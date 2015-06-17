@@ -81,7 +81,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     first reverse the graph with ``G.reverse()``.
 
     References
-    ------
+    ----------
     .. [1] Phillip Bonacich:
        Power and Centrality: A Family of Measures.
        American Journal of Sociology 92(5):1170–1182, 1986
@@ -187,7 +187,7 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     first reverse the graph with G.reverse().
 
     References
-    ------
+    ----------
     .. [1] Phillip Bonacich:
        Power and Centrality: A Family of Measures.
        American Journal of Sociology 92(5):1170–1182, 1986

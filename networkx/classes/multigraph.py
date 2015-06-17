@@ -90,7 +90,7 @@ class MultiGraph(Graph):
 
     or a collection of edges,
 
-    >>> G.add_edges_from(H.edges())
+    >>> G.add_edges_from(list(H.edges()))
 
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  If an edge already exists, an additional
@@ -161,7 +161,7 @@ class MultiGraph(Graph):
     (2, 1, 0, 4)
     (2, 3, 0, 8)
     (3, 2, 0, 8)
-    >>> G.edges(data='weight', keys=True)
+    >>> list(G.edges(data='weight', keys=True))
     [(1, 2, 0, 4), (1, 2, 1, None), (2, 3, 0, 8), (3, 4, 0, None), (4, 5, 0, None)]
 
     **Reporting:**
@@ -515,10 +515,10 @@ class MultiGraph(Graph):
         >>> G = nx.MultiGraph()
         >>> G.add_edges_from([(1,2),(1,2),(1,2)])
         >>> G.remove_edges_from([(1,2),(1,2)])
-        >>> G.edges()
+        >>> list(G.edges())
         [(1, 2)]
         >>> G.remove_edges_from([(1,2),(1,2)]) # silently ignore extra copy
-        >>> G.edges() # now empty graph
+        >>> list(G.edges()) # now empty graph
         []
         """
         for e in ebunch:
@@ -581,63 +581,8 @@ class MultiGraph(Graph):
         except KeyError:
             return False
 
+
     def edges(self, nbunch=None, data=False, keys=False, default=None):
-        """Return a list of edges.
-
-        Edges are returned as tuples with optional data and keys
-        in the order (node, neighbor, key, data).
-
-        Parameters
-        ----------
-        nbunch : iterable container, optional (default= all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
-        data : bool, optional (default=False)
-            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
-        keys : bool, optional (default=False)
-            Return two tuples (u,v) (False) or three-tuples (u,v,key) (True).
-
-        Returns
-        --------
-        edge_list: list of edge tuples
-            Edges that are adjacent to any node in nbunch, or a list
-            of all edges if nbunch is not specified.
-
-        See Also
-        --------
-        edges_iter : return an iterator over the edges
-
-        Notes
-        -----
-        Nodes in nbunch that are not in the graph will be (quietly) ignored.
-        For directed graphs this returns the out-edges.
-
-        Examples
-        --------
-        >>> G = nx.MultiGraph()  # or MultiDiGraph
-        >>> G.add_path([0,1,2])
-        >>> G.add_edge(2,3,weight=5)
-        >>> G.edges()
-        [(0, 1), (1, 2), (2, 3)]
-        >>> G.edges(data=True) # default edge data is {} (empty dictionary)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1))
-        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
-        >>> G.edges(keys=True) # default keys are integers
-        [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
-        >>> G.edges(data=True,keys=True) # default keys are integers
-        [(0, 1, 0, {}), (1, 2, 0, {}), (2, 3, 0, {'weight': 5})]
-        >>> list(G.edges(data='weight',default=1,keys=True))
-        [(0, 1, 0, 1), (1, 2, 0, 1), (2, 3, 0, 5)]
-        >>> G.edges([0,3])
-        [(0, 1), (3, 2)]
-        >>> G.edges(0)
-        [(0, 1)]
-
-        """
-        return list(self.edges_iter(nbunch, data, keys, default))
-
-    def edges_iter(self, nbunch=None, data=False, keys=False, default=None):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data and keys
@@ -660,12 +605,8 @@ class MultiGraph(Graph):
 
         Returns
         -------
-        edge_iter : iterator
+        edge : iterator
             An iterator of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
-
-        See Also
-        --------
-        edges : return a list of edges
 
         Notes
         -----
@@ -677,11 +618,11 @@ class MultiGraph(Graph):
         >>> G = nx.MultiGraph()   # or MultiDiGraph
         >>> G.add_path([0,1,2])
         >>> G.add_edge(2,3,weight=5)
-        >>> [e for e in G.edges_iter()]
+        >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
+        >>> list(G.edges(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1))
+        >>> list(G.edges(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges(keys=True)) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
@@ -689,9 +630,9 @@ class MultiGraph(Graph):
         [(0, 1, 0, {}), (1, 2, 0, {}), (2, 3, 0, {'weight': 5})]
         >>> list(G.edges(data='weight',default=1,keys=True))
         [(0, 1, 0, 1), (1, 2, 0, 1), (2, 3, 0, 5)]
-        >>> list(G.edges_iter([0,3]))
+        >>> list(G.edges([0,3]))
         [(0, 1), (3, 2)]
-        >>> list(G.edges_iter(0))
+        >>> list(G.edges(0))
         [(0, 1)]
 
         """
@@ -723,6 +664,7 @@ class MultiGraph(Graph):
                             yield (n, nbr, key) if keys else (n, nbr)
                 seen[n] = 1
         del seen
+
 
     def get_edge_data(self, u, v, key=None, default=None):
         """Return the attribute dictionary associated with edge (u,v).
@@ -863,10 +805,8 @@ class MultiGraph(Graph):
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
 
-        Warning
-        -------
-        If you have subclassed MultiGraph to use dict-like objects in the
-        data structure, those changes do not transfer to the MultiDiGraph
+        Warning: If you have subclassed MultiGraph to use dict-like objects
+        in the data structure, those changes do not transfer to the MultiDiGraph
         created by this method.
 
         Examples
@@ -874,7 +814,7 @@ class MultiGraph(Graph):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 0)]
 
         If already directed, return a (deep) copy
@@ -882,7 +822,7 @@ class MultiGraph(Graph):
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1)]
         """
         from networkx.classes.multidigraph import MultiDiGraph
@@ -902,7 +842,7 @@ class MultiGraph(Graph):
         A selfloop edge has the same node at both ends.
 
         Parameters
-        -----------
+        ----------
         data : bool, optional (default=False)
             Return selfloop edges as two tuples (u,v) (data=False)
             or three-tuples (u,v,datadict) (data=True)
@@ -1038,7 +978,7 @@ class MultiGraph(Graph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 2)]
         """
         bunch = self.nbunch_iter(nbunch)

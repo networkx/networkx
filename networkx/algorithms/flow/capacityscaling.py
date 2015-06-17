@@ -65,10 +65,10 @@ def _build_residual_network(G, demand, capacity, weight):
     # Extract edges with positive capacities. Self loops excluded.
     if G.is_multigraph():
         edge_list = [(u, v, k, e)
-                     for u, v, k, e in G.edges_iter(data=True, keys=True)
+                     for u, v, k, e in G.edges(data=True, keys=True)
                      if u != v and e.get(capacity, inf) > 0]
     else:
-        edge_list = [(u, v, 0, e) for u, v, e in G.edges_iter(data=True)
+        edge_list = [(u, v, 0, e) for u, v, e in G.edges(data=True)
                      if u != v and e.get(capacity, inf) > 0]
     # Simulate infinity with the larger of the sum of absolute node imbalances
     # the sum of finite edge capacities or any positive value if both sums are
@@ -268,7 +268,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
 
     # Determine the maxmimum edge capacity.
     wmax = max(chain([-inf],
-                     (e['capacity'] for u, v, e in R.edges_iter(data=True))))
+                     (e['capacity'] for u, v, e in R.edges(data=True))))
     if wmax == -inf:
         # Residual network has no edges.
         return flow_cost, _build_flow_dict(G, R, capacity, weight)

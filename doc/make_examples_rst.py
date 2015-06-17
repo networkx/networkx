@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 generate the rst files for the examples by iterating over the networkx examples
 """
@@ -28,7 +27,7 @@ def out_of_date(original, derived):
     return (not os.path.exists(derived) or
             os.stat(derived).st_mtime < os.stat(original).st_mtime)
 
-def main(exampledir,sourcedir):    
+def main(exampledir,sourcedir):
 
     noplot_regex = re.compile(r"#\s*-\*-\s*noplot\s*-\*-")
 
@@ -169,7 +168,7 @@ if __name__ == '__main__':
     except:
         arg0=sys.argv[0]
         print("""
-Usage:  %s exampledir sourcedir 
+Usage:  %s exampledir sourcedir
 
     exampledir: a directory containing the python code for the examples.
     sourcedir: a directory to put the generated documentation source for these examples.

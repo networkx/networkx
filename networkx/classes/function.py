@@ -15,13 +15,12 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'edges_iter', 'is_directed','info',
-           'freeze','is_frozen','subgraph','create_empty_copy',
-           'set_node_attributes','get_node_attributes',
-           'set_edge_attributes','get_edge_attributes',
-           'all_neighbors','non_neighbors', 'non_edges',
-           'common_neighbors', 'is_weighted','is_negatively_weighted',
-           'is_empty']
+           'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
+           'create_empty_copy', 'set_node_attributes',
+           'get_node_attributes', 'set_edge_attributes',
+           'get_edge_attributes', 'all_neighbors', 'non_neighbors',
+           'non_edges', 'common_neighbors', 'is_weighted',
+           'is_negatively_weighted', 'is_empty']
 
 
 def nodes(G):
@@ -30,23 +29,13 @@ def nodes(G):
 
 
 def edges(G,nbunch=None):
-    """Return list of edges incident to nodes in nbunch.
-
-    Return all edges if nbunch is unspecified or nbunch=None.
-
-    For digraphs, edges=out_edges
-    """
-    return G.edges(nbunch)
-
-
-def edges_iter(G,nbunch=None):
     """Return iterator over edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
     """
-    return G.edges_iter(nbunch)
+    return G.edges(nbunch)
 
 
 def degree(G,nbunch=None,weight=None):
@@ -384,10 +373,10 @@ def set_edge_attributes(G, name, values):
     except AttributeError:
         # Treat `value` as the attribute value for each edge.
         if G.is_multigraph():
-            edges = G.edges(keys=True)
+            edges = list(G.edges(keys=True))
         else:
-            edges = G.edges()
-        values = dict(zip(edges, [values] * len(edges)))
+            edges = list(G.edges())
+        values = dict(zip(edges, [values] * len(list(edges))))
 
     if G.is_multigraph():
         for (u, v, key), value in values.items():

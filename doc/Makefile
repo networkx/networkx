@@ -35,8 +35,8 @@ clean:
 generate: build/generate-stamp
 build/generate-stamp: $(wildcard source/reference/*.rst)
 	mkdir -p build
-	./make_gallery.py 
-	./make_examples_rst.py ../examples source
+	python make_gallery.py 
+	python make_examples_rst.py ../examples source
 	touch build/generate-stamp
 
 

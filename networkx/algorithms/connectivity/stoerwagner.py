@@ -96,9 +96,9 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
 
     # Make a copy of the graph for internal use.
     G = nx.Graph((u, v, {'weight': e.get(weight, 1)})
-                 for u, v, e in G.edges_iter(data=True) if u != v)
+                 for u, v, e in G.edges(data=True) if u != v)
 
-    for u, v, e, in G.edges_iter(data=True):
+    for u, v, e, in G.edges(data=True):
         if e['weight'] < 0:
             raise nx.NetworkXError('graph has a negative-weighted edge.')
 

@@ -10,10 +10,14 @@ Mailing List
    https://groups.google.com/forum/#!forum/networkx-discuss
 Development
    https://github.com/networkx/networkx
-   
+
    .. image:: https://travis-ci.org/networkx/networkx.png?branch=master
       :target: https://travis-ci.org/networkx/networkx
-  
+
+   .. image:: https://readthedocs.org/projects/networkx/badge/?version=latest
+      :target: https://readthedocs.org/projects/networkx/?badge=latest
+      :alt: Documentation Status
+
    .. image:: https://coveralls.io/repos/networkx/networkx/badge.png?branch=master
       :target: https://coveralls.io/r/networkx/networkx?branch=master
 
@@ -30,7 +34,7 @@ A quick example that finds the shortest path between two nodes in an undirected 
    ['A', 'B', 'D']
 
 Distributed with a BSD license; see LICENSE.txt::
-    
+
    Copyright (C) 2004-2015 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>

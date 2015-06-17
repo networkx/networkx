@@ -43,15 +43,16 @@ repository, unless you have made local changes in the meantime. In this case, yo
 
 It is also possible to update your local fork directly from GitHub:
 
-1. Open your fork on GitHub.
-2. Click on 'Pull Requests'.
-3. Click on 'New Pull Request'. By default, GitHub will compare the original with your fork. If
-you didn’t make any changes, there is nothing to compare.
-4. Click on 'Switching the base' or click 'Edit' and switch the base manually. Now GitHub will
-compare your fork with the original, and you should see all the latest changes.
-5. Click on 'Click to create a pull request for this comparison' and name your pull request.
-6. Click on Send pull request.
-7. Scroll down and click 'Merge pull request' and finally 'Confirm merge'. You will be able to merge 
-it automatically unless you didnot change you local repo.
+  1. Open your fork on GitHub.
+  2. Click on 'Pull Requests'.
+  3. Click on 'New Pull Request'. By default, GitHub will compare the original with your fork. If you didn’t make any changes, there is nothing to compare.
+  4. Click on 'Switching the base' or click 'Edit' and switch the base manually. Now GitHub will compare your fork with the original, and you should see all the latest changes.
+  5. Click on 'Click to create a pull request for this comparison' and name your pull request.
+  6. Click on Send pull request.
+  7. Scroll down and click 'Merge pull request' and finally 'Confirm merge'. You will be able to merge it automatically unless you did not change you local repo.
+
+
 
 .. include:: links.inc
+
+

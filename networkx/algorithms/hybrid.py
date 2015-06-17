@@ -74,7 +74,11 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     deleted_some=True # hack to start off the while loop
     while deleted_some:
         deleted_some=False
-        for edge in H.edges():
+        # We use `for edge in list(H.edges()):` instead of
+        # `for edge in H.edges():` because we edit the graph `H` in
+        # the loop. Hence using an iterator will result in
+        # `RuntimeError: dictionary changed size during iteration`
+        for edge in list(H.edges()):
             (u,v)=edge
             ### Get copy of graph needed for this search
             if low_memory:

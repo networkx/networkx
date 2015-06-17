@@ -46,7 +46,7 @@ Expanders
 ---------
 .. automodule:: networkx.generators.expanders
 .. autosummary::
-   :toctree:generated/
+   :toctree: generated/
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
@@ -156,17 +156,6 @@ Geometric
    geographical_threshold_graph
    waxman_graph
    navigable_small_world_graph
-
-
-Hybrid
-------
-.. automodule:: networkx.generators.hybrid
-.. autosummary::
-   :toctree: generated/
-
-   kl_connected_subgraph
-   is_kl_connected
-
 
 Line Graph
 ----------

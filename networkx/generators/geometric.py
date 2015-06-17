@@ -105,7 +105,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
 
 def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
                                  weight=None):
-    """Returns a geographical threshold graph.
+    r"""Returns a geographical threshold graph.
 
     The geographical threshold graph model places ``n`` nodes uniformly at
     random in a rectangular domain.  Each node `u` is assigned a weight `w_u`.
@@ -207,7 +207,7 @@ def geographical_threshold_edges(G, theta, alpha=2):
 
 
 def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
-    """Return a Waxman random graph.
+    r"""Return a Waxman random graph.
 
     The Waxman random graph model places ``n`` nodes uniformly at random in a
     rectangular domain. Each pair of nodes at Euclidean distance `d` is joined

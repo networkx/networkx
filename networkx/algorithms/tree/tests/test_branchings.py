@@ -105,8 +105,8 @@ def sorted_edges(G, attr='weight', default=1):
     return edges
 
 def assert_equal_branchings(G1, G2, attr='weight', default=1):
-    edges1 = G1.edges(data=True)
-    edges2 = G2.edges(data=True)
+    edges1 = list(G1.edges(data=True))
+    edges2 = list(G2.edges(data=True))
 
     # Grab the weights only.
     e1 = sorted_edges(G1, attr, default)

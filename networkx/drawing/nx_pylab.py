@@ -137,7 +137,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     return
 
 
-def draw_networkx(G, pos=None, with_labels=True, **kwds):
+def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     """Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
@@ -153,6 +153,9 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
        See networkx.layout for functions that compute node positions.
+
+    arrows : bool, optional (default=True)
+       For directed graphs, if True draw arrowheads.
 
     with_labels :  bool, optional (default=True)
        Set to True to draw labels on the nodes.
@@ -229,6 +232,13 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     label : string, optional
         Label for graph legend
 
+    Notes
+    -----
+    For directed graphs, "arrows" (actually just thicker stubs) are drawn
+    at the head end.  Arrows can be turned off with keyword arrows=False.
+    Yes, it is ugly but drawing proper arrows with Matplotlib this
+    way is tricky.
+
     Examples
     --------
     >>> G=nx.dodecahedral_graph()
@@ -261,7 +271,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
         pos = nx.drawing.spring_layout(G)  # default to spring layout
 
     node_collection = draw_networkx_nodes(G, pos, **kwds)
-    edge_collection = draw_networkx_edges(G, pos, **kwds)
+    edge_collection = draw_networkx_edges(G, pos, arrows=arrows, **kwds)
     if with_labels:
         draw_networkx_labels(G, pos, **kwds)
     plt.draw_if_interactive()
@@ -494,7 +504,7 @@ def draw_networkx_edges(G, pos,
         ax = plt.gca()
 
     if edgelist is None:
-        edgelist = G.edges()
+        edgelist = list(G.edges())
 
     if not edgelist or len(edgelist) == 0:  # no edges!
         return None

@@ -43,7 +43,7 @@ def maximal_matching(G):
     """
     matching = set([])
     edges = set([])
-    for u,v in G.edges_iter():
+    for u,v in G.edges():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
         if (u,v) not in edges and (v,u) not in edges:
@@ -92,6 +92,9 @@ def max_weight_matching(G, maxcardinality=False):
     This method is based on the "blossom" method for finding augmenting
     paths and the "primal-dual" method for finding a matching of maximum
     weight, both methods invented by Jack Edmonds [1]_.
+
+    Bipartite graphs can also be matched using the functions present in
+    :mod:`networkx.algorithms.bipartite.matching`.
 
     References
     ----------
@@ -150,7 +153,7 @@ def max_weight_matching(G, maxcardinality=False):
     # Find the maximum edge weight.
     maxweight = 0
     allinteger = True
-    for i,j,d in G.edges_iter(data=True):
+    for i,j,d in G.edges(data=True):
         wt=d.get('weight',1)
         if i != j and wt > maxweight:
             maxweight = wt
@@ -569,7 +572,7 @@ def max_weight_matching(G, maxcardinality=False):
         assert len(blossomdual) == 0 or min(blossomdual.values()) >= 0
         # 0. all edges have non-negative slack and
         # 1. all matched edges have zero slack;
-        for i,j,d in G.edges_iter(data=True):
+        for i,j,d in G.edges(data=True):
             wt=d.get('weight',1)
             if i == j:
                 continue # ignore self-loops

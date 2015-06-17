@@ -177,5 +177,5 @@ class TestGeneratorsSmall():
         assert_raises(networkx.exception.NetworkXError, tutte_graph,
                       create_using=DiGraph())
         MG=tutte_graph(create_using=MultiGraph())
-        assert_equal(MG.edges(), G.edges())
+        assert_equal(sorted(MG.edges()), sorted(G.edges()))
 

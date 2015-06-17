@@ -37,7 +37,7 @@ list of names that have commits in ``networkx``'s
 
 A historical, partial listing of contributors and their contributions to some
 of the earlier versions of NetworkX can be found
-`here </reference/credits_old.html>`_.
+`here <https://github.com/networkx/networkx/blob/886e790437bcf30e9f58368829d483efef7a2acc/doc/source/reference/credits_old.rst>`_.
 
 
 Original Authors

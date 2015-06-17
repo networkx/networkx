@@ -147,11 +147,11 @@ def to_agraph(N):
     # loop over edges
 
     if N.is_multigraph():
-        for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
+        for u,v,key,edgedata in N.edges(data=True,keys=True):
             str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             A.add_edge(u,v,key=str(key),**str_edgedata)
     else:
-        for u,v,edgedata in N.edges_iter(data=True):
+        for u,v,edgedata in N.edges(data=True):
             str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             A.add_edge(u,v,**str_edgedata)
 
@@ -373,12 +373,12 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
 
         # update all the edge labels
         if G.is_multigraph():
-            for u,v,key,data in G.edges_iter(keys=True, data=True):
+            for u,v,key,data in G.edges(keys=True, data=True):
                 # PyGraphviz doesn't convert the key to a string. See #339
                 edge = A.get_edge(u,v,str(key))
                 edge.attr['label'] = str(func(data))
         else:
-            for u,v,data in G.edges_iter(data=True):
+            for u,v,data in G.edges(data=True):
                 edge = A.get_edge(u,v)
                 edge.attr['label'] = str(func(data))
 

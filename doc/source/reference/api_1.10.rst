@@ -1,6 +1,6 @@
-*********************************
+**********************************
 Version 1.10 notes and API changes
-*********************************
+**********************************
 
 This page includes more detailed release information and API changes from
 NetworkX 1.9 to NetworkX 1.10.

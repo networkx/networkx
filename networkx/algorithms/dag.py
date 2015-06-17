@@ -331,7 +331,7 @@ def transitive_closure(G):
     """
     TC = nx.DiGraph()
     TC.add_nodes_from(G.nodes())
-    TC.add_edges_from(G.edges_iter())
+    TC.add_edges_from(G.edges())
     for v in G:
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
@@ -373,8 +373,7 @@ def antichains(G):
     References
     ----------
     .. [1] Free Lattices, by R. Freese, J. Jezek and J. B. Nation,
-    AMS, Vol 42, 1995, p. 226.
-
+       AMS, Vol 42, 1995, p. 226.
     """
     TC = nx.transitive_closure(G)
     antichains_stacks = [([], nx.topological_sort(G, reverse=True))]

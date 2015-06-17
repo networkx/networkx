@@ -40,18 +40,19 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
         assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
 
-    def test_edges_iter(self):
+    def test_edges(self):
         G=self.K3
-        assert_equal(sorted(G.edges_iter()),
+        assert_equal(sorted(G.edges()),
                      [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
-        assert_equal(sorted(G.edges_iter(0)),[(0,1),(0,2)])
+        assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
 
     def test_edges_data(self):
         G=self.K3
         assert_equal(sorted(G.edges(data=True)),
                      [(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),(2,0,{}),(2,1,{})])
         assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
-        assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
+        f = lambda x: list(G.edges(x))
+        assert_raises((KeyError,networkx.NetworkXError), f,-1)
 
     def test_out_edges(self):
         G=self.K3
@@ -60,11 +61,11 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.out_edges(0)),[(0,1),(0,2)])
         assert_raises((KeyError,networkx.NetworkXError), G.out_edges,-1)
 
-    def test_out_edges_iter(self):
+    def test_out_edges(self):
         G=self.K3
-        assert_equal(sorted(G.out_edges_iter()),
+        assert_equal(sorted(G.out_edges()),
                      [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
-        assert_equal(sorted(G.edges_iter(0)),[(0,1),(0,2)])
+        assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
 
     def test_out_edges_dir(self):
         G=self.P3
@@ -72,11 +73,11 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.out_edges(0)),[(0, 1)])
         assert_equal(sorted(G.out_edges(2)),[])
 
-    def test_out_edges_iter_dir(self):
+    def test_out_edges_dir(self):
         G=self.P3
-        assert_equal(sorted(G.out_edges_iter()),[(0, 1), (1, 2)])
-        assert_equal(sorted(G.out_edges_iter(0)),[(0, 1)])
-        assert_equal(sorted(G.out_edges_iter(2)),[])
+        assert_equal(sorted(G.out_edges()),[(0, 1), (1, 2)])
+        assert_equal(sorted(G.out_edges(0)),[(0, 1)])
+        assert_equal(sorted(G.out_edges(2)),[])
 
     def test_in_edges_dir(self):
         G=self.P3
@@ -84,11 +85,11 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.in_edges(0)),[])
         assert_equal(sorted(G.in_edges(2)),[(1,2)])
 
-    def test_in_edges_iter_dir(self):
+    def test_in_edges_dir(self):
         G=self.P3
-        assert_equal(sorted(G.in_edges_iter()),[(0, 1), (1, 2)])
-        assert_equal(sorted(G.in_edges_iter(0)),[])
-        assert_equal(sorted(G.in_edges_iter(2)),[(1,2)])
+        assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
+        assert_equal(sorted(G.in_edges(0)),[])
+        assert_equal(sorted(G.in_edges(2)),[(1,2)])
 
     def test_degree(self):
         G=self.K3
@@ -103,6 +104,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(list(G.degree_iter()),[(0,4),(1,4),(2,4)])
         assert_equal(dict(G.degree_iter()),{0:4,1:4,2:4})
         assert_equal(list(G.degree_iter(0)),[(0,4)])
+        assert_equal(list(G.degree_iter(iter([0]))),[(0,4)]) #run through iterator
 
     def test_in_degree(self):
         G=self.K3
@@ -110,6 +112,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(G.in_degree(),{0:2,1:2,2:2})
         assert_equal(G.in_degree(0),2)
         assert_equal(G.in_degree([0]),{0:2})
+        assert_equal(G.in_degree(iter([0])),{0:2})
         assert_raises((KeyError,networkx.NetworkXError), G.in_degree,-1)
 
     def test_in_degree_iter(self):
@@ -117,6 +120,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(list(G.in_degree_iter()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.in_degree_iter()),{0:2,1:2,2:2})
         assert_equal(list(G.in_degree_iter(0)),[(0,2)])
+        assert_equal(list(G.in_degree_iter(iter([0]))),[(0,2)]) #run through iterator
 
     def test_in_degree_iter_weighted(self):
         G=self.K3
@@ -127,6 +131,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(list(G.in_degree_iter(weight='other')),[(0,2),(1,2.2),(2,2)])
         assert_equal(dict(G.in_degree_iter(weight='other')),{0:2,1:2.2,2:2})
         assert_equal(list(G.in_degree_iter(1,weight='other')),[(1,2.2)])
+        assert_equal(list(G.in_degree_iter(iter([1]),weight='other')),[(1,2.2)])
 
     def test_out_degree(self):
         G=self.K3
@@ -134,6 +139,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(G.out_degree(),{0:2,1:2,2:2})
         assert_equal(G.out_degree(0),2)
         assert_equal(G.out_degree([0]),{0:2})
+        assert_equal(G.out_degree(iter([0])),{0:2})
         assert_raises((KeyError,networkx.NetworkXError), G.out_degree,-1)
 
     def test_out_degree_iter_weighted(self):
@@ -145,12 +151,14 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(list(G.out_degree_iter(weight='other')),[(0,2.2),(1,2),(2,2)])
         assert_equal(dict(G.out_degree_iter(weight='other')),{0:2.2,1:2,2:2})
         assert_equal(list(G.out_degree_iter(0,weight='other')),[(0,2.2)])
+        assert_equal(list(G.out_degree_iter(iter([0]),weight='other')),[(0,2.2)])
 
     def test_out_degree_iter(self):
         G=self.K3
         assert_equal(list(G.out_degree_iter()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.out_degree_iter()),{0:2,1:2,2:2})
         assert_equal(list(G.out_degree_iter(0)),[(0,2)])
+        assert_equal(list(G.out_degree_iter(iter([0]))),[(0,2)])
 
     def test_size(self):
         G=self.K3

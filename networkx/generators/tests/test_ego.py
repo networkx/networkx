@@ -19,11 +19,11 @@ class TestGeneratorEgo():
         assert_true(nx.is_isomorphic(nx.star_graph(3),H))
         G=nx.path_graph(3)
         H=nx.ego_graph(G,0)
-        assert_equal(H.edges(), [(0, 1)])
+        assert_equal(sorted(H.edges()), [(0, 1)])
         H=nx.ego_graph(G,0,undirected=True)
-        assert_equal(H.edges(), [(0, 1)])
+        assert_equal(sorted(H.edges()), [(0, 1)])
         H=nx.ego_graph(G,0,center=False)
-        assert_equal(H.edges(), [])
+        assert_equal(sorted(H.edges()), [])
 
 
     def test_ego_distance(self):

@@ -794,7 +794,7 @@ class DegreeSequenceRandomGraph(object):
             if not self.suitable_edge():
                 raise nx.NetworkXUnfeasible('no suitable edges left')
             while True:
-                u,v = sorted(random.choice(H.edges()))
+                u,v = sorted(random.choice(list(H.edges())))
                 if random.random() < self.q(u,v):
                     break
             if random.random() < self.p(u,v): # accept edge

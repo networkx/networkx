@@ -180,5 +180,5 @@ class TestGeneratorThreshold():
         assert_raises(nx.exception.NetworkXError,
                       nxt.threshold_graph, cs, create_using=nx.DiGraph())
         MG=nxt.threshold_graph(cs,create_using=nx.MultiGraph())
-        assert_equal(MG.edges(), G.edges())
+        assert_equal(sorted(MG.edges()), sorted(G.edges()))
 

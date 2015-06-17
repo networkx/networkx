@@ -92,6 +92,6 @@ def clique_removal(G):
             cliques.append(c_i)
         if i_i:
             isets.append(i_i)
-
-    maxiset = max(isets)
+    # Determine the largest independent set as measured by cardinality.
+    maxiset = max(isets, key=len)
     return maxiset, cliques

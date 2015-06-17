@@ -39,7 +39,7 @@ class TestGeneratorsBipartite():
                       complete_bipartite_graph, 7, 3, create_using=DiGraph())
 
         mG=complete_bipartite_graph(7, 3, create_using=MultiGraph())
-        assert_equal(mG.edges(), G.edges())
+        assert_equal(sorted(mG.edges()), sorted(G.edges()))
 
     def test_configuration_model(self):
         aseq=[3,3,3,3]
@@ -204,5 +204,5 @@ class TestGeneratorsBipartite():
         print(X)
         assert_equal(set(range(n)),X)
         assert_equal(set(range(n,n+m)),Y)
-        assert_equal(edges, len(G.edges()))
+        assert_equal(edges, len(list(G.edges())))
 
