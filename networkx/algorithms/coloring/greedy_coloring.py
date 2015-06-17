@@ -42,19 +42,15 @@ def strategy_largest_first(G, colors):
     Largest first (lf) ordering. Ordering the nodes by largest degree
     first.
     """
-    nodes = G.nodes()
-    nodes.sort(key=lambda node: -G.degree(node))
-
-    return nodes
+    return sorted(G, key=G.degree, reverse=True)
 
 
 def strategy_random_sequential(G, colors):
     """
     Random sequential (RS) ordering. Scrambles nodes into random ordering.
     """
-    nodes = G.nodes()
+    nodes = list(G)
     random.shuffle(nodes)
-
     return nodes
 
 
@@ -131,7 +127,7 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
     strategy_connected_sequential_dfs method). The default is bfs.
     """
     for component_graph in nx.connected_component_subgraphs(G):
-        source = component_graph.nodes()[0]
+        source = next(iter(component_graph))
 
         yield source  # Pick the first node as source
 
@@ -156,7 +152,7 @@ def strategy_saturation_largest_first(G, colors):
     no_colored = 0
     distinct_colors = {}
 
-    for node in G.nodes_iter():
+    for node in G:
         distinct_colors[node] = set()
 
     while no_colored != len_g:

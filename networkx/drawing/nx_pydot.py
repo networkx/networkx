@@ -207,7 +207,7 @@ def to_pydot(N, strict=True):
     except KeyError:
         pass
 
-    for n,nodedata in N.nodes_iter(data=True):
+    for n,nodedata in N.nodes(data=True):
         str_nodedata=dict((k,make_str(v)) for k,v in nodedata.items())
         p=pydot.Node(make_str(n),**str_nodedata)
         P.add_node(p)

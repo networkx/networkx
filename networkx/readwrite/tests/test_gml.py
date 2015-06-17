@@ -221,7 +221,7 @@ graph
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert_equal(data, G.name)
         assert_equal({'name': data, unicode('data'): data}, G.graph)
-        assert_equal(G.nodes(data=True),
+        assert_equal(list(G.nodes(data=True)),
                      [(0, dict(int=-1, data=dict(data=data)))])
         assert_equal(G.edges(data=True), [(0, 0, dict(float=-2.5, data=data))])
         G = nx.Graph()
