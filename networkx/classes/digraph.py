@@ -922,18 +922,16 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=zip(iter(self.succ.items()),iter(self.pred.items()))
+            nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.items())
         else:
-            nodes_nbrs=zip(
-                ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
-                ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
+            nodes_nbrs=( (n,self.succ[n],self.pred[n]) for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for (n,succ),(n2,pred) in nodes_nbrs:
+            for n,succ,pred in nodes_nbrs:
                 yield (n,len(succ)+len(pred))
         else:
         # edge weighted graph - degree is sum of edge weights
-            for (n,succ),(n2,pred) in nodes_nbrs:
+            for n,succ,pred in nodes_nbrs:
                yield (n,
                       sum((succ[nbr].get(weight,1) for nbr in succ))+
                       sum((pred[nbr].get(weight,1) for nbr in pred)))
