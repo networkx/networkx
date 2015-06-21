@@ -72,12 +72,6 @@ class TestCore:
         k_core_subgraph=nx.k_core(self.H,k=2)
         assert_equal(sorted(k_core_subgraph.nodes()),[2,4,5,6])
     
-    # def test_k_in_out_core(self):
-    #   G = nx.DiGraph()
-    #   test_graph_list = [(0,1),(1,2),(1,3),(3,4),(1,4),(4,0),(1,0)]
-    #   G.add_edges_from(test_graph_list)
-    #   
-    
     def test_main_crust(self):
         main_crust_subgraph=nx.k_crust(self.H)
         assert_equal(sorted(main_crust_subgraph.nodes()),[0,1,3])
