@@ -13,7 +13,7 @@ http://arxiv.org/abs/cs.DS/0310049
 __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
                         'Jason Grout (jason-sage@creativetrax.com)',
                         'Aric Hagberg (hagberg@lanl.gov)'])
-
+import json
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -24,7 +24,7 @@ __all__ = ['core_number','k_core','k_shell','k_crust','k_corona','find_cores']
 
 import networkx as nx
 
-def core_number(G):
+def core_number(G,direction=None):
     """Return the core number for each vertex.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
@@ -35,7 +35,9 @@ def core_number(G):
     Parameters
     ----------
     G : NetworkX graph
-       A graph or directed graph
+       A graph or directed graph    
+    direction : string, optional
+       Whether the core number is k-in ('in') or k-out ('out')
 
     Returns
     -------
@@ -60,6 +62,9 @@ def core_number(G):
        Vladimir Batagelj and Matjaz Zaversnik, 2003.
        http://arxiv.org/abs/cs.DS/0310049
     """
+    if direction and direction != 'in' and direction != 'out':
+        raise nx.NetworkXError("direction must be: 'in' or 'out'")
+    
     if G.is_multigraph():
         raise nx.NetworkXError(
                 'MultiGraph and MultiDiGraph types not supported.')
@@ -70,13 +75,34 @@ def core_number(G):
                 'Consider using G.remove_edges_from(G.selfloop_edges()).')
 
     if G.is_directed():
+        print "is_directed():"
         import itertools
-        def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
+        def neighbors(v,direction):
+            print "neighbors({})".format(v)
+            if(direction):
+                if direction == 'in':
+                    print "direction == in"
+                    print "G.predecessors_iter({})",format(v)
+                    return itertools.chain.from_iterable([G.predecessors_iter(v)])
+                    print list(G.predecessors_iter(v))
+                elif direction == 'out':
+                    print direction == "out"
+                    print "direction == out"
+                    print "G.successors_iter({})",format(v)
+                    return itertools.chain.from_iterable([G.successors_iter(v)])
+            else:
+                print "direction == None"
+                return itertools.chain.from_iterable([G.predecessors_iter(v),
                                                   G.successors_iter(v)])
     else:
         neighbors=G.neighbors_iter
-    degrees=G.degree()
+    degrees = None
+    if direction == 'in':
+        degrees = G.in_degree()
+    elif direction == 'out':
+        degrees = G.out_degree()
+    else:
+        degrees=G.degree()
     # sort nodes by degree
     nodes=sorted(degrees,key=degrees.get)
     bin_boundaries=[0]
@@ -88,11 +114,18 @@ def core_number(G):
     node_pos = dict((v,pos) for pos,v in enumerate(nodes))
     # initial guesses for core is degree
     core=degrees
-    nbrs=dict((v,set(neighbors(v))) for v in G)
+    print "neighbors({})".format(v)
+    print str(set(neighbors(v,direction)))
+    nbrs=dict((v,set(neighbors(v,direction))) for v in G)
+    import copy
     for v in nodes:
-        for u in nbrs[v]:
-            if core[u] > core[v]:
-                nbrs[u].remove(v)
+        print "v: {}".format(v)
+        for u in nbrs[v]: # {4}
+            print "u: {}".format(u)
+            print "core[u]: {} core[v]: {}".format(core[u], core[v])
+            if core[u] > core[v]: # 2 > 1
+                # bi-directional operation
+                nbrs[v].remove(u) # nbrs[4] = {1,3} # Assumes reciprocity!
                 pos=node_pos[u]
                 bin_start=bin_boundaries[core[u]]
                 node_pos[u]=bin_start
@@ -104,7 +137,7 @@ def core_number(G):
 
 find_cores=core_number
 
-def k_core(G,k=None,core_number=None):
+def k_core(G,k=None,core_number=None,direction=None):
     """Return the k-core of G.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
@@ -117,6 +150,8 @@ def k_core(G,k=None,core_number=None):
       The order of the core.  If not specified return the main core.
     core_number : dictionary, optional
       Precomputed core numbers for the graph G.
+    direction : string, optional
+      Whether the k-core is a k-in-core ('in') or k-out-core ('out')
 
     Returns
     -------
@@ -149,8 +184,13 @@ def k_core(G,k=None,core_number=None):
        Vladimir Batagelj and Matjaz Zaversnik,  2003.
        http://arxiv.org/abs/cs.DS/0310049
     """
+    if direction and direction != ('in' or 'out'):
+        raise nx.NetworkXError("direction must be: 'in' or 'out'")
+    
     if core_number is None:
-        core_number=nx.core_number(G)
+        core_number=nx.core_number(G,direction=direction)
+        print direction
+        print core_number
     if k is None:
         k=max(core_number.values()) # max core
     nodes=(n for n in core_number if core_number[n]>=k)
