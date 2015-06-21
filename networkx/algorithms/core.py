@@ -22,6 +22,8 @@ __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
 #    BSD license.
 __all__ = ['core_number','k_core','k_shell','k_crust','k_corona','find_cores']
 
+import networkx as nx
+
 def core_number(G,direction=None):
     """Return the core number for each vertex.
 
