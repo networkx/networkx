@@ -13,6 +13,7 @@ http://arxiv.org/abs/cs.DS/0310049
 __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
                         'Jason Grout (jason-sage@creativetrax.com)',
                         'Aric Hagberg (hagberg@lanl.gov)'])
+
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
