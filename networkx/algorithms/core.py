@@ -108,10 +108,12 @@ def core_number(G,direction=None):
     nbrs=dict((v,set(neighbors(v,direction))) for v in G)
     import copy
     for v in nodes:
-        for u in nbrs[v]: # {4}
-            if core[u] > core[v]: # 2 > 1
-                # bi-directional operation
-                nbrs[v].remove(u) # nbrs[4] = {1,3} # Assumes reciprocity!
+        for u in nbrs[v]:
+            if core[u] > core[v]:
+                if direction == 'in':
+                    nbrs[v].remove(u)
+                else:
+                    nbrs[u].remove(v)
                 pos=node_pos[u]
                 bin_start=bin_boundaries[core[u]]
                 node_pos[u]=bin_start
