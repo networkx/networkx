@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from networkx.algorithms import tree
 
 
 class TestMST:
@@ -52,11 +51,11 @@ class TestMST:
         assert_equal(T.edges(data=True), self.maximum_spanning_edgelist)
 
     def test_kruskal_minimum_spanning_edges(self):
-        edgelist = sorted(tree.minimum_spanning_edges(self.G, algorithm='kruskal'))
+        edgelist = sorted(nx.minimum_spanning_edges(self.G, algorithm='kruskal'))
         assert_equal(edgelist, self.minimum_spanning_edgelist)
 
     def test_kruskal_maximum_spanning_edges(self):
-        edgelist = sorted(tree.maximum_spanning_edges(self.G, algorithm='kruskal'))
+        edgelist = sorted(nx.maximum_spanning_edges(self.G, algorithm='kruskal'))
         assert_equal(edgelist, self.maximum_spanning_edgelist)
 
     def test_kruskal_minimum_spanning_tree_disconnected(self):
@@ -150,13 +149,13 @@ class TestMST:
         assert_equal(T.edges(data=True), self.maximum_spanning_edgelist)
 
     def test_prim_minimum_spanning_edges(self):
-        edgelist = sorted(tree.minimum_spanning_edges(self.G, algorithm='prim'))
+        edgelist = sorted(nx.minimum_spanning_edges(self.G, algorithm='prim'))
         edgelist = sorted((sorted((u, v))[0], sorted((u, v))[1], d)
                           for u, v, d in edgelist)
         assert_equal(edgelist, self.minimum_spanning_edgelist)
 
     def test_prim_maximum_spanning_edges(self):
-        edgelist = sorted(tree.maximum_spanning_edges(self.G, algorithm='prim'))
+        edgelist = sorted(nx.maximum_spanning_edges(self.G, algorithm='prim'))
         edgelist = sorted((sorted((u, v))[0], sorted((u, v))[1], d)
                           for u, v, d in edgelist)
         assert_equal(edgelist, self.maximum_spanning_edgelist)

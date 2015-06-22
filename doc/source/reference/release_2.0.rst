@@ -1,6 +1,6 @@
-*********************************
-Version 2.0 notes and API changes
-*********************************
+*****************************************
+Version 2.0 release notes and API changes
+*****************************************
 
 This page includes more detailed release information and API changes from
 NetworkX 1.10 to NetworkX 2.0.
@@ -25,24 +25,17 @@ API changes
       >>> nx.maximum_spanning_tree(G, algorithm='kruskal')
 
   The ``algorithm`` parameter is new and appears before the existing ``weight``
-  parameter. So existing code that did not explicitly name the optional ``weight``
-  parameter will need to be updated::
+  parameter. So existing code that did not explicitly name the optional
+  ``weight`` parameter will need to be updated::
 
       >>> nx.minimum_spanning_tree(G, 'mass')  # old
       >>> nx.minimum_spanning_tree(G, weight='mass') # new
 
-  In the above, we are still relying on the the function being imported into the
-  top-level  namespace. We recommend the following instead, but do not have
-  immediate plans to deprecate the other approach::
+  In the above, we are still relying on the the functions being imported into the
+  top-level  namespace. We do not have immediate plans to deprecate this approach,
+  but we recommend the following instead::
 
        >>> from networkx.algorithms import tree
-       >>> tree.minimum_spanning_tree(G, weight='mass') # recommended
-
-  As for ``minimum_spanning_edges``/``maximum_spanning_edges``, they are not
-  imported in the top-level namespace. This approach should be used to
-  work with these functions::
-
-       >>> from networkx.algorithms import tree
+       # recommended
+       >>> tree.minimum_spanning_tree(G, algorithm='kruskal', weight='mass')
        >>> tree.minimum_spanning_edges(G, algorithm='prim', weight='mass')
-
-

@@ -68,7 +68,7 @@ from networkx.algorithms.flow import (maximum_flow, maximum_flow_value,
     min_cost_flow_cost, max_flow_min_cost, min_cost_flow, cost_of_flow)
 
 from .tree.recognition import *
-from .tree.mst import minimum_spanning_tree, maximum_spanning_tree
+from .tree.mst import *
 from .tree.branchings import (
 	maximum_branching, minimum_branching,
 	maximum_spanning_arborescence, minimum_spanning_arborescence
