@@ -28,7 +28,7 @@ class TestMCS:
         assert_true(nx.is_chordal(nx.complete_graph(3)))
         assert_true(nx.is_chordal(nx.cycle_graph(3)))
         assert_false(nx.is_chordal(nx.cycle_graph(5)))
-    
+
     def test_induced_nodes(self):
         G = nx.generators.classic.path_graph(10)
         I = nx.find_induced_nodes(G,1,9,2)
@@ -39,7 +39,7 @@ class TestMCS:
         assert_equal(I,set([1,2,4,6]))
         assert_raises(nx.NetworkXError,
 		      nx.find_induced_nodes,self.non_chordal_G,1,5)
-        
+
     def test_chordal_find_cliques(self):
         cliques = set([frozenset([9]),frozenset([7,8]),frozenset([1,2,3]),
                        frozenset([2,3,4]),frozenset([3,4,5,6])])
@@ -49,9 +49,9 @@ class TestMCS:
         G = nx.path_graph(10)
         cliqueset = nx.chordal_graph_cliques(G)
         for (u,v) in G.edges():
-            assert_true(frozenset([u,v]) in cliqueset 
+            assert_true(frozenset([u,v]) in cliqueset
                         or frozenset([v,u]) in cliqueset)
-    
+
     def test_chordal_find_cliquesCC(self):
         cliques = set([frozenset([1,2,3]),frozenset([2,3,4]),
                        frozenset([3,4,5,6])])

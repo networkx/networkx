@@ -3,10 +3,7 @@
 Chordal
 =======
 
-.. toctree::
-   :maxdepth: 2
-
-.. automodule:: networkx.algorithms.chordal.chordal_alg
+.. automodule:: networkx.algorithms.chordal
 .. autosummary::
    :toctree: generated/
 
@@ -14,4 +11,3 @@ Chordal
    chordal_graph_cliques
    chordal_graph_treewidth
    find_induced_nodes
-
