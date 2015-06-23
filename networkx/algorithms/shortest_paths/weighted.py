@@ -570,7 +570,7 @@ def bellman_ford(G, source, weight='weight'):
 
     """
     if source not in G:
-        raise KeyError("Node %s is not found in the graph" % source)
+        raise nx.NetworkXInvalidNode("Node %s is not found in the graph" % source)
 
     for u, v, attr in G.selfloop_edges(data=True):
         if attr.get(weight, 1) < 0:
@@ -687,7 +687,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
     """
     if source not in G:
-        raise KeyError("Node %s is not found in the graph" % source)
+        raise nx.NetworkXInvalidNode("Node %s is not found in the graph" % source)
 
     for u, v, attr in G.selfloop_edges(data=True):
         if attr.get(weight, 1) < 0:
@@ -909,6 +909,9 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     shortest_path
     shortest_path_length
     """
+    if source not in G or target not in G:
+        raise nx.NetworkXInvalidNode()
+
     if source == target:
         return (0, [source])
     push = heappush

@@ -51,6 +51,9 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     --------
     shortest_path_length
     """
+    if source not in G:
+        raise nx.NetworkXInvalidNode()
+
     seen={}                  # level (number of hops) when seen in BFS
     level=0                  # the current level
     nextlevel={source:1}  # dict of nodes to check at next level
@@ -134,6 +137,10 @@ def bidirectional_shortest_path(G,source,target):
     -----
     This algorithm is used by shortest_path(G,source,target).
     """
+
+    if source not in G or target not in G:
+        raise nx.NetworkXInvalidNode()
+
     # call helper to do the real work
     results=_bidirectional_pred_succ(G,source,target)
     pred,succ,w=results
@@ -240,6 +247,9 @@ def single_source_shortest_path(G,source,cutoff=None):
     --------
     shortest_path
     """
+    if source not in G:
+        raise nx.NetworkXInvalidNode()
+
     level=0                  # the current level
     nextlevel={source:1}       # list of nodes to check at next level
     paths={source:[source]}  # paths dictionary  (paths to key from source)
@@ -326,6 +336,9 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
     {0: [], 1: [0], 2: [1], 3: [2]}
 
     """
+    if source not in G:
+        raise nx.NetworkXInvalidNode()
+
     level=0                  # the current level
     nextlevel=[source]       # list of nodes to check at next level
     seen={source:level}      # level (number of hops) when seen in BFS

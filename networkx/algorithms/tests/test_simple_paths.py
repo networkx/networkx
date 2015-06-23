@@ -60,13 +60,13 @@ def test_cutoff_zero():
     paths = nx.all_simple_paths(nx.MultiGraph(G),0,3,cutoff=0)
     assert_equal(list(list(p) for p in paths),[])
 
-@raises(nx.NetworkXError)
+@raises(nx.NetworkXInvalidNode)
 def test_source_missing():
     G = nx.Graph()
     G.add_path([1,2,3])
     paths = list(nx.all_simple_paths(nx.MultiGraph(G),0,3))
 
-@raises(nx.NetworkXError)
+@raises(nx.NetworkXInvalidNode)
 def test_target_missing():
     G = nx.Graph()
     G.add_path([1,2,3])

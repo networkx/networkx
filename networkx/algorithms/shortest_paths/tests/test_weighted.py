@@ -207,8 +207,8 @@ class TestBellmanFordAndGoldbergRadizk:
         G.add_node(0)
         assert_equal(nx.bellman_ford(G, 0), ({0: None}, {0: 0}))
         assert_equal(nx.goldberg_radzik(G, 0), ({0: None}, {0: 0}))
-        assert_raises(KeyError, nx.bellman_ford, G, 1)
-        assert_raises(KeyError, nx.goldberg_radzik, G, 1)
+        assert_raises(nx.NetworkXInvalidNode, nx.bellman_ford, G, 1)
+        assert_raises(nx.NetworkXInvalidNode, nx.goldberg_radzik, G, 1)
 
     def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())

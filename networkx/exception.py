@@ -42,6 +42,9 @@ class NetworkXNoPath(NetworkXUnfeasible):
     """Exception for algorithms that should return a path when running
     on graphs where such a path does not exist."""
 
+class NetworkXInvalidNode(NetworkXUnfeasible):
+    """Exception for situations when there is no specific Node in graph."""
+
 class NetworkXNoCycle(NetworkXUnfeasible):
     """Exception for algorithms that should return a cycle when running
     on graphs where such a cycle does not exist."""

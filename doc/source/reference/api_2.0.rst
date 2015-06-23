@@ -74,3 +74,21 @@ Miscellaneous changes
 
 * [`#1192 <https://github.com/networkx/networkx/pull/1192>`_]
   Support for Python 2.6 is dropped.
+
+Algorithms changed
+==================
+
+Shortest path
+-------------
+
+single_source_shortest_path_length(), bidirectional_shortest_path(),
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+single_source_shortest_path(), predecessor(), astar_path(), 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+astar_path_length(), bellman_ford(), goldberg_radzik(), 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bidirectional_dijkstra(), shortest_path_length(), all_shortest_paths()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   These algorithms now raise an exception when a source and a target are
+   not presented in the graph. The exception is a NetworkXInvalidNode exception.
+

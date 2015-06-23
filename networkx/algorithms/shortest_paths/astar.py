@@ -67,6 +67,9 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     shortest_path, dijkstra_path
 
     """
+    if source not in G or target not in G:
+        raise nx.NetworkXInvalidNode()
+
     if G.is_multigraph():
         raise NetworkXError("astar_path() not implemented for Multi(Di)Graphs")
 
@@ -160,5 +163,8 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
     astar_path
 
     """
+    if source not in G or target not in G:
+        raise nx.NetworkXInvalidNode()
+
     path = astar_path(G, source, target, heuristic, weight)
     return sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))
