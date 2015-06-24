@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #    Copyright (C) 2015 by
 #    André Dietrich <dietrich@ivs.cs.uni-magdeburg.de>
+#    Sebastian Zug <zug@ivs.cs.uni-magdeburg.de>
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['André Dietrich <dietrich@ivs.cs.uni-magdeburg.de>',
-                            'Sebastian Zug <zug@ivs.cs.uni-magdeburg.de>'])
+
 __all__ = ['all_simple_paths',
 	   'all_shortest_paths',
 	   'has_path']
@@ -43,7 +43,6 @@ def all_simple_paths(G, source, target, cutoff=None):
     Examples
     --------
     >>> import networkx as nx
-    >>>
     >>> G = nx.complete_graph(4)
     >>> for path in nx.bidirectional.all_simple_paths(G, source=0, target=3):
     ...     print(path)
@@ -53,6 +52,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     [0, 2, 3]
     [0, 2, 1, 3]
     [0, 1, 2, 3]
+    
     >>> paths = nx.bidirectional.all_simple_paths(G, source=0, target=3, cutoff=2)
     >>> print(list(paths))
     [[0, 3], [0, 1, 3], [0, 2, 3]]
@@ -66,7 +66,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     
     This algorithm actually reduces the search space by half, which results
     in a faster identification of simple paths than in the original
-    "all_simple_paths" algorithm. But it requires more memory, which can
+    `nx.all_simple_paths` algorithm. But it requires more memory, which can
     have a negative effect on the speed in fully connected graphs.
     
               
@@ -192,7 +192,6 @@ def all_shortest_paths(G, source, target):
     Examples
     --------
     >>> import networkx as nx
-    >>>
     >>> G = nx.complete_graph(4)
     >>> for path in nx.bidirectional.all_shortest_paths(G, source=0, target=3):
     ...     print(path)
@@ -207,9 +206,9 @@ def all_shortest_paths(G, source, target):
     there are matching leaves in both trees, a new path is identified.
     
     This algorithm actually reduces the search space by half, which results
-    in a faster identification of simple paths than in the original
-    "all_simple_paths" algorithm. But it requires more memory, which can
-    have a negative effect on the speed in fully connected graphs.
+    in a faster identification of shortest paths than in the original
+    `nx.all_shortest_paths` algorithm. But it requires more memory, which
+    can have a negative effect on the speed in fully connected graphs.
     
               
                            source    
