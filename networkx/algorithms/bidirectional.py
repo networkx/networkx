@@ -108,7 +108,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     if target not in G:
         raise nx.NetworkXError('target node %s not in graph' % target)
     if cutoff is None:
-        cutoff = len(G)-1
+        cutoff = len(G) - 1
     if G.is_multigraph():
         return _all_simple_paths_multi(G, source, target, cutoff=cutoff)
     elif G.is_directed():
@@ -128,7 +128,7 @@ def _all_simple_paths_graph(G, source, target, cutoff):
 
         temp = set()
         tree1 = tree[i % 2]
-        tree2 = tree[(i+1) % 2]
+        tree2 = tree[(i + 1) % 2]
 
         leaves = {x[-1] for x in iter(tree1)}  # only to reduce some effort
         for path in iter(tree2):
@@ -140,13 +140,13 @@ def _all_simple_paths_graph(G, source, target, cutoff):
                                 if not set(_path).intersection(path):
                                     if i % 2:
                                         yield list(path) + \
-                                        [x for x in reversed(_path)]
+                                            [x for x in reversed(_path)]
                                     else:
                                         yield list(_path) + \
-                                        [x for x in reversed(path)]
+                                            [x for x in reversed(path)]
                     temp.add(path + (s,))
 
-        tree[(i+1) % 2] = temp
+        tree[(i + 1) % 2] = temp
 
 
 def _all_simple_paths_directed(G, source, target, cutoff):
@@ -160,7 +160,7 @@ def _all_simple_paths_directed(G, source, target, cutoff):
 
         temp = set()
         tree1 = tree[i % 2]
-        tree2 = tree[(i+1) % 2]
+        tree2 = tree[(i + 1) % 2]
 
         if i % 2:
             _next = G.successors_iter
@@ -177,13 +177,13 @@ def _all_simple_paths_directed(G, source, target, cutoff):
                                 if not set(_path).intersection(path):
                                     if i % 2:
                                         yield list(path) + \
-                                        [x for x in reversed(_path)]
+                                            [x for x in reversed(_path)]
                                     else:
                                         yield list(_path) + \
-                                        [x for x in reversed(path)]
+                                            [x for x in reversed(path)]
                     temp.add(path + (s,))
 
-        tree[(i+1) % 2] = temp
+        tree[(i + 1) % 2] = temp
 
 
 def _all_simple_paths_multi(G, source, target, cutoff):
@@ -197,7 +197,7 @@ def _all_simple_paths_multi(G, source, target, cutoff):
 
         temp = []
         tree1 = tree[i % 2]
-        tree2 = tree[(i+1) % 2]
+        tree2 = tree[(i + 1) % 2]
 
         leaves = {x[-1] for x in iter(tree1)}  # only to reduce some effort
         for path in iter(tree2):
@@ -209,13 +209,13 @@ def _all_simple_paths_multi(G, source, target, cutoff):
                                 if not set(_path).intersection(path):
                                     if i % 2:
                                         yield list(path) + \
-                                        [x for x in reversed(_path)]
+                                            [x for x in reversed(_path)]
                                     else:
                                         yield list(_path) + \
-                                        [x for x in reversed(path)]
+                                            [x for x in reversed(path)]
                     temp.append(path + (s,))
 
-        tree[(i+1) % 2] = temp
+        tree[(i + 1) % 2] = temp
 
 
 def all_shortest_paths(G, source, target):
@@ -316,10 +316,10 @@ def _all_shortest_paths_graph(G, source, target):
     while not found and tree[0] and tree[1]:
 
         tree1 = tree[i % 2]
-        tree2 = tree[(i+1) % 2]
+        tree2 = tree[(i + 1) % 2]
 
         node1 = node[i % 2]
-        node2 = node[(i+1) % 2]
+        node2 = node[(i + 1) % 2]
 
         temp = set()
 
@@ -333,15 +333,15 @@ def _all_shortest_paths_graph(G, source, target):
                                     found = 1
                                     if i % 2:
                                         yield list(path) + \
-                                        [x for x in reversed(_path)]
+                                            [x for x in reversed(_path)]
                                     else:
                                         yield list(_path) + \
-                                        [x for x in reversed(path)]
-                    #elif s not in node2:
+                                            [x for x in reversed(path)]
+                    # elif s not in node2:
                     node2.add(s)
                     temp.add(path + (s,))
 
-        tree[(i+1) % 2] = temp
+        tree[(i + 1) % 2] = temp
         i += 1
 
 
@@ -355,10 +355,10 @@ def _all_shortest_paths_directed(G, source, target):
     while not found and tree[0] and tree[1]:
 
         tree1 = tree[i % 2]
-        tree2 = tree[(i+1) % 2]
+        tree2 = tree[(i + 1) % 2]
 
         node1 = node[i % 2]
-        node2 = node[(i+1) % 2]
+        node2 = node[(i + 1) % 2]
 
         if i % 2:
             _next = G.successors_iter
@@ -377,53 +377,53 @@ def _all_shortest_paths_directed(G, source, target):
                                     found = 1
                                     if i % 2:
                                         yield list(path) + \
-                                        [x for x in reversed(_path)]
+                                            [x for x in reversed(_path)]
                                     else:
                                         yield list(_path) + \
-                                        [x for x in reversed(path)]
-                    #elif s not in node2:
+                                            [x for x in reversed(path)]
+                    # elif s not in node2:
                     node2.add(s)
                     temp.add(path + (s,))
 
-        tree[(i+1) % 2] = temp
+        tree[(i + 1) % 2] = temp
         i += 1
 
 
 def _all_shortest_paths_multi(G, source, target):
 
     tree = [[(source,)], [(target,)]]
-    #node = [{source}, {target}]
+    # node = [{source}, {target}]
     found = 0
     i = 0
     while not found and tree[0] and tree[1]:
 
         tree1 = tree[i % 2]
-        tree2 = tree[(i+1) % 2]
+        tree2 = tree[(i + 1) % 2]
 
-        #node1 = node[i%2]
-        #node2 = node[(i+1)%2]
+        # node1 = node[i%2]
+        # node2 = node[(i+1)%2]
 
         temp = []
 
         for path in iter(tree2):
             for s in [v for u, v in G.edges([path[-1]])]:
                 if s not in path:
-                    #if s in node1:
+                    # if s in node1:
                     for _path in iter(tree1):
                         if s == _path[-1]:
                             if not set(_path).intersection(path):
                                 found = 1
                                 if i % 2:
                                     yield list(path) + \
-                                    [x for x in reversed(_path)]
+                                        [x for x in reversed(_path)]
                                 else:
                                     yield list(_path) + \
-                                    [x for x in reversed(path)]
-                    #elif s not in node2:
+                                        [x for x in reversed(path)]
+                    # elif s not in node2:
                     #    node2.add(s)
                     temp.append(path + (s,))
 
-        tree[(i+1) % 2] = temp
+        tree[(i + 1) % 2] = temp
         i += 1
 
 
@@ -450,7 +450,7 @@ def _has_path_graph(G, source, target):
     while leaves[0] and leaves[1]:
 
         node2 = nodes[i % 2]
-        node1 = nodes[(i+1) % 2]
+        node1 = nodes[(i + 1) % 2]
 
         temp = set()
 
@@ -478,7 +478,7 @@ def _has_path_directed(G, source, target):
     while leaves[0] and leaves[1]:
 
         node2 = nodes[i % 2]
-        node1 = nodes[(i+1) % 2]
+        node1 = nodes[(i + 1) % 2]
 
         if i % 2:
             _next = G.predecessors_iter
@@ -511,7 +511,7 @@ def _has_path_multi(G, source, target):
     while leaves[0] and leaves[1]:
 
         node2 = nodes[i % 2]
-        node1 = nodes[(i+1) % 2]
+        node1 = nodes[(i + 1) % 2]
 
         temp = set()
 
