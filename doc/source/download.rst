@@ -5,7 +5,7 @@ Download
 Software
 ~~~~~~~~
 
-Source and binary releases: http://cheeseshop.python.org/pypi/networkx/
+Source and binary releases: http://pypi.python.org/pypi/networkx/
 
 Github (latest development): https://github.com/networkx/networkx/
 
