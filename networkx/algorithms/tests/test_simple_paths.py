@@ -51,7 +51,7 @@ def test_all_simple_paths_empty():
 
 def hamiltonian_path(G, source):
     source = next(G.nodes_iter())
-    neighbors = set(G[source])-set([source])
+    neighbors = set(G[source]) - set([source])
     n = len(G)
     for target in neighbors:
         for path in nx.all_simple_paths(G, source, target):
@@ -368,10 +368,9 @@ def test_bidirectional_shortest_simple_paths():
     paths = nx.bidirectional.all_shortest_paths(G, 1, 12)
     assert_equal(next(paths), [1, 2, 3, 4, 8, 12])
     assert_equal(next(paths), [1, 5, 9, 10, 11, 12])
-    assert_equal([len(path) for path in nx.bidirectional.all_simple_paths(G,
-                                                                          1,
-                                                                          12)],
-                 sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
+    assert_equal(
+        [len(path) for path in nx.bidirectional.all_simple_paths(G, 1, 12)],
+        sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
 
 
 def test_bidirectional_shortest_simple_paths_directed():
