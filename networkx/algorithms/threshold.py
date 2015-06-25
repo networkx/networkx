@@ -2,7 +2,7 @@
 Threshold Graphs - Creation, manipulation and identification.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2015 by 
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,9 +10,9 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #    BSD license.
 #
 
-__all__=[]
+__all__ = ['is_threshold_graph', 'find_threshold_graph']
 
-import random  # for swap_d 
+import random  # for swap_d
 from math import sqrt
 import networkx
 
@@ -21,22 +21,22 @@ def is_threshold_graph(G):
     Returns True if G is a threshold graph.
     """
     return is_threshold_sequence(list(G.degree().values()))
-    
+
 def is_threshold_sequence(degree_sequence):
     """
     Returns True if the sequence is a threshold degree seqeunce.
-    
+
     Uses the property that a threshold graph must be constructed by
     adding either dominating or isolated nodes. Thus, it can be
     deconstructed iteratively by removing a node of degree zero or a
     node that connects to the remaining nodes.  If this deconstruction
     failes then the sequence is not a threshold sequence.
     """
-    ds=degree_sequence[:] # get a copy so we don't destroy original 
+    ds=degree_sequence[:] # get a copy so we don't destroy original
     ds.sort()
-    while ds:     
+    while ds:
         if ds[0]==0:      # if isolated node
-            ds.pop(0)     # remove it 
+            ds.pop(0)     # remove it
             continue
         if ds[-1]!=len(ds)-1:  # is the largest degree node dominating?
             return False       # no, not a threshold degree sequence
@@ -56,7 +56,7 @@ def creation_sequence(degree_sequence,with_labels=False,compact=False):
     This list can be converted to a string if desired using "".join(cs)
 
     If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number 
+    Returns a list of 2-tuples containing the vertex number
     and a character 'd' or 'i' which describes the type of vertex.
 
     If compact==True:
@@ -80,7 +80,7 @@ def creation_sequence(degree_sequence,with_labels=False,compact=False):
     if isinstance(degree_sequence,dict):   # labeled degree seqeunce
         ds = [ [degree,label] for (label,degree) in degree_sequence.items() ]
     else:
-        ds=[ [d,i] for i,d in enumerate(degree_sequence) ] 
+        ds=[ [d,i] for i,d in enumerate(degree_sequence) ]
     ds.sort()
     cs=[]  # creation sequence
     while ds:
@@ -111,7 +111,7 @@ def make_compact(creation_sequence):
     Notice that the first number is the first vertex
     to be used for construction and so is always 'd'.
 
-    Labeled creation sequences lose their labels in the 
+    Labeled creation sequences lose their labels in the
     compact representation.
     """
     first=creation_sequence[0]
@@ -120,21 +120,21 @@ def make_compact(creation_sequence):
     elif isinstance(first,tuple):   # labeled creation sequence
         cs = [ s[1] for s in creation_sequence ]
     elif isinstance(first,int):   # compact creation sequence
-        return creation_sequence   
+        return creation_sequence
     else:
         raise TypeError("Not a valid creation sequence type")
 
     ccs=[]
     count=1 # count the run lengths of d's or i's.
     for i in range(1,len(cs)):
-        if cs[i]==cs[i-1]: 
+        if cs[i]==cs[i-1]:
             count+=1
         else:
             ccs.append(count)
             count=1
     ccs.append(count) # don't forget the last one
     return ccs
-    
+
 def uncompact(creation_sequence):
     """
     Converts a compact creation sequence for a threshold
@@ -205,18 +205,18 @@ def creation_sequence_to_weights(creation_sequence):
 
 def weights_to_creation_sequence(weights,threshold=1,with_labels=False,compact=False):
     """
-    Returns a creation sequence for a threshold graph 
+    Returns a creation sequence for a threshold graph
     determined by the weights and threshold given as input.
     If the sum of two node weights is greater than the
     threshold value, an edge is created between these nodes.
 
     The creation sequence is a list of single characters 'd'
     or 'i': 'd' for dominating or 'i' for isolated vertices.
-    Dominating vertices are connected to all vertices present 
+    Dominating vertices are connected to all vertices present
     when it is added.  The first node added is by convention 'd'.
 
     If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number 
+    Returns a list of 2-tuples containing the vertex number
     and a character 'd' or 'i' which describes the type of vertex.
 
     If compact==True:
@@ -238,7 +238,7 @@ def weights_to_creation_sequence(weights,threshold=1,with_labels=False,compact=F
     if isinstance(weights,dict):   # labeled weights
         wseq = [ [w,label] for (label,w) in weights.items() ]
     else:
-        wseq = [ [w,i] for i,w in enumerate(weights) ] 
+        wseq = [ [w,i] for i,w in enumerate(weights) ]
     wseq.sort()
     cs=[]  # creation sequence
     cutoff=threshold-wseq[-1][0]
@@ -267,13 +267,13 @@ def threshold_graph(creation_sequence, create_using=None):
     Create a threshold graph from the creation sequence or compact
     creation_sequence.
 
-    The input sequence can be a 
+    The input sequence can be a
 
     creation sequence (e.g. ['d','i','d','d','d','i'])
     labeled creation sequence (e.g. [(0,'d'),(2,'d'),(1,'i')])
     compact creation sequence (e.g. [2,1,1,2,0])
-    
-    Use cs=creation_sequence(degree_sequence,labeled=True) 
+
+    Use cs=creation_sequence(degree_sequence,labeled=True)
     to convert a degree sequence to a creation sequence.
 
     Returns None if the sequence is not valid
@@ -290,7 +290,7 @@ def threshold_graph(creation_sequence, create_using=None):
     else:
         print("not a valid creation sequence type")
         return None
-        
+
     if create_using is None:
         G = networkx.Graph()
     elif create_using.is_directed():
@@ -307,8 +307,8 @@ def threshold_graph(creation_sequence, create_using=None):
     while ci:
         (v,node_type)=ci.pop(0)
         if node_type=='d': # dominating type, connect to all existing nodes
-            for u in G.nodes(): 
-                G.add_edge(v,u) 
+            for u in G.nodes():
+                G.add_edge(v,u)
         G.add_node(v)
     return G
 
@@ -334,7 +334,7 @@ def find_threshold_graph(G, create_using=None):
     """
     Return a threshold subgraph that is close to largest in G.
     The threshold graph will contain the largest degree node in G.
-    
+
     """
     return threshold_graph(find_creation_sequence(G),create_using)
 
@@ -342,7 +342,7 @@ def find_threshold_graph(G, create_using=None):
 def find_creation_sequence(G):
     """
     Find a threshold subgraph that is close to largest in G.
-    Returns the labeled creation sequence of that threshold graph.  
+    Returns the labeled creation sequence of that threshold graph.
     """
     cs=[]
     # get a local pointer to the working part of the graph
@@ -368,9 +368,9 @@ def find_creation_sequence(G):
         H=H.subgraph(H.neighbors(bigv))
     cs.reverse()
     return cs
-    
 
-    
+
+
 ### Properties of Threshold Graphs
 def triangles(creation_sequence):
     """
@@ -384,7 +384,7 @@ def triangles(creation_sequence):
     ntri=dr*(dr-1)*(dr-2)/6 # number of triangles in clique of nd d's
     # now add dr choose 2 triangles for every 'i' in sequence where
     # dr is the number of d's to the right of the current i
-    for i,typ in enumerate(cs): 
+    for i,typ in enumerate(cs):
         if typ=="i":
             ntri+=dr*(dr-1)/2
         else:
@@ -450,7 +450,7 @@ def degree_sequence(creation_sequence):
             seq.append(rd+i)
         else:
             seq.append(rd)
-    return seq            
+    return seq
 
 def density(creation_sequence):
     """
@@ -476,7 +476,7 @@ def degree_correlation(creation_sequence):
     rdi=[ i for i,sym in enumerate(cs) if sym=="d"] # index of "d"s
     ds=degree_sequence(cs)
     for i,sym in enumerate(cs):
-        if sym=="d": 
+        if sym=="d":
             if i!=rdi[0]:
                 print("Logic error in degree_correlation",i,rdi)
                 raise ValueError
@@ -491,7 +491,7 @@ def degree_correlation(creation_sequence):
     denom=(2*m*s2-s3*s3)
     numer=(4*m*s1-s3*s3)
     if denom==0:
-        if numer==0: 
+        if numer==0:
             return 1
         raise ValueError("Zero Denominator but Numerator is %s"%numer)
     return numer/float(denom)
@@ -499,16 +499,16 @@ def degree_correlation(creation_sequence):
 
 def shortest_path(creation_sequence,u,v):
     """
-    Find the shortest path between u and v in a 
+    Find the shortest path between u and v in a
     threshold graph G with the given creation_sequence.
 
-    For an unlabeled creation_sequence, the vertices 
-    u and v must be integers in (0,len(sequence)) refering 
+    For an unlabeled creation_sequence, the vertices
+    u and v must be integers in (0,len(sequence)) refering
     to the position of the desired vertices in the sequence.
 
     For a labeled creation_sequence, u and v are labels of veritices.
 
-    Use cs=creation_sequence(degree_sequence,with_labels=True) 
+    Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
 
     Returns a list of vertices from u to v.
@@ -525,7 +525,7 @@ def shortest_path(creation_sequence,u,v):
         cs = [(i,ci[i]) for i in range(len(ci))]
     else:
         raise TypeError("Not a valid creation sequence type")
-        
+
     verts=[ s[0] for s in cs ]
     if v not in verts:
         raise ValueError("Vertex %s not in graph from creation_sequence"%v)
@@ -574,13 +574,13 @@ def shortest_path_length(creation_sequence,i):
         cs = uncompact(creation_sequence)
     else:
         raise TypeError("Not a valid creation sequence type")
-    
+
     # Compute
     N=len(cs)
     spl=[2]*N       # length 2 to every node
     spl[i]=0        # except self which is 0
     # 1 for all d's to the right
-    for j in range(i+1,N):   
+    for j in range(i+1,N):
         if cs[j]=="d":
             spl[j]=1
     if cs[i]=='d': # 1 for all nodes to the left
@@ -602,7 +602,7 @@ def betweenness_sequence(creation_sequence,normalized=True):
     """
     cs=creation_sequence
     seq=[]               # betweenness
-    lastchar='d'         # first node is always a 'd'        
+    lastchar='d'         # first node is always a 'd'
     dr=float(cs.count("d"))  # number of d's to the right of curren pos
     irun=0               # number of i's in the last run
     drun=0               # number of d's in the last run
@@ -620,8 +620,8 @@ def betweenness_sequence(creation_sequence,normalized=True):
                 dr-=drun      # update number of d's to the right
                 drun=0        # reset d counter
                 irun=0        # reset i counter
-            b=0      # isolated nodes have zero betweenness 
-            irun+=1  # add another i to the run   
+            b=0      # isolated nodes have zero betweenness
+            irun+=1  # add another i to the run
         seq.append(float(b))
         lastchar=c
 
@@ -636,7 +636,7 @@ def betweenness_sequence(creation_sequence,normalized=True):
 
 def eigenvectors(creation_sequence):
     """
-    Return a 2-tuple of Laplacian eigenvalues and eigenvectors 
+    Return a 2-tuple of Laplacian eigenvalues and eigenvectors
     for the threshold network with creation_sequence.
     The first value is a list of eigenvalues.
     The second value is a list of eigenvectors.
@@ -698,9 +698,9 @@ def spectral_projection(u,eigenpairs):
 
     eigenpairs should be a list of two objects.  The
     first is a list of eigenvalues and the second a list
-    of eigenvectors.  The eigenvectors should be lists. 
+    of eigenvectors.  The eigenvectors should be lists.
 
-    There's not a lot of error checking on lengths of 
+    There's not a lot of error checking on lengths of
     arrays, etc. so be careful.
     """
     coeff=[]
@@ -709,7 +709,7 @@ def spectral_projection(u,eigenpairs):
         c=sum([ evv*uv for (evv,uv) in zip(ev,u)])
         coeff.append(c)
     return coeff
-        
+
 
 
 def eigenvalues(creation_sequence):
@@ -720,7 +720,7 @@ def eigenvalues(creation_sequence):
     Based on the Ferrer's diagram method.  The spectrum is integral
     and is the conjugate of the degree sequence.
 
-    See:: 
+    See::
 
       @Article{degree-merris-1994,
        author = 	 {Russel Merris},
@@ -777,7 +777,7 @@ def random_threshold_sequence(n,p,seed=None):
 
     cs=['d']  # threshold sequences always start with a d
     for i in range(1,n):
-        if random.random() < p: 
+        if random.random() < p:
             cs.append('d')
         else:
             cs.append('i')
@@ -794,8 +794,8 @@ def right_d_threshold_sequence(n,m):
     """
     Create a skewed threshold graph with a given number
     of vertices (n) and a given number of edges (m).
-    
-    The routine returns an unlabeled creation sequence 
+
+    The routine returns an unlabeled creation sequence
     for the threshold graph.
 
     FIXME: describe algorithm
@@ -803,12 +803,12 @@ def right_d_threshold_sequence(n,m):
     """
     cs=['d']+['i']*(n-1) # create sequence with n insolated nodes
 
-    #  m <n : not enough edges, make disconnected 
-    if m < n: 
+    #  m <n : not enough edges, make disconnected
+    if m < n:
         cs[m]='d'
         return cs
 
-    # too many edges 
+    # too many edges
     if m > n*(n-1)/2:
         raise ValueError("Too many edges for this many nodes.")
 
@@ -828,7 +828,7 @@ def left_d_threshold_sequence(n,m):
     Create a skewed threshold graph with a given number
     of vertices (n) and a given number of edges (m).
 
-    The routine returns an unlabeled creation sequence 
+    The routine returns an unlabeled creation sequence
     for the threshold graph.
 
     FIXME: describe algorithm
@@ -836,12 +836,12 @@ def left_d_threshold_sequence(n,m):
     """
     cs=['d']+['i']*(n-1) # create sequence with n insolated nodes
 
-    #  m <n : not enough edges, make disconnected 
-    if m < n: 
+    #  m <n : not enough edges, make disconnected
+    if m < n:
         cs[m]='d'
         return cs
 
-    # too many edges 
+    # too many edges
     if m > n*(n-1)/2:
         raise ValueError("Too many edges for this many nodes.")
 
@@ -886,7 +886,7 @@ def swap_d(cs,p_split=1.0,p_combine=1.0,seed=None):
             cs[split_to]='d'
             cs[flip_side]='d'
             dlist.remove(choice)
-            # don't add or combine may reverse this action            
+            # don't add or combine may reverse this action
             # dlist.extend([split_to,flip_side])
 #            print >>sys.stderr,"split at %s to %s and %s"%(choice,split_to,flip_side)
     # combine
@@ -903,4 +903,4 @@ def swap_d(cs,p_split=1.0,p_combine=1.0,seed=None):
 #        print >>sys.stderr,"combine %s and %s to make %s."%(first_choice,second_choice,target)
 
     return cs
-        
+
