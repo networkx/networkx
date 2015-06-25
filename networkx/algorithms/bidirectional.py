@@ -139,9 +139,11 @@ def _all_simple_paths_graph(G, source, target, cutoff):
                             if s == _path[-1]:
                                 if not set(_path).intersection(path):
                                     if i % 2:
-                                        yield list(path) + [x for x in reversed(_path)]
+                                        yield list(path) + \
+                                        [x for x in reversed(_path)]
                                     else:
-                                        yield list(_path) + [x for x in reversed(path)]
+                                        yield list(_path) + \
+                                        [x for x in reversed(path)]
                     temp.add(path + (s,))
 
         tree[(i+1) % 2] = temp
@@ -174,9 +176,11 @@ def _all_simple_paths_directed(G, source, target, cutoff):
                             if s == _path[-1]:
                                 if not set(_path).intersection(path):
                                     if i % 2:
-                                        yield list(path) + [x for x in reversed(_path)]
+                                        yield list(path) + \
+                                        [x for x in reversed(_path)]
                                     else:
-                                        yield list(_path) + [x for x in reversed(path)]
+                                        yield list(_path) + \
+                                        [x for x in reversed(path)]
                     temp.add(path + (s,))
 
         tree[(i+1) % 2] = temp
@@ -204,9 +208,11 @@ def _all_simple_paths_multi(G, source, target, cutoff):
                             if s == _path[-1]:
                                 if not set(_path).intersection(path):
                                     if i % 2:
-                                        yield list(path) + [x for x in reversed(_path)]
+                                        yield list(path) + \
+                                        [x for x in reversed(_path)]
                                     else:
-                                        yield list(_path) + [x for x in reversed(path)]
+                                        yield list(_path) + \
+                                        [x for x in reversed(path)]
                     temp.append(path + (s,))
 
         tree[(i+1) % 2] = temp
@@ -326,9 +332,11 @@ def _all_shortest_paths_graph(G, source, target):
                                 if not set(_path).intersection(path):
                                     found = 1
                                     if i % 2:
-                                        yield list(path) + [x for x in reversed(_path)]
+                                        yield list(path) + \
+                                        [x for x in reversed(_path)]
                                     else:
-                                        yield list(_path) + [x for x in reversed(path)]
+                                        yield list(_path) + \
+                                        [x for x in reversed(path)]
                     #elif s not in node2:
                     node2.add(s)
                     temp.add(path + (s,))
@@ -368,9 +376,11 @@ def _all_shortest_paths_directed(G, source, target):
                                 if not set(_path).intersection(path):
                                     found = 1
                                     if i % 2:
-                                        yield list(path) + [x for x in reversed(_path)]
+                                        yield list(path) + \
+                                        [x for x in reversed(_path)]
                                     else:
-                                        yield list(_path) + [x for x in reversed(path)]
+                                        yield list(_path) + \
+                                        [x for x in reversed(path)]
                     #elif s not in node2:
                     node2.add(s)
                     temp.add(path + (s,))
@@ -404,9 +414,11 @@ def _all_shortest_paths_multi(G, source, target):
                             if not set(_path).intersection(path):
                                 found = 1
                                 if i % 2:
-                                    yield list(path) + [x for x in reversed(_path)]
+                                    yield list(path) + \
+                                    [x for x in reversed(_path)]
                                 else:
-                                    yield list(_path) + [x for x in reversed(path)]
+                                    yield list(_path) + \
+                                    [x for x in reversed(path)]
                     #elif s not in node2:
                     #    node2.add(s)
                     temp.append(path + (s,))
