@@ -402,9 +402,3 @@ def test_bidirectional_ssp_target_missing():
     G.add_path([1,2,3])
     paths = list(nx.bidirectional.all_shortest_paths(G, 1, 4))
 
-@raises(nx.NetworkXNoPath)
-def test_bidirectional_ssp_source_missing():
-    G = nx.Graph()
-    G.add_path([0, 1, 2])
-    G.add_path([3, 4, 5])
-    paths = list(nx.shortest_simple_paths(G, 0, 3))
