@@ -63,7 +63,7 @@ def ancestors(G, source):
 
 
 def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG) or 
+    """Return True if the graph G is a directed acyclic graph (DAG) or
     False if not.
 
     Parameters
@@ -98,7 +98,11 @@ def topological_sort(G, nbunch=None, reverse=False):
         A directed graph
 
     nbunch : container of nodes (optional)
-        Explore graph in specified order given in nbunch
+        Limits the returns nodes to descendants of those in nbunch,
+        and resolves ambiguities in the topological sort order so
+        that u appears before v if
+        (1) there is a directed path from u to v, or
+        (2) u appears before v in nbunch.
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
@@ -125,7 +129,7 @@ def topological_sort(G, nbunch=None, reverse=False):
 
     References
     ----------
-    .. [1] Skiena, S. S. The Algorithm Design Manual  (Springer-Verlag, 1998). 
+    .. [1] Skiena, S. S. The Algorithm Design Manual  (Springer-Verlag, 1998).
         http://www.amazon.com/exec/obidos/ASIN/0387948600/ref=ase_thealgorithmrepo/
     """
     if not G.is_directed():
@@ -139,13 +143,14 @@ def topological_sort(G, nbunch=None, reverse=False):
 
     if nbunch is None:
         nbunch = G.nodes_iter()
-        def out_edges(w):
+        def direct_descendants(w):
             return G[w]
     else:
         nbunch_index = {x: i
-                        for i, x in enumerate(nbunch)} 
-        def out_edges(w):
-            return sorted(G[w], key=lambda x: nbunch_index[x])
+                        for i, x in enumerate(nbunch)}
+        len_nbunch = len(nbunch)
+        def direct_descendants(w):
+            return sorted(G[w], key=lambda x: nbunch_index.get(x, len_nbunch))
     for v in nbunch:     # process all vertices in G
         if v in explored:
             continue
@@ -158,7 +163,7 @@ def topological_sort(G, nbunch=None, reverse=False):
             seen.add(w)     # mark as seen
             # Check successors for cycles and for new nodes
             new_nodes = []
-            for n in out_edges(w):
+            for n in direct_descendants(w):
                 if n not in explored:
                     if n in seen:  # CYCLE !!
                         raise nx.NetworkXUnfeasible("Graph contains a cycle.")
@@ -187,7 +192,11 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     G : NetworkX digraph
 
     nbunch : container of nodes (optional)
-        Explore graph in specified order given in nbunch
+        Limits the returns nodes to descendants of those in nbunch,
+        and resolves ambiguities in the topological sort order so
+        that u appears before v if
+        (1) there is a directed path from u to v, or
+        (2) u appears before v in nbunch.
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
@@ -220,7 +229,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     def _dfs(v):
         ancestors.add(v)
 
-        for w in G[v]:
+        for w in direct_descendants(v):
             if w in ancestors:
                 raise nx.NetworkXUnfeasible("Graph contains a cycle.")
 
@@ -237,6 +246,14 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
 
     if nbunch is None:
         nbunch = G.nodes_iter()
+        def direct_descendants(w):
+            return G[w]
+    else:
+        nbunch_index = {x: i
+                        for i, x in enumerate(nbunch)}
+        len_nbunch = len(nbunch)
+        def direct_descendants(w):
+            return sorted(G[w], key=lambda x: nbunch_index.get(x, len_nbunch))
 
     for v in nbunch:
         if v not in explored:
@@ -251,7 +268,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
 def is_aperiodic(G):
     """Return True if G is aperiodic.
 
-    A directed graph is aperiodic if there is no integer k > 1 that 
+    A directed graph is aperiodic if there is no integer k > 1 that
     divides the length of every cycle in the graph.
 
     Parameters
