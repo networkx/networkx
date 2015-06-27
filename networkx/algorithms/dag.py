@@ -142,8 +142,10 @@ def topological_sort(G, nbunch=None, reverse=False):
         def out_edges(w):
             return G[w]
     else:
+        nbunch_index = {x: i
+                        for i, x in enumerate(nbunch)} 
         def out_edges(w):
-            return sorted(G[w], key=lambda x: nbunch.index(x))
+            return sorted(G[w], key=lambda x: nbunch_index[x])
     for v in nbunch:     # process all vertices in G
         if v in explored:
             continue
