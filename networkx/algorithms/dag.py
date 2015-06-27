@@ -98,7 +98,7 @@ def topological_sort(G, nbunch=None, reverse=False):
         A directed graph
 
     nbunch : container of nodes (optional)
-        Limits the returns nodes to descendants of those in nbunch,
+        Limits the returned nodes to descendants of those in nbunch,
         and resolves ambiguities in the topological sort order so
         that u appears before v if
         (1) there is a directed path from u to v, or
@@ -192,7 +192,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     G : NetworkX digraph
 
     nbunch : container of nodes (optional)
-        Limits the returns nodes to descendants of those in nbunch,
+        Limits the returned nodes to descendants of those in nbunch,
         and resolves ambiguities in the topological sort order so
         that u appears before v if
         (1) there is a directed path from u to v, or
