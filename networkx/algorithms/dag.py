@@ -139,6 +139,11 @@ def topological_sort(G, nbunch=None, reverse=False):
 
     if nbunch is None:
         nbunch = G.nodes_iter()
+        def out_edges(w):
+            return G[w]
+    else:
+        def out_edges(w):
+            return sorted(G[w], key=lambda x: nbunch.index(x))
     for v in nbunch:     # process all vertices in G
         if v in explored:
             continue
@@ -151,7 +156,7 @@ def topological_sort(G, nbunch=None, reverse=False):
             seen.add(w)     # mark as seen
             # Check successors for cycles and for new nodes
             new_nodes = []
-            for n in G[w]:
+            for n in out_edges(w):
                 if n not in explored:
                     if n in seen:  # CYCLE !!
                         raise nx.NetworkXUnfeasible("Graph contains a cycle.")
