@@ -203,7 +203,7 @@ def node_connectivity(G, s=None, t=None):
         return 0
 
     # Choose a node with minimum degree
-    v, minimum_degree = min(G.degree().items(), key=itemgetter(1))
+    v, minimum_degree = min(G.degree(), key=itemgetter(1))
     # Node connectivity is bounded by minimum degree
     K = minimum_degree
     # compute local node connectivity with all non-neighbors nodes

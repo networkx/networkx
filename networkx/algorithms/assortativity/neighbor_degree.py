@@ -13,16 +13,16 @@ __all__ = ["average_neighbor_degree"]
 def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
     # average degree of neighbors
     avg = {}
-    for n,deg in source_degree(nodes,weight=weight).items():
+    for n,deg in source_degree(nodes,weight=weight):
         # normalize but not by zero degree
         if deg == 0:
             deg = 1
         nbrdeg = target_degree(G[n])
         if weight is None:
-            avg[n] = sum(nbrdeg.values())/float(deg)
+            avg[n] = sum(dict(nbrdeg).values())/float(deg)
         else:
             avg[n] = sum((G[n][nbr].get(weight,1)*d 
-                          for nbr,d in nbrdeg.items()))/float(deg)
+                          for nbr,d in nbrdeg))/float(deg)
     return avg
 
 def average_neighbor_degree(G, source='out', target='out',

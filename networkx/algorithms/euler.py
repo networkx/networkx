@@ -49,7 +49,7 @@ def is_eulerian(G):
             return False
     else:
         # An undirected Eulerian graph has no vertices of odd degrees
-        for v,d in G.degree_iter():
+        for v, d in G.degree():
             if d % 2 != 0:
                 return False
         # Must be connected

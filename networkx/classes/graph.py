@@ -1224,6 +1224,39 @@ class Graph(object):
         return iter(self.adj.items())
 
     def degree(self, nbunch=None, weight=None):
+        """Return an iterator for (node, degree) and degree for single node.
+
+        The node degree is the number of edges adjacent to the node.
+        This function returns the degree for a single node and an iterator
+        for a bunch of nodes or if nothing is passed as argument.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default=all nodes)
+            A container of nodes.  The container will be iterated
+            through once.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
+
+        Returns
+        -------
+        deg:
+            Degree of the node, if a single node is passed as argument.
+        nd_iter : an iterator
+            The iterator returns two-tuples of (node, degree).
+
+        Examples
+        --------
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
+        >>> G.degree(0) # node 0 with degree 1
+        1
+        >>> list(G.degree([0,1]))
+        [(0, 1), (1, 2)]
+        """
         if nbunch in self:
             nbrs = self.adj[nbunch]
             if weight is None:
@@ -1666,7 +1699,7 @@ class Graph(object):
         >>> G.size(weight='weight')
         6.0
         """
-        s = sum(self.degree(weight=weight).values()) / 2
+        s = sum(dict(self.degree(weight=weight)).values()) / 2
         if weight is None:
             return int(s)
         else:

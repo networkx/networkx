@@ -184,11 +184,11 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
         nlist = sorted(G.nodes())
         mapping = dict(zip(nlist, range(first_label, N)))
     elif ordering == "increasing degree":
-        dv_pairs = [(d,n) for (n,d) in G.degree_iter()]
+        dv_pairs = [(d,n) for (n,d) in G.degree()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
         mapping = dict(zip([n for d,n in dv_pairs], range(first_label, N)))
     elif ordering == "decreasing degree":
-        dv_pairs = [(d,n) for (n,d) in G.degree_iter()]
+        dv_pairs = [(d,n) for (n,d) in G.degree()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
         dv_pairs.reverse()
         mapping = dict(zip([n for d,n in dv_pairs], range(first_label, N)))

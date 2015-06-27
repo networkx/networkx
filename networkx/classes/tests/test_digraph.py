@@ -9,11 +9,6 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(G.has_successor(0,1),True)
         assert_equal(G.has_successor(0,-1),False)
 
-    # def test_successors(self):
-    #     G=self.K3
-    #     assert_equal(sorted(G.successors(0)),[1,2])
-    #     assert_raises((KeyError,networkx.NetworkXError), G.successors,-1)
-
     def test_successors(self):
         G=self.K3
         assert_equal(sorted(G.successors(0)),[1,2])
@@ -23,11 +18,6 @@ class BaseDiGraphTester(BaseGraphTester):
         G=self.K3
         assert_equal(G.has_predecessor(0,1),True)
         assert_equal(G.has_predecessor(0,-1),False)
-
-    # def test_predecessors(self):
-    #     G=self.K3
-    #     assert_equal(sorted(G.predecessors(0)),[1,2])
-    #     assert_raises((KeyError,networkx.NetworkXError), G.predecessors,-1)
 
     def test_predecessors(self):
         G=self.K3
@@ -93,72 +83,46 @@ class BaseDiGraphTester(BaseGraphTester):
 
     def test_degree(self):
         G=self.K3
-        assert_equal(list(G.degree().values()),[4,4,4])
-        assert_equal(G.degree(),{0:4,1:4,2:4})
-        assert_equal(G.degree(0),4)
-        assert_equal(G.degree([0]),{0:4})
-        assert_raises((KeyError,networkx.NetworkXError), G.degree,-1)
-
-    def test_degree_iter(self):
-        G=self.K3
-        assert_equal(list(G.degree_iter()),[(0,4),(1,4),(2,4)])
-        assert_equal(dict(G.degree_iter()),{0:4,1:4,2:4})
-        assert_equal(list(G.degree_iter(0)),[(0,4)])
-        assert_equal(list(G.degree_iter(iter([0]))),[(0,4)]) #run through iterator
+        assert_equal(list(G.degree()),[(0,4),(1,4),(2,4)])
+        assert_equal(dict(G.degree()),{0:4,1:4,2:4})
+        assert_equal(G.degree(0), 4)
+        assert_equal(list(G.degree(iter([0]))), [(0, 4)]) #run through iterator
 
     def test_in_degree(self):
         G=self.K3
-        assert_equal(list(G.in_degree().values()),[2,2,2])
-        assert_equal(G.in_degree(),{0:2,1:2,2:2})
-        assert_equal(G.in_degree(0),2)
-        assert_equal(G.in_degree([0]),{0:2})
-        assert_equal(G.in_degree(iter([0])),{0:2})
-        assert_raises((KeyError,networkx.NetworkXError), G.in_degree,-1)
+        assert_equal(list(G.in_degree()),[(0,2),(1,2),(2,2)])
+        assert_equal(dict(G.in_degree()),{0:2,1:2,2:2})
+        assert_equal(G.in_degree(0), 2)
+        assert_equal(list(G.in_degree(iter([0]))), [(0, 2)]) #run through iterator
 
-    def test_in_degree_iter(self):
-        G=self.K3
-        assert_equal(list(G.in_degree_iter()),[(0,2),(1,2),(2,2)])
-        assert_equal(dict(G.in_degree_iter()),{0:2,1:2,2:2})
-        assert_equal(list(G.in_degree_iter(0)),[(0,2)])
-        assert_equal(list(G.in_degree_iter(iter([0]))),[(0,2)]) #run through iterator
-
-    def test_in_degree_iter_weighted(self):
+    def test_in_degree_weighted(self):
         G=self.K3
         G.add_edge(0,1,weight=0.3,other=1.2)
-        assert_equal(list(G.in_degree_iter(weight='weight')),[(0,2),(1,1.3),(2,2)])
-        assert_equal(dict(G.in_degree_iter(weight='weight')),{0:2,1:1.3,2:2})
-        assert_equal(list(G.in_degree_iter(1,weight='weight')),[(1,1.3)])
-        assert_equal(list(G.in_degree_iter(weight='other')),[(0,2),(1,2.2),(2,2)])
-        assert_equal(dict(G.in_degree_iter(weight='other')),{0:2,1:2.2,2:2})
-        assert_equal(list(G.in_degree_iter(1,weight='other')),[(1,2.2)])
-        assert_equal(list(G.in_degree_iter(iter([1]),weight='other')),[(1,2.2)])
+        assert_equal(list(G.in_degree(weight='weight')),[(0,2),(1,1.3),(2,2)])
+        assert_equal(dict(G.in_degree(weight='weight')),{0:2,1:1.3,2:2})
+        assert_equal(G.in_degree(1,weight='weight'), 1.3)
+        assert_equal(list(G.in_degree(weight='other')),[(0,2),(1,2.2),(2,2)])
+        assert_equal(dict(G.in_degree(weight='other')),{0:2,1:2.2,2:2})
+        assert_equal(G.in_degree(1,weight='other'), 2.2)
+        assert_equal(list(G.in_degree(iter([1]),weight='other')), [(1, 2.2)])
+
+    def test_out_degree_weighted(self):
+        G=self.K3
+        G.add_edge(0,1,weight=0.3,other=1.2)
+        assert_equal(list(G.out_degree(weight='weight')),[(0,1.3),(1,2),(2,2)])
+        assert_equal(dict(G.out_degree(weight='weight')),{0:1.3,1:2,2:2})
+        assert_equal(G.out_degree(0,weight='weight'), 1.3)
+        assert_equal(list(G.out_degree(weight='other')),[(0,2.2),(1,2),(2,2)])
+        assert_equal(dict(G.out_degree(weight='other')),{0:2.2,1:2,2:2})
+        assert_equal(G.out_degree(0,weight='other'), 2.2)
+        assert_equal(list(G.out_degree(iter([0]), weight='other')), [(0, 2.2)])
 
     def test_out_degree(self):
         G=self.K3
-        assert_equal(list(G.out_degree().values()),[2,2,2])
-        assert_equal(G.out_degree(),{0:2,1:2,2:2})
-        assert_equal(G.out_degree(0),2)
-        assert_equal(G.out_degree([0]),{0:2})
-        assert_equal(G.out_degree(iter([0])),{0:2})
-        assert_raises((KeyError,networkx.NetworkXError), G.out_degree,-1)
-
-    def test_out_degree_iter_weighted(self):
-        G=self.K3
-        G.add_edge(0,1,weight=0.3,other=1.2)
-        assert_equal(list(G.out_degree_iter(weight='weight')),[(0,1.3),(1,2),(2,2)])
-        assert_equal(dict(G.out_degree_iter(weight='weight')),{0:1.3,1:2,2:2})
-        assert_equal(list(G.out_degree_iter(0,weight='weight')),[(0,1.3)])
-        assert_equal(list(G.out_degree_iter(weight='other')),[(0,2.2),(1,2),(2,2)])
-        assert_equal(dict(G.out_degree_iter(weight='other')),{0:2.2,1:2,2:2})
-        assert_equal(list(G.out_degree_iter(0,weight='other')),[(0,2.2)])
-        assert_equal(list(G.out_degree_iter(iter([0]),weight='other')),[(0,2.2)])
-
-    def test_out_degree_iter(self):
-        G=self.K3
-        assert_equal(list(G.out_degree_iter()),[(0,2),(1,2),(2,2)])
-        assert_equal(dict(G.out_degree_iter()),{0:2,1:2,2:2})
-        assert_equal(list(G.out_degree_iter(0)),[(0,2)])
-        assert_equal(list(G.out_degree_iter(iter([0]))),[(0,2)])
+        assert_equal(list(G.out_degree()),[(0,2),(1,2),(2,2)])
+        assert_equal(dict(G.out_degree()),{0:2,1:2,2:2})
+        assert_equal(G.out_degree(0), 2)
+        assert_equal(list(G.out_degree(iter([0]))), [(0, 2)])
 
     def test_size(self):
         G=self.K3
