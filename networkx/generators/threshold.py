@@ -358,7 +358,7 @@ def find_creation_sequence(G):
         ds.sort()
         # Update threshold graph nodes
         if ds[-1][0]==0: # all are isolated
-            cs.extend( zip((dsdict), ['i']*(len(ds)-1)+['d']))
+            cs.extend(zip(dsdict, ['i'] * (len(ds) - 1) + ['d']))
             break   # Done!
         # pull off isolated nodes
         while ds[0][0]==0:

@@ -23,7 +23,7 @@ def _avg_deg_conn(G, neighbors, source_degree, target_degree,
     for n,k in source_nodes:
         nbrdeg = target_degree(neighbors(n))
         if weight is None:
-            s = float(sum(dict(nbrdeg).values()))
+            s = float(sum(d for n, d in nbrdeg))
         else: # weight nbr degree by weight of (n,nbr) edge
             if neighbors == G.neighbors:
                 s = float(sum((G[n][nbr].get(weight,1)*d
