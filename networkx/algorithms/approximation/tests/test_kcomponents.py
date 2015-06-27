@@ -259,9 +259,9 @@ class TestAntiGraph:
             node = list(G.nodes())[0]
             nodes = list(G.nodes())[1:4]
             assert_equal(G.degree(node), A.degree(node))
-            assert_equal(sum(dict(G.degree()).values()), sum(dict(A.degree()).values()))
+            assert_equal(sum(d for n, d in G.degree()), sum(d for n, d in A.degree()))
             # AntiGraph is a ThinGraph, so all the weights are 1
-            assert_equal(sum(dict(A.degree()).values()), 
-                         sum(dict(A.degree(weight='weight')).values()))
-            assert_equal(sum(dict(G.degree(nodes)).values()), 
-                         sum(dict(A.degree(nodes)).values()))
+            assert_equal(sum(d for n, d in A.degree()),
+                         sum(d for n, d in A.degree(weight='weight')))
+            assert_equal(sum(d for n, d in G.degree(nodes)),
+                         sum(d for n, d in A.degree(nodes)))
