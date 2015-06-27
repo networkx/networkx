@@ -76,9 +76,9 @@ def core_number(G):
                                                   G.successors(v)])
     else:
         neighbors=G.neighbors
-    degrees=G.degree()
+    degrees = dict(G.degree())
     # sort nodes by degree
-    nodes=sorted(degrees,key=degrees.get)
+    nodes = sorted(degrees, key=degrees.get)
     bin_boundaries=[0]
     curr_degree=0
     for i,v in enumerate(nodes):

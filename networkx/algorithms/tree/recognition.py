@@ -113,7 +113,7 @@ def is_arborescence(G):
     if not is_tree(G):
         return False
 
-    if max(G.in_degree().values()) > 1:
+    if max(d for n,d in G.in_degree()) > 1:
         return False
 
     return True
@@ -147,7 +147,7 @@ def is_branching(G):
     if not is_forest(G):
         return False
 
-    if max(G.in_degree().values()) > 1:
+    if max(d for n, d in G.in_degree()) > 1:
         return False
 
     return True

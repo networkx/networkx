@@ -331,7 +331,7 @@ class TestGeneratorClassic():
 
         p=path_graph(10)
         assert_true(is_connected(p))
-        assert_equal(sorted(list(p.degree().values())),
+        assert_equal(sorted(d for n, d in p.degree()),
                      [1, 1, 2, 2, 2, 2, 2, 2, 2, 2])
         assert_equal(p.order()-1, p.size())
 
@@ -344,7 +344,7 @@ class TestGeneratorClassic():
 
     def test_periodic_grid_2d_graph(self):
         g=grid_2d_graph(0,0, periodic=True)
-        assert_equal(g.degree(), {})
+        assert_equal(dict(g.degree()), {})
 
         for m, n, G in [(2, 2, cycle_graph(4)), (1, 7, cycle_graph(7)),
                      (7, 1, cycle_graph(7)), (2, 5, circular_ladder_graph(5)),
@@ -365,7 +365,7 @@ class TestGeneratorClassic():
         assert_true(is_isomorphic(star_graph(2), path_graph(3)))
 
         s=star_graph(10)
-        assert_equal(sorted(list(s.degree().values())),
+        assert_equal(sorted(d for n, d in s.degree()),
                      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10])
 
         assert_raises(networkx.exception.NetworkXError,
@@ -387,7 +387,7 @@ class TestGeneratorClassic():
         assert_equal(g.name, 'wheel_graph(4)')
 
         g=wheel_graph(10)
-        assert_equal(sorted(list(g.degree().values())),
+        assert_equal(sorted(d for n, d in g.degree()),
                      [3, 3, 3, 3, 3, 3, 3, 3, 3, 9])
 
         assert_raises(networkx.exception.NetworkXError,

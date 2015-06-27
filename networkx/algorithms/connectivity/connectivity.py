@@ -325,8 +325,9 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     # Pick a node with minimum degree
-    degree = G.degree()
+    degree = dict(G.degree())
     minimum_degree = min(degree.values())
+    # TODO
     v = next(n for n, d in degree.items() if d == minimum_degree)
     # Node connectivity is bounded by degree.
     K = minimum_degree
@@ -753,7 +754,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             return 0
 
         # initial value for \lambda is minimum degree
-        L = min(G.degree().values())
+        L = min(d for n, d in G.degree())
         nodes = list(G)
         n = len(nodes)
         for i in range(n):
@@ -771,7 +772,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             return 0
 
         # initial value for \lambda is minimum degree
-        L = min(G.degree().values())
+        L = min(d for n, d in G.degree())
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:

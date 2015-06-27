@@ -720,10 +720,12 @@ class MultiGraph(Graph):
         except KeyError:
             return default
 
-    def degree_iter(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree).
+    def degree(self, nbunch=None, weight=None):
+        """Return an iterator for (node, degree) and degree for single node.
 
         The node degree is the number of edges adjacent to the node.
+        This function returns the degree for a single node and an iterator
+        for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
         ----------
@@ -738,42 +740,51 @@ class MultiGraph(Graph):
 
         Returns
         -------
+        deg:
+            Degree of the node, if a single node is passed as argument.
         nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
-
-        See Also
-        --------
-        degree
 
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> list(G.degree_iter(0)) # node 0 with degree 1
-        [(0, 1)]
-        >>> list(G.degree_iter([0,1]))
+        >>> G.degree(0) # node 0 with degree 1
+        1
+        >>> list(G.degree([0,1]))
         [(0, 1), (1, 2)]
 
         """
+        if nbunch in self:
+            nbrs = self.adj[nbunch]
+            if weight is None:
+                return sum([len(data) for data in nbrs.values()]) + (nbunch in nbrs and len(nbrs[nbunch]))
+            deg = sum([d.get(weight, 1) for data in nbrs.values() for d in data.values()])
+            if nbunch in nbrs:
+                deg += sum([d.get(weight, 1) for key, d in nbrs[nbunch].items()])
+            return deg
         if nbunch is None:
             nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs = ((n, self.adj[n]) for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for n, nbrs in nodes_nbrs:
-                deg = sum([len(data) for data in nbrs.values()])
-                yield (n, deg + (n in nbrs and len(nbrs[n])))
+            def d_iter():
+                for n, nbrs in nodes_nbrs:
+                    deg = sum([len(data) for data in nbrs.values()])
+                    yield (n, deg + (n in nbrs and len(nbrs[n])))
         else:
             # edge weighted graph - degree is sum of nbr edge weights
-            for n, nbrs in nodes_nbrs:
-                deg = sum([d.get(weight, 1)
-                           for data in nbrs.values()
-                           for d in data.values()])
-                if n in nbrs:
-                    deg += sum([d.get(weight, 1)
-                                for key, d in nbrs[n].items()])
-                yield (n, deg)
+            def d_iter():
+                for n, nbrs in nodes_nbrs:
+                    deg = sum([d.get(weight, 1)
+                               for data in nbrs.values()
+                               for d in data.values()])
+                    if n in nbrs:
+                        deg += sum([d.get(weight, 1)
+                                    for key, d in nbrs[n].items()])
+                    yield (n, deg)
+        return d_iter()
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

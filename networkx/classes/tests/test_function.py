@@ -15,7 +15,7 @@ class TestFunction(object):
         self.DGnodes=list(range(5))
         self.DGedges=[(0,1),(0,2),(0,3),(1,0),(1,1),(1,2)]
 
-    def test_nodes_iter(self):
+    def test_nodes(self):
         assert_equal(list(self.G.nodes()),list(nx.nodes(self.G)))
         assert_equal(list(self.DG.nodes()),list(nx.nodes(self.DG)))
 
@@ -26,12 +26,12 @@ class TestFunction(object):
         assert_equal(list(self.DG.edges(nbunch=[0,1,3])),list(nx.edges(self.DG,nbunch=[0,1,3])))
 
     def test_degree(self):
-        assert_equal(self.G.degree(),nx.degree(self.G))
-        assert_equal(self.DG.degree(),nx.degree(self.DG))
-        assert_equal(self.G.degree(nbunch=[0,1]),nx.degree(self.G,nbunch=[0,1]))
-        assert_equal(self.DG.degree(nbunch=[0,1]),nx.degree(self.DG,nbunch=[0,1]))
-        assert_equal(self.G.degree(weight='weight'),nx.degree(self.G,weight='weight'))
-        assert_equal(self.DG.degree(weight='weight'),nx.degree(self.DG,weight='weight'))
+        assert_equal(list(self.G.degree()), list(nx.degree(self.G)))
+        assert_equal(list(self.DG.degree()), list(nx.degree(self.DG)))
+        assert_equal(list(self.G.degree(nbunch=[0, 1])), list(nx.degree(self.G, nbunch=[0, 1])))
+        assert_equal(list(self.DG.degree(nbunch=[0, 1])), list(nx.degree(self.DG, nbunch=[0, 1])))
+        assert_equal(list(self.G.degree(weight='weight')), list(nx.degree(self.G, weight='weight')))
+        assert_equal(list(self.DG.degree(weight='weight')), list(nx.degree(self.DG, weight='weight')))
 
     def test_neighbors(self):
         assert_equal(self.G.neighbors(1),nx.neighbors(self.G,1))

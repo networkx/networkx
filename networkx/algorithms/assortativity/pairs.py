@@ -107,11 +107,11 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
         nodes = set(G)
     else:
         nodes = set(nodes)
-    xdeg = G.degree_iter
-    ydeg = G.degree_iter
+    xdeg = G.degree
+    ydeg = G.degree
     if G.is_directed():
-        direction = {'out':G.out_degree_iter,
-                     'in':G.in_degree_iter}
+        direction = {'out':G.out_degree,
+                     'in':G.in_degree}
         xdeg = direction[x]
         ydeg = direction[y]
 

@@ -106,8 +106,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         k = nx.node_connectivity(G, flow_func=flow_func)
     # step 2: 
     # Find k nodes with top degree, call it X:
-    degree = G.degree().items()
-    X = {n for n, d in sorted(degree, key=itemgetter(1), reverse=True)[:k]}
+    X = {n for n, d in sorted(G.degree(), key=itemgetter(1), reverse=True)[:k]}
     # Check if X is a k-node-cutset
     if _is_separating_set(G, X):
         seen.append(X)

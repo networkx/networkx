@@ -529,10 +529,12 @@ class MultiDiGraph(MultiGraph,DiGraph):
                             yield (nbr, n)
 
 
-    def degree_iter(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree).
+    def degree(self, nbunch=None, weight=None):
+        """Return an iterator for (node, degree) and degree for single node.
 
         The node degree is the number of edges adjacent to the node.
+        This function returns the degree for a single node and an iterator
+        for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
         ----------
@@ -547,23 +549,32 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Returns
         -------
+        deg:
+            Degree of the node, if a single node is passed as argument.
         nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
-
-        See Also
-        --------
-        degree
 
         Examples
         --------
         >>> G = nx.MultiDiGraph()
         >>> G.add_path([0,1,2,3])
-        >>> list(G.degree_iter(0)) # node 0 with degree 1
-        [(0, 1)]
-        >>> list(G.degree_iter([0,1]))
+        >>> G.degree(0) # node 0 with degree 1
+        1
+        >>> list(G.degree([0,1]))
         [(0, 1), (1, 2)]
 
         """
+        if nbunch in self:
+            succ = self.succ[nbunch]
+            pred = self.pred[nbunch]
+            if weight is None:
+                indeg = sum([len(data) for data in pred.values()])
+                outdeg = sum([len(data) for data in succ.values()])
+                return indeg + outdeg
+            s = (sum(sum(succ[nbr][node].get(weight, 1) for node in succ[nbr]) for nbr in succ)) + \
+                (sum(sum(pred[nbr][node].get(weight, 1) for node in pred[nbr]) for nbr in pred))
+            return s
+
         if nbunch is None:
             nodes_nbrs = ( (n, succ, self.pred[n])
                     for n,succ in self.succ.items() )
@@ -572,25 +583,30 @@ class MultiDiGraph(MultiGraph,DiGraph):
                     for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for n, succ, pred in nodes_nbrs:
-                indeg = sum([len(data) for data in pred.values()])
-                outdeg = sum([len(data) for data in succ.values()])
-                yield (n, indeg + outdeg)
+            def d_iter():
+                for n, succ, pred in nodes_nbrs:
+                    indeg = sum([len(data) for data in pred.values()])
+                    outdeg = sum([len(data) for data in succ.values()])
+                    yield (n, indeg + outdeg)
         else:
             # edge weighted graph - degree is sum of nbr edge weights
-            for n, succ, pred in nodes_nbrs:
-                deg = sum([d.get(weight, 1)
-                           for data in pred.values()
-                           for d in data.values()])
-                deg += sum([d.get(weight, 1)
-                           for data in succ.values()
-                           for d in data.values()])
-                yield (n, deg)
+            def d_iter():
+                for n, succ, pred in nodes_nbrs:
+                    deg = sum([d.get(weight, 1)
+                               for data in pred.values()
+                               for d in data.values()])
+                    deg += sum([d.get(weight, 1)
+                               for data in succ.values()
+                               for d in data.values()])
+                    yield (n, deg)
+        return d_iter()
 
-    def in_degree_iter(self, nbunch=None, weight=None):
-        """Return an iterator for (node, in-degree).
+    def in_degree(self, nbunch=None, weight=None):
+        """Return an iterator for (node, in-degree) and in-degree for single node.
 
         The node in-degree is the number of edges pointing in to the node.
+        This function returns the in-degree for a single node and an iterator
+        for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
         ----------
@@ -605,43 +621,54 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Returns
         -------
+        deg:
+            Degree of the node, if a single node is passed as argument.
         nd_iter : an iterator
             The iterator returns two-tuples of (node, in-degree).
 
         See Also
         --------
-        degree, in_degree, out_degree, out_degree_iter
+        degree, out_degree
 
         Examples
         --------
         >>> G = nx.MultiDiGraph()
         >>> G.add_path([0,1,2,3])
-        >>> list(G.in_degree_iter(0)) # node 0 with degree 0
-        [(0, 0)]
-        >>> list(G.in_degree_iter([0,1]))
+        >>> G.in_degree(0) # node 0 with degree 0
+        0
+        >>> list(G.in_degree([0,1]))
         [(0, 0), (1, 1)]
 
         """
+        if nbunch in self:
+            if weight is None:
+                return sum(len(self.pred[nbunch][node]) for node in self.pred[nbunch])
+            return (sum(sum(self.pred[nbunch][nbr][node].get(weight, 1) for node in self.pred[nbunch][nbr]) for nbr in self.pred[nbunch]))
         if nbunch is None:
             nodes_nbrs = self.pred.items()
         else:
             nodes_nbrs = ((n, self.pred[n]) for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for n, nbrs in nodes_nbrs:
-                yield (n, sum([len(data) for data in nbrs.values()]))
+            def d_iter():
+                for n, nbrs in nodes_nbrs:
+                    yield (n, sum([len(data) for data in nbrs.values()]))
         else:
             # edge weighted graph - degree is sum of nbr edge weights
-            for n, pred in nodes_nbrs:
-                deg = sum([d.get(weight, 1)
-                           for data in pred.values()
-                           for d in data.values()])
-                yield (n, deg)
+            def d_iter():
+                for n, pred in nodes_nbrs:
+                    deg = sum([d.get(weight, 1)
+                               for data in pred.values()
+                               for d in data.values()])
+                    yield (n, deg)
+        return d_iter()
 
-    def out_degree_iter(self, nbunch=None, weight=None):
-        """Return an iterator for (node, out-degree).
+    def out_degree(self, nbunch=None, weight=None):
+        """Return an iterator for (node, out-degree) and out-degree for single node.
 
         The node out-degree is the number of edges pointing out of the node.
+        This function returns the out-degree for a single node and an iterator
+        for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
         ----------
@@ -656,37 +683,46 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Returns
         -------
+        deg:
+            Degree of the node, if a single node is passed as argument.
         nd_iter : an iterator
             The iterator returns two-tuples of (node, out-degree).
 
         See Also
         --------
-        degree, in_degree, out_degree, in_degree_iter
+        degree, in_degree
 
         Examples
         --------
         >>> G = nx.MultiDiGraph()
         >>> G.add_path([0,1,2,3])
-        >>> list(G.out_degree_iter(0)) # node 0 with degree 1
-        [(0, 1)]
-        >>> list(G.out_degree_iter([0,1]))
+        >>> G.out_degree(0) # node 0 with degree 1
+        1
+        >>> list(G.out_degree([0,1]))
         [(0, 1), (1, 1)]
 
         """
+        if nbunch in self:
+            if weight is None:
+                return sum(len(self.succ[nbunch][node]) for node in self.succ[nbunch])
+            return (sum(sum(self.succ[nbunch][nbr][node].get(weight, 1) for node in self.succ[nbunch][nbr]) for nbr in self.succ[nbunch]))
         if nbunch is None:
             nodes_nbrs = self.succ.items()
         else:
             nodes_nbrs = ((n, self.succ[n]) for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for n, nbrs in nodes_nbrs:
-                yield (n, sum([len(data) for data in nbrs.values()]))
+            def d_iter():
+                for n, nbrs in nodes_nbrs:
+                    yield (n, sum([len(data) for data in nbrs.values()]))
         else:
-            for n, succ in nodes_nbrs:
-                deg = sum([d.get(weight, 1)
-                           for data in succ.values()
-                           for d in data.values()])
-                yield (n, deg)
+            def d_iter():
+                for n, succ in nodes_nbrs:
+                    deg = sum([d.get(weight, 1)
+                               for data in succ.values()
+                               for d in data.values()])
+                    yield (n, deg)
+        return d_iter()
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

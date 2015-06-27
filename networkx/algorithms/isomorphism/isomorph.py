@@ -35,16 +35,16 @@ def could_be_isomorphic(G1,G2):
     if G1.order() != G2.order(): return False
 
     # Check local properties
-    d1=G1.degree()
+    d1 = G1.degree()
     t1=nx.triangles(G1)
     c1=nx.number_of_cliques(G1)
-    props1=[ [d1[v], t1[v], c1[v]] for v in d1 ]
+    props1 = [[d, t1[v], c1[v]] for v,d in d1]
     props1.sort()
 
     d2=G2.degree()
     t2=nx.triangles(G2)
     c2=nx.number_of_cliques(G2)
-    props2=[ [d2[v], t2[v], c2[v]] for v in d2 ]
+    props2 = [[d, t2[v], c2[v]] for v,d in d2]
     props2.sort()
 
     if props1 != props2:
@@ -73,14 +73,14 @@ def fast_could_be_isomorphic(G1,G2):
     if G1.order() != G2.order(): return False
 
     # Check local properties
-    d1=G1.degree()
-    t1=nx.triangles(G1)
-    props1=[ [d1[v], t1[v]] for v in d1 ]
+    d1 = G1.degree()
+    t1 = nx.triangles(G1)
+    props1 = [ [d, t1[v]] for v,d in d1 ]
     props1.sort()
 
-    d2=G2.degree()
+    d2 = G2.degree()
     t2=nx.triangles(G2)
-    props2=[ [d2[v], t2[v]] for v in d2 ]
+    props2=[ [d, t2[v]] for v,d in d2 ]
     props2.sort()
 
     if props1 != props2: return False
@@ -108,10 +108,8 @@ def faster_could_be_isomorphic(G1,G2):
     if G1.order() != G2.order(): return False
 
     # Check local properties
-    d1=list(G1.degree().values())
-    d1.sort()
-    d2=list(G2.degree().values())
-    d2.sort()
+    d1 = sorted(d for n, d in G1.degree())
+    d2 = sorted(d for n, d in G2.degree())
 
     if d1 != d2: return False
 
