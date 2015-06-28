@@ -179,6 +179,10 @@ class TestDAG:
         assert_equal(longest_path(G), [1, 2, 3, 4, 5])
         G = nx.Graph()
         assert_raises(nx.NetworkXNotImplemented, longest_path, G)
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
+            [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4), (5, 6, 0), (1, 6, 2)])
+        assert_equal(longest_path(G), [2, 3, 5, 6])
 
     def test_dag_longest_path_length(self):
         longest_path_length = nx.algorithms.dag.dag_longest_path_length
@@ -189,6 +193,10 @@ class TestDAG:
         assert_equal(longest_path_length(G), 4)
         G = nx.Graph()
         assert_raises(nx.NetworkXNotImplemented, longest_path_length, G)
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
+            [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4), (5, 6, 0), (1, 6, 2)])
+        assert_equal(longest_path_length(G), 3)
 
 
 def test_is_aperiodic_cycle():

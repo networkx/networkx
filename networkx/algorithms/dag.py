@@ -392,13 +392,20 @@ def antichains(G):
 
 
 @not_implemented_for('undirected')
-def dag_longest_path(G):
+def dag_longest_path(G, weight='weight', default_weight=1):
     """Returns the longest path in a DAG
+    If G has edges with 'weight' attribute the edge data are used as weight values.
 
     Parameters
     ----------
     G : NetworkX DiGraph
         Graph
+
+    weight : string (default 'weight')
+        Edge data key to use for weight
+
+    default_weight : integer (default 1)
+        The weight of edges that do not have a weight attribute
 
     Returns
     -------
@@ -414,20 +421,22 @@ def dag_longest_path(G):
     --------
     dag_longest_path_length
     """
-    dist = {}  # stores [node, distance] pair
-    for node in nx.topological_sort(G):
-        # pairs of dist,node for all incoming edges
-        pairs = [(dist[v][0] + 1, v) for v in G.pred[node]]
-        if pairs:
-            dist[node] = max(pairs)
-        else:
-            dist[node] = (0, node)
-    node, (length, _) = max(dist.items(), key=lambda x: x[1])
+    dist = {} # stores {v : (length, u)}
+    for v in nx.topological_sort(G):
+        us = [(dist[u][0] + data.get(weight, default_weight), u)
+            for u, data in G.pred[v].items()]
+        # Use the best predecessor if there is one and its distance is non-negative, otherwise terminate.
+        maxu = max(us) if us else (0, v)
+        dist[v] = maxu if maxu[0] >= 0 else (0, v)
+    u = None
+    v = max(dist, key=dist.get)
     path = []
-    while length > 0:
-        path.append(node)
-        length, node = dist[node]
-    return list(reversed(path))
+    while u != v:
+        path.append(v)
+        u = v
+        v = dist[v][1]
+    path.reverse()
+    return path
 
 
 @not_implemented_for('undirected')
