@@ -100,9 +100,7 @@ def topological_sort(G, nbunch=None, reverse=False):
     nbunch : container of nodes (optional)
         Limits the returned nodes to descendants of those in nbunch,
         and resolves ambiguities in the topological sort order so
-        that u appears before v if
-        (1) there is a directed path from u to v, or
-        (2) u appears before v in nbunch.
+        that u is explored before v if it appears before v in nbunch.
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
@@ -194,9 +192,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     nbunch : container of nodes (optional)
         Limits the returned nodes to descendants of those in nbunch,
         and resolves ambiguities in the topological sort order so
-        that u appears before v if
-        (1) there is a directed path from u to v, or
-        (2) u appears before v in nbunch.
+        that u is explored before v if it appears before v in nbunch.
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
