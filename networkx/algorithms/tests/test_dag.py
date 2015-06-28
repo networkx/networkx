@@ -105,6 +105,7 @@ class TestDAG:
         assert_equal(nx.topological_sort_recursive(G, [1]), [1, 5, 4, 2, 6, 3])
         assert_equal(nx.topological_sort(G, [5]), [5])
         assert_equal(nx.topological_sort_recursive(G, [5]), [5])
+        assert_equal(nx.topological_sort(G, [2, 6, 4, 5]), [5, 4, 2, 6, 3])
 
     def test_ancestors(self):
         G = nx.DiGraph()
