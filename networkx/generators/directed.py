@@ -241,17 +241,15 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
            Discrete Algorithms, 132--139, 2003.
     """
 
-    # TODO
-    def _choose_node(G,distribution,delta):
+    def _choose_node(G, distribution, delta, psum):
         cumsum=0.0
         # normalization 
-        psum = float(sum(distribution.values())) + float(delta) * len(G)
         r = random.random()
-        for i in range(0, len(G)):
-            cumsum += (distribution[i] + delta) / psum
-            if r < cumsum:  
+        for n, d in distribution:
+            cumsum += (d + delta) / psum
+            if r < cumsum:
                 break
-        return i
+        return n
 
     if create_using is None:
         # start with 3-cycle
@@ -278,8 +276,10 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
 
     # seed random number generated (uses None as default)
     random.seed(seed)
-
+    number_of_edges = G.number_of_edges()
     while len(G)<n:
+        psum_in = number_of_edges + float(delta_in) * len(G)
+        psum_out = number_of_edges + float(delta_out) * len(G)
         r = random.random()
         # random choice in alpha,beta,gamma ranges
         if r<alpha:
@@ -287,20 +287,21 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
             # add new node v
             v = len(G) 
             # choose w according to in-degree and delta_in
-            w = _choose_node(G, dict(G.in_degree()),delta_in)
+            w = _choose_node(G, G.in_degree(), delta_in, psum_in)
         elif r < alpha+beta:
             # beta
             # choose v according to out-degree and delta_out
-            v = _choose_node(G, dict(G.out_degree()),delta_out)
+            v = _choose_node(G, G.out_degree(), delta_out, psum_out)
             # choose w according to in-degree and delta_in
-            w = _choose_node(G, dict(G.in_degree()),delta_in)
+            w = _choose_node(G, G.in_degree(), delta_in, psum_in)
         else:
             # gamma
             # choose v according to out-degree and delta_out
-            v = _choose_node(G, dict(G.out_degree()),delta_out)
+            v = _choose_node(G, G.out_degree(), delta_out, psum_out)
             # add new node w
             w = len(G) 
         G.add_edge(v,w)
+        number_of_edges += 1
         
     return G
 
