@@ -144,8 +144,7 @@ def topological_sort(G, nbunch=None, reverse=False):
         def direct_descendants(w):
             return G[w]
     else:
-        nbunch_index = {x: i
-                        for i, x in enumerate(nbunch)}
+        nbunch_index = {x: i for i, x in enumerate(nbunch)}
         len_nbunch = len(nbunch)
         def direct_descendants(w):
             return sorted(G[w], key=lambda x: nbunch_index.get(x, len_nbunch))
@@ -245,8 +244,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
         def direct_descendants(w):
             return G[w]
     else:
-        nbunch_index = {x: i
-                        for i, x in enumerate(nbunch)}
+        nbunch_index = {x: i for i, x in enumerate(nbunch)}
         len_nbunch = len(nbunch)
         def direct_descendants(w):
             return sorted(G[w], key=lambda x: nbunch_index.get(x, len_nbunch))
