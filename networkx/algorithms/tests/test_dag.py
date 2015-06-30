@@ -96,16 +96,17 @@ class TestDAG:
         assert_equal(nx.topological_sort_recursive(G), [0, 1])
         assert_equal(nx.topological_sort(G), [0, 1])
 
-    def test_nbunch_argument(self):
+    def test_source_nodes_argument(self):
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
-        assert_equal(nx.topological_sort(G), [1, 2, 3, 6, 4, 5])
-        assert_equal(nx.topological_sort_recursive(G), [1, 5, 4, 2, 6, 3])
-        assert_equal(nx.topological_sort(G, [1]), [1, 2, 3, 6, 4, 5])
-        assert_equal(nx.topological_sort_recursive(G, [1]), [1, 5, 4, 2, 6, 3])
-        assert_equal(nx.topological_sort(G, [5]), [5])
-        assert_equal(nx.topological_sort_recursive(G, [5]), [5])
-        assert_equal(nx.topological_sort(G, [2, 6, 4, 5]), [5, 4, 2, 6, 3])
+        for method in [nx.topological_sort, nx.topological_sort_recursive]:
+            assert_equal(method(G, edge_key=lambda x, y: y),
+                         [1, 2, 3, 6, 4, 5])
+            assert_equal(method(G, [1], edge_key=lambda x, y: y),
+                         [1, 2, 3, 6, 4, 5])
+            assert_equal(method(G, [2], edge_key=lambda x, y: y),
+                         [2, 3, 6])
+            assert_equal(method(G, [5]), [5])
 
     def test_ancestors(self):
         G = nx.DiGraph()

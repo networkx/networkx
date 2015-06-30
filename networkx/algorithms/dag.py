@@ -85,7 +85,7 @@ def is_directed_acyclic_graph(G):
         return False
 
 
-def topological_sort(G, nbunch=None, reverse=False):
+def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
     """Return a list of nodes in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes
@@ -97,10 +97,14 @@ def topological_sort(G, nbunch=None, reverse=False):
     G : NetworkX digraph
         A directed graph
 
-    nbunch : container of nodes (optional)
-        Limits the returned nodes to descendants of those in nbunch,
-        and resolves ambiguities in the topological sort order so
-        that u is explored before v if it appears before v in nbunch.
+    source_nodes : container of nodes (optional)
+        Limits the returned nodes to descendants of those in source_nodes.
+        Defaults to all nodes in the graph.
+
+    edge_key : function
+        This function accepts a pair of nodes representing an edge
+        and resolves ambiguities in the exploration order so that edges with
+        a smaller key are explored first.
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
@@ -139,16 +143,15 @@ def topological_sort(G, nbunch=None, reverse=False):
     order = []
     explored = set()
 
-    if nbunch is None:
-        nbunch = G.nodes_iter()
-        def direct_descendants(w):
-            return G[w]
+    if source_nodes is None:
+        source_nodes = G.nodes_iter()
+    if edge_key is None:
+        def direct_descendants(x):
+            return G[x]
     else:
-        nbunch_index = {x: i for i, x in enumerate(nbunch)}
-        len_nbunch = len(nbunch)
-        def direct_descendants(w):
-            return sorted(G[w], key=lambda x: nbunch_index.get(x, len_nbunch))
-    for v in nbunch:     # process all vertices in G
+        def direct_descendants(x):
+            return sorted(G[x], key=lambda y: edge_key(x, y))
+    for v in source_nodes:
         if v in explored:
             continue
         fringe = [v]   # nodes yet to look at
@@ -171,13 +174,13 @@ def topological_sort(G, nbunch=None, reverse=False):
                 explored.add(w)
                 order.append(w)
                 fringe.pop()    # done considering this node
-    if reverse:
-        return order
-    else:
-        return list(reversed(order))
+    if not reverse:
+        order.reverse()
+    return order
 
 
-def topological_sort_recursive(G, nbunch=None, reverse=False):
+def topological_sort_recursive(G, source_nodes=None, edge_key=None,
+                               reverse=False):
     """Return a list of nodes in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes such
@@ -188,10 +191,14 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     ----------
     G : NetworkX digraph
 
-    nbunch : container of nodes (optional)
-        Limits the returned nodes to descendants of those in nbunch,
-        and resolves ambiguities in the topological sort order so
-        that u is explored before v if it appears before v in nbunch.
+    source_nodes : container of nodes (optional)
+        Limits the returned nodes to descendants of those in source_nodes.
+        Defaults to all nodes in the graph.
+
+    edge_key : function
+        This function accepts a pair of nodes representing an edge
+        and resolves ambiguities in the exploration order so that edges with
+        a smaller key are explored first.
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
@@ -239,24 +246,22 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     explored = set()
     order = []
 
-    if nbunch is None:
-        nbunch = G.nodes_iter()
-        def direct_descendants(w):
-            return G[w]
+    if source_nodes is None:
+        source_nodes = G.nodes_iter()
+    if edge_key is None:
+        def direct_descendants(x):
+            return G[x]
     else:
-        nbunch_index = {x: i for i, x in enumerate(nbunch)}
-        len_nbunch = len(nbunch)
-        def direct_descendants(w):
-            return sorted(G[w], key=lambda x: nbunch_index.get(x, len_nbunch))
+        def direct_descendants(x):
+            return sorted(G[x], key=lambda y: edge_key(x, y), reverse=True)
 
-    for v in nbunch:
+    for v in source_nodes:
         if v not in explored:
             _dfs(v)
 
-    if reverse:
-        return order
-    else:
-        return list(reversed(order))
+    if not reverse:
+        order.reverse()
+    return order
 
 
 def is_aperiodic(G):
