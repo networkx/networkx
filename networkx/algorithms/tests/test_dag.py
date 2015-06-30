@@ -100,8 +100,6 @@ class TestDAG:
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
         for method in [nx.topological_sort, nx.topological_sort_recursive]:
-            assert_equal(method(G, edge_key=lambda x, y: y),
-                         [1, 2, 3, 6, 4, 5])
             assert_equal(method(G, [1], edge_key=lambda x, y: y),
                          [1, 2, 3, 6, 4, 5])
             assert_equal(method(G, [2], edge_key=lambda x, y: y),
