@@ -151,7 +151,7 @@ def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
     else:
         def direct_descendants(x):
             return sorted(G[x], key=lambda y: edge_key(x, y))
-    for v in source_nodes:
+    for v in G.nbunch_iter(source_nodes):
         if v in explored:
             continue
         fringe = [v]   # nodes yet to look at
@@ -246,8 +246,6 @@ def topological_sort_recursive(G, source_nodes=None, edge_key=None,
     explored = set()
     order = []
 
-    if source_nodes is None:
-        source_nodes = G.nodes_iter()
     if edge_key is None:
         def direct_descendants(x):
             return G[x]
@@ -255,7 +253,7 @@ def topological_sort_recursive(G, source_nodes=None, edge_key=None,
         def direct_descendants(x):
             return sorted(G[x], key=lambda y: edge_key(x, y), reverse=True)
 
-    for v in source_nodes:
+    for v in G.nbunch_iter(source_nodes):
         if v not in explored:
             _dfs(v)
 
