@@ -143,8 +143,6 @@ def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
     order = []
     explored = set()
 
-    if source_nodes is None:
-        source_nodes = G.nodes_iter()
     if edge_key is None:
         def direct_descendants(x):
             return G[x]
