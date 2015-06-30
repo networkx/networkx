@@ -101,7 +101,7 @@ def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
         Limits the returned nodes to descendants of those in source_nodes.
         Defaults to all nodes in the graph.
 
-    edge_key : function
+    edge_key : function, optional
         This function accepts a pair of nodes representing an edge
         and resolves ambiguities in the exploration order so that edges with
         a smaller key are explored first.
@@ -193,7 +193,7 @@ def topological_sort_recursive(G, source_nodes=None, edge_key=None,
         Limits the returned nodes to descendants of those in source_nodes.
         Defaults to all nodes in the graph.
 
-    edge_key : function
+    edge_key : function, optional
         This function accepts a pair of nodes representing an edge
         and resolves ambiguities in the exploration order so that edges with
         a smaller key are explored first.
