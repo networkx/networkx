@@ -111,79 +111,61 @@ def all_simple_paths(G, source, target, cutoff=None):
         cutoff = len(G) - 1
     if G.is_multigraph():
         return _all_simple_paths_multi(G, source, target, cutoff=cutoff)
-    elif G.is_directed():
-        return _all_simple_paths_directed(G, source, target, cutoff=cutoff)
     else:
-        return _all_simple_paths_graph(G, source, target, cutoff=cutoff)
+        return _all_simple_paths(G, source, target, cutoff=cutoff)
 
 
-def _all_simple_paths_graph(G, source, target, cutoff):
-
-    if cutoff < 1:
-        return
-
-    tree = [{(source,)}, {(target,)}]
-
-    for i in range(cutoff):
-
-        temp = set()
-        tree1 = tree[i % 2]
-        tree2 = tree[(i + 1) % 2]
-
-        leaves = {x[-1] for x in iter(tree1)}  # only to reduce some effort
-        for path in iter(tree2):
-            for s in iter(G[path[-1]]):
-                if s not in path:
-                    if s in leaves:
-                        for _path in iter(tree1):
-                            if s == _path[-1]:
-                                if not set(_path).intersection(path):
-                                    if i % 2:
-                                        yield list(path) + \
-                                            [x for x in reversed(_path)]
-                                    else:
-                                        yield list(_path) + \
-                                            [x for x in reversed(path)]
-                    temp.add(path + (s,))
-
-        tree[(i + 1) % 2] = temp
-
-
-def _all_simple_paths_directed(G, source, target, cutoff):
+def _all_simple_paths(G, source, target, cutoff):
 
     if cutoff < 1:
         return
 
     tree = [{(source,)}, {(target,)}]
+    leaves = [{source}, {target}]
 
-    for i in range(cutoff):
+    # used if the graph is not directed
+    neighbors = lambda node: iter(G[node])
 
-        temp = set()
-        tree1 = tree[i % 2]
-        tree2 = tree[(i + 1) % 2]
+    for i in range(1, cutoff+1):
 
         if i % 2:
-            _next = G.successors_iter
+            tree_source = tree[1]
+            tree_target = tree[0]
+            leaves_ = leaves[0]
+
+            if G.is_directed():
+                neighbors = G.successors_iter
+
         else:
-            _next = G.predecessors_iter
+            tree_source = tree[0]
+            tree_target = tree[1]
+            leaves_ = leaves[1]
 
-        leaves = {x[-1] for x in iter(tree1)}  # only to reduce some effort
-        for path in iter(tree2):
-            for s in _next(path[-1]):
-                if s not in path:
-                    if s in leaves:
-                        for _path in iter(tree1):
-                            if s == _path[-1]:
-                                if not set(_path).intersection(path):
+            if G.is_directed():
+                neighbors = G.predecessors_iter
+
+        temp_tree = set()
+        temp_leaves = set()
+
+        for path_s in iter(tree_source):
+            for s in neighbors(path_s[-1]):
+                if s not in path_s:
+                    if s in leaves_:
+                        for path_t in iter(tree_target):
+                            if s == path_t[-1]:
+                                if not set(path_t).intersection(path_s):
+                                    found = 1
                                     if i % 2:
-                                        yield list(path) + \
-                                            [x for x in reversed(_path)]
+                                        yield list(path_t) + \
+                                            [x for x in reversed(path_s)]
                                     else:
-                                        yield list(_path) + \
-                                            [x for x in reversed(path)]
-                    temp.add(path + (s,))
+                                        yield list(path_s) + \
+                                            [x for x in reversed(path_t)]
+                    temp_tree.add(path_s + (s,))
+                    temp_leaves.add(s)
 
-        tree[(i + 1) % 2] = temp
+        tree[i % 2] = temp_tree
+        leaves[i % 2] = temp_leaves
 
 
 def _all_simple_paths_multi(G, source, target, cutoff):
@@ -192,30 +174,41 @@ def _all_simple_paths_multi(G, source, target, cutoff):
         return
 
     tree = [[(source,)], [(target,)]]
+    leaves = [{source}, {target}]
 
-    for i in range(cutoff):
+    for i in range(1, cutoff+1):
 
-        temp = []
-        tree1 = tree[i % 2]
-        tree2 = tree[(i + 1) % 2]
+        if i % 2:
+            tree_source = tree[1]
+            tree_target = tree[0]
+            leaves_ = leaves[0]
 
-        leaves = {x[-1] for x in iter(tree1)}  # only to reduce some effort
-        for path in iter(tree2):
-            for s in [v for u, v in G.edges([path[-1]])]:
-                if s not in path:
-                    if s in leaves:
-                        for _path in iter(tree1):
-                            if s == _path[-1]:
-                                if not set(_path).intersection(path):
+        else:
+            tree_source = tree[0]
+            tree_target = tree[1]
+            leaves_ = leaves[1]
+
+        temp_tree = []
+        temp_leaves = []
+
+        for path_s in iter(tree_source):
+            for s in [v for u, v in G.edges([path_s[-1]])]:
+                if s not in path_s:
+                    if s in leaves_:
+                        for path_t in iter(tree_target):
+                            if s == path_t[-1]:
+                                if not set(path_t).intersection(path_s):
                                     if i % 2:
-                                        yield list(path) + \
-                                            [x for x in reversed(_path)]
+                                        yield list(path_t) + \
+                                            [x for x in reversed(path_s)]
                                     else:
-                                        yield list(_path) + \
-                                            [x for x in reversed(path)]
-                    temp.append(path + (s,))
+                                        yield list(path_s) + \
+                                            [x for x in reversed(path_t)]
+                    temp_tree.append(path_s + (s,))
+                    temp_leaves.append(s)
 
-        tree[(i + 1) % 2] = temp
+        tree[i % 2] = temp_tree
+        leaves[i % 2] = temp_leaves
 
 
 def all_shortest_paths(G, source, target):
@@ -242,6 +235,9 @@ def all_shortest_paths(G, source, target):
     ------
     NetworkXError
        If source or target nodes are not in the input graph.
+
+    NetworkXNoPath
+        If no path exists between source and target.
 
     Examples
     --------
@@ -300,131 +296,108 @@ def all_shortest_paths(G, source, target):
         raise nx.NetworkXError('target node %s not in graph' % target)
     if G.is_multigraph():
         return _all_shortest_paths_multi(G, source, target)
-    elif G.is_directed():
-        return _all_shortest_paths_directed(G, source, target)
     else:
-        return _all_shortest_paths_graph(G, source, target)
+        return _all_shortest_paths(G, source, target)
 
 
-def _all_shortest_paths_graph(G, source, target):
-
-    tree = [{(source,)}, {(target,)}]
-    node = [{source}, {target}]
-    found = 0
-    i = 0
-
-    while not found and tree[0] and tree[1]:
-
-        tree1 = tree[i % 2]
-        tree2 = tree[(i + 1) % 2]
-
-        node1 = node[i % 2]
-        node2 = node[(i + 1) % 2]
-
-        temp = set()
-
-        for path in iter(tree2):
-            for s in iter(G[path[-1]]):
-                if s not in path:
-                    if s in node1:
-                        for _path in iter(tree1):
-                            if s == _path[-1]:
-                                if not set(_path).intersection(path):
-                                    found = 1
-                                    if i % 2:
-                                        yield list(path) + \
-                                            [x for x in reversed(_path)]
-                                    else:
-                                        yield list(_path) + \
-                                            [x for x in reversed(path)]
-                    # elif s not in node2:
-                    node2.add(s)
-                    temp.add(path + (s,))
-
-        tree[(i + 1) % 2] = temp
-        i += 1
-
-
-def _all_shortest_paths_directed(G, source, target):
+def _all_shortest_paths(G, source, target):
 
     tree = [{(source,)}, {(target,)}]
-    node = [{source}, {target}]
+    nodes = [{source}, {target}]
     found = 0
-    i = 0
+    i = 1
+
+    # used if the graph is not directed
+    neighbors = lambda node: iter(G[node])
 
     while not found and tree[0] and tree[1]:
-
-        tree1 = tree[i % 2]
-        tree2 = tree[(i + 1) % 2]
-
-        node1 = node[i % 2]
-        node2 = node[(i + 1) % 2]
 
         if i % 2:
-            _next = G.successors_iter
+            tree_source = tree[1]
+            tree_target = tree[0]
+            nodes_source = nodes[1]
+            nodes_target = nodes[0]
+
+            if G.is_directed():
+                neighbors = G.predecessors_iter
+
         else:
-            _next = G.predecessors_iter
+            tree_source = tree[0]
+            tree_target = tree[1]
+            nodes_source = nodes[0]
+            nodes_target = nodes[1]
 
-        temp = set()
+            if G.is_directed():
+                neighbors = G.successors_iter
 
-        for path in iter(tree2):
-            for s in _next(path[-1]):
-                if s not in path:
-                    if s in node1:
-                        for _path in iter(tree1):
-                            if s == _path[-1]:
-                                if not set(_path).intersection(path):
+        temp_tree = set()
+
+        for path_s in iter(tree_source):
+            for s in neighbors(path_s[-1]):
+                if s not in path_s:
+                    if s in nodes_target:
+                        for path_t in iter(tree_target):
+                            if s == path_t[-1]:
+                                if not set(path_t).intersection(path_s):
                                     found = 1
                                     if i % 2:
-                                        yield list(path) + \
-                                            [x for x in reversed(_path)]
+                                        yield list(path_t) + \
+                                            [x for x in reversed(path_s)]
                                     else:
-                                        yield list(_path) + \
-                                            [x for x in reversed(path)]
+                                        yield list(path_s) + \
+                                            [x for x in reversed(path_t)]
                     # elif s not in node2:
-                    node2.add(s)
-                    temp.add(path + (s,))
+                    nodes_source.add(s)
+                    temp_tree.add(path_s + (s,))
 
-        tree[(i + 1) % 2] = temp
+        tree[i % 2] = temp_tree
         i += 1
+
+    if not found:
+        raise nx.NetworkXNoPath("No path between %s and %s." % (source,
+                                                                target))
 
 
 def _all_shortest_paths_multi(G, source, target):
 
     tree = [[(source,)], [(target,)]]
-    # node = [{source}, {target}]
     found = 0
-    i = 0
+    i = 1
+
     while not found and tree[0] and tree[1]:
 
-        tree1 = tree[i % 2]
-        tree2 = tree[(i + 1) % 2]
+        if i % 2:
+            tree_source = tree[1]
+            tree_target = tree[0]
 
-        # node1 = node[i%2]
-        # node2 = node[(i+1)%2]
+        else:
+            tree_source = tree[0]
+            tree_target = tree[1]
 
-        temp = []
+        temp_tree = []
 
-        for path in iter(tree2):
-            for s in [v for u, v in G.edges([path[-1]])]:
-                if s not in path:
-                    # if s in node1:
-                    for _path in iter(tree1):
-                        if s == _path[-1]:
-                            if not set(_path).intersection(path):
+        for path_s in iter(tree_source):
+            for s in [v for u, v in G.edges([path_s[-1]])]:
+                if s not in path_s:
+                    for path_t in iter(tree_target):
+                        if s == path_t[-1]:
+                            if not set(path_t).intersection(path_s):
                                 found = 1
                                 if i % 2:
-                                    yield list(path) + \
-                                        [x for x in reversed(_path)]
+                                    yield list(path_t) + \
+                                        [x for x in reversed(path_s)]
                                 else:
-                                    yield list(_path) + \
-                                        [x for x in reversed(path)]
-                    # elif s not in node2:
-                    #    node2.add(s)
-                    temp.append(path + (s,))
+                                    yield list(path_s) + \
+                                        [x for x in reversed(path_t)]
 
-        tree[(i + 1) % 2] = temp
+                    temp_tree.append(path_s + (s,))
+
+        tree[i % 2] = temp_tree
         i += 1
+
+    if not found:
+        raise nx.NetworkXNoPath("No path between %s and %s." % (source,
+                                                                target))
 
 
 def has_path(G, source, target):
@@ -435,64 +408,43 @@ def has_path(G, source, target):
         raise nx.NetworkXError('target node %s not in graph' % target)
     if G.is_multigraph():
         return _has_path_multi(G, source, target)
-    elif G.is_directed():
-        return _has_path_directed(G, source, target)
     else:
-        return _has_path_graph(G, source, target)
+        return _has_path(G, source, target)
 
 
-def _has_path_graph(G, source, target):
-
-    leaves = [{source}, {target}]
-    nodes = [{source}, {target}]
-    i = 1
-
-    while leaves[0] and leaves[1]:
-
-        node2 = nodes[i % 2]
-        node1 = nodes[(i + 1) % 2]
-
-        temp = set()
-
-        for leave in iter(leaves[i % 2]):
-            for s in iter(G[leave]):
-                if s in node1:
-                    return True
-                elif s not in node2:
-                    node2.add(s)
-                    temp.add(s)
-
-        leaves[i % 2] = temp
-
-        i += 1
-
-    return False
-
-
-def _has_path_directed(G, source, target):
+def _has_path(G, source, target):
 
     leaves = [{source}, {target}]
     nodes = [{source}, {target}]
     i = 1
 
-    while leaves[0] and leaves[1]:
+    neighbors = lambda node: iter(G[node])
 
-        node2 = nodes[i % 2]
-        node1 = nodes[(i + 1) % 2]
+    while leaves[0] and leaves[1]:
 
         if i % 2:
-            _next = G.predecessors_iter
+            nodes_t = nodes[0]
+            nodes_s = nodes[1]
+            leaves_ = leaves[1]
+
+            if G.is_directed():
+                neighbors = G.successors_iter
         else:
-            _next = G.successors_iter
+            nodes_t = nodes[1]
+            nodes_s = nodes[0]
+            leaves_ = leaves[0]
+
+            if G.is_directed():
+                neighbors = G.predecessors_iter
 
         temp = set()
 
-        for leave in iter(leaves[i % 2]):
-            for s in _next(leave):
-                if s in node1:
+        for leave in iter(leaves_):
+            for s in neighbors(leave):
+                if s in nodes_t:
                     return True
-                elif s not in node2:
-                    node2.add(s)
+                elif s not in nodes_s:
+                    nodes_s.add(s)
                     temp.add(s)
 
         leaves[i % 2] = temp
@@ -510,17 +462,23 @@ def _has_path_multi(G, source, target):
 
     while leaves[0] and leaves[1]:
 
-        node2 = nodes[i % 2]
-        node1 = nodes[(i + 1) % 2]
+        if i % 2:
+            nodes_t = nodes[0]
+            nodes_s = nodes[1]
+            leaves_ = leaves[1]
+        else:
+            nodes_t = nodes[1]
+            nodes_s = nodes[0]
+            leaves_ = leaves[0]
 
         temp = set()
 
-        for leave in iter(leaves[i % 2]):
+        for leave in iter(leaves_):
             for s in [v for u, v in G.edges([leave])]:
-                if s in node1:
+                if s in nodes_t:
                     return True
-                elif s not in node2:
-                    node2.add(s)
+                elif s not in nodes_s:
+                    node_s.add(s)
                     temp.add(s)
 
         leaves[i % 2] = temp
