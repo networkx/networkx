@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2015
+#    Copyright Giulio Rossetti, Michele Coscia (C) 2015
 #    All rights reserved.
 #    BSD license.
 
