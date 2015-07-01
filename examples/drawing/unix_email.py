@@ -71,7 +71,7 @@ if __name__ == '__main__':
             G.add_edge(source_addr,target_addr,message=msg)  
 
     # print edges with message subject
-    for (u,v,d) in G.edges_iter(data=True):
+    for (u,v,d) in G.edges(data=True):
         print("From: %s To: %s Subject: %s"%(u,v,d['message']["Subject"]))
     
 
