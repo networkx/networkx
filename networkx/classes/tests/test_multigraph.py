@@ -91,8 +91,8 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G=self.K3
         G.add_edge(0,0)
         assert_equal(list(G.nodes_with_selfloops()), [0])
-        assert_equal(G.selfloop_edges(),[(0,0)])
-        assert_equal(G.selfloop_edges(data=True),[(0,0,{})])
+        assert_equal(list(G.selfloop_edges()), [(0, 0)])
+        assert_equal(list(G.selfloop_edges(data=True)), [(0, 0, {})])
         assert_equal(G.number_of_selfloops(),1)
 
     def test_selfloops2(self):
