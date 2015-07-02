@@ -713,7 +713,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         c = col + row
         # selfloop entries get double counted when symmetrizing
         # so we subtract the data on the diagonal
-        selfloops = G.selfloop_edges(data=True)
+        selfloops = list(G.selfloop_edges(data=True))
         if selfloops:
             diag_index,diag_data = zip(*((index[u],-d.get(weight,1))
                                          for u,v,d in selfloops
