@@ -85,7 +85,7 @@ def _compute_rc(G):
     total = sum(deghist)
     # number of nodes with degree > k (omit last entry which is zero)
     nks = [total-cs for cs in nx.utils.accumulate(deghist) if total-cs > 1]
-    deg=G.degree()
+    deg = dict(G.degree())
     edge_degrees=sorted(sorted((deg[u],deg[v])) for u,v in G.edges()) 
     ek=G.number_of_edges()
     k1,k2=edge_degrees.pop(0)

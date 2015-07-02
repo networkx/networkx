@@ -16,20 +16,24 @@ def _avg_deg_conn(G, neighbors, source_degree, target_degree,
     # "k nearest neighbors, or neighbor_connectivity
     dsum = defaultdict(float)
     dnorm = defaultdict(float)
-    for n,k in source_degree(nodes).items():
+    # hack for single nodes
+    source_nodes = source_degree(nodes)
+    if nodes in G:
+        source_nodes = [(nodes, source_degree(nodes))]
+    for n,k in source_nodes:
         nbrdeg = target_degree(neighbors(n))
         if weight is None:
-            s = float(sum(nbrdeg.values()))
+            s = float(sum(d for n, d in nbrdeg))
         else: # weight nbr degree by weight of (n,nbr) edge
             if neighbors == G.neighbors:
                 s = float(sum((G[n][nbr].get(weight,1)*d
-                               for nbr,d in nbrdeg.items())))
+                               for nbr,d in nbrdeg)))
             elif neighbors == G.successors:
                 s = float(sum((G[n][nbr].get(weight,1)*d
-                               for nbr,d in nbrdeg.items())))
+                               for nbr,d in nbrdeg)))
             elif neighbors == G.predecessors:
                 s = float(sum((G[nbr][n].get(weight,1)*d
-                               for nbr,d in nbrdeg.items())))
+                               for nbr,d in nbrdeg)))
         dnorm[k] += source_degree(n, weight=weight)
         dsum[k] += s
 
@@ -44,7 +48,7 @@ def _avg_deg_conn(G, neighbors, source_degree, target_degree,
 
 def average_degree_connectivity(G, source="in+out", target="in+out",
                                 nodes=None, weight=None):
-    r"""Compute the average degree connectivity of graph.
+    """Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
     nodes with degree k. For weighted graphs, an analogous measure can

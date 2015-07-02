@@ -241,7 +241,7 @@ def degrees(B, nodes, weight=None):
     >>> G = nx.complete_bipartite_graph(3,2)
     >>> Y=set([3,4])
     >>> degX,degY=bipartite.degrees(G,Y)
-    >>> degX
+    >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
 
     See Also

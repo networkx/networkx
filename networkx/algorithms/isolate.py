@@ -74,4 +74,4 @@ def isolates(G):
     >>> nx.isolates(G)
     [3]
     """
-    return [n for (n,d) in G.degree_iter() if d==0]
+    return [n for (n,d) in G.degree() if d==0]

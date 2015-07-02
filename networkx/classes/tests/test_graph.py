@@ -51,28 +51,20 @@ class BaseGraphTester(object):
         G=self.K3
         assert_equal(G.adjacency_list(),[[1,2],[0,2],[0,1]])
 
-    def test_degree(self):
-        G=self.K3
-        assert_equal(list(G.degree().values()),[2,2,2])
-        assert_equal(G.degree(),{0:2,1:2,2:2})
-        assert_equal(G.degree(0),2)
-        assert_equal(G.degree([0]),{0:2})
-        assert_raises((KeyError,networkx.NetworkXError), G.degree,-1)
-
     def test_weighted_degree(self):
         G=self.Graph()
         G.add_edge(1,2,weight=2)
         G.add_edge(2,3,weight=3)
-        assert_equal(list(G.degree(weight='weight').values()),[2,5,3])
-        assert_equal(G.degree(weight='weight'),{1:2,2:5,3:3})
-        assert_equal(G.degree(1,weight='weight'),2)
-        assert_equal(G.degree([1],weight='weight'),{1:2})
+        assert_equal(list(d for n, d in G.degree(weight='weight')), [2, 5, 3])
+        assert_equal(dict(G.degree(weight='weight')), {1: 2, 2: 5, 3: 3})
+        assert_equal(G.degree(1,weight='weight'), 2)
+        assert_equal(list(G.degree([1],weight='weight')), [(1, 2)])
 
-    def test_degree_iter(self):
+    def test_degree(self):
         G=self.K3
-        assert_equal(list(G.degree_iter()),[(0,2),(1,2),(2,2)])
-        assert_equal(dict(G.degree_iter()),{0:2,1:2,2:2})
-        assert_equal(list(G.degree_iter(0)),[(0,2)])
+        assert_equal(list(G.degree()),[(0,2),(1,2),(2,2)])
+        assert_equal(dict(G.degree()),{0:2,1:2,2:2})
+        assert_equal(G.degree(0), 2)
 
     def test_size(self):
         G=self.K3
@@ -145,12 +137,12 @@ class BaseGraphTester(object):
 
     def test_selfloop_degree(self):
         G=self.Graph()
-        G.add_edge(1,1)
-        assert_equal(list(G.degree().values()),[2])
-        assert_equal(G.degree(),{1:2})
-        assert_equal(G.degree(1),2)
-        assert_equal(G.degree([1]),{1:2})
-        assert_equal(G.degree([1],weight='weight'),{1:2})
+        G.add_edge(1, 1)
+        assert_equal(list(G.degree()), [(1, 2)])
+        assert_equal(dict(G.degree()), {1: 2})
+        assert_equal(G.degree(1), 2)
+        assert_equal(list(G.degree([1])), [(1, 2)])
+        assert_equal(G.degree(1, weight='weight'), 2)
 
     def test_selfloops(self):
         G=self.K3.copy()
@@ -174,15 +166,15 @@ class BaseAttrGraphTester(BaseGraphTester):
         G=self.Graph()
         G.add_edge(1,2,weight=2,other=3)
         G.add_edge(2,3,weight=3,other=4)
-        assert_equal(list(G.degree(weight='weight').values()),[2,5,3])
-        assert_equal(G.degree(weight='weight'),{1:2,2:5,3:3})
-        assert_equal(G.degree(1,weight='weight'),2)
-        assert_equal(G.degree([1],weight='weight'),{1:2})
+        assert_equal(list(d for n, d in G.degree(weight='weight')), [2, 5, 3])
+        assert_equal(dict(G.degree(weight='weight')),{1: 2, 2: 5, 3: 3})
+        assert_equal(G.degree(1,weight='weight'), 2)
+        assert_equal(list(G.degree([1],weight='weight')), [(1, 2)])
 
-        assert_equal(list(G.degree(weight='other').values()),[3,7,4])
-        assert_equal(G.degree(weight='other'),{1:3,2:7,3:4})
-        assert_equal(G.degree(1,weight='other'),3)
-        assert_equal(G.degree([1],weight='other'),{1:3})
+        assert_equal(list(d for n, d in G.degree(weight='other')), [3, 7, 4])
+        assert_equal(dict(G.degree(weight='other')),{1: 3, 2: 7, 3: 4})
+        assert_equal(G.degree(1,weight='other'), 3)
+        assert_equal(list(G.degree([1],weight='other')), [(1, 3)])
 
     def add_attributes(self,G):
         G.graph['foo']=[]

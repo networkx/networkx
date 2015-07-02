@@ -9,14 +9,14 @@ def test_configuration_model_empty():
     # empty graph has empty degree sequence
     deg_seq=[]
     G=configuration_model(deg_seq)
-    assert_equal(G.degree(), {})
+    assert_equal(dict(G.degree()), {})
 
 def test_configuration_model():
     deg_seq=[5,3,3,3,3,2,2,2,1,1,1]
     G=configuration_model(deg_seq,seed=12345678)
-    assert_equal(sorted(G.degree().values(),reverse=True),
+    assert_equal(sorted((d for n, d in G.degree()), reverse=True),
                  [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
-    assert_equal(sorted(G.degree(range(len(deg_seq))).values(),
+    assert_equal(sorted((d for n, d in G.degree(range(len(deg_seq)))),
                         reverse=True),
                  [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
 
@@ -54,7 +54,7 @@ def test_expected_degree_graph_empty():
     # empty graph has empty degree sequence
     deg_seq=[]
     G=expected_degree_graph(deg_seq)
-    assert_equal(G.degree(), {})
+    assert_equal(dict(G.degree()), {})
 
 
 def test_expected_degree_graph():
@@ -113,11 +113,13 @@ def test_directed_havel_hakimi():
     p = 1.0 / r
     for i in range(r):
         G1 = nx.erdos_renyi_graph(n,p*(i+1),None,True)
-        din = list(G1.in_degree().values())
-        dout = list(G1.out_degree().values())
-        G2 = nx.directed_havel_hakimi_graph(din, dout)
-        assert_true(din == list(G2.in_degree().values()))
-        assert_true(dout == list(G2.out_degree().values()))
+        din1 = list(d for n, d in G1.in_degree())
+        dout1 = list(d for n, d in G1.out_degree())
+        G2 = nx.directed_havel_hakimi_graph(din1, dout1)
+        din2 = list(d for n, d in G2.in_degree())
+        dout2 = list(d for n, d in G2.out_degree())
+        assert_equal(sorted(din1), sorted(din2))
+        assert_equal(sorted(dout1), sorted(dout2))
 
     # Test non-graphical sequence
     dout = [1000,3,3,3,3,2,2,2,1,1,1]
@@ -128,8 +130,10 @@ def test_directed_havel_hakimi():
     dout=[1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     din=[2, 2, 2, 2, 2, 2, 2, 2, 0, 2]
     G2 = nx.directed_havel_hakimi_graph(din, dout)
-    assert_true(din == list(G2.in_degree().values()))
-    assert_true(dout == list(G2.out_degree().values()))
+    dout2 = (d for n, d in G2.out_degree())
+    din2 = (d for n, d in G2.in_degree())
+    assert_equal(sorted(dout), sorted(dout2))
+    assert_equal(sorted(din), sorted(din2))
     # Test unequal sums
     din=[2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     assert_raises(nx.exception.NetworkXError,
@@ -155,7 +159,7 @@ def test_degree_sequence_tree():
 def test_random_degree_sequence_graph():
     d=[1,2,2,3]
     G = nx.random_degree_sequence_graph(d)
-    assert_equal(d, list(G.degree().values()))
+    assert_equal(d, sorted(d for n, d in G.degree()))
 
 def test_random_degree_sequence_graph_raise():
     z=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
@@ -163,7 +167,8 @@ def test_random_degree_sequence_graph_raise():
                   random_degree_sequence_graph, z)
 
 def test_random_degree_sequence_large():
-    G = nx.fast_gnp_random_graph(100,0.1)
-    d = G.degree().values()
-    G = nx.random_degree_sequence_graph(d, seed=0)
-    assert_equal(sorted(d), sorted(list(G.degree().values())))
+    G1 = nx.fast_gnp_random_graph(100,0.1)
+    d1 = (d for n, d in G1.degree())
+    G2 = nx.random_degree_sequence_graph(d1, seed=0)
+    d2 = (d for n, d in G2.degree())
+    assert_equal(sorted(d1), sorted(d2))

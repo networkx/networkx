@@ -293,37 +293,31 @@ class HistoricalTests(object):
         assert_equal(G.degree('A'),2)
 
         # degree of single node in iterable container must return dict
-        assert_equal(list(G.degree(['A']).values()),[2])
-        assert_equal(G.degree(['A']),{'A': 2})
-        assert_equal(sorted(G.degree(['A','B']).values()),[2, 3])
-        assert_equal(G.degree(['A','B']),{'A': 2, 'B': 3})
-        assert_equal(sorted(G.degree().values()),[2, 2, 3, 3])
-        assert_equal(sorted([v for k,v in G.degree_iter()]),
-                     [2, 2, 3, 3])
+        assert_equal(list(G.degree(['A'])), [('A', 2)])
+        assert_equal(sorted(d for n, d in G.degree(['A','B'])), [2, 3])
+        assert_equal(sorted(d for n, d in G.degree()), [2, 2, 3, 3])
 
     def test_degree2(self):
         H=self.G()
         H.add_edges_from([(1,24),(1,2)])
-        assert_equal(sorted(H.degree([1,24]).values()),[1, 2])
+        assert_equal(sorted(d for n, d in H.degree([1,24])),[1, 2])
 
     def test_degree_graph(self):
         P3=nx.path_graph(3)
         P5=nx.path_graph(5)
         # silently ignore nodes not in P3
-        assert_equal(P3.degree(['A','B']),{})
+        assert_equal(dict(d for n, d in P3.degree(['A','B'])),{})
         # nbunch can be a graph
-        assert_equal(sorted(P5.degree(P3).values()),[1, 2, 2])
+        assert_equal(sorted(d for n, d in P5.degree(P3)),[1, 2, 2])
         # nbunch can be a graph thats way to big
-        assert_equal(sorted(P3.degree(P5).values()),[1, 1, 2])
-        assert_equal(P5.degree([]),{})
-        assert_equal(list(P5.degree_iter([])),[])
-        assert_equal(dict(P5.degree_iter([])),{})
+        assert_equal(sorted(d for n, d in P3.degree(P5)),[1, 1, 2])
+        assert_equal(list(P5.degree([])),[])
+        assert_equal(dict(P5.degree([])),{})
 
     def test_null(self):
         null=nx.null_graph()
-        assert_equal(null.degree(),{})
-        assert_equal(list(null.degree_iter()),[])
-        assert_equal(dict(null.degree_iter()),{})
+        assert_equal(list(null.degree()),[])
+        assert_equal(dict(null.degree()),{})
 
     def test_order_size(self):
         G=self.G()
@@ -411,9 +405,9 @@ class HistoricalTests(object):
         assert_edges_equal(G.edges(),
         [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')])
 
-        assert_equal(sorted([v for k,v in G.degree_iter()]),
+        assert_equal(sorted([v for k,v in G.degree()]),
                      [0, 0, 0, 2, 2, 3, 3])
-        assert_equal(sorted(G.degree_iter(),key=str),
+        assert_equal(sorted(G.degree(), key=str),
                      [('A', 2), ('B', 3), ('C', 3), ('D', 2), 
                       ('G', 0), ('J', 0), ('K', 0)])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])

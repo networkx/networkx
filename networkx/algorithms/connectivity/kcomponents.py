@@ -180,7 +180,7 @@ def _generate_partition(G, cuts, k):
                 return True
         return False
     components = []
-    nodes = ({n for n, d in G.degree().items() if d > k} - 
+    nodes = ({n for n, d in G.degree() if d > k} -
              {n for cut in cuts for n in cut})
     H = G.subgraph(nodes)
     for cc in nx.connected_components(H):

@@ -116,9 +116,10 @@ def degree_histogram(G):
     Note: the bins are width one, hence len(list) can be large
     (Order(number_of_edges))
     """
-    degseq=list(G.degree().values())
-    dmax=max(degseq)+1
-    freq= [ 0 for d in range(dmax) ]
+    # We need to make degseq list because we call it twice.
+    degseq = list(d for n, d in G.degree())
+    dmax = max(degseq) + 1
+    freq = [ 0 for d in range(dmax) ]
     for d in degseq:
         freq[d] += 1
     return freq
@@ -266,11 +267,11 @@ def info(G, n=None):
         if len(G) > 0:
             if G.is_directed():
                 info+="Average in degree: %8.4f\n"%\
-                    (sum(G.in_degree().values())/float(nnodes))
+                    (sum(d for n, d in G.in_degree())/float(nnodes))
                 info+="Average out degree: %8.4f"%\
-                    (sum(G.out_degree().values())/float(nnodes))
+                    (sum(d for n, d in G.out_degree())/float(nnodes))
             else:
-                s=sum(G.degree().values())
+                s=sum(dict(G.degree()).values())
                 info+="Average degree: %8.4f"%\
                     (float(s)/float(nnodes))
 
