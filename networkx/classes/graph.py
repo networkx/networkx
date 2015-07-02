@@ -1508,7 +1508,7 @@ class Graph(object):
         [1]
 
         """
-        return [n for n, nbrs in self.adj.items() if n in nbrs]
+        return (n for n, nbrs in self.adj.items() if n in nbrs)
 
     def selfloop_edges(self, data=False, default=None):
         """Return a list of selfloop edges.
@@ -1539,20 +1539,20 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
-        >>> G.selfloop_edges()
+        >>> list(G.selfloop_edges())
         [(1, 1)]
-        >>> G.selfloop_edges(data=True)
+        >>> list(G.selfloop_edges(data=True))
         [(1, 1, {})]
         """
         if data is True:
-            return [(n, n, nbrs[n])
-                    for n, nbrs in self.adj.items() if n in nbrs]
+            return ((n, n, nbrs[n])
+                    for n, nbrs in self.adj.items() if n in nbrs)
         elif data is not False:
-            return [(n, n, nbrs[n].get(data, default))
-                    for n, nbrs in self.adj.items() if n in nbrs]
+            return ((n, n, nbrs[n].get(data, default))
+                    for n, nbrs in self.adj.items() if n in nbrs)
         else:
-            return [(n, n)
-                    for n, nbrs in self.adj.items() if n in nbrs]
+            return ((n, n)
+                    for n, nbrs in self.adj.items() if n in nbrs)
 
     def number_of_selfloops(self):
         """Return the number of selfloop edges.
@@ -1576,7 +1576,7 @@ class Graph(object):
         >>> G.number_of_selfloops()
         1
         """
-        return len(self.selfloop_edges())
+        return len(list(self.selfloop_edges()))
 
     def size(self, weight=None):
         """Return the number of edges.
