@@ -1576,7 +1576,7 @@ class Graph(object):
         >>> G.number_of_selfloops()
         1
         """
-        return len(list(self.selfloop_edges()))
+        return sum(1 for _ in self.selfloop_edges())
 
     def size(self, weight=None):
         """Return the number of edges.
