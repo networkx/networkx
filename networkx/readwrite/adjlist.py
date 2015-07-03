@@ -76,7 +76,7 @@ def generate_adjlist(G, delimiter=' '):
     """
     directed = G.is_directed()
     seen = set()
-    for s, nbrs in G.adjacency_iter():
+    for s, nbrs in G.adjacency():
         line = make_str(s) + delimiter
         for t, data in nbrs.items():
             if not directed and t in seen:

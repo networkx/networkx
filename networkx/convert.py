@@ -265,10 +265,10 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
     dod={}
     if nodelist is None:
         if edge_data is None:
-            for u,nbrdict in G.adjacency_iter():
+            for u,nbrdict in G.adjacency():
                 dod[u]=nbrdict.copy()
         else: # edge_data is not None
-            for u,nbrdict in G.adjacency_iter():
+            for u,nbrdict in G.adjacency():
                 dod[u]=dod.fromkeys(nbrdict, edge_data)
     else: # nodelist is not None
         if edge_data is None:

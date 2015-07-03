@@ -45,7 +45,7 @@ def node_attribute_xy(G, attribute, nodes=None):
     else:
         nodes = set(nodes)
     node = G.node 
-    for u,nbrsdict in G.adjacency_iter():
+    for u,nbrsdict in G.adjacency():
         if u not in nodes:
             continue
         uattr = node[u].get(attribute,None)

@@ -240,10 +240,10 @@ class TestAntiGraph:
             for comp in ac:
                 assert_true(comp in gc)
 
-    def test_adjacency_iter(self):
+    def test_adjacency(self):
         for G, A in self.GA:
-            a_adj = list(A.adjacency_iter())
-            for n, nbrs in G.adjacency_iter():
+            a_adj = list(A.adjacency())
+            for n, nbrs in G.adjacency():
                 assert_true((n, set(nbrs)) in a_adj)
 
     def test_neighbors(self):
