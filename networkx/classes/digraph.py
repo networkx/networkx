@@ -902,6 +902,9 @@ class DiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
         if nbunch in self:
             succ = self.succ[nbunch]
             pred = self.pred[nbunch]
@@ -966,6 +969,9 @@ class DiGraph(Graph):
         [(0, 0), (1, 1)]
 
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
         if nbunch in self:
             if weight is None:
                 return len(self.pred[nbunch])
@@ -1027,6 +1033,9 @@ class DiGraph(Graph):
         [(0, 1), (1, 1)]
 
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
         if nbunch in self:
             if weight is None:
                 return len(self.succ[nbunch])
