@@ -47,10 +47,6 @@ class BaseGraphTester(object):
         f=lambda x:list(G.edges(x))
         assert_raises((KeyError,networkx.NetworkXError), f, -1)
 
-    def test_adjacency_list(self):
-        G=self.K3
-        assert_equal(G.adjacency_list(),[[1,2],[0,2],[0,1]])
-
     def test_weighted_degree(self):
         G=self.Graph()
         G.add_edge(1,2,weight=2)
@@ -451,9 +447,9 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(G.name,"test")
         assert_equal(sorted(G.adj.items()),[(1, {2: {}}), (2, {1: {}})])
 
-    def test_adjacency_iter(self):
+    def test_adjacency(self):
         G=self.K3
-        assert_equal(dict(G.adjacency_iter()),
+        assert_equal(dict(G.adjacency()),
                 {0: {1: {}, 2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}})
 
     def test_getitem(self):

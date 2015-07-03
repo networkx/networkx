@@ -20,9 +20,9 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         assert_equal(G.get_edge_data(0,1,0),{})
         
 
-    def test_adjacency_iter(self):
+    def test_adjacency(self):
         G=self.K3
-        assert_equal(dict(G.adjacency_iter()),
+        assert_equal(dict(G.adjacency()),
                           {0: {1: {0:{}}, 2: {0:{}}},
                            1: {0: {0:{}}, 2: {0:{}}},
                            2: {0: {0:{}}, 1: {0:{}}}})

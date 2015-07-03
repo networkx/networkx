@@ -368,7 +368,7 @@ def project_down(B,create_using=None,name=None):
     if name is not None:
         G.name=name
 
-    for v,Bvnbrs in B.adjacency_iter():
+    for v,Bvnbrs in B.adjacency():
        if B.node_type[v]=="Bottom":
           G.add_node(v)
           for cv in Bvnbrs:
@@ -391,7 +391,7 @@ def project_up(B,create_using=None,name=None):
     if name is not None:
         G.name=name
 
-    for v,Bvnbrs in B.adjacency_iter():
+    for v,Bvnbrs in B.adjacency():
        if B.node_type[v]=="Top":
           vname= -v   #Change sign of name for Top Nodes
           G.add_node(vname)

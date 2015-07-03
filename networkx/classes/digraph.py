@@ -142,9 +142,9 @@ class DiGraph(Graph):
     5
 
     The fastest way to traverse all edges of a graph is via
-    adjacency_iter(), but the edges() method is often more convenient.
+    adjacency(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency_iter():
+    >>> for n,nbrsdict in G.adjacency():
     ...     for nbr,eattr in nbrsdict.items():
     ...        if 'weight' in eattr:
     ...            (n,nbr,eattr['weight'])
@@ -1163,12 +1163,12 @@ class DiGraph(Graph):
         H.add_nodes_from(self)
         if reciprocal is True:
             H.add_edges_from( (u,v,deepcopy(d))
-                              for u,nbrs in self.adjacency_iter()
+                              for u,nbrs in self.adjacency()
                               for v,d in nbrs.items()
                               if v in self.pred[u])
         else:
             H.add_edges_from( (u,v,deepcopy(d))
-                              for u,nbrs in self.adjacency_iter()
+                              for u,nbrs in self.adjacency()
                               for v,d in nbrs.items() )
         H.graph=deepcopy(self.graph)
         H.node=deepcopy(self.node)

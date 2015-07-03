@@ -367,7 +367,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     else:
         # Graph or DiGraph, this is much faster than above
         M = np.zeros((nlen,nlen), dtype=dtype, order=order) + np.nan
-        for u,nbrdict in G.adjacency_iter():
+        for u,nbrdict in G.adjacency():
             for v,d in nbrdict.items():
                 try:
                     M[index[u],index[v]] = d.get(weight,1)

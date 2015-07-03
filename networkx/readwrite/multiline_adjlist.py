@@ -87,7 +87,7 @@ def generate_multiline_adjlist(G, delimiter=' '):
     """
     if G.is_directed():
         if G.is_multigraph():
-            for s, nbrs in G.adjacency_iter():
+            for s, nbrs in G.adjacency():
                 nbr_edges = [(u, data)
                              for u, datadict in nbrs.items()
                              for key, data in datadict.items()]
@@ -99,7 +99,7 @@ def generate_multiline_adjlist(G, delimiter=' '):
                     else:
                         yield make_str(u) + delimiter + make_str(d)
         else:  # directed single edges
-            for s, nbrs in G.adjacency_iter():
+            for s, nbrs in G.adjacency():
                 deg = len(nbrs)
                 yield make_str(s) + delimiter + str(deg)
                 for u, d in nbrs.items():
@@ -110,7 +110,7 @@ def generate_multiline_adjlist(G, delimiter=' '):
     else:  # undirected
         if G.is_multigraph():
             seen = set()  # helper dict used to avoid duplicate edges
-            for s, nbrs in G.adjacency_iter():
+            for s, nbrs in G.adjacency():
                 nbr_edges = [(u, data)
                              for u, datadict in nbrs.items()
                              if u not in seen
@@ -125,7 +125,7 @@ def generate_multiline_adjlist(G, delimiter=' '):
                 seen.add(s)
         else:  # undirected single edges
             seen = set()  # helper dict used to avoid duplicate edges
-            for s, nbrs in G.adjacency_iter():
+            for s, nbrs in G.adjacency():
                 nbr_edges = [(u, d) for u, d in nbrs.items() if u not in seen]
                 deg = len(nbr_edges)
                 yield make_str(s) + delimiter + str(deg)

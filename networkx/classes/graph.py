@@ -151,9 +151,9 @@ class Graph(object):
     5
 
     The fastest way to traverse all edges of a graph is via
-    adjacency_iter(), but the edges() method is often more convenient.
+    adjacency(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency_iter():
+    >>> for n,nbrsdict in G.adjacency():
     ...     for nbr,eattr in nbrsdict.items():
     ...        if 'weight' in eattr:
     ...            (n,nbr,eattr['weight'])
@@ -1172,32 +1172,7 @@ class Graph(object):
         except KeyError:
             return default
 
-    def adjacency_list(self):
-        """Return an adjacency list representation of the graph.
-
-        The output adjacency list is in the order of G.nodes().
-        For directed graphs, only outgoing adjacencies are included.
-
-        Returns
-        -------
-        adj_list : lists of lists
-            The adjacency structure of the graph as a list of lists.
-
-        See Also
-        --------
-        adjacency_iter
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
-        >>> G.adjacency_list() # in order given by G.nodes()
-        [[1], [0, 2], [1, 3], [2]]
-
-        """
-        return list(map(list, iter(self.adj.values())))
-
-    def adjacency_iter(self):
+    def adjacency(self):
         """Return an iterator of (node, adjacency dict) tuples for all nodes.
 
         This is the fastest way to look at every edge.
@@ -1209,15 +1184,11 @@ class Graph(object):
            An iterator of (node, adjacency dictionary) for all nodes in
            the graph.
 
-        See Also
-        --------
-        adjacency_list
-
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> [(n,nbrdict) for n,nbrdict in G.adjacency_iter()]
+        >>> [(n,nbrdict) for n,nbrdict in G.adjacency()]
         [(0, {1: {}}), (1, {0: {}, 2: {}}), (2, {1: {}, 3: {}}), (3, {2: {}})]
 
         """
@@ -1381,7 +1352,7 @@ class Graph(object):
         G.name = self.name
         G.add_nodes_from(self)
         G.add_edges_from(((u, v, deepcopy(data))
-            for u, nbrs in self.adjacency_iter()
+            for u, nbrs in self.adjacency()
             for v, data in nbrs.items()))
         G.graph = deepcopy(self.graph)
         G.node = deepcopy(self.node)
