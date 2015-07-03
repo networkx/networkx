@@ -910,8 +910,8 @@ class DiGraph(Graph):
             pred = self.pred[nbunch]
             if weight is None:
                 return len(succ) + len(pred)
-            return sum(succ[nbr].get(weight, 1) for nbr in succ) + \
-                   sum(pred[nbr].get(weight, 1) for nbr in pred)
+            return sum(data.get(weight, 1) for data in succ.values()) + \
+                   sum(data.get(weight, 1) for data in pred.values())
 
         if nbunch is None:
             nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.items())
@@ -925,8 +925,8 @@ class DiGraph(Graph):
             def d_iter():
                 for n,succ,pred in nodes_nbrs:
                     yield (n,
-                      sum((succ[nbr].get(weight,1) for nbr in succ))+
-                      sum((pred[nbr].get(weight,1) for nbr in pred)))
+                      sum((data.get(weight,1) for data in succ.values()))+
+                      sum((data.get(weight,1) for data in pred.values())))
         return d_iter()
 
 
@@ -973,9 +973,10 @@ class DiGraph(Graph):
         # None(indicating all nodes). (nbunch in self) is True when nbunch
         # is a single node.
         if nbunch in self:
+            pred = self.pred[nbunch]
             if weight is None:
-                return len(self.pred[nbunch])
-            return sum(self.pred[nbunch][nbr].get(weight, 1) for nbr in self.pred[nbunch])
+                return len(pred)
+            return sum(data.get(weight, 1) for data in pred.values())
 
         if nbunch is None:
             nodes_nbrs=self.pred.items()
@@ -1037,9 +1038,10 @@ class DiGraph(Graph):
         # None(indicating all nodes). (nbunch in self) is True when nbunch
         # is a single node.
         if nbunch in self:
+            succ = self.succ[nbunch]
             if weight is None:
-                return len(self.succ[nbunch])
-            return sum(self.succ[nbunch][nbr].get(weight, 1) for nbr in self.succ[nbunch])
+                return len(succ)
+            return sum(data.get(weight, 1) for data in succ.values())
 
         if nbunch is None:
             nodes_nbrs=self.succ.items()
