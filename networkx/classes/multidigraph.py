@@ -564,6 +564,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 1), (1, 2)]
 
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
         if nbunch in self:
             succ = self.succ[nbunch]
             pred = self.pred[nbunch]
@@ -640,10 +643,14 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 0), (1, 1)]
 
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
         if nbunch in self:
             if weight is None:
                 return sum(len(self.pred[nbunch][node]) for node in self.pred[nbunch])
-            return (sum(sum(self.pred[nbunch][nbr][node].get(weight, 1) for node in self.pred[nbunch][nbr]) for nbr in self.pred[nbunch]))
+            return (sum(sum(self.pred[nbunch][nbr][node].get(weight, 1)
+                for node in self.pred[nbunch][nbr]) for nbr in self.pred[nbunch]))
         if nbunch is None:
             nodes_nbrs = self.pred.items()
         else:
@@ -702,10 +709,14 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 1), (1, 1)]
 
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
         if nbunch in self:
             if weight is None:
                 return sum(len(self.succ[nbunch][node]) for node in self.succ[nbunch])
-            return (sum(sum(self.succ[nbunch][nbr][node].get(weight, 1) for node in self.succ[nbunch][nbr]) for nbr in self.succ[nbunch]))
+            return (sum(sum(self.succ[nbunch][nbr][node].get(weight, 1)
+                for node in self.succ[nbunch][nbr]) for nbr in self.succ[nbunch]))
         if nbunch is None:
             nodes_nbrs = self.succ.items()
         else:
