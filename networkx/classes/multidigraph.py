@@ -151,9 +151,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
     {2: {0: {'weight': 4}, 1: {'color': 'blue'}}}
 
     The fastest way to traverse all edges of a graph is via
-    adjacency_iter(), but the edges() method is often more convenient.
+    adjacency(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency_iter():
+    >>> for n,nbrsdict in G.adjacency():
     ...     for nbr,keydict in nbrsdict.items():
     ...        for key,eattr in keydict.items():
     ...            if 'weight' in eattr:
@@ -831,13 +831,13 @@ class MultiDiGraph(MultiGraph,DiGraph):
         H.add_nodes_from(self)
         if reciprocal is True:
             H.add_edges_from((u, v, key, deepcopy(data))
-                            for u, nbrs in self.adjacency_iter()
+                            for u, nbrs in self.adjacency()
                             for v, keydict in nbrs.items()
                             for key, data in keydict.items()
                             if self.has_edge(v, u, key))
         else:
             H.add_edges_from((u, v, key, deepcopy(data))
-                            for u, nbrs in self.adjacency_iter()
+                            for u, nbrs in self.adjacency()
                             for v, keydict in nbrs.items()
                             for key, data in keydict.items())
         H.graph = deepcopy(self.graph)
