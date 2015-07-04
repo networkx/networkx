@@ -881,42 +881,42 @@ class MultiGraph(Graph):
         >>> G = nx.MultiGraph()   # or MultiDiGraph
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
-        >>> G.selfloop_edges()
+        >>> list(G.selfloop_edges())
         [(1, 1)]
-        >>> G.selfloop_edges(data=True)
+        >>> list(G.selfloop_edges(data=True))
         [(1, 1, {})]
-        >>> G.selfloop_edges(keys=True)
+        >>> list(G.selfloop_edges(keys=True))
         [(1, 1, 0)]
-        >>> G.selfloop_edges(keys=True, data=True)
+        >>> list(G.selfloop_edges(keys=True, data=True))
         [(1, 1, 0, {})]
         """
         if data is True:
             if keys:
-                return [(n, n, k, d)
+                return ((n, n, k, d)
                         for n, nbrs in self.adj.items()
-                        if n in nbrs for k, d in nbrs[n].items()]
+                        if n in nbrs for k, d in nbrs[n].items())
             else:
-                return [(n, n, d)
+                return ((n, n, d)
                         for n, nbrs in self.adj.items()
-                        if n in nbrs for d in nbrs[n].values()]
+                        if n in nbrs for d in nbrs[n].values())
         elif data is not False:
             if keys:
-                return [(n, n, k, d.get(data, default))
+                return ((n, n, k, d.get(data, default))
                         for n, nbrs in self.adj.items()
-                        if n in nbrs for k, d in nbrs[n].items()]
+                        if n in nbrs for k, d in nbrs[n].items())
             else:
-                return [(n, n, d.get(data, default))
+                return ((n, n, d.get(data, default))
                         for n, nbrs in self.adj.items()
-                        if n in nbrs for d in nbrs[n].values()]
+                        if n in nbrs for d in nbrs[n].values())
         else:
             if keys:
-                return [(n, n, k)
+                return ((n, n, k)
                         for n, nbrs in self.adj.items()
-                        if n in nbrs for k in nbrs[n].keys()]
+                        if n in nbrs for k in nbrs[n].keys())
             else:
-                return [(n, n)
+                return ((n, n)
                         for n, nbrs in self.adj.items()
-                        if n in nbrs for d in nbrs[n].values()]
+                        if n in nbrs for d in nbrs[n].values())
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.
