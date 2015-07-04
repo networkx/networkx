@@ -69,7 +69,7 @@ History
 NetworkX was born in May 2002. The original version was designed and written by Aric Hagberg, Dan Schult, and Pieter Swart in 2002 and 2003.  
 The first public release was in April 2005.
 
-Many people have contributed to the success of NetworkX.   Some of the contributors are listed in the :doc:`credits. </reference/credits>`
+Many people have contributed to the success of NetworkX. Some of the contributors are listed in the :doc:`credits. </reference/credits>`
 
 
 

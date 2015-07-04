@@ -47,11 +47,8 @@ Iterating over nodes and edges
    MultiDiGraph.neighbors
    MultiDiGraph.__getitem__
    MultiDiGraph.successors
-   MultiDiGraph.successors_iter
    MultiDiGraph.predecessors
-   MultiDiGraph.predecessors_iter
-   MultiDiGraph.adjacency_list
-   MultiDiGraph.adjacency_iter
+   MultiDiGraph.adjacency
    MultiDiGraph.nbunch_iter
 
 
@@ -67,11 +64,8 @@ Information about graph structure
    MultiDiGraph.number_of_nodes
    MultiDiGraph.__len__
    MultiDiGraph.degree
-   MultiDiGraph.degree_iter
    MultiDiGraph.in_degree
-   MultiDiGraph.in_degree_iter
    MultiDiGraph.out_degree
-   MultiDiGraph.out_degree_iter
    MultiDiGraph.size
    MultiDiGraph.number_of_edges
    MultiDiGraph.nodes_with_selfloops
