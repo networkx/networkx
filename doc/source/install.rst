@@ -33,7 +33,7 @@ Installing from source
 
 You can install from source by downloading a source archive file
 (tar.gz or zip) or by checking out the source files from the
-Mercurial source code repository.
+Git source code repository.
 
 NetworkX is a pure Python package; you don't need a compiler to build
 or install it.
@@ -59,6 +59,7 @@ GitHub
 ------
 
   1. Clone the networkx repostitory
+    ::
 
        git clone https://github.com/networkx/networkx.git
 

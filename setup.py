@@ -31,6 +31,7 @@ version = release.write_versionfile()
 sys.path.pop(0)
 
 packages=["networkx",
+          "networkx.addons",
           "networkx.algorithms",
           "networkx.algorithms.assortativity",
           "networkx.algorithms.bipartite",
