@@ -755,6 +755,9 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
         if nbunch in self:
             nbrs = self.adj[nbunch]
             if weight is None:
