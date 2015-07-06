@@ -122,7 +122,7 @@ def topological_sort(G, source_nodes=None, reverse=False):
 
     See also
     --------
-    is_directed_acyclic_graph
+    lexicographical_topological_sort, is_directed_acyclic_graph
 
     References
     ----------
@@ -168,9 +168,9 @@ def topological_sort(G, source_nodes=None, reverse=False):
 def lexicographical_topological_sort(G, key=None):
     """Return a list of nodes in topological sort order.
 
-    A topological sort is a nonunique permutation of the nodes
-    such that an edge from u to v implies that u appears before v in the
-    topological sort order.
+    A topological sort is a nonunique permutation of the nodes such that an
+    edge from u to v implies that u appears before v in the topological sort
+    order.
 
     Parameters
     ----------
@@ -184,12 +184,12 @@ def lexicographical_topological_sort(G, key=None):
     Raises
     ------
     NetworkXError
-        Topological sort is defined for directed graphs only. If the
-        graph G is undirected, a NetworkXError is raised.
+        Topological sort is defined for directed graphs only. If the graph G
+        is undirected, a NetworkXError is raised.
 
     NetworkXUnfeasible
-        If G is not a directed acyclic graph (DAG) no topological sort
-        exists and a NetworkXUnfeasible exception is raised.
+        If G is not a directed acyclic graph (DAG) no topological sort exists
+        and a NetworkXUnfeasible exception is raised.
 
     Notes
     -----
