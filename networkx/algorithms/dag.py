@@ -86,7 +86,7 @@ def is_directed_acyclic_graph(G):
         return False
 
 
-def topological_sort(G, source_nodes=None, reverse=False):
+def topological_sort(G, ancestors_limit=None, reverse=False):
     """Return a list of nodes in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes
