@@ -198,6 +198,17 @@ class TestDAG:
             [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4), (5, 6, 0), (1, 6, 2)])
         assert_equal(longest_path_length(G), 3)
 
+    def test_lexicographical_topological_sort(self):
+        G = nx.DiGraph([(1,2), (2,3), (1,4), (1,5), (2,6)])
+        assert_equal(list(nx.lexicographical_topological_sort(G)),
+                     [1, 2, 3, 4, 5, 6])
+        assert_equal(list(nx.lexicographical_topological_sort(
+            G, key=lambda x: x)),
+                     [1, 2, 3, 4, 5, 6])
+        assert_equal(list(nx.lexicographical_topological_sort(
+            G, key=lambda x: -x)),
+                     [1, 5, 4, 2, 6, 3])
+
 
 def test_is_aperiodic_cycle():
     G = nx.DiGraph()
