@@ -179,7 +179,7 @@ def lexicographical_topological_sort(G, key=None):
 
     key : function, optional
         This function that maps nodes to keys with which to resolve
-        ambiguities in the sort order.
+        ambiguities in the sort order.  Defaults to the identity function.
 
     Raises
     ------
@@ -208,6 +208,9 @@ def lexicographical_topological_sort(G, key=None):
     if not G.is_directed():
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
+
+    if key is None:
+        key = lambda x: x
 
     # nonrecursive version
     indegree_map = {node: len(G.pred[node])
