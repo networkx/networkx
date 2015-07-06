@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from fractions import gcd
+import heapq
 import networkx as nx
 from networkx.utils.decorators import *
 """Algorithms for directed acyclic graphs (DAGs)."""
@@ -15,7 +16,7 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 __all__ = ['descendants',
            'ancestors',
            'topological_sort',
-           'topological_sort_recursive',
+           'lexicographical_topological_sort',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
@@ -85,7 +86,7 @@ def is_directed_acyclic_graph(G):
         return False
 
 
-def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
+def topological_sort(G, source_nodes=None, reverse=False):
     """Return a list of nodes in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes
@@ -97,15 +98,9 @@ def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
     G : NetworkX digraph
         A directed graph
 
-    source_nodes : container of nodes (optional)
-        Limits the returned nodes to descendants of those in source_nodes.
-        Defaults to all nodes in the graph.
-
-    edge_key : function, optional
-        This function accepts a pair of nodes representing an edge
-        and resolves ambiguities in the exploration order so that edges with
-        a smaller key are explored first.
-
+    ancestors_limit : container of nodes (optional)
+        Limits the returned nodes to descendants of these nodes.  Defaults
+        to all nodes in the graph.
     reverse : bool, optional
         Return postorder instead of preorder if True.
         Reverse mode is a bit more efficient.
@@ -138,18 +133,11 @@ def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
-    # nonrecursive version
     seen = set()
     order = []
     explored = set()
 
-    if edge_key is None:
-        def direct_descendants(x):
-            return G[x]
-    else:
-        def direct_descendants(x):
-            return sorted(G[x], key=lambda y: edge_key(x, y))
-    for v in G.nbunch_iter(source_nodes):
+    for v in G.nbunch_iter(ancestors_limit):
         if v in explored:
             continue
         fringe = [v]   # nodes yet to look at
@@ -161,7 +149,7 @@ def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
             seen.add(w)     # mark as seen
             # Check successors for cycles and for new nodes
             new_nodes = []
-            for n in direct_descendants(w):
+            for n in G[x]:
                 if n not in explored:
                     if n in seen:  # CYCLE !!
                         raise nx.NetworkXUnfeasible("Graph contains a cycle.")
@@ -177,30 +165,21 @@ def topological_sort(G, source_nodes=None, edge_key=None, reverse=False):
     return order
 
 
-def topological_sort_recursive(G, source_nodes=None, edge_key=None,
-                               reverse=False):
+def lexicographical_topological_sort(G, key=None):
     """Return a list of nodes in topological sort order.
 
-    A topological sort is a nonunique permutation of the nodes such
-    that an edge from u to v implies that u appears before v in the
+    A topological sort is a nonunique permutation of the nodes
+    such that an edge from u to v implies that u appears before v in the
     topological sort order.
 
     Parameters
     ----------
     G : NetworkX digraph
+        A directed graph
 
-    source_nodes : container of nodes (optional)
-        Limits the returned nodes to descendants of those in source_nodes.
-        Defaults to all nodes in the graph.
-
-    edge_key : function, optional
-        This function accepts a pair of nodes representing an edge
-        and resolves ambiguities in the exploration order so that edges with
-        a smaller key are explored first.
-
-    reverse : bool, optional
-        Return postorder instead of preorder if True.
-        Reverse mode is a bit more efficient.
+    key : function, optional
+        This function that maps nodes to keys with which to resolve
+        ambiguities in the sort order.
 
     Raises
     ------
@@ -214,50 +193,57 @@ def topological_sort_recursive(G, source_nodes=None, edge_key=None,
 
     Notes
     -----
-    This is a recursive version of topological sort.
+    This algorithm is based on a description and proof in
+    Introduction to algorithms - a creative approach [1]_ .
 
     See also
     --------
     topological_sort
-    is_directed_acyclic_graph
 
+    References
+    ----------
+    .. [1] Manber, U. (1989). Introduction to algorithms - a creative approach. Addison-Wesley.
+        http://www.amazon.com/Introduction-Algorithms-A-Creative-Approach/dp/0201120372
     """
     if not G.is_directed():
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
-    def _dfs(v):
-        ancestors.add(v)
+    # nonrecursive version
+    indegree_map = {node: len(G.pred[node])
+                    for node in G}
+    # This integer breaks ties since node names only have to be hashable
+    # -- not comparable.  Python 3.0 introduces the nonlocal keyword;
+    # Python 2.7 forces us to work around it using a map.
+    tiebreaker = {None: 0}
 
-        for w in direct_descendants(v):
-            if w in ancestors:
-                raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+    def create_tuple(node):
+        retval = key(node), tiebreaker[None], node
+        tiebreaker[None] += 1
+        return retval
 
-            if w not in explored:
-                _dfs(w)
+    # These nodes have zero indegree and ready to be returned.
+    zero_indegree = [create_tuple(node)
+                     for node, indegree in indegree_map.items()
+                     if indegree == 0]
+    heapq.heapify(zero_indegree)
 
-        ancestors.remove(v)
-        explored.add(v)
-        order.append(v)
+    for _, _, node in zero_indegree:
+        del indegree_map[node]
 
-    ancestors = set()
-    explored = set()
-    order = []
+    while zero_indegree:
+        _, _, node = heapq.heappop(zero_indegree)
 
-    if edge_key is None:
-        def direct_descendants(x):
-            return G[x]
-    else:
-        def direct_descendants(x):
-            return sorted(G[x], key=lambda y: edge_key(x, y), reverse=True)
+        for child in G[node]:
+            indegree_map[child] -= 1
+            if indegree_map[child] == 0:
+                heapq.heappush(zero_indegree, create_tuple(child))
+                del indegree_map[child]
 
-    for v in G.nbunch_iter(source_nodes):
-        if v not in explored:
-            _dfs(v)
+        yield node
 
-    if not reverse:
-        order.reverse()
-    return order
+    if indegree_map:
+        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
 
 
 def is_aperiodic(G):
