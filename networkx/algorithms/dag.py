@@ -101,6 +101,7 @@ def topological_sort(G, ancestors_limit=None, reverse=False):
     ancestors_limit : container of nodes (optional)
         Limits the returned nodes to descendants of these nodes.  Defaults
         to all nodes in the graph.
+
     reverse : bool, optional
         Return postorder instead of preorder if True.
         Reverse mode is a bit more efficient.
@@ -149,7 +150,7 @@ def topological_sort(G, ancestors_limit=None, reverse=False):
             seen.add(w)     # mark as seen
             # Check successors for cycles and for new nodes
             new_nodes = []
-            for n in G[x]:
+            for n in G[w]:
                 if n not in explored:
                     if n in seen:  # CYCLE !!
                         raise nx.NetworkXUnfeasible("Graph contains a cycle.")
