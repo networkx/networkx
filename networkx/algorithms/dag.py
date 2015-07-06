@@ -18,6 +18,7 @@ __all__ = ['descendants',
            'topological_sort',
            'lexicographical_topological_sort',
            'is_directed_acyclic_graph',
+           'alternate_topological_sort',
            'is_aperiodic',
            'transitive_closure',
            'antichains',
@@ -166,6 +167,73 @@ def topological_sort(G, ancestors_limit=None, reverse=False):
     return order
 
 
+def alternate_topological_sort(G):
+    """Return a list of nodes in topological sort order.
+
+    A topological sort is a nonunique permutation of the nodes such that an
+    edge from u to v implies that u appears before v in the topological sort
+    order.
+
+    Parameters
+    ----------
+    G : NetworkX digraph
+        A directed graph
+
+    Raises
+    ------
+    NetworkXError
+        Topological sort is defined for directed graphs only. If the graph G
+        is undirected, a NetworkXError is raised.
+
+    NetworkXUnfeasible
+        If G is not a directed acyclic graph (DAG) no topological sort exists
+        and a NetworkXUnfeasible exception is raised.
+
+    Notes
+    -----
+    This algorithm is based on a description and proof in
+    Introduction to algorithms - a creative approach [1]_ .
+
+    See also
+    --------
+    topological_sort
+
+    References
+    ----------
+    .. [1] Manber, U. (1989). Introduction to algorithms - a creative approach. Addison-Wesley.
+        http://www.amazon.com/Introduction-Algorithms-A-Creative-Approach/dp/0201120372
+    """
+    if not G.is_directed():
+        raise nx.NetworkXError(
+            "Topological sort not defined on undirected graphs.")
+
+    # nonrecursive version
+    indegree_map = {node: len(G.pred[node])
+                    for node in G}
+
+    # These nodes have zero indegree and ready to be returned.
+    zero_indegree = [node
+                     for node, indegree in indegree_map.items()
+                     if indegree == 0]
+
+    for node in zero_indegree:
+        del indegree_map[node]
+
+    while zero_indegree:
+        node = zero_indegree.pop()
+
+        for child in G[node]:
+            indegree_map[child] -= 1
+            if indegree_map[child] == 0:
+                zero_indegree.append(child)
+                del indegree_map[child]
+
+        yield node
+
+    if indegree_map:
+        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+
+
 def lexicographical_topological_sort(G, key=None):
     """Return a list of nodes in topological sort order.
 
@@ -179,8 +247,8 @@ def lexicographical_topological_sort(G, key=None):
         A directed graph
 
     key : function, optional
-        This function that maps nodes to keys with which to resolve
-        ambiguities in the sort order.  Defaults to the identity function.
+        This function maps nodes to keys with which to resolve ambiguities in
+        the sort order.  Defaults to the identity function.
 
     Raises
     ------
@@ -226,7 +294,7 @@ def lexicographical_topological_sort(G, key=None):
         tiebreaker[None] += 1
         return retval
 
-    # These nodes have zero indegree and ready to be returned.
+    # These nodes have zero indegree and are ready to be returned.
     zero_indegree = [create_tuple(node)
                      for node, indegree in indegree_map.items()
                      if indegree == 0]

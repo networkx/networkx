@@ -100,10 +100,8 @@ class TestDAG:
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
         for method in [nx.topological_sort, topological_sort_recursive]:
-            assert_equal(method(G, [1], edge_key=lambda x, y: y),
-                         [1, 2, 3, 6, 4, 5])
-            assert_equal(method(G, [2], edge_key=lambda x, y: y),
-                         [2, 3, 6])
+            assert_equal(method(G, [1]), [1, 2, 3, 6, 4, 5])
+            assert_equal(method(G, [2]), [2, 3, 6])
             assert_equal(method(G, [5]), [5])
 
     def test_ancestors(self):
@@ -280,8 +278,7 @@ def test_is_aperiodic_disconnected2():
     assert_false(nx.is_aperiodic(G))
 
 
-def topological_sort_recursive(G, ancestors_limit=None, edge_key=None,
-                               reverse=False):
+def topological_sort_recursive(G, ancestors_limit=None, reverse=False):
     """
     This function implements the same interface as toplogical sort using
     a different algorithm.
@@ -293,7 +290,7 @@ def topological_sort_recursive(G, ancestors_limit=None, edge_key=None,
     def _dfs(v):
         ancestors.add(v)
 
-        for w in direct_descendants(v):
+        for w in G[v]:
             if w in ancestors:
                 raise nx.NetworkXUnfeasible("Graph contains a cycle.")
 
@@ -307,13 +304,6 @@ def topological_sort_recursive(G, ancestors_limit=None, edge_key=None,
     ancestors = set()
     explored = set()
     order = []
-
-    if edge_key is None:
-        def direct_descendants(x):
-            return G[x]
-    else:
-        def direct_descendants(x):
-            return sorted(G[x], key=lambda y: edge_key(x, y), reverse=True)
 
     for v in G.nbunch_iter(ancestors_limit):
         if v not in explored:
