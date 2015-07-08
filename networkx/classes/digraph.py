@@ -573,9 +573,8 @@ class DiGraph(Graph):
             self.pred[v]= self.adjlist_dict_factory()
             self.node[v] = {}
         # add the edge
-        datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
+        datadict=self.succ[u].get(v,self.edge_attr_dict_factory())
         datadict.update(attr_dict)
-        self.succ[u][v]=datadict
         self.pred[v][u]=datadict
 
     def add_edges_from(self, ebunch, attr_dict=None, **attr):
