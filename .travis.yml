@@ -1,6 +1,8 @@
 # After changing this file, check it on:
 #   http://lint.travis-ci.org/
 #
+sudo: false
+
 language: python
 
 python:
@@ -24,6 +26,17 @@ matrix:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
     - python: "pypy"
 
+addons:
+  apt:
+    packages:
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
+    - libsuitesparse-dev
+    - libgdal-dev
+    - graphviz
+    - mono-devel
 
 env:
   matrix:
@@ -35,11 +48,6 @@ before_install:
   - uname -a
   - printenv
   # Workaround for travis-ci/travis-ci#2683
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      sudo rm /etc/apt/sources.list.d/pgdg-source.list*;
-      sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable;
-      sudo apt-get update -qq;
-    fi
   - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
       if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
         wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh;
@@ -56,12 +64,6 @@ before_install:
 
   - if [[ "${PYTHON_VM}" == ipy ]]; then
       pushd ..;
-      curl -L -o xamarin.pgp http://download.mono-project.com/repo/xamarin.gpg;
-      sudo apt-key add xamarin.pgp;
-      sudo sh -c 'echo "deb http://download.mono-project.com/repo/debian wheezy main" >> /etc/apt/sources.list';
-      sudo sh -c 'echo "deb http://download.mono-project.com/repo/debian wheezy-libtiff-compat main" >> /etc/apt/sources.list';
-      sudo apt-get update -qq;
-      sudo apt-get install -qq mono-devel;
 
       curl -L -o ipy-2.7-maint.zip https://github.com/IronLanguages/main/archive/ipy-2.7-maint.zip;
       unzip -q ipy-2.7-maint.zip;
@@ -91,14 +93,11 @@ install:
   ### Install any prerequisites or dependencies necessary to run the build.
   - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
       DEPS="pyyaml numpy scipy matplotlib Cython pandas pip";
-      sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran libsuitesparse-dev;
-      sudo apt-get install libgdal-dev;
       conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS gdal;
       conda install -n test-environment --channel https://conda.binstar.org/patricksnape scikits-sparse;
       source activate test-environment;
       python -c "from osgeo import ogr;print('importing ogr worked')";
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
-        sudo apt-get install graphviz;
         pip install pygraphviz pydot2;
       fi;
     fi
