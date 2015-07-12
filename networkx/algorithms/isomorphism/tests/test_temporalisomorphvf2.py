@@ -10,49 +10,51 @@ from nose.tools import assert_true, assert_false, assert_equal
 from nose import SkipTest
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
-from datetime import timedelta
+from datetime import date, timedelta
 
 def provide_g1_edgelist():
     return [(0, 1), (0, 2), (1, 2), (2, 4), (1, 3), (3, 4), (4, 5)]
 
 def put_same_time(G, att_name):
     for e in G.edges(data=True):
-        e[2][att_name] = '2015-01-01'
+        e[2][att_name] = date(2015, 01, 01)
     return G
 
 def put_sequence_time(G, att_name):
-    for i, e in enumerate(G.edges(data=True)):
-        e[2][att_name] = '2015-01-0' + str(i+1)
+    current_date = date(2015, 01, 01)
+    for e in G.edges(data=True):
+        current_date += timedelta(days=1)
+        e[2][att_name] = current_date
     return G
 
 def put_time_config_0(G, att_name):
-    G[0][1][att_name] = '2015-01-02'
-    G[0][2][att_name] = '2015-01-02'
-    G[1][2][att_name] = '2015-01-03'
-    G[1][3][att_name] = '2015-01-01'
-    G[2][4][att_name] = '2015-01-01'
-    G[3][4][att_name] = '2015-01-03'
-    G[4][5][att_name] = '2015-01-03'
+    G[0][1][att_name] = date(2015, 01, 02)
+    G[0][2][att_name] = date(2015, 01, 02)
+    G[1][2][att_name] = date(2015, 01, 03)
+    G[1][3][att_name] = date(2015, 01, 01)
+    G[2][4][att_name] = date(2015, 01, 01)
+    G[3][4][att_name] = date(2015, 01, 03)
+    G[4][5][att_name] = date(2015, 01, 03)
     return G
 
 def put_time_config_1(G, att_name):
-    G[0][1][att_name] = '2015-01-02'
-    G[0][2][att_name] = '2015-01-01'
-    G[1][2][att_name] = '2015-01-03'
-    G[1][3][att_name] = '2015-01-01'
-    G[2][4][att_name] = '2015-01-02'
-    G[3][4][att_name] = '2015-01-04'
-    G[4][5][att_name] = '2015-01-03'
+    G[0][1][att_name] = date(2015, 01, 02)
+    G[0][2][att_name] = date(2015, 01, 01)
+    G[1][2][att_name] = date(2015, 01, 03)
+    G[1][3][att_name] = date(2015, 01, 01)
+    G[2][4][att_name] = date(2015, 01, 02)
+    G[3][4][att_name] = date(2015, 01, 04)
+    G[4][5][att_name] = date(2015, 01, 03)
     return G
 
 def put_time_config_2(G, att_name):
-    G[0][1][att_name] = '2015-01-01'
-    G[0][2][att_name] = '2015-01-01'
-    G[1][2][att_name] = '2015-01-03'
-    G[1][3][att_name] = '2015-01-02'
-    G[2][4][att_name] = '2015-01-02'
-    G[3][4][att_name] = '2015-01-03'
-    G[4][5][att_name] = '2015-01-02'
+    G[0][1][att_name] = date(2015, 01, 01)
+    G[0][2][att_name] = date(2015, 01, 01)
+    G[1][2][att_name] = date(2015, 01, 03)
+    G[1][3][att_name] = date(2015, 01, 02)
+    G[2][4][att_name] = date(2015, 01, 02)
+    G[3][4][att_name] = date(2015, 01, 03)
+    G[4][5][att_name] = date(2015, 01, 02)
     return G
 
 class TestTimeRespectingGraphMatcher(object):

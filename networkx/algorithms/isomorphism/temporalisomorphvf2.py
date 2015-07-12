@@ -44,7 +44,8 @@ Handles directed and undirected graphs and graphs with parallel edges.
 """
 
 #    This extension was originally coded by Ursula Redmond
-#    during postgraduate research at the Clique Research Cluster.
+#    during postgraduate research at the Clique Research Cluster,
+#    and subsequently the Insight Centre for Data Analytics.
 #    Padraig Cunningham, principal investigator.
 #    School of Computer Science and Informatics, University College Dublin.
 
@@ -56,21 +57,6 @@ from .isomorphvf2 import GraphMatcher, DiGraphMatcher
 __all__ = ['TimeRespectingGraphMatcher',
            'TimeRespectingDiGraphMatcher']
 
-def get_date(dictionary, temporal_attribute_name):
-    '''
-    A future refactor will remove this conversion step.
-    Given the data dictionary of an edge, return the datetime.
-    '''
-    #if 'date' in dictionary:
-        #date = dictionary['date']
-        #return datetime.strptime(date, '%Y-%m-%d')
-    #elif 'datetime' in dictionary:
-        #dt = dictionary['datetime']
-        #return datetime.strptime(dt, '%Y-%m-%d %H:%M:%S')
-    
-    date = dictionary[temporal_attribute_name]
-    return datetime.strptime(date, '%Y-%m-%d')
-    
 
 class TimeRespectingGraphMatcher(GraphMatcher):
 
@@ -102,10 +88,10 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         dates = []
         for n in neighbors:
             if type(Gx) == type(nx.Graph()): # Graph G[u][v] returns the data dictionary.
-                dates.append(get_date(Gx[Gx_node][n], self.temporal_attribute_name))
+                dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
             else: # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
                 for edge in Gx[Gx_node][n].values(): # Iterates all edges between node pair.
-                    dates.append(get_date(edge, self.temporal_attribute_name))
+                    dates.append(edge[self.temporal_attribute_name])
         if any(x is None for x in dates):
             raise ValueError('Datetime not supplied for at least one edge.')
         dates.sort() # Small to large.
@@ -171,11 +157,11 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         pred_dates = []
         if type(Gx) == type(nx.DiGraph()): # Graph G[u][v] returns the data dictionary.
             for n in pred:
-                pred_dates.append(get_date(Gx[n][Gx_node], self.temporal_attribute_name))
+                pred_dates.append(Gx[n][Gx_node][self.temporal_attribute_name])
         else: # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
             for n in pred:
-                for data_dict in Gx[n][Gx_node].values(): # Iterates all edge data between node pair.
-                    pred_dates.append(get_date(data_dict, self.temporal_attribute_name))
+                for edge in Gx[n][Gx_node].values(): # Iterates all edge data between node pair.
+                    pred_dates.append(edge[self.temporal_attribute_name])
         return pred_dates
     
     def get_succ_dates(self, Gx, Gx_node, core_x, succ):
@@ -185,11 +171,11 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         succ_dates = []
         if type(Gx) == type(nx.DiGraph()): # Graph G[u][v] returns the data dictionary.
             for n in succ:
-                succ_dates.append(get_date(Gx[Gx_node][n], self.temporal_attribute_name))
+                succ_dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
         else: # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
             for n in succ:
-                for data_dict in Gx[Gx_node][n].values(): # Iterates all edge data between node pair.
-                    succ_dates.append(get_date(data_dict, self.temporal_attribute_name))
+                for edge in Gx[Gx_node][n].values(): # Iterates all edge data between node pair.
+                    succ_dates.append(edge[self.temporal_attribute_name])
         return succ_dates
 
     def one_hop(self, Gx, Gx_node, core_x, pred, succ):
