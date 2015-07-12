@@ -34,7 +34,6 @@ class TimeRespectingGraphMatcher(GraphMatcher):
 
         Add temporal information to the edges.
         >>> GM = isomorphism.TimeRespectingGraphMatcher(G1,G2)
-
         """
         self.d = d
         super(TimeRespectingGraphMatcher, self).__init__(G1, G2)
@@ -105,7 +104,6 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
         Add temporal information to the edges.
         >>> GM = isomorphism.TimeRespectingGraphMatcher(G1,G2)
-
         """
         self.d = d
         super(TimeRespectingDiGraphMatcher, self).__init__(G1, G2)
