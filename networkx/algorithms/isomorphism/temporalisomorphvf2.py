@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 import networkx as nx
 from datetime import datetime, timedelta
-from isomorphvf2 import GraphMatcher, DiGraphMatcher
+from .isomorphvf2 import GraphMatcher, DiGraphMatcher
 
 __all__ = ['TimeRespectingGraphMatcher',
            'TimeRespectingDiGraphMatcher']
@@ -32,7 +33,6 @@ class TimeRespectingGraphMatcher(GraphMatcher):
 
         >>> G2 = nx.Graph(nx.path_graph(4, create_using=nx.Graph()))
 
-        Add temporal information to the edges.
         >>> GM = isomorphism.TimeRespectingGraphMatcher(G1,G2)
         """
         self.d = d
@@ -102,7 +102,6 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
 
-        Add temporal information to the edges.
         >>> GM = isomorphism.TimeRespectingGraphMatcher(G1,G2)
         """
         self.d = d
