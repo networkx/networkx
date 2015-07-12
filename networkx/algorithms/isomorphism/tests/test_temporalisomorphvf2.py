@@ -1,0 +1,173 @@
+"""
+    Tests for the temporal aspect of the Temporal VF2 isomorphism algorithm.
+"""
+
+import os
+import struct
+import random
+
+from nose.tools import assert_true, assert_false, assert_equal
+from nose import SkipTest
+import networkx as nx
+from networkx.algorithms import isomorphism as iso
+from datetime import timedelta
+
+def provide_g1_edgelist():
+    return [(0, 1), (0, 2), (1, 2), (2, 4), (1, 3), (3, 4), (4, 5)]
+
+def put_same_time(G):
+    for e in G.edges(data=True):
+        e[2]['date'] = '2015-01-01'
+    return G
+
+def put_sequence_time(G):
+    for i, e in enumerate(G.edges(data=True)):
+        e[2]['date'] = '2015-01-0' + str(i+1)
+    return G
+
+def put_time_config_0(G):
+    G[0][1]['date'] = '2015-01-02'
+    G[0][2]['date'] = '2015-01-02'
+    G[1][2]['date'] = '2015-01-03'
+    G[1][3]['date'] = '2015-01-01'
+    G[2][4]['date'] = '2015-01-01'
+    G[3][4]['date'] = '2015-01-03'
+    G[4][5]['date'] = '2015-01-03'
+    return G
+
+def put_time_config_1(G):
+    G[0][1]['date'] = '2015-01-02'
+    G[0][2]['date'] = '2015-01-01'
+    G[1][2]['date'] = '2015-01-03'
+    G[1][3]['date'] = '2015-01-01'
+    G[2][4]['date'] = '2015-01-02'
+    G[3][4]['date'] = '2015-01-04'
+    G[4][5]['date'] = '2015-01-03'
+    return G
+
+def put_time_config_2(G):
+    G[0][1]['date'] = '2015-01-01'
+    G[0][2]['date'] = '2015-01-01'
+    G[1][2]['date'] = '2015-01-03'
+    G[1][3]['date'] = '2015-01-02'
+    G[2][4]['date'] = '2015-01-02'
+    G[3][4]['date'] = '2015-01-03'
+    G[4][5]['date'] = '2015-01-02'
+    return G
+
+class TestTimeRespectingGraphMatcher(object):
+
+    """
+        A test class for the undirected temporal graph matcher.
+    """
+
+    def provide_g1_topology(self):
+        G1 = nx.Graph()
+        G1.add_edges_from(provide_g1_edgelist())
+        return G1
+
+    def provide_g2_path_3edges(self):
+        G2 = nx.Graph()
+        G2.add_edges_from([(0, 1), (1, 2), (2, 3)])
+        return G2
+
+    def test_timdelta_zero_timeRespecting_returnsTrue(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_same_time(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta()
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        assert_true(gm.subgraph_is_isomorphic())
+
+    def test_notTimeRespecting_returnsFalse(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_sequence_time(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta()
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        assert_false(gm.subgraph_is_isomorphic())
+
+    def test_timdelta_one_config0_returns_no_embeddings(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_time_config_0(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta(days=1)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        count_match = len(list(gm.subgraph_isomorphisms_iter()))
+        assert_true(count_match == 0)
+
+    def test_timdelta_one_config1_returns_four_embedding(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_time_config_1(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta(days=1)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        count_match = len(list(gm.subgraph_isomorphisms_iter()))
+        assert_true(count_match == 4)
+    
+    def test_timdelta_one_config2_returns_ten_embeddings(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_time_config_2(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta(days=1)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        L = list(gm.subgraph_isomorphisms_iter())
+        count_match = len(list(gm.subgraph_isomorphisms_iter()))
+        assert_true(count_match == 10)
+    
+
+class TestDiTimeRespectingGraphMatcher(object):
+
+
+    """
+        A test class for the directed time-respecting graph matcher.
+    """
+
+    def provide_g1_topology(self):
+        G1 = nx.DiGraph()
+        G1.add_edges_from(provide_g1_edgelist())
+        return G1
+
+    def provide_g2_path_3edges(self):
+        G2 = nx.DiGraph()
+        G2.add_edges_from([(0, 1), (1, 2), (2, 3)])
+        return G2
+
+    def test_timdelta_zero_same_dates_returns_true(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_same_time(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta()
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        assert_true(gm.subgraph_is_isomorphic())
+
+    def test_timdelta_one_config0_returns_no_embeddings(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_time_config_0(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta(days=1)
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        count_match = len(list(gm.subgraph_isomorphisms_iter()))
+        assert_true(count_match == 0)
+
+    def test_timdelta_one_config1_returns_one_embedding(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_time_config_1(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta(days=1)
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        count_match = len(list(gm.subgraph_isomorphisms_iter()))
+        assert_true(count_match == 1)
+    
+    def test_timdelta_one_config2_returns_two_embeddings(self):
+        G1 = self.provide_g1_topology()
+        G1 = put_time_config_2(G1)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta(days=1)
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        count_match = len(list(gm.subgraph_isomorphisms_iter()))
+        assert_true(count_match == 2)
+
+
+
+
