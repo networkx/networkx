@@ -15,44 +15,44 @@ from datetime import timedelta
 def provide_g1_edgelist():
     return [(0, 1), (0, 2), (1, 2), (2, 4), (1, 3), (3, 4), (4, 5)]
 
-def put_same_time(G):
+def put_same_time(G, att_name):
     for e in G.edges(data=True):
-        e[2]['date'] = '2015-01-01'
+        e[2][att_name] = '2015-01-01'
     return G
 
-def put_sequence_time(G):
+def put_sequence_time(G, att_name):
     for i, e in enumerate(G.edges(data=True)):
-        e[2]['date'] = '2015-01-0' + str(i+1)
+        e[2][att_name] = '2015-01-0' + str(i+1)
     return G
 
-def put_time_config_0(G):
-    G[0][1]['date'] = '2015-01-02'
-    G[0][2]['date'] = '2015-01-02'
-    G[1][2]['date'] = '2015-01-03'
-    G[1][3]['date'] = '2015-01-01'
-    G[2][4]['date'] = '2015-01-01'
-    G[3][4]['date'] = '2015-01-03'
-    G[4][5]['date'] = '2015-01-03'
+def put_time_config_0(G, att_name):
+    G[0][1][att_name] = '2015-01-02'
+    G[0][2][att_name] = '2015-01-02'
+    G[1][2][att_name] = '2015-01-03'
+    G[1][3][att_name] = '2015-01-01'
+    G[2][4][att_name] = '2015-01-01'
+    G[3][4][att_name] = '2015-01-03'
+    G[4][5][att_name] = '2015-01-03'
     return G
 
-def put_time_config_1(G):
-    G[0][1]['date'] = '2015-01-02'
-    G[0][2]['date'] = '2015-01-01'
-    G[1][2]['date'] = '2015-01-03'
-    G[1][3]['date'] = '2015-01-01'
-    G[2][4]['date'] = '2015-01-02'
-    G[3][4]['date'] = '2015-01-04'
-    G[4][5]['date'] = '2015-01-03'
+def put_time_config_1(G, att_name):
+    G[0][1][att_name] = '2015-01-02'
+    G[0][2][att_name] = '2015-01-01'
+    G[1][2][att_name] = '2015-01-03'
+    G[1][3][att_name] = '2015-01-01'
+    G[2][4][att_name] = '2015-01-02'
+    G[3][4][att_name] = '2015-01-04'
+    G[4][5][att_name] = '2015-01-03'
     return G
 
-def put_time_config_2(G):
-    G[0][1]['date'] = '2015-01-01'
-    G[0][2]['date'] = '2015-01-01'
-    G[1][2]['date'] = '2015-01-03'
-    G[1][3]['date'] = '2015-01-02'
-    G[2][4]['date'] = '2015-01-02'
-    G[3][4]['date'] = '2015-01-03'
-    G[4][5]['date'] = '2015-01-02'
+def put_time_config_2(G, att_name):
+    G[0][1][att_name] = '2015-01-01'
+    G[0][2][att_name] = '2015-01-01'
+    G[1][2][att_name] = '2015-01-03'
+    G[1][3][att_name] = '2015-01-02'
+    G[2][4][att_name] = '2015-01-02'
+    G[3][4][att_name] = '2015-01-03'
+    G[4][5][att_name] = '2015-01-02'
     return G
 
 class TestTimeRespectingGraphMatcher(object):
@@ -73,44 +73,58 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_timdelta_zero_timeRespecting_returnsTrue(self):
         G1 = self.provide_g1_topology()
-        G1 = put_same_time(G1)
+        temporal_name = 'date'
+        G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
-        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
+        assert_true(gm.subgraph_is_isomorphic())
+
+    def test_attNameStrange_timdelta_zero_timeRespecting_returnsTrue(self):
+        G1 = self.provide_g1_topology()
+        temporal_name = 'strange_name'
+        G1 = put_same_time(G1, temporal_name)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta()
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         assert_true(gm.subgraph_is_isomorphic())
 
     def test_notTimeRespecting_returnsFalse(self):
         G1 = self.provide_g1_topology()
-        G1 = put_sequence_time(G1)
+        temporal_name = 'date'
+        G1 = put_sequence_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
-        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         assert_false(gm.subgraph_is_isomorphic())
 
     def test_timdelta_one_config0_returns_no_embeddings(self):
         G1 = self.provide_g1_topology()
-        G1 = put_time_config_0(G1)
+        temporal_name = 'date'
+        G1 = put_time_config_0(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
-        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 0)
 
     def test_timdelta_one_config1_returns_four_embedding(self):
         G1 = self.provide_g1_topology()
-        G1 = put_time_config_1(G1)
+        temporal_name = 'date'
+        G1 = put_time_config_1(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
-        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 4)
     
     def test_timdelta_one_config2_returns_ten_embeddings(self):
         G1 = self.provide_g1_topology()
-        G1 = put_time_config_2(G1)
+        temporal_name = 'date'
+        G1 = put_time_config_2(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
-        gm = iso.TimeRespectingGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         L = list(gm.subgraph_isomorphisms_iter())
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 10)
@@ -135,36 +149,49 @@ class TestDiTimeRespectingGraphMatcher(object):
 
     def test_timdelta_zero_same_dates_returns_true(self):
         G1 = self.provide_g1_topology()
-        G1 = put_same_time(G1)
+        temporal_name = 'date'
+        G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
-        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
+        assert_true(gm.subgraph_is_isomorphic())
+
+    def test_attNameStrange_timdelta_zero_same_dates_returns_true(self):
+        G1 = self.provide_g1_topology()
+        temporal_name = 'strange'
+        G1 = put_same_time(G1, temporal_name)
+        G2 = self.provide_g2_path_3edges()
+        d = timedelta()
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         assert_true(gm.subgraph_is_isomorphic())
 
     def test_timdelta_one_config0_returns_no_embeddings(self):
         G1 = self.provide_g1_topology()
-        G1 = put_time_config_0(G1)
+        temporal_name = 'date'
+        G1 = put_time_config_0(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
-        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 0)
 
     def test_timdelta_one_config1_returns_one_embedding(self):
         G1 = self.provide_g1_topology()
-        G1 = put_time_config_1(G1)
+        temporal_name = 'date'
+        G1 = put_time_config_1(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
-        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 1)
     
     def test_timdelta_one_config2_returns_two_embeddings(self):
         G1 = self.provide_g1_topology()
-        G1 = put_time_config_2(G1)
+        temporal_name = 'date'
+        G1 = put_time_config_2(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
-        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, d)
+        gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 2)
 
