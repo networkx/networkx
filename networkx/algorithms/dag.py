@@ -143,26 +143,6 @@ def topological_sort(G):
     for node in zero_indegree:
         del indegree_map[node]
 
-    while zero_indegree:
-        node = zero_indegree.pop()
-        if node not in G:
-            raise RuntimeError("Graph changed during iteration")
-        for _, child in G.edges_iter(node):
-            try:
-                indegree_map[child] -= 1
-            except KeyError:
-                raise RuntimeError("Graph changed during iteration")
-            if indegree_map[child] == 0:
-                zero_indegree.append(child)
-                del indegree_map[child]
-
-        yield node
-
-    if indegree_map:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
-                                    "during iteration")
-
-
 def lexicographical_topological_sort(G, key=(lambda x: x)):
     """Return a generator of nodes in lexicographically topologically sorted
     order.
