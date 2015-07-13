@@ -122,7 +122,7 @@ def topological_sort(G):
 
     See also
     --------
-    lexicographical_topological_sort
+    is_directed_acyclic_graph, lexicographical_topological_sort
 
     References
     ----------
@@ -133,9 +133,7 @@ def topological_sort(G):
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
-    # nonrecursive version
-    indegree_map = {node: len(G.pred[node])
-                    for node in G}
+    indegree_map = G.in_degree()
 
     # These nodes have zero indegree and ready to be returned.
     zero_indegree = [node
@@ -221,7 +219,7 @@ def lexicographical_topological_sort(G, key=(lambda x: x)):
     def create_tuple(node):
         return key(node), node
 
-    indegree_map = dict(G.in_degree())
+    indegree_map = G.in_degree()
 
     # These nodes have zero indegree and are ready to be returned.
     zero_indegree = [create_tuple(node)
@@ -390,7 +388,7 @@ def antichains(G):
        AMS, Vol 42, 1995, p. 226.
     """
     TC = nx.transitive_closure(G)
-    antichains_stacks = [([], list(nx.topological_sort(G)))]
+    antichains_stacks = [([], list(reversed(list(nx.topological_sort(G)))))]
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
         # Invariant:

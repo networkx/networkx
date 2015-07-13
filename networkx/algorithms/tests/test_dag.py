@@ -17,7 +17,7 @@ class TestDAG:
         consume(nx.topological_sort(DG))
 
         DG.add_edge(3, 2)
-        assert_raises(nx.NetworkXUnfeasible, list, nx.topological_sort(DG))
+        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
         DG.remove_edge(2, 3)
         consume(nx.topological_sort(DG))
@@ -33,7 +33,7 @@ class TestDAG:
         DG = nx.DiGraph({1: [2], 2: [3], 3: [4],
                          4: [5], 5: [1], 11: [12],
                          12: [13], 13: [14], 14: [15]})
-        assert_raises(nx.NetworkXUnfeasible, list, nx.topological_sort(DG))
+        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
         assert_false(nx.is_directed_acyclic_graph(DG))
 
@@ -56,13 +56,13 @@ class TestDAG:
         validate(list(nx.topological_sort(DG)))
 
         DG.add_edge(14, 1)
-        assert_raises(nx.NetworkXUnfeasible, list, nx.topological_sort(DG))
+        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
     def test_topological_sort4(self):
         G = nx.Graph()
         G.add_edge(1, 2)
         # Only directed graphs can be topologically sorted.
-        assert_raises(nx.NetworkXError, list, nx.topological_sort(G))
+        assert_raises(nx.NetworkXError, consume, nx.topological_sort(G))
 
     def test_topological_sort5(self):
         G = nx.DiGraph()
