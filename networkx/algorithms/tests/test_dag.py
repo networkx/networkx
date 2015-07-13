@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from itertools import combinations
+from nose.tools import *
 from networkx.testing.utils import assert_edges_equal
 from networkx.utils import consume
-from nose.tools import *
 import networkx as nx
 
 
