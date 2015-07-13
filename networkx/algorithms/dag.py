@@ -162,7 +162,6 @@ def topological_sort(G):
         raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
                                     "during iteration")
 
-
 def lexicographical_topological_sort(G, key=(lambda x: x)):
     """Return a generator of nodes in lexicographically topologically sorted
     order.
