@@ -14,6 +14,7 @@ True
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from itertools import tee
 import collections
 import sys
 import uuid
@@ -182,3 +183,10 @@ def consume(iterable):
     "Consume the iterable entirely."
     # Feed the entire iterable into a zero-length deque.
     collections.deque(iterable, maxlen=0)
+
+# Recipe from itertools documentation.
+def pairwise(iterable):
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)

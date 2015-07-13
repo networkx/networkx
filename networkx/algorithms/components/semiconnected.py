@@ -8,9 +8,8 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # All rights reserved.
 # BSD license.
 
-from itertools import tee
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = ['is_semiconnected']
 
@@ -62,10 +61,4 @@ def is_semiconnected(G):
 
     G = nx.condensation(G)
     path = nx.topological_sort(G)
-    # Recipe from itertools documentation.
-    def pairwise(iterable):
-        "s -> (s0, s1), (s1, s2), (s2, s3), ..."
-        a, b = tee(iterable)
-        next(b, None)
-        return zip(a, b)
     return all(G.has_edge(u, v) for u, v in pairwise(path))
