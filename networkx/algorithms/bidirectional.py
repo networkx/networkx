@@ -134,7 +134,7 @@ def _all_simple_paths(G, source, target, cutoff):
             leaves_ = leaves[0]
 
             if G.is_directed():
-                neighbors = G.successors_iter
+                neighbors = G.predecessors_iter
 
         else:
             tree_source = tree[0]
@@ -142,7 +142,7 @@ def _all_simple_paths(G, source, target, cutoff):
             leaves_ = leaves[1]
 
             if G.is_directed():
-                neighbors = G.predecessors_iter
+                neighbors = G.successors_iter
 
         temp_tree = set()
         temp_leaves = set()
@@ -154,13 +154,13 @@ def _all_simple_paths(G, source, target, cutoff):
                         for path_t in iter(tree_target):
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
-                                    found = 1
                                     if i % 2:
                                         yield list(path_t) + \
                                             [x for x in reversed(path_s)]
                                     else:
                                         yield list(path_s) + \
                                             [x for x in reversed(path_t)]
+
                     temp_tree.add(path_s + (s,))
                     temp_leaves.add(s)
 
@@ -428,14 +428,14 @@ def _has_path(G, source, target):
             leaves_ = leaves[1]
 
             if G.is_directed():
-                neighbors = G.successors_iter
+                neighbors = G.predecessors_iter
         else:
             nodes_t = nodes[1]
             nodes_s = nodes[0]
             leaves_ = leaves[0]
 
             if G.is_directed():
-                neighbors = G.predecessors_iter
+                neighbors = G.successors_iter
 
         temp = set()
 
