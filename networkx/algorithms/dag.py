@@ -5,7 +5,7 @@ import networkx as nx
 from networkx.utils.decorators import *
 from networkx.utils import consume
 """Algorithms for directed acyclic graphs (DAGs)."""
-#    Copyright (C) 2006-2011 by
+#    Copyright (C) 2006-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
