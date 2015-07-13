@@ -9,10 +9,9 @@
 from fractions import gcd
 import heapq
 
-from ..utils import arbitrary_element
-from networkx.utils import consume
-from networkx.utils.decorators import *
 import networkx as nx
+from networkx.utils import consume, arbitrary_element
+from networkx.utils.decorators import *
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
