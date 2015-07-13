@@ -179,10 +179,10 @@ def dict_to_numpy_array1(d,mapping=None):
     return a
 
 # Recipe from the itertools documentation.
-def consume(iterable):
-    "Consume the iterable entirely."
-    # Feed the entire iterable into a zero-length deque.
-    collections.deque(iterable, maxlen=0)
+def consume(iterator):
+    "Consume the iterator entirely."
+    # Feed the entire iterator into a zero-length deque.
+    collections.deque(iterator, maxlen=0)
 
 # Recipe from the itertools documentation.
 def pairwise(iterable):
