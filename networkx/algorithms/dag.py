@@ -3,6 +3,7 @@ from fractions import gcd
 import heapq
 import networkx as nx
 from networkx.utils.decorators import *
+from networkx.utils import consume
 """Algorithms for directed acyclic graphs (DAGs)."""
 #    Copyright (C) 2006-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -81,7 +82,7 @@ def is_directed_acyclic_graph(G):
     if not G.is_directed():
         return False
     try:
-        list(topological_sort(G))
+        consume(topological_sort(G))
         return True
     except nx.NetworkXUnfeasible:
         return False
@@ -147,8 +148,15 @@ def topological_sort(G):
     while zero_indegree:
         node = zero_indegree.pop()
 
-        for child in G[node]:
-            indegree_map[child] -= 1
+        try:
+            children = G[node]
+        except KeyError:
+            raise RuntimeError("Graph changed during iteration")
+        for child in children:
+            try:
+                indegree_map[child] -= 1
+            except KeyError:
+                raise RuntimeError("Graph changed during iteration")
             if indegree_map[child] == 0:
                 zero_indegree.append(child)
                 del indegree_map[child]
@@ -156,8 +164,8 @@ def topological_sort(G):
         yield node
 
     if indegree_map:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle (or graph changed "
-                                    "during iteration over generator).")
+        raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
+                                    "during iteration")
 
 
 def lexicographical_topological_sort(G, key=(lambda x: x)):
@@ -227,8 +235,15 @@ def lexicographical_topological_sort(G, key=(lambda x: x)):
     while zero_indegree:
         _, node = heapq.heappop(zero_indegree)
 
-        for child in G[node]:
-            indegree_map[child] -= 1
+        try:
+            children = G[node]
+        except KeyError:
+            raise RuntimeError("Graph changed during iteration")
+        for child in children:
+            try:
+                indegree_map[child] -= 1
+            except KeyError:
+                raise RuntimeError("Graph changed during iteration")
             if indegree_map[child] == 0:
                 heapq.heappush(zero_indegree, create_tuple(child))
                 del indegree_map[child]
@@ -236,8 +251,8 @@ def lexicographical_topological_sort(G, key=(lambda x: x)):
         yield node
 
     if indegree_map:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle (or graph changed "
-                                    "during iteration over generator).")
+        raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
+                                    "during iteration")
 
 
 def is_aperiodic(G):

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from itertools import combinations
-from nose.tools import *
 from networkx.testing.utils import assert_edges_equal
+from networkx.utils import consume
+from nose.tools import *
 import networkx as nx
 
 
@@ -13,13 +14,13 @@ class TestDAG:
     def test_topological_sort1(self):
         DG = nx.DiGraph([(1, 2), (1, 3), (2, 3)])
 
-        nx.topological_sort(DG)
+        consume(nx.topological_sort(DG))
 
         DG.add_edge(3, 2)
         assert_raises(nx.NetworkXUnfeasible, list, nx.topological_sort(DG))
 
         DG.remove_edge(2, 3)
-        nx.topological_sort(DG)
+        consume(nx.topological_sort(DG))
 
     def test_is_directed_acyclic_graph(self):
         G = nx.generators.complete_graph(2)
@@ -37,7 +38,7 @@ class TestDAG:
         assert_false(nx.is_directed_acyclic_graph(DG))
 
         DG.remove_edge(1, 2)
-        nx.topological_sort(DG)
+        consume(nx.topological_sort(DG))
         assert_true(nx.is_directed_acyclic_graph(DG))
 
     def test_topological_sort3(self):
@@ -67,6 +68,37 @@ class TestDAG:
         G = nx.DiGraph()
         G.add_edge(0, 1)
         assert_equal(list(nx.topological_sort(G)), [0, 1])
+
+    def test_topological_sort6(self):
+        for algorithm in [nx.topological_sort,
+                          nx.lexicographical_topological_sort]:
+            def runtime_error():
+                DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+                first = True
+                for x in algorithm(DG):
+                    if first:
+                        first = False
+                        DG.add_edge(5 - x, 5)
+
+            def unfeasible_error():
+                DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+                first = True
+                for x in algorithm(DG):
+                    if first:
+                        first = False
+                        DG.remove_node(4)
+
+            def runtime_error2():
+                DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+                first = True
+                for x in algorithm(DG):
+                    if first:
+                        first = False
+                        DG.remove_node(2)
+
+            assert_raises(RuntimeError, runtime_error)
+            assert_raises(RuntimeError, runtime_error2)
+            assert_raises(nx.NetworkXUnfeasible, unfeasible_error)
 
     def test_ancestors(self):
         G = nx.DiGraph()
