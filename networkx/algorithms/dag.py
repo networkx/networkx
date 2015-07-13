@@ -145,12 +145,9 @@ def topological_sort(G):
 
     while zero_indegree:
         node = zero_indegree.pop()
-
-        try:
-            children = G[node]
-        except KeyError:
+        if node not in G:
             raise RuntimeError("Graph changed during iteration")
-        for child in children:
+        for _, child in G.edges_iter(node):
             try:
                 indegree_map[child] -= 1
             except KeyError:
@@ -233,11 +230,9 @@ def lexicographical_topological_sort(G, key=(lambda x: x)):
     while zero_indegree:
         _, node = heapq.heappop(zero_indegree)
 
-        try:
-            children = G[node]
-        except KeyError:
+        if node not in G:
             raise RuntimeError("Graph changed during iteration")
-        for child in children:
+        for _, child in G.edges_iter(node):
             try:
                 indegree_map[child] -= 1
             except KeyError:
