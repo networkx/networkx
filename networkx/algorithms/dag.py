@@ -12,13 +12,13 @@ from networkx.utils.decorators import *
 #    BSD license.
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
-                            'Ben Edwards (bedwards@cs.unm.edu)'])
+                            'Ben Edwards (bedwards@cs.unm.edu)',
+                            'Neil Girdhar (neil.girdhar@mcgill.ca)'])
 __all__ = ['descendants',
            'ancestors',
            'topological_sort',
            'lexicographical_topological_sort',
            'is_directed_acyclic_graph',
-           'alternate_topological_sort',
            'is_aperiodic',
            'transitive_closure',
            'antichains',
@@ -81,94 +81,14 @@ def is_directed_acyclic_graph(G):
     if not G.is_directed():
         return False
     try:
-        topological_sort(G, reverse=True)
+        list(topological_sort(G))
         return True
     except nx.NetworkXUnfeasible:
         return False
 
 
-def topological_sort(G, ancestors_limit=None, reverse=False):
-    """Return a list of nodes in topological sort order.
-
-    A topological sort is a nonunique permutation of the nodes
-    such that an edge from u to v implies that u appears before v in the
-    topological sort order.
-
-    Parameters
-    ----------
-    G : NetworkX digraph
-        A directed graph
-
-    ancestors_limit : container of nodes (optional)
-        Limits the returned nodes to descendants of these nodes.  Defaults
-        to all nodes in the graph.
-
-    reverse : bool, optional
-        Return postorder instead of preorder if True.
-        Reverse mode is a bit more efficient.
-
-    Raises
-    ------
-    NetworkXError
-        Topological sort is defined for directed graphs only. If the
-        graph G is undirected, a NetworkXError is raised.
-
-    NetworkXUnfeasible
-        If G is not a directed acyclic graph (DAG) no topological sort
-        exists and a NetworkXUnfeasible exception is raised.
-
-    Notes
-    -----
-    This algorithm is based on a description and proof in
-    The Algorithm Design Manual [1]_ .
-
-    See also
-    --------
-    lexicographical_topological_sort, is_directed_acyclic_graph
-
-    References
-    ----------
-    .. [1] Skiena, S. S. The Algorithm Design Manual  (Springer-Verlag, 1998).
-        http://www.amazon.com/exec/obidos/ASIN/0387948600/ref=ase_thealgorithmrepo/
-    """
-    if not G.is_directed():
-        raise nx.NetworkXError(
-            "Topological sort not defined on undirected graphs.")
-
-    seen = set()
-    order = []
-    explored = set()
-
-    for v in G.nbunch_iter(ancestors_limit):
-        if v in explored:
-            continue
-        fringe = [v]   # nodes yet to look at
-        while fringe:
-            w = fringe[-1]  # depth first search
-            if w in explored:  # already looked down this branch
-                fringe.pop()
-                continue
-            seen.add(w)     # mark as seen
-            # Check successors for cycles and for new nodes
-            new_nodes = []
-            for n in G[w]:
-                if n not in explored:
-                    if n in seen:  # CYCLE !!
-                        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
-                    new_nodes.append(n)
-            if new_nodes:   # Add new_nodes to fringe
-                fringe.extend(new_nodes)
-            else:           # No new nodes so w is fully explored
-                explored.add(w)
-                order.append(w)
-                fringe.pop()    # done considering this node
-    if not reverse:
-        order.reverse()
-    return order
-
-
-def alternate_topological_sort(G):
-    """Return a list of nodes in topological sort order.
+def topological_sort(G):
+    """Return a generator of nodes in topologically sorted order.
 
     A topological sort is a nonunique permutation of the nodes such that an
     edge from u to v implies that u appears before v in the topological sort
@@ -178,6 +98,11 @@ def alternate_topological_sort(G):
     ----------
     G : NetworkX digraph
         A directed graph
+
+    Returns
+    -------
+    topologically_sorted_nodes : iterable
+        An iterable of node names in topological sorted order.
 
     Raises
     ------
@@ -196,7 +121,7 @@ def alternate_topological_sort(G):
 
     See also
     --------
-    topological_sort
+    lexicographical_topological_sort
 
     References
     ----------
@@ -231,11 +156,13 @@ def alternate_topological_sort(G):
         yield node
 
     if indegree_map:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+        raise nx.NetworkXUnfeasible("Graph contains a cycle (or graph changed "
+                                    "during iteration over generator).")
 
 
-def lexicographical_topological_sort(G, key=None):
-    """Return a list of nodes in topological sort order.
+def lexicographical_topological_sort(G, key=(lambda x: x)):
+    """Return a generator of nodes in lexicographically topologically sorted
+    order.
 
     A topological sort is a nonunique permutation of the nodes such that an
     edge from u to v implies that u appears before v in the topological sort
@@ -249,6 +176,11 @@ def lexicographical_topological_sort(G, key=None):
     key : function, optional
         This function maps nodes to keys with which to resolve ambiguities in
         the sort order.  Defaults to the identity function.
+
+    Returns
+    -------
+    lexicographically_topologically_sorted_nodes : iterable
+        An iterable of node names in lexicographical topological sort order.
 
     Raises
     ------
@@ -278,21 +210,10 @@ def lexicographical_topological_sort(G, key=None):
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
-    if key is None:
-        key = lambda x: x
-
-    # nonrecursive version
-    indegree_map = {node: len(G.pred[node])
-                    for node in G}
-    # This integer breaks ties since node names only have to be hashable
-    # -- not comparable.  Python 3.0 introduces the nonlocal keyword;
-    # Python 2.7 forces us to work around it using a map.
-    tiebreaker = {None: 0}
-
     def create_tuple(node):
-        retval = key(node), tiebreaker[None], node
-        tiebreaker[None] += 1
-        return retval
+        return key(node), node
+
+    indegree_map = dict(G.in_degree())
 
     # These nodes have zero indegree and are ready to be returned.
     zero_indegree = [create_tuple(node)
@@ -300,11 +221,11 @@ def lexicographical_topological_sort(G, key=None):
                      if indegree == 0]
     heapq.heapify(zero_indegree)
 
-    for _, _, node in zero_indegree:
+    for _, node in zero_indegree:
         del indegree_map[node]
 
     while zero_indegree:
-        _, _, node = heapq.heappop(zero_indegree)
+        _, node = heapq.heappop(zero_indegree)
 
         for child in G[node]:
             indegree_map[child] -= 1
@@ -315,7 +236,8 @@ def lexicographical_topological_sort(G, key=None):
         yield node
 
     if indegree_map:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+        raise nx.NetworkXUnfeasible("Graph contains a cycle (or graph changed "
+                                    "during iteration over generator).")
 
 
 def is_aperiodic(G):
@@ -453,7 +375,7 @@ def antichains(G):
        AMS, Vol 42, 1995, p. 226.
     """
     TC = nx.transitive_closure(G)
-    antichains_stacks = [([], nx.topological_sort(G, reverse=True))]
+    antichains_stacks = [([], list(nx.topological_sort(G)))]
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
         # Invariant:
