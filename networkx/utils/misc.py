@@ -14,6 +14,7 @@ True
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import collections
 import sys
 import uuid
 # itertools.accumulate is only available on Python 3.2 or later.
@@ -175,3 +176,9 @@ def dict_to_numpy_array1(d,mapping=None):
         i = mapping[k1]
         a[i] = d[k1]
     return a
+
+# consume is described in the itertools documentation.
+def consume(iterable):
+    "Consume the iterable entirely."
+    # Feed the entire iterable into a zero-length deque.
+    collections.deque(iterable, maxlen=0)
