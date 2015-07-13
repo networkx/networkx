@@ -2,6 +2,7 @@
 from itertools import combinations
 from nose.tools import *
 from networkx.testing.utils import assert_edges_equal
+from networkx.utils import consume
 import networkx as nx
 
 
@@ -11,36 +12,15 @@ class TestDAG:
         pass
 
     def test_topological_sort1(self):
-        DG = nx.DiGraph()
-        DG.add_edges_from([(1, 2), (1, 3), (2, 3)])
-        assert_equal(nx.topological_sort(DG), [1, 2, 3])
-        assert_equal(nx.topological_sort_recursive(DG), [1, 2, 3])
+        DG = nx.DiGraph([(1, 2), (1, 3), (2, 3)])
+
+        consume(nx.topological_sort(DG))
 
         DG.add_edge(3, 2)
-        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
-        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort_recursive, DG)
+        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
         DG.remove_edge(2, 3)
-        assert_equal(nx.topological_sort(DG), [1, 3, 2])
-        assert_equal(nx.topological_sort_recursive(DG), [1, 3, 2])
-
-    def test_reverse_topological_sort1(self):
-        DG = nx.DiGraph()
-        DG.add_edges_from([(1, 2), (1, 3), (2, 3)])
-        assert_equal(nx.topological_sort(DG, reverse=True), [3, 2, 1])
-        assert_equal(
-            nx.topological_sort_recursive(DG, reverse=True), [3, 2, 1])
-
-        DG.add_edge(3, 2)
-        assert_raises(nx.NetworkXUnfeasible,
-                      nx.topological_sort, DG, reverse=True)
-        assert_raises(nx.NetworkXUnfeasible,
-                      nx.topological_sort_recursive, DG, reverse=True)
-
-        DG.remove_edge(2, 3)
-        assert_equal(nx.topological_sort(DG, reverse=True), [2, 3, 1])
-        assert_equal(
-            nx.topological_sort_recursive(DG, reverse=True), [2, 3, 1])
+        consume(nx.topological_sort(DG))
 
     def test_is_directed_acyclic_graph(self):
         G = nx.generators.complete_graph(2)
@@ -53,16 +33,12 @@ class TestDAG:
         DG = nx.DiGraph({1: [2], 2: [3], 3: [4],
                          4: [5], 5: [1], 11: [12],
                          12: [13], 13: [14], 14: [15]})
-        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
-        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort_recursive, DG)
+        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
         assert_false(nx.is_directed_acyclic_graph(DG))
 
         DG.remove_edge(1, 2)
-        assert_equal(nx.topological_sort_recursive(DG),
-                     [11, 12, 13, 14, 15, 2, 3, 4, 5, 1])
-        assert_equal(nx.topological_sort(DG),
-                     [11, 12, 13, 14, 15, 2, 3, 4, 5, 1])
+        consume(nx.topological_sort(DG))
         assert_true(nx.is_directed_acyclic_graph(DG))
 
     def test_topological_sort3(self):
@@ -77,34 +53,52 @@ class TestDAG:
             assert_equal(set(order), set(DG))
             for u, v in combinations(order, 2):
                 assert_false(nx.has_path(DG, v, u))
-        validate(nx.topological_sort_recursive(DG))
-        validate(nx.topological_sort(DG))
+        validate(list(nx.topological_sort(DG)))
 
         DG.add_edge(14, 1)
-        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
-        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort_recursive, DG)
+        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
     def test_topological_sort4(self):
         G = nx.Graph()
         G.add_edge(1, 2)
-        assert_raises(nx.NetworkXError, nx.topological_sort, G)
-        assert_raises(nx.NetworkXError, nx.topological_sort_recursive, G)
+        # Only directed graphs can be topologically sorted.
+        assert_raises(nx.NetworkXError, consume, nx.topological_sort(G))
 
     def test_topological_sort5(self):
         G = nx.DiGraph()
         G.add_edge(0, 1)
-        assert_equal(nx.topological_sort_recursive(G), [0, 1])
-        assert_equal(nx.topological_sort(G), [0, 1])
+        assert_equal(list(nx.topological_sort(G)), [0, 1])
 
-    def test_nbunch_argument(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
-        assert_equal(nx.topological_sort(G), [1, 2, 3, 6, 4, 5])
-        assert_equal(nx.topological_sort_recursive(G), [1, 5, 4, 2, 6, 3])
-        assert_equal(nx.topological_sort(G, [1]), [1, 2, 3, 6, 4, 5])
-        assert_equal(nx.topological_sort_recursive(G, [1]), [1, 5, 4, 2, 6, 3])
-        assert_equal(nx.topological_sort(G, [5]), [5])
-        assert_equal(nx.topological_sort_recursive(G, [5]), [5])
+    def test_topological_sort6(self):
+        for algorithm in [nx.topological_sort,
+                          nx.lexicographical_topological_sort]:
+            def runtime_error():
+                DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+                first = True
+                for x in algorithm(DG):
+                    if first:
+                        first = False
+                        DG.add_edge(5 - x, 5)
+
+            def unfeasible_error():
+                DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+                first = True
+                for x in algorithm(DG):
+                    if first:
+                        first = False
+                        DG.remove_node(4)
+
+            def runtime_error2():
+                DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+                first = True
+                for x in algorithm(DG):
+                    if first:
+                        first = False
+                        DG.remove_node(2)
+
+            assert_raises(RuntimeError, runtime_error)
+            assert_raises(RuntimeError, runtime_error2)
+            assert_raises(nx.NetworkXUnfeasible, unfeasible_error)
 
     def test_ancestors(self):
         G = nx.DiGraph()
@@ -197,6 +191,28 @@ class TestDAG:
         G.add_weighted_edges_from(
             [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4), (5, 6, 0), (1, 6, 2)])
         assert_equal(longest_path_length(G), 3)
+
+    def test_lexicographical_topological_sort(self):
+        G = nx.DiGraph([(1,2), (2,3), (1,4), (1,5), (2,6)])
+        assert_equal(list(nx.lexicographical_topological_sort(G)),
+                     [1, 2, 3, 4, 5, 6])
+        assert_equal(list(nx.lexicographical_topological_sort(
+            G, key=lambda x: x)),
+                     [1, 2, 3, 4, 5, 6])
+        assert_equal(list(nx.lexicographical_topological_sort(
+            G, key=lambda x: -x)),
+                     [1, 5, 4, 2, 6, 3])
+
+    def test_lexicographical_topological_sort(self):
+        G = nx.DiGraph([(1,2), (2,3), (1,4), (1,5), (2,6)])
+        assert_equal(list(nx.lexicographical_topological_sort(G)),
+                     [1, 2, 3, 4, 5, 6])
+        assert_equal(list(nx.lexicographical_topological_sort(
+            G, key=lambda x: x)),
+                     [1, 2, 3, 4, 5, 6])
+        assert_equal(list(nx.lexicographical_topological_sort(
+            G, key=lambda x: -x)),
+                     [1, 5, 4, 2, 6, 3])
 
 
 def test_is_aperiodic_cycle():

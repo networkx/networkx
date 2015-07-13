@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from fractions import gcd
+import heapq
 import networkx as nx
 from networkx.utils.decorators import *
+from networkx.utils import consume
 """Algorithms for directed acyclic graphs (DAGs)."""
-#    Copyright (C) 2006-2011 by
+#    Copyright (C) 2006-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,11 +13,12 @@ from networkx.utils.decorators import *
 #    BSD license.
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
-                            'Ben Edwards (bedwards@cs.unm.edu)'])
+                            'Ben Edwards (bedwards@cs.unm.edu)',
+                            'Neil Girdhar (neil.girdhar@mcgill.ca)'])
 __all__ = ['descendants',
            'ancestors',
            'topological_sort',
-           'topological_sort_recursive',
+           'lexicographical_topological_sort',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
@@ -63,7 +66,7 @@ def ancestors(G, source):
 
 
 def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG) or 
+    """Return True if the graph G is a directed acyclic graph (DAG) or
     False if not.
 
     Parameters
@@ -79,172 +82,184 @@ def is_directed_acyclic_graph(G):
     if not G.is_directed():
         return False
     try:
-        topological_sort(G, reverse=True)
+        consume(topological_sort(G))
         return True
     except nx.NetworkXUnfeasible:
         return False
 
 
-def topological_sort(G, nbunch=None, reverse=False):
-    """Return a list of nodes in topological sort order.
+def topological_sort(G):
+    """Return a generator of nodes in topologically sorted order.
 
-    A topological sort is a nonunique permutation of the nodes
-    such that an edge from u to v implies that u appears before v in the
-    topological sort order.
+    A topological sort is a nonunique permutation of the nodes such that an
+    edge from u to v implies that u appears before v in the topological sort
+    order.
 
     Parameters
     ----------
     G : NetworkX digraph
         A directed graph
 
-    nbunch : container of nodes (optional)
-        Explore graph in specified order given in nbunch
-
-    reverse : bool, optional
-        Return postorder instead of preorder if True.
-        Reverse mode is a bit more efficient.
+    Returns
+    -------
+    topologically_sorted_nodes : iterable
+        An iterable of node names in topological sorted order.
 
     Raises
     ------
     NetworkXError
-        Topological sort is defined for directed graphs only. If the
-        graph G is undirected, a NetworkXError is raised.
+        Topological sort is defined for directed graphs only. If the graph G
+        is undirected, a NetworkXError is raised.
 
     NetworkXUnfeasible
-        If G is not a directed acyclic graph (DAG) no topological sort
-        exists and a NetworkXUnfeasible exception is raised.
+        If G is not a directed acyclic graph (DAG) no topological sort exists
+        and a NetworkXUnfeasible exception is raised.  This can also be
+        raised if G is changed while the returned iterator is being processed.
+
+    RuntimeError
+        If G is changed while the returned iterator is being processed.
 
     Notes
     -----
     This algorithm is based on a description and proof in
-    The Algorithm Design Manual [1]_ .
+    Introduction to algorithms - a creative approach [1]_ .
 
     See also
     --------
-    is_directed_acyclic_graph
+    is_directed_acyclic_graph, lexicographical_topological_sort
 
     References
     ----------
-    .. [1] Skiena, S. S. The Algorithm Design Manual  (Springer-Verlag, 1998). 
-        http://www.amazon.com/exec/obidos/ASIN/0387948600/ref=ase_thealgorithmrepo/
+    .. [1] Manber, U. (1989). Introduction to algorithms - a creative approach. Addison-Wesley.
+        http://www.amazon.com/Introduction-Algorithms-A-Creative-Approach/dp/0201120372
     """
     if not G.is_directed():
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
-    # nonrecursive version
-    seen = set()
-    order = []
-    explored = set()
+    indegree_map = G.in_degree()
 
-    if nbunch is None:
-        nbunch = G.nodes_iter()
-    for v in nbunch:     # process all vertices in G
-        if v in explored:
-            continue
-        fringe = [v]   # nodes yet to look at
-        while fringe:
-            w = fringe[-1]  # depth first search
-            if w in explored:  # already looked down this branch
-                fringe.pop()
-                continue
-            seen.add(w)     # mark as seen
-            # Check successors for cycles and for new nodes
-            new_nodes = []
-            for n in G[w]:
-                if n not in explored:
-                    if n in seen:  # CYCLE !!
-                        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
-                    new_nodes.append(n)
-            if new_nodes:   # Add new_nodes to fringe
-                fringe.extend(new_nodes)
-            else:           # No new nodes so w is fully explored
-                explored.add(w)
-                order.append(w)
-                fringe.pop()    # done considering this node
-    if reverse:
-        return order
-    else:
-        return list(reversed(order))
+    # These nodes have zero indegree and ready to be returned.
+    zero_indegree = [node
+                     for node, indegree in indegree_map.items()
+                     if indegree == 0]
+
+    for node in zero_indegree:
+        del indegree_map[node]
+
+    while zero_indegree:
+        node = zero_indegree.pop()
+        if node not in G:
+            raise RuntimeError("Graph changed during iteration")
+        for _, child in G.edges_iter(node):
+            try:
+                indegree_map[child] -= 1
+            except KeyError:
+                raise RuntimeError("Graph changed during iteration")
+            if indegree_map[child] == 0:
+                zero_indegree.append(child)
+                del indegree_map[child]
+
+        yield node
+
+    if indegree_map:
+        raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
+                                    "during iteration")
 
 
-def topological_sort_recursive(G, nbunch=None, reverse=False):
-    """Return a list of nodes in topological sort order.
+def lexicographical_topological_sort(G, key=(lambda x: x)):
+    """Return a generator of nodes in lexicographically topologically sorted
+    order.
 
-    A topological sort is a nonunique permutation of the nodes such
-    that an edge from u to v implies that u appears before v in the
-    topological sort order.
+    A topological sort is a nonunique permutation of the nodes such that an
+    edge from u to v implies that u appears before v in the topological sort
+    order.
 
     Parameters
     ----------
     G : NetworkX digraph
+        A directed graph
 
-    nbunch : container of nodes (optional)
-        Explore graph in specified order given in nbunch
+    key : function, optional
+        This function maps nodes to keys with which to resolve ambiguities in
+        the sort order.  Defaults to the identity function.
 
-    reverse : bool, optional
-        Return postorder instead of preorder if True.
-        Reverse mode is a bit more efficient.
+    Returns
+    -------
+    lexicographically_topologically_sorted_nodes : iterable
+        An iterable of node names in lexicographical topological sort order.
 
     Raises
     ------
     NetworkXError
-        Topological sort is defined for directed graphs only. If the
-        graph G is undirected, a NetworkXError is raised.
+        Topological sort is defined for directed graphs only. If the graph G
+        is undirected, a NetworkXError is raised.
 
     NetworkXUnfeasible
-        If G is not a directed acyclic graph (DAG) no topological sort
-        exists and a NetworkXUnfeasible exception is raised.
+        If G is not a directed acyclic graph (DAG) no topological sort exists
+        and a NetworkXUnfeasible exception is raised.  This can also be
+        raised if G is changed while the returned iterator is being processed.
+
+    RuntimeError
+        If G is changed while the returned iterator is being processed.
 
     Notes
     -----
-    This is a recursive version of topological sort.
+    This algorithm is based on a description and proof in
+    Introduction to algorithms - a creative approach [1]_ .
 
     See also
     --------
     topological_sort
-    is_directed_acyclic_graph
 
+    References
+    ----------
+    .. [1] Manber, U. (1989). Introduction to algorithms - a creative approach. Addison-Wesley.
+        http://www.amazon.com/Introduction-Algorithms-A-Creative-Approach/dp/0201120372
     """
     if not G.is_directed():
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
-    def _dfs(v):
-        ancestors.add(v)
+    def create_tuple(node):
+        return key(node), node
 
-        for w in G[v]:
-            if w in ancestors:
-                raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+    indegree_map = G.in_degree()
 
-            if w not in explored:
-                _dfs(w)
+    # These nodes have zero indegree and are ready to be returned.
+    zero_indegree = [create_tuple(node)
+                     for node, indegree in indegree_map.items()
+                     if indegree == 0]
+    heapq.heapify(zero_indegree)
 
-        ancestors.remove(v)
-        explored.add(v)
-        order.append(v)
+    for _, node in zero_indegree:
+        del indegree_map[node]
 
-    ancestors = set()
-    explored = set()
-    order = []
+    while zero_indegree:
+        _, node = heapq.heappop(zero_indegree)
 
-    if nbunch is None:
-        nbunch = G.nodes_iter()
+        if node not in G:
+            raise RuntimeError("Graph changed during iteration")
+        for _, child in G.edges_iter(node):
+            try:
+                indegree_map[child] -= 1
+            except KeyError:
+                raise RuntimeError("Graph changed during iteration")
+            if indegree_map[child] == 0:
+                heapq.heappush(zero_indegree, create_tuple(child))
+                del indegree_map[child]
 
-    for v in nbunch:
-        if v not in explored:
-            _dfs(v)
+        yield node
 
-    if reverse:
-        return order
-    else:
-        return list(reversed(order))
+    if indegree_map:
+        raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
+                                    "during iteration")
 
 
 def is_aperiodic(G):
     """Return True if G is aperiodic.
 
-    A directed graph is aperiodic if there is no integer k > 1 that 
+    A directed graph is aperiodic if there is no integer k > 1 that
     divides the length of every cycle in the graph.
 
     Parameters
@@ -376,7 +391,7 @@ def antichains(G):
        AMS, Vol 42, 1995, p. 226.
     """
     TC = nx.transitive_closure(G)
-    antichains_stacks = [([], nx.topological_sort(G, reverse=True))]
+    antichains_stacks = [([], list(reversed(list(nx.topological_sort(G)))))]
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
         # Invariant:

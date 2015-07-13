@@ -14,8 +14,10 @@ True
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import collections
 import sys
 import uuid
+from itertools import tee
 # itertools.accumulate is only available on Python 3.2 or later.
 #
 # Once support for Python versions less than 3.2 is dropped, this code should
@@ -175,3 +177,16 @@ def dict_to_numpy_array1(d,mapping=None):
         i = mapping[k1]
         a[i] = d[k1]
     return a
+
+# Recipe from the itertools documentation.
+def consume(iterator):
+    "Consume the iterator entirely."
+    # Feed the entire iterator into a zero-length deque.
+    collections.deque(iterator, maxlen=0)
+
+# Recipe from the itertools documentation.
+def pairwise(iterable):
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
