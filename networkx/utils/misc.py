@@ -178,13 +178,13 @@ def dict_to_numpy_array1(d,mapping=None):
         a[i] = d[k1]
     return a
 
-# consume is described in the itertools documentation.
+# Recipe from the itertools documentation.
 def consume(iterable):
     "Consume the iterable entirely."
     # Feed the entire iterable into a zero-length deque.
     collections.deque(iterable, maxlen=0)
 
-# Recipe from itertools documentation.
+# Recipe from the itertools documentation.
 def pairwise(iterable):
     "s -> (s0, s1), (s1, s2), (s2, s3), ..."
     a, b = tee(iterable)
