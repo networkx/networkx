@@ -43,8 +43,7 @@ Iterating over nodes and edges
    MultiGraph.get_edge_data
    MultiGraph.neighbors
    MultiGraph.__getitem__
-   MultiGraph.adjacency_list
-   MultiGraph.adjacency_iter
+   MultiGraph.adjacency
    MultiGraph.nbunch_iter
 
 
@@ -61,7 +60,6 @@ Information about graph structure
    MultiGraph.number_of_nodes
    MultiGraph.__len__
    MultiGraph.degree
-   MultiGraph.degree_iter
    MultiGraph.size
    MultiGraph.number_of_edges
    MultiGraph.nodes_with_selfloops

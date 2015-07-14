@@ -43,8 +43,7 @@ Iterating over nodes and edges
    Graph.get_edge_data
    Graph.neighbors
    Graph.__getitem__
-   Graph.adjacency_list
-   Graph.adjacency_iter
+   Graph.adjacency
    Graph.nbunch_iter
 
 
@@ -61,7 +60,6 @@ Information about graph structure
    Graph.number_of_nodes
    Graph.__len__
    Graph.degree
-   Graph.degree_iter
    Graph.size
    Graph.number_of_edges
    Graph.nodes_with_selfloops
