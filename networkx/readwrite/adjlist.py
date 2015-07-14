@@ -76,7 +76,7 @@ def generate_adjlist(G, delimiter=' '):
     """
     directed = G.is_directed()
     seen = set()
-    for s, nbrs in G.adjacency_iter():
+    for s, nbrs in G.adjacency():
         line = make_str(s) + delimiter
         for t, data in nbrs.items():
             if not directed and t in seen:
@@ -179,9 +179,9 @@ def parse_adjlist(lines, comments='#', delimiter=None,
     ...          '4',
     ...          '5']
     >>> G = nx.parse_adjlist(lines, nodetype = int)
-    >>> G.nodes()
+    >>> list(G)
     [1, 2, 3, 4, 5]
-    >>> G.edges()
+    >>> list(G.edges())
     [(1, 2), (1, 5), (2, 3), (2, 4), (3, 5)]
 
     See Also

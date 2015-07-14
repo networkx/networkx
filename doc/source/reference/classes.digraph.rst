@@ -39,17 +39,12 @@ Iterating over nodes and edges
    :toctree: generated/
 
    DiGraph.nodes
-   DiGraph.nodes_iter
    DiGraph.__iter__
    DiGraph.edges
-   DiGraph.edges_iter
    DiGraph.out_edges
-   DiGraph.out_edges_iter
    DiGraph.in_edges
-   DiGraph.in_edges_iter
    DiGraph.get_edge_data
    DiGraph.neighbors
-   DiGraph.neighbors_iter
    DiGraph.__getitem__
    DiGraph.successors
    DiGraph.successors_iter

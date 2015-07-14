@@ -5,6 +5,7 @@ Flow based connectivity algorithms
 from __future__ import division
 
 import itertools
+from operator import itemgetter
 
 import networkx as nx
 # Define the default maximum flow function to use in all flow based
@@ -203,7 +204,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
 
 def node_connectivity(G, s=None, t=None, flow_func=None):
-    r"""Returns node connectivity for a graph or digraph G.
+    """Returns node connectivity for a graph or digraph G.
 
     Node connectivity is equal to the minimum number of nodes that
     must be removed to disconnect G or render it trivial. If source
@@ -311,13 +312,13 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         # It is necessary to consider both predecessors
         # and successors for directed graphs
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
         if not nx.is_connected(G):
             return 0
         iter_func = itertools.combinations
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
 
     # Reuse the auxiliary digraph and the residual network
     H = build_auxiliary_node_connectivity(G)
@@ -325,11 +326,8 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     # Pick a node with minimum degree
-    degree = G.degree()
-    minimum_degree = min(degree.values())
-    v = next(n for n, d in degree.items() if d == minimum_degree)
     # Node connectivity is bounded by degree.
-    K = minimum_degree
+    v, K = min(G.degree(), key=itemgetter(1))
     # compute local node connectivity with all its non-neighbors nodes
     for w in set(G) - set(neighbors(v)) - set([v]):
         kwargs['cutoff'] = K
@@ -753,8 +751,8 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             return 0
 
         # initial value for \lambda is minimum degree
-        L = min(G.degree().values())
-        nodes = G.nodes()
+        L = min(d for n, d in G.degree())
+        nodes = list(G)
         n = len(nodes)
         for i in range(n):
             kwargs['cutoff'] = L
@@ -771,7 +769,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             return 0
 
         # initial value for \lambda is minimum degree
-        L = min(G.degree().values())
+        L = min(d for n, d in G.degree())
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:

@@ -373,7 +373,7 @@ def draw_networkx_nodes(G, pos,
         ax = plt.gca()
 
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
 
     if not nodelist or len(nodelist) == 0:  # empty nodelist, no drawing
         return None
@@ -504,7 +504,7 @@ def draw_networkx_edges(G, pos,
         ax = plt.gca()
 
     if edgelist is None:
-        edgelist = G.edges()
+        edgelist = list(G.edges())
 
     if not edgelist or len(edgelist) == 0:  # no edges!
         return None

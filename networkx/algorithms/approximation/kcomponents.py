@@ -144,7 +144,7 @@ def k_components(G, min_density=0.95):
             SG = G.subgraph(nodes)
             # Build auxiliary graph
             H = _AntiGraph()
-            H.add_nodes_from(SG.nodes_iter())
+            H.add_nodes_from(SG.nodes())
             for u,v in combinations(SG, 2):
                 K = node_connectivity(SG, u, v, cutoff=k)
                 if k > K:
@@ -184,7 +184,7 @@ def _cliques_heuristic(G, H, k, min_density):
             if len(SH) <= k:
                 break
             sh_cnumber = nx.core_number(SH)
-            sh_deg = SH.degree()
+            sh_deg = dict(SH.degree())
             min_deg = min(sh_deg.values())
             SH.remove_nodes_from(n for n, d in sh_deg.items() if d == min_deg)
             SG = nx.k_core(G.subgraph(SH), k)
@@ -237,31 +237,6 @@ class _AntiGraph(nx.Graph):
                     set(self.adj) - set(self.adj[n]) - set([n]))
 
     def neighbors(self, n):
-        """Return a list of the nodes connected to the node n in 
-           the dense graph.
-
-        Parameters
-        ----------
-        n : node
-           A node in the graph
-
-        Returns
-        -------
-        nlist : list
-            A list of nodes that are adjacent to n.
-
-        Raises
-        ------
-        NetworkXError
-            If the node n is not in the graph.
-
-        """
-        try:
-            return list(set(self.adj) - set(self.adj[n]) - set([n]))
-        except KeyError:
-            raise NetworkXError("The node %s is not in the graph."%(n,))
-
-    def neighbors_iter(self, n):
         """Return an iterator over all neighbors of node n in the 
            dense graph.
 
@@ -272,15 +247,7 @@ class _AntiGraph(nx.Graph):
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
     def degree(self, nbunch=None, weight=None):
-        """Return the degree of a node or nodes in the dense graph.
-        """
-        if nbunch in self:      # return a single node
-            return next(self.degree_iter(nbunch,weight))[1]
-        else:           # return a dict
-            return dict(self.degree_iter(nbunch,weight))
-
-    def degree_iter(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree) in the dense graph.
+        """Return an iterator for (node, degree) and degree for single node.
 
         The node degree is the number of edges adjacent to the node.
 
@@ -297,6 +264,8 @@ class _AntiGraph(nx.Graph):
 
         Returns
         -------
+        deg:
+            Degree of the node, if a single node is passed as argument.
         nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
 
@@ -308,31 +277,42 @@ class _AntiGraph(nx.Graph):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> list(G.degree_iter(0)) # node 0 with degree 1
-        [(0, 1)]
-        >>> list(G.degree_iter([0,1]))
+        >>> G.degree(0) # node 0 with degree 1
+        1
+        >>> list(G.degree([0,1]))
         [(0, 1), (1, 2)]
 
         """
+        if nbunch in self:
+            nbrs = {v: self.all_edge_dict for v in set(self.adj) - \
+                    set(self.adj[nbunch]) - set([nbunch])}
+            if weight is None:
+                return len(nbrs) + (nbunch in nbrs)
+            return sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) + \
+                              (nbunch in nbrs and nbrs[nbunch].get(weight, 1))
+
         if nbunch is None:
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                             set(self.adj) - set(self.adj[n]) - set([n])})
-                            for n in self.nodes_iter())
+                            for n in self.nodes())
         else:
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                             set(self.nodes()) - set(self.adj[n]) - set([n])})
                             for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for n,nbrs in nodes_nbrs:
-                yield (n,len(nbrs)+(n in nbrs)) # return tuple (n,degree)
+            def d_iter():
+                for n,nbrs in nodes_nbrs:
+                    yield (n,len(nbrs)+(n in nbrs)) # return tuple (n,degree)
         else:
-            # AntiGraph is a ThinGraph so all edges have weight 1
-            for n,nbrs in nodes_nbrs:
-                yield (n, sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) +
-                              (n in nbrs and nbrs[n].get(weight, 1)))
+            def d_iter():
+                # AntiGraph is a ThinGraph so all edges have weight 1
+                for n,nbrs in nodes_nbrs:
+                    yield (n, sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) +
+                                  (n in nbrs and nbrs[n].get(weight, 1)))
+        return d_iter()
 
-    def adjacency_iter(self):
+    def adjacency(self):
         """Return an iterator of (node, adjacency set) tuples for all nodes
            in the dense graph.
 

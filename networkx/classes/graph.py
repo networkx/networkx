@@ -125,7 +125,7 @@ class Graph(object):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
@@ -151,9 +151,9 @@ class Graph(object):
     5
 
     The fastest way to traverse all edges of a graph is via
-    adjacency_iter(), but the edges() method is often more convenient.
+    adjacency(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency_iter():
+    >>> for n,nbrsdict in G.adjacency():
     ...     for nbr,eattr in nbrsdict.items():
     ...        if 'weight' in eattr:
     ...            (n,nbr,eattr['weight'])
@@ -161,7 +161,7 @@ class Graph(object):
     (2, 1, 4)
     (2, 3, 8)
     (3, 2, 8)
-    >>> G.edges(data='weight')
+    >>> list(G.edges(data='weight'))
     [(1, 2, 4), (2, 3, 8), (3, 4, None), (4, 5, None)]
 
     **Reporting:**
@@ -212,10 +212,10 @@ class Graph(object):
     ...     node_dict_factory=OrderedDict
     >>> G=OrderedNodeGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
-    >>> G.edges()
+    >>> list(G.edges())
     [(2, 1), (2, 2), (1, 1)]
 
     Create a graph object that tracks the order nodes are added
@@ -226,10 +226,10 @@ class Graph(object):
     ...    adjlist_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
-    >>> G.edges()
+    >>> list(G.edges())
     [(2, 2), (2, 1), (1, 1)]
 
     Create a low memory graph class that effectively disallows edge
@@ -243,7 +243,7 @@ class Graph(object):
     ...     edge_attr_dict_factory = single_edge_dict
     >>> G = ThinGraph()
     >>> G.add_edge(2,1)
-    >>> G.edges(data= True)
+    >>> list(G.edges(data= True))
     [(1, 2, {'weight': 1})]
     >>> G.add_edge(2,2)
     >>> G[2][1] is G[2][2]
@@ -553,10 +553,10 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> G.edges()
+        >>> list(G.edges())
         [(0, 1), (1, 2)]
         >>> G.remove_node(1)
-        >>> G.edges()
+        >>> list(G.edges())
         []
 
         """
@@ -588,11 +588,11 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> e = G.nodes()
+        >>> e = list(G.nodes())
         >>> e
         [0, 1, 2]
         >>> G.remove_nodes_from(e)
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
 
         """
@@ -606,67 +606,49 @@ class Graph(object):
             except KeyError:
                 pass
 
-    def nodes_iter(self, data=False):
-        """Return an iterator over the nodes.
+    def nodes(self, data=False):
+        """Returns an iterator over the nodes.
 
         Parameters
         ----------
         data : boolean, optional (default=False)
-               If False the iterator returns nodes.  If True
-               return a two-tuple of node and node data dictionary
+               If ``False``, the iterator returns nodes.  If ``True``,
+               the iterator return a two-tuple of node and node data
+               dictionary.
 
         Returns
         -------
-        niter : iterator
-            An iterator over nodes.  If data=True the iterator gives
-            two-tuples containing (node, node data, dictionary)
+        iterator
+            An iterator over nodes, or if ``data`` is ``True``, an
+            iterator over two-tuples of the form ``(node, node data
+            dictionary)``.
 
         Notes
         -----
-        If the node data is not required it is simpler and equivalent
-        to use the expression 'for n in G'.
-
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
+        If the node data is not required, it is simpler and equivalent
+        to use the expression ``for n in G``, or ``list(G)``.
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
+        There are two simple ways of getting a list of all nodes in the graph::
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from(range(3))
+        >>> list(G.nodes())
+        [0, 1, 2]
+        >>> list(G)
+        [0, 1, 2]
 
-        >>> [d for n,d in G.nodes_iter(data=True)]
-        [{}, {}, {}]
+        To get the node data along with the nodes::
+
+        >>> G.add_node(1, time='5pm')
+        >>> G.node[0]['foo'] = 'bar'
+        >>> list(G.nodes(data=True))
+        [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
+
         """
         if data:
             return iter(self.node.items())
         return iter(self.node)
-
-    def nodes(self, data=False):
-        """Return a list of the nodes in the graph.
-
-        Parameters
-        ----------
-        data : boolean, optional (default=False)
-               If False return a list of nodes.  If True return a
-               two-tuple of node and node data dictionary
-
-        Returns
-        -------
-        nlist : list
-            A list of nodes.  If data=True a list of two-tuples containing
-            (node, node data dictionary).
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
-        >>> G.nodes()
-        [0, 1, 2]
-        >>> G.add_node(1, time='5pm')
-        >>> G.nodes(data=True)
-        [(0, {}), (1, {'time': '5pm'}), (2, {})]
-        """
-        return list(self.nodes_iter(data=data))
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -905,7 +887,8 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0,1,3.0),(1,2,7.5)])
         """
-        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch), **attr)
+        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch),
+                            **attr)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -1018,8 +1001,9 @@ class Graph(object):
         except KeyError:
             return False
 
+
     def neighbors(self, n):
-        """Return a list of the nodes connected to the node n.
+        """Return an iterator over all neighbors of node n.
 
         Parameters
         ----------
@@ -1028,8 +1012,8 @@ class Graph(object):
 
         Returns
         -------
-        nlist : list
-            A list of nodes that are adjacent to n.
+        neighbors : iterator
+            An iterator over all neighbors of node n
 
         Raises
         ------
@@ -1050,23 +1034,7 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> G.neighbors(0)
-        [1]
-
-        """
-        try:
-            return list(self.adj[n])
-        except KeyError:
-            raise NetworkXError("The node %s is not in the graph." % (n,))
-
-    def neighbors_iter(self, n):
-        """Return an iterator over all neighbors of node n.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
-        >>> [n for n in G.neighbors_iter(0)]
+        >>> [n for n in G.neighbors(0)]
         [1]
 
         Notes
@@ -1082,55 +1050,8 @@ class Graph(object):
         except KeyError:
             raise NetworkXError("The node %s is not in the graph." % (n,))
 
+
     def edges(self, nbunch=None, data=False, default=None):
-        """Return a list of edges.
-
-        Edges are returned as tuples with optional data
-        in the order (node, neighbor, data).
-
-        Parameters
-        ----------
-        nbunch : iterable container, optional (default= all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
-        data : bool, optional (default=False)
-            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
-
-        Returns
-        --------
-        edge_list: list of edge tuples
-            Edges that are adjacent to any node in nbunch, or a list
-            of all edges if nbunch is not specified.
-
-        See Also
-        --------
-        edges_iter : return an iterator over the edges
-
-        Notes
-        -----
-        Nodes in nbunch that are not in the graph will be (quietly) ignored.
-        For directed graphs this returns the out-edges.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
-        >>> G.add_edge(2,3,weight=5)
-        >>> G.edges()
-        [(0, 1), (1, 2), (2, 3)]
-        >>> G.edges(data=True) # default edge data is {} (empty dictionary)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1))
-        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
-        >>> G.edges([0,3])
-        [(0, 1), (3, 2)]
-        >>> G.edges(0)
-        [(0, 1)]
-
-        """
-        return list(self.edges_iter(nbunch, data, default))
-
-    def edges_iter(self, nbunch=None, data=False, default=None):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data
@@ -1151,12 +1072,8 @@ class Graph(object):
 
         Returns
         -------
-        edge_iter : iterator
+        edges : iterator
             An iterator of (u,v) or (u,v,d) tuples of edges.
-
-        See Also
-        --------
-        edges : return a list of edges
 
         Notes
         -----
@@ -1168,15 +1085,15 @@ class Graph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1,2])
         >>> G.add_edge(2,3,weight=5)
-        >>> [e for e in G.edges_iter()]
+        >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
+        >>> list(G.edges(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1))
+        >>> list(G.edges(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
-        >>> list(G.edges_iter([0,3]))
+        >>> list(G.edges([0,3]))
         [(0, 1), (3, 2)]
-        >>> list(G.edges_iter(0))
+        >>> list(G.edges(0))
         [(0, 1)]
 
         """
@@ -1255,32 +1172,7 @@ class Graph(object):
         except KeyError:
             return default
 
-    def adjacency_list(self):
-        """Return an adjacency list representation of the graph.
-
-        The output adjacency list is in the order of G.nodes().
-        For directed graphs, only outgoing adjacencies are included.
-
-        Returns
-        -------
-        adj_list : lists of lists
-            The adjacency structure of the graph as a list of lists.
-
-        See Also
-        --------
-        adjacency_iter
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
-        >>> G.adjacency_list() # in order given by G.nodes()
-        [[1], [0, 2], [1, 3], [2]]
-
-        """
-        return list(map(list, iter(self.adj.values())))
-
-    def adjacency_iter(self):
+    def adjacency(self):
         """Return an iterator of (node, adjacency dict) tuples for all nodes.
 
         This is the fastest way to look at every edge.
@@ -1292,63 +1184,22 @@ class Graph(object):
            An iterator of (node, adjacency dictionary) for all nodes in
            the graph.
 
-        See Also
-        --------
-        adjacency_list
-
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> [(n,nbrdict) for n,nbrdict in G.adjacency_iter()]
+        >>> [(n,nbrdict) for n,nbrdict in G.adjacency()]
         [(0, {1: {}}), (1, {0: {}, 2: {}}), (2, {1: {}, 3: {}}), (3, {2: {}})]
 
         """
         return iter(self.adj.items())
 
     def degree(self, nbunch=None, weight=None):
-        """Return the degree of a node or nodes.
-
-        The node degree is the number of edges adjacent to that node.
-
-        Parameters
-        ----------
-        nbunch : iterable container, optional (default=all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
-
-        weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used
-           as a weight.  If None, then each edge has weight 1.
-           The degree is the sum of the edge weights adjacent to the node.
-
-        Returns
-        -------
-        nd : dictionary, or number
-            A dictionary with nodes as keys and degree as values or
-            a number if a single node is specified.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
-        >>> G.degree(0)
-        1
-        >>> G.degree([0,1])
-        {0: 1, 1: 2}
-        >>> list(G.degree([0,1]).values())
-        [1, 2]
-
-        """
-        if nbunch in self:      # return a single node
-            return next(self.degree_iter(nbunch, weight))[1]
-        else:           # return a dict
-            return dict(self.degree_iter(nbunch, weight))
-
-    def degree_iter(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree).
+        """Return an iterator for (node, degree) and degree for single node.
 
         The node degree is the number of edges adjacent to the node.
+        This function returns the degree for a single node and an iterator
+        for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
         ----------
@@ -1363,36 +1214,44 @@ class Graph(object):
 
         Returns
         -------
+        deg:
+            Degree of the node, if a single node is passed as argument.
         nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
 
-        See Also
-        --------
-        degree
-
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> list(G.degree_iter(0)) # node 0 with degree 1
-        [(0, 1)]
-        >>> list(G.degree_iter([0,1]))
+        >>> G.degree(0) # node 0 with degree 1
+        1
+        >>> list(G.degree([0,1]))
         [(0, 1), (1, 2)]
-
         """
+        # Test to see if nbunch is a single node, an iterator of nodes or
+        # None(indicating all nodes). (nbunch in self) is True when nbunch
+        # is a single node.
+        if nbunch in self:
+            nbrs = self.adj[nbunch]
+            if weight is None:
+                return len(nbrs) + (1 if nbunch in nbrs else 0) # handle self-loops
+            return sum(dd.get(weight, 1) for nbr,dd in nbrs.items()) +\
+                    (nbrs[nbunch].get(weight, 1) if nbunch in nbrs else 0)
+
         if nbunch is None:
             nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs = ((n, self.adj[n]) for n in self.nbunch_iter(nbunch))
-
         if weight is None:
-            for n, nbrs in nodes_nbrs:
-                yield (n, len(nbrs) + (n in nbrs))  # return tuple (n,degree)
+            def d_iter():
+                for n, nbrs in nodes_nbrs:
+                    yield (n, len(nbrs) + (1 if n in nbrs else 0))  # return tuple (n,degree)
         else:
-            # edge weighted graph - degree is sum of nbr edge weights
-            for n, nbrs in nodes_nbrs:
-                yield (n, sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) +
-                    (n in nbrs and nbrs[n].get(weight, 1)))
+            def d_iter():
+                for n, nbrs in nodes_nbrs:
+                    yield (n, sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) +
+                        (nbrs[n].get(weight, 1) if n in nbrs else 0))
+        return d_iter()
 
     def clear(self):
         """Remove all nodes and edges from the graph.
@@ -1404,9 +1263,9 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.clear()
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
-        >>> G.edges()
+        >>> list(G.edges())
         []
 
         """
@@ -1480,7 +1339,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 0)]
 
         If already directed, return a (deep) copy
@@ -1488,7 +1347,7 @@ class Graph(object):
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1)]
         """
         from networkx import DiGraph
@@ -1496,7 +1355,7 @@ class Graph(object):
         G.name = self.name
         G.add_nodes_from(self)
         G.add_edges_from(((u, v, deepcopy(data))
-            for u, nbrs in self.adjacency_iter()
+            for u, nbrs in self.adjacency()
             for v, data in nbrs.items()))
         G.graph = deepcopy(self.graph)
         G.node = deepcopy(self.node)
@@ -1531,10 +1390,10 @@ class Graph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 0)]
         >>> G2 = H.to_undirected()
-        >>> G2.edges()
+        >>> list(G2.edges())
         [(0, 1)]
         """
         return deepcopy(self)
@@ -1575,7 +1434,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 2)]
         """
         bunch = self.nbunch_iter(nbunch)
@@ -1617,12 +1476,13 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edge(1,1)
-        >>> G.add_edge(1,2)
-        >>> G.nodes_with_selfloops()
+        >>> G.add_edge(1, 1)
+        >>> G.add_edge(1, 2)
+        >>> list(G.nodes_with_selfloops())
         [1]
+
         """
-        return [n for n, nbrs in self.adj.items() if n in nbrs]
+        return (n for n, nbrs in self.adj.items() if n in nbrs)
 
     def selfloop_edges(self, data=False, default=None):
         """Return a list of selfloop edges.
@@ -1653,20 +1513,20 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
-        >>> G.selfloop_edges()
+        >>> list(G.selfloop_edges())
         [(1, 1)]
-        >>> G.selfloop_edges(data=True)
+        >>> list(G.selfloop_edges(data=True))
         [(1, 1, {})]
         """
         if data is True:
-            return [(n, n, nbrs[n])
-                    for n, nbrs in self.adj.items() if n in nbrs]
+            return ((n, n, nbrs[n])
+                    for n, nbrs in self.adj.items() if n in nbrs)
         elif data is not False:
-            return [(n, n, nbrs[n].get(data, default))
-                    for n, nbrs in self.adj.items() if n in nbrs]
+            return ((n, n, nbrs[n].get(data, default))
+                    for n, nbrs in self.adj.items() if n in nbrs)
         else:
-            return [(n, n)
-                    for n, nbrs in self.adj.items() if n in nbrs]
+            return ((n, n)
+                    for n, nbrs in self.adj.items() if n in nbrs)
 
     def number_of_selfloops(self):
         """Return the number of selfloop edges.
@@ -1690,7 +1550,7 @@ class Graph(object):
         >>> G.number_of_selfloops()
         1
         """
-        return len(self.selfloop_edges())
+        return sum(1 for _ in self.selfloop_edges())
 
     def size(self, weight=None):
         """Return the number of edges.
@@ -1725,7 +1585,7 @@ class Graph(object):
         >>> G.size(weight='weight')
         6.0
         """
-        s = sum(self.degree(weight=weight).values()) / 2
+        s = sum(dict(self.degree(weight=weight)).values()) / 2
         if weight is None:
             return int(s)
         else:

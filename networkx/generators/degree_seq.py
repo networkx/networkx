@@ -206,8 +206,8 @@ def directed_configuration_model(in_degree_sequence,
     Examples
     --------
     >>> D=nx.DiGraph([(0,1),(1,2),(2,3)]) # directed path graph
-    >>> din=list(D.in_degree().values())
-    >>> dout=list(D.out_degree().values())
+    >>> din=list(d for n, d in D.in_degree())
+    >>> dout=list(d for n, d in D.out_degree())
     >>> din.append(1)
     >>> dout[0]=2
     >>> D=nx.directed_configuration_model(din,dout)
@@ -625,7 +625,7 @@ def degree_sequence_tree(deg_sequence,create_using=None):
         last+=nedges
 
     # in case we added one too many
-    if len(G.degree())>len(deg_sequence):
+    if len(G) > len(deg_sequence):
         G.remove_node(0)
     return G
 
@@ -678,7 +678,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     --------
     >>> sequence = [1, 2, 2, 3]
     >>> G = nx.random_degree_sequence_graph(sequence)
-    >>> sorted(G.degree().values())
+    >>> sorted(d for n, d in G.degree())
     [1, 2, 2, 3]
     """
     DSRG = DegreeSequenceRandomGraph(sequence, seed=seed)
@@ -794,7 +794,7 @@ class DegreeSequenceRandomGraph(object):
             if not self.suitable_edge():
                 raise nx.NetworkXUnfeasible('no suitable edges left')
             while True:
-                u,v = sorted(random.choice(H.edges()))
+                u,v = sorted(random.choice(list(H.edges())))
                 if random.random() < self.q(u,v):
                     break
             if random.random() < self.p(u,v): # accept edge

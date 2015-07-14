@@ -38,13 +38,10 @@ Iterating over nodes and edges
    :toctree: generated/
 
    Graph.nodes
-   Graph.nodes_iter
    Graph.__iter__
    Graph.edges
-   Graph.edges_iter
    Graph.get_edge_data
    Graph.neighbors
-   Graph.neighbors_iter
    Graph.__getitem__
    Graph.adjacency_list
    Graph.adjacency_iter

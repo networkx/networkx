@@ -20,7 +20,7 @@ def is_threshold_graph(G):
     """
     Returns True if G is a threshold graph.
     """
-    return is_threshold_sequence(list(G.degree().values()))
+    return is_threshold_sequence(list(d for n, d in G.degree()))
     
 def is_threshold_sequence(degree_sequence):
     """
@@ -32,13 +32,13 @@ def is_threshold_sequence(degree_sequence):
     node that connects to the remaining nodes.  If this deconstruction
     failes then the sequence is not a threshold sequence.
     """
-    ds=degree_sequence[:] # get a copy so we don't destroy original 
+    ds = degree_sequence[:] # get a copy so we don't destroy original
     ds.sort()
     while ds:     
         if ds[0]==0:      # if isolated node
             ds.pop(0)     # remove it 
             continue
-        if ds[-1]!=len(ds)-1:  # is the largest degree node dominating?
+        if ds[-1] != len(ds)-1:  # is the largest degree node dominating?
             return False       # no, not a threshold degree sequence
         ds.pop()               # yes, largest is the dominating node
         ds=[ d-1 for d in ds ] # remove it and decrement all degrees
@@ -77,7 +77,7 @@ def creation_sequence(degree_sequence,with_labels=False,compact=False):
         raise ValueError("compact sequences cannot be labeled")
 
     # make an indexed copy
-    if isinstance(degree_sequence,dict):   # labeled degree seqeunce
+    if isinstance(degree_sequence, dict):   # labeled degree seqeunce
         ds = [ [degree,label] for (label,degree) in degree_sequence.items() ]
     else:
         ds=[ [d,i] for i,d in enumerate(degree_sequence) ] 
@@ -307,7 +307,11 @@ def threshold_graph(creation_sequence, create_using=None):
     while ci:
         (v,node_type)=ci.pop(0)
         if node_type=='d': # dominating type, connect to all existing nodes
-            for u in G.nodes(): 
+            # We use `for u in list(G):` instead of
+            # `for u in G:` because we edit the graph `G` in
+            # the loop. Hence using an iterator will result in
+            # `RuntimeError: dictionary changed size during iteration`
+            for u in list(G):
                 G.add_edge(v,u) 
         G.add_node(v)
     return G
@@ -349,12 +353,12 @@ def find_creation_sequence(G):
     H=G
     while H.order()>0:
         # get new degree sequence on subgraph
-        dsdict=H.degree()
-        ds=[ [d,v] for v,d in dsdict.items() ]
+        dsdict = dict(H.degree())
+        ds = [(d, v) for v,d in dsdict.items()]
         ds.sort()
         # Update threshold graph nodes
         if ds[-1][0]==0: # all are isolated
-            cs.extend( zip( dsdict, ['i']*(len(ds)-1)+['d']) )
+            cs.extend(zip(dsdict, ['i'] * (len(ds) - 1) + ['d']))
             break   # Done!
         # pull off isolated nodes
         while ds[0][0]==0:

@@ -8,7 +8,7 @@ def test_valid_degree_sequence1():
     p = .3
     for i in range(10):
         G = nx.erdos_renyi_graph(n,p)
-        deg = list(G.degree().values())
+        deg = (d for n, d in G.degree())
         assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
         assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
 
@@ -16,7 +16,7 @@ def test_valid_degree_sequence2():
     n = 100
     for i in range(10):
         G = nx.barabasi_albert_graph(n,1)
-        deg = list(G.degree().values())
+        deg = (d for n, d in G.degree())
         assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
         assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
 
@@ -43,7 +43,7 @@ class TestAtlas(object):
         
     def test_atlas(self):
         for graph in self.GAG:
-            deg = list(graph.degree().values())
+            deg = (d for n, d in graph.degree())
             assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
             assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
         
@@ -77,8 +77,8 @@ def test_directed_degree_sequence():
     p = 1.0 / r
     for i in range(r):
         G = nx.erdos_renyi_graph(n,p*(i+1),None,True)
-        din = list(G.in_degree().values())
-        dout = list(G.out_degree().values())
+        din = (d for n, d in G.in_degree())
+        dout = (d for n, d in G.out_degree())
         assert_true(nx.is_digraphical(din, dout))
 
 def test_small_directed_sequences():

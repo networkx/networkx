@@ -148,7 +148,7 @@ def intersection_array(G):
         raise nx.NetworkxException('Not implemented for directed ',
                                    'or multiedge graphs.')
     # test for regular graph (all degrees must be equal)
-    degree = G.degree_iter()
+    degree = G.degree()
     (_,k) = next(degree)
     for _,knext in degree:
         if knext != k:

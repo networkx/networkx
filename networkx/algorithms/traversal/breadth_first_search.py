@@ -42,9 +42,9 @@ def bfs_edges(G, source, reverse=False):
     by D. Eppstein, July 2004.
     """
     if reverse and isinstance(G, nx.DiGraph):
-        neighbors = G.predecessors_iter
+        neighbors = G.predecessors
     else:
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
     visited = set([source])
     queue = deque([(source, neighbors(source))])
     while queue:

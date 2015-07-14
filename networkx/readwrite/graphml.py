@@ -301,7 +301,7 @@ class GraphMLWriter(GraphML):
             xml_obj.append(obj)
 
     def add_nodes(self, G, graph_element):
-        for node,data in G.nodes_iter(data=True):
+        for node,data in G.nodes(data=True):
             node_element = Element("node", id = make_str(node))
             default=G.graph.get('node_default',{})
             self.add_attributes("node", node_element, data, default)
@@ -309,7 +309,7 @@ class GraphMLWriter(GraphML):
 
     def add_edges(self, G, graph_element):
         if G.is_multigraph():
-            for u,v,key,data in G.edges_iter(data=True,keys=True):
+            for u,v,key,data in G.edges(data=True,keys=True):
                 edge_element = Element("edge",source=make_str(u),
                                        target=make_str(v))
                 default=G.graph.get('edge_default',{})
@@ -318,7 +318,7 @@ class GraphMLWriter(GraphML):
                                     {'key':key}, default)
                 graph_element.append(edge_element)
         else:
-            for u,v,data in G.edges_iter(data=True):
+            for u,v,data in G.edges(data=True):
                 edge_element = Element("edge",source=make_str(u),
                                        target=make_str(v))
                 default=G.graph.get('edge_default',{})

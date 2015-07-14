@@ -206,7 +206,7 @@ class TestAntiGraph:
     def test_size(self):
         for G, A in self.GA:
             n = G.order()
-            s = len(G.edges())+len(A.edges())
+            s = len(list(G.edges())) + len(list(A.edges()))
             assert_true(s == (n*(n-1))/2)
 
     def test_degree(self):
@@ -224,10 +224,10 @@ class TestAntiGraph:
             for comp in ac:
                 assert_true(comp in gc)
 
-    def test_adjacency_iter(self):
+    def test_adjacency(self):
         for G, A in self.GA:
-            a_adj = list(A.adjacency_iter())
-            for n, nbrs in G.adjacency_iter():
+            a_adj = list(A.adjacency())
+            for n, nbrs in G.adjacency():
                 assert_true((n, set(nbrs)) in a_adj)
 
     def test_neighbors(self):
@@ -239,18 +239,16 @@ class TestAntiGraph:
         for G, A in self.GA:
             node = 'non_existent_node'
             assert_raises(nx.NetworkXError, A.neighbors, node)
-            assert_raises(nx.NetworkXError, A.neighbors_iter, node)
             assert_raises(nx.NetworkXError, G.neighbors, node)
-            assert_raises(nx.NetworkXError, G.neighbors_iter, node)
 
     def test_degree(self):
         for G, A in self.GA:
             node = list(G.nodes())[0]
             nodes = list(G.nodes())[1:4]
             assert_equal(G.degree(node), A.degree(node))
-            assert_equal(sum(G.degree().values()), sum(A.degree().values()))
+            assert_equal(sum(d for n, d in G.degree()), sum(d for n, d in A.degree()))
             # AntiGraph is a ThinGraph, so all the weights are 1
-            assert_equal(sum(A.degree().values()), 
-                         sum(A.degree(weight='weight').values()))
-            assert_equal(sum(G.degree(nodes).values()), 
-                         sum(A.degree(nodes).values()))
+            assert_equal(sum(d for n, d in A.degree()),
+                         sum(d for n, d in A.degree(weight='weight')))
+            assert_equal(sum(d for n, d in G.degree(nodes)),
+                         sum(d for n, d in A.degree(nodes)))

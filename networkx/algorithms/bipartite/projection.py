@@ -47,9 +47,9 @@ def projected_graph(B, nodes, multigraph=False):
     >>> from networkx.algorithms import bipartite
     >>> B = nx.path_graph(4)
     >>> G = bipartite.projected_graph(B, [1,3]) 
-    >>> print(G.nodes())
+    >>> list(G)
     [1, 3]
-    >>> print(G.edges())
+    >>> list(G.edges())
     [(1, 3)]
     
     If nodes `a`, and `b` are connected through both nodes 1 and 2 then
@@ -149,12 +149,12 @@ def weighted_projected_graph(B, nodes, ratio=False):
     >>> from networkx.algorithms import bipartite
     >>> B = nx.path_graph(4)
     >>> G = bipartite.weighted_projected_graph(B, [1,3])
-    >>> print(G.nodes())
+    >>> list(G)
     [1, 3]
-    >>> print(G.edges(data=True))
+    >>> list(G.edges(data=True))
     [(1, 3, {'weight': 1})]
     >>> G = bipartite.weighted_projected_graph(B, [1,3], ratio=True)
-    >>> print(G.edges(data=True))
+    >>> list(G.edges(data=True))
     [(1, 3, {'weight': 0.5})]
     
     Notes
@@ -242,7 +242,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     >>> B = nx.path_graph(5)
     >>> B.add_edge(1,5)
     >>> G = bipartite.collaboration_weighted_projected_graph(B, [0, 2, 4, 5])
-    >>> print(G.nodes())
+    >>> list(G)
     [0, 2, 4, 5]
     >>> for edge in G.edges(data=True): print(edge)
     ... 
@@ -335,12 +335,12 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     >>> from networkx.algorithms import bipartite
     >>> B = nx.path_graph(5)
     >>> G = bipartite.overlap_weighted_projected_graph(B, [0, 2, 4])
-    >>> print(G.nodes())
+    >>> list(G)
     [0, 2, 4]
-    >>> print(G.edges(data=True))
+    >>> list(G.edges(data=True))
     [(0, 2, {'weight': 0.5}), (2, 4, {'weight': 0.5})]
     >>> G = bipartite.overlap_weighted_projected_graph(B, [0, 2, 4], jaccard=False)
-    >>> print(G.edges(data=True))
+    >>> list(G.edges(data=True))
     [(0, 2, {'weight': 1.0}), (2, 4, {'weight': 1.0})]
     
     Notes
@@ -446,14 +446,14 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     (1, 3, {'weight': 4})
     >>> # Without specifying a function, the weight is equal to # shared partners
     >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1])
-    >>> print(G.edges(data=True))
+    >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 2})]
     >>> # To specify a custom weight function use the weight_function parameter
     >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=jaccard)
-    >>> print(G.edges(data=True))
+    >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 1.0})]
     >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=my_weight)
-    >>> print(G.edges(data=True))
+    >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 10})]
     
     Notes

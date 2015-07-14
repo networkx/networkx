@@ -368,7 +368,7 @@ def project_down(B,create_using=None,name=None):
     if name is not None:
         G.name=name
 
-    for v,Bvnbrs in B.adjacency_iter():
+    for v,Bvnbrs in B.adjacency():
        if B.node_type[v]=="Bottom":
           G.add_node(v)
           for cv in Bvnbrs:
@@ -391,7 +391,7 @@ def project_up(B,create_using=None,name=None):
     if name is not None:
         G.name=name
 
-    for v,Bvnbrs in B.adjacency_iter():
+    for v,Bvnbrs in B.adjacency():
        if B.node_type[v]=="Top":
           vname= -v   #Change sign of name for Top Nodes
           G.add_node(vname)
@@ -443,7 +443,7 @@ def node_clique_number(G,nodes=None,cliques=None):
         cliques=list(find_cliques(G))
 
     if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
+        nodes=list(G.nodes())   # none, get entire graph
 
     if not isinstance(nodes, list):   # check for a list
         v=nodes
@@ -481,7 +481,7 @@ def number_of_cliques(G,nodes=None,cliques=None):
         cliques=list(find_cliques(G))
 
     if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
+        nodes=list(G.nodes())   # none, get entire graph
 
     if not isinstance(nodes, list):   # check for a list
         v=nodes
@@ -504,7 +504,7 @@ def cliques_containing_node(G,nodes=None,cliques=None):
         cliques=list(find_cliques(G))
 
     if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
+        nodes=list(G.nodes())   # none, get entire graph
 
     if not isinstance(nodes, list):   # check for a list
         v=nodes
