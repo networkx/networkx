@@ -19,6 +19,7 @@ __all__ = ['nonisomorphic_trees',
            'number_of_nonisomorphic_trees']
 
 import networkx as nx
+from networkx.utils import iterlen
 
 
 def nonisomorphic_trees(order, create="graph"):
@@ -76,7 +77,7 @@ def number_of_nonisomorphic_trees(order):
     ----------
 
     """
-    return sum(1 for _ in nonisomorphic_trees(order))
+    return iterlen(nonisomorphic_trees(order))
 
 
 def _next_rooted_tree(predecessor, p=None):

@@ -48,6 +48,11 @@ def test_make_str_with_bytes():
         assert_true(isinstance(y, str))
         assert_true(len(y) == 7)
 
+def test_iterlen():
+    G = nx.complete_graph(5)
+    assert_equal(iterlen(G.edges()), 10)
+    assert_equal(iterlen(G.nodes()), 5)
+
 def test_make_str_with_unicode():
     import sys
     PY2 = sys.version_info[0] == 2
