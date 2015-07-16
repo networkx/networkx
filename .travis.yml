@@ -45,6 +45,7 @@ env:
 
 before_install:
   ### Prepare the system to install prerequisites or dependencies
+  - pip install --upgrade pip
   - uname -a
   - printenv
   # Workaround for travis-ci/travis-ci#2683
