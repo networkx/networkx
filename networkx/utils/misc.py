@@ -175,3 +175,18 @@ def dict_to_numpy_array1(d,mapping=None):
         i = mapping[k1]
         a[i] = d[k1]
     return a
+
+def iterlen(iterator):
+    """Returns the number of elements in the iterator.
+
+    This will exhaust the iterator, use carefully.
+    >>> i = iter([1, 2, 3])
+    >>> iterlen(i)
+    3
+    >>> next(i)
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    StopIteration
+    """
+    # inspired by ilen(), more-itertools
+    return sum(1 for _ in iterator)
