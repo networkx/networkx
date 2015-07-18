@@ -1,11 +1,6 @@
 """
     Tests for the temporal aspect of the Temporal VF2 isomorphism algorithm.
 """
-
-import os
-import struct
-import random
-
 from nose.tools import assert_true, assert_false, assert_equal
 from nose import SkipTest
 import networkx as nx
@@ -62,8 +57,8 @@ def put_time_config_2(G, att_name):
     G[4][5][att_name] = date(2015, 1, 2)
     return G
 
-class TestTimeRespectingGraphMatcher(object):
 
+class TestTimeRespectingGraphMatcher(object):
     """
         A test class for the undirected temporal graph matcher.
     """
@@ -147,8 +142,6 @@ class TestTimeRespectingGraphMatcher(object):
     
 
 class TestDiTimeRespectingGraphMatcher(object):
-
-
     """
         A test class for the directed time-respecting graph matcher.
     """
@@ -210,7 +203,4 @@ class TestDiTimeRespectingGraphMatcher(object):
         gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 2)
-
-
-
 
