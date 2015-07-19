@@ -391,7 +391,7 @@ class Graph(object):
         Notes
         -----
         G[n] is similar to G.neighbors(n) but the internal data dictionary
-        is returned instead of a list.
+        is returned instead of an iterator.
 
         Assigning G[n] will corrupt the internal graph data structure.
         Use G[n] for reading data only.
@@ -1459,7 +1459,7 @@ class Graph(object):
         return H
 
     def nodes_with_selfloops(self):
-        """Return a list of nodes with self loops.
+        """Returns an iterator of nodes with self loops.
 
         A node with a self loop has an edge with both ends adjacent
         to that node.
@@ -1485,7 +1485,7 @@ class Graph(object):
         return (n for n, nbrs in self.adj.items() if n in nbrs)
 
     def selfloop_edges(self, data=False, default=None):
-        """Return a list of selfloop edges.
+        """Returns an iterator of selfloop edges.
 
         A selfloop edge has the same node at both ends.
 
