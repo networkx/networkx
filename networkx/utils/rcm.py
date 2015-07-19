@@ -7,7 +7,10 @@ Cuthill-McKee ordering of graph nodes to produce sparse matrices
 #    BSD license.
 from collections import deque
 from operator import itemgetter
+
 import networkx as nx
+from ..utils import arbitrary_element
+
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['cuthill_mckee_ordering',
            'reverse_cuthill_mckee_ordering']
@@ -148,7 +151,7 @@ def connected_cuthill_mckee_ordering(G, heuristic=None):
 def pseudo_peripheral_node(G):
     # helper for cuthill-mckee to find a node in a "pseudo peripheral pair"
     # to use as good starting node
-    u = next(G.nodes_iter())
+    u = arbitrary_element(G)
     lp = 0
     v = u
     while True:

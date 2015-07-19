@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
-"""
-Eulerian circuits and graphs.
-"""
-import networkx as nx
-
-__author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
+#
 #    Copyright (C) 2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+"""
+Eulerian circuits and graphs.
+"""
+import networkx as nx
+
+from ..utils import arbitrary_element
+
+__author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
+                            'Aric Hagberg <hagberg@lanl.gov>'])
 
 __all__ = ['is_eulerian', 'eulerian_circuit']
+
 
 def is_eulerian(G):
     """Return True if G is an Eulerian graph, False otherwise.
@@ -43,13 +47,13 @@ def is_eulerian(G):
         # Every node must have equal in degree and out degree
         for n in G.nodes_iter():
             if G.in_degree(n) != G.out_degree(n):
-               return False
+                return False
         # Must be strongly connected
         if not nx.is_strongly_connected(G):
             return False
     else:
         # An undirected Eulerian graph has no vertices of odd degrees
-        for v,d in G.degree_iter():
+        for v, d in G.degree_iter():
             if d % 2 != 0:
                 return False
         # Must be connected
@@ -110,11 +114,11 @@ def eulerian_circuit(G, source=None):
     from operator import itemgetter
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
-    g = G.__class__(G) # copy graph structure (not attributes)
+    g = G.__class__(G)  # copy graph structure (not attributes)
 
     # set starting node
     if source is None:
-        v = next(g.nodes_iter())
+        v = arbitrary_element(g)
     else:
         v = source
 
@@ -137,6 +141,6 @@ def eulerian_circuit(G, source=None):
             last_vertex = current_vertex
             vertex_stack.pop()
         else:
-            random_edge = next(edges(current_vertex))
-            vertex_stack.append(get_vertex(random_edge))
-            g.remove_edge(*random_edge)
+            arbitrary_edge = next(edges(current_vertex))
+            vertex_stack.append(get_vertex(arbitrary_edge))
+            g.remove_edge(*arbitrary_edge)

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from fractions import gcd
-import networkx as nx
-from networkx.utils.decorators import *
 """Algorithms for directed acyclic graphs (DAGs)."""
 #    Copyright (C) 2006-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -9,6 +6,12 @@ from networkx.utils.decorators import *
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from fractions import gcd
+
+import networkx as nx
+from networkx.utils.decorators import *
+from ..utils import arbitrary_element
+
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
                             'Ben Edwards (bedwards@cs.unm.edu)'])
@@ -279,7 +282,7 @@ def is_aperiodic(G):
         raise nx.NetworkXError(
             "is_aperiodic not defined for undirected graphs")
 
-    s = next(G.nodes_iter())
+    s = arbitrary_element(G)
     levels = {s: 0}
     this_level = [s]
     g = 0

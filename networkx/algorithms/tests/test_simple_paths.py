@@ -6,6 +6,7 @@ import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx.algorithms.simple_paths import _bidirectional_shortest_path
 from networkx.algorithms.simple_paths import _bidirectional_dijkstra
+from networkx.utils import arbitrary_element
 
 # Tests for all_simple_paths
 def test_all_simple_paths():
@@ -44,7 +45,7 @@ def test_all_simple_paths_empty():
     assert_equal(list(list(p) for p in paths),[])
 
 def hamiltonian_path(G,source):
-    source = next(G.nodes_iter())
+    source = arbitrary_element(G)
     neighbors = set(G[source])-set([source])
     n = len(G)
     for target in neighbors:

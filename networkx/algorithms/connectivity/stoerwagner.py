@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
-Stoer-Wagner minimum cut algorithm.
-"""
-from itertools import islice
-import networkx as nx
-from networkx.utils import *
-
-__author__ = 'ysitu <ysitu@users.noreply.github.com>'
+#
 # Copyright (C) 2014
 # ysitu <ysitu@users.noreply.github.com>
 # All rights reserved.
 # BSD license.
+"""
+Stoer-Wagner minimum cut algorithm.
+"""
+from itertools import islice
+
+import networkx as nx
+from ...utils import BinaryHeap
+from ...utils import not_implemented_for
+from ...utils import arbitrary_element
+
+__author__ = 'ysitu <ysitu@users.noreply.github.com>'
 
 __all__ = ['stoer_wagner']
 
@@ -109,7 +113,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     # Repeatedly pick a pair of nodes to contract until only one node is left.
     for i in range(n - 1):
         # Pick an arbitrary node u and create a set A = {u}.
-        u = next(iter(G))
+        u = arbitrary_element(G)
         A = set([u])
         # Repeatedly pick the node "most tightly connected" to A and add it to
         # A. The tightness of connectivity of a node not in A is defined by the
