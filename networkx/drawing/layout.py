@@ -327,7 +327,7 @@ def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
 
     A=np.asarray(A) # make sure we have an array instead of a matrix
 
-    if pos==None:
+    if pos is None:
         # random initial positions
         pos=np.asarray(np.random.random((nnodes,dim)),dtype=A.dtype)
     else:
@@ -398,7 +398,7 @@ def _sparse_fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
     except:
         A=(coo_matrix(A)).tolil()
 
-    if pos==None:
+    if pos is None:
         # random initial positions
         pos=np.asarray(np.random.random((nnodes,dim)),dtype=A.dtype)
     else:
@@ -406,7 +406,7 @@ def _sparse_fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
         pos=pos.astype(A.dtype)
 
     # no fixed nodes
-    if fixed==None:
+    if fixed is None:
         fixed=[]
 
     # optimal distance between nodes
