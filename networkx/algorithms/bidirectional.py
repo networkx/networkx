@@ -128,7 +128,9 @@ def _all_simple_paths(G, source, target, cutoff):
 
     for i in range(1, cutoff+1):
 
-        if i % 2:
+        if len(tree[1]) <= len(tree[0]):
+            modus = 1
+
             tree_source = tree[1]
             tree_target = tree[0]
             leaves_ = leaves[0]
@@ -137,6 +139,8 @@ def _all_simple_paths(G, source, target, cutoff):
                 neighbors = G.predecessors_iter
 
         else:
+            modus = 0
+
             tree_source = tree[0]
             tree_target = tree[1]
             leaves_ = leaves[1]
@@ -154,7 +158,7 @@ def _all_simple_paths(G, source, target, cutoff):
                         for path_t in iter(tree_target):
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
-                                    if i % 2:
+                                    if modus:
                                         yield list(path_t) + \
                                             [x for x in reversed(path_s)]
                                     else:
@@ -164,8 +168,8 @@ def _all_simple_paths(G, source, target, cutoff):
                     temp_tree.add(path_s + (s,))
                     temp_leaves.add(s)
 
-        tree[i % 2] = temp_tree
-        leaves[i % 2] = temp_leaves
+        tree[modus] = temp_tree
+        leaves[modus] = temp_leaves
 
 
 def _all_simple_paths_multi(G, source, target, cutoff):
@@ -178,12 +182,14 @@ def _all_simple_paths_multi(G, source, target, cutoff):
 
     for i in range(1, cutoff+1):
 
-        if i % 2:
+        if len(tree[1]) <= len(tree[0]):
+            modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
             leaves_ = leaves[0]
 
         else:
+            modus = 0
             tree_source = tree[0]
             tree_target = tree[1]
             leaves_ = leaves[1]
@@ -198,7 +204,7 @@ def _all_simple_paths_multi(G, source, target, cutoff):
                         for path_t in iter(tree_target):
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
-                                    if i % 2:
+                                    if modus:
                                         yield list(path_t) + \
                                             [x for x in reversed(path_s)]
                                     else:
@@ -207,8 +213,8 @@ def _all_simple_paths_multi(G, source, target, cutoff):
                     temp_tree.append(path_s + (s,))
                     temp_leaves.append(s)
 
-        tree[i % 2] = temp_tree
-        leaves[i % 2] = temp_leaves
+        tree[modus] = temp_tree
+        leaves[modus] = temp_leaves
 
 
 def all_shortest_paths(G, source, target):
@@ -312,7 +318,8 @@ def _all_shortest_paths(G, source, target):
 
     while not found and tree[0] and tree[1]:
 
-        if i % 2:
+        if len(tree[1]) <= len(tree[0]):
+            modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
             nodes_source = nodes[1]
@@ -322,6 +329,7 @@ def _all_shortest_paths(G, source, target):
                 neighbors = G.predecessors_iter
 
         else:
+            modus = 0
             tree_source = tree[0]
             tree_target = tree[1]
             nodes_source = nodes[0]
@@ -340,7 +348,7 @@ def _all_shortest_paths(G, source, target):
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
                                     found = 1
-                                    if i % 2:
+                                    if modus:
                                         yield list(path_t) + \
                                             [x for x in reversed(path_s)]
                                     else:
@@ -350,7 +358,7 @@ def _all_shortest_paths(G, source, target):
                     nodes_source.add(s)
                     temp_tree.add(path_s + (s,))
 
-        tree[i % 2] = temp_tree
+        tree[modus] = temp_tree
         i += 1
 
     if not found:
@@ -366,11 +374,13 @@ def _all_shortest_paths_multi(G, source, target):
 
     while not found and tree[0] and tree[1]:
 
-        if i % 2:
+        if len(tree[1]) <= len(tree[0]):
+            modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
 
         else:
+            modus = 0
             tree_source = tree[0]
             tree_target = tree[1]
 
@@ -383,7 +393,7 @@ def _all_shortest_paths_multi(G, source, target):
                         if s == path_t[-1]:
                             if not set(path_t).intersection(path_s):
                                 found = 1
-                                if i % 2:
+                                if modus:
                                     yield list(path_t) + \
                                         [x for x in reversed(path_s)]
                                 else:
@@ -392,7 +402,7 @@ def _all_shortest_paths_multi(G, source, target):
 
                     temp_tree.append(path_s + (s,))
 
-        tree[i % 2] = temp_tree
+        tree[modus] = temp_tree
         i += 1
 
     if not found:
@@ -422,7 +432,8 @@ def _has_path(G, source, target):
 
     while leaves[0] and leaves[1]:
 
-        if i % 2:
+        if len(leaves[1]) <= len(leaves[0]):
+            modus = 1
             nodes_t = nodes[0]
             nodes_s = nodes[1]
             leaves_ = leaves[1]
@@ -430,6 +441,7 @@ def _has_path(G, source, target):
             if G.is_directed():
                 neighbors = G.predecessors_iter
         else:
+            modus = 0
             nodes_t = nodes[1]
             nodes_s = nodes[0]
             leaves_ = leaves[0]
@@ -447,7 +459,7 @@ def _has_path(G, source, target):
                     nodes_s.add(s)
                     temp.add(s)
 
-        leaves[i % 2] = temp
+        leaves[modus] = temp
 
         i += 1
 
@@ -462,11 +474,13 @@ def _has_path_multi(G, source, target):
 
     while leaves[0] and leaves[1]:
 
-        if i % 2:
+        if len(leaves[1]) <= len(leaves[0]):
+            modus = 1
             nodes_t = nodes[0]
             nodes_s = nodes[1]
             leaves_ = leaves[1]
         else:
+            modus = 0
             nodes_t = nodes[1]
             nodes_s = nodes[0]
             leaves_ = leaves[0]
@@ -481,7 +495,7 @@ def _has_path_multi(G, source, target):
                     node_s.add(s)
                     temp.add(s)
 
-        leaves[i % 2] = temp
+        leaves[modus] = temp
 
         i += 1
 
