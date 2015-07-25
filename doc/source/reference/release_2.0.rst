@@ -39,3 +39,66 @@ API changes
        # recommended
        >>> tree.minimum_spanning_tree(G, algorithm='kruskal', weight='mass')
        >>> tree.minimum_spanning_edges(G, algorithm='prim', weight='mass')
+
+* [`<>`_]
+  With the release of NetworkX 2.0 we are moving towards an iterator reporting API.
+  We used to have two methods for the same property of the graph, one that returns a
+  list and one that returns an iterator. With 2.0 we have removed the one that returns
+  a list and renamed the iterator returning method as the original one. For example,
+  ``G.nodes()`` used to return a list and ``G.nodes_iter()`` used to return an iterator, now
+  ``G.nodes()`` returns an iterator and ``G.nodes_iter()`` is removed. These changes have
+  been done for all the methods in all graph classes, Di/Multi/Graphs.
+  The old behavior
+
+    >>> G = nx.complete_graph(5)
+    >>> G.nodes()
+    [0, 1, 2, 3, 4]
+    >>> G.nodes_iter()
+    <dictionary-keyiterator at 0x10898f470>
+
+  has changed to
+
+    >>> G = nx.complete_graph(5)
+    >>> G.nodes()
+    <dictionary-keyiterator at 0x10898f470>
+    >>> list(G.nodes())
+    [0, 1, 2, 3, 4]
+
+
+  The following methods have changed:
+    * Graph
+
+      * `G.nodes()`
+      * `G.edges()`
+      * `G.neighbors()`
+      * `G.adjacency_list()`, `G.adjacency_iter()` to `G.adjacency()`
+      * `G.degree()`
+      * `G.nodes_with_selfloops()`
+      * `G.selfloop_edges()`
+
+    * DiGraph
+
+      * `G.nodes()`
+      * `G.edges()`
+      * `G.in_edges()`
+      * `G.out_edges()`
+      * `G.degree()`
+      * `G.in_degree()`
+      * `G.out_degree()`
+
+    * MultiGraph
+
+      * `G.edges()`
+      * `G.degree()`
+      * `G.selfloop_edges()`
+
+    * MultiDiGraph
+
+      * `G.edges()`
+      * `G.in_edges()`
+      * `G.out_edges()`
+      * `G.degree()`
+      * `G.in_degree()`
+      * `G.out_degree()`
+
+    The subclass AntiGraph has also been updated accordingly.
