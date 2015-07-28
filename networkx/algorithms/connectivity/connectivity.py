@@ -5,6 +5,7 @@ Flow based connectivity algorithms
 from __future__ import division
 
 import itertools
+from operator import itemgetter
 
 import networkx as nx
 # Define the default maximum flow function to use in all flow based
@@ -325,9 +326,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     # Pick a node with minimum degree
-    degree = G.degree()
-    minimum_degree = min(degree.values())
-    v = next(n for n, d in degree.items() if d == minimum_degree)
+    v, minimum_degree = min(G.degree().items(), key=itemgetter(1))
     # Node connectivity is bounded by degree.
     K = minimum_degree
     # compute local node connectivity with all its non-neighbors nodes

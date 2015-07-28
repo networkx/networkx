@@ -11,6 +11,10 @@ python:
   - "3.3"
   - "3.4"
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 matrix:
   fast_finish: true
 
@@ -45,6 +49,7 @@ env:
 
 before_install:
   ### Prepare the system to install prerequisites or dependencies
+  - pip install --upgrade pip
   - uname -a
   - printenv
   # Workaround for travis-ci/travis-ci#2683

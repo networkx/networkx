@@ -12,6 +12,7 @@ from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx
+from networkx.utils import arbitrary_element
 
 
 class TestQuotient(object):
@@ -57,8 +58,8 @@ class TestQuotient(object):
         """
         G = nx.path_graph(5)
         identity = lambda u, v: u == v
-        peek = lambda x: next(iter(x))
-        same_parity = lambda b, c: peek(b) % 2 == peek(c) % 2
+        same_parity = lambda b, c: (arbitrary_element(b) % 2
+                                    == arbitrary_element(c) % 2)
         actual = nx.quotient_graph(G, identity, same_parity)
         expected = nx.Graph()
         expected.add_edges_from([(0, 2), (0, 4), (2, 4)])

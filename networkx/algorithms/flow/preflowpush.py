@@ -11,7 +11,13 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 from collections import deque
 from itertools import islice
 import networkx as nx
-from networkx.algorithms.flow.utils import *
+#from networkx.algorithms.flow.utils import *
+from ...utils import arbitrary_element
+from .utils import build_residual_network
+from .utils import CurrentEdge
+from .utils import detect_unboundedness
+from .utils import GlobalRelabelThreshold
+from .utils import Level
 
 __all__ = ['preflow_push']
 
@@ -233,7 +239,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
             # Record the old height and level for the gap heuristic.
             old_height = height
             old_level = level
-            u = next(iter(level.active))
+            u = arbitrary_element(level.active)
             height = discharge(u, True)
             if grt.is_reached():
                 # Global relabeling heuristic: Recompute the exact heights of
@@ -277,7 +283,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
                 # Move to the next lower level.
                 height -= 1
                 break
-            u = next(iter(level.active))
+            u = arbitrary_element(level.active)
             height = discharge(u, False)
             if grt.is_reached():
                 # Global relabeling heuristic.

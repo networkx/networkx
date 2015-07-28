@@ -162,7 +162,7 @@ def parse_pajek(lines):
             break
         if l.lower().startswith("*network"):
             try:
-                label, name = l.split()
+                label, name = l.split(None, 1)
             except ValueError:
                 # Line was not of the form:  *network NAME
                 pass

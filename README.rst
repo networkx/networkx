@@ -11,14 +11,14 @@ Mailing List
 Development
    https://github.com/networkx/networkx
 
-   .. image:: https://travis-ci.org/networkx/networkx.png?branch=master
+   .. image:: https://travis-ci.org/networkx/networkx.svg?branch=master
       :target: https://travis-ci.org/networkx/networkx
 
    .. image:: https://readthedocs.org/projects/networkx/badge/?version=latest
       :target: https://readthedocs.org/projects/networkx/?badge=latest
       :alt: Documentation Status
 
-   .. image:: https://coveralls.io/repos/networkx/networkx/badge.png?branch=master
+   .. image:: https://coveralls.io/repos/networkx/networkx/badge.svg?branch=master
       :target: https://coveralls.io/r/networkx/networkx?branch=master
 
 
