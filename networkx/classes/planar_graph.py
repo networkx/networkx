@@ -1,4 +1,5 @@
 from ordered import OrderedGraph
+import collections
 
 class NoPlanarityProvidedException(Exception):
     pass
@@ -14,14 +15,104 @@ class PlanarGraph(OrderedGraph):
         self._adjacency_orders = {}
         self._adjacency_indices = {}
 
+        self._next_face_id = 0
+        self._left_face = {}
+        self._right_face = {}
+        self._faces = {}
+        self._facehashes = {}
+
         super(PlanarGraph, self).__init__(data=data, **attr)
 
     def _planar_data_complete(self):
         return all(self._has_planar_data.values())
 
+    def _grow_face(self, start_node, u, v):
+        if v == start_node:
+            if (u < v):
+                return [(u, 0)]
+            else:
+                return [(u, 1)]
+
+        index_in_v = self._adjacency_indices[v][u]
+        next_index = index_in_v - 1
+        if next_index < 0:
+            next_index = len(self._adjacency_orders[v]) - 1
+        next_vertex = self._adjacency_orders[v][next_index]
+
+        side = 0 if (u < v) else 1
+        return [(u, side)] + self._grow_face(start_node, v, next_vertex)
+
+    def _canonicalize_face(self, face):
+        min_val = face[0]
+        min_pos = 0
+
+        for i in range(1, len(face)):
+            if face[i] < min_val:
+                min_val = face[i]
+                min_pos = i
+
+        return tuple(face[min_pos:] + face[:min_pos])
+
+    def _incorporate_face(self, face):
+        name = self._canonicalize_face([v for v,side in face])
+        if name in self._old_facehashes:
+            face_id = self._old_facehashes[name]
+        else:
+            face_id = self._next_face_id
+            self._next_face_id += 1
+
+        self._facehashes[name] = face_id
+        self._faces[face_id] = name
+
+        face_edges = ((face[i][0], face[(i+1) % len(face)][0], face[i][1]) for i in range(0, len(face)))
+
+        for u,v,side in face_edges:
+            if side == 0:
+                self._left_face[frozenset((u,v))] = face_id
+            else:
+                self._right_face[frozenset((u,v))] = face_id
+
+    def _create_faces(self):
+        self._left_face = {}
+        self._right_face = {}
+        self._old_faces = self._faces
+        self._faces = {}
+        self._old_facehashes = self._facehashes
+        self._facehashes = {}
+
+        for (u,v) in self.edges():
+            if not frozenset((u,v)) in self._left_face:
+                if (u < v):
+                    new_face = self._grow_face(u, u, v)
+                else:
+                    new_face = self._grow_face(v, v, u)
+
+                self._incorporate_face(new_face)
+
+            if not frozenset((u,v)) in self._right_face:
+                if (u < v):
+                    new_face = self._grow_face(u, v, u)
+                else:
+                    new_face = self._grow_face(v, u, v)
+
+                self._incorporate_face(new_face)
+
+        del self._old_faces
+        del self._old_facehashes
+
+    def _order_vertices(self):
+        for v in self.nodes():
+            old_adj = self.adj[v]
+            self.adj[v] = collections.OrderedDict()
+            for neigh in self._adjacency_orders[v]:
+                self.adj[v][neigh] = old_adj[neigh]
+
     def _compute_planarity(self):
         if not self._planar_data_complete():
             raise NoPlanarityProvidedException()
+
+        self._create_faces()
+        self._order_vertices()
 
         self._computed_planar = True
 
