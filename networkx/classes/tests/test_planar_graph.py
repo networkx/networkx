@@ -3,7 +3,12 @@ from nose.tools import *
 import networkx
 from test_graph import BaseGraphTester
 
-class TestPlanarGraph(BaseGraphTester):
+class BasePlanarGraphTester(BaseGraphTester):
+    def test_adjacency_list(self):
+        G=self.K3
+        assert_equal(G.adjacency_list(),[[1,2],[2,0],[0,1]])
+
+class TestPlanarGraph(BasePlanarGraphTester):
     """Tests specific to dict-of-dict-of-dict graph data structure"""
     def setUp(self):
         self.Graph=networkx.PlanarGraph
