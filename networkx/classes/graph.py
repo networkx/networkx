@@ -509,8 +509,8 @@ class Graph(object):
         """
         for n in nodes:
             # keep all this inside try/except because
-            # CPython throws TypeError on n not in self.succ,
-            # while pre-2.7.5 ironpython throws on self.succ[n]
+            # CPython throws TypeError on n not in self.node,
+            # while pre-2.7.5 ironpython throws on self.adj[n]
             try:
                 if n not in self.node:
                     self.adj[n] = self.adjlist_dict_factory()
