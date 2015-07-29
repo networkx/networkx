@@ -167,7 +167,8 @@ class Graph(object):
     **Reporting:**
 
     Simple graph information is obtained using methods.
-    Iterator versions of many reporting methods exist for efficiency.
+    Reporting methods usually return iterators instead of containers
+    to reduce memory usage.
     Methods exist for reporting nodes(), edges(), neighbors() and degree()
     as well as the number of nodes and edges.
 
@@ -1020,16 +1021,6 @@ class Graph(object):
         NetworkXError
             If the node n is not in the graph.
 
-        Notes
-        -----
-        It is usually more convenient (and faster) to access the
-        adjacency dictionary as G[n]:
-
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edge('a','b',weight=7)
-        >>> G['a']
-        {'b': {'weight': 7}}
-
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -1039,8 +1030,13 @@ class Graph(object):
 
         Notes
         -----
-        It is faster to use the idiom "in G[0]", e.g.
+        It is usually more convenient (and faster) to access the
+        adjacency dictionary as ``G[n]``:
 
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_edge('a', 'b', weight=7)
+        >>> G['a']
+        {'b': {'weight': 7}}
         >>> G = nx.path_graph(4)
         >>> [n for n in G[0]]
         [1]
@@ -1195,10 +1191,10 @@ class Graph(object):
         return iter(self.adj.items())
 
     def degree(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree) and degree for single node.
+        """Return an iterator for (node, degree) or degree for single node.
 
         The node degree is the number of edges adjacent to the node.
-        This function returns the degree for a single node and an iterator
+        This function returns the degree for a single node or an iterator
         for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
@@ -1214,8 +1210,11 @@ class Graph(object):
 
         Returns
         -------
+        If a single node is requested
         deg:
-            Degree of the node, if a single node is passed as argument.
+            Degree of the node
+
+        OR if multiple nodes are requested
         nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
 

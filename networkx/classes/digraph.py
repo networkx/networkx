@@ -156,7 +156,8 @@ class DiGraph(Graph):
     **Reporting:**
 
     Simple graph information is obtained using methods.
-    Iterator versions of many reporting methods exist for efficiency.
+    Reporting methods usually return iterators instead of containers
+    to reduce memory usage.
     Methods exist for reporting nodes(), edges(), neighbors() and degree()
     as well as the number of nodes and edges.
 
@@ -785,6 +786,7 @@ class DiGraph(Graph):
 
         See Also
         --------
+        in_edges, out_edges
 
         Notes
         -----
@@ -864,10 +866,10 @@ class DiGraph(Graph):
 
 
     def degree(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree) and degree for single node.
+        """Return an iterator for (node, degree) or degree for single node.
 
         The node degree is the number of edges adjacent to the node.
-        This function returns the degree for a single node and an iterator
+        This function returns the degree for a single node or an iterator
         for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
@@ -883,8 +885,11 @@ class DiGraph(Graph):
 
         Returns
         -------
+        If a single node is requested
         deg:
-            Degree of the node, if a single node is passed as argument.
+            Degree of the node
+
+        OR if multiple nodes are requested
         nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
 
@@ -931,10 +936,10 @@ class DiGraph(Graph):
 
 
     def in_degree(self, nbunch=None, weight=None):
-        """Return an iterator for (node, in-degree) and in-degree for single node.
+        """Return an iterator for (node, in-degree) or in-degree for single node.
 
         The node in-degree is the number of edges pointing in to the node.
-        This function returns the in-degree for a single node and an iterator
+        This function returns the in-degree for a single node or an iterator
         for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
@@ -950,8 +955,11 @@ class DiGraph(Graph):
 
         Returns
         -------
+        If a single node is requested
         deg:
-            In-degree of the node, if a single node is passed as argument.
+            In-degree of the node
+
+        OR if multiple nodes are requested
         nd_iter : an iterator
             The iterator returns two-tuples of (node, in-degree).
 
@@ -996,10 +1004,10 @@ class DiGraph(Graph):
 
 
     def out_degree(self, nbunch=None, weight=None):
-        """Return an iterator for (node, out-degree) and out-degree for single node.
+        """Return an iterator for (node, out-degree) or out-degree for single node.
 
         The node out-degree is the number of edges pointing out of the node.
-        This function returns the out-degree for a single node and an iterator
+        This function returns the out-degree for a single node or an iterator
         for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
@@ -1015,8 +1023,11 @@ class DiGraph(Graph):
 
         Returns
         -------
+        If a single node is requested
         deg:
-            Out-degree of the node, if a single node is passed as argument.
+            Out-degree of the node
+
+        OR if multiple nodes are requested
         nd_iter : an iterator
             The iterator returns two-tuples of (node, out-degree).
 
