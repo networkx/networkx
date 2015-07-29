@@ -167,7 +167,8 @@ class MultiGraph(Graph):
     **Reporting:**
 
     Simple graph information is obtained using methods.
-    Iterator versions of many reporting methods exist for efficiency.
+    Reporting methods usually return iterators instead of containers
+    to reduce memory usage.
     Methods exist for reporting nodes(), edges(), neighbors() and degree()
     as well as the number of nodes and edges.
 
@@ -721,10 +722,10 @@ class MultiGraph(Graph):
             return default
 
     def degree(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree) and degree for single node.
+        """Return an iterator for (node, degree) or degree for single node.
 
         The node degree is the number of edges adjacent to the node.
-        This function returns the degree for a single node and an iterator
+        This function returns the degree for a single node or an iterator
         for a bunch of nodes or if nothing is passed as argument.
 
         Parameters
@@ -740,8 +741,11 @@ class MultiGraph(Graph):
 
         Returns
         -------
+        If a single node is requested
         deg:
             Degree of the node, if a single node is passed as argument.
+
+        OR if multiple nodes are requested
         nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
 
