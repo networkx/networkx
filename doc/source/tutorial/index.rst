@@ -8,6 +8,7 @@ Tutorial
    :maxdepth: 2
 
    tutorial
+   tutorial1
 
 **What Next**
 
