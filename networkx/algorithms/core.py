@@ -1,3 +1,9 @@
+#    Copyright (C) 2004-2015 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 """
 Find the k-cores of a graph.
 
@@ -10,20 +16,19 @@ Vladimir Batagelj and Matjaz Zaversnik, 2003.
 http://arxiv.org/abs/cs.DS/0310049
 
 """
+
 __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
                         'Jason Grout (jason-sage@creativetrax.com)',
                         'Aric Hagberg (hagberg@lanl.gov)'])
 
-#    Copyright (C) 2004-2015 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 __all__ = ['core_number','k_core','k_shell','k_crust','k_corona','find_cores']
 
 import networkx as nx
+from networkx import all_neighbors
+from networkx.exception import NetworkXError
+from networkx.utils import not_implemented_for
 
+@not_implemented_for('multigraph')
 def core_number(G):
     """Return the core number for each vertex.
 
@@ -60,49 +65,66 @@ def core_number(G):
        Vladimir Batagelj and Matjaz Zaversnik, 2003.
        http://arxiv.org/abs/cs.DS/0310049
     """
-    if G.is_multigraph():
-        raise nx.NetworkXError(
-                'MultiGraph and MultiDiGraph types not supported.')
-
-    if G.number_of_selfloops()>0:
-        raise nx.NetworkXError(
-                'Input graph has self loops; the core number is not defined.',
-                'Consider using G.remove_edges_from(G.selfloop_edges()).')
-
-    if G.is_directed():
-        import itertools
-        def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
-    else:
-        neighbors=G.neighbors_iter
-    degrees=G.degree()
-    # sort nodes by degree
-    nodes=sorted(degrees,key=degrees.get)
-    bin_boundaries=[0]
-    curr_degree=0
-    for i,v in enumerate(nodes):
-        if degrees[v]>curr_degree:
-            bin_boundaries.extend([i]*(degrees[v]-curr_degree))
-            curr_degree=degrees[v]
-    node_pos = dict((v,pos) for pos,v in enumerate(nodes))
-    # initial guesses for core is degree
-    core=degrees
-    nbrs=dict((v,set(neighbors(v))) for v in G)
+    if G.number_of_selfloops() > 0:
+        raise NetworkXError(
+                'Input graph has self loops; the core number is not defined.'
+                ' Consider using G.remove_edges_from(G.selfloop_edges()).')
+    degrees = dict(G.degree())
+    # Sort nodes by degree.
+    nodes = sorted(degrees, key=degrees.get)
+    bin_boundaries = [0]
+    curr_degree = 0
+    for i, v in enumerate(nodes):
+        if degrees[v] > curr_degree:
+            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
+            curr_degree = degrees[v]
+    node_pos = {v: pos for pos, v in enumerate(nodes)}
+    # The initial guess for the core number of a node is its degree.
+    core = degrees
+    nbrs = {v: set(all_neighbors(G, v)) for v in G}
     for v in nodes:
         for u in nbrs[v]:
             if core[u] > core[v]:
                 nbrs[u].remove(v)
-                pos=node_pos[u]
-                bin_start=bin_boundaries[core[u]]
-                node_pos[u]=bin_start
-                node_pos[nodes[bin_start]]=pos
-                nodes[bin_start],nodes[pos]=nodes[pos],nodes[bin_start]
-                bin_boundaries[core[u]]+=1
-                core[u]-=1
+                pos = node_pos[u]
+                bin_start = bin_boundaries[core[u]]
+                node_pos[u] = bin_start
+                node_pos[nodes[bin_start]] = pos
+                nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
+                bin_boundaries[core[u]] += 1
+                core[u] -= 1
     return core
 
-find_cores=core_number
+
+find_cores = core_number
+
+
+def _core_helper(G, func, k=None, core=None):
+    """Returns the subgraph induced by all nodes for which ``func``
+    returns ``True``.
+
+    ``G`` is a NetworkX graph.
+
+    ``func`` is a function that takes three inputs: a node of ``G``, the
+    maximum core value, and the core number of the graph. The function
+    must return a Boolean value.
+
+    ``k`` is the order of the core. If not specified, the maximum over
+    all core values will be returned.
+
+    ``core`` is a dictionary mapping node to core numbers for that
+    node. If you have already computed it, you should provide it
+    here. If not specified, the core numbers will be computed from the
+    graph.
+
+    """
+    if core is None:
+        core = core_number(G)
+    if k is None:
+        k = max(core.values())
+    nodes = [v for v in core if func(v, k, core)]
+    return G.subgraph(nodes).copy()
+
 
 def k_core(G,k=None,core_number=None):
     """Return the k-core of G.
@@ -149,12 +171,9 @@ def k_core(G,k=None,core_number=None):
        Vladimir Batagelj and Matjaz Zaversnik,  2003.
        http://arxiv.org/abs/cs.DS/0310049
     """
-    if core_number is None:
-        core_number=nx.core_number(G)
-    if k is None:
-        k=max(core_number.values()) # max core
-    nodes=(n for n in core_number if core_number[n]>=k)
-    return G.subgraph(nodes).copy()
+    func = lambda v, k, core_number: core_number[v] >= k
+    return _core_helper(G, func, k, core_number)
+
 
 def k_shell(G,k=None,core_number=None):
     """Return the k-shell of G.
@@ -206,12 +225,9 @@ def k_shell(G,k=None,core_number=None):
        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
-    if core_number is None:
-        core_number=nx.core_number(G)
-    if k is None:
-        k=max(core_number.values()) # max core
-    nodes=(n for n in core_number if core_number[n]==k)
-    return G.subgraph(nodes).copy()
+    func = lambda v, k, core_number: core_number[v] == k
+    return _core_helper(G, func, k, core_number)
+
 
 def k_crust(G,k=None,core_number=None):
     """Return the k-crust of G.
@@ -260,12 +276,16 @@ def k_crust(G,k=None,core_number=None):
        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
+    func = lambda v, k, core_number: core_number[v] <= k
+    # HACK These two checks are done in _core_helper, but this function
+    # requires k to be one less than the maximum core value instead of
+    # just the maximum. Therefore we duplicate the checks here. A better
+    # solution should exist...
     if core_number is None:
-        core_number=nx.core_number(G)
+        core_number = nx.core_number(G)
     if k is None:
-        k=max(core_number.values())-1
-    nodes=(n for n in core_number if core_number[n]<=k)
-    return G.subgraph(nodes).copy()
+        k = max(core_number.values()) - 1
+    return _core_helper(G, func, k, core_number)
 
 
 def k_corona(G, k, core_number=None):
@@ -315,10 +335,5 @@ def k_corona(G, k, core_number=None):
        Phys. Rev. E 73, 056101 (2006)
        http://link.aps.org/doi/10.1103/PhysRevE.73.056101
     """
-
-    if core_number is None:
-        core_number = nx.core_number(G)
-    nodes = (n for n in core_number
-             if core_number[n] == k
-             and len([v for v in G[n] if core_number[v] >= k]) == k)
-    return G.subgraph(nodes).copy()
+    func = lambda v, k, c: c[v] == k and sum(1 for w in G[v] if c[w] >= k) == k
+    return _core_helper(G, func, k, core_number)
