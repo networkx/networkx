@@ -71,9 +71,9 @@ class PlanarGraph(OrderedGraph):
 
         for u,v,side in face_edges:
             if side == 0:
-                self._right_face[frozenset((u,v))] = face_id
-            else:
                 self._left_face[frozenset((u,v))] = face_id
+            else:
+                self._right_face[frozenset((u,v))] = face_id
 
     def _create_faces(self):
         self._left_face = {}
@@ -136,14 +136,14 @@ class PlanarGraph(OrderedGraph):
         if v_index is None:
             raise NetworkXError("No edge base-v")
 
-        if u_index - v_index != 1 and not (u_index == len(self._adjacency_orders[base])-1 and v_index == 0):
+        if v_index - u_index != 1 and not (u_index == len(self._adjacency_orders[base])-1 and v_index == 0):
             print(self._adjacency_orders[base])
             raise NetworkXError("u and v are not consecutive neighbors of base")
 
-        if base < u:
-            face = self._right_face[frozenset((base,u))]
-        else:
+        if base < u: # incoming edge
             face = self._left_face[frozenset((base,u))]
+        else:
+            face = self._right_face[frozenset((base,u))]
 
         return face
 
