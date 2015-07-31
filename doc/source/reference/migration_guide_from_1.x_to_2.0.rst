@@ -1,10 +1,14 @@
-This is a guide for people moving from NetworkX 1.XX to NetworkX 2.0
+*******************************
+Migration guide from 1.X to 2.0
+*******************************
+
+This is a guide for people moving from NetworkX 1.X to NetworkX 2.0
+
+Any issues with these can be discussed on the [mailing list](https://groups.google.com/forum/#!forum/networkx-discuss)
 
 As you know we have made some major changes to the methods in the Multi/Di/Graph classes.
-Methods that used to return lists are removed and the methods that returned iterators
-are renamed(removing the _iter suffix).
-For example we hade two methods to get nodes of a graph, ``G.nodes()`` and ``G.nodes_iter()``. ``G.nodes_iter()`` is renamed to ``G.nodes()``, hence 
-``G.nodes()`` returns an iterator now instead of list.
+Methods that used to return containers now return iterators and methods that returned iterators have been removed.
+For example, ``G.nodes()`` now returns an iterator and ``G.nodes_iter()`` has been removed.
 
 The methods changed are explained with examples below.
 
@@ -21,7 +25,7 @@ People suprised by this output and expecting something like this
 
 don't panic. Nothing is wrong.
 
-Now ``G.nodes()`` returns an iterator. If you don't like this you can always get the old output by
+Now ``G.nodes()`` returns an iterator. If you want a list of nodes send the iterator to the Python list function
 
 	>>> list(G.nodes())
 	[0, 1, 2, 3, 4]
@@ -52,9 +56,10 @@ and ``G.neighbors(n)`` where n is a node.
 
 So, basically you can switch back to the old behavior by adding `list()` to the method.
 
-BUT we did something different with ``G.degree()``. If a single node is passed as argument,
-instead of returning an iterator or list, ``G.degree(n)`` now returns the degree of the node. Well this makes more sense.
-``G.degree()`` follows the old practice (returning node, degree pairs) if more than one node is passed or nothing is passed.
+For methods that used to return a dict, like ``G.degree()``, the new iterator version
+returns a (key,value) 2-tuple so that passing it to Python's dict function recovers
+the original behavior if desired.
+Note that passing a single node to the degree method still returns the degree of that node as it always has.
 
 	>>> G.degree(2)
 	4
@@ -113,5 +118,3 @@ Let's have a look on them.
 	[1]
 
 The same changes apply to MultiGraphs and MultiDiGraphs.
-
-Any issues with these can be discussed on the [mailing list](https://groups.google.com/forum/#!forum/networkx-discuss)
