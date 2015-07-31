@@ -243,7 +243,7 @@ def closeness_centrality(G, nodes, normalized=True):
     n = float(len(top))
     m = float(len(bottom))
     for node in top:
-        sp=path_length(G,node)
+        sp=dict(path_length(G,node))
         totsp=sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node]= (m + 2*(n-1)) / totsp
@@ -253,7 +253,7 @@ def closeness_centrality(G, nodes, normalized=True):
         else:
             closeness[n]=0.0
     for node in bottom:
-        sp=path_length(G,node)
+        sp=dict(path_length(G,node))
         totsp=sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node]= (n + 2*(m-1)) / totsp

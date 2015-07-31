@@ -70,10 +70,10 @@ def harmonic_centrality(G, distance=None):
             harmonic_centrality[singleton] = 0.0
         return harmonic_centrality
 
-    sp = path_length(G.reverse() if G.is_directed() else G)
+    sp = dict(path_length(G.reverse() if G.is_directed() else G))
 
     for n in nodes:
-        harmonic_centrality[n] = sum([1/i if i > 0 else 0 for i in sp[n].values()])
+        harmonic_centrality[n] = sum([1/i if i > 0 else 0 for i in dict(sp[n]).values()])
 
     return harmonic_centrality
 

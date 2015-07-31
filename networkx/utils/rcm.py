@@ -152,7 +152,7 @@ def pseudo_peripheral_node(G):
     lp = 0
     v = u
     while True:
-        spl = nx.shortest_path_length(G, v)
+        spl = dict(nx.shortest_path_length(G, v))
         l = max(spl.values())
         if l <= lp:
             break
