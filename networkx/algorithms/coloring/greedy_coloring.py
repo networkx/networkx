@@ -202,7 +202,7 @@ def strategy_saturation_largest_first(G, colors):
                 distinct_colors[neighbour].add(color)
 
 
-GREEDY_COLOR_STRATEGIES = {
+STRATEGIES = {
     'largest_first': strategy_largest_first,
     'random_sequential': strategy_random_sequential,
     'smallest_last': strategy_smallest_last,
@@ -276,10 +276,10 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     """
     colors = {}  # dictionary to keep track of the colors of the nodes
 
-    if nx.utils.is_string_like(strategy):
-        strategy = GREEDY_COLOR_STRATEGIES.get(strategy, None)
-        if strategy is None:
-            raise ValueError("Unrecognized Strategy: {0}".format(strategy))
+    strategy = STRATEGIES.get(strategy, strategy)
+    if not callable(strategy):
+        raise nx.NetworkXError('strategy must be callable or a valid string. '
+                               '{0} not valid.'.format(strategy))
 
     if len(G):
         if interchange and (
