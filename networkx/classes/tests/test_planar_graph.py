@@ -8,7 +8,34 @@ class BasePlanarGraphTester(BaseGraphTester):
         G=self.K3
         assert_equal(G.adjacency_list(),[[1,2],[2,0],[0,1]])
 
-class TestPlanarGraph(BasePlanarGraphTester):
+class PlanarityTester(BasePlanarGraphTester):
+    def test_face_assignment(self):
+        G = self.Graph()
+        G.add_nodes_from([0,1,2,3])
+        G.add_edges_from([
+            (0,1), (0,3), (0,2),
+            (1,3),
+            (2,3)
+        ])
+        G.provide_planarity_data(0, [1,3,2])
+        G.provide_planarity_data(1, [3,0])
+        G.provide_planarity_data(2, [0,3])
+        G.provide_planarity_data(3, [2,0,1])
+
+        outer_face = G.get_face_between(0, 2, 1)
+        assert_equal(G.get_face_between(1, 0, 3), outer_face)
+        assert_equal(G.get_face_between(3, 1, 2), outer_face)
+        assert_equal(G.get_face_between(2, 3, 0), outer_face)
+
+        inner_triangle_one = G.get_face_between(0, 3, 2)
+        assert_equal(G.get_face_between(3, 2, 0), inner_triangle_one)
+        assert_equal(G.get_face_between(2, 0, 3), inner_triangle_one)
+
+        inner_triangle_two = G.get_face_between(1, 3, 0)
+        assert_equal(G.get_face_between(3, 0, 1), inner_triangle_two)
+        assert_equal(G.get_face_between(0, 1, 3), inner_triangle_two)
+
+class TestPlanarGraph(PlanarityTester):
     """Tests specific to dict-of-dict-of-dict graph data structure"""
     def setUp(self):
         self.Graph=networkx.PlanarGraph
