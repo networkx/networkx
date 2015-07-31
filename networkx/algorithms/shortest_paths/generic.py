@@ -187,18 +187,7 @@ def shortest_path_length(G, source=None, target=None, weight=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> print(nx.shortest_path_length(G,source=0,target=4))
-    4
-    >>> p=nx.shortest_path_length(G,source=0) # target not specified
-    >>> p[4]
-    4
-    >>> p=nx.shortest_path_length(G,target=4) # source not specified
-    >>> p[0]
-    4
-    >>> p=nx.shortest_path_length(G) # source,target not specified
-    >>> p[0][4]
-    4
+  
 
     Notes
     -----
@@ -226,12 +215,15 @@ def shortest_path_length(G, source=None, target=None, weight=None):
                 paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
-            with nx.utils.reversed(G):
-                if weight is None:
-                    paths=nx.single_source_shortest_path_length(G, target)
+            # with nx.utils.reversed(G):
+            if weight is None:
+                if G.is_directed():
+                    paths=nx.single_source_shortest_path_length(G.reverse(copy=False), target)
                 else:
-                    paths=nx.single_source_dijkstra_path_length(G, target,
-                                                                weight=weight)
+                    paths=nx.single_source_shortest_path_length(G, target)
+            else:
+                paths=nx.single_source_dijkstra_path_length(G, target,
+                                                            weight=weight)
     else:
         if target is None:
             ## Find paths to all nodes accessible from the source.
@@ -278,17 +270,7 @@ def average_shortest_path_length(G, weight=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> print(nx.average_shortest_path_length(G))
-    2.0
 
-    For disconnected graphs you can compute the average shortest path
-    length for each component:
-    >>> G=nx.Graph([(1,2),(3,4)])
-    >>> for g in nx.connected_component_subgraphs(G):
-    ...     print(nx.average_shortest_path_length(g))
-    1.0
-    1.0
 
     """
     if G.is_directed():
@@ -301,7 +283,7 @@ def average_shortest_path_length(G, weight=None):
     if weight is None:
         for node in G:
             path_length=nx.single_source_shortest_path_length(G, node)
-            avg += sum(path_length.values())
+            avg += sum(d for n, d in path_length)
     else:
         for node in G:
             path_length=nx.single_source_dijkstra_path_length(G, node, weight=weight)

@@ -50,11 +50,11 @@ def eccentricity(G, v=None, sp=None):
     e={}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length=networkx.single_source_shortest_path_length(G,n)
+            length = dict(networkx.single_source_shortest_path_length(G,n))
             L = len(length)
         else:
             try:
-                length=sp[n]
+                length = sp[n]
                 L = len(length)
             except TypeError:
                 raise networkx.NetworkXError('Format of "sp" is invalid.')
@@ -62,7 +62,7 @@ def eccentricity(G, v=None, sp=None):
             msg = "Graph not connected: infinite path length"
             raise networkx.NetworkXError(msg)
             
-        e[n]=max(length.values())
+        e[n]=max(dict(length).values())
 
     if v in G:
         return e[v]  # return single value

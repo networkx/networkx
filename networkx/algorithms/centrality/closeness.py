@@ -87,7 +87,7 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
         nodes = [u]
     closeness_centrality = {}
     for n in nodes:
-        sp = path_length(G,n)
+        sp = dict(path_length(G,n))
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness_centrality[n] = (len(sp)-1.0) / totsp

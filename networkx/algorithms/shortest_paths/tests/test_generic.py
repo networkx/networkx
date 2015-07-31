@@ -51,7 +51,7 @@ class TestGenericPath:
         assert_equal(nx.shortest_path_length(self.directed_cycle,0,4,weight='weight'),4)
 
     def test_shortest_path_length_target(self):
-        sp = nx.shortest_path_length(nx.path_graph(3), target=1)
+        sp = dict(nx.shortest_path_length(nx.path_graph(3), target=1))
         assert_equal(sp[0], 1)
         assert_equal(sp[1], 0)
         assert_equal(sp[2], 1)
@@ -71,11 +71,11 @@ class TestGenericPath:
 
 
     def test_single_source_shortest_path_length(self):
-        l=nx.shortest_path_length(self.cycle,0)
-        assert_equal(l,{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
-        assert_equal(l,nx.single_source_shortest_path_length(self.cycle,0))
+        l = dict(nx.shortest_path_length(self.cycle,0))
+        assert_equal(l, {0:0,1:1,2:2,3:3,4:3,5:2,6:1})
+        assert_equal(l, dict(nx.single_source_shortest_path_length(self.cycle,0)))
         l=nx.shortest_path_length(self.grid,1)
-        assert_equal(l[16],6)
+        assert_equal(dict(l)[16], 6)
         # now with weights
         l=nx.shortest_path_length(self.cycle,0,weight='weight')
         assert_equal(l,{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
@@ -99,11 +99,14 @@ class TestGenericPath:
 
 
     def test_all_pairs_shortest_path_length(self):
-        l=nx.shortest_path_length(self.cycle)
-        assert_equal(l[0],{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
-        assert_equal(l,nx.all_pairs_shortest_path_length(self.cycle))
-        l=nx.shortest_path_length(self.grid)
-        assert_equal(l[1][16],6)
+        l = dict(nx.shortest_path_length(self.cycle))
+        assert_equal(dict(l[0]), {0:0,1:1,2:2,3:3,4:3,5:2,6:1})
+        # for n, d in l:
+        #     assert_equal(n, i for i, j in nx.all_pairs_shortest_path_length(self.cycle))
+        #     assert_equal(dict(d), dict(j) for i, j in nx.all_pairs_shortest_path_length(self.cycle))
+        # assert_equal(l, dict(nx.all_pairs_shortest_path_length(self.cycle)))
+        l=dict(nx.shortest_path_length(self.grid))
+        assert_equal(dict(l[1])[16],6)
         # now with weights
         l=nx.shortest_path_length(self.cycle,weight='weight')
         assert_equal(l[0],{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
@@ -112,7 +115,7 @@ class TestGenericPath:
         assert_equal(l[1][16],6)
 
     def test_average_shortest_path(self):
-        l=nx.average_shortest_path_length(self.cycle)
+        l = nx.average_shortest_path_length(self.cycle)
         assert_almost_equal(l,2)
         l=nx.average_shortest_path_length(nx.path_graph(5))
         assert_almost_equal(l,2)

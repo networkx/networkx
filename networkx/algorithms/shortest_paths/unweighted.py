@@ -41,10 +41,10 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> length=nx.single_source_shortest_path_length(G,0)
+    >>> length = dict(nx.single_source_shortest_path_length(G,0))
     >>> length[4]
     4
-    >>> print(length)
+    >>> length
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     See Also
@@ -61,9 +61,10 @@ def single_source_shortest_path_length(G,source,cutoff=None):
             if v not in seen:
                 seen[v]=level # set the level of vertex v
                 nextlevel.update(G[v]) # add neighbors of v
+                yield (v, level)
         if (cutoff is not None and cutoff <= level):  break
         level=level+1
-    return seen  # return all path lengths as dictionary
+    del seen  # return all path lengths as dictionary
 
 
 def all_pairs_shortest_path_length(G, cutoff=None):
@@ -89,17 +90,16 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = nx.all_pairs_shortest_path_length(G)
-    >>> print(length[1][4])
-    3
-    >>> length[1]
+    >>> dict(dict(nx.all_pairs_shortest_path_length(G))[1])[2]
+    1
+    >>> dict(dict(nx.all_pairs_shortest_path_length(G))[1])
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
     """
     length = single_source_shortest_path_length
     # TODO This can be trivially parallelized.
-    return {n: length(G, n, cutoff=cutoff) for n in G}
-
+    for n in G:
+        yield (n, dict(length(G, n, cutoff=cutoff)))
 
 def bidirectional_shortest_path(G,source,target):
     """Return a list of nodes in a shortest path between source and target.
