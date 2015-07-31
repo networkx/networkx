@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+#    Copyright (C) 2004-2015 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 """
 Shortest path algorithms for weighed graphs.
 """
@@ -6,12 +12,13 @@ __author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>',
                             'Loïc Séguin-C. <loicseguin@gmail.com>',
                             'Dan Schult <dschult@colgate.edu>',
                             'Niels van Adrichem <n.l.m.vanadrichem@tudelft.nl'])
-#    Copyright (C) 2004-2015 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+
+from collections import deque
+from heapq import heappush, heappop
+from itertools import count
+import networkx as nx
+from networkx.utils import generate_unique_node
+
 
 __all__ = ['dijkstra_path',
            'dijkstra_path_length',
@@ -27,11 +34,39 @@ __all__ = ['dijkstra_path',
            'goldberg_radzik',
            'johnson']
 
-from collections import deque
-from heapq import heappush, heappop
-from itertools import count
-import networkx as nx
-from networkx.utils import generate_unique_node
+
+def _weight_function(G, weight):
+    """Returns a function that returns the weight of an edge,
+    specifically suitable for input to the :func:`_dijkstra` and
+    :func:`_bellman_ford_relaxation` functions.
+
+    ``G`` is a NetworkX graph.
+
+    ``weight`` is either a string or a callable. If it is callable,
+    ``weight`` itself is returned. If it is a string, it is assumed to
+    be the name of the edge attribute that represents the weight of an
+    edge. In that case, a function is returned that gets the edge weight
+    according to the specified edge attribute.
+
+    This function returns a callable that accepts exactly three inputs:
+    a node, an node adjacent to the first one, and the edge attribute
+    dictionary for the eedge joining those nodes. That function returns
+    a number representing the weight of an edge.
+
+    If ``G`` is a multigraph, and ``weight`` is not callable, the
+    minimum edge weight over all parallel edges is returned. If any edge
+    does not have an attribute with key ``weight``, it is assumed to
+    have weight one.
+
+    """
+    if callable(weight):
+        return weight
+    # If the weight keyword argument is not callable, we assume it is a
+    # string representing the edge attribute containing the weight of
+    # the edge.
+    if G.is_multigraph():
+        return lambda u, v, d: min(attr.get(weight, 1) for attr in d.values())
+    return lambda u, v, data: data.get(weight, 1)
 
 
 def dijkstra_path(G, source, target, weight='weight'):
@@ -47,8 +82,18 @@ def dijkstra_path(G, source, target, weight='weight'):
     target : node
        Ending node
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -98,8 +143,6 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     target : node label
        ending node for path
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -110,6 +153,19 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     ------
     NetworkXNoPath
         If no path exists between source and target.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Examples
     --------
@@ -156,11 +212,21 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
     source : node
        Starting node for path.
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
-
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -201,11 +267,21 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     source : node label
        Starting node for path
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight.
-
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -231,16 +307,12 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     single_source_dijkstra()
 
     """
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
-
-    return iter(_dijkstra(G, source, get_weight, cutoff=cutoff).items())
+    weight = _weight_function(G, weight)
+    return iter(_dijkstra(G, source, weight, cutoff=cutoff).items())
 
 
-def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight'):
+def single_source_dijkstra(G, source, target=None, cutoff=None,
+                           weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
 
     Uses Dijkstra's algorithm for shortest paths.
@@ -257,6 +329,19 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
 
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -296,19 +381,13 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
     """
     if source == target:
         return ({source: 0}, {source: [source]})
-
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
-
+    weight = _weight_function(G, weight)
     paths = {source: [source]}  # dictionary of paths
-    return (_dijkstra(G, source, get_weight, paths=paths, cutoff=cutoff,
-                     target=target), paths)
+    return (_dijkstra(G, source, weight, paths=paths, cutoff=cutoff,
+                      target=target), paths)
 
 
-def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
+def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
               target=None):
     """Uses Dijkstra's algorithm to find shortest weighted paths
 
@@ -319,7 +398,7 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
     source : node label
        Starting node for paths
 
-    get_weight: function
+    weight: function
         Function with (u, v, data) input that returns that edges weight
 
     pred: dict of lists, optional(default=None)
@@ -365,10 +444,10 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
         if v == target:
             break
         for u, e in G_succ[v].items():
-            cost = get_weight(v, u, e)
+            cost = weight(v, u, e)
             if cost is None:
                 continue
-            vu_dist = dist[v] + get_weight(v, u, e)
+            vu_dist = dist[v] + weight(v, u, e)
             if cutoff is not None:
                 if vu_dist > cutoff:
                     continue
@@ -403,11 +482,21 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     source : node label
        Starting node for path
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
-
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -423,14 +512,9 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     The list of predecessors contains more than one element only when
     there are more than one shortest paths to the key node.
     """
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
-
+    weight = _weight_function(G, weight)
     pred = {source: []}  # dictionary of predecessors
-    return (pred, _dijkstra(G, source, get_weight, pred=pred, cutoff=cutoff))
+    return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff))
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
@@ -440,11 +524,21 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
-
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -480,11 +574,21 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
-
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -530,8 +634,18 @@ def bellman_ford(G, source, weight='weight'):
     source: node label
        Starting node for path
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -577,10 +691,9 @@ def bellman_ford(G, source, weight='weight'):
     """
     if source not in G:
         raise KeyError("Node %s is not found in the graph" % source)
-
-    for u, v, attr in G.selfloop_edges(data=True):
-        if attr.get(weight, 1) < 0:
-            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+    weight = _weight_function(G, weight)
+    if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
+        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     dist = {source: 0}
     pred = {source: None}
@@ -607,8 +720,11 @@ def _bellman_ford_relaxation(G, pred, dist, source, weight):
     source: list
         List of source nodes
 
-    weight: string
-       Edge data key corresponding to the edge weight
+    weight : function
+       The weight of an edge is the value returned by the function. The
+       function must accept exactly three positional arguments: the two
+       endpoints of an edge and the dictionary of edge attributes for
+       that edge. The function must return a number.
 
     Returns
     -------
@@ -623,13 +739,6 @@ def _bellman_ford_relaxation(G, pred, dist, source, weight):
        negative cost (di)cycle.  Note: any negative weight edge in an
        undirected graph is a negative cost cycle
     """
-    if G.is_multigraph():
-        def get_weight(edge_dict):
-            return min(eattr.get(weight, 1) for eattr in edge_dict.values())
-    else:
-        def get_weight(edge_dict):
-            return edge_dict.get(weight, 1)
-
     G_succ = G.succ if G.is_directed() else G.adj
     inf = float('inf')
     n = len(G)
@@ -644,7 +753,7 @@ def _bellman_ford_relaxation(G, pred, dist, source, weight):
         if pred[u] not in in_q:
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + get_weight(e)
+                dist_v = dist_u + weight(u, v, e)
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
@@ -677,8 +786,18 @@ def goldberg_radzik(G, source, weight='weight'):
     source: node label
        Starting node for path
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -724,20 +843,12 @@ def goldberg_radzik(G, source, weight='weight'):
     """
     if source not in G:
         raise KeyError("Node %s is not found in the graph" % source)
-
-    for u, v, attr in G.selfloop_edges(data=True):
-        if attr.get(weight, 1) < 0:
-            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+    weight = _weight_function(G, weight)
+    if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
+        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     if len(G) == 1:
         return {source: None}, {source: 0}
-
-    if G.is_multigraph():
-        def get_weight(edge_dict):
-            return min(attr.get(weight, 1) for attr in edge_dict.values())
-    else:
-        def get_weight(edge_dict):
-            return edge_dict.get(weight, 1)
 
     if G.is_directed():
         G_succ = G.succ
@@ -769,7 +880,8 @@ def goldberg_radzik(G, source, weight='weight'):
                 continue
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
-            if all(d_u + get_weight(e) >= d[v] for v, e in G_succ[u].items()):
+            if all(d_u + weight(u, v, e) >= d[v]
+                   for v, e in G_succ[u].items()):
                 continue
             # Nonrecursive DFS that inserts nodes reachable from u via edges of
             # nonpositive reduced costs into to_scan in (reverse) topological
@@ -786,7 +898,7 @@ def goldberg_radzik(G, source, weight='weight'):
                     stack.pop()
                     in_stack.remove(u)
                     continue
-                t = d[u] + get_weight(e)
+                t = d[u] + weight(u, v, e)
                 d_v = d[v]
                 if t <= d_v:
                     is_neg = t < d_v
@@ -816,7 +928,7 @@ def goldberg_radzik(G, source, weight='weight'):
         for u in to_scan:
             d_u = d[u]
             for v, e in G_succ[u].items():
-                w_e = get_weight(e)
+                w_e = weight(u, v, e)
                 if d_u + w_e < d[v]:
                     d[v] = d_u + w_e
                     pred[v] = u
@@ -842,8 +954,18 @@ def negative_edge_cycle(G, weight='weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -895,8 +1017,18 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     target : node
        Ending node.
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -1023,15 +1155,25 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
 
 def johnson(G, weight='weight'):
-    """Compute shortest paths between all nodes in a weighted graph using
-    Johnson's algorithm.
+    r"""Computes shortest paths between each pair of nodes in a weighted
+    graph using Johnson's algorithm.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight.
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Returns
     -------
@@ -1060,8 +1202,10 @@ def johnson(G, weight='weight'):
     the input graph that removes all negative weights, allowing Dijkstra's
     algorithm to be used on the transformed graph.
 
-    It may be faster than Floyd - Warshall algorithm in sparse graphs.
-    Algorithm complexity: O(V^2 * logV + V * E)
+    The time complexity of this algorithm is `O(n^2 \log n + n m)`,
+    where `n` is the number of nodes and `m` the number of edges in the
+    graph. For dense graphs, this may be faster than the Floyd–Warshall
+    algorithm.
 
     See Also
     --------
@@ -1071,30 +1215,24 @@ def johnson(G, weight='weight'):
     all_pairs_shortest_path_length
     all_pairs_dijkstra_path
     bellman_ford
+
     """
     if not nx.is_weighted(G, weight=weight):
         raise nx.NetworkXError('Graph is not weighted.')
 
     dist = {v: 0 for v in G}
     pred = {v: None for v in G}
-
+    weight = _weight_function(G, weight)
     # Calculate distance of shortest paths
-    dist_bellman = _bellman_ford_relaxation(G, pred, dist, list(G.nodes()),
-                                            weight)[1]
+    dist_bellman = _bellman_ford_relaxation(G, pred, dist, list(G), weight)[1]
+    # Update the weight function to take into account the Bellman--Ford
+    # relaxation distances.
+    scale = lambda u, v: dist_bellman[u] - dist_bellman[v]
+    new_weight = lambda u, v, d: weight(u, v, d) + scale(u, v)
 
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: (
-            min(eattr.get(weight, 1) for eattr in data.values()) +
-            dist_bellman[u] - dist_bellman[v])
-    else:
-        get_weight = lambda u, v, data: (data.get(weight, 1) +
-                                         dist_bellman[u] - dist_bellman[v])
-                                         
     def dist_path(v):
-        paths={v: [v]}
-        _dijkstra(G, v, get_weight, paths=paths)
+        paths = {v: [v]}
+        _dijkstra(G, v, new_weight, paths=paths)
         return paths
         
-    all_pairs = {v: dist_path(v) for v in G}
-
-    return all_pairs
+    return {v: dist_path(v) for v in G}

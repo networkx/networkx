@@ -1,4 +1,10 @@
-from nose.tools import *
+from __future__ import division
+
+from nose.tools import assert_equal
+from nose.tools import assert_false
+from nose.tools import assert_raises
+from nose.tools import raises
+
 import networkx as nx
 
 
@@ -196,6 +202,32 @@ class TestWeightedPath:
         assert_raises(ValueError, nx.dijkstra_predecessor_and_distance, G, 8)
         G.add_edge(9, 10)
         assert_raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
+
+    def test_weight_function(self):
+        """Tests that a callable weight is interpreted as a weight
+        function instead of an edge attribute.
+
+        """
+        # Create a triangle in which the edge from node 0 to node 2 has
+        # a large weight and the other two edges have a small weight.
+        G = nx.complete_graph(3)
+        G.edge[0][2]['weight'] = 10
+        G.edge[0][1]['weight'] = 1
+        G.edge[1][2]['weight'] = 1
+        # The weight function will take the multiplicative inverse of
+        # the weights on the edges. This way, weights that were large
+        # before now become small and vice versa.
+        weight = lambda u, v, d: 1 / d['weight']
+        # The shortest path from 0 to 2 using the actual weights on the
+        # edges should be [0, 1, 2].
+        distances, paths = nx.single_source_dijkstra(G, 0, 2)
+        assert_equal(distances[2], 2)
+        assert_equal(paths[2], [0, 1, 2])
+        # However, with the above weight function, the shortest path
+        # should be the [0, 2], since that has a very small weight.
+        distances, paths = nx.single_source_dijkstra(G, 0, 2, weight=weight)
+        assert_equal(distances[2], 1 / 10)
+        assert_equal(paths[2], [0, 2])
 
 
 class TestBellmanFordAndGoldbergRadizk:
