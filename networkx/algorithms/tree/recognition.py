@@ -112,6 +112,7 @@ def is_arborescence(G):
     """
     return is_tree(G) and max(d for n, d in G.in_degree()) <= 1
 
+
 @nx.utils.not_implemented_for('undirected')
 def is_branching(G):
     """

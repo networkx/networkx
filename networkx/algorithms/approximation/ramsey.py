@@ -27,7 +27,6 @@ def ramsey_R2(G):
     """
     if not G:
         return (set([]), set([]))
-
     node = next(G.nodes())
     nbrs = nx.all_neighbors(G, node)
     nnbrs = nx.non_neighbors(G, node)
