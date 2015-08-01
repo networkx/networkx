@@ -202,7 +202,20 @@ def strategy_saturation_largest_first(G, colors):
                 distinct_colors[neighbour].add(color)
 
 
-def greedy_color(G, strategy=strategy_largest_first, interchange=False):
+STRATEGIES = {
+    'largest_first': strategy_largest_first,
+    'random_sequential': strategy_random_sequential,
+    'smallest_last': strategy_smallest_last,
+    'independent_set': strategy_independent_set,
+    'connected_sequential_bfs': strategy_connected_sequential_bfs,
+    'connected_sequential_dfs': strategy_connected_sequential_dfs,
+    'connected_sequential': strategy_connected_sequential,
+    'saturation_largest_first': strategy_saturation_largest_first,
+    'DSATUR': strategy_saturation_largest_first,
+}
+
+
+def greedy_color(G, strategy='largest_first', interchange=False):
     """Color a graph using various strategies of greedy graph coloring.
     The strategies are described in [1]_.
 
@@ -213,22 +226,23 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
     ----------
     G : NetworkX graph
 
-    strategy : function(G, colors)
-       A function that provides the coloring strategy, by returning nodes
-       in the ordering they should be colored. G is the graph, and colors
-       is a dict of the currently assigned colors, keyed by nodes.
+    strategy : string or function(G, colors)
+       A string or function providing the color strategy. Built-in options are:
 
-       You can pass your own ordering function, or use one of the built in:
+       * 'largest_first'
+       * 'random_sequential'
+       * 'smallest_last'
+       * 'independent_set'
+       * 'connected_sequential_bfs'
+       * 'connected_sequential_dfs'
+       * 'connected_sequential' (alias of 'connected_sequential_bfs')
+       * 'saturation_largest_first'
+       * 'DSATUR' (alias of 'saturation_largest_first')
 
-       * strategy_largest_first
-       * strategy_random_sequential
-       * strategy_smallest_last
-       * strategy_independent_set
-       * strategy_connected_sequential_bfs
-       * strategy_connected_sequential_dfs
-       * strategy_connected_sequential
-         (alias of strategy_connected_sequential_bfs)
-       * strategy_saturation_largest_first (also known as DSATUR)
+       Optionally, you may instead pass a function which implements the coloring
+       strategy, by returning nodes in the ordering they should be colored.
+       G is the graph, and colors is a dict of the currently assigned colors,
+       keyed by nodes.
 
     interchange: bool
        Will use the color interchange algorithm described by [2]_ if set
@@ -247,7 +261,7 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> d = nx.coloring.greedy_color(G, strategy=nx.coloring.strategy_largest_first)
+    >>> d = nx.coloring.greedy_color(G, strategy='largest_first')
     >>> d in [{0: 0, 1: 1, 2: 0, 3: 1}, {0: 1, 1: 0, 2: 1, 3: 0}]
     True
 
@@ -261,6 +275,11 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
        ISBN 0-486-45353-7.
     """
     colors = {}  # dictionary to keep track of the colors of the nodes
+
+    strategy = STRATEGIES.get(strategy, strategy)
+    if not callable(strategy):
+        raise nx.NetworkXError('strategy must be callable or a valid string. '
+                               '{0} not valid.'.format(strategy))
 
     if len(G):
         if interchange and (
