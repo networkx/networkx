@@ -35,6 +35,23 @@ class PlanarityTester(BasePlanarGraphTester):
         assert_equal(G.get_face_between(3, 0, 1), inner_triangle_two)
         assert_equal(G.get_face_between(0, 1, 3), inner_triangle_two)
 
+    def test_star(self):
+        G = self.Graph()
+        G.add_nodes_from([0,1,2,3,4,5])
+        G.add_edges_from([(0,1), (0,2), (0,3), (0,4), (0,5)])
+        G.provide_planarity_data(0, [1,2,3,4,5])
+        G.provide_planarity_data(1, [0])
+        G.provide_planarity_data(2, [0])
+        G.provide_planarity_data(3, [0])
+        G.provide_planarity_data(4, [0])
+        G.provide_planarity_data(5, [0])
+
+        face = G.get_face_between(0, 1, 2)
+        assert_equal(G.get_face_between(0,2,3), face)
+        assert_equal(G.get_face_between(0,3,4), face)
+        assert_equal(G.get_face_between(0,4,5), face)
+        assert_equal(G.get_face_between(0,5,1), face)
+
 class TestPlanarGraph(PlanarityTester):
     """Tests specific to dict-of-dict-of-dict graph data structure"""
     def setUp(self):

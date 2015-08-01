@@ -10,17 +10,43 @@ class InconsistentPlanarityData(Exception):
     pass
 
 class PlanarGraph(OrderedGraph):
+    """Class to represent an undirected planar Graph
+
+    This class is used to represent an undirected graph together with a
+    (combinatorial) planar embedding. It provides various functions that rely
+    on this planar embedding.
+    """
+
     def __init__(self, data=None, **attr):
         self._has_planar_data = {}
+        """Stores for every node whether the order of adjacencies has been provided"""
         self._computed_planar = True
+        """Indicates whether all internal variables for the current embedding have been computed"""
 
         self._adjacency_orders = {}
+        """Stores for every node the order (in clockwise order) of its adjacencies
+        in the given embedding
+        """
         self._adjacency_indices = {}
+        """Reverse mapping for _adjacency_orders. _adjacency_indices[u][v] indicates the
+        index in _adjacency_orders[u] that will be v
+        """
 
         self._next_face_id = 0
         self._left_face = {}
+        """When _computed_planar is True, this stores for every edge which face is on
+        its left side. Please note that for this purpose, edges are directed towards
+        the smaller vertex.
+        """
         self._right_face = {}
+        """When _computed_planar is True, this stores for every edge which face is on
+        its right side. Please note that for this purpose, edges are directed towards
+        the smaller vertex.
+        """
         self._faces = {}
+        """When _computed_planar is True, this stores the vertices along each face in
+        clockwise order.
+        """
         self._facehashes = {}
 
         super(PlanarGraph, self).__init__(data=data, **attr)
@@ -28,21 +54,21 @@ class PlanarGraph(OrderedGraph):
     def _planar_data_complete(self):
         return all(self._has_planar_data.values())
 
-    def _grow_face(self, start_node, u, v):
-        if v == start_node:
-            if (u < v):
-                return [(u, 0)]
-            else:
-                return [(u, 1)]
-
+    def _grow_face(self, start_edge, u, v):
         index_in_v = self._adjacency_indices[v][u]
         next_index = index_in_v - 1
         if next_index < 0:
             next_index = len(self._adjacency_orders[v]) - 1
         next_vertex = self._adjacency_orders[v][next_index]
 
+        if (v, next_vertex) == start_edge:
+            if (u < v):
+                return [(u, 0)]
+            else:
+                return [(u, 1)]
+
         side = 0 if (u < v) else 1
-        return [(u, side)] + self._grow_face(start_node, v, next_vertex)
+        return [(u, side)] + self._grow_face(start_edge, v, next_vertex)
 
     def _canonicalize_face(self, face):
         min_val = face[0]
@@ -86,17 +112,17 @@ class PlanarGraph(OrderedGraph):
         for (u,v) in self.edges():
             if not frozenset((u,v)) in self._left_face:
                 if (u < v):
-                    new_face = self._grow_face(u, u, v)
+                    new_face = self._grow_face((u, v), u, v)
                 else:
-                    new_face = self._grow_face(v, v, u)
+                    new_face = self._grow_face((v, u), v, u)
 
                 self._incorporate_face(new_face)
 
             if not frozenset((u,v)) in self._right_face:
                 if (u < v):
-                    new_face = self._grow_face(v, v, u)
+                    new_face = self._grow_face((v, u), v, u)
                 else:
-                    new_face = self._grow_face(u, u, v)
+                    new_face = self._grow_face((u, v), u, v)
 
                 self._incorporate_face(new_face)
 
@@ -125,6 +151,11 @@ class PlanarGraph(OrderedGraph):
         return super(PlanarGraph, self).__getitem__(n)
 
     def get_face_between(self, base, u, v):
+        """Returns the face between the edges (base,u) and (base,v).
+
+        Please note that this means that u and v must be consecutive (in
+        clockwise order) neighbors of base.
+        """
         if not self._computed_planar:
             self._compute_planarity()
 
@@ -207,6 +238,17 @@ class PlanarGraph(OrderedGraph):
         self._computed_planar = False
 
     def insert_edge(self, u, u_pos, v, v_pos, attr_dict=None, **attr):
+        """Inserts an edge at a given position within the combinatorial embedding.
+
+        Arguments:
+            u:          One end of the edge
+            u_pos:      The index inside u's adjacencies that this edge will be insertred at.
+                        I.e. this edge will be between old adjacencies (u_pos-1) andd u_pos
+                        of u.
+            v:          Other end of the edge
+            v_pos:      Same as u_pos, only for v
+            attr_dict:  Atrribute data for this edge
+        """
         super(PlanarGraph, self).add_edge(u, v, attr_dict=attr_dict, **attr)
 
         if self._has_planar_data[u]:
@@ -224,6 +266,19 @@ class PlanarGraph(OrderedGraph):
         self._computed_planar = False
 
     def provide_planarity_data(self, v, ordered_adjacencies):
+        """Can be used to provide the order of adjacencies around a vertex, in
+        clockwise order.
+
+        This must be done for every vertex before planarity-related methods can
+        be used!
+
+        Example:
+            If vertex 0 has neighbors 1, 2 and 3 (in this order), this would be
+            correct:
+                G.provide_planarity_data(0, [1,2,3])
+            Equally correct would be:
+                G.provide_planarity_data(0, [2,3,1])
+        """
         if not len(set(ordered_adjacencies)) == len(ordered_adjacencies):
             raise InconsistentPlanarityData()
         if not set(ordered_adjacencies) == set(self.adj[v].keys()):
