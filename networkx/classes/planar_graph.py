@@ -1,7 +1,25 @@
-from ordered import OrderedGraph
+"""Base class for undirected graphs with planar embedding.
+
+The Graph class allows any hashable, comparable object as a node
+and can associate key/value attribute pairs with each undirected edge.
+
+Self-loops are allowed but multiple edges are not.
+"""
+#    Copyright (C) 2015 by
+#    Lukas Barth (mail@tinloaf.de)
+#    All rights reserved.
+#    BSD license.
+from copy import deepcopy
+import networkx as nx
 from networkx.exception import NetworkXError
+import networkx.convert as convert
+
+__author__ = """\n""".join(['Lukas Barth (mail@tinloaf.de)'])
+
 import collections
 
+from ordered import OrderedGraph
+from networkx.exception import NetworkXError
 
 class NoPlanarityProvidedException(Exception):
     pass
