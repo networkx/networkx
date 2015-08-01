@@ -25,3 +25,9 @@ networkx.egg-info/
 # Sublime Text project files
 *.sublime-project
 *.sublime-workspace
+
+# IPython Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Vim's swap files
+*.sw[op]

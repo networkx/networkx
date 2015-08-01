@@ -30,3 +30,14 @@ Branchings and Spanning Arborescences
    maximum_spanning_arborescence
    minimum_spanning_arborescence
    Edmonds
+
+Spanning Trees
+--------------
+.. automodule:: networkx.algorithms.tree.mst
+.. autosummary::
+   :toctree: generated/
+
+   minimum_spanning_tree
+   maximum_spanning_tree
+   minimum_spanning_edges
+   maximum_spanning_edges

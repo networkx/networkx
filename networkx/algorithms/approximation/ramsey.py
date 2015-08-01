@@ -7,6 +7,8 @@ Ramsey numbers.
 #   All rights reserved.
 #   BSD license.
 import networkx as nx
+from ...utils import arbitrary_element
+
 __all__ = ["ramsey_R2"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 

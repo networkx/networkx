@@ -6,6 +6,7 @@ import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx.algorithms.simple_paths import _bidirectional_shortest_path
 from networkx.algorithms.simple_paths import _bidirectional_dijkstra
+from networkx.utils import arbitrary_element
 
 # Tests for all_simple_paths
 def test_all_simple_paths():

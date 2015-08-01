@@ -10,6 +10,7 @@ Connected components.
 #    BSD license.
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+from ...utils import arbitrary_element
 
 __authors__ = "\n".join(['Eben Kenah',
                          'Aric Hagberg <aric.hagberg@gmail.com>'

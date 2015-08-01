@@ -1,5 +1,5 @@
 """
-A package for generating various graphs in networkx. 
+A package for generating various graphs in networkx.
 
 """
 from networkx.generators.classic import *
@@ -13,7 +13,6 @@ from networkx.generators.random_graphs import *
 from networkx.generators.small import *
 from networkx.generators.stochastic import *
 from networkx.generators.social import *
-from networkx.generators.threshold import *
 from networkx.generators.intersection import *
 from networkx.generators.random_clustered import *
 from networkx.generators.community import *
