@@ -52,6 +52,8 @@ class PlanarityTester(BasePlanarGraphTester):
         assert_equal(G.get_face_between(0,4,5), face)
         assert_equal(G.get_face_between(0,5,1), face)
 
+        assert_equal(G.get_face(face), tuple((0,1,0,5,0,4,0,3,0,2)))
+
 class TestPlanarGraph(PlanarityTester):
     """Tests specific to dict-of-dict-of-dict graph data structure"""
     def setUp(self):

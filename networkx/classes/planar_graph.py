@@ -66,8 +66,19 @@ class PlanarGraph(OrderedGraph):
         clockwise order.
         """
         self._facehashes = {}
+        """When recomputing the faces, this is used to check whether a face has not changed.
+        In this case, we try to preserve its ID.
+        """
 
         super(PlanarGraph, self).__init__(data=data, **attr)
+
+    def get_face(self, face_id):
+        """Returns the vertices that appear on the face identified by face_id,
+        in order.
+
+        Faces will be ordered clockwise for inner faces and counterclockwise for
+        the outer face."""
+        return self._faces[face_id]
 
     def _planar_data_complete(self):
         return all(self._has_planar_data.values())
@@ -89,15 +100,16 @@ class PlanarGraph(OrderedGraph):
         return [(u, side)] + self._grow_face(start_edge, v, next_vertex)
 
     def _canonicalize_face(self, face):
-        min_val = face[0]
-        min_pos = 0
-
-        for i in range(1, len(face)):
-            if face[i] < min_val:
-                min_val = face[i]
-                min_pos = i
-
-        return tuple(face[min_pos:] + face[:min_pos])
+        print("Face before: " + str(face))
+        # TODO
+        # Decide if we actually need this, or if a rotationally invariant hash is
+        # enough?
+        canonical = tuple(min(
+            face if i == 0 else (face[i:] + face[:i])
+            for i in range(len(face))
+        ))
+        print("Face after: " + str(canonical))
+        return canonical
 
     def _incorporate_face(self, face):
         name = self._canonicalize_face([v for v,side in face])
@@ -134,6 +146,7 @@ class PlanarGraph(OrderedGraph):
                 else:
                     new_face = self._grow_face((v, u), v, u)
 
+                #new_face = tuple(reversed(new_face))
                 self._incorporate_face(new_face)
 
             if not frozenset((u,v)) in self._right_face:
@@ -142,6 +155,7 @@ class PlanarGraph(OrderedGraph):
                 else:
                     new_face = self._grow_face((u, v), u, v)
 
+                #new_face = tuple(reversed(new_face))
                 self._incorporate_face(new_face)
 
         del self._old_faces
