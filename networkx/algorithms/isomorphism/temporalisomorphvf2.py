@@ -118,16 +118,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         """
         Paths of length 2 from Gx_node should be time-respecting.
         """
-        
-        #return any(not self.one_hop(Gx, v, [w for w in Gx[v] if w in core_x] + [Gx_node]) for v in neighbors)
-        time_respecting = True
-        for neigh in neighbors:
-            out_neighbors = [b for b in Gx[neigh] if b in core_x]
-            out_neighbors.append(Gx_node) # Include Gx_node as a neighbor, since it's not in the mapping.
-            if not self.one_hop(Gx, neigh, out_neighbors):
-                time_respecting = False
-                break
-        return time_respecting
+        return all(self.one_hop(Gx, v, [n for n in Gx[v] if n in core_x] + [Gx_node]) for v in neighbors)
 
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is semantically 
@@ -205,32 +196,30 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         succ_dates = self.get_succ_dates(Gx, Gx_node, core_x, succ)
         return self.test_one(pred_dates, succ_dates) and self.test_two(pred_dates, succ_dates)
     
-    def two_hop_pred(self, Gx, Gx_node, core_x, pred, succ):
+    def two_hop_pred(self, Gx, Gx_node, core_x, pred):
         """
         The predeccessors of the ego node.
         """
-        time_respecting = True
-        for p in pred:
-            pred_p, succ_p = [n for n in Gx.predecessors(p) if n in core_x], [n for n in Gx.successors(p) if n in core_x]
-            succ_p.append(Gx_node)
-            if not self.one_hop(Gx, p, core_x, pred_p, succ_p):
-                time_respecting = False
-                break
-        return time_respecting
+        return all(self.one_hop(Gx, p, core_x, self.preds(Gx, core_x, p), self.succs(Gx, core_x, p, Gx_node)) for p in pred)
 
-    def two_hop_succ(self, Gx, Gx_node, core_x, pred, succ):
+    def two_hop_succ(self, Gx, Gx_node, core_x, succ):
         """
         The successors of the ego node.
         """
-        time_respecting = True
-        for s in succ:
-            pred_s, succ_s = [n for n in Gx.predecessors(s) if n in core_x], [n for n in Gx.successors(s) if n in core_x]
-            pred_s.append(Gx_node)
-            if not self.one_hop(Gx, s, core_x, pred_s, succ_s):
-                time_respecting = False
-                break
-        return time_respecting
+        return all(self.one_hop(Gx, s, core_x, self.preds(Gx, core_x, s, Gx_node), self.succs(Gx, core_x, s)) for s in succ)
+   
+    def preds(self, Gx, core_x, v, Gx_node=None):
+        pred = [n for n in Gx.predecessors(v) if n in core_x]
+        if Gx_node:
+            pred.append(Gx_node)
+        return pred
     
+    def succs(self, Gx, core_x, v, Gx_node=None):
+        succ = [n for n in Gx.successors(v) if n in core_x]
+        if Gx_node:
+            succ.append(Gx_node)
+        return succ
+ 
     def test_one(self, pred_dates, succ_dates):
         """
         Edges one hop out from Gx_node in the mapping should be 
@@ -272,9 +261,9 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         pred, succ = [n for n in self.G1.predecessors(G1_node) if n in self.core_1], [n for n in self.G1.successors(G1_node) if n in self.core_1]
         if not self.one_hop(self.G1, G1_node, self.core_1, pred, succ): # Fail fast on first node.
             return False
-        if not self.two_hop_pred(self.G1, G1_node, self.core_1, pred, succ):
+        if not self.two_hop_pred(self.G1, G1_node, self.core_1, pred):
             return False
-        if not self.two_hop_succ(self.G1, G1_node, self.core_1, pred, succ):
+        if not self.two_hop_succ(self.G1, G1_node, self.core_1, succ):
             return False
         # Otherwise, this node is sematically feasible!
         return True
