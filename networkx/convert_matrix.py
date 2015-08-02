@@ -1126,3 +1126,7 @@ def setup_module(module):
         import scipy
     except:
         raise SkipTest("SciPy not available")
+    try:
+        import pandas
+    except:
+        raise SkipTest("Pandas not available")
