@@ -292,6 +292,7 @@ class DiGraph(Graph):
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.edge=self.adj
+        self.frozen = False
 
 
     def add_node(self, n, attr_dict=None, **attr):
