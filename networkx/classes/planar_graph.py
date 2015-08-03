@@ -9,17 +9,16 @@ Self-loops are allowed but multiple edges are not.
 #    Lukas Barth (mail@tinloaf.de)
 #    All rights reserved.
 #    BSD license.
-from copy import deepcopy
-import networkx as nx
-from networkx.exception import NetworkXError
-import networkx.convert as convert
 
 __author__ = """\n""".join(['Lukas Barth (mail@tinloaf.de)'])
 
 import collections
+from copy import deepcopy
 
-from ordered import OrderedGraph
+import networkx as nx
 from networkx.exception import NetworkXError
+import networkx.convert as convert
+from networkx.classes.ordered import OrderedGraph
 
 class NoPlanarityProvidedException(Exception):
     pass
