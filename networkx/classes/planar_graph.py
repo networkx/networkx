@@ -78,7 +78,20 @@ class PlanarGraph(OrderedGraph):
 
         Faces will be ordered clockwise for inner faces and counterclockwise for
         the outer face."""
+        if not self._computed_planar:
+            self._compute_planarity()
+
         return self._faces[face_id]
+
+    def faces(self):
+        """Returns all faces.
+
+        Faces are returned as a list of 2-tuples: (face_id, vertices)
+        """
+        if not self._computed_planar:
+            self._compute_planarity()
+
+        return tuple(self._faces.items())
 
     def _planar_data_complete(self):
         return all(self._has_planar_data.values())
@@ -100,7 +113,6 @@ class PlanarGraph(OrderedGraph):
         return [(u, side)] + self._grow_face(start_edge, v, next_vertex)
 
     def _canonicalize_face(self, face):
-        print("Face before: " + str(face))
         # TODO
         # Decide if we actually need this, or if a rotationally invariant hash is
         # enough?
@@ -108,7 +120,6 @@ class PlanarGraph(OrderedGraph):
             face if i == 0 else (face[i:] + face[:i])
             for i in range(len(face))
         ))
-        print("Face after: " + str(canonical))
         return canonical
 
     def _incorporate_face(self, face):
@@ -296,6 +307,10 @@ class PlanarGraph(OrderedGraph):
                 self._adjacency_indices[v][moved] += 1
 
         self._computed_planar = False
+
+    def provide_planarity_data_from(self, data):
+        for (v, ordered_adjacencies) in data.items():
+            self.provide_planarity_data(v, ordered_adjacencies)
 
     def provide_planarity_data(self, v, ordered_adjacencies):
         """Can be used to provide the order of adjacencies around a vertex, in

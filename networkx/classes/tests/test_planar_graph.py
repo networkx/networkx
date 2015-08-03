@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from itertools import combinations
+
 from nose.tools import *
 import networkx
 from test_graph import BaseGraphTester
@@ -54,6 +56,10 @@ class PlanarityTester(BasePlanarGraphTester):
 
         assert_equal(G.get_face(face), tuple((0,1,0,5,0,4,0,3,0,2)))
 
+    def test_euler(self):
+        facecount = len(self.K4.faces())
+        assert_equal(4 - 6 + facecount, 2)
+
 class TestPlanarGraph(PlanarityTester):
     """Tests specific to dict-of-dict-of-dict graph data structure"""
     def setUp(self):
@@ -75,6 +81,17 @@ class TestPlanarGraph(PlanarityTester):
         self.K3.node[0]={}
         self.K3.node[1]={}
         self.K3.node[2]={}
+
+        self.K4 = self.Graph()
+        self.K4.add_nodes_from([0,1,2,3])
+        self.K4.add_edges_from(combinations([0,1,2,3], 2))
+        self.K4.provide_planarity_data_from(
+            {0: [1,2,3],
+             1: [3,2,0],
+             2: [3,0,1],
+             3: [2,1,0]
+            }
+        )
 
     def test_adjacency_iter(self):
         G=self.K3
