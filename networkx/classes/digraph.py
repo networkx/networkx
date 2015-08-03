@@ -732,12 +732,26 @@ class DiGraph(Graph):
         """
         return (u in self.succ and v in self.succ[u])
 
+    def has_successors(self, u, v):
+        """Return True if node u any successors."""
+        try:
+            return bool(self.succ[u])
+        except KeyError:
+            raise NetworkXError("The node %s is not in the digraph."%(n,))
+
     def has_predecessor(self, u, v):
         """Return True if node u has predecessor v.
 
         This is true if graph has the edge u<-v.
         """
         return (u in self.pred and v in self.pred[u])
+
+    def has_predecessors(self, u):
+        """Return True if node u any predecessors."""
+        try:
+            return bool(self.pred[u])
+        except KeyError:
+            raise NetworkXError("The node %s is not in the digraph."%(n,))
 
     def successors_iter(self,n):
         """Return an iterator over successor nodes of n.
