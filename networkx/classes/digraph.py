@@ -733,7 +733,7 @@ class DiGraph(Graph):
         return (u in self.succ and v in self.succ[u])
 
     def has_successors(self, u, v):
-        """Return True if node u any successors."""
+        """Return True if node u has any successors, otherwise False."""
         try:
             return bool(self.succ[u])
         except KeyError:
@@ -747,7 +747,7 @@ class DiGraph(Graph):
         return (u in self.pred and v in self.pred[u])
 
     def has_predecessors(self, u):
-        """Return True if node u any predecessors."""
+        """Return True if node u has any predecessors, otherwise False."""
         try:
             return bool(self.pred[u])
         except KeyError:
