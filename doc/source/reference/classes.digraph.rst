@@ -68,6 +68,8 @@ Information about graph structure
    DiGraph.has_node
    DiGraph.__contains__
    DiGraph.has_edge
+   DiGraph.has_successors
+   DiGraph.has_predecessors
    DiGraph.order
    DiGraph.number_of_nodes
    DiGraph.__len__
