@@ -119,6 +119,14 @@ def topological_sort(G):
     RuntimeError
         If G is changed while the returned iterator is being processed.
 
+    Examples
+    ---------
+    To get the reverse order of the topological sort::
+
+    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> list(reversed(list(nx.topological_sort(DG))))
+    [3, 2, 1]
+
     Notes
     -----
     This algorithm is based on a description and proof in
@@ -137,21 +145,15 @@ def topological_sort(G):
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
-    indegree_map = G.in_degree()
-
+    indegree_map = {v: d for v, d in G.in_degree() if d > 0}
     # These nodes have zero indegree and ready to be returned.
-    zero_indegree = [node
-                     for node, indegree in indegree_map.items()
-                     if indegree == 0]
-
-    for node in zero_indegree:
-        del indegree_map[node]
+    zero_indegree = [v for v, d in G.in_degree() if d == 0]
 
     while zero_indegree:
         node = zero_indegree.pop()
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
-        for _, child in G.edges_iter(node):
+        for _, child in G.edges(node):
             try:
                 indegree_map[child] -= 1
             except KeyError:
@@ -167,7 +169,7 @@ def topological_sort(G):
                                     "during iteration")
 
 
-def lexicographical_topological_sort(G, key=(lambda x: x)):
+def lexicographical_topological_sort(G, key=None):
     """Return a generator of nodes in lexicographically topologically sorted
     order.
 
@@ -221,26 +223,23 @@ def lexicographical_topological_sort(G, key=(lambda x: x)):
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
+    if key is None:
+        key = lambda x: x
+
     def create_tuple(node):
         return key(node), node
 
-    indegree_map = G.in_degree()
-
-    # These nodes have zero indegree and are ready to be returned.
-    zero_indegree = [create_tuple(node)
-                     for node, indegree in indegree_map.items()
-                     if indegree == 0]
+    indegree_map = {v: d for v, d in G.in_degree() if d > 0}
+    # These nodes have zero indegree and ready to be returned.
+    zero_indegree = [create_tuple(v) for v, d in G.in_degree() if d == 0]
     heapq.heapify(zero_indegree)
-
-    for _, node in zero_indegree:
-        del indegree_map[node]
 
     while zero_indegree:
         _, node = heapq.heappop(zero_indegree)
 
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
-        for _, child in G.edges_iter(node):
+        for _, child in G.edges(node):
             try:
                 indegree_map[child] -= 1
             except KeyError:
