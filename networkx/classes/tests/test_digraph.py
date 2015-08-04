@@ -24,6 +24,28 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(G.has_predecessor(0,1),True)
         assert_equal(G.has_predecessor(0,-1),False)
 
+    def test_has_successors(self):
+        G=self.K3
+        assert_equal(G.has_successors(0),True)
+
+        G = networkx.DiGraph()
+        G.add_node('a')
+        G.add_node('b')
+        G.add_edge('a', 'b')
+        assert_equal(G.has_successors('b'),False)
+        assert_equal(G.has_successors('a'),True)
+
+    def test_has_predecessors(self):
+        G=self.K3
+        assert_equal(G.has_predecessors(1),True)
+
+        G = networkx.DiGraph()
+        G.add_node('a')
+        G.add_node('b')
+        G.add_edge('a', 'b')
+        assert_equal(G.has_predecessors('b'),True)
+        assert_equal(G.has_predecessors('a'),False)
+
     def test_predecessors(self):
         G=self.K3
         assert_equal(sorted(G.predecessors(0)),[1,2])

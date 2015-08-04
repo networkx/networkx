@@ -735,7 +735,7 @@ class DiGraph(Graph):
     def has_successors(self, u):
         """Return ``True`` if node u has successors, otherwise ``False``"""
         try:
-            return len(self.succ[u]) == 0
+            return len(self.succ[u]) > 0
         except KeyError:
             raise NetworkXError("The node {0} is not in the"
                                 " digraph.".format(u))
@@ -750,7 +750,7 @@ class DiGraph(Graph):
     def has_predecessors(self, u):
         """Return ``True`` if node u has predecessors, otherwise ``False``."""
         try:
-            return len(self.pred[u]) == 0
+            return len(self.pred[u]) > 0
         except KeyError:
             raise NetworkXError("The node {0} is not in the"
                                 " digraph.".format(u))
