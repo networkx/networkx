@@ -235,13 +235,12 @@ class _AntiGraph(nx.Graph):
 
         """
         all_edge_dict = self.all_edge_dict
-        return dict((node, all_edge_dict) for node in
-                    set(self._adj) - set(self._adj[n]) - set([n]))
+        return {node: all_edge_dict for node in
+                set(self.adj) - set(self.adj[n]) - set([n])}
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the
            dense graph.
-
         """
         try:
             return iter(set(self._adj) - set(self._adj[n]) - set([n]))
