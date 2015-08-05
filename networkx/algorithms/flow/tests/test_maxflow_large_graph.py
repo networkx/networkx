@@ -63,7 +63,7 @@ def validate_flows(G, s, t, soln_value, R, flow_func):
     for u in G:
         assert_equal(set(G[u]), set(flow_dict[u]),
                      msg=msg.format(flow_func.__name__))
-    excess = dict((u, 0) for u in flow_dict)
+    excess = {u: 0 for u in flow_dict}
     for u in flow_dict:
         for v, flow in flow_dict[u].items():
             ok_(flow <= G[u][v].get('capacity', float('inf')),
