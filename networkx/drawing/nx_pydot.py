@@ -20,17 +20,14 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    All rights reserved.
 #    BSD license.
 import importlib
+
+import six
+
 from networkx.utils import open_file, make_str
 import networkx as nx
 __author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
-
-# 2.x/3.x compatibility
-try:
-    basestring
-except NameError:
-    basestring = str
 
 PYDOT_LIBRARIES = ['pydot', 'pydotplus', 'pydot_ng']
 
@@ -137,13 +134,13 @@ def from_pydot(P):
         s=[]
         d=[]
 
-        if isinstance(u, basestring):
+        if isinstance(u, six.string_types):
             s.append(u.strip('"'))
         else:
             for unodes in u['nodes']:
                 s.append(unodes.strip('"'))
 
-        if isinstance(v, basestring):
+        if isinstance(v, six.string_types):
             d.append(v.strip('"'))
         else:
             for vnodes in v['nodes']:

@@ -12,6 +12,9 @@ Node positioning algorithms for graph drawing.
 #    All rights reserved.
 #    BSD license.
 import collections
+
+import six
+
 import networkx as nx
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 __all__ = ['circular_layout',
@@ -605,13 +608,8 @@ def setup_module(module):
         raise SkipTest("SciPy not available")
 
 def flatten(l):
-    try:
-        bs = basestring
-    except NameError:
-        # Py3k
-        bs = str
     for el in l:
-        if isinstance(el, collections.Iterable) and not isinstance(el, bs):
+        if isinstance(el, collections.Iterable) and not isinstance(el, six.string_types):
             for sub in flatten(el):
                 yield sub
         else:

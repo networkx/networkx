@@ -111,7 +111,7 @@ package_data     = {
     'networkx.utils': ['tests/*.py']
     }
 
-install_requires = ['decorator>=3.4.0']
+install_requires = ['decorator>=3.4.0', 'six']
 
 if __name__ == "__main__":
 

@@ -22,6 +22,9 @@ Example graphs in GML format:
 http://www-personal.umich.edu/~mejn/netdata/
 
 """
+
+import six
+
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2008-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -32,13 +35,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
-try:
-    try:
-        from cStringIO import StringIO
-    except ImportError:
-        from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+
 from ast import literal_eval
 from collections import defaultdict
 from lib2to3.pgen2.parse import ParseError
@@ -55,18 +52,6 @@ except ImportError:
     # Python 3.x
     import html.entities as htmlentitydefs
 
-try:
-    long
-except NameError:
-    long = int
-try:
-    unicode
-except NameError:
-    unicode = str
-try:
-    unichr
-except NameError:
-    unichr = chr
 try:
     literal_eval(r"u'\u4444'")
 except SyntaxError:
@@ -86,7 +71,7 @@ def escape(text):
         return '&#' + str(ord(ch)) + ';'
 
     text = re.sub('[^ -~]|[&"]', fixup, text)
-    return text if isinstance(text, str) else str(text)
+    return text if isinstance(text, six.text_type) else six.text_type(text)
 
 
 def unescape(text):
@@ -108,7 +93,7 @@ def unescape(text):
             except KeyError:
                 return text  # leave unchanged
         try:
-            return chr(code) if code < 256 else unichr(code)
+            return chr(code) if code < 256 else six.unichr(code)
         except (ValueError, OverflowError):
             return text  # leave unchanged
 
@@ -133,7 +118,7 @@ def literal_destringizer(rep):
     ValueError
         If ``rep`` is not a Python literal.
     """
-    if isinstance(rep, (str, unicode)):
+    if isinstance(rep, six.string_types):
         orig_rep = rep
         try:
             # Python 3.2 does not recognize 'u' prefixes before string literals
@@ -201,8 +186,8 @@ def read_gml(path, label='label', destringizer=None):
                 line = line.decode('ascii')
             except UnicodeDecodeError:
                 raise NetworkXError('input is not ASCII-encoded')
-            if not isinstance(line, str):
-                lines = str(lines)
+            if not isinstance(line, six.text_type):
+                lines = six.text_type(lines)
             if line and line[-1] == '\n':
                 line = line[:-1]
             yield line
@@ -253,7 +238,7 @@ def parse_gml(lines, label='label', destringizer=None):
     http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
     """
     def decode_line(line):
-        if isinstance(line, bytes):
+        if isinstance(line, six.binary_type):
             try:
                 line.decode('ascii')
             except UnicodeDecodeError:
@@ -263,7 +248,7 @@ def parse_gml(lines, label='label', destringizer=None):
         return line
 
     def filter_lines(lines):
-        if isinstance(lines, (str, unicode)):
+        if isinstance(lines, six.string_types):
             lines = decode_line(lines)
             lines = lines.splitlines()
             for line in lines:
@@ -477,9 +462,9 @@ def literal_stringizer(value):
     ``networkx.readwrite.gml.literal_destringizer`` function.
     """
     def stringize(value):
-        if isinstance(value, (int, long, bool)) or value is None:
+        if isinstance(value, six.integer_types + (bool,)) or value is None:
             buf.write(str(value))
-        elif isinstance(value, unicode):
+        elif isinstance(value, six.text_type):
             text = repr(value)
             if text[0] != 'u':
                 try:
@@ -487,7 +472,7 @@ def literal_stringizer(value):
                 except UnicodeEncodeError:
                     text = 'u' + text
             buf.write(text)
-        elif isinstance(value, (float, complex, str, bytes)):
+        elif isinstance(value, (float, complex) + (six.binary_type,)):
             buf.write(repr(value))
         elif isinstance(value, list):
             buf.write('[')
@@ -542,7 +527,7 @@ def literal_stringizer(value):
             raise ValueError(
                 '%r cannot be converted into a Python literal' % (value,))
 
-    buf = StringIO()
+    buf = six.StringIO()
     stringize(value)
     return buf.getvalue()
 
@@ -582,14 +567,14 @@ def generate_gml(G, stringizer=None):
     valid_keys = re.compile('^[A-Za-z][0-9A-Za-z]*$')
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
-        if not isinstance(key, (str, unicode)):
+        if not isinstance(key, six.string_types):
             raise NetworkXError('%r is not a string' % (key,))
         if not valid_keys.match(key):
             raise NetworkXError('%r is not a valid key' % (key,))
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
-            if isinstance(value, (int, long)):
+            if isinstance(value, six.integer_types):
                 yield indent + key + ' ' + str(value)
             elif isinstance(value, float):
                 text = repr(value).upper()
@@ -619,7 +604,7 @@ def generate_gml(G, stringizer=None):
                     except ValueError:
                         raise NetworkXError(
                             '%r cannot be converted into a string' % (value,))
-                if not isinstance(value, (str, unicode)):
+                if not isinstance(value, six.string_types):
                     raise NetworkXError('%r is not a string' % (value,))
                 yield indent + key + ' "' + escape(value) + '"'
 
