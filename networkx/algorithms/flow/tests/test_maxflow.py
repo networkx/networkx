@@ -30,7 +30,7 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     for u in G:
         assert_equal(set(G[u]), set(flowDict[u]),
                      msg=msg.format(flow_func.__name__))
-    excess = dict((u, 0) for u in flowDict)
+    excess = {u: 0 for u in flowDict}
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
@@ -378,7 +378,7 @@ class TestMaxFlowMinCutInterface:
                     result = result[0]
                 assert_equal(fv, result, msg=msgi.format(flow_func.__name__,
                                                     interface_func.__name__))
- 
+
     def test_minimum_cut_no_cutoff(self):
         G = self.G
         for flow_func in flow_funcs:
@@ -405,7 +405,7 @@ class TestMaxFlowMinCutInterface:
     def test_kwargs_default_flow_func(self):
         G = self.H
         for interface_func in interface_funcs:
-            assert_raises(nx.NetworkXError, interface_func, 
+            assert_raises(nx.NetworkXError, interface_func,
                           G, 0, 1, global_relabel_freq=2)
 
     def test_reusing_residual(self):
@@ -476,11 +476,11 @@ class TestCutoff:
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
-        nx.set_edge_attributes(G, 'capacity', 
-                               dict(((u, v), 1) for u, v in G.edges()))
+        nx.set_edge_attributes(G, 'capacity',
+                               {(u, v): 1 for u, v in G.edges()})
         for flow_func in [shortest_augmenting_path, edmonds_karp]:
             for cutoff in [3, 2, 1]:
                 result = nx.maximum_flow_value(G, 0, 4, flow_func=flow_func,
                                                cutoff=cutoff)
-                assert_equal(cutoff, result, 
+                assert_equal(cutoff, result,
                             msg="cutoff error in {0}".format(flow_func.__name__))
