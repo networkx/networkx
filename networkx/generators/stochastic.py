@@ -50,7 +50,7 @@ def stochastic_graph(G, copy=True, weight='weight'):
     else:
         # Reference the original graph, don't make a copy.
         W = G
-    degree = W.out_degree(weight=weight)
+    degree = dict(W.out_degree(weight=weight))
     for (u, v, d) in W.edges(data=True):
         if degree[u] == 0:
             warnings.warn('zero out-degree for node %s' % u)

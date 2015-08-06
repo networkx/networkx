@@ -415,7 +415,7 @@ def condensation(G, scc=None):
         mapping.update((n, i) for n in component)
     number_of_components = i + 1
     C.add_nodes_from(range(number_of_components))
-    C.add_edges_from((mapping[u], mapping[v]) for u, v in G.edges_iter()
+    C.add_edges_from((mapping[u], mapping[v]) for u, v in G.edges()
                      if mapping[u] != mapping[v])
     # Add a list of members (ie original nodes) to each node (ie scc) in C.
     nx.set_node_attributes(C, 'members', members)

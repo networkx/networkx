@@ -82,7 +82,7 @@ class TestMaximalIndependantSet(object):
         for i in range(0, 50, 10):
             G = nx.random_graphs.erdos_renyi_graph(i*10+1, random.random())
             IS = nx.maximal_independent_set(G)
-            assert_false(G.subgraph(IS).edges())
+            assert_false(list(G.subgraph(IS).edges()))
             neighbors_of_MIS = set.union(*(set(G.neighbors(v)) for v in IS))
             for v in set(G.nodes()).difference(IS):
                 assert_true(v in neighbors_of_MIS)

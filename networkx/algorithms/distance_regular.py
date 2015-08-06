@@ -145,9 +145,9 @@ def intersection_array(G):
     global_parameters
     """
     # test for regular graph (all degrees must be equal)
-    degree = G.degree_iter()
-    (_, k) = next(degree)
-    for _, knext in degree:
+    degree = G.degree()
+    (_,k) = next(degree)
+    for _,knext in degree:
         if knext != k:
             raise nx.NetworkXError('Graph is not distance regular.')
         k = knext

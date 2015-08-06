@@ -22,7 +22,7 @@ class TestSpectrum(object):
         self.G=havel_hakimi_graph(deg)
         self.P=nx.path_graph(3)
         self.WG=nx.Graph( (u,v,{'weight':0.5,'other':0.3})
-                for (u,v) in self.G.edges_iter() )
+                for (u,v) in self.G.edges() )
         self.WG.add_node(4)
         self.DG=nx.DiGraph()
         self.DG.add_path([0,1,2])

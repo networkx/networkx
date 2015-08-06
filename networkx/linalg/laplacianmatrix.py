@@ -52,7 +52,7 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     """
     import scipy.sparse
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   format='csr')
     n,m = A.shape
@@ -114,7 +114,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     import scipy
     import scipy.sparse
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   format='csr')
     n,m = A.shape

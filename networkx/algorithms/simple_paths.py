@@ -364,17 +364,17 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
 
     # handle either directed or undirected
     if G.is_directed():
-        Gpred=G.predecessors_iter
-        Gsucc=G.successors_iter
+        Gpred=G.predecessors
+        Gsucc=G.successors
     else:
-        Gpred=G.neighbors_iter
-        Gsucc=G.neighbors_iter
+        Gpred=G.neighbors
+        Gsucc=G.neighbors
 
     # support optional nodes filter
     if ignore_nodes:
-        def filter_iter(nodes_iter):
+        def filter_iter(nodes):
             def iterate(v):
-                for w in nodes_iter(v):
+                for w in nodes(v):
                     if w not in ignore_nodes:
                         yield w
             return iterate
@@ -403,9 +403,9 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
             Gsucc=filter_succ_iter(Gsucc)
 
         else:
-            def filter_iter(nodes_iter):
+            def filter_iter(nodes):
                 def iterate(v):
-                    for w in nodes_iter(v):
+                    for w in nodes(v):
                         if (v, w) not in ignore_edges \
                                 and (w, v) not in ignore_edges:
                             yield w
@@ -522,17 +522,17 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
 
     # handle either directed or undirected
     if G.is_directed():
-        Gpred=G.predecessors_iter
-        Gsucc=G.successors_iter
+        Gpred=G.predecessors
+        Gsucc=G.successors
     else:
-        Gpred=G.neighbors_iter
-        Gsucc=G.neighbors_iter
+        Gpred=G.neighbors
+        Gsucc=G.neighbors
 
     # support optional nodes filter
     if ignore_nodes:
-        def filter_iter(nodes_iter):
+        def filter_iter(nodes):
             def iterate(v):
-                for w in nodes_iter(v):
+                for w in nodes(v):
                     if w not in ignore_nodes:
                         yield w
             return iterate
@@ -561,9 +561,9 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
             Gsucc=filter_succ_iter(Gsucc)
 
         else:
-            def filter_iter(nodes_iter):
+            def filter_iter(nodes):
                 def iterate(v):
-                    for w in nodes_iter(v):
+                    for w in nodes(v):
                         if (v, w) not in ignore_edges \
                                 and (w, v) not in ignore_edges:
                             yield w

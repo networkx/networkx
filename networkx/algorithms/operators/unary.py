@@ -40,7 +40,7 @@ def complement(G, name=None):
     R.name = name
     R.add_nodes_from(G)
     R.add_edges_from(((n, n2)
-                      for n, nbrs in G.adjacency_iter()
+                      for n, nbrs in G.adjacency()
                       for n2 in G if n2 not in nbrs
                       if n != n2))
     return R

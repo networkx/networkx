@@ -65,23 +65,35 @@ def core_number(G):
        Vladimir Batagelj and Matjaz Zaversnik, 2003.
        http://arxiv.org/abs/cs.DS/0310049
     """
-    if G.number_of_selfloops() > 0:
-        raise NetworkXError(
-                'Input graph has self loops; the core number is not defined.'
-                ' Consider using G.remove_edges_from(G.selfloop_edges()).')
+    if G.is_multigraph():
+        raise nx.NetworkXError(
+                'MultiGraph and MultiDiGraph types not supported.')
+
+    if G.number_of_selfloops()>0:
+        raise nx.NetworkXError(
+                'Input graph has self loops; the core number is not defined.',
+                'Consider using G.remove_edges_from(G.selfloop_edges()).')
+
+    if G.is_directed():
+        import itertools
+        def neighbors(v):
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
+    else:
+        neighbors=G.neighbors
     degrees = dict(G.degree())
-    # Sort nodes by degree.
+    # sort nodes by degree
     nodes = sorted(degrees, key=degrees.get)
-    bin_boundaries = [0]
-    curr_degree = 0
-    for i, v in enumerate(nodes):
-        if degrees[v] > curr_degree:
-            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
-            curr_degree = degrees[v]
-    node_pos = {v: pos for pos, v in enumerate(nodes)}
-    # The initial guess for the core number of a node is its degree.
-    core = degrees
-    nbrs = {v: set(all_neighbors(G, v)) for v in G}
+    bin_boundaries=[0]
+    curr_degree=0
+    for i,v in enumerate(nodes):
+        if degrees[v]>curr_degree:
+            bin_boundaries.extend([i]*(degrees[v]-curr_degree))
+            curr_degree=degrees[v]
+    node_pos = dict((v,pos) for pos,v in enumerate(nodes))
+    # initial guesses for core is degree
+    core=degrees
+    nbrs=dict((v,set(neighbors(v))) for v in G)
     for v in nodes:
         for u in nbrs[v]:
             if core[u] > core[v]:

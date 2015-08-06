@@ -58,10 +58,10 @@ def color(G):
     if G.is_directed():
         import itertools
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
-        neighbors=G.neighbors_iter
+        neighbors=G.neighbors
 
     color = {}
     for n in G: # handle disconnected graphs
@@ -241,7 +241,7 @@ def degrees(B, nodes, weight=None):
     >>> G = nx.complete_bipartite_graph(3,2)
     >>> Y=set([3,4])
     >>> degX,degY=bipartite.degrees(G,Y)
-    >>> degX
+    >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
 
     See Also

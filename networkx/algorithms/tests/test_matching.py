@@ -221,7 +221,7 @@ def test_maximal_matching():
     vset = set(u for u, v in matching)
     vset = vset | set(v for u, v in matching)
 
-    for edge in graph.edges_iter():
+    for edge in graph.edges():
         u, v = edge
         ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0, \
                 "not a proper matching!")
@@ -240,7 +240,7 @@ def test_maximal_matching():
     vset = set(u for u, v in matching)
     vset = vset | set(v for u, v in matching)
 
-    for edge in graph.edges_iter():
+    for edge in graph.edges():
         u, v = edge
         ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0, \
                 "not a proper matching!")

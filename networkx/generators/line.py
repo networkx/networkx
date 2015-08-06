@@ -130,10 +130,10 @@ def _edge_func(G):
     """
     if G.is_multigraph():
         def get_edges(nbunch=None):
-            return G.edges_iter(nbunch, keys=True)
+            return G.edges(nbunch, keys=True)
     else:
         def get_edges(nbunch=None):
-            return G.edges_iter(nbunch)
+            return G.edges(nbunch)
     return get_edges
 
 def _sorted_edge(u, v):

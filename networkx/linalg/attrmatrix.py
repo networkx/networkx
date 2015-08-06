@@ -258,7 +258,7 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     M = np.zeros((N,N), dtype=dtype, order=order)
 
     seen = set([])
-    for u,nbrdict in G.adjacency_iter():
+    for u,nbrdict in G.adjacency():
         for v in nbrdict:
             # Obtain the node attribute values.
             i, j = index[node_value(u)], index[node_value(v)]
@@ -421,7 +421,7 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     M = sparse.lil_matrix((N,N), dtype=dtype)
 
     seen = set([])
-    for u,nbrdict in G.adjacency_iter():
+    for u,nbrdict in G.adjacency():
         for v in nbrdict:
             # Obtain the node attribute values.
             i, j = index[node_value(u)], index[node_value(v)]

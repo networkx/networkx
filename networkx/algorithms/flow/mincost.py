@@ -216,7 +216,7 @@ def cost_of_flow(G, flowDict, weight = 'weight'):
     max_flow_min_cost, min_cost_flow, min_cost_flow_cost, network_simplex
     """
     return sum((flowDict[u][v] * d.get(weight, 0)
-                for u, v, d in G.edges_iter(data = True)))
+                for u, v, d in G.edges(data = True)))
 
 
 def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
