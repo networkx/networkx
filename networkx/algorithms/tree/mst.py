@@ -41,7 +41,7 @@ def prim_mst_edges(G, minimum, weight='weight', data=True):
     push = heappush
     pop = heappop
 
-    nodes = list(G.nodes())
+    nodes = list(G)
     c = count()
 
     sign = 1
@@ -229,7 +229,7 @@ def _optimum_spanning_tree(G, algorithm, minimum, weight='weight'):
 
     # Add isolated nodes
     if len(T) != len(G):
-        T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
+        T.add_nodes_from([n for n, d in G.degree() if d == 0])
 
     # Add node and graph attributes as shallow copy
     for n in T:

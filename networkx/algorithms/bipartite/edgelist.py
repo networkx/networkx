@@ -333,9 +333,9 @@ def read_edgelist(path, comments="#",
     >>> d = fh.write(textline)
     >>> fh.close()
     >>> G = bipartite.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
-    >>> G.nodes()
+    >>> list(G)
     [1, 2]
-    >>> G.edges(data = True)
+    >>> list(G.edges(data=True))
     [(1, 2, {'weight': 3.0})]
 
     See parse_edgelist() for more examples of formatting.

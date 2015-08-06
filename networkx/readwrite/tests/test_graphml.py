@@ -376,13 +376,13 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 """
         fh = io.BytesIO(data.encode('UTF-8'))
         G=nx.read_graphml(fh)
-        assert_equal(G.edges(),[('n0','n1')])
+        assert_equal(list(G.edges()),[('n0','n1')])
         assert_equal(G['n0']['n1']['id'],'e0')
         assert_equal(G.node['n0']['label'],'1')
         assert_equal(G.node['n1']['label'],'2')
 
         H=nx.parse_graphml(data)
-        assert_equal(H.edges(),[('n0','n1')])
+        assert_equal(list(H.edges()),[('n0','n1')])
         assert_equal(H['n0']['n1']['id'],'e0')
         assert_equal(H.node['n0']['label'],'1')
         assert_equal(H.node['n1']['label'],'2')

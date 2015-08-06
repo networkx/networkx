@@ -44,11 +44,11 @@ class TestMST:
 
     def test_kruskal_minimum_spanning_tree(self):
         T = nx.minimum_spanning_tree(self.G, algorithm='kruskal')
-        assert_equal(T.edges(data=True), self.minimum_spanning_edgelist)
+        assert_equal(sorted(T.edges(data=True)), self.minimum_spanning_edgelist)
 
     def test_maximum_spanning_tree(self):
         T = nx.maximum_spanning_tree(self.G, algorithm='kruskal')
-        assert_equal(T.edges(data=True), self.maximum_spanning_edgelist)
+        assert_equal(sorted(T.edges(data=True)), self.maximum_spanning_edgelist)
 
     def test_kruskal_minimum_spanning_edges(self):
         edgelist = sorted(nx.minimum_spanning_edges(self.G, algorithm='kruskal'))
@@ -142,11 +142,11 @@ class TestMST:
 
     def test_prim_minimum_spanning_tree(self):
         T = nx.minimum_spanning_tree(self.G, algorithm='prim')
-        assert_equal(T.edges(data=True), self.minimum_spanning_edgelist)
+        assert_equal(sorted(T.edges(data=True)), self.minimum_spanning_edgelist)
 
     def test_prim_maximum_spanning_tree(self):
         T = nx.maximum_spanning_tree(self.G, algorithm='prim')
-        assert_equal(T.edges(data=True), self.maximum_spanning_edgelist)
+        assert_equal(sorted(T.edges(data=True)), self.maximum_spanning_edgelist)
 
     def test_prim_minimum_spanning_edges(self):
         edgelist = sorted(nx.minimum_spanning_edges(self.G, algorithm='prim'))

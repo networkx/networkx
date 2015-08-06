@@ -300,7 +300,7 @@ def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
         return G
     new_node = 2         # next node to be added
     for i in range(1,n+1): #iterate over number of generations.
-        last_generation_edges = G.edges()
+        last_generation_edges = list(G.edges())
         number_of_edges_in_last_generation = len(last_generation_edges)
         for j in range(0,number_of_edges_in_last_generation):
             G.add_edge(new_node,last_generation_edges[j][0])
@@ -582,11 +582,11 @@ def complete_multipartite_graph(*block_sizes):
         >>> G = nx.complete_multipartite_graph(1, 2, 3)
         >>> [G.node[u]['block'] for u in G]
         [0, 1, 1, 2, 2, 2]
-        >>> G.edges(0)
+        >>> list(G.edges(0))
         [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
-        >>> G.edges(2)
+        >>> list(G.edges(2))
         [(2, 0), (2, 3), (2, 4), (2, 5)]
-        >>> G.edges(4)
+        >>> list(G.edges(4))
         [(4, 0), (4, 1), (4, 2)]
 
     Notes

@@ -62,7 +62,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     if G.is_multigraph() or G.is_directed():
         raise Exception('rich_club_coefficient is not implemented for ',
                         'directed or multiedge graphs.')
-    if len(G.selfloop_edges()) > 0:
+    if G.number_of_selfloops() > 0:
         raise Exception('rich_club_coefficient is not implemented for ',
                         'graphs with self loops.')
     rc=_compute_rc(G)
@@ -85,8 +85,8 @@ def _compute_rc(G):
     total = sum(deghist)
     # number of nodes with degree > k (omit last entry which is zero)
     nks = [total-cs for cs in nx.utils.accumulate(deghist) if total-cs > 1]
-    deg=G.degree()
-    edge_degrees=sorted(sorted((deg[u],deg[v])) for u,v in G.edges_iter()) 
+    deg = dict(G.degree())
+    edge_degrees=sorted(sorted((deg[u],deg[v])) for u,v in G.edges()) 
     ek=G.number_of_edges()
     k1,k2=edge_degrees.pop(0)
     rc={}

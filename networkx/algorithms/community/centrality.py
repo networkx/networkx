@@ -59,6 +59,7 @@ def _remove_max_edge(G, weight=None):
     while nx.number_connected_components(G) <= number_components:
         betweenness = nx.edge_betweenness_centrality(G, weight=weight)
         max_value = max(betweenness.values())
-        for edge in G.edges():
+        # Use a list of edges because G is changed in the loop
+        for edge in list(G.edges()):
             if betweenness[edge] == max_value:
                 G.remove_edge(*edge)

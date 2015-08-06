@@ -77,7 +77,7 @@ def communicability_centrality_exp(G):
     """
     # alternative implementation that calculates the matrix exponential
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
+    nodelist = list(G) # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
@@ -148,7 +148,7 @@ def communicability_centrality(G):
     """
     import numpy
     import numpy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
+    nodelist = list(G) # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
@@ -236,7 +236,7 @@ def communicability_betweenness_centrality(G, normalized=True):
     """
     import scipy
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
+    nodelist = list(G) # ordering of nodes in matrix
     n = len(nodelist)
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -340,7 +340,7 @@ def communicability(G):
     """
     import numpy
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
+    nodelist = list(G) # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
@@ -420,7 +420,7 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
+    nodelist = list(G) # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1

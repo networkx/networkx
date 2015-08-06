@@ -206,9 +206,9 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     C = []  # edge weights
 
     if not multigraph:
-        edges = G.edges_iter(data=True)
+        edges = G.edges(data=True)
     else:
-        edges = G.edges_iter(data=True, keys=True)
+        edges = G.edges(data=True, keys=True)
     edges = (e for e in edges
              if e[0] != e[1] and e[-1].get(capacity, inf) != 0)
     for i, e in enumerate(edges):
@@ -574,11 +574,11 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     if not multigraph:
         for e in zip(S, T, x):
             add_entry(e)
-        edges = G.edges_iter(data=True)
+        edges = G.edges(data=True)
     else:
         for e in zip(S, T, K, x):
             add_entry(e)
-        edges = G.edges_iter(data=True, keys=True)
+        edges = G.edges(data=True, keys=True)
     for e in edges:
         if e[0] != e[1]:
             if e[-1].get(capacity, inf) == 0:

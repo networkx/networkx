@@ -160,7 +160,7 @@ def edge_load(G,nodes=None,cutoff=False):
     """
     betweenness={}
     if not nodes:         # find betweenness for every node  in graph
-        nodes=G.nodes()   # that probably is what you want...
+        nodes = list(G)   # that probably is what you want...
     for source in nodes:
         ubetween=_edge_betweenness(G,source,nodes,cutoff=cutoff)
         for v in ubetween.keys():

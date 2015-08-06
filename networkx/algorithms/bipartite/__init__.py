@@ -66,7 +66,7 @@ container with all nodes that belong to one node set:
 >>> print(round(bipartite.density(B, bottom_nodes),2))
 0.42
 >>> G = bipartite.projected_graph(B, top_nodes)
->>> G.edges()
+>>> list(G.edges())
 [(1, 2), (1, 4)]
 
 All bipartite graph generators in NetworkX build bipartite graphs with the 

@@ -55,13 +55,7 @@ def is_eulerian(G):
                 and nx.is_strongly_connected(G))
     # An undirected Eulerian graph has no vertices of odd degree and
     # must be connected.
-    #
-    # TODO When `G.degree()` is modified to return an iterator instead of a
-    # dictionary, this line needs to change to
-    #
-    #     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
-    #
-    return all(d % 2 == 0 for d in G.degree().values()) and nx.is_connected(G)
+    return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
 
 
 def eulerian_circuit(G, source=None):
@@ -133,11 +127,11 @@ def eulerian_circuit(G, source=None):
 
     if g.is_directed():
         degree = g.in_degree
-        edges = g.in_edges_iter
+        edges = g.in_edges
         get_vertex = itemgetter(0)
     else:
         degree = g.degree
-        edges = g.edges_iter
+        edges = g.edges
         get_vertex = itemgetter(1)
 
     vertex_stack = [v]

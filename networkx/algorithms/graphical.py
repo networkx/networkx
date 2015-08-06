@@ -50,7 +50,7 @@ def is_graphical(sequence, method='eg'):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> sequence = G.degree().values()
+    >>> sequence = (d for n, d in G.degree())
     >>> nx.is_valid_degree_sequence(sequence)
     True
 

@@ -31,7 +31,7 @@ class TestGraphMatrix(object):
                             [1, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0]])
         self.WG=nx.Graph( (u,v,{'weight':0.5,'other':0.3})
-                for (u,v) in self.G.edges_iter() )
+                for (u,v) in self.G.edges() )
         self.WG.add_node(4)
         self.WA=numpy.array([[0 , 0.5, 0.5, 0.5, 0],
                             [0.5, 0  , 0.5, 0  , 0],

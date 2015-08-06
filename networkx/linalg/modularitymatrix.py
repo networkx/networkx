@@ -65,7 +65,7 @@ def modularity_matrix(G, nodelist=None):
        Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
     k = A.sum(axis=1)
     m = G.number_of_edges()
@@ -131,7 +131,7 @@ def directed_modularity_matrix(G, nodelist=None):
         Phys. Rev Lett., vol. 100, no. 11, p. 118703, 2008.
     """
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
     k_in = A.sum(axis=0)
     k_out = A.sum(axis=1)

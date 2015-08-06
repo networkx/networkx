@@ -76,7 +76,7 @@ def core_number(G):
     curr_degree = 0
     for i, v in enumerate(nodes):
         if degrees[v] > curr_degree:
-            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
+            bin_boundaries.extend([i] * (degrees[v]-curr_degree))
             curr_degree = degrees[v]
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.

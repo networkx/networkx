@@ -41,7 +41,7 @@ all_tests=[
         ('for n in G:\n for e in G.edges(n,data=True):\n  pass',
             basic_setup, 3, 1) ),
     ('all_edges',
-        (('for n,nbrs in G.adjacency_iter():\n'
+        (('for n,nbrs in G.adjacency():\n'
           ' for nbr,data in nbrs.items():\n  pass'),
             basic_setup, 3, 1) ),
     ('degree', ('for d in G.degree():\n  pass', basic_setup, 3, 1) ),

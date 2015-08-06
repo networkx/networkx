@@ -88,7 +88,7 @@ def greedy_coloring_with_interchange(original_graph, nodes):
 
     graph = {node_id: Node(node_id, n) for node_id in original_graph}
 
-    for (node1, node2) in original_graph.edges_iter():
+    for (node1, node2) in original_graph.edges():
         adj_entry1 = AdjEntry(node2)
         adj_entry2 = AdjEntry(node1)
         adj_entry1.mate = adj_entry2

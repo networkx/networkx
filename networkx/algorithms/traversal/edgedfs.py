@@ -35,7 +35,7 @@ def helper_funcs(G, orientation):
                 yield edge + (REVERSE,)
     else:
         # If "yield from" were an option, we could pass kwds automatically.
-        out_edges = G.edges_iter
+        out_edges = G.edges
 
     # If every edge had a unique key, then it would be easier to track which
     # edges had been visited. Since that is not available, we will form a

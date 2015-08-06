@@ -92,8 +92,8 @@ class TestAdjlist():
         H=nx.read_adjlist(fname)
         H2=nx.read_adjlist(fname)
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -104,8 +104,8 @@ class TestAdjlist():
         H=nx.read_adjlist(fname,create_using=nx.DiGraph())
         H2=nx.read_adjlist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -115,8 +115,8 @@ class TestAdjlist():
         nx.write_adjlist(G,fname)
         H=nx.read_adjlist(fname,nodetype=int)
         H2=nx.read_adjlist(fname,nodetype=int)
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -127,8 +127,8 @@ class TestAdjlist():
         H=nx.read_adjlist(fname,create_using=nx.DiGraph())
         H2=nx.read_adjlist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -141,8 +141,8 @@ class TestAdjlist():
         H2=nx.read_adjlist(fname,nodetype=int,
                            create_using=nx.MultiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -155,8 +155,8 @@ class TestAdjlist():
         H2=nx.read_adjlist(fname,nodetype=int,
                            create_using=nx.MultiDiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -166,8 +166,8 @@ class TestAdjlist():
         nx.write_adjlist(G, fh, delimiter=':')
         fh.seek(0)
         H = nx.read_adjlist(fh, nodetype=int, delimiter=':')
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
 
 
 class TestMultilineAdjlist():
@@ -191,8 +191,8 @@ class TestMultilineAdjlist():
         H=nx.read_multiline_adjlist(fname)
         H2=nx.read_multiline_adjlist(fname)
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -203,8 +203,8 @@ class TestMultilineAdjlist():
         H=nx.read_multiline_adjlist(fname,create_using=nx.DiGraph())
         H2=nx.read_multiline_adjlist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -214,8 +214,8 @@ class TestMultilineAdjlist():
         nx.write_multiline_adjlist(G,fname)
         H=nx.read_multiline_adjlist(fname,nodetype=int)
         H2=nx.read_multiline_adjlist(fname,nodetype=int)
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -226,8 +226,8 @@ class TestMultilineAdjlist():
         H=nx.read_multiline_adjlist(fname,create_using=nx.DiGraph())
         H2=nx.read_multiline_adjlist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -240,8 +240,8 @@ class TestMultilineAdjlist():
         H2=nx.read_multiline_adjlist(fname,nodetype=int,
                                      create_using=nx.MultiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -254,8 +254,8 @@ class TestMultilineAdjlist():
         H2=nx.read_multiline_adjlist(fname,nodetype=int,
                                      create_using=nx.MultiDiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -265,5 +265,5 @@ class TestMultilineAdjlist():
         nx.write_multiline_adjlist(G, fh, delimiter=':')
         fh.seek(0)
         H = nx.read_multiline_adjlist(fh, nodetype=int, delimiter=':')
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))

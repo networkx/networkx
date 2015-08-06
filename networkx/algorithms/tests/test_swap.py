@@ -7,16 +7,16 @@ random.seed(0)
 
 def test_double_edge_swap():
     graph = barabasi_albert_graph(200,1)
-    degrees = sorted(graph.degree().values())
+    degrees = sorted(d for n, d in graph.degree())
     G = double_edge_swap(graph, 40)
-    assert_equal(degrees, sorted(graph.degree().values()))
+    assert_equal(degrees, sorted(d for n, d in graph.degree()))
 
 def test_connected_double_edge_swap():
     graph = barabasi_albert_graph(200,1)
-    degrees = sorted(graph.degree().values())
+    degrees = sorted(d for n, d in graph.degree())
     G = connected_double_edge_swap(graph, 40)
     assert_true(is_connected(graph))
-    assert_equal(degrees, sorted(graph.degree().values()))
+    assert_equal(degrees, sorted(d for n, d in graph.degree()))
 
 @raises(NetworkXError)
 def test_double_edge_swap_small():
@@ -38,7 +38,6 @@ def test_connected_double_edge_swap_not_connected():
 
 def test_degree_seq_c4():
     G = cycle_graph(4)
-    degrees = sorted(G.degree().values())
+    degrees = sorted(d for n, d in G.degree())
     G = double_edge_swap(G,1,100)
-    assert_equal(degrees, sorted(G.degree().values()))
-
+    assert_equal(degrees, sorted(d for n, d in G.degree()))
