@@ -324,8 +324,8 @@ def compose(G, H, name=None):
         name = "compose( %s, %s )" % (G.name, H.name)
     R = G.__class__()
     R.name = name
-    R.add_nodes_from(H.nodes())
-    R.add_nodes_from(G.nodes())
+    R.add_nodes_from(G.nodes_iter(data=True))
+    R.add_nodes_from(H.nodes_iter(data=True))
     if G.is_multigraph():
         R.add_edges_from(G.edges_iter(keys=True, data=True))
     else:
@@ -335,9 +335,6 @@ def compose(G, H, name=None):
     else:
         R.add_edges_from(H.edges_iter(data=True))
 
-    # add node attributes, H attributes take precedent over G attributes
-    R.node.update(G.node)
-    R.node.update(H.node)
     # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
     R.graph.update(H.graph)
