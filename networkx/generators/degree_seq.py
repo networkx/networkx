@@ -8,10 +8,11 @@
 #    All rights reserved.
 #    BSD license.
 import heapq
-from itertools import combinations, permutations
+from itertools import combinations
 import math
 from operator import itemgetter
 import random
+
 import networkx as nx
 from networkx.utils import random_weighted_sample
 
@@ -750,15 +751,13 @@ class DegreeSequenceRandomGraph(object):
         return self.remaining_degree[u]*self.remaining_degree[v]/norm
 
     def suitable_edge(self):
-        # Check if there is a suitable edge that is not in the graph
-        # True if an (arbitrary) remaining node has at least one possible 
-        # connection to another remaining node
+        """Returns ``True`` if and only if an arbitrary remaining node can
+        potentially be joined with some other remaining node.
+
+        """
         nodes = iter(self.remaining_degree)
-        u = next(nodes) # one arbitrary node
-        for v in nodes: # loop over all other remaining nodes
-            if not self.graph.has_edge(u, v):
-                return True
-        return False
+        u = next(nodes)
+        return any(v not in self.graph[u] for v in nodes)
 
     def phase1(self):
         # choose node pairs from (degree) weighted distribution

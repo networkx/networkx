@@ -1,22 +1,18 @@
-"""
-=======
-Cliques
-=======
-
-Find and manipulate cliques of graphs.
-
-Note that finding the largest clique of a graph has been
-shown to be an NP-complete problem; the algorithms here
-could take a long time to run.
-
-http://en.wikipedia.org/wiki/Clique_problem
-"""
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+"""Functions for finding and manipulating cliques.
+
+Finding the largest clique in a graph is NP-complete problem, so most of
+these algorithms have an exponential running time; for more information,
+see the Wikipedia article on the `clique problem`_.
+
+.. _clique problem:: https://en.wikipedia.org/wiki/Clique_problem
+
+"""
 from collections import deque
 from itertools import chain, islice
 try:
@@ -37,47 +33,47 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
 def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
-    This method returns cliques of size (cardinality)
-    k = 1, 2, 3, ..., maxDegree - 1.
-
-    Where maxDegree is the maximal degree of any node in the graph.
+    This function returns an iterator over cliques, each of which is a
+    list of nodes. The iteration is ordered by cardinality of the
+    cliques: first all cliques of size one, then all cliques of size
+    two, etc.
 
     Parameters
     ----------
-    G: undirected graph
+    G : NetworkX graph
+        An undirected graph.
 
     Returns
     -------
-    generator of lists: generator of list for each clique.
+    iterator
+        An iterator over cliques, each of which is a list of nodes in
+        ``G``. The cliques are ordered according to size.
 
     Notes
     -----
     To obtain a list of all cliques, use
-    :samp:`list(enumerate_all_cliques(G))`.
+    `list(enumerate_all_cliques(G))`. However, be aware that in the
+    worst-case, the length of this list can be exponential in the number
+    of nodes in the graph (for example, when the graph is the complete
+    graph). This function avoids storing all cliques in memory by only
+    keeping current candidate node lists in memory during its search.
 
-    Based on the algorithm published by Zhang et al. (2005) [1]_
-    and adapted to output all cliques discovered.
+    The implementation is adapted from the algorithm by Zhang, et
+    al. (2005) [1]_ to output all cliques discovered.
 
-    This algorithm is not applicable on directed graphs.
-
-    This algorithm ignores self-loops and parallel edges as
-    clique is not conventionally defined with such edges.
-
-    There are often many cliques in graphs.
-    This algorithm however, hopefully, does not run out of memory
-    since it only keeps candidate sublists in memory and
-    continuously removes exhausted sublists.
+    This algorithm ignores self-loops and parallel edges, since cliques
+    are not conventionally defined with such edges.
 
     References
     ----------
     .. [1] Yun Zhang, Abu-Khzam, F.N., Baldwin, N.E., Chesler, E.J.,
            Langston, M.A., Samatova, N.F.,
-           Genome-Scale Computational Approaches to Memory-Intensive
-           Applications in Systems Biology.
-           Supercomputing, 2005. Proceedings of the ACM/IEEE SC 2005
-           Conference, pp. 12, 12-18 Nov. 2005.
-           doi: 10.1109/SC.2005.29.
-           http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1559964&isnumber=33129
+           "Genome-Scale Computational Approaches to Memory-Intensive
+           Applications in Systems Biology".
+           *Supercomputing*, 2005. Proceedings of the ACM/IEEE SC 2005
+           Conference, pp. 12, 12--18 Nov. 2005.
+           <http://dx.doi.org/10.1109/SC.2005.29>.
+
     """
     index = {}
     nbrs = {}
@@ -103,60 +99,73 @@ def enumerate_all_cliques(G):
 
 @not_implemented_for('directed')
 def find_cliques(G):
-    """Search for all maximal cliques in a graph.
+    """Returns all maximal cliques in an undirected graph.
 
-    Maximal cliques are the largest complete subgraph containing
-    a given node.  The largest maximal clique is sometimes called
-    the maximum clique.
+    For each node *v*, a *maximal clique for v* is a largest complete
+    subgraph containing *v*. The largest maximal clique is sometimes
+    called the *maximum clique*.
+
+    This function returns an iterator over cliques, each of which is a
+    list of nodes. It is an iterative implementation, so should not
+    suffer from recursion depth issues.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
 
     Returns
     -------
-    generator of lists: genetor of member list for each maximal clique
+    iterator
+        An iterator over maximal cliques, each of which is a list of
+        nodes in ``G``. The order of cliques is arbitrary.
 
     See Also
     --------
-    find_cliques_recursive :
-    A recursive version of the same algorithm
+    find_cliques_recursive
+        A recursive version of the same algorithm.
 
     Notes
     -----
-    To obtain a list of cliques, use list(find_cliques(G)).
+    To obtain a list of all maximal cliques, use
+    `list(find_cliques(G))`. However, be aware that in the worst-case,
+    the length of this list can be exponential in the number of nodes in
+    the graph (for example, when the graph is the complete graph). This
+    function avoids storing all cliques in memory by only keeping
+    current candidate node lists in memory during its search.
 
-    Based on the algorithm published by Bron & Kerbosch (1973) [1]_
-    as adapted by Tomita, Tanaka and Takahashi (2006) [2]_
-    and discussed in Cazals and Karande (2008) [3]_.
-    The method essentially unrolls the recursion used in
-    the references to avoid issues of recursion stack depth.
+    This implementation is based on the algorithm published by Bron and
+    Kerbosch (1973) [1]_, as adapted by Tomita, Tanaka and Takahashi
+    (2006) [2]_ and discussed in Cazals and Karande (2008) [3]_. It
+    essentially unrolls the recursion used in the references to avoid
+    issues of recursion stack depth (for a recursive implementation, see
+    :func:`find_cliques_recursive`).
 
-    This algorithm is not suitable for directed graphs.
-
-    This algorithm ignores self-loops and parallel edges as
-    clique is not conventionally defined with such edges.
-
-    There are often many cliques in graphs.  This algorithm can
-    run out of memory for large graphs.
+    This algorithm ignores self-loops and parallel edges, since cliques
+    are not conventionally defined with such edges.
 
     References
     ----------
-    .. [1] Bron, C. and Kerbosch, J. 1973.
-       Algorithm 457: finding all cliques of an undirected graph.
-       Commun. ACM 16, 9 (Sep. 1973), 575-577.
-       http://portal.acm.org/citation.cfm?doid=362342.362367
+    .. [1] Bron, C. and Kerbosch, J.
+       "Algorithm 457: finding all cliques of an undirected graph".
+       *Communications of the ACM* 16, 9 (Sep. 1973), 575--577.
+       <http://portal.acm.org/citation.cfm?doid=362342.362367>
 
     .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
-       The worst-case time complexity for generating all maximal
-       cliques and computational experiments,
-       Theoretical Computer Science, Volume 363, Issue 1,
+       "The worst-case time complexity for generating all maximal
+       cliques and computational experiments",
+       *Theoretical Computer Science*, Volume 363, Issue 1,
        Computing and Combinatorics,
        10th Annual International Conference on
-       Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42
-       http://dx.doi.org/10.1016/j.tcs.2006.06.015
+       Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28--42
+       <http://dx.doi.org/10.1016/j.tcs.2006.06.015>
 
     .. [3] F. Cazals, C. Karande,
-       A note on the problem of reporting maximal cliques,
-       Theoretical Computer Science,
-       Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
-       http://dx.doi.org/10.1016/j.tcs.2008.05.010
+       "A note on the problem of reporting maximal cliques",
+       *Theoretical Computer Science*,
+       Volume 407, Issues 1--3, 6 November 2008, Pages 564--568,
+       <http://dx.doi.org/10.1016/j.tcs.2008.05.010>
+
     """
     if len(G) == 0:
         return
@@ -196,54 +205,72 @@ def find_cliques(G):
         pass
 
 
+# TODO Should this also be not implemented for directed graphs?
 def find_cliques_recursive(G):
-    """Recursive search for all maximal cliques in a graph.
+    """Returns all maximal cliques in a graph.
 
-    Maximal cliques are the largest complete subgraph containing
-    a given point.  The largest maximal clique is sometimes called
-    the maximum clique.
+    For each node *v*, a *maximal clique for v* is a largest complete
+    subgraph containing *v*. The largest maximal clique is sometimes
+    called the *maximum clique*.
+
+    This function returns an iterator over cliques, each of which is a
+    list of nodes. It is a recursive implementation, so may suffer from
+    recursion depth issues.
+
+    Parameters
+    ----------
+    G : NetworkX graph
 
     Returns
     -------
-    list of lists: list of members in each maximal clique
+    iterator
+        An iterator over maximal cliques, each of which is a list of
+        nodes in ``G``. The order of cliques is arbitrary.
 
     See Also
     --------
-    find_cliques : An nonrecursive version of the same algorithm
+    find_cliques
+        An iterative version of the same algorithm.
 
     Notes
     -----
-    Based on the algorithm published by Bron & Kerbosch (1973) [1]_
-    as adapted by Tomita, Tanaka and Takahashi (2006) [2]_
-    and discussed in Cazals and Karande (2008) [3]_.
+    To obtain a list of all maximal cliques, use
+    `list(find_cliques_recursive(G))`. However, be aware that in the
+    worst-case, the length of this list can be exponential in the number
+    of nodes in the graph (for example, when the graph is the complete
+    graph). This function avoids storing all cliques in memory by only
+    keeping current candidate node lists in memory during its search.
 
-    This implementation returns a list of lists each of
-    which contains the members of a maximal clique.
+    This implementation is based on the algorithm published by Bron and
+    Kerbosch (1973) [1]_, as adapted by Tomita, Tanaka and Takahashi
+    (2006) [2]_ and discussed in Cazals and Karande (2008) [3]_. For a
+    non-recursive implementation, see :func:`find_cliques`.
 
-    This algorithm ignores self-loops and parallel edges as
-    clique is not conventionally defined with such edges.
+    This algorithm ignores self-loops and parallel edges, since cliques
+    are not conventionally defined with such edges.
 
     References
     ----------
-    .. [1] Bron, C. and Kerbosch, J. 1973.
-       Algorithm 457: finding all cliques of an undirected graph.
-       Commun. ACM 16, 9 (Sep. 1973), 575-577.
-       http://portal.acm.org/citation.cfm?doid=362342.362367
+    .. [1] Bron, C. and Kerbosch, J.
+       "Algorithm 457: finding all cliques of an undirected graph".
+       *Communications of the ACM* 16, 9 (Sep. 1973), 575--577.
+       <http://portal.acm.org/citation.cfm?doid=362342.362367>
 
     .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
-       The worst-case time complexity for generating all maximal
-       cliques and computational experiments,
-       Theoretical Computer Science, Volume 363, Issue 1,
+       "The worst-case time complexity for generating all maximal
+       cliques and computational experiments",
+       *Theoretical Computer Science*, Volume 363, Issue 1,
        Computing and Combinatorics,
        10th Annual International Conference on
-       Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42
-       http://dx.doi.org/10.1016/j.tcs.2006.06.015
+       Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28--42
+       <http://dx.doi.org/10.1016/j.tcs.2006.06.015>
 
     .. [3] F. Cazals, C. Karande,
-       A note on the problem of reporting maximal cliques,
-       Theoretical Computer Science,
-       Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
-       http://dx.doi.org/10.1016/j.tcs.2008.05.010
+       "A note on the problem of reporting maximal cliques",
+       *Theoretical Computer Science*,
+       Volume 407, Issues 1--3, 6 November 2008, Pages 564--568,
+       <http://dx.doi.org/10.1016/j.tcs.2008.05.010>
+
     """
     if len(G) == 0:
         return iter([])
@@ -270,18 +297,35 @@ def find_cliques_recursive(G):
     return expand(set(G), set(G))
 
 
-def make_max_clique_graph(G,create_using=None,name=None):
-    """ Create the maximal clique graph of a graph.
+# Theory has done a lot with clique graphs, but I haven't seen much on
+# maximal clique graphs.
+def make_max_clique_graph(G, create_using=None, name=None):
+    """Returns the maximal clique graph of ``G``.
 
-    Finds the maximal cliques and treats these as nodes.
-    The nodes are connected if they have common members in
-    the original graph.  Theory has done a lot with clique
-    graphs, but I haven't seen much on maximal clique graphs.
+    The *maximal clique graph* of a graph `G` is the graph whose nodes
+    are the maximal cliques of `G` and with an edge joining clique `C_1`
+    to clique `C_2` if and only if the cliques share at least one node.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
+
+    Returns
+    -------
+    NetworkX graph
+        The maximal clique graph corresponding to ``G``.
+
+    See also
+    --------
+    make_clique_bipartite
 
     Notes
     -----
-    This should be the same as make_clique_bipartite followed
-    by project_up, but it saves all the intermediate steps.
+    This is essentially a convenience function for
+    ``project_up(make_clique_bipartite(G))``, but avoids having to
+    perform the intermediate steps.
+
     """
     cliq=list(map(set,find_cliques(G)))
     if create_using:
@@ -302,19 +346,33 @@ def make_max_clique_graph(G,create_using=None,name=None):
     return B
 
 def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
-    """Create a bipartite clique graph from a graph G.
+    """Returns the bipartite clique graph corresponding to ``G``.
 
-    Nodes of G are retained as the "bottom nodes" of B and
-    cliques of G become "top nodes" of B.
-    Edges are present if a bottom node belongs to the clique
-    represented by the top node.
+    In the returned bipartite graph, the "bottom" nodes are the nodes of
+    ``G`` and the "top" nodes represent the maximal cliques of ``G``.
+    There is an edge from node *v* to clique *C* in the returned graph
+    if and only if *v* is an element of *C*.
 
-    Returns a Graph with additional attribute dict B.node_type
-    which is keyed by nodes to "Bottom" or "Top" appropriately.
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
 
-    if fpos is not None, a second additional attribute dict B.pos
-    is created to hold the position tuple of each node for viewing
-    the bipartite graph.
+    fpos : bool
+        If ``True`` or not ``None``, the returned graph will have an
+        additional attribute, ``pos``, a dictionary mapping node to
+        position in the Euclidean plane.
+
+
+    Returns
+    -------
+    NetworkX graph
+        A bipartite graph with nodes of ``G`` on one side and maximal
+        cliques of ``G`` on the other. The returned graph has an
+        additional attribute, ``node_type``, a dictionary mapping node
+        to ``'Bottom'`` if it represents a node in ``G`` or ``'Top'`` if
+        it represents a clique in ``G``.
+
     """
     cliq=list(find_cliques(G))
     if create_using:
@@ -400,10 +458,33 @@ def project_up(B,create_using=None,name=None):
              G.add_edges_from([(vname,-u) for u in B[cv] if u!=v])
     return G
 
-def graph_clique_number(G,cliques=None):
-    """Return the clique number (size of the largest clique) for G.
+def graph_clique_number(G, cliques=None):
+    """Returns the clique number of the graph.
 
-    An optional list of cliques can be input if already computed.
+    The *clique number* of a graph is the size of the largest clique in
+    the graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
+
+    cliques : list
+        A list of cliques, each of which is itself a list of nodes. If
+        not specified, the list of all cliques will be computed, as by
+        :func:`find_cliques`.
+
+    Returns
+    -------
+    int
+        The size of the largest clique in ``G``.
+
+    Notes
+    -----
+    You should provide ``cliques`` if you have already computed the list
+    of maximal cliques, in order to avoid an exponential time search for
+    maximal cliques.
+
     """
     if cliques is None:
         cliques=find_cliques(G)
@@ -411,9 +492,29 @@ def graph_clique_number(G,cliques=None):
 
 
 def graph_number_of_cliques(G,cliques=None):
-    """Returns the number of maximal cliques in G.
+    """Returns the number of maximal cliques in the graph.
 
-    An optional list of cliques can be input if already computed.
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
+
+    cliques : list
+        A list of cliques, each of which is itself a list of nodes. If
+        not specified, the list of all cliques will be computed, as by
+        :func:`find_cliques`.
+
+    Returns
+    -------
+    int
+        The number of maximal cliques in ``G``.
+
+    Notes
+    -----
+    You should provide ``cliques`` if you have already computed the list
+    of maximal cliques, in order to avoid an exponential time search for
+    maximal cliques.
+
     """
     if cliques is None:
         cliques=list(find_cliques(G))

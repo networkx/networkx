@@ -76,8 +76,7 @@ def number_of_nonisomorphic_trees(order):
     ----------
 
     """
-    length = sum(1 for _ in nonisomorphic_trees(order))
-    return length
+    return sum(1 for _ in nonisomorphic_trees(order))
 
 
 def _next_rooted_tree(predecessor, p=None):

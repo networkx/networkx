@@ -8,7 +8,7 @@ from nose.tools import *
 from nose import SkipTest
 from nose.plugins.attrib import attr
 import networkx as nx
-import networkx.generators.threshold as nxt
+import networkx.algorithms.threshold as nxt
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 
 cnlti = nx.convert_node_labels_to_integers
@@ -51,7 +51,7 @@ class TestGeneratorThreshold():
         assert_true(graph_could_be_isomorphic(H0,G))
         assert_true(graph_could_be_isomorphic(H0,H1))
         assert_true(graph_could_be_isomorphic(H0,H2))
-        
+
     def test_shortest_path(self):
         deg=[3,2,2,1]
         G=nx.generators.havel_hakimi_graph(deg)
@@ -77,7 +77,7 @@ class TestGeneratorThreshold():
         wseq=nxt.creation_sequence_to_weights(cs)
         cs2=nxt.weights_to_creation_sequence(wseq)
         assert_equal(cs, cs2)
-        
+
         wseq=nxt.creation_sequence_to_weights(nxt.uncompact([3,1,2,3,3,2,3]))
         assert_equal(wseq,
                      [s*0.125 for s in [4,4,4,3,5,5,2,2,2,6,6,6,1,1,7,7,7]])
@@ -151,7 +151,7 @@ class TestGeneratorThreshold():
         s=nxt.right_d_threshold_sequence(5,7)
         s1=nxt.swap_d(s,1.0,1.0)
 
-        
+
     @attr('numpy')
     def test_eigenvectors(self):
         try:

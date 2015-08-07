@@ -13,8 +13,10 @@ __all__ = ['capacity_scaling']
 from itertools import chain
 from math import log
 import networkx as nx
-from networkx.utils import *
-
+from ...utils import BinaryHeap
+from ...utils import generate_unique_node
+from ...utils import not_implemented_for
+from ...utils import arbitrary_element
 
 def _detect_unboundedness(R):
     """Detect infinite-capacity negative cycles.
@@ -308,7 +310,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         # Repeatedly augment flow from S to T along shortest paths until
         # Δ-feasibility is achieved.
         while S and T:
-            s = next(iter(S))
+            s = arbitrary_element(S)
             t = None
             # Search for a shortest path in terms of reduce costs from s to
             # any t in T in the Δ-residual network.

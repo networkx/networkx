@@ -132,21 +132,6 @@ def test_example_1():
     G = graph_example_1()
     _check_connectivity(G)
 
-def test_random_gnp():
-    G = nx.gnp_random_graph(50, 0.2)
-    _check_connectivity(G)
-
-def test_shell():
-    constructor=[(20,80,0.8),(80,180,0.6)]
-    G = nx.random_shell_graph(constructor)
-    _check_connectivity(G)
-
-def test_configuration():
-    deg_seq = nx.utils.create_degree_sequence(100,nx.utils.powerlaw_sequence)
-    G = nx.Graph(nx.configuration_model(deg_seq))
-    G.remove_edges_from(G.selfloop_edges())
-    _check_connectivity(G)
-
 def test_karate_0():
     G = nx.karate_club_graph()
     _check_connectivity(G)
@@ -184,9 +169,11 @@ def test_example_1_detail_3_and_4():
     }
     G = graph_example_1()
     result = k_components(G)
-    for k, components in solution.items():
+    for k, components in result.items():
+        if k < 3:
+            continue
         for component in components:
-            assert_true(component in result[k])
+            assert_true(component in solution[k])
 
 @raises(nx.NetworkXNotImplemented)
 def test_directed():
