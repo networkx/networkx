@@ -41,5 +41,5 @@ G=parse_gml(gml) # parse gml data
 
 print(txt)
 # print degree for each team - number of games
-for n,d in G.degree_iter():
+for n,d in G.degree():
     print('%s %d' % (n, d))

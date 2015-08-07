@@ -90,7 +90,7 @@ def dfs_tree(G, source):
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2])
     >>> T = nx.dfs_tree(G,0)
-    >>> print(T.edges())
+    >>> print(list(T.edges()))
     [(0, 1), (1, 2)]
     """
     T = nx.DiGraph()

@@ -38,16 +38,12 @@ Iterating over nodes and edges
    :toctree: generated/
 
    MultiGraph.nodes
-   MultiGraph.nodes_iter
    MultiGraph.__iter__
    MultiGraph.edges
-   MultiGraph.edges_iter
    MultiGraph.get_edge_data
    MultiGraph.neighbors
-   MultiGraph.neighbors_iter
    MultiGraph.__getitem__
-   MultiGraph.adjacency_list
-   MultiGraph.adjacency_iter
+   MultiGraph.adjacency
    MultiGraph.nbunch_iter
 
 
@@ -64,7 +60,6 @@ Information about graph structure
    MultiGraph.number_of_nodes
    MultiGraph.__len__
    MultiGraph.degree
-   MultiGraph.degree_iter
    MultiGraph.size
    MultiGraph.number_of_edges
    MultiGraph.nodes_with_selfloops

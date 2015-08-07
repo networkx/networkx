@@ -73,7 +73,7 @@ class HistoricalTests(object):
         G.add_node('m')   # no complaints
         assert_raises(nx.NetworkXError,G.remove_node,'j')
         G.remove_node('m')
-        assert_equal(G.nodes(),[])
+        assert_equal(list(G), [])
 
     def test_nbunch_is_list(self):
         G=self.G()
@@ -104,11 +104,11 @@ class HistoricalTests(object):
     def test_nbunch_iterator(self):
         G=self.G()
         G.add_nodes_from(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
-        n_iter=self.P3.nodes_iter()
+        n_iter=self.P3.nodes()
         G.add_nodes_from(n_iter)
         assert_equal(sorted(G.nodes(),key=str),
                      [1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
-        n_iter=self.P3.nodes_iter() # rebuild same iterator
+        n_iter=self.P3.nodes() # rebuild same iterator
         G.remove_nodes_from(n_iter) # remove nbunch of nodes (nbunch=iterator)
         assert_equal(sorted(G.nodes(),key=str),
                      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
@@ -252,38 +252,37 @@ class HistoricalTests(object):
         assert_edges_equal(G.edges(ndict),elist)
         # nbunch can be a single node
         assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
+        assert_nodes_equal(sorted(G), ['A', 'B', 'C', 'D'])
 
-        assert_edges_equal(G.nodes_iter(), ['A', 'B', 'C', 'D'])
-
-    def test_edges_iter_nbunch(self):
+    def test_edges_nbunch(self):
         G=self.G()
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('C', 'B'), ('C', 'D')])
-        # Test G.edges_iter(nbunch) with various forms of nbunch
+        # Test G.edges(nbunch) with various forms of nbunch
         # node not in nbunch should be quietly ignored
-        assert_equals(list(G.edges_iter('Z')),[])
+        assert_equals(list(G.edges('Z')),[])
         # nbunch can be an empty list
-        assert_equals(sorted(G.edges_iter([])),[])
+        assert_equals(sorted(G.edges([])),[])
         if G.is_directed():
             elist=[('A', 'B'), ('A', 'C'), ('B', 'D')]
         else:
             elist=[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         # nbunch can be a list
-        assert_edges_equal(G.edges_iter(['A','B']),elist)
+        assert_edges_equal(G.edges(['A','B']),elist)
         # nbunch can be a set
-        assert_edges_equal(G.edges_iter(set(['A','B'])),elist)
+        assert_edges_equal(G.edges(set(['A','B'])),elist)
         # nbunch can be a graph
         G1=self.G()
         G1.add_nodes_from(['A','B'])
-        assert_edges_equal(G.edges_iter(G1),elist)
+        assert_edges_equal(G.edges(G1),elist)
         # nbunch can be a dict with nodes as keys
         ndict={'A': "thing1", 'B': "thing2"}
-        assert_edges_equal(G.edges_iter(ndict),elist)
+        assert_edges_equal(G.edges(ndict),elist)
         # nbunch can be a single node
-        assert_edges_equal(G.edges_iter('A'), [('A', 'B'), ('A', 'C')])
+        assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
 
         # nbunch can be nothing (whole graph)
-        assert_edges_equal(G.edges_iter(), [('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        assert_edges_equal(G.edges(), [('A', 'B'), ('A', 'C'), ('B', 'D'), 
                            ('C', 'B'), ('C', 'D')])
 
 
@@ -294,37 +293,31 @@ class HistoricalTests(object):
         assert_equal(G.degree('A'),2)
 
         # degree of single node in iterable container must return dict
-        assert_equal(list(G.degree(['A']).values()),[2])
-        assert_equal(G.degree(['A']),{'A': 2})
-        assert_equal(sorted(G.degree(['A','B']).values()),[2, 3])
-        assert_equal(G.degree(['A','B']),{'A': 2, 'B': 3})
-        assert_equal(sorted(G.degree().values()),[2, 2, 3, 3])
-        assert_equal(sorted([v for k,v in G.degree_iter()]),
-                     [2, 2, 3, 3])
+        assert_equal(list(G.degree(['A'])), [('A', 2)])
+        assert_equal(sorted(d for n, d in G.degree(['A','B'])), [2, 3])
+        assert_equal(sorted(d for n, d in G.degree()), [2, 2, 3, 3])
 
     def test_degree2(self):
         H=self.G()
         H.add_edges_from([(1,24),(1,2)])
-        assert_equal(sorted(H.degree([1,24]).values()),[1, 2])
+        assert_equal(sorted(d for n, d in H.degree([1,24])),[1, 2])
 
     def test_degree_graph(self):
         P3=nx.path_graph(3)
         P5=nx.path_graph(5)
         # silently ignore nodes not in P3
-        assert_equal(P3.degree(['A','B']),{})
+        assert_equal(dict(d for n, d in P3.degree(['A','B'])),{})
         # nbunch can be a graph
-        assert_equal(sorted(P5.degree(P3).values()),[1, 2, 2])
+        assert_equal(sorted(d for n, d in P5.degree(P3)),[1, 2, 2])
         # nbunch can be a graph thats way to big
-        assert_equal(sorted(P3.degree(P5).values()),[1, 1, 2])
-        assert_equal(P5.degree([]),{})
-        assert_equal(list(P5.degree_iter([])),[])
-        assert_equal(dict(P5.degree_iter([])),{})
+        assert_equal(sorted(d for n, d in P3.degree(P5)),[1, 1, 2])
+        assert_equal(list(P5.degree([])),[])
+        assert_equal(dict(P5.degree([])),{})
 
     def test_null(self):
         null=nx.null_graph()
-        assert_equal(null.degree(),{})
-        assert_equal(list(null.degree_iter()),[])
-        assert_equal(dict(null.degree_iter()),{})
+        assert_equal(list(null.degree()),[])
+        assert_equal(dict(null.degree()),{})
 
     def test_order_size(self):
         G=self.G()
@@ -348,8 +341,8 @@ class HistoricalTests(object):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('C', 'B'), ('C', 'D')])
         SG=G.subgraph(['A','B','D']) 
-        assert_nodes_equal(SG.nodes(),['A', 'B', 'D'])
-        assert_edges_equal(SG.edges(),[('A', 'B'), ('B', 'D')])
+        assert_nodes_equal(list(SG), ['A', 'B', 'D'])
+        assert_edges_equal(list(SG.edges()), [('A', 'B'), ('B', 'D')])
 
     def test_to_directed(self):
         G=self.G()
@@ -398,7 +391,7 @@ class HistoricalTests(object):
         G.add_nodes_from('GJK')
         assert_equal(sorted(G['A']),['B', 'C'])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])
-        assert_equal(sorted(G.neighbors_iter('A')),['B', 'C'])
+        assert_equal(sorted(G.neighbors('A')),['B', 'C'])
         assert_equal(sorted(G.neighbors('G')),[])
         assert_raises(nx.NetworkXError,G.neighbors,'j')
 
@@ -407,18 +400,18 @@ class HistoricalTests(object):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('C', 'B'), ('C', 'D')])
         G.add_nodes_from('GJK')
-        assert_equal(sorted(G.nodes_iter()),
+        assert_equal(sorted(G.nodes()),
                      ['A', 'B', 'C', 'D', 'G', 'J', 'K'])
-        assert_edges_equal(G.edges_iter(),
+        assert_edges_equal(G.edges(),
         [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')])
 
-        assert_equal(sorted([v for k,v in G.degree_iter()]),
+        assert_equal(sorted([v for k,v in G.degree()]),
                      [0, 0, 0, 2, 2, 3, 3])
-        assert_equal(sorted(G.degree_iter(),key=str),
+        assert_equal(sorted(G.degree(), key=str),
                      [('A', 2), ('B', 3), ('C', 3), ('D', 2), 
                       ('G', 0), ('J', 0), ('K', 0)])
-        assert_equal(sorted(G.neighbors_iter('A')),['B', 'C'])
-        assert_raises(nx.NetworkXError,G.neighbors_iter,'X')
+        assert_equal(sorted(G.neighbors('A')),['B', 'C'])
+        assert_raises(nx.NetworkXError,G.neighbors,'X')
         G.clear()
         assert_equal(nx.number_of_nodes(G),0)
         assert_equal(nx.number_of_edges(G),0)

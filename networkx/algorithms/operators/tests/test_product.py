@@ -89,8 +89,8 @@ def test_tensor_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = tensor_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if H.has_edge(u_H, v_H) and G.has_edge(u_G, v_G):
                 assert_true(GH.has_edge((u_G, u_H), (v_G, v_H)))
             else:
@@ -188,8 +188,8 @@ def test_cartesian_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = cartesian_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if (u_G == v_G and H.has_edge(u_H, v_H)) or \
                (u_H == v_H and G.has_edge(u_G, v_G)):
                 assert_true(GH.has_edge((u_G, u_H), (v_G, v_H)))
@@ -265,8 +265,8 @@ def test_lexicographic_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = lexicographic_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if G.has_edge(u_G, v_G) or (u_G == v_G and H.has_edge(u_H, v_H)):
                 assert_true(GH.has_edge((u_G, u_H), (v_G, v_H)))
             else:
@@ -341,8 +341,8 @@ def test_strong_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = strong_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if (u_G == v_G and H.has_edge(u_H, v_H)) or \
                (u_H == v_H and G.has_edge(u_G, v_G)) or \
                (G.has_edge(u_G, v_G) and H.has_edge(u_H, v_H)):
@@ -364,7 +364,7 @@ def test_graph_power():
     G.add_edge(8, 9)
     G.add_edge(9, 2)
     H = nx.power(G, 2)
-    assert_equal(H.edges(), [(0, 1), (0, 2), (0, 5), (0, 6), (0, 7), (1, 9),
+    assert_equal(list(H.edges()), [(0, 1), (0, 2), (0, 5), (0, 6), (0, 7), (1, 9),
                              (1, 2), (1, 3), (1, 6), (2, 3), (2, 4), (2, 8),
                              (2, 9), (3, 4), (3, 5), (3, 9), (4, 5), (4, 6),
                              (5, 6), (5, 7), (6, 7), (6, 8), (7, 8), (7, 9),

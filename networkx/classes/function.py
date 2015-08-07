@@ -15,43 +15,27 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'nodes_iter', 'edges_iter', 'is_directed','info',
-           'freeze','is_frozen','subgraph','create_empty_copy',
-           'set_node_attributes','get_node_attributes',
-           'set_edge_attributes','get_edge_attributes',
-           'all_neighbors','non_neighbors', 'non_edges',
-           'common_neighbors', 'is_weighted','is_negatively_weighted',
-           'is_empty']
+           'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
+           'create_empty_copy', 'set_node_attributes',
+           'get_node_attributes', 'set_edge_attributes',
+           'get_edge_attributes', 'all_neighbors', 'non_neighbors',
+           'non_edges', 'common_neighbors', 'is_weighted',
+           'is_negatively_weighted', 'is_empty']
 
 
 def nodes(G):
-    """Return a copy of the graph nodes in a list."""
+    """Return an iterator over the graph nodes."""
     return G.nodes()
 
 
-def nodes_iter(G):
-    """Return an iterator over the graph nodes."""
-    return G.nodes_iter()
-
-
 def edges(G,nbunch=None):
-    """Return list of edges incident to nodes in nbunch.
-
-    Return all edges if nbunch is unspecified or nbunch=None.
-
-    For digraphs, edges=out_edges
-    """
-    return G.edges(nbunch)
-
-
-def edges_iter(G,nbunch=None):
     """Return iterator over edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
     """
-    return G.edges_iter(nbunch)
+    return G.edges(nbunch)
 
 
 def degree(G,nbunch=None,weight=None):
@@ -132,9 +116,10 @@ def degree_histogram(G):
     Note: the bins are width one, hence len(list) can be large
     (Order(number_of_edges))
     """
-    degseq=list(G.degree().values())
-    dmax=max(degseq)+1
-    freq= [ 0 for d in range(dmax) ]
+    # We need to make degseq list because we call it twice.
+    degseq = list(d for n, d in G.degree())
+    dmax = max(degseq) + 1
+    freq = [ 0 for d in range(dmax) ]
     for d in degseq:
         freq[d] += 1
     return freq
@@ -282,11 +267,11 @@ def info(G, n=None):
         if len(G) > 0:
             if G.is_directed():
                 info+="Average in degree: %8.4f\n"%\
-                    (sum(G.in_degree().values())/float(nnodes))
+                    (sum(d for n, d in G.in_degree())/float(nnodes))
                 info+="Average out degree: %8.4f"%\
-                    (sum(G.out_degree().values())/float(nnodes))
+                    (sum(d for n, d in G.out_degree())/float(nnodes))
             else:
-                s=sum(G.degree().values())
+                s=sum(dict(G.degree()).values())
                 info+="Average degree: %8.4f"%\
                     (float(s)/float(nnodes))
 
@@ -389,10 +374,10 @@ def set_edge_attributes(G, name, values):
     except AttributeError:
         # Treat `value` as the attribute value for each edge.
         if G.is_multigraph():
-            edges = G.edges(keys=True)
+            edges = list(G.edges(keys=True))
         else:
-            edges = G.edges()
-        values = dict(zip(edges, [values] * len(edges)))
+            edges = list(G.edges())
+        values = dict(zip(edges, [values] * len(list(edges))))
 
     if G.is_multigraph():
         for (u, v, key), value in values.items():
@@ -453,10 +438,10 @@ def all_neighbors(graph, node):
         Iterator of neighbors
     """
     if graph.is_directed():
-        values = itertools.chain.from_iterable([graph.predecessors_iter(node),
-                                                graph.successors_iter(node)])
+        values = itertools.chain.from_iterable([graph.predecessors(node),
+                                                graph.successors(node)])
     else:
-        values = graph.neighbors_iter(node)
+        values = graph.neighbors(node)
 
     return values
 
@@ -495,7 +480,7 @@ def non_edges(graph):
         Iterator of edges that are not in the graph.
     """
     if graph.is_directed():
-        for u in graph.nodes_iter():
+        for u in graph.nodes():
             for v in non_neighbors(graph, u):
                 yield (u, v)
     else:

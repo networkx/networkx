@@ -655,7 +655,7 @@ def generate_gml(G, stringizer=None):
     if multigraph:
         ignored_keys.add('key')
         kwargs['keys'] = True
-    for e in G.edges_iter(**kwargs):
+    for e in G.edges(**kwargs):
         yield '  edge ['
         yield '    source ' + str(node_id[e[0]])
         yield '    target ' + str(node_id[e[1]])

@@ -61,13 +61,11 @@ def asyn_lpa_communities(G, weight=None):
     cont = True
     while cont:
         cont = False
-        nodes = nx.nodes(G)
+        nodes = list(G)
         random.shuffle(nodes)
         # Calculate the label for each node
         for node in nodes:
-            n_neighbors = G.neighbors(node)
-
-            if len(n_neighbors) < 1:
+            if len(G[node]) < 1:
                 continue
 
             # Get label frequencies. Depending on the order they are processed

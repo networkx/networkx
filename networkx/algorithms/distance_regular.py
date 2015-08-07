@@ -145,7 +145,7 @@ def intersection_array(G):
     global_parameters
     """
     # test for regular graph (all degrees must be equal)
-    degree = G.degree_iter()
+    degree = G.degree()
     (_, k) = next(degree)
     for _, knext in degree:
         if knext != k:

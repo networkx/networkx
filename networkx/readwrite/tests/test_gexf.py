@@ -284,7 +284,7 @@ class TestGEXF(object):
         nx.write_gexf(G,fh)
         fh.seek(0)
         H=nx.read_gexf(fh,node_type=int)
-        assert_equal(H.nodes(),[7])
+        assert_equal(list(H),[7])
         assert_equal(H.node[7]['label'],'77')
 
     def test_write_with_node_attributes(self):

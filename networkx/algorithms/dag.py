@@ -141,7 +141,7 @@ def topological_sort(G, nbunch=None, reverse=False):
     explored = set()
 
     if nbunch is None:
-        nbunch = G.nodes_iter()
+        nbunch = G.nodes()
     for v in nbunch:     # process all vertices in G
         if v in explored:
             continue
@@ -232,7 +232,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     order = []
 
     if nbunch is None:
-        nbunch = G.nodes_iter()
+        nbunch = G.nodes()
 
     for v in nbunch:
         if v not in explored:
@@ -333,8 +333,8 @@ def transitive_closure(G):
 
     """
     TC = nx.DiGraph()
-    TC.add_nodes_from(G.nodes_iter())
-    TC.add_edges_from(G.edges_iter())
+    TC.add_nodes_from(G.nodes())
+    TC.add_edges_from(G.edges())
     for v in G:
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)

@@ -46,7 +46,7 @@ def generate_pajek(G):
 
     # write nodes with attributes
     yield '*vertices %s'%(G.order())
-    nodes = G.nodes()
+    nodes = list(G)
     # make dictionary mapping nodes to integers
     nodenumber=dict(zip(nodes,range(1,len(nodes)+1)))
     for n in nodes:
