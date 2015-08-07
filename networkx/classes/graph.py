@@ -177,12 +177,12 @@ class Graph(object):
     **Subclasses (Advanced):**
 
     The Graph class uses a dict-of-dict-of-dict data structure.
-    The outer dict (node_dict) holds adjacency lists keyed by node.
-    The next dict (adjlist) represents the adjacency list and holds
-    edge data keyed by neighbor.  The inner dict (edge_attr) represents
+    The outer dict (node_dict) holds adjacency information keyed by node.
+    The next dict (adjlist_dict) represents the adjacency information and holds
+    edge data keyed by neighbor.  The inner dict (edge_attr_dict) represents
     the edge data and holds edge attribute values keyed by attribute names.
 
-    Each of these three dicts can be replaced by a user defined
+    Each of these three dicts can be replaced in a subclass by a user defined
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
@@ -191,7 +191,7 @@ class Graph(object):
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the outer-most dict
-        in the data structure that holds adjacency lists keyed by node.
+        in the data structure that holds adjacency info keyed by node.
         It should require no arguments and return a dict-like object.
 
     adjlist_dict_factory : function, (default: dict)
@@ -206,7 +206,7 @@ class Graph(object):
 
     Examples
     --------
-    Create a graph object that tracks the order nodes are added.
+    Create a graph subclass that tracks the order nodes are added.
 
     >>> from collections import OrderedDict
     >>> class OrderedNodeGraph(nx.Graph):
@@ -1069,7 +1069,7 @@ class Graph(object):
         Returns
         -------
         edges : iterator
-            An iterator of (u,v) or (u,v,d) tuples of edges.
+            An iterator over (u,v) or (u,v,d) tuples of edges.
 
         Notes
         -----
@@ -1169,7 +1169,7 @@ class Graph(object):
             return default
 
     def adjacency(self):
-        """Return an iterator of (node, adjacency dict) tuples for all nodes.
+        """Return an iterator over (node, adjacency dict) tuples for all nodes.
 
         This is the fastest way to look at every edge.
         For directed graphs, only outgoing adjacencies are included.
@@ -1177,7 +1177,7 @@ class Graph(object):
         Returns
         -------
         adj_iter : iterator
-           An iterator of (node, adjacency dictionary) for all nodes in
+           An iterator over (node, adjacency dictionary) for all nodes in
            the graph.
 
         Examples
@@ -1211,11 +1211,11 @@ class Graph(object):
         Returns
         -------
         If a single node is requested
-        deg:
+        deg : int
             Degree of the node
 
         OR if multiple nodes are requested
-        nd_iter : an iterator
+        nd_iter : iterator
             The iterator returns two-tuples of (node, degree).
 
         Examples
@@ -1458,15 +1458,15 @@ class Graph(object):
         return H
 
     def nodes_with_selfloops(self):
-        """Returns an iterator of nodes with self loops.
+        """Returns an iterator over nodes with self loops.
 
         A node with a self loop has an edge with both ends adjacent
         to that node.
 
         Returns
         -------
-        nodelist : list
-            A list of nodes with self loops.
+        nodelist : iterator
+            A iterator over nodes with self loops.
 
         See Also
         --------
@@ -1484,7 +1484,7 @@ class Graph(object):
         return (n for n, nbrs in self.adj.items() if n in nbrs)
 
     def selfloop_edges(self, data=False, default=None):
-        """Returns an iterator of selfloop edges.
+        """Returns an iterator over selfloop edges.
 
         A selfloop edge has the same node at both ends.
 
@@ -1500,8 +1500,8 @@ class Graph(object):
 
         Returns
         -------
-        edgelist : list of edge tuples
-            A list of all selfloop edges.
+        edgeiter : iterator over edge tuples
+            An iterator over all selfloop edges.
 
         See Also
         --------
@@ -1709,7 +1709,7 @@ class Graph(object):
         self.add_edges_from(edges, **attr)
 
     def nbunch_iter(self, nbunch=None):
-        """Return an iterator of nodes contained in nbunch that are
+        """Return an iterator over nodes contained in nbunch that are
         also in the graph.
 
         The nodes in nbunch are checked for membership in the graph
@@ -1750,7 +1750,7 @@ class Graph(object):
         nbunch is not hashable, a NetworkXError is raised.
         """
         if nbunch is None:   # include all nodes via iterator
-            bunch = iter(self.adj.keys())
+            bunch = iter(self.adj)
         elif nbunch in self:  # if nbunch is a single node
             bunch = iter([nbunch])
         else:                # if nbunch is a sequence of nodes

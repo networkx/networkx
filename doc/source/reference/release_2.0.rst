@@ -5,7 +5,7 @@ Version 2.0 release notes and API changes
 This page includes more detailed release information and API changes from
 NetworkX 1.10 to NetworkX 2.0.
 
-This is a [migration guide for people moving from 1.X to 2.0](http://networkx.readthedocs.org/en/latest/reference/migration_guide_from_1.x_to_2.0.html)
+There is a [migration guide for people moving from 1.X to 2.0](http://networkx.readthedocs.org/en/latest/reference/migration_guide_from_1.x_to_2.0.html)
 
 Please send comments and questions to the networkx-discuss [mailing list](http://groups.google.com/group/networkx-discuss).
 
@@ -43,7 +43,7 @@ API changes
       * ``G.nodes()``
       * ``G.edges()``
       * ``G.neighbors()``
-      * ``G.adjacency_list()``, ``G.adjacency_iter()`` to ``G.adjacency()``
+      * ``G.adjacency_list()`` and ``G.adjacency_iter()`` to ``G.adjacency()``
       * ``G.degree()``
       * ``G.nodes_with_selfloops()``
       * ``G.selfloop_edges()``
