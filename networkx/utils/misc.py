@@ -16,6 +16,9 @@ True
 #    BSD license.
 import sys
 import uuid
+
+import six
+
 # itertools.accumulate is only available on Python 3.2 or later.
 #
 # Once support for Python versions less than 3.2 is dropped, this code should
@@ -84,7 +87,7 @@ def is_list_of_ints( intlist ):
         if not isinstance(i,int): return False
     return True
 
-PY2 = sys.version_info[0] == 2
+PY2 = six.PY2
 if PY2:
     def make_str(x):
         """Return the string representation of t."""

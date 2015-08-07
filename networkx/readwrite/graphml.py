@@ -43,6 +43,7 @@ __all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
 
 import networkx as nx
 from networkx.utils import open_file, make_str
+import six
 import warnings
 try:
     from xml.etree.cElementTree import Element, ElementTree, tostring, fromstring
@@ -205,13 +206,9 @@ class GraphML(object):
         ' '.join(['http://graphml.graphdrawing.org/xmlns',
                   'http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd'])
 
-    try:
-        chr(12345)     # Fails on Py!=3.
-        unicode = str  # Py3k's str is our unicode type
-        long = int     # Py3K's int is our long type
-    except ValueError:
-        # Python 2.x
-        pass
+    if six.PY3:
+        unicode = six.text_type
+        long = int
 
     types=[(int,"integer"), # for Gephi GraphML bug
            (str,"yfiles"),(str,"string"), (unicode,"string"),

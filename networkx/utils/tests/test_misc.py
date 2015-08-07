@@ -4,6 +4,8 @@ from nose import SkipTest
 import networkx as nx
 from networkx.utils import *
 
+import six
+
 def test_is_string_like():
     assert_true(is_string_like("aaaa"))
     assert_false(is_string_like(None))
@@ -35,12 +37,9 @@ def test_random_number_distribution():
     z=discrete_sequence(20,distribution=[0,0,0,0,1,1,1,1,2,2,3])
 
 def test_make_str_with_bytes():
-    import sys
-    PY2 = sys.version_info[0] == 2
-
     x = "qualité"
     y = make_str(x)
-    if PY2:
+    if six.PY2:
         assert_true(isinstance(y, unicode))
         # Since file encoding is utf-8, the é will be two bytes.
         assert_true(len(y) == 8)
@@ -49,9 +48,7 @@ def test_make_str_with_bytes():
         assert_true(len(y) == 7)
 
 def test_make_str_with_unicode():
-    import sys
-    PY2 = sys.version_info[0] == 2
-    if PY2:
+    if six.PY2:
         x = unicode("qualité", encoding='utf-8')
         y = make_str(x)
         assert_true(isinstance(y, unicode))

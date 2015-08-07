@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import six
 from ast import literal_eval
 import codecs
 import io
@@ -10,15 +11,6 @@ import networkx as nx
 from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
 import tempfile
-
-try:
-    unicode
-except NameError:
-    unicode = str
-try:
-    unichr
-except NameError:
-    unichr = chr
 
 
 class TestGraph(object):
@@ -145,7 +137,7 @@ graph
         # https://github.com/networkx/networkx/issues/1061
         # Encoding quotes as HTML entities.
         G = nx.path_graph(1)
-        attr = 'This is "quoted" and this is a copyright: ' + unichr(169)
+        attr = 'This is "quoted" and this is a copyright: ' + six.unichr(169)
         G.node[0]['demo'] = attr
         fobj = tempfile.NamedTemporaryFile()
         nx.write_gml(G, fobj)
@@ -203,11 +195,11 @@ graph
 
     def test_data_types(self):
         data = [10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
-                [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}]]
+                [{(b'\xfd',): '\x7f', six.unichr(0x4444): (1, 2)}]]
         try:
-            data.append(unichr(0x14444))  # fails under IronPython
+            data.append(six.unichr(0x14444))  # fails under IronPython
         except ValueError:
-            data.append(unichr(0x1444))
+            data.append(six.unichr(0x1444))
         try:
             data.append(literal_eval('{2.3j, 1 - 2.3j, ()}'))  # fails under Python 2.7
         except ValueError:
@@ -220,7 +212,7 @@ graph
         gml = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert_equal(data, G.name)
-        assert_equal({'name': data, unicode('data'): data}, G.graph)
+        assert_equal({'name': data, six.text_type('data'): data}, G.graph)
         assert_equal(G.nodes(data=True),
                      [(0, dict(int=-1, data=dict(data=data)))])
         assert_equal(G.edges(data=True), [(0, 0, dict(float=-2.5, data=data))])
@@ -235,7 +227,7 @@ graph
 ]"""
         G = nx.parse_gml(gml)
         assert_equal(
-            '&"\x0f' + unichr(0x4444) + '&#1234567890;&#x1234567890abcdef;&unknown;',
+            '&"\x0f' + six.unichr(0x4444) + '&#1234567890;&#x1234567890abcdef;&unknown;',
             G.name)
         gml = '\n'.join(nx.generate_gml(G))
         assert_equal("""graph [
@@ -256,7 +248,7 @@ graph
         def assert_parse_error(gml):
             assert_raises(nx.NetworkXError, nx.parse_gml, gml)
 
-        assert_parse_error(['graph [\n\n', unicode(']')])
+        assert_parse_error(['graph [\n\n', six.text_type(']')])
         assert_parse_error('')
         assert_parse_error('Creator ""')
         assert_parse_error('0')
