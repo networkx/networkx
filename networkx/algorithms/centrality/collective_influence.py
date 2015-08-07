@@ -55,7 +55,7 @@ def collective_influence(G, u=None, distance=2):
     reduced_degree = lambda node: G.degree(node)-1
 
     if u is None:
-        nodes = G.nodes_iter()
+        nodes = G.nodes()
     else:
         nodes = [u]
 
