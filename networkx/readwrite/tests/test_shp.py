@@ -8,7 +8,6 @@ from nose.tools import assert_equal
 
 import networkx as nx
 
-
 class TestShp(object):
     @classmethod
     def setupClass(cls):
@@ -25,8 +24,8 @@ class TestShp(object):
 
     def setUp(self):
 
-        def createlayer(driver):
-            lyr = shp.CreateLayer("edges", None, ogr.wkbLineString)
+        def createlayer(driver, layerType=ogr.wkbLineString):
+            lyr = driver.CreateLayer("edges", None, layerType)
             namedef = ogr.FieldDefn("Name", ogr.OFTString)
             namedef.SetWidth(32)
             lyr.CreateField(namedef)
@@ -36,12 +35,11 @@ class TestShp(object):
 
         testdir = os.path.join(tempfile.gettempdir(), 'shpdir')
         shppath = os.path.join(tempfile.gettempdir(), 'tmpshp.shp')
+        multi_shppath = os.path.join(tempfile.gettempdir(), 'tmp_mshp.shp')
 
-        self.deletetmp(drv, testdir, shppath)
+        self.deletetmp(drv, testdir, shppath, multi_shppath)
         os.mkdir(testdir)
 
-        shp = drv.CreateDataSource(shppath)
-        lyr = createlayer(shp)
         self.names = ['a', 'b', 'c', 'c']  # edgenames
         self.paths = ([(1.0, 1.0), (2.0, 2.0)],
                       [(2.0, 2.0), (3.0, 3.0)],
@@ -52,6 +50,10 @@ class TestShp(object):
                                  [(2.0, 2.0), (3.0, 3.0)],
                                  [(0.9, 0.9), (4.0, 2.0)])
 
+        self.multi_names = ['a', 'a', 'a', 'a']  # edgenames
+
+        shp = drv.CreateDataSource(shppath)
+        lyr = createlayer(shp)
  
         for path, name in zip(self.paths, self.names):
             feat = ogr.Feature(lyr.GetLayerDefn())
@@ -61,7 +63,27 @@ class TestShp(object):
             feat.SetGeometry(g)
             feat.SetField("Name", name)
             lyr.CreateFeature(feat)
+
+        # create single record multiline shapefile for testing
+        multi_shp = drv.CreateDataSource(multi_shppath)
+        multi_lyr = createlayer(multi_shp, ogr.wkbMultiLineString)
+         
+        multi_g = ogr.Geometry(ogr.wkbMultiLineString)
+        for path in self.paths:
+            
+            g = ogr.Geometry(ogr.wkbLineString)
+            for p in path:
+                g.AddPoint_2D(*p)
+
+            multi_g.AddGeometry(g)
+
+        multi_feat = ogr.Feature(multi_lyr.GetLayerDefn())
+        multi_feat.SetGeometry(multi_g)
+        multi_feat.SetField("Name", 'a') 
+        multi_lyr.CreateFeature(multi_feat)
+
         self.shppath = shppath
+        self.multi_shppath = multi_shppath
         self.testdir = testdir
         self.drv = drv
 
@@ -85,6 +107,9 @@ class TestShp(object):
         G = nx.read_shp(self.shppath, simplify=False)
         compare_graph_paths_names(G, self.paths, self.names)
 
+        # multiline unsimplified
+        G = nx.read_shp(self.multi_shppath, simplify=False)
+        compare_graph_paths_names(G, self.paths, self.multi_names)
 
     def checkgeom(self, lyr, expected):
         feature = lyr.GetNextFeature()
