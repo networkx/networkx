@@ -142,7 +142,7 @@ def freeze(G):
     Node and edge data can still be modified.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph
 
@@ -188,7 +188,7 @@ def is_frozen(G):
     """Return True if graph is frozen.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph
 

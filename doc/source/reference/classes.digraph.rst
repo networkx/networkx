@@ -7,7 +7,7 @@ DiGraph - Directed graphs with self loops
 Overview
 ========
 .. currentmodule:: networkx
-.. autofunction:: DiGraph
+.. autoclass:: DiGraph
 
 
 Adding and removing nodes and edges

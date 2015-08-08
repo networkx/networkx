@@ -1,10 +1,11 @@
-**********
 Centrality
-**********
+==========
+
 .. automodule:: networkx.algorithms.centrality
 
 Degree
 ------
+.. automodule:: networkx.algorithms.centrality.degree_alg
 .. autosummary::
    :toctree: generated/
 
@@ -14,6 +15,7 @@ Degree
 
 Closeness
 ---------
+.. automodule:: networkx.algorithms.centrality.closeness
 .. autosummary::
    :toctree: generated/
 
@@ -21,6 +23,7 @@ Closeness
 
 Betweenness
 -----------
+.. automodule:: networkx.algorithms.centrality.betweenness
 .. autosummary::
    :toctree: generated/
 
@@ -31,6 +34,7 @@ Betweenness
 
 Current Flow Closeness
 ----------------------
+.. automodule:: networkx.algorithms.centrality.current_flow_closeness
 .. autosummary::
    :toctree: generated/
 
@@ -38,6 +42,7 @@ Current Flow Closeness
 
 Current-Flow Betweenness
 ------------------------
+.. automodule:: networkx.algorithms.centrality.current_flow_betweenness
 .. autosummary::
    :toctree: generated/
 
@@ -49,6 +54,7 @@ Current-Flow Betweenness
 
 Eigenvector
 -----------
+.. automodule:: networkx.algorithms.centrality.eigenvector
 .. autosummary::
    :toctree: generated/
 
@@ -59,6 +65,7 @@ Eigenvector
 
 Communicability
 ---------------
+.. automodule:: networkx.algorithms.centrality.communicability_alg
 .. autosummary::
    :toctree: generated/
 
@@ -71,6 +78,7 @@ Communicability
 
 Load
 ----
+.. automodule:: networkx.algorithms.centrality.load
 .. autosummary::
    :toctree: generated/
 
@@ -79,6 +87,7 @@ Load
 
 Dispersion
 ----------
+.. automodule:: networkx.algorithms.centrality.dispersion
 .. autosummary::
    :toctree: generated/
 
@@ -86,6 +95,7 @@ Dispersion
 
 Harmonic Centrality
 -------------------
+.. automodule:: networkx.algorithms.centrality.harmonic
 .. autosummary::
    :toctree: generated/
 

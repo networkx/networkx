@@ -8,8 +8,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 G = nx.gnp_random_graph(100,0.02)
 
-degree_sequence=sorted(nx.degree(G).values(),reverse=True) # degree sequence
-#print "Degree sequence", degree_sequence
+degree_sequence = sorted(d for v, d in nx.degree(G), reverse=True)
 dmax=max(degree_sequence)
 
 plt.loglog(degree_sequence,'b-',marker='o')

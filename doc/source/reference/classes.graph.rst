@@ -7,7 +7,7 @@ Graph -- Undirected graphs with self loops
 Overview
 ========
 .. currentmodule:: networkx
-.. autofunction:: Graph
+.. autoclass:: Graph
 
 Adding and removing nodes and edges
 ===================================

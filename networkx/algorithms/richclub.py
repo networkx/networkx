@@ -6,7 +6,7 @@ __author__ = """\n""".join(['Ben Edwards',
 __all__ = ['rich_club_coefficient']
 
 def rich_club_coefficient(G, normalized=True, Q=100):
-    """Return the rich-club coefficient of the graph G.
+    r"""Return the rich-club coefficient of the graph G.
 
     The rich-club coefficient is the ratio, for every degree k, of the
     number of actual to the number of potential edges for nodes 
@@ -14,7 +14,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
 
     .. math::
 
-        \\phi(k) = \\frac{2 Ek}{Nk(Nk-1)}
+       \phi(k) = \frac{2 Ek}{Nk(Nk-1)}
 
     where Nk is the number of nodes with degree larger than k, and Ek
     be the number of edges among those nodes.
@@ -42,7 +42,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     0.4
 
     Notes
-    ------
+    -----
     The rich club definition and algorithm are found in [1]_.  This
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.

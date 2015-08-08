@@ -28,7 +28,7 @@ def complement(G, name=None):
     GC : A new graph.
 
     Notes
-    ------
+    -----
     Note that complement() does not create self-loops and also
     does not produce parallel edges for MultiGraphs.
 

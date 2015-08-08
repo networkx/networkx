@@ -1531,7 +1531,7 @@ class TimingGraph(object):
         A selfloop edge has the same node at both ends.
 
         Parameters
-        -----------
+        ----------
         data : bool, optional (default=False)
             Return selfloop edges as two tuples (u,v) (data=False)
             or three-tuples (u,v,data) (data=True)
@@ -3844,7 +3844,7 @@ class TimingMultiGraph(TimingGraph):
         A selfloop edge has the same node at both ends.
 
         Parameters
-        -----------
+        ----------
         data : bool, optional (default=False)
             Return selfloop edges as two tuples (u,v) (data=False)
             or three-tuples (u,v,data) (data=True)

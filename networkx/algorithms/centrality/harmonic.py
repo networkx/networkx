@@ -13,7 +13,7 @@ __all__ = ['harmonic_centrality']
 
 
 def harmonic_centrality(G, distance=None):
-    """Compute harmonic centrality for nodes.
+    r"""Compute harmonic centrality for nodes.
 
     Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
     of the shortest path distances from all other nodes to `u`.
@@ -32,7 +32,8 @@ def harmonic_centrality(G, distance=None):
       A NetworkX graph
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
-      path calculations.  If `None`, then each edge will have distance equal to 1.
+      path calculations.  If `None`, then each edge will have distance equal
+      to 1.
 
     Returns
     -------

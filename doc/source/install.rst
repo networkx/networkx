@@ -58,12 +58,12 @@ Source archive file
 GitHub
 ------
 
-  1. Clone the networkx repostitory
-    ::
+  1. Clone the networkx repository
+     ::
 
-       git clone https://github.com/networkx/networkx.git
+        git clone https://github.com/networkx/networkx.git
 
-  (see https://github.com/networkx/networkx/ for other options)
+     (see https://github.com/networkx/networkx/ for other options)
 
   2. Change directory to :samp:`networkx`
 

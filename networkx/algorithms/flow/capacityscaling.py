@@ -198,10 +198,9 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         not connected.
 
     NetworkXUnfeasible
-        This exception is raised in the following situations:
-            * The sum of the demands is not zero. Then, there is no
-              flow satisfying all demands.
-            * There is no flow satisfying all demand.
+        This exception is raised if either the sum of the demands is not zero
+        (in which case there is no flow satisfying all demands) or if there is
+        no flow satisfying all demand.
 
     NetworkXUnbounded
         This exception is raised if the digraph G has a cycle of
@@ -214,7 +213,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
 
     See also
     --------
-    :meth:`network_simplex`
+    network_simplex
 
     Examples
     --------

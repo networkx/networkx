@@ -632,19 +632,20 @@ class Graph(object):
         Examples
         --------
         There are two simple ways of getting a list of all nodes in the graph::
-        >>> G = nx.Graph()
-        >>> G.add_nodes_from(range(3))
-        >>> list(G.nodes())
-        [0, 1, 2]
-        >>> list(G)
-        [0, 1, 2]
+
+            >>> G = nx.Graph()
+            >>> G.add_nodes_from(range(3))
+            >>> list(G.nodes())
+            [0, 1, 2]
+            >>> list(G)
+            [0, 1, 2]
 
         To get the node data along with the nodes::
 
-        >>> G.add_node(1, time='5pm')
-        >>> G.node[0]['foo'] = 'bar'
-        >>> list(G.nodes(data=True))
-        [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
+            >>> G.add_node(1, time='5pm')
+            >>> G.node[0]['foo'] = 'bar'
+            >>> list(G.nodes(data=True))
+            [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
 
         """
         if data:

@@ -47,7 +47,7 @@ def asyn_lpa_communities(G, weight=None):
         Iterable of communities given as sets of nodes.
 
     Notes
-    ------
+    -----
     Edge weight attributes must be numerical.
 
     References

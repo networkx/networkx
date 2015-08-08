@@ -29,7 +29,7 @@ def stochastic_graph(G, copy=True, weight='weight'):
     reweighting takes that into account.
 
     Parameters
-    -----------
+    ----------
     G : directed graph
       A NetworkX DiGraph
 
