@@ -2,7 +2,7 @@
 Coloring
 ********
 
-.. automodule:: networkx.algorithms.coloring
+.. automodule:: networkx.algorithms.coloring.greedy_coloring
 .. autosummary::
    :toctree: generated/
 

@@ -7,7 +7,7 @@ MultiGraph - Undirected graphs with self loops and parallel edges
 Overview
 ========
 .. currentmodule:: networkx
-.. autofunction:: MultiGraph
+.. autoclass:: MultiGraph
 
 Adding and removing nodes and edges
 ===================================

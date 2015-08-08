@@ -24,7 +24,7 @@ from networkx.algorithms.centrality.betweenness import\
 def betweenness_centrality_subset(G,sources,targets,
                                   normalized=False,
                                   weight=None):
-    """Compute betweenness centrality for a subset of nodes.
+    r"""Compute betweenness centrality for a subset of nodes.
 
     .. math::
 
@@ -36,7 +36,6 @@ def betweenness_centrality_subset(G,sources,targets,
     passing through some  node `v` other than `s, t`. 
     If `s = t`, `\sigma(s, t) = 1`,
     and if `v \in {s, t}`,  `\sigma(s, t|v) = 0` [2]_.
-
 
     Parameters
     ----------
@@ -76,11 +75,11 @@ def betweenness_centrality_subset(G,sources,targets,
     paths between pairs of nodes.
 
     The normalization might seem a little strange but it is the same
-    as in betweenness_centrality() and is designed to make
-    betweenness_centrality(G) be the same as
-    betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes()).
+    as in :func:`betweenness_centrality` and is designed to make
+    ``betweenness_centrality(G)`` be the same as::
 
-    
+        betweenness_centrality_subset(G, sources=list(G), targets=list(G))
+
     References
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
@@ -106,7 +105,7 @@ def betweenness_centrality_subset(G,sources,targets,
 def edge_betweenness_centrality_subset(G,sources,targets,
                                        normalized=False,
                                        weight=None):
-    """Compute betweenness centrality for edges for a subset of nodes.
+    r"""Compute betweenness centrality for edges for a subset of nodes.
 
     .. math::
 
@@ -132,7 +131,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
       If True the betweenness values are normalized by `2/(n(n-1))` 
       for graphs, and `1/(n(n-1))` for directed graphs where `n` 
       is the number of nodes in G.
-       
+
     weight : None or string, optional  
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
@@ -141,7 +140,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     -------
     edges : dictionary
        Dictionary of edges with Betweenness centrality as the value.
-        
+
     See Also
     --------
     betweenness_centrality

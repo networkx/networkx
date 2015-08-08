@@ -1,6 +1,5 @@
 .. _multidigraph:
 
-
 =================================================================
 MultiDiGraph - Directed graphs with self loops and parallel edges
 =================================================================
@@ -8,7 +7,7 @@ MultiDiGraph - Directed graphs with self loops and parallel edges
 Overview
 ========
 .. currentmodule:: networkx
-.. autofunction:: MultiDiGraph
+.. autoclass:: MultiDiGraph
 
 Adding and Removing Nodes and Edges
 ===================================

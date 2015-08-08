@@ -1,13 +1,11 @@
 *************
 Assortativity
 *************
-
 .. automodule:: networkx.algorithms.assortativity
-.. autosummary::
-   :toctree: generated/
 
 Assortativity
 -------------   
+.. automodule:: networkx.algorithms.assortativity.correlation
 .. autosummary::
    :toctree: generated/
 
@@ -18,6 +16,7 @@ Assortativity
 
 Average neighbor degree
 -----------------------   
+.. automodule:: networkx.algorithms.assortativity.neighbor_degree
 .. autosummary::
    :toctree: generated/
 
@@ -26,6 +25,7 @@ Average neighbor degree
 
 Average degree connectivity
 ---------------------------
+.. automodule:: networkx.algorithms.assortativity.connectivity
 .. autosummary::
    :toctree: generated/
 
@@ -35,6 +35,7 @@ Average degree connectivity
 
 Mixing
 ------
+.. automodule:: networkx.algorithms.assortativity.mixing
 .. autosummary::
    :toctree: generated/
 

@@ -7,6 +7,7 @@ Flows
 
 Maximum Flow
 ------------
+.. automodule:: networkx.algorithms.flow.maxflow
 .. autosummary::
    :toctree: generated/
 
@@ -18,6 +19,7 @@ Maximum Flow
 
 Edmonds-Karp
 ------------
+.. automodule:: networkx.algorithms.flow.edmondskarp
 .. autosummary::
    :toctree: generated/
 
@@ -26,6 +28,7 @@ Edmonds-Karp
 
 Shortest Augmenting Path
 ------------------------
+.. automodule:: networkx.algorithms.flow.shortestaugmentingpath
 .. autosummary::
    :toctree: generated/
 
@@ -34,6 +37,7 @@ Shortest Augmenting Path
 
 Preflow-Push
 ------------
+.. automodule:: networkx.algorithms.flow.preflowpush
 .. autosummary::
    :toctree: generated/
 
@@ -42,6 +46,7 @@ Preflow-Push
 
 Utils
 -----
+.. automodule:: networkx.algorithms.flow.utils
 .. autosummary::
    :toctree: generated/
 
@@ -50,6 +55,7 @@ Utils
 
 Network Simplex
 ---------------
+.. automodule:: networkx.algorithms.flow.networkxsimplex
 .. autosummary::
    :toctree: generated/
 
@@ -62,6 +68,7 @@ Network Simplex
 
 Capacity Scaling Minimum Cost Flow
 ----------------------------------
+.. automodule:: networkx.algorithms.flow.capacityscaling
 .. autosummary::
    :toctree: generated/
 

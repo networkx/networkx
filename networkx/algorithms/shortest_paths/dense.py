@@ -35,7 +35,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
         will be Inf.
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths in
     dense graphs or graphs with negative weights when Dijkstra's
     algorithm fails.  This algorithm can still fail if there are
@@ -75,7 +75,7 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
        in the shortest path.
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
@@ -133,7 +133,7 @@ def floyd_warshall(G, weight='weight'):
        between nodes.
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.

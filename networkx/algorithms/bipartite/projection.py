@@ -44,26 +44,28 @@ def projected_graph(B, nodes, multigraph=False):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
-    >>> B = nx.path_graph(4)
-    >>> G = bipartite.projected_graph(B, [1,3]) 
-    >>> list(G)
-    [1, 3]
-    >>> list(G.edges())
-    [(1, 3)]
-    
-    If nodes `a`, and `b` are connected through both nodes 1 and 2 then
-    building a multigraph results in two edges in the projection onto 
-    [`a`,`b`]:
+    To project a bipartite graph onto one of its node sets::
 
-    >>> B = nx.Graph()
-    >>> B.add_edges_from([('a', 1), ('b', 1), ('a', 2), ('b', 2)])
-    >>> G = bipartite.projected_graph(B, ['a', 'b'], multigraph=True)
-    >>> print([sorted((u,v)) for u,v in G.edges()])
-    [['a', 'b'], ['a', 'b']]
+        >>> from networkx.algorithms import bipartite
+        >>> B = nx.path_graph(4)
+        >>> G = bipartite.projected_graph(B, [1,3]) 
+        >>> list(G)
+        [1, 3]
+        >>> list(G.edges())
+        [(1, 3)]
+
+    If nodes ``'a'`` and ``'b'`` are connected through both nodes ``1``
+    and ``2`` then building a multigraph results in two edges in the
+    projection onto ``['a', 'b']``::
+
+        >>> B = nx.Graph()
+        >>> B.add_edges_from([('a', 1), ('b', 1), ('a', 2), ('b', 2)])
+        >>> G = bipartite.projected_graph(B, ['a', 'b'], multigraph=True)
+        >>> print([sorted((u,v)) for u,v in G.edges()])
+        [['a', 'b'], ['a', 'b']]
 
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     Returns a simple graph that is the projection of the bipartite graph B
     onto the set of nodes given in list nodes.  If multigraph=True then
@@ -156,9 +158,9 @@ def weighted_projected_graph(B, nodes, ratio=False):
     >>> G = bipartite.weighted_projected_graph(B, [1,3], ratio=True)
     >>> list(G.edges(data=True))
     [(1, 3, {'weight': 0.5})]
-    
+
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
@@ -238,21 +240,24 @@ def collaboration_weighted_projected_graph(B, nodes):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
-    >>> B = nx.path_graph(5)
-    >>> B.add_edge(1,5)
-    >>> G = bipartite.collaboration_weighted_projected_graph(B, [0, 2, 4, 5])
-    >>> list(G)
-    [0, 2, 4, 5]
-    >>> for edge in G.edges(data=True): print(edge)
-    ... 
-    (0, 2, {'weight': 0.5})
-    (0, 5, {'weight': 0.5})
-    (2, 4, {'weight': 1.0})
-    (2, 5, {'weight': 0.5})
+    To get the computed weights of the edges in the projected graph::
+
+        >>> from networkx.algorithms import bipartite
+        >>> B = nx.path_graph(5)
+        >>> B.add_edge(1,5)
+        >>> nodes = [0, 2, 4, 5]
+        >>> G = bipartite.collaboration_weighted_projected_graph(B, nodes)
+        >>> list(G)
+        [0, 2, 4, 5]
+        >>> for edge in G.edges(data=True): print(edge)
+        ...
+        (0, 2, {'weight': 0.5})
+        (0, 5, {'weight': 0.5})
+        (2, 4, {'weight': 1.0})
+        (2, 5, {'weight': 0.5})
     
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
@@ -334,17 +339,18 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     --------
     >>> from networkx.algorithms import bipartite
     >>> B = nx.path_graph(5)
-    >>> G = bipartite.overlap_weighted_projected_graph(B, [0, 2, 4])
+    >>> projected = bipartite.overlap_weighted_projected_graph
+    >>> G = projected(B, [0, 2, 4])
     >>> list(G)
     [0, 2, 4]
     >>> list(G.edges(data=True))
     [(0, 2, {'weight': 0.5}), (2, 4, {'weight': 0.5})]
-    >>> G = bipartite.overlap_weighted_projected_graph(B, [0, 2, 4], jaccard=False)
+    >>> G = projected(B, [0, 2, 4], jaccard=False)
     >>> list(G.edges(data=True))
     [(0, 2, {'weight': 1.0}), (2, 4, {'weight': 1.0})]
-    
+
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
@@ -418,46 +424,59 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
-    >>> # Define some custom weight functions
-    >>> def jaccard(G, u, v):
-    ...     unbrs = set(G[u])
-    ...     vnbrs = set(G[v])
-    ...     return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
-    ... 
-    >>> def my_weight(G, u, v, weight='weight'):
-    ...     w = 0
-    ...     for nbr in set(G[u]) & set(G[v]):
-    ...         w += G.edge[u][nbr].get(weight, 1) + G.edge[v][nbr].get(weight, 1)
-    ...     return w
-    ... 
-    >>> # A complete bipartite graph with 4 nodes and 4 edges
-    >>> B = nx.complete_bipartite_graph(2,2)
-    >>> # Add some arbitrary weight to the edges
-    >>> for i,(u,v) in enumerate(B.edges()):
-    ...     B.edge[u][v]['weight'] = i + 1
-    ... 
-    >>> for edge in B.edges(data=True):
-    ...     print(edge)
-    ... 
-    (0, 2, {'weight': 1})
-    (0, 3, {'weight': 2})
-    (1, 2, {'weight': 3})
-    (1, 3, {'weight': 4})
-    >>> # Without specifying a function, the weight is equal to # shared partners
-    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1])
-    >>> print(list(G.edges(data=True)))
-    [(0, 1, {'weight': 2})]
-    >>> # To specify a custom weight function use the weight_function parameter
-    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=jaccard)
-    >>> print(list(G.edges(data=True)))
-    [(0, 1, {'weight': 1.0})]
-    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=my_weight)
-    >>> print(list(G.edges(data=True)))
-    [(0, 1, {'weight': 10})]
+
+    For the examples in this section, consider the complete bipartite graph
+    with four nodes and four edges, with some arbitrary weights on the edges::
+
+        >>> from networkx.algorithms import bipartite
+        >>> B = nx.complete_bipartite_graph(2, 2)
+        >>> for i, (u, v) in enumerate(B.edges(), 1):
+        ...     B.edge[u][v]['weight'] = i
+        ...
+        >>> for edge in B.edges(data=True):
+        ...     print(edge)
+        ...
+        (0, 2, {'weight': 1})
+        (0, 3, {'weight': 2})
+        (1, 2, {'weight': 3})
+        (1, 3, {'weight': 4})
+
+    Without specifying a function, the weight is equal to the number
+    of shared partners::
+
+        >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1])
+        >>> list(G.edges(data=True))
+        [(0, 1, {'weight': 2})]
+
+    You can specify a custom weight function using the ``weight_function``
+    parameter. For example, using the Jaccard index::
     
+        >>> def jaccard(G, u, v):
+        ...     unbrs = set(G[u])
+        ...     vnbrs = set(G[v])
+        ...     return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
+        ...
+        >>> projected = bipartite.generic_weighted_projected_graph
+        >>> G = projected(B, [0, 1], weight_function=jaccard)
+        >>> list(G.edges(data=True))
+        [(0, 1, {'weight': 1.0})]
+
+    Using the sum of the weights of the common neighbors::
+
+        >>> def my_weight(G, u, v, weight='weight'):
+        ...     w = 0
+        ...     for nbr in nx.common_neighbors(G, u, v):
+        ...         w += (G.edge[u][nbr].get(weight, 1)
+        ...               + G.edge[v][nbr].get(weight, 1))
+        ...     return w
+        ...
+        >>> projected = bipartite.generic_weighted_projected_graph
+        >>> G = projected(B, [0, 1], weight_function=my_weight)
+        >>> list(G.edges(data=True))
+        [(0, 1, {'weight': 10})]
+
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 

@@ -24,7 +24,6 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
                     weight = 'weight'):
     r"""Compute the Katz centrality for the nodes of the graph G.
 
-
     Katz centrality computes the centrality for a node based on the centrality
     of its neighbors. It is a generalization of the eigenvector centrality. The
     Katz centrality for node `i` is
@@ -33,14 +32,14 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 
         x_i = \alpha \sum_{j} A_{ij} x_j + \beta,
 
-    where `A` is the adjacency matrix of the graph G with eigenvalues `\lambda`.
+    where `A` is the adjacency matrix of the graph G with eigenvalues
+    `\lambda`.
 
     The parameter `\beta` controls the initial centrality and
 
     .. math::
 
         \alpha < \frac{1}{\lambda_{max}}.
-
 
     Katz centrality computes the relative influence of a node within a
     network by measuring the number of the immediate neighbors (first
@@ -53,7 +52,6 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     should be strictly less than the inverse largest eigenvalue of the
     adjacency matrix in order for the Katz centrality to be computed
     correctly. More information is provided in [1]_ .
-
 
     Parameters
     ----------
@@ -280,7 +278,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     hits
 
     Notes
-    ------
+    -----
     Katz centrality was introduced by [2]_.
 
     This algorithm uses a direct linear solver to solve the above equation.

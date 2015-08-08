@@ -8,7 +8,7 @@ VF2 Algorithm
 
 Graph Matcher
 -------------
-.. currentmodule:: networkx.algorithms.isomorphism
+.. currentmodule:: networkx.algorithms.isomorphism.isomorphvf2
 
 .. autosummary::
    :toctree: generated/

@@ -48,7 +48,7 @@ def _avg_deg_conn(G, neighbors, source_degree, target_degree,
 
 def average_degree_connectivity(G, source="in+out", target="in+out",
                                 nodes=None, weight=None):
-    """Compute the average degree connectivity of graph.
+    r"""Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
     nodes with degree k. For weighted graphs, an analogous measure can
@@ -58,7 +58,6 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     .. math::
 
         k_{nn,i}^{w} = \frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
-
 
     where `s_i` is the weighted degree of node `i`,
     `w_{ij}` is the weight of the edge that links `i` and `j`,
@@ -89,12 +88,14 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G.edge[1][2]['weight'] = 3
-    >>> nx.k_nearest_neighbors(G)
-    {1: 2.0, 2: 1.5}
-    >>> nx.k_nearest_neighbors(G, weight='weight')
-    {1: 2.0, 2: 1.75}
+    Get the *k*-nearest neighbors, with and without weight::
+
+        >>> G=nx.path_graph(4)
+        >>> G.edge[1][2]['weight'] = 3
+        >>> nx.k_nearest_neighbors(G)
+        {1: 2.0, 2: 1.5}
+        >>> nx.k_nearest_neighbors(G, weight='weight')
+        {1: 2.0, 2: 1.75}
 
     See also
     --------

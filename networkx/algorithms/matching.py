@@ -76,9 +76,8 @@ def max_weight_matching(G, maxcardinality=False):
        mate[v] == w if node v is matched to node w.  Unmatched nodes do not
        occur as a key in mate.
 
-
     Notes
-    ------
+    -----
     If G has edges with 'weight' attribute the edge data are used as
     weight values else the weights are assumed to be 1.
 
