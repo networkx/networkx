@@ -215,3 +215,12 @@ class TestConvert():
 
         assert_true(self.edgelists_equal(nx.Graph(nx.MultiDiGraph(edges1)).edges(),edges1))
         assert_true(self.edgelists_equal(nx.Graph(nx.MultiDiGraph(edges2)).edges(),edges1))
+
+    def test_attribute_dict_integrity(self):
+        # we must not replace dict-like graph data structures with dicts 
+        G=OrderedGraph()
+        G.add_nodes_from("abc")
+        H=to_networkx_graph(G, create_using=OrderedGraph())
+        assert_equal(list(H.node),list(G.node))
+        H=OrderedDiGraph(G)
+        assert_equal(list(H.node),list(G.node))
