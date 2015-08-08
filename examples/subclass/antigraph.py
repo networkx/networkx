@@ -87,7 +87,7 @@ class AntiGraph(nx.Graph):
 
         Returns
         -------
-        nd_iter : an iterator
+        nd_iter : iterator
             The iterator returns two-tuples of (node, degree).
 
         See Also
