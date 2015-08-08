@@ -1,11 +1,9 @@
-"""
-Harmonic centrality measure.
-"""
 #    Copyright (C) 2015 by
 #    Alessandro Luongo
 #    BSD license.
+"""Functions for computing the harmonic centrality of a graph."""
 from __future__ import division
-import functools
+
 import networkx as nx
 
 __author__ = "\n".join(['Alessandro Luongo (alessandro.luongo@studenti.unimi.it'])
@@ -56,16 +54,7 @@ def harmonic_centrality(G, distance=None):
     .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
-    if len(G) <= 1:
-        return {singleton: 0.0 for singleton in G.nodes()}
-    
     if G.is_directed():
         G = G.reverse()
-        
-    if distance is not None:
-        # use Dijkstra's algorithm with specified attribute as edge weight
-        sp = nx.all_pairs_dijkstra_path_length(G, weight=distance)
-    else:
-        sp = nx.all_pairs_shortest_path_length(G)
-
-    return {n: sum(1/d if d > 0 else 0 for d in dd.values()) for n, dd in sp}
+    sp = nx.shortest_path_length(G, weight=distance)
+    return {n: sum(1 / d if d > 0 else 0 for d in dd.values()) for n, dd in sp}
