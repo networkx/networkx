@@ -5,14 +5,6 @@ Communities
 .. automodule:: networkx.algorithms.community
 .. currentmodule:: networkx
 
-Community Detection
--------------------
-.. automodule:: networkx.algorithms.community.centrality
-.. autosummary::
-   :toctree: generated/
-
-   girvan_newman
-
 K-Clique
 --------
 .. automodule:: networkx.algorithms.community.kclique
@@ -28,3 +20,20 @@ Label propagation
    :toctree: generated/
 
    asyn_lpa_communities
+
+Measuring partitions
+--------------------
+.. automodule:: networkx.algorithms.community.quality
+.. autosummary::
+   :toctree: generated/
+
+   coverage
+   performance
+
+Partitions via centrality measures
+----------------------------------
+.. automodule:: networkx.algorithms.community.centrality
+.. autosummary::
+   :toctree: generated/
+
+   girvan_newman
