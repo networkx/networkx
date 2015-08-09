@@ -1,7 +1,10 @@
 #!/usr/bin/env python
-from nose.tools import assert_equal
-import networkx as nx
 import collections
+from functools import partial
+
+from nose.tools import assert_equal
+
+import networkx as nx
 
 
 def validate_communities(result, expected):
@@ -56,7 +59,8 @@ class TestCommunities():
         validate_communities(result[2], [(1,), (2, ), (3, ), (4, ), (5, ), (6, ),
                                          (7, ), (8, ), (9, ), (10,), (11, ), (12, ),
                                          (13, ), (14, )])
-        result = list(nx.girvan_newman(g, weight='weight'))
+        ranking = partial(nx.edge_betweenness_centrality, weight='weight')
+        result = list(nx.girvan_newman(g, ranking))
         assert_equal(len(result), 4)
         validate_communities(result[0], [(1, 2, 3, 4, 5, 6, 7), (8, 9, 10, 11, 12, 13, 14)])
         validate_communities(result[1], [(1, 2, 3, ), (4, 5, 6, ), (9, 10, 11, ),
@@ -67,7 +71,8 @@ class TestCommunities():
                                          (7, ), (8, ), (9, ), (10,), (11, ), (12, ),
                                          (13, ), (14, )])
         dg = g.to_directed()
-        result = list(nx.girvan_newman(dg, weight='weight'))
+        ranking = partial(nx.edge_betweenness_centrality, weight='weight')
+        result = list(nx.girvan_newman(dg, ranking=ranking))
         assert_equal(len(result), 4)
         validate_communities(result[0], [(1, 2, 3, 4, 5, 6, 7), (8, 9, 10, 11, 12, 13, 14)])
         validate_communities(result[1], [(1, 2, 3, ), (4, 5, 6, ), (9, 10, 11, ),
