@@ -10,11 +10,6 @@ Graph products.
 import networkx as nx
 from itertools import product
 
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'
-                            'Ben Edwards(bedwards@cs.unm.edu)'])
-
 __all__ = ['tensor_product', 'cartesian_product',
            'lexicographic_product', 'strong_product', 'power']
 

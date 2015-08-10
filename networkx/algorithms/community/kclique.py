@@ -6,8 +6,7 @@
 #    BSD license.
 from collections import defaultdict
 import networkx as nx
-__author__ = """\n""".join(['Conrad Lee <conradlee@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['k_clique_communities']
 
 def k_clique_communities(G, k, cliques=None):

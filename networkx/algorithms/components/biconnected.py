@@ -12,10 +12,6 @@ from itertools import chain
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>',
-                        'Dan Schult <dschult@colgate.edu>',
-                        'Aric Hagberg <aric.hagberg@gmail.com>'])
-
 __all__ = [
     'biconnected_components',
     'biconnected_component_edges',

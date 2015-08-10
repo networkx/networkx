@@ -10,9 +10,6 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 import itertools
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
            'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',

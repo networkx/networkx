@@ -8,9 +8,8 @@ from itertools import chain, count
 import json
 import networkx as nx
 from networkx.utils import make_str
-__author__ = """Aric Hagberg <hagberg@lanl.gov>"""
-__all__ = ['node_link_data', 'node_link_graph']
 
+__all__ = ['node_link_data', 'node_link_graph']
 
 _attrs = dict(id='id', source='source', target='target', key='key')
 

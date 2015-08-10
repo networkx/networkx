@@ -9,10 +9,6 @@ Generators for geometric graphs.
 #    All rights reserved.
 #    BSD license.
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)',
-                        'Ben Edwards (BJEdwards@gmail.com)'])
-
 __all__ = ['random_geometric_graph',
            'waxman_graph',
            'geographical_threshold_graph',

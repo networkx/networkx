@@ -22,7 +22,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 import importlib
 from networkx.utils import open_file, make_str
 import networkx as nx
-__author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
+
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 

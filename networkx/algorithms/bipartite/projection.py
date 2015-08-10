@@ -8,8 +8,7 @@ import networkx as nx
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Jordi Torrents <jtorrents@milnou.net>'])
+
 __all__ = ['project',
            'projected_graph',
            'weighted_projected_graph',

@@ -7,7 +7,6 @@ Betweenness centrality measures for subsets of nodes.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['betweenness_centrality_subset',
            'edge_betweenness_centrality_subset',

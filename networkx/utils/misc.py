@@ -40,9 +40,6 @@ except ImportError:
             yield total
 
 
-__author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Ben Edwards(bedwards@cs.unm.edu)'])
 ### some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py

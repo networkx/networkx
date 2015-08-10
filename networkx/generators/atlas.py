@@ -15,7 +15,6 @@ Because of its size, this module is not imported by default.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Pieter Swart (swart@lanl.gov)"""
  
 __all__ = ['graph_atlas_g']
 

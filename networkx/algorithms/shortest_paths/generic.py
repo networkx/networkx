@@ -12,8 +12,7 @@ These algorithms work with undirected and directed graphs.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Sérgio Nery Simões <sergionery@gmail.com>'])
+
 __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
            'has_path']

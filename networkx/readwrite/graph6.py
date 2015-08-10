@@ -23,8 +23,7 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
-__author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
-                            'Aric Hagberg <aric.hagberg@lanl.gov'])
+
 __all__ = ['read_graph6', 'parse_graph6', 'generate_graph6', 'write_graph6']
 
 def parse_graph6(string):

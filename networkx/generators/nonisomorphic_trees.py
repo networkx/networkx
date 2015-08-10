@@ -12,8 +12,6 @@ the root.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = "\n".join(["Aric Hagberg (hagberg@lanl.gov)",
-                        "Mridul Seth (seth.mridul@gmail.com)"])
 
 __all__ = ['nonisomorphic_trees',
            'number_of_nonisomorphic_trees']

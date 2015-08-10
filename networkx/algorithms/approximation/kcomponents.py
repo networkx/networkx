@@ -17,13 +17,10 @@ from networkx.algorithms.connectivity import \
 from networkx.algorithms.connectivity import build_auxiliary_node_connectivity
 from networkx.algorithms.flow import build_residual_network
 
-
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['k_components']
 
 
-not_implemented_for('directed')
+@not_implemented_for('directed')
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
     

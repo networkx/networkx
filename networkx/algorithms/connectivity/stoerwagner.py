@@ -14,8 +14,6 @@ from ...utils import BinaryHeap
 from ...utils import not_implemented_for
 from ...utils import arbitrary_element
 
-__author__ = 'ysitu <ysitu@users.noreply.github.com>'
-
 __all__ = ['stoer_wagner']
 
 

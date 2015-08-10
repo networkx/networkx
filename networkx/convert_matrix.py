@@ -31,9 +31,6 @@ import itertools
 import networkx as nx
 from networkx.convert import _prep_create_using
 from networkx.utils import not_implemented_for
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
            'from_pandas_dataframe', 'to_pandas_dataframe',
            'to_numpy_recarray',

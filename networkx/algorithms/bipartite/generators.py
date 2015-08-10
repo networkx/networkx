@@ -14,9 +14,7 @@ import random
 import networkx 
 from functools import reduce
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
+
 __all__=['configuration_model',
          'havel_hakimi_graph',
          'reverse_havel_hakimi_graph',

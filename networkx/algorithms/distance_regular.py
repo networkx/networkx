@@ -11,9 +11,6 @@ Distance-regular graphs
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__author__ = """\n""".join(['Dheeraj M R <dheerajrav@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
-
 __all__ = ['is_distance_regular', 'intersection_array', 'global_parameters']
 
 

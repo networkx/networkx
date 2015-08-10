@@ -8,8 +8,7 @@ Vitality measures.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Renato Fabbri'])
+
 __all__ = ['closeness_vitality']
 
 def weiner_index(G, weight=None):

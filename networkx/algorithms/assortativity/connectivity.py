@@ -6,8 +6,7 @@
 #    BSD license.
 from collections import defaultdict
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+
 __all__ = ['average_degree_connectivity',
            'k_nearest_neighbors']
 

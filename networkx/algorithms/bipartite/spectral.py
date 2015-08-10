@@ -3,7 +3,6 @@
 Spectral bipartivity measure.
 """
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

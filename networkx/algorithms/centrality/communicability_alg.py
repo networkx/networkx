@@ -9,8 +9,7 @@ Communicability and centrality measures.
 #    BSD license.
 import networkx as nx
 from networkx.utils import *
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Franck Kalala (franckkalala@yahoo.fr'])
+
 __all__ = ['communicability_centrality_exp',
            'communicability_centrality',
            'communicability_betweenness_centrality',

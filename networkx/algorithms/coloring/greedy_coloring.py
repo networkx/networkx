@@ -13,9 +13,6 @@ import random
 import itertools
 from . import greedy_coloring_with_interchange as _interchange
 
-__author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
-                        "Jan Aagaard Meier <jmei@itu.dk>",
-                        "Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = [
     'greedy_color',
     'strategy_largest_first',

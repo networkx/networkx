@@ -5,8 +5,6 @@ Functions for creating network blockmodels from node partitions.
 Created by Drew Conway <drew.conway@nyu.edu> 
 Copyright (c) 2010. All rights reserved.
 """
-__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
 __all__=['blockmodel']
 
 import networkx as nx

@@ -8,7 +8,7 @@
 #    BSD license.
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import *
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['current_flow_closeness_centrality', 'information_centrality']
 
 def current_flow_closeness_centrality(G, weight='weight',

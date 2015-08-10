@@ -6,8 +6,7 @@
 #    BSD license.
 import itertools
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+
 __all__ = [ 'clustering',
             'average_clustering',
             'latapy_clustering',

@@ -9,9 +9,7 @@ Eigenvector centrality.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (aric.hagberg@gmail.com)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)'])
+
 __all__ = ['eigenvector_centrality',
            'eigenvector_centrality_numpy']
 

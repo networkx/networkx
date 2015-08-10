@@ -9,10 +9,7 @@
 from __future__ import division
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)',
-                        'Jean-Gabriel Young (Jean.gabriel.young@gmail.com)'])
+
 __all__ = ['modularity_matrix', 'directed_modularity_matrix']
 
 

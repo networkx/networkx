@@ -19,7 +19,6 @@ See http://en.wikipedia.org/wiki/Shapefile for additional information.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """Ben Reilly (benwreilly@gmail.com)"""
 __all__ = ['read_shp', 'write_shp']
 
 

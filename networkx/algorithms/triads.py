@@ -14,9 +14,6 @@ from __future__ import division
 
 import networkx as nx
 
-__author__ = '\n'.join(['Alex Levenson (alex@isnontinvain.com)',
-                        'Diederik van Liere (diederik.vanliere@rotman.utoronto.ca)'])
-
 __all__ = ['triadic_census']
 
 #: The names of each type of triad.

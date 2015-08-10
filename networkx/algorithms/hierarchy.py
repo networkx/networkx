@@ -9,7 +9,7 @@ Flow Hierarchy.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__authors__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)'])
+
 __all__ = ['flow_hierarchy']
 
 def flow_hierarchy(G, weight=None):

@@ -32,8 +32,6 @@ doi:10.1007/BF01994876
 #   BSD license.
 from networkx.algorithms.approximation import clique_removal
 __all__ = ["maximum_independent_set"]
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
-
 
 def maximum_independent_set(G):
     """Return an approximate maximum independent set.

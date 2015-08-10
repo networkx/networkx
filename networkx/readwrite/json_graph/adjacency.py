@@ -6,7 +6,7 @@
 #    BSD license.
 from itertools import chain, count
 import networkx as nx
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['adjacency_data', 'adjacency_graph']
 
 _attrs = dict(id='id', key='key')

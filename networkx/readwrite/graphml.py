@@ -34,9 +34,6 @@ http://graphml.graphdrawing.org/specification.html for the specification and
 http://graphml.graphdrawing.org/primer/graphml-primer.html
 for examples.
 """
-__author__ = """\n""".join(['Salim Fadhley',
-                            'Aric Hagberg (hagberg@lanl.gov)'
-                            ])
 
 __all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
            'parse_graphml', 'GraphMLWriter', 'GraphMLReader']

@@ -7,8 +7,6 @@ Current-flow betweenness centrality measures for subsets of nodes.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-
 __all__ = ['current_flow_betweenness_centrality_subset',
            'edge_current_flow_betweenness_centrality_subset']
 

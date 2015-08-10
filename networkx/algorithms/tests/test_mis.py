@@ -13,8 +13,6 @@ Tests for maximal (not maximum) independent sets.
 #    All rights reserved.
 #    BSD license.
 
-__author__ = """Leo Lopes (leo.lopes@monash.edu)"""
-
 from nose.tools import *
 import networkx as nx
 import random

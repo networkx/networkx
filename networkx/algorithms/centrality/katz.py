@@ -10,10 +10,6 @@ Katz centrality.
 #    BSD license.
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg (aric.hagberg@gmail.com)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)',
-                        'Vincent Gauthier (vgauthier@luxbulb.org)'])
 
 __all__ = ['katz_centrality',
            'katz_centrality_numpy']

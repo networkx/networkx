@@ -23,9 +23,7 @@ nx_pygraphviz, nx_pydot
 #    BSD license.
 import warnings
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+
 __all__ = ['to_networkx_graph',
            'from_dict_of_dicts', 'to_dict_of_dicts',
            'from_dict_of_lists', 'to_dict_of_lists',

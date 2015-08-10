@@ -13,7 +13,7 @@ Node positioning algorithms for graph drawing.
 #    BSD license.
 import collections
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
+
 __all__ = ['circular_layout',
            'random_layout',
            'shell_layout',

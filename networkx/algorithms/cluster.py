@@ -13,11 +13,6 @@ import networkx as nx
 from networkx import NetworkXError
 from ..utils import not_implemented_for
 
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Dan Schult (dschult@colgate.edu)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity',
           'square_clustering']
 

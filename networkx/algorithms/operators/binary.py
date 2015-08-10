@@ -9,9 +9,7 @@ Operations on graphs including union, intersection, difference.
 #    BSD license.
 import networkx as nx
 from networkx.utils import is_string_like
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+
 __all__ = ['union', 'compose', 'disjoint_union', 'intersection',
            'difference', 'symmetric_difference']
 

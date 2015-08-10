@@ -17,10 +17,6 @@ http://arxiv.org/abs/cs.DS/0310049
 
 """
 
-__author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
-                        'Jason Grout (jason-sage@creativetrax.com)',
-                        'Aric Hagberg (hagberg@lanl.gov)'])
-
 __all__ = ['core_number','k_core','k_shell','k_crust','k_corona','find_cores']
 
 import networkx as nx

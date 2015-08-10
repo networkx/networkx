@@ -9,8 +9,6 @@ from operator import itemgetter
 
 import networkx as nx
 
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['local_node_connectivity',
            'node_connectivity',
            'all_pairs_node_connectivity']

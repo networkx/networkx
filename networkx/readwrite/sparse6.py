@@ -25,8 +25,7 @@ from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
 from networkx.readwrite.graph6 import data_to_graph6, graph6_to_data,\
     data_to_n, n_to_data
-__author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
-                            'Aric Hagberg <aric.hagberg@lanl.gov'])
+
 __all__ = ['read_sparse6', 'parse_sparse6',
            'generate_sparse6', 'write_sparse6']
 

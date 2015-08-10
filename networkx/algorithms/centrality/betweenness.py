@@ -12,7 +12,6 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 import random
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['betweenness_centrality',
            'edge_betweenness_centrality',

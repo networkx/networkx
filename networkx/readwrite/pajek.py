@@ -20,7 +20,7 @@ for format information.
 #    BSD license.
 import networkx as nx
 from networkx.utils import is_string_like, open_file, make_str
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
 def generate_pajek(G):

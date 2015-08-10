@@ -8,7 +8,7 @@
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['floyd_warshall',
            'floyd_warshall_predecessor_and_distance',
            'floyd_warshall_numpy']

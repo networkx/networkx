@@ -8,10 +8,6 @@ Eigenvalue spectrum of graphs.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
 __all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum']
 

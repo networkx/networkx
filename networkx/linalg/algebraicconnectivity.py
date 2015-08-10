@@ -3,7 +3,6 @@
 Algebraic connectivity and Fiedler vectors of undirected graphs.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
 # All rights reserved.
 # BSD license.

@@ -25,7 +25,7 @@ import os
 import sys
 import tempfile
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['from_agraph', 'to_agraph',
            'write_dot', 'read_dot',
            'graphviz_layout',

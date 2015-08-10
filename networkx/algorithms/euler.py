@@ -15,9 +15,6 @@ import networkx as nx
 
 from ..utils import arbitrary_element
 
-__author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
-
 __all__ = ['is_eulerian', 'eulerian_circuit']
 
 

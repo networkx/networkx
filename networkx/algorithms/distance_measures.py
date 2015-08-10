@@ -2,8 +2,6 @@
 """
 Graph diameter, radius, eccentricity and other properties.
 """
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
 #    Copyright (C) 2004-2015 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
