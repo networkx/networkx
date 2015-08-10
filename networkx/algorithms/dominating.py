@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
+
 __all__ = [ 'dominating_set', 'is_dominating_set']
 
 def dominating_set(G, start_with=None):

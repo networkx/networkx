@@ -7,7 +7,7 @@ Basic algorithms for breadth-first searching the nodes of a graph.
 """
 import networkx as nx
 from collections import defaultdict, deque
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
 def bfs_edges(G, source, reverse=False):

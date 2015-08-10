@@ -10,12 +10,6 @@
 from collections import defaultdict
 import heapq
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)'
-                        'Joel Miller (joel.c.miller.research@gmail.com)'
-                        'Ben Edwards'
-                        'Brian Cloteaux <brian.cloteaux@nist.gov>'])
 
 __all__ = ['is_graphical',
            'is_multigraphical',

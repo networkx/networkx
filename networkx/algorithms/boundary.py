@@ -8,7 +8,6 @@ Node boundaries are nodes outside the set of nodes
 that have an edge to a node in the set.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

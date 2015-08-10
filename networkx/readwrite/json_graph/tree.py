@@ -7,7 +7,7 @@
 from itertools import chain, count
 import networkx as nx
 from networkx.utils import make_str
-__author__ = """Aric Hagberg (hagberg@lanl.gov))"""
+
 __all__ = ['tree_data', 'tree_graph']
 
 _attrs = dict(id='id', children='children')

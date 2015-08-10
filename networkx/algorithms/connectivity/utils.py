@@ -4,8 +4,6 @@ Utilities for connectivity package
 """
 import networkx as nx
 
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['build_auxiliary_node_connectivity',
            'build_auxiliary_edge_connectivity']
 

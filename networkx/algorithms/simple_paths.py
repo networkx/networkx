@@ -9,11 +9,6 @@ from itertools import count
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Andrey Paramonov',
-                            'Jordi Torrents <jordi.t21@gmail.com>'])
-
 __all__ = [
     'all_simple_paths',
     'shortest_simple_paths',

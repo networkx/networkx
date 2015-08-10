@@ -8,10 +8,6 @@ Degree centrality measures.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)'])
-
 __all__ = ['degree_centrality',
            'in_degree_centrality',
            'out_degree_centrality']

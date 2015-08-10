@@ -8,8 +8,6 @@ import random
 from networkx.utils import not_implemented_for
 
 __all__ = ['average_clustering']
-__author__ = """\n""".join(['Fred Morstatter <fred.morstatter@asu.edu>',
-                            'Jordi Torrents <jtorrents@milnou.net>'])
 
 @not_implemented_for('directed')
 def average_clustering(G, trials=1000):

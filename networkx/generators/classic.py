@@ -21,8 +21,6 @@ import itertools
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph
 from networkx.utils import accumulate
 
-__author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-
 __all__ = [ 'balanced_tree',
             'barbell_graph',
             'complete_graph',

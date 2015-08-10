@@ -9,9 +9,6 @@ from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx import NetworkXError
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
 
 
 class MultiGraph(Graph):

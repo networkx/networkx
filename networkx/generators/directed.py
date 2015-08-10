@@ -10,7 +10,6 @@ scale-free graphs.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ ="""Aric Hagberg (hagberg@lanl.gov)\nWillem Ligtenberg (W.P.A.Ligtenberg@tue.nl)"""
 
 __all__ = ['gn_graph', 'gnc_graph', 'gnr_graph','scale_free_graph']
 

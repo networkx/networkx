@@ -11,9 +11,6 @@ random selections.
 import random
 import sys
 import networkx as nx
-__author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Ben Edwards(bedwards@cs.unm.edu)'])
 
 import warnings as _warnings
 def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):

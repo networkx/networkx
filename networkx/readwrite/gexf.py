@@ -22,7 +22,6 @@ specification and http://gexf.net/format/basic.html for examples.
 #    All rights reserved.
 #    BSD license.
 # Based on GraphML NetworkX GraphML reader
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 import itertools
 import networkx as nx

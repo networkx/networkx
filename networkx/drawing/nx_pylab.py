@@ -22,7 +22,7 @@ pygraphviz:     http://pygraphviz.github.io/
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['draw',
            'draw_networkx',
            'draw_networkx_nodes',

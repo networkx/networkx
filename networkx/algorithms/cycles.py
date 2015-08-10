@@ -20,10 +20,6 @@ __all__ = [
     'cycle_basis','simple_cycles','recursive_simple_cycles', 'find_cycle'
 ]
 
-__author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
-                        'Dan Schult <dschult@colgate.edu>',
-                        'Aric Hagberg <hagberg@lanl.gov>'])
-
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def cycle_basis(G,root=None):

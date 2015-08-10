@@ -5,9 +5,7 @@
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult (dschult@colgate.edu)'])
+
 __all__ = ['convert_node_labels_to_integers', 'relabel_nodes']
 
 def relabel_nodes(G, mapping, copy=True):

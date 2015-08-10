@@ -8,9 +8,6 @@ Adjacency matrix and incidence matrix of graphs.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
 
 __all__ = ['incidence_matrix',
            'adj_matrix', 'adjacency_matrix',

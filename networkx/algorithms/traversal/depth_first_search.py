@@ -10,7 +10,7 @@ by D. Eppstein, July 2004.
 """
 import networkx as nx
 from collections import defaultdict
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['dfs_edges', 'dfs_tree',
            'dfs_predecessors', 'dfs_successors',
            'dfs_preorder_nodes','dfs_postorder_nodes',

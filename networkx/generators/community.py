@@ -8,8 +8,7 @@ import networkx as nx
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """\n""".join(['Ben Edwards (bedwards@cs.unm.edu)',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+
 __all__ = ['caveman_graph', 'connected_caveman_graph',
            'relaxed_caveman_graph', 'random_partition_graph',
            'planted_partition_graph', 'gaussian_random_partition_graph']

@@ -14,8 +14,6 @@ from itertools import count
 from networkx import NetworkXError
 import networkx as nx
 
-__author__ = "\n".join(["Salim Fadhley <salimfadhley@gmail.com>",
-                        "Matteo Dell'Amico <matteodellamico@gmail.com>"])
 __all__ = ['astar_path', 'astar_path_length']
 
 

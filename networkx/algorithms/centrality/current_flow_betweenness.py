@@ -10,7 +10,6 @@ Current-flow betweenness centrality measures.
 import random
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import *
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['current_flow_betweenness_centrality',
            'approximate_current_flow_betweenness_centrality',

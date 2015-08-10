@@ -2,7 +2,7 @@
 """Generators of  x-y pairs of node data."""
 import networkx as nx
 from networkx.utils import dict_to_numpy_array
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['node_attribute_xy',
            'node_degree_xy']
 

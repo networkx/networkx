@@ -19,10 +19,6 @@ from .classic import empty_graph, path_graph, complete_graph
 from .degree_seq import degree_sequence_tree
 
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)'])
-
 __all__ = ['fast_gnp_random_graph',
            'gnp_random_graph',
            'dense_gnm_random_graph',

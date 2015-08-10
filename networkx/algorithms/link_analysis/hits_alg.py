@@ -9,7 +9,7 @@
 #    NetworkX:http://networkx.github.io/
 import networkx as nx
 from networkx.exception import NetworkXError
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['hits','hits_numpy','hits_scipy','authority_matrix','hub_matrix']
 
 def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):

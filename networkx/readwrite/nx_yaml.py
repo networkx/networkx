@@ -13,7 +13,6 @@ Format
 http://pyyaml.org/wiki/PyYAML
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2015 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

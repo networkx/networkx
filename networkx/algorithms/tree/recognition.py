@@ -76,13 +76,8 @@ becomes a useful notion.
 
 import networkx as nx
 
-__author__ = """\n""".join([
-    'Ferdinando Papale <ferdinando.papale@gmail.com>',
-    'chebee7i <chebee7i@gmail.com>',
-])
-
-
 __all__ = ['is_arborescence', 'is_branching', 'is_forest', 'is_tree']
+
 
 @nx.utils.not_implemented_for('undirected')
 def is_arborescence(G):

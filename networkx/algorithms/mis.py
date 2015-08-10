@@ -11,9 +11,6 @@ Algorithm to find a maximal (not maximum) independent set.
 #    All rights reserved.
 #    BSD license.
 
-__author__ = "\n".join(["Leo Lopes <leo.lopes@monash.edu>",
-                        "Loïc Séguin-C. <loicseguin@gmail.com>"])
-
 __all__ = ['maximal_independent_set']
 
 import random

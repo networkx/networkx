@@ -9,8 +9,7 @@ Functions for identifying isolate (degree zero) nodes.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
+
 __all__=['is_isolate','isolates']
 
 def is_isolate(G,n):

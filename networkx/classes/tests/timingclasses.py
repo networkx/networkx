@@ -17,9 +17,6 @@ import networkx as nx
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
 
 class TimingGraph(object):
     """

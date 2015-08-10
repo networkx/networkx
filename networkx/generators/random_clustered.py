@@ -9,8 +9,6 @@
 #    BSD license.
 import random
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Joel Miller (joel.c.miller.research@gmail.com)'])
 
 __all__ = ['random_clustered_graph']
 

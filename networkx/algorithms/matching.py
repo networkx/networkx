@@ -14,8 +14,6 @@ Matching
 #   All rights reserved.
 #   BSD license.
 from itertools import repeat
-__author__ = """\n""".join(['Joris van Rantwijk',
-                            'Nicholas Mancuso (nick.mancuso@gmail.com)'])
 
 __all__ = ['max_weight_matching', 'maximal_matching']
 

@@ -7,8 +7,7 @@ Ego graph.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
+
 __all__ = ['ego_graph']
 
 import networkx as nx

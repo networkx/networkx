@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
-__author__ = """\n""".join(['Ben Edwards',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
 
 __all__ = ['rich_club_coefficient']
 

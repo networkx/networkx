@@ -22,7 +22,6 @@ Example graphs in GML format:
 http://www-personal.umich.edu/~mejn/netdata/
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2008-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

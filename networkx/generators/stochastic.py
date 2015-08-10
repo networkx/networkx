@@ -14,7 +14,6 @@ import warnings
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__author__ = "Aric Hagberg <aric.hagberg@gmail.com>"
 __all__ = ['stochastic_graph']
 
 

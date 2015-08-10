@@ -9,9 +9,7 @@ Closeness centrality measures.
 #    BSD license.
 import functools
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)'])
+
 __all__ = ['closeness_centrality']
 
 

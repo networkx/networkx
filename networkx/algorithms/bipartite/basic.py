@@ -11,8 +11,7 @@ Bipartite Graph Algorithms
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = [ 'is_bipartite',
             'is_bipartite_node_set',
             'color',

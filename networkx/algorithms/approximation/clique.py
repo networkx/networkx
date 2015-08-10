@@ -8,7 +8,7 @@ Cliques.
 #   BSD license.
 import networkx as nx
 from networkx.algorithms.approximation import ramsey
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
+
 __all__ = ["clique_removal","max_clique"]
 
 def max_clique(G):

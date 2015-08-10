@@ -2,9 +2,6 @@
 """
 Shortest path algorithms for weighed graphs.
 """
-__author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>',
-                            'Loïc Séguin-C. <loicseguin@gmail.com>',
-                            'Dan Schult <dschult@colgate.edu>'])
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

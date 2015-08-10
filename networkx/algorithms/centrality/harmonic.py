@@ -8,7 +8,6 @@ from __future__ import division
 import functools
 import networkx as nx
 
-__author__ = "\n".join(['Alessandro Luongo (alessandro.luongo@studenti.unimi.it'])
 __all__ = ['harmonic_centrality']
 
 

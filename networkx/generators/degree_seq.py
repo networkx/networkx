@@ -16,13 +16,6 @@ import random
 import networkx as nx
 from networkx.utils import random_weighted_sample
 
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart <swart@lanl.gov>',
-                        'Dan Schult <dschult@colgate.edu>'
-                        'Joel Miller <joel.c.miller.research@gmail.com>',
-                        'Nathan Lemons <nlemons@gmail.com>'
-                        'Brian Cloteaux <brian.cloteaux@nist.gov>'])
-
 __all__ = ['configuration_model',
            'directed_configuration_model',
            'expected_degree_graph',

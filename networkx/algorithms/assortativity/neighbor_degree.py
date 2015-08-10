@@ -5,10 +5,8 @@
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ["average_neighbor_degree"]
 
+__all__ = ["average_neighbor_degree"]
 
 def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
     # average degree of neighbors

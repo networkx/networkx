@@ -12,9 +12,6 @@ import networkx as nx
 from networkx.utils.decorators import *
 from ..utils import arbitrary_element
 
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Dan Schult (dschult@colgate.edu)',
-                            'Ben Edwards (bedwards@cs.unm.edu)'])
 __all__ = ['descendants',
            'ancestors',
            'topological_sort',

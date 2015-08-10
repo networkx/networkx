@@ -23,8 +23,6 @@ from ...utils import not_implemented_for
 __all__ = ["min_weighted_dominating_set",
            "min_edge_dominating_set"]
 
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
-
 
 # TODO Why doesn't this algorithm work for directed graphs?
 @not_implemented_for('directed')
