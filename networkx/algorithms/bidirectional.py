@@ -130,17 +130,14 @@ def _all_simple_paths(G, source, target, cutoff):
 
         if len(tree[1]) <= len(tree[0]):
             modus = 1
-
             tree_source = tree[1]
             tree_target = tree[0]
             leaves_ = leaves[0]
 
             if G.is_directed():
                 neighbors = G.predecessors_iter
-
         else:
             modus = 0
-
             tree_source = tree[0]
             tree_target = tree[1]
             leaves_ = leaves[1]
@@ -159,6 +156,7 @@ def _all_simple_paths(G, source, target, cutoff):
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
+
                                         yield list(path_t) + \
                                             [x for x in reversed(path_s)]
                                     else:
@@ -394,6 +392,7 @@ def _all_shortest_paths_multi(G, source, target):
                             if not set(path_t).intersection(path_s):
                                 found = 1
                                 if modus:
+
                                     yield list(path_t) + \
                                         [x for x in reversed(path_s)]
                                 else:

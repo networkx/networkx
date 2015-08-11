@@ -9,6 +9,7 @@ from networkx.algorithms.simple_paths import _bidirectional_dijkstra
 from networkx.utils import arbitrary_element
 
 
+
 # Tests for all_simple_paths
 def test_all_simple_paths():
     G = nx.path_graph(4)
