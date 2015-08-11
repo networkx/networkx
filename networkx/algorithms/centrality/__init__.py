@@ -1,6 +1,7 @@
 from .betweenness import *
 from .betweenness_subset import *
 from .closeness import *
+from .collective_influence import *
 from .communicability_alg import *
 from .current_flow_closeness import *
 from .current_flow_betweenness import *

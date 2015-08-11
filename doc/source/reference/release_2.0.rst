@@ -92,3 +92,9 @@ API changes
        # recommended
        >>> tree.minimum_spanning_tree(G, algorithm='kruskal', weight='mass')
        >>> tree.minimum_spanning_edges(G, algorithm='prim', weight='mass')
+
+New functionalities
+-------------------
+* [`#1717 <https://github.com/networkx/networkx/pull/1717>`_]
+  Added the collective influence measure to the centrality package
+  (:samp:`networkx.algorithms.centrality`).
