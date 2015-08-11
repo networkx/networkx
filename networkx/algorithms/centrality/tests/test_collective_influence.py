@@ -35,5 +35,5 @@ class TestCollectiveInfluence(object):
 
     def test_collective_influence_1(self):
         collective_influence = nx.collective_influence(self.G)
-        assert_almost_equal(collective_influence[7], 63)
-        assert_almost_equal(collective_influence[22], 60)
+        assert_equal(collective_influence[7],  63)
+        assert_equal(collective_influence[22], 60)
