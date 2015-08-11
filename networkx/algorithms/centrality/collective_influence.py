@@ -65,8 +65,10 @@ def collective_influence(G, u=None, distance=2):
         path_lengths = nx.single_source_shortest_path_length(
             G, source=node, cutoff=distance
         )
-        frontier_nodes = {node for node, path_length in path_lengths.items()
-                          if path_length == distance}
+        frontier_nodes = {
+            node for node, path_length in path_lengths.items()
+            if path_length == distance
+        }
 
         collective_influence[node] = reduced_degree(node) * sum(map(reduced_degree, frontier_nodes))
 
