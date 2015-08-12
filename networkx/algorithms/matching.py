@@ -42,14 +42,14 @@ def maximal_matching(G):
     (i.e. no superset of M exists). It runs in `O(|E|)` time.
     """
     matching = set([])
-    edges = set([])
+    nodes = set([])
     for u,v in G.edges():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
-        if (u,v) not in edges and (v,u) not in edges:
+        if u not in nodes and v not in nodes:
             matching.add((u,v))
-            edges |= set(G.edges(u))
-            edges |= set(G.edges(v))
+            nodes.add(u)
+            nodes.add(v)
     return matching
 
 
