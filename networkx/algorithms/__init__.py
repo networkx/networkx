@@ -51,6 +51,7 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 import networkx.algorithms.operators
+import networkx.algorithms.tournament
 import networkx.algorithms.tree
 
 # bipartite
