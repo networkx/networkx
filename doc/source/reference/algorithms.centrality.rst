@@ -19,6 +19,14 @@ Closeness
 
    closeness_centrality
 
+Cumulative nomination scheme
+----------------------------
+.. automodule:: networkx.algorithms.centrality.cns
+.. autosummary::
+   :toctree: generated/
+
+   cns_centrality
+
 Betweenness
 -----------
 .. autosummary::
