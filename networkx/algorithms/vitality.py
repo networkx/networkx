@@ -19,7 +19,7 @@ def weiner_index(G, weight=None):
     if weight is None:
         for n in G:
             path_length=nx.single_source_shortest_path_length(G,n)
-            weiner+=sum(path_length.values())
+            weiner+=sum(d for n, d in path_length)
     else:
         for n in G:
             path_length=nx.single_source_dijkstra_path_length(G,

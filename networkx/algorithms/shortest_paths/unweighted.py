@@ -40,30 +40,29 @@ def single_source_shortest_path_length(G,source,cutoff=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.single_source_shortest_path_length(G,0)
-    >>> length[4]
-    4
-    >>> print(length)
+    >>> G = nx.path_graph(5)
+    >>> length = nx.single_source_shortest_path_length(G, 0)
+    >>> dict(length)
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     See Also
     --------
     shortest_path_length
     """
-    seen={}                  # level (number of hops) when seen in BFS
-    level=0                  # the current level
-    nextlevel={source:1}  # dict of nodes to check at next level
+    seen = {}                  # level (number of hops) when seen in BFS
+    level = 0                  # the current level
+    nextlevel = {source:1}  # dict of nodes to check at next level
     while nextlevel:
-        thislevel=nextlevel  # advance to next level
-        nextlevel={}         # and start a new list (fringe)
+        thislevel = nextlevel  # advance to next level
+        nextlevel = {}         # and start a new list (fringe)
         for v in thislevel:
             if v not in seen:
-                seen[v]=level # set the level of vertex v
+                seen[v] = level # set the level of vertex v
                 nextlevel.update(G[v]) # add neighbors of v
+                yield (v, level)
         if (cutoff is not None and cutoff <= level):  break
         level=level+1
-    return seen  # return all path lengths as dictionary
+    del seen
 
 
 def all_pairs_shortest_path_length(G, cutoff=None):
@@ -90,15 +89,14 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     --------
     >>> G = nx.path_graph(5)
     >>> length = nx.all_pairs_shortest_path_length(G)
-    >>> print(length[1][4])
-    3
-    >>> length[1]
+    >>> dict(length)[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
     """
     length = single_source_shortest_path_length
     # TODO This can be trivially parallelized.
-    return {n: length(G, n, cutoff=cutoff) for n in G}
+    for n in G:
+        yield (n, dict(length(G, n, cutoff=cutoff)))
 
 
 def bidirectional_shortest_path(G,source,target):
