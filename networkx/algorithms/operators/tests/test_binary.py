@@ -226,6 +226,13 @@ def test_union_and_compose():
     E=disjoint_union(G1,G2)
     assert_equal(sorted(E.nodes()),[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
 
+    G = nx.Graph()
+    H = nx.Graph()
+    G.add_nodes_from([(1, {'a1': 1})])
+    H.add_nodes_from([(1, {'b1': 1})])
+    R = compose(G, H)
+    assert_equal(R.node, {1: {'a1': 1, 'b1': 1}})
+
 
 def test_union_multigraph():
     G=nx.MultiGraph()

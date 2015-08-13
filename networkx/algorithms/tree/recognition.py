@@ -110,13 +110,8 @@ def is_arborescence(G):
     is_tree
 
     """
-    if not is_tree(G):
-        return False
+    return is_tree(G) and max(d for n, d in G.in_degree()) <= 1
 
-    if max(d for n,d in G.in_degree()) > 1:
-        return False
-
-    return True
 
 @nx.utils.not_implemented_for('undirected')
 def is_branching(G):
@@ -144,13 +139,8 @@ def is_branching(G):
     is_forest
 
     """
-    if not is_forest(G):
-        return False
+    return is_forest(G) and max(d for n, d in G.in_degree()) <= 1
 
-    if max(d for n, d in G.in_degree()) > 1:
-        return False
-
-    return True
 
 def is_forest(G):
     """
@@ -190,12 +180,8 @@ def is_forest(G):
     else:
         components = nx.connected_component_subgraphs
 
-    for component in components(G):
-        # Make sure the component is a tree.
-        if component.number_of_edges() != component.number_of_nodes() - 1:
-            return False
+    return all(len(c) - 1 == c.number_of_edges() for c in components(G))
 
-    return True
 
 def is_tree(G):
     """
@@ -230,13 +216,10 @@ def is_tree(G):
     if len(G) == 0:
         raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
 
-    # A connected graph with no cycles has n-1 edges.
-    if G.number_of_edges() != len(G) - 1:
-        return False
-
     if G.is_directed():
         is_connected = nx.is_weakly_connected
     else:
         is_connected = nx.is_connected
 
-    return is_connected(G)
+    # A connected graph with no cycles has n-1 edges.
+    return len(G) - 1 == G.number_of_edges() and is_connected(G)

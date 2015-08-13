@@ -9,16 +9,19 @@ Generators for random graphs.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from collections import defaultdict
+import itertools
+import math
+import random
+
+import networkx as nx
+from .classic import empty_graph, path_graph, complete_graph
+from .degree_seq import degree_sequence_tree
+
+
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)'])
-import itertools
-import random
-import math
-import networkx as nx
-from networkx.generators.classic import empty_graph, path_graph, complete_graph
-
-from collections import defaultdict
 
 __all__ = ['fast_gnp_random_graph',
            'gnp_random_graph',
@@ -466,14 +469,11 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     watts_strogatz_graph()
 
     """
-    G = watts_strogatz_graph(n, k, p, seed)
-    t=1
-    while not nx.is_connected(G):
+    for i in range(tries):
         G = watts_strogatz_graph(n, k, p, seed)
-        t=t+1
-        if t>tries:
-            raise nx.NetworkXError("Maximum number of tries exceeded")
-    return G
+        if nx.is_connected(G):
+            return G
+    raise nx.NetworkXError('Maximum number of tries exceeded')
 
 
 def random_regular_graph(d, n, seed=None):
@@ -937,17 +937,10 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     edges is one smaller than the number of nodes).
 
     """
-    from networkx.generators.degree_seq import degree_sequence_tree
-    try:
-        s=random_powerlaw_tree_sequence(n,
-                                        gamma=gamma,
-                                        seed=seed,
-                                        tries=tries)
-    except:
-        raise nx.NetworkXError(\
-              "Exceeded max (%d) attempts for a valid tree sequence."%tries)
-    G=degree_sequence_tree(s)
-    G.name="random_powerlaw_tree(%s,%s)"%(n,gamma)
+    # This call may raise a NetworkXError if the number of tries is succeeded.
+    seq = random_powerlaw_tree_sequence(n, gamma=gamma, seed=seed, tries=tries)
+    G = degree_sequence_tree(seq)
+    G.name = "random_powerlaw_tree(%s,%s)" % (n, gamma)
     return G
 
 
@@ -983,22 +976,25 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
         random.seed(seed)
 
     # get trial sequence
-    z=nx.utils.powerlaw_sequence(n,exponent=gamma)
+    z = nx.utils.powerlaw_sequence(n, exponent=gamma)
     # round to integer values in the range [0,n]
-    zseq=[min(n, max( int(round(s)),0 )) for s in z]
+    zseq = [min(n, max(int(round(s)), 0)) for s in z]
 
     # another sequence to swap values from
-    z=nx.utils.powerlaw_sequence(tries,exponent=gamma)
+    z = nx.utils.powerlaw_sequence(tries, exponent=gamma)
     # round to integer values in the range [0,n]
-    swap=[min(n, max( int(round(s)),0 )) for s in z]
+    swap = [min(n, max(int(round(s)), 0)) for s in z]
 
     for deg in swap:
-        if n-sum(zseq)/2.0 == 1.0: # is a tree, return sequence
+        # If this degree sequence can be the degree sequence of a tree, return
+        # it. It can be a tree if the number of edges is one fewer than the
+        # number of nodes, or in other words, ``n - sum(zseq) / 2 == 1``. We
+        # use an equivalent condition below that avoids floating point
+        # operations.
+        if 2 * n - sum(zseq) == 2:
             return zseq
-        index=random.randint(0,n-1)
-        zseq[index]=swap.pop()
+        index = random.randint(0, n - 1)
+        zseq[index] = swap.pop()
 
-    raise nx.NetworkXError(\
-          "Exceeded max (%d) attempts for a valid tree sequence."%tries)
-    return False
-
+    raise nx.NetworkXError('Exceeded max (%d) attempts for a valid tree'
+                           ' sequence.' % tries)

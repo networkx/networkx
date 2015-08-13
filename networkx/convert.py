@@ -89,10 +89,10 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
             result= from_dict_of_dicts(data.adj,\
                     create_using=create_using,\
                     multigraph_input=data.is_multigraph())
-            if hasattr(data,'graph') and isinstance(data.graph,dict):
-                result.graph=data.graph.copy()
-            if hasattr(data,'node') and isinstance(data.node,dict):
-                result.node=dict( (n,dd.copy()) for n,dd in data.node.items() )
+            if hasattr(data,'graph'): # data.graph should be dict-like
+                result.graph.update(data.graph)
+            if hasattr(data,'node'): # data.node should be dict-like
+                result.node.update( (n,dd.copy()) for n,dd in data.node.items() )
             return result
         except:
             raise nx.NetworkXError("Input is not a correct NetworkX graph.")

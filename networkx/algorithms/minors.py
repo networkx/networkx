@@ -12,22 +12,10 @@ from itertools import combinations
 from itertools import permutations
 from itertools import product
 
+from ..utils import arbitrary_element
+
 __all__ = ['contracted_edge', 'contracted_nodes',
            'identified_nodes', 'quotient_graph']
-
-
-def peek(iterable):
-    """Returns an arbitrary element of ``iterable`` without removing it.
-
-    This is most useful for peeking at an arbitrary element of a set::
-
-        >>> peek({3, 2, 1})
-        1
-        >>> peek('hello')
-        'h'
-
-    """
-    return next(iter(iterable))
 
 
 def equivalence_classes(iterable, relation):
@@ -53,7 +41,7 @@ def equivalence_classes(iterable, relation):
         #
         # Each block is guaranteed to be non-empty
         for block in blocks:
-            x = peek(block)
+            x = arbitrary_element(block)
             if relation(x, y):
                 block.append(y)
                 break
