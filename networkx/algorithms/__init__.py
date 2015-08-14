@@ -34,6 +34,7 @@ from networkx.algorithms.distance_regular import *
 from networkx.algorithms.swap import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.simple_paths import *
+from networkx.algorithms.bidirectional_path_search import *
 
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
@@ -51,7 +52,6 @@ import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 import networkx.algorithms.operators
 import networkx.algorithms.tree
-import networkx.algorithms.bidirectional
 
 # bipartite
 from networkx.algorithms.bipartite import (projected_graph, project, is_bipartite,

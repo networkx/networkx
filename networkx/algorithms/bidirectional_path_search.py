@@ -6,12 +6,12 @@
 #    BSD license.
 import networkx as nx
 
-__all__ = ['all_simple_paths',
-           'all_shortest_paths',
-           'has_path']
+__all__ = ['bidirectional_all_simple_paths',
+           'bidirectional_all_shortest_paths',
+           'bidirectional_has_path']
 
 
-def all_simple_paths(G, source, target, cutoff=None):
+def bidirectional_all_simple_paths(G, source, target, cutoff=None):
     """Generate all simple paths in graph G from source to target.
 
     A simple path is a path with no repeated nodes.
@@ -49,7 +49,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     --------
     >>> import networkx as nx
     >>> G = nx.complete_graph(4)
-    >>> for path in nx.bidirectional.all_simple_paths(G, source=0, target=3):
+    >>> for path in nx.bidirectional_all_simple_paths(G, source=0, target=3):
     ...     print(path)
     ...
     [0, 3]
@@ -58,7 +58,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     [0, 1, 2, 3]
     [0, 2, 1, 3]
 
-    >>> paths = nx.bidirectional.all_simple_paths(G, 0, 3, cutoff=2)
+    >>> paths = nx.bidirectional_all_simple_paths(G, 0, 3, cutoff=2)
     >>> print(list(paths))
     [[0, 3], [0, 1, 3], [0, 2, 3]]
 
@@ -66,32 +66,34 @@ def all_simple_paths(G, source, target, cutoff=None):
     -----
     This algorithm constructs sequentially two trees, one from the source
     in direction to the target and one from the target in direction to the
-    source. The leaves of both growing trees are continuously compared, if
+    source. Only the tree with fewer leaves is increased within the next step.
+    The leaves of both growing trees are continuously compared, and if
     there are matching leaves in both trees, a new path is identified.
 
     This algorithm actually reduces the search space by half, which results
     in a faster identification of simple paths than in the original
-    `nx.all_simple_paths` algorithm. But it requires more memory, which can
-    have a negative effect on the speed in fully connected graphs.
+    `nx.all_simple_paths` algorithm. But it might require more memory, which
+    can have a negative effect on the speed in fully connected graphs.
+    See the benchmark at: http://www.aizac.info/bi-graph-search-benchmark
 
-                           source
-                             /\
-                            /\ \
-                           / /\ \
-                          /   /\ \
-                         /\  /\  /\
-                        /  \/   /  \
-                       /    \  /\   \
-                      /_____/_/__\___\_________  meeting points
-                     /\     \    /   /\
-                    /XX\    /  \/   /XX\
-                   /XXXX\   \/  \  /XXXX\
-                  /XXXXXX\  /    \/XXXXXX\
-                 /XXXXXXXX\ \/   /XXXXXXXX\
-                /XXXXXXXXXX\ \  /XXXXXXXXXX\
-               /XXXXXXXXXXXX\ \/XXXXXXXXXXXX\
-              /XXXXXXXXXXXXXX\/XXXXXXXXXXXXXX\
-                           target
+                           source                                      |
+                             /\                                        |
+                            /\ \                                       |
+                           / /\ \                                      |
+                          /   /\ \                                     |
+                         /\  /\  /\                                    |
+                        /  \/   /  \                                   |
+                       /    \  /\   \                                  |
+                      /_____/_/__\___\_________   meeting points       |
+                     /\ \   \    /   /\                                |
+                    /XX\ \  /  \/   /XX\                               |
+                   /XXXX\ \ \/  \  /XXXX\                              |
+                  /XXXXXX\ \/    \/XXXXXX\                             |
+                 /XXXXXXXX\ \/   /XXXXXXXX\                            |
+                /XXXXXXXXXX\ \  /XXXXXXXXXX\                           |
+               /XXXXXXXXXXXX\ \/XXXXXXXXXXXX\                          |
+              /XXXXXXXXXXXXXX\/XXXXXXXXXXXXXX\                         |
+                           target                                      |
     Authors
     -------
     André Dietrich and Sebastian Zug
@@ -100,7 +102,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     See Also
     --------
     nx.all_simple_paths, nx.all_shortest_paths, nx.shortest_path,
-    nx.bidirectional.all_shortest_paths, nx.bidirectional.has_path
+    nx.bidirectional_all_shortest_paths, nx.bidirectional_has_path
     """
 
     if source not in G:
@@ -110,12 +112,12 @@ def all_simple_paths(G, source, target, cutoff=None):
     if cutoff is None:
         cutoff = len(G) - 1
     if G.is_multigraph():
-        return _all_simple_paths_multi(G, source, target, cutoff=cutoff)
+        return _bidirectional_all_simple_paths_multi(G, source, target, cutoff=cutoff)
     else:
-        return _all_simple_paths(G, source, target, cutoff=cutoff)
+        return _bidirectional_all_simple_paths(G, source, target, cutoff=cutoff)
 
 
-def _all_simple_paths(G, source, target, cutoff):
+def _bidirectional_all_simple_paths(G, source, target, cutoff):
 
     if cutoff < 1:
         return
@@ -135,7 +137,7 @@ def _all_simple_paths(G, source, target, cutoff):
             leaves_ = leaves[0]
 
             if G.is_directed():
-                neighbors = G.predecessors_iter
+                neighbors = G.predecessors
         else:
             modus = 0
             tree_source = tree[0]
@@ -143,7 +145,7 @@ def _all_simple_paths(G, source, target, cutoff):
             leaves_ = leaves[1]
 
             if G.is_directed():
-                neighbors = G.successors_iter
+                neighbors = G.successors
 
         temp_tree = set()
         temp_leaves = set()
@@ -170,7 +172,7 @@ def _all_simple_paths(G, source, target, cutoff):
         leaves[modus] = temp_leaves
 
 
-def _all_simple_paths_multi(G, source, target, cutoff):
+def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
 
     if cutoff < 1:
         return
@@ -215,7 +217,7 @@ def _all_simple_paths_multi(G, source, target, cutoff):
         leaves[modus] = temp_leaves
 
 
-def all_shortest_paths(G, source, target):
+def bidirectional_all_shortest_paths(G, source, target):
     """Generate all shortest paths in graph G from source to target.
 
     Parameters
@@ -247,7 +249,7 @@ def all_shortest_paths(G, source, target):
     --------
     >>> import networkx as nx
     >>> G = nx.complete_graph(4)
-    >>> for path in nx.bidirectional.all_shortest_paths(G, source=0, target=3):
+    >>> for path in nx.bidirectional_all_shortest_paths(G, source=0, target=3):
     ...     print(path)
     ...
     [0, 3]
@@ -256,33 +258,35 @@ def all_shortest_paths(G, source, target):
     -----
     This algorithm constructs sequentially two trees, one from the source
     in direction to the target and one from the target in direction to the
-    source. The leaves of both growing trees are continuously compared, if
+    source. Only the tree with fewer leaves is increased within the next step.
+    The leaves of both growing trees are continuously compared, and if
     there are matching leaves in both trees, a new path is identified.
 
     This algorithm actually reduces the search space by half, which results
-    in a faster identification of shortest paths than in the original
-    `nx.all_shortest_paths` algorithm. But it requires more memory, which
+    in a faster identification of simple paths than in the original
+    `nx.all_simple_paths` algorithm. But it might require more memory, which
     can have a negative effect on the speed in fully connected graphs.
+    See the benchmark at: http://www.aizac.info/bi-graph-search-benchmark
 
+                           source                                      |
+                             /\                                        |
+                            /\ \                                       |
+                           / /\ \                                      |
+                          /   /\ \                                     |
+                         /\  /\  /\                                    |
+                        /  \/   /  \                                   |
+                       /    \  /\   \                                  |
+                      /_____/_/__\___\_________   meeting points       |
+                     /\ \   \    /   /\                                |
+                    /XX\ \  /  \/   /XX\                               |
+                   /XXXX\ \ \/  \  /XXXX\                              |
+                  /XXXXXX\ \/    \/XXXXXX\                             |
+                 /XXXXXXXX\ \/   /XXXXXXXX\                            |
+                /XXXXXXXXXX\ \  /XXXXXXXXXX\                           |
+               /XXXXXXXXXXXX\ \/XXXXXXXXXXXX\                          |
+              /XXXXXXXXXXXXXX\/XXXXXXXXXXXXXX\                         |
+                           target                                      |
 
-                           source
-                             /\
-                            /\ \
-                           / /\ \
-                          /   /\ \
-                         /\  /\  /\
-                        /  \/   /  \
-                       /    \  /\   \
-                      /_____/_/__\___\_________   meeting points
-                     /\ \   \    /   /\
-                    /XX\ \  /  \/   /XX\
-                   /XXXX\ \ \/  \  /XXXX\
-                  /XXXXXX\ \/    \/XXXXXX\
-                 /XXXXXXXX\ \/   /XXXXXXXX\
-                /XXXXXXXXXX\ \  /XXXXXXXXXX\
-               /XXXXXXXXXXXX\ \/XXXXXXXXXXXX\
-              /XXXXXXXXXXXXXX\/XXXXXXXXXXXXXX\
-                           target
     Authors
     -------
     André Dietrich and Sebastian Zug
@@ -291,7 +295,7 @@ def all_shortest_paths(G, source, target):
     See Also
     --------
     nx.all_simple_paths, nx.all_shortest_paths, nx.shortest_path,
-    nx.bidirectional.all_simple_paths, nx.bidirectional.has_path
+    nx.bidirectional_all_simple_paths, nx.bidirectional_has_path
     """
 
     if source not in G:
@@ -299,12 +303,12 @@ def all_shortest_paths(G, source, target):
     if target not in G:
         raise nx.NetworkXError('target node %s not in graph' % target)
     if G.is_multigraph():
-        return _all_shortest_paths_multi(G, source, target)
+        return _bidirectional_all_shortest_paths_multi(G, source, target)
     else:
-        return _all_shortest_paths(G, source, target)
+        return _bidirectional_all_shortest_paths(G, source, target)
 
 
-def _all_shortest_paths(G, source, target):
+def _bidirectional_all_shortest_paths(G, source, target):
 
     tree = [{(source,)}, {(target,)}]
     nodes = [{source}, {target}]
@@ -324,7 +328,7 @@ def _all_shortest_paths(G, source, target):
             nodes_target = nodes[0]
 
             if G.is_directed():
-                neighbors = G.predecessors_iter
+                neighbors = G.predecessors
 
         else:
             modus = 0
@@ -334,7 +338,7 @@ def _all_shortest_paths(G, source, target):
             nodes_target = nodes[1]
 
             if G.is_directed():
-                neighbors = G.successors_iter
+                neighbors = G.successors
 
         temp_tree = set()
 
@@ -364,7 +368,7 @@ def _all_shortest_paths(G, source, target):
                                                                 target))
 
 
-def _all_shortest_paths_multi(G, source, target):
+def _bidirectional_all_shortest_paths_multi(G, source, target):
 
     tree = [[(source,)], [(target,)]]
     found = 0
@@ -409,19 +413,19 @@ def _all_shortest_paths_multi(G, source, target):
                                                                 target))
 
 
-def has_path(G, source, target):
+def bidirectional_has_path(G, source, target):
 
     if source not in G:
         raise nx.NetworkXError('source node %s not in graph' % source)
     if target not in G:
         raise nx.NetworkXError('target node %s not in graph' % target)
     if G.is_multigraph():
-        return _has_path_multi(G, source, target)
+        return _bidirectional_has_path_multi(G, source, target)
     else:
-        return _has_path(G, source, target)
+        return _bidirectional_has_path(G, source, target)
 
 
-def _has_path(G, source, target):
+def _bidirectional_has_path(G, source, target):
 
     leaves = [{source}, {target}]
     nodes = [{source}, {target}]
@@ -438,7 +442,7 @@ def _has_path(G, source, target):
             leaves_ = leaves[1]
 
             if G.is_directed():
-                neighbors = G.predecessors_iter
+                neighbors = G.predecessors
         else:
             modus = 0
             nodes_t = nodes[1]
@@ -446,7 +450,7 @@ def _has_path(G, source, target):
             leaves_ = leaves[0]
 
             if G.is_directed():
-                neighbors = G.successors_iter
+                neighbors = G.successors
 
         temp = set()
 
@@ -465,7 +469,7 @@ def _has_path(G, source, target):
     return False
 
 
-def _has_path_multi(G, source, target):
+def _bidirectional_has_path_multi(G, source, target):
 
     leaves = [{source}, {target}]
     nodes = [{source}, {target}]

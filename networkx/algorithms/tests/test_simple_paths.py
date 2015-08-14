@@ -52,7 +52,7 @@ def test_all_simple_paths_empty():
 
 
 def hamiltonian_path(G, source):
-    source = next(G.nodes_iter())
+    source = next(G.nodes())
     neighbors = set(G[source]) - set([source])
     n = len(G)
     for target in neighbors:
@@ -297,27 +297,27 @@ def test_bidirectional_dijkstra_no_path():
 # test bidirectional search
 def test_bidirectional_all_simple_paths():
     G = nx.path_graph(4)
-    paths = nx.bidirectional.all_simple_paths(G, 0, 3)
+    paths = nx.bidirectional_all_simple_paths(G, 0, 3)
     assert_equal(list(list(p) for p in paths), [[0, 1, 2, 3]])
 
 
 def test_bidirectional_all_simple_paths_cutoff():
     G = nx.complete_graph(4)
-    paths = nx.bidirectional.all_simple_paths(G, 0, 1, cutoff=1)
+    paths = nx.bidirectional_all_simple_paths(G, 0, 1, cutoff=1)
     assert_equal(list(list(p) for p in paths), [[0, 1]])
-    paths = nx.bidirectional.all_simple_paths(G, 0, 1, cutoff=2)
+    paths = nx.bidirectional_all_simple_paths(G, 0, 1, cutoff=2)
     assert_equal(list(list(p) for p in paths), [[0, 1], [0, 2, 1], [0, 3, 1]])
 
 
 def test_bidirectional_all_simple_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
-    paths = nx.bidirectional.all_simple_paths(G, 1, 2)
+    paths = nx.bidirectional_all_simple_paths(G, 1, 2)
     assert_equal(list(list(p) for p in paths), [[1, 2], [1, 2]])
 
 
 def test_bidirectional_all_simple_paths_multigraph_with_cutoff():
     G = nx.MultiGraph([(1, 2), (1, 2), (1, 10), (10, 2)])
-    paths = nx.bidirectional.all_simple_paths(G, 1, 2, cutoff=1)
+    paths = nx.bidirectional_all_simple_paths(G, 1, 2, cutoff=1)
     assert_equal(list(list(p) for p in paths), [[1, 2], [1, 2]])
 
 
@@ -325,13 +325,13 @@ def test_bidirectional_all_simple_paths_directed():
     G = nx.DiGraph()
     G.add_path([1, 2, 3])
     G.add_path([3, 2, 1])
-    paths = nx.bidirectional.all_simple_paths(G, 1, 3)
+    paths = nx.bidirectional_all_simple_paths(G, 1, 3)
     assert_equal(list(list(p) for p in paths), [[1, 2, 3]])
 
 
 def test_bidirectional_all_simple_paths_empty():
     G = nx.path_graph(4)
-    paths = nx.bidirectional.all_simple_paths(G, 0, 3, cutoff=2)
+    paths = nx.bidirectional_all_simple_paths(G, 0, 3, cutoff=2)
     assert_equal(list(list(p) for p in paths), [])
 
 
@@ -345,9 +345,9 @@ def test_bidirectional_hamiltonian_path():
 
 def test_bidirectional_cutoff_zero():
     G = nx.complete_graph(4)
-    paths = nx.bidirectional.all_simple_paths(G, 0, 3, cutoff=0)
+    paths = nx.bidirectional_all_simple_paths(G, 0, 3, cutoff=0)
     assert_equal(list(list(p) for p in paths), [])
-    paths = nx.bidirectional.all_simple_paths(nx.MultiGraph(G), 0, 3, cutoff=0)
+    paths = nx.bidirectional_all_simple_paths(nx.MultiGraph(G), 0, 3, cutoff=0)
     assert_equal(list(list(p) for p in paths), [])
 
 
@@ -355,29 +355,29 @@ def test_bidirectional_cutoff_zero():
 def test_bidirectional_source_missing():
     G = nx.Graph()
     G.add_path([1, 2, 3])
-    paths = list(nx.bidirectional.all_simple_paths(nx.MultiGraph(G), 0, 3))
+    paths = list(nx.bidirectional_all_simple_paths(nx.MultiGraph(G), 0, 3))
 
 
 @raises(nx.NetworkXError)
 def test_bidirectional_target_missing():
     G = nx.Graph()
     G.add_path([1, 2, 3])
-    paths = list(nx.bidirectional.all_simple_paths(nx.MultiGraph(G), 1, 4))
+    paths = list(nx.bidirectional_all_simple_paths(nx.MultiGraph(G), 1, 4))
 
 
 def test_bidirectional_shortest_simple_paths():
     G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
-    paths = nx.bidirectional.all_shortest_paths(G, 1, 12)
-    assert_equal(next(paths), [1, 2, 3, 4, 8, 12])
-    assert_equal(next(paths), [1, 5, 9, 10, 11, 12])
+    paths = nx.bidirectional_all_shortest_paths(G, 1, 12)
+    assert_equal(next(paths), [1, 5, 6, 10, 11, 12])
+    assert_equal(next(paths), [1, 5, 6, 7, 8, 12])
     assert_equal(
-        [len(path) for path in nx.bidirectional.all_simple_paths(G, 1, 12)],
+        [len(path) for path in nx.bidirectional_all_simple_paths(G, 1, 12)],
         sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
 
 
 def test_bidirectional_shortest_simple_paths_directed():
     G = nx.cycle_graph(7, create_using=nx.DiGraph())
-    paths = nx.bidirectional.all_shortest_paths(G, 0, 3)
+    paths = nx.bidirectional_all_shortest_paths(G, 0, 3)
     assert_equal([path for path in paths], [[0, 1, 2, 3]])
 
 
@@ -393,7 +393,7 @@ def test_bidirectional_Greg_Bernstein():
     solution = [['N1', 'N0', 'N3'],
                 ['N1', 'N2', 'N3'],
                 ['N1', 'N4', 'N0', 'N3']]
-    result = list(nx.bidirectional.all_simple_paths(g1, 'N1', 'N3'))
+    result = list(nx.bidirectional_all_simple_paths(g1, 'N1', 'N3'))
     assert_equal(result, solution)
 
 
@@ -404,7 +404,7 @@ def test_bidirectional_weighted_shortest_simple_path():
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
     nx.set_edge_attributes(G, 'weight', weight)
     cost = 0
-    for path in nx.bidirectional.all_shortest_paths(G, 0, 3):
+    for path in nx.bidirectional_all_shortest_paths(G, 0, 3):
         this_cost = cost_func(path)
         assert_true(cost <= this_cost)
         cost = this_cost
@@ -418,7 +418,7 @@ def test_bidirectional_directed_weighted_shortest_simple_path():
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
     nx.set_edge_attributes(G, 'weight', weight)
     cost = 0
-    for path in nx.bidirectional.all_shortest_paths(G, 0, 3):
+    for path in nx.bidirectional_all_shortest_paths(G, 0, 3):
         this_cost = cost_func(path)
         assert_true(cost <= this_cost)
         cost = this_cost
@@ -429,7 +429,7 @@ def test_bidirectional_weight_name():
     nx.set_edge_attributes(G, 'weight', 1)
     nx.set_edge_attributes(G, 'foo', 1)
     G.edge[1][2]['foo'] = 7
-    paths = list(nx.bidirectional.all_simple_paths(G, 0, 3))
+    paths = list(nx.bidirectional_all_simple_paths(G, 0, 3))
     solution = [[0, 1, 2, 3], [0, 6, 5, 4, 3]]
     assert_equal(paths, solution)
 
@@ -438,11 +438,11 @@ def test_bidirectional_weight_name():
 def test_bidirectional_ssp_source_missing():
     G = nx.Graph()
     G.add_path([1, 2, 3])
-    paths = list(nx.bidirectional.all_shortest_paths(G, 0, 3))
+    paths = list(nx.bidirectional_all_shortest_paths(G, 0, 3))
 
 
 @raises(nx.NetworkXError)
 def test_bidirectional_ssp_target_missing():
     G = nx.Graph()
     G.add_path([1, 2, 3])
-    paths = list(nx.bidirectional.all_shortest_paths(G, 1, 4))
+    paths = list(nx.bidirectional_all_shortest_paths(G, 1, 4))
