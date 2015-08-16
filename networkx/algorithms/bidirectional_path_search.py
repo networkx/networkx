@@ -130,7 +130,7 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
 
     for i in range(1, cutoff+1):
 
-        if len(tree[1]) <= len(tree[0]):
+        if len(tree[1]) < len(tree[0]):
             modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
@@ -182,7 +182,7 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
 
     for i in range(1, cutoff+1):
 
-        if len(tree[1]) <= len(tree[0]):
+        if len(tree[1]) < len(tree[0]):
             modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
@@ -320,7 +320,7 @@ def _bidirectional_all_shortest_paths(G, source, target):
 
     while not found and tree[0] and tree[1]:
 
-        if len(tree[1]) <= len(tree[0]):
+        if len(tree[1]) < len(tree[0]):
             modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
@@ -376,7 +376,7 @@ def _bidirectional_all_shortest_paths_multi(G, source, target):
 
     while not found and tree[0] and tree[1]:
 
-        if len(tree[1]) <= len(tree[0]):
+        if len(tree[1]) < len(tree[0]):
             modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
@@ -435,34 +435,34 @@ def _bidirectional_has_path(G, source, target):
 
     while leaves[0] and leaves[1]:
 
-        if len(leaves[1]) <= len(leaves[0]):
+        if len(leaves[1]) < len(leaves[0]):
             modus = 1
-            nodes_t = nodes[0]
             nodes_s = nodes[1]
-            leaves_ = leaves[1]
+            leaves_t = leaves[0]
+            leaves_s = leaves[1]
 
             if G.is_directed():
                 neighbors = G.predecessors
         else:
             modus = 0
-            nodes_t = nodes[1]
             nodes_s = nodes[0]
-            leaves_ = leaves[0]
+            leaves_t = leaves[1]
+            leaves_s = leaves[0]
 
             if G.is_directed():
                 neighbors = G.successors
 
         temp = set()
 
-        for leave in iter(leaves_):
+        for leave in iter(leaves_s):
             for s in neighbors(leave):
-                if s in nodes_t:
-                    return True
-                elif s not in nodes_s:
-                    nodes_s.add(s)
+                if s not in nodes_s:
+                    if s in leaves_t:
+                        return True
                     temp.add(s)
 
         leaves[modus] = temp
+        nodes[modus].update(temp)
 
         i += 1
 
@@ -477,28 +477,28 @@ def _bidirectional_has_path_multi(G, source, target):
 
     while leaves[0] and leaves[1]:
 
-        if len(leaves[1]) <= len(leaves[0]):
+        if len(leaves[1]) < len(leaves[0]):
             modus = 1
-            nodes_t = nodes[0]
             nodes_s = nodes[1]
-            leaves_ = leaves[1]
+            leaves_t = leaves[0]
+            leaves_s = leaves[1]
         else:
             modus = 0
-            nodes_t = nodes[1]
             nodes_s = nodes[0]
-            leaves_ = leaves[0]
+            leaves_t = leaves[1]
+            leaves_s = leaves[0]
 
         temp = set()
 
-        for leave in iter(leaves_):
+        for leave in iter(leaves_s):
             for s in [v for u, v in G.edges([leave])]:
-                if s in nodes_t:
-                    return True
-                elif s not in nodes_s:
-                    node_s.add(s)
+                if s not in nodes_s:
+                    if s in leaves_t:
+                        return True
                     temp.add(s)
 
         leaves[modus] = temp
+        nodes[modus].update(temp)
 
         i += 1
 
