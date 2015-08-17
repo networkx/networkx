@@ -163,21 +163,23 @@ def shortest_path_length(G, source=None, target=None, weight=None):
 
     Returns
     -------
-    length: int or dictionary
+    length: int or iterator
         If the source and target are both specified, return the length of
         the shortest path from the source to the target.
 
-        If only the source is specified, return a dictionary keyed by
-        targets whose values are the lengths of the shortest path from the
-        source to one of the targets.
+        If only the source is specified, return a tuple
+        (target, shortest path length) iterator, where shortest path lengths
+        are the lengths of the shortest path from the source to one of the
+        targets.
 
-        If only the target is specified, return a dictionary keyed by
-        sources whose values are the lengths of the shortest path from one
-        of the sources to the target.
+        If only the target is specified, return a tuple
+        (source, shortest path length) iterator, where shortest path lengths
+        are the lengths of the shortest path from one of the sources
+        to the target.
 
-        If neither the source nor target are specified return a dictionary
-        of dictionaries with path[source][target]=L, where L is the length
-        of the shortest path from source to target.
+        If neither the source nor target are specified, return a
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path length as the key value.
 
     Raises
     ------

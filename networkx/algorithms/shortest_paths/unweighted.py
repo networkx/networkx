@@ -35,8 +35,8 @@ def single_source_shortest_path_length(G,source,cutoff=None):
 
     Returns
     -------
-    lengths : dictionary
-        Dictionary of shortest path lengths keyed by target.
+    lengths : iterator
+        (target, shortest path length) iterator
 
     Examples
     --------
@@ -78,12 +78,13 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     Returns
     -------
-    lengths : dictionary
-        Dictionary of shortest path lengths keyed by source and target.
+    lengths : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path length as the key value.
 
     Notes
     -----
-    The dictionary returned only has keys for reachable node pairs.
+    The iterator returned only has reachable node pairs.
 
     Examples
     --------
