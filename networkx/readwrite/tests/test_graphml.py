@@ -123,7 +123,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
         self.attribute_numeric_type_data = """<?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-  <key attr.name="weight" attr.type="long" for="node" id="d1" />
+  <key attr.name="weight" attr.type="double" for="node" id="d1" />
   <key attr.name="weight" attr.type="double" for="edge" id="d0" />
   <graph edgedefault="directed">
     <node id="n0">
