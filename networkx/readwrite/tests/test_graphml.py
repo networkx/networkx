@@ -232,7 +232,11 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         self.attribute_numeric_type_fh.seek(0)
 
         xml = parse(fh)
-        keys = [x.items() for x in xml.getroot().getchildren()[:2]]
+        # Children are the key elements, and the graph element
+        children = xml.getroot().getchildren()
+        assert_equal(len(children), 3)
+
+        keys = [child.items() for child in children[:2]]
 
         assert_equal(len(keys), 2)
         assert_in(('attr.type', 'double'), keys[0])
