@@ -275,6 +275,13 @@ class GraphMLWriter(GraphML):
         if self.infer_numeric_types:
             types = self.attribute_types[(name, scope)]
 
+            try:
+                chr(12345)     # Fails on Py!=3.
+                long = int     # Py3K's int is our long type
+            except ValueError:
+                # Python 2.x
+                pass
+
             if len(types) > 1:
                 if float in types:
                     return float
@@ -385,7 +392,7 @@ class GraphMLWriter(GraphML):
         # data that needs to be added to them.
         # We postpone processing of this in order to do type inference/generalization.
         # See self.attr_type
-        for (xml_obj, data) in self.attributes.iteritems():
+        for (xml_obj, data) in self.attributes.items():
             for (k, v, scope, default) in data:
                 xml_obj.append(self.add_data(make_str(k), self.attr_type(k, scope, v), make_str(v),
                                              scope, default))
