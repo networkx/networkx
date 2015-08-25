@@ -348,7 +348,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
         raise nx.NetworkXError("k>=n, choose smaller k or larger n")
     G=empty_graph(n)
     G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
-    nlist = G.nodes()
+    nlist = list(G.nodes())
     fromv = nlist
     # connect the k/2 neighbors
     for j in range(1, k // 2+1):
@@ -357,7 +357,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
             G.add_edge(fromv[i], tov[i])
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w
-    e = G.edges()
+    e = list(G.edges())
     for (u, v) in e:
         if random.random() < p:
             w = random.choice(nlist)
@@ -716,7 +716,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
 
     G=empty_graph(m) # add m initial nodes (m0 in barabasi-speak)
     G.name="Powerlaw-Cluster Graph"
-    repeated_nodes=G.nodes()  # list of existing nodes to sample from
+    repeated_nodes = list(G.nodes()) # list of existing nodes to sample from
                            # with nodes repeated once for each adjacent edge
     source=m               # next node is m
     while source<n:        # Now add the other n-1 nodes
@@ -797,7 +797,7 @@ def duplication_divergence_graph(n, p, seed=None):
     i = 2
     while i < n:
         # Choose a random node from current graph to duplicate.
-        random_node = random.choice(G.nodes())
+        random_node = random.choice(list(G.nodes()))
         # Make the replica.
         G.add_node(i)
         # flag indicates whether at least one edge is connected on the replica.
