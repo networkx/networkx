@@ -157,7 +157,7 @@ def topological_sort(G, nbunch=None, reverse=False):
             for n in G[w]:
                 if n not in explored:
                     if n in seen:  # CYCLE !!
-                        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+                        raise nx.NetworkXUnfeasible("Graph contains a cycle at %s." % n)
                     new_nodes.append(n)
             if new_nodes:   # Add new_nodes to fringe
                 fringe.extend(new_nodes)
@@ -218,7 +218,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
 
         for w in G[v]:
             if w in ancestors:
-                raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+                raise nx.NetworkXUnfeasible("Graph contains a cycle at %s." % w)
 
             if w not in explored:
                 _dfs(w)
