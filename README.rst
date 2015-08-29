@@ -40,6 +40,8 @@ Distributed with a BSD license; see LICENSE.txt::
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
 
+For installation, see INSTALLATION.txt
+
 
 
 
