@@ -1,5 +1,7 @@
-from networkx.classes.graph import Graph
-from networkx.classes.digraph import DiGraph
-from networkx.classes.multigraph import MultiGraph
-from networkx.classes.multidigraph import MultiDiGraph
-from networkx.classes.function import *
+from .graph import Graph
+from .digraph import DiGraph
+from .multigraph import MultiGraph
+from .multidigraph import MultiDiGraph
+from .ordered import *
+
+from .function import *

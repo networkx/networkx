@@ -2,7 +2,7 @@
 """
 Attracting components.
 """
-#    Copyright (C) 2004-2013 by 
+#    Copyright (C) 2004-2015 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -36,15 +36,15 @@ def attracting_components(G):
 
     Returns
     -------
-    attractors : generator of list
-        The list of attracting components, sorted from largest attracting
-        component to smallest attracting component.
+    attractors : generator of sets
+        A generator of sets of nodes, one for each attracting component of G.
 
     See Also
     --------
     number_attracting_components
     is_attracting_component 
     attracting_component_subgraphs
+
     """
     scc = list(nx.strongly_connected_components(G))
     cG = nx.condensation(G, scc)
@@ -129,6 +129,7 @@ def attracting_component_subgraphs(G, copy=True):
     attracting_components
     number_attracting_components
     is_attracting_component
+
     """
     for ac in attracting_components(G):
         if copy:

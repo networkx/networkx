@@ -1,91 +1,109 @@
 # -*- coding: utf-8 -*-
-"""
-**************************************
-Minimum Vertex and Edge Dominating Set
-**************************************
-
-
-A dominating set for a graph G = (V, E) is a subset D of V such that every
-vertex not in D is joined to at least one member of D by some edge. The
-domination number gamma(G) is the number of vertices in a smallest dominating
-set for G. Given a graph G = (V, E) find a minimum weight dominating set V'.
-
-http://en.wikipedia.org/wiki/Dominating_set
-
-An edge dominating set for a graph G = (V, E) is a subset D of E such that
-every edge not in D is adjacent to at least one edge in D.
-
-http://en.wikipedia.org/wiki/Edge_dominating_set
-"""
 #   Copyright (C) 2011-2012 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>
 #   All rights reserved.
 #   BSD license.
-import networkx as nx
+"""Functions for finding node and edge dominating sets.
+
+A *`dominating set`_[1] for an undirected graph *G* with vertex set *V*
+and edge set *E* is a subset *D* of *V* such that every vertex not in
+*D* is adjacent to at least one member of *D*. An *`edge dominating
+set`_[2] is a subset *F* of *E* such that every edge not in *F* is
+incident to an endpoint of at least one edge in *F*.
+
+.. [1] dominating set: https://en.wikipedia.org/wiki/Dominating_set
+.. [2] edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
+
+"""
+from __future__ import division
+
+from ..matching import maximal_matching
+from ...utils import not_implemented_for
+
 __all__ = ["min_weighted_dominating_set",
            "min_edge_dominating_set"]
+
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
+# TODO Why doesn't this algorithm work for directed graphs?
+@not_implemented_for('directed')
 def min_weighted_dominating_set(G, weight=None):
-    r"""Return minimum weight vertex dominating set.
+    """Returns a dominating set that approximates the minimum weight node
+    dominating set.
 
     Parameters
     ----------
     G : NetworkX graph
-      Undirected graph
+        Undirected graph.
 
-    weight : None or string, optional (default = None)
-        If None, every edge has weight/distance/weight 1. If a string, use this
-        edge attribute as the edge weight. Any edge attribute not present
-        defaults to 1.
+    weight : string
+        The node attribute storing the weight of an edge. If provided,
+        the node attribute with this key must be a number for each
+        node. If not provided, each node is assumed to have weight one.
 
     Returns
     -------
     min_weight_dominating_set : set
-      Returns a set of vertices whose weight sum is no more than log w(V) * OPT
+        A set of nodes, the sum of whose weights is no more than `(\log
+        w(V)) w(V^*)`, where `w(V)` denotes the sum of the weights of
+        each node in the graph and `w(V^*)` denotes the sum of the
+        weights of each node in the minimum weight dominating set.
 
     Notes
     -----
-    This algorithm computes an approximate minimum weighted dominating set
-    for the graph G. The upper-bound on the size of the solution is
-    log w(V) * OPT.  Runtime of the algorithm is `O(|E|)`.
+    This algorithm computes an approximate minimum weighted dominating
+    set for the graph ``G``. The returned solution has weight `(\log
+    w(V)) w(V^*)`, where `w(V)` denotes the sum of the weights of each
+    node in the graph and `w(V^*)` denotes the sum of the weights of
+    each node in the minimum weight dominating set for the graph.
+
+    This implementation of the algorithm runs in `O(m)` time, where `m`
+    is the number of edges in the graph.
 
     References
     ----------
-    .. [1] Vazirani, Vijay Approximation Algorithms (2001)
+    .. [1] Vazirani, Vijay V.
+           *Approximation Algorithms*.
+           Springer Science & Business Media, 2001.
+
     """
-    if not G:
-        raise ValueError("Expected non-empty NetworkX graph!")
+    # The unique dominating set for the null graph is the empty set.
+    if len(G) == 0:
+        return set()
 
-    # min cover = min dominating set
-    dom_set = set([])
-    cost_func = dict((node, nd.get(weight, 1)) \
-                     for node, nd in G.nodes_iter(data=True))
+    # This is the dominating set that will eventually be returned.
+    dom_set = set()
 
-    vertices = set(G)
-    sets = dict((node, set([node]) | set(G[node])) for node in G)
+    def _cost(node_and_neighborhood):
+        """Returns the cost-effectiveness of greedily choosing the given
+        node.
 
-    def _cost(subset):
-        """ Our cost effectiveness function for sets given its weight
+        `node_and_neighborhood` is a two-tuple comprising a node and its
+        closed neighborhood.
+
         """
-        cost = sum(cost_func[node] for node in subset)
-        return cost / float(len(subset - dom_set))
+        v, neighborhood = node_and_neighborhood
+        return G.node[v].get(weight, 1) / len(neighborhood - dom_set)
 
+    # This is a set of all vertices not already covered by the
+    # dominating set.
+    vertices = set(G)
+    # This is a dictionary mapping each node to the closed neighborhood
+    # of that node.
+    neighborhoods = {v: {v} | set(G[v]) for v in G}
+
+    # Continue until all vertices are adjacent to some node in the
+    # dominating set.
     while vertices:
-        # find the most cost effective set, and the vertex that for that set
-        dom_node, min_set = min(sets.items(),
-                                key=lambda x: (x[0], _cost(x[1])))
-        alpha = _cost(min_set)
-
-        # reduce the cost for the rest
-        for node in min_set - dom_set:
-            cost_func[node] = alpha
-
-        # add the node to the dominating set and reduce what we must cover
+        # Find the most cost-effective node to add, along with its
+        # closed neighborhood.
+        dom_node, min_set = min(neighborhoods.items(), key=_cost)
+        # Add the node to the dominating set and reduce the remaining
+        # set of nodes to cover.
         dom_set.add(dom_node)
-        del sets[dom_node]
-        vertices = vertices - min_set
+        del neighborhoods[dom_node]
+        vertices -= min_set
 
     return dom_set
 
@@ -111,4 +129,4 @@ def min_edge_dominating_set(G):
     """
     if not G:
         raise ValueError("Expected non-empty NetworkX graph!")
-    return nx.maximal_matching(G)
+    return maximal_matching(G)

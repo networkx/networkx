@@ -3,7 +3,7 @@
 Depth-first search
 ==================
 
-Basic algorithms for depth-first searching.
+Basic algorithms for depth-first searching the nodes of a graph.
 
 Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
 by D. Eppstein, July 2004.
@@ -90,7 +90,7 @@ def dfs_tree(G, source):
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2])
     >>> T = nx.dfs_tree(G,0)
-    >>> print(T.edges())
+    >>> print(list(T.edges()))
     [(0, 1), (1, 2)]
     """
     T = nx.DiGraph()

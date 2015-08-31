@@ -4,8 +4,13 @@ from collections import defaultdict
 from os.path import splitext
 
 import networkx as nx
-from networkx.external.decorator import decorator
+from decorator import decorator
 from networkx.utils import is_string_like
+
+__all__ = [
+    'not_implemented_for',
+    'open_file',
+]
 
 def not_implemented_for(*graph_types):
     """Decorator to mark algorithms as not implemented

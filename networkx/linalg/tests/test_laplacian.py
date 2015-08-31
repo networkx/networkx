@@ -22,7 +22,7 @@ class TestLaplacian(object):
         deg=[3,2,2,1,0]
         self.G=havel_hakimi_graph(deg)
         self.WG=nx.Graph( (u,v,{'weight':0.5,'other':0.3})
-                for (u,v) in self.G.edges_iter() )
+                for (u,v) in self.G.edges() )
         self.WG.add_node(4)
         self.MG=nx.MultiGraph(self.G)
 

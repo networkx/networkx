@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 An example showing how to use the interface to the pygraphviz
-AGraph class to convert to and from graphviz. 
+AGraph class to convert to and from graphviz.
 
 Also see the pygraphviz documentation and examples at
-https://networkx.lanl.gov/pygraphviz/
+http://pygraphviz.github.io/
 
 
 """

@@ -25,7 +25,7 @@ try:
     from networkx import graphviz_layout
     layout=nx.graphviz_layout
 except ImportError:
-    print "PyGraphviz not found; drawing with spring layout; will be slow."
+    print("PyGraphviz not found; drawing with spring layout; will be slow.")
     layout=nx.spring_layout
 
 

@@ -8,18 +8,37 @@ can be accessed, for example, as
 >>> networkx.utils.is_string_like('spam')
 True
 """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import sys
-import subprocess
 import uuid
+# itertools.accumulate is only available on Python 3.2 or later.
+#
+# Once support for Python versions less than 3.2 is dropped, this code should
+# be removed.
+try:
+    from itertools import accumulate
+except ImportError:
+    import operator
 
-import networkx as nx
-from networkx.external.decorator import decorator
+    # The code for this function is from the Python 3.5 documentation,
+    # distributed under the PSF license:
+    # <https://docs.python.org/3.5/library/itertools.html#itertools.accumulate>
+    def accumulate(iterable, func=operator.add):
+        it = iter(iterable)
+        try:
+            total = next(it)
+        except StopIteration:
+            return
+        yield total
+        for element in it:
+            total = func(total, element)
+            yield total
+
 
 __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
@@ -86,17 +105,6 @@ else:
         """Return the string representation of t."""
         return str(x)
 
-def cumulative_sum(numbers):
-    """Yield cumulative sum of numbers.
-
-    >>> import networkx.utils as utils
-    >>> list(utils.cumulative_sum([1,2,3,4]))
-    [1, 3, 6, 10]
-    """
-    csum = 0
-    for n in numbers:
-        csum += n
-        yield csum
 
 def generate_unique_node():
     """ Generate a unique node label."""
@@ -111,11 +119,13 @@ def default_opener(filename):
         The path of the file to be opened.
 
     """
+    from subprocess import call
+
     cmds = {'darwin': ['open'],
             'linux2': ['xdg-open'],
             'win32': ['cmd.exe', '/C', 'start', '']}
     cmd = cmds[sys.platform] + [filename]
-    subprocess.call(cmd)
+    call(cmd)
 
 
 def dict_to_numpy_array(d,mapping=None):
@@ -123,17 +133,17 @@ def dict_to_numpy_array(d,mapping=None):
     with optional mapping."""
     try:
         return dict_to_numpy_array2(d, mapping)
-    except AttributeError:
+    except (AttributeError, TypeError):
+        # AttributeError is when no mapping was provided and v.keys() fails.
+        # TypeError is when a mapping was provided and d[k1][k2] fails.
         return dict_to_numpy_array1(d,mapping)
 
 def dict_to_numpy_array2(d,mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
-    with optional mapping."""
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(
-          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    with optional mapping.
+
+    """
+    import numpy
     if mapping is None:
         s=set(d.keys())
         for k,v in d.items():
@@ -151,12 +161,10 @@ def dict_to_numpy_array2(d,mapping=None):
 
 def dict_to_numpy_array1(d,mapping=None):
     """Convert a dictionary of numbers to a 1d numpy array
-    with optional mapping."""
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(
-          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    with optional mapping.
+
+    """
+    import numpy
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s,range(len(s))))
@@ -166,3 +174,40 @@ def dict_to_numpy_array1(d,mapping=None):
         i = mapping[k1]
         a[i] = d[k1]
     return a
+
+
+def is_iterator(obj):
+    """Returns ``True`` if and only if the given object is an iterator
+    object.
+
+    """
+    has_next_attr = hasattr(obj, '__next__') or hasattr(obj, 'next')
+    return iter(obj) is obj and has_next_attr
+
+
+def arbitrary_element(iterable):
+    """Returns an arbitrary element of ``iterable`` without removing it.
+
+    This is most useful for "peeking" at an arbitrary element of a set,
+    but can be used for any list, dictionary, etc., as well::
+
+        >>> arbitrary_element({3, 2, 1})
+        1
+        >>> arbitrary_element('hello')
+        'h'
+
+    This function raises a :exc:`ValueError` if ``iterable`` is an
+    iterator (because the current implementation of this function would
+    consume an element from the iterator)::
+
+        >>> iterator = iter([1, 2, 3])
+        >>> arbitrary_element(iterator)
+        Traceback (most recent call last):
+            ...
+        ValueError: cannot return an arbitrary item from an iterator
+
+    """
+    if is_iterator(iterable):
+        raise ValueError('cannot return an arbitrary item from an iterator')
+    # Another possible implementation is `for x in iterable: return x`.
+    return next(iter(iterable))

@@ -31,7 +31,7 @@ This way of working helps to keep work well organized, with readable history.
 This in turn makes it easier for project maintainers (that might be you) to see
 what you've done, and why you did it.
 
-See `linux git workflow`_ and `ipython git workflow`_ for some explanation.
+See `ipython git workflow`_ for some explanation.
 
 Consider deleting your master branch
 ====================================

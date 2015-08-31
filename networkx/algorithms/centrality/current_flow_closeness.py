@@ -15,9 +15,9 @@ def current_flow_closeness_centrality(G, weight='weight',
                                       dtype=float, solver='lu'):
     """Compute current-flow closeness centrality for nodes.
 
-    A variant of closeness centrality based on effective
-    resistance between nodes in a network.  This metric
-    is also known as information centrality.
+    Current-flow closeness centrality is variant of closeness
+    centrality based on effective resistance between nodes in
+    a network. This metric is also known as information centrality.
 
     Parameters
     ----------
@@ -56,9 +56,9 @@ def current_flow_closeness_centrality(G, weight='weight',
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
        http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
 
-    .. [2] Stephenson, K. and Zelen, M.
+    .. [2] Karen Stephenson and Marvin Zelen:
        Rethinking centrality: Methods and examples.
-       Social Networks. Volume 11, Issue 1, March 1989, pp. 1-37
+       Social Networks 11(1):1-37, 1989.
        http://dx.doi.org/10.1016/0378-8733(89)90016-6
     """
     from networkx.utils import reverse_cuthill_mckee_ordering

@@ -19,7 +19,7 @@ def weiner_index(G, weight=None):
     if weight is None:
         for n in G:
             path_length=nx.single_source_shortest_path_length(G,n)
-            weiner+=sum(path_length.values())
+            weiner+=sum(d for n, d in path_length)
     else:
         for n in G:
             path_length=nx.single_source_dijkstra_path_length(G,
@@ -70,13 +70,13 @@ def closeness_vitality(G, weight=None):
         # remove edges connected to node n and keep list of edges with data
         # could remove node n but it doesn't count anyway
         if multigraph:
-            edges = G.edges(n,data=True,keys=True)
+            edges = list(G.edges(n,data=True,keys=True))
             if G.is_directed():
-                edges += G.in_edges(n,data=True,keys=True)
+                edges += list(G.in_edges(n,data=True,keys=True))
         else:
-            edges = G.edges(n,data=True)
+            edges = list(G.edges(n,data=True))
             if G.is_directed():
-                edges += G.in_edges(n,data=True)
+                edges += list(G.in_edges(n,data=True))
         G.remove_edges_from(edges)
         closeness_vitality[n] = wig - weiner_index(G,weight)
         # add edges and data back to graph

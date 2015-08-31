@@ -11,7 +11,7 @@ class TestMWVC:
         sg = nx.star_graph(size)
         cover = a.min_weighted_vertex_cover(sg)
         assert_equals(2, len(cover))
-        for u, v in sg.edges_iter():
+        for u, v in sg.edges():
             ok_((u in cover or v in cover), "Node node covered!")
 
         wg = nx.Graph()
@@ -35,5 +35,5 @@ class TestMWVC:
         csum = sum(wg.node[node]["weight"] for node in cover)
         assert_equals(4, csum)
 
-        for u, v in wg.edges_iter():
+        for u, v in wg.edges():
             ok_((u in cover or v in cover), "Node node covered!")

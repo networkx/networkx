@@ -13,7 +13,7 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 """
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -288,3 +288,9 @@ def n_to_data(n):
             (n>>30) & 0x3f, (n>>24) & 0x3f, (n>>18) & 0x3f,
             (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
     raise NetworkXError("Numbers above 68719476735 are not supported by graph6")
+
+
+def teardown_module(module):
+    import os
+    if os.path.isfile('test.g6'):
+        os.unlink('test.g6')

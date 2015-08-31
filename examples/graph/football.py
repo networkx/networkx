@@ -17,11 +17,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    All rights reserved.
 #    BSD license.
 
-try:
-    import pyparsing
-except ImportError as e:
-    raise ImportError(str(e)+". Check http://pyparsing.wikispaces.com/")
-    
 from networkx import *
 
 url="http://www-personal.umich.edu/~mejn/netdata/football.zip"
@@ -46,5 +41,5 @@ G=parse_gml(gml) # parse gml data
 
 print(txt)
 # print degree for each team - number of games
-for n,d in G.degree_iter():
+for n,d in G.degree():
     print('%s %d' % (n, d))

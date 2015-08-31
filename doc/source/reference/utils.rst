@@ -5,9 +5,8 @@ Utilities
 .. automodule:: networkx.utils
 .. currentmodule:: networkx.utils
 
-Helper functions
+Helper Functions
 ----------------
-
 .. automodule:: networkx.utils.misc
 .. autosummary::
    :toctree: generated/
@@ -17,11 +16,10 @@ Helper functions
    iterable
    is_list_of_ints
    make_str
-   cumulative_sum
    generate_unique_node
    default_opener
 
-Data structures and Algorithms
+Data Structures and Algorithms
 ------------------------------
 .. automodule:: networkx.utils.union_find
 .. autosummary::
@@ -29,7 +27,7 @@ Data structures and Algorithms
 
    UnionFind.union
 
-Random sequence generators
+Random Sequence Generators
 --------------------------
 .. automodule:: networkx.utils.random_sequence
 .. autosummary::
@@ -46,8 +44,6 @@ Random sequence generators
    random_weighted_sample
    weighted_choice
 
-
-
 Decorators
 ----------
 .. automodule:: networkx.utils.decorators
@@ -55,3 +51,20 @@ Decorators
    :toctree: generated/
 
    open_file
+
+Cuthill-Mckee Ordering
+----------------------
+.. automodule:: networkx.utils.rcm
+.. autosummary::
+   :toctree: generated/
+
+   cuthill_mckee_ordering
+   reverse_cuthill_mckee_ordering
+
+Context Managers
+----------------
+.. automodule:: networkx.utils.contextmanagers
+.. autosummary::
+   :toctree: generated/
+
+   reversed

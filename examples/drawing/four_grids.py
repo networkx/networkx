@@ -4,7 +4,7 @@ Draw a graph with matplotlib.
 You must have matplotlib for this to work.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008
+#    Copyright (C) 2004-2015
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

@@ -10,10 +10,6 @@ JSON
    adjacency_graph
    tree_data
    tree_graph
-   dumps
-   loads
-   dump
-   load
    
 
 

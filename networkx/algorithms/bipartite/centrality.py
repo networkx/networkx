@@ -71,9 +71,9 @@ def degree_centrality(G, nodes):
     top = set(nodes)
     bottom = set(G) - top
     s = 1.0/len(bottom)
-    centrality = dict((n,d*s) for n,d in G.degree_iter(top))
+    centrality = dict((n,d*s) for n,d in G.degree(top))
     s = 1.0/len(top)
-    centrality.update(dict((n,d*s) for n,d in G.degree_iter(bottom)))
+    centrality.update(dict((n,d*s) for n,d in G.degree(bottom)))
     return centrality
 
 
@@ -243,8 +243,8 @@ def closeness_centrality(G, nodes, normalized=True):
     n = float(len(top))
     m = float(len(bottom))
     for node in top:
-        sp=path_length(G,node)
-        totsp=sum(sp.values())
+        sp = dict(path_length(G, node))
+        totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node]= (m + 2*(n-1)) / totsp
             if normalized:
@@ -253,8 +253,8 @@ def closeness_centrality(G, nodes, normalized=True):
         else:
             closeness[n]=0.0
     for node in bottom:
-        sp=path_length(G,node)
-        totsp=sum(sp.values())
+        sp = dict(path_length(G, node))
+        totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node]= (n + 2*(m-1)) / totsp
             if normalized:

@@ -12,34 +12,34 @@ class TestRelabel():
         G=empty_graph()
         H=convert_node_labels_to_integers(G,100)
         assert_equal(H.name, '(empty_graph(0))_with_int_labels')
-        assert_equal(H.nodes(), [])
-        assert_equal(H.edges(), [])
+        assert_equal(list(H.nodes()), [])
+        assert_equal(list(H.edges()), [])
 
         for opt in ["default", "sorted", "increasing degree",
                     "decreasing degree"]:
             G=empty_graph()
             H=convert_node_labels_to_integers(G,100, ordering=opt)
             assert_equal(H.name, '(empty_graph(0))_with_int_labels')
-            assert_equal(H.nodes(), [])
-            assert_equal(H.edges(), [])
+            assert_equal(list(H.nodes()), [])
+            assert_equal(list(H.edges()), [])
 
         G=empty_graph()
         G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
         G.name="paw"
         H=convert_node_labels_to_integers(G)
-        degH=H.degree().values()
-        degG=G.degree().values()
+        degH = (d for n, d in H.degree())
+        degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
 
         H=convert_node_labels_to_integers(G,1000)
-        degH=H.degree().values()
-        degG=G.degree().values()
+        degH = (d for n, d in H.degree())
+        degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
-        assert_equal(H.nodes(), [1000, 1001, 1002, 1003])
+        assert_equal(list(H.nodes()), [1000, 1001, 1002, 1003])
 
         H=convert_node_labels_to_integers(G,ordering="increasing degree")
-        degH=H.degree().values()
-        degG=G.degree().values()
+        degH = (d for n, d in H.degree())
+        degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
         assert_equal(degree(H,0), 1)
         assert_equal(degree(H,1), 2)
@@ -47,8 +47,8 @@ class TestRelabel():
         assert_equal(degree(H,3), 3)
 
         H=convert_node_labels_to_integers(G,ordering="decreasing degree")
-        degH=H.degree().values()
-        degG=G.degree().values()
+        degH = (d for n, d in H.degree())
+        degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
         assert_equal(degree(H,0), 3)
         assert_equal(degree(H,1), 2)
@@ -57,8 +57,8 @@ class TestRelabel():
 
         H=convert_node_labels_to_integers(G,ordering="increasing degree",
                                           label_attribute='label')
-        degH=H.degree().values()
-        degG=G.degree().values()
+        degH = (d for n, d in H.degree())
+        degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
         assert_equal(degree(H,0), 1)
         assert_equal(degree(H,1), 2)
@@ -76,8 +76,8 @@ class TestRelabel():
         G.add_edges_from([('C','D'),('A','B'),('A','C'),('B','C')])
         G.name="paw"
         H=convert_node_labels_to_integers(G,ordering="sorted")
-        degH=H.degree().values()
-        degG=G.degree().values()
+        degH = (d for n, d in H.degree())
+        degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
 
         H=convert_node_labels_to_integers(G,ordering="sorted",
@@ -137,6 +137,13 @@ class TestRelabel():
         assert_equal(sorted(G.edges()),
                      [('aardvark', 'bear'), ('aardvark', 'bear')])
 
+    def test_relabel_isolated_nodes_to_same(self):
+        G=Graph()
+        G.add_nodes_from(range(4))
+        mapping={1:1}
+        H=relabel_nodes(G, mapping, copy=False)
+        assert_equal(sorted(H.nodes()), list(range(4)))
+
     @raises(KeyError)
     def test_relabel_nodes_missing(self):
         G=Graph([('A','B'),('A','C'),('B','C'),('C','D')])
@@ -161,3 +168,6 @@ class TestRelabel():
         G = nx.MultiDiGraph([(1, 1), (1, 2), (2, 3)])
         G = nx.relabel_nodes(G, {1: 'One', 2: 'Two', 3: 'Three'}, copy=False)
         assert_equal(sorted(G.nodes()),['One','Three','Two'])
+        G = nx.MultiDiGraph([(1, 1)])
+        G = nx.relabel_nodes(G, {1: 0}, copy=False)
+        assert_equal(sorted(G.nodes()), [0])

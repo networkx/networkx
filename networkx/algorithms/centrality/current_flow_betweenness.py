@@ -74,8 +74,8 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
 
     References
     ----------
-    .. [1] Centrality Measures Based on Current Flow.
-       Ulrik Brandes and Daniel Fleischer,
+    .. [1] Ulrik Brandes and Daniel Fleischer:
+       Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
        http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
@@ -190,7 +190,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
     sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw) where `w` is the width of the sparse
+    The space required is `O(nw)` where `w` is the width of the sparse
     Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
 
     If the edges have a 'weight' attribute they will be used as

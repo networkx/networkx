@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test sequences for graphiness.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -50,7 +50,7 @@ def is_graphical(sequence, method='eg'):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> sequence = G.degree().values()
+    >>> sequence = (d for n, d in G.degree())
     >>> nx.is_valid_degree_sequence(sequence)
     True
 

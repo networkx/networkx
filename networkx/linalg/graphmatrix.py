@@ -1,7 +1,7 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -70,12 +70,12 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
     """
     import scipy.sparse
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     if edgelist is None:
         if G.is_multigraph():
-            edgelist = G.edges(keys=True)
+            edgelist = list(G.edges(keys=True))
         else:
-            edgelist = G.edges()
+            edgelist = list(G.edges())
     A = scipy.sparse.lil_matrix((len(nodelist),len(edgelist)))
     node_index = dict( (node,i) for i,node in enumerate(nodelist) )
     for ei,e in enumerate(edgelist):
@@ -126,17 +126,35 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
 
     Notes
     -----
+    For directed graphs, entry i,j corresponds to an edge from i to j.
+    
     If you want a pure Python adjacency matrix representation try
     networkx.convert.to_dict_of_dicts which will return a
     dictionary-of-dictionaries format that can be addressed as a
     sparse matrix.
 
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
+    For MultiGraph/MultiDiGraph with parallel edges the weights are summed.
     See to_numpy_matrix for other options.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the edge weight attribute
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Scipy sparse matrix can be modified as follows:
+
+    >>> import scipy as sp
+    >>> G = nx.Graph([(1,1)])
+    >>> A = nx.adjacency_matrix(G)
+    >>> print(A.todense())
+    [[1]]
+    >>> A.setdiag(A.diagonal()*2)
+    >>> print(A.todense())
+    [[2]]
 
     See Also
     --------
     to_numpy_matrix
+    to_scipy_sparse_matrix
     to_dict_of_dicts
     """
     return nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight)
@@ -147,6 +165,6 @@ adj_matrix=adjacency_matrix
 def setup_module(module):
     from nose import SkipTest
     try:
-        import numpy
+        import scipy
     except:
-        raise SkipTest("NumPy not available")
+        raise SkipTest("SciPy not available")

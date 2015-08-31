@@ -39,6 +39,7 @@ Advanced Interface
    dijkstra_predecessor_and_distance
    bellman_ford
    negative_edge_cycle
+   johnson
 
 
 Dense Graphs

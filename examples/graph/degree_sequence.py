@@ -16,7 +16,7 @@ __revision__ = "$Revision: 503 $"
 from networkx import *
 
 z=[5,3,3,3,3,2,2,2,1,1,1]
-print is_valid_degree_sequence(z)
+print(is_valid_degree_sequence(z))
 
 print("Configuration model")
 G=configuration_model(z)  # configuration model
@@ -32,5 +32,3 @@ for d in degree_sequence:
 print("degree #nodes")
 for d in hist:
     print('%d %d' % (d,hist[d]))
-
-

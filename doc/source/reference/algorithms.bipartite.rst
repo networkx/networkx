@@ -17,7 +17,27 @@ Basic functions
    color
    density
    degrees
+
+Matching
+--------
+.. automodule:: networkx.algorithms.bipartite.matching
+.. autosummary::
+   :toctree: generated/
+
+   eppstein_matching
+   hopcroft_karp_matching
+   to_vertex_cover
+
+
+Matrix
+------
+.. automodule:: networkx.algorithms.bipartite.matrix
+.. autosummary::
+   :toctree: generated/
+
    biadjacency_matrix
+   from_biadjacency_matrix
+
 
 Projections
 -----------
@@ -71,6 +91,24 @@ Centrality
    closeness_centrality
    degree_centrality
    betweenness_centrality
+
+
+Generators
+----------
+.. automodule:: networkx.algorithms.bipartite.generators
+.. autosummary::
+   :toctree: generated/
+
+   complete_bipartite_graph
+   configuration_model
+   havel_hakimi_graph
+   reverse_havel_hakimi_graph
+   alternating_havel_hakimi_graph
+   preferential_attachment_graph
+   random_graph
+   gnmk_random_graph
+
+
 
 
 

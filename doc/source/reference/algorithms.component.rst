@@ -43,7 +43,7 @@ Weak connectivity
    weakly_connected_components
    weakly_connected_component_subgraphs
 
-Atrracting components
+Attracting components
 ^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: networkx.algorithms.components.attracting
 .. autosummary::
@@ -68,8 +68,11 @@ Biconnected components
    articulation_points
 
 
+Semiconnectedness
+^^^^^^^^^^^^^^^^^
+.. automodule:: networkx.algorithms.components.semiconnected
+.. autosummary::
+   :toctree: generated/
 
-
-
-
+   is_semiconnected
 

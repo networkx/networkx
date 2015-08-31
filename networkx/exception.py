@@ -8,7 +8,7 @@ Base exceptions and errors for NetworkX.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)\nLoïc Séguin-C. <loicseguin@gmail.com>"""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -41,6 +41,10 @@ class NetworkXUnfeasible(NetworkXAlgorithmError):
 class NetworkXNoPath(NetworkXUnfeasible):
     """Exception for algorithms that should return a path when running
     on graphs where such a path does not exist."""
+
+class NetworkXNoCycle(NetworkXUnfeasible):
+    """Exception for algorithms that should return a cycle when running
+    on graphs where such a cycle does not exist."""
 
 class NetworkXUnbounded(NetworkXAlgorithmError):
     """Exception raised by algorithms trying to solve a maximization

@@ -2,7 +2,10 @@ from nose import SkipTest
 from nose.tools import assert_raises, assert_true, assert_equal, raises
 
 import networkx as nx
+from networkx.testing import assert_graphs_equal
 from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
+from networkx.testing.utils import assert_graphs_equal
+
 
 class TestConvertNumpy(object):
     @classmethod
@@ -25,7 +28,7 @@ class TestConvertNumpy(object):
 
     def create_weighted(self, G):
         g = cycle_graph(4)
-        e = g.edges()
+        e = list(g.edges())
         source = [u for u,v in e]
         dest = [v for u,v in e]
         weight = [s+10 for s in source]
@@ -34,8 +37,8 @@ class TestConvertNumpy(object):
         return G
 
     def assert_equal(self, G1, G2):
-        assert_true( sorted(G1.nodes())==sorted(G2.nodes()) )
-        assert_true( sorted(G1.edges())==sorted(G2.edges()) )
+        assert_equal(sorted(G1.nodes()), sorted(G2.nodes()))
+        assert_equal(sorted(G1.edges()), sorted(G2.edges()))
 
     def identity_conversion(self, G, A, create_using):
         GG = nx.from_scipy_sparse_matrix(A, create_using=create_using)
@@ -96,7 +99,7 @@ class TestConvertNumpy(object):
         """Conversion from graph to sparse matrix to graph with nodelist."""
         P4 = path_graph(4)
         P3 = path_graph(3)
-        nodelist = P3.nodes()
+        nodelist = list(P3.nodes())
         A = nx.to_scipy_sparse_matrix(P4, nodelist=nodelist)
         GA = nx.Graph(A)
         self.assert_equal(GA, P3)
@@ -177,3 +180,61 @@ class TestConvertNumpy(object):
         G.add_edge(3,1)
         M = nx.to_scipy_sparse_matrix(G,nodelist=[3,2,1])
         np_assert_equal(M.todense(), np.matrix([[0,0,1],[1,0,0],[0,1,0]]))
+
+    def test_selfloop_graph(self):
+        G = nx.Graph([(1,1)])
+        M = nx.to_scipy_sparse_matrix(G)
+        np_assert_equal(M.todense(), np.matrix([[1]]))
+
+    def test_selfloop_digraph(self):
+        G = nx.DiGraph([(1,1)])
+        M = nx.to_scipy_sparse_matrix(G)
+        np_assert_equal(M.todense(), np.matrix([[1]]))
+
+    def test_from_scipy_sparse_matrix_parallel_edges(self):
+        """Tests that the :func:`networkx.from_scipy_sparse_matrix` function
+        interprets integer weights as the number of parallel edges when
+        creating a multigraph.
+
+        """
+        A = sparse.csr_matrix([[1, 1], [1, 2]])
+        # First, with a simple graph, each integer entry in the adjacency
+        # matrix is interpreted as the weight of a single edge in the graph.
+        expected = nx.DiGraph()
+        edges = [(0, 0), (0, 1), (1, 0)]
+        expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
+        expected.add_edge(1, 1, weight=2)
+        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=True,
+                                             create_using=nx.DiGraph())
+        assert_graphs_equal(actual, expected)
+        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=False,
+                                             create_using=nx.DiGraph())
+        assert_graphs_equal(actual, expected)
+        # Now each integer entry in the adjacency matrix is interpreted as the
+        # number of parallel edges in the graph if the appropriate keyword
+        # argument is specified.
+        edges = [(0, 0), (0, 1), (1, 0), (1, 1), (1, 1)]
+        expected = nx.MultiDiGraph()
+        expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
+        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=True,
+                                             create_using=nx.MultiDiGraph())
+        assert_graphs_equal(actual, expected)
+        expected = nx.MultiDiGraph()
+        expected.add_edges_from(set(edges), weight=1)
+        # The sole self-loop (edge 0) on vertex 1 should have weight 2.
+        expected[1][1][0]['weight'] = 2
+        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=False,
+                                             create_using=nx.MultiDiGraph())
+        assert_graphs_equal(actual, expected)
+
+    def test_symmetric(self):
+        """Tests that a symmetric matrix has edges added only once to an
+        undirected multigraph when using
+        :func:`networkx.from_scipy_sparse_matrix`.
+
+        """
+        A = sparse.csr_matrix([[0, 1], [1, 0]])
+        G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph())
+        expected = nx.MultiGraph()
+        expected.add_edge(0, 1, weight=1)
+        assert_graphs_equal(G, expected)

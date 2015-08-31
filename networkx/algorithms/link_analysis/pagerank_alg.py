@@ -1,11 +1,11 @@
 """PageRank analysis of graph structure. """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#    NetworkX:http://networkx.lanl.gov/
+#    NetworkX:http://networkx.github.io/
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
@@ -25,7 +25,7 @@ def pagerank(G, alpha=0.85, personalization=None,
     an algorithm to rank web pages.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
@@ -163,7 +163,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     """Return the Google matrix of the graph.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
@@ -217,7 +217,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     import numpy as np
 
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
 
     M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
     N = len(G)
@@ -257,7 +257,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
 
     M /= M.sum(axis=1)  # Normalize rows to sum to 1
 
-    return alpha * M + (1 - alpha) * np.outer(np.ones(N), p)
+    return alpha * M + (1 - alpha) * p
 
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
@@ -269,7 +269,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     an algorithm to rank web pages.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
@@ -351,7 +351,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     an algorithm to rank web pages.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
@@ -420,7 +420,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     if N == 0:
         return {}
 
-    nodelist = G.nodes()
+    nodelist = list(G)
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   dtype=float)
     S = scipy.array(M.sum(axis=1)).flatten()

@@ -14,8 +14,7 @@ class TestPydot(object):
     def setupClass(cls):
         global pydot
         try:
-            import pydot
-            import dot_parser
+            pydot = nx.drawing.nx_pydot.load_pydot()
         except ImportError:
             raise SkipTest('pydot not available.')
 

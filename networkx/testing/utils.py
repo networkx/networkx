@@ -6,7 +6,6 @@ def assert_nodes_equal(nlist1, nlist2):
     # Assumes lists are either nodes, or (node,datadict) tuples,
     # and also that nodes are orderable/sortable.
     try:
-        l = len(nlist1[0])
         n1 = sorted(nlist1,key=operator.itemgetter(0))
         n2 = sorted(nlist2,key=operator.itemgetter(0))
         assert_equal(len(n1),len(n2))

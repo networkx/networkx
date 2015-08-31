@@ -6,7 +6,7 @@ This uses Graphviz for layout so you need PyGraphviz or Pydot.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008
+#    Copyright (C) 2004-2015
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,7 +21,7 @@ def lanl_graph():
     try:
         fh=open('lanl_routes.edgelist','r')
     except IOError:
-        print "lanl.edges not found"
+        print("lanl.edges not found")
         raise
 
     G=nx.Graph()
@@ -52,9 +52,9 @@ if __name__ == '__main__':
 
     G=lanl_graph()
 
-    print "graph has %d nodes with %d edges"\
-          %(nx.number_of_nodes(G),nx.number_of_edges(G))
-    print nx.number_connected_components(G),"connected components"
+    print("graph has %d nodes with %d edges"\
+          %(nx.number_of_nodes(G),nx.number_of_edges(G)))
+    print(nx.number_connected_components(G),"connected components")
 
     import matplotlib.pyplot as plt
     plt.figure(figsize=(8,8))

@@ -1,7 +1,7 @@
 """
 Closeness centrality measures.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -70,9 +70,9 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
 
     References
     ----------
-    .. [1] Freeman, L.C., 1979. Centrality in networks: I.
-       Conceptual clarification.  Social Networks 1, 215--239.
-       http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
+    .. [1] Linton C. Freeman: Centrality in networks: I.
+       Conceptual clarification. Social Networks 1:215-239, 1979.
+       http://leonidzhukov.ru/hse/2013/socialnetworks/papers/freeman79-centrality.pdf
     """
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight 
@@ -87,7 +87,7 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
         nodes = [u]
     closeness_centrality = {}
     for n in nodes:
-        sp = path_length(G,n)
+        sp = dict(path_length(G, n))
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness_centrality[n] = (len(sp)-1.0) / totsp

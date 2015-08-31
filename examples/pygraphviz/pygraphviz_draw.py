@@ -4,7 +4,7 @@ An example showing how to use the interface to the pygraphviz
 AGraph class to draw a graph.
 
 Also see the pygraphviz documentation and examples at
-https://networkx.lanl.gov/pygraphviz/
+http://pygraphviz.github.io/
 
 
 """

@@ -5,7 +5,7 @@ Making your own copy (fork) of networkx
 ======================================================
 
 You need to do this only once.  The instructions here are very similar
-to the instructions at http://help.github.com/forking/ |emdash| please see
+to the instructions at https://help.github.com/articles/fork-a-repo/ |emdash| please see
 that page for more detail.  We're repeating some of it here just to give the
 specifics for the `networkx`_ project, and to suggest some default names.
 

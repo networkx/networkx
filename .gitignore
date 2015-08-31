@@ -21,5 +21,13 @@ doc/source/examples/*
 
 # Generated when 'python setup_egg.py'
 networkx.egg-info/
-Networkx.sublime-project
-Networkx.sublime-workspace
+
+# Sublime Text project files
+*.sublime-project
+*.sublime-workspace
+
+# IPython Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Vim's swap files
+*.sw[op]

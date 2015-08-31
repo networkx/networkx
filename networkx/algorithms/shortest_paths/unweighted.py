@@ -3,7 +3,7 @@
 Shortest path algorithms for unweighted graphs.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2010 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -35,72 +35,69 @@ def single_source_shortest_path_length(G,source,cutoff=None):
 
     Returns
     -------
-    lengths : dictionary
-        Dictionary of shortest path lengths keyed by target.
+    lengths : iterator
+        (target, shortest path length) iterator
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.single_source_shortest_path_length(G,0)
-    >>> length[4]
-    4
-    >>> print(length)
+    >>> G = nx.path_graph(5)
+    >>> length = nx.single_source_shortest_path_length(G, 0)
+    >>> dict(length)
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     See Also
     --------
     shortest_path_length
     """
-    seen={}                  # level (number of hops) when seen in BFS
-    level=0                  # the current level
-    nextlevel={source:1}  # dict of nodes to check at next level
+    seen = {}                  # level (number of hops) when seen in BFS
+    level = 0                  # the current level
+    nextlevel = {source:1}  # dict of nodes to check at next level
     while nextlevel:
-        thislevel=nextlevel  # advance to next level
-        nextlevel={}         # and start a new list (fringe)
+        thislevel = nextlevel  # advance to next level
+        nextlevel = {}         # and start a new list (fringe)
         for v in thislevel:
             if v not in seen:
-                seen[v]=level # set the level of vertex v
+                seen[v] = level # set the level of vertex v
                 nextlevel.update(G[v]) # add neighbors of v
+                yield (v, level)
         if (cutoff is not None and cutoff <= level):  break
         level=level+1
-    return seen  # return all path lengths as dictionary
+    del seen
 
 
-def all_pairs_shortest_path_length(G,cutoff=None):
-    """ Compute the shortest path lengths between all nodes in G.
+def all_pairs_shortest_path_length(G, cutoff=None):
+    """Computes the shortest path lengths between all nodes in ``G``.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth at which to stop the search. Only paths of length at most
+        ``cutoff`` are returned.
 
     Returns
     -------
-    lengths : dictionary
-        Dictionary of shortest path lengths keyed by source and target.
+    lengths : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path length as the key value.
 
     Notes
     -----
-    The dictionary returned only has keys for reachable node pairs.
+    The iterator returned only has reachable node pairs.
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.all_pairs_shortest_path_length(G)
-    >>> print(length[1][4])
-    3
-    >>> length[1]
+    >>> G = nx.path_graph(5)
+    >>> length = nx.all_pairs_shortest_path_length(G)
+    >>> dict(length)[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
     """
-    paths={}
+    length = single_source_shortest_path_length
+    # TODO This can be trivially parallelized.
     for n in G:
-        paths[n]=single_source_shortest_path_length(G,n,cutoff=cutoff)
-    return paths
-
-
+        yield (n, dict(length(G, n, cutoff=cutoff)))
 
 
 def bidirectional_shortest_path(G,source,target):
@@ -140,15 +137,16 @@ def bidirectional_shortest_path(G,source,target):
 
     # build path from pred+w+succ
     path=[]
+    # from source to w
+    while w is not None:
+        path.append(w)
+        w=pred[w]
+    path.reverse()
     # from w to target
+    w=succ[path[-1]]
     while w is not None:
         path.append(w)
         w=succ[w]
-    # from source to w
-    w=pred[path[0]]
-    while w is not None:
-        path.insert(0,w)
-        w=pred[w]
 
     return path
 
@@ -165,11 +163,11 @@ def _bidirectional_pred_succ(G, source, target):
 
     # handle either directed or undirected
     if G.is_directed():
-        Gpred=G.predecessors_iter
-        Gsucc=G.successors_iter
+        Gpred=G.predecessors
+        Gsucc=G.successors
     else:
-        Gpred=G.neighbors_iter
-        Gsucc=G.neighbors_iter
+        Gpred=G.neighbors
+        Gsucc=G.neighbors
 
     # predecesssor and successors in search
     pred={source:None}
@@ -257,15 +255,16 @@ def single_source_shortest_path(G,source,cutoff=None):
     return paths
 
 
-def all_pairs_shortest_path(G,cutoff=None):
-    """ Compute shortest paths between all nodes.
+def all_pairs_shortest_path(G, cutoff=None):
+    """Compute shortest paths between all nodes.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth at which to stop the search. Only paths of length at most
+        ``cutoff`` are returned.
 
     Returns
     -------
@@ -274,8 +273,8 @@ def all_pairs_shortest_path(G,cutoff=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> path=nx.all_pairs_shortest_path(G)
+    >>> G = nx.path_graph(5)
+    >>> path = nx.all_pairs_shortest_path(G)
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
@@ -284,12 +283,8 @@ def all_pairs_shortest_path(G,cutoff=None):
     floyd_warshall()
 
     """
-    paths={}
-    for n in G:
-        paths[n]=single_source_shortest_path(G,n,cutoff=cutoff)
-    return paths
-
-
+    # TODO This can be trivially parallelized.
+    return {n: single_source_shortest_path(G, n, cutoff=cutoff) for n in G}
 
 
 def predecessor(G,source,target=None,cutoff=None,return_seen=None):
@@ -318,10 +313,10 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> print(G.nodes())
+    >>> G = nx.path_graph(4)
+    >>> list(G)
     [0, 1, 2, 3]
-    >>> nx.predecessor(G,0)
+    >>> nx.predecessor(G, 0)
     {0: [], 1: [0], 2: [1], 3: [2]}
 
     """
@@ -356,4 +351,3 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
             return (pred,seen)
         else:
             return pred
-

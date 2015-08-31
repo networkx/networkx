@@ -77,7 +77,7 @@ def trac_ticket_role(name, rawtext, text, lineno, inliner,
         base = app.config.trac_url
         if not base:
             raise AttributeError
-    except AttributeError, err:
+    except AttributeError as err:
         msg = 'trac_url configuration value is not set (%s)'
         raise ValueError(msg % str(err))
 
@@ -96,7 +96,7 @@ def trac_changeset_role(name, rawtext, text, lineno, inliner,
         base = app.config.trac_url
         if not base:
             raise AttributeError
-    except AttributeError, err:
+    except AttributeError as err:
         msg = 'trac_url configuration value is not set (%s)'
         raise ValueError(msg % str(err))    
 
@@ -131,7 +131,7 @@ for role in active_roles.values():
     role.__doc__ = sample_role.__doc__
 
 def setup(app):
-    for role, func in active_roles.iteritems():
+    for role, func in active_roles.items():
         roles.register_local_role(role, func)
     app.add_config_value('trac_url', None, 'env')
         

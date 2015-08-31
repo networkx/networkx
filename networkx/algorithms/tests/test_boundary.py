@@ -91,11 +91,11 @@ class TestBoundary:
 
         cheeger(G,k)=min(|bdy(S)|/|S| for |S|=k, 0<k<=|V(G)|/2)
         """
-        from random import sample
+        from itertools import combinations
         P=nx.petersen_graph()
         def cheeger(G,k):
-            return min([float(len(nx.node_boundary(G,sample(G.nodes(),k))))/k 
-                        for n in range(100)])
+            return min( float(len(nx.node_boundary(G,nn)))/k
+                        for nn in combinations(G,k) )
 
         assert_almost_equals(cheeger(P,1),3.00,places=2)
         assert_almost_equals(cheeger(P,2),2.00,places=2)

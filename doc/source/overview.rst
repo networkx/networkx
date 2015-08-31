@@ -13,7 +13,7 @@ Who uses NetworkX?
 ------------------
 
 The potential audience for NetworkX includes mathematicians,
-physicists, biologists, computer scientists, and social scientists.  Good 
+physicists, biologists, computer scientists, and social scientists. Good 
 reviews of the state-of-the-art in the science of
 complex networks are presented in Albert and Barabási [BA02]_, Newman
 [Newman03]_, and Dorogovtsev and Mendes [DM03]_. See also the classic
@@ -26,7 +26,7 @@ Goals
 -----
 NetworkX is intended to provide
 
--  tools for the study the structure and
+-  tools for the study of the structure and
    dynamics of social, biological, and infrastructure networks,
 
 -  a standard programming interface and graph implementation that is suitable
@@ -69,7 +69,7 @@ History
 NetworkX was born in May 2002. The original version was designed and written by Aric Hagberg, Dan Schult, and Pieter Swart in 2002 and 2003.  
 The first public release was in April 2005.
 
-Many people have contributed to the success of NetworkX.   Some of the contributors are listed in the :doc:`credits. </reference/credits>`
+Many people have contributed to the success of NetworkX. Some of the contributors are listed in the :doc:`credits. </reference/credits>`
 
 
 

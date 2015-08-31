@@ -34,6 +34,16 @@ Spectrum
    laplacian_spectrum
    adjacency_spectrum
 
+Algebraic Connectivity
+----------------------
+.. automodule:: networkx.linalg.algebraicconnectivity
+.. autosummary::
+   :toctree: generated/
+
+   algebraic_connectivity
+   fiedler_vector
+   spectral_ordering
+
 Attribute Matrices
 ------------------
 

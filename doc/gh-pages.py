@@ -15,6 +15,7 @@ something like 'current' as a stable URL for the most current version"""
 #-----------------------------------------------------------------------------
 # Imports
 #-----------------------------------------------------------------------------
+from __future__ import print_function
 import os
 import re
 import shutil
@@ -128,13 +129,11 @@ if __name__ == '__main__':
 
         sh('git add -A %s' % tag)
         sh('git commit -m"Updated doc release: %s"' % tag)
-        print
-        print 'Most recent 3 commits:'
+        print('\nMost recent 3 commits:')
         sys.stdout.flush()
         sh('git --no-pager log --oneline HEAD~3..')
     finally:
         cd(startdir)
 
-    print
-    print 'Now verify the build in: %r' % dest
-    print "If everything looks good, 'git push'"
+    print('\nNow verify the build in: %r' % dest)
+    print("If everything looks good, 'git push'")

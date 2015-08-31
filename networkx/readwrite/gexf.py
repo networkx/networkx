@@ -212,7 +212,13 @@ class GEXF(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    convert_bool={'false': False, 'False': False, 'true': True, 'True': True}
+    # http://www.w3.org/TR/xmlschema-2/#boolean
+    convert_bool = {
+        'true': True, 'false': False,
+        'True': True, 'False': False,
+        '0': False, 0: False,
+        '1': False, 1: True
+    }
 
 #    try:
 #        register_namespace = ET.register_namespace
@@ -297,7 +303,7 @@ class GEXFWriter(GEXF):
 
     def add_nodes(self, G, graph_element):
         nodes_element = Element('nodes')
-        for node,data in G.nodes_iter(data=True):
+        for node,data in G.nodes(data=True):
             node_data=data.copy()
             node_id = make_str(node_data.pop('id', node))
             kw={'id':node_id}
@@ -330,7 +336,7 @@ class GEXFWriter(GEXF):
         def edge_key_data(G):
             # helper function to unify multigraph and graph edge iterator
             if G.is_multigraph():
-                for u,v,key,data in G.edges_iter(data=True,keys=True):
+                for u,v,key,data in G.edges(data=True,keys=True):
                     edge_data=data.copy()
                     edge_data.update(key=key)
                     edge_id=edge_data.pop('id',None)
@@ -338,7 +344,7 @@ class GEXFWriter(GEXF):
                         edge_id=next(self.edge_id)
                     yield u,v,edge_id,edge_data
             else:
-                for u,v,data in G.edges_iter(data=True):
+                for u,v,data in G.edges(data=True):
                     edge_data=data.copy()
                     edge_id=edge_data.pop('id',None)
                     if edge_id is None:
@@ -573,9 +579,7 @@ class GEXFWriter(GEXF):
         if self.prettyprint:
             self.indent(self.xml)
         document = ElementTree(self.xml)
-        header='<?xml version="1.0" encoding="%s"?>'%self.encoding
-        fh.write(header.encode(self.encoding))
-        document.write(fh, encoding=self.encoding)
+        document.write(fh, encoding=self.encoding, xml_declaration=True)
 
 
     def indent(self, elem, level=0):
@@ -643,7 +647,7 @@ class GEXFReader(GEXF):
             G.graph['mode']='dynamic'
         else:
             G.graph['mode']='static'
-            
+
         # timeformat
         self.timeformat=graph_xml.get('timeformat')
         if self.timeformat == 'date':

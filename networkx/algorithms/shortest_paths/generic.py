@@ -4,11 +4,8 @@ Compute the shortest paths and path lengths between nodes in the graph.
 
 These algorithms work with undirected and directed graphs.
 
-For directed graphs the paths can be computed in the reverse
-order by first flipping the edge orientation using R=G.reverse(copy=False).
-
 """
-#    Copyright (C) 2004-2012 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -100,10 +97,6 @@ def shortest_path(G, source=None, target=None, weight=None):
     There may be more than one shortest path between a source and target.
     This returns only one of them.
 
-    For digraphs this returns a shortest directed path. To find paths in the
-    reverse direction first use G.reverse(copy=False) to flip the edge
-    orientation.
-
     See Also
     --------
     all_pairs_shortest_path()
@@ -120,21 +113,15 @@ def shortest_path(G, source=None, target=None, weight=None):
                 paths=nx.all_pairs_dijkstra_path(G,weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
-            directed = G.is_directed()
-            if directed:
-               G.reverse(copy=False)
+            with nx.utils.reversed(G):
+                if weight is None:
+                    paths=nx.single_source_shortest_path(G, target)
+                else:
+                    paths=nx.single_source_dijkstra_path(G, target, weight=weight)
+                # Now flip the paths so they go from a source to the target.
+                for target in paths:
+                    paths[target] = list(reversed(paths[target]))
 
-            if weight is None:
-                paths=nx.single_source_shortest_path(G,target)
-            else:
-                paths=nx.single_source_dijkstra_path(G,target,weight=weight)
-
-            # Now flip the paths so they go from a source to the target.
-            for target in paths:
-                paths[target] = list(reversed(paths[target]))
-
-            if directed:
-                G.reverse(copy=False)
     else:
         if target is None:
             ## Find paths to all nodes accessible from the source.
@@ -176,21 +163,23 @@ def shortest_path_length(G, source=None, target=None, weight=None):
 
     Returns
     -------
-    length: int or dictionary
+    length: int or iterator
         If the source and target are both specified, return the length of
         the shortest path from the source to the target.
 
-        If only the source is specified, return a dictionary keyed by
-        targets whose values are the lengths of the shortest path from the
-        source to one of the targets.
+        If only the source is specified, return a tuple
+        (target, shortest path length) iterator, where shortest path lengths
+        are the lengths of the shortest path from the source to one of the
+        targets.
 
-        If only the target is specified, return a dictionary keyed by
-        sources whose values are the lengths of the shortest path from one
-        of the sources to the target.
+        If only the target is specified, return a tuple
+        (source, shortest path length) iterator, where shortest path lengths
+        are the lengths of the shortest path from one of the sources
+        to the target.
 
-        If neither the source nor target are specified return a dictionary
-        of dictionaries with path[source][target]=L, where L is the length
-        of the shortest path from source to target.
+        If neither the source nor target are specified, return a
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path length as the key value.
 
     Raises
     ------
@@ -200,16 +189,16 @@ def shortest_path_length(G, source=None, target=None, weight=None):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print(nx.shortest_path_length(G,source=0,target=4))
+    >>> nx.shortest_path_length(G,source=0,target=4)
     4
     >>> p=nx.shortest_path_length(G,source=0) # target not specified
-    >>> p[4]
+    >>> dict(p)[4]
     4
     >>> p=nx.shortest_path_length(G,target=4) # source not specified
-    >>> p[0]
+    >>> dict(p)[0]
     4
     >>> p=nx.shortest_path_length(G) # source,target not specified
-    >>> p[0][4]
+    >>> dict(p)[0][4]
     4
 
     Notes
@@ -233,28 +222,24 @@ def shortest_path_length(G, source=None, target=None, weight=None):
         if target is None:
             ## Find paths between all pairs.
             if weight is None:
-                paths=nx.all_pairs_shortest_path_length(G)
+                paths = nx.all_pairs_shortest_path_length(G)
             else:
                 paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
-            directed = G.is_directed()
-            if directed:
-               G.reverse(copy=False)
-
-            if weight is None:
-                paths=nx.single_source_shortest_path_length(G,target)
-            else:
-                paths=nx.single_source_dijkstra_path_length(G,target,
-                                                            weight=weight)
-
-            if directed:
-                G.reverse(copy=False)
+            with nx.utils.reversed(G):
+                if weight is None:
+                    # We need to exhaust the iterator as Graph needs
+                    # to be reversed.
+                    paths = list(nx.single_source_shortest_path_length(G, target))
+                else:
+                    paths=nx.single_source_dijkstra_path_length(G, target,
+                                                                    weight=weight)
     else:
         if target is None:
             ## Find paths to all nodes accessible from the source.
             if weight is None:
-                paths=nx.single_source_shortest_path_length(G,source)
+                paths = nx.single_source_shortest_path_length(G,source)
             else:
                 paths=nx.single_source_dijkstra_path_length(G,source,weight=weight)
         else:
@@ -319,7 +304,7 @@ def average_shortest_path_length(G, weight=None):
     if weight is None:
         for node in G:
             path_length=nx.single_source_shortest_path_length(G, node)
-            avg += sum(path_length.values())
+            avg += sum(dist for n, dist in path_length)
     else:
         for node in G:
             path_length=nx.single_source_dijkstra_path_length(G, node, weight=weight)

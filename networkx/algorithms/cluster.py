@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
-"""Algorithms to characterize the number of triangles in a graph."""
-from itertools import combinations
-import networkx as nx
-from networkx import NetworkXError
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Dan Schult (dschult@colgate.edu)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Jordi Torrents <jtorrents@milnou.net>'])
-#    Copyright (C) 2004-2011 by 
+#
+#    Copyright (C) 2004-2015 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+"""Algorithms to characterize the number of triangles in a graph."""
+from itertools import combinations
+
+import networkx as nx
+from networkx import NetworkXError
+from ..utils import not_implemented_for
+
+__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
+                            'Dan Schult (dschult@colgate.edu)',
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Jordi Torrents <jtorrents@milnou.net>'])
+
 __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity',
           'square_clustering']
 
+
+@not_implemented_for('directed')
 def triangles(G, nodes=None):
     """Compute the number of triangles.
 
@@ -49,12 +56,13 @@ def triangles(G, nodes=None):
     three times, once at each node.  Self loops are ignored.
 
     """
-    if G.is_directed():
-        raise NetworkXError("triangles() is not defined for directed graphs.")
+    # If `nodes` represents a single node in the graph, return only its number
+    # of triangles.
     if nodes in G: 
-        # return single value
         return next(_triangles_and_degree_iter(G,nodes))[2] // 2
-    return dict( (v,t // 2) for v,d,t in _triangles_and_degree_iter(G,nodes))
+    # Otherwise, `nodes` represents an iterable of nodes, so return a
+    # dictionary mapping node to number of triangles.
+    return {v: t // 2 for v, d, t in _triangles_and_degree_iter(G, nodes)}
 
 def _triangles_and_degree_iter(G,nodes=None):
     """ Return an iterator of (node, degree, triangles).  
@@ -89,7 +97,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     if G.is_multigraph():
         raise NetworkXError("Not defined for multigraphs.")
 
-    if weight is None or G.edges()==[]:
+    if weight is None or list(G.edges())==[]:
         max_weight=1.0
     else:
         max_weight=float(max(d.get(weight,1.0) 
@@ -136,7 +144,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
        The edge attribute that holds the numerical value used as a weight.
        If None, then each edge has weight 1.
 
-    count_zeros : bool (default=False)       
+    count_zeros : bool
        If False include only the nodes with nonzero clustering in the average.
 
     Returns

@@ -13,9 +13,9 @@ Examples
 
 See Also
 --------
-Pygraphviz: http://networkx.lanl.gov/pygraphviz
+Pygraphviz: http://pygraphviz.github.io/
 """
-#    Copyright (C) 2004-2012 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -130,8 +130,7 @@ def to_agraph(N):
         import pygraphviz
     except ImportError:
         raise ImportError('requires pygraphviz ',
-                          'http://networkx.lanl.gov/pygraphviz ',
-                          '(not available for Python3)')
+                          'http://pygraphviz.github.io/')
     directed=N.is_directed()
     strict=N.number_of_selfloops()==0 and not N.is_multigraph()
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
@@ -148,11 +147,11 @@ def to_agraph(N):
     # loop over edges
 
     if N.is_multigraph():
-        for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
+        for u,v,key,edgedata in N.edges(data=True,keys=True):
             str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             A.add_edge(u,v,key=str(key),**str_edgedata)
     else:
-        for u,v,edgedata in N.edges_iter(data=True):
+        for u,v,edgedata in N.edges(data=True):
             str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             A.add_edge(u,v,**str_edgedata)
 
@@ -173,8 +172,7 @@ def write_dot(G,path):
         import pygraphviz
     except ImportError:
         raise ImportError('requires pygraphviz ',
-                          'http://networkx.lanl.gov/pygraphviz ',
-                          '(not available for Python3)')
+                          'http://pygraphviz.github.io/')
     A=to_agraph(G)
     A.write(path)
     A.clear()
@@ -192,8 +190,7 @@ def read_dot(path):
         import pygraphviz
     except ImportError:
         raise ImportError('read_dot() requires pygraphviz ',
-                          'http://networkx.lanl.gov/pygraphviz ',
-                          '(not available for Python3)')
+                          'http://pygraphviz.github.io/')
     A=pygraphviz.AGraph(file=path)
     return from_agraph(A)
 
@@ -256,8 +253,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
         import pygraphviz
     except ImportError:
         raise ImportError('requires pygraphviz ',
-                          'http://networkx.lanl.gov/pygraphviz ',
-                          '(not available for Python3)')
+                          'http://pygraphviz.github.io/')
     if root is not None:
         args+="-Groot=%s"%root
     A=to_agraph(G)
@@ -377,12 +373,12 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
 
         # update all the edge labels
         if G.is_multigraph():
-            for u,v,key,data in G.edges_iter(keys=True, data=True):
+            for u,v,key,data in G.edges(keys=True, data=True):
                 # PyGraphviz doesn't convert the key to a string. See #339
                 edge = A.get_edge(u,v,str(key))
                 edge.attr['label'] = str(func(data))
         else:
-            for u,v,data in G.edges_iter(data=True):
+            for u,v,data in G.edges(data=True):
                 edge = A.get_edge(u,v)
                 edge.attr['label'] = str(func(data))
 

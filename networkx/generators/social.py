@@ -6,26 +6,47 @@ __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Katy Bold <kbold@princeton.edu>',
                             'Aric Hagberg <aric.hagberg@gmail.com)'])
 
-__all__ = ['karate_club_graph','davis_southern_women_graph',
+__all__ = ['karate_club_graph', 'davis_southern_women_graph',
            'florentine_families_graph']
 
+
 def karate_club_graph():
-    """Return Zachary's Karate club graph.
+    """Return Zachary's Karate Club graph.
+
+    Each node in the returned graph has a node attribute ``'club'`` that
+    indicates the name of the club to which the member represented by that node
+    belongs, either ``'Mr. Hi'`` or ``'Officer'``.
+
+    Examples
+    --------
+    To get the name of the club to which a node belongs::
+
+        >>> import networkx as nx
+        >>> G = nx.karate_club_graph()
+        >>> G.node[5]['club']
+        'Mr. Hi'
+        >>> G.node[9]['club']
+        'Officer'
 
     References
     ----------
-    .. [1] Zachary W. 
-       An information flow model for conflict and fission in small groups.
-       Journal of Anthropological Research, 33, 452-473, (1977).
+    .. [1] Zachary, Wayne W.
+       "An Information Flow Model for Conflict and Fission in Small Groups."
+       *Journal of Anthropological Research*, 33, 452--473, (1977).
 
     .. [2] Data file from:
        http://vlado.fmf.uni-lj.si/pub/networks/data/Ucinet/UciData.htm
     """
-    G=nx.Graph()
-    G.add_nodes_from(range(34))
-    G.name="Zachary's Karate Club"
+    # Create the set of all members, and the members of each club.
+    all_members = set(range(34))
+    club1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 16, 17, 19, 21}
+    # club2 = all_members - club1
 
-    zacharydat="""\
+    G = nx.Graph()
+    G.add_nodes_from(all_members)
+    G.name = "Zachary's Karate Club"
+
+    zacharydat = """\
 0 1 1 1 1 1 1 1 1 0 1 1 1 1 0 0 0 1 0 1 0 1 0 0 0 0 0 0 0 0 0 1 0 0
 1 0 1 1 0 0 0 1 0 0 0 0 0 1 0 0 0 1 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0
 1 1 0 1 0 0 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 1 0
@@ -60,51 +81,17 @@ def karate_club_graph():
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0 0 0 1 1
 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 1 0 0 1 0 1 0 1 1 0 0 0 0 0 1 1 1 0 1
 0 0 0 0 0 0 0 0 1 1 0 0 0 1 1 1 0 0 1 1 1 0 1 1 0 0 1 1 1 1 1 1 1 0"""
-    row=0
-    for line in zacharydat.split('\n'):
-        thisrow=list(map(int,line.split(' ')))
-        for col in range(0,len(thisrow)):
-            if thisrow[col]==1:
-                G.add_edge(row,col) # col goes from 0,33
-        row+=1
-    club1 = 'Mr. Hi' 
-    club2 = 'Officer'
-    G.node[0]['club'] = club1 
-    G.node[1]['club'] = club1 
-    G.node[2]['club'] = club1 
-    G.node[3]['club'] = club1 
-    G.node[4]['club'] = club1 
-    G.node[5]['club'] = club1 
-    G.node[6]['club'] = club1 
-    G.node[7]['club'] = club1 
-    G.node[8]['club'] = club1 
-    G.node[9]['club'] = club2 
-    G.node[10]['club'] = club1 
-    G.node[11]['club'] = club1 
-    G.node[12]['club'] = club1 
-    G.node[13]['club'] = club1 
-    G.node[14]['club'] = club2 
-    G.node[15]['club'] = club2 
-    G.node[16]['club'] = club1 
-    G.node[17]['club'] = club1 
-    G.node[18]['club'] = club2 
-    G.node[19]['club'] = club1 
-    G.node[20]['club'] = club2 
-    G.node[21]['club'] = club1 
-    G.node[22]['club'] = club2 
-    G.node[23]['club'] = club2 
-    G.node[24]['club'] = club2 
-    G.node[25]['club'] = club2 
-    G.node[26]['club'] = club2 
-    G.node[27]['club'] = club2 
-    G.node[28]['club'] = club2 
-    G.node[29]['club'] = club2 
-    G.node[30]['club'] = club2 
-    G.node[31]['club'] = club2 
-    G.node[32]['club'] = club2 
-    G.node[33]['club'] = club2 
-    return G
 
+    for row, line in enumerate(zacharydat.split('\n')):
+        thisrow = [int(b) for b in line.split()]
+        for col, entry in enumerate(thisrow):
+            if entry == 1:
+                G.add_edge(row, col)
+
+    # Add the name of each member's club as a node attribute.
+    for v in G:
+        G.node[v]['club'] = 'Mr. Hi' if v in club1 else 'Officer'
+    return G
 
 
 def davis_southern_women_graph():
@@ -119,41 +106,41 @@ def davis_southern_women_graph():
     """
     G = nx.Graph()
     # Top nodes
-    G.add_nodes_from(["Evelyn Jefferson",
-                      "Laura Mandeville",
-                      "Theresa Anderson",
-                      "Brenda Rogers",
-                      "Charlotte McDowd",
-                      "Frances Anderson",
-                      "Eleanor Nye",
-                      "Pearl Oglethorpe",
-                      "Ruth DeSand",
-                      "Verne Sanderson",
-                      "Myra Liddel",
-                      "Katherina Rogers",
-                      "Sylvia Avondale",
-                      "Nora Fayette",
-                      "Helen Lloyd",
-                      "Dorothy Murchison",
-                      "Olivia Carleton",
-                      "Flora Price"], 
-                     bipartite=0)
+    women = ["Evelyn Jefferson",
+             "Laura Mandeville",
+             "Theresa Anderson",
+             "Brenda Rogers",
+             "Charlotte McDowd",
+             "Frances Anderson",
+             "Eleanor Nye",
+             "Pearl Oglethorpe",
+             "Ruth DeSand",
+             "Verne Sanderson",
+             "Myra Liddel",
+             "Katherina Rogers",
+             "Sylvia Avondale",
+             "Nora Fayette",
+             "Helen Lloyd",
+             "Dorothy Murchison",
+             "Olivia Carleton",
+             "Flora Price"]
+    G.add_nodes_from(women, bipartite=0)
     # Bottom nodes
-    G.add_nodes_from(["E1",
-                      "E2",
-                      "E3",
-                      "E4",
-                      "E5",
-                      "E6",
-                      "E7",
-                      "E8",
-                      "E9",
-                      "E10",
-                      "E11",
-                      "E12",
-                      "E13",
-                      "E14"], 
-                     bipartite=1)
+    events = ["E1",
+              "E2",
+              "E3",
+              "E4",
+              "E5",
+              "E6",
+              "E7",
+              "E8",
+              "E9",
+              "E10",
+              "E11",
+              "E12",
+              "E13",
+              "E14"]
+    G.add_nodes_from(events, bipartite=1)
 
     G.add_edges_from([("Evelyn Jefferson","E1"),
                       ("Evelyn Jefferson","E2"),
@@ -244,6 +231,8 @@ def davis_southern_women_graph():
                       ("Olivia Carleton","E11"),
                       ("Flora Price","E9"),
                       ("Flora Price","E11")])
+    G.graph['top'] = women
+    G.graph['bottom'] = events
     return G
 
 def florentine_families_graph():
@@ -277,4 +266,3 @@ def florentine_families_graph():
     G.add_edge('Bischeri','Guadagni')
     G.add_edge('Guadagni','Lamberteschi')
     return G
-

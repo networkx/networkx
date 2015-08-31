@@ -40,14 +40,12 @@ def _prep_create_using(create_using):
 
     """
     if create_using is None:
-        G=nx.Graph()
-    else:
-        G=create_using
-        try:
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a networkx graph type")
-    return G
+        return nx.Graph()
+    try:
+        create_using.clear()
+    except:
+        raise TypeError("Input graph is not a networkx graph type")
+    return create_using
 
 def to_networkx_graph(data,create_using=None,multigraph_input=False):
     """Make a NetworkX graph from a known data structure.
@@ -91,10 +89,10 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
             result= from_dict_of_dicts(data.adj,\
                     create_using=create_using,\
                     multigraph_input=data.is_multigraph())
-            if hasattr(data,'graph') and isinstance(data.graph,dict):
-                result.graph=data.graph.copy()
-            if hasattr(data,'node') and isinstance(data.node,dict):
-                result.node=dict( (n,dd.copy()) for n,dd in data.node.items() )
+            if hasattr(data,'graph'): # data.graph should be dict-like
+                result.graph.update(data.graph)
+            if hasattr(data,'node'): # data.node should be dict-like
+                result.node.update( (n,dd.copy()) for n,dd in data.node.items() )
             return result
         except:
             raise nx.NetworkXError("Input is not a correct NetworkX graph.")
@@ -126,6 +124,19 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
             return from_edgelist(data,create_using=create_using)
         except:
             raise nx.NetworkXError("Input is not a valid edge list")
+
+    # Pandas DataFrame
+    try:
+        import pandas as pd
+        if isinstance(data, pd.DataFrame):
+            try:
+                return nx.from_pandas_dataframe(data, create_using=create_using)
+            except:
+                msg = "Input is not a correct Pandas DataFrame."
+                raise nx.NetworkXError(msg)
+    except ImportError:
+        msg = 'pandas not found, skipping conversion test.'
+        warnings.warn(msg, ImportWarning)
 
     # numpy matrix or ndarray
     try:
@@ -254,10 +265,10 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
     dod={}
     if nodelist is None:
         if edge_data is None:
-            for u,nbrdict in G.adjacency_iter():
+            for u,nbrdict in G.adjacency():
                 dod[u]=nbrdict.copy()
         else: # edge_data is not None
-            for u,nbrdict in G.adjacency_iter():
+            for u,nbrdict in G.adjacency():
                 dod[u]=dod.fromkeys(nbrdict, edge_data)
     else: # nodelist is not None
         if edge_data is None:

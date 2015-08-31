@@ -80,7 +80,7 @@ def blockmodel(G,partitions,multigraph=False):
     # Add nodes and properties to blockmodel            
     # The blockmodel nodes are node-induced subgraphs of G
     # Label them with integers starting at 0
-    for i,p in zip(range(len(part)),part):
+    for i,p in enumerate(part):
         M.add_node(i)
         # The node-induced subgraph is stored as the node 'graph' attribute 
         SG=G.subgraph(p)

@@ -4,7 +4,7 @@ Various small and named graphs, together with some compact generators.
 
 """
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2015 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -152,7 +152,7 @@ def LCF_graph(n,shift_list,repeats,create_using=None):
     # start with the n-cycle
     G=cycle_graph(n, create_using)
     G.name="LCF_graph"
-    nodes=G.nodes()
+    nodes = list(G)
 
     n_extra_edges=repeats*len(shift_list)    
     # edges are added n_extra_edges times
