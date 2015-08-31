@@ -177,8 +177,6 @@ def dict_to_numpy_array1(d,mapping=None):
         a[i] = d[k1]
     return a
 
-<<<<<<< 8f1cbb800427e9ff9bdbf768ffef1a85ba4c454e
-
 def is_iterator(obj):
     """Returns ``True`` if and only if the given object is an iterator
     object.
