@@ -84,7 +84,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
 
     Notes
     ------
-    If G has edges with 'weight' attribute the edge data are used as
+    If G has edges with weight attributes the edge data are used as
     weight values else the weights are assumed to be 1.
 
     This function takes time O(number_of_nodes ** 3).
