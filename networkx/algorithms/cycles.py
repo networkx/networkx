@@ -26,11 +26,12 @@ __all__ = ['chords', 'cycle_basis', 'cycle_basis_matrix', 'find_cycle',
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Aric Hagberg <hagberg@lanl.gov>',
-                        'JuanPi Carbajal <ajuanpi+dev@gmail.com>'])
+                        'JuanPi Carbajal <ajuanpi+dev@gmail.com>',
+                        'Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>'])
 
 
 @not_implemented_for('directed')
-def cycle_basis(G, root=None):
+def cycle_basis(G, root=None, T=None):
     """Returns a list of cycles that form a basis for the cycle space of
     ``G``.
 
@@ -54,6 +55,11 @@ def cycle_basis(G, root=None):
 
     root : node, optional
         A starting node to use when computing the basis.
+
+    T : NetworkX graph, optional
+        When the graph ``G`` is a multigraph a A spanning tree is used to extract
+        all the cycles defined by multiple edges between nodes. This is done by
+        calling the function :func:`chords`, which accepts a precomputed tree.
 
     Returns
     -------
@@ -87,7 +93,7 @@ def cycle_basis(G, root=None):
     cycles = []
     # Add all cycles due to multiple edges between nodes.
     if G.is_multigraph():
-        C, T = chords(G, output_tree=True)
+        C, T = chords(G, T=T, output_tree=True)
         cycles = [list(e) for e in C.edges_iter()
                   if T.has_edge(*e) or T.has_edge(*e[::-1])]
         # Make G a graph so that the original algorithm works.
@@ -132,22 +138,21 @@ def cycle_basis(G, root=None):
     return cycles
 
 
-# TODO What does "oriented" mean in the documentation? Need to define it.
 @not_implemented_for('directed')
 def cycle_basis_matrix(G, T=None):
     """Returns the matrix describing the fundamental cycles in ``G``.
 
-    If ``G`` is not oriented, an arbitrary orientation is selected.
+    If ``G`` is not a directed graph, an arbitrary orientation of the edges is selected.
 
     Parameters
     ----------
     G : NetworkX Graph
         An instance of :class:`networkx.Graph` or :class:`networkx.MultiGraph`.
 
-    T : NetworkX graph
+    T : NetworkX graph, optional
         A spanning tree for the graph ``G``. If this argument is not ``None``,
         the cycle basis whose matrix will be returned will be the set of
-        `fundamental cycles`_ of the tree ``T``. If this is not specified, an
+        `fundamental cycles`_ with respect to the tree ``T``. If this is not specified, an
         arbitrary minimum spanning tree will be used.
 
     .. _fundamental cycles: https://en.wikipedia.org/wiki/Spanning_tree#Fundamental_cycles

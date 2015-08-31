@@ -12,6 +12,8 @@
 """Example of creating Kirchhoff's circuit laws from a (directed) multigraph.
 
 """
+__author__ = """\n""".join(['JuanPi Carbajal <juanpi+dev@gmail.com>',
+                            'Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>'])
 
 import networkx as nx
 
