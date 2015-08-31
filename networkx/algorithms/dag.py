@@ -252,6 +252,33 @@ def lexicographical_topological_sort(G, key=None):
 
         yield node
 
+=======
+
+    def create_tuple(node):
+        return key(node), node
+
+    indegree_map = {v: d for v, d in G.in_degree() if d > 0}
+    # These nodes have zero indegree and ready to be returned.
+    zero_indegree = [create_tuple(v) for v, d in G.in_degree() if d == 0]
+    heapq.heapify(zero_indegree)
+
+    while zero_indegree:
+        _, node = heapq.heappop(zero_indegree)
+
+        if node not in G:
+            raise RuntimeError("Graph changed during iteration")
+        for _, child in G.edges(node):
+            try:
+                indegree_map[child] -= 1
+            except KeyError:
+                raise RuntimeError("Graph changed during iteration")
+            if indegree_map[child] == 0:
+                heapq.heappush(zero_indegree, create_tuple(child))
+                del indegree_map[child]
+
+        yield node
+
+>>>>>>> 65c873e0df99c35775fdc84a0013229326fef1c7
     if indegree_map:
         raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
                                     "during iteration")
