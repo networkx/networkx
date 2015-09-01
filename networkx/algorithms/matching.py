@@ -53,7 +53,7 @@ def maximal_matching(G):
     return matching
 
 
-def max_weight_matching(G, maxcardinality=False):
+def max_weight_matching(G, maxcardinality=False, weight='weight'):
     """Compute a maximum-weighted matching of G.
 
     A matching is a subset of edges in which no node occurs more than once.
@@ -65,9 +65,14 @@ def max_weight_matching(G, maxcardinality=False):
     G : NetworkX graph
       Undirected graph
 
-    maxcardinality: bool, optional
+    maxcardinality: bool, optional (default=False)
        If maxcardinality is True, compute the maximum-cardinality matching
        with maximum weight among all maximum-cardinality matchings.
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
+       If key not found, uses 1 as weight.
+
 
     Returns
     -------
@@ -79,7 +84,7 @@ def max_weight_matching(G, maxcardinality=False):
 
     Notes
     ------
-    If G has edges with 'weight' attribute the edge data are used as
+    If G has edges with weight attributes the edge data are used as
     weight values else the weights are assumed to be 1.
 
     This function takes time O(number_of_nodes ** 3).
@@ -154,7 +159,7 @@ def max_weight_matching(G, maxcardinality=False):
     maxweight = 0
     allinteger = True
     for i,j,d in G.edges(data=True):
-        wt=d.get('weight',1)
+        wt=d.get(weight,1)
         if i != j and wt > maxweight:
             maxweight = wt
         allinteger = allinteger and (str(type(wt)).split("'")[1]
@@ -231,7 +236,7 @@ def max_weight_matching(G, maxcardinality=False):
 
     # Return 2 * slack of edge (v, w) (does not work inside blossoms).
     def slack(v, w):
-        return dualvar[v] + dualvar[w] - 2 * G[v][w].get('weight',1)
+        return dualvar[v] + dualvar[w] - 2 * G[v][w].get(weight,1)
 
     # Assign label t to the top-level blossom containing vertex w,
     # coming through an edge from vertex v.
@@ -573,7 +578,7 @@ def max_weight_matching(G, maxcardinality=False):
         # 0. all edges have non-negative slack and
         # 1. all matched edges have zero slack;
         for i,j,d in G.edges(data=True):
-            wt=d.get('weight',1)
+            wt=d.get(weight,1)
             if i == j:
                 continue # ignore self-loops
             s = dualvar[i] + dualvar[j] - 2 * wt
