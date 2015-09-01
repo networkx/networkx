@@ -9,7 +9,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # BSD license.
 
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = ['is_semiconnected']
 
@@ -61,4 +61,4 @@ def is_semiconnected(G):
 
     G = nx.condensation(G)
     path = nx.topological_sort(G)
-    return all(G.has_edge(u, v) for u, v in zip(path[:-1], path[1:]))
+    return all(G.has_edge(u, v) for u, v in pairwise(path))
