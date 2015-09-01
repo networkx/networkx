@@ -14,13 +14,26 @@ class TestDAG:
     def test_topological_sort1(self):
         DG = nx.DiGraph([(1, 2), (1, 3), (2, 3)])
 
-        consume(nx.topological_sort(DG))
+        for algorithm in [nx.topological_sort,
+                          nx.lexicographical_topological_sort]:
+            assert_equal(tuple(algorithm(DG)), (1, 2, 3))
 
         DG.add_edge(3, 2)
-        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
+
+        for algorithm in [nx.topological_sort,
+                          nx.lexicographical_topological_sort]:
+            assert_raises(nx.NetworkXUnfeasible, consume, algorithm(DG))
 
         DG.remove_edge(2, 3)
-        consume(nx.topological_sort(DG))
+
+        for algorithm in [nx.topological_sort,
+                          nx.lexicographical_topological_sort]:
+            assert_equal(tuple(algorithm(DG)), (1, 3, 2))
+
+        DG.remove_edge(3, 2)
+
+        assert_in(tuple(nx.topological_sort(DG)), {(1, 2, 3), (1, 3, 2)})
+        assert_equal(tuple(nx.lexicographical_topological_sort(DG)), (1, 2, 3))
 
     def test_is_directed_acyclic_graph(self):
         G = nx.generators.complete_graph(2)
