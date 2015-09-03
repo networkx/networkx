@@ -224,7 +224,6 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
     if pos is not None:
         dom_size = max(np.array(pos.values()).flatten())
         pos_arr=np.asarray(np.random.random((len(G),dim)))*dom_size
-        pos_arr=np.asarray(np.random.random((len(G),dim)))
         for i,n in enumerate(G):
             if n in pos:
                 pos_arr[i]=np.asarray(pos[n])
