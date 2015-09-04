@@ -61,7 +61,7 @@ def random_layout(G, dim=2, scale=1., center=None):
     shape = (len(G), dim)
     pos = np.random.random(shape) * scale
     if center is not None:
-        pos += center - 0.5 * scale
+        pos += np.asarray(center) - 0.5 * scale
     return dict(zip(G, pos))
 
 
@@ -106,7 +106,7 @@ def circular_layout(G, dim=2, scale=1., center=None):
     theta = np.arange(0, twopi, twopi/len(G))
     pos = np.column_stack([np.cos(theta), np.sin(theta)]) * scale
     if center is not None:
-        pos += center
+        pos += np.asarray(center)
 
     return dict(zip(G, pos))
 
@@ -176,6 +176,7 @@ def shell_layout(G, nlist=None, dim=2, scale=1., center=None):
         radius += gap
 
     if center is not None:
+        center = np.asarray(center)
         for n,p in npos.items():
             npos[n] = p + center
 
@@ -268,7 +269,7 @@ def fruchterman_reingold_layout(G, dim=2, k=None,
 
     if k is None and fixed is not None:
         # Adjust k for domains larger than 1x1
-        k=dom_size/np.sqrt(len(G))
+        k=domain_size.max()/np.sqrt(len(G))
     try:
         # Sparse matrix
         if len(G) < 500:  # sparse solver for large graphs
@@ -282,7 +283,7 @@ def fruchterman_reingold_layout(G, dim=2, k=None,
     if fixed is None:
         pos = _rescale_layout(pos, scale)
         if center is not None:
-            pos += center - 0.5 * scale
+            pos += np.asarray(center) - 0.5 * scale
 
     return dict(zip(G,pos))
 
@@ -473,7 +474,7 @@ def spectral_layout(G, dim=2, weight='weight', scale=1., center=None):
         else: #len(G) == 2
             pos = np.array([np.zeros(dim), np.ones(dim) * scale])
             if center is not None:
-                pos += center - scale * 0.5
+                pos += np.asarray(center) - scale * 0.5
         return dict(zip(G,pos))
     try:
         # Sparse matrix
@@ -494,7 +495,7 @@ def spectral_layout(G, dim=2, weight='weight', scale=1., center=None):
 
     pos = _rescale_layout(pos, scale)
     if center is not None:
-        pos += center - 0.5 * scale
+        pos += np.asarray(center) - 0.5 * scale
 
     return dict(zip(G,pos))
 
