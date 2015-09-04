@@ -256,7 +256,7 @@ def fruchterman_reingold_layout(G, dim=2, k=None,
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
-        pos_coords = np.array(pos.values())
+        pos_coords = np.array(list(pos.values()))
         min_coords = pos_coords.min(0)
         domain_size = pos_coords.max(0) - min_coords
         shape = (len(G), dim)
