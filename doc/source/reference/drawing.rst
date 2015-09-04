@@ -78,6 +78,7 @@ Graph Layout
    :toctree: generated/
 
    circular_layout
+   fruchterman_reingold_layout
    random_layout
    shell_layout
    spring_layout

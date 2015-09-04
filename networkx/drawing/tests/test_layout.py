@@ -40,6 +40,33 @@ class TestLayout(object):
         vpos=nx.spectral_layout(G)
         vpos=nx.shell_layout(G)
 
+    def test_empty_graph(self):
+        G=nx.Graph()
+        vpos=nx.random_layout(G)
+        vpos=nx.circular_layout(G)
+        vpos=nx.spring_layout(G)
+        vpos=nx.fruchterman_reingold_layout(G)
+        vpos=nx.shell_layout(G)
+
+    def test_single_node(self):
+        G=nx.Graph()
+        G.add_node(0)
+        vpos=nx.random_layout(G)
+        vpos=nx.circular_layout(G)
+        vpos=nx.spring_layout(G)
+        vpos=nx.fruchterman_reingold_layout(G)
+        vpos=nx.shell_layout(G)
+
+    def test_spectral_for_small_graphs(self):
+        G=nx.Graph()
+        vpos=nx.spectral_layout(G)
+        G.add_node(0)
+        vpos=nx.spectral_layout(G)
+        G.add_node(1)
+        vpos=nx.spectral_layout(G)
+        # 3 nodes should allow eigensolvers to work
+        G.add_node(2)
+        vpos=nx.spectral_layout(G)
 
     def test_adjacency_interface_numpy(self):
         A=nx.to_numpy_matrix(self.Gs)
