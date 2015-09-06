@@ -4,6 +4,11 @@ Layout
 ******
 
 Node positioning algorithms for graph drawing.
+
+The default scales and centering for these layouts are 
+typically squares with side [0, 1] or [0, scale].
+The two circular layout routines (circular_layout and
+shell_layout) have size [-1, 1] or [-scale, scale].
 """
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>

@@ -71,13 +71,42 @@ class TestLayout(object):
         vpos = nx.shell_layout(G, scale=2, center=(4,5))
         vpos = nx.spectral_layout(G, scale=2, center=(4,5))
 
+    def check_scale_and_center(self, pos, scale, center):
+        center = numpy.array(center)
+        low = center - 0.5 * scale
+        hi = center + 0.5 * scale
+        vpos = numpy.array(list(pos.values()))
+        length = vpos.max(0) - vpos.min(0)
+        assert (length <= scale).all()
+        assert (vpos >= low).all()
+        assert (vpos <= hi).all()
+
     def test_scale_and_center_arg(self):
         G = nx.complete_graph(9)
+        G.add_node(9)
         vpos = nx.random_layout(G, scale=2, center=(4,5))
-        vpos = nx.circular_layout(G, scale=2, center=(4,5))
+        self.check_scale_and_center(vpos, scale=2, center=(4,5))
         vpos = nx.spring_layout(G, scale=2, center=(4,5))
-        vpos = nx.shell_layout(G, scale=2, center=(4,5))
+        self.check_scale_and_center(vpos, scale=2, center=(4,5))
         vpos = nx.spectral_layout(G, scale=2, center=(4,5))
+        self.check_scale_and_center(vpos, scale=2, center=(4,5))
+        # circular can have twice as big length
+        vpos = nx.circular_layout(G, scale=2, center=(4,5))
+        self.check_scale_and_center(vpos, scale=2*2, center=(4,5))
+        vpos = nx.shell_layout(G, scale=2, center=(4,5))
+        self.check_scale_and_center(vpos, scale=2*2, center=(4,5))
+
+        # check default center and scale
+        vpos = nx.random_layout(G)
+        self.check_scale_and_center(vpos, scale=1, center=(0.5,0.5))
+        vpos = nx.spring_layout(G)
+        self.check_scale_and_center(vpos, scale=1, center=(0.5,0.5))
+        vpos = nx.spectral_layout(G)
+        self.check_scale_and_center(vpos, scale=1, center=(0.5,0.5))
+        vpos = nx.circular_layout(G)
+        self.check_scale_and_center(vpos, scale=2, center=(0,0))
+        vpos = nx.shell_layout(G)
+        self.check_scale_and_center(vpos, scale=2, center=(0,0))
 
     def test_shell_layout(self):
         G = nx.complete_graph(9)
