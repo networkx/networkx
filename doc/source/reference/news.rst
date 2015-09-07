@@ -8,11 +8,11 @@ NetworkX 2.0
 ------------
 Release date: TBD
 
-NetworkX 1.10.1
+NetworkX 1.11
 --------------
 Release date: 7 September 2015
 
-Bugfix release for minor installation and fixes in layouts and docs.
+Release for fixes of installation on some machines, layouts and docs.
 
 NetworkX 1.10
 --------------
