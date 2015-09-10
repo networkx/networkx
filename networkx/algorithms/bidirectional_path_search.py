@@ -150,11 +150,11 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
         temp_tree = set()
         temp_leaves = set()
 
-        for path_s in iter(tree_source):
+        for path_s in tree_source:
             for s in neighbors(path_s[-1]):
                 if s not in path_s:
                     if s in leaves_:
-                        for path_t in iter(tree_target):
+                        for path_t in tree_target:
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
@@ -197,11 +197,11 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
         temp_tree = []
         temp_leaves = []
 
-        for path_s in iter(tree_source):
+        for path_s in tree_source:
             for s in [v for u, v in G.edges([path_s[-1]])]:
                 if s not in path_s:
                     if s in leaves_:
-                        for path_t in iter(tree_target):
+                        for path_t in tree_target:
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
@@ -342,11 +342,11 @@ def _bidirectional_all_shortest_paths(G, source, target):
 
         temp_tree = set()
 
-        for path_s in iter(tree_source):
+        for path_s in tree_source:
             for s in neighbors(path_s[-1]):
                 if s not in path_s:
                     if s in nodes_target:
-                        for path_t in iter(tree_target):
+                        for path_t in tree_target:
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
                                     found = 1
@@ -388,15 +388,14 @@ def _bidirectional_all_shortest_paths_multi(G, source, target):
 
         temp_tree = []
 
-        for path_s in iter(tree_source):
+        for path_s in tree_source:
             for s in [v for u, v in G.edges([path_s[-1]])]:
                 if s not in path_s:
-                    for path_t in iter(tree_target):
+                    for path_t in tree_target:
                         if s == path_t[-1]:
                             if not set(path_t).intersection(path_s):
                                 found = 1
                                 if modus:
-
                                     yield list(path_t) + \
                                         [x for x in reversed(path_s)]
                                 else:
@@ -454,7 +453,7 @@ def _bidirectional_has_path(G, source, target):
 
         temp = set()
 
-        for leave in iter(leaves_s):
+        for leave in leaves_s:
             for s in neighbors(leave):
                 if s not in nodes_s:
                     if s in leaves_t:
@@ -490,7 +489,7 @@ def _bidirectional_has_path_multi(G, source, target):
 
         temp = set()
 
-        for leave in iter(leaves_s):
+        for leave in leaves_s:
             for s in [v for u, v in G.edges([leave])]:
                 if s not in nodes_s:
                     if s in leaves_t:
