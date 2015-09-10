@@ -9,7 +9,7 @@ Directed Acyclic Graphs
    ancestors
    descendants
    topological_sort
-   topological_sort_recursive
+   lexicographical_topological_sort
    is_directed_acyclic_graph
    is_aperiodic
    transitive_closure

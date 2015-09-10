@@ -151,7 +151,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     G = nx.Graph(islice(contractions, best_phase))
     v = contractions[best_phase][1]
     G.add_node(v)
-    reachable = set(nx.single_source_shortest_path_length(G, v))
+    reachable = set(n for n, d in nx.single_source_shortest_path_length(G, v))
     partition = (list(reachable), list(nodes - reachable))
 
     return cut_value, partition

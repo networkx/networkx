@@ -69,12 +69,15 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     Notes
     ------
-    The measure was introduced by [1]_.
+    The measure was introduced by [1]_ and is discussed in [2]_.
 
-    The eigenvector calculation is done by the power iteration method and has
-    no guarantee of convergence. The iteration will stop after ``max_iter``
-    iterations or an error tolerance of ``number_of_nodes(G)*tol`` has been
-    reached.
+    Eigenvector convergence: The power iteration method is used to compute
+    the eigenvector and convergence is not guaranteed. Our method stops after
+    ``max_iter`` iterations or when the vector change is below an error
+    tolerance of ``number_of_nodes(G)*tol``. We actually use (A+I) rather
+    than the adjacency matrix A because it shifts the spectrum to enable
+    discerning the correct eigenvector even for networks with multiple
+    dominant eigenvalues.
 
     For directed graphs this is "left" eigenvector centrality which corresponds
     to the in-edges in the graph. For out-edges eigenvector centrality
@@ -111,8 +114,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     # make up to max_iter iterations
     for i in range(max_iter):
         xlast = x
-        x = dict.fromkeys(xlast, 0)
-        # do the multiplication y^T = x^T A
+        x = xlast.copy() # Start with xlast times I to iterate with (A+I)
+        # do the multiplication y^T = x^T A (left eigenvector)
         for n in x:
             for nbr in G[n]:
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)

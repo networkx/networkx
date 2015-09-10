@@ -41,6 +41,9 @@ class TestEigenvectorCentrality(object):
         b=networkx.eigenvector_centrality_numpy(G)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n],places=4)
+        b=networkx.eigenvector_centrality(G)
+        for n in sorted(G):
+            assert_almost_equal(b[n],b_answer[n],places=4)
 
 
     def test_P3_unweighted(self):

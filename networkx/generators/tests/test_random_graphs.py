@@ -65,14 +65,14 @@ class TestGeneratorsRandom():
         """
         G = random_regular_graph(0, 10)
         assert_equal(len(G), 10)
-        assert_equal(len(G.edges()), 0)
+        assert_equal(sum(1 for _ in G.edges()), 0)
 
     def test_gnp(self):
         for generator in [gnp_random_graph, binomial_graph, erdos_renyi_graph,
                           fast_gnp_random_graph]:
             G = generator(10, -1.1)
             assert_equal(len(G), 10)
-            assert_equal(len(G.edges()), 0)
+            assert_equal(sum(1 for _ in G.edges()), 0)
 
             G = generator(10, 0.1)
             assert_equal(len(G), 10)
@@ -82,12 +82,12 @@ class TestGeneratorsRandom():
 
             G = generator(10, 1.1)
             assert_equal(len(G), 10)
-            assert_equal(len(G.edges()), 45)
+            assert_equal(sum(1 for _ in G.edges()), 45)
 
             G = generator(10, -1.1, directed=True)
             assert_true(G.is_directed())
             assert_equal(len(G), 10)
-            assert_equal(len(G.edges()), 0)
+            assert_equal(sum(1 for _ in G.edges()), 0)
 
             G = generator(10, 0.1, directed=True)
             assert_true(G.is_directed())
@@ -96,35 +96,35 @@ class TestGeneratorsRandom():
             G = generator(10, 1.1, directed=True)
             assert_true(G.is_directed())
             assert_equal(len(G), 10)
-            assert_equal(len(G.edges()), 90)
+            assert_equal(sum(1 for _ in G.edges()), 90)
 
             # assert that random graphs generate all edges for p close to 1
             edges = 0
             runs = 100
             for i in range(runs):
-                edges += len(generator(10, 0.99999, directed=True).edges())
+                edges += sum(1 for _ in generator(10, 0.99999, directed=True).edges())
             assert_almost_equal(edges/float(runs), 90, delta=runs*2.0/100)
 
     def test_gnm(self):
         G=gnm_random_graph(10,3)
         assert_equal(len(G),10)
-        assert_equal(len(G.edges()),3)
+        assert_equal(sum(1 for _ in G.edges()), 3)
 
         G=gnm_random_graph(10,3,seed=42)
         assert_equal(len(G),10)
-        assert_equal(len(G.edges()),3)
+        assert_equal(sum(1 for _ in G.edges()), 3)
 
         G=gnm_random_graph(10,100)
         assert_equal(len(G),10)
-        assert_equal(len(G.edges()),45)
+        assert_equal(sum(1 for _ in G.edges()), 45)
 
         G=gnm_random_graph(10,100,directed=True)
         assert_equal(len(G),10)
-        assert_equal(len(G.edges()),90)
+        assert_equal(sum(1 for _ in G.edges()),90)
 
         G=gnm_random_graph(10,-1.1)
         assert_equal(len(G),10)
-        assert_equal(len(G.edges()),0)
+        assert_equal(sum(1 for _ in G.edges()),0)
 
     def test_watts_strogatz_big_k(self):
         assert_raises(networkx.exception.NetworkXError,
