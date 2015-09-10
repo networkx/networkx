@@ -158,7 +158,6 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
-
                                         yield list(path_t) + \
                                             [x for x in reversed(path_s)]
                                     else:
