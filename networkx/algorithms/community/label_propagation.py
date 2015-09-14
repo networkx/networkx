@@ -67,6 +67,8 @@ def _color_network(G):
             coloring[color].add(node)
         else:
             coloring[color] = set([node])
+            
+    return coloring
 
 def _labeling_complete(labeling, G):
     """Determines whether or not LPA is done. It is complete when all nodes 
