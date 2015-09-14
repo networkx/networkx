@@ -62,17 +62,16 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
 
     for ego in G:
         # EgoMinusEgo and LabelPropagation phase
-        ego_minus_ego = nx.ego_graph(G, ego, 1, False)
+        ego_minus_ego = G.subgraph(G[ego])
         community_to_nodes = _overlapping_label_propagation(ego_minus_ego, ego, weight)
 
         # merging phase
-        for c in community_to_nodes.keys():
-            if len(community_to_nodes[c]) > min_community_size:
-                actual_community = community_to_nodes[c]
+        for community in community_to_nodes.values():
+            if len(community) > min_community_size:
+                actual_community = community
                 all_communities = _merge_communities(all_communities, set(actual_community), epsilon)
 
-    for c in all_communities:
-        yield c
+    return all_communities
 
 
 def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iter=100):
@@ -223,14 +222,8 @@ def _generalized_inclusion(c1, c2, epsilon):
            DEMON: a local-first discovery method for overlapping communities.
            KDD 2012:615-623.
     """
-    intersection = c2 & c1
-    smaller_set_size = min(len(c1), len(c2))
-
-    if len(intersection) > 0 and smaller_set_size > 0:
-        inclusion_pct = len(intersection) / smaller_set_size
-
-        if inclusion_pct > epsilon:
-            union = c2 | c1
-            return union
-
+    intersection = c1 & c2
+    all_nonempty = intersection and c1 and c2
+    if all_nonempty and len(intersection) / min(len(c1), len(c2)) > epsilon:
+            return c1 | c2
     return None
