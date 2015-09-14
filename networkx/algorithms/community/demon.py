@@ -172,18 +172,17 @@ def _merge_communities(communities, actual_community, epsilon):
     if actual_community in communities:
         return communities
 
+    # search a community to merge with
+    for test_community in communities:
+        union = _generalized_inclusion(actual_community, test_community, epsilon)
+        # community to merge with found
+        if union:
+            communities.pop(communities.index(test_community))
+            communities.append(union)
+            break
+    # not merged: insert the original community
     else:
-        # search a community to merge with
-        for test_community in communities:
-            union = _generalized_inclusion(actual_community, test_community, epsilon)
-            # community to merge with found
-            if union:
-                communities.pop(communities.index(test_community))
-                communities.append(union)
-                break
-        # not merged: insert the original community
-        else:
-            communities.append(actual_community)
+        communities.append(actual_community)
 
     return communities
 
