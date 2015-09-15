@@ -26,7 +26,7 @@ def test_one_node():
     assert_equal(result, ground_truth)
 
 
-def test_simple_communities():
+def test_unconnected_communities():
     test = nx.Graph()
     # community 1
     test.add_edge('a', 'c')
@@ -46,28 +46,42 @@ def test_simple_communities():
     assert_equal(result, ground_truth)
 
     
-def test_unconnected_communities():
+def test_connected_communities():
     test = nx.Graph()
     # community 1
     test.add_edge('a', 'b')
+    test.add_edge('c', 'a')
     test.add_edge('c', 'b')
-    test.add_edge('a', 'c')
+    test.add_edge('d', 'a')
+    test.add_edge('d', 'b')
+    test.add_edge('d', 'c')
+    test.add_edge('e', 'a')
+    test.add_edge('e', 'b')
+    test.add_edge('e', 'c')
+    test.add_edge('e', 'd')
     # community 2
-    test.add_edge('d', 'e')
-    test.add_edge('e', 'f')
-    test.add_edge('f', 'd')
-    # connection from community 1 to community 2
-    test.add_edge('a', 'd')
+    test.add_edge('1', '2')
+    test.add_edge('3', '1')
+    test.add_edge('3', '2')
+    test.add_edge('4', '1')
+    test.add_edge('4', '2')
+    test.add_edge('4', '3')
+    test.add_edge('5', '1')
+    test.add_edge('5', '2')
+    test.add_edge('5', '3')
+    test.add_edge('5', '4')
+    #edge between community 1 and 2    
+    test.add_edge('a', '1')
     # community 3
-    test.add_edge('w', 'y')
+    test.add_edge('x', 'y')
     # community 4 with only a single node
     test.add_node('z')
     
     # The expected communities are:    
-    ground_truth = set([frozenset(['z']), 
-                        frozenset(['a', 'c', 'b']), 
-                        frozenset(['e', 'd', 'f']), 
-                        frozenset(['y', 'w'])])
+    ground_truth = set([frozenset(['a','b','c','d','e']), 
+                        frozenset(['1','2','3','4','5']), 
+                        frozenset(['x', 'y']), 
+                        frozenset(['z'])])
                         
     communities = label_propagation.label_propagation_communities(test)
     result = {frozenset(c) for c in communities} 
