@@ -381,20 +381,20 @@ def test_bidirectional_shortest_simple_paths_directed():
     assert_equal([path for path in paths], [[0, 1, 2, 3]])
 
 
-def test_bidirectional_Greg_Bernstein():
-    g1 = nx.Graph()
-    g1.add_nodes_from(["N0", "N1", "N2", "N3", "N4"])
-    g1.add_edge("N4", "N1", weight=10.0, capacity=50, name="L5")
-    g1.add_edge("N4", "N0", weight=7.0, capacity=40, name="L4")
-    g1.add_edge("N0", "N1", weight=10.0, capacity=45, name="L1")
-    g1.add_edge("N3", "N0", weight=10.0, capacity=50, name="L0")
-    g1.add_edge("N2", "N3", weight=12.0, capacity=30, name="L2")
-    g1.add_edge("N1", "N2", weight=15.0, capacity=42, name="L3")
-    solution = [['N1', 'N0', 'N3'],
-                ['N1', 'N2', 'N3'],
-                ['N1', 'N4', 'N0', 'N3']]
-    result = list(nx.bidirectional_all_simple_paths(g1, 'N1', 'N3'))
-    assert_equal(result, solution)
+#def test_bidirectional_Greg_Bernstein():
+#    g1 = nx.Graph()
+#    g1.add_nodes_from(["N0", "N1", "N2", "N3", "N4"])
+#    g1.add_edge("N4", "N1", weight=10.0, capacity=50, name="L5")
+#    g1.add_edge("N4", "N0", weight=7.0, capacity=40, name="L4")
+#    g1.add_edge("N0", "N1", weight=10.0, capacity=45, name="L1")
+#    g1.add_edge("N3", "N0", weight=10.0, capacity=50, name="L0")
+#    g1.add_edge("N2", "N3", weight=12.0, capacity=30, name="L2")
+#    g1.add_edge("N1", "N2", weight=15.0, capacity=42, name="L3")
+#    solution = [['N1', 'N0', 'N3'],
+#                ['N1', 'N2', 'N3'],
+#                ['N1', 'N4', 'N0', 'N3']]
+#    result = list(nx.bidirectional_all_simple_paths(g1, 'N1', 'N3'))
+#    assert_equal(result, solution)
 
 
 def test_bidirectional_weighted_shortest_simple_path():
