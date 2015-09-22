@@ -832,10 +832,14 @@ def draw_networkx_edge_labels(G, pos,
         labels = edge_labels
     text_items = {}
     for (n1, n2), label in labels.items():
+        if type(label_pos) == dict:
+            label_pos_ = label_pos[(n1, n2)]
+        else:
+            label_pos_ = label_pos            
         (x1, y1) = pos[n1]
         (x2, y2) = pos[n2]
-        (x, y) = (x1 * label_pos + x2 * (1.0 - label_pos),
-                  y1 * label_pos + y2 * (1.0 - label_pos))
+        (x, y) = (x1 * label_pos_ + x2 * (1.0 - label_pos_),
+                  y1 * label_pos_ + y2 * (1.0 - label_pos_))
 
         if rotate:
             angle = numpy.arctan2(y2-y1, x2-x1)/(2.0*numpy.pi)*360  # degrees
