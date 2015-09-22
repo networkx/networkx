@@ -134,7 +134,11 @@ script:
 
       # Run nosetests.
   - if [[ "${PYTHON_VM}" != ipy ]]; then
-      nosetests --verbosity=2 --with-coverage --cover-package=networkx;
+      if [[ "${PYTHON_VM}" == pypy ]]; then
+          nosetests --verbosity=2;
+      else
+          nosetests --verbosity=2 --with-coverage --cover-package=networkx;
+      fi;
     else
       mono "${IPY}" -X:ExceptionDetail -X:FullFrames -c 'from nose import main; main()' \--verbosity=2;
     fi
