@@ -308,7 +308,7 @@ def average_shortest_path_length(G, weight=None):
     else:
         for node in G:
             path_length=nx.single_source_dijkstra_path_length(G, node, weight=weight)
-            avg += sum(path_length.values())
+            avg += sum(dist for n, dist in path_length)
     n=len(G)
     return avg/(n*(n-1))
 

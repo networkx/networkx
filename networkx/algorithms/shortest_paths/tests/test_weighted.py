@@ -69,8 +69,8 @@ class TestWeightedPath:
 
         validate_path(
             self.XG, 's', 'v', 9, nx.single_source_dijkstra_path(self.XG, 's')['v'])
-        assert_equal(
-            nx.single_source_dijkstra_path_length(self.XG, 's')['v'], 9)
+        assert_equal(dict(
+            nx.single_source_dijkstra_path_length(self.XG, 's'))['v'], 9)
 
         validate_path(
             self.XG, 's', 'v', 9, nx.single_source_dijkstra(self.XG, 's')[1]['v'])
@@ -164,7 +164,7 @@ class TestWeightedPath:
 
     def test_single_source_dijkstra_path_length(self):
         pl = nx.single_source_dijkstra_path_length
-        assert_equal(pl(self.MXG4, 0)[2], 4)
+        assert_equal(dict(pl(self.MXG4, 0))[2], 4)
         spl = pl(self.MXG4, 0, cutoff=2)
         assert_false(2 in spl)
 

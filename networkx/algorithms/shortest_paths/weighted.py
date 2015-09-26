@@ -125,7 +125,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     --------
     bidirectional_dijkstra()
     """
-    length = single_source_dijkstra_path_length(G, source, weight=weight)
+    length = dict(single_source_dijkstra_path_length(G, source, weight=weight))
     try:
         return length[target]
     except KeyError:
@@ -197,13 +197,13 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     Returns
     -------
-    length : dictionary
-       Dictionary of shortest lengths keyed by target.
+    length : iterator
+        (target, shortest path length) iterator
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.single_source_dijkstra_path_length(G,0)
+    >>> G = nx.path_graph(5)
+    >>> length = dict(nx.single_source_dijkstra_path_length(G, 0))
     >>> length[4]
     4
     >>> print(length)
@@ -333,8 +333,8 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
        Returns two dictionaries representing a list of predecessors
        of a node and the distance to each node.
 
-    distance : dictionary
-       Dictionary of shortest lengths keyed by target.
+    distance : iterator
+        (target, shortest path length) iterator
     """
     G_succ = G.succ if G.is_directed() else G.adj
 
@@ -352,7 +352,6 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
         dist[v] = d
         if v == target:
             break
-
         for u, e in G_succ[v].items():
             cost = get_weight(v, u, e)
             if cost is None:
@@ -377,10 +376,16 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
                     pred[u].append(v)
 
     if paths is not None:
-        return (dist, paths)
-    if pred is not None:
-        return (pred, dist)
-    return dist
+        def dijkstra_return():
+            return (dist, paths)
+    elif pred is not None:
+        def dijkstra_return():
+            return (pred, dist)
+    else:
+        def dijkstra_return():
+            for i in dist:
+                yield (i, dist[i])
+    return dijkstra_return()
 
 
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
@@ -402,7 +407,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
 
     Returns
     -------
-    pred,distance : dictionaries
+    pred, distance : dictionaries
        Returns two dictionaries representing a list of predecessors
        of a node and the distance to each node.
 
@@ -439,14 +444,15 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
 
     Returns
     -------
-    distance : dictionary
-       Dictionary, keyed by source and target, of shortest path lengths.
+    distance : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path length as the key value.
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.all_pairs_dijkstra_path_length(G)
-    >>> print(length[1][4])
+    >>> G = nx.path_graph(5)
+    >>> length = dict(nx.all_pairs_dijkstra_path_length(G))
+    >>> length[1][4]
     3
     >>> length[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
@@ -460,7 +466,8 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     """
     length = single_source_dijkstra_path_length
     # TODO This can be trivially parallelized.
-    return {n: length(G, n, cutoff=cutoff, weight=weight) for n in G}
+    for n in G:
+        yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
 
 
 def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):

@@ -71,16 +71,8 @@ def harmonic_centrality(G, distance=None):
         return harmonic_centrality
 
     sp = path_length(G.reverse() if G.is_directed() else G)
-
-    # temporary hack, will fix this when all_pairs_dijkstra_path_length is
-    # updated to return an iterator @MridulS
-    if distance is not None:
-        for n in nodes:
-            harmonic_centrality[n] = sum([1/i if i > 0 else 0 for i in sp[n].values()])
-    else:     
-        for node, dist_dict in sp:
-            harmonic_centrality[node] = sum([1/dist if dist > 0 else 0 for dist in dist_dict.values()])
+    for node, dist_dict in sp:
+            harmonic_centrality[node] = sum(
+                [1/dist if dist > 0 else 0 for dist in dist_dict.values()])
 
     return harmonic_centrality
-
-
