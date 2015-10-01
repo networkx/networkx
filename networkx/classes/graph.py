@@ -1740,11 +1740,7 @@ class Graph(object):
         >>> G.size(weight='weight')
         6.0
         """
-        s=sum(self.degree(weight=weight).values())/2
-        if weight is None:
-            return int(s)
-        else:
-            return float(s)
+        return sum(self.degree(weight=weight).values())/2
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.
