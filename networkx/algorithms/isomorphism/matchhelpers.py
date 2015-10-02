@@ -99,8 +99,8 @@ def categorical_node_match(attr, default):
     else:
         attrs = list(zip(attr, default)) # Python 3
         def match(data1, data2):
-            values1 = set([data1.get(attr, d) for attr, d in attrs])
-            values2 = set([data2.get(attr, d) for attr, d in attrs])
+            values1 = [data1.get(attr, d) for attr, d in attrs]
+            values2 = [data2.get(attr, d) for attr, d in attrs]
             return values1 == values2
     return match
 
