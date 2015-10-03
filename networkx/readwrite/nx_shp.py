@@ -93,6 +93,7 @@ def read_shp(path, simplify=True):
                         attributes["Wkb"] = segment.ExportToWkb()
                         attributes["Wkt"] = segment.ExportToWkt()
                         attributes["Json"] = segment.ExportToJson()
+                        del segment
                         net.add_edge(pt1, pt2, attributes)
 
     return net
