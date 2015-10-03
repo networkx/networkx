@@ -52,8 +52,11 @@ def harmonic_centrality(G, distance=None):
 
     References
     ----------
-    .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality." Internet Mathematics 10.3-4 (2014): 222-262.
+    .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality." 
+           Internet Mathematics 10.3-4 (2014): 222-262.
     """
+    if len(G) <= 1:
+        return {0.0 for singleton in G.nodes()}
 
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight
@@ -62,17 +65,5 @@ def harmonic_centrality(G, distance=None):
     else:
         path_length = nx.all_pairs_shortest_path_length
 
-    nodes = G.nodes()
-    harmonic_centrality = {}
-
-    if len(G) <= 1:
-        for singleton in nodes:
-            harmonic_centrality[singleton] = 0.0
-        return harmonic_centrality
-
     sp = path_length(G.reverse() if G.is_directed() else G)
-    for node, dist_dict in sp:
-            harmonic_centrality[node] = sum(
-                [1/dist if dist > 0 else 0 for dist in dist_dict.values()])
-
-    return harmonic_centrality
+    return {n: sum(1/d if d > 0 else 0 for d in dd.values()) for n, dd in sp}
