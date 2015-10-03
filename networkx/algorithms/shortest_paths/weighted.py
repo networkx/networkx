@@ -298,43 +298,47 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
 
 def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
               target=None):
-    """Implementation of Dijkstra's algorithm
+    """Uses Dijkstra's algorithm to find shortest weighted paths
 
     Parameters
     ----------
     G : NetworkX graph
 
     source : node label
-       Starting node for path
+       Starting node for paths
 
     get_weight: function
-        Function for getting edge weight
+        Function with (u, v, data) input that returns that edges weight
 
-    pred: list, optional(default=None)
-        List of predecessors of a node
+    pred: dict of lists, optional(default=None)
+        dict to store a list of predecessors keyed by that node
+        If None, predecessors are not stored.
 
     paths: dict, optional (default=None)
-        Path from the source to a target node.
+        dict to store the path list from source to each node, keyed by node.
+        If None, paths are not stored.
 
     target : node label, optional
-       Ending node for path
+        Ending node for path. Search is halted when target is found.
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
 
     Returns
     -------
-    distance,path : dictionaries
-       Returns a tuple of two dictionaries keyed by node.
-       The first dictionary stores distance from the source.
-       The second stores the path from the source to that node.
+    distance, path : two dictionaries
+        If path is not None, both distance and path dictionaries are returned.
+        The first dict stores distance from the source to the keyed node.
+        The second stores stores the path from the source to the keyed node.
 
-    pred,distance : dictionaries
-       Returns two dictionaries representing a list of predecessors
-       of a node and the distance to each node.
+    pred, distance : dictionaries
+        If path is None and pred is not None, two dicts are returned.
+        The first dict stores a list of predecessors keyed by node.
+        The second dict stores distance from the source to the keyed node.
 
     distance : iterator
-        (target, shortest path length) iterator
+        If path and pred are both None, an iterator is returned yielding
+        (node, shortest path length to that node)
     """
     G_succ = G.succ if G.is_directed() else G.adj
 
@@ -376,16 +380,10 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
                     pred[u].append(v)
 
     if paths is not None:
-        def dijkstra_return():
-            return (dist, paths)
+        return (dist, paths)
     elif pred is not None:
-        def dijkstra_return():
-            return (pred, dist)
-    else:
-        def dijkstra_return():
-            for i in dist:
-                yield (i, dist[i])
-    return dijkstra_return()
+        return (pred, dist)
+    return iter(dist.items())
 
 
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
@@ -465,7 +463,6 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     The dictionary returned only has keys for reachable node pairs.
     """
     length = single_source_dijkstra_path_length
-    # TODO This can be trivially parallelized.
     for n in G:
         yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
 
