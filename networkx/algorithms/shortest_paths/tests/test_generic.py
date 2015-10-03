@@ -77,11 +77,12 @@ class TestGenericPath:
         l = dict(nx.shortest_path_length(self.grid,1))
         assert_equal(l[16],6)
         # now with weights
-        l=nx.shortest_path_length(self.cycle,0,weight='weight')
-        assert_equal(l,{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
-        assert_equal(l,nx.single_source_dijkstra_path_length(self.cycle,0))
-        l=nx.shortest_path_length(self.grid,1,weight='weight')
-        assert_equal(l[16],6)
+        l = dict(nx.shortest_path_length(self.cycle, 0, weight='weight'))
+        assert_equal(l, {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
+        assert_equal(l, dict(nx.single_source_dijkstra_path_length(
+            self.cycle, 0)))
+        l = dict(nx.shortest_path_length(self.grid, 1, weight='weight'))
+        assert_equal(l[16], 6)
 
 
     def test_all_pairs_shortest_path(self):
@@ -105,11 +106,11 @@ class TestGenericPath:
         l=dict(nx.shortest_path_length(self.grid))
         assert_equal(l[1][16],6)
         # now with weights
-        l=nx.shortest_path_length(self.cycle,weight='weight')
-        assert_equal(l[0],{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
-        assert_equal(l,nx.all_pairs_dijkstra_path_length(self.cycle))
-        l=nx.shortest_path_length(self.grid,weight='weight')
-        assert_equal(l[1][16],6)
+        l = dict(nx.shortest_path_length(self.cycle, weight='weight'))
+        assert_equal(l[0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
+        assert_equal(l, dict(nx.all_pairs_dijkstra_path_length(self.cycle)))
+        l = dict(nx.shortest_path_length(self.grid, weight='weight'))
+        assert_equal(l[1][16], 6)
 
     def test_average_shortest_path(self):
         l=nx.average_shortest_path_length(self.cycle)
