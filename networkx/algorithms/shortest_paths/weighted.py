@@ -346,8 +346,10 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
     pop = heappop
     dist = {}  # dictionary of final distances
     seen = {source: 0}
+    # fringe is heapq with 3-tuples (distance,c,node)
+    # use the count c to avoid comparing nodes (may not be able to)
     c = count()
-    fringe = []  # use heapq with (distance,label) tuples
+    fringe = []
     push(fringe, (0, next(c), source))
     while fringe:
         (d, _, v) = pop(fringe)
