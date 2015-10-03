@@ -9,6 +9,7 @@ __all__ = sum([maxflow.__all__,
                 shortestaugmentingpath.__all__,
                 capacityscaling.__all__,
                 networksimplex.__all__,
+                ['build_flow_dict', 'build_residual_network']
             ], [])
 
 from .maxflow import *
