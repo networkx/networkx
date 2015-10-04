@@ -22,8 +22,7 @@ __all__ = ['stochastic_graph']
 
 @not_implemented_for('undirected')
 def stochastic_graph(G, copy=True, weight='weight'):
-    """Returns a right-stochastic representation of the directed graph
-    ``G``.
+    """Returns a right-stochastic representation of directed graph ``G``.
 
     A right-stochastic graph is a weighted digraph in which for each
     node, the sum of the weights of all the out-edges of that node is
@@ -31,7 +30,7 @@ def stochastic_graph(G, copy=True, weight='weight'):
     edge attribute), the reweighting takes that into account.
 
     Parameters
-    -----------
+    ----------
     G : directed graph
         A :class:`~networkx.DiGraph` or :class:`~networkx.MultiDiGraph`.
 
