@@ -36,7 +36,7 @@ A.write('k5_attributes.dot')
 # default attributes as dictionary data
 X=nx.from_agraph(A)
 print("edges")
-print(X.edges(data=True))
+print(list(X.edges(data=True)))
 print("default graph attributes")
 print(X.graph)
 print("node node attributes")
