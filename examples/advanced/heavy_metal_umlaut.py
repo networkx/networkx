@@ -64,7 +64,7 @@ for n in G.nodes():
     if n not in H:
         print(False)
 
-print(G.nodes())
+print(list(G.nodes()))
 
 try:
     pos=NX.spring_layout(G)

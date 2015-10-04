@@ -38,7 +38,7 @@ plt.title('samplike3')
 nx.draw(G3,pos,node_size=50,with_labels=False)
 plt.subplot(224)
 plt.title('samplike1,2,3')
-nx.draw(G3,pos,edgelist=G3.edges(),node_size=50,with_labels=False)
+nx.draw(G3, pos, edgelist=list(G3.edges()), node_size=50, with_labels=False)
 nx.draw_networkx_edges(G1,pos,alpha=0.25)
 nx.draw_networkx_edges(G2,pos,alpha=0.25)
 plt.savefig("sampson.png") # save as png
