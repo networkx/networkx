@@ -32,7 +32,7 @@ def stochastic_graph(G, copy=True, weight='weight'):
 
     Parameters
     -----------
-    G : NetworkX graph
+    G : directed graph
         A :class:`~networkx.DiGraph` or :class:`~networkx.MultiDiGraph`.
 
     copy : boolean, optional

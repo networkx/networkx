@@ -83,7 +83,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
 
 
     Notes
-    ------
+    -----
     If G has edges with weight attributes the edge data are used as
     weight values else the weights are assumed to be 1.
 

@@ -66,7 +66,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     [0, 1, 2, 3, 4]
 
     Notes
-    ------
+    -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
@@ -266,7 +266,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
     [0, 1, 2, 3, 4]
 
     Notes
-    ---------
+    -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
@@ -1050,7 +1050,7 @@ def johnson(G, weight='weight'):
     ['0', '1', '2']
 
     Notes
-    ------
+    -----
     Johnson's algorithm is suitable even for graphs with negative weights. It
     works by using the Bellman–Ford algorithm to compute a transformation of
     the input graph that removes all negative weights, allowing Dijkstra's

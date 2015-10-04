@@ -9,6 +9,9 @@ Overview
 .. currentmodule:: networkx
 .. autofunction:: DiGraph
 
+=======
+Methods
+=======
 
 Adding and removing nodes and edges
 ===================================
