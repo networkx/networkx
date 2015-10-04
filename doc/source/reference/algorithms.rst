@@ -41,7 +41,6 @@ Algorithms
    algorithms.matching
    algorithms.minors
    algorithms.mis
-   algorithms.mst
    algorithms.operators
    algorithms.rich_club
    algorithms.shortest_paths

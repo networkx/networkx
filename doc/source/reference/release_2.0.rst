@@ -11,7 +11,7 @@ Please send comments and questions to the networkx-discuss [mailing list](http:/
 
 API changes
 -----------
-* [`<>`_]
+* Base Graph Class Changes
   With the release of NetworkX 2.0 we are moving towards an iterator reporting API.
   We used to have two methods for the same property of the graph, one that returns a
   list and one that returns an iterator. With 2.0 we have removed the one that returns

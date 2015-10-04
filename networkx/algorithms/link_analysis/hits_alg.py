@@ -137,7 +137,7 @@ def hits_numpy(G,normalized=True):
     Hubs estimates the node value based on outgoing links.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph
 
@@ -207,7 +207,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     Hubs estimates the node value based on outgoing links.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph
 

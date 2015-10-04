@@ -74,11 +74,11 @@ GitHub
 ------
 
   1. Clone the networkx repostitory
-    ::
+     (see https://github.com/networkx/networkx/ for options)
+     ::
 
        git clone https://github.com/networkx/networkx.git
 
-  (see https://github.com/networkx/networkx/ for other options)
 
   2. Change directory to :samp:`networkx`
 

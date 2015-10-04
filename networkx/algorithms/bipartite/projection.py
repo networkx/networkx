@@ -63,7 +63,7 @@ def projected_graph(B, nodes, multigraph=False):
     [['a', 'b'], ['a', 'b']]
 
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     Returns a simple graph that is the projection of the bipartite graph B
     onto the set of nodes given in list nodes.  If multigraph=True then
@@ -158,7 +158,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     [(1, 3, {'weight': 0.5})]
     
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
@@ -252,7 +252,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     (2, 5, {'weight': 0.5})
     
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
@@ -344,7 +344,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     [(0, 2, {'weight': 1.0}), (2, 4, {'weight': 1.0})]
     
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
@@ -457,7 +457,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     [(0, 1, {'weight': 10})]
     
     Notes
-    ------
+    -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
