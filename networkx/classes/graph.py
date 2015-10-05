@@ -13,6 +13,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from __future__ import division
 from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -1584,11 +1585,7 @@ class Graph(object):
         >>> G.size(weight='weight')
         6.0
         """
-        s = sum(dict(self.degree(weight=weight)).values()) / 2
-        if weight is None:
-            return int(s)
-        else:
-            return float(s)
+        return sum(dict(self.degree(weight=weight)).values()) / 2
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.
