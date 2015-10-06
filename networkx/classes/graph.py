@@ -13,7 +13,6 @@ For directed graphs see DiGraph and MultiDiGraph.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from __future__ import division
 from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
