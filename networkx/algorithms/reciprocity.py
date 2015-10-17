@@ -59,7 +59,7 @@ def _reciprocity_iter(G,nodes):
         if n_total == 0:
             raise NetworkXError('Not defined for isolated nodes.')
             
-        reciprocity = 2*len(overlap)/float(n_total)
+        reciprocity = 2.0*float(len(overlap))/float(n_total)
         yield (node,reciprocity)
         
 @not_implemented_for('undirected','multigraph')
@@ -78,4 +78,4 @@ def overall_reciprocity(G):
     if n_all_edge == 0:
         raise NetworkXError("Not defined for empty graphs")
 
-    return n_overlap_edge/float(n_all_edge)
+    return float(n_overlap_edge)/float(n_all_edge)
