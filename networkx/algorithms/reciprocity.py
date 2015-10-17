@@ -5,9 +5,6 @@
 #    All rights reserved.
 #    BSD license.
 """Algorithms to calculate reciprocity in a directed graph."""
-from itertools import combinations
-
-import networkx as nx
 from networkx import NetworkXError
 from ..utils import not_implemented_for
 
