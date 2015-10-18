@@ -244,7 +244,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             W -= (W.T * X * X.T).T
             project(W)
             # Compute the diagonal of P * L * P as a Jacobi preconditioner.
-            D = L.diagonal()
+            D = L.diagonal().astype(float)
             D += 2. * (asarray(X) * asarray(W)).sum(axis=1)
             D += (asarray(X) * asarray(X * (W.T * X))).sum(axis=1)
             D[D < tol * Lnorm] = 1.
