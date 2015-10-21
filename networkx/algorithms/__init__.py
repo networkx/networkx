@@ -21,6 +21,7 @@ from networkx.algorithms.mis import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.link_prediction import *
 from networkx.algorithms.operators import *
+from networkx.algorithms.reciprocity import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.triads import *
