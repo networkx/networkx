@@ -433,9 +433,7 @@ def ring_of_cliques(x, y):
     """
     G = nx.Graph()
     for i in range(0, x):
-        for j in range(0, y):
-            k = i * y + j
-            for l in range(k+1, (i+1)*y):
-                G.add_edge(l, k)
+        edges = itertools.combinations(range(i*y, i*y+y), 2)
+        G.add_edges_from(edges)
         G.add_edge(i*y+y/2, (i+1)*y % (x*y))
     return G
