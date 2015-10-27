@@ -6,13 +6,17 @@ import networkx as nx
 #    Copyright(C) 2011 by
 #    Ben Edwards <bedwards@cs.unm.edu>
 #    Aric Hagberg <hagberg@lanl.gov>
+#    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
 #    All rights reserved.
 #    BSD license.
 __author__ = """\n""".join(['Ben Edwards (bedwards@cs.unm.edu)',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+                            'Aric Hagberg (hagberg@lanl.gov)',
+                            'Konstantinos Karakatsanis '
+                            '<dinoskarakas@gmail.com>'])
 __all__ = ['caveman_graph', 'connected_caveman_graph',
            'relaxed_caveman_graph', 'random_partition_graph',
-           'planted_partition_graph', 'gaussian_random_partition_graph']
+           'planted_partition_graph', 'gaussian_random_partition_graph',
+           'ring_of_cliques']
 
 
 def caveman_graph(l, k):
@@ -406,3 +410,32 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
         assigned += size
         sizes.append(size)
     return random_partition_graph(sizes, p_in, p_out, directed, seed)
+
+
+def ring_of_cliques(x, y):
+    """Returns a ring of cliques graph of ``x`` cliques of size ``y``.
+
+    Parameters
+    ----------
+    x : int
+      Number of cliques
+    y : int
+      Size of cliques
+
+    Returns
+    -------
+    G : NetworkX Graph
+      ring of cliques graph
+
+    Examples
+    --------
+    >>> G = nx.ring_of_cliques(8, 4)
+    """
+    G = nx.Graph()
+    for i in range(0, x):
+        for j in range(0, y):
+            k = i * y + j
+            for l in range(k+1, (i+1)*y):
+                G.add_edge(l, k)
+        G.add_edge(i*y+y/2, (i+1)*y % (x*y))
+    return G
