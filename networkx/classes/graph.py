@@ -1768,7 +1768,7 @@ class Graph(object):
                     # capture error for unhashable node.
                     elif 'hashable' in message:
                         raise NetworkXError(
-                            "Node %s in the sequence nbunch is not a valid node."%n)
+                            "Node {} in the sequence nbunch is not a valid node.".format(n))
                     else:
                         raise
             bunch = bunch_iter(nbunch, self.adj)
