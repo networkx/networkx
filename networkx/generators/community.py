@@ -3,7 +3,7 @@ import itertools
 import math
 import random
 import networkx as nx
-#    Copyright(C) 2011 by
+#    Copyright(C) 2011, 2015 by
 #    Ben Edwards <bedwards@cs.unm.edu>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
@@ -427,13 +427,27 @@ def ring_of_cliques(x, y):
     G : NetworkX Graph
       ring of cliques graph
 
+    Raises
+    ------
+    NetworkXError
+        If the number of cliques is lower than 2 or
+        if the size of cliques is smaller than 1.
+
     Examples
     --------
     >>> G = nx.ring_of_cliques(8, 4)
     """
+    if x < 2:
+        raise nx.NetworkXError('A ring of cliques must have at least '
+                               'two cliques')
+    if y < 1:
+        raise nx.NetworkXError('The cliques must have at least one node')
+
     G = nx.Graph()
     for i in range(0, x):
         edges = itertools.combinations(range(i*y, i*y+y), 2)
         G.add_edges_from(edges)
+        # connects the middle node of each clique
+        # with the first node of the next clique
         G.add_edge(i*y+y/2, (i+1)*y % (x*y))
     return G
