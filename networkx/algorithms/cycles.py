@@ -105,8 +105,8 @@ def cycle_basis(G,root=None):
 def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    A simple cycle, or elementary circuit, is a closed path where no
-    node appears twice. Two elementary circuits are distinct if they
+    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    no node appears twice. Two elementary circuits are distinct if they
     are not cyclic permutations of each other.
 
     This is a nonrecursive, iterator/generator version of Johnson's
@@ -225,8 +225,8 @@ def simple_cycles(G):
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    A simple cycle, or elementary circuit, is a closed path where no
-    node appears twice. Two elementary circuits are distinct if they
+    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    no node appears twice. Two elementary circuits are distinct if they
     are not cyclic permutations of each other.
 
     This version uses a recursive algorithm to build a list of cycles.
