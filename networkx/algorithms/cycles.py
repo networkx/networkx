@@ -105,7 +105,7 @@ def cycle_basis(G,root=None):
 def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    An simple cycle, or elementary circuit, is a closed path where no
+    A simple cycle, or elementary circuit, is a closed path where no
     node appears twice. Two elementary circuits are distinct if they
     are not cyclic permutations of each other.
 
@@ -241,7 +241,7 @@ def recursive_simple_cycles(G):
     Returns
     -------
     A list of cycles, where each cycle is represented by a list of nodes
-       along the cycle.
+    along the cycle.
 
     Example:
 
