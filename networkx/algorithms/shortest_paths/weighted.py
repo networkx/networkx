@@ -484,14 +484,15 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 
     Returns
     -------
-    distance : dictionary
-       Dictionary, keyed by source and target, of shortest paths.
+    distance : iterator
+        (source, targets) iterator with targets as a dictionary keyed by
+        target and shortest path as value
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> path=nx.all_pairs_dijkstra_path(G)
-    >>> print(path[0][4])
+    >>> G = nx.path_graph(5)
+    >>> path = nx.all_pairs_dijkstra_path(G)
+    >>> print(dict(path)[0][4])
     [0, 1, 2, 3, 4]
 
     Notes
@@ -505,8 +506,8 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 
     """
     path = single_source_dijkstra_path
-    # TODO This can be trivially parallelized.
-    return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
+    for n in G:
+        yield (n, path(G, n, cutoff=cutoff, weight=weight))
 
 
 def bellman_ford(G, source, weight='weight'):
