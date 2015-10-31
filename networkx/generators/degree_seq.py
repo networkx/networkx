@@ -107,8 +107,9 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
 
     >>> G.remove_edges_from(G.selfloop_edges())
     """
-    if not sum(deg_sequence)%2 ==0:
-        raise nx.NetworkXError('Invalid degree sequence')
+    if sum(deg_sequence) % 2 != 0:
+        msg = 'Invalid degree sequence: sum of degrees must be even, not odd'
+        raise nx.NetworkXError(msg)
 
     if create_using is None:
         create_using = nx.MultiGraph()
