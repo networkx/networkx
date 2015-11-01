@@ -32,7 +32,7 @@ from subprocess import Popen, PIPE, CalledProcessError, check_call
 pages_dir = 'gh-pages'
 html_dir = 'build/dist'
 pdf_dir = 'build/latex'
-pages_repo = 'git@github.com:networkx/documentation.git'
+pages_repo = 'https://github.com/networkx/documentation.git'
 
 #-----------------------------------------------------------------------------
 # Functions
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     try:
         cd(pages_dir)
         status = sh2('git status | head -1')
-        branch = re.match('\# On branch (.*)$', status).group(1)
+        branch = re.match('On branch (.*)$', status).group(1)
         if branch != 'gh-pages':
             e = 'On %r, git branch is %r, MUST be "gh-pages"' % (pages_dir,
                                                                  branch)
