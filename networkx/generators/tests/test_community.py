@@ -119,17 +119,14 @@ def test_gaussian_random_partition_graph():
 
 def test_ring_of_cliques():
     for i in range(2, 20):
-        for j in range(1, 20):
-            G = nx.ring_of_cliques(i, j)
-            assert_equal(G.number_of_nodes(), i*j)
-            if i != 2 or j != 1:
-                assert_equal(G.number_of_edges(),
-                             len(list(itertools.
-                                      combinations(range(j), 2)))*i+i)
-            else:
-                # the edge that already exists cannot be duplicated
-                assert_equal(G.number_of_edges(),
-                             len(list(itertools.
-                                      combinations(range(j), 2)))*i+i-1)
+            for j in range(2, 20):
+                G = nx.ring_of_cliques(i, j)
+                assert_equal(G.number_of_nodes(), i*j)
+                if i != 2 or j != 1:
+                    expected_num_edges = i * (((j * (j - 1)) // 2) + 1)
+                else:
+                    # the edge that already exists cannot be duplicated
+                    expected_num_edges = i * (((j * (j - 1)) // 2) + 1) - 1
+                assert_equal(G.number_of_edges(), expected_num_edges)
     assert_raises(nx.NetworkXError, nx.ring_of_cliques, 1, 5)
     assert_raises(nx.NetworkXError, nx.ring_of_cliques, 3, 0)
