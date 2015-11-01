@@ -12,7 +12,11 @@ NetworkX 1.11
 --------------
 Release date: 7 September 2015
 
-Release for fixes of installation on some machines, layouts and docs.
+Fixes installation on some machines, 
+restores default center of layout routines,
+fixes various docs including examples.
+Docs can build on readthedocs.org.
+Support for Python 3.5 added, drop support for Python 3.2.
 
 NetworkX 1.10
 --------------
