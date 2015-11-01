@@ -54,7 +54,7 @@ except ImportError:
         pass
 
 @open_file(1,mode='wb')
-def write_graphml(G, path, infer_numeric_types=False, encoding='utf-8',prettyprint=True):
+def write_graphml(G, path, encoding='utf-8', prettyprint=True, infer_numeric_types=False):
     """Write G in GraphML XML format to path
 
     Parameters
