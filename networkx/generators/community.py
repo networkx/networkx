@@ -415,6 +415,9 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
 def ring_of_cliques(num_cliques, clique_size):
     """Defines a "ring of cliques" graph.
 
+    A ring of cliques graph is consisting of cliques, connected through single
+    links. Each clique is a complete graph.
+
     Parameters
     ----------
     num_cliques : int
@@ -448,8 +451,6 @@ def ring_of_cliques(num_cliques, clique_size):
         edges = itertools.combinations(range(i*clique_size, i*clique_size +
                                              clique_size), 2)
         G.add_edges_from(edges)
-        # connects the middle node of each clique
-        # with the first node of the next clique
         G.add_edge(i*clique_size+1, (i+1)*clique_size %
                    (num_cliques*clique_size))
     return G
