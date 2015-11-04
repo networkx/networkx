@@ -351,7 +351,7 @@ def find_cycle(G, source=None, orientation='original'):
     -------
     edges : directed edges
         A list of directed edges indicating the path taken for the loop. If
-        no cycle is found, then ``edges`` will be an empty list. For graphs, an
+        no cycle is found, then an exception is raised. For graphs, an
         edge is of the form (u, v) where ``u`` and ``v`` are the tail and head
         of the edge as determined by the traversal. For multigraphs, an edge is
         of the form (u, v, key), where ``key`` is the key of the edge. When the
@@ -362,6 +362,11 @@ def find_cycle(G, source=None, orientation='original'):
         direction. When the direction is forward, the value of ``direction``
         is 'forward'. When the direction is reverse, the value of ``direction``
         is 'reverse'.
+        
+    Raises
+    ------
+    NetworkXNoCycle
+        If no cycle was found.
 
     Examples
     --------
