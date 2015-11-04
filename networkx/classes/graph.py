@@ -13,6 +13,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from __future__ import division
 from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -1562,8 +1563,12 @@ class Graph(object):
 
         Returns
         -------
-        nedges : int
-            The number of edges or sum of edge weights in the graph.
+        size 
+             The integer number of edges in the graph if `weight` 
+             is None. If a weight keyword argument is provided, 
+             and all the weights are integers, the output will 
+             be a float, regardless of whether all the weights 
+             are integers.
 
         See Also
         --------
@@ -1584,7 +1589,12 @@ class Graph(object):
         >>> G.size(weight='weight')
         6.0
         """
-        return sum(dict(self.degree(weight=weight)).values()) / 2
+        s = sum(d for v, d in self.degree(weight=weight))
+        # If `weight` is None, the sum of the degrees is guaranteed to be
+        # even, so we can perform integer division and hence return an
+        # integer. Otherwise, the sum of the weighted degrees is not
+        # guaranteed to be an integer, so we perform "real" division.
+        return s // 2 if weight is None else s / 2
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.
