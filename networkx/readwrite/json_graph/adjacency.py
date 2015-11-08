@@ -68,12 +68,8 @@ def adjacency_data(G, attrs=_attrs):
     key = None if not multigraph else attrs['key']
     if id_ == key:
         raise nx.NetworkXError('Attribute names are not unique.')
-    data = {}
-    data['directed'] = G.is_directed()
-    data['multigraph'] = multigraph
-    data['graph'] = list(G.graph.items())
-    data['nodes'] = []
-    data['adjacency'] = []
+    data = {'directed': G.is_directed(), 'multigraph': multigraph, 'graph': list(G.graph.items()), 'nodes': [],
+            'adjacency': []}
     for n, nbrdict in G.adjacency():
         data['nodes'].append(dict(chain(G.node[n].items(), [(id_, n)])))
         adj = []

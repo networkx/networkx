@@ -215,11 +215,7 @@ class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
                 self.K3.pred[v][u]=d
         self.K3.adj=self.K3.succ
         self.K3.edge=self.K3.adj
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
-
+        self.K3.node= {0: {}, 1: {}, 2: {}}
 
     def test_add_edge(self):
         G=self.Graph()
