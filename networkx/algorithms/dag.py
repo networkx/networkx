@@ -44,7 +44,7 @@ def descendants(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    des = set(n for n, d in nx.shortest_path_length(G, source=source)) - set([source])
+    des = set(n for n, d in nx.shortest_path_length(G, source=source)) - {source}
     return des
 
 
@@ -63,7 +63,7 @@ def ancestors(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    anc = set(n for n, d in nx.shortest_path_length(G, target=source)) - set([source])
+    anc = set(n for n, d in nx.shortest_path_length(G, target=source)) - {source}
     return anc
 
 

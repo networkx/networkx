@@ -146,7 +146,7 @@ def detect_unboundedness(R, s, t):
     """Detect an infinite-capacity s-t path in R.
     """
     q = deque([s])
-    seen = set([s])
+    seen = {s}
     inf = R.graph['inf']
     while q:
         u = q.popleft()

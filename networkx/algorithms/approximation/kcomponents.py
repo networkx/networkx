@@ -233,8 +233,8 @@ class _AntiGraph(nx.Graph):
 
         """
         all_edge_dict = self.all_edge_dict
-        return dict((node, all_edge_dict) for node in 
-                    set(self.adj) - set(self.adj[n]) - set([n]))
+        return dict((node, all_edge_dict) for node in
+                    set(self.adj) - set(self.adj[n]) - {n})
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the 
@@ -242,7 +242,7 @@ class _AntiGraph(nx.Graph):
 
         """
         try:
-            return iter(set(self.adj) - set(self.adj[n]) - set([n]))
+            return iter(set(self.adj) - set(self.adj[n]) - {n})
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
@@ -285,7 +285,7 @@ class _AntiGraph(nx.Graph):
         """
         if nbunch in self:
             nbrs = {v: self.all_edge_dict for v in set(self.adj) - \
-                    set(self.adj[nbunch]) - set([nbunch])}
+                    set(self.adj[nbunch]) - {nbunch}}
             if weight is None:
                 return len(nbrs) + (nbunch in nbrs)
             return sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) + \
@@ -293,11 +293,11 @@ class _AntiGraph(nx.Graph):
 
         if nbunch is None:
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
-                            set(self.adj) - set(self.adj[n]) - set([n])})
+                               set(self.adj) - set(self.adj[n]) - {n}})
                             for n in self.nodes())
         else:
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
-                            set(self.nodes()) - set(self.adj[n]) - set([n])})
+                               set(self.nodes()) - set(self.adj[n]) - {n}})
                             for n in self.nbunch_iter(nbunch))
 
         if weight is None:
@@ -327,4 +327,4 @@ class _AntiGraph(nx.Graph):
 
         """
         for n in self.adj:
-            yield (n, set(self.adj) - set(self.adj[n]) - set([n]))
+            yield (n, set(self.adj) - set(self.adj[n]) - {n})
