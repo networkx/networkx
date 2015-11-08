@@ -449,7 +449,7 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
     while n > 0:
         # Retrieve the maximum degree in the sequence
         while len(num_degs[dmax]) == 0:
-            dmax -= 1;
+            dmax -= 1
         # If there are not enough stubs to connect to, then the sequence is
         # not graphical
         if dmax > n-1:
