@@ -41,9 +41,6 @@ except ImportError:
     from io import StringIO
 from ast import literal_eval
 from collections import defaultdict
-from lib2to3.pgen2.parse import ParseError
-from lib2to3.pgen2.tokenize import TokenError
-from lib2to3.refactor import RefactoringTool
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
