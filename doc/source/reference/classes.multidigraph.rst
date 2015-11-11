@@ -10,6 +10,10 @@ Overview
 .. currentmodule:: networkx
 .. autofunction:: MultiDiGraph
 
+=======
+Methods
+=======
+
 Adding and Removing Nodes and Edges
 ===================================
 

@@ -25,7 +25,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     r"""Compute the shortest-path betweenness centrality for nodes.
 
     Betweenness centrality of a node `v` is the sum of the
-    fraction of all-pairs shortest paths that pass through `v`:
+    fraction of all-pairs shortest paths that pass through `v`
 
     .. math::
 
@@ -134,7 +134,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     r"""Compute betweenness centrality for edges.
 
     Betweenness centrality of an edge `e` is the sum of the
-    fraction of all-pairs shortest paths that pass through `e`:
+    fraction of all-pairs shortest paths that pass through `e`
 
     .. math::
 

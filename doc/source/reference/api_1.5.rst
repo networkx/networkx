@@ -12,7 +12,7 @@ Weighted graph algorithms
 
 Many 'weighted' graph algorithms now take optional parameter to 
 specifiy which edge attribute should be used for the weight
-(default='weight') (:ticket:`509`)
+(default='weight') (ticket https://networkx.lanl.gov/trac/ticket/509)
 
 In some cases the parameter name was changed from weighted_edges,
 or weighted, to weight.  Here is how to specify which edge attribute 

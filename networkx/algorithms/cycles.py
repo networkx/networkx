@@ -105,10 +105,9 @@ def cycle_basis(G,root=None):
 def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    An simple cycle, or elementary circuit, is a closed path where no
-    node appears twice, except that the first and last node are the same.
-    Two elementary circuits are distinct if they are not cyclic permutations
-    of each other.
+    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    no node appears twice. Two elementary circuits are distinct if they
+    are not cyclic permutations of each other.
 
     This is a nonrecursive, iterator/generator version of Johnson's
     algorithm [1]_.  There may be better algorithms for some cases [2]_ [3]_.
@@ -121,8 +120,8 @@ def simple_cycles(G):
     Returns
     -------
     cycle_generator: generator
-       A generator that produces elementary cycles of the graph.  Each cycle is
-       a list of nodes with the first and last nodes being the same.
+       A generator that produces elementary cycles of the graph.
+       Each cycle is represented by a list of nodes along the cycle.
 
     Examples
     --------
@@ -226,13 +225,12 @@ def simple_cycles(G):
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    A simple cycle, or elementary circuit, is a closed path where no
-    node appears twice, except that the first and last node are the same.
-    Two elementary circuits are distinct if they are not cyclic permutations
-    of each other.
+    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    no node appears twice. Two elementary circuits are distinct if they
+    are not cyclic permutations of each other.
 
     This version uses a recursive algorithm to build a list of cycles.
-    You should probably use the iterator version caled simple_cycles().
+    You should probably use the iterator version called simple_cycles().
     Warning: This recursive version uses lots of RAM!
 
     Parameters
@@ -242,8 +240,8 @@ def recursive_simple_cycles(G):
 
     Returns
     -------
-    A list of circuits, where each circuit is a list of nodes, with the first
-    and last node being the same.
+    A list of cycles, where each cycle is represented by a list of nodes
+    along the cycle.
 
     Example:
 
@@ -353,7 +351,7 @@ def find_cycle(G, source=None, orientation='original'):
     -------
     edges : directed edges
         A list of directed edges indicating the path taken for the loop. If
-        no cycle is found, then ``edges`` will be an empty list. For graphs, an
+        no cycle is found, then an exception is raised. For graphs, an
         edge is of the form (u, v) where ``u`` and ``v`` are the tail and head
         of the edge as determined by the traversal. For multigraphs, an edge is
         of the form (u, v, key), where ``key`` is the key of the edge. When the
@@ -364,6 +362,11 @@ def find_cycle(G, source=None, orientation='original'):
         direction. When the direction is forward, the value of ``direction``
         is 'forward'. When the direction is reverse, the value of ``direction``
         is 'reverse'.
+        
+    Raises
+    ------
+    NetworkXNoCycle
+        If no cycle was found.
 
     Examples
     --------

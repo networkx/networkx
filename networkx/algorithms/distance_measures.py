@@ -59,9 +59,14 @@ def eccentricity(G, v=None, sp=None):
             except TypeError:
                 raise networkx.NetworkXError('Format of "sp" is invalid.')
         if L != order:
-            msg = "Graph not connected: infinite path length"
+            if G.is_directed():
+                msg = ('Found infinite path length because the digraph is not'
+                       ' strongly connected')
+            else:
+                msg = ('Found infinite path length because the graph is not'
+                       ' connected')
             raise networkx.NetworkXError(msg)
-            
+
         e[n]=max(length.values())
 
     if v in G:

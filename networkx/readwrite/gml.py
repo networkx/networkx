@@ -286,7 +286,7 @@ def parse_gml_lines(lines, label, destringizer):
     """
     def tokenize():
         patterns = [
-            r'[A-Za-z][0-9A-Za-z]*\s+',  # keys
+            r'[A-Za-z][0-9A-Za-z_]*\s+',  # keys
             r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
             r'[+-]?[0-9]+',   # ints
             r'".*?"',         # strings
@@ -706,7 +706,7 @@ def write_gml(G, path, stringizer=None):
     structure.
 
     Examples
-    ---------
+    --------
     >>> G = nx.path_graph(4)
     >>> nx.write_gml(G, "test.gml")
 

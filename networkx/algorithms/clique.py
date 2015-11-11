@@ -8,9 +8,9 @@
 
 Finding the largest clique in a graph is NP-complete problem, so most of
 these algorithms have an exponential running time; for more information,
-see the Wikipedia article on the `clique problem`_.
+see the Wikipedia article on the clique problem [1]_.
 
-.. _clique problem:: https://en.wikipedia.org/wiki/Clique_problem
+.. [1] clique problem:: https://en.wikipedia.org/wiki/Clique_problem
 
 """
 from collections import deque

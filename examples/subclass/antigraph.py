@@ -168,7 +168,7 @@ if __name__ == '__main__':
         node = list(G.nodes())[0]
         nodes = list(G.nodes())[1:4]
         assert G.degree(node) == A.degree(node)
-        assert sum(G.degree().values()) == sum(A.degree().values())
+        assert sum(d for n,d in G.degree()) == sum(d for n,d in A.degree())
         # AntiGraph is a ThinGraph, so all the weights are 1
-        assert sum(A.degree().values()) == sum(A.degree(weight='weight').values())
-        assert sum(G.degree(nodes).values()) == sum(A.degree(nodes).values())
+        assert sum(d for n,d in A.degree()) == sum(d for n,d in A.degree(weight='weight'))
+        assert sum(d for n,d in G.degree(nodes)) == sum(d for n,d in A.degree(nodes))
