@@ -439,12 +439,22 @@ def ring_of_cliques(num_cliques, clique_size):
     Examples
     --------
     >>> G = nx.ring_of_cliques(8, 4)
+
+    See Also
+    --------
+    connected_caveman_graph
+
+    Notes
+    -----
+    The `connected_caveman_graph` graph removes a link from each clique to
+    connect it with the next clique. Instead, the `ring_of_cliques` graph
+    simply adds the link without removing any link from the cliques.
     """
     if num_cliques < 2:
         raise nx.NetworkXError('A ring of cliques must have at least '
                                'two cliques')
     if clique_size < 2:
-        raise nx.NetworkXError('The cliques must have at least one node')
+        raise nx.NetworkXError('The cliques must have at least two nodes')
 
     G = nx.Graph()
     for i in range(num_cliques):
