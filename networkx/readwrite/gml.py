@@ -135,7 +135,7 @@ def literal_destringizer(rep):
             rep=rtp_fix_unicode(rep)
         try:
             return literal_eval(rep)
-        except ValueError:
+        except (SyntaxError):
             raise ValueError('%r is not a valid Python literal' % (orig_rep,))
     else:
         raise ValueError('%r is not a string' % (rep,))
