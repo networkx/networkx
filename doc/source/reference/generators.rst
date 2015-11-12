@@ -218,6 +218,7 @@ Community
    random_partition_graph
    planted_partition_graph
    gaussian_random_partition_graph
+   ring_of_cliques
 
 
 Non Isomorphic Trees
