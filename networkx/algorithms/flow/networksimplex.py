@@ -26,7 +26,8 @@ except NameError:
 
 
 @not_implemented_for('undirected')
-def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
+def network_simplex(G, demand='demand', capacity='capacity', weight='weight',
+                    tolerance=1e-7):
     r"""Find a minimum cost flow satisfying all demands in digraph G.
 
     This is a primal network simplex algorithm that uses the leaving
@@ -64,6 +65,9 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         that indicates the cost incurred by sending one unit of flow on
         that edge. If not present, the weight is considered to be 0.
         Default value: 'weight'.
+
+    tolerance : float
+        The floating point tolerance.
 
     Returns
     -------
@@ -236,7 +240,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     # Quick infeasibility detection
     ###########################################################################
 
-    if sum(D) != 0:
+    if abs(sum(D)) > tolerance:
         raise nx.NetworkXUnfeasible('total node demand is not zero')
     for e, u in zip(E, U):
         if u < 0:
@@ -251,7 +255,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
                 'edge %r has negative capacity' % (e[:-1],))
 
     ###########################################################################
-    # Initialization 
+    # Initialization
     ###########################################################################
 
     # Add a dummy node -1 and connect all existing nodes to it with infinite-
@@ -282,7 +286,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     parent = list(chain(repeat(-1, n), [None]))  # parent nodes
     edge = list(range(e, e + n))                 # edges to parents
     size = list(chain(repeat(1, n), [n + 1]))    # subtree sizes
-    next = list(chain(range(1, n), [-1, 0]))     # next nodes in depth-first thread 
+    next = list(chain(range(1, n), [-1, 0]))     # next nodes in depth-first thread
     prev = list(range(-1, n))                    # previous nodes in depth-first thread
     last = list(chain(range(n), [n - 1]))        # last descendants in depth-first thread
 
@@ -540,7 +544,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     # Infeasibility and unboundedness detection
     ###########################################################################
 
-    if any(x[i] != 0 for i in range(-n, 0)):
+    if any(abs(x[i]) > tolerance for i in range(-n, 0)):
         raise nx.NetworkXUnfeasible('no flow satisfies all node demands')
 
     if (any(x[i] * 2 >= faux_inf for i in range(e)) or
