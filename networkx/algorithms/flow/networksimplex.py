@@ -67,7 +67,9 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight',
         Default value: 'weight'.
 
     tolerance : float
-        The floating point tolerance.
+        Used to check that the sum of all of the demands is approximately
+        zero.  This is done by looking at the absolute value of the sum of the
+        demands and checking to see if this is less than `tolerance`.
 
     Returns
     -------
