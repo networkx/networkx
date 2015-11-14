@@ -537,9 +537,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
 
 @not_implemented_for('multigraph')
-def to_numpy_recarray(G,nodelist=None,
-                      dtype=[('weight',float)],
-                      order=None):
+def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     """Return the graph adjacency matrix as a NumPy recarray.
 
     Parameters
@@ -583,6 +581,8 @@ def to_numpy_recarray(G,nodelist=None,
     [[0 5]
      [5 0]]
     """
+    if dtype is None:
+        dtype = [('weight', float)]
     import numpy as np
     if nodelist is None:
         nodelist = list(G)
