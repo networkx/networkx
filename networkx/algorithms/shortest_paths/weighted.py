@@ -125,7 +125,18 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     --------
     bidirectional_dijkstra()
     """
-    length = dict(single_source_dijkstra_path_length(G, source, weight=weight))
+    
+    if source == target:
+        return 0
+
+    if G.is_multigraph():
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
+    else:
+        get_weight = lambda u, v, data: data.get(weight, 1)
+    
+    length =  dict(_dijkstra(G, source, get_weight, target=target))
+    
     try:
         return length[target]
     except KeyError:
