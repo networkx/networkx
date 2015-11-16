@@ -731,7 +731,7 @@ def bellman_ford_predecessor_and_distance(G, source, weight='weight'):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     dist = {source: 0}
-    pred = {source: None}
+    pred = {source: []}
 
     if len(G) == 1:
         return pred, dist
@@ -784,22 +784,24 @@ def _bellman_ford(G, pred, dist, source, weight):
     while q:
         u = q.popleft()
         in_q.remove(u)
-        # Skip relaxations if the predecessor of u is in the queue.
-        if pred[u] not in in_q:
-            dist_u = dist[u]
-            for v, e in G_succ[u].items():
-                dist_v = dist_u + weight(u, v, e)
-                if dist_v < dist.get(v, inf):
-                    if v not in in_q:
-                        q.append(v)
-                        in_q.add(v)
-                        count_v = count.get(v, 0) + 1
-                        if count_v == n:
-                            raise nx.NetworkXUnbounded(
-                                "Negative cost cycle detected.")
-                        count[v] = count_v
-                    dist[v] = dist_v
-                    pred[v] = u
+
+        dist_u = dist[u]
+        for v, e in G_succ[u].items():
+            dist_v = dist_u + get_weight(e)
+            if dist_v < dist.get(v, inf):
+                if v not in in_q:
+                    q.append(v)
+                    in_q.add(v)
+                    count_v = count.get(v, 0) + 1
+                    if count_v == n:
+                        raise nx.NetworkXUnbounded(
+                            "Negative cost cycle detected.")
+                    count[v] = count_v
+                dist[v] = dist_v
+                pred[v] = [u]
+                
+            elif dist.get(v) != None and dist_v == dist.get(v):
+                pred[v].append(u)
 
     return pred, dist
 
@@ -1259,6 +1261,7 @@ def johnson(G, weight='weight'):
     dist = {v: 0 for v in G}
     pred = {v: [None] for v in G}
     weight = _weight_function(G, weight)
+
     # Calculate distance of shortest paths
     dist_bellman = _bellman_ford(G, list(G), weight, pred=pred, dist=dist)
     # Update the weight function to take into account the Bellman--Ford
