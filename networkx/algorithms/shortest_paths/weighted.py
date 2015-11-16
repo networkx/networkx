@@ -30,7 +30,7 @@ __all__ = ['dijkstra_path',
            'all_pairs_dijkstra_path',
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
-           'bellman_ford',
+           'bellman_ford_predecessor_and_distance',
            'negative_edge_cycle',
            'goldberg_radzik',
            'johnson']
@@ -652,7 +652,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
 
 
-def bellman_ford(G, source, weight='weight'):
+def bellman_ford_predecessor_and_distance(G, source, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
@@ -700,7 +700,7 @@ def bellman_ford(G, source, weight='weight'):
     --------
     >>> import networkx as nx
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
-    >>> pred, dist = nx.bellman_ford(G, 0)
+    >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
     >>> sorted(pred.items())
     [(0, None), (1, 0), (2, 1), (3, 2), (4, 3)]
     >>> sorted(dist.items())
@@ -709,7 +709,7 @@ def bellman_ford(G, source, weight='weight'):
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
+    >>> assert_raises(nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 0)
 
     Notes
     -----
@@ -736,10 +736,10 @@ def bellman_ford(G, source, weight='weight'):
     if len(G) == 1:
         return pred, dist
 
-    return _bellman_ford_relaxation(G, pred, dist, [source], weight)
+    return _bellman_ford(G, pred, dist, [source], weight)
 
 
-def _bellman_ford_relaxation(G, pred, dist, source, weight):
+def _bellman_ford(G, pred, dist, source, weight):
     """Relaxation loop for Bellman–Ford algorithm
 
     Parameters
@@ -1022,16 +1022,16 @@ def negative_edge_cycle(G, weight='weight'):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
-    This algorithm uses bellman_ford() but finds negative cycles
+    This algorithm uses bellman_ford_predecessor_and_distance() but finds negative cycles
     on any component by first adding a new node connected to
-    every node, and starting bellman_ford on that node.  It then
+    every node, and starting bellman_ford_predecessor_and_distance on that node.  It then
     removes that extra node.
     """
     newnode = generate_unique_node()
     G.add_edges_from([(newnode, n) for n in G])
 
     try:
-        bellman_ford(G, newnode, weight)
+        bellman_ford_predecessor_and_distance(G, newnode, weight)
     except nx.NetworkXUnbounded:
         return True
     finally:
@@ -1250,17 +1250,17 @@ def johnson(G, weight='weight'):
     all_pairs_shortest_path
     all_pairs_shortest_path_length
     all_pairs_dijkstra_path
-    bellman_ford
+    bellman_ford_predecessor_and_distance
 
     """
     if not nx.is_weighted(G, weight=weight):
         raise nx.NetworkXError('Graph is not weighted.')
 
     dist = {v: 0 for v in G}
-    pred = {v: None for v in G}
+    pred = {v: [None] for v in G}
     weight = _weight_function(G, weight)
     # Calculate distance of shortest paths
-    dist_bellman = _bellman_ford_relaxation(G, pred, dist, list(G), weight)[1]
+    dist_bellman = _bellman_ford(G, list(G), weight, pred=pred, dist=dist)
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
     scale = lambda u, v: dist_bellman[u] - dist_bellman[v]
@@ -1272,3 +1272,4 @@ def johnson(G, weight='weight'):
         return paths
 
     return {v: dist_path(v) for v in G}
+
