@@ -785,26 +785,27 @@ def _bellman_ford(G, pred, dist, source, weight):
         u = q.popleft()
         in_q.remove(u)
 
-        dist_u = dist[u]
-        for v, e in G_succ[u].items():
-            dist_v = dist_u + get_weight(e)
-            if dist_v < dist.get(v, inf):
-                if v not in in_q:
-                    q.append(v)
-                    in_q.add(v)
-                    count_v = count.get(v, 0) + 1
-                    if count_v == n:
-                        raise nx.NetworkXUnbounded(
-                            "Negative cost cycle detected.")
-                    count[v] = count_v
-                dist[v] = dist_v
-                pred[v] = [u]
-                
-            elif dist.get(v) != None and dist_v == dist.get(v):
-                pred[v].append(u)
+        # Skip relaxations if any of the predecessors of u is in the queue. If any is in the queue, its distance and follow-up computations will change
+        if all(pred_u not in in_q for pred_u in pred[u]):
+            dist_u = dist[u]
+            for v, e in G_succ[u].items():
+                dist_v = dist_u + get_weight(e)
+                if dist_v < dist.get(v, inf):
+                    if v not in in_q:
+                        q.append(v)
+                        in_q.add(v)
+                        count_v = count.get(v, 0) + 1
+                        if count_v == n:
+                            raise nx.NetworkXUnbounded(
+                                "Negative cost cycle detected.")
+                        count[v] = count_v
+                    dist[v] = dist_v
+                    pred[v] = [u]
+                    
+                elif dist.get(v) != None and dist_v == dist.get(v):
+                    pred[v].append(u)
 
     return pred, dist
-
 
 def goldberg_radzik(G, source, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
