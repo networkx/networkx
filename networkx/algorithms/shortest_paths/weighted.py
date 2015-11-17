@@ -236,7 +236,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
 
-    return iter(    _dijkstra(G, source, get_weight, cutoff=cutoff).items() )
+    return iter(_dijkstra(G, source, get_weight, cutoff=cutoff).items())
 
 
 def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight'):
@@ -304,7 +304,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
 
     paths = {source: [source]}  # dictionary of paths
     return (_dijkstra(G, source, get_weight, paths=paths, cutoff=cutoff,
-                     target=target),    paths)
+                     target=target), paths)
 
 
 def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
@@ -337,19 +337,13 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
 
     Returns
     -------
-    distance, path : two dictionaries
-        If path is not None, both distance and path dictionaries are returned.
-        The first dict stores distance from the source to the keyed node.
-        The second stores stores the path from the source to the keyed node.
-
-    pred, distance : dictionaries
-        If path is None and pred is not None, two dicts are returned.
-        The first dict stores a list of predecessors keyed by node.
-        The second dict stores distance from the source to the keyed node.
-
-    distance : iterator
-        If path and pred are both None, an iterator is returned yielding
-        (node, shortest path length to that node)
+    distance : dictionary
+        A dict storing a list of predecessors keyed by node.
+        
+    Notes
+    -----
+    The optional predecessor and path dictionaries can be read by the caller
+    through the original pred and paths references passed as arguments.
     """
     G_succ = G.succ if G.is_directed() else G.adj
 
@@ -391,7 +385,9 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
             elif vu_dist == seen[u]:
                 if pred is not None:
                     pred[u].append(v)
-
+    
+    # The optional predecessor and path dictionaries can be read by the caller
+    # through the pred and paths references passed as arguments.
     return dist
 
 
