@@ -192,8 +192,7 @@ def node_connectivity(G, s=None, t=None):
         connected_func = nx.is_weakly_connected
         iter_func = itertools.permutations
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors(v),
-                                                  G.successors(v)])
+            return itertools.chain(G.predecessors(v), G.successors(v))
     else:
         connected_func = nx.is_connected
         iter_func = itertools.combinations
