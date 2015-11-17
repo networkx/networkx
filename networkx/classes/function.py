@@ -225,7 +225,7 @@ def subgraph(G, nbunch):
     return G.subgraph(nbunch)
 
 
-def create_empty_copy(G,with_nodes=True):
+def create_empty_copy(G, with_data=True):
     """Return a copy of the graph G with all of the edges removed.
 
     Parameters
@@ -233,16 +233,19 @@ def create_empty_copy(G,with_nodes=True):
     G : graph
        A NetworkX graph
 
-    with_nodes :  bool (default=True)
-       Include nodes.
+    with_data :  bool (default=True)
+       Propagate Graph and Nodes data to the new graph.
 
-    Notes
+    See Also
     -----
-    Graph, node, and edge data is not propagated to the new graph.
+    empty_graph
+
     """
-    H=G.__class__()
-    if with_nodes:
+    H = G.__class__()
+    H.add_nodes_from(G)
+    if with_data:
         H.add_nodes_from(G)
+        H.graph = G.graph
     return H
 
 
