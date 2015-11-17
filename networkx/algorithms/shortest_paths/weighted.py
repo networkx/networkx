@@ -135,7 +135,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
     
-    length =  dict(_dijkstra(G, source, get_weight, target=target))
+    length =  _dijkstra(G, source, get_weight, target=target)
     
     try:
         return length[target]
@@ -236,7 +236,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
 
-    return _dijkstra(G, source, get_weight, cutoff=cutoff)
+    return iter(    _dijkstra(G, source, get_weight, cutoff=cutoff).items() )
 
 
 def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight'):
@@ -303,8 +303,8 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
         get_weight = lambda u, v, data: data.get(weight, 1)
 
     paths = {source: [source]}  # dictionary of paths
-    return _dijkstra(G, source, get_weight, paths=paths, cutoff=cutoff,
-                     target=target)
+    return (_dijkstra(G, source, get_weight, paths=paths, cutoff=cutoff,
+                     target=target),    paths)
 
 
 def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
@@ -392,11 +392,7 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
                 if pred is not None:
                     pred[u].append(v)
 
-    if paths is not None:
-        return (dist, paths)
-    elif pred is not None:
-        return (pred, dist)
-    return iter(dist.items())
+    return dist
 
 
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
@@ -437,7 +433,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
         get_weight = lambda u, v, data: data.get(weight, 1)
 
     pred = {source: []}  # dictionary of predecessors
-    return _dijkstra(G, source, get_weight, pred=pred, cutoff=cutoff)
+    return (pred, _dijkstra(G, source, get_weight, pred=pred, cutoff=cutoff))
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
@@ -1096,6 +1092,12 @@ def johnson(G, weight='weight'):
     else:
         get_weight = lambda u, v, data: (data.get(weight, 1) +
                                          dist_bellman[u] - dist_bellman[v])
+                                         
+    def dist_path(v):
+        paths={v: [v]}
+        _dijkstra(G, v, get_weight, paths=paths)
+        return paths
+        
+    all_pairs = {v: dist_path(v) for v in G}
 
-    all_pairs = {v: _dijkstra(G, v, get_weight, paths={v: [v]})[1] for v in G}
     return all_pairs
