@@ -9,7 +9,6 @@
 #
 import networkx as nx
 from networkx.utils import not_implemented_for
-from copy import deepcopy
 import itertools
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
@@ -243,11 +242,9 @@ def create_empty_copy(G, with_data=True):
 
     """
     H = G.__class__()
+    H.add_nodes_from(G.nodes(data=with_data))
     if with_data:
-        H.add_nodes_from([(node, G.node[node]) for node in G.nodes()])
-        H.graph = {n: d for n, d in G.graph.items()}
-    else:
-        H.add_nodes_from(G)
+        H.graph.update(G.graph)
     return H
 
 
