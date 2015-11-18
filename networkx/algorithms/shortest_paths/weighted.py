@@ -736,10 +736,16 @@ def bellman_ford_predecessor_and_distance(G, source, weight='weight'):
     if len(G) == 1:
         return pred, dist
 
-    return _bellman_ford(G, pred, dist, [source], weight)
+    if G.is_multigraph():
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
+    else:
+        get_weight = lambda u, v, data: data.get(weight, 1)
+        
+    return (pred, _bellman_ford(G, [source], get_weight,pred=pred, dist=dist))
 
 
-def _bellman_ford(G, pred, dist, source, weight):
+def _bellman_ford(G, source, get_weight, pred=None, paths=None, dist=None, cutoff=None, target=None):
     """Relaxation loop for Bellman–Ford algorithm
 
     Parameters
@@ -774,6 +780,26 @@ def _bellman_ford(G, pred, dist, source, weight):
        negative cost (di)cycle.  Note: any negative weight edge in an
        undirected graph is a negative cost cycle
     """
+
+    if paths != None:
+        raise NotImplementedError(
+            "To Be Done: Parameter paths not yet implemented")       
+
+    if target != None:
+        raise NotImplementedError(
+            "To Be Done: Parameter target not yet implemented")
+    
+    if cutoff != None:
+        raise NotImplementedError(
+            "To Be Done: Parameter cutoff not yet implemented")
+
+            
+    if pred == None:
+        pred = {v: [] for v in source}
+    
+    if dist == None:
+        dist = {v: 0 for v in source}
+
     G_succ = G.succ if G.is_directed() else G.adj
     inf = float('inf')
     n = len(G)
@@ -789,7 +815,7 @@ def _bellman_ford(G, pred, dist, source, weight):
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + get_weight(e)
+                dist_v = dist_u + get_weight(v, u, e)
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
@@ -805,7 +831,7 @@ def _bellman_ford(G, pred, dist, source, weight):
                 elif dist.get(v) != None and dist_v == dist.get(v):
                     pred[v].append(u)
 
-    return pred, dist
+    return dist
 
 def goldberg_radzik(G, source, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
