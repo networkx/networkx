@@ -709,7 +709,8 @@ def bellman_ford_predecessor_and_distance(G, source, weight='weight'):
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 0)
+    >>> assert_raises(nx.NetworkXUnbounded,
+                      nx.bellman_ford_predecessor_and_distance, G, 0)
 
     Notes
     -----
@@ -745,19 +746,14 @@ def bellman_ford_predecessor_and_distance(G, source, weight='weight'):
     return (pred, _bellman_ford(G, [source], get_weight,pred=pred, dist=dist))
 
 
-def _bellman_ford(G, source, get_weight, pred=None, paths=None, dist=None, cutoff=None, target=None):
+def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
+                  cutoff=None, target=None):
     """Relaxation loop for Bellman–Ford algorithm
 
     Parameters
     ----------
     G : NetworkX graph
-
-    pred: dict
-        Keyed by node to predecessor in the path
-
-    dist: dict
-        Keyed by node to the distance from the source
-
+    
     source: list
         List of source nodes
 
@@ -766,6 +762,26 @@ def _bellman_ford(G, source, get_weight, pred=None, paths=None, dist=None, cutof
        function must accept exactly three positional arguments: the two
        endpoints of an edge and the dictionary of edge attributes for
        that edge. The function must return a number.
+
+    pred: dict of lists, optional (default=None)
+        dict to store a list of predecessors keyed by that node
+        If None, predecessors are not stored
+
+    paths: dict, optional (default=None)
+        dict to store the path list from source to each node, keyed by node
+        If None, paths are not stored
+
+    dist: dict, optional (default=None)
+        dict to store distance from source to the keyed node
+        If None, returned dist dict contents default to 0 for every node in the
+        source list
+
+    cutoff: integer or float, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned
+        
+    target: node label, optional
+        Ending node for path. Path lengths to other destinations may (and
+        probably will) be incorrect.
 
     Returns
     -------
@@ -785,15 +801,6 @@ def _bellman_ford(G, source, get_weight, pred=None, paths=None, dist=None, cutof
         raise NotImplementedError(
             "To Be Done: Parameter paths not yet implemented")       
 
-    if target != None:
-        raise NotImplementedError(
-            "To Be Done: Parameter target not yet implemented")
-    
-    if cutoff != None:
-        raise NotImplementedError(
-            "To Be Done: Parameter cutoff not yet implemented")
-
-            
     if pred == None:
         pred = {v: [] for v in source}
     
@@ -811,11 +818,20 @@ def _bellman_ford(G, source, get_weight, pred=None, paths=None, dist=None, cutof
         u = q.popleft()
         in_q.remove(u)
 
-        # Skip relaxations if any of the predecessors of u is in the queue. If any is in the queue, its distance and follow-up computations will change
+        # Skip relaxations if any of the predecessors of u is in the queue.
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
                 dist_v = dist_u + get_weight(v, u, e)
+
+                if cutoff is not None:
+                    if dist_v > cutoff:
+                        continue
+                                    
+                if target is not None:
+                    if dist_v > dist.get(target, inf):
+                        continue
+                    
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
