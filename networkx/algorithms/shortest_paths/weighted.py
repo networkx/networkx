@@ -30,6 +30,13 @@ __all__ = ['dijkstra_path',
            'all_pairs_dijkstra_path',
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
+           'bellman_ford_path',
+           'bellman_ford_path_length',
+           'single_source_bellman_ford',
+           'single_source_bellman_ford_path',
+           'single_source_bellman_ford_path_length',
+           'all_pairs_bellman_ford_path',
+           'all_pairs_bellman_ford_path_length',
            'bellman_ford_predecessor_and_distance',
            'negative_edge_cycle',
            'goldberg_radzik',
@@ -848,6 +855,89 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                     pred[v].append(u)
 
     return dist
+def bellman_ford_path(G, source, target, weight='weight'):
+    """See dijkstra_path()
+    
+    """
+    (length, path) = single_source_bellman_ford(G, source, target=target, weight=weight)
+    try:
+        return path[target]
+    except KeyError:
+        raise nx.NetworkXNoPath(
+            "node %s not reachable from %s" % (source, target))
+            
+def bellman_ford_path_length(G, source, target, weight='weight'):
+    """See dijkstra_path_length()
+    
+    """
+    if source == target:
+        return 0
+
+    if G.is_multigraph():
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
+    else:
+        get_weight = lambda u, v, data: data.get(weight, 1)
+    
+    length =  _bellman_ford(G, source, get_weight, target=target)
+    
+    try:
+        return length[target]
+    except KeyError:
+        raise nx.NetworkXNoPath(
+            "node %s not reachable from %s" % (source, target))
+
+def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
+    """See single_source_dijkstra_path()
+    
+    """
+    (length, path) = single_source_bellman_ford(
+        G, source, cutoff=cutoff, weight=weight)
+    return path
+
+def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weight'):
+    """See single_source_dijkstra_path_length()
+    
+    """
+    if G.is_multigraph():
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
+    else:
+        get_weight = lambda u, v, data: data.get(weight, 1)
+
+    return iter(_bellman_ford(G, source, get_weight, cutoff=cutoff).items())
+
+def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weight'):
+    """See single_source_dijkstra()
+    """
+    if source == target:
+        return ({source: 0}, {source: [source]})
+
+    if G.is_multigraph():
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
+    else:
+        get_weight = lambda u, v, data: data.get(weight, 1)
+
+    paths = {source: [source]}  # dictionary of paths
+    return (_bellman_ford(G, source, get_weight, paths=paths, cutoff=cutoff,
+                     target=target), paths)
+
+def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
+    """See all_pairs_dijkstra_path_length()
+    
+    """
+    length = single_source_bellman_ford_path_length
+    for n in G:
+        yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
+
+def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
+    """See all_pairs_dijkstra_path()
+
+    """
+    path = single_source_bellman_ford_path
+    # TODO This can be trivially parallelized.
+    return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
 
 def goldberg_radzik(G, source, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
