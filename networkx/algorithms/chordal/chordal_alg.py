@@ -20,6 +20,7 @@ __all__ = ['is_chordal',
            'find_induced_nodes', 
            'chordal_graph_cliques',
            'chordal_graph_treewidth',
+		   'chordal_simplicial_vertex',
            'NetworkXTreewidthBoundExceeded']
 
 class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
@@ -241,6 +242,48 @@ def chordal_graph_treewidth(G):
     for clique in nx.chordal_graph_cliques(G):
         max_clique = max(max_clique,len(clique))
     return max_clique - 1
+
+def chordal_simplicial_vertex(G):
+    """Returns the simplicial vertex of the chordal graph G. 
+	
+    Parameters
+    ----------
+    G : graph
+      A NetworkX graph 
+    
+    Returns
+    -------
+    simplicial vertex : node of graphs whoes open neighborhood is clique
+	The size of the largest clique in the graph minus one.
+    
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support DiGraph, MultiGraph and MultiDiGraph. 
+        If the input graph is an instance of one of these classes, a
+        NetworkXError is raised.
+        The algorithm can only be applied to chordal graphs. If
+        the input graph is found to be non-chordal, a NetworkXError is raised.
+        
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> e = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8)]
+    >>> G = nx.Graph(e)
+    >>> nx.chordal_simplicial_vertex(G)
+    1
+
+    References
+    ----------
+    .. [1] http://www.cse.iitd.ernet.in/~naveen/courses/CSL851/Keshav.pdf
+    """
+    if not is_chordal(G):
+        raise nx.NetworkXError("Input graph is not chordal.")
+
+    for node in G.nodes():
+        nbrs = nx.all_neighbors(G, node)
+        if _is_complete_graph(G.subgraph(nbrs)):
+            return node
 
 def _is_complete_graph(G):
     """Returns True if G is a complete graph."""

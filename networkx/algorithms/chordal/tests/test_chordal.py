@@ -57,3 +57,5 @@ class TestMCS:
                        frozenset([3,4,5,6])])
         assert_equal(nx.chordal_graph_cliques(self.connected_chordal_G),cliques)
 
+    def test_chordal_simplicial_vertex(self):
+        assert_equal(nx.chordal_simplicial_vertex(self.connected_chordal_G), 1)
