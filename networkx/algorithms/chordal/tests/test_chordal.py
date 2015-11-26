@@ -59,3 +59,5 @@ class TestMCS:
 
     def test_chordal_simplicial_vertex(self):
         assert_equal(nx.chordal_simplicial_vertex(self.connected_chordal_G), 1)
+        assert_raises(nx.NetworkXError,
+            nx.chordal_simplicial_vertex,self.non_chordal_G)
