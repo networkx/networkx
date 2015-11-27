@@ -54,15 +54,15 @@ class TestFunction(object):
         assert_equal(self.DG.subgraph([0,1,2,4]).adj,nx.subgraph(self.DG,[0,1,2,4]).adj)
 
     def test_create_empty_copy(self):
-        G=nx.create_empty_copy(self.G, with_nodes=False)
-        assert_equal(list(G), [])
-        assert_equal(G.graph,{})
-        assert_equal(G.node,{})
-        assert_equal(G.edge,{})
-        G=nx.create_empty_copy(self.G)
+        G=nx.create_empty_copy(self.G, with_data=False)
         assert_equal(list(G), list(self.G))
         assert_equal(G.graph,{})
         assert_equal(G.node,{}.fromkeys(self.G.nodes(),{}))
+        assert_equal(G.edge,{}.fromkeys(self.G.nodes(),{}))
+        G=nx.create_empty_copy(self.G)
+        assert_equal(list(G), list(self.G))
+        assert_equal(G.graph,self.G.graph)
+        assert_equal(G.node,self.G.node)
         assert_equal(G.edge,{}.fromkeys(self.G.nodes(),{}))
 
     def test_degree_histogram(self):
