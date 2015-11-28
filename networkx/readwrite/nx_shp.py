@@ -152,7 +152,7 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
                     edge_attrs["Wkb"] = segment.ExportToWkb()
                     edge_attrs["Wkt"] = segment.ExportToWkt()
                     edge_attrs["Json"] = segment.ExportToJson()
-
+                    del segment
                 yield (pt1, pt2, edge_attrs)
 
     elif geom.GetGeometryType() == ogr.wkbMultiLineString:

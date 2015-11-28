@@ -98,10 +98,9 @@ def categorical_node_match(attr, default):
             return data1.get(attr, default) == data2.get(attr, default)
     else:
         attrs = list(zip(attr, default)) # Python 3
+
         def match(data1, data2):
-            values1 = set([data1.get(attr, d) for attr, d in attrs])
-            values2 = set([data2.get(attr, d) for attr, d in attrs])
-            return values1 == values2
+            return all(data1.get(attr, d) == data2.get(attr, d) for attr, d in attrs)
     return match
 
 try:

@@ -20,7 +20,7 @@ print(is_valid_degree_sequence(z))
 
 print("Configuration model")
 G=configuration_model(z)  # configuration model
-degree_sequence=list(degree(G).values()) # degree sequence
+degree_sequence = [d for n,d in G.degree()] # degree sequence
 print("Degree sequence %s" % degree_sequence)
 print("Degree histogram")
 hist={}

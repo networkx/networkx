@@ -140,7 +140,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     while n > 0:
         # Retrieve the maximum degree in the sequence
         while num_degs[dmax] == 0:
-            dmax -= 1;
+            dmax -= 1
         # If there are not enough stubs to connect to, then the sequence is
         # not graphical
         if dmax > n-1:

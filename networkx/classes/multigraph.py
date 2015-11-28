@@ -37,6 +37,7 @@ class MultiGraph(Graph):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
@@ -264,7 +265,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u,v : nodes
+        u, v : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         key : hashable identifier, optional (default=lowest unused integer)
@@ -424,7 +425,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u,v: nodes
+        u, v : nodes
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
@@ -533,7 +534,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u,v : nodes
+        u, v : nodes
             Nodes can be, for example, strings or numbers.
 
         key : hashable identifier, optional (default=None)
@@ -672,9 +673,11 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u,v : nodes
-        default:  any Python object (default=None)
+        u, v : nodes
+
+        default :  any Python object (default=None)
             Value to return if the edge (u,v) is not found.
+
         key : hashable identifier, optional (default=None)
             Return data only for the edge with specified key.
 
@@ -927,7 +930,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u,v : nodes, optional (default=all edges)
+        u, v : nodes, optional (default=all edges)
             If u and v are specified, return the number of edges between
             u and v. Otherwise return the total number of all edges.
 

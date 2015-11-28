@@ -159,8 +159,7 @@ def uniform_sequence(n):
 def cumulative_distribution(distribution):
     """Return normalized cumulative distribution from discrete distribution."""
 
-    cdf=[]
-    cdf.append(0.0)
+    cdf= [0.0]
     psum=float(sum(distribution))
     for i in range(0,len(distribution)):
         cdf.append(cdf[i]+distribution[i]/psum)

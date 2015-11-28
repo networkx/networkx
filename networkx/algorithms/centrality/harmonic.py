@@ -13,14 +13,14 @@ __all__ = ['harmonic_centrality']
 
 
 def harmonic_centrality(G, distance=None):
-    """Compute harmonic centrality for nodes.
+    r"""Compute harmonic centrality for nodes.
 
     Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
-    of the shortest path distances from all other nodes to `u`.
+    of the shortest path distances from all other nodes to `u`
 
     .. math::
 
-        C(u) = \sum_{v \neq u \epsilon G} \frac{1}{d(v, u)},
+        C(u) = \sum_{v \neq u} \frac{1}{d(v, u)}
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`.
 
@@ -30,6 +30,7 @@ def harmonic_centrality(G, distance=None):
     ----------
     G : graph
       A NetworkX graph
+
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
       path calculations.  If `None`, then each edge will have distance equal to 1.
@@ -52,35 +53,19 @@ def harmonic_centrality(G, distance=None):
 
     References
     ----------
-    .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality." Internet Mathematics 10.3-4 (2014): 222-262.
+    .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
+           Internet Mathematics 10.3-4 (2014): 222-262.
     """
-
+    if len(G) <= 1:
+        return {singleton: 0.0 for singleton in G.nodes()}
+    
+    if G.is_directed():
+        G = G.reverse()
+        
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight
-        path_length = functools.partial(nx.all_pairs_dijkstra_path_length,
-                                        weight=distance)
+        sp = nx.all_pairs_dijkstra_path_length(G, weight=distance)
     else:
-        path_length = nx.all_pairs_shortest_path_length
+        sp = nx.all_pairs_shortest_path_length(G)
 
-    nodes = G.nodes()
-    harmonic_centrality = {}
-
-    if len(G) <= 1:
-        for singleton in nodes:
-            harmonic_centrality[singleton] = 0.0
-        return harmonic_centrality
-
-    sp = path_length(G.reverse() if G.is_directed() else G)
-
-    # temporary hack, will fix this when all_pairs_dijkstra_path_length is
-    # updated to return an iterator @MridulS
-    if distance is not None:
-        for n in nodes:
-            harmonic_centrality[n] = sum([1/i if i > 0 else 0 for i in sp[n].values()])
-    else:     
-        for node, dist_dict in sp:
-            harmonic_centrality[node] = sum([1/dist if dist > 0 else 0 for dist in dist_dict.values()])
-
-    return harmonic_centrality
-
-
+    return {n: sum(1/d if d > 0 else 0 for d in dd.values()) for n, dd in sp}

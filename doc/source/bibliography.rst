@@ -5,7 +5,7 @@ Bibliography
 
 .. [BA02] R. Albert and A.-L. Barabási, "Statistical mechanics of complex
    networks", Reviews of Modern Physics, 74, pp. 47-97, 2002. 
-   :arxiv:`cond-mat/0106096`
+   http://arxiv.org/abs/cond-mat/0106096
 
 .. [Bollobas01] B. Bollobás, "Random Graphs", Second Edition,
    Cambridge University Press, 2001.
@@ -19,17 +19,17 @@ Bibliography
 
 .. [choudum1986] S.A. Choudum. "A simple proof of the Erdős-Gallai theorem on 
    graph sequences." Bulletin of the Australian Mathematical Society, 33, 
-   pp 67-70, 1986. :doi:`10.1017/S0004972700002872`
+   pp 67-70, 1986. http://dx.doi.org/10.1017/S0004972700002872
 
 .. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997. 
-   :url:`http://diestel-graph-theory.com/index.html`
+   http://diestel-graph-theory.com/index.html
 
 .. [DM03] S.N. Dorogovtsev and J.F.F. Mendes, "Evolution of Networks",
    Oxford University Press, 2003.
 
 .. [EppsteinPads] David Eppstein.
    PADS, A library of Python Algorithms and Data Structures.
-   :url:`http://www.ics.uci.edu/~eppstein/PADS`
+   http://www.ics.uci.edu/~eppstein/PADS
    
 .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
 
@@ -48,7 +48,7 @@ Bibliography
 
 .. [Newman03] M.E.J. Newman, "The Structure and Function of Complex
    Networks", SIAM Review, 45, pp. 167-256, 2003. 
-   :url:`http://epubs.siam.org/doi/abs/10.1137/S003614450342480`
+   http://epubs.siam.org/doi/abs/10.1137/S003614450342480
 
 .. [Sedgewick02] R. Sedgewick, "Algorithms in C: Parts 1-4: 
    Fundamentals, Data Structure, Sorting, Searching", Addison Wesley
@@ -61,5 +61,5 @@ Bibliography
     2nd ed., 2001.
 
 .. [vanRossum98] Guido van Rossum. Python Patterns - Implementing Graphs, 1998.
-   :url:`http://www.python.org/doc/essays/graphs`
+   http://www.python.org/doc/essays/graphs
 

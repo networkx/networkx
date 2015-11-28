@@ -66,7 +66,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     [0, 1, 2, 3, 4]
 
     Notes
-    ------
+    -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
@@ -125,7 +125,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     --------
     bidirectional_dijkstra()
     """
-    length = single_source_dijkstra_path_length(G, source, weight=weight)
+    length = dict(single_source_dijkstra_path_length(G, source, weight=weight))
     try:
         return length[target]
     except KeyError:
@@ -197,13 +197,13 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     Returns
     -------
-    length : dictionary
-       Dictionary of shortest lengths keyed by target.
+    length : iterator
+        (target, shortest path length) iterator
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.single_source_dijkstra_path_length(G,0)
+    >>> G = nx.path_graph(5)
+    >>> length = dict(nx.single_source_dijkstra_path_length(G, 0))
     >>> length[4]
     4
     >>> print(length)
@@ -266,7 +266,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
     [0, 1, 2, 3, 4]
 
     Notes
-    ---------
+    -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
@@ -298,43 +298,47 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
 
 def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
               target=None):
-    """Implementation of Dijkstra's algorithm
+    """Uses Dijkstra's algorithm to find shortest weighted paths
 
     Parameters
     ----------
     G : NetworkX graph
 
     source : node label
-       Starting node for path
+       Starting node for paths
 
     get_weight: function
-        Function for getting edge weight
+        Function with (u, v, data) input that returns that edges weight
 
-    pred: list, optional(default=None)
-        List of predecessors of a node
+    pred: dict of lists, optional(default=None)
+        dict to store a list of predecessors keyed by that node
+        If None, predecessors are not stored.
 
     paths: dict, optional (default=None)
-        Path from the source to a target node.
+        dict to store the path list from source to each node, keyed by node.
+        If None, paths are not stored.
 
     target : node label, optional
-       Ending node for path
+        Ending node for path. Search is halted when target is found.
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
 
     Returns
     -------
-    distance,path : dictionaries
-       Returns a tuple of two dictionaries keyed by node.
-       The first dictionary stores distance from the source.
-       The second stores the path from the source to that node.
+    distance, path : two dictionaries
+        If path is not None, both distance and path dictionaries are returned.
+        The first dict stores distance from the source to the keyed node.
+        The second stores stores the path from the source to the keyed node.
 
-    pred,distance : dictionaries
-       Returns two dictionaries representing a list of predecessors
-       of a node and the distance to each node.
+    pred, distance : dictionaries
+        If path is None and pred is not None, two dicts are returned.
+        The first dict stores a list of predecessors keyed by node.
+        The second dict stores distance from the source to the keyed node.
 
-    distance : dictionary
-       Dictionary of shortest lengths keyed by target.
+    distance : iterator
+        If path and pred are both None, an iterator is returned yielding
+        (node, shortest path length to that node)
     """
     G_succ = G.succ if G.is_directed() else G.adj
 
@@ -342,8 +346,10 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
     pop = heappop
     dist = {}  # dictionary of final distances
     seen = {source: 0}
+    # fringe is heapq with 3-tuples (distance,c,node)
+    # use the count c to avoid comparing nodes (may not be able to)
     c = count()
-    fringe = []  # use heapq with (distance,label) tuples
+    fringe = []
     push(fringe, (0, next(c), source))
     while fringe:
         (d, _, v) = pop(fringe)
@@ -352,7 +358,6 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
         dist[v] = d
         if v == target:
             break
-
         for u, e in G_succ[v].items():
             cost = get_weight(v, u, e)
             if cost is None:
@@ -378,9 +383,9 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
 
     if paths is not None:
         return (dist, paths)
-    if pred is not None:
+    elif pred is not None:
         return (pred, dist)
-    return dist
+    return iter(dist.items())
 
 
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
@@ -402,7 +407,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
 
     Returns
     -------
-    pred,distance : dictionaries
+    pred, distance : dictionaries
        Returns two dictionaries representing a list of predecessors
        of a node and the distance to each node.
 
@@ -439,14 +444,15 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
 
     Returns
     -------
-    distance : dictionary
-       Dictionary, keyed by source and target, of shortest path lengths.
+    distance : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path length as the key value.
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.all_pairs_dijkstra_path_length(G)
-    >>> print(length[1][4])
+    >>> G = nx.path_graph(5)
+    >>> length = dict(nx.all_pairs_dijkstra_path_length(G))
+    >>> length[1][4]
     3
     >>> length[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
@@ -459,8 +465,8 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     The dictionary returned only has keys for reachable node pairs.
     """
     length = single_source_dijkstra_path_length
-    # TODO This can be trivially parallelized.
-    return {n: length(G, n, cutoff=cutoff, weight=weight) for n in G}
+    for n in G:
+        yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
 
 
 def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
@@ -1044,7 +1050,7 @@ def johnson(G, weight='weight'):
     ['0', '1', '2']
 
     Notes
-    ------
+    -----
     Johnson's algorithm is suitable even for graphs with negative weights. It
     works by using the Bellman–Ford algorithm to compute a transformation of
     the input graph that removes all negative weights, allowing Dijkstra's

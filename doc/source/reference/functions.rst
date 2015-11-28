@@ -24,7 +24,6 @@ Nodes
 
    nodes
    number_of_nodes
-   nodes_iter
    all_neighbors
    non_neighbors
    common_neighbors
@@ -38,7 +37,6 @@ Edges
 
    edges
    number_of_edges
-   edges_iter
    non_edges
 
 

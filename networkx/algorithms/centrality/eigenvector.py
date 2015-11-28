@@ -68,7 +68,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     hits
 
     Notes
-    ------
+    -----
     The measure was introduced by [1]_ and is discussed in [2]_.
 
     Eigenvector convergence: The power iteration method is used to compute
@@ -179,7 +179,7 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     hits
 
     Notes
-    ------
+    -----
     The measure was introduced by [1]_.
 
     This algorithm uses the SciPy sparse eigenvalue solver (ARPACK) to

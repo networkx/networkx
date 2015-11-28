@@ -121,6 +121,34 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         self.attribute_graph.add_edge('n5','n4',id='e6',weight=1.1)
         self.attribute_fh = io.BytesIO(self.attribute_data.encode('UTF-8'))
 
+        self.attribute_numeric_type_data = """<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="weight" attr.type="double" for="node" id="d1" />
+  <key attr.name="weight" attr.type="double" for="edge" id="d0" />
+  <graph edgedefault="directed">
+    <node id="n0">
+      <data key="d1">1</data>
+    </node>
+    <node id="n1">
+      <data key="d1">2.0</data>
+    </node>
+    <edge source="n0" target="n1">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="n1" target="n1">
+      <data key="d0">1.0</data>
+    </edge>
+  </graph>
+</graphml>
+"""
+
+        self.attribute_numeric_type_graph = nx.DiGraph()
+        self.attribute_numeric_type_graph.add_node('n0', weight=1)
+        self.attribute_numeric_type_graph.add_node('n1', weight=2.0)
+        self.attribute_numeric_type_graph.add_edge('n0', 'n1', weight=1)
+        self.attribute_numeric_type_graph.add_edge('n1', 'n1', weight=1.0)
+        self.attribute_numeric_type_fh = io.BytesIO(self.attribute_numeric_type_data.encode('UTF-8'))
+
         self.simple_undirected_data="""<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
@@ -186,6 +214,33 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         assert_equal(
             sorted(sorted(e) for e in G.edges()),
             sorted(sorted(e) for e in I.edges()))
+
+    def test_write_read_attribute_numeric_type_graphml(self):
+        from xml.etree.ElementTree import parse
+
+        G = self.attribute_numeric_type_graph
+        fh = io.BytesIO()
+        nx.write_graphml(G, fh, infer_numeric_types=True)
+        fh.seek(0)
+        H = nx.read_graphml(fh)
+        fh.seek(0)
+
+        assert_equal(sorted(G.nodes()), sorted(H.nodes()))
+        assert_equal(sorted(G.edges()), sorted(H.edges()))
+        assert_equal(sorted(G.edges(data=True)),
+                     sorted(H.edges(data=True)))
+        self.attribute_numeric_type_fh.seek(0)
+
+        xml = parse(fh)
+        # Children are the key elements, and the graph element
+        children = xml.getroot().getchildren()
+        assert_equal(len(children), 3)
+
+        keys = [child.items() for child in children[:2]]
+
+        assert_equal(len(keys), 2)
+        assert_in(('attr.type', 'double'), keys[0])
+        assert_in(('attr.type', 'double'), keys[1])
 
     def test_read_attribute_graphml(self):
         G=self.attribute_graph
@@ -442,4 +497,3 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         H=nx.parse_graphml(s)
         assert_equal(H.node['n0']['test'],True)
         assert_equal(H.node['n2']['test'],False)
-

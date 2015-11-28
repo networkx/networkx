@@ -22,9 +22,9 @@ def weiner_index(G, weight=None):
             weiner+=sum(d for n, d in path_length)
     else:
         for n in G:
-            path_length=nx.single_source_dijkstra_path_length(G,
+            path_length = nx.single_source_dijkstra_path_length(G,
                     n,weight=weight)
-            weiner+=sum(path_length.values())
+            weiner += sum(d for n, d in path_length)
     return weiner
 
 

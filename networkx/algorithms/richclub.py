@@ -42,7 +42,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     0.4
 
     Notes
-    ------
+    -----
     The rich club definition and algorithm are found in [1]_.  This
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.

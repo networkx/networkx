@@ -1,60 +1,60 @@
-"""Functions for generating stochastic graphs from a given weighted directed
-graph.
-
-"""
 #    Copyright (C) 2010-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from __future__ import division
-import warnings
+"""Functions for generating stochastic graphs from a given weighted directed
+graph.
 
-import networkx as nx
+"""
+from __future__ import division
+
+from functools import partial
+
+from networkx.classes import DiGraph
+from networkx.classes import MultiDiGraph
 from networkx.utils import not_implemented_for
 
 __author__ = "Aric Hagberg <aric.hagberg@gmail.com>"
 __all__ = ['stochastic_graph']
 
 
-@not_implemented_for('multigraph')
 @not_implemented_for('undirected')
 def stochastic_graph(G, copy=True, weight='weight'):
-    """Returns a right-stochastic representation of the directed graph ``G``.
+    """Returns a right-stochastic representation of directed graph ``G``.
 
-    A right-stochastic graph is a weighted digraph in which for each node, the
-    sum of the weights of all the out-edges of that node is 1. If the graph is
-    already weighted (for example, via a ``'weight'`` edge attribute), the
-    reweighting takes that into account.
+    A right-stochastic graph is a weighted digraph in which for each
+    node, the sum of the weights of all the out-edges of that node is
+    1. If the graph is already weighted (for example, via a ``'weight'``
+    edge attribute), the reweighting takes that into account.
 
     Parameters
-    -----------
+    ----------
     G : directed graph
-      A NetworkX DiGraph
+        A :class:`~networkx.DiGraph` or :class:`~networkx.MultiDiGraph`.
 
     copy : boolean, optional
-      If this is ``True``, then this function returns a new instance of
-      :class:`networkx.Digraph`. Otherwise, the original graph is modified
-      in-place (and also returned, for convenience).
+        If this is ``True``, then this function returns a new graph with
+        the stochastic reweighting. Otherwise, the original graph is
+        modified in-place (and also returned, for convenience).
 
     weight : edge attribute key (optional, default='weight')
-      Edge attribute key used for reading the existing weight and setting the
-      new weight.  If no attribute with this key is found for an edge, then the
-      edge weight is assumed to be 1. If an edge has a weight, it must be a
-      a positive number.
+        Edge attribute key used for reading the existing weight and
+        setting the new weight.  If no attribute with this key is found
+        for an edge, then the edge weight is assumed to be 1. If an edge
+        has a weight, it must be a a positive number.
 
     """
     if copy:
-        W = nx.DiGraph(G)
-    else:
-        # Reference the original graph, don't make a copy.
-        W = G
-    degree = dict(W.out_degree(weight=weight))
-    for (u, v, d) in W.edges(data=True):
+        G = MultiDiGraph(G) if G.is_multigraph() else DiGraph(G)
+    # There is a tradeoff here: the dictionary of node degrees may
+    # require a lot of memory, whereas making a call to `G.out_degree`
+    # inside the loop may be costly in computation time.
+    degree = dict(G.out_degree(weight=weight))
+    for u, v, d in G.edges(data=True):
         if degree[u] == 0:
-            warnings.warn('zero out-degree for node %s' % u)
             d[weight] = 0
         else:
             d[weight] = d.get(weight, 1) / degree[u]
-    return W
+    return G

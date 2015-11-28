@@ -131,6 +131,19 @@ class BaseGraphTester(object):
         # but gets caught when iterator hits the unhashable
         assert_raises(networkx.NetworkXError,list,bunch)
 
+    @raises(networkx.NetworkXError)
+    def test_nbunch_iter_node_fails_format(self):
+        """Tests that a node that would have failed string formatting
+        doesn't cause an error when attempting to raise a
+        :exc:`networkx.NetworkXError`.
+
+        For more information, see pull request #1813.
+
+        """
+        G = self.Graph()
+        nbunch = [('x', set())]
+        list(G.nbunch_iter(nbunch))
+
     def test_selfloop_degree(self):
         G=self.Graph()
         G.add_edge(1, 1)

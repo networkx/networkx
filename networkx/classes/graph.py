@@ -46,6 +46,7 @@ class Graph(object):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
@@ -640,7 +641,6 @@ class Graph(object):
         [0, 1, 2]
 
         To get the node data along with the nodes::
-
         >>> G.add_node(1, time='5pm')
         >>> G.node[0]['foo'] = 'bar'
         >>> list(G.nodes(data=True))
@@ -723,7 +723,7 @@ class Graph(object):
 
         Parameters
         ----------
-        u,v : nodes
+        u, v : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         attr_dict : dictionary, optional (default= no attributes)
@@ -896,7 +896,7 @@ class Graph(object):
 
         Parameters
         ----------
-        u,v: nodes
+        u, v : nodes
             Remove the edge between nodes u and v.
 
         Raises
@@ -965,7 +965,7 @@ class Graph(object):
 
         Parameters
         ----------
-        u,v : nodes
+        u, v : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
 
@@ -1124,7 +1124,7 @@ class Graph(object):
 
         Parameters
         ----------
-        u,v : nodes
+        u, v : nodes
         default:  any Python object (default=None)
             Value to return if the edge (u,v) is not found.
 
@@ -1595,7 +1595,7 @@ class Graph(object):
 
         Parameters
         ----------
-        u,v : nodes, optional (default=all edges)
+        u, v : nodes, optional (default=all edges)
             If u and v are specified, return the number of edges between
             u and v. Otherwise return the total number of all edges.
 
@@ -1768,7 +1768,7 @@ class Graph(object):
                     # capture error for unhashable node.
                     elif 'hashable' in message:
                         raise NetworkXError(
-                            "Node %s in the sequence nbunch is not a valid node."%n)
+                            "Node {} in the sequence nbunch is not a valid node.".format(n))
                     else:
                         raise
             bunch = bunch_iter(nbunch, self.adj)

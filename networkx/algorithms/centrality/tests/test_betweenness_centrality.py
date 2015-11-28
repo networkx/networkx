@@ -3,7 +3,7 @@ from nose.tools import *
 import networkx as nx
 
 def weighted_G():
-    G=nx.Graph();
+    G=nx.Graph()
     G.add_edge(0,1,weight=3)
     G.add_edge(0,2,weight=2)
     G.add_edge(0,3,weight=6)
