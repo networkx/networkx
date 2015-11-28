@@ -175,14 +175,8 @@ class TestDiGraph(BaseAttrDiGraphTester,TestGraph):
         self.P3.adj={0: {1: ed1}, 1: {2: ed2}, 2: {}}
         self.P3.succ=self.P3.adj
         self.P3.pred={0: {}, 1: {0: ed1}, 2: {1: ed2}}
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
-        self.P3.node={}
-        self.P3.node[0]={}
-        self.P3.node[1]={}
-        self.P3.node[2]={}
+        self.K3.node= {0: {}, 1: {}, 2: {}}
+        self.P3.node= {0: {}, 1: {}, 2: {}}
 
     def test_data_input(self):
         G=self.Graph(data={1:[2],2:[1]}, name="test")

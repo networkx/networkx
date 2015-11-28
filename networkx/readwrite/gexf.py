@@ -265,9 +265,7 @@ class GEXFWriter(GEXF):
         self.edge_id=itertools.count()
         self.attr_id=itertools.count()
         # default attributes are stored in dictionaries
-        self.attr={}
-        self.attr['node']={}
-        self.attr['edge']={}
+        self.attr= {'node': {}, 'edge': {}}
         self.attr['node']['dynamic']={}
         self.attr['node']['static']={}
         self.attr['edge']['dynamic']={}
