@@ -314,7 +314,6 @@ def _bidirectional_all_shortest_paths(G, source, target):
     tree = [{(source,)}, {(target,)}]
     nodes = [{source}, {target}]
     found = 0
-    i = 1
 
     # used if the graph is not directed
     neighbors = lambda node: iter(G[node])
@@ -362,7 +361,6 @@ def _bidirectional_all_shortest_paths(G, source, target):
                     temp_tree.add(path_s + (s,))
 
         tree[modus] = temp_tree
-        i += 1
 
     if not found:
         raise nx.NetworkXNoPath("No path between %s and %s." % (source,
@@ -373,7 +371,6 @@ def _bidirectional_all_shortest_paths_multi(G, source, target):
 
     tree = [[(source,)], [(target,)]]
     found = 0
-    i = 1
 
     while not found and tree[0] and tree[1]:
 
@@ -406,7 +403,6 @@ def _bidirectional_all_shortest_paths_multi(G, source, target):
                     temp_tree.append(path_s + (s,))
 
         tree[modus] = temp_tree
-        i += 1
 
     if not found:
         raise nx.NetworkXNoPath("No path between %s and %s." % (source,
@@ -429,7 +425,6 @@ def _bidirectional_has_path(G, source, target):
 
     leaves = [{source}, {target}]
     nodes = [{source}, {target}]
-    i = 1
 
     neighbors = lambda node: iter(G[node])
 
@@ -464,8 +459,6 @@ def _bidirectional_has_path(G, source, target):
         leaves[modus] = temp
         nodes[modus].update(temp)
 
-        i += 1
-
     return False
 
 
@@ -473,7 +466,6 @@ def _bidirectional_has_path_multi(G, source, target):
 
     leaves = [{source}, {target}]
     nodes = [{source}, {target}]
-    i = 1
 
     while leaves[0] and leaves[1]:
 
@@ -499,7 +491,5 @@ def _bidirectional_has_path_multi(G, source, target):
 
         leaves[modus] = temp
         nodes[modus].update(temp)
-
-        i += 1
 
     return False
