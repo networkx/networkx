@@ -112,9 +112,11 @@ def bidirectional_all_simple_paths(G, source, target, cutoff=None):
     if cutoff is None:
         cutoff = len(G) - 1
     if G.is_multigraph():
-        return _bidirectional_all_simple_paths_multi(G, source, target, cutoff=cutoff)
+        return _bidirectional_all_simple_paths_multi(G, source,
+                                                     target, cutoff=cutoff)
     else:
-        return _bidirectional_all_simple_paths(G, source, target, cutoff=cutoff)
+        return _bidirectional_all_simple_paths(G, source,
+                                               target, cutoff=cutoff)
 
 
 def _bidirectional_all_simple_paths(G, source, target, cutoff):
@@ -128,7 +130,7 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
     # used if the graph is not directed
     neighbors = lambda node: iter(G[node])
 
-    for i in range(1, cutoff+1):
+    for _ in range(cutoff):
 
         if len(tree[1]) < len(tree[0]):
             modus = 1
@@ -179,7 +181,7 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
     tree = [[(source,)], [(target,)]]
     leaves = [{source}, {target}]
 
-    for i in range(1, cutoff+1):
+    for _ in range(cutoff):
 
         if len(tree[1]) < len(tree[0]):
             modus = 1
