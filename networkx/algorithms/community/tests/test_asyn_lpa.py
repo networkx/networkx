@@ -20,7 +20,7 @@ def test_single_node():
     test.add_node('a')
 
     # ground truth
-    ground_truth = set([frozenset(['a'])])
+    ground_truth = {frozenset(['a'])}
 
     communities = asyn_lpa.asyn_lpa_communities(test)
     result = {frozenset(c) for c in communities}
@@ -41,8 +41,7 @@ def test_simple_communities():
     test.add_edge('f', 'e')
 
     # ground truth
-    ground_truth = set([frozenset(['a', 'c', 'b']),
-                        frozenset(['e', 'd', 'f'])])
+    ground_truth = {frozenset(['a', 'c', 'b']), frozenset(['e', 'd', 'f'])}
 
     communities = asyn_lpa.asyn_lpa_communities(test)
     result = {frozenset(c) for c in communities}
@@ -78,11 +77,11 @@ def test_several_communities():
     test.add_edge('5b', '5c')
 
     # ground truth
-    ground_truth = set([frozenset(['1a', '1c', '1b']),
-                        frozenset(['2a', '2c', '2b']),
-                        frozenset(['3a', '3c', '3b']),
-                        frozenset(['4a', '4c', '4b']),
-                        frozenset(['5a', '5c', '5b'])])
+    ground_truth = {frozenset(['1a', '1c', '1b']),
+                    frozenset(['2a', '2c', '2b']),
+                    frozenset(['3a', '3c', '3b']),
+                    frozenset(['4a', '4c', '4b']),
+                    frozenset(['5a', '5c', '5b'])}
 
     communities = asyn_lpa.asyn_lpa_communities(test)
     result = {frozenset(c) for c in communities}

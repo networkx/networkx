@@ -242,7 +242,7 @@ class HistoricalTests(object):
         # nbunch can be a list
         assert_edges_equal(G.edges(['A','B']),elist)
         # nbunch can be a set
-        assert_edges_equal(G.edges(set(['A','B'])),elist)
+        assert_edges_equal(G.edges({'A', 'B'}), elist)
         # nbunch can be a graph
         G1=self.G()
         G1.add_nodes_from('AB')
@@ -270,7 +270,7 @@ class HistoricalTests(object):
         # nbunch can be a list
         assert_edges_equal(G.edges(['A','B']),elist)
         # nbunch can be a set
-        assert_edges_equal(G.edges(set(['A','B'])),elist)
+        assert_edges_equal(G.edges({'A', 'B'}), elist)
         # nbunch can be a graph
         G1=self.G()
         G1.add_nodes_from(['A','B'])
@@ -451,7 +451,7 @@ class HistoricalTests(object):
         H=K5.subgraph(1)
         assert_true(nx.is_isomorphic(H,K1))
         # Test G.subgraph(nbunch), where nbunch is a set
-        H=K5.subgraph(set([1]))
+        H=K5.subgraph({1})
         assert_true(nx.is_isomorphic(H,K1))
         # Test G.subgraph(nbunch), where nbunch is an iterator
         H=K5.subgraph(iter(K3))

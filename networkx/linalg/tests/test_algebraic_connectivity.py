@@ -230,13 +230,13 @@ class TestSpectralOrdering(object):
         for method in self._methods:
             order = nx.spectral_ordering(G, weight='spam', method=method)
             assert_equal(set(order), set(G))
-            ok_(set([1, 3]) in (set(order[:-1]), set(order[1:])))
+            ok_({1, 3} in (set(order[:-1]), set(order[1:])))
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             assert_equal(set(order), set(G))
-            ok_(set([2, 3]) in (set(order[:-1]), set(order[1:])))
+            ok_({2, 3} in (set(order[:-1]), set(order[1:])))
 
     @preserve_random_state
     def test_path(self):

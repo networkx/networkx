@@ -230,7 +230,7 @@ def test_maximal_matching():
 
     for edge in graph.edges():
         u, v = edge
-        ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0, \
+        ok_(len({v} & vset) > 0 or len({u} & vset) > 0, \
                 "not a proper matching!")
 
     eq_(1, len(matching), "matching not length 1!")
@@ -249,7 +249,7 @@ def test_maximal_matching():
 
     for edge in graph.edges():
         u, v = edge
-        ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0, \
+        ok_(len({v} & vset) > 0 or len({u} & vset) > 0, \
                 "not a proper matching!")
 
 def test_maximal_matching_ordering():

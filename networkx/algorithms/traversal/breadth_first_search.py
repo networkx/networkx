@@ -45,7 +45,7 @@ def bfs_edges(G, source, reverse=False):
         neighbors = G.predecessors
     else:
         neighbors = G.neighbors
-    visited = set([source])
+    visited = {source}
     queue = deque([(source, neighbors(source))])
     while queue:
         parent, children = queue[0]

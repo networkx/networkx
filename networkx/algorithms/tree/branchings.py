@@ -46,7 +46,7 @@ __all__ = [
     'Edmonds'
 ]
 
-KINDS = set(['max', 'min'])
+KINDS = {'max', 'min'}
 
 STYLES = {
     'branching': 'branching',

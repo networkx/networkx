@@ -24,11 +24,11 @@ def test_dominating_set_error():
 
 def test_is_dominating_set():
     G = nx.path_graph(4)
-    d = set([1, 3])
+    d = {1, 3}
     assert_true(nx.is_dominating_set(G, d))
-    d = set([0, 2])
+    d = {0, 2}
     assert_true(nx.is_dominating_set(G, d))
-    d = set([1])
+    d = {1}
     assert_false(nx.is_dominating_set(G, d))
 
 def test_wikipedia_is_dominating_set():
@@ -36,6 +36,6 @@ def test_wikipedia_is_dominating_set():
     """
     G = nx.cycle_graph(4)
     G.add_edges_from([(0, 4), (1, 4), (2,5)])
-    assert_true(nx.is_dominating_set(G, set([4, 3, 5])))
-    assert_true(nx.is_dominating_set(G, set([0, 2])))
-    assert_true(nx.is_dominating_set(G, set([1, 2])))
+    assert_true(nx.is_dominating_set(G, {4, 3, 5}))
+    assert_true(nx.is_dominating_set(G, {0, 2}))
+    assert_true(nx.is_dominating_set(G, {1, 2}))

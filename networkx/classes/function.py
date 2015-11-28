@@ -464,7 +464,7 @@ def non_neighbors(graph, node):
     non_neighbors : iterator
         Iterator of nodes in the graph that are not neighbors of the node.
     """
-    nbors = set(neighbors(graph, node)) | set([node])
+    nbors = set(neighbors(graph, node)) | {node}
     return (nnode for nnode in graph if nnode not in nbors)
 
 

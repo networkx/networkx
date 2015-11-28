@@ -52,7 +52,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
         """dispersion for all nodes 'v' in a ego network G_u of node 'u'"""
         u_nbrs = set(G_u[u])
         ST = set(n for n in G_u[v] if n in u_nbrs)
-        set_uv=set([u,v])
+        set_uv= {u, v}
         #all possible ties of connections that u and b share
         possib = combinations(ST, 2)
         total = 0

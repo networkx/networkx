@@ -83,7 +83,7 @@ def cycle_basis(G,root=None):
                 if nbr not in used:   # new node
                     pred[nbr]=z
                     stack.append(nbr)
-                    used[nbr]=set([z])
+                    used[nbr]= {z}
                 elif nbr == z:        # self loops
                     cycles.append([z])
                 elif nbr not in zused:# found a cycle
@@ -162,7 +162,7 @@ def simple_cycles(G):
     cycle_basis
     """
     def _unblock(thisnode,blocked,B):
-        stack=set([thisnode])
+        stack= {thisnode}
         while stack:
             node=stack.pop()
             if node in blocked:

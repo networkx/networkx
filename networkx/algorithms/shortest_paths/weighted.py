@@ -771,7 +771,7 @@ def goldberg_radzik(G, source, weight='weight'):
             # nonpositive reduced costs into to_scan in (reverse) topological
             # order.
             stack = [(u, iter(G_succ[u].items()))]
-            in_stack = set([u])
+            in_stack = {u}
             neg_count[u] = 0
             while stack:
                 u, it = stack[-1]
@@ -821,7 +821,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
     # Set of nodes relabled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
-    relabeled = set([source])
+    relabeled = {source}
 
     while relabeled:
         to_scan = topo_sort(relabeled)

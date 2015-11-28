@@ -72,7 +72,7 @@ def node_link_data(G, attrs=_attrs):
     target = attrs['target']
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs['key']
-    if len(set([source, target, key])) < 3:
+    if len({source, target, key}) < 3:
         raise nx.NetworkXError('Attribute names are not unique.')
     mapping = dict(zip(G, count()))
     data = {}

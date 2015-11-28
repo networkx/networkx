@@ -290,7 +290,7 @@ def _find_chordality_breaker(G,s=None,treewidth_bound=sys.maxsize):
     if s is None:
         s = random.choice(list(unnumbered))
     unnumbered.remove(s)
-    numbered = set([s])
+    numbered = {s}
 #    current_treewidth = None
     current_treewidth = -1
     while unnumbered:# and current_treewidth <= treewidth_bound:
@@ -318,14 +318,14 @@ def _connected_chordal_graph_cliques(G):
     """Return the set of maximal cliques of a connected chordal graph."""
     if G.number_of_nodes() == 1:
         x = frozenset(G.nodes())
-        return set([x])
+        return {x}
     else:
         cliques = set()
         unnumbered = set(G.nodes())
         v = random.choice(list(unnumbered))
         unnumbered.remove(v)
-        numbered = set([v])
-        clique_wanna_be = set([v])
+        numbered = {v}
+        clique_wanna_be = {v}
         while unnumbered:
             v = _max_cardinality_node(G,unnumbered,numbered)
             unnumbered.remove(v)

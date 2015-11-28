@@ -80,10 +80,10 @@ def _triangles_and_degree_iter(G,nodes=None):
         nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
 
     for v,v_nbrs in nodes_nbrs:
-        vs=set(v_nbrs)-set([v])
+        vs= set(v_nbrs) - {v}
         ntriangles=0
         for w in vs:
-            ws=set(G[w])-set([w])
+            ws= set(G[w]) - {w}
             ntriangles+=len(vs.intersection(ws))
         yield (v,len(vs),ntriangles)
 
@@ -108,7 +108,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
         nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
 
     for i,nbrs in nodes_nbrs:
-        inbrs=set(nbrs)-set([i])
+        inbrs= set(nbrs) - {i}
         weighted_triangles=0.0
         seen=set()
         for j in inbrs:
@@ -358,7 +358,7 @@ def square_clustering(G, nodes=None):
         clustering[v] = 0.0
         potential=0
         for u,w in combinations(G[v], 2):
-            squares = len((set(G[u]) & set(G[w])) - set([v]))
+            squares = len((set(G[u]) & set(G[w])) - {v})
             clustering[v] += squares
             degm = squares + 1.0
             if w in G[u]:

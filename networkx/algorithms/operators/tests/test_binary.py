@@ -16,7 +16,7 @@ def test_union_attributes():
     h.node[0]['x'] = 7
 
     gh = nx.union(g, h, rename=('g', 'h'))
-    assert_equal( set(gh.nodes()) , set(['h0', 'h1', 'g0', 'g1']) )
+    assert_equal(set(gh.nodes()), {'h0', 'h1', 'g0', 'g1'})
     for n in gh:
         graph, node = n
         assert_equal( gh.node[n], eval(graph).node[int(node)] )
@@ -34,7 +34,7 @@ def test_intersection():
     H.add_edge(2,3)
     H.add_edge(3,4)
     I=nx.intersection(G,H)
-    assert_equal( set(I.nodes()) , set([1,2,3,4]) )    
+    assert_equal(set(I.nodes()), {1, 2, 3, 4})
     assert_equal( sorted(I.edges()) , [(2,3)] )    
 
 
@@ -85,13 +85,13 @@ def test_difference():
     H.add_edge(2,3)
     H.add_edge(3,4)
     D=nx.difference(G,H)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal(set(D.nodes()), {1, 2, 3, 4})
     assert_equal( sorted(D.edges()) , [(1,2)] )    
     D=nx.difference(H,G)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal(set(D.nodes()), {1, 2, 3, 4})
     assert_equal( sorted(D.edges()) , [(3,4)] )    
     D=nx.symmetric_difference(G,H)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal(set(D.nodes()), {1, 2, 3, 4})
     assert_equal( sorted(D.edges()) , [(1,2),(3,4)] )    
 
 
@@ -104,14 +104,14 @@ def test_difference2():
     H.add_edge(1,2)
     G.add_edge(2,3)
     D=nx.difference(G,H)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal(set(D.nodes()), {1, 2, 3, 4})
     assert_equal( sorted(D.edges()) , [(2,3)] )    
     D=nx.difference(H,G)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal(set(D.nodes()), {1, 2, 3, 4})
     assert_equal( sorted(D.edges()) , [] )    
     H.add_edge(3,4)
     D=nx.difference(H,G)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal(set(D.nodes()), {1, 2, 3, 4})
     assert_equal( sorted(D.edges()) , [(3,4)] )    
 
 
