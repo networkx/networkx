@@ -93,6 +93,7 @@ def _compute_rc(G):
     for d,nk in zip(range(len(nks)),nks):         
         while k1 <= d:
             if len(edge_degrees)==0:
+                ek = 0
                 break
             k1,k2=edge_degrees.pop(0)
             ek-=1
