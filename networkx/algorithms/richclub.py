@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
+from networkx.utils import not_implemented_for
+
 __author__ = """\n""".join(['Ben Edwards',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 
 __all__ = ['rich_club_coefficient']
 
+@not_implemented_for('directed','multigraph')
 def rich_club_coefficient(G, normalized=True, Q=100):
     """Return the rich-club coefficient of the graph G.
 
@@ -59,9 +62,6 @@ def rich_club_coefficient(G, normalized=True, Q=100):
        "Uniform generation of random graphs with arbitrary degree 
        sequences", 2006. http://arxiv.org/abs/cond-mat/0312028
     """
-    if G.is_multigraph() or G.is_directed():
-        raise Exception('rich_club_coefficient is not implemented for ',
-                        'directed or multiedge graphs.')
     if G.number_of_selfloops() > 0:
         raise Exception('rich_club_coefficient is not implemented for ',
                         'graphs with self loops.')
