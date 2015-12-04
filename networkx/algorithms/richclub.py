@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils.decorators import not_implemented_for
 
 __author__ = """\n""".join(['Ben Edwards',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 
 __all__ = ['rich_club_coefficient']
 
-@not_implemented_for('directed','multigraph')
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def rich_club_coefficient(G, normalized=True, Q=100):
     """Return the rich-club coefficient of the graph G.
 
@@ -86,17 +87,17 @@ def _compute_rc(G):
     # number of nodes with degree > k (omit last entry which is zero)
     nks = [total-cs for cs in nx.utils.accumulate(deghist) if total-cs > 1]
     deg = dict(G.degree())
-    edge_degrees=sorted(sorted((deg[u],deg[v])) for u,v in G.edges()) 
-    ek=G.number_of_edges()
-    k1,k2=edge_degrees.pop(0)
-    rc={}
-    for d,nk in zip(range(len(nks)),nks):         
+    edge_degrees = sorted(sorted((deg[u],deg[v])) for u,v in G.edges())
+    ek = G.number_of_edges()
+    k1,k2 = edge_degrees.pop(0)
+    rc = {}
+    for d,nk in zip(range(len(nks)),nks):
         while k1 <= d:
             if len(edge_degrees)==0:
-                ek = 0
+                ek=0
                 break
-            k1,k2=edge_degrees.pop(0)
-            ek-=1
+            k1,k2 = edge_degrees.pop(0)
+            ek -= 1
         rc[d] = 2.0*ek/(nk*(nk-1))
     return rc
 
