@@ -283,6 +283,13 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
     nodes : dictionary
        Dictionary of edge tuples with betweenness centrality as the value.
 
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support DiGraphs.
+        If the input graph is an instance of DiGraph class, NetworkXError
+        is raised.
+
     See Also
     --------
     betweenness_centrality

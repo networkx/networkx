@@ -103,7 +103,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
             w = w + 1 + int(lr/lp)
             if v == w: # avoid self loops
                 w = w + 1
-            while  w >= n and v < n:
+            while v < n <= w:
                 w = w - n
                 v = v + 1
                 if v == w: # avoid self loops

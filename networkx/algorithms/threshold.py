@@ -776,7 +776,7 @@ def random_threshold_sequence(n,p,seed=None):
     if not seed is None:
         random.seed(seed)
 
-    if not (p<=1 and p>=0):
+    if not (0 <= p <= 1):
         raise ValueError("p must be in [0,1]")
 
     cs=['d']  # threshold sequences always start with a d
