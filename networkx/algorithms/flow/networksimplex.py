@@ -546,7 +546,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight',
     # Infeasibility and unboundedness detection
     ###########################################################################
 
-    if any(abs(x[i]) > tolerance for i in range(-n, 0)):
+    if any(abs(d) > tolerance for d in x):
         raise nx.NetworkXUnfeasible('no flow satisfies all node demands')
 
     if (any(x[i] * 2 >= faux_inf for i in range(e)) or

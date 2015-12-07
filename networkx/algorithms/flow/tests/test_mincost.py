@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import division
 import networkx as nx
 from nose.tools import assert_equal, assert_raises, assert_almost_equal
 import os
@@ -33,9 +33,9 @@ class TestMinCostFlow:
         G = nx.Graph()
         G.add_nodes_from(['i', 'j', 'k', 'l'])
         G.node['i']['demand'] = -1
-        G.node['j']['demand'] = 1. / 3
-        G.node['k']['demand'] = 1. / 3
-        G.node['l']['demand'] = 1. / 3
+        G.node['j']['demand'] = 1 / 3
+        G.node['k']['demand'] = 1 / 3
+        G.node['l']['demand'] = 1 / 3
         G.add_edge('i','j', {'weight': 1})
         G.add_edge('j','k', {'weight': 11})
         G.add_edge('k','l', {'weight': 21})
