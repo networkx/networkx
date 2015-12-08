@@ -47,7 +47,7 @@ class TestMinCostFlow:
         assert_almost_equal(cost, 15.3333333333)
         assert_equal(H, soln)
 
-    def test_floats_digraph(self):
+    def test_floats_digraph_scaled(self):
         G = nx.Graph()
         G.add_nodes_from(['i', 'j', 'k', 'l'])
         G.node['i']['demand'] = -1
