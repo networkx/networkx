@@ -197,7 +197,6 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight',
     N = list(G)                                # nodes
     I = {u: i for i, u in enumerate(N)}        # node indices
     D = [G.node[u].get(demand, 0) for u in N]  # node demands
-    print(D)
     inf = float('inf')
     for p, b in zip(N, D):
         if abs(b) == inf:
@@ -243,7 +242,6 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight',
     ###########################################################################
 
     if abs(sum(D)) > tolerance:
-        print(abs(sum(D)))
         raise nx.NetworkXUnfeasible('total node demand is not zero')
     for e, u in zip(E, U):
         if u < 0:
