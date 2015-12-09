@@ -94,7 +94,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
 
     Notes
     -----
-    This algorithm is not guaranteed to work if edge weights
+    This algorithm is not guaranteed to work if edge weights or demands
     are floating point numbers (overflows and roundoff errors can
     cause problems).
 
@@ -251,7 +251,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
                 'edge %r has negative capacity' % (e[:-1],))
 
     ###########################################################################
-    # Initialization 
+    # Initialization
     ###########################################################################
 
     # Add a dummy node -1 and connect all existing nodes to it with infinite-
@@ -282,7 +282,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     parent = list(chain(repeat(-1, n), [None]))  # parent nodes
     edge = list(range(e, e + n))                 # edges to parents
     size = list(chain(repeat(1, n), [n + 1]))    # subtree sizes
-    next = list(chain(range(1, n), [-1, 0]))     # next nodes in depth-first thread 
+    next = list(chain(range(1, n), [-1, 0]))     # next nodes in depth-first thread
     prev = list(range(-1, n))                    # previous nodes in depth-first thread
     last = list(chain(range(n), [n - 1]))        # last descendants in depth-first thread
 
