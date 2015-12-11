@@ -24,7 +24,7 @@ def min_edge_cover(G):
 
     Parameters
     ----------
-    G : An undirected, unweighted graph.
+    G : An undirected, unweighted bipartite graph.
 
     Returns
     -------
@@ -35,20 +35,15 @@ def min_edge_cover(G):
 
     Notes
     -----
-    Worst Case runtime of ``nx.max_weight_matching(G, maxcardinality=True)``
-    is `O(n^{3})`
+    Worst Case runtime of ``nx.bipartite.max_weight_matching(G)``
+    is `O(n^{2.5})`
     And the greedy extension works in `O(n\log{}n)`
-    So worst case run time of the function is `O(n^{3})`.
-
-    Minimum edge cover for bipartite graph can also be found using the
-    function present in :mod:`networkx.algorithms.bipartite.covering`
+    So worst case run time of the function is `O(n^{2.5})`.
     """
     if len(nx.isolates(G)) > 0:
         # ``min_cover`` does not exist as there is an isolated vertex
-        raise nx.NetworkXException(
-            "Graph has a vertex with no edge incident on it, so no edge cover exists.")
-
-    maximum_matching = nx.max_weight_matching(G, maxcardinality=True)
+        raise nx.NetworkXException("Graph is empty, so no edge cover exists.")
+    maximum_matching = nx.bipartite.maximum_matching(G)
     # ``min_cover`` is superset of ``maximum_matching``
     min_cover = set(maximum_matching.items())
     # iterate for uncovered nodes
@@ -67,27 +62,3 @@ def min_edge_cover(G):
         min_cover.add((u, v))
         min_cover.add((v, u))
     return min_cover
-
-
-def is_edge_covering(G, cover):
-    """Returns a boolean value according to the ``cover`` being an edge cover
-    Given a set of edges, whether it is an edge covering can be decided
-    in linear time if we just check whether all nodes of the graph
-    has an edge from the set, incident on it.
-
-    Parameters
-    ----------
-    G : An undirected, unweighted graph.
-    cover : set of edges to be checked.
-
-    Returns
-    -------
-    boolean value : True if the set of edges forms an edge cover
-
-    Notes
-    -----
-    Worst Case runtime is `O(number of nodes)`
-    """
-    if len(set(G.nodes()) - set(x[0] for x in cover)) > 0:
-        return False
-    return True
