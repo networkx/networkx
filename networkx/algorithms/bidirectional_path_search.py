@@ -64,17 +64,17 @@ def bidirectional_all_simple_paths(G, source, target, cutoff=None):
 
     Notes
     -----
-    This algorithm constructs sequentially two trees, one from the source
-    in direction to the target and one from the target in direction to the
-    source. Only the tree with fewer leaves is increased within the next step.
-    The leaves of both growing trees are continuously compared, and if
-    there are matching leaves in both trees, a new path is identified.
+    This is our implementation of a bidirectional search algorithm, which
+    constructs sequentially two trees, one from the source in direction to
+    the target and one from the target in direction to the source. Only
+    the tree with fewer leaves is increased within the next step. The
+    leaves of both growing trees are continuously compared, and if there
+    are matching leaves in both trees, a new path is identified.
 
     This algorithm actually reduces the search space by half, which results
     in a faster identification of simple paths than in the original
     `nx.all_simple_paths` algorithm. But it might require more memory, which
     can have a negative effect on the speed in fully connected graphs.
-    See the benchmark at: http://www.aizac.info/bi-graph-search-benchmark
 
                            source                                      |
                              /\                                        |
@@ -94,6 +94,13 @@ def bidirectional_all_simple_paths(G, source, target, cutoff=None):
                /XXXXXXXXXXXX\ \/XXXXXXXXXXXX\                          |
               /XXXXXXXXXXXXXX\/XXXXXXXXXXXXXX\                         |
                            target                                      |
+
+    We provide a benchmark at:
+    http://nbviewer.ipython.org/url/gitlab.com/OvGU-ESS/Jupyter-Notebooks/raw/master/bidirectional%20graph%20search%20benchmark.ipynb
+
+    If you want to search for simple paths in order, use
+    nx.all_shortest_paths.
+
     Authors
     -------
     André Dietrich and Sebastian Zug
@@ -109,14 +116,15 @@ def bidirectional_all_simple_paths(G, source, target, cutoff=None):
         raise nx.NetworkXError('source node %s not in graph' % source)
     if target not in G:
         raise nx.NetworkXError('target node %s not in graph' % target)
+
     if cutoff is None:
         cutoff = len(G) - 1
     if G.is_multigraph():
         return _bidirectional_all_simple_paths_multi(G, source,
-                                                     target, cutoff=cutoff)
+                                                        target, cutoff=cutoff)
     else:
         return _bidirectional_all_simple_paths(G, source,
-                                               target, cutoff=cutoff)
+                                                        target, cutoff=cutoff)
 
 
 def _bidirectional_all_simple_paths(G, source, target, cutoff):
@@ -124,8 +132,7 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
     if cutoff < 1:
         return
 
-    tree = [{(source,)}, {(target,)}]
-    leaves = [{source}, {target}]
+    tree = [{source:{(source,)}}, {target:{(target,)}}]
 
     # used if the graph is not directed
     neighbors = lambda node: iter(G[node])
@@ -136,7 +143,6 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
             modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
-            leaves_ = leaves[0]
 
             if G.is_directed():
                 neighbors = G.predecessors
@@ -144,20 +150,18 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
             modus = 0
             tree_source = tree[0]
             tree_target = tree[1]
-            leaves_ = leaves[1]
 
             if G.is_directed():
                 neighbors = G.successors
 
-        temp_tree = set()
-        temp_leaves = set()
+        temp_tree = dict()
 
-        for path_s in tree_source:
-            for s in neighbors(path_s[-1]):
-                if s not in path_s:
-                    if s in leaves_:
-                        for path_t in tree_target:
-                            if s == path_t[-1]:
+        for leave, paths in tree_source.iteritems():
+            for s in neighbors(leave):
+                for path_s in paths:
+                    if s not in path_s:
+                        if tree_target.has_key(s):
+                            for path_t in tree_target[s]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
                                         yield list(path_t) + \
@@ -165,21 +169,19 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
                                     else:
                                         yield list(path_s) + \
                                             [x for x in reversed(path_t)]
-
-                    temp_tree.add(path_s + (s,))
-                    temp_leaves.add(s)
+                        try:
+                            temp_tree[s].add(path_s + (s,))
+                        except:
+                            temp_tree[s] = {(path_s + (s,))}
 
         tree[modus] = temp_tree
-        leaves[modus] = temp_leaves
-
 
 def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
 
     if cutoff < 1:
         return
 
-    tree = [[(source,)], [(target,)]]
-    leaves = [{source}, {target}]
+    tree = [{source:{(source,)}}, {target:{(target,)}}]
 
     for _ in range(cutoff):
 
@@ -187,23 +189,20 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
             modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
-            leaves_ = leaves[0]
 
         else:
             modus = 0
             tree_source = tree[0]
             tree_target = tree[1]
-            leaves_ = leaves[1]
 
-        temp_tree = []
-        temp_leaves = []
+        temp_tree = dict()
 
-        for path_s in tree_source:
-            for s in [v for u, v in G.edges([path_s[-1]])]:
-                if s not in path_s:
-                    if s in leaves_:
-                        for path_t in tree_target:
-                            if s == path_t[-1]:
+        for leave, paths in tree_source.iteritems():
+            for s in [v for u, v in G.edges(leave)]:
+                for path_s in paths:
+                    if s not in path_s:
+                        if tree_target.has_key(s):
+                            for path_t in tree_target[s]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
                                         yield list(path_t) + \
@@ -211,11 +210,12 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
                                     else:
                                         yield list(path_s) + \
                                             [x for x in reversed(path_t)]
-                    temp_tree.append(path_s + (s,))
-                    temp_leaves.append(s)
+                        try:
+                            temp_tree[s].add(path_s + (s,))
+                        except:
+                            temp_tree[s] = {(path_s + (s,))}
 
         tree[modus] = temp_tree
-        leaves[modus] = temp_leaves
 
 
 def bidirectional_all_shortest_paths(G, source, target):
@@ -257,17 +257,17 @@ def bidirectional_all_shortest_paths(G, source, target):
 
     Notes
     -----
-    This algorithm constructs sequentially two trees, one from the source
-    in direction to the target and one from the target in direction to the
-    source. Only the tree with fewer leaves is increased within the next step.
-    The leaves of both growing trees are continuously compared, and if
-    there are matching leaves in both trees, a new path is identified.
+    This is our implementation of a bidirectional search algorithm, which
+    constructs sequentially two trees, one from the source in direction to
+    the target and one from the target in direction to the source. Only
+    the tree with fewer leaves is increased within the next step. The
+    leaves of both growing trees are continuously compared, and if there
+    are matching leaves in both trees, a new path is identified.
 
     This algorithm actually reduces the search space by half, which results
     in a faster identification of simple paths than in the original
     `nx.all_simple_paths` algorithm. But it might require more memory, which
     can have a negative effect on the speed in fully connected graphs.
-    See the benchmark at: http://www.aizac.info/bi-graph-search-benchmark
 
                            source                                      |
                              /\                                        |
@@ -287,6 +287,9 @@ def bidirectional_all_shortest_paths(G, source, target):
                /XXXXXXXXXXXX\ \/XXXXXXXXXXXX\                          |
               /XXXXXXXXXXXXXX\/XXXXXXXXXXXXXX\                         |
                            target                                      |
+
+    We provide a benchmark at:
+    http://nbviewer.ipython.org/url/gitlab.com/OvGU-ESS/Jupyter-Notebooks/raw/master/bidirectional%20graph%20search%20benchmark.ipynb
 
     Authors
     -------
