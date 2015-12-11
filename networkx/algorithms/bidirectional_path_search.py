@@ -156,7 +156,7 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
 
         temp_tree = dict()
 
-        for leave, paths in tree_source.iteritems():
+        for leave, paths in tree_source.items():
             for s in neighbors(leave):
                 for path_s in paths:
                     if s not in path_s:
@@ -197,7 +197,7 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
 
         temp_tree = dict()
 
-        for leave, paths in tree_source.iteritems():
+        for leave, paths in tree_source.items():
             for s in [v for u, v in G.edges(leave)]:
                 for path_s in paths:
                     if s not in path_s:
