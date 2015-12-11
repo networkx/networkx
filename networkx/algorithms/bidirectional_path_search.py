@@ -160,7 +160,7 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
             for s in neighbors(leave):
                 for path_s in paths:
                     if s not in path_s:
-                        if tree_target.has_key(s):
+                        if s in tree_target:
                             for path_t in tree_target[s]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
@@ -201,7 +201,7 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
             for s in [v for u, v in G.edges(leave)]:
                 for path_s in paths:
                     if s not in path_s:
-                        if tree_target.has_key(s):
+                        if s in tree_target:
                             for path_t in tree_target[s]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
