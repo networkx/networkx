@@ -135,44 +135,37 @@ def _bidirectional_all_simple_paths(G, source, target, cutoff):
     tree = [{source:{(source,)}}, {target:{(target,)}}]
 
     # used if the graph is not directed
-    neighbors = lambda node: iter(G[node])
+    neighbors = lambda modus, node: iter(G[node])
+
+    if G.is_directed():
+        neighbors = lambda modus, node: G.predecessors(node) if modus \
+                                              else G.successors(node)
 
     for _ in range(cutoff):
 
-        if len(tree[1]) < len(tree[0]):
-            modus = 1
-            tree_source = tree[1]
-            tree_target = tree[0]
+        modus = len(tree[1]) < len(tree[0])
 
-            if G.is_directed():
-                neighbors = G.predecessors
-        else:
-            modus = 0
-            tree_source = tree[0]
-            tree_target = tree[1]
-
-            if G.is_directed():
-                neighbors = G.successors
-
+        tree_source = tree[modus]
+        tree_target = tree[modus^1]
         temp_tree = dict()
 
         for leave, paths in tree_source.items():
-            for s in neighbors(leave):
+            for s in neighbors(modus, leave):
                 for path_s in paths:
                     if s not in path_s:
                         if s in tree_target:
                             for path_t in tree_target[s]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
-                                        yield list(path_t) + \
-                                            [x for x in reversed(path_s)]
+                                        yield list(path_t +
+                                                   tuple(reversed(path_s)))
                                     else:
-                                        yield list(path_s) + \
-                                            [x for x in reversed(path_t)]
+                                        yield list(path_s +
+                                                   tuple(reversed(path_t)))
                         try:
                             temp_tree[s].add(path_s + (s,))
                         except:
-                            temp_tree[s] = {(path_s + (s,))}
+                            temp_tree[s] = {path_s + (s,)}
 
         tree[modus] = temp_tree
 
@@ -185,16 +178,9 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
 
     for _ in range(cutoff):
 
-        if len(tree[1]) < len(tree[0]):
-            modus = 1
-            tree_source = tree[1]
-            tree_target = tree[0]
-
-        else:
-            modus = 0
-            tree_source = tree[0]
-            tree_target = tree[1]
-
+        modus = len(tree[1]) < len(tree[0])
+        tree_source = tree[modus]
+        tree_target = tree[modus^1]
         temp_tree = dict()
 
         for leave, paths in tree_source.items():
@@ -205,15 +191,15 @@ def _bidirectional_all_simple_paths_multi(G, source, target, cutoff):
                             for path_t in tree_target[s]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
-                                        yield list(path_t) + \
-                                            [x for x in reversed(path_s)]
+                                        yield list(path_t +
+                                                   tuple(reversed(path_s)))
                                     else:
-                                        yield list(path_s) + \
-                                            [x for x in reversed(path_t)]
+                                        yield list(path_s +
+                                                   tuple(reversed(path_t)))
                         try:
                             temp_tree[s].add(path_s + (s,))
                         except:
-                            temp_tree[s] = {(path_s + (s,))}
+                            temp_tree[s] = {path_s + (s,)}
 
         tree[modus] = temp_tree
 
@@ -319,34 +305,24 @@ def _bidirectional_all_shortest_paths(G, source, target):
     found = 0
 
     # used if the graph is not directed
-    neighbors = lambda node: iter(G[node])
+    neighbors = lambda modus, node: iter(G[node])
 
+    if G.is_directed():
+        neighbors = lambda modus, node: G.predecessors(node) if modus \
+                                                else G.successors(node)
     while not found and tree[0] and tree[1]:
 
-        if len(tree[1]) < len(tree[0]):
-            modus = 1
-            tree_source = tree[1]
-            tree_target = tree[0]
-            nodes_source = nodes[1]
-            nodes_target = nodes[0]
+        modus = len(tree[1]) < len(tree[0])
 
-            if G.is_directed():
-                neighbors = G.predecessors
-
-        else:
-            modus = 0
-            tree_source = tree[0]
-            tree_target = tree[1]
-            nodes_source = nodes[0]
-            nodes_target = nodes[1]
-
-            if G.is_directed():
-                neighbors = G.successors
+        tree_source = tree[modus]
+        tree_target = tree[modus^1]
+        nodes_source = nodes[modus]
+        nodes_target = nodes[modus^1]
 
         temp_tree = set()
 
         for path_s in tree_source:
-            for s in neighbors(path_s[-1]):
+            for s in neighbors(modus, path_s[-1]):
                 if s not in path_s:
                     if s in nodes_target:
                         for path_t in tree_target:
@@ -354,11 +330,11 @@ def _bidirectional_all_shortest_paths(G, source, target):
                                 if not set(path_t).intersection(path_s):
                                     found = 1
                                     if modus:
-                                        yield list(path_t) + \
-                                            [x for x in reversed(path_s)]
+                                        yield list(path_t +
+                                                   tuple(reversed(path_s)))
                                     else:
-                                        yield list(path_s) + \
-                                            [x for x in reversed(path_t)]
+                                        yield list(path_s +
+                                                   tuple(reversed(path_t)))
                     # elif s not in node2:
                     nodes_source.add(s)
                     temp_tree.add(path_s + (s,))
@@ -377,16 +353,10 @@ def _bidirectional_all_shortest_paths_multi(G, source, target):
 
     while not found and tree[0] and tree[1]:
 
-        if len(tree[1]) < len(tree[0]):
-            modus = 1
-            tree_source = tree[1]
-            tree_target = tree[0]
+        modus = len(tree[1]) < len(tree[0])
 
-        else:
-            modus = 0
-            tree_source = tree[0]
-            tree_target = tree[1]
-
+        tree_source = tree[modus]
+        tree_target = tree[modus^1]
         temp_tree = []
 
         for path_s in tree_source:
@@ -397,11 +367,11 @@ def _bidirectional_all_shortest_paths_multi(G, source, target):
                             if not set(path_t).intersection(path_s):
                                 found = 1
                                 if modus:
-                                    yield list(path_t) + \
-                                        [x for x in reversed(path_s)]
+                                    yield list(path_t +
+                                               tuple(reversed(path_s)))
                                 else:
-                                    yield list(path_s) + \
-                                        [x for x in reversed(path_t)]
+                                    yield list(path_s +
+                                               tuple(reversed(path_t)))
 
                     temp_tree.append(path_s + (s,))
 
@@ -429,31 +399,22 @@ def _bidirectional_has_path(G, source, target):
     leaves = [{source}, {target}]
     nodes = [{source}, {target}]
 
-    neighbors = lambda node: iter(G[node])
+    neighbors = lambda modus, node: iter(G[node])
+
+    if G.is_directed():
+        neighbors = lambda modus, node: G.predecessors(node) if modus else G.successors(node)
 
     while leaves[0] and leaves[1]:
 
-        if len(leaves[1]) < len(leaves[0]):
-            modus = 1
-            nodes_s = nodes[1]
-            leaves_t = leaves[0]
-            leaves_s = leaves[1]
+        modus = len(leaves[1]) < len(leaves[0])
 
-            if G.is_directed():
-                neighbors = G.predecessors
-        else:
-            modus = 0
-            nodes_s = nodes[0]
-            leaves_t = leaves[1]
-            leaves_s = leaves[0]
-
-            if G.is_directed():
-                neighbors = G.successors
-
+        nodes_s = nodes[modus]
+        leaves_t = leaves[modus^1]
+        leaves_s = leaves[modus]
         temp = set()
 
         for leave in leaves_s:
-            for s in neighbors(leave):
+            for s in neighbors(modus, leave):
                 if s not in nodes_s:
                     if s in leaves_t:
                         return True
@@ -472,17 +433,11 @@ def _bidirectional_has_path_multi(G, source, target):
 
     while leaves[0] and leaves[1]:
 
-        if len(leaves[1]) < len(leaves[0]):
-            modus = 1
-            nodes_s = nodes[1]
-            leaves_t = leaves[0]
-            leaves_s = leaves[1]
-        else:
-            modus = 0
-            nodes_s = nodes[0]
-            leaves_t = leaves[1]
-            leaves_s = leaves[0]
+        modus = len(leaves[1]) < len(leaves[0])
 
+        nodes_s = nodes[modus]
+        leaves_t = leaves[modus^1]
+        leaves_s = leaves[modus]
         temp = set()
 
         for leave in leaves_s:
