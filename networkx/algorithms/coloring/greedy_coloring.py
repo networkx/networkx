@@ -62,7 +62,7 @@ def strategy_smallest_last(G, colors):
     built is returned.
     """
     len_g = len(G)
-    available_g = G.copy()
+    available_g = G.copy(with_data=False)
     nodes = [None] * len_g
 
     for i in range(len_g):
@@ -84,7 +84,7 @@ def strategy_independent_set(G, colors):
     no_colored = 0
     k = 0
 
-    uncolored_g = G.copy()
+    uncolored_g = G.copy(with_data=False)
     while no_colored < len_g:  # While there are uncolored nodes
         available_g = uncolored_g.copy()
 

@@ -210,6 +210,17 @@ class BaseAttrGraphTester(BaseGraphTester):
         H=G.__class__(G)
         self.is_shallow_copy(H,G)
 
+    def test_copy_without_data(self):
+        """Tests for creating a copy of the graph without any of the
+        graph, node, or edge data attributes.
+
+        """
+        G = self.K3.copy(with_data=False)
+        nodes = set(self.K3)
+        assert_equal(G.graph, {})
+        assert_equal(G.node, {v: {} for v in nodes})
+        assert_equal(G.edge, {u: {v: {} for v in nodes - {u}} for u in nodes})
+
     def test_copy_attr(self):
         G=self.Graph(foo=[])
         G.add_node(0,foo=[])
