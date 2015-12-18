@@ -169,13 +169,13 @@ def eulerian_path(G):
 
     Raises
     ------
-    NetworkXError: If the graph does not have an eulerian path.
+    NetworkXError: If the graph does not have an Eulerian path.
 
     Notes
     -----
     Linear time algorithm, adapted from [1]_ and [3]_.
     Information about euler paths in [2]_.
-    Code for eulerian circuit in [3]_.
+    Code for Eulerian circuit in [3]_.
 
     Important: In [1], euler path is in reverse order,
     this implementation gives the path in correct order
