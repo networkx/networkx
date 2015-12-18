@@ -6,6 +6,12 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+#    eulerian_path()
+#    Copyright 2015 by
+#    Edwardo Rivera-Hazim <edwardo.rivera@upr.edu>
+#    Humberto Ortiz-Zuazaga <humberto.ortiz@upr.edu>
+#    BSD license.
 """
 Eulerian circuits and graphs.
 """
@@ -18,7 +24,9 @@ from ..utils import arbitrary_element
 from collections import deque
 
 __author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
+                            'Aric Hagberg <hagberg@lanl.gov>',
+                            'Edwardo Rivera-Hazim <edwardo.rivera@upr.edu>',
+                            'Humberto Ortiz-Zuazaga <humberto.ortiz@upr.edu>'])
 
 __all__ = ['is_eulerian', 'eulerian_circuit', 'eulerian_path']
 
