@@ -280,7 +280,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     random.seed(seed)
     number_of_edges = G.number_of_edges()
     while len(G)<n:
-        psum_in = number_of_edges + delta_in) * len(G)
+        psum_in = number_of_edges + delta_in * len(G)
         psum_out = number_of_edges + delta_out * len(G)
         r = random.random()
         # random choice in alpha,beta,gamma ranges
