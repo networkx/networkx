@@ -15,6 +15,8 @@ import networkx as nx
 
 from ..utils import arbitrary_element
 
+from collections import deque
+
 __author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 
@@ -278,7 +280,7 @@ def eulerian_path(G):
     if not start:
         raise nx.NetworkXError("G doesn't have an Euler Path")
     # Begin algorithm:
-    vertex_stack = [start]
+    vertex_stack = deque([start])
     last_vertex = None
 
     while vertex_stack:
