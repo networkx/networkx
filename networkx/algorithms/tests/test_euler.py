@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# coding: utf-8
 # run with nose: nosetests -v test_euler.py
 
 from nose.tools import *
 import networkx as nx
-from networkx import is_eulerian,eulerian_circuit
+from networkx import is_eulerian,eulerian_circuit,eulerian_path
 
 class TestEuler:
 
@@ -95,3 +96,57 @@ class TestEuler:
     @raises(nx.NetworkXError)
     def test_not_eulerian(self):    
         f=list(eulerian_circuit(nx.complete_graph(4)))
+
+    def test_eulerian_path(self):
+        G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'),
+                      ('W', 'S'), ('S', 'E')])
+        edges=list(eulerian_path(G))
+        nodes=[u for u,v in edges]
+        # Grab the last node in path
+        nodes.append(v)
+        assert_equal(edges,[('W', 'N'), ('N', 'E'), ('E', 'W'),
+                            ('W', 'S'), ('S', 'E')])
+        assert_equal(nodes,['W','N','E','W','S','E'])
+        
+
+    def test_eulerian_path_directed(self):
+        # An example, directed:
+        G = nx.DiGraph()
+        G.add_edge("W","N")
+        G.add_edge("N","E")
+        G.add_edge("S","E")
+        G.add_edge("W","S")
+        G.add_edge("E","W")
+
+        edges = list(nx.eulerian_path(G))
+        nodes = [u for u, v in edges]
+        # Grab the last node in path
+        nodes.append(v)
+        assert_equal(nodes,['W', 'N', 'E', 'W', 'S', 'E'])
+
+
+    def test_eulerian_path_multidirected(self):
+        # An example, multidirected:
+        G = nx.MultiGraph()
+        G.add_edge("W","N")
+        G.add_edge("N","E")
+        G.add_edge("E","W")
+        G.add_edge("E","W")
+        G.add_edge("W","S")
+        G.add_edge("S","E")
+        G.add_edge("S","E")
+        G.add_edge("S","E")
+
+        edges = list(nx.eulerian_path(G))
+        nodes = [u for u, v in edges]
+        # Grab the last node in path
+        nodes.append(v)
+        assert_equal(nodes, ['S', 'W', 'N', 'E', 'W', 'E', 'S', 'E', 'S'])
+
+    @raises(nx.NetworkXError)
+    def test_no_eulerian_path(self):
+        # Use the bridges of Königsberg
+        G = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
+                      ('W', 'S'), ('W', 'S'), ('S', 'E')])
+        f=list(eulerian_path(G))
+        
