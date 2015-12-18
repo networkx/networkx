@@ -240,6 +240,8 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
            Proceedings of the fourteenth annual ACM-SIAM Symposium on
            Discrete Algorithms, 132--139, 2003.
     """
+    delta_in = float(delta_in)
+    delta_out = float(delta_out)
 
     def _choose_node(G, distribution, delta, psum):
         cumsum=0.0
@@ -278,11 +280,11 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     random.seed(seed)
     number_of_edges = G.number_of_edges()
     while len(G)<n:
-        psum_in = number_of_edges + float(delta_in) * len(G)
-        psum_out = number_of_edges + float(delta_out) * len(G)
+        psum_in = number_of_edges + delta_in) * len(G)
+        psum_out = number_of_edges + delta_out * len(G)
         r = random.random()
         # random choice in alpha,beta,gamma ranges
-        if r<alpha:
+        if r < alpha:
             # alpha
             # add new node v
             v = len(G) 
@@ -300,7 +302,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
             v = _choose_node(G, G.out_degree(), delta_out, psum_out)
             # add new node w
             w = len(G) 
-        G.add_edge(v,w)
+        G.add_edge(v, w)
         number_of_edges += 1
         
     return G
