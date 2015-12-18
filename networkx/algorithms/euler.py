@@ -210,90 +210,91 @@ def eulerian_path(G):
     if not G.is_directed() and not nx.is_connected(G):
         raise nx.NetworkXError("G is not connected.")
 
-    # Now verify if has an eulerian circuit: even condition of all nodes is satified.
+    # Now verify if has an Eulerian circuit: even condition of all nodes is satified.
     if nx.is_eulerian(G):
-        x = nx.eulerian_circuit(G) # generator of edges
-        for i in x:
-            yield i
-
+        # if we have an Eulerian cycle, generate its edges
+        for edge in nx.eulerian_circuit(G):
+            yield edge
+        # and we're done
+        return
+    
     # Not all vertex have even degree, check if exactly two vertex have odd degrees.
     # If yes, then there is an Euler path. If not, raise an error (no euler path can be found)
+    g = G.__class__(G)  # copy graph structure (not attributes)
+
+    # list to check the odd degree condition, and a flag
+    check_odd = []
+    directed = g.is_directed()
+
+    if directed:
+        degree = g.in_degree
+        out_degree = g.out_degree
+        edges = g.in_edges
+        get_vertex = itemgetter(0)
+        directed = True
     else:
-        g = G.__class__(G)  # copy graph structure (not attributes)
+        degree = g.degree
+        edges = g.edges
+        get_vertex = itemgetter(1)
 
-        # list to check the odd degree condition, and a flag
-        check_odd = []
-        directed = False
-
-        if g.is_directed():
-            degree = g.in_degree
-            out_degree = g.out_degree
-            edges = g.in_edges
-            get_vertex = itemgetter(0)
-            directed = True
-        else:
-            degree = g.degree
-            edges = g.edges
-            get_vertex = itemgetter(1)
-
-        # Verify if an euler path can be found. Complexity O(n) ?
-        for vertex in g.nodes():
-            deg = degree(vertex)
-            # directed case
-            if directed:
-                outdeg = out_degree(vertex)
-                if deg != outdeg:
-                    # if we have more than 2 odd nodes, we do a raise (no euler path)
-                    if len(check_odd) > 2:
-                        raise nx.NetworkXError("G doesn't have an Euler Path.")
-                # is odd and we append it.
-                    else:
-                        check_odd.append(vertex)
-            # undirected case
-            else:
-                if deg % 2 != 0:
-                    # if we have more than 2 odd nodes, we do a raise (no euler path)
-                    if len(check_odd) > 2:
-                        raise nx.NetworkXError("G doesn't have an Euler Path.")
-                    # is odd and we append it.
-                    else:
-                        check_odd.append(vertex)
-
+    # Verify if an euler path can be found. Complexity O(n) ?
+    for v in g:
+        deg = degree(v)
+        # directed case
         if directed:
-            def verify_odd_cond(g,check_odd):
-                first = check_odd[0]
-                second = check_odd[1]
-                if  g.out_degree(first) == g.in_degree(first) + 1 and g.in_degree(second) == g.out_degree(second) + 1:
-                    return second
-                elif g.out_degree(second) == g.in_degree(second) + 1 and g.in_degree(first)  == g.out_degree(first) + 1:
-                    return first
-                else:
-                    return None
-            start = verify_odd_cond(g,check_odd)
+            outdeg = out_degree(v)
+            if deg != outdeg:
+                # if we have more than 2 odd nodes, we do a raise (no euler path)
+                if len(check_odd) > 2:
+                    raise nx.NetworkXError("G doesn't have an Euler Path.")
+                # is odd and we append it.
+                check_odd.append(v)
+        # undirected case
         else:
-            start = check_odd[0]
+            if deg % 2 != 0:
+                # if we have more than 2 odd nodes, we do a raise (no euler path)
+                if len(check_odd) > 2:
+                    raise nx.NetworkXError("G doesn't have an Euler Path.")
+                # is odd and we append it.
+                check_odd.append(v)
 
-        # if the odd condition is not meet, raise an error.
-        if not start:
-            raise nx.NetworkXError("G doesn't have an Euler Path")
-        # Begin algorithm:
-        vertex_stack = [start]
-        last_vertex = None
+    if directed:
 
-        while vertex_stack:
+        first = check_odd[0]
+        second = check_odd[1]
+        if  g.out_degree(first) == g.in_degree(first) + 1 and \
+            g.in_degree(second) == g.out_degree(second) + 1:
+            start = second
+        elif g.out_degree(second) == g.in_degree(second) + 1 and \
+             g.in_degree(first)  == g.out_degree(first) + 1:
+            start = first
+        else:
+            start =  None
 
-            current_vertex = vertex_stack[-1] #(4)
-            # if no neighbors:
-            if degree(current_vertex) == 0:
-                # Special case, we cannot add a None vertex to the path.
-                if last_vertex is not None:
-                    yield (last_vertex, current_vertex)
-                last_vertex = current_vertex
-                vertex_stack.pop()
-            # we have neighbors, so add the vertex to the stack (2), take any of its neighbors (1)
-            # remove the edge between selected neighbor and that vertex,
-            # and set that neighbor as the current vertex (4).
-            else:
-                random_edge = next(edges(current_vertex)) #(1)
-                vertex_stack.append(get_vertex(random_edge)) #(2)
-                g.remove_edge(*random_edge) #(3)
+    else:
+        start = check_odd[0]
+
+    # if the odd condition is not meet, raise an error.
+    if not start:
+        raise nx.NetworkXError("G doesn't have an Euler Path")
+    # Begin algorithm:
+    vertex_stack = [start]
+    last_vertex = None
+
+    while vertex_stack:
+
+        current_vertex = vertex_stack[-1]
+        # if no neighbors:
+        if degree(current_vertex) == 0:
+            # Special case, we cannot add a None vertex to the path.
+            if last_vertex is not None:
+                yield (last_vertex, current_vertex)
+            last_vertex = current_vertex
+            vertex_stack.pop()
+        # we have neighbors, so add the vertex to the stack (2), take any of its neighbors (1)
+        # remove the edge between selected neighbor and that vertex,
+        # and set that neighbor as the current vertex (4).
+        else:
+            edge = next(edges(current_vertex))
+            vertex_stack.append(get_vertex(edge))
+            g.remove_edge(*edge)
