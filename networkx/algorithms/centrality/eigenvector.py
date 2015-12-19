@@ -133,7 +133,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
             return x
 
     raise nx.NetworkXError("""eigenvector_centrality():
-power iteration failed to converge in %d iterations."%(i+1))""")
+power iteration failed to converge in %d iterations."%(i+1))""" % max_iter)
 
 
 def eigenvector_centrality_numpy(G, weight='weight'):
