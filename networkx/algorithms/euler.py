@@ -202,7 +202,8 @@ def eulerian_path(G):
 
     Examples
     --------
-    >>> G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')])
+    >>> G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'),
+                      ('S', 'E')])
     >>> list(nx.find_eulerian_path(G))
     [('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')]
 
@@ -212,7 +213,7 @@ def eulerian_path(G):
     """
 
     is_directed = G.is_directed()
-    
+
     # Verify that graph is connected, short circuit
     if is_directed and not nx.is_weakly_connected(G):
         raise nx.NetworkXError("G is not connected.")
@@ -304,9 +305,10 @@ def eulerian_path(G):
                 yield (last_vertex, current_vertex)
             last_vertex = current_vertex
             vertex_stack.pop()
-        # we have neighbors, so add the vertex to the stack (2), take any of its neighbors (1)
-        # remove the edge between selected neighbor and that vertex,
-        # and set that neighbor as the current vertex (4).
+        # we have neighbors, so add the vertex to the stack (2), take
+        # any of its neighbors (1) remove the edge between selected
+        # neighbor and that vertex, and set that neighbor as the
+        # current vertex (4).
         else:
             edge = next(edges(current_vertex))
             vertex_stack.append(get_vertex(edge))

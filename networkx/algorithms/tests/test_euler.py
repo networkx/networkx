@@ -91,6 +91,9 @@ class TestEuler:
     def test_not_eulerian(self):
         next(list(eulerian_circuit(nx.complete_graph(4))))
 
+
+class TestEulerianPath:
+
     def test_eulerian_path(self):
         G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'),
                       ('W', 'S'), ('S', 'E')])
