@@ -243,7 +243,6 @@ def eulerian_path(G):
         out_degree = g.out_degree
         edges = g.in_edges
         get_vertex = itemgetter(0)
-        directed = True
     else:
         degree = g.degree
         edges = g.edges
@@ -283,7 +282,7 @@ def eulerian_path(G):
              g.in_degree(first) == g.out_degree(first) + 1:
             start = first
         else:
-            start =  None
+            start = None
 
     else:
         start = check_odd[0]
