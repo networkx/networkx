@@ -4,7 +4,8 @@
 
 from nose.tools import *
 import networkx as nx
-from networkx import is_eulerian,eulerian_circuit,eulerian_path
+from networkx import is_eulerian,eulerian_circuit, \
+    has_eulerian_path,eulerian_path
 
 class TestEuler:
 
@@ -127,9 +128,13 @@ class TestEulerianPath:
         nodes.append(v)
         assert_equal(nodes, ['S', 'W', 'N', 'E', 'W', 'E', 'S', 'E', 'S'])
 
+    # Use the bridges of Königsberg
+    bridges = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
+                             ('W', 'S'), ('W', 'S'), ('S', 'E')])
+
+    def test_has_eulerian_path(self):
+        assert_false(has_eulerian_path(self.bridges))
+
     @raises(nx.NetworkXError)
     def test_no_eulerian_path(self):
-        # Use the bridges of Königsberg
-        G = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
-                           ('W', 'S'), ('W', 'S'), ('S', 'E')])
-        next(list(eulerian_path(G)))
+        next(list(eulerian_path(self.bridges)))
