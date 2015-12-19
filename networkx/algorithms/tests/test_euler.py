@@ -38,8 +38,6 @@ class TestEuler:
         G.add_edge(3,1)
         assert_false(is_eulerian(G))
 
-        
-
     def test_eulerian_circuit_cycle(self):
         G=nx.cycle_graph(4)
 
@@ -65,8 +63,6 @@ class TestEuler:
         assert_equal(nodes,[1,2,0])
         assert_equal(edges,[(1,2),(2,0),(0,1)])
         
-
-
     def test_eulerian_circuit_digraph(self):
         G=nx.DiGraph()
         G.add_cycle([0,1,2,3])
@@ -81,61 +77,46 @@ class TestEuler:
         assert_equal(nodes,[1,2,3,0])
         assert_equal(edges,[(1,2),(2,3),(3,0),(0,1)])
 
-
     def test_eulerian_circuit_multigraph(self):
         G=nx.MultiGraph()
         G.add_cycle([0,1,2,3])
         G.add_edge(1,2)
         G.add_edge(1,2)
         edges=list(eulerian_circuit(G,source=0))
-        nodes=[u for u,v in edges]
+        nodes=[u for u, v in edges]
         assert_equal(nodes,[0,3,2,1,2,1])
         assert_equal(edges,[(0,3),(3,2),(2,1),(1,2),(2,1),(1,0)])
 
-
     @raises(nx.NetworkXError)
-    def test_not_eulerian(self):    
-        f=list(eulerian_circuit(nx.complete_graph(4)))
+    def test_not_eulerian(self):
+        next(list(eulerian_circuit(nx.complete_graph(4))))
 
     def test_eulerian_path(self):
         G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'),
                       ('W', 'S'), ('S', 'E')])
-        edges=list(eulerian_path(G))
-        nodes=[u for u,v in edges]
+        edges = list(eulerian_path(G))
+        nodes = [u for u, v in edges]
         # Grab the last node in path
         nodes.append(v)
-        assert_equal(edges,[('W', 'N'), ('N', 'E'), ('E', 'W'),
-                            ('W', 'S'), ('S', 'E')])
-        assert_equal(nodes,['W','N','E','W','S','E'])
-        
+        assert_equal(edges, [('W', 'N'), ('N', 'E'), ('E', 'W'),
+                             ('W', 'S'), ('S', 'E')])
+        assert_equal(nodes, ['W', 'N', 'E', 'W', 'S', 'E'])
 
     def test_eulerian_path_directed(self):
         # An example, directed:
-        G = nx.DiGraph()
-        G.add_edge("W","N")
-        G.add_edge("N","E")
-        G.add_edge("S","E")
-        G.add_edge("W","S")
-        G.add_edge("E","W")
-
+        G = nx.DiGraph([("W", "N"), ("N", "E"), ("S", "E"), ("W", "S"),
+                        ("E", "W")])
         edges = list(nx.eulerian_path(G))
         nodes = [u for u, v in edges]
         # Grab the last node in path
         nodes.append(v)
-        assert_equal(nodes,['W', 'N', 'E', 'W', 'S', 'E'])
-
+        assert_equal(nodes, ['W', 'N', 'E', 'W', 'S', 'E'])
 
     def test_eulerian_path_multidirected(self):
         # An example, multidirected:
-        G = nx.MultiGraph()
-        G.add_edge("W","N")
-        G.add_edge("N","E")
-        G.add_edge("E","W")
-        G.add_edge("E","W")
-        G.add_edge("W","S")
-        G.add_edge("S","E")
-        G.add_edge("S","E")
-        G.add_edge("S","E")
+        G = nx.MultiGraph([("W", "N"), ("N", "E"), ("E", "W"),
+                           ("E", "W"), ("W", "S"), ("S", "E"),
+                           ("S", "E"), ("S", "E")])
 
         edges = list(nx.eulerian_path(G))
         nodes = [u for u, v in edges]
@@ -147,6 +128,5 @@ class TestEuler:
     def test_no_eulerian_path(self):
         # Use the bridges of Königsberg
         G = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
-                      ('W', 'S'), ('W', 'S'), ('S', 'E')])
-        f=list(eulerian_path(G))
-        
+                           ('W', 'S'), ('W', 'S'), ('S', 'E')])
+        next(list(eulerian_path(G)))

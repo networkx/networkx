@@ -61,8 +61,8 @@ def is_eulerian(G):
     if G.is_directed():
         # Every node must have equal in degree and out degree and the
         # graph must be strongly connected
-        return (all(G.in_degree(n) == G.out_degree(n) for n in G)
-                and nx.is_strongly_connected(G))
+        return (all(G.in_degree(n) == G.out_degree(n) for n in G) and
+                nx.is_strongly_connected(G))
     # An undirected Eulerian graph has no vertices of odd degree and
     # must be connected.
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
@@ -210,33 +210,35 @@ def eulerian_path(G):
     >>> list(nx.find_eulerian_path(G))
     [(1,2),(2,3)]
     """
-    from operator import itemgetter
 
+    is_directed = G.is_directed()
+    
     # Verify that graph is connected, short circuit
-    if G.is_directed() and not nx.is_weakly_connected(G):
+    if is_directed and not nx.is_weakly_connected(G):
         raise nx.NetworkXError("G is not connected.")
 
     # is undirected
-    if not G.is_directed() and not nx.is_connected(G):
+    if not is_directed and not nx.is_connected(G):
         raise nx.NetworkXError("G is not connected.")
 
-    # Now verify if has an Eulerian circuit: even condition of all nodes is satified.
+    # Now verify if has an Eulerian circuit: even condition of all
+    # nodes is satified.
     if nx.is_eulerian(G):
         # if we have an Eulerian cycle, generate its edges
         for edge in nx.eulerian_circuit(G):
             yield edge
         # and we're done
         return
-    
-    # Not all vertex have even degree, check if exactly two vertex have odd degrees.
-    # If yes, then there is an Euler path. If not, raise an error (no euler path can be found)
+
+    # Not all vertex have even degree, check if exactly two vertex
+    # have odd degrees.  If yes, then there is an Euler path. If not,
+    # raise an error (no euler path can be found)
     g = G.__class__(G)  # copy graph structure (not attributes)
 
     # list to check the odd degree condition, and a flag
     check_odd = []
-    directed = g.is_directed()
 
-    if directed:
+    if is_directed:
         degree = g.in_degree
         out_degree = g.out_degree
         edges = g.in_edges
@@ -251,10 +253,11 @@ def eulerian_path(G):
     for v in g:
         deg = degree(v)
         # directed case
-        if directed:
+        if is_directed:
             outdeg = out_degree(v)
             if deg != outdeg:
-                # if we have more than 2 odd nodes, we do a raise (no euler path)
+                # if we have more than 2 odd nodes, we do a raise (no
+                # euler path)
                 if len(check_odd) > 2:
                     raise nx.NetworkXError("G doesn't have an Euler Path.")
                 # is odd and we append it.
@@ -262,21 +265,22 @@ def eulerian_path(G):
         # undirected case
         else:
             if deg % 2 != 0:
-                # if we have more than 2 odd nodes, we do a raise (no euler path)
+                # if we have more than 2 odd nodes, we do a raise (no
+                # euler path)
                 if len(check_odd) > 2:
                     raise nx.NetworkXError("G doesn't have an Euler Path.")
                 # is odd and we append it.
                 check_odd.append(v)
 
-    if directed:
+    if is_directed:
 
         first = check_odd[0]
         second = check_odd[1]
-        if  g.out_degree(first) == g.in_degree(first) + 1 and \
-            g.in_degree(second) == g.out_degree(second) + 1:
+        if g.out_degree(first) == g.in_degree(first) + 1 and \
+           g.in_degree(second) == g.out_degree(second) + 1:
             start = second
         elif g.out_degree(second) == g.in_degree(second) + 1 and \
-             g.in_degree(first)  == g.out_degree(first) + 1:
+             g.in_degree(first) == g.out_degree(first) + 1:
             start = first
         else:
             start =  None
