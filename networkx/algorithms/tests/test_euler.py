@@ -101,6 +101,7 @@ class TestEulerianPath:
         edges = list(eulerian_path(G))
         nodes = [u for u, v in edges]
         # Grab the last node in path
+        u, v = edges[-1]
         nodes.append(v)
         assert_equal(edges, [('W', 'N'), ('N', 'E'), ('E', 'W'),
                              ('W', 'S'), ('S', 'E')])
@@ -113,6 +114,7 @@ class TestEulerianPath:
         edges = list(nx.eulerian_path(G))
         nodes = [u for u, v in edges]
         # Grab the last node in path
+        u, v = edges[-1]
         nodes.append(v)
         assert_equal(nodes, ['W', 'N', 'E', 'W', 'S', 'E'])
 
@@ -125,6 +127,7 @@ class TestEulerianPath:
         edges = list(nx.eulerian_path(G))
         nodes = [u for u, v in edges]
         # Grab the last node in path
+        u, v = edges[-1]
         nodes.append(v)
         assert_equal(nodes, ['S', 'W', 'N', 'E', 'W', 'E', 'S', 'E', 'S'])
 
