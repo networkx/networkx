@@ -33,9 +33,6 @@ __all__ = [ 'balanced_tree',
             'dorogovtsev_goltsev_mendes_graph',
             'empty_graph',
             'full_rary_tree',
-            'grid_graph',
-            'grid_2d_graph',
-            'hypercube_graph',
             'ladder_graph',
             'lollipop_graph',
             'null_graph',
@@ -356,88 +353,6 @@ def empty_graph(n=0,create_using=None):
     G.name="empty_graph(%d)"%n
     return G
 
-def grid_2d_graph(m,n,periodic=False,create_using=None):
-    """ Return the 2d grid graph of mxn nodes,
-        each connected to its nearest neighbors.
-        Optional argument periodic=True will connect
-        boundary nodes via periodic boundary conditions.
-    """
-    G=empty_graph(0,create_using)
-    G.name="grid_2d_graph"
-    rows=range(m)
-    columns=range(n)
-    G.add_nodes_from( (i,j) for i in rows for j in columns )
-    G.add_edges_from( ((i,j),(i-1,j)) for i in rows for j in columns if i>0 )
-    G.add_edges_from( ((i,j),(i,j-1)) for i in rows for j in columns if j>0 )
-    if G.is_directed():
-        G.add_edges_from( ((i,j),(i+1,j)) for i in rows for j in columns if i<m-1 )
-        G.add_edges_from( ((i,j),(i,j+1)) for i in rows for j in columns if j<n-1 )
-    if periodic:
-        if n>2:
-            G.add_edges_from( ((i,0),(i,n-1)) for i in rows )
-            if G.is_directed():
-                G.add_edges_from( ((i,n-1),(i,0)) for i in rows )
-        if m>2:
-            G.add_edges_from( ((0,j),(m-1,j)) for j in columns )
-            if G.is_directed():
-                G.add_edges_from( ((m-1,j),(0,j)) for j in columns )
-        G.name="periodic_grid_2d_graph(%d,%d)"%(m,n)
-    return G
-
-
-def grid_graph(dim,periodic=False):
-    """ Return the n-dimensional grid graph.
-
-    The dimension is the length of the list 'dim' and the
-    size in each dimension is the value of the list element.
-
-    E.g. G=grid_graph(dim=[2,3]) produces a 2x3 grid graph.
-
-    If periodic=True then join grid edges with periodic boundary conditions.
-
-    """
-    dlabel="%s"%dim
-    if dim==[]:
-        G=empty_graph(0)
-        G.name="grid_graph(%s)"%dim
-        return G
-    if not is_list_of_ints(dim):
-        raise nx.NetworkXError("dim is not a list of integers")
-    if min(dim)<=0:
-        raise nx.NetworkXError(\
-              "dim is not a list of strictly positive integers")
-    if periodic:
-        func=cycle_graph
-    else:
-        func=path_graph
-
-    dim=list(dim)
-    current_dim=dim.pop()
-    G=func(current_dim)
-    while len(dim)>0:
-        current_dim=dim.pop()
-        # order matters: copy before it is cleared during the creation of Gnew
-        Gold=G.copy()
-        Gnew=func(current_dim)
-        # explicit: create_using=None
-        # This is so that we get a new graph of Gnew's class.
-        G=nx.cartesian_product(Gnew,Gold)
-    # graph G is done but has labels of the form (1,(2,(3,1)))
-    # so relabel
-    H=nx.relabel_nodes(G, flatten)
-    H.name="grid_graph(%s)"%dlabel
-    return H
-
-def hypercube_graph(n):
-    """Return the n-dimensional hypercube.
-
-    Node labels are the integers 0 to 2**n - 1.
-
-    """
-    dim=n*[2]
-    G=grid_graph(dim)
-    G.name="hypercube_graph_(%d)"%n
-    return G
 
 def ladder_graph(n,create_using=None):
     """Return the Ladder graph of length n.

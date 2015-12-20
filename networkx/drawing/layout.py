@@ -1,25 +1,30 @@
-"""
-******
-Layout
-******
-
-Node positioning algorithms for graph drawing.
-"""
+# -*- coding: utf-8 -*-
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+"""Node positioning algorithms for graph drawing."""
+from __future__ import division
+
 import collections
+from math import sqrt
+
 import networkx as nx
+
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
+
 __all__ = ['circular_layout',
+           'fruchterman_reingold_layout',
+           'grid_layout',
+           'hexagonal_lattice_layout',
            'random_layout',
            'shell_layout',
            'spring_layout',
            'spectral_layout',
-           'fruchterman_reingold_layout']
+           'triangular_lattice_layout',
+           ]
 
 def process_params(G, center, dim):
     # Some boilerplate code.
@@ -40,6 +45,160 @@ def process_params(G, center, dim):
         raise ValueError(msg)
 
     return G, center
+
+
+def grid_layout(G, m, n, scale=1):
+    """Position nodes with uniform spacing on the *m* &times; *n* grid.
+
+    Returns a dictionary mapping a node to its position in the Euclidean
+    plane, given as a two-tuple.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph whose nodes will be positioned. The nodes of this
+        graph *must* be two-tuples of integers of the form (*i*, *j*),
+        where *i* is between 0 and *m - 1*, inclusive, and *j* is
+        between 0 and *n - 1*, inclusive. (This implies that the number
+        of nodes in the graph must be ``m * n``.)
+    m : int
+        The number of rows of nodes.
+    n : int
+        The number of columns of nodes.
+    scale : float
+        The scale of the layout. A larger number means a greater
+        distance between nodes.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    Compute the natural layout of the two-dimensional grid graph, scaled by
+    half::
+
+        >>> import networkx as nx
+        >>> m, n = 4, 3
+        >>> G = nx.grid_2d_graph(m, n)
+        >>> pos = nx.grid_layout(G, m, n, scale=0.5)
+        >>> pos[(2, 1)]
+        (1.0, 0.5)
+
+    Compute a grid layout of the triangular lattice graph::
+
+        >>> import networkx as nx
+        >>> m, n = 4, 3
+        >>> G = nx.triangular_lattice_graph(m, n)
+        >>> pos = nx.grid_layout(G, m, n)
+        >>> pos[(2, 1)]
+        (2, 1)
+
+    """
+    return {(i, j): (scale * i, scale * j) for i, j in G}
+
+
+def triangular_lattice_layout(G, m, n, scale=1):
+    """Position nodes in a *m* × *n* triangular lattice comprising
+    equilateral triangles.
+
+    Returns a dictionary mapping a node to its position in the Euclidean
+    plane, given as a two-tuple.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph whose nodes will be positioned. The nodes of this
+        graph *must* be two-tuples of integers of the form (*i*, *j*),
+        where *i* is between 0 and *m - 1*, inclusive, and *j* is
+        between 0 and *n - 1*, inclusive. (This implies that the number
+        of nodes in the graph must be ``m * n``.)
+    m : int
+        The number of "rows" of nodes.
+    n : int
+        The number of "columns" of nodes.
+    scale : float
+        The scale of the layout. A larger number means a greater
+        distance between nodes.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    Compute the natural triangular lattice layout of a triangular grid graph::
+
+        >>> import networkx as nx
+        >>> m, n = 4, 3
+        >>> G = nx.triangular_lattice_graph(m, n)
+        >>> pos = nx.triangular_lattice_layout(G, m, n)
+        >>> x, y = pos[(2, 1)]
+        >>> round(x, 4), round(y, 4)
+        (1.0, 0.866)
+
+    """
+    layout = grid_layout(G, m, n, scale=scale)
+    # Shift each x-axis value by half a unit so that we get a lattice of
+    # isosceles triangle. Scale each y-axis value down by (sqrt(3) / 2) of a
+    # unit so that we get a lattice of equilateral triangles.
+    yscale = (sqrt(3) / 2) * scale
+    xshift = lambda i: 0.5 * i * scale
+    return {(i, j): (x - xshift(i), yscale * y)
+            for (i, j), (x, y) in layout.items()}
+
+
+def hexagonal_lattice_layout(G, m, n, scale):
+    """Position nodes in a *m* × *n* hexagonal lattice.
+
+    Returns a dictionary mapping a node to its position in the Euclidean
+    plane, given as a two-tuple.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph whose nodes will be positioned. The nodes of this
+        graph *must* be two-tuples of integers of the form (*i*, *j*),
+        where *i* is between 0 and *m - 1*, inclusive, and *j* is
+        between 0 and *n - 1*, inclusive. (This implies that the number
+        of nodes in the graph must be ``m * n``.)
+    m : int
+        The number of "rows" of nodes.
+    n : int
+        The number of "columns" of nodes.
+    scale : float
+        The scale of the layout. A larger number means a greater
+        distance between nodes.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    Compute the natural hexagonal lattice layout of a hexagonal grid
+    graph::
+
+        >>> import networkx as nx
+        >>> m, n = 4, 3
+        >>> G = nx.hexagonal_lattice_graph(m, n)
+        >>> pos = nx.hexagonal_lattice_layout(G, m, n)
+        >>> x, y = pos[(2, 1)]
+        >>> round(x, 4), round(y, 4)
+        (1.0, 0.866)
+
+    """
+    layout = grid_layout(G, m, n, scale)
+    # Squeeze the x-values closer together by a factor of (sqrt(3) / 2)
+    # and shift alternating y-values up or down.
+    xscale = (sqrt(3) / 2) * scale
+    yscale = 1.5 * scale
+    yshift = lambda i, j: 0.25 if (i + j) % 2 == 0 else -0.25
+    return {(i, j): (xscale * x, yscale * y + yshift(i, j))
+            for (i, j), (x, y) in layout.items()}
 
 
 def random_layout(G, dim=2, center=None):

@@ -8,6 +8,7 @@ from networkx.generators.directed import *
 from networkx.generators.ego import *
 from networkx.generators.expanders import *
 from networkx.generators.geometric import *
+from networkx.generators.lattice import *
 from networkx.generators.line import *
 from networkx.generators.random_graphs import *
 from networkx.generators.small import *

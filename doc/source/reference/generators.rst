@@ -30,9 +30,6 @@ Classic
    cycle_graph
    dorogovtsev_goltsev_mendes_graph
    empty_graph
-   grid_2d_graph
-   grid_graph
-   hypercube_graph
    ladder_graph
    lollipop_graph
    null_graph
@@ -50,6 +47,19 @@ Expanders
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
+
+
+Lattice
+-------
+.. automodule:: networkx.generators.lattice
+.. autosummary::
+   :toctree:generated/
+
+   grid_2d_graph
+   grid_graph
+   hexagonal_lattice_graph
+   hypercube_graph
+   triangular_lattice_graph
 
 
 Small
