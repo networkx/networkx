@@ -131,8 +131,8 @@ class TestEulerianPath:
         for v in nodes:
             assert_true(v in expected_nodes) 
 
-    def test_eulerian_path_multidirected(self):
-        # An example, multidirected:
+    def test_eulerian_path_multigraph(self):
+        # An example, multi edge, undirected:
         G = nx.MultiGraph([("W", "N"), ("N", "E"), ("E", "W"),
                            ("E", "W"), ("W", "S"), ("S", "E"),
                            ("S", "E"), ("S", "E")])
@@ -145,8 +145,8 @@ class TestEulerianPath:
 
         expected_edges = [('S', 'W'), ('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'E'), ('E', 'S'), ('S', 'E'), ('E', 'S')]
         assert_true(len(edges) == len(expected_edges))
-        for edge in expected_edges:
-            assert_true(edge in edges)
+        for u, v in expected_edges:
+            assert_true((u, v in edges) or (v, u in edges))
 
         expected_nodes = ['S', 'W', 'N', 'E', 'W', 'E', 'S', 'E', 'S']
         assert_true(len(nodes) == len(expected_nodes))
