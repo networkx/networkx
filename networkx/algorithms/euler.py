@@ -377,7 +377,7 @@ def eulerian_path(G):
 
     >>> G = nx.DiGraph([(1, 2), (2, 3)])
     >>> list(nx.eulerian_path(G))
-    [(1,2),(2,3)]
+    [(1, 2), (2, 3)]
     """
     if is_eulerian(G):
         return eulerian_circuit(G)
