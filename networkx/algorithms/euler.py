@@ -174,6 +174,12 @@ def has_eulerian_path(G):
     Returns
     -------
     True, False
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1,2),(2,3)])                                      
+    >>> nx.has_eulerian_path(G)
+    True
     """
     is_directed = G.is_directed()
 
@@ -300,17 +306,6 @@ def _find_eulerian_path(G):
     .. [2] http://en.wikipedia.org/wiki/Eulerian_path
     .. [3] https://github.com/networkx/networkx/blob/master/networkx/algorithms/euler.py
     .. [4] https://www.math.ku.edu/~jmartin/courses/math105-F11/Lectures/chapter5-part2.pdf
-
-    Examples
-    --------
-    >>> G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'),
-                      ('S', 'E')])
-    >>> list(nx.find_eulerian_path(G))
-    [('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')]
-
-    >>> G = nx.Digraph([(1, 2), (2, 3)])
-    >>> list(nx.find_eulerian_path(G))
-    [(1,2),(2,3)]
     """
     g = G.__class__(G)  # copy graph structure (not attributes)
     is_directed = g.is_directed()
@@ -358,11 +353,37 @@ def eulerian_path(G):
     Check if the graph ``G'' has an Eulerian path or circuit and
     return a generator for the edges. If no path is available, raise
     an error.
+
+    Parameters
+    ----------
+    G: NetworkX Graph, DiGraph, MultiGraph or MultiDiGraph
+        A directed or undirected Graph or MultiGraph.
+
+    Returns
+    -------
+    edges: generator
+        A generator that produces edges in the Eulerian path.
+
+    Raises
+    ------
+    NetworkXError: If the graph does not have an Eulerian path.
+
+    Examples
+    --------
+    >>> G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'),
+                      ('S', 'E')])
+    >>> list(nx.eulerian_path(G))
+    [('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')]
+
+    >>> G = nx.DiGraph([(1, 2), (2, 3)])
+    >>> list(nx.eulerian_path(G))
+    [(1,2),(2,3)]
     """
     if is_eulerian(G):
         return eulerian_circuit(G)
 
-    if has_eulerian_path(G):
+    start = has_eulerian_path(G)
+    if start:
         return _find_eulerian_path(G)
 
     raise nx.NetworkXError("G does not have an Eulerian path.")
