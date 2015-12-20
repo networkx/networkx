@@ -103,9 +103,15 @@ class TestEulerianPath:
         # Grab the last node in path
         u, v = edges[-1]
         nodes.append(v)
-        assert_equal(edges, [('W', 'N'), ('N', 'E'), ('E', 'W'),
-                             ('W', 'S'), ('S', 'E')])
-        assert_equal(nodes, ['W', 'N', 'E', 'W', 'S', 'E'])
+        expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'),
+                          ('W', 'S'), ('S', 'E')]
+        assert_true(len(edges) == len(expected_edges))
+        for edge in expected_edges:
+            assert_true(edge in edges)
+        expected_nodes = ['W', 'N', 'E', 'W', 'S', 'E']
+        assert_true(len(nodes) == len(expected_nodes))
+        for v in expected_nodes:
+            assert_true(v in nodes)
 
     def test_eulerian_path_directed(self):
         # An example, directed:
@@ -116,7 +122,14 @@ class TestEulerianPath:
         # Grab the last node in path
         u, v = edges[-1]
         nodes.append(v)
-        assert_equal(nodes, ['W', 'N', 'E', 'W', 'S', 'E'])
+        expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')]
+        assert_true(len(edges) == len(expected_edges))
+        for edge in expected_edges:
+            assert_true(edge in edges)
+        expected_nodes = ['W', 'N', 'E', 'W', 'S', 'E']
+        assert_true(len(nodes) == len(expected_nodes))
+        for v in nodes:
+            assert_true(v in expected_nodes) 
 
     def test_eulerian_path_multidirected(self):
         # An example, multidirected:
@@ -129,7 +142,16 @@ class TestEulerianPath:
         # Grab the last node in path
         u, v = edges[-1]
         nodes.append(v)
-        assert_equal(nodes, ['S', 'W', 'N', 'E', 'W', 'E', 'S', 'E', 'S'])
+
+        expected_edges = [('S', 'W'), ('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'E'), ('E', 'S'), ('S', 'E'), ('E', 'S')]
+        assert_true(len(edges) == len(expected_edges))
+        for edge in expected_edges:
+            assert_true(edge in edges)
+
+        expected_nodes = ['S', 'W', 'N', 'E', 'W', 'E', 'S', 'E', 'S']
+        assert_true(len(nodes) == len(expected_nodes))
+        for v in nodes:
+            assert_true(v in expected_nodes)
 
     # Use the bridges of Königsberg
     bridges = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
