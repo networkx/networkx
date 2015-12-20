@@ -371,8 +371,8 @@ def eulerian_path(G):
     Examples
     --------
     >>> G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')])
-    >>> list(nx.eulerian_path(G))
-    [('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')]
+    >>> len(list(nx.eulerian_path(G)))
+    5
 
     >>> G = nx.DiGraph([(1, 2), (2, 3)])
     >>> list(nx.eulerian_path(G))

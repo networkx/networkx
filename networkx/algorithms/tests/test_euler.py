@@ -106,8 +106,8 @@ class TestEulerianPath:
         expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'),
                           ('W', 'S'), ('S', 'E')]
         assert_true(len(edges) == len(expected_edges))
-        for edge in expected_edges:
-            assert_true(edge in edges)
+        for u, v in expected_edges:
+            assert_true((u, v in edges) or (v, u in edges))
         expected_nodes = ['W', 'N', 'E', 'W', 'S', 'E']
         assert_true(len(nodes) == len(expected_nodes))
         for v in expected_nodes:
@@ -124,8 +124,8 @@ class TestEulerianPath:
         nodes.append(v)
         expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')]
         assert_true(len(edges) == len(expected_edges))
-        for edge in expected_edges:
-            assert_true(edge in edges)
+        for u, v in expected_edges:
+            assert_true(u, v in edges)
         expected_nodes = ['W', 'N', 'E', 'W', 'S', 'E']
         assert_true(len(nodes) == len(expected_nodes))
         for v in nodes:
