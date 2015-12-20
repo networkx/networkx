@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
+
 import networkx
 import networkx as nx
 
@@ -34,20 +36,28 @@ class TestCycles:
         cy=networkx.cycle_basis(G,9)
         sort_cy= sorted( sorted(c) for c in cy )
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5]])
+
         # test disconnected graphs
         G.add_cycle(list("ABC"))
         cy=networkx.cycle_basis(G,9)
         sort_cy= sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
 
-    @raises(nx.NetworkXNotImplemented)
-    def test_cycle_basis(self):
-        G=nx.DiGraph()
-        cy=networkx.cycle_basis(G,0)
+        # Testing undirected multigraph
+        cables = [(1,2),(1,2),(1,2),(3,1),(3,2)]
+        G = nx.MultiGraph(cables)
+        Z = networkx.cycle_basis(G,3)
+        assert_equal(Z, [[1,2],[1,2],[1,2,3]])
+
+        # Testing undirected multigraph with keys and data
+        cables = [(1,2,{"val":10}),(1,2,{"val":10}),(1,2,{"val":1}),(1,3,{"val":0}),(3,2,{"val":0})]
+        G = nx.MultiGraph(cables)
+        Z = networkx.cycle_basis(G,3)
+        assert_equal(Z, [[1,2],[1,2],[1,2,3]])
 
     @raises(nx.NetworkXNotImplemented)
     def test_cycle_basis(self):
-        G=nx.MultiGraph()
+        G=nx.DiGraph()
         cy=networkx.cycle_basis(G,0)
 
     def test_simple_cycles(self):
