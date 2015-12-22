@@ -6,7 +6,8 @@ Breadth-first search
 Basic algorithms for breadth-first searching the nodes of a graph.
 """
 import networkx as nx
-from collections import defaultdict, deque
+from collections import deque
+
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
@@ -92,11 +93,11 @@ def bfs_tree(G, source, reverse=False):
     """
     T = nx.DiGraph()
     T.add_node(source)
-    T.add_edges_from(bfs_edges(G,source,reverse=reverse))
+    T.add_edges_from(bfs_edges(G, source, reverse=reverse))
     return T
 
 def bfs_predecessors(G, source):
-    """Return dictionary of predecessors in breadth-first-search from source.
+    """Returns an iterator of predecessors in breadth-first-search from source.
 
     Parameters
     ----------
@@ -108,25 +109,32 @@ def bfs_predecessors(G, source):
 
     Returns
     -------
-    pred: dict
-       A dictionary with nodes as keys and predecessor nodes as values.
+    pred: iterator
+        (node, predecessors) iterator where predecessors is the list of
+        predecessors of the node.
 
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_path([0,1,2])
-    >>> print(nx.bfs_predecessors(G,0))
+    >>> G.add_path([0, 1, 2])
+    >>> print(dict(nx.bfs_predecessors(G, 0)))
     {1: 0, 2: 1}
+    >>> H = nx.Graph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> dict(nx.bfs_predecessors(H, 0))
+    {1: 0, 2: 0, 3: 1, 4: 1, 5: 2, 6: 2}
 
     Notes
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
     """
-    return dict((t,s) for s,t in bfs_edges(G,source))
+    for s, t in bfs_edges(G, source):
+        yield (t, s)
+
 
 def bfs_successors(G, source):
-    """Return dictionary of successors in breadth-first-search from source.
+    """Returns an iterator of successors in breadth-first-search from source.
 
     Parameters
     ----------
@@ -138,22 +146,34 @@ def bfs_successors(G, source):
 
     Returns
     -------
-    succ: dict
-       A dictionary with nodes as keys and list of succssors nodes as values.
+    succ: iterator
+       (node, successors) iterator where successors is the list of
+       successors of the node.
 
     Examples
     --------
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2])
-    >>> print(nx.bfs_successors(G,0))
+    >>> print(dict(nx.bfs_successors(G,0)))
     {0: [1], 1: [2]}
+    >>> H = nx.Graph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> dict(nx.bfs_successors(H, 0))
+    {0: [1, 2], 1: [3, 4], 2: [5, 6]}
+
 
     Notes
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
     """
-    d = defaultdict(list)
-    for s,t in bfs_edges(G,source):
-        d[s].append(t)
-    return dict(d)
+    parent = source
+    children = []
+    for p, c in bfs_edges(G, source):
+        if p == parent:
+            children.append(c)
+            continue
+        yield (parent, children)
+        children = [c]
+        parent = p
+    yield (parent, children)
