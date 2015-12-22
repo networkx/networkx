@@ -122,7 +122,8 @@ class TestEulerianPath:
         # Grab the last node in path
         u, v = edges[-1]
         nodes.append(v)
-        expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')]
+        expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'),
+                          ('W', 'S'), ('S', 'E')]
         assert_true(len(edges) == len(expected_edges))
         for u, v in expected_edges:
             assert_true(u, v in edges)
@@ -143,7 +144,8 @@ class TestEulerianPath:
         u, v = edges[-1]
         nodes.append(v)
 
-        expected_edges = [('S', 'W'), ('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'E'), ('E', 'S'), ('S', 'E'), ('E', 'S')]
+        expected_edges = [('S', 'W'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
+                          ('W', 'E'), ('E', 'S'), ('S', 'E'), ('E', 'S')]
         assert_true(len(edges) == len(expected_edges))
         for u, v in expected_edges:
             assert_true((u, v in edges) or (v, u in edges))

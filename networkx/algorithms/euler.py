@@ -192,13 +192,13 @@ def has_eulerian_path(G):
         return False
 
     # Now verify if has an Eulerian circuit: even condition of all
-    # nodes is satified.
+    # nodes is satisfied.
     if nx.is_eulerian(G):
         return True
 
     # Not all vertex have even degree, check if exactly two vertex
     # have odd degrees.  If yes, then there is an Euler path. If not,
-    # raise an error (no euler path can be found)
+    # raise an error (no Euler path can be found)
 
     # if the odd condition is not meet, raise an error.
     start = _find_path_start(G)
@@ -226,7 +226,7 @@ def _find_path_start(G):
     else:
         degree = G.degree
 
-    # Verify if an euler path can be found. Complexity O(n) ?
+    # Verify if an Euler path can be found. Complexity O(n) ?
     for v in G:
         deg = degree(v)
         # directed case
@@ -267,7 +267,7 @@ def _find_path_start(G):
 
 
 def _find_eulerian_path(G):
-    """Returns the edges of an Eulerian path in G, (if it exists).
+    """Returns a generator for the edges of an Eulerian path in G.
 
     An Eulerian path is a path that crosses every edge in G
     exactly once.
@@ -289,12 +289,12 @@ def _find_eulerian_path(G):
     Notes
     -----
     Linear time algorithm, adapted from [1]_ and [3]_.
-    Information about euler paths in [2]_.
+    Information about Euler paths in [2]_.
     Code for Eulerian circuit in [3]_.
 
-    Important: In [1], euler path is in reverse order,
+    Important: In [1], Euler path is in reverse order,
     this implementation gives the path in correct order
-    as in [3]_ for eulerian_circuit. The distinction for
+    as in [3]_ for Eulerian_circuit. The distinction for
     directed graph is in using the in_degree neighbors, not the out
     ones. for undirected, it is using itemgetter(1) for get_vertex,
     which uses the correct vertex for this order. Also, every graph
@@ -306,6 +306,7 @@ def _find_eulerian_path(G):
     .. [2] http://en.wikipedia.org/wiki/Eulerian_path
     .. [3] https://github.com/networkx/networkx/blob/master/networkx/algorithms/euler.py
     .. [4] https://www.math.ku.edu/~jmartin/courses/math105-F11/Lectures/chapter5-part2.pdf
+
     """
     g = G.__class__(G)  # copy graph structure (not attributes)
     is_directed = g.is_directed()
@@ -348,7 +349,7 @@ def _find_eulerian_path(G):
 
 
 def eulerian_path(G):
-    """Return the egdes of an Eulerian path in G.
+    """Return the edges of an Eulerian path in G.
 
     Check if the graph ``G'' has an Eulerian path or circuit and
     return a generator for the edges. If no path is available, raise
