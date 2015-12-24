@@ -29,7 +29,7 @@ __author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
                             'Humberto Ortiz-Zuazaga <humberto.ortiz@upr.edu>'])
 
 __all__ = ['is_eulerian', 'eulerian_circuit',
-           'has_eulerian_path', 'eulerian_path']
+           'is_semieulerian', 'eulerian_path']
 
 
 def is_eulerian(G):
@@ -160,8 +160,8 @@ def eulerian_circuit(G, source=None):
             g.remove_edge(*arbitrary_edge)
 
 
-def has_eulerian_path(G):
-    """Returns ``True'' iff ``G'' has an Eulerian path.
+def is_semieulerian(G):
+    """Returns ``True`` if and only if ``G`` has an Eulerian path.
 
     An Eulerian path is a path that crosses every edge in G
     exactly once.
@@ -175,10 +175,14 @@ def has_eulerian_path(G):
     -------
     True, False
 
+    See Also
+    --------
+    is_eulerian()
+
     Examples
     --------
-    >>> G = nx.DiGraph([(1,2),(2,3)])                                      
-    >>> nx.has_eulerian_path(G)
+    >>> G = nx.DiGraph([(1,2),(2,3)])
+    >>> nx.is_semieulerian(G)
     True
     """
     is_directed = G.is_directed()
@@ -190,11 +194,6 @@ def has_eulerian_path(G):
     # is undirected
     if not is_directed and not nx.is_connected(G):
         return False
-
-    # Now verify if has an Eulerian circuit: even condition of all
-    # nodes is satisfied.
-    if nx.is_eulerian(G):
-        return True
 
     # Not all vertex have even degree, check if exactly two vertex
     # have odd degrees.  If yes, then there is an Euler path. If not,
@@ -226,7 +225,7 @@ def _find_path_start(G):
     else:
         degree = G.degree
 
-    # Verify if an Euler path can be found. Complexity O(n) ?
+    # Verify if an Euler path can be found. Complexity O(|V|)
     for v in G:
         deg = degree(v)
         # directed case
@@ -267,9 +266,9 @@ def _find_path_start(G):
 
 
 def _find_eulerian_path(G):
-    """Returns a generator for the edges of an Eulerian path in G.
+    """Returns a generator for the edges of an Eulerian path in ``G``.
 
-    An Eulerian path is a path that crosses every edge in G
+    An Eulerian path is a path that crosses every edge in ``G``
     exactly once.
 
     Parameters
@@ -349,9 +348,9 @@ def _find_eulerian_path(G):
 
 
 def eulerian_path(G):
-    """Return the edges of an Eulerian path in G.
+    """Return a generator of the edges of an Eulerian path in ``G``.
 
-    Check if the graph ``G'' has an Eulerian path or circuit and
+    Check if the graph ``G`` has an Eulerian path or circuit and
     return a generator for the edges. If no path is available, raise
     an error.
 
@@ -379,11 +378,7 @@ def eulerian_path(G):
     >>> list(nx.eulerian_path(G))
     [(1, 2), (2, 3)]
     """
-    if is_eulerian(G):
-        return eulerian_circuit(G)
-
-    start = has_eulerian_path(G)
-    if start:
+    if is_semieulerian(G):
         return _find_eulerian_path(G)
 
     raise nx.NetworkXError("G does not have an Eulerian path.")

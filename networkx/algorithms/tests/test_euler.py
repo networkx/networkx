@@ -4,8 +4,7 @@
 
 from nose.tools import *
 import networkx as nx
-from networkx import is_eulerian,eulerian_circuit, \
-    has_eulerian_path,eulerian_path
+from networkx import is_eulerian, eulerian_circuit, is_semieulerian, eulerian_path
 
 class TestEuler:
 
@@ -53,17 +52,17 @@ class TestEuler:
         assert_equal(edges,[(1,2),(2,3),(3,0),(0,1)])
 
         G=nx.complete_graph(3)
-        
+
         edges=list(eulerian_circuit(G,source=0))
         nodes=[u for u,v in edges]
         assert_equal(nodes,[0,2,1])
         assert_equal(edges,[(0,2),(2,1),(1,0)])
-        
+
         edges=list(eulerian_circuit(G,source=1))
         nodes=[u for u,v in edges]
         assert_equal(nodes,[1,2,0])
         assert_equal(edges,[(1,2),(2,0),(0,1)])
-        
+
     def test_eulerian_circuit_digraph(self):
         G=nx.DiGraph()
         G.add_cycle([0,1,2,3])
@@ -130,13 +129,13 @@ class TestEulerianPath:
         expected_nodes = ['W', 'N', 'E', 'W', 'S', 'E']
         assert_true(len(nodes) == len(expected_nodes))
         for v in nodes:
-            assert_true(v in expected_nodes) 
+            assert_true(v in expected_nodes)
 
     def test_eulerian_path_multigraph(self):
         # An example, multi edge, undirected:
         G = nx.MultiGraph([("W", "N"), ("N", "E"), ("E", "W"),
                            ("E", "W"), ("W", "S"), ("S", "E"),
-                           ("S", "E"), ("S", "E")])
+                           ("S", "E")])
 
         edges = list(nx.eulerian_path(G))
         nodes = [u for u, v in edges]
@@ -144,13 +143,13 @@ class TestEulerianPath:
         u, v = edges[-1]
         nodes.append(v)
 
-        expected_edges = [('S', 'W'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
-                          ('W', 'E'), ('E', 'S'), ('S', 'E'), ('E', 'S')]
+        expected_edges = [('E', 'N'), ('N', 'W'), ('W', 'E'), ('E', 'W'),
+                          ('W', 'S'), ('S', 'E'), ('E', 'S')]
         assert_true(len(edges) == len(expected_edges))
         for u, v in expected_edges:
             assert_true((u, v in edges) or (v, u in edges))
 
-        expected_nodes = ['S', 'W', 'N', 'E', 'W', 'E', 'S', 'E', 'S']
+        expected_nodes = ['E', 'N', 'W', 'E', 'W', 'S', 'E', 'S']
         assert_true(len(nodes) == len(expected_nodes))
         for v in nodes:
             assert_true(v in expected_nodes)
@@ -159,8 +158,8 @@ class TestEulerianPath:
     bridges = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
                              ('W', 'S'), ('W', 'S'), ('S', 'E')])
 
-    def test_has_eulerian_path(self):
-        assert_false(has_eulerian_path(self.bridges))
+    def test_is_semieulerian(self):
+        assert_false(is_semieulerian(self.bridges))
 
     @raises(nx.NetworkXError)
     def test_no_eulerian_path(self):
