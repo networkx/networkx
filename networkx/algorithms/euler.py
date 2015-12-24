@@ -265,11 +265,11 @@ def _find_path_start(G):
     return start
 
 
-def _find_eulerian_path(G):
-    """Returns a generator for the edges of an Eulerian path in ``G``.
+def eulerian_path(G):
+    """Return a generator of the edges of an Eulerian path in ``G``.
 
-    An Eulerian path is a path that crosses every edge in ``G``
-    exactly once.
+    Check if the graph ``G`` has an Eulerian path and return a
+    generator for the edges. If no path is available, raise an error.
 
     Parameters
     ----------
@@ -284,6 +284,16 @@ def _find_eulerian_path(G):
     Raises
     ------
     NetworkXError: If the graph does not have an Eulerian path.
+
+    Examples
+    --------
+    >>> G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')])
+    >>> len(list(nx.eulerian_path(G)))
+    5
+
+    >>> G = nx.DiGraph([(1, 2), (2, 3)])
+    >>> list(nx.eulerian_path(G))
+    [(1, 2), (2, 3)]
 
     Notes
     -----
@@ -307,6 +317,9 @@ def _find_eulerian_path(G):
     .. [4] https://www.math.ku.edu/~jmartin/courses/math105-F11/Lectures/chapter5-part2.pdf
 
     """
+    if not is_semieulerian(G):
+        raise nx.NetworkXError("G does not have an Eulerian path.")
+
     g = G.__class__(G)  # copy graph structure (not attributes)
     is_directed = g.is_directed()
 
@@ -345,40 +358,3 @@ def _find_eulerian_path(G):
             edge = next(edges(current_vertex))
             vertex_stack.append(get_vertex(edge))
             g.remove_edge(*edge)
-
-
-def eulerian_path(G):
-    """Return a generator of the edges of an Eulerian path in ``G``.
-
-    Check if the graph ``G`` has an Eulerian path or circuit and
-    return a generator for the edges. If no path is available, raise
-    an error.
-
-    Parameters
-    ----------
-    G: NetworkX Graph, DiGraph, MultiGraph or MultiDiGraph
-        A directed or undirected Graph or MultiGraph.
-
-    Returns
-    -------
-    edges: generator
-        A generator that produces edges in the Eulerian path.
-
-    Raises
-    ------
-    NetworkXError: If the graph does not have an Eulerian path.
-
-    Examples
-    --------
-    >>> G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')])
-    >>> len(list(nx.eulerian_path(G)))
-    5
-
-    >>> G = nx.DiGraph([(1, 2), (2, 3)])
-    >>> list(nx.eulerian_path(G))
-    [(1, 2), (2, 3)]
-    """
-    if is_semieulerian(G):
-        return _find_eulerian_path(G)
-
-    raise nx.NetworkXError("G does not have an Eulerian path.")
