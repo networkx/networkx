@@ -94,42 +94,43 @@ class TestEuler:
 
 class TestEulerianPath:
 
+    # Use the bridges of Königsberg
+    bridges = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
+                             ('W', 'S'), ('W', 'S'), ('S', 'E')])
+
+    def verify_path(self, G, path):
+        g = G.__class__(G)  # copy graph structure (not attributes)
+
+        if len(path) == 0:
+            return False
+
+        current_vertex = None
+
+        for edge in path:
+            u, v = edge
+            if not current_vertex:
+                current_vertex = u
+            if current_vertex == u:
+                g.remove_edge(*edge)
+            else:
+                raise nx.NetworkXError("Bad edge on path" + str(edge))
+            current_vertex = v
+        if len(list(g.edges())) > 0:
+            raise nx.NetworkXError("Path did not use all edges")
+        return True
+
     def test_eulerian_path(self):
         G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'),
                       ('W', 'S'), ('S', 'E')])
         edges = list(eulerian_path(G))
-        nodes = [u for u, v in edges]
-        # Grab the last node in path
-        u, v = edges[-1]
-        nodes.append(v)
-        expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'),
-                          ('W', 'S'), ('S', 'E')]
-        assert_true(len(edges) == len(expected_edges))
-        for u, v in expected_edges:
-            assert_true((u, v in edges) or (v, u in edges))
-        expected_nodes = ['W', 'N', 'E', 'W', 'S', 'E']
-        assert_true(len(nodes) == len(expected_nodes))
-        for v in expected_nodes:
-            assert_true(v in nodes)
+        assert_true(self.verify_path(G, edges))
 
     def test_eulerian_path_directed(self):
         # An example, directed:
         G = nx.DiGraph([("W", "N"), ("N", "E"), ("S", "E"), ("W", "S"),
                         ("E", "W")])
         edges = list(nx.eulerian_path(G))
-        nodes = [u for u, v in edges]
-        # Grab the last node in path
-        u, v = edges[-1]
-        nodes.append(v)
-        expected_edges = [('W', 'N'), ('N', 'E'), ('E', 'W'),
-                          ('W', 'S'), ('S', 'E')]
-        assert_true(len(edges) == len(expected_edges))
-        for u, v in expected_edges:
-            assert_true(u, v in edges)
-        expected_nodes = ['W', 'N', 'E', 'W', 'S', 'E']
-        assert_true(len(nodes) == len(expected_nodes))
-        for v in nodes:
-            assert_true(v in expected_nodes)
+        self.verify_path(G, edges)
 
     def test_eulerian_path_multigraph(self):
         # An example, multi edge, undirected:
@@ -138,25 +139,7 @@ class TestEulerianPath:
                            ("S", "E")])
 
         edges = list(nx.eulerian_path(G))
-        nodes = [u for u, v in edges]
-        # Grab the last node in path
-        u, v = edges[-1]
-        nodes.append(v)
-
-        expected_edges = [('E', 'N'), ('N', 'W'), ('W', 'E'), ('E', 'W'),
-                          ('W', 'S'), ('S', 'E'), ('E', 'S')]
-        assert_true(len(edges) == len(expected_edges))
-        for u, v in expected_edges:
-            assert_true((u, v in edges) or (v, u in edges))
-
-        expected_nodes = ['E', 'N', 'W', 'E', 'W', 'S', 'E', 'S']
-        assert_true(len(nodes) == len(expected_nodes))
-        for v in nodes:
-            assert_true(v in expected_nodes)
-
-    # Use the bridges of Königsberg
-    bridges = nx.MultiGraph([('W', 'N'), ('W', 'N'), ('N', 'E'), ('E', 'W'),
-                             ('W', 'S'), ('W', 'S'), ('S', 'E')])
+        self.verify_path(G, edges)
 
     def test_is_semieulerian(self):
         assert_false(is_semieulerian(self.bridges))
@@ -164,3 +147,9 @@ class TestEulerianPath:
     @raises(nx.NetworkXError)
     def test_no_eulerian_path(self):
         next(list(eulerian_path(self.bridges)))
+
+    @raises(nx.NetworkXError)
+    def test_badpath(self):
+        G = nx.Graph([('W', 'N'), ('N', 'E'), ('E', 'W'), ('W', 'S'), ('S', 'E')])
+        edges = list(eulerian_path(G))
+        self.verify_path(G, edges[1:])
