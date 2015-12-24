@@ -27,11 +27,13 @@ Highlights
 ~~~~~~~~~~
 - Connected components now return generators
 - new functions including
-  - enumerate_all_cliques, greedy_coloring, edge_dfs, find_cycle
+
+  + enumerate_all_cliques, greedy_coloring, edge_dfs, find_cycle
     immediate_dominators, harmonic_centrality
-  - Hopcraft--Karp algorithm for maximum matchings
-  - optimum branchings and arborescences.
-  - all_simple_paths
+  + Hopcraft--Karp algorithm for maximum matchings
+  + optimum branchings and arborescences.
+  + all_simple_paths
+
 - pyparsing dependence removed from GML reader/parser
 - improve flow algorithms
 - new generators releated to expander graphs.
@@ -195,7 +197,8 @@ New features
    that handle subsets of nodes
  - :mod:`In-place node relabeling <networkx.relabel>` 
  - Many 'weighted' graph algorithms now take optional parameter to use 
-   specified edge attribute (default='weight') (:ticket:`509`)
+   specified edge attribute (default='weight')
+   (ticket https://networkx.lanl.gov/trac/ticket/509)
 
  - Test for :mod:`distance regular <networkx.algorithms.distance_regular>` graphs
  - Fast :mod:`directed Erdős-Renyi graph  <networkx.generators.random_graphs>` generator
@@ -213,21 +216,34 @@ See :doc:`api_1.5`
 
 Bug fixes
 ~~~~~~~~~
- - Fix edge handling for multigraphs in networkx/graphviz interface 
-   (:ticket:`507`)
- - Update networkx/pydot interface for new versions of pydot 
-   (:ticket:`506`), (:ticket:`535`)
- - Fix negative cycle handling in Bellman-Ford (:ticket:`502`)
- - Write more attributes with GraphML and GML formats (:ticket:`480`)
- - Handle white space better in read_edgelist (:ticket:`513`)
- - Better parsing of Pajek format files (:ticket:`524`) (:ticket:`542`)
- - Isolates functions work with directed graphs (:ticket:`526`)
- - Faster conversion to numpy matrices (:ticket:`529`)
- - Add graph['name'] and use properties to access Graph.name (:ticket:`544`)
- - Topological sort confused None and 0 (:ticket:`546`)
- - GEXF writer mishandled weight=0 (:ticket:`550`)
- - Speedup in SciPy version of PageRank (:ticket:`554`)
- - Numpy PageRank node order incorrect + speedups (:ticket:`555`)
+ - Fix edge handling for multigraphs in networkx/graphviz interface
+   (ticket https://networkx.lanl.gov/trac/ticket/507)
+ - Update networkx/pydot interface for new versions of pydot
+   (ticket https://networkx.lanl.gov/trac/ticket/506)
+   (ticket https://networkx.lanl.gov/trac/ticket/535)
+ - Fix negative cycle handling in Bellman-Ford
+   (ticket https://networkx.lanl.gov/trac/ticket/502)
+ - Write more attributes with GraphML and GML formats
+   (ticket https://networkx.lanl.gov/trac/ticket/480)
+ - Handle white space better in read_edgelist
+   (ticket https://networkx.lanl.gov/trac/ticket/513)
+ - Better parsing of Pajek format files
+   (ticket https://networkx.lanl.gov/trac/ticket/524)
+   (ticket https://networkx.lanl.gov/trac/ticket/542)
+ - Isolates functions work with directed graphs
+   (ticket https://networkx.lanl.gov/trac/ticket/526)
+ - Faster conversion to numpy matrices
+   (ticket https://networkx.lanl.gov/trac/ticket/529)
+ - Add graph['name'] and use properties to access Graph.name
+   (ticket https://networkx.lanl.gov/trac/ticket/544)
+ - Topological sort confused None and 0
+   (ticket https://networkx.lanl.gov/trac/ticket/546)
+ - GEXF writer mishandled weight=0
+   (ticket https://networkx.lanl.gov/trac/ticket/550)
+ - Speedup in SciPy version of PageRank
+   (ticket https://networkx.lanl.gov/trac/ticket/554)
+ - Numpy PageRank node order incorrect + speedups
+   (ticket https://networkx.lanl.gov/trac/ticket/555)
 
 NetworkX 1.4
 ------------

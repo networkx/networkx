@@ -49,12 +49,11 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     The average degree connectivity is the average nearest neighbor degree of
     nodes with degree k. For weighted graphs, an analogous measure can
     be computed using the weighted average neighbors degree defined in
-    [1]_, for a node `i`, as:
+    [1]_, for a node `i`, as
 
     .. math::
 
         k_{nn,i}^{w} = \frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
-
 
     where `s_i` is the weighted degree of node `i`,
     `w_{ij}` is the weight of the edge that links `i` and `j`,
@@ -70,7 +69,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     target : "in"|"out"|"in+out" (default:"in+out"
        Directed graphs only. Use "in"- or "out"-degree for target node.
 
-    nodes: list or iterable (optional)
+    nodes : list or iterable (optional)
         Compute neighbor connectivity for these nodes. The default is all
         nodes.
 
@@ -80,7 +79,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
 
     Returns
     -------
-    d: dict
+    d : dict
        A dictionary keyed by degree k with the value of average connectivity.
 
     Examples

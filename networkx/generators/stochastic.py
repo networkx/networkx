@@ -29,9 +29,9 @@ def stochastic_graph(G, copy=True, weight='weight'):
     reweighting takes that into account.
 
     Parameters
-    -----------
+    ----------
     G : directed graph
-      A NetworkX DiGraph
+        A :class:`~networkx.DiGraph` or :class:`~networkx.MultiDiGraph`.
 
     copy : boolean, optional
       If this is ``True``, then this function returns a new instance of

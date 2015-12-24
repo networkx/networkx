@@ -280,7 +280,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     hits
 
     Notes
-    ------
+    -----
     Katz centrality was introduced by [2]_.
 
     This algorithm uses a direct linear solver to solve the above equation.

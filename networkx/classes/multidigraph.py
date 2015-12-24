@@ -38,6 +38,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
@@ -262,7 +263,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Parameters
         ----------
-        u,v : nodes
+        u, v : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         key : hashable identifier, optional (default=lowest unused integer)
@@ -349,7 +350,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Parameters
         ----------
-        u,v: nodes
+        u, v : nodes
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
