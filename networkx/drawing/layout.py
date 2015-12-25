@@ -97,7 +97,7 @@ def circular_layout(G, dim=2, scale=1., center=None):
     >>> pos=nx.circular_layout(G)
 
     Notes
-    ------
+    -----
     This algorithm currently only works in two dimensions and does not
     try to minimize edge crossings.
 
@@ -146,7 +146,7 @@ def shell_layout(G, nlist=None, dim=2, scale=1., center=None):
     >>> pos = nx.shell_layout(G, shells)
 
     Notes
-    ------
+    -----
     This algorithm currently only works in two dimensions and does not
     try to minimize edge crossings.
 

@@ -9,6 +9,10 @@ Overview
 .. currentmodule:: networkx
 .. autofunction:: Graph
 
+=======
+Methods
+=======
+
 Adding and removing nodes and edges
 ===================================
 

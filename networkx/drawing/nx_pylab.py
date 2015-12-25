@@ -62,7 +62,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
        Set the Matplotlib hold state.  If True subsequent draw
        commands will be added to the current axes.
 
-    **kwds : optional keywords
+    kwds : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
 
 
@@ -890,7 +890,7 @@ def draw_circular(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -906,7 +906,7 @@ def draw_random(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -922,7 +922,7 @@ def draw_spectral(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -938,7 +938,7 @@ def draw_spring(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -954,7 +954,7 @@ def draw_shell(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -976,7 +976,7 @@ def draw_graphviz(G, prog="neato", **kwargs):
     prog : string, optional
       Name of Graphviz layout program
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
     """
     pos = nx.drawing.graphviz_layout(G, prog)
