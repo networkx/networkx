@@ -56,7 +56,7 @@ def maximal_independent_set(G, nodes=None):
     [1, 3]
     
     Notes
-    ------
+    -----
     This algorithm does not solve the maximum independent set problem.
 
     """

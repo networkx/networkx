@@ -128,7 +128,7 @@ def _build_flow_dict(G, R, capacity, weight):
 
 def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                      heap=BinaryHeap):
-    """Find a minimum cost flow satisfying all demands in digraph G.
+    r"""Find a minimum cost flow satisfying all demands in digraph G.
 
     This is a capacity scaling successive shortest augmenting path algorithm.
 
@@ -178,16 +178,14 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
 
     Returns
     -------
-    flowCost: integer
+    flowCost : integer
         Cost of a minimum cost flow satisfying all demands.
 
-    flowDict: dictionary
-        Dictionary of dictionaries keyed by nodes such that
-        flowDict[u][v] is the flow edge (u, v) if G is a digraph.
-
-        Dictionary of dictionaries of dictionaries keyed by nodes such that
-        flowDict[u][v][key] is the flow edge (u, v, key) if G is a
-        multidigraph.
+    flowDict : dictionary
+        If G is a DiGraph, a dict-of-dicts keyed by nodes such that
+        flowDict[u][v] is the flow edge (u, v).
+        If G is a MultiDiGraph, a dict-of-dictsof-dicts keyed by nodes
+        so that flowDict[u][v][key] is the flow edge (u, v, key).
 
     Raises
     ------
@@ -197,6 +195,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
 
     NetworkXUnfeasible
         This exception is raised in the following situations:
+
             * The sum of the demands is not zero. Then, there is no
               flow satisfying all demands.
             * There is no flow satisfying all demand.

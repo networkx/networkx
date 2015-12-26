@@ -55,7 +55,7 @@ if on_rtd:
         # from networkx/doc/source (which holds conf.py).
         py = sys.executable
         subprocess.call([py, 'make_gallery.py'])
-        subprocess.call([py, 'make_examples.py', '../examples', 'source'])
+        subprocess.call([py, 'make_examples_rst.py', '../examples', 'source'])
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py

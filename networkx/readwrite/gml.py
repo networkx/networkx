@@ -706,7 +706,7 @@ def write_gml(G, path, stringizer=None):
     structure.
 
     Examples
-    ---------
+    --------
     >>> G = nx.path_graph(4)
     >>> nx.write_gml(G, "test.gml")
 
