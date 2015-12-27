@@ -33,6 +33,7 @@ def girvan_newman(G, weight=None):
     the tightly knit community structure is exposed and result can be depicted
     as a dendrogram.
     """
+    # The copy of G here must include the edge weight data.
     g = G.copy().to_undirected()
     components = []
     while g.number_of_edges() > 0:

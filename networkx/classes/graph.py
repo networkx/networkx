@@ -1273,8 +1273,16 @@ class Graph(object):
         self.node.clear()
         self.graph.clear()
 
-    def copy(self):
+    def copy(self, with_data=True):
         """Return a copy of the graph.
+
+        Parameters
+        ----------
+        with_data : bool
+            If ``True``, the returned graph will have a deep copy of the
+            graph, node, and edge attributes of this object. Otherwise,
+            the returned graph will only have a copy of the nodes and
+            edges of this object.
 
         Returns
         -------
@@ -1285,11 +1293,6 @@ class Graph(object):
         --------
         to_directed: return a directed copy of the graph.
 
-        Notes
-        -----
-        This makes a complete copy of the graph including all of the
-        node or edge attributes.
-
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -1297,7 +1300,12 @@ class Graph(object):
         >>> H = G.copy()
 
         """
-        return deepcopy(self)
+        if with_data:
+            return deepcopy(self)
+        G = nx.Graph()
+        G.add_nodes_from(self)
+        G.add_edges_from(self.edges())
+        return G
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""
