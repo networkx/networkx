@@ -135,3 +135,12 @@ class TestGeneratorsRandom():
         # infinite loop used to occur when a node has degree n-1 and needs to rewire
         watts_strogatz_graph(10, 9, 0.25, seed=0)
         newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
+
+    def test_random_kernel_graph(self):
+        def integral(u, w, z):
+            return c*(z-w)
+        def root(u, w, r):
+            return r/c+w
+        c = 1
+        graph = random_kernel_graph(1000, integral, root)
+        assert_equal(len(graph), 1000)
