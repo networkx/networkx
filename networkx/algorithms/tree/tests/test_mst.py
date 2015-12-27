@@ -245,3 +245,45 @@ class TestMST:
     @raises(ValueError)
     def test_wrong_value(self):
         nx.minimum_spanning_tree(self.G, algorithm='random')
+
+    def test_multigraph_keys(self):
+        """Tests that the minimum spanning edges of a multigraph
+        preserves edge keys.
+
+        """
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key='a', weight=2)
+        G.add_edge(0, 1, key='b', weight=1)
+        mst_edges = nx.minimum_spanning_edges(G, algorithm='kruskal',
+                                              data=False)
+        assert_equal([(0, 1, 'b')], list(mst_edges))
+        mst_edges = nx.minimum_spanning_edges(G, algorithm='prim', data=False)
+        assert_equal([(0, 1, 'b')], list(mst_edges))
+
+    def test_multigraph_keys_max(self):
+        """Tests that the maximum spanning edges of a multigraph
+        preserves edge keys.
+
+        """
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key='a', weight=2)
+        G.add_edge(0, 1, key='b', weight=1)
+        mst_edges = nx.maximum_spanning_edges(G, algorithm='kruskal',
+                                              data=False)
+        assert_equal([(0, 1, 'a')], list(mst_edges))
+        mst_edges = nx.maximum_spanning_edges(G, algorithm='prim', data=False)
+        assert_equal([(0, 1, 'a')], list(mst_edges))
+
+    def test_multigraph_keys_tree(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key='a', weight=2)
+        G.add_edge(0, 1, key='b', weight=1)
+        T = nx.minimum_spanning_tree(G)
+        assert_equal([(0, 1, 1)], list(T.edges(data='weight')))
+
+    def test_multigraph_keys_tree_max(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key='a', weight=2)
+        G.add_edge(0, 1, key='b', weight=1)
+        T = nx.maximum_spanning_tree(G)
+        assert_equal([(0, 1, 2)], list(T.edges(data='weight')))
