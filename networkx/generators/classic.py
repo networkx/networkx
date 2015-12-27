@@ -1,3 +1,9 @@
+#    Copyright (C) 2004-2015 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 """
 Generators for some classic graphs.
 
@@ -10,16 +16,15 @@ as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-#    Copyright (C) 2004-2015 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+from __future__ import division
+
 import itertools
 
+import networkx as nx
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph
 from networkx.utils import accumulate
+from networkx.utils import flatten
+from networkx.utils import is_list_of_ints
 
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 
@@ -48,8 +53,6 @@ __all__ = [ 'balanced_tree',
 #-------------------------------------------------------------------
 #   Some Classic Graphs
 #-------------------------------------------------------------------
-import networkx as nx
-from networkx.utils import is_list_of_ints, flatten
 
 def _tree_edges(n,r):
     # helper function for trees
@@ -98,43 +101,53 @@ def full_rary_tree(r, n, create_using=None):
     G.add_edges_from(_tree_edges(n,r))
     return G
 
+
 def balanced_tree(r, h, create_using=None):
-    """Return the perfectly balanced r-tree of height h.
+    """Return the perfectly balanced ``r``-ary tree of height ``h``.
 
     Parameters
     ----------
     r : int
-        Branching factor of the tree
+        Branching factor of the tree; each node will have ``r``
+        children.
+
     h : int
-        Height of the tree
-    create_using : NetworkX graph type, optional
-        Use specified type to construct graph (default = networkx.Graph)
+        Height of the tree.
+
+    create_using : NetworkX graph
+        Use the specified graph as the base for the generated tree; see
+        the documentation of :func:`~networkx.empty_graph` for more
+        information.
 
     Returns
     -------
-    G : networkx Graph
-        A tree with n nodes
+    G : NetworkX graph
+        A balanced ``r``-ary tree of height ``h``.
 
     Notes
     -----
-    This is the rooted tree where all leaves are at distance h from
-    the root. The root has degree r and all other internal nodes have
-    degree r+1.
+    This is the rooted tree where all leaves are at distance ``h`` from
+    the root. The root has degree ``r`` and all other internal nodes
+    have degree ``r + 1``.
 
-    Node labels are the integers 0 (the root) up to  number_of_nodes - 1.
+    Node labels are integers, starting from zero.
 
-    Also refered to as a complete r-ary tree.
+    A balanced tree is also known as a *complete ``r``-ary tree*.
+
     """
-    # number of nodes is n=1+r+..+r^h
-    if r==1:
-        n=2
+    # The number of nodes in the balanced tree is `1 + r + ... + r^h`,
+    # which is computed by using the closed-form formula for a geometric
+    # sum with ratio `r`. In the special case that `r` is 1, the number
+    # of nodes is simply `h + 1` (since the tree is actually a path
+    # graph).
+    if r == 1:
+        n = h + 1
     else:
-        n = int((1-r**(h+1))/(1-r)) # sum of geometric series r!=1
-    G=nx.empty_graph(n,create_using)
-    G.add_edges_from(_tree_edges(n,r))
-    return G
+        # This must be an integer if both `r` and `h` are integers. If
+        # they are not, we force integer division anyway.
+        n = (1 - r ** (h + 1)) // (1 - r)
+    return full_rary_tree(r, n, create_using=create_using)
 
-    return nx.full_rary_tree(r,n,create_using)
 
 def barbell_graph(m1,m2,create_using=None):
     """Return the Barbell Graph: two complete graphs connected by a path.
