@@ -8,6 +8,8 @@ Documentation
    http://networkx.github.io
 Mailing List
    https://groups.google.com/forum/#!forum/networkx-discuss
+IRC
+   `irc://chat.freenode.net/networkx`_ (for a web client click `here`_)
 Development
    https://github.com/networkx/networkx
 
@@ -40,6 +42,5 @@ Distributed with a BSD license; see LICENSE.txt::
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
 
-
-
-
+.. _irc://chat.freenode.net/networkx: irc://chat.freenode.net/networkx
+.. _here: http://webchat.freenode.net?channels=%23networkx
