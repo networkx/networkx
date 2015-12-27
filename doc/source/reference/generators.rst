@@ -229,3 +229,12 @@ Non Isomorphic Trees
 
    nonisomorphic_trees
    number_of_nonisomorphic_trees
+
+
+Triads
+------
+.. automodule:: networkx.generators.triads
+.. autosummary::
+   :toctree: generated/
+
+   triad_graph
