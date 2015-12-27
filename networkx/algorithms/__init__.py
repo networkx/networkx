@@ -9,6 +9,7 @@ from networkx.algorithms.components import *
 from networkx.algorithms.coloring import *
 from networkx.algorithms.core import *
 from networkx.algorithms.cycles import *
+from networkx.algorithms.cuts import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.dominance import *
