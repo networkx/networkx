@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # cuts.py - functions for computing and evaluating cuts
 #
 # Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
