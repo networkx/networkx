@@ -614,12 +614,10 @@ class Graph(object):
 
         Parameters
         ----------
-        data : boolean, optional (default=False)
-            If ``False``, the iterator returns nodes.  If ``True``,
-            the iterator returns a two-tuple of node and node data
-            dictionary. ``data`` can also be a specific node attribute from
-            node data dictionary, if ``data`` is an attribute, the iterator
-            returns a two-tuple of node and value of node attribute.
+        data : string or bool, optional (default=False)
+            The node attribute returned in 2-tuple (n,ddict[data]).
+            If True, return entire node attribute dict as (n,ddict).
+            If False, return just the nodes n.
 
         default : value, optional (default=None)
             Value used for nodes that dont have the requested attribute.
@@ -628,11 +626,12 @@ class Graph(object):
         Returns
         -------
         iterator
-            An iterator over nodes, or if ``data`` is ``True``, an
-            iterator over two-tuples of the form ``(node, node data
-            dictionary)``, or if ``data`` is an attribute from the node
-            data dictionary, an iterator over two-tuples of the form ``(node,
-            attribute value)``
+            An iterator over nodes, or (n,d) tuples of node with data.
+            If data is False, an iterator over nodes.
+            Otherwise an iterator of 2-tuples (node, attribute value)
+            where the attribute is specified in data.
+            If data is True then the attribute becomes the
+            entire data dictionary.
 
         Notes
         -----
@@ -663,12 +662,11 @@ class Graph(object):
         >>> list(G.nodes(data='time', default='Not Available'))
         [(0, 'Not Available'), (1, '5pm'), (2, 'Not Available')]
         """
-        ndict = self.node.items()
         if data is True:
-            for n, ddict in ndict:
+            for n, ddict in self.node.items():
                 yield (n, ddict)
         elif data is not False:
-            for n, ddict in ndict:
+            for n, ddict in self.node.items():
                 d = ddict[data] if data in ddict else default
                 yield (n, d)
         else:
@@ -1303,8 +1301,8 @@ class Graph(object):
 
         Parameters
         ----------
-        with_data : bool
-            If ``True``, the returned graph will have a deep copy of the
+        with_data : bool, optional (default=True)
+            If True, the returned graph will have a deep copy of the
             graph, node, and edge attributes of this object. Otherwise,
             the returned graph will only have a copy of the nodes and
             edges of this object.
@@ -1585,22 +1583,22 @@ class Graph(object):
         return sum(1 for _ in self.selfloop_edges())
 
     def size(self, weight=None):
-        """Return the number of edges.
+        """Return the number of edges or total of all edge weights.
 
         Parameters
         ----------
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used
-           as a weight.  If None, then each edge has weight 1.
+            The edge attribute that holds the numerical value used
+            as a weight. If None, then each edge has weight 1.
 
         Returns
         -------
-        size 
-             The integer number of edges in the graph if `weight` 
-             is None. If a weight keyword argument is provided, 
-             and all the weights are integers, the output will 
-             be a float, regardless of whether all the weights 
-             are integers.
+        size : numeric
+            The number of edges or
+            (if weight keyword is provided) the total weight sum.
+
+            If weight is None, returns an int. Otherwise a float
+            (or more general numeric if the weights are more general).
 
         See Also
         --------
