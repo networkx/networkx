@@ -178,6 +178,28 @@ class TestQuotient(object):
             assert_equal(M.node[n]['nnodes'], 3)
             assert_equal(M.node[n]['density'], 1)
 
+    def test_blockmodel(self):
+        G = nx.path_graph(6)
+        partition = [[0, 1], [2, 3], [4, 5]]
+        M = nx.blockmodel(G, partition)
+        assert_equal(sorted(M.nodes()), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M.nodes():
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 1.0)
+
+    def test_multigraph_blockmodel(self):
+        G = nx.MultiGraph(nx.path_graph(6))
+        partition = [[0, 1], [2, 3], [4, 5]]
+        M = nx.blockmodel(G, partition, multigraph=True)
+        assert_equal(sorted(M.nodes()), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M.nodes():
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 1.0)
+
 
 class TestContraction(object):
     """Unit tests for node and edge contraction functions."""

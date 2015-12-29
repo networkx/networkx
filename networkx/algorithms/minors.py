@@ -20,7 +20,7 @@ from networkx.exception import NetworkXException
 from networkx.utils import arbitrary_element
 
 __all__ = ['contracted_edge', 'contracted_nodes',
-           'identified_nodes', 'quotient_graph']
+           'identified_nodes', 'quotient_graph', 'blockmodel']
 
 chaini = chain.from_iterable
 
@@ -412,3 +412,58 @@ def contracted_edge(G, edge, self_loops=True):
         raise ValueError('Edge {0} does not exist in graph G; cannot contract'
                          ' it'.format(edge))
     return contracted_nodes(G, *edge, self_loops=self_loops)
+
+
+def blockmodel(G, partition, multigraph=False):
+    """Returns a reduced graph constructed using the generalized block modeling
+    technique.
+
+    The blockmodel technique collapses nodes into blocks based on a
+    given partitioning of the node set.  Each partition of nodes
+    (block) is represented as a single node in the reduced graph.
+    Edges between nodes in the block graph are added according to the
+    edges in the original graph.  If the parameter multigraph is False
+    (the default) a single edge is added with a weight equal to the
+    sum of the edge weights between nodes in the original graph
+    The default is a weight of 1 if weights are not specified.  If the
+    parameter multigraph is True then multiple edges are added each
+    with the edge data from the original graph.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx Graph or DiGraph
+
+    partition : list of lists, or list of sets
+        The partition of the nodes.  Must be non-overlapping.
+
+    multigraph : bool, optional
+        If True return a MultiGraph with the edge data of the original
+        graph applied to each corresponding edge in the new graph.
+        If False return a Graph with the sum of the edge weights, or a
+        count of the edges if the original graph is unweighted.
+
+    Returns
+    -------
+    blockmodel : a Networkx graph object
+
+    Examples
+    --------
+    >>> G = nx.path_graph(6)
+    >>> partition = [[0,1],[2,3],[4,5]]
+    >>> M = nx.blockmodel(G,partition)
+
+    References
+    ----------
+    .. [1] Patrick Doreian, Vladimir Batagelj, and Anuska Ferligoj
+           "Generalized Blockmodeling",Cambridge University Press, 2004.
+
+    Notes
+    -----
+    This function has been deprecated. Please use ``quotient_graph`` instead.
+    """
+    if multigraph:
+        return nx.quotient_graph(G, partition,
+                                 create_using=nx.MultiGraph(), relabel=True)
+    else:
+        return nx.quotient_graph(G, partition, relabel=True)
