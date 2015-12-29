@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-from nose.tools import *
+from nose.tools import (assert_equal, assert_raises, assert_true, raises,
+                        assert_not_equal)
 import networkx
 
 class BaseGraphTester(object):
@@ -335,14 +335,19 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_equal(H.graph['foo'], 'bar')
 
     def test_node_attr(self):
-        G=self.K3
-        G.add_node(1,foo='bar')
+        G = self.K3
+        G.add_node(1, foo='bar')
         assert_equal(list(G.nodes()), [0, 1, 2])
         assert_equal(list(G.nodes(data=True)),
                      [(0, {}), (1, {'foo':'bar'}), (2, {})])
-        G.node[1]['foo']='baz'
+        G.node[1]['foo'] = 'baz'
         assert_equal(list(G.nodes(data=True)),
                      [(0, {}), (1, {'foo':'baz'}), (2, {})])
+        assert_equal(list(G.nodes(data='foo')),
+                     [(0, None), (1, 'baz'), (2, None)])
+        assert_equal(list(G.nodes(data='foo', default='bar')),
+                     [(0, 'bar'), (1, 'baz'), (2, 'bar')])
+
 
     def test_node_attr2(self):
         G=self.K3

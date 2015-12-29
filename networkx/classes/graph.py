@@ -609,22 +609,30 @@ class Graph(object):
             except KeyError:
                 pass
 
-    def nodes(self, data=False):
+    def nodes(self, data=False, default=None):
         """Returns an iterator over the nodes.
 
         Parameters
         ----------
         data : boolean, optional (default=False)
-               If ``False``, the iterator returns nodes.  If ``True``,
-               the iterator return a two-tuple of node and node data
-               dictionary.
+            If ``False``, the iterator returns nodes.  If ``True``,
+            the iterator returns a two-tuple of node and node data
+            dictionary. ``data`` can also be a specific node attribute from
+            node data dictionary, if ``data`` is an attribute, the iterator
+            returns a two-tuple of node and value of node attribute.
+
+        default : value, optional (default=None)
+            Value used for nodes that dont have the requested attribute.
+            Only relevant if data is not True or False.
 
         Returns
         -------
         iterator
             An iterator over nodes, or if ``data`` is ``True``, an
             iterator over two-tuples of the form ``(node, node data
-            dictionary)``.
+            dictionary)``, or if ``data`` is an attribute from the node
+            data dictionary, an iterator over two-tuples of the form ``(node,
+            attribute value)``
 
         Notes
         -----
@@ -633,7 +641,8 @@ class Graph(object):
 
         Examples
         --------
-        There are two simple ways of getting a list of all nodes in the graph::
+        There are two simple ways of getting a list of all nodes in the graph:
+
         >>> G = nx.Graph()
         >>> G.add_nodes_from(range(3))
         >>> list(G.nodes())
@@ -641,16 +650,31 @@ class Graph(object):
         >>> list(G)
         [0, 1, 2]
 
-        To get the node data along with the nodes::
+        To get the node data along with the nodes:
+
         >>> G.add_node(1, time='5pm')
         >>> G.node[0]['foo'] = 'bar'
         >>> list(G.nodes(data=True))
         [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
-
+        >>> list(G.nodes(data='foo'))
+        [(0, 'bar'), (1, None), (2, None)]
+        >>> list(G.nodes(data='time'))
+        [(0, None), (1, '5pm'), (2, None)]
+        >>> list(G.nodes(data='time', default='Not Available'))
+        [(0, 'Not Available'), (1, '5pm'), (2, 'Not Available')]
         """
-        if data:
-            return iter(self.node.items())
-        return iter(self.node)
+        ndict = self.node.items()
+        if data is True:
+            for n, ddict in ndict:
+                yield (n, ddict)
+        elif data is not False:
+            for n, ddict in ndict:
+                d = ddict[data] if data in ddict else default
+                yield (n, d)
+        else:
+            for n in self.node:
+                yield n
+
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
