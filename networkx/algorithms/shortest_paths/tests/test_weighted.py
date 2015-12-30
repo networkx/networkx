@@ -68,14 +68,14 @@ class TestWeightedPath:
         assert_equal(D['v'], 9)
 
         validate_path(
-            self.XG, 's', 'v', 9, nx.single_source_dijkstra_path(self.XG, 's')['v'])
+            self.XG, 's', 'v', 9, dict(nx.single_source_dijkstra_path(self.XG, 's'))['v'])
         assert_equal(dict(
             nx.single_source_dijkstra_path_length(self.XG, 's'))['v'], 9)
 
         validate_path(
             self.XG, 's', 'v', 9, nx.single_source_dijkstra(self.XG, 's')[1]['v'])
         validate_path(
-            self.MXG, 's', 'v', 9, nx.single_source_dijkstra_path(self.MXG, 's')['v'])
+            self.MXG, 's', 'v', 9, dict(nx.single_source_dijkstra_path(self.MXG, 's'))['v'])
 
         GG = self.XG.to_undirected()
         # make sure we get lower weight
@@ -127,7 +127,7 @@ class TestWeightedPath:
             self.XG4, 0, 2, 4, *nx.bidirectional_dijkstra(self.XG4, 0, 2))
 
         # need more tests here
-        P = nx.single_source_dijkstra_path(self.XG, 's')['v']
+        P = dict(nx.single_source_dijkstra_path(self.XG, 's'))['v']
         validate_path(self.XG, 's', 'v', sum(self.XG[u][v]['weight'] for u, v in zip(
             P[:-1], P[1:])), nx.dijkstra_path(self.XG, 's', 'v'))
 
