@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import random
-from nose.tools import *
+from nose.tools import assert_equal, assert_raises, assert_true, raises
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
@@ -67,13 +67,13 @@ def test_cutoff_zero():
     paths = nx.all_simple_paths(nx.MultiGraph(G),0,3,cutoff=0)
     assert_equal(list(list(p) for p in paths),[])
 
-@raises(nx.NetworkXError)
+@raises(nx.NodeNotFound)
 def test_source_missing():
     G = nx.Graph()
     G.add_path([1,2,3])
     paths = list(nx.all_simple_paths(nx.MultiGraph(G),0,3))
 
-@raises(nx.NetworkXError)
+@raises(nx.NodeNotFound)
 def test_target_missing():
     G = nx.Graph()
     G.add_path([1,2,3])
@@ -139,14 +139,14 @@ def test_weight_name():
     paths = list(nx.shortest_simple_paths(G, 0, 3, weight='foo'))
     solution = [[0, 6, 5, 4, 3], [0, 1, 2, 3]]
     assert_equal(paths, solution)
-    
-@raises(nx.NetworkXError)
+
+@raises(nx.NodeNotFound)
 def test_ssp_source_missing():
     G = nx.Graph()
     G.add_path([1,2,3])
     paths = list(nx.shortest_simple_paths(G, 0, 3))
 
-@raises(nx.NetworkXError)
+@raises(nx.NodeNotFound)
 def test_ssp_target_missing():
     G = nx.Graph()
     G.add_path([1,2,3])
@@ -199,7 +199,7 @@ def test_bidirectional_shortest_path_restricted():
         nx.NetworkXNoPath,
         _bidirectional_shortest_path,
         directed_cycle,
-        0, 3, 
+        0, 3,
         ignore_edges=[(1, 2)],
     )
 
@@ -225,7 +225,7 @@ def test_bidirectional_dijksta_restricted():
     XG3.add_weighted_edges_from([[0, 1, 2], [1, 2, 12],
                                  [2, 3, 1], [3, 4, 5],
                                  [4, 5, 1], [5, 0, 10]])
-    validate_length_path(XG, 's', 'v', 9, 
+    validate_length_path(XG, 's', 'v', 9,
                          *_bidirectional_dijkstra(XG, 's', 'v'))
     validate_length_path(XG, 's', 'v', 10,
                          *_bidirectional_dijkstra(XG, 's', 'v', ignore_nodes=['u']))
@@ -259,4 +259,3 @@ def test_bidirectional_dijkstra_no_path():
     G.add_path([1, 2, 3])
     G.add_path([4, 5, 6])
     path = _bidirectional_dijkstra(G, 1, 6)
-
