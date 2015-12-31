@@ -43,6 +43,7 @@ Algorithms
    algorithms.minors
    algorithms.mis
    algorithms.operators
+   algorithms.reciprocity
    algorithms.rich_club
    algorithms.shortest_paths
    algorithms.simple_paths
