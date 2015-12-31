@@ -31,3 +31,6 @@ networkx.egg-info/
 
 # Vim's swap files
 *.sw[op]
+
+#Spyder project file
+.spyderproject

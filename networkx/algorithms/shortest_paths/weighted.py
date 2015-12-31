@@ -4,7 +4,8 @@ Shortest path algorithms for weighed graphs.
 """
 __author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>',
                             'Loïc Séguin-C. <loicseguin@gmail.com>',
-                            'Dan Schult <dschult@colgate.edu>'])
+                            'Dan Schult <dschult@colgate.edu>',
+                            'Niels van Adrichem <n.l.m.vanadrichem@tudelft.nl'])
 #    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -125,7 +126,18 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     --------
     bidirectional_dijkstra()
     """
-    length = dict(single_source_dijkstra_path_length(G, source, weight=weight))
+    
+    if source == target:
+        return 0
+
+    if G.is_multigraph():
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
+    else:
+        get_weight = lambda u, v, data: data.get(weight, 1)
+    
+    length =  _dijkstra(G, source, get_weight, target=target)
+    
     try:
         return length[target]
     except KeyError:
@@ -225,7 +237,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
 
-    return _dijkstra(G, source, get_weight, cutoff=cutoff)
+    return iter(_dijkstra(G, source, get_weight, cutoff=cutoff).items())
 
 
 def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight'):
@@ -292,8 +304,8 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
         get_weight = lambda u, v, data: data.get(weight, 1)
 
     paths = {source: [source]}  # dictionary of paths
-    return _dijkstra(G, source, get_weight, paths=paths, cutoff=cutoff,
-                     target=target)
+    return (_dijkstra(G, source, get_weight, paths=paths, cutoff=cutoff,
+                     target=target), paths)
 
 
 def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
@@ -326,19 +338,13 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
 
     Returns
     -------
-    distance, path : two dictionaries
-        If path is not None, both distance and path dictionaries are returned.
-        The first dict stores distance from the source to the keyed node.
-        The second stores stores the path from the source to the keyed node.
-
-    pred, distance : dictionaries
-        If path is None and pred is not None, two dicts are returned.
-        The first dict stores a list of predecessors keyed by node.
-        The second dict stores distance from the source to the keyed node.
-
-    distance : iterator
-        If path and pred are both None, an iterator is returned yielding
-        (node, shortest path length to that node)
+    distance : dictionary
+        A dict storing a list of predecessors keyed by node.
+        
+    Notes
+    -----
+    The optional predecessor and path dictionaries can be read by the caller
+    through the original pred and paths references passed as arguments.
     """
     G_succ = G.succ if G.is_directed() else G.adj
 
@@ -380,12 +386,10 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
             elif vu_dist == seen[u]:
                 if pred is not None:
                     pred[u].append(v)
-
-    if paths is not None:
-        return (dist, paths)
-    elif pred is not None:
-        return (pred, dist)
-    return iter(dist.items())
+    
+    # The optional predecessor and path dictionaries can be read by the caller
+    # through the pred and paths references passed as arguments.
+    return dist
 
 
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
@@ -426,7 +430,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
         get_weight = lambda u, v, data: data.get(weight, 1)
 
     pred = {source: []}  # dictionary of predecessors
-    return _dijkstra(G, source, get_weight, pred=pred, cutoff=cutoff)
+    return (pred, _dijkstra(G, source, get_weight, pred=pred, cutoff=cutoff))
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
@@ -1085,6 +1089,12 @@ def johnson(G, weight='weight'):
     else:
         get_weight = lambda u, v, data: (data.get(weight, 1) +
                                          dist_bellman[u] - dist_bellman[v])
+                                         
+    def dist_path(v):
+        paths={v: [v]}
+        _dijkstra(G, v, get_weight, paths=paths)
+        return paths
+        
+    all_pairs = {v: dist_path(v) for v in G}
 
-    all_pairs = {v: _dijkstra(G, v, get_weight, paths={v: [v]})[1] for v in G}
     return all_pairs
