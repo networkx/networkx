@@ -96,10 +96,15 @@ install:
       conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS gdal;
       conda install -n test-environment --channel https://conda.binstar.org/patricksnape scikits-sparse;
       source activate test-environment;
+      if [[ "${TRAVIS_PYTHON_VERSION}" =~ "3.3" ]]; then
+          pip install https://pypi.python.org/packages/source/p/pydotplus/pydotplus-2.0.2.tar.gz#md5=0e2fc3dbdfd846819d4cd3769cb4595b;
+      else
+          pip install pydotplus;
+      fi;
       python -c "from osgeo import ogr;print('importing ogr worked')";
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
         sudo apt-get install graphviz;
-        pip install pygraphviz pydot2;
+        pip install pygraphviz;
       fi;
     fi
   - if [[ "${PYTHON_VM}" != ipy ]]; then
