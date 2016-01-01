@@ -14,9 +14,9 @@ class TestPydot(object):
     def setupClass(cls):
         global pydot
         try:
-            pydot = nx.drawing.nx_pydot.load_pydot()
+            import pydotplus as pydot
         except ImportError:
-            raise SkipTest('pydot not available.')
+            raise SkipTest('pydotplus not available.')
 
     def build_graph(self, G):
         G.add_edge('A','B')
@@ -28,7 +28,12 @@ class TestPydot(object):
 
     def assert_equal(self, G1, G2):
         assert_true( sorted(G1.nodes())==sorted(G2.nodes()) )
-        assert_true( sorted(G1.edges())==sorted(G2.edges()) )
+        if G1.is_directed():
+            assert_true(sorted(G1.edges()) == sorted(G2.edges()))
+        else:
+            e1 = sorted(map(sorted, G1.edges()))
+            e2 = sorted(map(sorted, G2.edges()))
+            assert_true(e1 == e2)
 
     def pydot_checks(self, G):
         H, P = self.build_graph(G)

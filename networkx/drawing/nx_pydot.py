@@ -9,7 +9,7 @@ Either this module or nx_pygraphviz can be used to interface with graphviz.
 
 See Also
 --------
-Pydot: http://code.google.com/p/pydot/
+PyDotPlus: https://github.com/carlos-jenkins/pydotplus
 Graphviz:          http://www.research.att.com/sw/tools/graphviz/
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
@@ -32,29 +32,12 @@ try:
 except NameError:
     basestring = str
 
-PYDOT_LIBRARIES = ['pydot', 'pydotplus', 'pydot_ng']
-
-def load_pydot():
-    for library in PYDOT_LIBRARIES:
-        try:
-            module = importlib.import_module(library)
-        except ImportError:
-            pass
-        else:
-            break
-    else:
-        msg = "pydot could not be loaded: http://code.google.com/p/pydot/"
-        raise ImportError(msg)
-
-    return module
-
 @open_file(1, mode='w')
 def write_dot(G, path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
     Path can be a string or a file handle.
     """
-    pydot = load_pydot()
     P=to_pydot(G)
     path.write(P.to_string())
     return
@@ -76,7 +59,10 @@ def read_dot(path):
     -----
     Use G=nx.Graph(nx.read_dot(path)) to return a Graph instead of a MultiGraph.
     """
-    pydot = load_pydot()
+    try:
+        import pydotplus as pydot
+    except ImportError:
+        raise ImportError("pydotplus required for read_dot()")
     data = path.read()
     P = pydot.graph_from_dot_data(data)
     return from_pydot(P)
@@ -182,8 +168,10 @@ def to_pydot(N, strict=True):
     -----
 
     """
-    pydot = load_pydot()
-
+    try:
+        import pydotplus as pydot
+    except ImportError:
+        raise ImportError("pydotplus required for to_pydot()")
     # set Graphviz graph type
     if N.is_directed():
         graph_type='digraph'
@@ -268,8 +256,10 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     >>> pos=nx.pydot_layout(G)
     >>> pos=nx.pydot_layout(G,prog='dot')
     """
-    pydot = load_pydot()
-
+    try:
+        import pydotplus as pydot
+    except ImportError:
+        raise ImportError("pydotplus required for to_pydot()")
     P=to_pydot(G)
     if root is not None :
         P.set("root",make_str(root))
@@ -289,7 +279,7 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
 
     node_pos={}
     for n in G.nodes():
-        pydot_node = pydot.Node(make_str(n)).get_name().encode('utf-8')
+        pydot_node = pydot.Node(make_str(n)).get_name()
         node=Q.get_node(pydot_node)
 
         if isinstance(node,list):
@@ -304,6 +294,6 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
 def setup_module(module):
     from nose import SkipTest
     try:
-        pydot = load_pydot()
+        import pydotplus as pydot
     except ImportError:
-        raise SkipTest("pydot not available")
+        raise SkipTest("pydotplus not available")
