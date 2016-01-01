@@ -59,3 +59,11 @@ class TestLayout(object):
 
         pos=nx.drawing.layout._sparse_fruchterman_reingold(A,dim=3)
         assert_equal(pos.shape,(6,3))
+
+    def test_single_nodes(self):
+        G=nx.path_graph(1)
+        vpos = nx.shell_layout(G)
+        assert(vpos[0].any() == False)
+        G=nx.path_graph(3)
+        vpos = nx.shell_layout(G, [[0], [1,2]])
+        assert(vpos[0].any() == False)

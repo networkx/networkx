@@ -176,13 +176,13 @@ def shell_layout(G, nlist=None, dim=2, scale=1, center=None):
 
     if len(G) == 0:
         return {}
-    elif len(G) == 1:
-        return {G.nodes()[0]: center}
+    if len(G) == 1:
+        return {nx.utils.arbitrary_element(G): center}
 
 
     if nlist is None:
         # draw the whole graph in one shell
-        nlist = [list(G.nodes())]
+        nlist = [list(G)]
 
     if len(nlist[0]) == 1:
         # single node at center
@@ -587,8 +587,9 @@ def _rescale_layout(pos,scale=1):
         pos[:,i]-=pos[:,i].mean()
         lim=max(pos[:,i].max(),lim)
     # rescale to (-scale,scale) in all directions, preserves aspect
-    for i in range(pos.shape[1]):
-        pos[:,i]*=scale/lim
+    if lim > 0:
+        for i in range(pos.shape[1]):
+            pos[:,i]*=scale/lim
     return pos
 
 
