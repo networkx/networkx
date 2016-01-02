@@ -137,6 +137,8 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     5
 
     """
+    if G.has_edge(s,t) or G.has_edge(t,s):
+        return []
     if flow_func is None:
         flow_func = default_flow_func
 
@@ -277,6 +279,8 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
+    if G.has_edge(s,t) or G.has_edge(t,s):
+        return []
     if auxiliary is None:
         H = build_auxiliary_node_connectivity(G)
     else:
