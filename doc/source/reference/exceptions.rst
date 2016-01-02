@@ -19,4 +19,8 @@ Exceptions
 
 .. autoclass:: networkx.NetworkXUnbounded
 
+.. autoclass:: networkx.PathNotFound
+
+.. autoclass:: networkx.InvalidNode
+
 
