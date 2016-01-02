@@ -137,8 +137,6 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     5
 
     """
-    if G.has_edge(s,t) or G.has_edge(t,s):
-        return []
     if flow_func is None:
         flow_func = default_flow_func
 
@@ -146,7 +144,8 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
         H = build_auxiliary_edge_connectivity(G)
     else:
         H = auxiliary
-
+    if G.has_edge(s,t) or G.has_edge(t,s):
+        return []
     kwargs = dict(capacity='capacity', flow_func=flow_func, residual=residual)
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
@@ -279,8 +278,6 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
-    if G.has_edge(s,t) or G.has_edge(t,s):
-        return []
     if auxiliary is None:
         H = build_auxiliary_node_connectivity(G)
     else:
@@ -289,7 +286,8 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     mapping = H.graph.get('mapping', None)
     if mapping is None:
         raise nx.NetworkXError('Invalid auxiliary digraph.')
-
+    if G.has_edge(s,t) or G.has_edge(t,s):
+        return []
     kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
