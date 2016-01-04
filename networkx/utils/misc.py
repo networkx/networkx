@@ -17,7 +17,7 @@ True
 import collections
 import sys
 import uuid
-from itertools import tee
+from itertools import tee, chain
 # itertools.accumulate is only available on Python 3.2 or later.
 #
 # Once support for Python versions less than 3.2 is dropped, this code should
@@ -222,10 +222,12 @@ def consume(iterator):
 
 
 # Recipe from the itertools documentation.
-def pairwise(iterable):
+def pairwise(iterable, cycle=False):
     "s -> (s0, s1), (s1, s2), (s2, s3), ..."
     a, b = tee(iterable)
-    next(b, None)
+    first = next(b, None)
+    if cycle is True:
+        return zip(a, chain(b, (first,)))
     return zip(a, b)
 
 
