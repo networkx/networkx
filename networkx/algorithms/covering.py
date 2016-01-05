@@ -1,9 +1,7 @@
 """
-An edge cover of a graph is a set of edges such that every vertex of
-the graph is incident to at least one edge of the set.
-A minimum edge cover is an edge covering of smallest possible size.
-
-`Edge Cover <https://en.wikipedia.org/wiki/Edge_cover>`_
+********
+Covering
+********
 """
 #    Copyright (C) 2015 by
 #    Nishant Nikhil <nishantiam@gmail.com>
@@ -14,10 +12,15 @@ import networkx as nx
 from networkx.utils import not_implemented_for, arbitrary_element
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for('directed', 'multigraph')
 def min_edge_cover(G):
     """Returns a set of edges which constitute the minimum edge cover of the graph.
+    An edge cover of a graph is a set of edges such that every vertex of
+    the graph is incident to at least one edge of the set.
+    A minimum edge cover is an edge covering of smallest possible size.
+
+    `Edge Cover <https://en.wikipedia.org/wiki/Edge_cover>`_
+
     A smallest edge cover can be found in polynomial time by finding
     a maximum matching and extending it greedily so that all vertices
     are covered.
@@ -46,7 +49,8 @@ def min_edge_cover(G):
     if len(nx.isolates(G)) > 0:
         # ``min_cover`` does not exist as there is an isolated vertex
         raise nx.NetworkXException(
-            "Graph has a vertex with no edge incident on it, so no edge cover exists.")
+            "Graph has a vertex with no edge incident on it, "
+            "so no edge cover exists.")
 
     maximum_matching = nx.max_weight_matching(G, maxcardinality=True)
     # ``min_cover`` is superset of ``maximum_matching``
@@ -70,7 +74,10 @@ def min_edge_cover(G):
 
 
 def is_edge_covering(G, cover):
-    """Returns a boolean value according to the ``cover`` being an edge cover
+    """Returns True if the set of edges forms an edge cove else returns False
+    An edge cover of a graph is a set of edges such that every vertex of
+    the graph is incident to at least one edge of the set.
+
     Given a set of edges, whether it is an edge covering can be decided
     in linear time if we just check whether all nodes of the graph
     has an edge from the set, incident on it.
