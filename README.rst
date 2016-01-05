@@ -8,6 +8,8 @@ Documentation
    http://networkx.github.io
 Mailing List
    https://groups.google.com/forum/#!forum/networkx-discuss
+IRC
+   `irc://chat.freenode.net/networkx`_ (for a web client click `here`_)
 Development
    https://github.com/networkx/networkx
 
@@ -35,11 +37,10 @@ A quick example that finds the shortest path between two nodes in an undirected 
 
 Distributed with a BSD license; see LICENSE.txt::
 
-   Copyright (C) 2004-2015 NetworkX Developers
+   Copyright (C) 2004-2016 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
 
-
-
-
+.. _irc://chat.freenode.net/networkx: irc://chat.freenode.net/networkx
+.. _here: http://webchat.freenode.net?channels=%23networkx

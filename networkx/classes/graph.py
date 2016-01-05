@@ -7,12 +7,13 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from __future__ import division
 from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -608,22 +609,29 @@ class Graph(object):
             except KeyError:
                 pass
 
-    def nodes(self, data=False):
+    def nodes(self, data=False, default=None):
         """Returns an iterator over the nodes.
 
         Parameters
         ----------
-        data : boolean, optional (default=False)
-               If ``False``, the iterator returns nodes.  If ``True``,
-               the iterator return a two-tuple of node and node data
-               dictionary.
+        data : string or bool, optional (default=False)
+            The node attribute returned in 2-tuple (n,ddict[data]).
+            If True, return entire node attribute dict as (n,ddict).
+            If False, return just the nodes n.
+
+        default : value, optional (default=None)
+            Value used for nodes that dont have the requested attribute.
+            Only relevant if data is not True or False.
 
         Returns
         -------
         iterator
-            An iterator over nodes, or if ``data`` is ``True``, an
-            iterator over two-tuples of the form ``(node, node data
-            dictionary)``.
+            An iterator over nodes, or (n,d) tuples of node with data.
+            If data is False, an iterator over nodes.
+            Otherwise an iterator of 2-tuples (node, attribute value)
+            where the attribute is specified in data.
+            If data is True then the attribute becomes the
+            entire data dictionary.
 
         Notes
         -----
@@ -632,7 +640,8 @@ class Graph(object):
 
         Examples
         --------
-        There are two simple ways of getting a list of all nodes in the graph::
+        There are two simple ways of getting a list of all nodes in the graph:
+
         >>> G = nx.Graph()
         >>> G.add_nodes_from(range(3))
         >>> list(G.nodes())
@@ -640,16 +649,30 @@ class Graph(object):
         >>> list(G)
         [0, 1, 2]
 
-        To get the node data along with the nodes::
+        To get the node data along with the nodes:
+
         >>> G.add_node(1, time='5pm')
         >>> G.node[0]['foo'] = 'bar'
         >>> list(G.nodes(data=True))
         [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
-
+        >>> list(G.nodes(data='foo'))
+        [(0, 'bar'), (1, None), (2, None)]
+        >>> list(G.nodes(data='time'))
+        [(0, None), (1, '5pm'), (2, None)]
+        >>> list(G.nodes(data='time', default='Not Available'))
+        [(0, 'Not Available'), (1, '5pm'), (2, 'Not Available')]
         """
-        if data:
-            return iter(self.node.items())
-        return iter(self.node)
+        if data is True:
+            for n, ddict in self.node.items():
+                yield (n, ddict)
+        elif data is not False:
+            for n, ddict in self.node.items():
+                d = ddict[data] if data in ddict else default
+                yield (n, d)
+        else:
+            for n in self.node:
+                yield n
+
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -1273,8 +1296,16 @@ class Graph(object):
         self.node.clear()
         self.graph.clear()
 
-    def copy(self):
+    def copy(self, with_data=True):
         """Return a copy of the graph.
+
+        Parameters
+        ----------
+        with_data : bool, optional (default=True)
+            If True, the returned graph will have a deep copy of the
+            graph, node, and edge attributes of this object. Otherwise,
+            the returned graph will only have a copy of the nodes and
+            edges of this object.
 
         Returns
         -------
@@ -1285,11 +1316,6 @@ class Graph(object):
         --------
         to_directed: return a directed copy of the graph.
 
-        Notes
-        -----
-        This makes a complete copy of the graph including all of the
-        node or edge attributes.
-
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -1297,7 +1323,12 @@ class Graph(object):
         >>> H = G.copy()
 
         """
-        return deepcopy(self)
+        if with_data:
+            return deepcopy(self)
+        G = nx.Graph()
+        G.add_nodes_from(self)
+        G.add_edges_from(self.edges())
+        return G
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""
@@ -1552,18 +1583,22 @@ class Graph(object):
         return sum(1 for _ in self.selfloop_edges())
 
     def size(self, weight=None):
-        """Return the number of edges.
+        """Return the number of edges or total of all edge weights.
 
         Parameters
         ----------
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used
-           as a weight.  If None, then each edge has weight 1.
+            The edge attribute that holds the numerical value used
+            as a weight. If None, then each edge has weight 1.
 
         Returns
         -------
-        nedges : int
-            The number of edges or sum of edge weights in the graph.
+        size : numeric
+            The number of edges or
+            (if weight keyword is provided) the total weight sum.
+
+            If weight is None, returns an int. Otherwise a float
+            (or more general numeric if the weights are more general).
 
         See Also
         --------
@@ -1584,11 +1619,12 @@ class Graph(object):
         >>> G.size(weight='weight')
         6.0
         """
-        s = sum(dict(self.degree(weight=weight)).values()) / 2
-        if weight is None:
-            return int(s)
-        else:
-            return float(s)
+        s = sum(d for v, d in self.degree(weight=weight))
+        # If `weight` is None, the sum of the degrees is guaranteed to be
+        # even, so we can perform integer division and hence return an
+        # integer. Otherwise, the sum of the weighted degrees is not
+        # guaranteed to be an integer, so we perform "real" division.
+        return s // 2 if weight is None else s / 2
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.

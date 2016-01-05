@@ -86,6 +86,120 @@ class TestQuotient(object):
         Q = nx.quotient_graph(G, same_component)
         assert_true(nx.is_isomorphic(C, Q))
 
+    def test_path(self):
+        G = nx.path_graph(6)
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_equal(sorted(M), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M:
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 1)
+
+    def test_multigraph_path(self):
+        G = nx.MultiGraph(nx.path_graph(6))
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_equal(sorted(M), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M:
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 1)
+
+    def test_directed_path(self):
+        G = nx.DiGraph()
+        G.add_path(range(6))
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_equal(sorted(M), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M:
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 0.5)
+
+    def test_directed_multigraph_path(self):
+        G = nx.MultiDiGraph()
+        G.add_path(range(6))
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_equal(sorted(M), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M:
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 0.5)
+
+    @raises(nx.NetworkXException)
+    def test_overlapping_blocks(self):
+        G = nx.path_graph(6)
+        partition = [{0, 1, 2}, {2, 3}, {4, 5}]
+        nx.quotient_graph(G, partition)
+
+    def test_weighted_path(self):
+        G = nx.path_graph(6)
+        for i in range(5):
+            G[i][i + 1]['weight'] = i + 1
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_equal(sorted(M), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_equal(M[0][1]['weight'], 2)
+        assert_equal(M[1][2]['weight'], 4)
+        for n in M:
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 1)
+
+    def test_barbell(self):
+        G = nx.barbell_graph(3, 0)
+        partition = [{0, 1, 2}, {3, 4, 5}]
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_equal(sorted(M), [0, 1])
+        assert_equal(sorted(M.edges()), [(0, 1)])
+        for n in M:
+            assert_equal(M.node[n]['nedges'], 3)
+            assert_equal(M.node[n]['nnodes'], 3)
+            assert_equal(M.node[n]['density'], 1)
+
+    def test_barbell_plus(self):
+        G = nx.barbell_graph(3, 0)
+        # Add an extra edge joining the bells.
+        G.add_edge(0, 5)
+        partition = [{0, 1, 2}, {3, 4, 5}]
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_equal(sorted(M), [0, 1])
+        assert_equal(sorted(M.edges()), [(0, 1)])
+        assert_equal(M[0][1]['weight'], 2)
+        for n in M:
+            assert_equal(M.node[n]['nedges'], 3)
+            assert_equal(M.node[n]['nnodes'], 3)
+            assert_equal(M.node[n]['density'], 1)
+
+    def test_blockmodel(self):
+        G = nx.path_graph(6)
+        partition = [[0, 1], [2, 3], [4, 5]]
+        M = nx.blockmodel(G, partition)
+        assert_equal(sorted(M.nodes()), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M.nodes():
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 1.0)
+
+    def test_multigraph_blockmodel(self):
+        G = nx.MultiGraph(nx.path_graph(6))
+        partition = [[0, 1], [2, 3], [4, 5]]
+        M = nx.blockmodel(G, partition, multigraph=True)
+        assert_equal(sorted(M.nodes()), [0, 1, 2])
+        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        for n in M.nodes():
+            assert_equal(M.node[n]['nedges'], 1)
+            assert_equal(M.node[n]['nnodes'], 2)
+            assert_equal(M.node[n]['density'], 1.0)
+
 
 class TestContraction(object):
     """Unit tests for node and edge contraction functions."""

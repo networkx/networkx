@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Algorithms for directed acyclic graphs (DAGs)."""
-#    Copyright (C) 2006-2015 by
+#    Copyright (C) 2006-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

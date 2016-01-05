@@ -102,6 +102,7 @@ Random Graphs
    barabasi_albert_graph
    powerlaw_cluster_graph
    duplication_divergence_graph
+   random_kernel_graph
    random_lobster
    random_shell_graph
    random_powerlaw_tree
@@ -143,6 +144,7 @@ Directed
    gn_graph
    gnr_graph
    gnc_graph
+   random_k_out_graph
    scale_free_graph
 
 
@@ -229,3 +231,12 @@ Non Isomorphic Trees
 
    nonisomorphic_trees
    number_of_nonisomorphic_trees
+
+
+Triads
+------
+.. automodule:: networkx.generators.triads
+.. autosummary::
+   :toctree: generated/
+
+   triad_graph

@@ -173,7 +173,7 @@ class TestEdgelist:
         bipartite.write_edgelist(G,fname)  
         H=bipartite.read_edgelist(fname,nodetype=int)
         # isolated nodes are not written in edgelist
-        G.remove_nodes_from(nx.isolates(G))
+        G.remove_nodes_from(list(nx.isolates(G)))
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)

@@ -1,5 +1,4 @@
 from networkx.algorithms.assortativity import *
-from networkx.algorithms.block import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.centrality import *
 from networkx.algorithms.cluster import *
@@ -9,6 +8,7 @@ from networkx.algorithms.components import *
 from networkx.algorithms.coloring import *
 from networkx.algorithms.core import *
 from networkx.algorithms.cycles import *
+from networkx.algorithms.cuts import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.dominance import *
@@ -36,6 +36,7 @@ from networkx.algorithms.distance_regular import *
 from networkx.algorithms.swap import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.simple_paths import *
+from networkx.algorithms.wiener import *
 
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
@@ -52,6 +53,7 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 import networkx.algorithms.operators
+import networkx.algorithms.tournament
 import networkx.algorithms.tree
 
 # bipartite

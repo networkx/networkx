@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -14,19 +14,21 @@ see the Wikipedia article on the clique problem [1]_.
 
 """
 from collections import deque
-from itertools import chain, islice
+from itertools import chain
+from itertools import combinations
+from itertools import islice
 try:
     from itertools import ifilter as filter
 except ImportError:
     pass
 import networkx
-from networkx.utils.decorators import *
+from networkx.utils import not_implemented_for
 __author__ = """Dan Schult (dschult@colgate.edu)"""
 __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite' ,'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',
            'number_of_cliques', 'cliques_containing_node',
-           'project_down', 'project_up', 'enumerate_all_cliques']
+           'enumerate_all_cliques']
 
 
 @not_implemented_for('directed')
@@ -297,53 +299,50 @@ def find_cliques_recursive(G):
     return expand(set(G), set(G))
 
 
-# Theory has done a lot with clique graphs, but I haven't seen much on
-# maximal clique graphs.
-def make_max_clique_graph(G, create_using=None, name=None):
-    """Returns the maximal clique graph of ``G``.
+def make_max_clique_graph(G, create_using=None):
+    """Returns the maximal clique graph of the given graph.
 
-    The *maximal clique graph* of a graph `G` is the graph whose nodes
-    are the maximal cliques of `G` and with an edge joining clique `C_1`
-    to clique `C_2` if and only if the cliques share at least one node.
+    The nodes of the maximal clique graph of ``G`` are the cliques of
+    ``G`` and an edge joins two cliques if the cliques are not disjoint.
 
     Parameters
     ----------
     G : NetworkX graph
-        An undirected graph.
+
+    create_using : NetworkX graph
+        If provided, this graph will be cleared and the nodes and edges
+        of the maximal clique graph will be added to this graph.
 
     Returns
     -------
     NetworkX graph
-        The maximal clique graph corresponding to ``G``.
-
-    See also
-    --------
-    make_clique_bipartite
+        A graph whose nodes are the cliques of ``G`` and whose edges
+        join two cliques if they are not disjoint.
 
     Notes
     -----
-    This is essentially a convenience function for
-    ``project_up(make_clique_bipartite(G))``, but avoids having to
-    perform the intermediate steps.
+    This function behaves like the following code::
+
+        import networkx as nx
+        G = nx.make_clique_bipartite(G)
+        cliques = [v for v in G.nodes() if G.node[v]['bipartite'] == 0]
+        G = nx.bipartite.project(G, cliques)
+        G = nx.relabel_nodes(G, {-v: v - 1 for v in G})
+
+    It should be faster, though, since it skips all the intermediate
+    steps.
 
     """
-    cliq=list(map(set,find_cliques(G)))
-    if create_using:
-        B=create_using
-        B.clear()
-    else:
-        B=networkx.Graph()
-    if name is not None:
-        B.name=name
-
-    for i,cl in enumerate(cliq):
-        B.add_node(i+1)
-        for j,other_cl in enumerate(cliq[:i]):
-            # if not cl.isdisjoint(other_cl): #Requires 2.6
-            intersect=cl & other_cl
-            if intersect:     # Not empty
-                B.add_edge(i+1,j+1)
+    B = create_using if create_using is not None else networkx.Graph()
+    B.clear()
+    cliques = list(enumerate(set(c) for c in find_cliques(G)))
+    # Add a numbered node for each clique.
+    B.add_nodes_from(i for i, c in cliques)
+    # Join cliques by an edge if they share a node.
+    clique_pairs = combinations(cliques, 2)
+    B.add_edges_from((i, j) for (i, c1), (j, c2) in clique_pairs if c1 & c2)
     return B
+
 
 def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
     """Returns the bipartite clique graph corresponding to ``G``.
@@ -363,100 +362,36 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
         additional attribute, ``pos``, a dictionary mapping node to
         position in the Euclidean plane.
 
+    create_using : NetworkX graph
+        If provided, this graph will be cleared and the nodes and edges
+        of the bipartite graph will be added to this graph.
 
     Returns
     -------
     NetworkX graph
-        A bipartite graph with nodes of ``G`` on one side and maximal
-        cliques of ``G`` on the other. The returned graph has an
-        additional attribute, ``node_type``, a dictionary mapping node
-        to ``'Bottom'`` if it represents a node in ``G`` or ``'Top'`` if
-        it represents a clique in ``G``.
+        A bipartite graph whose "bottom" set is the nodes of the graph
+        ``G``, whose "top" set is the cliques of ``G``, and whose edges
+        join nodes of ``G`` to the cliques that contain them.
+
+        The nodes of the graph ``G`` have the node attribute
+        ``'bipartite'`` set to ``1`` and the nodes representing cliques
+        have the node attribute ``'bipartite'`` set to ``0``, as is the
+        convention for bipartite graphs in NetworkX.
 
     """
-    cliq=list(find_cliques(G))
-    if create_using:
-        B=create_using
-        B.clear()
-    else:
-        B=networkx.Graph()
-    if name is not None:
-        B.name=name
-
-    B.add_nodes_from(G)
-    B.node_type={}   # New Attribute for B
-    for n in B:
-        B.node_type[n]="Bottom"
-
-    if fpos:
-       B.pos={}     # New Attribute for B
-       delta_cpos=1./len(cliq)
-       delta_ppos=1./G.order()
-       cpos=0.
-       ppos=0.
-    for i,cl in enumerate(cliq):
-       name= -i-1   # Top nodes get negative names
-       B.add_node(name)
-       B.node_type[name]="Top"
-       if fpos:
-          if name not in B.pos:
-             B.pos[name]=(0.2,cpos)
-             cpos +=delta_cpos
-       for v in cl:
-          B.add_edge(name,v)
-          if fpos is not None:
-             if v not in B.pos:
-                B.pos[v]=(0.8,ppos)
-                ppos +=delta_ppos
+    B = create_using if create_using is not None else networkx.Graph()
+    B.clear()
+    # The "bottom" nodes in the bipartite graph are the nodes of the
+    # original graph, G.
+    B.add_nodes_from(G, bipartite=1)
+    for i, cl in enumerate(find_cliques(G)):
+        # The "top" nodes in the bipartite graph are the cliques. These
+        # nodes get negative numbers as labels.
+        name = -i - 1
+        B.add_node(name, bipartite=0)
+        B.add_edges_from((v, name) for v in cl)
     return B
 
-def project_down(B,create_using=None,name=None):
-    """Project a bipartite graph B down onto its "bottom nodes".
-
-    The nodes retain their names and are connected if they
-    share a common top node in the bipartite graph.
-
-    Returns a Graph.
-    """
-    if create_using:
-        G=create_using
-        G.clear()
-    else:
-        G=networkx.Graph()
-    if name is not None:
-        G.name=name
-
-    for v,Bvnbrs in B.adjacency():
-       if B.node_type[v]=="Bottom":
-          G.add_node(v)
-          for cv in Bvnbrs:
-             G.add_edges_from([(v,u) for u in B[cv] if u!=v])
-    return G
-
-def project_up(B,create_using=None,name=None):
-    """Project a bipartite graph B down onto its "bottom nodes".
-
-    The nodes retain their names and are connected if they
-    share a common Bottom Node in the Bipartite Graph.
-
-    Returns a Graph.
-    """
-    if create_using:
-        G=create_using
-        G.clear()
-    else:
-        G=networkx.Graph()
-    if name is not None:
-        G.name=name
-
-    for v,Bvnbrs in B.adjacency():
-       if B.node_type[v]=="Top":
-          vname= -v   #Change sign of name for Top Nodes
-          G.add_node(vname)
-          for cv in Bvnbrs:
-             # Note: -u changes the name (not Top node anymore)
-             G.add_edges_from([(vname,-u) for u in B[cv] if u!=v])
-    return G
 
 def graph_clique_number(G, cliques=None):
     """Returns the clique number of the graph.

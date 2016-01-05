@@ -8,7 +8,7 @@ can be accessed, for example, as
 >>> networkx.utils.is_string_like('spam')
 True
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -213,11 +213,13 @@ def arbitrary_element(iterable):
     # Another possible implementation is `for x in iterable: return x`.
     return next(iter(iterable))
 
+
 # Recipe from the itertools documentation.
 def consume(iterator):
     "Consume the iterator entirely."
     # Feed the entire iterator into a zero-length deque.
     collections.deque(iterator, maxlen=0)
+
 
 # Recipe from the itertools documentation.
 def pairwise(iterable):
@@ -225,3 +227,32 @@ def pairwise(iterable):
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
+
+
+def is_path(G, *path):
+    """Returns ``True`` if and only if the given nodes form a path in ``G``.
+
+    If no positional arguments other than ``G`` are provided, this
+    function returns ``False``. If a single node is provided, this
+    function returns ``True``. Otherwise, if each pair of adjacent nodes
+    is an edge in the given graph, this function return ``True``.
+
+    For example::
+
+        >>> import networkx as nx
+        >>> G = nx.cycle_graph(4)
+        >>> nx.utils.is_path(G, 0)
+        True
+        >>> nx.utils.is_path(G, 0, 1)
+        True
+        >>> nx.utils.is_path(G, 2, 3, 0)
+        True
+        >>> nx.utils.is_path(G, 0, 2)
+        False
+
+    """
+    if len(path) == 0:
+        return False
+    if len(path) == 1:
+        return True
+    return all(v in G[u] for u, v in pairwise(path))

@@ -8,13 +8,16 @@
 Distance-regular graphs
 =======================
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
+from .distance_measures import diameter
 
 __author__ = """\n""".join(['Dheeraj M R <dheerajrav@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
 
-__all__ = ['is_distance_regular', 'intersection_array', 'global_parameters']
+__all__ = ['is_distance_regular', 'is_strongly_regular',
+           'intersection_array', 'global_parameters']
 
 
 def is_distance_regular(G):
@@ -172,3 +175,59 @@ def intersection_array(G):
             cint[i] = c
     return ([bint.get(j, 0) for j in range(diameter)],
             [cint.get(j + 1, 0) for j in range(diameter)])
+
+
+# TODO There is a definition for directed strongly regular graphs.
+@not_implemented_for('directed', 'multigraph')
+def is_strongly_regular(G):
+    """Returns ``True`` if and only if the given graph is strongly
+    regular.
+
+    An undirected graph is *strongly regular* if
+
+    * it is regular,
+    * each pair of adjacent vertices has the same number of neighbors in
+      common,
+    * each pair of nonadjacent vertices has the same number of neighbors
+      in common.
+
+    Each strongly regular graph is a distance-regular graph.
+    Conversely, if a distance-regular graph has diameter two, then it is
+    a strongly regular graph. For more information on distance-regular
+    graphs, see :func:`is_distance_regular`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
+
+    Returns
+    -------
+    bool
+        Whether ``G`` is strongly regular.
+
+    Examples
+    --------
+
+    The cycle graph on five vertices is strongly regular. It is
+    two-regular, each pair of adjacent vertices has no shared neighbors,
+    and each pair of nonadjacent vertices has one shared neighbor::
+
+        >>> import networkx as nx
+        >>> G = nx.cycle_graph(5)
+        >>> nx.is_strongly_regular(G)
+        True
+
+    """
+    # Here is an alternate implementation based directly on the
+    # definition of strongly regular graphs:
+    #
+    #     return (all_equal(G.degree().values())
+    #             and all_equal(len(common_neighbors(G, u, v))
+    #                           for u, v in G.edges())
+    #             and all_equal(len(common_neighbors(G, u, v))
+    #                           for u, v in non_edges(G)))
+    #
+    # We instead use the fact that a distance-regular graph of diameter
+    # two is strongly regular.
+    return is_distance_regular(G) and diameter(G) == 2

@@ -42,6 +42,16 @@ class TestGeneratorClassic():
         t=balanced_tree(r=10,h=1)
         assert_true(is_isomorphic(t,star_graph(10)))
 
+    def test_balanced_tree_path(self):
+        """Tests that the balanced tree with branching factor one is the
+        path graph.
+
+        """
+        # A tree of height four has five levels.
+        T = balanced_tree(1, 4)
+        P = path_graph(5)
+        assert_true(is_isomorphic(T, P))
+
     def test_full_rary_tree(self):
         r=2
         n=9
