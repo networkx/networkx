@@ -717,14 +717,14 @@ def bellman_ford_predecessor_and_distance(G, source, cutoff=None, weight='weight
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
     >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
     >>> sorted(pred.items())
-    [(0, None), (1, 0), (2, 1), (3, 2), (4, 3)]
+    [(0, []), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded,
+    >>> assert_raises(nx.NetworkXUnbounded, \
                       nx.bellman_ford_predecessor_and_distance, G, 0)
 
     Notes
@@ -812,10 +812,6 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
        undirected graph is a negative cost cycle
     """
 
-    if paths != None:
-        raise NotImplementedError(
-            "To Be Done: Parameter paths not yet implemented")       
-
     if pred == None:
         pred = {v: [] for v in source}
     
@@ -862,14 +858,28 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                 elif dist.get(v) != None and dist_v == dist.get(v):
                     pred[v].append(u)
 
+    if paths != None:
+        for dst in pred:
+            path = [dst]
+            cur = dst
+            
+            while len(pred[cur]) != 0:
+                cur = pred[cur][0]
+                path.append(cur)
+            
+            path.reverse()
+            paths[dst] = path
+    
+
     return dist
+    
 def bellman_ford_path(G, source, target, weight='weight'):
     """See dijkstra_path()
     
     """
-    (length, path) = single_source_bellman_ford(G, source, target=target, weight=weight)
+    (length, paths) = single_source_bellman_ford(G, source, target=target, weight=weight)
     try:
-        return path[target]
+        return paths[target]
     except KeyError:
         raise nx.NetworkXNoPath(
             "node %s not reachable from %s" % (source, target))
@@ -887,7 +897,7 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
     
-    length =  _bellman_ford(G, source, get_weight, target=target)
+    length =  _bellman_ford(G, [source], get_weight, target=target)
     
     try:
         return length[target]
@@ -913,7 +923,7 @@ def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weigh
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
 
-    return iter(_bellman_ford(G, source, get_weight, cutoff=cutoff).items())
+    return iter(_bellman_ford(G, [source], get_weight, cutoff=cutoff).items())
 
 def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weight'):
     """See single_source_dijkstra()
@@ -928,7 +938,7 @@ def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weig
         get_weight = lambda u, v, data: data.get(weight, 1)
 
     paths = {source: [source]}  # dictionary of paths
-    return (_bellman_ford(G, source, get_weight, paths=paths, cutoff=cutoff,
+    return (_bellman_ford(G, [source], get_weight, paths=paths, cutoff=cutoff,
                      target=target), paths)
 
 def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
