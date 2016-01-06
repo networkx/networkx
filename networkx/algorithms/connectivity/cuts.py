@@ -123,7 +123,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     ...     k = len(minimum_st_edge_cut(G, u, v, auxiliary=H, residual=R))
     ...     result[u][v] = k
     >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
-    True
+    False
 
     You can also use alternative flow algorithms for computing edge
     cuts. For instance, in dense networks the algorithm
