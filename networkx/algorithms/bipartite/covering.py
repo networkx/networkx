@@ -42,7 +42,7 @@ def min_edge_cover(G):
     And the greedy extension works in `O(n\log{}n)`
     So worst case run time of the function is `O(n^{2.5})`.
     """
-    if len(nx.isolates(G)) > 0:
+    if nx.number_of_isolates(G) > 0:
         # ``min_cover`` does not exist as there is an isolated vertex
         raise nx.NetworkXException("Graph has a vertex with no edge incident "
                                    "on it, so no edge cover exists.")

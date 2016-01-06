@@ -46,7 +46,7 @@ def min_edge_cover(G):
     Minimum edge cover for bipartite graph can also be found using the
     function present in :mod:`networkx.algorithms.bipartite.covering`
     """
-    if len(nx.isolates(G)) > 0:
+    if nx.number_of_isolates(G) > 0:
         # ``min_cover`` does not exist as there is an isolated vertex
         raise nx.NetworkXException(
             "Graph has a vertex with no edge incident on it, "
