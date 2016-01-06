@@ -46,7 +46,7 @@ def maximal_matching(G):
     for u,v in G.edges():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
-        if u not in nodes and v not in nodes:
+        if u not in nodes and v not in nodes and u!=v:
             matching.add((u,v))
             nodes.add(u)
             nodes.add(v)
