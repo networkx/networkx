@@ -1,0 +1,13 @@
+decorator>=3.4.0
+matplotlib
+scipy
+numpy
+nose
+pandas
+gdal
+pyyaml
+pygraphviz
+sphinx
+sphinxcontrib-bibtex
+sphinx_rtd_theme
+pydotplus
