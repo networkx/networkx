@@ -123,7 +123,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     ...     k = len(minimum_st_edge_cut(G, u, v, auxiliary=H, residual=R))
     ...     result[u][v] = k
     >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
-    False
+    True
 
     You can also use alternative flow algorithms for computing edge
     cuts. For instance, in dense networks the algorithm
@@ -144,8 +144,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
         H = build_auxiliary_edge_connectivity(G)
     else:
         H = auxiliary
-    if G.has_edge(s,t) or G.has_edge(t,s):
-        return []
+
     kwargs = dict(capacity='capacity', flow_func=flow_func, residual=residual)
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
