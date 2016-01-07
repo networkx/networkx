@@ -6,7 +6,7 @@ from networkx.algorithms.connectivity import (minimum_st_edge_cut,
 from networkx.algorithms.flow import (edmonds_karp, preflow_push,
                                       shortest_augmenting_path)
 from networkx.utils import arbitrary_element
-from networkx.algorithms.connectivity import minimum_st_edge_cut,minimum_node_cut
+
 flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
 
 msg = "Assertion failed in function: {0}"
@@ -191,7 +191,7 @@ def test_empty_graphs():
 def test_unbounded():
     G = nx.complete_graph(5)
     for flow_func in flow_funcs:
-        assert_equal(0, len(minimum_st_edge_cut(G, 1, 4, flow_func=flow_func)))
+        assert_equal(4, len(minimum_st_edge_cut(G, 1, 4, flow_func=flow_func)))
 
 def test_missing_source():
     G = nx.path_graph(4)
@@ -236,20 +236,13 @@ def tests_min_cut_complete_directed():
     G = G.to_directed()
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
-            assert_equal(0, len(interface_func(G, flow_func=flow_func)))
+            assert_equal(4, len(interface_func(G, flow_func=flow_func)))
 
 def tests_minimum_st_node_cut():
     G=nx.Graph()
     G.add_nodes_from([0,1,2,3,7,8,11,12])
     G.add_edges_from([(7,11),(1,11),(1,12),(12,8),(0,1),(0,11),(0,2)])
-    nodelist=minimum_node_cut(G,7,11)
-    assert(nodelist==[])
-
-def tests_minimum_st_edge_cut():
-    G=nx.Graph()
-    G.add_nodes_from([0,1,2,3,7])
-    G.add_edges_from([(0,1),(1,2),(2,3),(3,7)], weight = 1)
-    nodelist=minimum_st_edge_cut(G,0,1)
+    nodelist=minimum_st_node_cut(G,7,11)
     assert(nodelist==[])
 
 def test_invalid_auxiliary():
