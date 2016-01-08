@@ -10,6 +10,8 @@ Generators for some directed graphs, including growing network (GN) graphs and
 scale-free graphs.
 
 """
+from __future__ import division
+
 from collections import Counter
 import random
 
@@ -243,8 +245,6 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
            Proceedings of the fourteenth annual ACM-SIAM Symposium on
            Discrete Algorithms, 132--139, 2003.
     """
-    delta_in = float(delta_in)
-    delta_out = float(delta_out)
 
     def _choose_node(G, distribution, delta, psum):
         cumsum=0.0
