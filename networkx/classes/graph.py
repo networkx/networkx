@@ -1325,7 +1325,8 @@ class Graph(object):
         """
         if with_data:
             return deepcopy(self)
-        G = nx.Graph()
+        graph_class = type(self)
+        G = graph_class()
         G.add_nodes_from(self)
         G.add_edges_from(self.edges())
         return G

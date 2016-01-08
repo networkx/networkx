@@ -242,3 +242,18 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
         assert_equal(G.adj,{0:{2:{0:{}}},1:{2:{0:{}}},2:{0:{0:{}},1:{0:{}}}})
         assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
 
+    def test_copy_without_data(self):
+        """Tests for creating a copy of the graph without any of the
+        graph, node, or edge data attributes.
+
+        """
+        G = self.K3.copy(with_data=False)
+        nodes = set(self.K3)
+        assert_equal(G.is_directed(), self.K3.is_directed())
+        assert_equal(G.is_multigraph(), self.K3.is_multigraph())
+        assert_equal(G.graph, {})
+        assert_equal(G.node, {v: {} for v in nodes})
+        # This line depends on the particular implementation of the
+        # dict-of-dict-of-dict data structure.
+        assert_equal(G.edge, {u: {v: {0: {}} for v in nodes - {u}}
+                              for u in nodes})

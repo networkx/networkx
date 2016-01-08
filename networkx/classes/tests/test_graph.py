@@ -210,17 +210,6 @@ class BaseAttrGraphTester(BaseGraphTester):
         H=G.__class__(G)
         self.is_shallow_copy(H,G)
 
-    def test_copy_without_data(self):
-        """Tests for creating a copy of the graph without any of the
-        graph, node, or edge data attributes.
-
-        """
-        G = self.K3.copy(with_data=False)
-        nodes = set(self.K3)
-        assert_equal(G.graph, {})
-        assert_equal(G.node, {v: {} for v in nodes})
-        assert_equal(G.edge, {u: {v: {} for v in nodes - {u}} for u in nodes})
-
     def test_copy_attr(self):
         G=self.Graph(foo=[])
         G.add_node(0,foo=[])
@@ -601,7 +590,6 @@ class TestGraph(BaseAttrGraphTester):
         f = lambda x: list(G.edges(x))
         assert_raises((KeyError,networkx.NetworkXError), f,-1)
 
-
     def test_get_edge_data(self):
         G=self.K3
         assert_equal(G.get_edge_data(0,1),{})
@@ -609,3 +597,18 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(G.get_edge_data(10,20),None)
         assert_equal(G.get_edge_data(-1,0),None)
         assert_equal(G.get_edge_data(-1,0,default=1),1)
+
+    def test_copy_without_data(self):
+        """Tests for creating a copy of the graph without any of the
+        graph, node, or edge data attributes.
+
+        """
+        G = self.K3.copy(with_data=False)
+        nodes = set(self.K3)
+        assert_equal(G.is_directed(), self.K3.is_directed())
+        assert_equal(G.is_multigraph(), self.K3.is_multigraph())
+        assert_equal(G.graph, {})
+        assert_equal(G.node, {v: {} for v in nodes})
+        # This line depends on the particular implementation of the
+        # dict-of-dict-of-dict data structure.
+        assert_equal(G.edge, {u: {v: {} for v in nodes - {u}} for u in nodes})
