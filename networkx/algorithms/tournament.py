@@ -31,8 +31,8 @@ from itertools import combinations
 import random
 
 import networkx as nx
+from networkx.algorithms.simple_paths import is_simple_path as is_path
 from networkx.utils import arbitrary_element
-from networkx.utils import is_path
 from networkx.utils import not_implemented_for
 
 __all__ = ['hamiltonian_path', 'is_reachable', 'is_strongly_connected',

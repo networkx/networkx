@@ -8,6 +8,7 @@ from itertools import count
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.utils import pairwise
 
 __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>',
@@ -16,8 +17,63 @@ __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
 
 __all__ = [
     'all_simple_paths',
+    'is_simple_path',
     'shortest_simple_paths',
 ]
+
+
+def is_simple_path(G, *path):
+    """Returns ``True`` if and only if the given nodes form a simple
+    path in ``G``.
+
+    A *simple path* in a graph is a sequence of nodes in which no node
+    appears more than once in the sequence, and each adjacent pair of
+    nodes in the sequence is adjacent in the graph.
+
+    Parameters
+    ----------
+    path : nodes
+        Zero or more nodes can be provided as positional arguments to
+        this function. Each node must be a node in ``G``.
+
+    Returns
+    -------
+    bool
+        If no positional arguments other than ``G`` are provided, this
+        function returns ``False``. If a single node is provided, this
+        function returns ``True``. Otherwise, if each pair of adjacent
+        nodes is an edge in the given graph, this function return
+        ``True``.
+
+    Examples
+    --------
+    Use positional arguments to test nodes in simple paths::
+
+        >>> G = nx.cycle_graph(4)
+        >>> nx.is_simple_path(G, 0)
+        True
+        >>> nx.is_simple_path(G, 0, 1)
+        True
+        >>> nx.is_simple_path(G, 2, 3, 0)
+        True
+        >>> nx.is_simple_path(G, 0, 2)
+        False
+
+    Unpack an iterable of nodes when testing an iterable of nodes::
+
+        >>> path = [0, 1, 2]
+        >>> nx.is_simple_path(G, *path)
+        True
+
+    """
+    if len(path) == 0:
+        return False
+    if len(path) == 1:
+        return True
+    # Test that no node appears more than once, and that each
+    # adjacent pair of nodes is adjacent.
+    return (len(set(path)) == len(path)
+            and all(v in G[u] for u, v in pairwise(path)))
 
 
 def all_simple_paths(G, source, target, cutoff=None):
