@@ -92,7 +92,7 @@ install:
   - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
       DEPS="pyyaml numpy scipy matplotlib Cython pandas pip";
       sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran libsuitesparse-dev;
-      sudo apt-get install libgdal-dev;
+      sudo apt-get install libgdal-dev graphviz;
       conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS gdal;
       conda install -n test-environment --channel https://conda.binstar.org/patricksnape scikits-sparse;
       source activate test-environment;
@@ -103,7 +103,6 @@ install:
       fi;
       python -c "from osgeo import ogr;print('importing ogr worked')";
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
-        sudo apt-get install graphviz;
         pip install pygraphviz;
       fi;
     fi
