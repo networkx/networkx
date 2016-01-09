@@ -12,6 +12,7 @@ Support for Python 3.5 added, drop support for Python 3.2.
 
 Highlights
 ~~~~~~~~~~
+Pydot features now use pydotplus.
 Fixes installation on some machines and test with appveyor, 
 Restores default center and scale of layout routines,
 Fixes various docs including no symbolic links in examples.
