@@ -21,39 +21,39 @@ class TestIsSimplePath(object):
 
     def test_simple_path(self):
         G = nx.path_graph(2)
-        assert_true(nx.is_simple_path(G, 0, 1))
+        assert_true(nx.is_simple_path(G, [0, 1]))
 
     def test_non_simple_path(self):
         G = nx.path_graph(2)
-        assert_false(nx.is_simple_path(G, 0, 1, 0))
+        assert_false(nx.is_simple_path(G, [0, 1, 0]))
 
     def test_cycle(self):
         G = nx.cycle_graph(3)
-        assert_false(nx.is_simple_path(G, 0, 1, 2, 0))
+        assert_false(nx.is_simple_path(G, [0, 1, 2, 0]))
 
     def test_missing_node(self):
         G = nx.path_graph(2)
-        assert_false(nx.is_simple_path(G, 0, 2))
+        assert_false(nx.is_simple_path(G, [0, 2]))
 
     def test_directed_path(self):
         G = nx.DiGraph([(0, 1), (1, 2)])
-        assert_true(nx.is_simple_path(G, 0, 1, 2))
+        assert_true(nx.is_simple_path(G, [0, 1, 2]))
 
     def test_directed_non_path(self):
         G = nx.DiGraph([(0, 1), (1, 2)])
-        assert_false(nx.is_simple_path(G, 2, 1, 0))
+        assert_false(nx.is_simple_path(G, [2, 1, 0]))
 
     def test_directed_cycle(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
-        assert_false(nx.is_simple_path(G, 0, 1, 2, 0))
+        assert_false(nx.is_simple_path(G, [0, 1, 2, 0]))
 
     def test_multigraph(self):
         G = nx.MultiGraph([(0, 1), (0, 1)])
-        assert_true(nx.is_simple_path(G, 0, 1))
+        assert_true(nx.is_simple_path(G, [0, 1]))
 
     def test_multidigraph(self):
         G = nx.MultiDiGraph([(0, 1), (0, 1), (1, 0), (1, 0)])
-        assert_true(nx.is_simple_path(G, 0, 1))
+        assert_true(nx.is_simple_path(G, [0, 1]))
 
 
 # Tests for all_simple_paths

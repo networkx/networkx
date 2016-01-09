@@ -274,6 +274,7 @@ def is_reachable(G, s, t):
            <http://eccc.hpi-web.de/report/2001/092/>
 
     """
+
     def two_neighborhood(G, v):
         """Returns the set of nodes at distance at most two from `v`.
 
@@ -286,7 +287,8 @@ def is_reachable(G, s, t):
         """
         # TODO This is trivially parallelizable.
         return {x for x in G
-                if x == v or x in G[v] or any(is_path(G, v, z, x) for z in G)}
+                if x == v or x in G[v] or
+                any(is_path(G, [v, z, x]) for z in G)}
 
     def is_closed(G, nodes):
         """Decides whether the given set of nodes is closed.

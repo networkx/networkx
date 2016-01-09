@@ -22,7 +22,7 @@ __all__ = [
 ]
 
 
-def is_simple_path(G, *path):
+def is_simple_path(G, nodes):
     """Returns ``True`` if and only if the given nodes form a simple
     path in ``G``.
 
@@ -32,48 +32,28 @@ def is_simple_path(G, *path):
 
     Parameters
     ----------
-    path : nodes
-        Zero or more nodes can be provided as positional arguments to
-        this function. Each node must be a node in ``G``.
+    nodes : list
+        A list of zero or more nodes in the graph ``G``.
 
     Returns
     -------
     bool
-        If no positional arguments other than ``G`` are provided, this
-        function returns ``False``. If a single node is provided, this
-        function returns ``True``. Otherwise, if each pair of adjacent
-        nodes is an edge in the given graph, this function return
-        ``True``.
+        Whether the given list of nodes represents a simple path in
+        ``G``. The empty list is considered a valid simple path.
 
     Examples
     --------
-    Use positional arguments to test nodes in simple paths::
-
-        >>> G = nx.cycle_graph(4)
-        >>> nx.is_simple_path(G, 0)
-        True
-        >>> nx.is_simple_path(G, 0, 1)
-        True
-        >>> nx.is_simple_path(G, 2, 3, 0)
-        True
-        >>> nx.is_simple_path(G, 0, 2)
-        False
-
-    Unpack an iterable of nodes when testing an iterable of nodes::
-
-        >>> path = [0, 1, 2]
-        >>> nx.is_simple_path(G, *path)
-        True
+    >>> G = nx.cycle_graph(4)
+    >>> nx.is_simple_path(G, [2, 3, 0])
+    True
+    >>> nx.is_simple_path(G, [0, 2])
+    False
 
     """
-    if len(path) == 0:
-        return False
-    if len(path) == 1:
-        return True
     # Test that no node appears more than once, and that each
     # adjacent pair of nodes is adjacent.
-    return (len(set(path)) == len(path)
-            and all(v in G[u] for u, v in pairwise(path)))
+    return (len(set(nodes)) == len(nodes)
+            and all(v in G[u] for u, v in pairwise(nodes)))
 
 
 def all_simple_paths(G, source, target, cutoff=None):
