@@ -515,6 +515,8 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     flow between an arbitrary node in the dominating set and the rest of
     nodes in it. This is an implementation of algorithm 6 in [1]_. For 
     directed graphs, the algorithm does n calls to the max flow function.
+    The function raises an error if the directed graph is not weakly
+    connected and returns an empty set if it is weakly connected.
     It is an implementation of algorithm 8 in [1]_.
 
     See also
