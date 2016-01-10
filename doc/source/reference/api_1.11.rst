@@ -16,6 +16,12 @@ API changes
   The defaul values revert to the v1.9 values (center is the origin
   for circular layouts and domain is [0, scale) for others.
 
+* [`#1924 <https://github.com/networkx/networkx/pull/1924>`_]
+  Replace pydot with pydotplus for drawing with the pydot interface.
+
+* [`#1888 <https://github.com/networkx/networkx/pull/1888>`_]
+  Replace support for Python3.2 with support for Python 3.5.
+
 Miscellaneous changes
 ---------------------
 
