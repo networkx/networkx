@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 # test_kernighan_lin.py - unit tests for Kernighan–Lin bipartition algorithm
 #
 # Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
