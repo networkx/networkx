@@ -79,10 +79,12 @@ def from_pydot(P):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_pydot(K5)
-    >>> G=nx.from_pydot(A) # return MultiGraph
-    >>> G=nx.Graph(nx.from_pydot(A)) # make a Graph instead of MultiGraph
+    >>> K5 = nx.complete_graph(5)
+    >>> A = nx.nx_pydot.to_pydot(K5)
+    >>> G = nx.nx_pydot.from_pydot(A) # return MultiGraph
+
+    # make a Graph instead of MultiGraph
+    >>> G = nx.Graph(nx.nx_pydot.from_pydot(A)) 
 
     """
     if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument
@@ -161,8 +163,8 @@ def to_pydot(N, strict=True):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> P=nx.to_pydot(K5)
+    >>> K5 = nx.complete_graph(5)
+    >>> P = nx.nx_pydot.to_pydot(K5)
 
     Notes
     -----
@@ -233,9 +235,9 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
 
     Examples
     --------
-    >>> G=nx.complete_graph(4)
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> G = nx.complete_graph(4)
+    >>> pos = nx.nx_pydot.graphviz_layout(G)
+    >>> pos = nx.nx_pydot.graphviz_layout(G, prog='dot')
 
     Notes
     -----
@@ -251,9 +253,9 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
 
     Examples
     --------
-    >>> G=nx.complete_graph(4)
-    >>> pos=nx.pydot_layout(G)
-    >>> pos=nx.pydot_layout(G,prog='dot')
+    >>> G = nx.complete_graph(4)
+    >>> pos = nx.nx_pydot.pydot_layout(G)
+    >>> pos = nx.nx_pydot.pydot_layout(G, prog='dot')
     """
     import pydotplus
     P=to_pydot(G)
