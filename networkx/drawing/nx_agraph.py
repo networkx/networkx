@@ -8,14 +8,15 @@ Interface to pygraphviz AGraph class.
 Examples
 --------
 >>> G=nx.complete_graph(5)
->>> A=nx.to_agraph(G)
->>> H=nx.from_agraph(A)
+>>> from networkx.drawing import nx_agraph
+>>> A=nx_agraph.to_agraph(G)
+>>> H=nx_agraph.from_agraph(A)
 
 See Also
 --------
 Pygraphviz: http://pygraphviz.github.io/
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -25,7 +26,7 @@ import os
 import sys
 import tempfile
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+# Aric Hagberg <aric.hagberg@gmail.com>
 __all__ = ['from_agraph', 'to_agraph',
            'write_dot', 'read_dot',
            'graphviz_layout',
@@ -46,9 +47,10 @@ def from_agraph(A,create_using=None):
     Examples
     --------
     >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_agraph(K5)
-    >>> G=nx.from_agraph(A)
-    >>> G=nx.from_agraph(A)
+    >>> from networkx.drawing import nx_agraph
+    >>> A=nx_agraph.to_agraph(K5)
+    >>> G=nx_agraph.from_agraph(A)
+    >>> G=nx_agraph.from_agraph(A)
 
 
     Notes
@@ -117,7 +119,8 @@ def to_agraph(N):
     Examples
     --------
     >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_agraph(K5)
+    >>> from networkx.drawing import nx_agraph
+    >>> A=nx_agraph.to_agraph(K5)
 
     Notes
     -----
@@ -215,8 +218,9 @@ def graphviz_layout(G,prog='neato',root=None, args=''):
     Examples
     --------
     >>> G=nx.petersen_graph()
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> from networkx.drawing import nx_agraph
+    >>> pos=nx_agraph.graphviz_layout(G)
+    >>> pos=nx_agraph.graphviz_layout(G,prog='dot')
 
     Notes
     -----
@@ -245,8 +249,9 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     Examples
     --------
     >>> G=nx.petersen_graph()
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> from networkx.drawing import nx_agraph
+    >>> pos=nx_agraph.graphviz_layout(G)
+    >>> pos=nx_agraph.graphviz_layout(G,prog='dot')
 
     """
     try:
