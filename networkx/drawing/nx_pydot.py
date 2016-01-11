@@ -13,7 +13,7 @@ PyDotPlus: https://github.com/carlos-jenkins/pydotplus
 Graphviz:          http://www.research.att.com/sw/tools/graphviz/
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,7 +22,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 import importlib
 from networkx.utils import open_file, make_str
 import networkx as nx
-__author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
+# Aric Hagberg <aric.hagberg@gmail.com>
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
@@ -80,9 +80,10 @@ def from_pydot(P):
     Examples
     --------
     >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_pydot(K5)
-    >>> G=nx.from_pydot(A) # return MultiGraph
-    >>> G=nx.Graph(nx.from_pydot(A)) # make a Graph instead of MultiGraph
+    >>> from networkx.drawing import nx_pydot
+    >>> A=nx_pydot.to_pydot(K5)
+    >>> G=nx_pydot.from_pydot(A) # return MultiGraph
+    >>> G=nx.Graph(nx_pydot.from_pydot(A)) # make a Graph instead of MultiGraph
 
     """
     if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument
@@ -162,7 +163,8 @@ def to_pydot(N, strict=True):
     Examples
     --------
     >>> K5=nx.complete_graph(5)
-    >>> P=nx.to_pydot(K5)
+    >>> from networkx.drawing import nx_pydot
+    >>> P=nx_pydot.to_pydot(K5)
 
     Notes
     -----
@@ -234,8 +236,9 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
     Examples
     --------
     >>> G=nx.complete_graph(4)
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> from networkx.drawing import nx_pydot
+    >>> pos=nx_pydot.graphviz_layout(G)
+    >>> pos=nx_pydot.graphviz_layout(G,prog='dot')
 
     Notes
     -----
@@ -252,8 +255,9 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     Examples
     --------
     >>> G=nx.complete_graph(4)
-    >>> pos=nx.pydot_layout(G)
-    >>> pos=nx.pydot_layout(G,prog='dot')
+    >>> from networkx.drawing import nx_pydot
+    >>> pos=nx_pydot.pydot_layout(G)
+    >>> pos=nx_pydot.pydot_layout(G,prog='dot')
     """
     import pydotplus
     P=to_pydot(G)

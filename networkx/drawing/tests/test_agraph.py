@@ -7,6 +7,7 @@ from nose import SkipTest
 from nose.tools import assert_true,assert_equal
 
 import networkx as nx
+from networkx.drawing import nx_agraph
 
 class TestAGraph(object):
     @classmethod
@@ -33,32 +34,32 @@ class TestAGraph(object):
 
     def agraph_checks(self, G):
         G = self.build_graph(G)
-        A=nx.to_agraph(G)
-        H=nx.from_agraph(A)
+        A=nx_agraph.to_agraph(G)
+        H=nx_agraph.from_agraph(A)
         self.assert_equal(G, H)
 
         fname=tempfile.mktemp()
-        nx.drawing.nx_agraph.write_dot(H,fname)
-        Hin=nx.drawing.nx_agraph.read_dot(fname)
+        nx_agraph.write_dot(H,fname)
+        Hin=nx_agraph.read_dot(fname)
         os.unlink(fname)
         self.assert_equal(H,Hin)
 
 
         (fd,fname)=tempfile.mkstemp()
         fh=open(fname,'w')
-        nx.drawing.nx_agraph.write_dot(H,fh)
+        nx_agraph.write_dot(H,fh)
         fh.close()
 
         fh=open(fname,'r')
-        Hin=nx.drawing.nx_agraph.read_dot(fh)
+        Hin=nx_agraph.read_dot(fh)
         fh.close()
         os.unlink(fname)
         self.assert_equal(H,Hin)
 
     def test_from_agraph_name(self):
         G=nx.Graph(name='test')
-        A=nx.to_agraph(G)
-        H=nx.from_agraph(A)
+        A=nx_agraph.to_agraph(G)
+        H=nx_agraph.from_agraph(A)
         assert_equal(G.name,'test')
 
 

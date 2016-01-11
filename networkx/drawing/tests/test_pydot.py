@@ -8,6 +8,7 @@ from nose import SkipTest
 from nose.tools import assert_true
 
 import networkx as nx
+from networkx.drawing import nx_pydot
 from networkx.testing import assert_graphs_equal
 
 class TestPydot(object):
@@ -25,8 +26,8 @@ class TestPydot(object):
         G.add_edge('B','C')
         G.add_edge('A','D')
         G.add_node('E')
-        P = nx.to_pydot(G)
-        G2 = G.__class__(nx.from_pydot(P))
+        P = nx_pydot.to_pydot(G)
+        G2 = G.__class__(nx_pydot.from_pydot(P))
         assert_graphs_equal(G, G2)
 
         fname = tempfile.mktemp()
@@ -42,7 +43,7 @@ class TestPydot(object):
         e2=[(e.get_source(),e.get_destination()) for e in Pin.get_edge_list()]
         assert_true( sorted(e1)==sorted(e2) )
 
-        Hin = nx.drawing.nx_pydot.read_dot(fname)
+        Hin = nx_pydot.read_dot(fname)
         Hin = G.__class__(Hin)
         assert_graphs_equal(G, Hin)
 
