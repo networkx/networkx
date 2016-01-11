@@ -13,7 +13,7 @@ Create a graph with a single edge from a dictionary of dictionaries
 
 See Also
 --------
-nx_pygraphviz, nx_pydot
+nx_agraph, nx_pydot
 """
 #    Copyright (C) 2006-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -100,7 +100,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
     # pygraphviz  agraph
     if hasattr(data,"is_strict"):
         try:
-            return nx.from_agraph(data,create_using=create_using)
+            return nx.nx_agraph.from_agraph(data,create_using=create_using)
         except:
             raise nx.NetworkXError("Input is not a correct pygraphviz graph.")
 

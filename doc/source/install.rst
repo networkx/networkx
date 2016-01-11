@@ -151,7 +151,7 @@ In conjunction with either
 
       or
 
-      - pydot: http://code.google.com/p/pydot/
+      - pydotplus: https://github.com/carlos-jenkins/pydotplus
 
 provides graph drawing and graph layout algorithms.
 

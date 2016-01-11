@@ -18,8 +18,9 @@ References.
 
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2015 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -47,7 +48,7 @@ def miles_graph():
         if line.startswith("*"): # skip comments
             continue
 
-        numfind=re.compile("^\d+") 
+        numfind=re.compile("^\d+")
 
         if numfind.match(line): # this line is distances
             dist=line.split()
@@ -60,12 +61,12 @@ def miles_graph():
             cities.insert(0,city)
             (coord,pop)=coordpop.split("]")
             (y,x)=coord.split(",")
-        
+
             G.add_node(city)
             # assign position - flip x axis for matplotlib, shift origin
             G.position[city]=(-int(x)+7500,int(y)-3000)
             G.population[city]=float(pop)/1000.0
-    return G            
+    return G
 
 if __name__ == '__main__':
     import networkx as nx
@@ -87,7 +88,7 @@ if __name__ == '__main__':
         if d['weight'] < 300:
             H.add_edge(u,v)
 
-    # draw with matplotlib/pylab            
+    # draw with matplotlib/pylab
 
     try:
         import matplotlib.pyplot as plt

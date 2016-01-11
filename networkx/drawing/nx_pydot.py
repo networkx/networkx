@@ -5,7 +5,7 @@ Pydot
 
 Import and export NetworkX graphs in Graphviz dot format using pydotplus.
 
-Either this module or nx_pygraphviz can be used to interface with graphviz.
+Either this module or nx_agraph can be used to interface with graphviz.
 
 See Also
 --------
@@ -13,7 +13,9 @@ PyDotPlus: https://github.com/carlos-jenkins/pydotplus
 Graphviz:          http://www.research.att.com/sw/tools/graphviz/
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
-#    Copyright (C) 2004-2015 by
+# Author: Aric Hagberg (aric.hagberg@gmail.com)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,7 +24,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 import importlib
 from networkx.utils import open_file, make_str
 import networkx as nx
-__author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
+
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
@@ -57,7 +59,7 @@ def read_dot(path):
 
     Notes
     -----
-    Use G=nx.Graph(nx.read_dot(path)) to return a Graph instead of a MultiGraph.
+    Use G = nx.Graph(read_dot(path)) to return a Graph instead of a MultiGraph.
     """
     import pydotplus
     data = path.read()
@@ -79,10 +81,12 @@ def from_pydot(P):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_pydot(K5)
-    >>> G=nx.from_pydot(A) # return MultiGraph
-    >>> G=nx.Graph(nx.from_pydot(A)) # make a Graph instead of MultiGraph
+    >>> K5 = nx.complete_graph(5)
+    >>> A = nx.nx_pydot.to_pydot(K5)
+    >>> G = nx.nx_pydot.from_pydot(A) # return MultiGraph
+
+    # make a Graph instead of MultiGraph
+    >>> G = nx.Graph(nx.nx_pydot.from_pydot(A)) 
 
     """
     if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument
@@ -161,8 +165,8 @@ def to_pydot(N, strict=True):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> P=nx.to_pydot(K5)
+    >>> K5 = nx.complete_graph(5)
+    >>> P = nx.nx_pydot.to_pydot(K5)
 
     Notes
     -----
@@ -233,9 +237,9 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
 
     Examples
     --------
-    >>> G=nx.complete_graph(4)
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> G = nx.complete_graph(4)
+    >>> pos = nx.nx_pydot.graphviz_layout(G)
+    >>> pos = nx.nx_pydot.graphviz_layout(G, prog='dot')
 
     Notes
     -----
@@ -251,9 +255,9 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
 
     Examples
     --------
-    >>> G=nx.complete_graph(4)
-    >>> pos=nx.pydot_layout(G)
-    >>> pos=nx.pydot_layout(G,prog='dot')
+    >>> G = nx.complete_graph(4)
+    >>> pos = nx.nx_pydot.pydot_layout(G)
+    >>> pos = nx.nx_pydot.pydot_layout(G, prog='dot')
     """
     import pydotplus
     P=to_pydot(G)
