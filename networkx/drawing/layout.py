@@ -4,7 +4,15 @@ Layout
 ******
 
 Node positioning algorithms for graph drawing.
+
+The default scales and centering for these layouts are
+typically squares with side [0, 1] or [0, scale].
+The two circular layout routines (circular_layout and
+shell_layout) have size [-1, 1] or [-scale, scale].
 """
+# Authors: Aric Hagberg <aric.hagberg@gmail.com>,
+#          Dan Schult <dschult@colgate.edu>
+
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -13,7 +21,7 @@ Node positioning algorithms for graph drawing.
 #    BSD license.
 import collections
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
+
 __all__ = ['circular_layout',
            'random_layout',
            'shell_layout',
@@ -581,7 +589,7 @@ def _sparse_spectral(A,dim=2):
 def _rescale_layout(pos,scale=1):
     # rescale to (-scale,scale) in all axes
 
-    # shift origin to (0,0)
+    # Find max length over all dimensions
     lim=0 # max coordinate for all axes
     for i in range(pos.shape[1]):
         pos[:,i]-=pos[:,i].mean()

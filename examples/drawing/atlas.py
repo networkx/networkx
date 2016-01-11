@@ -3,8 +3,9 @@
 Atlas of all graphs of 6 nodes or less.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004 by
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

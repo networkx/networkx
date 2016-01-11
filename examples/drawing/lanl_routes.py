@@ -5,7 +5,8 @@ Routes to LANL from 186 sites on the Internet.
 This uses Graphviz for layout so you need PyGraphviz or PyDotPlus.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
 #    Copyright (C) 2004-2016
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -33,7 +34,7 @@ def lanl_graph():
         G.add_edge(int(head), int(tail))
         time[int(head)] = float(rtt)
 
-    # get largest component and assign ping times to G0time dictionary        
+    # get largest component and assign ping times to G0time dictionary
     G0 = sorted(nx.connected_component_subgraphs(G), key = len, reverse=True)[0]
     G0.rtt = {}
     for n in G0:

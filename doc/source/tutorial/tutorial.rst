@@ -18,14 +18,14 @@ along with identified pairs of nodes (called edges, links, etc).
 In NetworkX, nodes can be any hashable object e.g. a text string, an
 image, an XML object, another Graph, a customized node object, etc.
 (Note: Python's None object should not be used as a node as it
-determines whether optional function arguments have been assigned 
+determines whether optional function arguments have been assigned
 in many functions.)
 
 Nodes
 -----
 
 The graph G can be grown in several ways.
-NetworkX includes many graph generator functions 
+NetworkX includes many graph generator functions
 and facilities to read and write graphs in many formats.
 To get started though we'll look at simple manipulations.
 You can add one node at a time,
@@ -38,14 +38,14 @@ add a list of nodes,
 
 or add any :term:`nbunch` of nodes.
 An *nbunch* is any iterable container
-of nodes that is not itself a node 
+of nodes that is not itself a node
 in the graph. (e.g. a list, set, graph, file, etc..)
 
 >>> H=nx.path_graph(10)
 >>> G.add_nodes_from(H)
 
 Note that G now contains the nodes of H as nodes of G.
-In contrast, you could use the graph H as a node in G. 
+In contrast, you could use the graph H as a node in G.
 
 >>> G.add_node(H)
 
@@ -56,7 +56,7 @@ thinking about how to structure your application so that
 the nodes are useful entities.  Of course you can always
 use a unique identifier in G and have a separate dictionary
 keyed by identifier to the node information if you prefer.
-(Note: You should not change the node object if the hash 
+(Note: You should not change the node object if the hash
 depends on its contents.)
 
 Edges
@@ -68,24 +68,24 @@ G can also be grown by adding one edge at a time,
 >>> e=(2,3)
 >>> G.add_edge(*e) # unpack edge tuple*
 
-by adding a list of edges, 
+by adding a list of edges,
 
 >>> G.add_edges_from([(1,2),(1,3)])
 
 or by adding any :term:`ebunch` of edges.
 An *ebunch* is any iterable container
 of edge-tuples.  An edge-tuple can be a 2-tuple
-of nodes or a 3-tuple with 2 nodes followed by 
+of nodes or a 3-tuple with 2 nodes followed by
 an edge attribute dictionary, e.g. (2,3,{'weight':3.1415}).
 Edge attributes are discussed further below
 
 >>> G.add_edges_from(H.edges())
 
-One can demolish the graph in a similar fashion; using 
+One can demolish the graph in a similar fashion; using
 :meth:`Graph.remove_node`,
-:meth:`Graph.remove_nodes_from`, 
+:meth:`Graph.remove_nodes_from`,
 :meth:`Graph.remove_edge`
-and 
+and
 :meth:`Graph.remove_edges_from`, e.g.
 
 >>> G.remove_node(H)
@@ -132,13 +132,13 @@ Removing nodes or edges has similar syntax to adding:
 >>> G.remove_edge(1,3)
 
 When creating a graph structure by instantiating one of the graph
-classes you can specify data in several formats.  
+classes you can specify data in several formats.
 
 >>> H=nx.DiGraph(G)   # create a DiGraph using the connections from G
 >>> list(H.edges())
 [(1, 2), (2, 1)]
 >>> edgelist=[(0,1),(1,2),(2,3)]
->>> H=nx.Graph(edgelist) 
+>>> H=nx.Graph(edgelist)
 
 What to use as nodes and edges
 ------------------------------
@@ -148,12 +148,12 @@ edges. The most common choices are numbers or strings, but a node can
 be any hashable object (except None), and an edge can be associated
 with any object x using G.add_edge(n1,n2,object=x).
 
-As an example, n1 and n2 could be protein objects from the RCSB Protein 
-Data Bank, and x could refer to an XML record of publications detailing 
-experimental observations of their interaction. 
+As an example, n1 and n2 could be protein objects from the RCSB Protein
+Data Bank, and x could refer to an XML record of publications detailing
+experimental observations of their interaction.
 
 We have found this power quite useful, but its abuse
-can lead to unexpected surprises unless one is familiar with Python. 
+can lead to unexpected surprises unless one is familiar with Python.
 If in doubt, consider using :func:`convert_node_labels_to_integers` to obtain
 a more traditional graph with integer labels.
 
@@ -161,16 +161,16 @@ a more traditional graph with integer labels.
 Accessing edges
 ---------------
 
-In addition to the methods 
-:meth:`Graph.nodes`, 
-:meth:`Graph.edges`, and 
+In addition to the methods
+:meth:`Graph.nodes`,
+:meth:`Graph.edges`, and
 :meth:`Graph.neighbors`,
 fast direct access to the graph data structure is also possible
 using subscript notation.
 
 .. Warning::
-   Do not change the returned dict--it is part of 
-   the graph data structure and direct manipulation may leave the 
+   Do not change the returned dict--it is part of
+   the graph data structure and direct manipulation may leave the
    graph in an inconsistent state.
 
 >>> G[1]  # Warning: do not change the resulting dict
@@ -213,7 +213,7 @@ Python object you like, can be attached to graphs, nodes, or edges.
 Each graph, node, and edge can hold key/value attribute pairs
 in an associated attribute dictionary (the keys must be hashable).
 By default these are empty, but attributes can be added or changed using
-add_edge, add_node or direct manipulation of the attribute 
+add_edge, add_node or direct manipulation of the attribute
 dictionaries named G.graph, G.node and G.edge for a graph G.
 
 
@@ -269,14 +269,14 @@ Directed graphs
 ---------------
 
 The :class:`DiGraph` class provides additional methods specific to directed
-edges, e.g. 
-:meth:`DiGraph.out_edges`, 
-:meth:`DiGraph.in_degree`, 
-:meth:`DiGraph.predecessors`, 
-:meth:`DiGraph.successors` etc.  
-To allow algorithms to work with both classes easily, the directed 
-versions of neighbors() and degree() are equivalent to successors() 
-and the sum of in_degree() and out_degree() respectively even though 
+edges, e.g.
+:meth:`DiGraph.out_edges`,
+:meth:`DiGraph.in_degree`,
+:meth:`DiGraph.predecessors`,
+:meth:`DiGraph.successors` etc.
+To allow algorithms to work with both classes easily, the directed
+versions of neighbors() and degree() are equivalent to successors()
+and the sum of in_degree() and out_degree() respectively even though
 that may feel inconsistent at times.
 
 >>> DG=nx.DiGraph()
@@ -340,7 +340,7 @@ can also be generated by
     disjoint_union(G1,G2)    - graph union assuming all nodes are different
     cartesian_product(G1,G2) - return Cartesian product graph
     compose(G1,G2)           - combine graphs identifying nodes common to both
-    complement(G)            - graph complement 
+    complement(G)            - graph complement
     create_empty_copy(G)     - return an empty copy of the same graph class
     convert_to_undirected(G) - return an undirected representation of G
     convert_to_directed(G)   - return a directed representation of G
@@ -359,7 +359,7 @@ can also be generated by
 >>> K_3_5=nx.complete_bipartite_graph(3,5)
 >>> barbell=nx.barbell_graph(10,10)
 >>> lollipop=nx.lollipop_graph(10,20)
- 
+
 4. Using a stochastic graph generator, e.g.
 
 >>> er=nx.erdos_renyi_graph(100,0.15)
@@ -367,21 +367,21 @@ can also be generated by
 >>> ba=nx.barabasi_albert_graph(100,5)
 >>> red=nx.random_lobster(100,0.9,0.9)
 
-5. Reading a graph stored in a file using common graph formats, 
+5. Reading a graph stored in a file using common graph formats,
    such as edge lists, adjacency lists, GML, GraphML, pickle, LEDA and others.
 
 >>> nx.write_gml(red,"path.to.file")
 >>> mygraph=nx.read_gml("path.to.file")
 
-Details on graph formats: :doc:`/reference/readwrite` 
+Details on graph formats: :doc:`/reference/readwrite`
 
-Details on graph generator functions: :doc:`/reference/generators` 
+Details on graph generator functions: :doc:`/reference/generators`
 
 
-Analyzing graphs 
+Analyzing graphs
 ----------------
 
-The structure of G can be analyzed using various graph-theoretic 
+The structure of G can be analyzed using various graph-theoretic
 functions such as:
 
 >>> G=nx.Graph()
@@ -403,11 +403,11 @@ Functions that return node properties return iterators over node, value
 >>> dict(nx.degree(G))
 {1: 2, 2: 1, 3: 1, 'spam': 0}
 
-For values of specific nodes, you can provide a single node or an nbunch 
-of nodes as argument.  If a single node is specified, then a single value 
-is returned.  If an nbunch is specified, then the function will 
+For values of specific nodes, you can provide a single node or an nbunch
+of nodes as argument.  If a single node is specified, then a single value
+is returned.  If an nbunch is specified, then the function will
 return a dictionary.
- 
+
 >>> nx.degree(G,1)
 2
 >>> G.degree(1)
@@ -426,11 +426,11 @@ Details on graph algorithms supported: :doc:`/reference/algorithms`
 Drawing graphs
 --------------
 
-NetworkX is not primarily a graph drawing package but 
+NetworkX is not primarily a graph drawing package but
 basic drawing with Matplotlib as well as an interface to use the
-open source Graphviz software package are included.  
+open source Graphviz software package are included.
 These are part of the networkx.drawing package
-and will be imported if possible. 
+and will be imported if possible.
 See :doc:`/reference/drawing` for details.
 
 Note that the drawing package in NetworkX is not yet compatible with
@@ -440,11 +440,11 @@ First import Matplotlib's plot interface (pylab works too)
 
 >>> import matplotlib.pyplot as plt
 
-You may find it useful to interactively test code using "ipython -pylab", 
+You may find it useful to interactively test code using "ipython -pylab",
 which combines the power of ipython and matplotlib and provides a convenient
 interactive mode.
 
-To test if the import of networkx.drawing was successful 
+To test if the import of networkx.drawing was successful
 draw G using one of
 
 >>> nx.draw(G)
@@ -452,12 +452,12 @@ draw G using one of
 >>> nx.draw_circular(G)
 >>> nx.draw_spectral(G)
 
-when drawing to an interactive display. 
-Note that you may need to issue a Matplotlib 
+when drawing to an interactive display.
+Note that you may need to issue a Matplotlib
 
->>> plt.show() 
+>>> plt.show()
 
-command if you are not using matplotlib in interactive mode: (See 
+command if you are not using matplotlib in interactive mode: (See
 `Matplotlib FAQ <http://matplotlib.org/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-when-i-use-it>`_
 )
 

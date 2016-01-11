@@ -15,6 +15,8 @@ See Also
 --------
 Pygraphviz: http://pygraphviz.github.io/
 """
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -25,7 +27,7 @@ import os
 import sys
 import tempfile
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['from_agraph', 'to_agraph',
            'write_dot', 'read_dot',
            'graphviz_layout',

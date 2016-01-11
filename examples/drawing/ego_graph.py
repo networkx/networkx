@@ -4,7 +4,7 @@
 Example using the NetworkX ego_graph() function to return the main egonet of 
 the largest hub in a Barabási-Albert network.
 """
-__author__="""Drew Conway (drew.conway@nyu.edu)"""
+# Author:  Drew Conway (drew.conway@nyu.edu)
 
 from operator import itemgetter
 import networkx as nx

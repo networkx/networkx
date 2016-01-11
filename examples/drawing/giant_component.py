@@ -6,7 +6,7 @@ giant connected component in a binomial random graph.
 Requires pygraphviz and matplotlib to draw.
 
 """
-#    Copyright (C) 2006-2008
+#    Copyright (C) 2006-2016
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

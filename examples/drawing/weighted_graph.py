@@ -2,12 +2,12 @@
 """
 An example using Graph as a weighted network.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+# Author: Aric Hagberg (hagberg@lanl.gov)
 try:
     import matplotlib.pyplot as plt
 except:
     raise
-    
+
 import networkx as nx
 
 G=nx.Graph()
