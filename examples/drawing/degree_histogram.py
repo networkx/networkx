@@ -3,9 +3,10 @@
 Random graph from given degree sequence.
 Draw degree rank plot and graph with matplotlib.
 """
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
-import networkx as nx
+# Author: Aric Hagberg <aric.hagberg@gmail.com>
 import matplotlib.pyplot as plt
+import networkx as nx
+
 G = nx.gnp_random_graph(100,0.02)
 
 degree_sequence=sorted(nx.degree(G).values(),reverse=True) # degree sequence
@@ -17,7 +18,7 @@ plt.title("Degree rank plot")
 plt.ylabel("degree")
 plt.xlabel("rank")
 
-# draw graph in inset 
+# draw graph in inset
 plt.axes([0.45,0.45,0.45,0.45])
 Gcc=sorted(nx.connected_component_subgraphs(G), key = len, reverse=True)[0]
 pos=nx.spring_layout(Gcc)

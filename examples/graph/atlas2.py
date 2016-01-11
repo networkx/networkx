@@ -4,11 +4,10 @@ Write first 20 graphs from the graph atlas as graphviz dot files
 Gn.dot where n=0,19.
 Requires pygraphviz and graphviz.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-05-19 14:23:02 -0600 (Thu, 19 May 2005) $"
-__credits__ = """"""
-__revision__ = ""
-#    Copyright (C) 2006 by
+# Author: Aric Hagberg (hagberg@lanl.gov)
+# Date: 2005-05-19 14:23:02 -0600 (Thu, 19 May 2005)
+
+#    Copyright (C) 2006-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

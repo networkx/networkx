@@ -9,8 +9,9 @@ Requires Internet connection to download the URL
 http://www-personal.umich.edu/~mejn/netdata/football.zip
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2007 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2007-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

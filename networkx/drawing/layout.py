@@ -5,12 +5,15 @@ Layout
 
 Node positioning algorithms for graph drawing.
 
-The default scales and centering for these layouts are 
+The default scales and centering for these layouts are
 typically squares with side [0, 1] or [0, scale].
 The two circular layout routines (circular_layout and
 shell_layout) have size [-1, 1] or [-scale, scale].
 """
-#    Copyright (C) 2004-2015 by
+# Authors: Aric Hagberg <aric.hagberg@gmail.com>,
+#          Dan Schult <dschult@colgate.edu>
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,8 +21,7 @@ shell_layout) have size [-1, 1] or [-scale, scale].
 #    BSD license.
 import collections
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Dan Schult(dschult@colgate.edu)'])
+
 __all__ = ['circular_layout',
            'random_layout',
            'shell_layout',
@@ -568,7 +570,7 @@ def _rescale_layout(pos, scale=1.):
     # rescale to [0, scale) in each axis
 
     # Find max length over all dimensions
-    maxlim=0 
+    maxlim=0
     for i in range(pos.shape[1]):
         pos[:,i] -= pos[:,i].min() # shift min to zero
         maxlim = max(maxlim, pos[:,i].max())

@@ -2,8 +2,9 @@
 """
 Read and write graphs.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2015 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,7 +19,7 @@ try: # Python 2.6+
 except TypeError: # Python 3.x
     write_adjlist(G,sys.stdout.buffer) # write adjacency list to screen
 # write edgelist to grid.edgelist
-write_edgelist(G,path="grid.edgelist",delimiter=":") 
+write_edgelist(G,path="grid.edgelist",delimiter=":")
 # read edgelist from grid.edgelist
-H=read_edgelist(path="grid.edgelist",delimiter=":") 
+H=read_edgelist(path="grid.edgelist",delimiter=":")
 

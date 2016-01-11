@@ -8,7 +8,8 @@ See http://networkx.github.io/documentation/latest/reference/drawing.html
 for more info.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

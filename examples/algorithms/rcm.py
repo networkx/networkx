@@ -1,9 +1,9 @@
 # Cuthill-McKee ordering of matrices
-# The reverse Cuthill-McKee algorithm gives a sparse matrix ordering that 
+# The reverse Cuthill-McKee algorithm gives a sparse matrix ordering that
 # reduces the matrix bandwidth.
 # Requires NumPy
-# Copyright (C) 2011 by 
-# Aric Hagberg <aric.hagberg@gmail.com>
+# Copyright (C) 2011-2016 by
+# Author:    Aric Hagberg <aric.hagberg@gmail.com>
 # BSD License
 import networkx as nx
 from networkx.utils import reverse_cuthill_mckee_ordering
@@ -11,7 +11,7 @@ import numpy as np
 
 # build low-bandwidth numpy matrix
 G=nx.grid_2d_graph(3,3)
-rcm = list(reverse_cuthill_mckee_ordering(G))    
+rcm = list(reverse_cuthill_mckee_ordering(G))
 print("ordering",rcm)
 
 print("unordered Laplacian matrix")
