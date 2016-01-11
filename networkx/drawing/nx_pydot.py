@@ -5,7 +5,7 @@ Pydot
 
 Import and export NetworkX graphs in Graphviz dot format using pydotplus.
 
-Either this module or nx_pygraphviz can be used to interface with graphviz.
+Either this module or nx_agraph can be used to interface with graphviz.
 
 See Also
 --------
@@ -57,7 +57,7 @@ def read_dot(path):
 
     Notes
     -----
-    Use G=nx.Graph(nx.read_dot(path)) to return a Graph instead of a MultiGraph.
+    Use G = nx.Graph(read_dot(path)) to return a Graph instead of a MultiGraph.
     """
     import pydotplus
     data = path.read()

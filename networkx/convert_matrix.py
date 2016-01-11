@@ -18,7 +18,7 @@ or equivalently
 
 See Also
 --------
-nx_pygraphviz, nx_pydot
+nx_agraph, nx_pydot
 """
 #    Copyright (C) 2006-2014 by
 #    Aric Hagberg <hagberg@lanl.gov>
