@@ -5,15 +5,19 @@
 #    All rights reserved.
 #    BSD license.
 #
-# Authors:  Aric Hagberg (hagberg@lanl.gov)
-#           Pieter Swart (swart@lanl.gov)
-#           Dan Schult(dschult@colgate.edu)
+# Authors: Aric Hagberg <hagberg@lanl.gov>
+#          Pieter Swart <swart@lanl.gov>
+#          Dan Schult <dschult@colgate.edu>
 """Functional interface to graph methods and assorted utilities.
 """
 from __future__ import division
 
 from collections import Counter
 from itertools import chain
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -364,33 +368,51 @@ def info(G, n=None):
 
 
 def set_node_attributes(G, name, values):
-    """Set node attributes from dictionary of nodes and values
+    """Sets node attributes from a given value or dictionary of values.
 
     Parameters
     ----------
     G : NetworkX Graph
 
     name : string
-       Attribute name
+       Name of the node attribute to set.
 
-    values: dict
-       Dictionary of attribute values keyed by node. If `values` is not a
-       dictionary, then it is treated as a single attribute value that is then
-       applied to every node in `G`.
+    values : dict
+       Dictionary of attribute values keyed by node. If `values` is
+       not a dictionary, then it is treated as a single attribute value
+       that is then applied to every node in `G`. This means that if
+       you provide a mutable object, like a list, updates to that object
+       will be reflected in the node attribute for each node.
 
     Examples
     --------
-    >>> G = nx.path_graph(3)
-    >>> bb = nx.betweenness_centrality(G)
-    >>> nx.set_node_attributes(G, 'betweenness', bb)
-    >>> G.node[1]['betweenness']
-    1.0
+    After computing some property of the nodes of a graph, you may want
+    to assign a node attribute to store the value of that property for
+    each node::
+
+        >>> G = nx.path_graph(3)
+        >>> bb = nx.betweenness_centrality(G)  # this is a dictionary
+        >>> nx.set_node_attributes(G, 'betweenness', bb)
+        >>> G.node[1]['betweenness']
+        1.0
+
+    If you provide a list as the third argument, updates to the list
+    will be reflected in the node attribute for each node::
+
+        >>> labels = []
+        >>> nx.set_node_attributes(G, 'labels', labels)
+        >>> labels.append('foo')
+        >>> G.node[0]['labels']
+        ['foo']
+        >>> G.node[1]['labels']
+        ['foo']
+        >>> G.node[2]['labels']
+        ['foo']
+
     """
-    try:
-        values.items
-    except AttributeError:
-        # Treat `value` as the attribute value for each node.
-        values = dict(zip(G.nodes(), [values] * len(G)))
+    # Treat `value` as the attribute value for each node.
+    if not isinstance(values, dict):
+        values = dict(zip_longest(G, [], fillvalue=values))
 
     for node, value in values.items():
         G.node[node][name] = value
@@ -422,40 +444,59 @@ def get_node_attributes(G, name):
 
 
 def set_edge_attributes(G, name, values):
-    """Set edge attributes from dictionary of edge tuples and values.
+    """Sets edge attributes from a given value or dictionary of values.
 
     Parameters
     ----------
     G : NetworkX Graph
 
     name : string
-       Attribute name
+       Name of the edge attribute to set.
 
     values : dict
-       Dictionary of attribute values keyed by edge (tuple). For multigraphs,
-       the keys tuples must be of the form (u, v, key). For non-multigraphs,
-       the keys must be tuples of the form (u, v). If `values` is not a
-       dictionary, then it is treated as a single attribute value that is then
-       applied to every edge in `G`.
+       Dictionary of attribute values keyed by edge (tuple). For
+       multigraphs, the tuples must be of the form ``(u, v, key)``,
+       where `u` and `v` are nodes and `key` is the key corresponding to
+       the edge. For non-multigraphs, the keys must be tuples of the
+       form ``(u, v)``.
+
+       If `values` is not a dictionary, then it is treated as a single
+       attribute value that is then applied to every edge in `G`. This
+       means that if you provide a mutable object, like a list, updates
+       to that object will be reflected in the edge attribute for each
+       edge.
 
     Examples
     --------
-    >>> G = nx.path_graph(3)
-    >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
-    >>> nx.set_edge_attributes(G, 'betweenness', bb)
-    >>> G[1][2]['betweenness']
-    2.0
+    After computing some property of the nodes of a graph, you may want
+    to assign a node attribute to store the value of that property for
+    each node::
+
+        >>> G = nx.path_graph(3)
+        >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
+        >>> nx.set_edge_attributes(G, 'betweenness', bb)
+        >>> G.edge[1][2]['betweenness']
+        2.0
+
+    If you provide a list as the third argument, updates to the list
+    will be reflected in the edge attribute for each node::
+
+        >>> labels = []
+        >>> nx.set_edge_attributes(G, 'labels', labels)
+        >>> labels.append('foo')
+        >>> G.edge[0][1]['labels']
+        ['foo']
+        >>> G.edge[1][2]['labels']
+        ['foo']
 
     """
-    try:
-        values.items
-    except AttributeError:
-        # Treat `value` as the attribute value for each edge.
+    # Treat `value` as the attribute value for each node.
+    if not isinstance(values, dict):
         if G.is_multigraph():
-            edges = list(G.edges(keys=True))
+            edges = G.edges(keys=True)
         else:
-            edges = list(G.edges())
-        values = dict(zip(edges, [values] * len(list(edges))))
+            edges = G.edges()
+        values = dict(zip_longest(edges, [], fillvalue=values))
 
     if G.is_multigraph():
         for (u, v, key), value in values.items():
