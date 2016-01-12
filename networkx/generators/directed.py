@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2009 by 
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+# Copyright (C) 2006-2009 by
+#   Aric Hagberg <hagberg@lanl.gov>
+#   Dan Schult <dschult@colgate.edu>
+#   Pieter Swart <swart@lanl.gov>
+# Copyright (C) 2009 by Willem Ligtenberg <W.P.A.Ligtenberg@tue.nl>
+#
+# All rights reserved.
+# BSD license.
 """
 Generators for some directed graphs, including growing network (GN) graphs and
 scale-free graphs.
@@ -19,8 +21,6 @@ import networkx as nx
 from networkx.generators.classic import empty_graph
 from networkx.utils import discrete_sequence
 from networkx.utils import weighted_choice
-
-__author__ ="""Aric Hagberg (hagberg@lanl.gov)\nWillem Ligtenberg (W.P.A.Ligtenberg@tue.nl)"""
 
 __all__ = ['gn_graph', 'gnc_graph', 'gnr_graph', 'random_k_out_graph',
            'scale_free_graph']
@@ -76,23 +76,23 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
     if seed is not None:
         random.seed(seed)
 
-    G=empty_graph(1,create_using)
-    G.name="gn_graph(%s)"%(n)
+    G = empty_graph(1, create_using)
+    G.name = "gn_graph({})".format(n)
 
-    if n==1:
+    if n == 1:
         return G
 
-    G.add_edge(1,0) # get started
-    ds=[1,1] # degree sequence
+    G.add_edge(1, 0)  # get started
+    ds = [1, 1]  # degree sequence
 
-    for source in range(2,n):
+    for source in range(2, n):
         # compute distribution from kernel and degree
-        dist=[kernel(d) for d in ds] 
-        # choose target from discrete distribution 
-        target=discrete_sequence(1,distribution=dist)[0]
-        G.add_edge(source,target)
+        dist = [kernel(d) for d in ds]
+        # choose target from discrete distribution
+        target = discrete_sequence(1, distribution=dist)[0]
+        G.add_edge(source, target)
         ds.append(1)  # the source has only one link (degree one)
-        ds[target]+=1 # add one to the target link degree
+        ds[target] += 1  # add one to the target link degree
     return G
 
 
@@ -137,20 +137,20 @@ def gnr_graph(n, p, create_using=None, seed=None):
     elif not create_using.is_directed():
         raise nx.NetworkXError("Directed Graph required in create_using")
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
-    G=empty_graph(1,create_using)
-    G.name="gnr_graph(%s,%s)"%(n,p)
+    G = empty_graph(1, create_using)
+    G.name = "gnr_graph(%s,%s)" % (n, p)
 
-    if n==1:
+    if n == 1:
         return G
 
-    for source in range(1,n):
-        target=random.randrange(0,source)
-        if random.random() < p and target !=0:
+    for source in range(1, n):
+        target = random.randrange(0, source)
+        if random.random() < p and target != 0:
             target = next(G.successors(target))
-        G.add_edge(source,target)
+        G.add_edge(source, target)
 
     return G
 
@@ -182,20 +182,20 @@ def gnc_graph(n, create_using=None, seed=None):
     elif not create_using.is_directed():
         raise nx.NetworkXError("Directed Graph required in create_using")
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
-    G=empty_graph(1,create_using)
-    G.name="gnc_graph(%s)"%(n)
+    G = empty_graph(1, create_using)
+    G.name = "gnc_graph(%s)" % (n)
 
-    if n==1:
+    if n == 1:
         return G
 
-    for source in range(1,n):
-        target=random.randrange(0,source)
+    for source in range(1, n):
+        target = random.randrange(0, source)
         for succ in G.successors(target):
-            G.add_edge(source,succ)
-        G.add_edge(source,target)
+            G.add_edge(source, succ)
+        G.add_edge(source, target)
 
     return G
 
@@ -208,14 +208,14 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     ----------
     n : integer
         Number of nodes in graph
-    alpha : float 
+    alpha : float
         Probability for adding a new node connected to an existing node
         chosen randomly according to the in-degree distribution.
     beta : float
         Probability for adding an edge between two existing nodes.
-        One existing node is chosen randomly according the in-degree 
-        distribution and the other chosen randomly according to the out-degree 
-        distribution.     
+        One existing node is chosen randomly according the in-degree
+        distribution and the other chosen randomly according to the out-degree
+        distribution.
     gamma : float
         Probability for adding a new node conecgted to an existing node
         chosen randomly according to the out-degree distribution.
@@ -233,13 +233,13 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     Create a scale-free graph on one hundred nodes::
 
     >>> G = nx.scale_free_graph(100)
-  
+
     Notes
     -----
     The sum of ``alpha``, ``beta``, and ``gamma`` must be 1.
 
     References
-    ----------  
+    ----------
     .. [1] B. Bollobás, C. Borgs, J. Chayes, and O. Riordan,
            Directed scale-free graphs,
            Proceedings of the fourteenth annual ACM-SIAM Symposium on
@@ -247,8 +247,8 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     """
 
     def _choose_node(G, distribution, delta, psum):
-        cumsum=0.0
-        # normalization 
+        cumsum = 0.0
+        # normalization
         r = random.random()
         for n, d in distribution:
             cumsum += (d + delta) / psum
@@ -259,13 +259,12 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     if create_using is None:
         # start with 3-cycle
         G = nx.MultiDiGraph()
-        G.add_edges_from([(0,1),(1,2),(2,0)])
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
     else:
         # keep existing graph structure?
         G = create_using
         if not (G.is_directed() and G.is_multigraph()):
-            raise nx.NetworkXError(\
-                  "MultiDiGraph required in create_using")
+            raise nx.NetworkXError("MultiDiGraph required in create_using")
 
     if alpha <= 0:
         raise ValueError('alpha must be >= 0.')
@@ -274,15 +273,17 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     if gamma <= 0:
         raise ValueError('beta must be >= 0.')
 
-    if alpha+beta+gamma !=1.0:
+    if alpha + beta + gamma != 1.0:
         raise ValueError('alpha+beta+gamma must equal 1.')
-        
-    G.name="directed_scale_free_graph(%s,alpha=%s,beta=%s,gamma=%s,delta_in=%s,delta_out=%s)"%(n,alpha,beta,gamma,delta_in,delta_out)
+
+    G.name = ("directed_scale_free_graph(%s,alpha=%s,beta=%s,gamma=%s,"
+              "delta_in=%s,delta_out=%s)" % (n, alpha, beta, gamma, delta_in,
+                                             delta_out))
 
     # seed random number generated (uses None as default)
     random.seed(seed)
     number_of_edges = G.number_of_edges()
-    while len(G)<n:
+    while len(G) < n:
         psum_in = number_of_edges + delta_in * len(G)
         psum_out = number_of_edges + delta_out * len(G)
         r = random.random()
@@ -290,7 +291,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         if r < alpha:
             # alpha
             # add new node v
-            v = len(G) 
+            v = len(G)
             # choose w according to in-degree and delta_in
             w = _choose_node(G, G.in_degree(), delta_in, psum_in)
         elif r < alpha+beta:
@@ -304,18 +305,101 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
             # choose v according to out-degree and delta_out
             v = _choose_node(G, G.out_degree(), delta_out, psum_out)
             # add new node w
-            w = len(G) 
+            w = len(G)
         G.add_edge(v, w)
         number_of_edges += 1
-        
+
+    return G
+
+
+def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True,
+                               seed=None):
+    """Returns a random ``k``-out graph with uniform attachment.
+
+    A random ``k``-out graph with uniform attachment is a multidigraph
+    generated by the following algorithm. For each node *u*, choose
+    ``k`` nodes *v* uniformly at random (with replacement). Add a
+    directed edge joining *u* to *v*.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes in the returned graph.
+
+    k : int
+        The out-degree of each node in the returned graph.
+
+    self_loops : bool
+        If ``True``, self-loops are allowed when generating the graph.
+
+    with_replacement : bool
+        If ``True``, neighbors are chosen with replacement and the
+        returned graph will be a directed multigraph. Otherwise,
+        neighbors are chosen without replacement and the returned graph
+        will be a directed graph.
+
+    seed: int
+        If provided, this is used as the seed for the random number
+        generator.
+
+    Returns
+    -------
+    NetworkX graph
+        A `k`-out-regular directed graph generated according to the
+        above algorithm. It will be a multigraph if and only if
+        ``with_replacement`` is ``True``.
+
+    Raises
+    ------
+    ValueError
+        If ``with_replacement`` is ``False`` and ``k`` is greater than
+        ``n``.
+
+    See also
+    --------
+    random_k_out_graph
+
+    Notes
+    -----
+    The return digraph or multidigraph may not be strongly connected, or
+    even weakly connected.
+
+    If ``with_replacement`` is ``True``, this function is similar to
+    :func:`random_k_out_graph`, if that function had parameter ``alpha``
+    set to positive infinity.
+
+    """
+    random.seed(seed)
+
+    if with_replacement:
+        create_using = nx.MultiDiGraph()
+
+        def sample(v, nodes):
+            if not self_loops:
+                nodes = nodes - {v}
+            return (random.choice(list(nodes)) for i in range(k))
+
+    else:
+        create_using = nx.DiGraph()
+
+        def sample(v, nodes):
+            if not self_loops:
+                nodes = nodes - {v}
+            return random.sample(nodes, k)
+
+    G = nx.empty_graph(n, create_using=create_using)
+    nodes = set(G)
+    for u in G:
+        G.add_edges_from((u, v) for v in sample(u, nodes))
+    G.name = 'random_uniform_k_out_graph({}, {})'.format(n, k)
     return G
 
 
 def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
-    """Returns a random ``k``-out graph.
+    """Returns a random ``k``-out graph with preferential attachment.
 
-    A random ``k``-out graph is a multidigraph generated by the
-    following algorithm.
+    A random ``k``-out graph with preferential attachment is a
+    multidigraph generated by the following algorithm.
 
     1. Begin with an empty digraph, and initially set each node to have
        weight ``alpha``.
@@ -394,4 +478,5 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
         v = weighted_choice(weights - adjustment)
         G.add_edge(u, v)
         weights[v] += 1
+    G.name = 'random_k_out_graph({0}, {1}, {2})'.format(n, k, alpha)
     return G
