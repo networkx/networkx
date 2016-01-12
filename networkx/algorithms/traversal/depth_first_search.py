@@ -2,7 +2,9 @@
 ==================
 Depth-first search
 ==================
+
 Basic algorithms for depth-first search and depth-limited search of a graph.
+
 Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
 by D. Eppstein, July 2004.
 https://en.wikipedia.org/wiki/Depth-limited_search
@@ -18,13 +20,14 @@ __all__ = ['dfs_edges', 'dfs_tree',
 
 def dfs_edges(G, source=None, depth_limit=None):
     """Produce edges in a depth-first-search (DFS).
+
     Parameters
     ----------
     G : NetworkX graph
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
-    depth_limit : length, optional
+    depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
     Returns
     -------
@@ -61,7 +64,7 @@ def dfs_edges(G, source=None, depth_limit=None):
         stack = [(start, depth_limit, iter(G[start]))]
         while stack:
             parent, depth_now, children = stack[-1]
-            if not depth_now >= 1:
+            if depth_now < 1:
                 stack.pop()
                 continue
             try:
@@ -76,12 +79,13 @@ def dfs_edges(G, source=None, depth_limit=None):
 
 def dfs_tree(G, source, depth_limit=None):
     """Return oriented tree constructed from a depth-first-search from source.
+
     Parameters
     ----------
     G : NetworkX graph
     source : node, optional
        Specify starting node for depth-first search.
-    depth_limit : length, optional
+    depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
     Returns
     -------
@@ -106,13 +110,14 @@ def dfs_tree(G, source, depth_limit=None):
 
 def dfs_predecessors(G, source=None, depth_limit=None):
     """Return dictionary of predecessors in depth-first-search from source.
+
     Parameters
     ----------
     G : NetworkX graph
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
-    depth_limit : length, optional
+    depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
     Returns
     -------
@@ -134,18 +139,19 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     repeatedly until all components in the graph are searched.
     """
     return dict((t, s) for s, t in dfs_edges(G, source=source,
-    depth_limit=depth_limit))
+                depth_limit=depth_limit))
 
 
 def dfs_successors(G, source=None, depth_limit=None):
     """Return dictionary of successors in depth-first-search from source.
+
     Parameters
     ----------
     G : NetworkX graph
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
-    depth_limit : length, optional
+    depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
     Returns
     -------
@@ -173,7 +179,8 @@ def dfs_successors(G, source=None, depth_limit=None):
 
 
 def dfs_postorder_nodes(G, source=None, depth_limit=None):
-    """Produce nodes in a depth-first-search post-ordering starting
+    """Produce nodes in a depth-first-search post-ordering starting.
+
     from source.
     Parameters
     ----------
@@ -181,7 +188,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
-    depth_limit : length, optional
+    depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
     Returns
     -------
@@ -203,7 +210,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     repeatedly until all components in the graph are searched.
     """
     post = (v for u, v, d in nx.dfs_labeled_edges(G, source=source,
-    depth_limit=depth_limit)
+            depth_limit=depth_limit)
           if d['dir'] == 'reverse')
     # potential modification: chain source to end of post-ordering
     # return chain(post,[source])
@@ -213,13 +220,14 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
 def dfs_preorder_nodes(G, source=None, depth_limit=None):
     """Produce nodes in a depth-first-search pre-ordering starting
     from source.
+
     Parameters
     ----------
     G : NetworkX graph
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
-    depth_limit : length, optional
+    depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
     Returns
     -------
@@ -241,7 +249,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     repeatedly until all components in the graph are searched.
     """
     pre = (v for u, v, d in nx.dfs_labeled_edges(G, source=source,
-    depth_limit=depth_limit)
+           depth_limit=depth_limit)
          if d['dir'] == 'forward')
     # potential modification: chain source to beginning of pre-ordering
     # return chain([source],pre)
@@ -250,13 +258,14 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
 
 def dfs_labeled_edges(G, source=None, depth_limit=None):
     """Produce edges in a depth-first-search (DFS) labeled by type.
+
     Parameters
     ----------
     G : NetworkX graph
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
-    depth_limit : length, optional
+    depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
     Returns
     -------
@@ -296,7 +305,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
         stack = [(start, depth_limit, iter(G[start]))]
         while stack:
             parent, depth_now, children = stack[-1]
-            if not depth_now >= 1:
+            if depth_now < 1:
                 stack.pop()
                 continue
             try:
