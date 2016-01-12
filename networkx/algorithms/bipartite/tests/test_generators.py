@@ -41,6 +41,14 @@ class TestGeneratorsBipartite():
         mG=complete_bipartite_graph(7, 3, create_using=MultiGraph())
         assert_equal(sorted(mG.edges()), sorted(G.edges()))
 
+        # specify nodes rather than number of nodes
+        G = complete_bipartite_graph([1, 2], ['a', 'b'])
+        has_edges = G.has_edge(1,'a') & G.has_edge(1,'b') &\
+                G.has_edge(2,'a') & G.has_edge(2,'b')
+        assert_true(has_edges)
+        assert_equal(G.size(), 4)
+
+
     def test_configuration_model(self):
         aseq=[3,3,3,3]
         bseq=[2,2,2,2,2]

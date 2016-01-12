@@ -140,9 +140,12 @@ class TestGeneratorClassic():
             assert_true(number_of_nodes(g) == m)
             assert_true(number_of_edges(g) == m * (m - 1) // 2)
 
-
         mg=complete_graph(m, create_using=MultiGraph())
         assert_equal(sorted(mg.edges()), sorted(g.edges()))
+
+        g = complete_graph("abc")
+        assert_equal(sorted(g.nodes()), ['a', 'b', 'c'])
+        assert_equal(g.size(), 3)
 
     def test_complete_digraph(self):
         # complete_graph(m) is a connected graph with
@@ -151,6 +154,11 @@ class TestGeneratorClassic():
             g = complete_graph(m,create_using=nx.DiGraph())
             assert_true(number_of_nodes(g) == m)
             assert_true(number_of_edges(g) == m * (m - 1))
+
+        g = complete_graph("abc", create_using=nx.DiGraph())
+        assert_equal(len(g), 3)
+        assert_equal(g.size(), 6)
+        assert_true(g.is_directed())
 
     def test_circular_ladder_graph(self):
         G=circular_ladder_graph(5)
@@ -183,6 +191,15 @@ class TestGeneratorClassic():
         G=cycle_graph(4, create_using=DiGraph())
         assert_false(G.has_edge(2,1))
         assert_true(G.has_edge(1,2))
+        assert_true(G.is_directed())
+
+        G=cycle_graph("abc")
+        assert_equal(len(G), 3)
+        assert_equal(G.size(), 3)
+        g=cycle_graph("abc", nx.DiGraph())
+        assert_equal(len(g), 3)
+        assert_equal(g.size(), 3)
+        assert_true(g.is_directed())
 
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G=dorogovtsev_goltsev_mendes_graph(0)
@@ -213,6 +230,10 @@ class TestGeneratorClassic():
         assert_equal(number_of_nodes(G), 42)
         assert_equal(number_of_edges(G), 0)
         assert_equal(G.name, 'empty_graph(42)')
+
+        G=empty_graph("abc")
+        assert_equal(len(G), 3)
+        assert_equal(G.size(), 0)
 
         # create empty digraph
         G=empty_graph(42,create_using=DiGraph(name="duh"))
@@ -246,6 +267,8 @@ class TestGeneratorClassic():
         assert_equal(DG.pred, G.adj)
         MG=grid_2d_graph(n,m, create_using=MultiGraph())
         assert_equal(sorted(MG.edges()), sorted(G.edges()))
+        g=grid_2d_graph(range(n), range(m))
+        assert_equal(sorted(g.edges()), sorted(G.edges()))
 
     def test_grid_graph(self):
         """grid_graph([n,m]) is a connected simple graph with the
@@ -269,6 +292,10 @@ class TestGeneratorClassic():
 
 #        mg=grid_graph([n,m], create_using=MultiGraph())
 #        assert_equal(mg.edges(), g.edges())
+
+        g=grid_graph([range(7,9), range(3,6)])
+        assert_equal(number_of_nodes(g), 2*3)
+        assert_true(is_isomorphic(g, grid_graph([2,3])))
 
     def test_hypercube_graph(self):
         for n, G in [(0, null_graph()), (1, path_graph(2)),
@@ -306,7 +333,7 @@ class TestGeneratorClassic():
             assert_equal(number_of_nodes(b), m1+m2)
             assert_equal(number_of_edges(b), m1*(m1-1)/2 + m2)
             assert_equal(b.name,
-                         'lollipop_graph(' + str(m1) + ',' + str(m2) + ')')
+                         'lollipop_graph(' + str(m1) + ', ' + str(m2) + ')')
 
         # Raise NetworkXError if m<2
         assert_raises(networkx.exception.NetworkXError,
@@ -326,6 +353,10 @@ class TestGeneratorClassic():
 
         mb=lollipop_graph(m1, m2, create_using=MultiGraph())
         assert_equal(sorted(mb.edges()), sorted(b.edges()))
+
+        g=lollipop_graph([1,2,3,4], "abc")
+        assert_equal(len(g), 7)
+        assert_equal(g.size(), 9)
 
     def test_null_graph(self):
         assert_equal(number_of_nodes(null_graph()), 0)
@@ -352,6 +383,14 @@ class TestGeneratorClassic():
         mp=path_graph(10, create_using=MultiGraph())
         assert_equal(sorted(mp.edges()), sorted(p.edges()))
 
+        G=path_graph("abc")
+        assert_equal(len(G), 3)
+        assert_equal(G.size(), 2)
+        g=path_graph("abc", nx.DiGraph())
+        assert_equal(len(g), 3)
+        assert_equal(g.size(), 2)
+        assert_true(g.is_directed())
+
     def test_periodic_grid_2d_graph(self):
         g=grid_2d_graph(0,0, periodic=True)
         assert_equal(dict(g.degree()), {})
@@ -369,10 +408,16 @@ class TestGeneratorClassic():
         MG=grid_2d_graph(4, 2, periodic=True, create_using=MultiGraph())
         assert_equal(sorted(MG.edges()), sorted(g.edges()))
 
+        gg=grid_2d_graph(range(4), range(2), periodic=True)
+        assert_true(is_isomorphic(gg, g))
+        ggg=grid_2d_graph("abcd", "ef", periodic=True)
+        assert_true(is_isomorphic(ggg, g))
+
     def test_star_graph(self):
         assert_true(is_isomorphic(star_graph(0), empty_graph(1)))
         assert_true(is_isomorphic(star_graph(1), path_graph(2)))
         assert_true(is_isomorphic(star_graph(2), path_graph(3)))
+        assert_true(is_isomorphic(star_graph(5), nx.complete_bipartite_graph(1,5)))
 
         s=star_graph(10)
         assert_equal(sorted(d for n, d in s.degree()),
@@ -383,6 +428,10 @@ class TestGeneratorClassic():
 
         ms=star_graph(10, create_using=MultiGraph())
         assert_equal(sorted(ms.edges()), sorted(s.edges()))
+
+        G=star_graph("abcdefg")
+        assert_equal(len(G), 7)
+        assert_equal(G.size(), 6)
 
     def test_trivial_graph(self):
         assert_equal(number_of_nodes(trivial_graph()), 1)
@@ -405,6 +454,10 @@ class TestGeneratorClassic():
 
         mg=wheel_graph(10, create_using=MultiGraph())
         assert_equal(sorted(mg.edges()), sorted(g.edges()))
+
+        G=wheel_graph("abc")
+        assert_equal(len(G), 3)
+        assert_equal(G.size(), 3)
 
     def test_complete_0_partite_graph(self):
         """Tests that the complete 0-partite graph is the null graph."""
