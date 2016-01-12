@@ -231,8 +231,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     repeatedly until all components in the graph are searched.
     """
     post = (v for u, v, d in nx.dfs_labeled_edges(G, source=source,
-            depth_limit=depth_limit)
-          if d['dir'] == 'reverse')
+            depth_limit=depth_limit) if d['dir'] == 'reverse')
     # potential modification: chain source to end of post-ordering
     # return chain(post,[source])
     return post
@@ -274,8 +273,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     repeatedly until all components in the graph are searched.
     """
     pre = (v for u, v, d in nx.dfs_labeled_edges(G, source=source,
-           depth_limit=depth_limit)
-         if d['dir'] == 'forward')
+           depth_limit=depth_limit) if d['dir'] == 'forward')
     # potential modification: chain source to beginning of pre-ordering
     # return chain([source],pre)
     return pre
