@@ -24,15 +24,19 @@ def dfs_edges(G, source=None, depth_limit=None):
     Parameters
     ----------
     G : NetworkX graph
+
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
+
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
+
     Returns
     -------
     edges: generator
        A generator of edges in the depth-first-search.
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -45,6 +49,7 @@ def dfs_edges(G, source=None, depth_limit=None):
     Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
     by D. Eppstein, July 2004.
     https://en.wikipedia.org/wiki/Depth-limited_search
+
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
@@ -83,14 +88,18 @@ def dfs_tree(G, source, depth_limit=None):
     Parameters
     ----------
     G : NetworkX graph
+
     source : node, optional
        Specify starting node for depth-first search.
+
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
+
     Returns
     -------
     T : NetworkX DiGraph
        An oriented tree
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -114,15 +123,19 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     Parameters
     ----------
     G : NetworkX graph
+
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
+
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
+
     Returns
     -------
     pred: dict
        A dictionary with nodes as keys and predecessor nodes as values.
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -148,15 +161,19 @@ def dfs_successors(G, source=None, depth_limit=None):
     Parameters
     ----------
     G : NetworkX graph
+
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
+
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
+
     Returns
     -------
     succ: dict
        A dictionary with nodes as keys and list of successor nodes as values.
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -179,21 +196,25 @@ def dfs_successors(G, source=None, depth_limit=None):
 
 
 def dfs_postorder_nodes(G, source=None, depth_limit=None):
-    """Produce nodes in a depth-first-search post-ordering starting.
-
+    """Produce nodes in a depth-first-search post-ordering starting
     from source.
+
     Parameters
     ----------
     G : NetworkX graph
+
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
+
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
+
     Returns
     -------
     nodes: generator
        A generator of nodes in a depth-first-search post-ordering.
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -224,15 +245,19 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     Parameters
     ----------
     G : NetworkX graph
+
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
+
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
+
     Returns
     -------
     nodes: generator
        A generator of nodes in a depth-first-search pre-ordering.
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -262,11 +287,14 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     Parameters
     ----------
     G : NetworkX graph
+
     source : node, optional
        Specify starting node for depth-first search and return edges in
        the component reachable from source.
+
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
+
     Returns
     -------
     edges: generator
