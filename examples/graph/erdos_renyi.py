@@ -8,8 +8,8 @@ This graph is sometimes called the Erdős-Rényi graph
 but is different from G{n,p} or binomial_graph which is also
 sometimes called the Erdős-Rényi graph.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__credits__ = """"""
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

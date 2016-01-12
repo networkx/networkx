@@ -7,14 +7,16 @@ Interface to pygraphviz AGraph class.
 
 Examples
 --------
->>> G=nx.complete_graph(5)
->>> A=nx.to_agraph(G)
->>> H=nx.from_agraph(A)
+>>> G = nx.complete_graph(5)
+>>> A = nx.nx_agraph.to_agraph(G)
+>>> H = nx.nx_agraph.from_agraph(A)
 
 See Also
 --------
 Pygraphviz: http://pygraphviz.github.io/
 """
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -25,7 +27,7 @@ import os
 import sys
 import tempfile
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['from_agraph', 'to_agraph',
            'write_dot', 'read_dot',
            'graphviz_layout',
@@ -45,10 +47,10 @@ def from_agraph(A,create_using=None):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_agraph(K5)
-    >>> G=nx.from_agraph(A)
-    >>> G=nx.from_agraph(A)
+    >>> K5 = nx.complete_graph(5)
+    >>> A = nx.nx_agraph.to_agraph(K5)
+    >>> G = nx.nx_agraph.from_agraph(A)
+    >>> G = nx.nx_agraph.from_agraph(A)
 
 
     Notes
@@ -116,8 +118,8 @@ def to_agraph(N):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_agraph(K5)
+    >>> K5 = nx.complete_graph(5)
+    >>> A = nx.nx_agraph.to_agraph(K5)
 
     Notes
     -----
@@ -214,9 +216,9 @@ def graphviz_layout(G,prog='neato',root=None, args=''):
 
     Examples
     --------
-    >>> G=nx.petersen_graph()
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> G = nx.petersen_graph()
+    >>> pos = nx.nx_agraph.graphviz_layout(G)
+    >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
 
     Notes
     -----
@@ -244,9 +246,9 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
 
     Examples
     --------
-    >>> G=nx.petersen_graph()
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> G = nx.petersen_graph()
+    >>> pos = nx.nx_agraph.graphviz_layout(G)
+    >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
 
     """
     try:

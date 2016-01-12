@@ -21,11 +21,10 @@ References.
 
 """
 from __future__ import print_function
-__author__ = """Brendt Wohlberg\nAric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-04-01 07:56:22 -0700 (Fri, 01 Apr 2005) $"
-__credits__ = """"""
-__revision__ = ""
-#    Copyright (C) 2004 by 
+# Authors: Brendt Wohlberg, Aric Hagberg (hagberg@lanl.gov)
+# Date: 2005-04-01 07:56:22 -0700 (Fri, 01 Apr 2005)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -61,7 +60,7 @@ def roget_graph():
         # head
         numfind=re.compile("^\d+") # re to find the number of this word
         head=numfind.findall(headname)[0] # get the number
-    
+
         G.add_node(head)
 
         for tail in tails.split():
@@ -69,7 +68,7 @@ def roget_graph():
                 print("skipping self loop",head,tail, file=sys.stderr)
             G.add_edge(head,tail)
 
-    return G            
+    return G
 
 if __name__ == '__main__':
     from networkx import *

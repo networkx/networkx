@@ -25,8 +25,8 @@ class TestPydot(object):
         G.add_edge('B','C')
         G.add_edge('A','D')
         G.add_node('E')
-        P = nx.to_pydot(G)
-        G2 = G.__class__(nx.from_pydot(P))
+        P = nx.nx_pydot.to_pydot(G)
+        G2 = G.__class__(nx.nx_pydot.from_pydot(P))
         assert_graphs_equal(G, G2)
 
         fname = tempfile.mktemp()
@@ -42,7 +42,7 @@ class TestPydot(object):
         e2=[(e.get_source(),e.get_destination()) for e in Pin.get_edge_list()]
         assert_true( sorted(e1)==sorted(e2) )
 
-        Hin = nx.drawing.nx_pydot.read_dot(fname)
+        Hin = nx.nx_pydot.read_dot(fname)
         Hin = G.__class__(Hin)
         assert_graphs_equal(G, Hin)
 
