@@ -1,20 +1,25 @@
-#    Copyright (C) 2012 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+# Copyright (C) 2010 by
+#   Aric Hagberg (hagberg@lanl.gov)
+#   Renato Fabbri
+# Copyright (C) 2012 by
+#   Aric Hagberg <hagberg@lanl.gov>
+#   Dan Schult <dschult@colgate.edu>
+#   Pieter Swart <swart@lanl.gov>
+# Copyright (C) 2016 by NetworkX developers.
+#
+# All rights reserved.
+# BSD license.
 """
 Vitality measures.
 """
-from .wiener import wiener_index
+from functools import partial
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Renato Fabbri'])
+import networkx as nx
+
 __all__ = ['closeness_vitality']
 
 
-def closeness_vitality(G, node=None, weight=None):
+def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     """Returns the closeness vitality for nodes in the graph.
 
     The *closeness vitality* of a node, defined in Section 3.6.2 of [1],
@@ -35,6 +40,13 @@ def closeness_vitality(G, node=None, weight=None):
         returned. Otherwise, a dictionary mappping each node to its
         closeness vitality will be returned.
 
+    Other parameters
+    ----------------
+    wiener_index : number
+        If you have already computed the Wiener index of the graph
+        ``G``, you can provide that value here. Otherwise, it will be
+        computed for you.
+
     Returns
     -------
     dictionary or float
@@ -48,7 +60,6 @@ def closeness_vitality(G, node=None, weight=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.cycle_graph(3)
     >>> nx.closeness_vitality(G)
     {0: 2.0, 1: 2.0, 2: 2.0}
@@ -65,9 +76,12 @@ def closeness_vitality(G, node=None, weight=None):
            <http://books.google.com/books?id=TTNhSm7HYrIC>
 
     """
+    if wiener_index is None:
+        wiener_index = nx.wiener_index(G, weight=weight)
     if node is not None:
-        before = wiener_index(G, weight=weight)
-        after = wiener_index(G.subgraph(set(G) - {node}), weight=weight)
-        return before - after
+        after = nx.wiener_index(G.subgraph(set(G) - {node}), weight=weight)
+        return wiener_index - after
+    vitality = partial(closeness_vitality, G, weight=weight,
+                       wiener_index=wiener_index)
     # TODO This can be trivially parallelized.
-    return {v: closeness_vitality(G, node=v, weight=weight) for v in G}
+    return {v: vitality(node=v) for v in G}
