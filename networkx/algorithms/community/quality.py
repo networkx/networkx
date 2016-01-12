@@ -16,29 +16,9 @@ from functools import wraps
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.algorithms.community.community_utils import is_partition
 
 __all__ = ['coverage', 'performance']
-
-
-def is_partition(G, partition):
-    """Returns True if and only if `partition` is a partition of
-    the nodes of `G`.
-
-    A partition of a universe set is a family of pairwise disjoint sets
-    whose union equals the universe set.
-
-    `G` is a NetworkX graph.
-
-    `partition` is a sequence (not an iterator) of sets of nodes of
-    `G`.
-
-    """
-    # Alternate implementation:
-    #
-    #     return (len(G) == sum(len(c) for c in community) and
-    #             set(G) == set().union(*community))
-    #
-    return all(sum(1 if v in c else 0 for c in partition) == 1 for v in G)
 
 
 def require_partition(func):

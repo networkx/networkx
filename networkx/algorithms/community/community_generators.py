@@ -294,12 +294,13 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     --------
     Basic usage::
 
+        >>> from networkx.algorithms.community import LFR_benchmark_graph
         >>> n = 250
         >>> tau1 = 3
         >>> tau2 = 1.5
         >>> mu = 0.1
-        >>> G = nx.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
-        ...                            min_community=20, seed=10)
+        >>> G = LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
+        ...                         min_community=20, seed=10)
 
     Continuing the example above, you can get the communities from the
     node attributes of the graph::
