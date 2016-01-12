@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -24,7 +24,8 @@ import networkx as nx
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph
 from networkx.utils import accumulate
 from networkx.utils import flatten
-from networkx.utils import is_list_of_ints
+from networkx.utils import nodes_or_number
+from networkx.utils import pairwise
 
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 
@@ -194,18 +195,20 @@ def barbell_graph(m1,m2,create_using=None):
         G.add_edge(m1+m2-1,m1+m2)
     return G
 
-def complete_graph(n,create_using=None):
+@nodes_or_number(0)
+def complete_graph(n, create_using=None):
     """ Return the complete graph K_n with n nodes.
 
     Node labels are the integers 0 to n-1.
     """
-    G=empty_graph(n,create_using)
-    G.name="complete_graph(%d)"%(n)
-    if n>1:
+    n_name, nodes = n
+    G=empty_graph(n_name, create_using)
+    G.name="complete_graph(%s)"%(n_name,)
+    if len(nodes) > 1:
         if G.is_directed():
-            edges=itertools.permutations(range(n),2)
+            edges=itertools.permutations(nodes, 2)
         else:
-            edges=itertools.combinations(range(n),2)
+            edges=itertools.combinations(nodes, 2)
         G.add_edges_from(edges)
     return G
 
@@ -280,18 +283,23 @@ def circulant_graph(n, offsets, create_using=None):
             G.add_edge(i, (i + j) % n)
     return G
 
-def cycle_graph(n,create_using=None):
-    """Return the cycle graph C_n over n nodes.
+@nodes_or_number(0)
+def cycle_graph(n, create_using=None):
+    """Return the cycle graph C_n of cyclicly connected nodes.
 
-    C_n is the n-path with two end-nodes connected.
+    C_n is a path with its two end-nodes connected.
 
-    Node labels are the integers 0 to n-1
+    If `nodes` is an iterable, it contains the nodes in the cycle.
+    Otherwise `range(nodes)` is used and `nodes` must be a number.
+
     If create_using is a DiGraph, the direction is in increasing order.
 
     """
-    G=path_graph(n,create_using)
-    G.name="cycle_graph(%d)"%n
-    if n>1: G.add_edge(n-1,0)
+    n_orig, nodes = n
+    G = empty_graph(nodes, create_using)
+    G.name="cycle_graph(%s)"%(n_orig,)
+    G.add_edges_from(nx.utils.pairwise(nodes))
+    G.add_edge(nodes[-1], nodes[0])
     return G
 
 def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
@@ -321,10 +329,12 @@ def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
             new_node += 1
     return G
 
-def empty_graph(n=0,create_using=None):
+@nodes_or_number(0)
+def empty_graph(n=0, create_using=None):
     """Return the empty graph with n nodes and zero edges.
 
-    Node labels are the integers 0 to n-1
+    If n is iterable, it holds the node labels.
+    Otherwise node labels are the integers 0 to n-1
 
     For example:
     >>> G=nx.empty_graph(10)
@@ -332,28 +342,32 @@ def empty_graph(n=0,create_using=None):
     10
     >>> G.number_of_edges()
     0
+    >>> G=nx.empty_graph("ABC")
+    >>> G.number_of_nodes()
+    3
+    >>> sorted(G)
+    ['A', 'B', 'C']
 
     The variable create_using should point to a "graph"-like object that
-    will be cleaned (nodes and edges will be removed) and refitted as
-    an empty "graph" with n nodes with integer labels. This capability
+    will be cleared (nodes and edges will be removed) and refitted as
+    an empty "graph" with nodes specified in n. This capability
     is useful for specifying the class-nature of the resulting empty
     "graph" (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).
 
     The variable create_using has two main uses:
     Firstly, the variable create_using can be used to create an
-    empty digraph, network,etc.  For example,
+    empty digraph, multigraph, etc.  For example,
 
     >>> n=10
     >>> G=nx.empty_graph(n,create_using=nx.DiGraph())
 
     will create an empty digraph on n nodes.
 
-    Secondly, one can pass an existing graph (digraph, pseudograph,
+    Secondly, one can pass an existing graph (digraph, multigraph,
     etc.) via create_using. For example, if G is an existing graph
-    (resp. digraph, pseudograph, etc.), then empty_graph(n,create_using=G)
-    will empty G (i.e. delete all nodes and edges using G.clear() in
-    base) and then add n nodes and zero edges, and return the modified
-    graph (resp. digraph, pseudograph, etc.).
+    (resp. digraph, multigraph, etc.), then empty_graph(n, create_using=G)
+    will empty G (i.e. delete all nodes and edges using G.clear())
+    and then add n nodes and zero edges, and return the modified graph.
 
     See also create_empty_copy(G).
 
@@ -365,10 +379,12 @@ def empty_graph(n=0,create_using=None):
         G=create_using
         G.clear()
 
-    G.add_nodes_from(range(n))
-    G.name="empty_graph(%d)"%n
+    n_name, nodes = n
+    G.name="empty_graph(%s)"%(n_name,)
+    G.add_nodes_from(nodes)
     return G
 
+@nodes_or_number([0,1])
 def grid_2d_graph(m,n,periodic=False,create_using=None):
     """ Return the 2d grid graph of mxn nodes,
         each connected to its nearest neighbors.
@@ -376,35 +392,41 @@ def grid_2d_graph(m,n,periodic=False,create_using=None):
         boundary nodes via periodic boundary conditions.
     """
     G=empty_graph(0,create_using)
-    G.name="grid_2d_graph"
-    rows=range(m)
-    columns=range(n)
+    row_name, rows = m
+    col_name, columns = n
+    G.name="grid_2d_graph(%s, %s)"%(row_name, col_name)
     G.add_nodes_from( (i,j) for i in rows for j in columns )
-    G.add_edges_from( ((i,j),(i-1,j)) for i in rows for j in columns if i>0 )
-    G.add_edges_from( ((i,j),(i,j-1)) for i in rows for j in columns if j>0 )
+    G.add_edges_from( ((i,j),(pi,j)) for pi,i in pairwise(rows) for j in columns )
+    G.add_edges_from( ((i,j),(i,pj)) for i in rows for pj,j in pairwise(columns) )
     if G.is_directed():
-        G.add_edges_from( ((i,j),(i+1,j)) for i in rows for j in columns if i<m-1 )
-        G.add_edges_from( ((i,j),(i,j+1)) for i in rows for j in columns if j<n-1 )
+        G.add_edges_from( ((pi,j),(i,j)) for pi,i in pairwise(rows) for j in columns )
+        G.add_edges_from( ((i,pj),(i,j)) for i in rows for pj,j in pairwise(columns) )
     if periodic:
-        if n>2:
-            G.add_edges_from( ((i,0),(i,n-1)) for i in rows )
+        if len(columns)>2:
+            f = columns[0]
+            l = columns[-1]
+            G.add_edges_from( ((i,f),(i,l)) for i in rows )
             if G.is_directed():
-                G.add_edges_from( ((i,n-1),(i,0)) for i in rows )
-        if m>2:
-            G.add_edges_from( ((0,j),(m-1,j)) for j in columns )
+                G.add_edges_from( ((i,l),(i,f)) for i in rows )
+        if len(rows)>2:
+            f = rows[0]
+            l = rows[-1]
+            G.add_edges_from( ((f,j),(l,j)) for j in columns )
             if G.is_directed():
-                G.add_edges_from( ((m-1,j),(0,j)) for j in columns )
-        G.name="periodic_grid_2d_graph(%d,%d)"%(m,n)
+                G.add_edges_from( ((l,j),(f,j)) for j in columns )
+        G.name="periodic_grid_2d_graph(%s,%s)"%(m,n)
     return G
 
 
 def grid_graph(dim,periodic=False):
     """ Return the n-dimensional grid graph.
 
-    The dimension is the length of the list 'dim' and the
-    size in each dimension is the value of the list element.
+    'dim' is a list with the size in each dimension or an
+    iterable of nodes for each dimension. The dimension of
+    the grid_graph is the length of the list 'dim'.
 
     E.g. G=grid_graph(dim=[2,3]) produces a 2x3 grid graph.
+    E.g. G=grid_graph(dim=[range(7,9), range(3,6)]) produces a 2x3 grid graph.
 
     If periodic=True then join grid edges with periodic boundary conditions.
 
@@ -414,11 +436,6 @@ def grid_graph(dim,periodic=False):
         G=empty_graph(0)
         G.name="grid_graph(%s)"%dim
         return G
-    if not is_list_of_ints(dim):
-        raise nx.NetworkXError("dim is not a list of integers")
-    if min(dim)<=0:
-        raise nx.NetworkXError(\
-              "dim is not a list of strictly positive integers")
     if periodic:
         func=cycle_graph
     else:
@@ -470,7 +487,8 @@ def ladder_graph(n,create_using=None):
     G.add_edges_from([(v,v+n) for v in range(n)])
     return G
 
-def lollipop_graph(m,n,create_using=None):
+@nodes_or_number([0, 1])
+def lollipop_graph(m, n, create_using=None):
     """Return the Lollipop Graph; `K_m` connected to `P_n`.
 
     This is the Barbell Graph without the right barbell.
@@ -487,23 +505,31 @@ def lollipop_graph(m,n,create_using=None):
     Fill's etext on Random Walks on Graphs.)
 
     """
+    m, m_nodes = m
+    n, n_nodes = n
+    M = len(m_nodes)
+    N = len(n_nodes)
+    if isinstance(m, int):
+        n_nodes = [len(m_nodes) + i for i in n_nodes]
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
-    if m<2:
+    if M < 2:
         raise nx.NetworkXError(\
               "Invalid graph description, m should be >=2")
-    if n<0:
+    if N < 0:
         raise nx.NetworkXError(\
               "Invalid graph description, n should be >=0")
+
     # the ball
-    G=complete_graph(m,create_using)
+    G = complete_graph(m_nodes, create_using)
     # the stick
-    G.add_nodes_from([v for v in range(m,m+n)])
-    if n>1:
-        G.add_edges_from([(v,v+1) for v in range(m,m+n-1)])
+    G.add_nodes_from(n_nodes)
+    if N > 1:
+        G.add_edges_from(pairwise(n_nodes))
     # connect ball to stick
-    if m>0: G.add_edge(m-1,m)
-    G.name="lollipop_graph(%d,%d)"%(m,n)
+    if M > 0 and N > 0:
+        G.add_edge(m_nodes[-1], n_nodes[0])
+    G.name="lollipop_graph(%s, %s)"%(m, n)
     return G
 
 
@@ -517,27 +543,50 @@ def null_graph(create_using=None):
     G.name="null_graph()"
     return G
 
-def path_graph(n,create_using=None):
-    """Return the Path graph P_n of n nodes linearly connected by n-1 edges.
+@nodes_or_number(0)
+def path_graph(n, create_using=None):
+    """Return the Path graph P_n of linearly connected nodes.
 
-    Node labels are the integers 0 to n - 1.
+    If `nodes` is an iterable, it contains the nodes in the path.
+    Otherwise `range(nodes)` is used and `nodes` must be a number.
+
     If create_using is a DiGraph then the edges are directed in
     increasing order.
 
     """
-    G=empty_graph(n,create_using)
-    G.name="path_graph(%d)"%n
-    G.add_edges_from([(v,v+1) for v in range(n-1)])
+    n_name, nodes = n
+    G = empty_graph(nodes, create_using)
+    G.name="path_graph(%s)"%(n_name,)
+    G.add_edges_from(nx.utils.pairwise(nodes))
     return G
 
-def star_graph(n,create_using=None):
-    """ Return the Star graph with n+1 nodes: one center node, connected to n outer nodes.
+@nodes_or_number(0)
+def star_graph(n, create_using=None):
+    """ Return the Star graph: one center node connected to n outer nodes.
 
-   Node labels are the integers 0 to n.
+    Parameters
+    ==========
+    n : int or iterable
+        If an integer, node labels are 0 to n with center 0.
+        If an iterable of nodes, the center is the first.
 
+    create_using : graph, optional (default Graph())
+       Return graph of this type. The instance will be cleared.
+
+    Notes
+    =====
+    The graph has n+1 nodes for integer n.
+    So `star_graph(3)` is the same as `star_graph(range(4))`.
     """
-    G=complete_bipartite_graph(1,n,create_using)
-    G.name="star_graph(%d)"%n
+    n_name, nodes = n
+    if isinstance(n_name, int):
+        nodes = nodes + [n_name] # there should be n+1 nodes
+    first=nodes[0]
+    G = empty_graph(nodes, create_using)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
+    G.add_edges_from((first, v) for v in nodes[1:])
+    G.name="star_graph(%s)"%(n_name,)
     return G
 
 def trivial_graph(create_using=None):
@@ -548,19 +597,23 @@ def trivial_graph(create_using=None):
     G.name="trivial_graph()"
     return G
 
-def wheel_graph(n,create_using=None):
+@nodes_or_number(0)
+def wheel_graph(n, create_using=None):
     """ Return the wheel graph: a single hub node connected to each node of the (n-1)-node cycle graph.
 
-   Node labels are the integers 0 to n - 1.
+    Node labels are the integers 0 to n - 1.
 
     """
-    if n == 0:
-        return nx.empty_graph(n, create_using=create_using)
-    G=star_graph(n-1,create_using)
-    G.name="wheel_graph(%d)"%n
-    G.add_edges_from([(v,v+1) for v in range(1,n-1)])
-    if n>2:
-        G.add_edge(1,n-1)
+    n_name, nodes = n
+    if n_name == 0:
+        G = nx.empty_graph(0, create_using=create_using)
+        G.name = "wheel_graph(0)"
+        return G
+    G = star_graph(nodes, create_using)
+    G.name="wheel_graph(%s)"%(n_name,)
+    if len(G) > 2:
+        G.add_edges_from(pairwise(nodes[1:]))
+        G.add_edge(nodes[-1],nodes[1])
     return G
 
 
@@ -569,25 +622,24 @@ def complete_multipartite_graph(*block_sizes):
 
     Parameters
     ----------
-
-    block_sizes : tuple of integers
-
-       The number of vertices in each block of the multipartite graph. The
-       length of this tuple is the number of blocks.
+    block_sizes : tuple of integers or tuple of node iterables
+       The arguments can either all be integer number of nodes or they
+       can all be iterables of nodes. If integers, they represent the
+       number of vertices in each block of the multipartite graph.
+       If iterables, each is used to create the nodes for that block.
+       The length of block_sizes is the number of blocks.
 
     Returns
     -------
-
     G : NetworkX Graph
 
-       Returns the complete multipartite graph with the specified block sizes.
+       Returns the complete multipartite graph with the specified blocks.
 
-       For each node, the node attribute ``'block'`` is an integer indicating
-       which block contains the node.
+       For each node, the node attribute ``'block'`` is an integer
+       indicating which block contains the node.
 
     Examples
     --------
-
     Creating a complete tripartite graph, with blocks of one, two, and three
     vertices, respectively.
 
@@ -602,9 +654,12 @@ def complete_multipartite_graph(*block_sizes):
         >>> list(G.edges(4))
         [(4, 0), (4, 1), (4, 2)]
 
+        >>> G = nx.complete_multipartite_graph('a', 'bc', 'def')
+        >>> [G.node[u]['block'] for u in sorted(G)]
+        [0, 1, 1, 2, 2, 2]
+
     Notes
     -----
-
     This function generalizes several other graph generator functions.
 
     - If no block sizes are given, this returns the null graph.
@@ -617,21 +672,32 @@ def complete_multipartite_graph(*block_sizes):
 
     See also
     --------
-
     complete_bipartite_graph
-
     """
-    G = nx.empty_graph(sum(block_sizes))
-    # If block_sizes is (n1, n2, n3, ...), create pairs of the form (0, n1),
-    # (n1, n1 + n2), (n1 + n2, n1 + n2 + n3), etc.
-    extents = zip([0] + list(accumulate(block_sizes)), accumulate(block_sizes))
-    blocks = [range(start, end) for start, end in extents]
-    for (i, block) in enumerate(blocks):
-        G.add_nodes_from(block, block=i)
-    # Across blocks, all vertices should be adjacent. We can use
-    # itertools.combinations() because the complete multipartite graph is an
-    # undirected graph.
+    # The complete multipartite graph is an undirected simple graph.
+    G = nx.Graph()
+    G.name = 'complete_multiparite_graph{}'.format(block_sizes)
+
+    if len(block_sizes) == 0:
+        return G
+
+    # set up blocks of nodes
+    try:
+        extents = pairwise(accumulate((0,) + block_sizes))
+        blocks = [range(start, end) for start, end in extents]
+    except TypeError:
+        blocks = block_sizes
+
+    # add nodes with block attribute
+    # while checking that ints are not mixed with iterables
+    try:
+        for (i, block) in enumerate(blocks):
+            G.add_nodes_from(block, block=i)
+    except TypeError:
+        raise nx.NetworkXError("Arguments must be all ints or all iterables")
+
+    # Across blocks, all vertices should be adjacent.
+    # We can use itertools.combinations() because undirected.
     for block1, block2 in itertools.combinations(blocks, 2):
         G.add_edges_from(itertools.product(block1, block2))
-    G.name = 'complete_multiparite_graph{0}'.format(block_sizes)
     return G

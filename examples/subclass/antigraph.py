@@ -1,7 +1,7 @@
 """ Complement graph class for small footprint when working on dense graphs.
 
-This class allows you to add the edges that *do not exist* in the dense 
-graph. However, when applying algorithms to this complement graph data 
+This class allows you to add the edges that *do not exist* in the dense
+graph. However, when applying algorithms to this complement graph data
 structure, it behaves as if it were the dense version. So it can be used
 directly in several NetworkX algorithms.
 
@@ -10,18 +10,16 @@ and biconnected_components algorithms but might also work for other
 algorithms.
 
 """
-#    Copyright (C) 2015 by 
+# Author: Jordi Torrents <jtorrents@milnou.net>
+
+#    Copyright (C) 2015-2016 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
 from networkx.exception import NetworkXError
 
-
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['AntiGraph']
-
 
 class AntiGraph(nx.Graph):
     """
@@ -31,9 +29,9 @@ class AntiGraph(nx.Graph):
     a low memory foodprint.
 
     In this class you add the edges that *do not exist* in the dense graph,
-    the report methods of the class return the neighbors, the edges and 
+    the report methods of the class return the neighbors, the edges and
     the degree as if it was the dense graph. Thus it's possible to use
-    an instance of this class with some of NetworkX functions. 
+    an instance of this class with some of NetworkX functions.
     """
 
     all_edge_dict = {'weight': 1}
@@ -81,7 +79,7 @@ class AntiGraph(nx.Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 

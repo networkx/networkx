@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 #
-#    Copyright (C) 2004-2015 by 
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 """Algorithms to characterize the number of triangles in a graph."""
+from __future__ import division
+
 from itertools import combinations
 
 import networkx as nx
 from networkx import NetworkXError
-from ..utils import not_implemented_for
+from networkx.utils import not_implemented_for
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
@@ -64,62 +66,59 @@ def triangles(G, nodes=None):
     # dictionary mapping node to number of triangles.
     return {v: t // 2 for v, d, t in _triangles_and_degree_iter(G, nodes)}
 
-def _triangles_and_degree_iter(G,nodes=None):
+
+@not_implemented_for('multigraph')
+def _triangles_and_degree_iter(G, nodes=None):
     """ Return an iterator of (node, degree, triangles).  
 
     This double counts triangles so you may want to divide by 2.
     See degree() and triangles() for definitions and details.
 
     """
-    if G.is_multigraph():
-        raise NetworkXError("Not defined for multigraphs.")
-
     if nodes is None:
         nodes_nbrs = G.adj.items()
     else:
-        nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
+        nodes_nbrs = ((n, G[n]) for n in G.nbunch_iter(nodes))
 
-    for v,v_nbrs in nodes_nbrs:
-        vs=set(v_nbrs)-set([v])
-        ntriangles=0
-        for w in vs:
-            ws=set(G[w])-set([w])
-            ntriangles+=len(vs.intersection(ws))
-        yield (v,len(vs),ntriangles)
+    for v, v_nbrs in nodes_nbrs:
+        vs = set(v_nbrs) - {v}
+        ntriangles = sum(len(vs & (set(G[w]) - {w})) for w in vs)
+        yield (v, len(vs), ntriangles)
 
 
+@not_implemented_for('multigraph')
 def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     """ Return an iterator of (node, degree, weighted_triangles).  
     
     Used for weighted clustering.
 
     """
-    if G.is_multigraph():
-        raise NetworkXError("Not defined for multigraphs.")
-
-    if weight is None or list(G.edges())==[]:
-        max_weight=1.0
+    if weight is None or G.number_of_edges() == 0:
+        max_weight = 1
     else:
-        max_weight=float(max(d.get(weight,1.0) 
-                             for u,v,d in G.edges(data=True)))
+        max_weight= max(d.get(weight, 1) for u, v, d in G.edges(data=True))
     if nodes is None:
         nodes_nbrs = G.adj.items()
     else:
-        nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
+        nodes_nbrs = ((n, G[n]) for n in G.nbunch_iter(nodes))
 
-    for i,nbrs in nodes_nbrs:
-        inbrs=set(nbrs)-set([i])
-        weighted_triangles=0.0
-        seen=set()
+    def wt(u, v):
+        return G[u][v].get(weight, 1) / max_weight
+
+    for i, nbrs in nodes_nbrs:
+        inbrs = set(nbrs) - {i}
+        weighted_triangles = 0
+        seen = set()
         for j in inbrs:
-            wij=G[i][j].get(weight,1.0)/max_weight
             seen.add(j)
-            jnbrs=set(G[j])-seen # this keeps from double counting
-            for k in inbrs&jnbrs:
-                wjk=G[j][k].get(weight,1.0)/max_weight
-                wki=G[i][k].get(weight,1.0)/max_weight
-                weighted_triangles+=(wij*wjk*wki)**(1.0/3.0)
-        yield (i,len(inbrs),weighted_triangles*2)
+            # This prevents double counting.
+            jnbrs = set(G[j]) - seen
+            # Only compute the edge weight once, before the inner inner
+            # loop.
+            wij = wt(i, j)
+            weighted_triangles += sum((wij * wt(j, k) * wt(k, i)) ** (1 / 3)
+                                      for k in inbrs & jnbrs)
+        yield (i, len(inbrs), 2 * weighted_triangles)
 
 
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
@@ -175,11 +174,13 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
        nodes and leafs on clustering measures for small-world networks.
        http://arxiv.org/abs/0802.2512
     """
-    c=clustering(G,nodes,weight=weight).values()
+    c = clustering(G, nodes, weight=weight).values()
     if not count_zeros:
         c = [v for v in c if v > 0]
-    return sum(c)/float(len(c))
+    return sum(c) / len(c)
 
+
+@not_implemented_for('directed')
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
@@ -241,25 +242,16 @@ def clustering(G, nodes=None, weight=None):
        K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).  
        http://jponnela.com/web_documents/a9.pdf
     """
-    if G.is_directed():
-        raise NetworkXError('Clustering algorithms are not defined ',
-                            'for directed graphs.')
     if weight is not None:
-        td_iter=_weighted_triangles_and_degree_iter(G,nodes,weight)
+        td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
     else:
-        td_iter=_triangles_and_degree_iter(G,nodes)
-
-    clusterc={}
-
-    for v,d,t in td_iter:
-        if t==0:
-            clusterc[v]=0.0
-        else:
-            clusterc[v]=t/float(d*(d-1))
-
+        td_iter = _triangles_and_degree_iter(G, nodes)
+    clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for v, d, t in td_iter}
     if nodes in G: 
-        return list(clusterc.values())[0] # return single value
+        # Return the value of the sole entry in the dictionary.
+        return clusterc[nodes]
     return clusterc
+
 
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles 
@@ -289,15 +281,9 @@ def transitivity(G):
     >>> print(nx.transitivity(G))
     1.0
     """
-    triangles=0 # 6 times number of triangles
-    contri=0  # 2 times number of connected triples
-    for v,d,t in _triangles_and_degree_iter(G):
-        contri += d*(d-1)
-        triangles += t
-    if triangles==0: # we had no triangles or possible triangles
-        return 0.0
-    else:
-        return triangles/float(contri)
+    triangles = sum(t for v, d, t in _triangles_and_degree_iter(G))
+    contri = sum(d * (d - 1) for v, d, t in _triangles_and_degree_iter(G))
+    return 0 if triangles == 0 else triangles / contri
 
 def square_clustering(G, nodes=None):
     r""" Compute the squares clustering coefficient for nodes.
@@ -352,20 +338,21 @@ def square_clustering(G, nodes=None):
     if nodes is None:
         node_iter = G
     else:
-        node_iter =  G.nbunch_iter(nodes) 
+        node_iter =  G.nbunch_iter(nodes)
     clustering = {}
     for v in node_iter:
-        clustering[v] = 0.0
-        potential=0
-        for u,w in combinations(G[v], 2):
+        clustering[v] = 0
+        potential = 0
+        for u, w in combinations(G[v], 2):
             squares = len((set(G[u]) & set(G[w])) - set([v]))
             clustering[v] += squares
-            degm = squares + 1.0
+            degm = squares + 1
             if w in G[u]:
                 degm += 1
             potential += (len(G[u]) - degm) * (len(G[w]) - degm) + squares
         if potential > 0:
             clustering[v] /= potential
     if nodes in G: 
-        return list(clustering.values())[0] # return single value
+        # Return the value of the sole entry in the dictionary.
+        return clustering[nodes]
     return clustering

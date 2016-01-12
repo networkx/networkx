@@ -1,7 +1,7 @@
 """
 Words/Ladder Graph
 ------------------
-Generate  an undirected graph over the 5757 5-letter words in the 
+Generate  an undirected graph over the 5757 5-letter words in the
 datafile words_dat.txt.gz.  Two words are connected by an edge
 if they differ in one letter, resulting in 14,135 edges. This example
 is described in Section 1.1 in Knuth's book [1]_,[2]_.
@@ -13,10 +13,11 @@ References
    ACM Press, New York, 1993.
 .. [2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
 """
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Brendt Wohlberg',
-                            'hughdbrown@yahoo.com'])
-#    Copyright (C) 2004-2015 by 
+# Authors: Aric Hagberg (hagberg@lanl.gov),
+#          Brendt Wohlberg,
+#          hughdbrown@yahoo.com
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -38,7 +39,7 @@ def generate_graph(words):
             j = lookup[c] # lowercase.index(c)
             for cc in lowercase[j+1:]:
                 yield left + cc + right
-    candgen = ((word, cand) for word in sorted(words) 
+    candgen = ((word, cand) for word in sorted(words)
                for cand in edit_distance_one(word) if cand in words)
     G.add_nodes_from(words)
     for word, cand in candgen:

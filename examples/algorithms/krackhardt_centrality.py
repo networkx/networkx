@@ -2,11 +2,11 @@
 """
 Centrality measures of Krackhardt social network.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-05-12 14:33:11 -0600 (Thu, 12 May 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 998 $"
-#    Copyright (C) 2004 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+# Date: 2005-05-12 14:33:11 -0600 (Thu, 12 May 2005)
+# Revision: 998
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

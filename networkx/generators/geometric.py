@@ -2,7 +2,7 @@
 """
 Generators for geometric graphs.
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -23,11 +23,13 @@ from functools import reduce
 from itertools import product
 import math, random, sys
 import networkx as nx
+from networkx.utils import nodes_or_number
 
 #---------------------------------------------------------------------------
 #  Random Geometric Graphs
 #---------------------------------------------------------------------------
 
+@nodes_or_number(0)
 def random_geometric_graph(n, radius, dim=2, pos=None):
     """Returns a random geometric graph in the unit cube.
 
@@ -37,8 +39,8 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
 
     Parameters
     ----------
-    n : int
-        Number of nodes
+    n : int or iterable
+        Number of nodes or iterable of nodes
     radius: float
         Distance threshold value
     dim : int, optional
@@ -80,9 +82,10 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
     .. [1] Penrose, Mathew, Random Geometric Graphs,
        Oxford Studies in Probability, 5, 2003.
     """
+    n_name, nodes = n
     G=nx.Graph()
     G.name="Random Geometric Graph"
-    G.add_nodes_from(range(n))
+    G.add_nodes_from(nodes)
     if pos is None:
         # random positions
         for n in G:
@@ -102,7 +105,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
                 G.add_edge(u,v)
     return G
 
-
+@nodes_or_number(0)
 def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
                                  weight=None):
     r"""Returns a geographical threshold graph.
@@ -120,8 +123,8 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
     Parameters
     ----------
-    n : int
-        Number of nodes
+    n : int or iterable
+        Number of nodes or iterable of nodes
     theta: float
         Threshold value
     alpha: float, optional
@@ -168,9 +171,10 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
        in Algorithms and Models for the Web-Graph (WAW 2007),
        Antony Bonato and Fan Chung (Eds), pp. 209--216, 2007
     """
+    n_name, nodes = n
     G=nx.Graph()
     # add n nodes
-    G.add_nodes_from([v for v in range(n)])
+    G.add_nodes_from(nodes)
     if weight is None:
         # choose weights from exponential distribution
         for n in G:
@@ -205,7 +209,7 @@ def geographical_threshold_edges(G, theta, alpha=2):
             if wu+wv >= theta*r**alpha:
                 yield(u,v)
 
-
+@nodes_or_number(0)
 def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
     r"""Return a Waxman random graph.
 
@@ -226,8 +230,8 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
 
     Parameters
     ----------
-    n : int
-        Number of nodes
+    n : int or iterable
+        Number of nodes or iterable of nodes
     alpha: float
         Model parameter
     beta: float
@@ -249,8 +253,9 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
        IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622.
     """
     # build graph of n nodes with random positions in the unit square
+    n_name, nodes = n
     G = nx.Graph()
-    G.add_nodes_from(range(n))
+    G.add_nodes_from(nodes)
     (xmin,ymin,xmax,ymax)=domain
     for n in G:
         G.node[n]['pos']=(xmin + ((xmax-xmin)*random.random()),

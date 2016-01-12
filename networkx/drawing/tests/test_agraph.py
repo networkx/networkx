@@ -33,13 +33,13 @@ class TestAGraph(object):
 
     def agraph_checks(self, G):
         G = self.build_graph(G)
-        A=nx.to_agraph(G)
-        H=nx.from_agraph(A)
+        A = nx.nx_agraph.to_agraph(G)
+        H = nx.nx_agraph.from_agraph(A)
         self.assert_equal(G, H)
 
         fname=tempfile.mktemp()
         nx.drawing.nx_agraph.write_dot(H,fname)
-        Hin=nx.drawing.nx_agraph.read_dot(fname)
+        Hin = nx.nx_agraph.read_dot(fname)
         os.unlink(fname)
         self.assert_equal(H,Hin)
 
@@ -50,15 +50,15 @@ class TestAGraph(object):
         fh.close()
 
         fh=open(fname,'r')
-        Hin=nx.drawing.nx_agraph.read_dot(fh)
+        Hin = nx.nx_agraph.read_dot(fh)
         fh.close()
         os.unlink(fname)
         self.assert_equal(H,Hin)
 
     def test_from_agraph_name(self):
-        G=nx.Graph(name='test')
-        A=nx.to_agraph(G)
-        H=nx.from_agraph(A)
+        G = nx.Graph(name='test')
+        A = nx.nx_agraph.to_agraph(G)
+        H = nx.nx_agraph.from_agraph(A)
         assert_equal(G.name,'test')
 
 

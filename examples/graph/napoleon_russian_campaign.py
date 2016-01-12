@@ -4,8 +4,9 @@ Minard's data from Napoleon's 1812-1813  Russian Campaign.
 http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2006 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2006-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -97,7 +98,7 @@ def minard_graph():
         x,y,name=line.split(',')
         c[name]=(float(x),float(y))
 
-    g=[]        
+    g=[]
 
     for data in [data1,data2,data3]:
         G=nx.Graph()
@@ -115,9 +116,9 @@ def minard_graph():
                 G.add_edge(i,last,{r:int(n)})
                 last=i
             i=i+1
-        g.append(G)        
+        g.append(G)
 
-    return g,c            
+    return g,c
 
 if __name__ == "__main__":
 

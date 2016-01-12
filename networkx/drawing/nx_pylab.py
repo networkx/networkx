@@ -13,7 +13,9 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
-#    Copyright (C) 2004-2015 by
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,7 +24,7 @@ pygraphviz:     http://pygraphviz.github.io/
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['draw',
            'draw_networkx',
            'draw_networkx_nodes',
