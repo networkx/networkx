@@ -21,32 +21,23 @@ def assert_edges_equal(edges1, edges2):
     from collections import defaultdict
     d1 = defaultdict(dict)
     d2 = defaultdict(dict)
-    for e in edges1:
+    c1 = 0
+    for c1,e in enumerate(edges1):
         u,v = e[0],e[1]
         data = e[2:]
         d1[u][v] = data
         d1[v][u] = data
-    for e in edges2:
+    c2 = 0
+    for c2,e in enumerate(edges2):
         u,v = e[0],e[1]
         data = e[2:]
         d2[u][v] = data
         d2[v][u] = data
-    assert_equal(len(d1), len(d2))
-    for k in d1:
-        assert_equal(d1[k], d2[k])
+    assert_equal(c1, c2)
+    assert_equal(d1, d2)
 
 
 def assert_graphs_equal(graph1, graph2):
-    if graph1.is_multigraph():
-        edges1 = graph1.edges(data=True,keys=True)
-    else:
-        edges1 = graph1.edges(data=True)
-    if graph2.is_multigraph():
-        edges2 = graph2.edges(data=True,keys=True)
-    else:
-        edges2 = graph2.edges(data=True)
-    assert_nodes_equal(graph1.nodes(data=True),
-                       graph2.nodes(data=True))
-    assert_edges_equal(edges1, edges2)
-    assert_equal(graph1.graph,graph2.graph)
-    return
+    assert_equal(graph1.adj, graph2.adj)
+    assert_equal(graph1.node, graph2.node)
+    assert_equal(graph1.graph, graph2.graph)
