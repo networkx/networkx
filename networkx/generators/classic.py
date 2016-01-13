@@ -11,7 +11,7 @@ The typical graph generator is called as follows:
 
 >>> G=nx.complete_graph(100)
 
-returning the complete graph on n nodes labeled 0,..,99
+returning the complete graph on n nodes labeled 0, .., 99
 as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
@@ -29,46 +29,47 @@ from networkx.utils import pairwise
 
 # Authors: Aric Hagberg (hagberg@lanl.gov) and Pieter Swart (swart@lanl.gov)
 
-__all__ = [ 'balanced_tree',
-            'barbell_graph',
-            'complete_graph',
-            'complete_multipartite_graph',
-            'circular_ladder_graph',
-            'circulant_graph',
-            'cycle_graph',
-            'dorogovtsev_goltsev_mendes_graph',
-            'empty_graph',
-            'full_rary_tree',
-            'grid_graph',
-            'grid_2d_graph',
-            'hypercube_graph',
-            'ladder_graph',
-            'lollipop_graph',
-            'null_graph',
-            'path_graph',
-            'star_graph',
-            'trivial_graph',
-            'wheel_graph']
+__all__ = ['balanced_tree',
+           'barbell_graph',
+           'complete_graph',
+           'complete_multipartite_graph',
+           'circular_ladder_graph',
+           'circulant_graph',
+           'cycle_graph',
+           'dorogovtsev_goltsev_mendes_graph',
+           'empty_graph',
+           'full_rary_tree',
+           'grid_graph',
+           'grid_2d_graph',
+           'hypercube_graph',
+           'ladder_graph',
+           'lollipop_graph',
+           'null_graph',
+           'path_graph',
+           'star_graph',
+           'trivial_graph',
+           'wheel_graph']
 
 
 #-------------------------------------------------------------------
 #   Some Classic Graphs
 #-------------------------------------------------------------------
 
-def _tree_edges(n,r):
+def _tree_edges(n, r):
     # helper function for trees
     # yields edges in rooted tree at 0 with n nodes and branching ratio r
-    nodes=iter(range(n))
-    parents=[next(nodes)] # stack of max length r
+    nodes = iter(range(n))
+    parents = [next(nodes)]  # stack of max length r
     while parents:
-        source=parents.pop(0)
+        source = parents.pop(0)
         for i in range(r):
             try:
-                target=next(nodes)
+                target = next(nodes)
                 parents.append(target)
-                yield source,target
+                yield source, target
             except StopIteration:
                 break
+
 
 def full_rary_tree(r, n, create_using=None):
     """Creates a full r-ary tree of n vertices.
@@ -98,8 +99,8 @@ def full_rary_tree(r, n, create_using=None):
     .. [1] An introduction to data structures and algorithms,
            James Andrew Storer,  Birkhauser Boston 2001, (page 225).
     """
-    G=nx.empty_graph(n,create_using)
-    G.add_edges_from(_tree_edges(n,r))
+    G = nx.empty_graph(n, create_using)
+    G.add_edges_from(_tree_edges(n, r))
     return G
 
 
@@ -150,7 +151,7 @@ def balanced_tree(r, h, create_using=None):
     return full_rary_tree(r, n, create_using=create_using)
 
 
-def barbell_graph(m1,m2,create_using=None):
+def barbell_graph(m1, m2, create_using=None):
     """Return the Barbell Graph: two complete graphs connected by a path.
 
     For `m1 > 1` and `m2 >= 0`.
@@ -159,9 +160,9 @@ def barbell_graph(m1,m2,create_using=None):
     and are connected by a path `P_{m2}`.
 
     The `2*m1+m2`  nodes are numbered
-        `0,...,m1-1` for the left barbell,
-        `m1,...,m1+m2-1` for the path,
-        and `m1+m2,...,2*m1+m2-1` for the right barbell.
+        `0, ..., m1-1` for the left barbell,
+        `m1, ..., m1+m2-1` for the path,
+        and `m1+m2, ..., 2*m1+m2-1` for the right barbell.
 
     The 3 subgraphs are joined via the edges `(m1-1, m1)` and 
     `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete 
@@ -173,28 +174,30 @@ def barbell_graph(m1,m2,create_using=None):
     """
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
-    if m1<2:
-        raise nx.NetworkXError(\
-              "Invalid graph description, m1 should be >=2")
-    if m2<0:
-        raise nx.NetworkXError(\
-              "Invalid graph description, m2 should be >=0")
+    if m1 < 2:
+        raise nx.NetworkXError(
+            "Invalid graph description, m1 should be >=2")
+    if m2 < 0:
+        raise nx.NetworkXError(
+            "Invalid graph description, m2 should be >=0")
 
     # left barbell
-    G=complete_graph(m1,create_using)
-    G.name="barbell_graph(%d,%d)"%(m1,m2)
+    G = complete_graph(m1, create_using)
+    G.name = "barbell_graph(%d,%d)" % (m1, m2)
 
     # connecting path
-    G.add_nodes_from([v for v in range(m1,m1+m2-1)])
-    if m2>1:
-        G.add_edges_from([(v,v+1) for v in range(m1,m1+m2-1)])
+    G.add_nodes_from([v for v in range(m1, m1 + m2 - 1)])
+    if m2 > 1:
+        G.add_edges_from([(v, v + 1) for v in range(m1, m1 + m2 - 1)])
     # right barbell
-    G.add_edges_from( (u,v) for u in range(m1+m2,2*m1+m2) for v in range(u+1,2*m1+m2))
+    G.add_edges_from((u, v) for u in range(m1 + m2, 2 * m1 + m2)
+                     for v in range(u + 1, 2 * m1 + m2))
     # connect it up
-    G.add_edge(m1-1,m1)
-    if m2>0:
-        G.add_edge(m1+m2-1,m1+m2)
+    G.add_edge(m1 - 1, m1)
+    if m2 > 0:
+        G.add_edge(m1 + m2 - 1, m1 + m2)
     return G
+
 
 @nodes_or_number(0)
 def complete_graph(n, create_using=None):
@@ -203,18 +206,18 @@ def complete_graph(n, create_using=None):
     Node labels are the integers 0 to n-1.
     """
     n_name, nodes = n
-    G=empty_graph(n_name, create_using)
-    G.name="complete_graph(%s)"%(n_name,)
+    G = empty_graph(n_name, create_using)
+    G.name = "complete_graph(%s)" % (n_name,)
     if len(nodes) > 1:
         if G.is_directed():
-            edges=itertools.permutations(nodes, 2)
+            edges = itertools.permutations(nodes, 2)
         else:
-            edges=itertools.combinations(nodes, 2)
+            edges = itertools.combinations(nodes, 2)
         G.add_edges_from(edges)
     return G
 
 
-def circular_ladder_graph(n,create_using=None):
+def circular_ladder_graph(n, create_using=None):
     """Return the circular ladder graph `CL_n` of length n.
 
     `CL_n` consists of two concentric n-cycles in which
@@ -223,10 +226,10 @@ def circular_ladder_graph(n,create_using=None):
     Node labels are the integers 0 to n-1
 
     """
-    G=ladder_graph(n,create_using)
-    G.name="circular_ladder_graph(%d)"%n
-    G.add_edge(0,n-1)
-    G.add_edge(n,2*n-1)
+    G = ladder_graph(n, create_using)
+    G.name = "circular_ladder_graph(%d)" % n
+    G.add_edge(0, n - 1)
+    G.add_edge(n, 2 * n - 1)
     return G
 
 
@@ -284,6 +287,7 @@ def circulant_graph(n, offsets, create_using=None):
             G.add_edge(i, (i + j) % n)
     return G
 
+
 @nodes_or_number(0)
 def cycle_graph(n, create_using=None):
     """Return the cycle graph `C_n` of cyclicly connected nodes.
@@ -298,12 +302,13 @@ def cycle_graph(n, create_using=None):
     """
     n_orig, nodes = n
     G = empty_graph(nodes, create_using)
-    G.name="cycle_graph(%s)"%(n_orig,)
+    G.name = "cycle_graph(%s)" % (n_orig,)
     G.add_edges_from(nx.utils.pairwise(nodes))
     G.add_edge(nodes[-1], nodes[0])
     return G
 
-def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
+
+def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Return the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
     n is the generation.
@@ -315,20 +320,21 @@ def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
             raise nx.NetworkXError("Directed Graph not supported")
         if create_using.is_multigraph():
             raise nx.NetworkXError("Multigraph not supported")
-    G=empty_graph(0,create_using)
-    G.name="Dorogovtsev-Goltsev-Mendes Graph"
-    G.add_edge(0,1)
-    if n==0:
+    G = empty_graph(0, create_using)
+    G.name = "Dorogovtsev-Goltsev-Mendes Graph"
+    G.add_edge(0, 1)
+    if n == 0:
         return G
     new_node = 2         # next node to be added
-    for i in range(1,n+1): #iterate over number of generations.
+    for i in range(1, n + 1):  # iterate over number of generations.
         last_generation_edges = list(G.edges())
         number_of_edges_in_last_generation = len(last_generation_edges)
-        for j in range(0,number_of_edges_in_last_generation):
-            G.add_edge(new_node,last_generation_edges[j][0])
-            G.add_edge(new_node,last_generation_edges[j][1])
+        for j in range(0, number_of_edges_in_last_generation):
+            G.add_edge(new_node, last_generation_edges[j][0])
+            G.add_edge(new_node, last_generation_edges[j][1])
             new_node += 1
     return G
+
 
 @nodes_or_number(0)
 def empty_graph(n=0, create_using=None):
@@ -360,7 +366,7 @@ def empty_graph(n=0, create_using=None):
     empty digraph, multigraph, etc.  For example,
 
     >>> n=10
-    >>> G=nx.empty_graph(n,create_using=nx.DiGraph())
+    >>> G=nx.empty_graph(n, create_using=nx.DiGraph())
 
     will create an empty digraph on n nodes.
 
@@ -375,89 +381,96 @@ def empty_graph(n=0, create_using=None):
     """
     if create_using is None:
         # default empty graph is a simple graph
-        G=nx.Graph()
+        G = nx.Graph()
     else:
-        G=create_using
+        G = create_using
         G.clear()
 
     n_name, nodes = n
-    G.name="empty_graph(%s)"%(n_name,)
+    G.name = "empty_graph(%s)" % (n_name,)
     G.add_nodes_from(nodes)
     return G
 
-@nodes_or_number([0,1])
-def grid_2d_graph(m,n,periodic=False,create_using=None):
+
+@nodes_or_number([0, 1])
+def grid_2d_graph(m, n, periodic=False, create_using=None):
     """ Return the 2d grid graph of mxn nodes,
         each connected to its nearest neighbors.
         Optional argument periodic=True will connect
         boundary nodes via periodic boundary conditions.
     """
-    G=empty_graph(0,create_using)
+    G = empty_graph(0, create_using)
     row_name, rows = m
     col_name, columns = n
-    G.name="grid_2d_graph(%s, %s)"%(row_name, col_name)
-    G.add_nodes_from( (i,j) for i in rows for j in columns )
-    G.add_edges_from( ((i,j),(pi,j)) for pi,i in pairwise(rows) for j in columns )
-    G.add_edges_from( ((i,j),(i,pj)) for i in rows for pj,j in pairwise(columns) )
+    G.name = "grid_2d_graph(%s, %s)" % (row_name, col_name)
+    G.add_nodes_from((i, j) for i in rows for j in columns)
+    G.add_edges_from(((i, j), (pi, j))
+                     for pi, i in pairwise(rows) for j in columns)
+    G.add_edges_from(((i, j), (i, pj))
+                     for i in rows for pj, j in pairwise(columns))
     if G.is_directed():
-        G.add_edges_from( ((pi,j),(i,j)) for pi,i in pairwise(rows) for j in columns )
-        G.add_edges_from( ((i,pj),(i,j)) for i in rows for pj,j in pairwise(columns) )
+        G.add_edges_from(((pi, j), (i, j))
+                         for pi, i in pairwise(rows) for j in columns)
+        G.add_edges_from(((i, pj), (i, j))
+                         for i in rows for pj, j in pairwise(columns))
     if periodic:
-        if len(columns)>2:
+        if len(columns) > 2:
             f = columns[0]
             l = columns[-1]
-            G.add_edges_from( ((i,f),(i,l)) for i in rows )
+            G.add_edges_from(((i, f), (i, l)) for i in rows)
             if G.is_directed():
-                G.add_edges_from( ((i,l),(i,f)) for i in rows )
-        if len(rows)>2:
+                G.add_edges_from(((i, l), (i, f)) for i in rows)
+        if len(rows) > 2:
             f = rows[0]
             l = rows[-1]
-            G.add_edges_from( ((f,j),(l,j)) for j in columns )
+            G.add_edges_from(((f, j), (l, j)) for j in columns)
             if G.is_directed():
-                G.add_edges_from( ((l,j),(f,j)) for j in columns )
-        G.name="periodic_grid_2d_graph(%s,%s)"%(m,n)
+                G.add_edges_from(((l, j), (f, j)) for j in columns)
+        G.name = "periodic_grid_2d_graph(%s,%s)" % (m, n)
     return G
 
 
-def grid_graph(dim,periodic=False):
+def grid_graph(dim, periodic=False):
     """ Return the n-dimensional grid graph.
 
     'dim' is a list with the size in each dimension or an
     iterable of nodes for each dimension. The dimension of
     the grid_graph is the length of the list 'dim'.
 
-    E.g. G=grid_graph(dim=[2,3]) produces a 2x3 grid graph.
-    E.g. G=grid_graph(dim=[range(7,9), range(3,6)]) produces a 2x3 grid graph.
+    E.g. G=grid_graph(dim=[2, 3]) produces a 2x3 grid graph.
+
+    E.g. G=grid_graph(dim=[range(7, 9), range(3, 6)]) produces a 2x3 grid graph.
 
     If periodic=True then join grid edges with periodic boundary conditions.
 
     """
-    dlabel="%s"%dim
-    if dim==[]:
-        G=empty_graph(0)
-        G.name="grid_graph(%s)"%dim
+    dlabel = "%s" % dim
+    if dim == []:
+        G = empty_graph(0)
+        G.name = "grid_graph(%s)" % dim
         return G
     if periodic:
-        func=cycle_graph
+        func = cycle_graph
     else:
-        func=path_graph
+        func = path_graph
 
-    dim=list(dim)
-    current_dim=dim.pop()
-    G=func(current_dim)
-    while len(dim)>0:
-        current_dim=dim.pop()
+    dim = list(dim)
+    current_dim = dim.pop()
+    G = func(current_dim)
+    while len(dim) > 0:
+        current_dim = dim.pop()
         # order matters: copy before it is cleared during the creation of Gnew
-        Gold=G.copy()
-        Gnew=func(current_dim)
+        Gold = G.copy()
+        Gnew = func(current_dim)
         # explicit: create_using=None
         # This is so that we get a new graph of Gnew's class.
-        G=nx.cartesian_product(Gnew,Gold)
-    # graph G is done but has labels of the form (1,(2,(3,1)))
+        G = nx.cartesian_product(Gnew, Gold)
+    # graph G is done but has labels of the form (1, (2, (3, 1)))
     # so relabel
-    H=nx.relabel_nodes(G, flatten)
-    H.name="grid_graph(%s)"%dlabel
+    H = nx.relabel_nodes(G, flatten)
+    H.name = "grid_graph(%s)" % dlabel
     return H
+
 
 def hypercube_graph(n):
     """Return the n-dimensional hypercube.
@@ -465,12 +478,13 @@ def hypercube_graph(n):
     Node labels are the integers 0 to 2**n - 1.
 
     """
-    dim=n*[2]
-    G=grid_graph(dim)
-    G.name="hypercube_graph_(%d)"%n
+    dim = n * [2]
+    G = grid_graph(dim)
+    G.name = "hypercube_graph_(%d)" % n
     return G
 
-def ladder_graph(n,create_using=None):
+
+def ladder_graph(n, create_using=None):
     """Return the Ladder graph of length n.
 
     This is two rows of n nodes, with
@@ -481,12 +495,13 @@ def ladder_graph(n,create_using=None):
     """
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
-    G=empty_graph(2*n,create_using)
-    G.name="ladder_graph_(%d)"%n
-    G.add_edges_from([(v,v+1) for v in range(n-1)])
-    G.add_edges_from([(v,v+1) for v in range(n,2*n-1)])
-    G.add_edges_from([(v,v+n) for v in range(n)])
+    G = empty_graph(2 * n, create_using)
+    G.name = "ladder_graph_(%d)" % n
+    G.add_edges_from([(v, v + 1) for v in range(n - 1)])
+    G.add_edges_from([(v, v + 1) for v in range(n, 2 * n - 1)])
+    G.add_edges_from([(v, v + n) for v in range(n)])
     return G
+
 
 @nodes_or_number([0, 1])
 def lollipop_graph(m, n, create_using=None):
@@ -495,9 +510,9 @@ def lollipop_graph(m, n, create_using=None):
     This is the Barbell Graph without the right barbell.
 
     For m>1 and n>=0, the complete graph K_m is connected to the
-    path P_n.  The resulting m+n nodes are labelled 0,...,m-1 for the
-    complete graph and m,...,m+n-1 for the path. The 2 subgraphs
-    are joined via the edge (m-1,m).  If n=0, this is merely a complete
+    path P_n.  The resulting m+n nodes are labelled 0, ..., m-1 for the
+    complete graph and m, ..., m+n-1 for the path. The 2 subgraphs
+    are joined via the edge (m-1, m).  If n=0, this is merely a complete
     graph.
 
     Node labels are the integers 0 to number_of_nodes - 1.
@@ -515,11 +530,11 @@ def lollipop_graph(m, n, create_using=None):
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
     if M < 2:
-        raise nx.NetworkXError(\
-              "Invalid graph description, m should be >=2")
+        raise nx.NetworkXError(
+            "Invalid graph description, m should be >=2")
     if N < 0:
-        raise nx.NetworkXError(\
-              "Invalid graph description, n should be >=0")
+        raise nx.NetworkXError(
+            "Invalid graph description, n should be >=0")
 
     # the ball
     G = complete_graph(m_nodes, create_using)
@@ -530,7 +545,7 @@ def lollipop_graph(m, n, create_using=None):
     # connect ball to stick
     if M > 0 and N > 0:
         G.add_edge(m_nodes[-1], n_nodes[0])
-    G.name="lollipop_graph(%s, %s)"%(m, n)
+    G.name = "lollipop_graph(%s, %s)" % (m, n)
     return G
 
 
@@ -540,9 +555,10 @@ def null_graph(create_using=None):
     See empty_graph for the use of create_using.
 
     """
-    G=empty_graph(0,create_using)
-    G.name="null_graph()"
+    G = empty_graph(0, create_using)
+    G.name = "null_graph()"
     return G
+
 
 @nodes_or_number(0)
 def path_graph(n, create_using=None):
@@ -557,9 +573,10 @@ def path_graph(n, create_using=None):
     """
     n_name, nodes = n
     G = empty_graph(nodes, create_using)
-    G.name="path_graph(%s)"%(n_name,)
+    G.name = "path_graph(%s)" % (n_name,)
     G.add_edges_from(nx.utils.pairwise(nodes))
     return G
+
 
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
@@ -581,22 +598,24 @@ def star_graph(n, create_using=None):
     """
     n_name, nodes = n
     if isinstance(n_name, int):
-        nodes = nodes + [n_name] # there should be n+1 nodes
-    first=nodes[0]
+        nodes = nodes + [n_name]  # there should be n+1 nodes
+    first = nodes[0]
     G = empty_graph(nodes, create_using)
     if G.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
     G.add_edges_from((first, v) for v in nodes[1:])
-    G.name="star_graph(%s)"%(n_name,)
+    G.name = "star_graph(%s)" % (n_name,)
     return G
+
 
 def trivial_graph(create_using=None):
     """ Return the Trivial graph with one node (with integer label 0) and no edges.
 
     """
-    G=empty_graph(1,create_using)
-    G.name="trivial_graph()"
+    G = empty_graph(1, create_using)
+    G.name = "trivial_graph()"
     return G
+
 
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
@@ -611,10 +630,10 @@ def wheel_graph(n, create_using=None):
         G.name = "wheel_graph(0)"
         return G
     G = star_graph(nodes, create_using)
-    G.name="wheel_graph(%s)"%(n_name,)
+    G.name = "wheel_graph(%s)" % (n_name,)
     if len(G) > 2:
         G.add_edges_from(pairwise(nodes[1:]))
-        G.add_edge(nodes[-1],nodes[1])
+        G.add_edge(nodes[-1], nodes[1])
     return G
 
 
