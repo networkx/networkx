@@ -27,7 +27,7 @@ from networkx.utils import flatten
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 
-__author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
+# Authors: Aric Hagberg (hagberg@lanl.gov) and Pieter Swart (swart@lanl.gov)
 
 __all__ = [ 'balanced_tree',
             'barbell_graph',
@@ -73,11 +73,11 @@ def _tree_edges(n,r):
 def full_rary_tree(r, n, create_using=None):
     """Creates a full r-ary tree of n vertices.
 
-    Sometimes called a k-ary, n-ary, or m-ary tree.  "... all non-leaf
-    vertices have exactly r children and all levels are full except
-    for some rightmost position of the bottom level (if a leaf at the
-    bottom level is missing, then so are all of the leaves to its
-    right." [1]_
+    Sometimes called a k-ary, n-ary, or m-ary tree.
+    "... all non-leaf vertices have exactly r children and all levels
+    are full except for some rightmost position of the bottom level
+    (if a leaf at the bottom level is missing, then so are all of the
+    leaves to its right." [1]_
 
     Parameters
     ----------
@@ -133,7 +133,7 @@ def balanced_tree(r, h, create_using=None):
 
     Node labels are integers, starting from zero.
 
-    A balanced tree is also known as a *complete ``r``-ary tree*.
+    A balanced tree is also known as a *complete r-ary tree*.
 
     """
     # The number of nodes in the balanced tree is `1 + r + ... + r^h`,
@@ -153,21 +153,22 @@ def balanced_tree(r, h, create_using=None):
 def barbell_graph(m1,m2,create_using=None):
     """Return the Barbell Graph: two complete graphs connected by a path.
 
-    For m1 > 1 and m2 >= 0.
+    For `m1 > 1` and `m2 >= 0`.
 
-    Two identical complete graphs K_{m1} form the left and right bells,
-    and are connected by a path P_{m2}.
+    Two identical complete graphs `K_{m1}` form the left and right bells,
+    and are connected by a path `P_{m2}`.
 
-    The 2*m1+m2  nodes are numbered
-        0,...,m1-1 for the left barbell,
-        m1,...,m1+m2-1 for the path,
-        and m1+m2,...,2*m1+m2-1 for the right barbell.
+    The `2*m1+m2`  nodes are numbered
+        `0,...,m1-1` for the left barbell,
+        `m1,...,m1+m2-1` for the path,
+        and `m1+m2,...,2*m1+m2-1` for the right barbell.
 
-    The 3 subgraphs are joined via the edges (m1-1,m1) and (m1+m2-1,m1+m2).
-    If m2=0, this is merely two complete graphs joined together.
+    The 3 subgraphs are joined via the edges `(m1-1, m1)` and 
+    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete 
+    graphs joined together.
 
     This graph is an extremal example in David Aldous
-    and Jim Fill's etext on Random Walks on Graphs.
+    and Jim Fill's e-text on Random Walks on Graphs.
 
     """
     if create_using is not None and create_using.is_directed():
@@ -197,7 +198,7 @@ def barbell_graph(m1,m2,create_using=None):
 
 @nodes_or_number(0)
 def complete_graph(n, create_using=None):
-    """ Return the complete graph K_n with n nodes.
+    """ Return the complete graph `K_n` with n nodes.
 
     Node labels are the integers 0 to n-1.
     """
@@ -214,9 +215,9 @@ def complete_graph(n, create_using=None):
 
 
 def circular_ladder_graph(n,create_using=None):
-    """Return the circular ladder graph CL_n of length n.
+    """Return the circular ladder graph `CL_n` of length n.
 
-    CL_n consists of two concentric n-cycles in which
+    `CL_n` consists of two concentric n-cycles in which
     each of the n pairs of concentric nodes are joined by an edge.
 
     Node labels are the integers 0 to n-1
@@ -285,9 +286,9 @@ def circulant_graph(n, offsets, create_using=None):
 
 @nodes_or_number(0)
 def cycle_graph(n, create_using=None):
-    """Return the cycle graph C_n of cyclicly connected nodes.
+    """Return the cycle graph `C_n` of cyclicly connected nodes.
 
-    C_n is a path with its two end-nodes connected.
+    `C_n` is a path with its two end-nodes connected.
 
     If `nodes` is an iterable, it contains the nodes in the cycle.
     Otherwise `range(nodes)` is used and `nodes` must be a number.
@@ -545,7 +546,7 @@ def null_graph(create_using=None):
 
 @nodes_or_number(0)
 def path_graph(n, create_using=None):
-    """Return the Path graph P_n of linearly connected nodes.
+    """Return the Path graph `P_n` of linearly connected nodes.
 
     If `nodes` is an iterable, it contains the nodes in the path.
     Otherwise `range(nodes)` is used and `nodes` must be a number.
@@ -576,7 +577,7 @@ def star_graph(n, create_using=None):
     Notes
     =====
     The graph has n+1 nodes for integer n.
-    So `star_graph(3)` is the same as `star_graph(range(4))`.
+    So star_graph(3) is the same as star_graph(range(4)).
     """
     n_name, nodes = n
     if isinstance(n_name, int):
@@ -632,7 +633,6 @@ def complete_multipartite_graph(*block_sizes):
     Returns
     -------
     G : NetworkX Graph
-
        Returns the complete multipartite graph with the specified blocks.
 
        For each node, the node attribute ``'block'`` is an integer
