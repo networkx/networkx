@@ -5,9 +5,12 @@ Depth-first search
 
 Basic algorithms for depth-first search and depth-limited search of a graph.
 
-Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
-by D. Eppstein, July 2004.
-https://en.wikipedia.org/wiki/Depth-limited_search
+The implementation of this function is adapted from David Eppstein's
+depth-first search function in `PADS`_, with modifications to allow depth
+limits based on the Wikipedia article "`Depth-limited search`_".
+
+.. _PADS: http://www.ics.uci.edu/~eppstein/PADS
+.. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
 """
 import networkx as nx
 from collections import defaultdict
@@ -46,12 +49,16 @@ def dfs_edges(G, source=None, depth_limit=None):
 
     Notes
     -----
-    Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
-    by D. Eppstein, July 2004.
-    https://en.wikipedia.org/wiki/Depth-limited_search
-
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
+
+    The implementation of this function is adapted from David Eppstein's
+    depth-first search function in `PADS`_, with modifications
+    to allow depth limits based on the Wikipedia article
+    "`Depth-limited search`_".
+
+    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
+    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     if source is None:
         # produce edges for all components
@@ -103,10 +110,13 @@ def dfs_tree(G, source, depth_limit=None):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_path([0,1,2])
-    >>> T = nx.dfs_tree(G,0)
+    >>> G.add_path([0,1,2,3,4])
+    >>> T = nx.dfs_tree(G,0,2)
     >>> print(list(T.edges()))
     [(0, 1), (1, 2)]
+    >>> T = nx.dfs_tree(G,0)
+    >>> print(list(T.edges()))
+    [(0, 1), (1, 2), (2, 3), (3, 4)]
     """
     T = nx.DiGraph()
     if source is None:
@@ -139,20 +149,23 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_path([0,1,2])
+    >>> G.add_path([0,1,2,3])
     >>> print(nx.dfs_predecessors(G,0))
+    {1: 0, 2: 1, 3: 2}
+    >>> print(nx.dfs_predecessors(G,0,2))
     {1: 0, 2: 1}
 
     Notes
     -----
-    Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
-    by D. Eppstein, July 2004.
-    https://en.wikipedia.org/wiki/Depth-limited_search
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
+    The implementation of this function is adapted from David Eppstein's
+    depth-first search function in `PADS`_, with modifications
+    to allow depth limits based on the Wikipedia article
+    "`Depth-limited search`_".
+
+    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
+    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    return dict((t, s) for s, t in dfs_edges(G, source=source,
-                depth_limit=depth_limit))
+    return {t: s for s, t in dfs_edges(G, source, depth_limit)}
 
 
 def dfs_successors(G, source=None, depth_limit=None):
@@ -183,11 +196,13 @@ def dfs_successors(G, source=None, depth_limit=None):
 
     Notes
     -----
-    Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
-    by D. Eppstein, July 2004.
-    https://en.wikipedia.org/wiki/Depth-limited_search
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
+    The implementation of this function is adapted from David Eppstein's
+    depth-first search function in `PADS`_, with modifications
+    to allow depth limits based on the Wikipedia article
+    "`Depth-limited search`_".
+
+    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
+    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     d = defaultdict(list)
     for s, t in dfs_edges(G, source=source, depth_limit=depth_limit):
@@ -224,17 +239,18 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
 
     Notes
     -----
-    Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
-    by D. Eppstein, July 2004.
-    https://en.wikipedia.org/wiki/Depth-limited_search
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
+    The implementation of this function is adapted from David Eppstein's
+    depth-first search function in `PADS`_, with modifications
+    to allow depth limits based on the Wikipedia article
+    "`Depth-limited search`_".
+
+    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
+    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    post = (v for u, v, d in nx.dfs_labeled_edges(G, source=source,
-            depth_limit=depth_limit) if d['dir'] == 'reverse')
+    edges = nx.dfs_labeled_edges(G, source=source,depth_limit=depth_limit)
     # potential modification: chain source to end of post-ordering
     # return chain(post,[source])
-    return post
+    return (v for u, v, d in edges if d['dir'] == 'reverse')
 
 
 def dfs_preorder_nodes(G, source=None, depth_limit=None):
@@ -266,17 +282,18 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
 
     Notes
     -----
-    Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
-    by D. Eppstein, July 2004.
-    https://en.wikipedia.org/wiki/Depth-limited_search
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
+    The implementation of this function is adapted from David Eppstein's
+    depth-first search function in `PADS`_, with modifications
+    to allow depth limits based on the Wikipedia article
+    "`Depth-limited search`_".
+
+    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
+    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    pre = (v for u, v, d in nx.dfs_labeled_edges(G, source=source,
-           depth_limit=depth_limit) if d['dir'] == 'forward')
-    # potential modification: chain source to beginning of pre-ordering
-    # return chain([source],pre)
-    return pre
+    edges = nx.dfs_labeled_edges(G, source=source,depth_limit=depth_limit)
+    # potential modification: chain source to end of post-ordering
+    # return chain(post,[source])
+    return (v for u, v, d in edges if d['dir'] == 'forward')
 
 
 def dfs_labeled_edges(G, source=None, depth_limit=None):
@@ -306,11 +323,13 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
 
     Notes
     -----
-    Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
-    by D. Eppstein, July 2004.
-    https://en.wikipedia.org/wiki/Depth-limited_search
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
+    The implementation of this function is adapted from David Eppstein's
+    depth-first search function in `PADS`_, with modifications
+    to allow depth limits based on the Wikipedia article
+    "`Depth-limited search`_".
+
+    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
+    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     # Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
     # by D. Eppstein, July 2004.

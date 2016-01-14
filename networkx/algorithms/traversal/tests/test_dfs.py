@@ -68,7 +68,7 @@ class TestDFS:
         assert_equal(sorted(T.edges()),[])
 
 
-class Testdls:
+class TestDepthLimitedSearch:
 
     def setUp(self):
         # a tree
@@ -84,28 +84,27 @@ class Testdls:
 
     def dls_test_preorder_nodes(self):
         assert_equal(list(nx.dfs_preorder_nodes(self.G, source=0,
-        depth_limit=2)), [0, 1, 2])
+                     depth_limit=2)), [0, 1, 2])
         assert_equal(list(nx.dfs_preorder_nodes(self.D, source=1,
-        depth_limit=2)), ([1, 0]))
+                     depth_limit=2)), ([1, 0]))
 
     def dls_test_postorder_nodes(self):
         assert_equal(list(nx.dfs_postorder_nodes(self.G,
-        source=3, depth_limit=3)), [1, 7, 2, 5, 4, 3])
+                     source=3, depth_limit=3)), [1, 7, 2, 5, 4, 3])
         assert_equal(list(nx.dfs_postorder_nodes(self.D,
-        source=2, depth_limit=2)),
-            ([3, 7, 2]))
+                     source=2, depth_limit=2)),([3, 7, 2]))
 
     def dls_test_successor(self):
         assert_equal(nx.dfs_successors(self.G, source=4, depth_limit=3),
                      {2: [1, 7], 3: [2], 4: [3, 5], 5: [6]})
         assert_equal(nx.dfs_successors(self.D, source=7, depth_limit=2),
-            {8: [9], 2: [3], 7: [8, 2]})
+                     {8: [9], 2: [3], 7: [8, 2]})
 
     def dls_test_predecessor(self):
         assert_equal(nx.dfs_predecessors(self.G, source=0, depth_limit=3),
-                      {1: 0, 2: 1, 3: 2, 7: 2})
+                     {1: 0, 2: 1, 3: 2, 7: 2})
         assert_equal(nx.dfs_predecessors(self.D, source=2, depth_limit=3),
-            {8: 7, 9: 8, 3: 2, 7: 2})
+                     {8: 7, 9: 8, 3: 2, 7: 2})
 
     def test_dls_tree(self):
         T = nx.dfs_tree(self.G, source=3, depth_limit=1)
@@ -113,8 +112,8 @@ class Testdls:
 
     def test_dls_edges(self):
         edges = nx.dfs_edges(self.G, source=9, depth_limit=4)
-        assert_equal(list(edges),
-        [(9, 8), (8, 7), (7, 2), (2, 1), (2, 3), (9, 10)])
+        assert_equal(list(edges),[(9, 8), (8, 7),
+                     (7, 2), (2, 1), (2, 3), (9, 10)])
 
     def test_dls_labeled_edges(self):
         edges = list(nx.dfs_labeled_edges(self.G, source=5, depth_limit=1))
