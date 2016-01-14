@@ -6,6 +6,7 @@ from networkx.generators.classic import *
 from networkx.generators.community import *
 from networkx.generators.degree_seq import *
 from networkx.generators.directed import *
+from networkx.generators.duplication import *
 from networkx.generators.ego import *
 from networkx.generators.expanders import *
 from networkx.generators.geometric import *
