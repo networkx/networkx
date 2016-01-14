@@ -157,6 +157,9 @@ def dfs_predecessors(G, source=None, depth_limit=None):
 
     Notes
     -----
+    If a source is not specified then a source is chosen arbitrarily and
+    repeatedly until all components in the graph are searched.
+
     The implementation of this function is adapted from David Eppstein's
     depth-first search function in `PADS`_, with modifications
     to allow depth limits based on the Wikipedia article
@@ -196,6 +199,9 @@ def dfs_successors(G, source=None, depth_limit=None):
 
     Notes
     -----
+    If a source is not specified then a source is chosen arbitrarily and
+    repeatedly until all components in the graph are searched.
+
     The implementation of this function is adapted from David Eppstein's
     depth-first search function in `PADS`_, with modifications
     to allow depth limits based on the Wikipedia article
@@ -239,6 +245,9 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
 
     Notes
     -----
+    If a source is not specified then a source is chosen arbitrarily and
+    repeatedly until all components in the graph are searched.
+
     The implementation of this function is adapted from David Eppstein's
     depth-first search function in `PADS`_, with modifications
     to allow depth limits based on the Wikipedia article
@@ -282,6 +291,9 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
 
     Notes
     -----
+    If a source is not specified then a source is chosen arbitrarily and
+    repeatedly until all components in the graph are searched.
+
     The implementation of this function is adapted from David Eppstein's
     depth-first search function in `PADS`_, with modifications
     to allow depth limits based on the Wikipedia article
@@ -323,6 +335,9 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
 
     Notes
     -----
+    If a source is not specified then a source is chosen arbitrarily and
+    repeatedly until all components in the graph are searched.
+
     The implementation of this function is adapted from David Eppstein's
     depth-first search function in `PADS`_, with modifications
     to allow depth limits based on the Wikipedia article
