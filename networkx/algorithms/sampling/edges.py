@@ -10,7 +10,7 @@
 """Functions for sampling edges from a graph."""
 import random
 
-from .helpers import sample_with_replacement
+from networkx.algorithms.sampling.helpers import sample_with_replacement
 
 __all__ = ['uniform_independent_edge_sample']
 

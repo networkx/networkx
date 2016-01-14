@@ -11,8 +11,8 @@
 import random
 
 import networkx as nx
-from .helpers import sample_with_replacement
-from .helpers import weighted_sample_with_replacement
+from networkx.algorithms.sampling.helpers import sample_with_replacement
+from networkx.algorithms.sampling.helpers import weighted_sample_with_replacement
 
 __all__ = ['degree_weighted_independent_node_sample',
            'uniform_independent_node_sample']
