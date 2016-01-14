@@ -125,9 +125,9 @@ def test_pairwise():
     node_pairs_cycle = node_pairs + [(3, 0)]
     assert_equal(list(pairwise(nodes)), node_pairs)
     assert_equal(list(pairwise(iter(nodes))), node_pairs)
-    assert_equal(list(pairwise(nodes, cycle=True)), node_pairs_cycle)
+    assert_equal(list(pairwise(nodes, cyclic=True)), node_pairs_cycle)
     empty_iter = iter(())
     assert_equal(list(pairwise(empty_iter)), [])
     empty_iter = iter(())
-    assert_equal(list(pairwise(empty_iter, cycle=True)), [])
+    assert_equal(list(pairwise(empty_iter, cyclic=True)), [])
 

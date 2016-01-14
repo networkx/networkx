@@ -8,6 +8,10 @@ can be accessed, for example, as
 >>> networkx.utils.is_string_like('spam')
 True
 """
+# Authors:      Aric Hagberg (hagberg@lanl.gov),
+#               Dan Schult(dschult@colgate.edu),
+#               Ben Edwards(bedwards@cs.unm.edu)
+
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -18,6 +22,7 @@ import collections
 import sys
 import uuid
 from itertools import tee, chain
+
 # itertools.accumulate is only available on Python 3.2 or later.
 #
 # Once support for Python versions less than 3.2 is dropped, this code should
@@ -41,10 +46,6 @@ except ImportError:
             total = func(total, element)
             yield total
 
-
-__author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Ben Edwards(bedwards@cs.unm.edu)'])
 ### some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
@@ -222,11 +223,11 @@ def consume(iterator):
 
 
 # Recipe from the itertools documentation.
-def pairwise(iterable, cycle=False):
+def pairwise(iterable, cyclic=False):
     "s -> (s0, s1), (s1, s2), (s2, s3), ..."
     a, b = tee(iterable)
     first = next(b, None)
-    if cycle is True:
+    if cyclic is True:
         return zip(a, chain(b, (first,)))
     return zip(a, b)
 
