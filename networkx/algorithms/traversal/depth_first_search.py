@@ -46,6 +46,7 @@ def dfs_edges(G, source=None, depth_limit=None):
     >>> G.add_path([0,1,2,3,4])
     >>> print(list(nx.dfs_edges(G,0)))
     [(0, 1), (1, 2),(2, 3), (3, 4)]
+
     >>> print(list(nx.dfs_edges(G,0,2)))
     [(0, 1), (1, 2)]
 
@@ -116,6 +117,7 @@ def dfs_tree(G, source, depth_limit=None):
     >>> T = nx.dfs_tree(G,0,2)
     >>> print(list(T.edges()))
     [(0, 1), (1, 2)]
+
     >>> T = nx.dfs_tree(G,0)
     >>> print(list(T.edges()))
     [(0, 1), (1, 2), (2, 3), (3, 4)]
@@ -154,6 +156,7 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     >>> G.add_path([0,1,2,3])
     >>> print(nx.dfs_predecessors(G,0))
     {1: 0, 2: 1, 3: 2}
+
     >>> print(nx.dfs_predecessors(G,0,2))
     {1: 0, 2: 1}
 
@@ -198,6 +201,7 @@ def dfs_successors(G, source=None, depth_limit=None):
     >>> G.add_path([0,1,2,3,4])
     >>> print(nx.dfs_successors(G,0))
     {0: [1], 1: [2],2: [3],3: [4]}
+
     >>> print(nx.dfs_successors(G,0,2))
     {0: [1], 1: [2]}
 
@@ -246,8 +250,9 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     >>> G.add_path([0,1,2,3,4])
     >>> print(list(nx.dfs_postorder_nodes(G,0)))
     [4, 3, 2, 1, 0]
+
     >>> print(list(nx.dfs_postorder_nodes(G,0,2)))
-    [2, 1, 0]
+    [1, 0]
 
     Notes
     -----
@@ -294,8 +299,9 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     >>> G.add_path([0, 1, 2, 3, 4])
     >>> print(list(nx.dfs_preorder_nodes(G,0)))
     [0, 1, 2, 3, 4]
+
     >>> print(list(nx.dfs_preorder_nodes(G,0,2)))
-    [0, 1, 2]
+    [0, 1]
 
     Notes
     -----
