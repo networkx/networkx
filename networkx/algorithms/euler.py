@@ -144,6 +144,6 @@ def eulerian_circuit(G, source=None):
             last_vertex = current_vertex
             vertex_stack.pop()
         else:
-            arbitrary_edge = next(edges(current_vertex))
+            arbitrary_edge = arbitrary_element(edges(current_vertex))
             vertex_stack.append(get_vertex(arbitrary_edge))
             g.remove_edge(*arbitrary_edge)
