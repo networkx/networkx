@@ -1,9 +1,3 @@
-#    Copyright (C) 2004-2016 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """
 Generators for some classic graphs.
 
@@ -16,6 +10,14 @@ as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
+# Authors: Aric Hagberg (hagberg@lanl.gov) and Pieter Swart (swart@lanl.gov)
+
+#    Copyright (C) 2004-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 from __future__ import division
 
 import itertools
@@ -26,8 +28,6 @@ from networkx.utils import accumulate
 from networkx.utils import flatten
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
-
-# Authors: Aric Hagberg (hagberg@lanl.gov) and Pieter Swart (swart@lanl.gov)
 
 __all__ = ['balanced_tree',
            'barbell_graph',
@@ -86,8 +86,9 @@ def full_rary_tree(r, n, create_using=None):
         branching factor of the tree
     n : int
         Number of nodes in the tree
-    create_using : NetworkX graph type, optional
-        Use specified type to construct graph (default = networkx.Graph)
+    create_using : Graph, optional (default None)
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Returns
     -------
@@ -116,10 +117,9 @@ def balanced_tree(r, h, create_using=None):
     h : int
         Height of the tree.
 
-    create_using : NetworkX graph
-        Use the specified graph as the base for the generated tree; see
-        the documentation of :func:`~networkx.empty_graph` for more
-        information.
+    create_using : Graph, optional (default None)
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Returns
     -------
@@ -203,7 +203,29 @@ def barbell_graph(m1, m2, create_using=None):
 def complete_graph(n, create_using=None):
     """ Return the complete graph `K_n` with n nodes.
 
-    Node labels are the integers 0 to n-1.
+    Parameters
+    ==========
+    n : int or iterable container of nodes
+        If n is an integer, nodes are from range(n).
+        If n is a container of nodes, those nodes appear in the graph.
+    create_using : Graph, optional (default None)
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
+
+    Examples
+    ========
+    >>> G = nx.complete_graph(9)
+    >>> len(G)
+    9
+    >>> G.size()
+    36
+    >>> G = nx.complete_graph(range(11,14))
+    >>> G.nodes()
+    [11, 12, 13]
+    >>> G = nx.complete_graph(4, nx.DiGraph())
+    >>> G.is_directed()
+    True
+
     """
     n_name, nodes = n
     G = empty_graph(n_name, create_using)
@@ -248,8 +270,9 @@ def circulant_graph(n, offsets, create_using=None):
         The number of vertices the generated graph is to contain.
     offsets : list of integers
         A list of vertex offsets, x_1 up to x_m, as described above.
-    create_using : NetworkX graph type, optional
-        Use specified type to construct graph (default = networkx.Graph)
+    create_using : Graph, optional (default None)
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Examples
     --------
@@ -294,10 +317,18 @@ def cycle_graph(n, create_using=None):
 
     `C_n` is a path with its two end-nodes connected.
 
-    If `nodes` is an iterable, it contains the nodes in the cycle.
-    Otherwise `range(nodes)` is used and `nodes` must be a number.
+    Parameters
+    ==========
+    n : int or iterable container of nodes
+        If n is an integer, nodes are from `range(n)`.
+        If n is a container of nodes, those nodes appear in the graph.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
-    If create_using is a DiGraph, the direction is in increasing order.
+    Notes
+    =====
+    If create_using is directed, the direction is in increasing order.
 
     """
     n_orig, nodes = n
@@ -340,8 +371,14 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
 def empty_graph(n=0, create_using=None):
     """Return the empty graph with n nodes and zero edges.
 
-    If n is iterable, it holds the node labels.
-    Otherwise node labels are the integers 0 to n-1
+    Parameters
+    ==========
+    n : int or iterable container of nodes (default = 0)
+        If n is an integer, nodes are from `range(n)`.
+        If n is a container of nodes, those nodes appear in the graph.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     For example:
     >>> G=nx.empty_graph(10)
@@ -355,6 +392,8 @@ def empty_graph(n=0, create_using=None):
     >>> sorted(G)
     ['A', 'B', 'C']
 
+    Notes
+    =====
     The variable create_using should point to a "graph"-like object that
     will be cleared (nodes and edges will be removed) and refitted as
     an empty "graph" with nodes specified in n. This capability
@@ -394,10 +433,20 @@ def empty_graph(n=0, create_using=None):
 
 @nodes_or_number([0, 1])
 def grid_2d_graph(m, n, periodic=False, create_using=None):
-    """ Return the 2d grid graph of mxn nodes,
-        each connected to its nearest neighbors.
-        Optional argument periodic=True will connect
-        boundary nodes via periodic boundary conditions.
+    """ Return the 2d grid graph of mxn nodes
+    
+    The grid graph has each node connected to its four nearest neighbors.
+
+    Parameters
+    ==========
+    m, n : int or iterable container of nodes (default = 0)
+        If an integer, nodes are from `range(n)`.
+        If a container, those become the coordinate of the node.
+    periodic : bool (default = False)
+        If True will connect boundary nodes in periodic fashion.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
     """
     G = empty_graph(0, create_using)
     row_name, rows = m
@@ -509,13 +558,22 @@ def lollipop_graph(m, n, create_using=None):
 
     This is the Barbell Graph without the right barbell.
 
-    For m>1 and n>=0, the complete graph K_m is connected to the
-    path P_n.  The resulting m+n nodes are labelled 0, ..., m-1 for the
-    complete graph and m, ..., m+n-1 for the path. The 2 subgraphs
-    are joined via the edge (m-1, m).  If n=0, this is merely a complete
-    graph.
+    Parameters
+    ==========
+    m, n : int or iterable container of nodes (default = 0)
+        If an integer, nodes are from `range(m)` and `range(m,m+n)`.
+        If a container, those become the coordinate of the node.
 
-    Node labels are the integers 0 to number_of_nodes - 1.
+        The nodes for m appear in the complete graph `K_m` and the nodes
+        for n appear in the path `P_n`
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
+
+    Notes
+    =====
+    The 2 subgraphs are joined via an edge (m-1, m).  
+    If n=0, this is merely a complete graph.
 
     (This graph is an extremal example in David Aldous and Jim
     Fill's etext on Random Walks on Graphs.)
@@ -564,11 +622,14 @@ def null_graph(create_using=None):
 def path_graph(n, create_using=None):
     """Return the Path graph `P_n` of linearly connected nodes.
 
-    If `nodes` is an iterable, it contains the nodes in the path.
-    Otherwise `range(nodes)` is used and `nodes` must be a number.
-
-    If create_using is a DiGraph then the edges are directed in
-    increasing order.
+    Parameters
+    ==========
+    n : int or iterable
+        If an integer, node labels are 0 to n with center 0.
+        If an iterable of nodes, the center is the first.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     """
     n_name, nodes = n
@@ -580,16 +641,18 @@ def path_graph(n, create_using=None):
 
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
-    """ Return the Star graph: one center node connected to n outer nodes.
+    """ Return the star graph
+    
+    The star graph consists of one center node connected to n outer nodes.
 
     Parameters
     ==========
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
-
-    create_using : graph, optional (default Graph())
-       Return graph of this type. The instance will be cleared.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
 
     Notes
     =====
@@ -609,7 +672,7 @@ def star_graph(n, create_using=None):
 
 
 def trivial_graph(create_using=None):
-    """ Return the Trivial graph with one node (with integer label 0) and no edges.
+    """ Return the Trivial graph with one node (with label 0) and no edges.
 
     """
     G = empty_graph(1, create_using)
@@ -619,8 +682,18 @@ def trivial_graph(create_using=None):
 
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
-    """ Return the wheel graph: a single hub node connected to each node of the (n-1)-node cycle graph.
+    """ Return the wheel graph
+    
+    The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
 
+    Parameters
+    ==========
+    n : int or iterable
+        If an integer, node labels are 0 to n with center 0.
+        If an iterable of nodes, the center is the first.
+    create_using : Graph, optional (default Graph())
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
     Node labels are the integers 0 to n - 1.
 
     """
