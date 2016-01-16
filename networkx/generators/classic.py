@@ -220,7 +220,7 @@ def complete_graph(n, create_using=None):
     >>> G.size()
     36
     >>> G = nx.complete_graph(range(11,14))
-    >>> G.nodes()
+    >>> list(G.nodes())
     [11, 12, 13]
     >>> G = nx.complete_graph(4, nx.DiGraph())
     >>> G.is_directed()
