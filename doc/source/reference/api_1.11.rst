@@ -10,6 +10,10 @@ Please send comments and questions to the networkx-discuss mailing list:
 
 API changes
 -----------
+* [`#1930 <https://github.com/networkx/networkx/pull/1930>`_] 
+  No longer import nx_agraph and nx_pydot into the top-level namespace.
+  They can be accessed within networkx as e.g. ``nx.nx_agraph.write_dot``
+  or imported as ``from networkx.drawing.nx_agraph import write_dot``.
 
 * [`#1750 <https://github.com/networkx/networkx/pull/1750>`_]
   Arguments center and scale are now available for all layout functions.
@@ -29,7 +33,7 @@ Miscellaneous changes
   Set up appveyor to automatically test installation on Windows machines.
   Remove symbolic links in examples to help such istallation.
 
-Change many doc_string typos to allow sphinx 
+Change many doc_string typos to allow sphinx
 to build the docs without errors or warnings. 
 
 Enable the docs to be automatically built on 
