@@ -174,12 +174,12 @@ def get_info(dynamic=True):
 ## Version information
 name = 'networkx'
 major = '1'
-minor = '11rc1'
+minor = '11rc2'
 
 
 ## Declare current release as a development release.
 ## Change to False before tagging a release; then change back.
-dev = True
+dev = False
 
 
 description = "Python package for creating and manipulating graphs and networks"
@@ -224,4 +224,3 @@ date, date_info, version, version_info, vcs_info = get_info()
 if __name__ == '__main__':
     # Write versionfile for nightly snapshots.
     write_versionfile()
-
