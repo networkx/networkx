@@ -44,10 +44,10 @@ def dfs_edges(G, source=None, depth_limit=None):
     --------
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2,3,4])
-    >>> print(list(nx.dfs_edges(G,0)))
+    >>> list(nx.dfs_edges(G,0))
     [(0, 1), (1, 2), (2, 3), (3, 4)]
 
-    >>> print(list(nx.dfs_edges(G,0,2)))
+    >>> list(nx.dfs_edges(G,0,2))
     [(0, 1), (1, 2)]
 
     Notes
@@ -113,11 +113,11 @@ def dfs_tree(G, source, depth_limit=None):
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2,3,4])
     >>> T = nx.dfs_tree(G,0,2)
-    >>> print(list(T.edges()))
+    >>> list(T.edges())
     [(0, 1), (1, 2)]
 
     >>> T = nx.dfs_tree(G,0)
-    >>> print(list(T.edges()))
+    >>> list(T.edges())
     [(0, 1), (1, 2), (2, 3), (3, 4)]
     """
     T = nx.DiGraph()
@@ -152,10 +152,10 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     --------
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2,3])
-    >>> print(nx.dfs_predecessors(G,0))
+    >>> nx.dfs_predecessors(G,0)
     {1: 0, 2: 1, 3: 2}
 
-    >>> print(nx.dfs_predecessors(G,0,2))
+    >>> nx.dfs_predecessors(G,0,2)
     {1: 0, 2: 1}
 
     Notes
@@ -197,10 +197,10 @@ def dfs_successors(G, source=None, depth_limit=None):
     --------
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2,3,4])
-    >>> print(nx.dfs_successors(G,0))
+    >>> nx.dfs_successors(G,0)
     {0: [1], 1: [2], 2: [3], 3: [4]}
 
-    >>> print(nx.dfs_successors(G,0,2))
+    >>> nx.dfs_successors(G,0,2)
     {0: [1], 1: [2]}
 
     Notes
@@ -246,10 +246,10 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     --------
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2,3,4])
-    >>> print(list(nx.dfs_postorder_nodes(G,0)))
+    >>> list(nx.dfs_postorder_nodes(G,0))
     [4, 3, 2, 1, 0]
 
-    >>> print(list(nx.dfs_postorder_nodes(G,0,2)))
+    >>> list(nx.dfs_postorder_nodes(G,0,2))
     [1, 0]
 
     Notes
@@ -265,7 +265,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    edges = nx.dfs_labeled_edges(G, source=source,depth_limit=depth_limit)
+    edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
     # potential modification: chain source to end of post-ordering
     # return chain(post,[source])
     return (v for u, v, d in edges if d['dir'] == 'reverse')
@@ -295,10 +295,10 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     --------
     >>> G = nx.Graph()
     >>> G.add_path([0, 1, 2, 3, 4])
-    >>> print(list(nx.dfs_preorder_nodes(G,0)))
+    >>> list(nx.dfs_preorder_nodes(G,0))
     [0, 1, 2, 3, 4]
 
-    >>> print(list(nx.dfs_preorder_nodes(G,0,2)))
+    >>> list(nx.dfs_preorder_nodes(G,0,2))
     [0, 1, 2]
 
     Notes
@@ -314,7 +314,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    edges = nx.dfs_labeled_edges(G, source=source,depth_limit=depth_limit)
+    edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
     # potential modification: chain source to end of post-ordering
     # return chain(post,[source])
     return (v for u, v, d in edges if d['dir'] == 'forward')
@@ -343,7 +343,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     --------
     >>> G = nx.Graph()
     >>> G.add_path([0,1,2])
-    >>> edges = (list(nx.dfs_labeled_edges(G,0)))
+    >>> edges = list(nx.dfs_labeled_edges(G,0))
 
     Notes
     -----
