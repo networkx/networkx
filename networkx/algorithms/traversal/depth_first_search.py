@@ -266,8 +266,6 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
-    # potential modification: chain source to end of post-ordering
-    # return chain(post,[source])
     return (v for u, v, d in edges if d['dir'] == 'reverse')
 
 
@@ -315,8 +313,6 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
-    # potential modification: chain source to end of post-ordering
-    # return chain(post,[source])
     return (v for u, v, d in edges if d['dir'] == 'forward')
 
 
@@ -377,9 +373,6 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
         stack = [(start, depth_limit, iter(G[start]))]
         while stack:
             parent, depth_now, children = stack[-1]
-            if depth_now < 1:
-                stack.pop()
-                continue
             try:
                 child = next(children)
                 if child in visited:
@@ -387,7 +380,8 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
                 else:
                     yield parent, child, {'dir': 'forward'}
                     visited.add(child)
-                    stack.append((child, depth_now-1, iter(G[child])))
+                    if depth_now > 1:
+                        stack.append((child, depth_now-1, iter(G[child])))
             except StopIteration:
                 stack.pop()
                 if stack:
