@@ -1,9 +1,40 @@
-#!/usr/bin/env python
-from nose.tools import *
-from networkx import *
-from networkx.generators.random_graphs import *
+# -*- encoding: utf-8 -*-
+# test_random_graphs.py - unit tests for random graph generators
+#
+# Copyright 2010–2016 NetworkX developers.
+#
+# This file is part of NetworkX.
+#
+# NetworkX is distributed under a BSD license; see LICENSE.txt for more
+# information.
+"""Unit tests for the :mod:`networkx.generators.random_graphs` module.
 
-class TestGeneratorsRandom():
+"""
+from nose.tools import assert_almost_equal
+from nose.tools import assert_equal
+from nose.tools import assert_raises
+from nose.tools import assert_true
+
+from networkx.exception import NetworkXError
+from networkx.generators.random_graphs import barabasi_albert_graph
+from networkx.generators.random_graphs import binomial_graph
+from networkx.generators.random_graphs import connected_watts_strogatz_graph
+from networkx.generators.random_graphs import dense_gnm_random_graph
+from networkx.generators.random_graphs import erdos_renyi_graph
+from networkx.generators.random_graphs import fast_gnp_random_graph
+from networkx.generators.random_graphs import gnm_random_graph
+from networkx.generators.random_graphs import gnp_random_graph
+from networkx.generators.random_graphs import newman_watts_strogatz_graph
+from networkx.generators.random_graphs import powerlaw_cluster_graph
+from networkx.generators.random_graphs import random_kernel_graph
+from networkx.generators.random_graphs import random_lobster
+from networkx.generators.random_graphs import random_regular_graph
+from networkx.generators.random_graphs import random_shell_graph
+from networkx.generators.random_graphs import watts_strogatz_graph
+
+
+class TestGeneratorsRandom(object):
+
     def smoke_test_random_graph(self):
         seed = 42
         G=gnp_random_graph(100,0.25,seed)
@@ -41,22 +72,14 @@ class TestGeneratorsRandom():
         G=powerlaw_cluster_graph(100,3,0.0,seed)
         assert_equal(G.number_of_edges(),(97*3))
 
-        G=duplication_divergence_graph(100,1.0,seed)
-        assert_equal(len(G), 100)
-        assert_raises(networkx.exception.NetworkXError,
-                      duplication_divergence_graph, 100, 2)
-        assert_raises(networkx.exception.NetworkXError,
-                      duplication_divergence_graph, 100, -1)
-
         G=random_regular_graph(10,20,seed)
 
-        assert_raises(networkx.exception.NetworkXError,
-                      random_regular_graph, 3, 21)
+        assert_raises(NetworkXError, random_regular_graph, 3, 21)
 
         constructor=[(10,20,0.8),(20,40,0.8)]
         G=random_shell_graph(constructor,seed)
 
-        G=nx.random_lobster(10,0.1,0.5,seed)
+        G=random_lobster(10,0.1,0.5,seed)
 
     def test_random_zero_regular_graph(self):
         """Tests that a 0-regular graph has the correct number of nodes and
@@ -127,10 +150,8 @@ class TestGeneratorsRandom():
         assert_equal(sum(1 for _ in G.edges()),0)
 
     def test_watts_strogatz_big_k(self):
-        assert_raises(networkx.exception.NetworkXError,
-                watts_strogatz_graph, 10, 10, 0.25)
-        assert_raises(networkx.exception.NetworkXError,
-                newman_watts_strogatz_graph, 10, 10, 0.25)
+        assert_raises(NetworkXError, watts_strogatz_graph, 10, 10, 0.25)
+        assert_raises(NetworkXError, newman_watts_strogatz_graph, 10, 10, 0.25)
         # could create an infinite loop, now doesn't
         # infinite loop used to occur when a node has degree n-1 and needs to rewire
         watts_strogatz_graph(10, 9, 0.25, seed=0)
