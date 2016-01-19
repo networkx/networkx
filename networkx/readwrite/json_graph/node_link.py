@@ -1,11 +1,10 @@
-#    Copyright (C) 2011-2013 by
+#    Copyright (C) 2011-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 from itertools import chain, count
-import json
 import networkx as nx
 from networkx.utils import make_str
 __author__ = """Aric Hagberg <hagberg@lanl.gov>"""
@@ -45,6 +44,7 @@ def node_link_data(G, attrs=_attrs):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> from networkx.readwrite import json_graph
     >>> G = nx.Graph([(1,2)])
     >>> data = json_graph.node_link_data(G)
@@ -78,7 +78,6 @@ def node_link_data(G, attrs=_attrs):
     data = {}
     data['directed'] = G.is_directed()
     data['multigraph'] = multigraph
-    data['graph'] = G.graph
     data['nodes'] = [dict(chain(G.node[n].items(), [(id_, n)])) for n in G]
     if multigraph:
         data['links'] = [
@@ -121,6 +120,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=_attrs):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> from networkx.readwrite import json_graph
     >>> G = nx.Graph([(1,2)])
     >>> data = json_graph.node_link_data(G)
