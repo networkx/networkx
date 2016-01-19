@@ -1,4 +1,4 @@
-#    Copyright (C) 2011-2013 by
+#    Copyright (C) 2011-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -41,6 +41,7 @@ def adjacency_data(G, attrs=_attrs):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> from networkx.readwrite import json_graph
     >>> G = nx.Graph([(1,2)])
     >>> data = json_graph.adjacency_data(G)
@@ -71,7 +72,6 @@ def adjacency_data(G, attrs=_attrs):
     data = {}
     data['directed'] = G.is_directed()
     data['multigraph'] = multigraph
-    data['graph'] = list(G.graph.items())
     data['nodes'] = []
     data['adjacency'] = []
     for n, nbrdict in G.adjacency():
@@ -115,6 +115,7 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> from networkx.readwrite import json_graph
     >>> G = nx.Graph([(1,2)])
     >>> data = json_graph.adjacency_data(G)
