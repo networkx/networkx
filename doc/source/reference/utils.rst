@@ -18,6 +18,7 @@ Helper Functions
    make_str
    generate_unique_node
    default_opener
+   pairwise
 
 Data Structures and Algorithms
 ------------------------------
