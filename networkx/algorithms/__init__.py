@@ -3,7 +3,7 @@ from networkx.algorithms.boundary import *
 from networkx.algorithms.centrality import *
 from networkx.algorithms.cluster import *
 from networkx.algorithms.clique import *
-from networkx.algorithms.communicability import *
+from networkx.algorithms.communicability_alg import *
 from networkx.algorithms.community import *
 from networkx.algorithms.components import *
 from networkx.algorithms.coloring import *
