@@ -19,10 +19,10 @@ __all__ = ['communicability',
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def communicability_exp(G):
+def communicability(G):
     r"""Return communicability between all pairs of nodes in G.
 
-    Communicability between pair of node (u,v) of node in G is the sum of
+    The communicability between pairs of nodes in G is the sum of
     closed walks of different lengths starting at node u and ending at node v.
 
     Parameters
@@ -38,31 +38,30 @@ def communicability_exp(G):
     Raises
     ------
     NetworkXError
-        If the graph is not undirected and simple.
+       If the graph is not undirected and simple.
 
     See Also
     --------
-    communicability_centrality_exp:
-       Communicability centrality for each node of G using matrix exponential.
-    communicability_centrality:
-       Communicability centrality for each node in G using spectral
-       decomposition.
     communicability_exp:
        Communicability between all pairs of nodes in G  using spectral
        decomposition.
+    communicability_betweenness_centrality:
+       Communicability betweeness centrality for each node in G.
 
     Notes
     -----
-    This algorithm uses matrix exponentiation of the adjacency matrix.
-
+    This algorithm uses a spectral decomposition of the adjacency matrix.
     Let G=(V,E) be a simple undirected graph.  Using the connection between
     the powers  of the adjacency matrix and the number of walks in the graph,
-    the communicability between nodes u and v is [1]_,
+    the communicability  between nodes `u` and `v` based on the graph spectrum
+    is [1]_
 
     .. math::
-        C(u,v) = (e^A)_{uv},
+        C(u,v)=\sum_{j=1}^{n}\phi_{j}(u)\phi_{j}(v)e^{\lambda_{j}},
 
-    where `A` is the adjacency matrix of G.
+    where `\phi_{j}(u)` is the `u\rm{th}` element of the `j\rm{th}` orthonormal
+    eigenvector of the adjacency matrix associated with the eigenvalue
+    `\lambda_{j}`.
 
     References
     ----------
@@ -74,21 +73,28 @@ def communicability_exp(G):
     Examples
     --------
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> c = nx.communicability_exp(G)
+    >>> c = nx.communicability(G)
     """
+    import numpy
     import scipy.linalg
-    nodelist = list(G) # ordering of nodes in matrix
+    nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
-    # communicability matrix
-    expA = scipy.linalg.expm(A)
+    w,vec = numpy.linalg.eigh(A)
+    expw = numpy.exp(w)
     mapping = dict(zip(nodelist,range(len(nodelist))))
-    c = {}
+    c={}
+    # computing communicabilities
     for u in G:
         c[u]={}
         for v in G:
-            c[u][v] = float(expA[mapping[u],mapping[v]])
+            s = 0
+            p = mapping[u]
+            q = mapping[v]
+            for j in range(len(nodelist)):
+                s += vec[:,j][p,0]*vec[:,j][q,0]*expw[j]
+            c[u][v] = float(s)
     return c
 
 @not_implemented_for('directed')
@@ -116,14 +122,10 @@ def communicability_exp(G):
 
     See Also
     --------
-    communicability_centrality_exp:
-       Communicability centrality for each node of G using matrix exponential.
-    communicability_centrality:
-       Communicability centrality for each node in G using spectral
-       decomposition.
-    communicability_exp:
-       Communicability between all pairs of nodes in G  using spectral
-       decomposition.
+    communicability:
+       Communicability between pairs of nodes in G.
+    communicability_betweenness_centrality:
+       Communicability betweeness centrality for each node in G.
 
     Notes
     -----
