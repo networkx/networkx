@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Subraph centrality and communicability betweenness.
 """
