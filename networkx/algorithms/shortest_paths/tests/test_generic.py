@@ -152,9 +152,16 @@ class TestGenericPath:
         assert_equal([[0,1,2,3],[0,10,20,3]],
                      sorted(nx.all_shortest_paths(G,0,3)))
 
-    @raises(nx.NetworkXNoPath)
-    def test_all_shortest_paths_raise(self):
+    @raises(nx.PathNotFound)
+    def test_all_shortest_paths_target_not_present(self):
         G = nx.Graph()
         G.add_path([0,1,2,3])
         G.add_node(4)
         paths = list(nx.all_shortest_paths(G,0,4))
+
+    @raises(nx.InvalidNode)
+    def test_all_shortest_paths_source_not_present(self):
+        G = nx.Graph()
+        G.add_edge("A", "B")
+        G.add_edge("B", "C")
+        list(nx.all_shortest_paths(G, "D", "A"))

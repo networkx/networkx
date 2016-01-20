@@ -336,6 +336,11 @@ def all_shortest_paths(G, source, target, weight=None):
     paths: generator of lists
         A generator of all paths between source and target.
 
+    Raises
+    ------
+    InvalidNode:
+       if the source node is not present in the graph
+
     Examples
     --------
     >>> G=nx.Graph()
@@ -354,12 +359,16 @@ def all_shortest_paths(G, source, target, weight=None):
     single_source_shortest_path()
     all_pairs_shortest_path()
     """
+    if source not in G:
+        raise nx.InvalidNode("source node {} not found in graph".format(source))
+
     if weight is not None:
         pred,dist = nx.dijkstra_predecessor_and_distance(G,source,weight=weight)
     else:
         pred = nx.predecessor(G,source)
+
     if target not in pred:
-        raise nx.NetworkXNoPath()
+        raise nx.PathNotFound()
     stack = [[target,0]]
     top = 0
     while top >= 0:

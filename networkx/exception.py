@@ -52,3 +52,11 @@ class NetworkXUnbounded(NetworkXAlgorithmError):
 
 class NetworkXNotImplemented(NetworkXException):
     """Exception raised by algorithms not implemented for a type of graph."""
+
+class InvalidNode(NetworkXException):
+    """Exception raised by an algorithm when source or target nodes are not
+    present in the graph"""
+
+class PathNotFound(NetworkXException):
+    """Exception for algorithms that should return a path when running
+    on graphs where such a path does not exist."""
