@@ -458,9 +458,11 @@ def blockmodel(G, partition, multigraph=False):
     .. [1] Patrick Doreian, Vladimir Batagelj, and Anuska Ferligoj
            "Generalized Blockmodeling",Cambridge University Press, 2004.
 
-    Notes
-    -----
-    This function has been deprecated. Please use ``quotient_graph`` instead.
+    .. note:: Deprecated in NetworkX v1.11
+
+        ``blockmodel`` will be removed in NetworkX 2.0. Instead use
+        ``quotient_graph`` with keyword argument ``relabel=True``, and
+        ``create_using=nx.MultiGraph()`` for multigraphs.
     """
     if multigraph:
         return nx.quotient_graph(G, partition,
