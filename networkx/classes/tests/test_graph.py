@@ -203,32 +203,51 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_equal(G.name,"test")
 
     def test_copy(self):
-        G=self.K3
+        G = self.Graph()
+        G.add_node(0)
+        G.add_edge(1, 2)
         self.add_attributes(G)
-        H=G.copy()
-        self.is_deepcopy(H,G)
-        H=G.__class__(G)
-        self.is_shallow_copy(H,G)
+        # deepcopy
+        H = G.copy()
+        self.is_deepcopy(H, G)
 
-    def test_copy_without_data(self):
-        """Tests for creating a copy of the graph without any of the
-        graph, node, or edge data attributes.
+    def test_class_copy(self):
+        G = self.Graph()
+        G.add_node(0)
+        G.add_edge(1, 2)
+        self.add_attributes(G)
+        # copy edge datadict but any container attr are same
+        H = G.__class__(G)
+        self.graphs_equal(H,G)
+        self.different_attrdict(H, G)
+        self.shallow_copy_attrdict(H,G)
 
-        """
-        G = self.K3.copy(with_data=False)
-        nodes = set(self.K3)
-        assert_equal(G.graph, {})
-        assert_equal(G.node, {v: {} for v in nodes})
-        assert_equal(G.edge, {u: {v: {} for v in nodes - {u}} for u in nodes})
+    def test_attr_reference(self):
+        G = self.Graph()
+        G.add_node(0)
+        G.add_edge(1, 2)
+        self.add_attributes(G)
+        # copy datadict by reference (with_data=False)
+        H = G.copy(with_data=False)
+        self.graphs_equal(H,G)
+        self.same_attrdict(H, G)
+        self.shallow_copy_attrdict(H,G)
 
-    def test_copy_attr(self):
-        G=self.Graph(foo=[])
-        G.add_node(0,foo=[])
-        G.add_edge(1,2,foo=[])
-        H=G.copy()
-        self.is_deepcopy(H,G)
-        H=G.__class__(G) # just copy
-        self.is_shallow_copy(H,G)
+    def test_fresh_copy(self):
+        G = self.Graph()
+        G.add_node(0)
+        G.add_edge(1, 2)
+        self.add_attributes(G)
+        # copy graph structure but use fresh datadict
+        H = G.__class__()
+        H.add_nodes_from(G)
+        H.add_edges_from(G.edges())
+        assert_equal(len(G.node[0]), 1)
+        ddict = G.adj[1][2][0] if G.is_multigraph() else G.adj[1][2]
+        assert_equal(len(ddict), 1)
+        assert_equal(len(H.node[0]), 0)
+        ddict = H.adj[1][2][0] if H.is_multigraph() else H.adj[1][2]
+        assert_equal(len(ddict), 0)
 
     def is_deepcopy(self,H,G):
         self.graphs_equal(H,G)
@@ -257,7 +276,6 @@ class BaseAttrGraphTester(BaseGraphTester):
 
     def is_shallow_copy(self,H,G):
         self.graphs_equal(H,G)
-        self.different_attrdict(H,G)
         self.shallow_copy_attrdict(H,G)
 
     def shallow_copy_attrdict(self,H,G):
@@ -413,6 +431,7 @@ class BaseAttrGraphTester(BaseGraphTester):
         self.add_attributes(G)
         H=networkx.Graph(G)
         self.is_shallow_copy(H,G)
+        self.different_attrdict(H,G)
         H=G.to_undirected()
         self.is_deepcopy(H,G)
 
@@ -421,6 +440,7 @@ class BaseAttrGraphTester(BaseGraphTester):
         self.add_attributes(G)
         H=networkx.DiGraph(G)
         self.is_shallow_copy(H,G)
+        self.different_attrdict(H,G)
         H=G.to_directed()
         self.is_deepcopy(H,G)
 
