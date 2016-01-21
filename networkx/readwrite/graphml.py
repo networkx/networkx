@@ -382,8 +382,8 @@ class GraphMLWriter(GraphML):
                                 id=graphid)
 
         default={}
-        data=dict((k,v) for (k,v) in  G.graph.items()
-                  if k not in ['node_default','edge_default'])
+        data = {k: v for (k, v) in G.graph.items()
+                if k not in ['node_default', 'edge_default']}
         self.add_attributes("graph", graph_element, data, default)
         self.add_nodes(G,graph_element)
         self.add_edges(G,graph_element)

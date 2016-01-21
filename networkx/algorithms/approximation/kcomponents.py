@@ -1,6 +1,6 @@
 """ Fast approximation for k-component structure
 """
-#    Copyright (C) 2015 by 
+#    Copyright (C) 2015 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    All rights reserved.
 #    BSD license.
@@ -26,19 +26,19 @@ __all__ = ['k_components']
 not_implemented_for('directed')
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
-    
-    A `k`-component is a maximal subgraph of a graph G that has, at least, 
+
+    A `k`-component is a maximal subgraph of a graph G that has, at least,
     node connectivity `k`: we need to remove at least `k` nodes to break it
     into more components. `k`-components have an inherent hierarchical
-    structure because they are nested in terms of connectivity: a connected 
-    graph can contain several 2-components, each of which can contain 
+    structure because they are nested in terms of connectivity: a connected
+    graph can contain several 2-components, each of which can contain
     one or more 3-components, and so forth.
 
     This implementation is based on the fast heuristics to approximate
     the `k`-component sturcture of a graph [1]_. Which, in turn, it is based on
-    a fast approximation algorithm for finding good lower bounds of the number 
+    a fast approximation algorithm for finding good lower bounds of the number
     of node independent paths between two nodes [2]_.
-  
+
     Parameters
     ----------
     G : NetworkX graph
@@ -52,39 +52,39 @@ def k_components(G, min_density=0.95):
     k_components : dict
         Dictionary with connectivity level `k` as key and a list of
         sets of nodes that form a k-component of level `k` as values.
-        
+
 
     Examples
     --------
-    >>> # Petersen graph has 10 nodes and it is triconnected, thus all 
+    >>> # Petersen graph has 10 nodes and it is triconnected, thus all
     >>> # nodes are in a single component on all three connectivity levels
     >>> from networkx.algorithms import approximation as apxa
     >>> G = nx.petersen_graph()
     >>> k_components = apxa.k_components(G)
-    
+
     Notes
     -----
-    The logic of the approximation algorithm for computing the `k`-component 
-    structure [1]_ is based on repeatedly applying simple and fast algorithms 
-    for `k`-cores and biconnected components in order to narrow down the 
+    The logic of the approximation algorithm for computing the `k`-component
+    structure [1]_ is based on repeatedly applying simple and fast algorithms
+    for `k`-cores and biconnected components in order to narrow down the
     number of pairs of nodes over which we have to compute White and Newman's
     approximation algorithm for finding node independent paths [2]_. More
-    formally, this algorithm is based on Whitney's theorem, which states 
-    an inclusion relation among node connectivity, edge connectivity, and 
-    minimum degree for any graph G. This theorem implies that every 
-    `k`-component is nested inside a `k`-edge-component, which in turn, 
+    formally, this algorithm is based on Whitney's theorem, which states
+    an inclusion relation among node connectivity, edge connectivity, and
+    minimum degree for any graph G. This theorem implies that every
+    `k`-component is nested inside a `k`-edge-component, which in turn,
     is contained in a `k`-core. Thus, this algorithm computes node independent
     paths among pairs of nodes in each biconnected part of each `k`-core,
-    and repeats this procedure for each `k` from 3 to the maximal core number 
+    and repeats this procedure for each `k` from 3 to the maximal core number
     of a node in the input graph.
 
-    Because, in practice, many nodes of the core of level `k` inside a 
-    bicomponent actually are part of a component of level k, the auxiliary 
-    graph needed for the algorithm is likely to be very dense. Thus, we use 
-    a complement graph data structure (see `AntiGraph`) to save memory. 
-    AntiGraph only stores information of the edges that are *not* present 
-    in the actual auxiliary graph. When applying algorithms to this 
-    complement graph data structure, it behaves as if it were the dense 
+    Because, in practice, many nodes of the core of level `k` inside a
+    bicomponent actually are part of a component of level k, the auxiliary
+    graph needed for the algorithm is likely to be very dense. Thus, we use
+    a complement graph data structure (see `AntiGraph`) to save memory.
+    AntiGraph only stores information of the edges that are *not* present
+    in the actual auxiliary graph. When applying algorithms to this
+    complement graph data structure, it behaves as if it were the dense
     version.
 
     See also
@@ -93,16 +93,16 @@ def k_components(G, min_density=0.95):
 
     References
     ----------
-    .. [1]  Torrents, J. and F. Ferraro (2015) Structural Cohesion: 
+    .. [1]  Torrents, J. and F. Ferraro (2015) Structural Cohesion:
             Visualization and Heuristics for Fast Computation.
             http://arxiv.org/pdf/1503.04476v1
 
-    .. [2]  White, Douglas R., and Mark Newman (2001) A Fast Algorithm for 
+    .. [2]  White, Douglas R., and Mark Newman (2001) A Fast Algorithm for
             Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
             http://eclectic.ss.uci.edu/~drwhite/working.pdf
 
-    .. [3]  Moody, J. and D. White (2003). Social cohesion and embeddedness: 
-            A hierarchical conception of social groups. 
+    .. [3]  Moody, J. and D. White (2003). Social cohesion and embeddedness:
+            A hierarchical conception of social groups.
             American Sociological Review 68(1), 103--28.
             http://www2.asanet.org/journals/ASRFeb03MoodyWhite.pdf
 
@@ -207,7 +207,7 @@ class _AntiGraph(nx.Graph):
     a low memory foodprint.
 
     In this class you add the edges that *do not exist* in the dense graph,
-    the report methods of the class return the neighbors, the edges and 
+    the report methods of the class return the neighbors, the edges and
     the degree as if it was the dense graph. Thus it's possible to use
     an instance of this class with some of NetworkX functions. In this
     case we only use k-core, connected_components, and biconnected_components.
@@ -233,13 +233,12 @@ class _AntiGraph(nx.Graph):
 
         """
         all_edge_dict = self.all_edge_dict
-        return dict((node, all_edge_dict) for node in 
-                    set(self.adj) - set(self.adj[n]) - set([n]))
+        return {node: all_edge_dict for node in
+                set(self.adj) - set(self.adj[n]) - set([n])}
 
     def neighbors(self, n):
-        """Return an iterator over all neighbors of node n in the 
+        """Return an iterator over all neighbors of node n in the
            dense graph.
-
         """
         try:
             return iter(set(self.adj) - set(self.adj[n]) - set([n]))
@@ -258,7 +257,7 @@ class _AntiGraph(nx.Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 

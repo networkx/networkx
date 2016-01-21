@@ -132,7 +132,7 @@ def dfs_predecessors(G, source=None):
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
-    return dict((t,s) for s,t in dfs_edges(G,source=source))
+    return {t: s for s, t in dfs_edges(G,source=source)}
 
 
 def dfs_successors(G, source=None):

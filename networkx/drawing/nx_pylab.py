@@ -829,7 +829,7 @@ def draw_networkx_edge_labels(G, pos,
     if ax is None:
         ax = plt.gca()
     if edge_labels is None:
-        labels = dict(((u, v), d) for u, v, d in G.edges(data=True))
+        labels = {(u, v): d for u, v, d in G.edges(data=True)}
     else:
         labels = edge_labels
     text_items = {}
