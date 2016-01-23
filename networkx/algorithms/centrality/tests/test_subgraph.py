@@ -21,7 +21,7 @@ class TestSubgraph:
 
     def test_subgraph_centrality(self):
         answer={0: 1.5430806348152433, 1: 1.5430806348152433}
-        result=communicability_centrality(nx.path_graph(2))
+        result=subgraph_centrality(nx.path_graph(2))
         for k,v in result.items():
             assert_almost_equal(answer[k],result[k],places=7)
 
@@ -32,10 +32,10 @@ class TestSubgraph:
                  'Franck': 2.3876142275231915}
         G1=nx.Graph([('Franck','Aric'),('Aric','Dan'),('Dan','Albert'),
                      ('Albert','Franck'),('Dan','1'),('Franck','Albert')])
-        result1=communicability_centrality(G1)
+        result1=subgraph_centrality(G1)
         for k,v in result1.items():
             assert_almost_equal(answer1[k],result1[k],places=7)
-        result1=communicability_centrality_exp(G1)
+        result1=subgraph_centrality_exp(G1)
         for k,v in result1.items():
             assert_almost_equal(answer1[k],result1[k],places=7)
 
@@ -57,25 +57,6 @@ class TestSubgraph:
         result1=communicability_betweenness_centrality(G1)
         for k,v in result1.items():
             assert_almost_equal(answer1[k],result1[k],places=7)
-
-
-    def test_subgraph(self):
-        answer={0 :{0: 1.5430806348152435,
-                    1: 1.1752011936438012
-                    },
-                1 :{0: 1.1752011936438012,
-                    1: 1.5430806348152435
-                    }
-                }
-#        answer={(0, 0): 1.5430806348152435,
-#                (0, 1): 1.1752011936438012,
-#                (1, 0): 1.1752011936438012,
-#                (1, 1): 1.5430806348152435}
-
-        result=subgraph(nx.path_graph(2))
-        for k1,val in result.items():
-            for k2 in val:
-                assert_almost_equal(answer[k1][k2],result[k1][k2],places=7)
 
 
     def test_estrada_index(self):

@@ -19,10 +19,23 @@ class TestCommunicability:
              raise SkipTest('SciPy not available.')
 
 
-    def test_communicability_betweenness_centrality_small(self):
-        G = nx.Graph([(1,2)])
-        result=communicability_betweenness_centrality(G)
-        assert_equal(result, {1:0,2:0})
+    def test_communicability(self): <- verschieben
+        answer={0 :{0: 1.5430806348152435,
+                    1: 1.1752011936438012
+                    },
+                1 :{0: 1.1752011936438012,
+                    1: 1.5430806348152435
+                    }
+                }
+#        answer={(0, 0): 1.5430806348152435,
+#                (0, 1): 1.1752011936438012,
+#                (1, 0): 1.1752011936438012,
+#                (1, 1): 1.5430806348152435}
+
+        result=communicability(nx.path_graph(2)) <- verschieben
+        for k1,val in result.items():
+            for k2 in val:
+                assert_almost_equal(answer[k1][k2],result[k1][k2],places=7)
 
 
     def test_communicability2(self):
