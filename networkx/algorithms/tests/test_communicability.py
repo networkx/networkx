@@ -19,7 +19,7 @@ class TestCommunicability:
              raise SkipTest('SciPy not available.')
 
 
-    def test_communicability(self): <- verschieben
+    def test_communicability(self):
         answer={0 :{0: 1.5430806348152435,
                     1: 1.1752011936438012
                     },
@@ -32,7 +32,7 @@ class TestCommunicability:
 #                (1, 0): 1.1752011936438012,
 #                (1, 1): 1.5430806348152435}
 
-        result=communicability(nx.path_graph(2)) <- verschieben
+        result=communicability(nx.path_graph(2))
         for k1,val in result.items():
             for k2 in val:
                 assert_almost_equal(answer[k1][k2],result[k1][k2],places=7)
