@@ -114,6 +114,7 @@ is partially historical, and now, mostly arbitrary.
 - Konstantinos Karakatsanis, GitHub: `k-karakatsanis <https://github.com/k-karakatsanis>`_
 - Ryan Nelson, GitHub: `rnelsonchem <https://github.com/rnelsonchem>`_
 - Niels van Adrichem, GitHub: `NvanAdrichem <https://github.com/NvanAdrichem>`_
+- Michael E. Rose, GitHub: `Michael-E-Rose <https://github.com/Michael-E-Rose>`_
 
 Support
 -------
