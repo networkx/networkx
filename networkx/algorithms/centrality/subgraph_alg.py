@@ -225,16 +225,16 @@ def communicability_betweenness_centrality(G, normalized=True):
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
     >>> cbc = nx.communicability_betweenness_centrality(G)
     """
-    import cbipy
-    import cbipy.linalg
+    import scipy
+    import scipy.linalg
     nodelist = G.nodes() # ordering of nodes in matrix
     n = len(nodelist)
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
-    expA = cbipy.linalg.expm(A)
+    expA = scipy.linalg.expm(A)
     mapping = dict(zip(nodelist,range(n)))
-    cb = {}
+    cbc = {}
     for v in G:
         # remove row and col of node v
         i = mapping[v]
@@ -242,31 +242,31 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:,i].copy()
         A[i,:] = 0
         A[:,i] = 0
-        B = (expA - cbipy.linalg.expm(A)) / expA
+        B = (expA - scipy.linalg.expm(A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i,:] = 0
         B[:,i] = 0
-        B -= cbipy.diag(cbipy.diag(B))
-        cb[v] = float(B.sum())
+        B -= scipy.diag(scipy.diag(B))
+        cbc[v] = float(B.sum())
         # put row and col back
         A[i,:] = row
         A[:,i] = col
-    # recbaling
-    cb = _recbale(cb,normalized=normalized)
-    return cb
+    # rescaling
+    cbc = _rescale(cbc,normalized=normalized)
+    return cbc
 
-def _recbale(cb,normalized):
-    # helper to recbale betweenness centrality
+def _rescale(cbc,normalized):
+    # helper to rescale betweenness centrality
     if normalized is True:
-        order=len(cb)
+        order=len(cbc)
         if order <=2:
-            cbale=None
+            scale=None
         else:
-            cbale=1.0/((order-1.0)**2-(order-1.0))
-    if cbale is not None:
-        for v in cb:
-            cb[v] *= cbale
-    return cb
+            scale=1.0/((order-1.0)**2-(order-1.0))
+    if scale is not None:
+        for v in cbc:
+            cbc[v] *= scale
+    return cbc
 
 def estrada_index(G):
     r"""Return the Estrada index of a the graph G.
