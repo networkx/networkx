@@ -181,3 +181,7 @@ class TestAverageShortestPathLength(object):
         """
         G = nx.trivial_graph()
         assert_equal(nx.average_shortest_path_length(G), 0)
+
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null_graph(self):
+        nx.average_shortest_path_length(nx.null_graph())

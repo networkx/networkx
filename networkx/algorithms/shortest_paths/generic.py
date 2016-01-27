@@ -285,26 +285,37 @@ def average_shortest_path_length(G, weight=None):
 
     Raises
     ------
-    NetworkXError:
-       if the graph is not connected.
+    NetworkXPointlessConcept
+        If ``G`` is the null graph (that is, the graph on zero nodes).
+
+    NetworkXError
+        If ``G`` is not connected (or not weakly connected, in the case
+        of a directed graph).
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> print(nx.average_shortest_path_length(G))
+    >>> G = nx.path_graph(5)
+    >>> nx.average_shortest_path_length(G)
     2.0
 
-    For disconnected graphs you can compute the average shortest path
+    For disconnected graphs, you can compute the average shortest path
     length for each component:
-    >>> G=nx.Graph([(1,2),(3,4)])
-    >>> for g in nx.connected_component_subgraphs(G):
-    ...     print(nx.average_shortest_path_length(g))
+
+    >>> G = nx.Graph([(1, 2), (3, 4)])
+    >>> for C in nx.connected_component_subgraphs(G):
+    ...     print(nx.average_shortest_path_length(C))
     1.0
     1.0
 
     """
-    # For the special case of the trivial graph, return zero immediately.
     n = len(G)
+    # For the special case of the null graph, raise an exception, since
+    # there are no paths in the null graph.
+    if n == 0:
+        msg = ('the null graph has no paths, thus there is no average shortest'
+               ' path length')
+        raise nx.NetworkXPointlessConcept(msg)
+    # For the special case of the trivial graph, return zero immediately.
     if n == 1:
         return 0
     # Shortest path length is undefined if the graph is disconnected.
