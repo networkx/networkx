@@ -139,7 +139,7 @@ def dijkstra_path(G, source, target, weight='weight'):
 
     See Also
     --------
-    bidirectional_dijkstra()
+    bidirectional_dijkstra(), bellman_ford_path()
     """
     (length, path) = single_source_dijkstra(G, source, target=target,
                                             weight=weight)
@@ -206,7 +206,8 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
     See Also
     --------
-    bidirectional_dijkstra
+    bidirectional_dijkstra(), bellman_ford_path_length()
+
     """
     if source == target:
         return 0
@@ -271,7 +272,7 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
 
     See Also
     --------
-    single_source_dijkstra()
+    single_source_dijkstra(), single_source_bellman_ford()
 
     """
     (length, path) = single_source_dijkstra(
@@ -334,7 +335,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     See Also
     --------
-    single_source_dijkstra()
+    single_source_dijkstra(), single_source_bellman_ford_path_length()
 
     """
     weight = _weight_function(G, weight)
@@ -416,6 +417,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     --------
     single_source_dijkstra_path()
     single_source_dijkstra_path_length()
+    single_source_bellman_ford()
     """
     if source == target:
         return ({source: 0}, {source: [source]})
@@ -651,7 +653,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 
     See Also
     --------
-    floyd_warshall()
+    floyd_warshall(), all_pairs_bellman_ford_path()
 
     """
     path = single_source_dijkstra_path
@@ -661,7 +663,6 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 def bellman_ford(G, source, weight='weight'):
 
     """DEPRECATED: Has been replaced by function bellman_ford_predecessor_and_distance().
-       
 
     """
     _warnings.warn("Function bellman_ford() is deprecated, use function bellman_ford_predecessor_and_distance() instead.",
@@ -878,8 +879,45 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     return dist
 
 def bellman_ford_path(G, source, target, weight='weight'):
-    """See dijkstra_path()
-    
+    """Returns the shortest path from source to target in a weighted graph G.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node
+
+    target : node
+       Ending node
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    Returns
+    -------
+    path : list
+       List of nodes in a shortest path.
+
+    Raises
+    ------
+    NetworkXNoPath
+       If no path exists between source and target.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> print(nx.bellman_ford_path(G,0,4))
+    [0, 1, 2, 3, 4]
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    See Also
+    --------
+    dijkstra_path(), bellman_ford_path_length()
     """
     (lengths, paths) = single_source_bellman_ford(G, source, target=target, weight=weight)
     try:
@@ -889,8 +927,46 @@ def bellman_ford_path(G, source, target, weight='weight'):
             "node %s not reachable from %s" % (source, target))
             
 def bellman_ford_path_length(G, source, target, weight='weight'):
-    """See dijkstra_path_length()
-    
+    """Returns the shortest path length from source to target
+    in a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       starting node for path
+
+    target : node label
+       ending node for path
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    Returns
+    -------
+    length : number
+        Shortest path length.
+
+    Raises
+    ------
+    NetworkXNoPath
+        If no path exists between source and target.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> print(nx.bellman_ford_path_length(G,0,4))
+    4
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    See Also
+    --------
+    dijkstra_path_length(), bellman_ford_path()
     """
     if source == target:
         return 0
@@ -910,16 +986,88 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
             "node %s not reachable from %s" % (source, target))
 
 def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
-    """See single_source_dijkstra_path()
-    
+    """Compute shortest path between source and all other reachable
+    nodes for a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node for path.
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    paths : dictionary
+       Dictionary of shortest path lengths keyed by target.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> path=nx.single_source_bellman_ford_path(G,0)
+    >>> path[4]
+    [0, 1, 2, 3, 4]
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    See Also
+    --------
+    single_source_dijkstra(), single_source_bellman_ford()
+
     """
     (length, path) = single_source_bellman_ford(
         G, source, cutoff=cutoff, weight=weight)
     return path
 
 def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weight'):
-    """See single_source_dijkstra_path_length()
-    
+    """Compute the shortest path length between source and all other
+    reachable nodes for a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       Starting node for path
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    length : iterator
+        (target, shortest path length) iterator
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> length = dict(nx.single_source_bellman_ford_path_length(G, 0))
+    >>> length[4]
+    4
+    >>> print(length)
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    See Also
+    --------
+    single_source_dijkstra(), single_source_bellman_ford()
+
     """
     if G.is_multigraph():
         get_weight = lambda u, v, data: min(
@@ -930,7 +1078,52 @@ def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weigh
     return iter(_bellman_ford(G, [source], get_weight, cutoff=cutoff).items())
 
 def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weight'):
-    """See single_source_dijkstra()
+    """Compute shortest paths and lengths in a weighted graph G.
+
+    Uses Bellman-Ford algorithm for shortest paths.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       Starting node for path
+
+    target : node label, optional
+       Ending node for path
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance,path : dictionaries
+       Returns a tuple of two dictionaries keyed by node.
+       The first dictionary stores distance from the source.
+       The second stores the path from the source to that node.
+
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> length,path=nx.single_source_bellman_ford(G,0)
+    >>> print(length[4])
+    4
+    >>> print(length)
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> path[4]
+    [0, 1, 2, 3, 4]
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    See Also
+    --------
+    single_source_dijkstra()
+    single_source_bellman_ford_path()
+    single_source_bellman_ford_path_length()
     """
     if source == target:
         return ({source: 0}, {source: [source]})
@@ -946,15 +1139,77 @@ def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weig
                      target=target), paths)
 
 def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
-    """See all_pairs_dijkstra_path_length()
-    
+    """ Compute shortest path lengths between all nodes in a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path length as the key value.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> length = dict(nx.all_pairs_bellman_ford_path_length(G))
+    >>> length[1][4]
+    3
+    >>> length[1]
+    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    The dictionary returned only has keys for reachable node pairs.
     """
     length = single_source_bellman_ford_path_length
     for n in G:
         yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
 
 def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
-    """See all_pairs_dijkstra_path()
+    """ Compute shortest paths between all nodes in a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance : dictionary
+       Dictionary, keyed by source and target, of shortest paths.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> path=nx.all_pairs_bellman_ford_path(G)
+    >>> print(path[0][4])
+    [0, 1, 2, 3, 4]
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    See Also
+    --------
+    floyd_warshall(), all_pairs_dijkstra_path()
 
     """
     path = single_source_bellman_ford_path
@@ -1408,6 +1663,8 @@ def johnson(G, weight='weight'):
     all_pairs_shortest_path_length
     all_pairs_dijkstra_path
     bellman_ford_predecessor_and_distance
+    all_pairs_bellman_ford_path
+    all_pairs_bellman_ford_path_length
 
     """
     if not nx.is_weighted(G, weight=weight):
