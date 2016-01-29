@@ -286,7 +286,7 @@ def parse_gml_lines(lines, label, destringizer):
     """
     def tokenize():
         patterns = [
-            r'[A-Za-z][0-9A-Za-z_]*(\s+|$)',  # keys
+            r'[A-Za-z][0-9A-Za-z_]*\b',  # keys
             r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
             r'[+-]?[0-9]+',   # ints
             r'".*?"',         # strings
