@@ -9,12 +9,23 @@ Find the k-cores of a graph.
 
 The k-core is found by recursively pruning nodes with degrees less than k.
 
-See the following reference for details:
+See the following references for details:
 
 An O(m) Algorithm for Cores Decomposition of Networks
 Vladimir Batagelj and Matjaz Zaversnik, 2003.
 http://arxiv.org/abs/cs.DS/0310049
 
+Generalized Cores
+Vladimir Batagelj and Matjaz Zaversnik, 2002.
+http://arxiv.org/pdf/cs/0202039
+
+For directed graphs a more general notion is that of D-cores which
+looks at (k, l) restrictions on (in, out) degree. The (k, k) D-core
+is the k-core.
+
+D-cores: Measuring Collaboration of Directed Graphs Based on Degeneracy
+Christos Giatsidis, Dimitrios M. Thilikos, Michalis Vazirgiannis, ICDM 2011.
+http://www.graphdegeneracy.org/dcores_ICDM_2011.pdf
 """
 
 __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
@@ -81,7 +92,7 @@ def core_number(G):
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.
     core = degrees
-    nbrs = {v: set(all_neighbors(G, v)) for v in G}
+    nbrs = {v: list(all_neighbors(G, v)) for v in G}
     for v in nodes:
         for u in nbrs[v]:
             if core[u] > core[v]:
