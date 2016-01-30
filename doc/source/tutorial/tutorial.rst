@@ -468,8 +468,8 @@ To save drawings to a file, use, for example
 writes to the file "path.png" in the local directory. If Graphviz
 and PyGraphviz, or pydotplus, are available on your system, you can also use
 
+>>> from networkx.drawing.nx_pydot import write_dot
 >>> nx.draw_graphviz(G)
->>> nx.write_dot(G,'file.dot')
+>>> write_dot(G,'file.dot')
 
 Details on drawing graphs: :doc:`/reference/drawing`
-
