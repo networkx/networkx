@@ -6,7 +6,7 @@ Release Log
 
 NetworkX 1.11
 -------------
-Release date: 30 November 2016
+Release date: 30 January 2016
 
 Support for Python 3.5 added, drop support for Python 3.2.
 
