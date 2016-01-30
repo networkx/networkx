@@ -6,14 +6,14 @@ Release Log
 
 NetworkX 1.11
 -------------
-Release date: * November 2015
+Release date: 30 November 2016
 
 Support for Python 3.5 added, drop support for Python 3.2.
 
 Highlights
 ~~~~~~~~~~
 Pydot features now use pydotplus.
-Fixes installation on some machines and test with appveyor, 
+Fixes installation on some machines and test with appveyor,
 Restores default center and scale of layout routines,
 Fixes various docs including no symbolic links in examples.
 Docs can now build using autosummary on readthedocs.org.
