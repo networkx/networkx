@@ -1,4 +1,12 @@
 # encoding: utf-8
+#    Copyright (C) 2008-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 Read graphs in GML format.
 
@@ -18,20 +26,10 @@ Format
 See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
 for format specification.
 
-Example graphs in GML format:
+Example graphs in GML format
 http://www-personal.umich.edu/~mejn/netdata/
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008-2010 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
-__all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
-
 try:
     try:
         from cStringIO import StringIO
@@ -52,6 +50,9 @@ except ImportError:
     # Python 3.x
     import html.entities as htmlentitydefs
 
+__all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
+
+
 try:
     long
 except NameError:
@@ -68,14 +69,16 @@ try:
     literal_eval(r"u'\u4444'")
 except SyntaxError:
     # Remove 'u' prefixes in unicode literals in Python 3
-    rtp_fix_unicode = lambda s:s[1:]
+    rtp_fix_unicode = lambda s: s[1:]
 else:
     rtp_fix_unicode = None
 
 
 def escape(text):
-    """Escape unprintable or non-ASCII characters, double quotes and ampersands
-    in a string using XML character references.
+    """Use XML character references to escape characters.
+
+    Use XML character references for unprintable or non-ASCII
+    characters, double quotes and ampersands in a string
     """
     def fixup(m):
         ch = m.group(0)
@@ -86,9 +89,7 @@ def escape(text):
 
 
 def unescape(text):
-    """Replace XML character references in a string with the referenced
-    characters.
-    """
+    """Replace XML character references with the referenced characters"""
     def fixup(m):
         text = m.group(0)
         if text[1] == '#':
@@ -130,12 +131,12 @@ def literal_destringizer(rep):
         If ``rep`` is not a Python literal.
     """
     if isinstance(rep, (str, unicode)):
-        orig_rep=rep
-        if rtp_fix_unicode:
-            rep=rtp_fix_unicode(rep)
+        orig_rep = rep
+        if rtp_fix_unicode is not None:
+            rep = rtp_fix_unicode(rep)
         try:
             return literal_eval(rep)
-        except (SyntaxError):
+        except SyntaxError:
             raise ValueError('%r is not a valid Python literal' % (orig_rep,))
     else:
         raise ValueError('%r is not a string' % (rep,))
