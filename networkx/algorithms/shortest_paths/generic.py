@@ -13,8 +13,6 @@ These algorithms work with undirected and directed graphs.
 """
 from __future__ import division
 
-from itertools import chain
-
 import networkx as nx
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
@@ -23,8 +21,6 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
            'has_path']
-
-chaini = chain.from_iterable
 
 
 def has_path(G, source, target):
@@ -324,9 +320,13 @@ def average_shortest_path_length(G, weight=None):
     if not G.is_directed() and not nx.is_connected(G):
         raise nx.NetworkXError("Graph is not connected.")
     # Compute all-pairs shortest paths.
-    path_lengths = shortest_path_length(G, weight=weight)
+    if weight is None:
+        path_length = lambda v: nx.single_source_shortest_path_length(G, v)
+    else:
+        path_length = lambda v: \
+            nx.single_source_dijkstra_path_length(G, v, weight=weight)
     # Sum the distances for each (ordered) pair of source and target node.
-    s = sum(chaini(dist.values() for s, dist in path_lengths))
+    s = sum(l for u in G for v, l in path_length(u))
     return s / (n * (n - 1))
 
 
