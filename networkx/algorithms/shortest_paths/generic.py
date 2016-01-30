@@ -299,7 +299,7 @@ def average_shortest_path_length(G, weight=None):
     2.0
 
     For disconnected graphs, you can compute the average shortest path
-    length for each component:
+    length for each component
 
     >>> G = nx.Graph([(1, 2), (3, 4)])
     >>> for C in nx.connected_component_subgraphs(G):
