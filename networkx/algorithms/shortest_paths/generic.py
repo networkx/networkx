@@ -1,22 +1,31 @@
 # -*- coding: utf-8 -*-
-"""
-Compute the shortest paths and path lengths between nodes in the graph.
-
-These algorithms work with undirected and directed graphs.
-
-"""
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+"""
+Compute the shortest paths and path lengths between nodes in the graph.
+
+These algorithms work with undirected and directed graphs.
+
+"""
+from __future__ import division
+
+from itertools import chain
+
 import networkx as nx
+
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Sérgio Nery Simões <sergionery@gmail.com>'])
+
 __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
            'has_path']
+
+chaini = chain.from_iterable
+
 
 def has_path(G, source, target):
     """Return True if G has a path from source to target, False otherwise.
@@ -276,41 +285,49 @@ def average_shortest_path_length(G, weight=None):
 
     Raises
     ------
-    NetworkXError:
-       if the graph is not connected.
+    NetworkXPointlessConcept
+        If ``G`` is the null graph (that is, the graph on zero nodes).
+
+    NetworkXError
+        If ``G`` is not connected (or not weakly connected, in the case
+        of a directed graph).
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> print(nx.average_shortest_path_length(G))
+    >>> G = nx.path_graph(5)
+    >>> nx.average_shortest_path_length(G)
     2.0
 
-    For disconnected graphs you can compute the average shortest path
+    For disconnected graphs, you can compute the average shortest path
     length for each component:
-    >>> G=nx.Graph([(1,2),(3,4)])
-    >>> for g in nx.connected_component_subgraphs(G):
-    ...     print(nx.average_shortest_path_length(g))
+
+    >>> G = nx.Graph([(1, 2), (3, 4)])
+    >>> for C in nx.connected_component_subgraphs(G):
+    ...     print(nx.average_shortest_path_length(C))
     1.0
     1.0
 
     """
-    if G.is_directed():
-        if not nx.is_weakly_connected(G):
-            raise nx.NetworkXError("Graph is not connected.")
-    else:
-        if not nx.is_connected(G):
-            raise nx.NetworkXError("Graph is not connected.")
-    avg=0.0
-    if weight is None:
-        for node in G:
-            path_length=nx.single_source_shortest_path_length(G, node)
-            avg += sum(dist for n, dist in path_length)
-    else:
-        for node in G:
-            path_length=nx.single_source_dijkstra_path_length(G, node, weight=weight)
-            avg += sum(dist for n, dist in path_length)
-    n=len(G)
-    return avg/(n*(n-1))
+    n = len(G)
+    # For the special case of the null graph, raise an exception, since
+    # there are no paths in the null graph.
+    if n == 0:
+        msg = ('the null graph has no paths, thus there is no average shortest'
+               ' path length')
+        raise nx.NetworkXPointlessConcept(msg)
+    # For the special case of the trivial graph, return zero immediately.
+    if n == 1:
+        return 0
+    # Shortest path length is undefined if the graph is disconnected.
+    if G.is_directed() and not nx.is_weakly_connected(G):
+        raise nx.NetworkXError("Graph is not weakly connected.")
+    if not G.is_directed() and not nx.is_connected(G):
+        raise nx.NetworkXError("Graph is not connected.")
+    # Compute all-pairs shortest paths.
+    path_lengths = shortest_path_length(G, weight=weight)
+    # Sum the distances for each (ordered) pair of source and target node.
+    s = sum(chaini(dist.values() for s, dist in path_lengths))
+    return s / (n * (n - 1))
 
 
 def all_shortest_paths(G, source, target, weight=None):
