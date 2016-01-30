@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+#    Copyright (C) 2004-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: Ben Edwards (bedwards@cs.unm.edu)
+#          Aric Hagberg (hagberg@lanl.gov)
 """Functions for computing rich-club coefficients."""
 from __future__ import division
 
@@ -6,17 +15,15 @@ import networkx as nx
 from networkx.utils import accumulate
 from networkx.utils import not_implemented_for
 
-__author__ = """\n""".join(['Ben Edwards',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
-
 __all__ = ['rich_club_coefficient']
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def rich_club_coefficient(G, normalized=True, Q=100):
     r"""Returns the rich-club coefficient of the graph ``G``.
 
-    For each degree *k, the *rich-club coefficient* is the ratio of the
+    For each degree *k*, the *rich-club coefficient* is the ratio of the
     number of actual to the number of potential edges for nodes with
     degree greater than *k*:
 
@@ -32,10 +39,10 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     G : NetworkX graph
         Undirected graph with neither parallel edges nor self-loops.
     normalized : bool (optional)
-        Normalize using randomized network (see [1]_)
+        Normalize using randomized network as in [1]_
     Q : float (optional, default=100)
-        If ``normalized`` is ``True``, perform ``Q * m`` double-edge
-        swaps, where ``m`` is the number of edges in ``G``, to use as a
+        If ``normalized`` is ``True``, perform `Q * m` double-edge
+        swaps, where `m` is the number of edges in ``G``, to use as a
         null-model for normalization.
 
     Returns
