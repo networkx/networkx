@@ -4,7 +4,7 @@ NetworkX is distributed with the BSD license.
 
 ::
 
-   Copyright (C) 2004-2015, NetworkX Developers
+   Copyright (C) 2004-2016, NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
@@ -38,4 +38,3 @@ NetworkX is distributed with the BSD license.
    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
