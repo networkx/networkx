@@ -2,6 +2,7 @@
 ----------------------------
 """
 from nose.tools import assert_equal
+from nose.tools import assert_false
 from nose.tools import assert_raises
 from nose.tools import assert_true
 
@@ -12,6 +13,7 @@ from networkx.generators.directed import gn_graph
 from networkx.generators.directed import gnr_graph
 from networkx.generators.directed import gnc_graph
 from networkx.generators.directed import random_k_out_graph
+from networkx.generators.directed import random_uniform_k_out_graph
 from networkx.generators.directed import scale_free_graph
 
 
@@ -63,3 +65,40 @@ class TestRandomKOutGraph(object):
         alpha = 1
         G = random_k_out_graph(n, k, alpha, self_loops=False)
         assert_equal(G.number_of_selfloops(), 0)
+
+
+class TestUniformRandomKOutGraph(object):
+    """Unit tests for the
+    :func:`~networkx.generators.directed.random_uniform_k_out_graph`
+    function.
+
+    """
+
+    def test_regularity(self):
+        """Tests that the generated graph is ``k``-out-regular."""
+        n = 10
+        k = 3
+        G = random_uniform_k_out_graph(n, k)
+        assert_true(all(d == k for v, d in G.out_degree()))
+
+    def test_no_self_loops(self):
+        """Tests for forbidding self-loops."""
+        n = 10
+        k = 3
+        G = random_uniform_k_out_graph(n, k, self_loops=False)
+        assert_equal(G.number_of_selfloops(), 0)
+        assert_true(all(d == k for v, d in G.out_degree()))
+
+    def test_with_replacement(self):
+        n = 10
+        k = 3
+        G = random_uniform_k_out_graph(n, k, with_replacement=True)
+        assert_true(G.is_multigraph())
+        assert_true(all(d == k for v, d in G.out_degree()))
+
+    def test_without_replacement(self):
+        n = 10
+        k = 3
+        G = random_uniform_k_out_graph(n, k, with_replacement=False)
+        assert_false(G.is_multigraph())
+        assert_true(all(d == k for v, d in G.out_degree()))
