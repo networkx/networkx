@@ -76,6 +76,19 @@ class TestEdgesEqual(_GenericTest):
         self._test_not_equal(G.edges(data=True, keys=True),
                              H.edges(data=True, keys=True))
 
+    def test_no_edges(self):
+        G = nx.MultiGraph()
+        H = nx.MultiGraph()
+        self._test_equal(G.edges(data=True, keys=True),
+                         H.edges(data=True, keys=True))
+
+
+    def test_duplicate_edges(self):
+        a = [(1,2),(5,4),(1,2)]
+        b = [(4,5),(1,2)]
+        self._test_not_equal(a,b)
+
+
 class TestGraphsEqual(_GenericTest):
     def setUp(self):
         self._assert_func = assert_graphs_equal
