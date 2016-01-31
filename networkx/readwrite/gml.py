@@ -280,7 +280,7 @@ def parse_gml_lines(lines, label, destringizer):
     """
     def tokenize():
         patterns = [
-            r'[A-Za-z][0-9A-Za-z_]*\s+',  # keys
+            r'[A-Za-z][0-9A-Za-z_]*\b',  # keys
             r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
             r'[+-]?[0-9]+',   # ints
             r'".*?"',         # strings
@@ -319,14 +319,14 @@ def parse_gml_lines(lines, label, destringizer):
         yield (None, None, lineno + 1, 1)  # EOF
 
     def unexpected(curr_token, expected):
-        type, value, lineno, pos = curr_token
+        category, value, lineno, pos = curr_token
         raise NetworkXError(
             'expected %s, found %s at (%d, %d)' %
             (expected, repr(value) if value is not None else 'EOF', lineno,
              pos))
 
-    def consume(curr_token, type, expected):
-        if curr_token[0] == type:
+    def consume(curr_token, category, expected):
+        if curr_token[0] == category:
             return next(tokens)
         unexpected(curr_token, expected)
 
@@ -335,11 +335,11 @@ def parse_gml_lines(lines, label, destringizer):
         while curr_token[0] == 0:  # keys
             key = curr_token[1]
             curr_token = next(tokens)
-            type = curr_token[0]
-            if type == 1 or type == 2:  # reals or ints
+            category = curr_token[0]
+            if category == 1 or category == 2:  # reals or ints
                 value = curr_token[1]
                 curr_token = next(tokens)
-            elif type == 3:  # strings
+            elif category == 3:  # strings
                 value = unescape(curr_token[1][1:-1])
                 if destringizer:
                     try:
@@ -347,7 +347,7 @@ def parse_gml_lines(lines, label, destringizer):
                     except ValueError:
                         pass
                 curr_token = next(tokens)
-            elif type == 4:  # dict start
+            elif category == 4:  # dict start
                 curr_token, value = parse_dict(curr_token)
             else:
                 unexpected(curr_token, "an int, float, string or '['")
@@ -385,12 +385,12 @@ def parse_gml_lines(lines, label, destringizer):
     G.graph.update((key, value) for key, value in graph.items()
                    if key != 'node' and key != 'edge')
 
-    def pop_attr(dct, type, attr, i):
+    def pop_attr(dct, category, attr, i):
         try:
             return dct.pop(attr)
         except KeyError:
             raise NetworkXError(
-                "%s #%d has no '%s' attribute" % (type, i, attr))
+                "%s #%d has no '%s' attribute" % (category, i, attr))
 
     nodes = graph.get('node', [])
     mapping = {}
