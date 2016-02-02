@@ -163,7 +163,7 @@ class TestFunction(object):
 
     def test_info_digraph(self):
         G=nx.DiGraph(name='path_graph(5)')
-        G.add_path([0,1,2,3,4])
+        nx.add_path(G, [0, 1, 2, 3, 4])
         info=nx.info(G)
         expected_graph_info='\n'.join(['Name: path_graph(5)',
                                        'Type: DiGraph',

@@ -154,11 +154,11 @@ class TestAverageShortestPathLength(object):
 
     def test_weighted(self):
         G = nx.Graph()
-        G.add_cycle(range(7), weight=2)
+        nx.add_cycle(G, range(7), weight=2)
         l = nx.average_shortest_path_length(G, weight='weight')
         assert_almost_equal(l, 4)
         G = nx.Graph()
-        G.add_path(range(5), weight=2)
+        nx.add_path(G, range(5), weight=2)
         l = nx.average_shortest_path_length(G, weight='weight')
         assert_almost_equal(l, 4)
 

@@ -124,7 +124,7 @@ class TestGraphsEqual(_GenericTest):
     def test_graphs_not_equal(self):
         G = nx.path_graph(4)
         H = nx.Graph()
-        H.add_cycle(range(4))
+        nx.add_cycle(H, range(4))
         self._test_not_equal(G,H)
 
     def test_graphs_not_equal2(self):

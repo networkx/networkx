@@ -67,52 +67,6 @@ class BaseGraphTester(object):
         assert_equal(G.size(),3)
         assert_equal(G.number_of_edges(),3)
 
-    def test_add_star(self):
-        G=self.K3.copy()
-        nlist=[12,13,14,15]
-        G.add_star(nlist)
-        assert_equal(sorted(G.edges(nlist)),[(12,13),(12,14),(12,15)])
-        G=self.K3.copy()
-        G.add_star(nlist,weight=2.0)
-        assert_equal(sorted(G.edges(nlist,data=True)),\
-                     [(12,13,{'weight':2.}),
-                      (12,14,{'weight':2.}),
-                      (12,15,{'weight':2.})])
-
-    def test_add_path(self):
-        G=self.K3.copy()
-        nlist=[12,13,14,15]
-        G.add_path(nlist)
-        assert_equal(sorted(G.edges(nlist)),[(12,13),(13,14),(14,15)])
-        G=self.K3.copy()
-        G.add_path(nlist,weight=2.0)
-        assert_equal(sorted(G.edges(nlist,data=True)),\
-                     [(12,13,{'weight':2.}),
-                      (13,14,{'weight':2.}),
-                      (14,15,{'weight':2.})])
-
-    def test_add_cycle(self):
-        G=self.K3.copy()
-        nlist=[12,13,14,15]
-        oklists=[ [(12,13),(12,15),(13,14),(14,15)], \
-                      [(12,13),(13,14),(14,15),(15,12)] ]
-        G.add_cycle(nlist)
-        assert_true(sorted(G.edges(nlist)) in oklists)
-        G=self.K3.copy()
-        oklists=[ [(12,13,{'weight':1.}),\
-                (12,15,{'weight':1.}),\
-                (13,14,{'weight':1.}),\
-                (14,15,{'weight':1.})], \
-                \
-                [(12,13,{'weight':1.}),\
-                (13,14,{'weight':1.}),\
-                (14,15,{'weight':1.}),\
-                (15,12,{'weight':1.})] \
-                ]
-
-        G.add_cycle(nlist,weight=1.0)
-        assert_true(sorted(G.edges(nlist,data=True)) in oklists)
-
     def test_nbunch_iter(self):
         G=self.K3
         assert_equal(list(G.nbunch_iter()),self.k3nodes) # all nodes
