@@ -43,7 +43,7 @@ def connected_components(G):
     Generate a sorted list of connected components, largest first.
 
     >>> G = nx.path_graph(4)
-    >>> G.add_path([10, 11, 12])
+    >>> nx.add_path(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
     [4, 3]
 

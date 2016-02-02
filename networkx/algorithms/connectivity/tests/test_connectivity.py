@@ -207,8 +207,8 @@ def test_edge_missing_target():
 
 def test_not_weakly_connected():
     G = nx.DiGraph()
-    G.add_path([1, 2, 3])
-    G.add_path([4, 5])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5])
     for flow_func in flow_funcs:
         assert_equal(nx.node_connectivity(G), 0,
                      msg=msg.format(flow_func.__name__))
@@ -217,8 +217,8 @@ def test_not_weakly_connected():
 
 def test_not_connected():
     G = nx.Graph()
-    G.add_path([1, 2, 3])
-    G.add_path([4, 5])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5])
     for flow_func in flow_funcs:
         assert_equal(nx.node_connectivity(G), 0,
                      msg=msg.format(flow_func.__name__))
@@ -340,7 +340,7 @@ class TestAllPairsNodeConnectivity:
     def test_all_pairs_connectivity(self):
         G = nx.Graph()
         nodes = [0, 1, 2, 3]
-        G.add_path(nodes)
+        nx.add_path(G, nodes)
         A = {n: {} for n in G}
         for u, v in itertools.combinations(nodes,2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
@@ -351,7 +351,7 @@ class TestAllPairsNodeConnectivity:
     def test_all_pairs_connectivity_directed(self):
         G = nx.DiGraph()
         nodes = [0, 1, 2, 3]
-        G.add_path(nodes)
+        nx.add_path(G, nodes)
         A = {n: {} for n in G}
         for u, v in itertools.permutations(nodes, 2):
             A[u][v] = nx.node_connectivity(G, u, v)

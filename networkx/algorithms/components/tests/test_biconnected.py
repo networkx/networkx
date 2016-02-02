@@ -18,8 +18,8 @@ def assert_components_equal(x, y):
 
 def test_barbell():
     G = nx.barbell_graph(8, 4)
-    G.add_path([7, 20, 21, 22])
-    G.add_cycle([22, 23, 24, 25])
+    nx.add_path(G, [7, 20, 21, 22])
+    nx.add_cycle(G, [22, 23, 24, 25])
     pts = set(nx.articulation_points(G))
     assert_equal(pts, {7, 8, 9, 10, 11, 12, 20, 21, 22})
 
@@ -44,14 +44,14 @@ def test_barbell():
 
 def test_articulation_points_cycle():
     G=nx.cycle_graph(3)
-    G.add_cycle([1, 3, 4])
+    nx.add_cycle(G, [1, 3, 4])
     pts=set(nx.articulation_points(G))
     assert_equal(pts, {1})
 
 def test_is_biconnected():
     G=nx.cycle_graph(3)
     assert_true(nx.is_biconnected(G))
-    G.add_cycle([1, 3, 4])
+    nx.add_cycle(G, [1, 3, 4])
     assert_false(nx.is_biconnected(G))
 
 def test_empty_is_biconnected():
@@ -62,13 +62,13 @@ def test_empty_is_biconnected():
 
 def test_biconnected_components_cycle():
     G=nx.cycle_graph(3)
-    G.add_cycle([1, 3, 4])
+    nx.add_cycle(G, [1, 3, 4])
     answer = [{0, 1, 2}, {1, 3, 4}]
     assert_components_equal(list(nx.biconnected_components(G)), answer)
 
 def test_biconnected_component_subgraphs_cycle():
     G=nx.cycle_graph(3)
-    G.add_cycle([1, 3, 4, 5])
+    nx.add_cycle(G, [1, 3, 4, 5])
     Gc = set(nx.biconnected_component_subgraphs(G))
     assert_equal(len(Gc), 2)
     g1, g2=Gc
@@ -104,10 +104,10 @@ def test_biconnected_components1():
 
 def test_biconnected_components2():
     G=nx.Graph()
-    G.add_cycle('ABC')
-    G.add_cycle('CDE')
-    G.add_cycle('FIJHG')
-    G.add_cycle('GIJ')
+    nx.add_cycle(G, 'ABC')
+    nx.add_cycle(G, 'CDE')
+    nx.add_cycle(G, 'FIJHG')
+    nx.add_cycle(G, 'GIJ')
     G.add_edge('E','G')
     comps = list(nx.biconnected_component_edges(G))
     answer = [

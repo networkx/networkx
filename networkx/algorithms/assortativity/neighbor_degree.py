@@ -86,7 +86,7 @@ def average_neighbor_degree(G, source='out', target='out',
     {0: 2.0, 1: 1.1666666666666667, 2: 1.25, 3: 2.0}
 
     >>> G=nx.DiGraph()
-    >>> G.add_path([0,1,2,3])
+    >>> nx.add_path(G, [0, 1, 2, 3])
     >>> nx.average_neighbor_degree(G, source='in', target='in')
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
 

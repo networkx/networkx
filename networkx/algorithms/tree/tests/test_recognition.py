@@ -110,7 +110,7 @@ def test_emptybranch():
 
 def test_path():
     G = nx.DiGraph()
-    G.add_path(range(5))
+    nx.add_path(G, range(5))
     assert_true(nx.is_branching(G))
     assert_true(nx.is_arborescence(G))
 
@@ -141,7 +141,7 @@ def test_notarborescence1():
 def test_notarborescence2():
     # Not an arborescence due to in-degree violation.
     G = nx.MultiDiGraph()
-    G.add_path(range(5))
+    nx.add_path(G, range(5))
     G.add_edge(6, 4)
     assert_false(nx.is_branching(G))
     assert_false(nx.is_arborescence(G))

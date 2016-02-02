@@ -10,9 +10,9 @@ REVERSE = nx.algorithms.edgedfs.REVERSE
 class TestCycles:
     def setUp(self):
         G=networkx.Graph()
-        G.add_cycle([0,1,2,3])
-        G.add_cycle([0,3,4,5])
-        G.add_cycle([0,1,6,7,8])
+        nx.add_cycle(G, [0,1,2,3])
+        nx.add_cycle(G, [0,3,4,5])
+        nx.add_cycle(G, [0,1,6,7,8])
         G.add_edge(8,9)
         self.G=G
 
@@ -35,7 +35,7 @@ class TestCycles:
         sort_cy= sorted( sorted(c) for c in cy )
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5]])
         # test disconnected graphs
-        G.add_cycle(list("ABC"))
+        nx.add_cycle(G, "ABC")
         cy=networkx.cycle_basis(G,9)
         sort_cy= sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
@@ -65,16 +65,16 @@ class TestCycles:
     def test_unsortable(self):
         #  TODO What does this test do?  das 6/2013
         G=nx.DiGraph()
-        G.add_cycle(['a',1])
+        nx.add_cycle(G, ['a',1])
         c=list(nx.simple_cycles(G))
 
     def test_simple_cycles_small(self):
         G = nx.DiGraph()
-        G.add_cycle([1,2,3])
+        nx.add_cycle(G, [1,2,3])
         c=sorted(nx.simple_cycles(G))
         assert_equal(len(c),1)
         assert_true(self.is_cyclic_permutation(c[0],[1,2,3]))
-        G.add_cycle([10,20,30])
+        nx.add_cycle(G, [10,20,30])
         cc=sorted(nx.simple_cycles(G))
         ca=[[1,2,3],[10,20,30]]
         for c in cc:

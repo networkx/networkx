@@ -18,7 +18,7 @@ class TestLayout(object):
     def setUp(self):
         self.Gi=nx.grid_2d_graph(5,5)
         self.Gs=nx.Graph()
-        self.Gs.add_path('abcdef')
+        nx.add_path(self.Gs, 'abcdef')
         self.bigG=nx.grid_2d_graph(25,25) #bigger than 500 nodes for sparse
 
     def test_smoke_int(self):

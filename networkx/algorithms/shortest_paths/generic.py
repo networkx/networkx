@@ -360,8 +360,8 @@ def all_shortest_paths(G, source, target, weight=None):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_path([0, 1, 2])
-    >>> G.add_path([0, 10, 2])
+    >>> nx.add_path(G, [0, 1, 2])
+    >>> nx.add_path(G, [0, 10, 2])
     >>> print([p for p in nx.all_shortest_paths(G, source=0, target=2)])
     [[0, 1, 2], [0, 10, 2]]
 

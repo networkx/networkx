@@ -230,34 +230,34 @@ class TestDAG:
 
 def test_is_aperiodic_cycle():
     G = nx.DiGraph()
-    G.add_cycle([1, 2, 3, 4])
+    nx.add_cycle(G, [1, 2, 3, 4])
     assert_false(nx.is_aperiodic(G))
 
 
 def test_is_aperiodic_cycle2():
     G = nx.DiGraph()
-    G.add_cycle([1, 2, 3, 4])
-    G.add_cycle([3, 4, 5, 6, 7])
+    nx.add_cycle(G, [1, 2, 3, 4])
+    nx.add_cycle(G, [3, 4, 5, 6, 7])
     assert_true(nx.is_aperiodic(G))
 
 
 def test_is_aperiodic_cycle3():
     G = nx.DiGraph()
-    G.add_cycle([1, 2, 3, 4])
-    G.add_cycle([3, 4, 5, 6])
+    nx.add_cycle(G, [1, 2, 3, 4])
+    nx.add_cycle(G, [3, 4, 5, 6])
     assert_false(nx.is_aperiodic(G))
 
 
 def test_is_aperiodic_cycle4():
     G = nx.DiGraph()
-    G.add_cycle([1, 2, 3, 4])
+    nx.add_cycle(G, [1, 2, 3, 4])
     G.add_edge(1, 3)
     assert_true(nx.is_aperiodic(G))
 
 
 def test_is_aperiodic_selfloop():
     G = nx.DiGraph()
-    G.add_cycle([1, 2, 3, 4])
+    nx.add_cycle(G, [1, 2, 3, 4])
     G.add_edge(1, 1)
     assert_true(nx.is_aperiodic(G))
 
@@ -283,8 +283,8 @@ def test_is_aperiodic_rary_tree():
 def test_is_aperiodic_disconnected():
     # disconnected graph
     G = nx.DiGraph()
-    G.add_cycle([1, 2, 3, 4])
-    G.add_cycle([5, 6, 7, 8])
+    nx.add_cycle(G, [1, 2, 3, 4])
+    nx.add_cycle(G, [5, 6, 7, 8])
     assert_false(nx.is_aperiodic(G))
     G.add_edge(1, 3)
     G.add_edge(5, 7)
@@ -293,6 +293,6 @@ def test_is_aperiodic_disconnected():
 
 def test_is_aperiodic_disconnected2():
     G = nx.DiGraph()
-    G.add_cycle([0, 1, 2])
+    nx.add_cycle(G, [0, 1, 2])
     G.add_edge(3, 3)
     assert_false(nx.is_aperiodic(G))

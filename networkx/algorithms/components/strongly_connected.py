@@ -49,7 +49,7 @@ def strongly_connected_components(G):
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.strongly_connected_components(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -145,7 +145,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.kosaraju_strongly_connected_components(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -206,7 +206,7 @@ def strongly_connected_components_recursive(G):
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.strongly_connected_components_recursive(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -289,7 +289,7 @@ def strongly_connected_component_subgraphs(G, copy=True):
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(Gc) for Gc in sorted(nx.strongly_connected_component_subgraphs(G),
     ...                         key=len, reverse=True)]
     [4, 3]

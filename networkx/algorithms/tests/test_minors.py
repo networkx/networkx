@@ -110,7 +110,7 @@ class TestQuotient(object):
 
     def test_directed_path(self):
         G = nx.DiGraph()
-        G.add_path(range(6))
+        nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
         assert_equal(sorted(M), [0, 1, 2])
@@ -122,7 +122,7 @@ class TestQuotient(object):
 
     def test_directed_multigraph_path(self):
         G = nx.MultiDiGraph()
-        G.add_path(range(6))
+        nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
         assert_equal(sorted(M), [0, 1, 2])

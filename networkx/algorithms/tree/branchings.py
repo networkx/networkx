@@ -90,8 +90,7 @@ def edge_subgraph(G, ebunch):
 
     Examples
     --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-    >>> G.add_path([0,1,2,3])
+    >>> G = nx.path_graph(4)
     >>> H = G.subgraph([0,1,2])
     >>> list(H.edges())
     [(0, 1), (1, 2)]

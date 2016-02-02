@@ -259,7 +259,7 @@ class TestGEXF(object):
     def test_default_attribute(self):
         G=nx.Graph()
         G.add_node(1,label='1',color='green')
-        G.add_path([0,1,2,3])
+        nx.add_path(G, [0,1,2,3])
         G.add_edge(1,2,foo=3)
         G.graph['node_default']={'color':'yellow'}
         G.graph['edge_default']={'foo':7}

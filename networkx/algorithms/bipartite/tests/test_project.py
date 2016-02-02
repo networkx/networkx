@@ -41,7 +41,7 @@ class TestBipartiteProject:
 
     def test_directed_path_collaboration_projected_graph(self):
         G=nx.DiGraph()
-        G.add_path(list(range(4)))
+        nx.add_path(G, range(4))
         P=bipartite.collaboration_weighted_projected_graph(G,[1,3])
         assert_nodes_equal(list(P),[1,3])
         assert_edges_equal(list(P.edges()),[(1,3)])
@@ -64,7 +64,7 @@ class TestBipartiteProject:
 
     def test_path_weighted_projected_directed_graph(self):
         G=nx.DiGraph()
-        G.add_path(list(range(4)))
+        nx.add_path(G, range(4))
         P=bipartite.weighted_projected_graph(G,[1,3])
         assert_nodes_equal(list(P),[1,3])
         assert_edges_equal(list(P.edges()),[(1,3)])
@@ -334,7 +334,7 @@ class TestBipartiteWeightedProjection:
         assert_edges_equal(list(list(G.edges(data=True))),
                      [(0, 2, {'weight': 1}), (2, 4, {'weight': 1})] )
         B = nx.DiGraph()
-        B.add_path(list(range(5)))
+        nx.add_path(B, range(5))
         G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4])
         assert_nodes_equal(list(G), [0, 2, 4])
         assert_edges_equal(list(G.edges(data=True)),

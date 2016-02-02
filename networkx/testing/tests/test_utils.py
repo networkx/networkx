@@ -62,17 +62,17 @@ class TestEdgesEqual(_GenericTest):
 
     def test_edges_with_data_equal(self):
         G = nx.MultiGraph()
-        G.add_path([0,1,2],weight=1)
+        nx.add_path(G, [0, 1, 2], weight=1)
         H = nx.MultiGraph()
-        H.add_path([0,1,2],weight=1)
+        nx.add_path(H, [0, 1, 2], weight=1)
         self._test_equal(G.edges(data=True, keys=True),
                          H.edges(data=True, keys=True))
 
     def test_edges_with_data_not_equal(self):
         G = nx.MultiGraph()
-        G.add_path([0,1,2],weight=1)
+        nx.add_path(G, [0, 1, 2], weight=1)
         H = nx.MultiGraph()
-        H.add_path([0,1,2],weight=2)
+        nx.add_path(H, [0, 1, 2], weight=2)
         self._test_not_equal(G.edges(data=True, keys=True),
                              H.edges(data=True, keys=True))
 
@@ -96,28 +96,28 @@ class TestGraphsEqual(_GenericTest):
     def test_graphs_equal(self):
         G = nx.path_graph(4)
         H = nx.Graph()
-        H.add_path(range(4))
+        nx.add_path(H, range(4))
         H.name='path_graph(4)'
         self._test_equal(G,H)
 
     def test_digraphs_equal(self):
         G = nx.path_graph(4, create_using=nx.DiGraph())
         H = nx.DiGraph()
-        H.add_path(range(4))
+        nx.add_path(H, range(4))
         H.name='path_graph(4)'
         self._test_equal(G,H)
 
     def test_multigraphs_equal(self):
         G = nx.path_graph(4, create_using=nx.MultiGraph())
         H = nx.MultiGraph()
-        H.add_path(range(4))
+        nx.add_path(H, range(4))
         H.name='path_graph(4)'
         self._test_equal(G,H)
 
     def test_multigraphs_equal(self):
         G = nx.path_graph(4, create_using=nx.MultiDiGraph())
         H = nx.MultiDiGraph()
-        H.add_path(range(4))
+        nx.add_path(H, range(4))
         H.name='path_graph(4)'
         self._test_equal(G,H)
 
@@ -130,13 +130,13 @@ class TestGraphsEqual(_GenericTest):
     def test_graphs_not_equal2(self):
         G = nx.path_graph(4)
         H = nx.Graph()
-        H.add_path(range(3))
+        nx.add_path(H, range(3))
         H.name='path_graph(4)'
         self._test_not_equal(G,H)
 
     def test_graphs_not_equal3(self):
         G = nx.path_graph(4)
         H = nx.Graph()
-        H.add_path(range(4))
+        nx.add_path(H, range(4))
         H.name='path_graph(foo)'
         self._test_not_equal(G,H)
