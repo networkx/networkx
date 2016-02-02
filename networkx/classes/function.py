@@ -1,5 +1,3 @@
-"""Functional interface to graph methods and assorted utilities.
-"""
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -7,15 +5,20 @@
 #    All rights reserved.
 #    BSD license.
 #
+# Authors:  Aric Hagberg (hagberg@lanl.gov)
+#           Pieter Swart (swart@lanl.gov)
+#           Dan Schult(dschult@colgate.edu)
+"""Functional interface to graph methods and assorted utilities.
+"""
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, pairwise
 import itertools
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+
+
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
            'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
+           'add_star', 'add_path', 'add_cycle',
            'create_empty_copy', 'set_node_attributes',
            'get_node_attributes', 'set_edge_attributes',
            'get_edge_attributes', 'all_neighbors', 'non_neighbors',
@@ -148,8 +151,7 @@ def freeze(G):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_path([0,1,2,3])
+    >>> G=nx.path_graph(4)
     >>> G=nx.freeze(G)
     >>> try:
     ...    G.add_edge(4,5)
@@ -200,6 +202,83 @@ def is_frozen(G):
         return G.frozen
     except AttributeError:
         return False
+
+
+def add_star(G, nodes, **attr):
+    """Add a star to Graph G.
+
+    The first node in nodes is the middle of the star.
+    It is connected to all other nodes.
+
+    Parameters
+    ----------
+    nodes : iterable container
+        A container of nodes.
+    attr : keyword arguments, optional (default= no attributes)
+        Attributes to add to every edge in star.
+
+    See Also
+    --------
+    add_path, add_cycle
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> nx.add_star(G, [0, 1, 2, 3])
+    >>> nx.add_star(G, [10, 11, 12], weight=2)
+    """
+    nlist = iter(nodes)
+    v = next(nlist)
+    edges = ((v, n) for n in nlist)
+    G.add_edges_from(edges, **attr)
+
+
+def add_path(G, nodes, **attr):
+    """Add a path to the Graph G.
+
+    Parameters
+    ----------
+    nodes : iterable container
+        A container of nodes.  A path will be constructed from
+        the nodes (in order) and added to the graph.
+    attr : keyword arguments, optional (default= no attributes)
+        Attributes to add to every edge in path.
+
+    See Also
+    --------
+    add_star, add_cycle
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> nx.add_path(G, [0, 1, 2, 3])
+    >>> nx.add_path(G, [10, 11, 12], weight=7)
+    """
+    G.add_edges_from(pairwise(nodes), **attr)
+
+
+def add_cycle(G, nodes, **attr):
+    """Add a cycle to the Graph G.
+
+    Parameters
+    ----------
+    nodes: iterable container
+        A container of nodes.  A cycle will be constructed from
+        the nodes (in order) and added to the graph.
+    attr : keyword arguments, optional (default= no attributes)
+        Attributes to add to every edge in cycle.
+
+    See Also
+    --------
+    add_path, add_star
+
+    Examples
+    --------
+    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> nx.add_cycle(G, [0, 1, 2, 3])
+    >>> nx.add_cycle(G, [10, 11, 12], weight=7)
+    """
+    G.add_edges_from(pairwise(nodes, cyclic=True), **attr)
 
 
 def subgraph(G, nbunch):
@@ -408,9 +487,9 @@ def get_edge_attributes(G, name):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_path([1,2,3],color='red')
-    >>> color=nx.get_edge_attributes(G,'color')
-    >>> color[(1,2)]
+    >>> nx.add_path(G, [1, 2, 3], color='red')
+    >>> color=nx.get_edge_attributes(G, 'color')
+    >>> color[(1, 2)]
     'red'
     """
     if G.is_multigraph():

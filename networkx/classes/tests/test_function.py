@@ -49,6 +49,49 @@ class TestFunction(object):
         assert_equal(self.G.is_directed(),nx.is_directed(self.G))
         assert_equal(self.DG.is_directed(),nx.is_directed(self.DG))
 
+    def test_add_star(self):
+        G = self.G.copy()
+        nlist = [12, 13, 14, 15]
+        nx.add_star(G, nlist)
+        assert_equal(sorted(G.edges(nlist)), [(12, 13), (12, 14), (12, 15)])
+        G = self.G.copy()
+        nx.add_star(G, nlist, weight=2.0)
+        assert_equal(sorted(G.edges(nlist, data=True)),
+                     [(12, 13, {'weight': 2.}),
+                      (12, 14, {'weight': 2.}),
+                      (12, 15, {'weight': 2.})])
+
+    def test_add_path(self):
+        G = self.G.copy()
+        nlist = [12, 13, 14, 15]
+        nx.add_path(G, nlist)
+        assert_equal(sorted(G.edges(nlist)), [(12, 13), (13, 14), (14, 15)])
+        G = self.G.copy()
+        nx.add_path(G, nlist, weight=2.0)
+        assert_equal(sorted(G.edges(nlist, data=True)),
+                     [(12, 13, {'weight': 2.}),
+                      (13, 14, {'weight': 2.}),
+                      (14, 15, {'weight': 2.})])
+
+    def test_add_cycle(self):
+        G = self.G.copy()
+        nlist = [12, 13, 14, 15]
+        oklists = [[(12, 13), (12, 15), (13, 14), (14, 15)],
+                   [(12, 13), (13, 14), (14, 15), (15, 12)]]
+        nx.add_cycle(G, nlist)
+        assert_true(sorted(G.edges(nlist)) in oklists)
+        G = self.G.copy()
+        oklists = [[(12, 13, {'weight': 1.}),
+                    (12, 15, {'weight': 1.}),
+                    (13, 14, {'weight': 1.}),
+                    (14, 15, {'weight': 1.})],
+                   [(12, 13, {'weight': 1.}),
+                    (13, 14, {'weight': 1.}),
+                    (14, 15, {'weight': 1.}),
+                    (15, 12, {'weight': 1.})]]
+        nx.add_cycle(G, nlist, weight=1.0)
+        assert_true(sorted(G.edges(nlist, data=True)) in oklists)
+
     def test_subgraph(self):
         assert_equal(self.G.subgraph([0,1,2,4]).adj,nx.subgraph(self.G,[0,1,2,4]).adj)
         assert_equal(self.DG.subgraph([0,1,2,4]).adj,nx.subgraph(self.DG,[0,1,2,4]).adj)
