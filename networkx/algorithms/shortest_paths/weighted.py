@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors:  Aric Hagberg <hagberg@lanl.gov>
+#           Loïc Séguin-C. <loicseguin@gmail.com>
+#           Dan Schult <dschult@colgate.edu>
+#           Niels van Adrichem <n.l.m.vanadrichem@tudelft.nl>
 """
 Shortest path algorithms for weighed graphs.
 """
-__author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>',
-                            'Loïc Séguin-C. <loicseguin@gmail.com>',
-                            'Dan Schult <dschult@colgate.edu>',
-                            'Niels van Adrichem <n.l.m.vanadrichem@tudelft.nl'])
 
 from collections import deque
 from heapq import heappush, heappop
@@ -36,26 +37,32 @@ __all__ = ['dijkstra_path',
 
 
 def _weight_function(G, weight):
-    """Returns a function that returns the weight of an edge,
-    specifically suitable for input to the :func:`_dijkstra` and
-    :func:`_bellman_ford_relaxation` functions.
+    """Returns a function that returns the weight of an edge.
 
-    ``G`` is a NetworkX graph.
+    The returned function is specifically suitable for input to
+    functions :func:`_dijkstra` and :func:`_bellman_ford_relaxation`.
 
-    ``weight`` is either a string or a callable. If it is callable,
-    ``weight`` itself is returned. If it is a string, it is assumed to
-    be the name of the edge attribute that represents the weight of an
-    edge. In that case, a function is returned that gets the edge weight
-    according to the specified edge attribute.
+    Parameters
+    ----------
+    G : NetworkX graph.
 
-    This function returns a callable that accepts exactly three inputs:
-    a node, an node adjacent to the first one, and the edge attribute
-    dictionary for the eedge joining those nodes. That function returns
-    a number representing the weight of an edge.
+    weight : string or function
+        If it is callable, `weight` itself is returned. If it is a string,
+        it is assumed to be the name of the edge attribute that represents
+        the weight of an edge. In that case, a function is returned that
+        gets the edge weight according to the specified edge attribute.
 
-    If ``G`` is a multigraph, and ``weight`` is not callable, the
+    Returns
+    -------
+    function
+        This function returns a callable that accepts exactly three inputs:
+        a node, an node adjacent to the first one, and the edge attribute
+        dictionary for the eedge joining those nodes. That function returns
+        a number representing the weight of an edge.
+
+    If `G` is a multigraph, and `weight` is not callable, the
     minimum edge weight over all parallel edges is returned. If any edge
-    does not have an attribute with key ``weight``, it is assumed to
+    does not have an attribute with key `weight`, it is assumed to
     have weight one.
 
     """
@@ -70,7 +77,10 @@ def _weight_function(G, weight):
 
 
 def dijkstra_path(G, source, target, weight='weight'):
-    """Returns the shortest path from source to target in a weighted graph G.
+    """Returns the shortest weighted path from source to target in G.
+
+    Uses Dijkstra's Method to compute the shortest weighted path
+    between two nodes in a graph.
 
     Parameters
     ----------
@@ -85,7 +95,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -116,6 +126,10 @@ def dijkstra_path(G, source, target, weight='weight'):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
+
     See Also
     --------
     bidirectional_dijkstra()
@@ -130,8 +144,10 @@ def dijkstra_path(G, source, target, weight='weight'):
 
 
 def dijkstra_path_length(G, source, target, weight='weight'):
-    """Returns the shortest path length from source to target
-    in a weighted graph.
+    """Returns the shortest weighted path length in G from source to target.
+
+    Uses Dijkstra's Method to compute the shortest weighted path length
+    between two nodes in a graph.
 
     Parameters
     ----------
@@ -157,7 +173,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -178,11 +194,15 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
+
     See Also
     --------
     bidirectional_dijkstra()
     """
-    
+
     if source == target:
         return 0
 
@@ -191,9 +211,9 @@ def dijkstra_path_length(G, source, target, weight='weight'):
             eattr.get(weight, 1) for eattr in data.values())
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
-    
-    length =  _dijkstra(G, source, get_weight, target=target)
-    
+
+    length = _dijkstra(G, source, get_weight, target=target)
+
     try:
         return length[target]
     except KeyError:
@@ -202,7 +222,9 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
 
 def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
-    """Compute shortest path between source and all other reachable
+    """Find shortest weighted paths in G from a source node.
+
+    Compute shortest path between source and all other reachable
     nodes for a weighted graph.
 
     Parameters
@@ -213,12 +235,12 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
        Starting node for path.
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+       Depth to stop the search. Only return paths with length <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -245,6 +267,10 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
+
     See Also
     --------
     single_source_dijkstra()
@@ -257,7 +283,9 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
 
 def single_source_dijkstra_path_length(G, source, cutoff=None,
                                        weight='weight'):
-    """Compute the shortest path length between source and all other
+    """Find shortest weighted path lengths in G from a source node.
+
+    Compute the shortest path length between source and all other
     reachable nodes for a weighted graph.
 
     Parameters
@@ -268,12 +296,12 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
        Starting node for path
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+       Depth to stop the search. Only return paths with length <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -302,6 +330,10 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
+
     See Also
     --------
     single_source_dijkstra()
@@ -313,9 +345,13 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
 def single_source_dijkstra(G, source, target=None, cutoff=None,
                            weight='weight'):
-    """Compute shortest paths and lengths in a weighted graph G.
+    """Find shortest weighted paths and lengths from a source node.
 
-    Uses Dijkstra's algorithm for shortest paths.
+    Compute the shortest path length between source and all other
+    reachable nodes for a weighted graph.
+
+    Uses Dijkstra's algorithm to compute shortest paths and lengths
+    between a source and all other reachable nodes in a weighted graph.
 
     Parameters
     ----------
@@ -328,12 +364,12 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
        Ending node for path
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+       Depth to stop the search. Only return paths with length <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -367,6 +403,10 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
+
     Based on the Python cookbook recipe (119466) at
     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
 
@@ -396,7 +436,7 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
     G : NetworkX graph
 
     source : node label
-       Starting node for paths
+        Starting node for paths
 
     weight: function
         Function with (u, v, data) input that returns that edges weight
@@ -413,17 +453,18 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
         Ending node for path. Search is halted when target is found.
 
     cutoff : integer or float, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only return paths with length <= cutoff.
 
     Returns
     -------
     distance : dictionary
         A dict storing a list of predecessors keyed by node.
-        
+
     Notes
     -----
-    The optional predecessor and path dictionaries can be read by the caller
-    through the original pred and paths references passed as arguments.
+    The optional predecessor and path dictionaries can be accessed by
+    the caller through the original pred and paths objects passed
+    as arguments. No need to explicitly return pred or paths.
     """
     G_succ = G.succ if G.is_directed() else G.adj
 
@@ -447,7 +488,7 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
             cost = weight(v, u, e)
             if cost is None:
                 continue
-            vu_dist = dist[v] + weight(v, u, e)
+            vu_dist = dist[v] + cost
             if cutoff is not None:
                 if vu_dist > cutoff:
                     continue
@@ -465,15 +506,18 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
             elif vu_dist == seen[u]:
                 if pred is not None:
                     pred[u].append(v)
-    
-    # The optional predecessor and path dictionaries can be read by the caller
-    # through the pred and paths references passed as arguments.
+
+    # The optional predecessor and path dictionaries can be accessed
+    # by the caller via the pred and paths objects passed as arguments.
     return dist
 
 
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
-    """Compute shortest path length and predecessors on shortest paths
-    in weighted graphs.
+    """Compute weighted shortest path length and predecessors.
+
+    Uses Dijkstra's Method to obtain the shortest weighted paths
+    and return dictionaries of predecessors for each node and
+    distance for each node from the `source`.
 
     Parameters
     ----------
@@ -483,12 +527,12 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
        Starting node for path
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+       Depth to stop the search. Only return paths with length <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -518,19 +562,19 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
-    """ Compute shortest path lengths between all nodes in a weighted graph.
+    """Compute shortest path lengths between all nodes in a weighted graph.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+       Depth to stop the search. Only return paths with length <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -568,19 +612,19 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
 
 
 def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
-    """ Compute shortest paths between all nodes in a weighted graph.
+    """Compute shortest paths between all nodes in a weighted graph.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
+       Depth to stop the search. Only return paths with length <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -637,7 +681,7 @@ def bellman_ford(G, source, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -789,7 +833,7 @@ def goldberg_radzik(G, source, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -957,7 +1001,7 @@ def negative_edge_cycle(G, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1020,7 +1064,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1065,8 +1109,8 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     source. The radius of this sphere will eventually be the length
     of the shortest path. Bidirectional Dijkstra will expand nodes
     from both the source and the target, making two spheres of half
-    this radius. Volume of the first sphere is pi*r*r while the
-    others are 2*pi*r/2*r/2, making up half the volume.
+    this radius. Volume of the first sphere is `\pi*r*r` while the
+    others are `2*\pi*r/2*r/2`, making up half the volume.
 
     This algorithm is not guaranteed to work if edge weights
     are negative or are floating point numbers
@@ -1081,13 +1125,12 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
         return (0, [source])
     push = heappush
     pop = heappop
-    # Init:   Forward             Backward
-    dists  = [{},                {}]  # dictionary of final distances
-    paths  = [{source: [source]}, {target: [target]}]  # dictionary of paths
-    fringe = [[],                []]  # heap of (distance, node) tuples for
-                                      # extracting next node to expand
-    seen   = [{source: 0},        {target: 0}]  # dictionary of distances to
-                                                # nodes seen
+    # Init:  [Forward, Backward]
+    dists = [{}, {}]                   # dictionary of final distances
+    paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
+    fringe = [[], []]                  # heap of (distance, node) tuples
+                                       # for choosing next node to expand
+    seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
     c = count()
     # initialize fringe heap
     push(fringe[0], (0, next(c), source))
@@ -1098,7 +1141,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     else:
         neighs = [G.neighbors, G.neighbors]
     # variables to hold shortest discovered path
-    #finaldist = 1e30000
+    # finaldist = 1e30000
     finalpath = []
     dir = 1
     while fringe[0] and fringe[1]:
@@ -1155,8 +1198,10 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
 
 def johnson(G, weight='weight'):
-    r"""Computes shortest paths between each pair of nodes in a weighted
-    graph using Johnson's algorithm.
+    r"""Uses Johnson's Algorithm to compute shortest paths.
+
+    Johnson's Algorithm finds a shortest path between each pair of
+    nodes in a weighted graph even if negative weights are present.
 
     Parameters
     ----------
@@ -1165,7 +1210,7 @@ def johnson(G, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining ``u`` to ``v`` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1234,5 +1279,5 @@ def johnson(G, weight='weight'):
         paths = {v: [v]}
         _dijkstra(G, v, new_weight, paths=paths)
         return paths
-        
+
     return {v: dist_path(v) for v in G}
