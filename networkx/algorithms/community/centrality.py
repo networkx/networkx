@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # centrality.py - functions for computing communities using centrality notions
 #
-# Copyright 2015 NetworkX developers.
+# Copyright 2015, 2016 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -14,25 +14,19 @@ import networkx as nx
 __all__ = ['girvan_newman']
 
 
-def girvan_newman(G, ranking=None):
+def girvan_newman(G, most_valuable_edge=None):
     """Finds communities in a graph using the Girvan–Newman method.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    weight : string, optional (default=None)
-       Edge data key corresponding to the edge weight.
+    most_valuable_edge : function
+        Function that takes a graph as input and outputs an edge. The
+        edge returned by this function will be recomputed and removed at
+        each iteration of the algorithm.
 
-    ranking : function
-        Function that takes a graph as input and outputs a
-        dictionary. The keys in the dictionary must be the edges of the
-        graph and the values must be comparable. The edges with the
-        highest value will be removed at each iteration of the
-        algorithm. The function will be called during each iteration of
-        the algorithm to recompute the edge rankings.
-
-        If not specified, the function
+        If not specified, the edge with the highest
         :func:`networkx.edge_betweenness_centrality` will be used.
 
     Returns
@@ -48,7 +42,7 @@ def girvan_newman(G, ranking=None):
 
         >>> G = nx.path_graph(10)
         >>> comp = girvan_newman(G)
-        >>> tuple(sorted(c) for c in list(comp)[0])
+        >>> tuple(sorted(c) for c in next(comp))
         ([0, 1, 2, 3, 4], [5, 6, 7, 8, 9])
 
     To get only the first *k* tuples of communities, use
@@ -59,10 +53,10 @@ def girvan_newman(G, ranking=None):
         >>> k = 2
         >>> comp = girvan_newman(G)
         >>> for communities in itertools.islice(comp, k):
-        ...     print(tuple(sorted(c) for c in communities))
+        ...     print(tuple(sorted(c) for c in communities)) # doctest: +SKIP
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
-        ([0, 1], [2, 3], [4, 5], [6, 7])
+        ([0, 1], [2, 3], [4, 5, 6, 7])
 
     To stop getting tuples of communities once the number of communities
     is greater than *k*, use :func:`itertools.takewhile`::
@@ -73,69 +67,107 @@ def girvan_newman(G, ranking=None):
         >>> comp = girvan_newman(G)
         >>> limited = itertools.takewhile(lambda c: len(c) <= k, comp)
         >>> for communities in limited:
-        ...     print(tuple(sorted(c) for c in communities))
+        ...     print(tuple(sorted(c) for c in communities)) # doctest: +SKIP
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
+        ([0, 1], [2, 3], [4, 5, 6, 7])
         ([0, 1], [2, 3], [4, 5], [6, 7])
 
-    To utilize edge weights when choosing an edge with, for example, the
-    edge betweenness centrality ranking function::
+    To just choose an edge to remove based on the weight::
 
-        >>> from functools import partial
+        >>> from operator import itemgetter
         >>> G = nx.path_graph(10)
-        >>> ranking = partial(nx.edge_betweenness_centrality, weight='weight')
-        >>> comp = girvan_newman(G, ranking=ranking)
-        >>> comp[0]
-        ([0, 1, 2, 3, 4], [8, 9, 5, 6, 7])
+        >>> edges = G.edges()
+        >>> nx.set_edge_attributes(G, 'weight', {(u, v): v for u, v in edges})
+        >>> def heaviest(G):
+        ...     u, v, w = max(G.edges(data='weight'), key=itemgetter(2))
+        ...     return (u, v)
+        ...
+        >>> comp = girvan_newman(G, most_valuable_edge=heaviest)
+        >>> tuple(sorted(c) for c in next(comp))
+        ([0, 1, 2, 3, 4, 5, 6, 7, 8], [9])
+
+    To utilize edge weights when choosing an edge with, for example, the
+    highest betweenness centrality::
+
+        >>> from networkx import edge_betweenness_centrality as betweenness
+        >>> def most_central_edge(G):
+        ...     centrality = betweenness(G, weight='weight')
+        ...     return max(centrality, key=centrality.get)
+        ...
+        >>> G = nx.path_graph(10)
+        >>> comp = girvan_newman(G, most_valuable_edge=most_central_edge)
+        >>> tuple(sorted(c) for c in next(comp))
+        ([0, 1, 2, 3, 4], [5, 6, 7, 8, 9])
 
     To specify a different ranking algorithm, for example edge current
     flow betweenness centrality, use the ``ranking`` keyword argument::
 
+        >>> from networkx import edge_current_flow_betweenness_centrality
+        >>> def most_central_edge(G):
+        ...     centrality = edge_current_flow_betweenness_centrality(G)
+        ...     return max(centrality, key=centrality.get)
+        ...
         >>> G = nx.path_graph(10)
-        >>> ranking = nx.edge_current_flow_betweenness_centrality
-        >>> comp = girvan_newman(G, ranking=ranking)  # doctest: +SKIP
+        >>> comp = girvan_newman(G, most_valuable_edge=most_central_edge)
+        >>> tuple(sorted(c) for c in next(comp))
+        ([0, 1, 2, 3, 4], [5, 6, 7, 8, 9])
 
     Notes
     -----
     The Girvan–Newman algorithm detects communities by progressively
-    removing edges from the original graph. The algorithm removes *all*
-    edges with the highest betweenness centrality at each step. As the
-    graph breaks down into pieces, the tightly knit community structure
-    is exposed and the result can be depicted as a dendrogram.
+    removing edges from the original graph. The algorithm removes the
+    "most valuable" edge, traditionally the edge with the highest
+    betweenness centrality, at each step. As the graph breaks down into
+    pieces, the tightly knit community structure is exposed and the
+    result can be depicted as a dendrogram.
 
     """
-    if ranking is None:
-        ranking = nx.edge_betweenness_centrality
+    # If the graph is already empty, simply return its connected
+    # components.
+    if G.number_of_edges() == 0:
+        yield tuple(nx.connected_components(G))
+        return
+    # If no function is provided for computing the most valuable edge,
+    # use the edge betweenness centrality.
+    if most_valuable_edge is None:
+        def most_valuable_edge(G):
+            """Returns the edge with the highest betweenness centrality
+            in the graph `G`.
+
+            """
+            # We have guaranteed that the graph is non-empty, so this
+            # dictionary will never be empty.
+            betweenness = nx.edge_betweenness_centrality(G)
+            return max(betweenness, key=betweenness.get)
     # The copy of G here must include the edge weight data.
     g = G.copy().to_undirected()
     # Self-loops must be removed because their removal has no effect on
     # the connected components of the graph.
     g.remove_edges_from(g.selfloop_edges())
     while g.number_of_edges() > 0:
-        yield _without_most_central_edges(g, ranking)
+        yield _without_most_central_edges(g, most_valuable_edge)
 
 
-def _without_most_central_edges(G, ranking):
+def _without_most_central_edges(G, most_valuable_edge):
     """Returns the connected components of the graph that results from
-    repeatedly removing the edges of maximum betweenness centrality.
+    repeatedly removing the most "valuable" edge in the graph.
 
-    This function modifies the graph ``G`` in-place; that is, it removes
-    edges on the graph ``G``.
+    ``G`` must be a non-empty graph. This function modifies the graph
+    ``G`` in-place; that is, it removes edges on the graph ``G``.
 
-    The ``weight`` parameter is passed directly to the function that
-    computes edge betweenness centrality.
+    ``most_valuable_edge`` is a function that takes the graph ``G`` as
+    input (or a subgraph with one or more edges of ``G`` removed) and
+    returns an edge. That edge will be removed and this process will be
+    repeated until the number of connected components in the graph
+    increases.
 
     """
     original_num_components = nx.number_connected_components(G)
     num_new_components = original_num_components
     while num_new_components <= original_num_components:
-        # Remove the edges of maximum betweenness centrality.
-        ranked_edges = ranking(G)
-        max_value = max(ranked_edges.values())
-        # Use a list of edges because G is changed in the loop
-        G.remove_edges_from(e for e in list(G.edges())
-                            if ranked_edges[e] == max_value)
-        # Get the new connected components after having removed the edges.
+        edge = most_valuable_edge(G)
+        G.remove_edge(*edge)
         new_components = tuple(nx.connected_components(G))
         num_new_components = len(new_components)
     return new_components
