@@ -12,9 +12,18 @@ def validate_communities(result, expected):
     assert_equal(collections.Counter(result), collections.Counter(expected))
 
 
-class TestCommunities():
+class TestGirvanNewman(object):
 
-    def test_girvan_newman_no_edges(self):
+    def test_selfloops(self):
+        G = nx.path_graph(4)
+        G.add_edge(0, 0)
+        G.add_edge(2, 2)
+        communities = list(nx.girvan_newman(G))
+        assert_equal(len(communities), 2)
+        validate_communities(communities[0], [(0, 1), (2, 3)])
+        validate_communities(communities[1], [(0, ), (1, ), (2, ), (3, )])
+
+    def test_no_edges(self):
         g = nx.Graph()
         g.add_nodes_from([1, 2, 3, 4, 5])
         result = list(nx.girvan_newman(g))

@@ -108,6 +108,9 @@ def girvan_newman(G, ranking=None):
         ranking = nx.edge_betweenness_centrality
     # The copy of G here must include the edge weight data.
     g = G.copy().to_undirected()
+    # Self-loops must be removed because their removal has no effect on
+    # the connected components of the graph.
+    g.remove_edges_from(g.selfloop_edges())
     while g.number_of_edges() > 0:
         yield _without_most_central_edges(g, ranking)
 
