@@ -35,9 +35,9 @@ def cycle_basis(G, root=None, T=None):
     """Returns a list of cycles that form a basis for the cycle space of
     ``G``.
 
-    The *`cycle space`_* of a graph is the vector space of its Eulerian
+    The `cycle space`_ of a graph is the vector space of its Eulerian
     subgraphs, with vector addition defined by symmetric difference of
-    the subgraphs. A *`cycle basis`_* is a basis for this vector space.
+    the subgraphs. A `cycle basis`_ is a basis for this vector space.
     It is a minimal collection of cycles such that any cycle in the
     network can be written as a "sum" (in the sense of symmetric
     difference, as stated above) of cycles in the basis.
@@ -57,9 +57,13 @@ def cycle_basis(G, root=None, T=None):
         A starting node to use when computing the basis.
 
     T : NetworkX graph, optional
-        When the graph ``G`` is a multigraph a A spanning tree is used to extract
-        all the cycles defined by multiple edges between nodes. This is done by
-        calling the function :func:`chords`, which accepts a precomputed tree.
+        Use this particular spanning tree when computing the cycles
+        induced by parallel edges joining pairs of nodes in a
+        multigraph. This must be a NetworkX graph object representing a
+        spanning tree of the graph ``G``. If not provided, a minimum
+        spanning tree will be computed.
+
+        This argument is ignored if ``G`` is not a multigraph.
 
     Returns
     -------
@@ -94,8 +98,7 @@ def cycle_basis(G, root=None, T=None):
     # Add all cycles due to multiple edges between nodes.
     if G.is_multigraph():
         C, T = chords(G, T=T, output_tree=True)
-        cycles = [list(e) for e in C.edges_iter()
-                  if T.has_edge(*e) or T.has_edge(*e[::-1])]
+        cycles = [[u, v] for u, v in C.edges() if v in T[u] or u in T[v]]
         # Make G a graph so that the original algorithm works.
         G = nx.Graph(G)
 
