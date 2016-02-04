@@ -188,16 +188,16 @@ def cycle_basis_matrix(G, T=None):
     ncol = len(C.edges())
     M = sp.zeros([nrow, ncol], dtype=sp.int8)
     if G.is_multigraph():
-        Cedges_iter = C.edges_iter(keys=True)
+        Cedges = C.edges(keys=True)
 
         Gedges = G.edges(keys=True)
         Tedges = T.edges(keys=True)
     else:
-        Cedges_iter = C.edges_iter()
+        Cedges = C.edges()
         Gedges = G.edges()
         Tedges = T.edges()
 
-    for col, e in enumerate(Cedges_iter):
+    for col, e in enumerate(Cedges):
         row = Gedges.index(e)
         M[row, col] = 1
 
@@ -555,20 +555,19 @@ def chords(G, T=None, output_tree=False):
     C = G.copy()
     # Recover keys and make chords.
     if G.is_multigraph():
-        Tedges = T.edges()
+        Tedges = list(T.edges())
         to_add = []
-        for e in G.edges_iter(keys=True, data=True):
+        for e in G.edges(keys=True, data=True):
             if e[:2] in Tedges:
                 to_add.append(e)
                 Tedges.pop(Tedges.index(e[:2]))
             if not Tedges:
                 break
         T = nx.MultiGraph(to_add)
-        # Difference to keep attributes ad keys
-        C.remove_edges_from([n for n in G.edges_iter(keys=True)
-                             if n in T.edges_iter(keys=True)])
+        # Difference to keep attributes and keys
+        C.remove_edges_from(e for e in G.edges(keys=True) if T.has_edge(*e))
     else:
-        C.remove_edges_from([n for n in G.edges_iter() if n in T.edges_iter()])
+        C.remove_edges_from(e for e in G.edges() if T.has_edge(*e))
     return (C, T) if output_tree else C
 
 
