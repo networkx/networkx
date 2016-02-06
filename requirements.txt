@@ -3,6 +3,7 @@ matplotlib
 scipy
 numpy
 nose
+nose-ignore-docstrings
 pandas
 gdal
 pyyaml
