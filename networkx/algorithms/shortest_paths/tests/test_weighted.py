@@ -140,8 +140,8 @@ class TestWeightedPath:
     @raises(nx.NetworkXNoPath)
     def test_bidirectional_dijkstra_no_path(self):
         G = nx.Graph()
-        G.add_path([1, 2, 3])
-        G.add_path([4, 5, 6])
+        nx.add_path(G, [1, 2, 3])
+        nx.add_path(G, [4, 5, 6])
         path = nx.bidirectional_dijkstra(G, 1, 6)
 
     def test_dijkstra_predecessor(self):

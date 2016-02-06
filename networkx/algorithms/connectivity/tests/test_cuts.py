@@ -209,8 +209,8 @@ def test_missing_target():
 
 def test_not_weakly_connected():
     G = nx.DiGraph()
-    G.add_path([1, 2, 3])
-    G.add_path([4, 5])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5])
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
             assert_raises(nx.NetworkXError, interface_func, G,
@@ -218,8 +218,8 @@ def test_not_weakly_connected():
 
 def test_not_connected():
     G = nx.Graph()
-    G.add_path([1, 2, 3])
-    G.add_path([4, 5])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5])
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
             assert_raises(nx.NetworkXError, interface_func, G,

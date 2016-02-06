@@ -42,7 +42,7 @@ def weakly_connected_components(G):
     Generate a sorted list of weakly connected components, largest first.
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
-    >>> G.add_path([10, 11, 12])
+    >>> nx.add_path(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.weakly_connected_components(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -117,7 +117,7 @@ def weakly_connected_component_subgraphs(G, copy=True):
     Generate a sorted list of weakly connected components, largest first.
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
-    >>> G.add_path([10, 11, 12])
+    >>> nx.add_path(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.weakly_connected_component_subgraphs(G),
     ...                         key=len, reverse=True)]
     [4, 3]

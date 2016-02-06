@@ -405,7 +405,7 @@ class TestMaxFlowMinCutInterface:
     def test_kwargs_default_flow_func(self):
         G = self.H
         for interface_func in interface_funcs:
-            assert_raises(nx.NetworkXError, interface_func, 
+            assert_raises(nx.NetworkXError, interface_func,
                           G, 0, 1, global_relabel_freq=2)
 
     def test_reusing_residual(self):
@@ -437,8 +437,8 @@ def test_preflow_push_global_relabel_freq():
 def test_preflow_push_makes_enough_space():
     #From ticket #1542
     G = nx.DiGraph()
-    G.add_path([0, 1, 3], capacity=1)
-    G.add_path([1, 2, 3], capacity=1)
+    nx.add_path(G, [0, 1, 3], capacity=1)
+    nx.add_path(G, [1, 2, 3], capacity=1)
     R = preflow_push(G, 0, 3, value_only=False)
     assert_equal(R.graph['flow_value'], 1)
 
@@ -448,7 +448,7 @@ def test_shortest_augmenting_path_two_phase():
     G = nx.DiGraph()
     for i in range(k):
         G.add_edge('s', (i, 0), capacity=1)
-        G.add_path(((i, j) for j in range(p)), capacity=1)
+        nx.add_path(G, ((i, j) for j in range(p)), capacity=1)
         G.add_edge((i, p - 1), 't', capacity=1)
     R = shortest_augmenting_path(G, 's', 't', two_phase=True)
     assert_equal(R.graph['flow_value'], k)
@@ -464,7 +464,7 @@ class TestCutoff:
         G = nx.DiGraph()
         for i in range(k):
             G.add_edge('s', (i, 0), capacity=2)
-            G.add_path(((i, j) for j in range(p)), capacity=2)
+            nx.add_path(G, ((i, j) for j in range(p)), capacity=2)
             G.add_edge((i, p - 1), 't', capacity=2)
         R = shortest_augmenting_path(G, 's', 't', two_phase=True, cutoff=k)
         ok_(k <= R.graph['flow_value'] <= 2 * k)
@@ -476,11 +476,11 @@ class TestCutoff:
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
-        nx.set_edge_attributes(G, 'capacity', 
+        nx.set_edge_attributes(G, 'capacity',
                                dict(((u, v), 1) for u, v in G.edges()))
         for flow_func in [shortest_augmenting_path, edmonds_karp]:
             for cutoff in [3, 2, 1]:
                 result = nx.maximum_flow_value(G, 0, 4, flow_func=flow_func,
                                                cutoff=cutoff)
-                assert_equal(cutoff, result, 
+                assert_equal(cutoff, result,
                             msg="cutoff error in {0}".format(flow_func.__name__))

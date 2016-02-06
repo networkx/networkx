@@ -60,16 +60,16 @@ class TestMST:
 
     def test_kruskal_minimum_spanning_tree_disconnected(self):
         G = nx.Graph()
-        G.add_path([1, 2])
-        G.add_path([10, 20])
+        G.add_edge(1, 2)
+        G.add_edge(10, 20)
         T = nx.minimum_spanning_tree(G, algorithm='kruskal')
         assert_equal(sorted(map(sorted, T.edges())), [[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()), [1, 2, 10, 20])
 
     def test_kruskal_maximum_spanning_tree_disconnected(self):
         G = nx.Graph()
-        G.add_path([1, 2])
-        G.add_path([10, 20])
+        G.add_edge(1, 2)
+        G.add_edge(10, 20)
         T = nx.maximum_spanning_tree(G, algorithm='kruskal')
         assert_equal(sorted(map(sorted, T.edges())), [[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()), [1, 2, 10, 20])
@@ -162,16 +162,16 @@ class TestMST:
 
     def test_prim_minimum_spanning_tree_disconnected(self):
         G = nx.Graph()
-        G.add_path([1, 2])
-        G.add_path([10, 20])
+        G.add_edge(1, 2)
+        G.add_edge(10, 20)
         T = nx.minimum_spanning_tree(G, algorithm='prim')
         assert_equal(sorted(map(sorted, T.edges())), [[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()), [1, 2, 10, 20])
 
     def test_prim_maximum_spanning_tree_disconnected(self):
         G = nx.Graph()
-        G.add_path([1, 2])
-        G.add_path([10, 20])
+        G.add_edge(1, 2)
+        G.add_edge(10, 20)
         T = nx.maximum_spanning_tree(G, algorithm='prim')
         assert_equal(sorted(map(sorted, T.edges())), [[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()), [1, 2, 10, 20])

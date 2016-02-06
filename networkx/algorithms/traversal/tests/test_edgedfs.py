@@ -39,8 +39,7 @@ class TestEdgeDFS(object):
 
     def test_digraph2(self):
         G = nx.DiGraph()
-        nodes = range(4)
-        G.add_path(nodes)
+        nx.add_path(G, range(4))
         x = list(edge_dfs(G, [0]))
         x_ = [(0, 1), (1, 2), (2, 3)]
         assert_equal(x, x_)
@@ -54,8 +53,7 @@ class TestEdgeDFS(object):
 
     def test_digraph_rev2(self):
         G = nx.DiGraph()
-        nodes = range(4)
-        G.add_path(nodes)
+        nx.add_path(G, range(4))
         x = list(edge_dfs(G, [3], orientation='reverse'))
         x_ = [(2, 3, REVERSE), (1, 2, REVERSE), (0, 1, REVERSE)]
         assert_equal(x, x_)
@@ -97,8 +95,7 @@ class TestEdgeDFS(object):
 
     def test_digraph_ignore2(self):
         G = nx.DiGraph()
-        nodes = range(4)
-        G.add_path(nodes)
+        nx.add_path(G, range(4))
         x = list(edge_dfs(G, [0], orientation='ignore'))
         x_ = [(0, 1, FORWARD), (1, 2, FORWARD), (2, 3, FORWARD)]
         assert_equal(x, x_)

@@ -32,8 +32,7 @@ def bfs_edges(G, source, reverse=False):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> G.add_path([0,1,2])
+    >>> G = nx.path_graph(3)
     >>> print(list(nx.bfs_edges(G,0)))
     [(0, 1), (1, 2)]
 
@@ -81,8 +80,7 @@ def bfs_tree(G, source, reverse=False):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> G.add_path([0,1,2])
+    >>> G = nx.path_graph(3)
     >>> print(list(nx.bfs_edges(G,0)))
     [(0, 1), (1, 2)]
 
@@ -115,8 +113,7 @@ def bfs_predecessors(G, source):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> G.add_path([0, 1, 2])
+    >>> G = nx.path_graph(3)
     >>> print(dict(nx.bfs_predecessors(G, 0)))
     {1: 0, 2: 1}
     >>> H = nx.Graph()
@@ -152,8 +149,7 @@ def bfs_successors(G, source):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> G.add_path([0,1,2])
+    >>> G = nx.path_graph(3)
     >>> print(dict(nx.bfs_successors(G,0)))
     {0: [1], 1: [2]}
     >>> H = nx.Graph()

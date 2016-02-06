@@ -68,8 +68,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
     >>> G.add_nodes_from([2,3])
     >>> G.add_nodes_from(range(100,110))
-    >>> H=nx.Graph()
-    >>> H.add_path([0,1,2,3,4,5,6,7,8,9])
+    >>> H=nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -370,7 +369,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Examples
         --------
         >>> G = nx.MultiDiGraph()
-        >>> G.add_path([0,1,2,3])
+        >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
@@ -442,7 +441,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Examples
         --------
         >>> G = nx.MultiDiGraph()
-        >>> G.add_path([0,1,2])
+        >>> nx.add_path(G, [0, 1, 2])
         >>> G.add_edge(2,3,weight=5)
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
@@ -569,7 +568,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Examples
         --------
         >>> G = nx.MultiDiGraph()
-        >>> G.add_path([0,1,2,3])
+        >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0) # node 0 with degree 1
         1
         >>> list(G.degree([0,1]))
@@ -652,7 +651,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Examples
         --------
         >>> G = nx.MultiDiGraph()
-        >>> G.add_path([0,1,2,3])
+        >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0) # node 0 with degree 0
         0
         >>> list(G.in_degree([0,1]))
@@ -722,7 +721,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Examples
         --------
         >>> G = nx.MultiDiGraph()
-        >>> G.add_path([0,1,2,3])
+        >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0) # node 0 with degree 1
         1
         >>> list(G.out_degree([0,1]))
@@ -793,7 +792,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Examples
         --------
         >>> G = nx.Graph()   # or MultiGraph, etc
-        >>> G.add_path([0,1])
+        >>> G.add_edge(0, 1)
         >>> H = G.to_directed()
         >>> list(H.edges())
         [(0, 1), (1, 0)]
@@ -801,7 +800,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         If already directed, return a (deep) copy
 
         >>> G = nx.MultiDiGraph()
-        >>> G.add_path([0,1])
+        >>> G.add_edge(0, 1)
         >>> H = G.to_directed()
         >>> list(H.edges())
         [(0, 1)]
@@ -895,8 +894,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> H = G.subgraph([0,1,2])
         >>> list(H.edges())
         [(0, 1), (1, 2)]

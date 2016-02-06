@@ -127,9 +127,9 @@ if __name__=='__main__':
 
 
     G=PrintGraph()
-    G.add_path(list(range(10)))
+    nx.add_path(G, range(10))
     print("subgraph")
-    H1=G.subgraph(list(range(4)),copy=False)
-    H2=G.subgraph(list(range(4)),copy=False)
+    H1=G.subgraph(range(4), copy=False)
+    H2=G.subgraph(range(4), copy=False)
     print(list(H1.edges()))
     print(list(H2.edges()))

@@ -130,4 +130,3 @@ def test_pairwise():
     assert_equal(list(pairwise(empty_iter)), [])
     empty_iter = iter(())
     assert_equal(list(pairwise(empty_iter, cyclic=True)), [])
-

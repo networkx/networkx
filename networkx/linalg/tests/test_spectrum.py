@@ -25,7 +25,7 @@ class TestSpectrum(object):
                 for (u,v) in self.G.edges() )
         self.WG.add_node(4)
         self.DG=nx.DiGraph()
-        self.DG.add_path([0,1,2])
+        nx.add_path(self.DG, [0,1,2])
 
     def test_laplacian_spectrum(self):
         "Laplacian eigenvalues"

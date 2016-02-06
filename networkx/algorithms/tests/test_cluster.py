@@ -13,7 +13,7 @@ class TestTriangles:
         assert_equal(list(nx.triangles(G).values()),
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         assert_equal(nx.triangles(G),
-                     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 
+                     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0,
                       5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
 
     def test_cubical(self):
@@ -47,7 +47,7 @@ class TestWeightedClustering:
         assert_equal(list(nx.clustering(G,weight='weight').values()),
                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert_equal(nx.clustering(G,weight='weight'),
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
+                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
                       5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
@@ -70,8 +70,7 @@ class TestWeightedClustering:
 
 
     def test_triangle_and_edge(self):
-        G=nx.Graph()
-        G.add_cycle([0,1,2])
+        G=nx.cycle_graph(3)
         G.add_edge(0,4,weight=2)
         assert_equal(nx.clustering(G)[0],1.0/3.0)
         assert_equal(nx.clustering(G,weight='weight')[0],1.0/6.0)
@@ -88,7 +87,7 @@ class TestClustering:
         assert_equal(list(nx.clustering(G).values()),
                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert_equal(nx.clustering(G),
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
+                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
                       5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
@@ -155,7 +154,7 @@ class TestSquareClustering:
         assert_equal(list(nx.square_clustering(G).values()),
                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert_equal(nx.square_clustering(G),
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
+                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
                       5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):

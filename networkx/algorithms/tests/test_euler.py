@@ -68,7 +68,7 @@ class TestEuler:
 
     def test_eulerian_circuit_digraph(self):
         G=nx.DiGraph()
-        G.add_cycle([0,1,2,3])
+        nx.add_cycle(G, [0, 1, 2, 3])
 
         edges=list(eulerian_circuit(G,source=0))
         nodes=[u for u,v in edges]
@@ -83,7 +83,7 @@ class TestEuler:
 
     def test_eulerian_circuit_multigraph(self):
         G=nx.MultiGraph()
-        G.add_cycle([0,1,2,3])
+        nx.add_cycle(G, [0, 1, 2, 3])
         G.add_edge(1,2)
         G.add_edge(1,2)
         edges=list(eulerian_circuit(G,source=0))
@@ -93,5 +93,5 @@ class TestEuler:
 
 
     @raises(nx.NetworkXError)
-    def test_not_eulerian(self):    
+    def test_not_eulerian(self):
         f=list(eulerian_circuit(nx.complete_graph(4)))

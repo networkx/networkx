@@ -34,8 +34,8 @@ def test_all_simple_paths_multigraph_with_cutoff():
 
 def test_all_simple_paths_directed():
     G = nx.DiGraph()
-    G.add_path([1,2,3])
-    G.add_path([3,2,1])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [3, 2, 1])
     paths = nx.all_simple_paths(G,1,3)
     assert_equal(list(list(p) for p in paths),[[1,2,3]])
 
@@ -70,13 +70,13 @@ def test_cutoff_zero():
 @raises(nx.NetworkXError)
 def test_source_missing():
     G = nx.Graph()
-    G.add_path([1,2,3])
+    nx.add_path(G, [1, 2, 3])
     paths = list(nx.all_simple_paths(nx.MultiGraph(G),0,3))
 
 @raises(nx.NetworkXError)
 def test_target_missing():
     G = nx.Graph()
-    G.add_path([1,2,3])
+    nx.add_path(G, [1, 2, 3])
     paths = list(nx.all_simple_paths(nx.MultiGraph(G),1,4))
 
 # Tests for shortest_simple_paths
@@ -143,26 +143,26 @@ def test_weight_name():
 @raises(nx.NetworkXError)
 def test_ssp_source_missing():
     G = nx.Graph()
-    G.add_path([1,2,3])
+    nx.add_path(G, [1, 2, 3])
     paths = list(nx.shortest_simple_paths(G, 0, 3))
 
 @raises(nx.NetworkXError)
 def test_ssp_target_missing():
     G = nx.Graph()
-    G.add_path([1,2,3])
+    nx.add_path(G, [1, 2, 3])
     paths = list(nx.shortest_simple_paths(G, 1, 4))
 
 @raises(nx.NetworkXNotImplemented)
 def test_ssp_multigraph():
     G = nx.MultiGraph()
-    G.add_path([1,2,3])
+    nx.add_path(G, [1, 2, 3])
     paths = list(nx.shortest_simple_paths(G, 1, 4))
 
 @raises(nx.NetworkXNoPath)
 def test_ssp_source_missing():
     G = nx.Graph()
-    G.add_path([0, 1, 2])
-    G.add_path([3, 4, 5])
+    nx.add_path(G, [0, 1, 2])
+    nx.add_path(G, [3, 4, 5])
     paths = list(nx.shortest_simple_paths(G, 0, 3))
 
 def test_bidirectional_shortest_path_restricted():
@@ -256,7 +256,7 @@ def test_bidirectional_dijksta_restricted():
 @raises(nx.NetworkXNoPath)
 def test_bidirectional_dijkstra_no_path():
     G = nx.Graph()
-    G.add_path([1, 2, 3])
-    G.add_path([4, 5, 6])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5, 6])
     path = _bidirectional_dijkstra(G, 1, 6)
 

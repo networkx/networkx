@@ -50,8 +50,8 @@ def cycle_basis(G,root=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
+    >>> nx.add_cycle(G, [0, 1, 2, 3])
+    >>> nx.add_cycle(G, [0, 3, 4, 5])
     >>> print(nx.cycle_basis(G,0))
     [[3, 4, 5, 0], [1, 2, 3, 0]]
 
