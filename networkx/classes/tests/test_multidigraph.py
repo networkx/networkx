@@ -2,6 +2,7 @@
 from nose.tools import *
 import networkx
 from test_multigraph import BaseMultiGraphTester, TestMultiGraph
+from test_multigraph import TestEdgeSubgraph as TestMultiGraphEdgeSubgraph
 
 class BaseMultiDiGraphTester(BaseMultiGraphTester):
     def test_edges(self):
@@ -302,3 +303,27 @@ class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
                              1:{2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
         G.remove_edges_from([(0,0)]) # silent fail
+
+
+class TestEdgeSubgraph(TestMultiGraphEdgeSubgraph):
+    """Unit tests for the :meth:`MultiDiGraph.edge_subgraph` method."""
+
+    def setup(self):
+        # Create a quadruply-linked path graph on five nodes.
+        G = networkx.MultiDiGraph()
+        G.add_path(range(5))
+        G.add_path(range(5))
+        G.add_path(reversed(range(5)))
+        G.add_path(reversed(range(5)))
+        # Add some node, edge, and graph attributes.
+        for i in range(5):
+            G.node[i]['name'] = 'node{}'.format(i)
+        G.edge[0][1][0]['name'] = 'edge010'
+        G.edge[0][1][1]['name'] = 'edge011'
+        G.edge[3][4][0]['name'] = 'edge340'
+        G.edge[3][4][1]['name'] = 'edge341'
+        G.graph['name'] = 'graph'
+        # Get the subgraph induced by one of the first edges and one of
+        # the last edges.
+        self.G = G
+        self.H = G.edge_subgraph([(0, 1, 0), (3, 4, 1)])

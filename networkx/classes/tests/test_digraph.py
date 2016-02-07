@@ -2,6 +2,7 @@
 from nose.tools import *
 import networkx
 from test_graph import BaseGraphTester, BaseAttrGraphTester, TestGraph
+from test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
 
 class BaseDiGraphTester(BaseGraphTester):
     def test_has_successor(self):
@@ -153,6 +154,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(R.edges()),[(2,1)])
         assert_equal(sorted(G.edges()),[(2,1)])
 
+
 class BaseAttrDiGraphTester(BaseDiGraphTester,BaseAttrGraphTester):
     pass
 
@@ -227,3 +229,20 @@ class TestDiGraph(BaseAttrDiGraphTester,TestGraph):
         assert_equal(G.succ,{0:{2:{}},1:{0:{},2:{}},2:{0:{},1:{}}})
         assert_equal(G.pred,{0:{1:{}, 2:{}}, 1:{2:{}}, 2:{0:{},1: {}}})
         G.remove_edges_from([(0,0)]) # silent fail
+
+
+class TestEdgeSubgraph(TestGraphEdgeSubgraph):
+    """Unit tests for the :meth:`DiGraph.edge_subgraph` method."""
+
+    def setup(self):
+        # Create a doubly-linked path graph on five nodes.
+        G = networkx.DiGraph(networkx.path_graph(5))
+        # Add some node, edge, and graph attributes.
+        for i in range(5):
+            G.node[i]['name'] = 'node{}'.format(i)
+        G.edge[0][1]['name'] = 'edge01'
+        G.edge[3][4]['name'] = 'edge34'
+        G.graph['name'] = 'graph'
+        # Get the subgraph induced by the first and last edges.
+        self.G = G
+        self.H = G.edge_subgraph([(0, 1), (3, 4)])
