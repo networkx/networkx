@@ -45,6 +45,7 @@ import collections
 import itertools
 
 from networkx.algorithms.bipartite import sets as bipartite_sets
+import networkx as nx
 
 __all__ = ['maximum_matching', 'hopcroft_karp_matching', 'eppstein_matching',
            'to_vertex_cover']
@@ -165,8 +166,8 @@ def eppstein_matching(G):
     -------
     matches : dictionary
 
-      The matching is returned as a dictionary, `matches`, such that
-      ``matches[v] == w`` if node ``v`` is matched to node ``w``. Unmatched
+      The matching is returned as a dictionary, `matching`, such that
+      ``matching[v] == w`` if node ``v`` is matched to node ``w``. Unmatched
       nodes do not occur as a key in mate.
 
     Notes
@@ -183,6 +184,10 @@ def eppstein_matching(G):
     hopcroft_karp_matching
 
     """
+    # Due to its original implementation, a directed graph is needed
+    # so that the two sets of bipartite nodes can be distinguished
+    left = bipartite_sets(G)[0]
+    G = nx.DiGraph(G.edges(left))
     # initialize greedy matching (redundant, but faster than full search)
     matching = {}
     for u in G:
@@ -190,7 +195,6 @@ def eppstein_matching(G):
             if v not in matching:
                 matching[v] = u
                 break
-
     while True:
         # structure residual graph into layers
         # pred[u] gives the neighbor in the previous layer for u in U
@@ -243,6 +247,10 @@ def eppstein_matching(G):
             # seems to be the case, they don't really need to be returned,
             # since that information can be inferred from the matching
             # dictionary.
+
+            # All the matched nodes must be a key in the dictionary
+            for key in matching.copy():
+                matching[matching[key]] = key
             return matching
 
         # recursively search backward through layers to find alternating paths
@@ -328,8 +336,8 @@ def _is_connected_by_alternating_path(G, v, matching, targets):
     # check for alternating paths starting with edges not in the
     # matching. Initiate the depth-first search with the current depth equal to
     # the number of nodes in the graph.
-    return (_alternating_dfs(v, len(G), along_matched=True)
-            or _alternating_dfs(v, len(G), along_matched=False))
+    return (_alternating_dfs(v, len(G), along_matched=True) or
+            _alternating_dfs(v, len(G), along_matched=False))
 
 
 def _connected_by_alternating_paths(G, matching, targets):
