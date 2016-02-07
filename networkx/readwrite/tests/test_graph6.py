@@ -82,5 +82,5 @@ class TestGraph6(object):
             assert_equal(sorted(g2.edges()), sorted(g.edges()))
 
     @raises(nx.NetworkXError)
-    def directed_error(self):
+    def directed_raise(self):
         nx.generate_graph6(nx.DiGraph())

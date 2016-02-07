@@ -291,7 +291,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
         assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
-    def test_key_error(self):
+    def test_key_raise(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -319,7 +319,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
         assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
-    def test_hyperedge_error(self):
+    def test_hyperedge_raise(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

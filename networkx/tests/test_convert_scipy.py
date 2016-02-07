@@ -156,7 +156,7 @@ class TestConvertNumpy(object):
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
 
     @raises(nx.NetworkXError)
-    def test_format_keyword_fail(self):
+    def test_format_keyword_raise(self):
         WP4 = nx.Graph()
         WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3))
                             for n in range(3) )
@@ -164,7 +164,7 @@ class TestConvertNumpy(object):
         nx.to_scipy_sparse_matrix(P4, format='any_other')
 
     @raises(nx.NetworkXError)
-    def test_null_fail(self):
+    def test_null_raise(self):
         nx.to_scipy_sparse_matrix(nx.Graph())
 
     def test_empty(self):

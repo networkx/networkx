@@ -216,7 +216,7 @@ class TestGEXF(object):
         assert_raises(nx.NetworkXError,nx.read_gexf,fh)
 
 
-    def test_key_error(self):
+    def test_key_raises(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.1draft" version="1.1">
     <graph mode="static" defaultedgetype="directed">

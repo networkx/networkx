@@ -97,22 +97,24 @@ before_install:
 install:
   ### Install any prerequisites or dependencies necessary to run the build.
   - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
-      DEPS="pyyaml numpy scipy matplotlib Cython pandas pip";
-      conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS gdal;
-      conda install -n test-environment --channel https://conda.binstar.org/patricksnape scikits-sparse;
+      DEPS="pyyaml numpy scipy matplotlib Cython pandas pip gdal";
+      conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS ;
       source activate test-environment;
+      echo "Testing that gdal installed ok by if osgeo imports";
+      python -c "from osgeo import ogr;print('importing ogr worked')";
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ "3.3" ]]; then
           pip install https://pypi.python.org/packages/source/p/pydotplus/pydotplus-2.0.2.tar.gz#md5=0e2fc3dbdfd846819d4cd3769cb4595b;
       else
           pip install pydotplus;
       fi;
-      python -c "from osgeo import ogr;print('importing ogr worked')";
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
         pip install pygraphviz;
       fi;
+      pip install scikits.sparse;
     fi
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       pip install --upgrade nose coverage coveralls;
+      pip install nose-ignore-docstring;
     fi
 
 script:
@@ -144,9 +146,9 @@ script:
       # Run nosetests.
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       if [[ "${PYTHON_VM}" == pypy ]]; then
-          nosetests --verbosity=2;
+          nosetests --verbosity=2 --with-ignore-docstrings;
       else
-          nosetests --verbosity=2 --with-coverage --cover-package=networkx;
+          nosetests --verbosity=2 --with-ignore-docstrings --with-coverage --cover-package=networkx;
       fi;
     else
       mono "${IPY}" -X:ExceptionDetail -X:FullFrames -c 'from nose import main; main()' \--verbosity=2;
