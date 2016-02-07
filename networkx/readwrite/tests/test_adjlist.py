@@ -52,7 +52,7 @@ class TestAdjlist():
         os.close(fd)
         os.unlink(fname)
 
-    def test_latin1_error(self):
+    def test_latin1_err(self):
         G = nx.Graph()
         try: # Python 3.x
             name1 = chr(2344) + chr(123) + chr(6543)

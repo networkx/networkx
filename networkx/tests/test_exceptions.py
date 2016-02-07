@@ -4,11 +4,11 @@ import networkx as nx
 # smoke tests for exceptions
 
 @raises(nx.NetworkXException)
-def test_raises_networkx_exception():
+def test_raises_networkxexception():
     raise nx.NetworkXException
 
 @raises(nx.NetworkXError)
-def test_raises_networkx_error():
+def test_raises_networkxerr():
     raise nx.NetworkXError
 
 @raises(nx.NetworkXPointlessConcept)
@@ -16,7 +16,7 @@ def test_raises_networkx_pointless_concept():
     raise nx.NetworkXPointlessConcept
 
 @raises(nx.NetworkXAlgorithmError)
-def test_raises_networkx_algorithm_error():
+def test_raises_networkxalgorithmerr():
     raise nx.NetworkXAlgorithmError
 
 @raises(nx.NetworkXUnfeasible)

@@ -98,5 +98,5 @@ class TestSparseGraph6(object):
             assert_equal(sorted(g2.edges()), sorted(g.edges()))
 
     @raises(nx.NetworkXError)
-    def directed_error(self):
+    def directed_raises(self):
         nx.generate_sparse6(nx.DiGraph())
