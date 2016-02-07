@@ -4,7 +4,7 @@ from nose.tools import assert_is
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
 
-import networkx
+import networkx as nx
 
 from test_graph import BaseAttrGraphTester, TestGraph
 
@@ -79,7 +79,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_to_undirected(self):
         G=self.K3
         self.add_attributes(G)
-        H=networkx.MultiGraph(G)
+        H=nx.MultiGraph(G)
         self.is_shallow_copy(H,G)
         H=G.to_undirected()
         self.is_deepcopy(H,G)
@@ -87,7 +87,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_to_directed(self):
         G=self.K3
         self.add_attributes(G)
-        H=networkx.MultiDiGraph(G)
+        H=nx.MultiDiGraph(G)
         self.is_shallow_copy(H,G)
         H=G.to_directed()
         self.is_deepcopy(H,G)
@@ -131,7 +131,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
 
 class TestMultiGraph(BaseMultiGraphTester,TestGraph):
     def setUp(self):
-        self.Graph=networkx.MultiGraph
+        self.Graph=nx.MultiGraph
         # build K3
         ed1,ed2,ed3 = ({0:{}},{0:{}},{0:{}})
         self.k3adj={0: {1: ed1, 2: ed2},
@@ -155,13 +155,13 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
         G=self.K3
         assert_equal(G[0],{1: {0:{}}, 2: {0:{}}})
         assert_raises(KeyError, G.__getitem__, 'j')
-        assert_raises((TypeError,networkx.NetworkXError), G.__getitem__, ['A'])
+        assert_raises((TypeError,nx.NetworkXError), G.__getitem__, ['A'])
 
     def test_remove_node(self):
         G=self.K3
         G.remove_node(0)
         assert_equal(G.adj,{1:{2:{0:{}}},2:{1:{0:{}}}})
-        assert_raises((KeyError,networkx.NetworkXError), G.remove_node,-1)
+        assert_raises((KeyError,nx.NetworkXError), G.remove_node,-1)
 
     def test_add_edge(self):
         G=self.Graph()
@@ -193,9 +193,9 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
                                     2:{'weight':2},3:{'weight':3}}}})
 
         # too few in tuple
-        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,)])
+        assert_raises(nx.NetworkXError, G.add_edges_from,[(0,)])
         # too many in tuple
-        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,1,2,3,4)])
+        assert_raises(nx.NetworkXError, G.add_edges_from,[(0,1,2,3,4)])
         assert_raises(TypeError, G.add_edges_from,[0])  # not a tuple
 
     def test_remove_edge(self):
@@ -206,8 +206,8 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
                             2: {0: {0: {}},
                                 1: {0: {}}}})
 
-        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
-        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,0,2,
+        assert_raises((KeyError,nx.NetworkXError), G.remove_edge,-1,0)
+        assert_raises((KeyError,nx.NetworkXError), G.remove_edge,0,2,
                       key=1)
         
     def test_remove_edges_from(self):
@@ -238,7 +238,7 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
                            2: {0: {0:{}}, 1: {0:{}}}})
         G.remove_edge(0,1)
         assert_equal(G.adj,{0:{2:{0:{}}},1:{2:{0:{}}},2:{0:{0:{}},1:{0:{}}}})
-        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
+        assert_raises((KeyError,nx.NetworkXError), G.remove_edge,-1,0)
 
 
 class TestEdgeSubgraph(object):
@@ -246,9 +246,9 @@ class TestEdgeSubgraph(object):
 
     def setup(self):
         # Create a doubly-linked path graph on five nodes.
-        G = networkx.MultiGraph()
-        G.add_path(range(5))
-        G.add_path(range(5))
+        G = nx.MultiGraph()
+        nx.add_path(G, range(5))
+        nx.add_path(G, range(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.node[i]['name'] = 'node{}'.format(i)
