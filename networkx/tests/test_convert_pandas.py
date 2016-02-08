@@ -24,6 +24,9 @@ class TestConvertPandas(object):
         df[0] = a # Column label 0 (int)
         df['b'] = b # Column label 'b' (str)
         self.df = df
+        mdf = pd.DataFrame([[4, 16, 'A', 'D']],
+                            columns=['weight', 'cost', 0, 'b'])
+        self.mdf = df.append(mdf)
 
     def assert_equal(self, G1, G2):
         assert_true( nx.is_isomorphic(G1, G2, edge_match=lambda x, y: x == y ))
@@ -34,6 +37,11 @@ class TestConvertPandas(object):
                                ('A', 'D', {'cost': 7, 'weight': 4})])
         G=nx.from_pandas_dataframe(self.df, 0, 'b', True)
         self.assert_equal(G, Gtrue)
+        # MultiGraph
+        MGtrue = nx.MultiGraph(Gtrue)
+        MGtrue.add_edge('A', 'D', attr_dict={'cost': 16, 'weight': 4})
+        MG=nx.from_pandas_dataframe(self.mdf, 0, 'b', True, nx.MultiGraph())
+        self.assert_equal(MG, MGtrue)
 
     def test_from_dataframe_multi_attr(self, ):
         Gtrue = nx.Graph([('E', 'C', {'cost': 9, 'weight': 10}),
