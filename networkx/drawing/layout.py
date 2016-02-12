@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 ******
 Layout
@@ -19,7 +20,9 @@ shell_layout) have size [-1, 1] or [-scale, scale].
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from __future__ import division
 import collections
+import math
 import networkx as nx
 
 __all__ = ['circular_layout',
@@ -27,7 +30,8 @@ __all__ = ['circular_layout',
            'shell_layout',
            'spring_layout',
            'spectral_layout',
-           'fruchterman_reingold_layout']
+           'fruchterman_reingold_layout',
+           'kamada_kawai']
 
 def process_params(G, center, dim):
     # Some boilerplate code.
@@ -626,3 +630,178 @@ def flatten(l):
         else:
             yield el
 
+
+def kamada_kawai(G, pos=None, K=1.0, L=0.1, iterations=None,
+                 tolerance=1, D=0, weight='weight'):
+    """Position nodes using Kamada–Kawai force-directed algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    pos : dict optional (default=None)
+       Initial positions for nodes as a dictionary with node as keys
+       and values as a list or tuple.  If None, then use random initial
+       positions.
+
+    K : float (default=1.0)
+       A constant which determines the strength of the spring.
+
+    L : float (default=0.1)
+        ``L`` a constant which determines desirable
+        length of a single edge in the display plane.
+
+    iterations : int  optional (default=None)
+       Maximum number of iterations of the algorithm.
+       If ``None``, then ``10 * n`` iterations will be completed.
+
+    tolerance : int  optional (default=1)
+       Number of maximum iterations of the inner loop of the
+       algorithm.
+
+    D : float  optional (default=0)
+       A constant which determines the minimum desirable value of
+       energy. If energy's value is lower of this constant then
+       algorithm terminates.
+
+    weight : string optional (default='weight')
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If ``None``, then all edge weights are 1.
+
+    Returns
+    -------
+    dict :
+       A dictionary of positions keyed by node
+
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError("kamada_kawai() requires numpy: http://scipy.org/ ")
+
+    n = G.number_of_nodes()
+    number_of_derivatives = 5
+    if n == 0:
+        return {}
+    if n == 1:
+        return {G.nodes()[0]: (0, 0)}
+
+    dist = nx.floyd_warshall_numpy(G, weight=weight)
+    diameter = np.ma.masked_invalid(dist).max()
+
+    # Initialize parameters
+    if iterations is None:
+        iterations = 10 * n
+    if tolerance is None:
+        tolerance = 1
+
+    if pos is None:
+        pos_arr = np.asarray(np.random.random((n, 2)), dtype=dist.dtype)
+    else:
+        # Determine size of existing domain to adjust initial positions
+        dom_size = max(flatten(pos.values()))
+        shape = (n, 2)
+        pos_arr = np.random.random(shape) * dom_size
+        for i, u in enumerate(G):
+            if u in pos_arr:
+                pos_arr[i] = np.asarray(pos[u])
+
+    # Initialize k and l arrays
+    k = np.zeros(dist.shape, dtype=dist.dtype)
+    l = np.zeros(dist.shape, dtype=dist.dtype)
+    for u in range(n):
+        for v in range(n):
+            if u != v:
+                if math.isinf(dist[u, v]):
+                    dist[u, v] = diameter
+                k[u, v] = K / (dist[u, v] ** 2)
+                l[u, v] = L * dist[u, v]
+
+    # Initialize delta and compute partial derivatives for every node
+    delta = np.zeros((pos_arr.shape[0], 1), dtype=dist.dtype)
+    partial_derivatives = np.vectorize(_compute_derivatives)
+    update = np.vectorize(_update_derivatives)
+    derivatives = np.array([np.sum(np.array(list(
+                            partial_derivatives(pos_arr[u, 0], pos_arr[u, 1],
+                                pos_arr[0:, 0], pos_arr[0:, 1], k[u, 0:],
+                                l[u, 0:])), dist.dtype)
+                                .reshape(number_of_derivatives, n), axis=1)
+                            for u in range(n)])
+    delta[0:, 0] = np.sqrt(derivatives[0:, 0] ** 2 + derivatives[0:, 1] ** 2)
+
+    # Select node with max delta
+    m = np.argmax(delta)
+
+    outer_iter = 0
+    while delta[m] > D and outer_iter < iterations:
+        outer_iter += 1
+        inner_iter = 0
+
+        elements = np.arange(n)
+        elements = elements[elements != m]
+
+        while delta[m] > D and inner_iter < tolerance:
+            inner_iter += 1
+            old_px = pos_arr[m, 0]
+            old_py = pos_arr[m, 1]
+            dx = (derivatives[m, 4] * derivatives[m, 1] - derivatives[m, 3]
+                  * derivatives[m, 0]) / (derivatives[m, 2] * derivatives[m, 3]
+                                          - derivatives[m, 4] ** 2)
+            dy = (derivatives[m, 2] * derivatives[m, 1] - derivatives[m, 4]
+                  * derivatives[m, 0]) / (derivatives[m, 4] ** 2 -
+                                          derivatives[m, 2] * derivatives[m, 3])
+
+            # Move node m to a new position
+            pos_arr[m, 0] += dx
+            pos_arr[m, 1] += dy
+
+            # Compute new partial derivatives of node m
+            derivatives_m = np.sum(np.array(list(
+                partial_derivatives(pos_arr[m, 0], pos_arr[m, 1],
+                                    pos_arr[elements, 0],
+                                    pos_arr[elements, 1], k[m, elements],
+                                    l[m, elements])),
+                                    dist.dtype).reshape(
+                                    number_of_derivatives, n - 1), axis=1)
+            derivatives[m] = derivatives_m
+            delta[m] = math.sqrt(derivatives_m[0] ** 2 + derivatives_m[1] ** 2)
+
+        # Compute new partial derivatives for every node
+        diff = np.transpose(np.array([update(pos_arr[0:, 0],
+                                             pos_arr[0:, 1], pos_arr[m, 0],
+                                             pos_arr[m, 1], k[0:, m],
+                                             l[0:, m], old_px, old_py)],
+                                     dist.dtype)[0])
+        derivatives += diff
+        delta[elements, 0] = np.sqrt(derivatives[elements, 0]
+                                     ** 2 + derivatives[elements, 1] ** 2)
+        m = np.argmax(delta)
+
+    pos_arr = dict(zip(G, pos_arr))
+    return pos_arr
+
+
+def _compute_derivatives(pxx, pxy, pyx, pyy, kappa, la):
+        if pxx == pyx and pxy == pyy:
+            return 0, 0, 0, 0, 0
+
+        diff_x = pxx - pyx
+        diff_y = pxy - pyy
+        eu_dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
+        eu_dist_cubed = eu_dist ** 3
+        edx = kappa * (diff_x - (la * diff_x / eu_dist))
+        edy = kappa * (diff_y - (la * diff_y / eu_dist))
+        edxx = kappa * (1 - (la * (diff_y ** 2)) / eu_dist_cubed)
+        edyy = kappa * (1 - (la * (diff_x ** 2)) / eu_dist_cubed)
+        edxy = (kappa * diff_y * la * diff_x) / eu_dist_cubed
+        return edx, edy, edxx, edyy, edxy
+
+
+def _update_derivatives(pxx, pxy, pyx, pyy, kappa, la, old_px, old_py):
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError("kamada_kawai() requires numpy: http://scipy.org/ ")
+
+    return tuple(np.subtract(_compute_derivatives(pxx, pxy, pyx, pyy, kappa, la),
+                 _compute_derivatives(pxx, pxy, old_px, old_py, kappa, la)))
