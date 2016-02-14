@@ -73,7 +73,7 @@ Source archive file
 GitHub
 ------
 
-  1. Clone the networkx repostitory
+  1. Clone the networkx repository
      (see https://github.com/networkx/networkx/ for options)
      ::
 
