@@ -92,7 +92,7 @@ def girvan_newman(G, most_valuable_edge=None):
 
         >>> from networkx import edge_betweenness_centrality as betweenness
         >>> def most_central_edge(G):
-        ...     centrality = betweenness(G, weight='weight')
+        ...     centrality = betweenness(G)
         ...     return max(centrality, key=centrality.get)
         ...
         >>> G = nx.path_graph(10)
@@ -100,18 +100,23 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> tuple(sorted(c) for c in next(comp))
         ([0, 1, 2, 3, 4], [5, 6, 7, 8, 9])
 
-    To specify a different ranking algorithm, for example edge current
-    flow betweenness centrality, use the ``ranking`` keyword argument::
+    To specify a different ranking algorithm for edges, use the
+    ``ranking`` keyword argument::
 
-        >>> from networkx import edge_current_flow_betweenness_centrality
+        >>> from networkx import edge_betweenness_centrality
+        >>> from random import random
         >>> def most_central_edge(G):
-        ...     centrality = edge_current_flow_betweenness_centrality(G)
+        ...     centrality = edge_betweenness_centrality(G)
+        ...     max_cent = max(centrality.values())
+        ...     # Scale the centrality values so they are between 0 and 1,
+        ...     # and add some random noise.
+        ...     centrality = {e: c / max_cent for e, c in centrality.items()}
+        ...     # Add some random noise.
+        ...     centrality = {e: c + random() for e, c in centrality.items()}
         ...     return max(centrality, key=centrality.get)
         ...
         >>> G = nx.path_graph(10)
         >>> comp = girvan_newman(G, most_valuable_edge=most_central_edge)
-        >>> tuple(sorted(c) for c in next(comp))
-        ([0, 1, 2, 3, 4], [5, 6, 7, 8, 9])
 
     Notes
     -----
