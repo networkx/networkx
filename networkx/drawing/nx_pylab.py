@@ -981,7 +981,7 @@ def draw_graphviz(G, prog="neato", **kwargs):
     kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
     """
-    pos = nx.drawing.graphviz_layout(G, prog)
+    pos = nx.drawing.nx_pydot.graphviz_layout(G, prog)
     draw(G, pos, **kwargs)
 
 
