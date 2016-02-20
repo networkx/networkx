@@ -1,9 +1,99 @@
-#!/usr/bin/env python
 from itertools import combinations
-from nose.tools import *
+
+from nose.tools import assert_equal
+from nose.tools import assert_false
+from nose.tools import assert_in
+from nose.tools import assert_raises
+from nose.tools import assert_true
+from nose.tools import ok_
+
+import networkx as nx
 from networkx.testing.utils import assert_edges_equal
 from networkx.utils import consume
-import networkx as nx
+from networkx.utils import pairwise
+
+
+class TestDagLongestPath(object):
+    """Unit tests for computing the longest path in a directed acyclic
+    graph.
+
+    """
+
+    def test_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)]
+        G = nx.DiGraph(edges)
+        assert_equal(nx.dag_longest_path(G), [1, 2, 3, 5, 6])
+
+        edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.DiGraph(edges)
+        assert_equal(nx.dag_longest_path(G), [1, 2, 3, 4, 5])
+
+    def test_weighted(self):
+        G = nx.DiGraph()
+        edges = [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4),
+                 (5, 6, 0), (1, 6, 2)]
+        G.add_weighted_edges_from(edges)
+        assert_equal(nx.dag_longest_path(G), [2, 3, 5, 6])
+
+    def test_undirected_not_implemented(self):
+        G = nx.Graph()
+        assert_raises(nx.NetworkXNotImplemented, nx.dag_longest_path, G)
+
+    def test_unorderable_nodes(self):
+        """Tests that computing the longest path does not depend on
+        nodes being orderable.
+
+        For more information, see issue #1989.
+
+        """
+        # TODO In Python 3, instances of the `object` class are
+        # unorderable by default, so we wouldn't need to define our own
+        # class here, we could just instantiate an instance of the
+        # `object` class. However, we still support Python 2; when
+        # support for Python 2 is dropped, this test can be simplified
+        # by replacing `Unorderable()` by `object()`.
+        class Unorderable(object):
+
+            def __le__(self):
+                raise NotImplemented
+
+            def __ge__(self):
+                raise NotImplemented
+
+        # Create the directed path graph on four nodes, with nodes
+        # represented as (unorderable) Python objects.
+        nodes = [Unorderable() for n in range(4)]
+        G = nx.DiGraph()
+        G.add_edges_from(pairwise(nodes))
+        path = list(nx.dag_longest_path(G))
+        assert_equal(path, nodes)
+
+
+class TestDagLongestPathLength(object):
+    """Unit tests for computing the length of a longest path in a
+    directed acyclic graph.
+
+    """
+
+    def test_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)]
+        G = nx.DiGraph(edges)
+        assert_equal(nx.dag_longest_path_length(G), 4)
+
+        edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.DiGraph(edges)
+        assert_equal(nx.dag_longest_path_length(G), 4)
+
+    def test_undirected_not_implemented(self):
+        G = nx.Graph()
+        assert_raises(nx.NetworkXNotImplemented, nx.dag_longest_path_length, G)
+
+    def test_weighted(self):
+        edges = [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4),
+                 (5, 6, 0), (1, 6, 2)]
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert_equal(nx.dag_longest_path_length(G), 3)
 
 
 class TestDAG:
@@ -176,45 +266,6 @@ class TestDAG:
         assert_raises(nx.NetworkXNotImplemented, f, G)
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         assert_raises(nx.NetworkXUnfeasible, f, G)
-
-    def test_dag_longest_path(self):
-        longest_path = nx.algorithms.dag.dag_longest_path
-        G = nx.DiGraph([(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)])
-        assert_equal(longest_path(G), [1, 2, 3, 5, 6])
-        G = nx.DiGraph(
-            [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)])
-        assert_equal(longest_path(G), [1, 2, 3, 4, 5])
-        G = nx.Graph()
-        assert_raises(nx.NetworkXNotImplemented, longest_path, G)
-        G = nx.DiGraph()
-        G.add_weighted_edges_from(
-            [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4), (5, 6, 0), (1, 6, 2)])
-        assert_equal(longest_path(G), [2, 3, 5, 6])
-
-    def test_dag_longest_path_length(self):
-        longest_path_length = nx.algorithms.dag.dag_longest_path_length
-        G = nx.DiGraph([(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)])
-        assert_equal(longest_path_length(G), 4)
-        G = nx.DiGraph(
-            [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)])
-        assert_equal(longest_path_length(G), 4)
-        G = nx.Graph()
-        assert_raises(nx.NetworkXNotImplemented, longest_path_length, G)
-        G = nx.DiGraph()
-        G.add_weighted_edges_from(
-            [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4), (5, 6, 0), (1, 6, 2)])
-        assert_equal(longest_path_length(G), 3)
-
-    def test_lexicographical_topological_sort(self):
-        G = nx.DiGraph([(1,2), (2,3), (1,4), (1,5), (2,6)])
-        assert_equal(list(nx.lexicographical_topological_sort(G)),
-                     [1, 2, 3, 4, 5, 6])
-        assert_equal(list(nx.lexicographical_topological_sort(
-            G, key=lambda x: x)),
-                     [1, 2, 3, 4, 5, 6])
-        assert_equal(list(nx.lexicographical_topological_sort(
-            G, key=lambda x: -x)),
-                     [1, 5, 4, 2, 6, 3])
 
     def test_lexicographical_topological_sort(self):
         G = nx.DiGraph([(1,2), (2,3), (1,4), (1,5), (2,6)])
