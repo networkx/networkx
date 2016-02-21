@@ -67,10 +67,11 @@ def spectral_modularity_partition(G):
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> left, right = nx.spectral_modularity_partition(G)
-    >>> sorted(left)
+    >>> left, right = nx.spectral_modularity_partition(G)  # doctest: +SKIP
+    >>> left, right = sorted(sorted(left), sorted(right))  # doctest: +SKIP
+    >>> left  # doctest: +SKIP
     [0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 16, 17, 19, 21]
-    >>> sorted(right)
+    >>> right  # doctest: +SKIP
     [8, 9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
     Notes
