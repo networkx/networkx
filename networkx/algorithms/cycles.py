@@ -502,7 +502,6 @@ def chords(G, T=None, output_tree=False):
     Returns
     -------
     NetworkX graph or a pair of NetworkX graphs
-
         If ``output_tree`` is ``False`` (the default) then this function
         returns a graph containing only the chords of ``G`` with respect
         to the spanning tree ``T`` (or a minimum spanning tree if ``T``
@@ -549,25 +548,34 @@ def chords(G, T=None, output_tree=False):
             else:
                 T = nx.DiGraph(nx.minimum_spanning_tree(nx.Graph(G)))
         else:
-            # All multigraph keys are lost here.
-            T = nx.minimum_spanning_tree(G)
+            if G.is_multigraph():
+                # All multigraph keys are lost here.
+                T = nx.minimum_spanning_tree(G)
+            else:
 
-    C = G.copy()
-    # Recover keys and make chords.
     if G.is_multigraph():
-        Tedges = list(T.edges())
-        to_add = []
-        for e in G.edges(keys=True, data=True):
-            if e[:2] in Tedges:
-                to_add.append(e)
-                Tedges.pop(Tedges.index(e[:2]))
-            if not Tedges:
-                break
-        T = nx.MultiGraph(to_add)
-        # Difference to keep attributes and keys
-        C.remove_edges_from(e for e in G.edges(keys=True) if T.has_edge(*e))
+        G_edges = set(G.edges(keys=True))
+        T_edges = set(T.edges(keys=True))
     else:
-        C.remove_edges_from(e for e in G.edges() if T.has_edge(*e))
+        G_edges = set(G.edges())
+        T_edges = set(T.edges())
+    C = G.edge_subgraph(G_edges - T_edges)
+    # C = G.copy()
+    # # Recover keys and make chords.
+    # if G.is_multigraph():
+    #     Tedges = list(T.edges())
+    #     to_add = []
+    #     for e in G.edges(keys=True, data=True):
+    #         if e[:2] in Tedges:
+    #             to_add.append(e)
+    #             Tedges.pop(Tedges.index(e[:2]))
+    #         if not Tedges:
+    #             break
+    #     T = nx.MultiGraph(to_add)
+    #     # Difference to keep attributes and keys
+    #     C.remove_edges_from(e for e in G.edges(keys=True) if T.has_edge(*e))
+    # else:
+    #     C.remove_edges_from(e for e in G.edges() if T.has_edge(*e))
     return (C, T) if output_tree else C
 
 
