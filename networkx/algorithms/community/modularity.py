@@ -16,6 +16,8 @@ from itertools import product
 import networkx as nx
 from .community_utils import is_partition
 
+__all__ = ['modularity']
+
 
 def modularity(G, communities, weight='weight'):
     r"""Returns the modularity of the given partition of the graph.
