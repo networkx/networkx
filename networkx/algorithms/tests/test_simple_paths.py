@@ -19,6 +19,31 @@ class TestIsSimplePath(object):
 
     """
 
+    def test_empty_list(self):
+        """Tests that the empty list is not a valid path, since there
+        should be a one-to-one correspondence between paths as lists of
+        nodes and paths as lists of edges.
+
+        """
+        G = nx.trivial_graph()
+        assert_false(nx.is_simple_path(G, []))
+
+    def test_trivial_path(self):
+        """Tests that the trivial path, a path of length one, is
+        considered a simple path in a graph.
+
+        """
+        G = nx.trivial_graph()
+        assert_true(nx.is_simple_path(G, [0]))
+
+    def test_trivial_nonpath(self):
+        """Tests that a list whose sole element is an object not in the
+        graph is not considered a simple path.
+
+        """
+        G = nx.trivial_graph()
+        assert_false(nx.is_simple_path(G, ['not a node']))
+
     def test_simple_path(self):
         G = nx.path_graph(2)
         assert_true(nx.is_simple_path(G, [0, 1]))
