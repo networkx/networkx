@@ -20,14 +20,15 @@ GEXF is an XML format.  See http://gexf.net/format/schema.html for the
 specification and http://gexf.net/format/basic.html for examples.
 """
 import itertools
+import time
 
 import networkx as nx
 from networkx.utils import open_file, make_str
 try:
-    from xml.etree.cElementTree import Element, ElementTree, tostring
+    from xml.etree.cElementTree import Element, ElementTree, SubElement, tostring
 except ImportError:
     try:
-        from xml.etree.ElementTree import Element, ElementTree, tostring
+        from xml.etree.ElementTree import Element, ElementTree, SubElement, tostring
     except ImportError:
         pass
 
@@ -271,17 +272,26 @@ class GEXFWriter(GEXF):
             mode = 'dynamic'
         else:
             mode = 'static'
-
         # Add a graph element to the XML
         if G.is_directed():
             default = 'directed'
         else:
             default = 'undirected'
-        graph_element = Element('graph', defaultedgetype=default, mode=mode)
+        name = G.graph.get('name', '')
+        graph_element = Element('graph', defaultedgetype=default, mode=mode,
+                                name=name)
         self.graph_element = graph_element
+        self.add_meta(G, graph_element)
         self.add_nodes(G, graph_element)
         self.add_edges(G, graph_element)
         self.xml.append(graph_element)
+
+    def add_meta(self, G, graph_element):
+        # add meta element with creator and date
+        meta_element = Element('meta')
+        SubElement(meta_element, 'creator').text = 'NetworkX {}'.format(nx.__version__)
+        SubElement(meta_element, 'lastmodified').text = time.strftime('%d/%m/%Y')
+        graph_element.append(meta_element)
 
     def add_nodes(self, G, graph_element):
         nodes_element = Element('nodes')
@@ -601,7 +611,11 @@ class GEXFReader(GEXF):
             G = nx.MultiDiGraph()
         else:
             G = nx.MultiGraph()
+
         # graph attributes
+        graph_name = graph_xml.get('name', '')
+        if graph_name != '':
+            G.graph['name'] = graph_name
         graph_start = graph_xml.get('start')
         if graph_start is not None:
             G.graph['start'] = graph_start
