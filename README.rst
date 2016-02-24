@@ -40,6 +40,11 @@ To get the git version do
 
     $ git clone git://github.com/networkx/networkx.git
 
+Decorator package is required for NetworkX.
+
+::
+
+    $ pip install decorator
 
 Usage
 -----
