@@ -19,3 +19,4 @@ from networkx.generators.small import *
 from networkx.generators.social import *
 from networkx.generators.stochastic import *
 from networkx.generators.triads import *
+from networkx.generators.joint_degree_seq import *

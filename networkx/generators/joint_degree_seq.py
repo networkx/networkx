@@ -1,11 +1,14 @@
-"""Generate graphs with a given joint degree 
-"""
+#    Copyright (C) 2016 by
+#    Minas Gjoka
+#    All rights reserved.
 #    BSD license.
+#
+# Author:  Minas Gjoka (minas.gjoka@gmail.com)
+"""Generate graphs with a given joint degree """
+
 import random
 
 import networkx as nx
-
-__author__ = "\n".join(['Minas Gjoka <minas.gjoka@gmail.com>'])
 
 __all__ = ['is_valid_joint_degree',
            'joint_degree_model']
@@ -182,9 +185,9 @@ def joint_degree_model(nkk,seed=None):
     --------
     >>> import networkx as nx
     >>> joint_degree_dict = {1: {4: 1},
-                             2: {2: 2, 3: 2, 4: 2},
-                             3: {2: 2, 4: 1},
-                             4: {1: 1, 2: 2, 3: 1}}
+    ...                      2: {2: 2, 3: 2, 4: 2},
+    ...                      3: {2: 2, 4: 1},
+    ...                      4: {1: 1, 2: 2, 3: 1}}
     >>> G=nx.joint_degree_model(joint_degree_dict)
     >>>
 
