@@ -153,9 +153,22 @@ load_centrality=newman_betweenness_centrality
 def edge_load(G,nodes=None,cutoff=False):
     """Compute edge load.
 
-    WARNING:
-
-    This module is for demonstration and testing purposes.
+    Parameters
+    ----------
+    G : graph
+      A networkx graph
+	  
+	cutoff : bool, optional
+      If specified, only consider paths of length <= cutoff.
+	  
+	Returns
+    -------
+    nodes : dictionary
+       Dictionary of edges with load as the value.
+	   
+	See Also
+    --------
+    betweenness_centrality(),edge_betweenness_centrality()
 
     """
     betweenness={}
