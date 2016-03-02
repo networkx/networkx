@@ -374,7 +374,7 @@ def draw_networkx_nodes(G, pos,
         ax = plt.gca()
 
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
 
     if not nodelist or len(nodelist) == 0:  # empty nodelist, no drawing
         return None
@@ -506,19 +506,19 @@ def draw_networkx_edges(G, pos,
         ax = plt.gca()
 
     if edgelist is None:
-        edgelist = G.edges()
+        edgelist = list(G.edges())
 
     if not edgelist or len(edgelist) == 0:  # no edges!
         return None
 
-    def Bezier3(p1, p2, p3, p4, t):
+    def bezier_3(p1, p2, p3, p4, t):
         B0 = (1-t)*(1-t)*(1-t)
         B1 = 3*(1-t)*(1-t)*t
         B2 = 3*(1-t)*t*t
         B3 = t*t*t
         return [p1[0]*B0 + p2[0]*B1 + p3[0]*B2 + p4[0]*B3, p1[1]*B0 + p2[1]*B1 + p3[1]*B2 + p4[1]*B3]
 
-    def EdgePos(e, pos, doFine):
+    def edge_poses(e, pos, doFine):
         pos1 = pos[e[0]]
         pos2 = pos[e[1]]
 
@@ -531,18 +531,18 @@ def draw_networkx_edges(G, pos,
             p2 = [pos1[0]*0.7 + pos2[0]*0.3 + 0.05, pos1[1]*0.7 + pos2[1]*0.3 + 0.05]
             p3 = [pos1[0]*0.3 + pos2[0]*0.7 - 0.05, pos1[1]*0.3 + pos2[1]*0.7 + 0.05]
             p4 = pos2
-            return tuple([Bezier3(p1, p2, p3, p4, float(t) / float(bezierPoints)) for t in range(0, bezierPoints+1)])
+            return tuple([bezier_3(p1, p2, p3, p4, float(t) / float(bezierPoints)) for t in range(0, bezierPoints+1)])
 
         else:
             p1 = pos1
             p2 = [pos2[0] - 0.15, pos2[1] + 0.15]
             p3 = [pos1[0] + 0.15, pos1[1] + 0.15]
             p4 = pos2
-            return tuple([Bezier3(p1, p2, p3, p4, float(t) / float(bezierPoints)) for t in range(0, bezierPoints+1)])
+            return tuple([bezier_3(p1, p2, p3, p4, float(t) / float(bezierPoints)) for t in range(0, bezierPoints+1)])
     
 
     # set edge positions
-    edge_pos = numpy.asarray([EdgePos(e, pos, draw_fine) for e in edgelist])
+    edge_pos = numpy.asarray([edge_poses(e, pos, draw_fine) for e in edgelist])
 
     if not cb.iterable(width):
         lw = (width,)
