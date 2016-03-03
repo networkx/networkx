@@ -15,6 +15,9 @@ Graph
    info
    create_empty_copy
    is_directed
+   add_star
+   add_path
+   add_cycle
 
 
 Nodes

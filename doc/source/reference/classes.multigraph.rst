@@ -29,9 +29,6 @@ Adding and removing nodes and edges
    MultiGraph.add_weighted_edges_from
    MultiGraph.remove_edge
    MultiGraph.remove_edges_from
-   MultiGraph.add_star
-   MultiGraph.add_path
-   MultiGraph.add_cycle
    MultiGraph.clear
 
 

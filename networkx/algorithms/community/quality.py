@@ -234,13 +234,6 @@ def coverage(G, partition):
     NetworkXError
         If ``partition`` is not a valid partition of the nodes of ``G``.
 
-    References
-    ----------
-    .. [1] Santo Fortunato.
-           "Community Detection in Graphs".
-           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <http://arxiv.org/abs/0906.0612>
-
     Notes
     -----
     If ``G`` is a multigraph, the multiplicity of edges is counted.
