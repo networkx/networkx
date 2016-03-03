@@ -29,9 +29,6 @@ Adding and removing nodes and edges
    DiGraph.add_weighted_edges_from
    DiGraph.remove_edge
    DiGraph.remove_edges_from
-   DiGraph.add_star
-   DiGraph.add_path
-   DiGraph.add_cycle
    DiGraph.clear
 
 

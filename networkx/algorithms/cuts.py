@@ -122,7 +122,7 @@ def volume(G, S, weight=None):
     ----------
     .. [1] David Gleich.
            *Hierarchical Directed Spectral Graph Partitioning*.
-          <https://www.cs.purdue.edu/homes/dgleich/publications/Gleich%202005%20-%20hierarchical%20directed%20spectral.pdf>
+           <https://www.cs.purdue.edu/homes/dgleich/publications/Gleich%202005%20-%20hierarchical%20directed%20spectral.pdf>
 
     """
     degree = G.out_degree if G.is_directed() else G.degree
@@ -170,7 +170,7 @@ def normalized_cut_size(G, S, T=None, weight=None):
     ----------
     .. [1] David Gleich.
            *Hierarchical Directed Spectral Graph Partitioning*.
-          <https://www.cs.purdue.edu/homes/dgleich/publications/Gleich%202005%20-%20hierarchical%20directed%20spectral.pdf>
+           <https://www.cs.purdue.edu/homes/dgleich/publications/Gleich%202005%20-%20hierarchical%20directed%20spectral.pdf>
 
     """
     if T is None:
@@ -217,7 +217,7 @@ def conductance(G, S, T=None, weight=None):
     ----------
     .. [1] David Gleich.
            *Hierarchical Directed Spectral Graph Partitioning*.
-          <https://www.cs.purdue.edu/homes/dgleich/publications/Gleich%202005%20-%20hierarchical%20directed%20spectral.pdf>
+           <https://www.cs.purdue.edu/homes/dgleich/publications/Gleich%202005%20-%20hierarchical%20directed%20spectral.pdf>
 
     """
     if T is None:
@@ -310,7 +310,7 @@ def mixing_expansion(G, S, T=None, weight=None):
     .. [1] Vadhan, Salil P.
            "Pseudorandomness."
            *Foundations and Trends
-            in Theoretical Computer Science* 7.1–3 (2011): 1–336.
+           in Theoretical Computer Science* 7.1–3 (2011): 1–336.
            <http://dx.doi.org/10.1561/0400000010>
 
     """
@@ -350,7 +350,7 @@ def node_expansion(G, S):
     .. [1] Vadhan, Salil P.
            "Pseudorandomness."
            *Foundations and Trends
-            in Theoretical Computer Science* 7.1–3 (2011): 1–336.
+           in Theoretical Computer Science* 7.1–3 (2011): 1–336.
            <http://dx.doi.org/10.1561/0400000010>
 
     """
@@ -388,8 +388,8 @@ def boundary_expansion(G, S):
     ----------
     .. [1] Vadhan, Salil P.
            "Pseudorandomness."
-           *Foundations and Trends
-            in Theoretical Computer Science* 7.1–3 (2011): 1–336.
+           *Foundations and Trends in Theoretical Computer Science*
+           7.1–3 (2011): 1–336.
            <http://dx.doi.org/10.1561/0400000010>
 
     """

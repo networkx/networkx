@@ -12,13 +12,13 @@ Algorithms
    algorithms.approximation
    algorithms.assortativity
    algorithms.bipartite
-   algorithms.block
    algorithms.boundary
    algorithms.centrality
    algorithms.chordal
    algorithms.clique
    algorithms.clustering
    algorithms.coloring
+   algorithms.communicability_alg
    algorithms.community
    algorithms.component
    algorithms.connectivity
@@ -48,7 +48,9 @@ Algorithms
    algorithms.shortest_paths
    algorithms.simple_paths
    algorithms.swap
+   algorithms.tournament
    algorithms.traversal
    algorithms.tree
    algorithms.triads
    algorithms.vitality
+   algorithms.wiener
