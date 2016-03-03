@@ -53,7 +53,7 @@ def min_weighted_dominating_set(G, weight=None):
     Notes
     -----
     This algorithm computes an approximate minimum weighted dominating
-    set for the graph ``G``. The returned solution has weight `(\log
+    set for the graph `G`. The returned solution has weight `(\log
     w(V)) w(V^*)`, where `w(V)` denotes the sum of the weights of each
     node in the graph and `w(V^*)` denotes the sum of the weights of
     each node in the minimum weight dominating set for the graph.

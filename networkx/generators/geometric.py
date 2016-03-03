@@ -36,9 +36,9 @@ from networkx.utils import nodes_or_number
 def random_geometric_graph(n, radius, dim=2, pos=None):
     """Returns a random geometric graph in the unit cube.
 
-    The random geometric graph model places ``n`` nodes uniformly at random in
+    The random geometric graph model places `n` nodes uniformly at random in
     the unit cube. Two nodes are joined by an edge if the Euclidean distance
-    between the nodes is at most ``radius``.
+    between the nodes is at most `radius`.
 
     Parameters
     ----------
@@ -69,7 +69,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
     This uses an `O(n^2)` algorithm to build the graph.  A faster algorithm
     is possible using k-d trees.
 
-    The ``pos`` keyword argument can be used to specify node positions so you
+    The `pos` keyword argument can be used to specify node positions so you
     can create an arbitrary distribution and domain for positions.
 
     For example, to use a 2D Gaussian distribution of node positions with mean
@@ -114,7 +114,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
                                  weight=None):
     r"""Returns a geographical threshold graph.
 
-    The geographical threshold graph model places ``n`` nodes uniformly at
+    The geographical threshold graph model places `n` nodes uniformly at
     random in a rectangular domain.  Each node `u` is assigned a weight `w_u`.
     Two nodes `u` and `v` are joined by an edge if
 
@@ -153,7 +153,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
     If weights are not specified they are assigned to nodes by drawing randomly
     from the exponential distribution with rate parameter `\lambda=1`.  To
-    specify weights from a different distribution, use the ``weight`` keyword
+    specify weights from a different distribution, use the `weight` keyword
     argument::
 
     >>> import random
@@ -197,8 +197,8 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
 def geographical_threshold_edges(G, theta, alpha=2):
     """Generates edges for a geographical threshold graph given a graph with
-    positions and weights assigned as node attributes ``'pos'`` and
-    ``'weight'``.
+    positions and weights assigned as node attributes `'pos'` and
+    `'weight'`.
 
     """
     nodes = list(G.nodes(data=True))
@@ -218,19 +218,19 @@ def geographical_threshold_edges(G, theta, alpha=2):
 def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
     r"""Return a Waxman random graph.
 
-    The Waxman random graph model places ``n`` nodes uniformly at random in a
+    The Waxman random graph model places `n` nodes uniformly at random in a
     rectangular domain. Each pair of nodes at Euclidean distance `d` is joined
     by an edge with probability
 
     .. math::
             p = \alpha \exp(-d / \beta L).
 
-    This function implements both Waxman models, using the ``L`` keyword
+    This function implements both Waxman models, using the `L` keyword
     argument.
 
-    * Waxman-1: if ``L`` is not specified, it is set to be the maximum distance
+    * Waxman-1: if `L` is not specified, it is set to be the maximum distance
       between any pair of nodes.
-    * Waxman-2: if ``L`` is specified, the distance between a pair of nodes is
+    * Waxman-2: if `L` is specified, the distance between a pair of nodes is
       chosen uniformly at random from the interval `[0, L]`.
 
     Parameters

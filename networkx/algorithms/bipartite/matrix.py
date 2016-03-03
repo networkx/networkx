@@ -133,7 +133,7 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     0 or 1 representing membership in part 0 or part 1 of the bipartite graph.
 
     If `create_using` is an instance of :class:`networkx.MultiGraph` or
-    :class:`networkx.MultiDiGraph` and the entries of `A` are of type ``int``,
+    :class:`networkx.MultiDiGraph` and the entries of `A` are of type int,
     then this function returns a multigraph (of the same type as
     `create_using`) with parallel edges. In this case, `edge_attribute` will be
     ignored.

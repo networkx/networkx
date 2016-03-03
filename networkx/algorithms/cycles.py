@@ -105,7 +105,7 @@ def cycle_basis(G,root=None):
 def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    A `simple cycle`, or `elementary circuit`, is a closed path where
     no node appears twice. Two elementary circuits are distinct if they
     are not cyclic permutations of each other.
 
@@ -225,7 +225,7 @@ def simple_cycles(G):
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    A `simple cycle`, or `elementary circuit`, is a closed path where
     no node appears twice. Two elementary circuits are distinct if they
     are not cyclic permutations of each other.
 
@@ -334,7 +334,7 @@ def find_cycle(G, source=None, orientation='original'):
         A directed/undirected graph/multigraph.
 
     source : node, list of nodes
-        The node from which the traversal begins. If ``None``, then a source
+        The node from which the traversal begins. If None, then a source
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
@@ -352,15 +352,15 @@ def find_cycle(G, source=None, orientation='original'):
     edges : directed edges
         A list of directed edges indicating the path taken for the loop. If
         no cycle is found, then an exception is raised. For graphs, an
-        edge is of the form (u, v) where ``u`` and ``v`` are the tail and head
+        edge is of the form (u, v) where `u` and `v` are the tail and head
         of the edge as determined by the traversal. For multigraphs, an edge is
-        of the form (u, v, key), where ``key`` is the key of the edge. When the
-        graph is directed, then ``u`` and ``v`` are always in the order of the
+        of the form (u, v, key), where `key` is the key of the edge. When the
+        graph is directed, then `u` and `v` are always in the order of the
         actual directed edge. If orientation is 'ignore', then an edge takes
         the form (u, v, key, direction) where direction indicates if the edge
         was followed in the forward (tail to head) or reverse (head to tail)
-        direction. When the direction is forward, the value of ``direction``
-        is 'forward'. When the direction is reverse, the value of ``direction``
+        direction. When the direction is forward, the value of `direction`
+        is 'forward'. When the direction is reverse, the value of `direction`
         is 'reverse'.
         
     Raises

@@ -29,12 +29,12 @@ def is_isolate(G, n):
     G : NetworkX graph
 
     n : node
-        A node in ``G``.
+        A node in `G`.
 
     Returns
     -------
     is_isolate : bool
-       ``True`` if and only if ``n`` has no neighbors.
+       True if and only if `n` has no neighbors.
 
     Examples
     --------
@@ -63,7 +63,7 @@ def isolates(G):
     Returns
     -------
     iterator
-        An iterator over the isolates of ``G``.
+        An iterator over the isolates of `G`.
 
     Examples
     --------
@@ -108,7 +108,7 @@ def number_of_isolates(G):
     Returns
     -------
     int
-        The number of degree zero nodes in the graph ``G``.
+        The number of degree zero nodes in the graph `G`.
 
     """
     # TODO This can be parallelized.

@@ -106,12 +106,12 @@ def full_rary_tree(r, n, create_using=None):
 
 
 def balanced_tree(r, h, create_using=None):
-    """Return the perfectly balanced ``r``-ary tree of height ``h``.
+    """Return the perfectly balanced `r`-ary tree of height `h`.
 
     Parameters
     ----------
     r : int
-        Branching factor of the tree; each node will have ``r``
+        Branching factor of the tree; each node will have `r`
         children.
 
     h : int
@@ -124,13 +124,13 @@ def balanced_tree(r, h, create_using=None):
     Returns
     -------
     G : NetworkX graph
-        A balanced ``r``-ary tree of height ``h``.
+        A balanced `r`-ary tree of height `h`.
 
     Notes
     -----
-    This is the rooted tree where all leaves are at distance ``h`` from
-    the root. The root has degree ``r`` and all other internal nodes
-    have degree ``r + 1``.
+    This is the rooted tree where all leaves are at distance `h` from
+    the root. The root has degree `r` and all other internal nodes
+    have degree `r + 1`.
 
     Node labels are integers, starting from zero.
 
@@ -727,7 +727,7 @@ def complete_multipartite_graph(*block_sizes):
     G : NetworkX Graph
        Returns the complete multipartite graph with the specified blocks.
 
-       For each node, the node attribute ``'block'`` is an integer
+       For each node, the node attribute `'block'` is an integer
        indicating which block contains the node.
 
     Examples
@@ -755,12 +755,12 @@ def complete_multipartite_graph(*block_sizes):
     This function generalizes several other graph generator functions.
 
     - If no block sizes are given, this returns the null graph.
-    - If a single block size ``n`` is given, this returns the empty graph on
-      ``n`` nodes.
-    - If two block sizes ``m`` and ``n`` are given, this returns the complete
-      bipartite graph on ``m + n`` nodes.
-    - If block sizes ``1`` and ``n`` are given, this returns the star graph on
-      ``n + 1`` nodes.
+    - If a single block size `n` is given, this returns the empty graph on
+      `n` nodes.
+    - If two block sizes `m` and `n` are given, this returns the complete
+      bipartite graph on `m + n` nodes.
+    - If block sizes `1` and `n` are given, this returns the star graph on
+      `n + 1` nodes.
 
     See also
     --------

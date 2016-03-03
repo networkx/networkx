@@ -14,15 +14,15 @@
 
 
 def is_partition(G, communities):
-    """Return ``True`` if and only if ``communities`` is a partition of
-    the nodes of ``G``.
+    """Return True if and only if `communities` is a partition of
+    the nodes of `G`.
 
     A partition of a universe set is a family of pairwise disjoint sets
     whose union is the entire universe set.
 
-    ``G`` is a NetworkX graph.
+    `G` is a NetworkX graph.
 
-    ``communities`` is an iterable of sets of nodes of ``G``. This
+    `communities` is an iterable of sets of nodes of `G`. This
     iterable will be consumed multiple times during the execution of
     this function.
 

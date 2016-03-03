@@ -223,7 +223,7 @@ intersphinx_mapping = {'http://docs.python.org/': None,
 
 # For trac custom roles
 
-default_role = 'math'
+default_role = 'obj'
 trac_url = 'https://networkx.lanl.gov/trac/'
 mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
 

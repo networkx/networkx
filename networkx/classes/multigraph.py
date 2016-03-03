@@ -1026,7 +1026,7 @@ class MultiGraph(Graph):
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.
 
-        The induced subgraph contains each edge in ``edges`` and each
+        The induced subgraph contains each edge in `edges` and each
         node incident to any one of those edges.
 
         Parameters

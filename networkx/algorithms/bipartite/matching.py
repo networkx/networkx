@@ -67,7 +67,7 @@ def hopcroft_karp_matching(G):
     matches : dictionary
 
       The matching is returned as a dictionary, `matches`, such that
-      ``matches[v] == w`` if node ``v`` is matched to node ``w``. Unmatched
+      ``matches[v] == w`` if node `v` is matched to node `w`. Unmatched
       nodes do not occur as a key in mate.
 
     Notes
@@ -167,7 +167,7 @@ def eppstein_matching(G):
     matches : dictionary
 
       The matching is returned as a dictionary, `matching`, such that
-      ``matching[v] == w`` if node ``v`` is matched to node ``w``. Unmatched
+      ``matching[v] == w`` if node `v` is matched to node `w`. Unmatched
       nodes do not occur as a key in mate.
 
     Notes
@@ -271,7 +271,7 @@ def eppstein_matching(G):
 
 
 def _is_connected_by_alternating_path(G, v, matching, targets):
-    """Returns ``True`` if and only if the vertex `v` is connected to one of
+    """Returns True if and only if the vertex `v` is connected to one of
     the target vertices by an alternating path in `G`.
 
     An *alternating path* is a path in which every other edge is in the
@@ -297,7 +297,7 @@ def _is_connected_by_alternating_path(G, v, matching, targets):
     unmatched_edges = set(G.edges()) - matched_edges
 
     def _alternating_dfs(u, depth, along_matched=True):
-        """Returns ``True`` if and only if `u` is connected to one of the
+        """Returns True if and only if `u` is connected to one of the
         targets by an alternating path.
 
         `u` is a vertex in the graph `G`.
@@ -305,7 +305,7 @@ def _is_connected_by_alternating_path(G, v, matching, targets):
         `depth` specifies the maximum recursion depth of the depth-first
         search.
 
-        If `along_matched` is ``True``, this step of the depth-first search
+        If `along_matched` is True, this step of the depth-first search
         will continue only through edges in the given matching. Otherwise, it
         will continue only through edges *not* in the given matching.
 

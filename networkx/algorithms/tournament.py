@@ -40,14 +40,14 @@ __all__ = ['hamiltonian_path', 'is_reachable', 'is_strongly_connected',
 
 
 def index_satisfying(iterable, condition):
-    """Returns the index of the first element in ``iterable`` that
+    """Returns the index of the first element in `iterable` that
     satisfies the given condition.
 
     If no such element is found (that is, when the iterable is
     exhausted), this returns the length of the iterable (that is, one
     greater than the last index of the iterable).
 
-    ``iterable`` must not be empty. If ``iterable`` is empty, this
+    `iterable` must not be empty. If `iterable` is empty, this
     function raises :exc:`ValueError`.
 
     """
@@ -69,7 +69,7 @@ def index_satisfying(iterable, condition):
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
 def is_tournament(G):
-    """Returns ``True`` if and only if ``G`` is a tournament.
+    """Returns True if and only if `G` is a tournament.
 
     A tournament is a directed graph, with neither self-loops nor
     multi-edges, in which there is exactly one directed edge joining
@@ -136,7 +136,7 @@ def hamiltonian_path(G):
 
 
 def random_tournament(n):
-    r"""Returns a random tournament graph on ``n`` nodes.
+    r"""Returns a random tournament graph on `n` nodes.
 
     Parameters
     ----------
@@ -179,7 +179,7 @@ def score_sequence(G):
     Returns
     -------
     list
-        A sorted list of the out-degrees of the nodes of ``G``.
+        A sorted list of the out-degrees of the nodes of `G`.
 
     """
     return sorted(d for v, d in G.out_degree())
@@ -205,7 +205,7 @@ def tournament_matrix(G):
        \end{cases}
 
     An equivalent definition is `T = A - A^T`, where *A* is the
-    adjacency matrix of the graph ``G``.
+    adjacency matrix of the graph `G`.
 
     Parameters
     ----------
@@ -215,7 +215,7 @@ def tournament_matrix(G):
     Returns
     -------
     SciPy sparse matrix
-        The tournament matrix of the tournament graph ``G``.
+        The tournament matrix of the tournament graph `G`.
 
     Raises
     ------
@@ -230,7 +230,7 @@ def tournament_matrix(G):
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
 def is_reachable(G, s, t):
-    """Decides whether there is a path from ``s`` to ``t`` in the
+    """Decides whether there is a path from `s` to `t` in the
     tournament.
 
     This function is more theoretically efficient than the reachability
@@ -254,7 +254,7 @@ def is_reachable(G, s, t):
     Returns
     -------
     bool
-        Whether there is a path from ``s`` to ``t`` in ``G``.
+        Whether there is a path from `s` to `t` in `G`.
 
     Notes
     -----
@@ -275,13 +275,13 @@ def is_reachable(G, s, t):
 
     """
     def two_neighborhood(G, v):
-        """Returns the set of nodes at distance at most two from ``v``.
+        """Returns the set of nodes at distance at most two from `v`.
 
-        ``G`` must be a graph and ``v`` a node in that graph.
+        `G` must be a graph and `v` a node in that graph.
 
         The returned set includes the nodes at distance zero (that is,
-        the node ``v`` itself), the nodes at distance one (that is, the
-        out-neighbors of ``v``), and the nodes at distance two.
+        the node `v` itself), the nodes at distance one (that is, the
+        out-neighbors of `v`), and the nodes at distance two.
 
         """
         # TODO This is trivially parallelizable.

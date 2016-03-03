@@ -112,7 +112,7 @@ find_cores = core_number
 
 
 def _core_subgraph(G, k_filter, k=None, core=None):
-    """Returns the subgraph induced by nodes passing filter ``k_filter``.
+    """Returns the subgraph induced by nodes passing filter `k_filter`.
 
     Parameters
     ----------
@@ -126,8 +126,8 @@ def _core_subgraph(G, k_filter, k=None, core=None):
       The order of the core. If not specified use the max core number.
       This value is used as the cutoff for the filter.
     core : dict, optional
-      Precomputed core numbers keyed by node for the graph ``G``.
-      If not specified, the core numbers will be computed from ``G``.
+      Precomputed core numbers keyed by node for the graph `G`.
+      If not specified, the core numbers will be computed from `G`.
 
     """
     if core is None:

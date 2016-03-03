@@ -30,19 +30,19 @@ def immediate_dominators(G, start):
     -------
     idom : dict keyed by nodes
         A dict containing the immediate dominators of each node reachable from
-        ``start``.
+        `start`.
 
     Raises
     ------
     NetworkXNotImplemented
-        If ``G`` is undirected.
+        If `G` is undirected.
 
     NetworkXError
-        If ``start`` is not in ``G``.
+        If `start` is not in `G`.
 
     Notes
     -----
-    Except for ``start``, the immediate dominators are the parents of their
+    Except for `start`, the immediate dominators are the parents of their
     corresponding nodes in the dominator tree.
 
     Examples
@@ -102,15 +102,15 @@ def dominance_frontiers(G, start):
     -------
     df : dict keyed by nodes
         A dict containing the dominance frontiers of each node reachable from
-        ``start`` as lists.
+        `start` as lists.
 
     Raises
     ------
     NetworkXNotImplemented
-        If ``G`` is undirected.
+        If `G` is undirected.
 
     NetworkXError
-        If ``start`` is not in ``G``.
+        If `start` is not in `G`.
 
     Examples
     --------

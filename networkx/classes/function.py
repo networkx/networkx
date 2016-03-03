@@ -611,7 +611,7 @@ def common_neighbors(G, u, v):
 
 
 def is_weighted(G, edge=None, weight='weight'):
-    """Returns ``True`` if ``G`` has weighted edges.
+    """Returns True if `G` has weighted edges.
 
     Parameters
     ----------
@@ -619,8 +619,8 @@ def is_weighted(G, edge=None, weight='weight'):
         A NetworkX graph.
 
     edge : tuple, optional
-        A 2-tuple specifying the only edge in ``G`` that will be tested. If
-        ``None``, then every edge in ``G`` is tested.
+        A 2-tuple specifying the only edge in `G` that will be tested. If
+        None, then every edge in `G` is tested.
 
     weight: string, optional
         The attribute name used to query for edge weights.
@@ -628,7 +628,7 @@ def is_weighted(G, edge=None, weight='weight'):
     Returns
     -------
     bool
-        A boolean signifying if ``G``, or the specified edge, is weighted.
+        A boolean signifying if `G`, or the specified edge, is weighted.
 
     Raises
     ------
@@ -664,7 +664,7 @@ def is_weighted(G, edge=None, weight='weight'):
 
 
 def is_negatively_weighted(G, edge=None, weight='weight'):
-    """Returns ``True`` if ``G`` has negatively weighted edges.
+    """Returns True if `G` has negatively weighted edges.
 
     Parameters
     ----------
@@ -672,8 +672,8 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
         A NetworkX graph.
 
     edge : tuple, optional
-        A 2-tuple specifying the only edge in ``G`` that will be tested. If
-        ``None``, then every edge in ``G`` is tested.
+        A 2-tuple specifying the only edge in `G` that will be tested. If
+        None, then every edge in `G` is tested.
 
     weight: string, optional
         The attribute name used to query for edge weights.
@@ -681,7 +681,7 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     Returns
     -------
     bool
-        A boolean signifying if ``G``, or the specified edge, is negatively
+        A boolean signifying if `G`, or the specified edge, is negatively
         weighted.
 
     Raises
@@ -717,7 +717,7 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
 
 
 def is_empty(G):
-    """Returns ``True`` if ``G`` has no edges.
+    """Returns True if `G` has no edges.
 
     Parameters
     ----------
@@ -727,7 +727,7 @@ def is_empty(G):
     Returns
     -------
     bool
-        ``True`` if ``G`` has no edges, and ``False`` otherwise.
+        True if `G` has no edges, and False otherwise.
 
     Notes
     -----

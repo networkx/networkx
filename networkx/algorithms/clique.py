@@ -49,7 +49,7 @@ def enumerate_all_cliques(G):
     -------
     iterator
         An iterator over cliques, each of which is a list of nodes in
-        ``G``. The cliques are ordered according to size.
+        `G`. The cliques are ordered according to size.
 
     Notes
     -----
@@ -120,7 +120,7 @@ def find_cliques(G):
     -------
     iterator
         An iterator over maximal cliques, each of which is a list of
-        nodes in ``G``. The order of cliques is arbitrary.
+        nodes in `G`. The order of cliques is arbitrary.
 
     See Also
     --------
@@ -227,7 +227,7 @@ def find_cliques_recursive(G):
     -------
     iterator
         An iterator over maximal cliques, each of which is a list of
-        nodes in ``G``. The order of cliques is arbitrary.
+        nodes in `G`. The order of cliques is arbitrary.
 
     See Also
     --------
@@ -302,8 +302,8 @@ def find_cliques_recursive(G):
 def make_max_clique_graph(G, create_using=None):
     """Returns the maximal clique graph of the given graph.
 
-    The nodes of the maximal clique graph of ``G`` are the cliques of
-    ``G`` and an edge joins two cliques if the cliques are not disjoint.
+    The nodes of the maximal clique graph of `G` are the cliques of
+    `G` and an edge joins two cliques if the cliques are not disjoint.
 
     Parameters
     ----------
@@ -316,7 +316,7 @@ def make_max_clique_graph(G, create_using=None):
     Returns
     -------
     NetworkX graph
-        A graph whose nodes are the cliques of ``G`` and whose edges
+        A graph whose nodes are the cliques of `G` and whose edges
         join two cliques if they are not disjoint.
 
     Notes
@@ -345,10 +345,10 @@ def make_max_clique_graph(G, create_using=None):
 
 
 def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
-    """Returns the bipartite clique graph corresponding to ``G``.
+    """Returns the bipartite clique graph corresponding to `G`.
 
     In the returned bipartite graph, the "bottom" nodes are the nodes of
-    ``G`` and the "top" nodes represent the maximal cliques of ``G``.
+    `G` and the "top" nodes represent the maximal cliques of `G`.
     There is an edge from node *v* to clique *C* in the returned graph
     if and only if *v* is an element of *C*.
 
@@ -358,8 +358,8 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
         An undirected graph.
 
     fpos : bool
-        If ``True`` or not ``None``, the returned graph will have an
-        additional attribute, ``pos``, a dictionary mapping node to
+        If True or not None, the returned graph will have an
+        additional attribute, `pos`, a dictionary mapping node to
         position in the Euclidean plane.
 
     create_using : NetworkX graph
@@ -370,12 +370,12 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
     -------
     NetworkX graph
         A bipartite graph whose "bottom" set is the nodes of the graph
-        ``G``, whose "top" set is the cliques of ``G``, and whose edges
-        join nodes of ``G`` to the cliques that contain them.
+        `G`, whose "top" set is the cliques of `G`, and whose edges
+        join nodes of `G` to the cliques that contain them.
 
-        The nodes of the graph ``G`` have the node attribute
-        ``'bipartite'`` set to ``1`` and the nodes representing cliques
-        have the node attribute ``'bipartite'`` set to ``0``, as is the
+        The nodes of the graph `G` have the node attribute
+        `'bipartite'` set to 1 and the nodes representing cliques
+        have the node attribute `'bipartite'` set to 0, as is the
         convention for bipartite graphs in NetworkX.
 
     """
@@ -412,11 +412,11 @@ def graph_clique_number(G, cliques=None):
     Returns
     -------
     int
-        The size of the largest clique in ``G``.
+        The size of the largest clique in `G`.
 
     Notes
     -----
-    You should provide ``cliques`` if you have already computed the list
+    You should provide `cliques` if you have already computed the list
     of maximal cliques, in order to avoid an exponential time search for
     maximal cliques.
 
@@ -442,11 +442,11 @@ def graph_number_of_cliques(G,cliques=None):
     Returns
     -------
     int
-        The number of maximal cliques in ``G``.
+        The number of maximal cliques in `G`.
 
     Notes
     -----
-    You should provide ``cliques`` if you have already computed the list
+    You should provide `cliques` if you have already computed the list
     of maximal cliques, in order to avoid an exponential time search for
     maximal cliques.
 

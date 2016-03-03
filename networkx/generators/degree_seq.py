@@ -752,7 +752,7 @@ class DegreeSequenceRandomGraph(object):
         return self.remaining_degree[u]*self.remaining_degree[v]/norm
 
     def suitable_edge(self):
-        """Returns ``True`` if and only if an arbitrary remaining node can
+        """Returns True if and only if an arbitrary remaining node can
         potentially be joined with some other remaining node.
 
         """

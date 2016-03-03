@@ -67,7 +67,7 @@ def dominating_set(G, start_with=None):
 
 
 def is_dominating_set(G, nbunch):
-    """Checks if ``nbunch`` is a dominating set for ``G``.
+    """Checks if `nbunch` is a dominating set for `G`.
 
     A *dominating set* for a graph with node set *V* is a subset *D* of
     *V* such that every node not in *D* is adjacent to at least one
@@ -78,7 +78,7 @@ def is_dominating_set(G, nbunch):
     G : NetworkX graph
 
     nbunch : iterable
-        An iterable of nodes in the graph ``G``.
+        An iterable of nodes in the graph `G`.
 
     See also
     --------

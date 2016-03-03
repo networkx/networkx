@@ -65,7 +65,7 @@ def triad_graph(triad_name):
     Raises
     ------
     :exc:`ValueError`
-        If ``triad_name`` is not the name of a triad.
+        If `triad_name` is not the name of a triad.
 
     See also
     --------

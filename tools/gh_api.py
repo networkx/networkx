@@ -115,7 +115,7 @@ def iter_fields(fields):
 
 def encode_multipart_formdata(fields, boundary=None):
     """
-    Encode a dictionary of ``fields`` using the multipart/form-data mime format.
+    Encode a dictionary of `fields` using the multipart/form-data mime format.
 
     :param fields:
         Dictionary of fields or list of (key, value) field tuples.  The key is
