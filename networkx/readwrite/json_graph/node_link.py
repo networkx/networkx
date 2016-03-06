@@ -1,21 +1,24 @@
-#    Copyright (C) 2011-2013 by
+#    Copyright (C) 2011-2016 by
+# 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Michael E. Rose <Michael.Ernst.Rose@gmail.com>
+#    
 #    All rights reserved.
 #    BSD license.
 from itertools import chain, count
 import json
 import networkx as nx
 from networkx.utils import make_str
-__author__ = """Aric Hagberg <hagberg@lanl.gov>"""
 __all__ = ['node_link_data', 'node_link_graph']
 
 
-_attrs = dict(id='id', source='source', target='target', key='key')
+_attrs = dict(source='source', target='target', name='name',
+              key='key', link='links')
 
 
-def node_link_data(G, attrs=_attrs):
+def node_link_data(G, attrs=None):
     """Return data in node-link format that is suitable for JSON serialization
     and use in Javascript documents.
 
@@ -24,11 +27,12 @@ def node_link_data(G, attrs=_attrs):
     G : NetworkX graph
 
     attrs : dict
-        A dictionary that contains four keys 'id', 'source', 'target' and
-        'key'. The corresponding values provide the attribute names for storing
-        NetworkX-internal graph data. The values should be unique. Default
-        value:
-        :samp:`dict(id='id', source='source', target='target', key='key')`.
+        A dictionary that contains five keys 'source', 'target', 'name',
+        'key' and 'link'.  The corresponding values provide the attribute
+        names for storing NetworkX-internal graph data.  The values should
+        be unique.  Default value:
+        :samp:`dict(source='source', target='target', name='name',
+                    key='key', link='links')`.
 
         If some user-defined graph data use these attribute names as data keys,
         they may be silently dropped.
@@ -46,30 +50,38 @@ def node_link_data(G, attrs=_attrs):
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.Graph([(1,2)])
-    >>> data = json_graph.node_link_data(G)
+    >>> G = nx.Graph([('A', 'B')])
+    >>> data1 = json_graph.node_link_data(G)
+    >>> H = nx.gn_graph(2)
+    >>> data2 = json_graph.node_link_data(H, {'link': 'edges', 'source': 'from', 'target': 'to'})    
 
     To serialize with json
 
     >>> import json
-    >>> s = json.dumps(data)
+    >>> s1 = json.dumps(data1)
+    >>> s2 = json.dumps(data2, {'link': 'edges', 'source': 'from', 'target': 'to'})
 
     Notes
     -----
-    Graph, node, and link attributes are stored in this format. Note that
-    attribute keys will be converted to strings in order to comply with
-    JSON.
+    Graph, node, and link attributes are stored in this format.  Note that
+    attribute keys will be converted to strings in order to comply with JSON.
 
-    The default value of attrs will be changed in a future release of NetworkX.
+    Attribute 'key' is only used for multigraphs.
 
     See Also
     --------
     node_link_graph, adjacency_data, tree_data
     """
     multigraph = G.is_multigraph()
-    id_ = attrs['id']
+    # Allow 'attrs' to keep default values.
+    if attrs is None:
+        attrs = _attrs
+    else:
+        attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
+    name = attrs['name']
     source = attrs['source']
     target = attrs['target']
+    links = attrs['link']
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs['key']
     if len(set([source, target, key])) < 3:
@@ -79,22 +91,21 @@ def node_link_data(G, attrs=_attrs):
     data['directed'] = G.is_directed()
     data['multigraph'] = multigraph
     data['graph'] = G.graph
-    data['nodes'] = [dict(chain(G.node[n].items(), [(id_, n)])) for n in G]
+    data['nodes'] = [dict(chain(G.node[n].items(), [(name, n)])) for n in G]
     if multigraph:
-        data['links'] = [
+        data[links] = [
             dict(chain(d.items(),
                        [(source, mapping[u]), (target, mapping[v]), (key, k)]))
             for u, v, k, d in G.edges(keys=True, data=True)]
     else:
-        data['links'] = [
+        data[links] = [
             dict(chain(d.items(),
                        [(source, mapping[u]), (target, mapping[v])]))
             for u, v, d in G.edges(data=True)]
-
     return data
 
 
-def node_link_graph(data, directed=False, multigraph=True, attrs=_attrs):
+def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     """Return graph from node-link data format.
 
     Parameters
@@ -109,10 +120,11 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=_attrs):
         If True, and multigraph not specified in data, return a multigraph.
 
     attrs : dict
-        A dictionary that contains four keys 'id', 'source', 'target' and
-        'key'. The corresponding values provide the attribute names for storing
-        NetworkX-internal graph data. Default value:
-        :samp:`dict(id='id', source='source', target='target', key='key')`.
+        A dictionary that contains five keys 'source', 'target', 'name',
+        'key' and 'link'.  The corresponding values provide the attribute
+        names for storing NetworkX-internal graph data.  Default value:
+        :samp:`dict(source='source', target='target', name='name',
+                    key='key', link='links')`.
 
     Returns
     -------
@@ -122,19 +134,23 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=_attrs):
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.Graph([(1,2)])
+    >>> G = nx.Graph([('A', 'B')])
     >>> data = json_graph.node_link_data(G)
     >>> H = json_graph.node_link_graph(data)
 
     Notes
     -----
-    The default value of attrs will be changed in a future release of NetworkX.
-
+    Attribute 'key' is only used for multigraphs.
 
     See Also
     --------
     node_link_data, adjacency_data, tree_data
     """
+    # Allow 'attrs' to keep default values.
+    if attrs is None:
+        attrs = _attrs
+    else:
+        attrs.update({k: v for (k, v) in _attrs.iteritems() if k not in attrs})
     multigraph = data.get('multigraph', multigraph)
     directed = data.get('directed', directed)
     if multigraph:
@@ -143,20 +159,21 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=_attrs):
         graph = nx.Graph()
     if directed:
         graph = graph.to_directed()
-    id_ = attrs['id']
+    name = attrs['name']
     source = attrs['source']
     target = attrs['target']
+    links = attrs['link']
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs['key']
     mapping = []
     graph.graph = data.get('graph', {})
     c = count()
     for d in data['nodes']:
-        node = d.get(id_, next(c))
+        node = d.get(name, next(c))
         mapping.append(node)
-        nodedata = dict((make_str(k), v) for k, v in d.items() if k != id_)
+        nodedata = dict((make_str(k), v) for k, v in d.items() if k != name)
         graph.add_node(node, **nodedata)
-    for d in data['links']:
+    for d in data[links]:
         src = d[source]
         tgt = d[target]
         if not multigraph:
