@@ -150,7 +150,7 @@ def to_agraph(N):
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges(data=True,keys=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.items() if k != 'key')
             A.add_edge(u,v,key=str(key),**str_edgedata)
     else:
         for u,v,edgedata in N.edges(data=True):
