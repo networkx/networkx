@@ -8,11 +8,7 @@ NetworkX documentation
     :Release: |version|
     :Date: |today|
 
-    Tutorial :download:`[PDF]  <networkx_tutorial.pdf>`
-
-    Reference :download:`[PDF]  <networkx_reference.pdf>`
-
-    Tutorial+Reference :download:`[HTML zip]  <networkx-documentation.zip>`
+    
 
 .. toctree::
    :maxdepth: 2
