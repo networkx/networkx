@@ -159,17 +159,6 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     target : node label
        ending node for path
 
-
-    Returns
-    -------
-    length : number
-        Shortest path length.
-
-    Raises
-    ------
-    NetworkXNoPath
-        If no path exists between source and target.
-
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
@@ -182,6 +171,16 @@ def dijkstra_path_length(G, source, target, weight='weight'):
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
        return a number.
+
+    Returns
+    -------
+    length : number
+        Shortest path length.
+
+    Raises
+    ------
+    NetworkXNoPath
+        If no path exists between source and target.
 
     Examples
     --------
@@ -200,20 +199,12 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
     See Also
     --------
-    bidirectional_dijkstra()
+    bidirectional_dijkstra
     """
-
     if source == target:
         return 0
-
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
-
-    length = _dijkstra(G, source, get_weight, target=target)
-
+    weight = _weight_function(G, weight)
+    length = _dijkstra(G, source, weight, target=target)
     try:
         return length[target]
     except KeyError:
