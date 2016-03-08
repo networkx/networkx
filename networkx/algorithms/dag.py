@@ -111,7 +111,7 @@ def topological_sort(G):
     ------
     NetworkXError
         Topological sort is defined for directed graphs only. If the graph G
-        is undirected, a NetworkXError is raised.
+        is undirected, a :exc:`NetworkXError` is raised.
 
     NetworkXUnfeasible
         If G is not a directed acyclic graph (DAG) no topological sort exists
@@ -197,7 +197,7 @@ def lexicographical_topological_sort(G, key=None):
     ------
     NetworkXError
         Topological sort is defined for directed graphs only. If the graph G
-        is undirected, a NetworkXError is raised.
+        is undirected, a :exc:`NetworkXError` is raised.
 
     NetworkXUnfeasible
         If G is not a directed acyclic graph (DAG) no topological sort exists

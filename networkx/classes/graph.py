@@ -1779,8 +1779,8 @@ class Graph(object):
         "if nbunch in self:", even after processing with this routine.
 
         If nbunch is not a node or a (possibly empty) sequence/iterator
-        or None, a NetworkXError is raised.  Also, if any object in
-        nbunch is not hashable, a NetworkXError is raised.
+        or None, a :exc:`NetworkXError` is raised.  Also, if any object in
+        nbunch is not hashable, a :exc:`NetworkXError` is raised.
         """
         if nbunch is None:   # include all nodes via iterator
             bunch = iter(self.adj)

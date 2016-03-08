@@ -567,7 +567,7 @@ class MultiGraph(Graph):
 
         >>> G.has_edge(0,1)
         True
-        >>> 1 in G[0]  # though this gives KeyError if 0 not in G
+        >>> 1 in G[0]  # though this gives :exc:`KeyError` if 0 not in G
         True
 
 
