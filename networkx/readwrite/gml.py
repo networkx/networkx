@@ -153,7 +153,7 @@ def read_gml(path, label='label', destringizer=None):
 
     label : string, optional
         If not None, the parsed nodes will be renamed according to node
-        attributes indicated by `label`. Default value: `'label'`.
+        attributes indicated by `label`. Default value: 'label'.
 
     destringizer : callable, optional
         A destringizer that recovers values stored as strings in GML. If it
@@ -216,7 +216,7 @@ def parse_gml(lines, label='label', destringizer=None):
 
     label : string, optional
         If not None, the parsed nodes will be renamed according to node
-        attributes indicated by `label`. Default value: `'label'`.
+        attributes indicated by `label`. Default value: 'label'.
 
     destringizer : callable, optional
         A destringizer that recovers values stored as strings in GML. If it
@@ -568,9 +568,9 @@ def generate_gml(G, stringizer=None):
 
     Notes
     -----
-    Graph attributes named `'directed'`, `'multigraph'`, `'node'` or
-    `'edge'`,node attributes named `'id'` or `'label'`, edge attributes
-    named `'source'` or `'target'` (or `'key'` if `G` is a multigraph)
+    Graph attributes named 'directed', 'multigraph', 'node' or
+    'edge',node attributes named 'id' or 'label', edge attributes
+    named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
     """
@@ -694,9 +694,9 @@ def write_gml(G, path, stringizer=None):
 
     Notes
     -----
-    Graph attributes named `'directed'`, `'multigraph'`, `'node'` or
-    `'edge'`,node attributes named `'id'` or `'label'`, edge attributes
-    named `'source'` or `'target'` (or `'key'` if `G` is a multigraph)
+    Graph attributes named 'directed', 'multigraph', 'node' or
+    'edge',node attributes named 'id' or 'label', edge attributes
+    named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
 

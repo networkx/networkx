@@ -374,8 +374,8 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
         join nodes of `G` to the cliques that contain them.
 
         The nodes of the graph `G` have the node attribute
-        `'bipartite'` set to 1 and the nodes representing cliques
-        have the node attribute `'bipartite'` set to 0, as is the
+        'bipartite' set to 1 and the nodes representing cliques
+        have the node attribute 'bipartite' set to 0, as is the
         convention for bipartite graphs in NetworkX.
 
     """

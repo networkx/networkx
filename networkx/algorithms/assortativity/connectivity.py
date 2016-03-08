@@ -62,8 +62,8 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     Raises
     ------
     ValueError
-        If either `source` or `target` are not one of ``'in'``,
-        ``'out'``, or ``'in+out'``.
+        If either `source` or `target` are not one of 'in',
+        'out', or 'in+out'.
 
     Examples
     --------

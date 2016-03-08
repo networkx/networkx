@@ -197,8 +197,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
 def geographical_threshold_edges(G, theta, alpha=2):
     """Generates edges for a geographical threshold graph given a graph with
-    positions and weights assigned as node attributes `'pos'` and
-    `'weight'`.
+    positions and weights assigned as node attributes 'pos' and 'weight'.
 
     """
     nodes = list(G.nodes(data=True))

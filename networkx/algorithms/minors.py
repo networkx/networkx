@@ -112,11 +112,11 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
         attributes to set on the node representing *B* in the quotient graph.
         If None, the following node attributes will be set:
 
-        * `'graph'`, the subgraph of the graph `G` that this block
+        * 'graph', the subgraph of the graph `G` that this block
           represents,
-        * `'nnodes'`, the number of nodes in this block,
-        * `'nedges'`, the number of edges within this block,
-        * `'density'`, the density of the subgraph of `G` that this
+        * 'nnodes', the number of nodes in this block,
+        * 'nedges', the number of edges within this block,
+        * 'density', the density of the subgraph of `G` that this
           block represents.
 
     relabel : bool

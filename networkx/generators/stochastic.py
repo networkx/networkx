@@ -26,7 +26,7 @@ def stochastic_graph(G, copy=True, weight='weight'):
 
     A right-stochastic graph is a weighted digraph in which for each
     node, the sum of the weights of all the out-edges of that node is
-    1. If the graph is already weighted (for example, via a `'weight'`
+    1. If the graph is already weighted (for example, via a 'weight'
     edge attribute), the reweighting takes that into account.
 
     Parameters

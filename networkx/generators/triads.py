@@ -18,8 +18,7 @@ from networkx.classes import DiGraph
 __all__ = ['triad_graph']
 
 #: Dictionary mapping triad name to list of directed edges in the
-#: digraph representation of that triad (with nodes ``'a'``, ``'b'``,
-#: and ``'c'``).
+#: digraph representation of that triad (with nodes 'a', 'b', and 'c').
 TRIAD_EDGES = {'003': [],
                '012': ['ab'],
                '102': ['ab', 'ba'],
@@ -59,8 +58,7 @@ def triad_graph(triad_name):
     -------
     :class:`~networkx.DiGraph`
         The digraph on three nodes with the given name. The nodes of the
-        graph are the single-character strings ``'a'``, ``'b'``, and
-        ``'c'``.
+        graph are the single-character strings 'a', 'b', and 'c'.
 
     Raises
     ------

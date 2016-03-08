@@ -727,7 +727,7 @@ def complete_multipartite_graph(*block_sizes):
     G : NetworkX Graph
        Returns the complete multipartite graph with the specified blocks.
 
-       For each node, the node attribute `'block'` is an integer
+       For each node, the node attribute 'block' is an integer
        indicating which block contains the node.
 
     Examples
