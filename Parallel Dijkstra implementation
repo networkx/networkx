@@ -1,0 +1,41 @@
+Hi, I would like to help with an implementation of the parallel Dijkstra algorithm. I am using it to generate 
+a Voronoi division over the graph. 
+Here is my code; I hope it can be useful; any kind of comments and corrections are welcome. Thanks 
+Arturo 
+
+For the code to work, it would be necessary to know the graph G, which must be undirected and a subset of the nodes of the graph
+this subset is named K and has all the breaking nodes also named voronoi nodes
+
+import networkx as nx
+
+i = 0                    # Identify the Voronoi Nodes or Breaking nodes
+Q = []
+while i < len(K):
+     if K[i] in G:
+          G.node[K[i]]['Dv'] = 0
+          G.node[K[i]]['V'] = 'V'+str(i)
+          heapq.heappush(Q, (0, K[i]))
+          i += 1
+
+# Node Expansion
+
+while len(Q) != 0:
+     v = heapq.heappop(Q)
+     print(v[1])
+     G.node[v[1]]['visit'] = 1        # Mark the node as visited
+
+     # Visit all the neigbors of the node to be expanded
+     for nbr in G.neighbors(v[1]):
+          if G.node[nbr]['visit'] == 0:
+               delta = G.node[v[1]]['Dv'] + (G.get_edge_data(v[1], nbr))['weight']
+
+               if G.node[nbr]['Dv'] == 1000:
+                    G.node[nbr]['Dv'] = delta
+                    G.node[nbr]['V'] = G.node[v[1]]['V']
+                    heapq.heappush(Q, (delta, nbr))
+
+               if (G.node[nbr]['Dv'] < 1000) and (delta < G.node[nbr]['Dv']):
+                    G.node[nbr]['V'] = G.node[v[1]]['V']
+                    G.node[nbr]['Dv'] = delta
+
+print(nx.get_node_attributes(G, 'V'))
