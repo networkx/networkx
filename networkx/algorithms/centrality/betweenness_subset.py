@@ -86,7 +86,7 @@ def betweenness_centrality_subset(G,sources,targets,
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
-    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweennes
+    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
        http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf

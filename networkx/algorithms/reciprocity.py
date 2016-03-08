@@ -29,8 +29,7 @@ def reciprocity(G, nodes=None):
     ----------
     G : graph
        A networkx directed graph
-    nodes : container of nodes, optional (default=None,
-            in such case return the reciprocity of the whole graph.)
+    nodes : container of nodes, optional (default=whole graph)
        Compute reciprocity for nodes in this container.
 
     Returns

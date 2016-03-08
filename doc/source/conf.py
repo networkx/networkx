@@ -139,6 +139,8 @@ modindex_common_prefix=['networkx.']
 
 doctest_global_setup="import networkx as nx"
 
+# treat ``x, y : type`` as vars x and y instead of default ``y(x,) : type``
+napoleon_use_param = False
 
 # Options for HTML output
 # -----------------------

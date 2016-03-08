@@ -806,15 +806,13 @@ class Graph(object):
         ebunch : container of edges
             Each edge given in the container will be added to the
             graph. The edges must be given as as 2-tuples (u,v) or
-            3-tuples (u,v,d) where d is a dictionary containing edge
-            data.
+            3-tuples (u,v,d) where d is a dictionary containing edge data.
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
-
 
         See Also
         --------

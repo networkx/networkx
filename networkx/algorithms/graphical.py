@@ -36,7 +36,6 @@ def is_graphical(sequence, method='eg'):
     sequence : list or iterable container
         A sequence of integer node degrees
 
-
     method : "eg" | "hh"
         The method used to validate the degree sequence.
         "eg" corresponds to the Erdős-Gallai algorithm, and

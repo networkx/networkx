@@ -62,7 +62,8 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
 
     Parameters
     ----------
-    data : a object to be converted
+    data : object to be converted
+
        Current known types are:
          any NetworkX graph
          dict-of-dicts

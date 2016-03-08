@@ -364,7 +364,6 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
-
         See Also
         --------
         add_edge : add a single edge
