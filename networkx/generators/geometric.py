@@ -115,15 +115,15 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
     r"""Returns a geographical threshold graph.
 
     The geographical threshold graph model places `n` nodes uniformly at
-    random in a rectangular domain.  Each node `u` is assigned a weight `w_u`.
-    Two nodes `u` and `v` are joined by an edge if
+    random in a rectangular domain.  Each node `u` is assigned a weight
+    :math:`w_u`. Two nodes `u` and `v` are joined by an edge if
 
     .. math::
 
        w_u + w_v \ge \theta r^{\alpha}
 
-    where `r` is the Euclidean distance between `u` and `v`, and `\theta`,
-    `\alpha` are parameters.
+    where `r` is the Euclidean distance between `u` and `v`,
+    and :math:`\theta`, :math:`\alpha` are parameters.
 
     Parameters
     ----------
@@ -152,8 +152,8 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
     -----
 
     If weights are not specified they are assigned to nodes by drawing randomly
-    from the exponential distribution with rate parameter `\lambda=1`.  To
-    specify weights from a different distribution, use the `weight` keyword
+    from the exponential distribution with rate parameter :math:`\lambda=1`.
+    To specify weights from a different distribution, use the `weight` keyword
     argument::
 
     >>> import random
@@ -311,13 +311,15 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     connections that are chosen randomly.
 
       [...] we begin with a set of nodes [...] that are identified with the set
-      of lattice points in an `n \times n` square, `\{(i, j): i \in \{1, 2,
-      \ldots, n\}, j \in \{1, 2, \ldots, n\}\}`, and we define the *lattice
-      distance* between two nodes `(i, j)` and `(k, l)` to be the number of
-      "lattice steps" separating them: `d((i, j), (k, l)) = |k - i| + |l - j|`.
-      For a universal constant `p \geq 1`, the node `u` has a directed edge to
+      of lattice points in an :math:`n \times n` square,
+      :math:`\{(i, j): i \in \{1, 2, \ldots, n\}, j \in \{1, 2, \ldots, n\}\}`,
+      and we define the *lattice distance* between two nodes `(i, j)` and
+      `(k, l)` to be the number of "lattice steps" separating them:
+      `d((i, j), (k, l)) = |k - i| + |l - j|`.
+
+      For a universal constant `p >= 1`, the node `u` has a directed edge to
       every other node within lattice distance `p` --- these are its *local
-      contacts*. For universal constants `q \ge 0` and `r \ge 0` we also
+      contacts*. For universal constants `q >= 0` and `r >= 0` we also
       construct directed edges from `u` to `q` other nodes (the *long-range
       contacts*) using independent random trials; the `i`th directed edge from
       `u` has endpoint `v` with probability proportional to `[d(u,v)]^{-r}`.

@@ -211,7 +211,7 @@ def arbitrary_element(iterable):
     """
     if is_iterator(iterable):
         raise ValueError('cannot return an arbitrary item from an iterator')
-    # Another possible implementation is `for x in iterable: return x`.
+    # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
 
 

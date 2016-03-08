@@ -405,8 +405,8 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     -----
     If `create_using` is an instance of :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
-    entries of `A` are of type `int`, then this function returns a multigraph
-    (of the same type as `create_using`) with parallel edges.
+    entries of `A` are of type :class:`int`, then this function returns a
+    multigraph (of the same type as `create_using`) with parallel edges.
 
     If `create_using` is an undirected multigraph, then only the edges
     indicated by the upper triangle of the matrix `A` will be added to the
@@ -816,9 +816,9 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
 
     If `create_using` is an instance of :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
-    entries of `A` are of type `int`, then this function returns a multigraph
-    (of the same type as `create_using`) with parallel edges. In this case,
-    `edge_attribute` will be ignored.
+    entries of `A` are of type :class:`int`, then this function returns a
+    multigraph (of the same type as `create_using`) with parallel edges.
+    In this case, `edge_attribute` will be ignored.
 
     If `create_using` is an undirected multigraph, then only the edges
     indicated by the upper triangle of the matrix `A` will be added to the

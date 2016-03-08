@@ -352,12 +352,12 @@ def find_cycle(G, source=None, orientation='original'):
     edges : directed edges
         A list of directed edges indicating the path taken for the loop. If
         no cycle is found, then an exception is raised. For graphs, an
-        edge is of the form (u, v) where `u` and `v` are the tail and head
+        edge is of the form `(u, v)` where `u` and `v` are the tail and head
         of the edge as determined by the traversal. For multigraphs, an edge is
-        of the form (u, v, key), where `key` is the key of the edge. When the
+        of the form `(u, v, key)`, where `key` is the key of the edge. When the
         graph is directed, then `u` and `v` are always in the order of the
         actual directed edge. If orientation is 'ignore', then an edge takes
-        the form (u, v, key, direction) where direction indicates if the edge
+        the form `(u, v, key, direction)` where direction indicates if the edge
         was followed in the forward (tail to head) or reverse (head to tail)
         direction. When the direction is forward, the value of `direction`
         is 'forward'. When the direction is reverse, the value of `direction`

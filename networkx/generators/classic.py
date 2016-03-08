@@ -562,7 +562,7 @@ def lollipop_graph(m, n, create_using=None):
     ==========
     m, n : int or iterable container of nodes (default = 0)
         If an integer, nodes are from `range(m)` and `range(m,m+n)`.
-        If a container, those become the coordinate of the node.
+        If a container, the entries are the coordinate of the node.
 
         The nodes for m appear in the complete graph `K_m` and the nodes
         for n appear in the path `P_n`
