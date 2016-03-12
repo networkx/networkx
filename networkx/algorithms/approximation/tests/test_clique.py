@@ -22,21 +22,21 @@ from networkx.algorithms.approximation import clique_removal
 
 
 def is_independent_set(G, nodes):
-    """Returns ``True`` if and only if ``nodes`` is a clique in ``G``.
+    """Returns True if and only if `nodes` is a clique in `G`.
 
-    ``G`` is a NetworkX graph. ``nodes`` is an iterable of nodes in
-    ``G``.
+    `G` is a NetworkX graph. `nodes` is an iterable of nodes in
+    `G`.
 
     """
     return G.subgraph(nodes).number_of_edges() == 0
 
 
 def is_clique(G, nodes):
-    """Returns ``True`` if and only if ``nodes`` is an independent set
-    in ``G``.
+    """Returns True if and only if `nodes` is an independent set
+    in `G`.
 
-    ``G`` is an undirected simple graph. ``nodes`` is an iterable of
-    nodes in ``G``.
+    `G` is an undirected simple graph. `nodes` is an iterable of
+    nodes in `G`.
 
     """
     H = G.subgraph(nodes)

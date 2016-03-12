@@ -12,7 +12,7 @@ import networkx as nx
 
 
 def asyn_lpa_communities(G, weight=None):
-    """Returns communities in ``G`` as detected by asynchronous label
+    """Returns communities in `G` as detected by asynchronous label
     propagation.
 
     The asynchronous label propagation algorithm is described in
@@ -35,8 +35,8 @@ def asyn_lpa_communities(G, weight=None):
     G : Graph
 
     weight : string
-        The edge attribute representing the weight of an edge. If
-        ``None``, each edge is assumed to have weight one. In this
+        The edge attribute representing the weight of an edge.
+        If None, each edge is assumed to have weight one. In this
         algorithm, the weight of an edge is used in determining the
         frequency with which a label appears among the neighbors of a
         node: a higher weight means the label appears more often.

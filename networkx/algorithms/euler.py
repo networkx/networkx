@@ -22,7 +22,7 @@ __all__ = ['is_eulerian', 'eulerian_circuit']
 
 
 def is_eulerian(G):
-    """Returns ``True`` if and only if ``G`` is Eulerian.
+    """Returns True if and only if `G` is Eulerian.
 
     An graph is *Eulerian* if it has an Eulerian circuit. An *Eulerian
     circuit* is a closed walk that includes each edge of a graph exactly
@@ -45,7 +45,7 @@ def is_eulerian(G):
     Notes
     -----
     If the graph is not connected (or not strongly connected, for
-    directed graphs), this function returns ``False``.
+    directed graphs), this function returns False.
 
     """
     if G.is_directed():
@@ -59,7 +59,7 @@ def is_eulerian(G):
 
 
 def eulerian_circuit(G, source=None):
-    """Returns an iterator over the edges of an Eulerian circuit in ``G``.
+    """Returns an iterator over the edges of an Eulerian circuit in `G`.
 
     An *Eulerian circuit* is a closed walk that includes each edge of a
     graph exactly once.

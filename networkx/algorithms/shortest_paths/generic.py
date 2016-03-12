@@ -286,10 +286,10 @@ def average_shortest_path_length(G, weight=None):
     Raises
     ------
     NetworkXPointlessConcept
-        If ``G`` is the null graph (that is, the graph on zero nodes).
+        If `G` is the null graph (that is, the graph on zero nodes).
 
     NetworkXError
-        If ``G`` is not connected (or not weakly connected, in the case
+        If `G` is not connected (or not weakly connected, in the case
         of a directed graph).
 
     Examples

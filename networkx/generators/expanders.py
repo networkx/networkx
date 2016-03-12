@@ -55,7 +55,7 @@ def margulis_gabber_galil_graph(n, create_using=None):
     n : int
         Determines the number of nodes in the graph: `n^2`.
     create_using : graph-like
-        A graph-like object that receives the constructed edges. If ``None``,
+        A graph-like object that receives the constructed edges. If None,
         then a :class:`~networkx.MultiGraph` instance is used.
 
     Returns
@@ -92,7 +92,7 @@ def chordal_cycle_graph(p, create_using=None):
     vertex `x` to its inverse modulo `p`. This graph is a (mildly explicit)
     3-regular expander [1]_.
 
-    ``p`` *must* be a prime number.
+    `p` *must* be a prime number.
 
     Parameters
     ----------
@@ -102,7 +102,7 @@ def chordal_cycle_graph(p, create_using=None):
         chordal edges in the cycle will be created.
 
     create_using : graph-like
-        A graph-like object that receives the constructed edges. If ``None``,
+        A graph-like object that receives the constructed edges. If None,
         then a :class:`~networkx.MultiGraph` instance is used.
 
     Returns
@@ -114,7 +114,7 @@ def chordal_cycle_graph(p, create_using=None):
     ------
     NetworkXError
 
-        If the graph provided in ``create_using`` is directed or not a
+        If the graph provided in `create_using` is directed or not a
         multigraph.
 
     References

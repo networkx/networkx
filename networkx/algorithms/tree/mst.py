@@ -154,7 +154,7 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight', keys=True,
 
     keys : bool
        Whether to yield edge key in multigraphs in addition to the
-       edge. If ``G`` is not a multigraph, this is ignored.
+       edge. If `G` is not a multigraph, this is ignored.
 
     data : bool, optional
        If True yield the edge data along with the edge.
@@ -163,19 +163,19 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight', keys=True,
     -------
     edges : iterator
        An iterator over tuples representing edges in a minimum spanning
-       tree of ``G``.
+       tree of `G`.
 
-       If ``G`` is a multigraph and both ``keys`` and ``data`` are
-       ``True``, then the tuples are four-tuples of the form ``(u, v, k,
-       w)``, where ``(u, v)`` is an edge, ``k`` is the edge key
-       identifying the particular edge joining ``u`` with ``v``, and
-       ``w`` is the weight of the edge. If ``keys`` is ``True`` but
-       ``data`` is ``False``, the tuples are three-tuples of the form
-       ``(u, v, k)``.
+       If `G` is a multigraph and both `keys` and `data` are
+       True, then the tuples are four-tuples of the form `(u, v, k,
+       w)`, where `(u, v)` is an edge, `k` is the edge key
+       identifying the particular edge joining `u` with `v`, and
+       `w` is the weight of the edge. If `keys` is True but
+       `data` is False, the tuples are three-tuples of the form
+       `(u, v, k)`.
 
-       If ``G`` is not a multigraph, the tuples are of the form ``(u, v,
-       w)`` if ``data`` is ``True`` or ``(u, v)`` if ``data`` is
-       ``False``.
+       If `G` is not a multigraph, the tuples are of the form `(u, v,
+       w)` if `data` is True or `(u, v)` if `data` is
+       False.
 
     Examples
     --------
@@ -235,7 +235,7 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight', data=True):
 
     keys : bool
        Whether to yield edge key in multigraphs in addition to the
-       edge. If ``G`` is not a multigraph, this is ignored.
+       edge. If `G` is not a multigraph, this is ignored.
 
     data : bool, optional
        If True yield the edge data along with the edge.
@@ -244,19 +244,19 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight', data=True):
     -------
     edges : iterator
        An iterator over tuples representing edges in a maximum spanning
-       tree of ``G``.
+       tree of `G`.
 
-       If ``G`` is a multigraph and both ``keys`` and ``data`` are
-       ``True``, then the tuples are four-tuples of the form ``(u, v, k,
-       w)``, where ``(u, v)`` is an edge, ``k`` is the edge key
-       identifying the particular edge joining ``u`` with ``v``, and
-       ``w`` is the weight of the edge. If ``keys`` is ``True`` but
-       ``data`` is ``False``, the tuples are three-tuples of the form
-       ``(u, v, k)``.
+       If `G` is a multigraph and both `keys` and `data` are
+       True, then the tuples are four-tuples of the form `(u, v, k,
+       w)`, where `(u, v)` is an edge, `k` is the edge key
+       identifying the particular edge joining `u` with `v`, and
+       `w` is the weight of the edge. If `keys` is True but
+       `data` is False, the tuples are three-tuples of the form
+       `(u, v, k)`.
 
-       If ``G`` is not a multigraph, the tuples are of the form ``(u, v,
-       w)`` if ``data`` is ``True`` or ``(u, v)`` if ``data`` is
-       ``False``.
+       If `G` is not a multigraph, the tuples are of the form `(u, v,
+       w)` if `data` is True or `(u, v)` if `data` is
+       False.
 
     Examples
     --------

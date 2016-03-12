@@ -64,7 +64,6 @@ def average_neighbor_degree(G, source='out', target='out',
         Compute neighbor degree for specified nodes.  The default is
         all nodes in the graph.
 
-
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
        If None, then each edge has weight 1.

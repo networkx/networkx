@@ -37,11 +37,11 @@ def cut_size(G, S, T=None, weight=None):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     T : sequence
-        A sequence of nodes in ``G``. If not specified, this is taken to
-        be the set complement of ``S``.
+        A sequence of nodes in `G`. If not specified, this is taken to
+        be the set complement of `S`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -50,9 +50,9 @@ def cut_size(G, S, T=None, weight=None):
     Returns
     -------
     number
-        Total weight of all edges from nodes in set ``S`` to nodes in
-        set ``T`` (and, in the case of directed graphs, all edges from
-        nodes in ``T`` to nodes in ``S``).
+        Total weight of all edges from nodes in set `S` to nodes in
+        set `T` (and, in the case of directed graphs, all edges from
+        nodes in `T` to nodes in `S`).
 
     Examples
     --------
@@ -98,7 +98,7 @@ def volume(G, S, weight=None):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -107,8 +107,8 @@ def volume(G, S, weight=None):
     Returns
     -------
     number
-        The volume of the set of nodes represented by ``S`` in the graph
-        ``G``.
+        The volume of the set of nodes represented by `S` in the graph
+        `G`.
 
     See also
     --------
@@ -140,10 +140,10 @@ def normalized_cut_size(G, S, T=None, weight=None):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     T : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -152,7 +152,7 @@ def normalized_cut_size(G, S, T=None, weight=None):
     Returns
     -------
     number
-        The normalized cut size between the two sets ``S`` and ``T``.
+        The normalized cut size between the two sets `S` and `T`.
 
     Notes
     -----
@@ -192,10 +192,10 @@ def conductance(G, S, T=None, weight=None):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     T : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -204,7 +204,7 @@ def conductance(G, S, T=None, weight=None):
     Returns
     -------
     number
-        The conductance between the two sets ``S`` and ``T``.
+        The conductance between the two sets `S` and `T`.
 
     See also
     --------
@@ -239,10 +239,10 @@ def edge_expansion(G, S, T=None, weight=None):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     T : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -251,7 +251,7 @@ def edge_expansion(G, S, T=None, weight=None):
     Returns
     -------
     number
-        The edge expansion between the two sets ``S`` and ``T``.
+        The edge expansion between the two sets `S` and `T`.
 
     See also
     --------
@@ -285,10 +285,10 @@ def mixing_expansion(G, S, T=None, weight=None):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     T : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -297,7 +297,7 @@ def mixing_expansion(G, S, T=None, weight=None):
     Returns
     -------
     number
-        The mixing expansion between the two sets ``S`` and ``T``.
+        The mixing expansion between the two sets `S` and `T`.
 
     See also
     --------
@@ -322,7 +322,7 @@ def mixing_expansion(G, S, T=None, weight=None):
 # TODO What is the generalization to two arguments, S and T? Does the
 # denominator become `min(len(S), len(T))`?
 def node_expansion(G, S):
-    """Returns the node expansion of the set ``S``.
+    """Returns the node expansion of the set `S`.
 
     The *node expansion* is the quotient of the size of the node
     boundary of *S* and the cardinality of *S*. [1]
@@ -332,12 +332,12 @@ def node_expansion(G, S):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     Returns
     -------
     number
-        The node expansion of the set ``S``.
+        The node expansion of the set `S`.
 
     See also
     --------
@@ -361,7 +361,7 @@ def node_expansion(G, S):
 # TODO What is the generalization to two arguments, S and T? Does the
 # denominator become `min(len(S), len(T))`?
 def boundary_expansion(G, S):
-    """Returns the boundary expansion of the set ``S``.
+    """Returns the boundary expansion of the set `S`.
 
     The *boundary expansion* is the quotient of the size of the edge
     boundary and the cardinality of *S*. [1]
@@ -371,12 +371,12 @@ def boundary_expansion(G, S):
     G : NetworkX graph
 
     S : sequence
-        A sequence of nodes in ``G``.
+        A sequence of nodes in `G`.
 
     Returns
     -------
     number
-        The boundary expansion of the set ``S``.
+        The boundary expansion of the set `S`.
 
     See also
     --------

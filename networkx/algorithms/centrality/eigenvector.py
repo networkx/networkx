@@ -73,7 +73,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     Eigenvector convergence: The power iteration method is used to compute
     the eigenvector and convergence is not guaranteed. Our method stops after
-    ``max_iter`` iterations or when the vector change is below an error
+    `max_iter` iterations or when the vector change is below an error
     tolerance of ``number_of_nodes(G)*tol``. We actually use (A+I) rather
     than the adjacency matrix A because it shifts the spectrum to enable
     discerning the correct eigenvector even for networks with multiple

@@ -364,7 +364,6 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
-
         See Also
         --------
         add_edge : add a single edge
@@ -567,7 +566,7 @@ class MultiGraph(Graph):
 
         >>> G.has_edge(0,1)
         True
-        >>> 1 in G[0]  # though this gives KeyError if 0 not in G
+        >>> 1 in G[0]  # though this gives :exc:`KeyError` if 0 not in G
         True
 
 
@@ -1026,7 +1025,7 @@ class MultiGraph(Graph):
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.
 
-        The induced subgraph contains each edge in ``edges`` and each
+        The induced subgraph contains each edge in `edges` and each
         node incident to any one of those edges.
 
         Parameters

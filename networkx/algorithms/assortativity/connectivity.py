@@ -62,8 +62,8 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     Raises
     ------
     ValueError
-        If either *source* or *target* are not one of ``'in'``,
-        ``'out'``, or ``'in+out'``.
+        If either `source` or `target` are not one of 'in',
+        'out', or 'in+out'.
 
     Examples
     --------
@@ -81,7 +81,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     Notes
     -----
     This algorithm is sometimes called "k nearest neighbors" and is also
-    available as ``k_nearest_neighbors``.
+    available as `k_nearest_neighbors`.
 
     References
     ----------

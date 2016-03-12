@@ -67,7 +67,6 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     kwds : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
 
-
     Examples
     --------
     >>> G=nx.dodecahedral_graph()

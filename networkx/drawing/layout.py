@@ -233,7 +233,6 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
        1/sqrt(n) where n is the number of nodes.  Increase this value
        to move nodes farther apart.
 
-
     pos : dict or None  optional (default=None)
        Initial positions for nodes as a dictionary with node as keys
        and values as a list or tuple.  If None, then use random initial
@@ -255,7 +254,6 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
 
     center : array-like or None
        Coordinate pair around which to center the layout.
-
 
     Returns
     -------

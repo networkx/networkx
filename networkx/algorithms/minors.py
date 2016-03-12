@@ -26,16 +26,16 @@ chaini = chain.from_iterable
 
 
 def equivalence_classes(iterable, relation):
-    """Returns the set of equivalence classes of the given ``iterable`` under
+    """Returns the set of equivalence classes of the given `iterable` under
     the specified equivalence relation.
 
-    ``relation`` must be a Boolean-valued function that takes two argument. It
+    `relation` must be a Boolean-valued function that takes two argument. It
     must represent an equivalence relation (that is, the relation induced by
     the function must be reflexive, symmetric, and transitive).
 
     The return value is a set of sets. It is a partition of the elements of
-    ``iterable``; duplicate elements will be ignored so it makes the most sense
-    for ``iterable`` to be a :class:`set`.
+    `iterable`; duplicate elements will be ignored so it makes the most sense
+    for `iterable` to be a :class:`set`.
 
     """
     # For simplicity of implementation, we initialize the return value as a
@@ -62,7 +62,7 @@ def equivalence_classes(iterable, relation):
 
 def quotient_graph(G, partition, edge_relation=None, node_data=None,
                    edge_data=None, relabel=False, create_using=None):
-    """Returns the quotient graph of ``G`` under the specified equivalence
+    """Returns the quotient graph of `G` under the specified equivalence
     relation on nodes.
 
     Parameters
@@ -73,8 +73,8 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
 
     partition : function or list of sets
         If a function, this function must represent an equivalence
-        relation on the nodes of ``G``. It must take two arguments *u*
-        and *v* and return ``True`` exactly when *u* and *v* are in the
+        relation on the nodes of `G`. It must take two arguments *u*
+        and *v* and return True exactly when *u* and *v* are in the
         same equivalence class. The equivalence classes form the nodes
         in the returned graph.
 
@@ -84,15 +84,15 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
 
     edge_relation : Boolean function with two arguments
         This function must represent an edge relation on the *blocks* of
-        ``G`` in the partition induced by ``node_relation``. It must
+        `G` in the partition induced by `node_relation`. It must
         take two arguments, *B* and *C*, each one a set of nodes, and
-        return ``True`` exactly when there should be an edge joining
+        return True exactly when there should be an edge joining
         block *B* to block *C* in the returned graph.
 
-        If ``edge_relation`` is not specified, it is assumed to be the
+        If `edge_relation` is not specified, it is assumed to be the
         following relation. Block *B* is related to block *C* if and
         only if some node in *B* is adjacent to some node in *C*,
-        according to the edge set of ``G``.
+        according to the edge set of `G`.
 
     edge_data : function
         This function takes two arguments, *B* and *C*, each one a set
@@ -100,30 +100,30 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
         data attributes to set on the edge joining *B* and *C*, should
         there be an edge joining *B* and *C* in the quotient graph (if
         no such edge occurs in the quotient graph as determined by
-        ``edge_relation``, then the output of this function is ignored).
+        `edge_relation`, then the output of this function is ignored).
 
         If the quotient graph would be a multigraph, this function is
         not applied, since the edge data from each edge in the graph
-        ``G`` appears in the edges of the quotient graph.
+        `G` appears in the edges of the quotient graph.
 
     node_data : function
-        This function takes one argument, *B*, a set of nodes in ``G``,
+        This function takes one argument, *B*, a set of nodes in `G`,
         and must return a dictionary representing the node data
         attributes to set on the node representing *B* in the quotient graph.
-        If ``None``, the following node attributes will be set:
+        If None, the following node attributes will be set:
 
-        * ``'graph'``, the subgraph of the graph ``G`` that this block
+        * 'graph', the subgraph of the graph `G` that this block
           represents,
-        * ``'nnodes'``, the number of nodes in this block,
-        * ``'nedges'``, the number of edges within this block,
-        * ``'density'``, the density of the subgraph of ``G`` that this
+        * 'nnodes', the number of nodes in this block,
+        * 'nedges', the number of edges within this block,
+        * 'density', the density of the subgraph of `G` that this
           block represents.
 
     relabel : bool
-        If ``True``, relabel the nodes of the quotient graph to be
+        If True, relabel the nodes of the quotient graph to be
         nonnegative integers. Otherwise, the nodes are identified with
         :class:`frozenset` instances representing the blocks given in
-        ``partition``.
+        `partition`.
 
     create_using : NetworkX graph
         If specified, this must be an instance of a NetworkX graph
@@ -134,9 +134,9 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
     Returns
     -------
     NetworkX graph
-        The quotient graph of ``G`` under the equivalence relation
-        specified by ``partition``. If the partition were given as a
-        list of :class:`set` instances and ``relabel`` is ``False``,
+        The quotient graph of `G` under the equivalence relation
+        specified by `partition`. If the partition were given as a
+        list of :class:`set` instances and `relabel` is False,
         each node will be a :class:`frozenset` corresponding to the same
         :class:`set`.
 
@@ -144,7 +144,7 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
     ------
     NetworkXException
         If the given partition is not a valid partition of the nodes of
-        ``G``.
+        `G`.
 
     Examples
     --------
@@ -268,7 +268,7 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
     H.add_edges_from(edges)
     # If requested by the user, relabel the nodes to be integers,
     # numbered in increasing order from zero in the same order as the
-    # iteration order of ``partition``.
+    # iteration order of `partition`.
     if relabel:
         # Can't use nx.convert_node_labels_to_integers() here since we
         # want the order of iteration to be the same for backward
@@ -279,7 +279,7 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
 
 
 def contracted_nodes(G, u, v, self_loops=True):
-    """Returns the graph that results from contracting ``u`` and ``v``.
+    """Returns the graph that results from contracting `u` and `v`.
 
     Node contraction identifies the two nodes as a single node incident to any
     edge that was incident to the original two nodes.
@@ -290,18 +290,18 @@ def contracted_nodes(G, u, v, self_loops=True):
        The graph whose nodes will be contracted.
 
     u, v : nodes
-       Must be nodes in ``G``.
+       Must be nodes in `G`.
 
     self_loops : Boolean
-       If this is ``True``, any edges joining ``u`` and ``v`` in ``G`` become
+       If this is True, any edges joining `u` and `v` in `G` become
        self-loops on the new node in the returned graph.
 
     Returns
     -------
     Networkx graph
-       A new graph object of the same type as ``G`` (leaving ``G`` unmodified)
-       with ``u`` and ``v`` identified in a single node. The right node ``v``
-       will be merged into the node ``u``, so only ``u`` will appear in the
+       A new graph object of the same type as `G` (leaving `G` unmodified)
+       with `u` and `v` identified in a single node. The right node `v`
+       will be merged into the node `u`, so only `u` will appear in the
        returned graph.
 
     Examples
@@ -323,7 +323,7 @@ def contracted_nodes(G, u, v, self_loops=True):
 
     Notes
     -----
-    This function is also available as ``identified_nodes``.
+    This function is also available as `identified_nodes`.
     """
     H = G.copy()
     if H.is_directed():
@@ -361,25 +361,25 @@ def contracted_edge(G, edge, self_loops=True):
        The graph whose edge will be contracted.
 
     edge : tuple
-       Must be a pair of nodes in ``G``.
+       Must be a pair of nodes in `G`.
 
     self_loops : Boolean
-       If this is ``True``, any edges (including ``edge``) joining the
-       endpoints of ``edge`` in ``G`` become self-loops on the new node in the
+       If this is True, any edges (including `edge`) joining the
+       endpoints of `edge` in `G` become self-loops on the new node in the
        returned graph.
 
     Returns
     -------
     Networkx graph
-       A new graph object of the same type as ``G`` (leaving ``G`` unmodified)
-       with endpoints of ``edge`` identified in a single node. The right node
-       of ``edge`` will be merged into the left one, so only the left one will
+       A new graph object of the same type as `G` (leaving `G` unmodified)
+       with endpoints of `edge` identified in a single node. The right node
+       of `edge` will be merged into the left one, so only the left one will
        appear in the returned graph.
 
     Raises
     ------
     ValueError
-       If ``edge`` is not an edge in ``G``.
+       If `edge` is not an edge in `G`.
 
     Examples
     --------
@@ -460,9 +460,9 @@ def blockmodel(G, partition, multigraph=False):
 
     .. note:: Deprecated in NetworkX v1.11
 
-        ``blockmodel`` will be removed in NetworkX 2.0. Instead use
-        ``quotient_graph`` with keyword argument ``relabel=True``, and
-        ``create_using=nx.MultiGraph()`` for multigraphs.
+        `blockmodel` will be removed in NetworkX 2.0. Instead use
+        `quotient_graph` with keyword argument `relabel=True`, and
+        `create_using=nx.MultiGraph()` for multigraphs.
     """
     if multigraph:
         return nx.quotient_graph(G, partition,
