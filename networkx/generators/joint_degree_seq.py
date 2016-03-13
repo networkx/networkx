@@ -12,7 +12,7 @@ import random
 import networkx as nx
 
 __all__ = ['is_valid_joint_degree',
-           'joint_degree_model']
+           'joint_degree_graph']
 
 
 def is_valid_joint_degree(joint_degrees):
@@ -31,7 +31,7 @@ def is_valid_joint_degree(joint_degrees):
     - the total number of edges joining nodes of degree *k* with
        nodes of degree *l* cannot exceed the total number of possible edges,
     - each diagonal entry ``joint_degrees[k][k]`` must be even (this is
-      a convention assumed by the :func:`joint_degree_model` function).
+      a convention assumed by the :func:`joint_degree_graph` function).
 
 
     Parameters
@@ -146,7 +146,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
     if h_node_residual[w_prime] == 0:
         unsat.remove(w_prime)
 
-def joint_degree_model(joint_degrees, seed=None):
+def joint_degree_graph(joint_degrees, seed=None):
     """ Generates a random simple graph with the given joint degree dictionary.
 
     Parameters
@@ -197,7 +197,7 @@ def joint_degree_model(joint_degrees, seed=None):
     ...                      2: {2: 2, 3: 2, 4: 2},
     ...                      3: {2: 2, 4: 1},
     ...                      4: {1: 1, 2: 2, 3: 1}}
-    >>> G=nx.joint_degree_model(joint_degrees)
+    >>> G=nx.joint_degree_graph(joint_degrees)
     >>>
     """
 
@@ -292,5 +292,5 @@ def joint_degree_model(joint_degrees, seed=None):
                             l_unsat.discard(w)
 
 
-    G.name = "joint_degree_model %d nodes"%(G.order())
+    G.name = "joint_degree_graph %d nodes"%(G.order())
     return G

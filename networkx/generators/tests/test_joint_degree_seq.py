@@ -1,6 +1,6 @@
 import time
 from nose.tools import *
-from networkx.generators.joint_degree_seq import is_valid_joint_degree, joint_degree_model
+from networkx.generators.joint_degree_seq import is_valid_joint_degree, joint_degree_graph
 from networkx.algorithms.assortativity import degree_mixing_dict
 from networkx.generators import powerlaw_cluster_graph
 
@@ -42,7 +42,7 @@ def test_is_valid_joint_degree():
     joint_degrees_5 = {1:{1:9}}
     assert_false(is_valid_joint_degree(joint_degrees_5))
 
-def test_joint_degree_model(ntimes=100):
+def test_joint_degree_graph(ntimes=100):
     for _ in range(ntimes):
         seed = time.time()
 
@@ -54,7 +54,7 @@ def test_joint_degree_model(ntimes=100):
 
         # generate simple undirected graph with given joint degree
         # joint_degrees_g
-        G = joint_degree_model(joint_degrees_g)
+        G = joint_degree_graph(joint_degrees_g)
         joint_degrees_G = degree_mixing_dict(G, normalized=False)
 
         # assert that the given joint degree is equal to the generated

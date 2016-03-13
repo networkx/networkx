@@ -249,5 +249,5 @@ Joint Degree Sequence
    :toctree: generated/
 
    is_valid_joint_degree
-   joint_degree_model
+   joint_degree_graph
 
