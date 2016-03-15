@@ -1,10 +1,9 @@
-Hi, I would like to help with an implementation of the parallel Dijkstra algorithm. I am using it to generate 
-a Voronoi division over the graph. 
-Here is my code; I hope it can be useful; any kind of comments and corrections are welcome. Thanks 
-Arturo 
 
-For the code to work, it would be necessary to know the graph G, which must be undirected and a subset of the nodes of the graph
-this subset is named K and has all the breaking nodes also named voronoi nodes
+# Here is my code; I hope it can be useful; any kind of comments and corrections are welcome. Thanks 
+# Arturo 
+
+# For the code to work, it would be necessary to know the graph G, which must be undirected and a subset of the nodes of the graph
+# this subset is named K and has all the breaking nodes also named voronoi nodes
 
 import networkx as nx
 
