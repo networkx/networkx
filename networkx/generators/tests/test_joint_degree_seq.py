@@ -5,6 +5,8 @@ from networkx.algorithms.assortativity import degree_mixing_dict
 from networkx.generators import powerlaw_cluster_graph
 
 def test_is_valid_joint_degree():
+    ''' Tests for conditions that invalidate a joint degree dict '''
+
     # valid joint degree that satisfies all five conditions
     joint_degrees = {1: {4: 1},
                      2: {2: 2, 3: 2, 4: 2},
