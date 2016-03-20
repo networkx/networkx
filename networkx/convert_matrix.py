@@ -39,7 +39,8 @@ __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
 
-def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight', nonedge=0.0):
+def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None, 
+                        multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a Pandas DataFrame.
 
     Parameters
@@ -91,7 +92,7 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     >>> import pandas as pd
     >>> import numpy as np
     >>> G = nx.Graph([(1,1)])
-    >>> df = nx.to_pandas_dataframe(G)
+    >>> df = nx.to_pandas_dataframe(G, dtype=int)
     >>> df
        1
     1  1
@@ -107,15 +108,16 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     >>> G.add_edge(1,0)
     >>> G.add_edge(2,2,weight=3)
     >>> G.add_edge(2,2)
-    >>> nx.to_pandas_dataframe(G, nodelist=[0,1,2])
+    >>> nx.to_pandas_dataframe(G, nodelist=[0,1,2], dtype=int)
        0  1  2
     0  0  2  0
     1  1  0  0
     2  0  0  4
     """
     import pandas as pd
-    M = to_numpy_matrix(G, nodelist, None, None, multigraph_weight, weight,
-                        nonedge)
+    M = to_numpy_matrix(G, nodelist=nodelist, dtype=dtype, order=order, 
+                        multigraph_weight=multigraph_weight, weight=weight, 
+                        nonedge=nonedge)
     if nodelist is None:
         nodelist = list(G)
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
@@ -377,7 +379,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     pass
 
     M[np.isnan(M)] = nonedge
-    M = np.asmatrix(M)
+    M = np.asmatrix(M, dtype=dtype)
     return M
 
 
