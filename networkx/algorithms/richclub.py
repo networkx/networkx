@@ -21,7 +21,7 @@ __all__ = ['rich_club_coefficient']
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def rich_club_coefficient(G, normalized=True, Q=100):
-    r"""Returns the rich-club coefficient of the graph ``G``.
+    r"""Returns the rich-club coefficient of the graph `G`.
 
     For each degree *k*, the *rich-club coefficient* is the ratio of the
     number of actual to the number of potential edges for nodes with
@@ -41,8 +41,8 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     normalized : bool (optional)
         Normalize using randomized network as in [1]_
     Q : float (optional, default=100)
-        If ``normalized`` is ``True``, perform `Q * m` double-edge
-        swaps, where `m` is the number of edges in ``G``, to use as a
+        If `normalized` is True, perform `Q * m` double-edge
+        swaps, where `m` is the number of edges in `G`, to use as a
         null-model for normalization.
 
     Returns
@@ -63,7 +63,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.
 
-    Estimates for appropriate values of ``Q`` are found in [2]_.
+    Estimates for appropriate values of `Q` are found in [2]_.
 
     References
     ----------
@@ -93,9 +93,9 @@ def rich_club_coefficient(G, normalized=True, Q=100):
 
 def _compute_rc(G):
     """Returns the rich-club coefficient for each degree in the graph
-    ``G``.
+    `G`.
 
-    ``G`` is an undirected graph without multiedges.
+    `G` is an undirected graph without multiedges.
 
     Returns a dictionary mapping degree to rich-club coefficient for
     that degree.

@@ -31,11 +31,11 @@ def betweenness_centrality_subset(G,sources,targets,
        c_B(v) =\sum_{s\in S, t \in T} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
     where `S` is the set of sources, `T` is the set of targets,
-    `\sigma(s, t)` is the number of shortest `(s, t)`-paths, 
-    and `\sigma(s, t|v)` is the number of those paths
-    passing through some  node `v` other than `s, t`. 
-    If `s = t`, `\sigma(s, t) = 1`,
-    and if `v \in {s, t}`,  `\sigma(s, t|v) = 0` [2]_.
+    :math:`\sigma(s, t)` is the number of shortest `(s, t)`-paths,
+    and :math:`\sigma(s, t|v)` is the number of those paths
+    passing through some  node `v` other than `s, t`.
+    If `s = t`, :math:`\sigma(s, t) = 1`,
+    and if :math:`v \in {s, t}`, :math:`\sigma(s, t|v) = 0` [2]_.
 
 
     Parameters
@@ -49,11 +49,11 @@ def betweenness_centrality_subset(G,sources,targets,
       Nodes to use as targets for shortest paths in betweenness
 
     normalized : bool, optional
-      If True the betweenness values are normalized by `2/((n-1)(n-2))` 
-      for graphs, and `1/((n-1)(n-2))` for directed graphs where `n` 
+      If True the betweenness values are normalized by `2/((n-1)(n-2))`
+      for graphs, and `1/((n-1)(n-2))` for directed graphs where `n`
       is the number of nodes in G.
-       
-    weight : None or string, optional  
+
+    weight : None or string, optional
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
 
@@ -72,7 +72,7 @@ def betweenness_centrality_subset(G,sources,targets,
     The basic algorithm is from [1]_.
 
     For weighted graphs the edge weights must be greater than zero.
-    Zero edge weights can produce an infinite number of equal length 
+    Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
     The normalization might seem a little strange but it is the same
@@ -80,14 +80,14 @@ def betweenness_centrality_subset(G,sources,targets,
     betweenness_centrality(G) be the same as
     betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes()).
 
-    
+
     References
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
-    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness 
-       Centrality and their Generic Computation. 
+    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
+       Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
        http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
     """
@@ -113,14 +113,14 @@ def edge_betweenness_centrality_subset(G,sources,targets,
        c_B(v) =\sum_{s\in S,t \in T} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
     where `S` is the set of sources, `T` is the set of targets,
-    `\sigma(s, t)` is the number of shortest `(s, t)`-paths, 
-    and `\sigma(s, t|e)` is the number of those paths
+    :math:`\sigma(s, t)` is the number of shortest `(s, t)`-paths,
+    and :math:`\sigma(s, t|e)` is the number of those paths
     passing through edge `e` [2]_.
 
     Parameters
     ----------
     G : graph
-      A networkx graph 
+      A networkx graph
 
     sources: list of nodes
       Nodes to use as sources for shortest paths in betweenness
@@ -129,11 +129,11 @@ def edge_betweenness_centrality_subset(G,sources,targets,
       Nodes to use as targets for shortest paths in betweenness
 
     normalized : bool, optional
-      If True the betweenness values are normalized by `2/(n(n-1))` 
-      for graphs, and `1/(n(n-1))` for directed graphs where `n` 
+      If True the betweenness values are normalized by `2/(n(n-1))`
+      for graphs, and `1/(n(n-1))` for directed graphs where `n`
       is the number of nodes in G.
-       
-    weight : None or string, optional  
+
+    weight : None or string, optional
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
 
@@ -141,7 +141,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     -------
     edges : dictionary
        Dictionary of edges with Betweenness centrality as the value.
-        
+
     See Also
     --------
     betweenness_centrality
@@ -152,7 +152,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     The basic algorithm is from [1]_.
 
     For weighted graphs the edge weights must be greater than zero.
-    Zero edge weights can produce an infinite number of equal length 
+    Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
     The normalization might seem a little strange but it is the same
@@ -165,8 +165,8 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
-    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness 
-       Centrality and their Generic Computation. 
+    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
+       Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
        http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
 
@@ -181,7 +181,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
         else:  # use Dijkstra's algorithm
             S,P,sigma=dijkstra(G,s,weight)
         b=_accumulate_edges_subset(b,S,P,sigma,s,targets)
-    for n in G: # remove nodes to only return edges 
+    for n in G: # remove nodes to only return edges
         del b[n]
     b=_rescale_e(b,len(G),normalized=normalized,directed=G.is_directed())
     return b

@@ -204,7 +204,7 @@ def to_pydot(N, strict=True):
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges(data=True,keys=True):
-            str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
+            str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items() if k != 'key')
             edge=pydotplus.Edge(make_str(u), make_str(v),
                     key=make_str(key), **str_edgedata)
             P.add_edge(edge)

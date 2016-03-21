@@ -44,16 +44,16 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     ----------------
     wiener_index : number
         If you have already computed the Wiener index of the graph
-        ``G``, you can provide that value here. Otherwise, it will be
+        `G`, you can provide that value here. Otherwise, it will be
         computed for you.
 
     Returns
     -------
     dictionary or float
-        If ``node`` is ``None``, this function returnes a dictionary
+        If `node` is None, this function returnes a dictionary
         with nodes as keys and closeness vitality as the
         value. Otherwise, it returns only the closeness vitality for the
-        specified ``node``.
+        specified `node`.
 
         The closeness vitality of a node may be negative infinity if
         removing that node would disconnect the graph.

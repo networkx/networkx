@@ -21,16 +21,16 @@ __all__ = ['coverage', 'performance']
 
 
 def is_partition(G, partition):
-    """Returns ``True`` if and only if ``partition`` is a partition of
-    the nodes of ``G``.
+    """Returns True if and only if `partition` is a partition of
+    the nodes of `G`.
 
     A partition of a universe set is a family of pairwise disjoint sets
     whose union equals the universe set.
 
-    ``G`` is a NetworkX graph.
+    `G` is a NetworkX graph.
 
-    ``partition`` is a sequence (not an iterator) of sets of nodes of
-    ``G``.
+    `partition` is a sequence (not an iterator) of sets of nodes of
+    `G`.
 
     """
     # Alternate implementation:
@@ -84,11 +84,11 @@ def require_partition(func):
 
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges according to the given
-    partition of the nodes of ``G``.
+    partition of the nodes of `G`.
 
-    ``G`` must be a NetworkX graph.
+    `G` must be a NetworkX graph.
 
-    ``partition`` must be a partition of the nodes of ``G``.
+    `partition` must be a partition of the nodes of `G`.
 
     The "intra-community edges" are those edges joining a pair of nodes
     in the same block of the partition.
@@ -99,18 +99,18 @@ def intra_community_edges(G, partition):
 
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges according to the given
-    partition of the nodes of ``G``.
+    partition of the nodes of `G`.
 
-    ``G`` must be a NetworkX graph.
+    `G` must be a NetworkX graph.
 
-    ``partition`` must be a partition of the nodes of ``G``.
+    `partition` must be a partition of the nodes of `G`.
 
     The *inter-community edges* are those edges joining a pair of nodes
     in different blocks of the partition.
 
     Implementation note: this function creates an intermediate graph
     that may require the same amount of memory as required to store
-    ``G``.
+    `G`.
 
     """
     # Alternate implementation that does not require constructing a new
@@ -126,20 +126,20 @@ def inter_community_edges(G, partition):
 
 def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
-    given partition of the nodes of ``G``.
+    given partition of the nodes of `G`.
 
-    ``G`` must be a NetworkX graph.
+    `G` must be a NetworkX graph.
 
-    ``partition`` must be a partition of the nodes of ``G``.
+    `partition` must be a partition of the nodes of `G`.
 
-    A *non-edge* is a pair of nodes (undirected if ``G`` is undirected)
-    that are not adjacent in ``G``. The *inter-community non-edges* are
+    A *non-edge* is a pair of nodes (undirected if `G` is undirected)
+    that are not adjacent in `G`. The *inter-community non-edges* are
     those non-edges on a pair of nodes in different blocks of the
     partition.
 
     Implementation note: this function creates two intermediate graphs,
     which may require up to twice the amount of memory as required to
-    store ``G``.
+    store `G`.
 
     """
     # Alternate implementation that does not require constructing two
@@ -169,7 +169,7 @@ def performance(G, partition):
 
     partition : sequence
 
-        Partition of the nodes of ``G``, represented as a sequence of
+        Partition of the nodes of `G`, represented as a sequence of
         sets of nodes. Each block of the partition represents a
         community.
 
@@ -181,7 +181,7 @@ def performance(G, partition):
     Raises
     ------
     NetworkXError
-        If ``partition`` is not a valid partition of the nodes of ``G``.
+        If `partition` is not a valid partition of the nodes of `G`.
 
     References
     ----------
@@ -220,7 +220,7 @@ def coverage(G, partition):
     G : NetworkX graph
 
     partition : sequence
-        Partition of the nodes of ``G``, represented as a sequence of
+        Partition of the nodes of `G`, represented as a sequence of
         sets of nodes. Each block of the partition represents a
         community.
 
@@ -232,18 +232,11 @@ def coverage(G, partition):
     Raises
     ------
     NetworkXError
-        If ``partition`` is not a valid partition of the nodes of ``G``.
-
-    References
-    ----------
-    .. [1] Santo Fortunato.
-           "Community Detection in Graphs".
-           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <http://arxiv.org/abs/0906.0612>
+        If `partition` is not a valid partition of the nodes of `G`.
 
     Notes
     -----
-    If ``G`` is a multigraph, the multiplicity of edges is counted.
+    If `G` is a multigraph, the multiplicity of edges is counted.
 
     References
     ----------

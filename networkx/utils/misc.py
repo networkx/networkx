@@ -179,7 +179,7 @@ def dict_to_numpy_array1(d,mapping=None):
     return a
 
 def is_iterator(obj):
-    """Returns ``True`` if and only if the given object is an iterator
+    """Returns True if and only if the given object is an iterator
     object.
 
     """
@@ -188,7 +188,7 @@ def is_iterator(obj):
 
 
 def arbitrary_element(iterable):
-    """Returns an arbitrary element of ``iterable`` without removing it.
+    """Returns an arbitrary element of `iterable` without removing it.
 
     This is most useful for "peeking" at an arbitrary element of a set,
     but can be used for any list, dictionary, etc., as well::
@@ -198,7 +198,7 @@ def arbitrary_element(iterable):
         >>> arbitrary_element('hello')
         'h'
 
-    This function raises a :exc:`ValueError` if ``iterable`` is an
+    This function raises a :exc:`ValueError` if `iterable` is an
     iterator (because the current implementation of this function would
     consume an element from the iterator)::
 
@@ -211,7 +211,7 @@ def arbitrary_element(iterable):
     """
     if is_iterator(iterable):
         raise ValueError('cannot return an arbitrary item from an iterator')
-    # Another possible implementation is `for x in iterable: return x`.
+    # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
 
 
@@ -233,12 +233,12 @@ def pairwise(iterable, cyclic=False):
 
 
 def is_path(G, *path):
-    """Returns ``True`` if and only if the given nodes form a path in ``G``.
+    """Returns True if and only if the given nodes form a path in `G`.
 
-    If no positional arguments other than ``G`` are provided, this
-    function returns ``False``. If a single node is provided, this
-    function returns ``True``. Otherwise, if each pair of adjacent nodes
-    is an edge in the given graph, this function return ``True``.
+    If no positional arguments other than `G` are provided, this
+    function returns False. If a single node is provided, this
+    function returns True. Otherwise, if each pair of adjacent nodes
+    is an edge in the given graph, this function return True.
 
     For example::
 

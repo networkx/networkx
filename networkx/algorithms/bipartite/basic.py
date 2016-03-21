@@ -37,7 +37,7 @@ def color(G):
 
     Raises
     ------
-    NetworkXError if the graph is not two-colorable.
+    exc:`NetworkXError` if the graph is not two-colorable.
 
     Examples
     --------

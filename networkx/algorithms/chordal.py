@@ -48,7 +48,7 @@ def is_chordal(G):
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         If the input graph is an instance of one of these classes, a
-        NetworkXError is raised.
+        :exc:`NetworkXError` is raised.
 
     Examples
     --------
@@ -105,9 +105,9 @@ def find_induced_nodes(G,s,t,treewidth_bound=sys.maxsize):
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         If the input graph is an instance of one of these classes, a
-        NetworkXError is raised.
+        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If
-        the input graph is found to be non-chordal, a NetworkXError is raised.
+        the input graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
     Examples
     --------
@@ -177,9 +177,9 @@ def chordal_graph_cliques(G):
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         If the input graph is an instance of one of these classes, a
-        NetworkXError is raised.
+        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If the
-        input graph is found to be non-chordal, a NetworkXError is raised.
+        input graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
     Examples
     --------
@@ -217,9 +217,9 @@ def chordal_graph_treewidth(G):
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
         If the input graph is an instance of one of these classes, a
-        NetworkXError is raised.
+        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If
-        the input graph is found to be non-chordal, a NetworkXError is raised.
+        the input graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
     Examples
     --------

@@ -36,9 +36,9 @@ from networkx.utils import nodes_or_number
 def random_geometric_graph(n, radius, dim=2, pos=None):
     """Returns a random geometric graph in the unit cube.
 
-    The random geometric graph model places ``n`` nodes uniformly at random in
+    The random geometric graph model places `n` nodes uniformly at random in
     the unit cube. Two nodes are joined by an edge if the Euclidean distance
-    between the nodes is at most ``radius``.
+    between the nodes is at most `radius`.
 
     Parameters
     ----------
@@ -69,7 +69,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
     This uses an `O(n^2)` algorithm to build the graph.  A faster algorithm
     is possible using k-d trees.
 
-    The ``pos`` keyword argument can be used to specify node positions so you
+    The `pos` keyword argument can be used to specify node positions so you
     can create an arbitrary distribution and domain for positions.
 
     For example, to use a 2D Gaussian distribution of node positions with mean
@@ -114,16 +114,16 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
                                  weight=None):
     r"""Returns a geographical threshold graph.
 
-    The geographical threshold graph model places ``n`` nodes uniformly at
-    random in a rectangular domain.  Each node `u` is assigned a weight `w_u`.
-    Two nodes `u` and `v` are joined by an edge if
+    The geographical threshold graph model places `n` nodes uniformly at
+    random in a rectangular domain.  Each node `u` is assigned a weight
+    :math:`w_u`. Two nodes `u` and `v` are joined by an edge if
 
     .. math::
 
        w_u + w_v \ge \theta r^{\alpha}
 
-    where `r` is the Euclidean distance between `u` and `v`, and `\theta`,
-    `\alpha` are parameters.
+    where `r` is the Euclidean distance between `u` and `v`,
+    and :math:`\theta`, :math:`\alpha` are parameters.
 
     Parameters
     ----------
@@ -152,8 +152,8 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
     -----
 
     If weights are not specified they are assigned to nodes by drawing randomly
-    from the exponential distribution with rate parameter `\lambda=1`.  To
-    specify weights from a different distribution, use the ``weight`` keyword
+    from the exponential distribution with rate parameter :math:`\lambda=1`.
+    To specify weights from a different distribution, use the `weight` keyword
     argument::
 
     >>> import random
@@ -197,8 +197,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
 def geographical_threshold_edges(G, theta, alpha=2):
     """Generates edges for a geographical threshold graph given a graph with
-    positions and weights assigned as node attributes ``'pos'`` and
-    ``'weight'``.
+    positions and weights assigned as node attributes 'pos' and 'weight'.
 
     """
     nodes = list(G.nodes(data=True))
@@ -218,19 +217,19 @@ def geographical_threshold_edges(G, theta, alpha=2):
 def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
     r"""Return a Waxman random graph.
 
-    The Waxman random graph model places ``n`` nodes uniformly at random in a
+    The Waxman random graph model places `n` nodes uniformly at random in a
     rectangular domain. Each pair of nodes at Euclidean distance `d` is joined
     by an edge with probability
 
     .. math::
             p = \alpha \exp(-d / \beta L).
 
-    This function implements both Waxman models, using the ``L`` keyword
+    This function implements both Waxman models, using the `L` keyword
     argument.
 
-    * Waxman-1: if ``L`` is not specified, it is set to be the maximum distance
+    * Waxman-1: if `L` is not specified, it is set to be the maximum distance
       between any pair of nodes.
-    * Waxman-2: if ``L`` is specified, the distance between a pair of nodes is
+    * Waxman-2: if `L` is specified, the distance between a pair of nodes is
       chosen uniformly at random from the interval `[0, L]`.
 
     Parameters
@@ -311,13 +310,15 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     connections that are chosen randomly.
 
       [...] we begin with a set of nodes [...] that are identified with the set
-      of lattice points in an `n \times n` square, `\{(i, j): i \in \{1, 2,
-      \ldots, n\}, j \in \{1, 2, \ldots, n\}\}`, and we define the *lattice
-      distance* between two nodes `(i, j)` and `(k, l)` to be the number of
-      "lattice steps" separating them: `d((i, j), (k, l)) = |k - i| + |l - j|`.
-      For a universal constant `p \geq 1`, the node `u` has a directed edge to
+      of lattice points in an :math:`n \times n` square,
+      :math:`\{(i, j): i \in \{1, 2, \ldots, n\}, j \in \{1, 2, \ldots, n\}\}`,
+      and we define the *lattice distance* between two nodes `(i, j)` and
+      `(k, l)` to be the number of "lattice steps" separating them:
+      `d((i, j), (k, l)) = |k - i| + |l - j|`.
+
+      For a universal constant `p >= 1`, the node `u` has a directed edge to
       every other node within lattice distance `p` --- these are its *local
-      contacts*. For universal constants `q \ge 0` and `r \ge 0` we also
+      contacts*. For universal constants `q >= 0` and `r >= 0` we also
       construct directed edges from `u` to `q` other nodes (the *long-range
       contacts*) using independent random trials; the `i`th directed edge from
       `u` has endpoint `v` with probability proportional to `[d(u,v)]^{-r}`.

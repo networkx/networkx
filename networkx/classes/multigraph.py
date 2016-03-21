@@ -32,11 +32,11 @@ class MultiGraph(Graph):
     Parameters
     ----------
     data : input graph
-        Data to initialize graph.  If data=None (default) an empty
-        graph is created.  The data can be an edge list, or any
-        NetworkX graph object.  If the corresponding optional Python
-        packages are installed the data can also be a NumPy matrix
-        or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+        Data to initialize graph. If data=None (default) an empty
+        graph is created.  The data can be any format that is supported
+        by the to_networkx_graph() function, currently including edge list,
+        dict of dicts, dict of lists, NetworkX graph, NumPy matrix
+        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
 
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
@@ -364,7 +364,6 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
-
         See Also
         --------
         add_edge : add a single edge
@@ -428,7 +427,7 @@ class MultiGraph(Graph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
-            If None remove a single (abritrary) edge between u and v.
+            If None remove a single (arbitrary) edge between u and v.
 
         Raises
         ------
@@ -567,7 +566,7 @@ class MultiGraph(Graph):
 
         >>> G.has_edge(0,1)
         True
-        >>> 1 in G[0]  # though this gives KeyError if 0 not in G
+        >>> 1 in G[0]  # though this gives :exc:`KeyError` if 0 not in G
         True
 
 
@@ -1026,7 +1025,7 @@ class MultiGraph(Graph):
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.
 
-        The induced subgraph contains each edge in ``edges`` and each
+        The induced subgraph contains each edge in `edges` and each
         node incident to any one of those edges.
 
         Parameters

@@ -41,7 +41,7 @@ def _tricode(G, v, u, w):
     """Returns the integer code of the given triad.
 
     This is some fancy magic that comes from Batagelj and Mrvar's paper. It
-    treats each edge joining a pair of ``v``, ``u``, and ``w`` as a bit in
+    treats each edge joining a pair of `v`, `u`, and `w` as a bit in
     the binary representation of an integer.
 
     """

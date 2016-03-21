@@ -41,12 +41,12 @@ def wiener_index(G, weight=None):
     Returns
     -------
     float
-        The Wiener index of the graph ``G``.
+        The Wiener index of the graph `G`.
 
     Raises
     ------
     NetworkXError
-        If the graph ``G`` is not connected.
+        If the graph `G` is not connected.
 
     Notes
     -----

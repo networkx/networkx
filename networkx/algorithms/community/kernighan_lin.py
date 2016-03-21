@@ -111,7 +111,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight'):
         improvemement before giving up.
 
     weight : key
-        Edge data key to use as weight. If ``None``, the weights are all
+        Edge data key to use as weight. If None, the weights are all
         set to one.
 
     Returns

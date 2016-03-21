@@ -51,7 +51,7 @@ class TestRandomKOutGraph(object):
     """
 
     def test_regularity(self):
-        """Tests that the generated graph is ``k``-out-regular."""
+        """Tests that the generated graph is `k`-out-regular."""
         n = 10
         k = 3
         alpha = 1
@@ -75,7 +75,7 @@ class TestUniformRandomKOutGraph(object):
     """
 
     def test_regularity(self):
-        """Tests that the generated graph is ``k``-out-regular."""
+        """Tests that the generated graph is `k`-out-regular."""
         n = 10
         k = 3
         G = random_uniform_k_out_graph(n, k)

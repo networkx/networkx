@@ -19,7 +19,7 @@ def reciprocity(G, nodes=None):
     The reciprocity of a directed graph is defined as the ratio
     of the number of edges pointing in both directions to the total
     number of edges in the graph.
-    Formally, r = |{(u,v) \in G|(v,u) \in G}| / |{(u,v) \in G}|.
+    Formally, :math:`r = |{(u,v) \in G|(v,u) \in G}| / |{(u,v) \in G}|`.
 
     The reciprocity of a single node u is defined similarly,
     it is the ratio of the number of edges in both directions to
@@ -29,8 +29,7 @@ def reciprocity(G, nodes=None):
     ----------
     G : graph
        A networkx directed graph
-    nodes : container of nodes, optional (default=None,
-            in such case return the reciprocity of the whole graph.)
+    nodes : container of nodes, optional (default=whole graph)
        Compute reciprocity for nodes in this container.
 
     Returns

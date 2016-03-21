@@ -51,13 +51,13 @@ def partial_duplication_graph(N, n, p, q, seed=None):
     Notes
     -----
     A graph of nodes is grown by creating a fully connected graph
-    of size ``n``. The following procedure is then repeated until
-    a total of ``N`` nodes have been reached.
+    of size `n`. The following procedure is then repeated until
+    a total of `N` nodes have been reached.
 
     1. A random node, *u*, is picked and a new node, *v*, is created.
     2. For each neighbor of *u* an edge from the neighbor to *v* is created
-       with probability ``p``.
-    3. An edge from *u* to *v* is created with probability ``q``.
+       with probability `p`.
+    3. An edge from *u* to *v* is created with probability `q`.
 
     This algorithm appears in [1].
 
@@ -103,9 +103,9 @@ def partial_duplication_graph(N, n, p, q, seed=None):
 def duplication_divergence_graph(n, p, seed=None):
     """Returns an undirected graph using the duplication-divergence model.
 
-    A graph of ``n`` nodes is created by duplicating the initial nodes
+    A graph of `n` nodes is created by duplicating the initial nodes
     and retaining edges incident to the original nodes with a retention
-    probability ``p``.
+    probability `p`.
 
     Parameters
     ----------
@@ -114,7 +114,7 @@ def duplication_divergence_graph(n, p, seed=None):
     p : float
         The probability for retaining the edge of the replicated node.
     seed : int, optional
-        A seed for the random number generator of ``random`` (default=None).
+        A seed for the random number generator of :mod:`random` (default=None).
 
     Returns
     -------

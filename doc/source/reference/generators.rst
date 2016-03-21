@@ -101,12 +101,21 @@ Random Graphs
    random_regular_graph
    barabasi_albert_graph
    powerlaw_cluster_graph
-   duplication_divergence_graph
    random_kernel_graph
    random_lobster
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence
+
+
+Duplication Divergence
+----------------------
+.. automodule:: networkx.generators.duplication
+.. autosummary::
+   :toctree: generated/
+
+   duplication_divergence_graph
+   partial_duplication_graph
 
 
 Degree Sequence

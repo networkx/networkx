@@ -2,7 +2,7 @@
 Communicability
 ***************
 
-.. automodule:: networkx.algorithms.communicability
+.. automodule:: networkx.algorithms.communicability_alg
 .. autosummary::
    :toctree: generated/
 

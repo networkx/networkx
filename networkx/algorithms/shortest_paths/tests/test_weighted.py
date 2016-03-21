@@ -6,57 +6,19 @@ from nose.tools import assert_raises
 from nose.tools import raises
 
 import networkx as nx
-
-
-def _setUp(self):
-    cnlti = nx.convert_node_labels_to_integers
-    self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
-    self.cycle = nx.cycle_graph(7)
-    self.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
-    self.XG = nx.DiGraph()
-    self.XG.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
-                                     ('u', 'v', 1), ('u', 'x', 2),
-                                     ('v', 'y', 1), ('x', 'u', 3),
-                                     ('x', 'v', 5), ('x', 'y', 2),
-                                     ('y', 's', 7), ('y', 'v', 6)])
-    self.MXG = nx.MultiDiGraph(self.XG)
-    self.MXG.add_edge('s', 'u', weight=15)
-    self.XG2 = nx.DiGraph()
-    self.XG2.add_weighted_edges_from([[1, 4, 1], [4, 5, 1],
-                                      [5, 6, 1], [6, 3, 1],
-                                      [1, 3, 50], [1, 2, 100], [2, 3, 100]])
-
-    self.XG3 = nx.Graph()
-    self.XG3.add_weighted_edges_from([[0, 1, 2], [1, 2, 12],
-                                      [2, 3, 1], [3, 4, 5],
-                                      [4, 5, 1], [5, 0, 10]])
-
-    self.XG4 = nx.Graph()
-    self.XG4.add_weighted_edges_from([[0, 1, 2], [1, 2, 2],
-                                      [2, 3, 1], [3, 4, 1],
-                                      [4, 5, 1], [5, 6, 1],
-                                      [6, 7, 1], [7, 0, 1]])
-    self.MXG4 = nx.MultiGraph(self.XG4)
-    self.MXG4.add_edge(0, 1, weight=3)
-    self.G = nx.DiGraph()  # no weights
-    self.G.add_edges_from([('s', 'u'), ('s', 'x'),
-                           ('u', 'v'), ('u', 'x'),
-                           ('v', 'y'), ('x', 'u'),
-                           ('x', 'v'), ('x', 'y'),
-                           ('y', 's'), ('y', 'v')])
+from networkx.utils import pairwise
 
 
 def validate_path(G, s, t, soln_len, path):
     assert_equal(path[0], s)
     assert_equal(path[-1], t)
     if not G.is_multigraph():
-        assert_equal(
-            soln_len, sum(G[u][v].get('weight', 1)
-                          for u, v in zip(path[:-1], path[1:])))
+        computed = sum(G[u][v].get('weight', 1) for u, v in pairwise(path))
+        assert_equal(soln_len, computed)
     else:
-        assert_equal(
-            soln_len, sum(min(e.get('weight', 1) for e in G[u][v].values())
-                          for u, v in zip(path[:-1], path[1:])))
+        computed = sum(min(e.get('weight', 1) for e in G[u][v].values())
+                       for u, v in pairwise(path))
+        assert_equal(soln_len, computed)
 
 
 def validate_length_path(G, s, t, soln_len, length, path):
@@ -64,9 +26,54 @@ def validate_length_path(G, s, t, soln_len, length, path):
     validate_path(G, s, t, length, path)
 
 
-class TestWeightedPath:
+class WeightedTestBase(object):
+    """Base class for test classes that test functions for computing
+    shortest paths in weighted graphs.
 
-    setUp = _setUp
+    """
+
+    def setup(self):
+        """Creates some graphs for use in the unit tests."""
+        cnlti = nx.convert_node_labels_to_integers
+        self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1,
+                          ordering="sorted")
+        self.cycle = nx.cycle_graph(7)
+        self.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
+        self.XG = nx.DiGraph()
+        self.XG.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
+                                         ('u', 'v', 1), ('u', 'x', 2),
+                                         ('v', 'y', 1), ('x', 'u', 3),
+                                         ('x', 'v', 5), ('x', 'y', 2),
+                                         ('y', 's', 7), ('y', 'v', 6)])
+        self.MXG = nx.MultiDiGraph(self.XG)
+        self.MXG.add_edge('s', 'u', weight=15)
+        self.XG2 = nx.DiGraph()
+        self.XG2.add_weighted_edges_from([[1, 4, 1], [4, 5, 1],
+                                          [5, 6, 1], [6, 3, 1],
+                                          [1, 3, 50], [1, 2, 100],
+                                          [2, 3, 100]])
+
+        self.XG3 = nx.Graph()
+        self.XG3.add_weighted_edges_from([[0, 1, 2], [1, 2, 12],
+                                          [2, 3, 1], [3, 4, 5],
+                                          [4, 5, 1], [5, 0, 10]])
+
+        self.XG4 = nx.Graph()
+        self.XG4.add_weighted_edges_from([[0, 1, 2], [1, 2, 2],
+                                          [2, 3, 1], [3, 4, 1],
+                                          [4, 5, 1], [5, 6, 1],
+                                          [6, 7, 1], [7, 0, 1]])
+        self.MXG4 = nx.MultiGraph(self.XG4)
+        self.MXG4.add_edge(0, 1, weight=3)
+        self.G = nx.DiGraph()  # no weights
+        self.G.add_edges_from([('s', 'u'), ('s', 'x'),
+                               ('u', 'v'), ('u', 'x'),
+                               ('v', 'y'), ('x', 'u'),
+                               ('x', 'v'), ('x', 'y'),
+                               ('y', 's'), ('y', 'v')])
+
+
+class TestWeightedPath(WeightedTestBase):
 
     def test_dijkstra(self):
         (D, P) = nx.single_source_dijkstra(self.XG, 's')
@@ -224,15 +231,42 @@ class TestWeightedPath:
         assert_equal(distances[2], 2)
         assert_equal(paths[2], [0, 1, 2])
         # However, with the above weight function, the shortest path
-        # should be the [0, 2], since that has a very small weight.
+        # should be [0, 2], since that has a very small weight.
         distances, paths = nx.single_source_dijkstra(G, 0, 2, weight=weight)
         assert_equal(distances[2], 1 / 10)
         assert_equal(paths[2], [0, 2])
 
 
-class TestBellmanFordAndGoldbergRadizk:
+class TestDijkstraPathLength(object):
+    """Unit tests for the :func:`networkx.dijkstra_path_length`
+    function.
 
-    setUp = _setUp
+    """
+
+    def test_weight_function(self):
+        """Tests for computing the length of the shortest path using
+        Dijkstra's algorithm with a user-defined weight function.
+
+        """
+        # Create a triangle in which the edge from node 0 to node 2 has
+        # a large weight and the other two edges have a small weight.
+        G = nx.complete_graph(3)
+        G.edge[0][2]['weight'] = 10
+        G.edge[0][1]['weight'] = 1
+        G.edge[1][2]['weight'] = 1
+        # The weight function will take the multiplicative inverse of
+        # the weights on the edges. This way, weights that were large
+        # before now become small and vice versa.
+        weight = lambda u, v, d: 1 / d['weight']
+        # The shortest path from 0 to 2 using the actual weights on the
+        # edges should be [0, 1, 2]. However, with the above weight
+        # function, the shortest path should be [0, 2], since that has a
+        # very small weight.
+        length = nx.dijkstra_path_length(G, 0, 2, weight=weight)
+        assert_equal(length, 1 / 10)
+
+
+class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
     def test_single_node_graph(self):
         G = nx.DiGraph()
@@ -337,9 +371,7 @@ class TestBellmanFordAndGoldbergRadizk:
                      [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
 
 
-class TestJohnsonAlgorithm:
-
-    setUp = _setUp
+class TestJohnsonAlgorithm(WeightedTestBase):
 
     @raises(nx.NetworkXError)
     def test_single_node_graph(self):

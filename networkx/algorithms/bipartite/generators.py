@@ -242,7 +242,6 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     create_using : NetworkX graph instance, optional
        Return graph of this type.
 
-
     Notes
     -----
     This function is not imported in the main namespace.
@@ -317,7 +316,6 @@ def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
-
 
     Notes
     -----

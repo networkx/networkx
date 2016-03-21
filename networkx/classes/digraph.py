@@ -32,11 +32,11 @@ class DiGraph(Graph):
     Parameters
     ----------
     data : input graph
-        Data to initialize graph.  If data=None (default) an empty
-        graph is created.  The data can be an edge list, or any
-        NetworkX graph object.  If the corresponding optional Python
-        packages are installed the data can also be a NumPy matrix
-        or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+        Data to initialize graph. If data=None (default) an empty
+        graph is created.  The data can be any format that is supported
+        by the to_networkx_graph() function, currently including edge list,
+        dict of dicts, dict of lists, NetworkX graph, NumPy matrix
+        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
 
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
@@ -584,16 +584,14 @@ class DiGraph(Graph):
         ----------
         ebunch : container of edges
             Each edge given in the container will be added to the
-            graph. The edges must be given as as 2-tuples (u,v) or
-            3-tuples (u,v,d) where d is a dictionary containing edge
-            data.
+            graph. The edges must be given as 2-tuples (u,v) or
+            3-tuples (u,v,d) where d is a dictionary containing edge data.
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
-
 
         See Also
         --------
@@ -1286,7 +1284,7 @@ class DiGraph(Graph):
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.
 
-        The induced subgraph contains each edge in ``edges`` and each
+        The induced subgraph contains each edge in `edges` and each
         node incident to any one of those edges.
 
         Parameters

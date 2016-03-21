@@ -13,9 +13,9 @@ __all__ = ['karate_club_graph', 'davis_southern_women_graph',
 def karate_club_graph():
     """Return Zachary's Karate Club graph.
 
-    Each node in the returned graph has a node attribute ``'club'`` that
+    Each node in the returned graph has a node attribute 'club' that
     indicates the name of the club to which the member represented by that node
-    belongs, either ``'Mr. Hi'`` or ``'Officer'``.
+    belongs, either 'Mr. Hi' or 'Officer'.
 
     Examples
     --------

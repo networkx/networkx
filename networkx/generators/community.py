@@ -20,7 +20,7 @@ __all__ = ['caveman_graph', 'connected_caveman_graph',
 
 
 def caveman_graph(l, k):
-    """Returns a caveman graph of ``l`` cliques of size ``k``.
+    """Returns a caveman graph of `l` cliques of size `k`.
 
     Parameters
     ----------
@@ -67,10 +67,10 @@ def caveman_graph(l, k):
 
 
 def connected_caveman_graph(l, k):
-    """Returns a connected caveman graph of ``l`` cliques of size ``k``.
+    """Returns a connected caveman graph of `l` cliques of size `k`.
 
-    The connected caveman graph is formed by creating ``n`` cliques of size
-    ``k``, then a single edge in each clique is rewired to a node in an
+    The connected caveman graph is formed by creating `n` cliques of size
+    `k`, then a single edge in each clique is rewired to a node in an
     adjacent clique.
 
     Parameters
@@ -113,8 +113,8 @@ def connected_caveman_graph(l, k):
 def relaxed_caveman_graph(l, k, p, seed=None):
     """Return a relaxed caveman graph.
 
-    A relaxed caveman graph starts with ``l`` cliques of size ``k``.  Edges are
-    then randomly rewired with probability ``p`` to link different cliques.
+    A relaxed caveman graph starts with `l` cliques of size `k`.  Edges are
+    then randomly rewired with probability `p` to link different cliques.
 
     Parameters
     ----------
