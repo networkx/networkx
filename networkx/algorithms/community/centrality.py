@@ -32,9 +32,9 @@ def girvan_newman(G, most_valuable_edge=None):
     Returns
     -------
     iterator
-        Iterator over tuples of sets of nodes in ``G``. Each set of
-        nodes is a community, each tuple is a sequence of communities at
-        a particular level of the algorithm.
+        Iterator over tuples of sets of nodes in `G`. Each set of node
+        is a community, each tuple is a sequence of communities at a
+        particular level of the algorithm.
 
     Examples
     --------
@@ -92,7 +92,7 @@ def girvan_newman(G, most_valuable_edge=None):
 
         >>> from networkx import edge_betweenness_centrality as betweenness
         >>> def most_central_edge(G):
-        ...     centrality = betweenness(G)
+        ...     centrality = betweenness(G, weight='weight')
         ...     return max(centrality, key=centrality.get)
         ...
         >>> G = nx.path_graph(10)
@@ -101,7 +101,7 @@ def girvan_newman(G, most_valuable_edge=None):
         ([0, 1, 2, 3, 4], [5, 6, 7, 8, 9])
 
     To specify a different ranking algorithm for edges, use the
-    ``ranking`` keyword argument::
+    `most_valuable_edge` keyword argument::
 
         >>> from networkx import edge_betweenness_centrality
         >>> from random import random
@@ -158,14 +158,13 @@ def _without_most_central_edges(G, most_valuable_edge):
     """Returns the connected components of the graph that results from
     repeatedly removing the most "valuable" edge in the graph.
 
-    ``G`` must be a non-empty graph. This function modifies the graph
-    ``G`` in-place; that is, it removes edges on the graph ``G``.
+    `G` must be a non-empty graph. This function modifies the graph `G`
+    in-place; that is, it removes edges on the graph `G`.
 
-    ``most_valuable_edge`` is a function that takes the graph ``G`` as
-    input (or a subgraph with one or more edges of ``G`` removed) and
-    returns an edge. That edge will be removed and this process will be
-    repeated until the number of connected components in the graph
-    increases.
+    `most_valuable_edge` is a function that takes the graph `G` as input
+    (or a subgraph with one or more edges of `G` removed) and returns an
+    edge. That edge will be removed and this process will be repeated
+    until the number of connected components in the graph increases.
 
     """
     original_num_components = nx.number_connected_components(G)
