@@ -10,10 +10,14 @@
 #           Dan Schult(dschult@colgate.edu)
 """Functional interface to graph methods and assorted utilities.
 """
-import networkx as nx
-from networkx.utils import not_implemented_for, pairwise
-import itertools
+from __future__ import division
 
+from collections import Counter
+from itertools import chain
+
+import networkx as nx
+from networkx.utils import not_implemented_for
+from networkx.utils import pairwise
 
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
@@ -31,7 +35,7 @@ def nodes(G):
     return G.nodes()
 
 
-def edges(G,nbunch=None):
+def edges(G, nbunch=None):
     """Return iterator over edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
@@ -41,14 +45,14 @@ def edges(G,nbunch=None):
     return G.edges(nbunch)
 
 
-def degree(G,nbunch=None,weight=None):
+def degree(G, nbunch=None, weight=None):
     """Return degree of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
-    return G.degree(nbunch,weight)
+    return G.degree(nbunch, weight)
 
 
-def neighbors(G,n):
+def neighbors(G, n):
     """Return a list of nodes connected to node n. """
     return G.neighbors(n)
 
@@ -88,15 +92,13 @@ def density(G):
     Self loops are counted in the total number of edges so graphs with self
     loops can have density higher than 1.
     """
-    n=number_of_nodes(G)
-    m=number_of_edges(G)
-    if m==0 or n <= 1:
-        d=0.0
-    else:
-        if G.is_directed():
-            d=m/float(n*(n-1))
-        else:
-            d= m*2.0/float(n*(n-1))
+    n = number_of_nodes(G)
+    m = number_of_edges(G)
+    if m == 0 or n <= 1:
+        return 0
+    d = m / (n * (n - 1))
+    if not G.is_directed():
+        d *= 2
     return d
 
 
@@ -119,13 +121,8 @@ def degree_histogram(G):
     Note: the bins are width one, hence len(list) can be large
     (Order(number_of_edges))
     """
-    # We need to make degseq list because we call it twice.
-    degseq = list(d for n, d in G.degree())
-    dmax = max(degseq) + 1
-    freq = [ 0 for d in range(dmax) ]
-    for d in degseq:
-        freq[d] += 1
-    return freq
+    counts = Counter(d for n, d in G.degree())
+    return [counts.get(i, 0) for i in range(max(counts) + 1)]
 
 
 def is_directed(G):
@@ -421,7 +418,7 @@ def get_node_attributes(G, name):
     >>> color[1]
     'red'
     """
-    return dict( (n,d[name]) for n,d in G.node.items() if name in d)
+    return {n: d[name] for n, d in G.node.items() if name in d}
 
 
 def set_edge_attributes(G, name, values):
@@ -496,8 +493,7 @@ def get_edge_attributes(G, name):
         edges = G.edges(keys=True, data=True)
     else:
         edges = G.edges(data=True)
-    return dict( (x[:-1], x[-1][name]) for x in edges if name in x[-1] )
-
+    return {x[:-1]: x[-1][name] for x in edges if name in x[-1]}
 
 
 def all_neighbors(graph, node):
@@ -519,11 +515,9 @@ def all_neighbors(graph, node):
         Iterator of neighbors
     """
     if graph.is_directed():
-        values = itertools.chain.from_iterable([graph.predecessors(node),
-                                                graph.successors(node)])
+        values = chain(graph.predecessors(node), graph.successors(node))
     else:
         values = graph.neighbors(node)
-
     return values
 
 
@@ -543,7 +537,7 @@ def non_neighbors(graph, node):
     non_neighbors : iterator
         Iterator of nodes in the graph that are not neighbors of the node.
     """
-    nbors = set(neighbors(graph, node)) | set([node])
+    nbors = set(neighbors(graph, node)) | {node}
     return (nnode for nnode in graph if nnode not in nbors)
 
 
@@ -561,7 +555,7 @@ def non_edges(graph):
         Iterator of edges that are not in the graph.
     """
     if graph.is_directed():
-        for u in graph.nodes():
+        for u in graph:
             for v in non_neighbors(graph, u):
                 yield (u, v)
     else:
