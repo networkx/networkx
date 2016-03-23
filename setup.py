@@ -54,8 +54,8 @@ packages=["networkx",
           "networkx.linalg",
           "networkx.readwrite",
           "networkx.readwrite.json_graph",
-          "networkx.tests",
-          "networkx.testing",
+          # "networkx.tests",
+          # "networkx.testing",
           "networkx.utils"]
 
 docdirbase  = 'share/doc/networkx-%s' % version
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         classifiers      = release.classifiers,
         packages         = packages,
         data_files       = data,
-        package_data     = package_data,
+        # package_data     = package_data,
         install_requires = install_requires,
         test_suite       = 'nose.collector',
         tests_require    = ['nose>=0.10.1'],
