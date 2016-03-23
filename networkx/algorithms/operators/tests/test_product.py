@@ -351,7 +351,7 @@ def test_strong_product_random():
                 assert_true(not GH.has_edge((u_G, u_H), (v_G, v_H)))
 
 
-@raises(nx.NetworkXError)
+@raises(nx.NetworkXNotImplemented)
 def test_graph_power_raises():
     nx.power(nx.MultiDiGraph(), 2)
 
