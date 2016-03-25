@@ -6,23 +6,43 @@
 NetworkX documentation
 ======================
 
-Contents:
+Basic information about NetworkX:
 
 .. toctree::
    :maxdepth: 2
 
    overview
-
-.. download
-.. install
-.. tutorial/index
-.. reference/index
-.. test
-.. developer/index
+   license
+   download
+   install
+   credits
+   tutorial
+   glossary
 .. reference/history
 .. bibliography
-.. examples/index
+
+Detailed API reference:
+
+.. toctree::
+   :maxdepth: 2
+
+.. reference/index
+
+Code and visual examples:
+
+.. toctree::
+   :maxdepth: 2
+
+   examples/index
 .. gallery
+
+Information for developing NetworkX:
+
+.. toctree::
+   :maxdepth: 2
+   
+.. test
+.. developer/index
 
 
 Indices and tables
