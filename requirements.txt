@@ -5,10 +5,22 @@ numpy
 nose
 nose-ignore-docstring
 pandas
-gdal
+# GDAL Requires system packages libgdal and libgdal-dev, and for the header
+# files to be available to pip:
+#
+#     sudo apt-get install libgdal1i libgdal1-dev
+#     export CPLUS_INCLUDE_PATH=/usr/include/gdal
+#     export C_INCLUDE_PATH=/usr/include/gdal
+#
+# We pin the version number to 1.11.2, because that is the version of the
+# system packages installed by `apt-get` above. When the default version
+# installed in Ubuntu changes, the pinned version number below needs to change
+# as well.
+gdal==1.11.2
 pyyaml
+# PyGraphViz requires GraphViz
+#
+#     sudo apt-get install graphviz graphviz-dev
+#
 pygraphviz
-sphinx
-sphinxcontrib-bibtex
-sphinx_rtd_theme
 pydotplus
