@@ -16,7 +16,7 @@ Drawing
    house_with_colors
    knuth_miles
    labels_and_colors
-   lanl_routs
+   lanl_routes
    node_colormap
    random_geometric_graph
    sampson

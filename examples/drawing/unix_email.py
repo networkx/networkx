@@ -23,21 +23,9 @@ python unixemail.py /var/spool/mail/username
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
-import email
 from email.utils import getaddresses,parseaddr
 import mailbox
 import sys
-
-# unix mailbox recipe
-# see http://www.python.org/doc/current/lib/module-mailbox.html
-def msgfactory(fp):
-    try:
-        return email.message_from_file(fp)
-    except email.Errors.MessageParseError:
-        # Don't return None since that will stop the mailbox iterator
-        return ''
-
 
 
 if __name__ == '__main__':
@@ -53,7 +41,7 @@ if __name__ == '__main__':
     else:
         filePath = sys.argv[1]
 
-    mbox = mailbox.mbox(filePath, msgfactory) # parse unix mailbox
+    mbox = mailbox.mbox(filePath)
 
     G=nx.MultiDiGraph() # create empty graph
 
@@ -75,11 +63,7 @@ if __name__ == '__main__':
     for (u,v,d) in G.edges(data=True):
         print("From: %s To: %s Subject: %s"%(u,v,d['message']["Subject"]))
 
-
-    try: # draw
-        pos=nx.spring_layout(G,iterations=10)
-        nx.draw(G,pos,node_size=0,alpha=0.4,edge_color='r',font_size=16)
-        plt.savefig("unix_email.png")
-        plt.show()
-    except: # matplotlib not available
-        pass
+    pos=nx.spring_layout(G,iterations=10)
+    nx.draw(G,pos,node_size=0,alpha=0.4,edge_color='r',font_size=16)
+    plt.savefig("unix_email.png")
+    plt.show()
