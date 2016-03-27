@@ -48,7 +48,7 @@ Information for developing NetworkX:
 .. toctree::
    :maxdepth: 1
    
-.. test
+   test
 .. developer/index
 
 
