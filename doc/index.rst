@@ -9,7 +9,7 @@ NetworkX documentation
 Basic information about NetworkX:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    overview
    license
@@ -18,20 +18,27 @@ Basic information about NetworkX:
    credits
    tutorial
    glossary
-.. reference/history
 .. bibliography
+
+News and API changes:
+
+.. toctree::
+   :maxdepth: 1
+
+   news
+   apichanges/index
 
 Detailed API reference:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
 .. reference/index
 
 Code and visual examples:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    examples/index
 .. gallery
@@ -39,7 +46,7 @@ Code and visual examples:
 Information for developing NetworkX:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
 .. test
 .. developer/index
