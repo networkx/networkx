@@ -4,4 +4,4 @@ Multigraph
 
 .. toctree::
 
-   chess_masters
+..   chess_masters

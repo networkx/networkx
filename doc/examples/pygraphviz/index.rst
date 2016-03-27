@@ -4,7 +4,7 @@ Pygraphviz
 
 .. toctree::
 
-   pygraphviz_attributes
-   pygraphviz_draw
-   pygraphviz_simple
+   attributes
+   draw
+   simple
    write_dotfile

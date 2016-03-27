@@ -17,6 +17,7 @@ Drawing
    knuth_miles
    labels_and_colors
    lanl_routes
+   napoleon_russian_campaign
    node_colormap
    random_geometric_graph
    sampson
