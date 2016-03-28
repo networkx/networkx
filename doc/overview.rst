@@ -140,5 +140,5 @@ What Next
 
 - :doc:`install`
 - :doc:`tutorial`
-- :doc:`reference`
-- :doc:`examples`
+- :doc:`reference/index`
+- :doc:`examples/index`

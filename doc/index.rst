@@ -33,7 +33,7 @@ Detailed API reference:
 .. toctree::
    :maxdepth: 1
 
-.. reference/index
+   reference/index
 
 Code and visual examples:
 

@@ -15,9 +15,7 @@ doc/build
 *.class
 
 # Generated while building documentation.
-doc/source/static/examples/*
-doc/source/reference/generated/*
-doc/source/examples/*
+generated/
 
 # Generated when 'python setup_egg.py'
 networkx.egg-info/
