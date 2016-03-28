@@ -410,6 +410,7 @@ def condensation(G, scc=None):
     mapping = {}
     members = {}
     C = nx.DiGraph()
+    i = 0  # required if G is empty
     for i, component in enumerate(scc):
         members[i] = component
         mapping.update((n, i) for n in component)
