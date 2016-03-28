@@ -49,7 +49,7 @@ Information for developing NetworkX:
    :maxdepth: 1
    
    test
-.. developer/index
+   developer/index
 
 
 Indices and tables
