@@ -4,7 +4,7 @@ Migration guide from 1.X to 2.0
 
 This is a guide for people moving from NetworkX 1.X to NetworkX 2.0
 
-Any issues with these can be discussed on the [mailing list](https://groups.google.com/forum/#!forum/networkx-discuss)
+Any issues with these can be discussed on the `mailing list`_.
 
 As you know we have made some major changes to the methods in the Multi/Di/Graph classes.
 Methods that used to return containers now return iterators and methods that returned iterators have been removed.
@@ -118,3 +118,5 @@ Let's have a look on them.
 	[1]
 
 The same changes apply to MultiGraphs and MultiDiGraphs.
+
+.. _mailing list: https://groups.google.com/forum/#!forum/networkx-discuss
