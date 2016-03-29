@@ -755,13 +755,9 @@ def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, w
     if len(G) == 1:
         return pred, dist
 
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
+    weight = _weight_function(G, weight)
         
-    return (pred, _bellman_ford(G, [source], get_weight,pred=pred, dist=dist, cutoff=cutoff, target=target))
+    return (pred, _bellman_ford(G, [source], weight,pred=pred, dist=dist, cutoff=cutoff, target=target))
 
 
 def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
@@ -836,7 +832,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + get_weight(v, u, e)
+                dist_v = dist_u + weight(v, u, e)
 
                 if cutoff is not None:
                     if dist_v > cutoff:
@@ -971,13 +967,9 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
     if source == target:
         return 0
 
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
+    weight = _weight_function(G, weight)
     
-    length =  _bellman_ford(G, [source], get_weight, target=target)
+    length =  _bellman_ford(G, [source], weight, target=target)
     
     try:
         return length[target]
@@ -1069,13 +1061,9 @@ def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weigh
     single_source_dijkstra(), single_source_bellman_ford()
 
     """
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
+    weight = _weight_function(G, weight)
 
-    return iter(_bellman_ford(G, [source], get_weight, cutoff=cutoff).items())
+    return iter(_bellman_ford(G, [source], weight, cutoff=cutoff).items())
 
 def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
@@ -1128,14 +1116,10 @@ def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weig
     if source == target:
         return ({source: 0}, {source: [source]})
 
-    if G.is_multigraph():
-        get_weight = lambda u, v, data: min(
-            eattr.get(weight, 1) for eattr in data.values())
-    else:
-        get_weight = lambda u, v, data: data.get(weight, 1)
+    weight = _weight_function(G, weight)
 
     paths = {source: [source]}  # dictionary of paths
-    return (_bellman_ford(G, [source], get_weight, paths=paths, cutoff=cutoff,
+    return (_bellman_ford(G, [source], weight, paths=paths, cutoff=cutoff,
                      target=target), paths)
 
 def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
