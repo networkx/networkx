@@ -811,10 +811,10 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
        undirected graph is a negative cost cycle
     """
 
-    if pred == None:
+    if pred is None:
         pred = {v: [None] for v in source}
     
-    if dist == None:
+    if dist is None:
         dist = {v: 0 for v in source}
 
     G_succ = G.succ if G.is_directed() else G.adj
@@ -854,17 +854,17 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                     dist[v] = dist_v
                     pred[v] = [u]
                     
-                elif dist.get(v) != None and dist_v == dist.get(v):
+                elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
-    if paths != None:
-        dsts = [target] if target != None else pred
+    if paths is not None:
+        dsts = [target] if target is not None else pred
         for dst in dsts:
         
             path = [dst]
             cur = dst
             
-            while pred[cur][0] != None:
+            while pred[cur][0] is not None:
                 cur = pred[cur][0]
                 path.append(cur)
             
