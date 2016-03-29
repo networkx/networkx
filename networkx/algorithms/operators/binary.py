@@ -341,3 +341,53 @@ def compose(G, H, name=None):
     R.graph.update(G.graph)
     R.graph.update(H.graph)
     return R
+
+def rooted_product(G, H, root):
+    """ Return the disjoint union of graphs G and H.
+
+    This algorithm forces distinct integer node labels.
+
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph
+
+    Returns
+    -------
+    U : A union graph with the same type as G.
+
+    Notes
+    -----
+    A new graph is created, of the same class as G.  It is recommended
+    that G and H be either both directed or both undirected.
+
+    The nodes of G are relabeled 0 to len(G)-1, and the nodes of H are
+    relabeled len(G) to len(G)+len(H)-1.
+
+    Graph, edge, and node attributes are propagated from G and H
+    to the union graph.  If a graph attribute is present in both
+    G and H the value from H is used.
+    """
+    if root not in H:
+        raise nx.NetworkXError('root must be a vertex in H')
+
+    import itertools
+
+    '''
+    R1 = nx.convert_node_labels_to_integers(G)
+    R2 = nx.convert_node_labels_to_integers(H, first_label=len(R1))
+    R = union(R1, R2)
+    R.name = "disjoint_union( %s, %s )" % (G.name, H.name)
+    R.graph.update(G.graph)
+    R.graph.update(H.graph)
+    return R
+    '''
+    import itertools
+    r = nx.Graph()
+    r.add_nodes_from(itertools.product(range(len(G)),range(len(H))))
+
+    print list(G.nodes())
+    print list(H.nodes())
+    #print len([(u,v) for u in r for v in r if (u[0],v[0]) in G.edges()])
+    print [((u,root),(v,root)) for u in G for v in G if (u,v) in G.edges()]
+    return r
