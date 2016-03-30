@@ -42,7 +42,7 @@ Code and visual examples:
    :maxdepth: 1
 
    examples/index
-.. gallery
+   gallery
 
 Information for developing NetworkX:
 
