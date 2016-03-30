@@ -30,9 +30,10 @@ def node_link_data(G, attrs=None):
         A dictionary that contains five keys 'source', 'target', 'name',
         'key' and 'link'.  The corresponding values provide the attribute
         names for storing NetworkX-internal graph data.  The values should
-        be unique.  Default value:
-        :samp:`dict(source='source', target='target', name='name',
-                    key='key', link='links')`.
+        be unique. The default value is::
+
+            dict(source='source', target='target', name='name',
+                 key='key', link='links')
 
         If some user-defined graph data use these attribute names as data keys,
         they may be silently dropped.
@@ -122,9 +123,10 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     attrs : dict
         A dictionary that contains five keys 'source', 'target', 'name',
         'key' and 'link'.  The corresponding values provide the attribute
-        names for storing NetworkX-internal graph data.  Default value:
-        :samp:`dict(source='source', target='target', name='name',
-                    key='key', link='links')`.
+        names for storing NetworkX-internal graph data. The default value is::
+
+            dict(source='source', target='target', name='name',
+                 key='key', link='links')
 
     Returns
     -------

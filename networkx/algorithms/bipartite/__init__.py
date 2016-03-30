@@ -31,10 +31,9 @@ algorithm:
 >>> nx.is_connected(B)
 True
 >>> bottom_nodes, top_nodes = bipartite.sets(B)
-
-list(top_nodes)
+>>> list(top_nodes)
 [1, 2, 3, 4]
-list(bottom_nodes)
+>>> list(bottom_nodes)
 ['a', 'c', 'b']
 
 However, if the input graph is not connected, there are more than one possible
@@ -80,8 +79,7 @@ All bipartite graph generators in NetworkX build bipartite graphs with the
 >>> list(RB_bottom)
 [5, 6, 7, 8, 9, 10, 11]
 
-For other bipartite graph generators see the bipartite section of
-:doc:`generators`.
+For other bipartite graph generators see :mod:`.generators`.
 
 """
 

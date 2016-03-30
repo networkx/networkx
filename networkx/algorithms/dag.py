@@ -122,12 +122,12 @@ def topological_sort(G):
         If G is changed while the returned iterator is being processed.
 
     Examples
-    ---------
+    --------
     To get the reverse order of the topological sort::
 
-    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
-    >>> list(reversed(list(nx.topological_sort(DG))))
-    [3, 2, 1]
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> list(reversed(list(nx.topological_sort(DG))))
+        [3, 2, 1]
 
     Notes
     -----

@@ -55,11 +55,24 @@ def is_graphical(sequence, method='eg'):
 
     References
     ----------
-    Erdős-Gallai
-        [EG1960]_, [choudum1986]_
+    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
 
-    Havel-Hakimi
-        [havel1955]_, [hakimi1962]_, [CL1996]_
+    .. [choudum1986] S.A. Choudum.
+       "A simple proof of the Erdős-Gallai theorem on graph sequences."
+       *Bulletin of the Australian Mathematical Society*, 33,
+       pp 67--70, 1986. http://dx.doi.org/10.1017/S0004972700002872
+
+    .. [havel1955] Havel, V.
+       "A Remark on the Existence of Finite Graphs"
+       *Casopis Pest. Mat.* 80, 477--480, 1955.
+
+    .. [hakimi1962] Hakimi, S.
+       "On the Realizability of a Set of Integers as Degrees of the Vertices
+       of a Graph." *SIAM J. Appl. Math.* 10, 496--506, 1962.
+
+    .. [CL1996] G. Chartrand and L. Lesniak,
+       *Graphs and Digraphs*, Chapman and Hall/CRC, 1996.
+
     """
     if method == 'eg':
         valid = is_valid_degree_sequence_erdos_gallai(list(sequence))
