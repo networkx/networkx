@@ -6,20 +6,16 @@ Reference
 
    introduction
    classes/index
-..   algorithms
-..   functions
-..   generators
-..   linalg
-..   convert
-..   relabel
-..   readwrite
-..   drawing
-..   exceptions
-..   utils
-..   legal
-..   citing	
-..   credits
-..   glossary
+   algorithms/index
+   functions
+   generators/index
+   linalg
+   convert
+   relabel
+   readwrite/index
+   drawing
+   exceptions
+   utils
 
 .. toctree:
    :hidden:

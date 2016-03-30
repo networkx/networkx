@@ -16,6 +16,7 @@ Basic information about NetworkX:
    download
    install
    credits
+   citing
    tutorial
    glossary
 .. bibliography
