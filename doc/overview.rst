@@ -53,29 +53,6 @@ survey of Brandes and Erlebach [BE05]_.
    Methodological Foundations", Lecture Notes in Computer Science, 
    Volume 3418, Springer-Verlag, 2005.
 
-.. comment
-
-   .. [CL1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs", 
-      Chapman and Hall/CRC, 1996.
-
-   .. [choudum1986] S.A. Choudum. "A simple proof of the Erdős-Gallai theorem on 
-      graph sequences." Bulletin of the Australian Mathematical Society, 33, 
-      pp 67-70, 1986. http://dx.doi.org/10.1017/S0004972700002872
-
-   .. [EppsteinPads] David Eppstein.
-      PADS, A library of Python Algorithms and Data Structures.
-      http://www.ics.uci.edu/~eppstein/PADS
-
-   .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
-
-   .. [hakimi1962] Hakimi, S. "On the Realizability of a Set of Integers as 
-      Degrees of the Vertices of a Graph." SIAM J. Appl. Math. 10, 496-506, 1962.
-
-   .. [havel1955] Havel, V. "A Remark on the Existence of Finite Graphs" 
-      Casopis Pest. Mat. 80, 477-480, 1955.
-
-   .. [vanRossum98] Guido van Rossum. Python Patterns - Implementing Graphs, 1998.
-      http://www.python.org/doc/essays/graphs
 
 Goals
 -----
