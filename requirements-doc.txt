@@ -8,4 +8,5 @@ decorator>=3.4.0
 # These are additional requirements needed specifically for building the
 # documentation.
 matplotlib
+pygraphviz
 sphinx>=1.3
