@@ -1,17 +1,15 @@
-.. _digraph:
+==========================================
+DiGraph -- Directed graphs with self loops
+==========================================
 
-=========================================
-DiGraph - Directed graphs with self loops
-=========================================
+.. currentmodule:: networkx
+
 
 Overview
 ========
-.. currentmodule:: networkx
-.. autofunction:: DiGraph
 
-=======
-Methods
-=======
+.. autoclass:: DiGraph
+
 
 Adding and removing nodes and edges
 ===================================
@@ -32,9 +30,9 @@ Adding and removing nodes and edges
    DiGraph.clear
 
 
-
 Iterating over nodes and edges
 ==============================
+
 .. autosummary::
    :toctree: generated/
 
@@ -54,6 +52,7 @@ Iterating over nodes and edges
 
 Information about graph structure
 =================================
+
 .. autosummary::
    :toctree: generated/
 
@@ -75,6 +74,7 @@ Information about graph structure
 
 Making copies and subgraphs
 ===========================
+
 .. autosummary::
    :toctree: generated/
 
@@ -84,4 +84,3 @@ Making copies and subgraphs
    DiGraph.subgraph
    DiGraph.edge_subgraph
    DiGraph.reverse
- 

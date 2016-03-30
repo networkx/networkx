@@ -1,20 +1,17 @@
-.. _multidigraph:
+==================================================================
+MultiDiGraph -- Directed graphs with self loops and parallel edges
+==================================================================
 
+.. currentmodule:: networkx
 
-=================================================================
-MultiDiGraph - Directed graphs with self loops and parallel edges
-=================================================================
 
 Overview
 ========
-.. currentmodule:: networkx
-.. autofunction:: MultiDiGraph
 
-=======
-Methods
-=======
+.. autoclass:: MultiDiGraph
 
-Adding and Removing Nodes and Edges
+
+Adding and removing nodes and edges
 ===================================
 
 .. autosummary::
@@ -33,9 +30,9 @@ Adding and Removing Nodes and Edges
    MultiDiGraph.clear
 
 
-
 Iterating over nodes and edges
 ==============================
+
 .. autosummary::
    :toctree: generated/
 
@@ -55,6 +52,7 @@ Iterating over nodes and edges
 
 Information about graph structure
 =================================
+
 .. autosummary::
    :toctree: generated/
 
@@ -74,17 +72,15 @@ Information about graph structure
    MultiDiGraph.number_of_selfloops
 
 
-
-
-
 Making copies and subgraphs
 ===========================
+
 .. autosummary::
    :toctree: generated/
 
    MultiDiGraph.copy
    MultiDiGraph.to_undirected
    MultiDiGraph.to_directed
-   MultiDiGraph.edge_subgraph
    MultiDiGraph.subgraph
+   MultiDiGraph.edge_subgraph
    MultiDiGraph.reverse

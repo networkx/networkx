@@ -1,17 +1,15 @@
-.. _multigraph:
+==================================================================
+MultiGraph -- Undirected graphs with self loops and parallel edges
+==================================================================
 
-=================================================================
-MultiGraph - Undirected graphs with self loops and parallel edges
-=================================================================
+.. currentmodule:: networkx
+
 
 Overview
 ========
-.. currentmodule:: networkx
-.. autofunction:: MultiGraph
 
-=======
-Methods
-=======
+.. autoclass:: MultiGraph
+
 
 Adding and removing nodes and edges
 ===================================
@@ -32,9 +30,9 @@ Adding and removing nodes and edges
    MultiGraph.clear
 
 
-
 Iterating over nodes and edges
 ==============================
+
 .. autosummary::
    :toctree: generated/
 
@@ -48,9 +46,9 @@ Iterating over nodes and edges
    MultiGraph.nbunch_iter
 
 
-
 Information about graph structure
 =================================
+
 .. autosummary::
    :toctree: generated/
 
@@ -70,6 +68,7 @@ Information about graph structure
 
 Making copies and subgraphs
 ===========================
+
 .. autosummary::
    :toctree: generated/
 

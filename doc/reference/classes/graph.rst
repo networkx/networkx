@@ -2,14 +2,14 @@
 Graph -- Undirected graphs with self loops
 ==========================================
 
+.. currentmodule:: networkx
+
+
 Overview
 ========
-.. currentmodule:: networkx
-.. autofunction:: Graph
 
-=======
-Methods
-=======
+.. autoclass:: Graph
+
 
 Adding and removing nodes and edges
 ===================================
@@ -30,9 +30,9 @@ Adding and removing nodes and edges
    Graph.clear
 
 
-
 Iterating over nodes and edges
 ==============================
+
 .. autosummary::
    :toctree: generated/
 
@@ -46,9 +46,9 @@ Iterating over nodes and edges
    Graph.nbunch_iter
 
 
-
 Information about graph structure
 =================================
+
 .. autosummary::
    :toctree: generated/
 
@@ -68,6 +68,7 @@ Information about graph structure
 
 Making copies and subgraphs
 ===========================
+
 .. autosummary::
    :toctree: generated/
 
