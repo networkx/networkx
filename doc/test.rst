@@ -10,7 +10,6 @@ the directions on the `nose homepage`_.
 
 .. _nose homepage: https://nose.readthedocs.org/
 
-
 Testing a source distribution
 =============================
 

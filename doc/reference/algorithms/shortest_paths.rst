@@ -37,7 +37,14 @@ Advanced Interface
    single_source_dijkstra
    bidirectional_dijkstra
    dijkstra_predecessor_and_distance
-   bellman_ford
+   bellman_ford_path
+   bellman_ford_path_length
+   single_source_bellman_ford_path
+   single_source_bellman_ford_path_length
+   all_pairs_bellman_ford_path
+   all_pairs_bellman_ford_path_length
+   single_source_bellman_ford
+   bellman_ford_predecessor_and_distance
    negative_edge_cycle
    johnson
 
