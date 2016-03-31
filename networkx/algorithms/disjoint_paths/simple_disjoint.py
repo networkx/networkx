@@ -1,18 +1,23 @@
+# -*- coding: utf-8 -*-
+#    Copyright (C) 2004-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors:  Niels van Adrichem <n.l.m.vanadrichem@tudelft.nl>
 """Disjoint paths computation using removal of found shortest paths.
 """
 
-#    Copyright (C) 2015-2016 by
-#    Niels L. M. van Adrichem <n.l.m.vanadrichem@tudelft.nl>
-#    All rights reserved.
-#    BSD license.
-
-__author__ = """\n""".join(['Niels L. M. van Adrichem <n.l.m.vanadrichem@tudelft.nl>'])
-__all__ = ['simple_disjoint']
-
 import networkx as nx
 
+__all__ = ['simple_disjoint']
+
 def simple_disjoint(G, source, target, weight=None, k=2, node_disjoint=False):
-    """ Simplest, even naive, disjoint path computation by removing previously
+    """ To Do: Fix Docstrings:
+    
+    Simplest, even naive, disjoint path computation by removing previously
     found paths and computing the next shortest path. This method, although it 
     often works out, gives no guaranteed correct result since it is susceptibl
     e to trap topologies where the removal of the shortest path blocks finding
