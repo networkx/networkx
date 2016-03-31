@@ -187,7 +187,7 @@ def parse_ucinet(lines):
             token = next(lines).lower()
         except StopIteration:
             break
-        print "Token : %s" % token
+        # print "Token : %s" % token
         if token.startswith('n'):
             if token.startswith('nr'):
                 nr = int(get_param("\d+", token, lines))
@@ -201,7 +201,8 @@ def parse_ucinet(lines):
                 number_of_nodes = int(get_param("\d+", token, lines))
 
         elif token.startswith("format"):
-            ucinet_format = get_param("fullmatrix|upperhalf|lowerhalf|nodelist1|nodelist2|nodelist1b|edgelist1|edgelist2|blockmatrix|partition", token, lines)
+            ucinet_format = get_param("fullmatrix|upperhalf|lowerhalf|nodelist1|nodelist2|nodelist1b|\
+                                        edgelist1|edgelist2|blockmatrix|partition", token, lines)
 
         elif token.startswith("labels"):
             token = next(lines).lower()
@@ -238,7 +239,8 @@ def parse_ucinet(lines):
                         else:
                             G.add_edge(source, target)
                 else:
-                    raise NotImplementedError("UCINET DL data format %s not yet implemented in Networkx" % ucinet_format)
+                    raise NotImplementedError("UCINET DL data format %s not yet implemented in Networkx"
+                                            % ucinet_format)
                 j += 1
     return G
 

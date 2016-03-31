@@ -20,8 +20,19 @@ class TestUcinet(object):
 
     def test_generate_ucinet(self):
         Gout = nx.readwrite.generate_ucinet(self.G)
+        s = ''
         for line in Gout:
-            print line
+            s += line + '\n'
+        s = s[:-1]
+        data = """\
+dl n=5 format=fullmatrix
+data:
+0 1 1 1 1
+1 0 1 1 0
+1 1 0 0 0
+1 1 0 0 0
+1 0 0 0 0"""
+        assert_equal(data, s)
 
     def test_parse_ucinet(self):
         data = """
@@ -35,7 +46,11 @@ Data:
         """
         graph = nx.MultiDiGraph()
         graph.add_nodes_from([0, 1, 2, 3, 4])
-        graph.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4), (1, 0), (1, 2), (2, 0), (2, 1), (2, 4), (3, 0), (4, 0), (4, 2)])
+        graph.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4),
+                              (1, 0), (1, 2),
+                              (2, 0), (2, 1), (2, 4),
+                              (3, 0),
+                              (4, 0), (4, 2)])
         G = nx.readwrite.parse_ucinet(data)
         assert_equal(sorted(G.nodes()), sorted(graph.nodes()))
         assert_edges_equal(G.edges(), graph.edges())
@@ -57,7 +72,11 @@ data:
                 """
         G = nx.readwrite.parse_ucinet(data)
         assert_equal(sorted(G.nodes()), sorted(['russ', 'barry', 'lin', 'pat', 'david']))
-        assert_edges_equal(G.edges(), [('russ', 'pat'), ('russ', 'david'), ('barry', 'lin'), ('barry', 'pat'), ('barry', 'david'), ('lin', 'barry'), ('lin', 'pat'), ('pat', 'barry'), ('pat', 'lin'), ('pat', 'russ'), ('david', 'barry'), ('david', 'russ')])
+        assert_edges_equal(G.edges(), [('russ', 'pat'), ('russ', 'david'),
+                                       ('barry', 'lin'), ('barry', 'pat'), ('barry', 'david'),
+                                       ('lin', 'barry'), ('lin', 'pat'),
+                                       ('pat', 'barry'), ('pat', 'lin'), ('pat', 'russ'),
+                                       ('david', 'barry'), ('david', 'russ')])
         # print [n for n in G.nodes()]
         # print [e for e in G.edges()]
 
@@ -92,7 +111,11 @@ data:
 """
         graph = nx.MultiDiGraph()
         graph.add_nodes_from([0, 1, 2, 3, 4])
-        graph.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4), (1, 0), (1, 2), (2, 0), (2, 1), (2, 4), (3, 0), (4, 0), (4, 2)])
+        graph.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4),
+                              (1, 0), (1, 2),
+                              (2, 0), (2, 1), (2, 4),
+                              (3, 0),
+                              (4, 0), (4, 2)])
         nx.readwrite.write_ucinet(graph, fh)
         fh.seek(0)
         assert_equal(fh.read(), data)
