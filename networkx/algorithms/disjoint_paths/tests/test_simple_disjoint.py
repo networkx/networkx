@@ -6,7 +6,7 @@ class TestSimpleDisjoint:
     def setup(self):
         """Creates some graphs for use in the unit tests."""
         self.G = nx.Graph()
-        self.G.add_weighted_edges_from([('A', 'B', 1), ('A', 'D', 1),
+        self.G.add_weighted_edges_from([('A', 'B', 1), ('A', 'D', 1.5),
                                         ('A', 'F', 3), ('A', 'G', 7),
                                         ('B', 'C', 1), ('B', 'D', 1),
                                         ('B', 'G', 1), ('C', 'D', 1),
@@ -26,12 +26,12 @@ class TestSimpleDisjoint:
     
     def test_weighted(self):
         dists, paths = nx.simple_disjoint(self.G, 'A', 'Z', weight="weight")
-        assert_equal(sorted(dists), [3, 4])
+        assert_equal(sorted(dists), [3, 4.5])
         assert_equal(sorted(paths), [['A', 'B', 'C', 'Z'], ['A', 'D', 'C', 'E', 'Z']])
         
     def test_negative_weight(self):
         dists, paths = nx.simple_disjoint(self.Gneg, 'A', 'Z', weight="weight")
-        assert_equal(sorted(dists), [1, 4])
+        assert_equal(sorted(dists), [1, 4.5])
         assert_equal(sorted(paths), [['A', 'B', 'C', 'Z'], ['A', 'D', 'C', 'E', 'Z']])
         
     def test_k_toohigh(self):
@@ -39,5 +39,5 @@ class TestSimpleDisjoint:
         
     def test_nodedisjoint(self):
         dists, paths = nx.simple_disjoint(self.G, 'A', 'Z', weight="weight", node_disjoint=True)
-        assert_equal(sorted(dists), [3, 5])
+        assert_equal(sorted(dists), [3, 5.5])
         assert_equal(sorted(paths), [['A', 'B', 'C', 'Z'], ['A', 'D', 'E', 'Z']])
