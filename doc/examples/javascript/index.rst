@@ -1,7 +1,0 @@
-**********
-Javascript
-**********
-
-.. toctree::
-
-   force

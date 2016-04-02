@@ -11,15 +11,12 @@ Basic information about NetworkX:
 .. toctree::
    :maxdepth: 1
 
-   overview
    license
    download
    install
    credits
    citing
-   tutorial
    glossary
-.. bibliography
 
 News and API changes:
 
@@ -35,22 +32,6 @@ Detailed API reference:
    :maxdepth: 1
 
    reference/index
-
-Code and visual examples:
-
-.. toctree::
-   :maxdepth: 1
-
-   examples/index
-   gallery
-
-Information for developing NetworkX:
-
-.. toctree::
-   :maxdepth: 1
-   
-   test
-   developer/index
 
 
 Indices and tables

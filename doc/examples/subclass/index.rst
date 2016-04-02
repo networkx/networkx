@@ -1,8 +1,0 @@
-********
-Subclass
-********
-
-.. toctree::
-
-   antigraph
-   printgraph

@@ -267,6 +267,7 @@ def generate_sparse6(G, nodes=None, header=True):
 @open_file(1, mode='wt')
 def write_sparse6(G, path, nodes=None, header=True):
     """Write graph G to given path in sparse6 format.
+
     Parameters
     ----------
     G : Graph (undirected)

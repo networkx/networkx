@@ -175,7 +175,7 @@ You can add many edges at one time:
 >>> elist=[('a','b',5.0),('b','c',3.0),('a','c',1.0),('c','d',7.3)]
 >>> G.add_weighted_edges_from(elist) 
 
-See the :doc:`../tutorial` for more examples.
+See the `NetworkX tutorial`_ for more examples.
 
 Some basic graph operations such as union and intersection
 are described in the :ref:`Operators module<operators>` documentation.
@@ -186,6 +186,8 @@ Graph generators such as :func:`~networkx.generators.binomial_graph` and
 
 For importing network data from formats such as GML, GraphML, edge list text
 files see the :mod:`~networkx.readwrite` subpackage.
+
+.. _NetworkX tutorial: https://github.com/networkx/tutorial
 
 
 Graph Reporting
@@ -252,9 +254,10 @@ edges are then lines between those dots.
 >>> nx.draw(G)   # default spring_layout
 >>> nx.draw(G,pos=nx.spectral_layout(G), nodecolor='r',edge_color='b')
 
-See the 
-:doc:`examples</examples/index>`
-for more ideas.
+See the `NetworkX examples`_ for more ideas.
+
+.. _NetworkX examples: https://github.com/networkx/notebooks
+
 
 Data Structure
 ==============

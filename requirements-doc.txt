@@ -1,12 +1,2 @@
-# These minimum requirements are repeated from `requirements.txt` needed for
-# NetworkX to run.
-#
-# We can't use `-r requirements.txt` here because then matplotlib would appear
-# twice, which causes a problem on older versions of pip.
-decorator>=3.4.0
-
-# These are additional requirements needed specifically for building the
-# documentation.
-matplotlib
-pygraphviz
+-r requirements.txt
 sphinx>=1.3

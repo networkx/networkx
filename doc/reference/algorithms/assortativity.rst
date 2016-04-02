@@ -3,8 +3,6 @@ Assortativity
 *************
 
 .. automodule:: networkx.algorithms.assortativity
-.. autosummary::
-   :toctree: generated/
 
 Assortativity
 -------------   
