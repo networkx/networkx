@@ -1,26 +1,26 @@
-#!/usr/bin/env python
-from nose.tools import *
+# test_mst.py - unit tests for minimum spanning tree functions
+#
+# This file is part of NetworkX.
+#
+# NetworkX is distributed under a BSD license; see LICENSE.txt for more
+# information.
+"""Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
+from nose.tools import assert_equal
+from nose.tools import raises
+
 import networkx as nx
 
 
 class TestMST:
 
     def setUp(self):
-    # example from Wikipedia: http://en.wikipedia.org/wiki/Kruskal's_algorithm
+        # example from Wikipedia:
+        # <https://en.wikipedia.org/wiki/Kruskal's_algorithm>
         G = nx.Graph()
-        edgelist = [(0, 3, [('weight', 5)]),
-                    (0, 1, [('weight', 7)]),
-                    (1, 3, [('weight', 9)]),
-                    (1, 2, [('weight', 8)]),
-                    (1, 4, [('weight', 7)]),
-                    (3, 4, [('weight', 15)]),
-                    (3, 5, [('weight', 6)]),
-                    (2, 4, [('weight', 5)]),
-                    (4, 5, [('weight', 8)]),
-                    (4, 6, [('weight', 9)]),
-                    (5, 6, [('weight', 11)])]
-
-        G.add_edges_from(edgelist)
+        edges = [(0, 1, 7), (0, 3, 5), (1, 2, 8), (1, 3, 9), (1, 4, 7),
+                 (2, 4, 5), (3, 4, 15), (3, 5, 6), (4, 5, 8), (4, 6, 9),
+                 (5, 6, 11)]
+        G.add_weighted_edges_from(edges)
         self.G = G
         minimum_spanning_edgelist = [(0, 1, {'weight': 7}),
                                      (0, 3, {'weight': 5}),
