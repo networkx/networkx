@@ -169,9 +169,11 @@ def parse_ucinet(lines):
     if not is_string_like(lines):
         s = ''
         for line in lines:
-            s += line
+            if type(line) == bytes:
+                s += line.decode('utf-8')
+            else:
+                s += line
         lines = s
-
     lexer = shlex.shlex(lines.lower())
     lexer.whitespace += ',='
     lexer.whitespace_split = True
@@ -184,6 +186,7 @@ def parse_ucinet(lines):
     labels = {}  # Contains labels of nodes
     row_labels_embedded = False  # Whether labels are embedded in data or not
     cols_labels_embedded = False
+    diagonal = True  # whether the main diagonal is present or absent
 
     KEYWORDS = ('format', 'data:', 'labels:')  # TODO remove ':' in keywords
 
@@ -206,6 +209,9 @@ def parse_ucinet(lines):
                 number_of_nodes = int(get_param("\d+", token, lexer))
                 nr = number_of_nodes
                 nc = number_of_nodes
+
+        elif token.startswith("diagonal"):
+            diagonal = get_param("present|absent", token, lexer)
 
         elif token.startswith("format"):
             ucinet_format = get_param("^(fullmatrix|upperhalf|lowerhalf|nodelist1|nodelist2|nodelist1b|\
@@ -247,6 +253,10 @@ def parse_ucinet(lines):
         params['usecols'] = range(1, nc + 1)
 
     if ucinet_format == 'fullmatrix':
+        try:
+            data_lines = bytes(data_lines, 'utf-8')
+        except TypeError:
+            pass
         data = genfromtxt(data_lines.splitlines(), case_sensitive=False, **params)
         mat = reshape(data, (max(number_of_nodes, nr), -1))
         G = nx.from_numpy_matrix(mat, create_using=nx.MultiDiGraph())
