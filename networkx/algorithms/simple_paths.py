@@ -60,6 +60,36 @@ def all_simple_paths(G, source, target, cutoff=None):
     >>> print(list(paths))
     [[0, 1, 3], [0, 2, 3], [0, 3]]
 
+    Iterate over each path from the root nodes to the leaf nodes in a
+    directed acyclic graph using a functional programming approach::
+
+        >>> from itertools import chain
+        >>> from itertools import product
+        >>> from itertools import starmap
+        >>> from functools import partial
+        >>>
+        >>> chaini = chain.from_iterable
+        >>>
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (0, 3), (3, 2)])
+        >>> roots = (v for v, d in G.in_degree() if d == 0)
+        >>> leaves = (v for v, d in G.out_degree() if d == 0)
+        >>> all_paths = partial(nx.all_simple_paths, G)
+        >>> list(chaini(starmap(all_paths, product(roots, leaves))))
+        [[0, 1, 2], [0, 3, 2]]
+
+    The same list computed using an iterative approach::
+
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (0, 3), (3, 2)])
+        >>> roots = (v for v, d in G.in_degree() if d == 0)
+        >>> leaves = (v for v, d in G.out_degree() if d == 0)
+        >>> all_paths = []
+        >>> for root in roots:
+        ...     for leaf in leaves:
+        ...         paths = nx.all_simple_paths(G, root, leaf)
+        ...         all_paths.extend(paths)
+        >>> all_paths
+        [[0, 1, 2], [0, 3, 2]]
+
     Notes
     -----
     This algorithm uses a modified depth-first search to generate the
@@ -75,6 +105,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     See Also
     --------
     all_shortest_paths, shortest_path
+
     """
     if source not in G:
         raise nx.NetworkXError('source node %s not in graph'%source)

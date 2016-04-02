@@ -17,6 +17,8 @@ Exceptions
 
 .. autoclass:: networkx.NetworkXNoPath
 
+.. autoclass:: networkx.NetworkXNoCycle
+
+.. autoclass:: HasACycle
+
 .. autoclass:: networkx.NetworkXUnbounded
-
-
