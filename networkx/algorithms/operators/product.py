@@ -367,7 +367,7 @@ def power(G, k):
     Returns
     -------
     NetworkX simple graph
-        `G` to the `k`th power.
+        `G` to the power `k`.
 
     Raises
     ------

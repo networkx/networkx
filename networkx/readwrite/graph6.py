@@ -17,7 +17,7 @@ graphs. For large sparse graphs, use the *sparse6* format.
 
 For more information, see the `graph6 homepage`_.
 
-.. _graph6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
+.. _graph6 homepage: http://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
 import networkx as nx

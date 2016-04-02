@@ -1,0 +1,2 @@
+decorator>=3.4.0
+sphinx>=1.3
