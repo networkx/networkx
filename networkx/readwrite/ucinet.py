@@ -33,6 +33,7 @@ import re
 import shlex
 import networkx as nx
 from networkx.utils import is_string_like, open_file, make_str
+from numpy import genfromtxt, reshape
 
 __all__ = ['generate_ucinet', 'read_ucinet', 'parse_ucinet', 'write_ucinet']
 
@@ -178,7 +179,7 @@ def parse_ucinet(lines):
     nr = 0  # number of rows (rectangular matrix)
     nc = 0  # number of columns (rectangular matrix)
     ucinet_format = 'fullmatrix'  # Format by default
-    labels = []  # Contains labels of nodes
+    labels = {}  # Contains labels of nodes
 
     KEYWORDS = ('format', 'data:', 'labels:')  # TODO remove ':' in keywords
 
@@ -208,7 +209,7 @@ def parse_ucinet(lines):
             token = next(lines).lower()
             i = 0
             while token not in KEYWORDS:
-                labels.append(token)
+                labels[i] = token
                 i += 1
                 try:
                     token = next(lines).lower()
@@ -216,32 +217,15 @@ def parse_ucinet(lines):
                     break
 
         if token.startswith('data'):  # data
-            # Generate nodes
-            if not labels:
-                labels = range(0, number_of_nodes)
-            G.add_nodes_from(labels)
-
             # Generate edges
-            j = 0
-            while lines:
-                try:
-                    token = next(lines).lower()
-                except StopIteration:
-                    break
-                if ucinet_format == 'fullmatrix':
-                    i = j / number_of_nodes
-                    k = j % number_of_nodes
-                    source = labels[i]
-                    target = labels[k]
-                    if token != '0':
-                        if token != '1':  # Weighted edge
-                            G.add_weighted_edges_from([(source, target, float(token))])
-                        else:
-                            G.add_edge(source, target)
-                else:
-                    raise NotImplementedError("UCINET DL data format %s not yet implemented in Networkx"
-                                            % ucinet_format)
-                j += 1
+            data = genfromtxt(list(lines))
+            if ucinet_format == 'fullmatrix':
+                mat = reshape(data, (max(number_of_nodes, nr), -1))
+                G = nx.from_numpy_matrix(mat, create_using=nx.MultiDiGraph())
+
+            # Relabel nodes
+            if labels:
+                G = nx.relabel_nodes(G, labels)
     return G
 
 
