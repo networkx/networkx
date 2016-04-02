@@ -13,26 +13,32 @@ class TestUcinet(object):
         self.G = nx.MultiDiGraph()
         self.G.add_nodes_from(['a', 'b', 'c', 'd', 'e'])
         self.G.add_edges_from([('a', 'b'), ('a', 'c'), ('a', 'd'), ('a', 'e'),
-                                ('b', 'a'), ('b', 'c'),
-                                ('c', 'a'), ('c', 'b'), ('c', 'e'),
-                                ('d', 'a'),
-                                ('e', 'a'), ('e', 'c')])
+                                ('b', 'a'), ('b', 'c'), ('b', 'd'),
+                                ('c', 'a'), ('c', 'b'),
+                                ('d', 'a'), ('d', 'b'),
+                                ('e', 'a')])
 
     def test_generate_ucinet(self):
         Gout = nx.readwrite.generate_ucinet(self.G)
         s = ''
         for line in Gout:
             s += line + '\n'
-        s = s[:-1]
+        G_generated = nx.readwrite.parse_ucinet(s)
+
         data = """\
 dl n=5 format=fullmatrix
+labels:
+a,b,c,d,e
 data:
 0 1 1 1 1
 1 0 1 1 0
 1 1 0 0 0
 1 1 0 0 0
 1 0 0 0 0"""
-        assert_equal(data, s)
+        G = nx.readwrite.parse_ucinet(data)
+
+        assert_equal(sorted(G.nodes()), sorted(G_generated.nodes()))
+        assert_edges_equal(G.edges(), G_generated.edges())
 
     def test_parse_ucinet(self):
         data = """
@@ -186,6 +192,10 @@ data:
                               (2, 0), (2, 1), (2, 4),
                               (3, 0),
                               (4, 0), (4, 2)])
+
         nx.readwrite.write_ucinet(graph, fh)
         fh.seek(0)
-        assert_equal(fh.read(), data)
+        G = nx.readwrite.parse_ucinet(fh.readlines())
+
+        assert_equal(sorted(G.nodes()), sorted(graph.nodes()))
+        assert_edges_equal(G.edges(), graph.edges())

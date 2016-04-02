@@ -33,7 +33,7 @@ import re
 import shlex
 import networkx as nx
 from networkx.utils import is_string_like, open_file, make_str
-from numpy import genfromtxt, reshape
+from numpy import genfromtxt, reshape, array_str
 
 __all__ = ['generate_ucinet', 'read_ucinet', 'parse_ucinet', 'write_ucinet']
 
@@ -60,19 +60,21 @@ def generate_ucinet(G):
     for full format information. Short version on http://www.analytictech.com/networks/dataentry.htm
     """
     n = G.number_of_nodes()
+    nodes = sorted(list(G.nodes()))
     yield 'dl n=%i format=fullmatrix' % n
+
+    # Labels
+    try:
+        int(nodes[0])
+    except ValueError:
+        s = 'labels:\n'
+        for label in nodes:
+            s += label + ' '
+        yield s
 
     yield 'data:'
 
-    for node in G:
-        neighbors = list(G.neighbors(node))
-        s = ''
-        for node2 in G:
-            if node2 in neighbors:
-                s += '1 '
-            else:
-                s += '0 '
-        yield s[:-1]  # Remove last space
+    yield str(nx.to_numpy_matrix(G, nodelist=nodes, dtype=int)).replace('[', ' ').replace(']', ' ').lstrip().rstrip()
 
 
 @open_file(0, mode='rb')
