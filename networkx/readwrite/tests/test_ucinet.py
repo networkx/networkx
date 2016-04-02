@@ -147,8 +147,43 @@ data:
   2  1 4
         """
         G = nx.MultiDiGraph()
-        G.add_nodes_from([1, 2, 3, 4])
-        G.add_edges_from([(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 4), (4, 1), (4, 4)])
+        G.add_nodes_from([0, 1, 2, 3])
+        G.add_edges_from([(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 3), (3, 0), (3, 3)])
+        G1 = nx.readwrite.parse_ucinet(data1)
+        G2 = nx.readwrite.parse_ucinet(data2)
+        assert_equal(sorted(G1.nodes()), sorted(G.nodes()))
+        assert_equal(sorted(G2.nodes()), sorted(G.nodes()))
+        assert_edges_equal(G1.edges(), G.edges())
+        assert_edges_equal(G2.edges(), G.edges())
+
+    def test_parse_ucinet_nodelist1_labels(self):
+        data1 = """
+DL n=5
+format = nodelist1
+labels:
+george, sally, jim, billy, jane
+data:
+1 2 3
+2 3
+4 1
+5 3
+        """
+        data2 = """
+DL n=5
+format = nodelist1
+labels embedded:
+data:
+george sally jim
+sally jim
+billy george
+jane jim
+        """
+        G = nx.MultiDiGraph()
+        G.add_nodes_from(['george', 'sally', 'jim', 'billy', 'jane'])
+        G.add_edges_from([('billy', 'george'),
+                          ('jane', 'jim'),
+                          ('sally', 'jim'),
+                          ('george', 'jim'), ('george', 'sally')])
         G1 = nx.readwrite.parse_ucinet(data1)
         G2 = nx.readwrite.parse_ucinet(data2)
         assert_equal(sorted(G1.nodes()), sorted(G.nodes()))
@@ -199,3 +234,41 @@ data:
 
         assert_equal(sorted(G.nodes()), sorted(graph.nodes()))
         assert_edges_equal(G.edges(), graph.edges())
+
+    def test_parse_ucinet_edgelist1(self):
+        data1 = """
+DL n=5
+format = edgelist1
+labels:
+george, sally, jim, billy, jane
+data:
+1 2
+1 3
+2 3
+3 1
+5 4
+        """
+        data2 = """
+DL n=5
+format = edgelist1
+labels embedded:
+data:
+george sally
+george jim
+sally jim
+jim george
+jane billy
+        """
+        G = nx.MultiDiGraph()
+        G.add_nodes_from(['george', 'sally', 'jim', 'billy', 'jane'])
+        G.add_edges_from([('jim', 'george'),
+                          ('jane', 'billy'),
+                          ('sally', 'jim'),
+                          ('george', 'jim'), ('george', 'sally')])
+
+        G1 = nx.readwrite.parse_ucinet(data1)
+        G2 = nx.readwrite.parse_ucinet(data2)
+        assert_equal(sorted(G1.nodes()), sorted(G.nodes()))
+        assert_equal(sorted(G2.nodes()), sorted(G.nodes()))
+        assert_edges_equal(G1.edges(), G.edges())
+        assert_edges_equal(G2.edges(), G.edges())

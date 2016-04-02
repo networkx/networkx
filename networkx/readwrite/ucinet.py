@@ -32,8 +32,8 @@ References
 import re
 import shlex
 import networkx as nx
-from networkx.utils import is_string_like, open_file, make_str
-from numpy import genfromtxt, reshape, array_str
+from networkx.utils import is_string_like, open_file
+from numpy import genfromtxt, reshape
 
 __all__ = ['generate_ucinet', 'read_ucinet', 'parse_ucinet', 'write_ucinet']
 
@@ -144,7 +144,7 @@ def write_ucinet(G, path, encoding='UTF-8'):
 def parse_ucinet(lines):
     """Parse UCINET format graph from string or iterable.
 
-    Currently only the 'fullmatrix' format is supported.
+    Currently only the 'fullmatrix', 'nodelist1' and 'nodelist1b' formats are supported.
 
     Parameters
     ----------
@@ -214,8 +214,8 @@ def parse_ucinet(lines):
             diagonal = get_param("present|absent", token, lexer)
 
         elif token.startswith("format"):
-            ucinet_format = get_param("^(fullmatrix|upperhalf|lowerhalf|nodelist1|nodelist2|nodelist1b|\
-                                        edgelist1|edgelist2|blockmatrix|partition)$", token, lexer)
+            ucinet_format = get_param("""^(fullmatrix|upperhalf|lowerhalf|nodelist1|nodelist2|nodelist1b|\
+edgelist1|edgelist2|blockmatrix|partition)$""", token, lexer)
 
         # TODO : row and columns labels
         elif token.startswith("row"):  # Row labels
@@ -227,7 +227,7 @@ def parse_ucinet(lines):
             token = next(lexer)
             i = 0
             while token not in KEYWORDS:
-                if token == 'embedded':
+                if token.startswith('embedded'):
                     row_labels_embedded = True
                     cols_labels_embedded = True
                     break
@@ -253,6 +253,7 @@ def parse_ucinet(lines):
         params['usecols'] = range(1, nc + 1)
 
     if ucinet_format == 'fullmatrix':
+        # In Python3 genfromtxt requires bytes string
         try:
             data_lines = bytes(data_lines, 'utf-8')
         except TypeError:
@@ -275,11 +276,31 @@ def parse_ucinet(lines):
                         else:
                             source = str(i)
                         s += source + ' ' + neighbor + '\n'
-        G = nx.parse_edgelist(s.splitlines(), nodetype=int, create_using=nx.MultiDiGraph())
+
+        G = nx.parse_edgelist(s.splitlines(),
+                              nodetype=str if row_labels_embedded and cols_labels_embedded else int,
+                              create_using=nx.MultiDiGraph())
+
+        if not row_labels_embedded or not cols_labels_embedded:
+            nx.relabel_nodes(G, dict(zip(list(G.nodes()), [i-1 for i in G.nodes()])), copy=False)
+
+    elif ucinet_format == 'edgelist1':
+        G = nx.parse_edgelist(data_lines.splitlines(),
+                              nodetype=str if row_labels_embedded and cols_labels_embedded else int,
+                              create_using=nx.MultiDiGraph())
+
+        if not row_labels_embedded or not cols_labels_embedded:
+            nx.relabel_nodes(G, dict(zip(list(G.nodes()), [i-1 for i in G.nodes()])), copy=False)
 
     # Relabel nodes
     if labels:
-        G = nx.relabel_nodes(G, labels)
+        try:
+            if len(list(G.nodes())) < number_of_nodes:
+                G.add_nodes_from(labels.values() if labels else range(0, number_of_nodes))
+            nx.relabel_nodes(G, labels, copy=False)
+        except KeyError:
+            pass  # Nodes already labelled
+
     return G
 
 
@@ -297,6 +318,15 @@ def get_param(regex, token, lines):
         try:
             n = next(lines)
         except StopIteration:
-            raise Exception("Parameter value not recognized")
+            raise Exception("Parameter %s value not recognized" % token)
         query = re.search(regex, n)
     return query.group()
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
