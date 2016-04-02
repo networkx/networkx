@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-**********
-Exceptions
-**********
-
-Base exceptions and errors for NetworkX.
-
-"""
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)\nLoïc Séguin-C. <loicseguin@gmail.com>"""
 #    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -15,10 +6,35 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #    All rights reserved.
 #    BSD license.
 #
+# Authors:
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Pieter Swart <swart@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Loïc Séguin-C. <loicseguin@gmail.com>
+"""
+**********
+Exceptions
+**********
 
-# Exception handling
+Base exceptions and errors for NetworkX.
+"""
 
-# the root of all Exceptions
+__all__ = [
+    'HasACycle',
+    'NodeNotFound',
+    'PowerIterationFailedConvergence',
+    'ExceededMaxIterations',
+    'AmbiguousSolution',
+    'NetworkXAlgorithmError',
+    'NetworkXException',
+    'NetworkXError',
+    'NetworkXNoCycle',
+    'NetworkXNoPath',
+    'NetworkXNotImplemented',
+    'NetworkXPointlessConcept',
+    'NetworkXUnbounded',
+    'NetworkXUnfeasible',
+]
 
 
 class NetworkXException(Exception):
@@ -30,10 +46,19 @@ class NetworkXError(NetworkXException):
 
 
 class NetworkXPointlessConcept(NetworkXException):
-    """Harary, F. and Read, R. "Is the Null Graph a Pointless Concept?"
-In Graphs and Combinatorics Conference, George Washington University.
-New York: Springer-Verlag, 1973.
-"""
+    """Raised when a null graph is provided as input to an algorithm
+    that cannot use it.
+
+    The null graph is sometimes considered a pointless concept [1]_,
+    thus the name of the exception.
+
+    References
+    ----------
+    .. [1] Harary, F. and Read, R. "Is the Null Graph a Pointless
+       Concept?"  In Graphs and Combinatorics Conference, George
+       Washington University.  New York: Springer-Verlag, 1973.
+
+    """
 
 
 class NetworkXAlgorithmError(NetworkXException):
@@ -53,6 +78,13 @@ class NetworkXNoPath(NetworkXUnfeasible):
 class NetworkXNoCycle(NetworkXUnfeasible):
     """Exception for algorithms that should return a cycle when running
     on graphs where such a cycle does not exist."""
+
+
+class HasACycle(NetworkXException):
+    """Raised if a graph has a cycle when an algorithm expects that it
+    will have no cycles.
+
+    """
 
 
 class NetworkXUnbounded(NetworkXAlgorithmError):
