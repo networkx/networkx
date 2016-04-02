@@ -58,7 +58,14 @@ Data:
         # print [e for e in G.edges()]
 
     def test_parse_ucinet_labels(self):
-        data = """
+        """
+        Test parsing of labels : single line (data1), multiple lines (data2), embedded (data3)
+
+        Labels must be separated by spaces, carriage returns, equal signs or commas.
+        Labels with embedded spaces are not advisable, but can be entered by
+        surrounding the label in quotes (e.g., "Humpty Dumpty").
+        """
+        data1 = """
 dl n=5
 format = fullmatrix
 labels:
@@ -70,15 +77,78 @@ data:
 1 0 1 0 1
 0 1 0 1 0
                 """
-        G = nx.readwrite.parse_ucinet(data)
-        assert_equal(sorted(G.nodes()), sorted(['russ', 'barry', 'lin', 'pat', 'david']))
-        assert_edges_equal(G.edges(), [('russ', 'pat'), ('russ', 'david'),
-                                       ('barry', 'lin'), ('barry', 'pat'), ('barry', 'david'),
-                                       ('lin', 'barry'), ('lin', 'pat'),
-                                       ('pat', 'barry'), ('pat', 'lin'), ('pat', 'russ'),
-                                       ('david', 'barry'), ('david', 'russ')])
+        data2 = """
+dl n=5
+format = fullmatrix
+labels:
+barry,david
+lin,pat
+russ
+data:
+0 1 1 1 0
+1 0 0 0 1
+1 0 0 1 0
+1 0 1 0 1
+0 1 0 1 0
+        """
+        data3 = """\
+dl n=5
+format = fullmatrix
+labels embedded
+data:
+barry david lin pat russ
+Barry 0 1 1 1 0
+david 1 0 0 0 1
+Lin 1 0 0 1 0
+Pat 1 0 1 0 1
+Russ 0 1 0 1 0
+        """
+        G = nx.MultiDiGraph()
+        G.add_nodes_from(['russ', 'barry', 'lin', 'pat', 'david'])
+        G.add_edges_from([('russ', 'pat'), ('russ', 'david'),
+                            ('barry', 'lin'), ('barry', 'pat'), ('barry', 'david'),
+                            ('lin', 'barry'), ('lin', 'pat'),
+                            ('pat', 'barry'), ('pat', 'lin'), ('pat', 'russ'),
+                            ('david', 'barry'), ('david', 'russ')])
+        G1 = nx.readwrite.parse_ucinet(data1)
+        G2 = nx.readwrite.parse_ucinet(data2)
+        G3 = nx.readwrite.parse_ucinet(data3)
+        assert_equal(sorted(G1.nodes()), sorted(G.nodes()))
+        assert_equal(sorted(G2.nodes()), sorted(G.nodes()))
+        assert_equal(sorted(G3.nodes()), sorted(G.nodes()))
+        assert_edges_equal(G1.edges(), G.edges())
+        assert_edges_equal(G2.edges(), G.edges())
+        assert_edges_equal(G3.edges(), G.edges())
         # print [n for n in G.nodes()]
         # print [e for e in G.edges()]
+
+    def test_parse_ucinet_nodelist1(self):
+        data1 = """
+DL n=4
+format = nodelist1
+data:
+  1  3 2 1
+  4  1 4
+  2  2 4 1
+        """
+        data2 = """
+DL n=4
+format = nodelist1b
+data:
+  3  1 2 3
+  3  1 2 4
+  0
+  2  1 4
+        """
+        G = nx.MultiDiGraph()
+        G.add_nodes_from([1, 2, 3, 4])
+        G.add_edges_from([(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 4), (4, 1), (4, 4)])
+        G1 = nx.readwrite.parse_ucinet(data1)
+        G2 = nx.readwrite.parse_ucinet(data2)
+        assert_equal(sorted(G1.nodes()), sorted(G.nodes()))
+        assert_equal(sorted(G2.nodes()), sorted(G.nodes()))
+        assert_edges_equal(G1.edges(), G.edges())
+        assert_edges_equal(G2.edges(), G.edges())
 
     def test_read_ucinet(self):
         fh = io.BytesIO()
