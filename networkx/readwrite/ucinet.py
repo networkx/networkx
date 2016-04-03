@@ -33,7 +33,7 @@ import re
 import shlex
 import networkx as nx
 from networkx.utils import is_string_like, open_file
-from numpy import genfromtxt, reshape
+from numpy import genfromtxt, reshape, insert, isnan
 
 __all__ = ['generate_ucinet', 'read_ucinet', 'parse_ucinet', 'write_ucinet']
 
@@ -247,10 +247,11 @@ edgelist1|edgelist2|blockmatrix|partition)$""", token, lexer)
     if cols_labels_embedded:
         # params['names'] = True
         labels = dict(zip(range(0, nc), data_lines.splitlines()[1].split()))
-        params['skip_header'] = 2  # First character is \n
+        # params['skip_header'] = 2  # First character is \n
     if row_labels_embedded:  # Skip first column
         # TODO rectangular case : labels can differ from rows to columns
-        params['usecols'] = range(1, nc + 1)
+        # params['usecols'] = range(1, nc + 1)
+        pass
 
     if ucinet_format == 'fullmatrix':
         # In Python3 genfromtxt requires bytes string
@@ -258,7 +259,11 @@ edgelist1|edgelist2|blockmatrix|partition)$""", token, lexer)
             data_lines = bytes(data_lines, 'utf-8')
         except TypeError:
             pass
-        data = genfromtxt(data_lines.splitlines(), case_sensitive=False, **params)
+        # Do not use splitlines() because it is not necessarily written as a square matrix
+        data = genfromtxt([data_lines], case_sensitive=False, **params)
+        if cols_labels_embedded or row_labels_embedded:
+            # data = insert(data, 0, float('nan'))
+            data = data[~isnan(data)]
         mat = reshape(data, (max(number_of_nodes, nr), -1))
         G = nx.from_numpy_matrix(mat, create_using=nx.MultiDiGraph())
 
@@ -327,6 +332,6 @@ def get_param(regex, token, lines):
 def setup_module(module):
     from nose import SkipTest
     try:
-        import scipy
+        import numpy
     except:
-        raise SkipTest("SciPy not available")
+        raise SkipTest("NumPy not available")

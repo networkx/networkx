@@ -6,6 +6,7 @@ import io
 from nose.tools import *
 import networkx as nx
 from networkx.testing import *
+from nose import SkipTest
 
 
 class TestUcinet(object):
@@ -17,6 +18,10 @@ class TestUcinet(object):
                                 ('c', 'a'), ('c', 'b'),
                                 ('d', 'a'), ('d', 'b'),
                                 ('e', 'a')])
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('NumPy not available.')
 
     def test_generate_ucinet(self):
         Gout = nx.readwrite.generate_ucinet(self.G)
