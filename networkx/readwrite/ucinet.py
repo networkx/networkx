@@ -33,7 +33,6 @@ import re
 import shlex
 import networkx as nx
 from networkx.utils import is_string_like, open_file
-from numpy import genfromtxt, reshape, insert, isnan
 
 __all__ = ['generate_ucinet', 'read_ucinet', 'parse_ucinet', 'write_ucinet']
 
@@ -164,6 +163,7 @@ def parse_ucinet(lines):
     See UCINET User Guide or http://www.analytictech.com/ucinet/help/hs5000.htm
     for full format information. Short version on http://www.analytictech.com/networks/dataentry.htm
     """
+    from numpy import genfromtxt, reshape, insert, isnan
     G = nx.MultiDiGraph()
 
     if not is_string_like(lines):
