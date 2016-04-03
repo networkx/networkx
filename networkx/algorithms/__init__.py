@@ -77,6 +77,7 @@ from networkx.algorithms.connectivity import all_pairs_node_connectivity
 from networkx.algorithms.connectivity import all_node_cuts
 from networkx.algorithms.connectivity import average_node_connectivity
 from networkx.algorithms.connectivity import edge_connectivity
+from networkx.algorithms.connectivity import edge_disjoint_paths 
 from networkx.algorithms.connectivity import k_components
 from networkx.algorithms.connectivity import k_edge_components
 from networkx.algorithms.connectivity import k_edge_subgraphs
@@ -85,6 +86,7 @@ from networkx.algorithms.connectivity import is_k_edge_connected
 from networkx.algorithms.connectivity import minimum_edge_cut
 from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity
+from networkx.algorithms.connectivity import node_disjoint_paths 
 from networkx.algorithms.connectivity import stoer_wagner
 from networkx.algorithms.flow import capacity_scaling
 from networkx.algorithms.flow import cost_of_flow
