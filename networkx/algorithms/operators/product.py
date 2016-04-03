@@ -10,6 +10,7 @@
 #     Pieter Swart <swart@lanl.gov>
 #     Dan Schult <dschult@colgate.edu>
 #     Ben Edwards <bedwards@cs.unm.edu>
+#     Marco Cognetta <cognetta.marco@gmail.com>
 """
 Graph products.
 """
@@ -19,7 +20,8 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = ['tensor_product', 'cartesian_product',
-           'lexicographic_product', 'strong_product', 'power']
+           'lexicographic_product', 'strong_product', 'power', 
+           'rooted_product']
 
 
 def _dict_product(d1, d2):
@@ -432,3 +434,41 @@ def power(G, k):
             level += 1
         H.add_edges_from((n, nbr) for nbr in seen)
     return H
+
+def rooted_product(G, H, root):
+    """ Return the rooted product of graphs G and H rooted at root in H.
+
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph
+    root : node
+       A node in H    
+
+    Returns
+    -------
+    R : The rooted product of G and H with a specified root in H
+
+    Notes
+    -----
+    A new graph is constructed representing the rooted product of
+    the inputted graphs, G and H, with a root in H.
+
+    The nodes of R are the Cartesian Product of the nodes of G and H. The
+    nodes of G and H are not relabeled.
+
+    """
+
+    if G.is_multigraph() or H.is_multigraph():
+        raise nx.NetworkXError('G and H must not be multigraphs')
+
+    if root not in H:
+        raise nx.NetworkXError('root must be a vertex in H')
+
+    R = nx.Graph()
+    R.add_nodes_from(product(G,H))
+    
+    R.add_edges_from([((e[0],root),(e[1],root)) for e in G.edges()] 
+        + [((g,e[0]),(g,e[1])) for g in G for e in H.edges()])
+    
+    return R
