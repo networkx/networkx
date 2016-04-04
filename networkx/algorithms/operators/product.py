@@ -435,6 +435,7 @@ def power(G, k):
         H.add_edges_from((n, nbr) for nbr in seen)
     return H
 
+@not_implemented_for('multigraph')
 def rooted_product(G, H, root):
     """ Return the rooted product of graphs G and H rooted at root in H.
 
@@ -459,16 +460,13 @@ def rooted_product(G, H, root):
 
     """
 
-    if G.is_multigraph() or H.is_multigraph():
-        raise nx.NetworkXError('G and H must not be multigraphs')
-
     if root not in H:
         raise nx.NetworkXError('root must be a vertex in H')
 
     R = nx.Graph()
     R.add_nodes_from(product(G,H))
     
-    R.add_edges_from([((e[0],root),(e[1],root)) for e in G.edges()] 
-        + [((g,e[0]),(g,e[1])) for g in G for e in H.edges()])
+    R.add_edges_from(((e[0],root),(e[1],root)) for e in G.edges())
+    R.add_edges_from(((g,e[0]),(g,e[1])) for g in G for e in H.edges())
     
     return R

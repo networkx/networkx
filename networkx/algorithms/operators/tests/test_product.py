@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx import tensor_product, cartesian_product, lexicographic_product, strong_product
+from networkx import tensor_product, cartesian_product, lexicographic_product, strong_product, rooted_product
 from nose.tools import assert_raises, assert_true, assert_equal, raises
 
 
@@ -370,3 +370,14 @@ def test_graph_power():
                              (5, 6), (5, 7), (6, 7), (6, 8), (7, 8), (7, 9),
                              (8, 9)])
     assert_raises(ValueError, nx.power, G, -1)
+
+def test_rooted_product():
+    G = nx.cycle_graph(5)
+    H = nx.Graph()
+    H.add_nodes_from(['a','b','c','d'])
+    H.add_edge('a','b')
+    H.add_edge('b','c')
+    H.add_edge('b','d')
+    R = nx.algorithms.operators.product.rooted_product(G,H,'a')
+    assert_equal(len(R),len(G)*len(H))
+    assert_equal(R.number_of_edges(),G.number_of_edges()+len(G)*H.number_of_edges())
