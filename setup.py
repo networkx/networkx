@@ -100,7 +100,7 @@ package_data     = {
     'networkx.algorithms.traversal': ['tests/*.py'],
     'networkx.algorithms.tree': ['tests/*.py'],
     'networkx.classes': ['tests/*.py'],
-    'networkx.generators': ['tests/*.py'],
+    'networkx.generators': ['tests/*.py', 'atlas.dat'],
     'networkx.drawing': ['tests/*.py'],
     'networkx.linalg': ['tests/*.py'],
     'networkx.readwrite': ['tests/*.py'],
