@@ -96,7 +96,7 @@ class TestDagLongestPathLength(object):
         assert_equal(nx.dag_longest_path_length(G), 3)
 
 
-class TestDAG:
+class TestDAG(object):
 
     def setUp(self):
         pass
@@ -203,6 +203,50 @@ class TestDAG:
             assert_raises(RuntimeError, runtime_error2)
             assert_raises(nx.NetworkXUnfeasible, unfeasible_error)
 
+    def test_source_nodes(self):
+        DG = nx.DiGraph([(1, 2), (1, 3), (2, 3)])
+
+        assert_equal(list(nx.dag.source_nodes(DG)), [1])
+
+        DG.add_edge(4, 3)
+
+        assert_equal(sorted(list(nx.dag.source_nodes(DG))), [1, 4])
+
+        DG.remove_edge(1, 2)
+
+        assert_equal(sorted(list(nx.dag.source_nodes(DG))), [1, 2, 4])
+
+        DG.add_edge(1, 2)
+        DG.add_edge(2, 4)
+        DG.add_edge(4, 1)
+
+        assert_equal(sorted(list(nx.dag.source_nodes(DG))), [])
+
+        G = nx.Graph([(1, 2), (1, 3), (2, 3)])
+        assert_raises(nx.NetworkXNotImplemented, nx.dag.source_nodes, G)
+
+    def test_sink_nodes(self):
+        DG = nx.DiGraph([(1, 2), (1, 3), (2, 3)])
+
+        assert_equal(list(nx.dag.sink_nodes(DG)), [3])
+
+        DG.add_edge(4, 3)
+
+        assert_equal(sorted(list(nx.dag.sink_nodes(DG))), [3])
+
+        DG.remove_edge(1, 2)
+        DG.remove_edge(1, 3)
+
+        assert_equal(sorted(list(nx.dag.sink_nodes(DG))), [1, 3])
+
+        DG.add_edge(3, 1)
+        DG.add_edge(1, 3)
+
+        assert_equal(sorted(list(nx.dag.sink_nodes(DG))), [])
+
+        G = nx.Graph([(1, 2), (1, 3), (2, 3)])
+        assert_raises(nx.NetworkXNotImplemented, nx.dag.sink_nodes, G)
+
     def test_ancestors(self):
         G = nx.DiGraph()
         ancestors = nx.algorithms.dag.ancestors
@@ -234,6 +278,38 @@ class TestDAG:
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         assert_raises(nx.NetworkXNotImplemented, transitive_closure, G)
 
+    def test_transitive_reduction(self):
+        transitive_reduction = nx.algorithms.dag.transitive_reduction
+
+        # Test acyclic case
+        G = nx.DiGraph([(0, 1), (0, 2), (0, 4),
+                        (0, 3), (1, 3), (2, 4),
+                        (3, 4), (2, 4), (2, 3)])
+        answer = transitive_reduction(G)
+        solution = [(0, 2), (0, 1), (2, 3), (1, 3), (3, 4)]
+        assert_edges_equal(answer.edges(), solution)
+        transitive_closure = nx.algorithms.dag.transitive_closure
+        S = nx.DiGraph(solution)
+        # transitive closure of original and reduced graph should be the same
+        assert_edges_equal(transitive_closure(G).edges(), transitive_closure(S).edges())
+
+        # Test cyclic case
+        G = nx.DiGraph([(0, 2), (0, 1), (0, 3), (2, 1), (2, 4), (1, 4), (4, 2),
+                        (4, 3), (3, 4), (5, 4), (5, 3)])
+        answer = transitive_reduction(G)
+        assert_equal(len(list(answer.edges())), 6)
+        # Cannot test equality.
+        # The transitive reduction of a cyclic graph is not unique.
+        # solution = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 1), (5, 1)]
+        # assert_edges_equal(answer.edges(), solution)
+        transitive_closure = nx.algorithms.dag.transitive_closure
+        A = nx.DiGraph(answer)
+        # transitive closure of original and reduced graph should be the same
+        assert_edges_equal(transitive_closure(G).edges(), transitive_closure(A).edges())
+
+        G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        assert_raises(nx.NetworkXNotImplemented, transitive_reduction, G)
+
     def _check_antichains(self, solution, result):
         sol = [frozenset(a) for a in solution]
         res = [frozenset(a) for a in result]
@@ -261,14 +337,15 @@ class TestDAG:
         G.add_nodes_from([0, 1, 2])
         solution = [[], [0], [1], [1, 0], [2], [2, 0], [2, 1], [2, 1, 0]]
         self._check_antichains(list(antichains(G)), solution)
-        f = lambda x: list(antichains(x))
+        def f(x):
+            return list(antichains(x))
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         assert_raises(nx.NetworkXNotImplemented, f, G)
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         assert_raises(nx.NetworkXUnfeasible, f, G)
 
     def test_lexicographical_topological_sort(self):
-        G = nx.DiGraph([(1,2), (2,3), (1,4), (1,5), (2,6)])
+        G = nx.DiGraph([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
         assert_equal(list(nx.lexicographical_topological_sort(G)),
                      [1, 2, 3, 4, 5, 6])
         assert_equal(list(nx.lexicographical_topological_sort(
