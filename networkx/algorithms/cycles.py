@@ -18,7 +18,7 @@ else:
 
 import networkx as nx
 from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
-from ..utils import not_implemented_for
+from networkx.utils import not_implemented_for
 
 __all__ = ['chords', 'cycle_basis', 'cycle_basis_matrix', 'find_cycle',
            'recursive_simple_cycles', 'simple_cycles']
@@ -538,36 +538,9 @@ def chords(G, T=None, output_tree=False):
 
     """
     if T is None:
-        # We convert ``G`` to an undirected graph, then convert ``T`` back
-        # to the same type as ``G``.
-        if G.is_directed():
-            # If G is a directed multigraph, remove the directionality of
-            # the edges. Multigraphs keys get lost here and we will need to
-            # add them back later.
-            if G.is_multigraph():
-                T = nx.minimum_spanning_tree(nx.MultiGraph(G))
-            else:
-                T = nx.DiGraph(nx.minimum_spanning_tree(nx.Graph(G)))
-        else:
-            # All multigraph keys are lost here.
-            T = nx.minimum_spanning_tree(G)
-
-    C = G.copy()
-    # Recover keys and make chords.
-    if G.is_multigraph():
-        Tedges = list(T.edges())
-        to_add = []
-        for e in G.edges(keys=True, data=True):
-            if e[:2] in Tedges:
-                to_add.append(e)
-                Tedges.pop(Tedges.index(e[:2]))
-            if not Tedges:
-                break
-        T = nx.MultiGraph(to_add)
-        # Difference to keep attributes and keys
-        C.remove_edges_from(e for e in G.edges(keys=True) if T.has_edge(*e))
-    else:
-        C.remove_edges_from(e for e in G.edges() if T.has_edge(*e))
+        T = nx.minimum_spanning_tree(G, as_multigraph=G.is_multigraph())
+    G_edges = G.edges(keys=True) if G.is_multigraph() else G.edges()
+    C = G.edge_subgraph(e for e in G_edges if not T.has_edge(*e))
     return (C, T) if output_tree else C
 
 
