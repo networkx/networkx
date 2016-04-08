@@ -292,22 +292,28 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight', data=True):
 
 
 @not_implemented_for('directed')
-def _optimum_spanning_tree(G, algorithm, minimum, weight='weight'):
+def _optimum_spanning_tree(G, algorithm, minimum, weight='weight',
+                           as_multigraph=False):
     try:
         algo = ALGORITHMS[algorithm]
     except KeyError:
         msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
         raise ValueError(msg)
 
-    # When creating the spanning tree, we can ignore the key used to
-    # identify multigraph edges, since a tree is guaranteed to have no
-    # multiedges. This is why we use `keys=False`.
-    edges = algo(G, minimum=minimum, weight=weight, keys=False, data=True)
-    T = nx.Graph(edges)
+    # If `as_multigraph` is False, we can ignore the key used to
+    # identify multigraph edges when creating the spanning tree. This is
+    # the default behavior, since a tree is guaranteed to have no
+    # parallel edges.
+    if not as_multigraph:
+        edges = algo(G, minimum=minimum, weight=weight, keys=False, data=True)
+        T = nx.Graph(edges)
+    else:
+        edges = algo(G, minimum=minimum, weight=weight, keys=True, data=True)
+        T = nx.MultiGraph(edges)
 
-    # Add isolated nodes
+    # Add isolated nodes.
     if len(T) != len(G):
-        T.add_nodes_from([n for n, d in G.degree() if d == 0])
+        T.add_nodes_from(nx.isolates(G))
 
     # Add node and graph attributes as shallow copy
     for n in T:
@@ -317,7 +323,8 @@ def _optimum_spanning_tree(G, algorithm, minimum, weight='weight'):
     return T
 
 
-def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
+def minimum_spanning_tree(G, weight='weight', algorithm='kruskal',
+                          as_multigraph=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -333,6 +340,12 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
         The algorithm to use when finding a minimum spanning tree. Valid
         choices are 'kruskal' or 'prim'.
 
+    as_multigraph : bool (default=False)
+        Whether to return the tree as an instance of
+        :class:`~networkx.MultiGraph`. The multigraph will still have at
+        most one edge joining each pair of nodes, but this is useful in
+        case you wish to have access to the edge key for the edges in
+        the computed spanning tree.
 
     Returns
     -------
@@ -359,10 +372,11 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
 
     """
     return _optimum_spanning_tree(G, algorithm=algorithm, minimum=True,
-                                  weight=weight)
+                                  weight=weight, as_multigraph=as_multigraph)
 
 
-def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
+def maximum_spanning_tree(G, weight='weight', algorithm='kruskal',
+                          as_multigraph=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -378,6 +392,12 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
         The algorithm to use when finding a minimum spanning tree. Valid
         choices are 'kruskal' or 'prim'.
 
+    as_multigraph : bool (default=False)
+        Whether to return the tree as an instance of
+        :class:`~networkx.MultiGraph`. The multigraph will still have at
+        most one edge joining each pair of nodes, but this is useful in
+        case you wish to have access to the edge key for the edges in
+        the computed spanning tree.
 
     Returns
     -------
@@ -404,4 +424,4 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
 
     """
     return _optimum_spanning_tree(G, algorithm=algorithm, minimum=False,
-                                  weight=weight)
+                                  weight=weight, as_multigraph=as_multigraph)

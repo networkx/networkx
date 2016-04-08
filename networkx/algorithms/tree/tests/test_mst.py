@@ -6,6 +6,7 @@
 # information.
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
 from nose.tools import assert_equal
+from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx
@@ -287,3 +288,19 @@ class TestMST:
         G.add_edge(0, 1, key='b', weight=1)
         T = nx.maximum_spanning_tree(G)
         assert_equal([(0, 1, 2)], list(T.edges(data='weight')))
+
+    def test_maximum_spanning_tree_as_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key='a', weight=2)
+        G.add_edge(0, 1, key='b', weight=1)
+        T = nx.maximum_spanning_tree(G, as_multigraph=True)
+        assert_true(T.is_multigraph())
+        assert_equal([(0, 1, 'a', 2)], list(T.edges(keys=True, data='weight')))
+
+    def test_minimum_spanning_tree_as_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key='a', weight=2)
+        G.add_edge(0, 1, key='b', weight=1)
+        T = nx.minimum_spanning_tree(G, as_multigraph=True)
+        assert_true(T.is_multigraph())
+        assert_equal([(0, 1, 'b', 1)], list(T.edges(keys=True, data='weight')))
