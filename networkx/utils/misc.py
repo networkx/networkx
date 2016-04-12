@@ -18,7 +18,8 @@ True
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import collections
+from collections import defaultdict
+from collections import deque
 import sys
 import uuid
 from itertools import tee, chain
@@ -219,7 +220,7 @@ def arbitrary_element(iterable):
 def consume(iterator):
     "Consume the iterator entirely."
     # Feed the entire iterator into a zero-length deque.
-    collections.deque(iterator, maxlen=0)
+    deque(iterator, maxlen=0)
 
 
 # Recipe from the itertools documentation.
@@ -230,6 +231,29 @@ def pairwise(iterable, cyclic=False):
     if cyclic is True:
         return zip(a, chain(b, (first,)))
     return zip(a, b)
+
+
+def groups(many_to_one):
+    """Converts a many-to-one mapping into a one-to-many mapping.
+
+    `many_to_one` must be a dictionary whose keys and values are all
+    :term:`hashable`.
+
+    The return value is a dictionary mapping values from `many_to_one`
+    to sets of keys from `many_to_one` that have that value.
+
+    For example::
+
+        >>> from networkx.utils import groups
+        >>> many_to_one = {'a': 1, 'b': 1, 'c': 2, 'd': 3, 'e': 3}
+        >>> groups(many_to_one)  # doctest: +SKIP
+        {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
+
+    """
+    one_to_many = defaultdict(set)
+    for v, k in many_to_one.items():
+        one_to_many[k].add(v)
+    return dict(one_to_many)
 
 
 def is_path(G, *path):

@@ -4,11 +4,10 @@
 #    BSD license.
 """Asynchronous label propagation algorithms for community detection."""
 
-import random
-from itertools import groupby
 from collections import Counter
+import random
 
-import networkx as nx
+from networkx.utils import groups
 
 
 def asyn_lpa_communities(G, weight=None):
@@ -85,5 +84,5 @@ def asyn_lpa_communities(G, weight=None):
             # neighbour labels (only one label has max_freq for each node).
             cont = cont or len(best_labels) > 1
 
-    return (set(v) for k, v in groupby(sorted(labels, key=labels.get),
-                                       key=labels.get))
+    # TODO In Python 3.3 or later, this should be `yield from ...`.
+    return iter(groups(labels).values())
