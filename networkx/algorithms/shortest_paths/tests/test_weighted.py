@@ -266,6 +266,36 @@ class TestDijkstraPathLength(object):
         assert_equal(length, 1 / 10)
 
 
+class TestMultiSourceDijkstra(object):
+    """Unit tests for the multi-source dialect of Dijkstra's shortest
+    path algorithms.
+
+    """
+
+    @raises(ValueError)
+    def test_no_sources(self):
+        nx.multi_source_dijkstra(nx.Graph(), {})
+
+    @raises(ValueError)
+    def test_path_no_sources(self):
+        nx.multi_source_dijkstra_path(nx.Graph(), {})
+
+    @raises(ValueError)
+    def test_path_length_no_sources(self):
+        nx.multi_source_dijkstra_path_length(nx.Graph(), {})
+
+    def test_two_sources(self):
+        edges = [(0, 1, 1), (1, 2, 1), (2, 3, 10), (3, 4, 1)]
+        G = nx.Graph()
+        G.add_weighted_edges_from(edges)
+        sources = {0, 4}
+        distances, paths = nx.multi_source_dijkstra(G, sources)
+        expected_distances = {0: 0, 1: 1, 2: 2, 3: 1, 4: 0}
+        expected_paths = {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [4, 3], 4: [4]}
+        assert_equal(distances, expected_distances)
+        assert_equal(paths, expected_paths)
+
+
 class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
     def test_single_node_graph(self):
