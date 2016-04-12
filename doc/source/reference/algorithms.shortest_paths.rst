@@ -28,15 +28,18 @@ Advanced Interface
 .. autosummary::
    :toctree: generated/
 
+   dijkstra_predecessor_and_distance
    dijkstra_path
    dijkstra_path_length
+   single_source_dijkstra
    single_source_dijkstra_path
    single_source_dijkstra_path_length
+   multi_source_dijkstra_path
+   multi_source_dijkstra_path_length
    all_pairs_dijkstra_path
    all_pairs_dijkstra_path_length
-   single_source_dijkstra
    bidirectional_dijkstra
-   dijkstra_predecessor_and_distance
+
    bellman_ford_path
    bellman_ford_path_length
    single_source_bellman_ford_path
@@ -45,6 +48,7 @@ Advanced Interface
    all_pairs_bellman_ford_path_length
    single_source_bellman_ford
    bellman_ford_predecessor_and_distance
+
    negative_edge_cycle
    johnson
 
