@@ -152,11 +152,9 @@ load_centrality=newman_betweenness_centrality
 
 def edge_load(G,nodes=None,cutoff=False):
     """Compute edge load.
-
+    
     WARNING:
-
     This module is for demonstration and testing purposes.
-
     """
     betweenness={}
     if not nodes:         # find betweenness for every node  in graph
