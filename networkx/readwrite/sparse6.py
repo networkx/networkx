@@ -16,7 +16,7 @@ The *sparse6* file format is a space-efficient format for large sparse
 graphs. For small graphs or large dense graphs, use the *graph6* file
 format.
 
-For more information, see the `sparse6 homepage`_.
+For more information, see the `sparse6`_ homepage.
 
 .. _sparse6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
 
@@ -267,6 +267,7 @@ def generate_sparse6(G, nodes=None, header=True):
 @open_file(1, mode='wt')
 def write_sparse6(G, path, nodes=None, header=True):
     """Write graph G to given path in sparse6 format.
+
     Parameters
     ----------
     G : Graph (undirected)

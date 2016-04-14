@@ -1,26 +1,28 @@
-# coding=utf8
-"""
-Load centrality.
-
-"""
+# -*- coding: utf-8 -*-
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)'])
+#
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Pieter Swart (swart@lanl.gov)
+#          Sasha Gutfraind (ag362@cornell.edu)
+"""
+Load centrality.
 
-__all__ = ['load_centrality',
-           'edge_load']
-
+"""
+from __future__ import division
+from operator import itemgetter
 import networkx as nx
 
-def newman_betweenness_centrality(G,v=None,cutoff=None,
-                           normalized=True,
-                           weight=None):
+__all__ = ['load_centrality',
+           'edge_load_centrality']
+
+
+def newman_betweenness_centrality(G, v=None, cutoff=None,
+                                  normalized=True, weight=None):
     """Compute load centrality for nodes.
 
     The load centrality of a node is the fraction of all shortest
@@ -69,18 +71,18 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
        http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
     """
     if v is not None:   # only one node
-        betweenness=0.0
+        betweenness = 0.0
         for source in G:
             ubetween = _node_betweenness(G, source, cutoff, False, weight)
             betweenness += ubetween[v] if v in ubetween else 0
         if normalized:
             order = G.order()
             if order <= 2:
-                return betweenness # no normalization b=0 for all nodes
+                return betweenness  # no normalization b=0 for all nodes
             betweenness *= 1.0 / ((order-1) * (order-2))
         return betweenness
     else:
-        betweenness = {}.fromkeys(G,0.0)
+        betweenness = {}.fromkeys(G, 0.0)
         for source in betweenness:
             ubetween = _node_betweenness(G, source, cutoff, False, weight)
             for vk in ubetween:
@@ -88,16 +90,17 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
         if normalized:
             order = G.order()
             if order <= 2:
-                return betweenness # no normalization b=0 for all nodes
+                return betweenness  # no normalization b=0 for all nodes
             scale = 1.0 / ((order-1) * (order-2))
             for v in betweenness:
                 betweenness[v] *= scale
         return betweenness  # all nodes
 
-def _node_betweenness(G,source,cutoff=False,normalized=True,weight=None):
-    """Node betweenness helper:
-    see betweenness_centrality for what you probably want.
 
+def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
+    """Node betweenness_centrality helper:
+
+    See betweenness_centrality for what you probably want.
     This actually computes "load" and not betweenness.
     See https://networkx.lanl.gov/ticket/103
 
@@ -108,91 +111,108 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weight=None):
     To get the load for a node you need to do all-pairs shortest paths.
 
     If weight is not None then use Dijkstra for finding shortest paths.
-    In this case a cutoff is not implemented and so is ignored.
-
     """
 
     # get the predecessor and path length data
     if weight is None:
-        (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True)
+        (pred, length) = nx.predecessor(G, source, cutoff=cutoff,
+                                        return_seen=True)
     else:
-        (pred,length)=nx.dijkstra_predecessor_and_distance(G,source,weight=weight)
+        (pred, length) = nx.dijkstra_predecessor_and_distance(G, source,
+                                                              cutoff, weight)
 
     # order the nodes by path length
-    onodes = [ (l,vert) for (vert,l) in length.items() ]
+    onodes = [(l, vert) for (vert, l) in length.items()]
     onodes.sort()
-    onodes[:] = [vert for (l,vert) in onodes if l>0]
+    onodes[:] = [vert for (l, vert) in onodes if l > 0]
 
     # intialize betweenness
-    between={}.fromkeys(length,1.0)
+    between = {}.fromkeys(length, 1.0)
 
     while onodes:
-        v=onodes.pop()
+        v = onodes.pop()
         if v in pred:
-            num_paths=len(pred[v])   # Discount betweenness if more than
-            for x in pred[v]:        # one shortest path.
-                if x==source:   # stop if hit source because all remaining v
-                    break       #  also have pred[v]==[source]
-                between[x]+=between[v]/float(num_paths)
+            num_paths = len(pred[v])  # Discount betweenness if more than
+            for x in pred[v]:         # one shortest path.
+                if x == source:  # stop if hit source because all remaining v
+                    break        # also have pred[v]==[source]
+                between[x] += between[v] / float(num_paths)
     #  remove source
     for v in between:
-        between[v]-=1
+        between[v] -= 1
     # rescale to be between 0 and 1
     if normalized:
-        l=len(between)
+        l = len(between)
         if l > 2:
-            scale=1.0/float((l-1)*(l-2)) # 1/the number of possible paths
+            # scale by 1/the number of possible paths
+            scale = 1.0 / float((l - 1) * (l - 2))
             for v in between:
                 between[v] *= scale
     return between
 
 
-load_centrality=newman_betweenness_centrality
+load_centrality = newman_betweenness_centrality
 
 
-def edge_load(G,nodes=None,cutoff=False):
+def edge_load_centrality(G, cutoff=False):
     """Compute edge load.
 
-    WARNING:
+    WARNING: This concept of edge load has not been analysed
+    or discussed outside of NetworkX that we know of.
+    It is based loosely on load_centrality in the sense that
+    it counts the number of shortest paths which cross each edge.
+    This function is for demonstration and testing purposes.
 
-    This module is for demonstration and testing purposes.
+    Parameters
+    ----------
+    G : graph
+        A networkx graph
 
+    cutoff : bool, optional
+        If specified, only consider paths of length <= cutoff.
+
+    Returns
+    -------
+    A dict keyed by edge 2-tuple to the number of shortest paths
+    which use that edge. Where more than one path is shortest
+    the count is divided equally among paths.
     """
-    betweenness={}
-    if not nodes:         # find betweenness for every node  in graph
-        nodes = list(G)   # that probably is what you want...
-    for source in nodes:
-        ubetween=_edge_betweenness(G,source,nodes,cutoff=cutoff)
-        for v in ubetween.keys():
-            b=betweenness.setdefault(v,0)  # get or set default
-            betweenness[v]=ubetween[v]+b    # cumulative total
+    betweenness = {}
+    for u, v in G.edges():
+        betweenness[(u, v)] = 0.0
+        betweenness[(v, u)] = 0.0
+
+    for source in G:
+        ubetween = _edge_betweenness(G, source, cutoff=cutoff)
+        for e, ubetweenv in ubetween.items():
+            betweenness[e] += ubetweenv  # cumulative total
     return betweenness
 
-def _edge_betweenness(G,source,nodes,cutoff=False):
+
+def _edge_betweenness(G, source, nodes=None, cutoff=False):
     """
     Edge betweenness helper.
     """
-    between={}
     # get the predecessor data
-    #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff)
-    (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True)
+    (pred, length) = nx.predecessor(G, source, cutoff=cutoff, return_seen=True)
     # order the nodes by path length
-    onodes = [ nn for dd,nn in sorted( (dist,n) for n,dist in length.items() )]
+    onodes = [n for n, d in sorted(length.items(), key=itemgetter(1))]
     # intialize betweenness, doesn't account for any edge weights
-    for u,v in G.edges(nodes):
-        between[(u,v)]=1.0
-        between[(v,u)]=1.0
+    between = {}
+    for u, v in G.edges(nodes):
+        between[(u, v)] = 1.0
+        between[(v, u)] = 1.0
 
     while onodes:           # work through all paths
-        v=onodes.pop()
+        v = onodes.pop()
         if v in pred:
-            num_paths=len(pred[v])   # Discount betweenness if more than
-            for w in pred[v]:        # one shortest path.
+            # Discount betweenness if more than one shortest path.
+            num_paths = len(pred[v])
+            for w in pred[v]:
                 if w in pred:
-                    num_paths=len(pred[w])  # Discount betweenness, mult path
+                    # Discount betweenness, mult path
+                    num_paths = len(pred[w])
                     for x in pred[w]:
-                        between[(w,x)]+=between[(v,w)]/num_paths
-                        between[(x,w)]+=between[(w,v)]/num_paths
+                        between[(w, x)] += between[(v, w)] / num_paths
+                        between[(x, w)] += between[(w, v)] / num_paths
     return between
-
-

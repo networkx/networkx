@@ -73,7 +73,7 @@ Load
    :toctree: generated/
 
    load_centrality
-   edge_load
+   edge_load_centrality
 
 Dispersion
 ----------

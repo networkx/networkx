@@ -367,7 +367,7 @@ def power(G, k):
     Returns
     -------
     NetworkX simple graph
-        `G` to the `k`th power.
+        `G` to the power `k`.
 
     Raises
     ------
@@ -406,8 +406,8 @@ def power(G, k):
 
     Notes
     -----
-    This definition of "power graph" comes from Exercise 3.1.6 of *Graph
-    Theory* by Bondy and Murty [1]_.
+    This definition of "power graph" comes from Exercise 3.1.6 of
+    *Graph Theory* by Bondy and Murty [1]_.
 
     """
     if k <= 0:
