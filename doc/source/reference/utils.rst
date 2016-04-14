@@ -19,6 +19,8 @@ Helper Functions
    generate_unique_node
    default_opener
    pairwise
+   groups
+
 
 Data Structures and Algorithms
 ------------------------------

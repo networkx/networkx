@@ -130,3 +130,11 @@ def test_pairwise():
     assert_equal(list(pairwise(empty_iter)), [])
     empty_iter = iter(())
     assert_equal(list(pairwise(empty_iter, cyclic=True)), [])
+
+
+def test_groups():
+    many_to_one = dict(zip('abcde', [0, 0, 1, 1, 2]))
+    actual = groups(many_to_one)
+    expected = {0: {'a', 'b'}, 1: {'c', 'd'}, 2: {'e'}}
+    assert_equal(actual, expected)
+    assert_equal({}, groups({}))

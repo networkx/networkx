@@ -53,4 +53,5 @@ Algorithms
    algorithms.tree
    algorithms.triads
    algorithms.vitality
+   algorithms.voronoi
    algorithms.wiener
