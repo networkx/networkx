@@ -1,3 +1,11 @@
+#    Copyright (C) 2004-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 **********
 Matplotlib
@@ -13,14 +21,6 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
-
-#    Copyright (C) 2004-2016 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
@@ -35,8 +35,7 @@ __all__ = ['draw',
            'draw_random',
            'draw_spectral',
            'draw_spring',
-           'draw_shell',
-           'draw_graphviz']
+           'draw_shell']
 
 
 def draw(G, pos=None, ax=None, hold=None, **kwds):
@@ -964,24 +963,6 @@ def draw_shell(G, **kwargs):
     if nlist is not None:
         del(kwargs['nlist'])
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
-
-
-def draw_graphviz(G, prog="neato", **kwargs):
-    """Draw networkx graph with graphviz layout.
-
-    Parameters
-    ----------
-    G : graph
-       A networkx graph
-
-    prog : string, optional
-      Name of Graphviz layout program
-
-    kwargs : optional keywords
-       See networkx.draw_networkx() for a description of optional keywords.
-    """
-    pos = nx.drawing.graphviz_layout(G, prog)
-    draw(G, pos, **kwargs)
 
 
 def draw_nx(G, pos, **kwds):

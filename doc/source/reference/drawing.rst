@@ -39,7 +39,6 @@ Matplotlib
    draw_spectral
    draw_spring
    draw_shell
-   draw_graphviz
 
 
 
