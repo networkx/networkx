@@ -136,7 +136,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 power iteration failed to converge in %d iterations."%(i+1))""")
 
 
-def eigenvector_centrality_numpy(G, weight='weight'):
+def eigenvector_centrality_numpy(G, weight='weight', max_iter=50, tol=0):
     """Compute the eigenvector centrality for the graph G.
 
     Eigenvector centrality computes the centrality for a node based on the
@@ -159,6 +159,13 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     weight : None or string, optional
       The name of the edge attribute used as weight.
       If None, all edge weights are considered equal.
+
+    max_iter : integer, optional
+      Maximum number of iterations in power method.
+
+    tol : float, optional
+       Relative accuracy for eigenvalues (stopping criterion). 
+       The default value of 0 implies machine precision.
 
     Returns
     -------
@@ -205,7 +212,7 @@ def eigenvector_centrality_numpy(G, weight='weight'):
         raise nx.NetworkXException('Empty graph.')
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight,
                                   dtype=float)
-    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR')
+    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR', maxiter=max_iter, tol=tol)
     largest = eigenvector.flatten().real
     norm = sp.sign(largest.sum())*sp.linalg.norm(largest)
     centrality = dict(zip(G,map(float,largest/norm)))
