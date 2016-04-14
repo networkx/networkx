@@ -39,3 +39,14 @@ class TestPylab(object):
                 os.unlink('test.ps')
             except OSError:
                 pass
+
+
+    def test_smoke_draw_graphviz(self):
+        try:
+            nx.drawing.draw_graphviz(self.G)
+        except AttributeError as e:
+            if "graphviz_layout" in str(e):
+                raise
+        except ImportError as e:
+            if "pygraphviz" in str(e):
+                raise SkipTest('pygraphviz not available.')
