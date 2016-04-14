@@ -13,11 +13,12 @@
 Load centrality.
 
 """
+from __future__ import division
 from operator import itemgetter
 import networkx as nx
 
 __all__ = ['load_centrality',
-           'edge_load']
+           'edge_load_centrality']
 
 
 def newman_betweenness_centrality(G, v=None, cutoff=None,
@@ -153,7 +154,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
 load_centrality = newman_betweenness_centrality
 
 
-def edge_load(G, cutoff=False):
+def edge_load_centrality(G, cutoff=False):
     """Compute edge load.
 
     WARNING: This concept of edge load has not been analysed
@@ -177,13 +178,14 @@ def edge_load(G, cutoff=False):
     the count is divided equally among paths.
     """
     betweenness = {}
+    for u, v in G.edges():
+        betweenness[(u, v)] = 0.0
+        betweenness[(v, u)] = 0.0
+
     for source in G:
         ubetween = _edge_betweenness(G, source, cutoff=cutoff)
         for e, ubetweenv in ubetween.items():
-            if e in betweenness:
-                betweenness[e] += ubetweenv  # cumulative total
-            else:
-                betweenness[e] = ubetweenv
+            betweenness[e] += ubetweenv  # cumulative total
     return betweenness
 
 
