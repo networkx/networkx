@@ -1,21 +1,22 @@
-# coding: utf-8
-"""
-Provides functions for finding and testing for locally `(k, l)`-connected
-graphs.
-
-"""
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
+# -*- coding: utf-8 -*-
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors:  Aric Hagberg (hagberg@lanl.gov) and Dan Schult (dschult@colgate.edu)
+#
+"""
+Provides functions for finding and testing for locally `(k, l)`-connected
+graphs.
 
-_all__ = ['kl_connected_subgraph', 'is_kl_connected']
-
+"""
 import copy
 import networkx as nx
+
+__all__ = ['kl_connected_subgraph', 'is_kl_connected']
 
 
 def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
