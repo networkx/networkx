@@ -184,18 +184,17 @@ def cycle_basis_matrix(G, T=None):
         raise nx.NetworkXError('This function requires SciPy:'
                                ' https://www.scipy.org/')
     C, T = chords(G, T=T, output_tree=True)
-    nrow = len(G.edges())
-    ncol = len(C.edges())
+    nrow = G.number_of_edges()
+    ncol = C.number_of_edges()
     M = sp.zeros([nrow, ncol], dtype=sp.int8)
     if G.is_multigraph():
-        Cedges = C.edges(keys=True)
-
-        Gedges = G.edges(keys=True)
-        Tedges = T.edges(keys=True)
+        Cedges = list(C.edges(keys=True))
+        Gedges = list(G.edges(keys=True))
+        Tedges = list(T.edges(keys=True))
     else:
-        Cedges = C.edges()
-        Gedges = G.edges()
-        Tedges = T.edges()
+        Cedges = list(C.edges())
+        Gedges = list(G.edges())
+        Tedges = list(T.edges())
 
     for col, e in enumerate(Cedges):
         row = Gedges.index(e)
@@ -205,20 +204,20 @@ def cycle_basis_matrix(G, T=None):
         edge = e[:2]
         edge_inv = e[:2][::-1]
         try:
-            einT = T.edges().index(edge)
+            einT = list(T.edges()).index(edge)
             # The edge is in the tree with the same orientation, hence
             # invert it.
             row2 = Gedges.index(Tedges[einT])
             M[row2, col] = -1
         except ValueError:
             try:
-                ieinT = T.edges().index(edge_inv)
+                ieinT = list(T.edges()).index(edge_inv)
                 # The edge is in the tree with the opposite orientation,
                 # hence leave it.
                 row2 = Gedges.index(Tedges[ieinT])
                 M[row2, col] = 1
             except ValueError:
-                tmp = T.edges()
+                tmp = list(T.edges())
                 tmp.append(edge)
                 cyc = cycle_basis(nx.Graph(tmp))[0]
                 cyc_e = []
@@ -240,12 +239,12 @@ def cycle_basis_matrix(G, T=None):
                 cyc_e.remove(edge)
                 for ce in cyc_e:
                     try:
-                        einT = T.edges().index(ce)
+                        einT = list(T.edges()).index(ce)
                         # The edge is in the tree with the same orientation.
                         row2 = Gedges.index(Tedges[einT])
                         M[row2, col] = 1
                     except ValueError:
-                        ieinT = T.edges().index(ce[::-1])
+                        ieinT = list(T.edges()).index(ce[::-1])
                         # The edge is in the tree with the opposite
                         # orientation.
                         row2 = Gedges.index(Tedges[ieinT])
