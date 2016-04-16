@@ -89,7 +89,7 @@ def is_biconnected(G):
 
     """
     bcc = list(biconnected_components(G))
-    if not bcc: # No bicomponents (it could be an empty graph)
+    if not bcc:  # No bicomponents (it could be an empty graph)
         return False
     return len(bcc[0]) == len(G)
 
@@ -253,6 +253,7 @@ def biconnected_components(G):
     """
     for comp in _biconnected_dfs(G, components=True):
         yield set(chain.from_iterable(comp))
+
 
 @not_implemented_for('directed')
 def biconnected_component_subgraphs(G, copy=True):
@@ -427,8 +428,8 @@ def _biconnected_dfs(G, components=True):
     for start in G:
         if start in visited:
             continue
-        discovery = {start:0} # "time" of first discovery of node during search
-        low = {start:0}
+        discovery = {start: 0}  # time of first discovery of node during search
+        low = {start: 0}
         root_children = 0
         visited.add(start)
         edge_stack = []
@@ -440,31 +441,31 @@ def _biconnected_dfs(G, components=True):
                 if grandparent == child:
                     continue
                 if child in visited:
-                    if discovery[child] <= discovery[parent]: # back edge
-                        low[parent] = min(low[parent],discovery[child])
+                    if discovery[child] <= discovery[parent]:  # back edge
+                        low[parent] = min(low[parent], discovery[child])
                         if components:
-                            edge_stack.append((parent,child))
+                            edge_stack.append((parent, child))
                 else:
                     low[child] = discovery[child] = len(discovery)
                     visited.add(child)
                     stack.append((parent, child, iter(G[child])))
                     if components:
-                        edge_stack.append((parent,child))
+                        edge_stack.append((parent, child))
             except StopIteration:
                 stack.pop()
                 if len(stack) > 1:
                     if low[parent] >= discovery[grandparent]:
                         if components:
-                            ind = edge_stack.index((grandparent,parent))
+                            ind = edge_stack.index((grandparent, parent))
                             yield edge_stack[ind:]
-                            edge_stack=edge_stack[:ind]
+                            edge_stack = edge_stack[:ind]
                         else:
                             yield grandparent
                     low[grandparent] = min(low[parent], low[grandparent])
-                elif stack: # length 1 so grandparent is root
+                elif stack:  # length 1 so grandparent is root
                     root_children += 1
                     if components:
-                        ind = edge_stack.index((grandparent,parent))
+                        ind = edge_stack.index((grandparent, parent))
                         yield edge_stack[ind:]
         if not components:
             # root node is articulation point if it has more than 1 child

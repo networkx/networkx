@@ -11,11 +11,12 @@
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['number_attracting_components', 
+__all__ = ['number_attracting_components',
            'attracting_components',
-           'is_attracting_component', 
+           'is_attracting_component',
            'attracting_component_subgraphs',
            ]
+
 
 @not_implemented_for('undirected')
 def attracting_components(G):
@@ -47,7 +48,7 @@ def attracting_components(G):
     See Also
     --------
     number_attracting_components
-    is_attracting_component 
+    is_attracting_component
     attracting_component_subgraphs
 
     """
@@ -56,6 +57,7 @@ def attracting_components(G):
     for n in cG:
         if cG.out_degree(n) == 0:
             yield scc[n]
+
 
 @not_implemented_for('undirected')
 def number_attracting_components(G):
@@ -136,7 +138,7 @@ def attracting_component_subgraphs(G, copy=True):
         A list of node-induced subgraphs of the attracting components of `G`.
 
     copy : bool
-        If copy is True, graph, node, and edge attributes are copied to the 
+        If copy is True, graph, node, and edge attributes are copied to the
         subgraphs.
 
     Raises
