@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
-Biconnected components and articulation points.
-"""
-#    Copyright (C) 2011-2013 by
+#    Copyright (C) 2011-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Jordi Torrents (jtorrents@milnou.net)
+#          Dan Schult (dschult@colgate.edu)
+#          Aric Hagberg (aric.hagberg@gmail.com)
+"""Biconnected components and articulation points."""
 from itertools import chain
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>',
-                        'Dan Schult <dschult@colgate.edu>',
-                        'Aric Hagberg <aric.hagberg@gmail.com>'])
 
 __all__ = [
     'biconnected_components',
@@ -30,7 +28,7 @@ def is_biconnected(G):
     """Return True if the graph is biconnected, False otherwise.
 
     A graph is biconnected if, and only if, it cannot be disconnected by
-    removing only one node (and all edges incident on that node). If
+    removing only one node (and all edges incident on that node).  If
     removing a node increases the number of disconnected components
     in the graph, that node is called an articulation point, or cut
     vertex.  A biconnected graph has no articulation points.
@@ -65,16 +63,20 @@ def is_biconnected(G):
     articulation_points
     biconnected_component_edges
     biconnected_component_subgraphs
+    components.is_strongly_connected
+    components.is_weakly_connected
+    components.is_connected
+    components.is_semiconnected
 
     Notes
     -----
     The algorithm to find articulation points and biconnected
     components is implemented using a non-recursive depth-first-search
     (DFS) that keeps track of the highest level that back edges reach
-    in the DFS tree. A node `n` is an articulation point if, and only
+    in the DFS tree.  A node `n` is an articulation point if, and only
     if, there exists a subtree rooted at `n` such that there is no
     back edge from any successor of `n` that links to a predecessor of
-    `n` in the DFS tree. By keeping track of all the edges traversed
+    `n` in the DFS tree.  By keeping track of all the edges traversed
     by the DFS we can obtain the biconnected components because all
     edges of a bicomponent will be traversed consecutively between
     articulation points.
@@ -99,9 +101,9 @@ def biconnected_component_edges(G):
 
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
-    subgraph. Note that nodes may be part of more than one biconnected
-    component. Those nodes are articulation points, or cut vertices. However,
-    each edge belongs to one, and only one, biconnected component.
+    subgraph.  Note that nodes may be part of more than one biconnected
+    component.  Those nodes are articulation points, or cut vertices.
+    However, each edge belongs to one, and only one, biconnected component.
 
     Notice that by convention a dyad is considered a biconnected component.
 
@@ -147,10 +149,10 @@ def biconnected_component_edges(G):
     The algorithm to find articulation points and biconnected
     components is implemented using a non-recursive depth-first-search
     (DFS) that keeps track of the highest level that back edges reach
-    in the DFS tree. A node `n` is an articulation point if, and only
+    in the DFS tree.  A node `n` is an articulation point if, and only
     if, there exists a subtree rooted at `n` such that there is no
     back edge from any successor of `n` that links to a predecessor of
-    `n` in the DFS tree. By keeping track of all the edges traversed
+    `n` in the DFS tree.  By keeping track of all the edges traversed
     by the DFS we can obtain the biconnected components because all
     edges of a bicomponent will be traversed consecutively between
     articulation points.
@@ -174,7 +176,7 @@ def biconnected_components(G):
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
     subgraph. Note that nodes may be part of more than one biconnected
-    component. Those nodes are articulation points, or cut vertices. The
+    component.  Those nodes are articulation points, or cut vertices.  The
     removal of articulation points will increase the number of connected
     components of the graph.
 
@@ -224,9 +226,9 @@ def biconnected_components(G):
 
     See Also
     --------
-    is_biconnected,
-    articulation_points,
-    biconnected_component_edges,
+    is_biconnected
+    articulation_points
+    biconnected_component_edges
     biconnected_component_subgraphs
 
     Notes
@@ -234,10 +236,10 @@ def biconnected_components(G):
     The algorithm to find articulation points and biconnected
     components is implemented using a non-recursive depth-first-search
     (DFS) that keeps track of the highest level that back edges reach
-    in the DFS tree. A node `n` is an articulation point if, and only
+    in the DFS tree.  A node `n` is an articulation point if, and only
     if, there exists a subtree rooted at `n` such that there is no
     back edge from any successor of `n` that links to a predecessor of
-    `n` in the DFS tree. By keeping track of all the edges traversed
+    `n` in the DFS tree.  By keeping track of all the edges traversed
     by the DFS we can obtain the biconnected components because all
     edges of a bicomponent will be traversed consecutively between
     articulation points.
@@ -259,8 +261,8 @@ def biconnected_component_subgraphs(G, copy=True):
 
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
-    subgraph. Note that nodes may be part of more than one biconnected
-    component. Those nodes are articulation points, or cut vertices. The
+    subgraph.  Note that nodes may be part of more than one biconnected
+    component.  Those nodes are articulation points, or cut vertices.  The
     removal of articulation points will increase the number of connected
     components of the graph.
 
@@ -312,9 +314,9 @@ def biconnected_component_subgraphs(G, copy=True):
 
     See Also
     --------
-    is_biconnected,
-    articulation_points,
-    biconnected_component_edges,
+    is_biconnected
+    articulation_points
+    biconnected_component_edges
     biconnected_components
 
     Notes
@@ -322,10 +324,10 @@ def biconnected_component_subgraphs(G, copy=True):
     The algorithm to find articulation points and biconnected
     components is implemented using a non-recursive depth-first-search
     (DFS) that keeps track of the highest level that back edges reach
-    in the DFS tree. A node `n` is an articulation point if, and only
+    in the DFS tree.  A node `n` is an articulation point if, and only
     if, there exists a subtree rooted at `n` such that there is no
     back edge from any successor of `n` that links to a predecessor of
-    `n` in the DFS tree. By keeping track of all the edges traversed
+    `n` in the DFS tree.  By keeping track of all the edges traversed
     by the DFS we can obtain the biconnected components because all
     edges of a bicomponent will be traversed consecutively between
     articulation points.
@@ -352,7 +354,7 @@ def articulation_points(G):
 
     An articulation point or cut vertex is any node whose removal (along with
     all its incident edges) increases the number of connected components of
-    a graph. An undirected connected graph without articulation points is
+    a graph.  An undirected connected graph without articulation points is
     biconnected. Articulation points belong to more than one biconnected
     component of a graph.
 
@@ -389,9 +391,9 @@ def articulation_points(G):
 
     See Also
     --------
-    is_biconnected,
-    biconnected_components,
-    biconnected_component_edges,
+    is_biconnected
+    biconnected_components
+    biconnected_component_edges
     biconnected_component_subgraphs
 
     Notes
@@ -399,10 +401,10 @@ def articulation_points(G):
     The algorithm to find articulation points and biconnected
     components is implemented using a non-recursive depth-first-search
     (DFS) that keeps track of the highest level that back edges reach
-    in the DFS tree. A node `n` is an articulation point if, and only
+    in the DFS tree.  A node `n` is an articulation point if, and only
     if, there exists a subtree rooted at `n` such that there is no
     back edge from any successor of `n` that links to a predecessor of
-    `n` in the DFS tree. By keeping track of all the edges traversed
+    `n` in the DFS tree.  By keeping track of all the edges traversed
     by the DFS we can obtain the biconnected components because all
     edges of a bicomponent will be traversed consecutively between
     articulation points.

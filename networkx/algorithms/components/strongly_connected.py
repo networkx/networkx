@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Strongly connected components.
-"""
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Eben Kenah
+#          Aric Hagberg (hagberg@lanl.gov)
+#          Christopher Ellison
+#          Ben Edwards (bedwards@cs.unm.edu)
+"""Strongly connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-
-__authors__ = "\n".join(['Eben Kenah',
-                         'Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison',
-                         'Ben Edwards (bedwards@cs.unm.edu)'])
 
 __all__ = ['number_strongly_connected_components',
            'strongly_connected_components',
@@ -41,7 +40,7 @@ def strongly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented :
         If G is undirected.
 
     Examples
@@ -61,12 +60,13 @@ def strongly_connected_components(G):
 
     See Also
     --------
-    connected_components,
-    weakly_connected_components
+    components.connected_components
+    components.weakly_connected_components
+    kosaraju_strongly_connected_components
 
     Notes
     -----
-    Uses Tarjan's algorithm with Nuutila's modifications.
+    Uses Tarjan's algorithm[1]_ with Nuutila's modifications[2]_.
     Nonrecursive version of algorithm.
 
     References
@@ -157,8 +157,7 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     See Also
     --------
-    connected_components
-    weakly_connected_components
+    strongly_connected_components
 
     Notes
     -----
@@ -198,8 +197,8 @@ def strongly_connected_components_recursive(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
-        If G is undirected
+    NetworkXNotImplemented :
+        If G is undirected.
 
     Examples
     --------
@@ -222,7 +221,7 @@ def strongly_connected_components_recursive(G):
 
     Notes
     -----
-    Uses Tarjan's algorithm with Nuutila's modifications.
+    Uses Tarjan's algorithm[1]_ with Nuutila's modifications[2]_.
 
     References
     ----------
@@ -284,6 +283,11 @@ def strongly_connected_component_subgraphs(G, copy=True):
     comp : generator of graphs
       A generator of graphs, one for each strongly connected component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     Generate a sorted list of strongly connected components, largest first.
@@ -301,8 +305,9 @@ def strongly_connected_component_subgraphs(G, copy=True):
 
     See Also
     --------
-    connected_component_subgraphs
-    weakly_connected_component_subgraphs
+    strongly_connected_components
+    components.connected_component_subgraphs
+    components.weakly_connected_component_subgraphs
 
     """
     for comp in strongly_connected_components(G):
@@ -326,9 +331,16 @@ def number_strongly_connected_components(G):
     n : integer
        Number of strongly connected components
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
-    connected_components
+    strongly_connected_components
+    components.number_connected_components
+    components.number_weakly_connected_components
 
     Notes
     -----
@@ -351,8 +363,17 @@ def is_strongly_connected(G):
     connected : bool
       True if the graph is strongly connected, False otherwise.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
+    components.is_weakly_connected
+    components.is_semiconnected
+    components.is_connected
+    components.is_biconnected
     strongly_connected_components
 
     Notes
@@ -386,18 +407,18 @@ def condensation(G, scc=None):
     Returns
     -------
     C : NetworkX DiGraph
-       The condensation graph C of G. The node labels are integers
+       The condensation graph C of G.  The node labels are integers
        corresponding to the index of the component in the list of
-       strongly connected components of G. C has a graph attribute named
+       strongly connected components of G.  C has a graph attribute named
        'mapping' with a dictionary mapping the original nodes to the
-       nodes in C to which they belong. Each node in C also has a node
+       nodes in C to which they belong.  Each node in C also has a node
        attribute 'members' with the set of original nodes in G that
        form the SCC that the node in C represents.
 
     Raises
     ------
     NetworkXNotImplemented:
-        If G is not directed
+        If G is undirected.
 
     Notes
     -----
