@@ -16,3 +16,4 @@ Directed Acyclic Graphs
    antichains
    dag_longest_path
    dag_longest_path_length
+   dag_to_branching
