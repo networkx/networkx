@@ -26,6 +26,7 @@ Algorithms
    algorithms.cycles
    algorithms.cuts
    algorithms.dag
+   algorithms.dispersion
    algorithms.distance_measures
    algorithms.distance_regular
    algorithms.dominance
