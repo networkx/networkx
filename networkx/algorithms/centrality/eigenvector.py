@@ -112,7 +112,9 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
         x[k] *= s
     nnodes = G.number_of_nodes()
     # make up to max_iter iterations
+    curr_iter = 0
     for i in range(max_iter):
+        curr_iter = i
         xlast = x
         x = xlast.copy() # Start with xlast times I to iterate with (A+I)
         # do the multiplication y^T = x^T A (left eigenvector)
@@ -133,7 +135,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
             return x
 
     raise nx.NetworkXError("""eigenvector_centrality():
-power iteration failed to converge in %d iterations."%(i+1))""")
+        power iteration failed to converge in %d iterations."%d""" \
+        % (max_iter, curr_iter+1))
 
 
 def eigenvector_centrality_numpy(G, weight='weight', max_iter=50, tol=0):
