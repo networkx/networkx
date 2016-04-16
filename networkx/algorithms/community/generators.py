@@ -138,7 +138,7 @@ def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
     :exc:`~networkx.exception.NetworkXError` is raised.
 
     The communities returned by this are sets of integers in the set {0,
-    …, *n* - 1}, where *n* is the length of ``degree_sequence``.
+    ..., *n* - 1}, where *n* is the length of ``degree_sequence``.
 
     """
     # This assumes the nodes in the graph will be natural numbers.
@@ -272,8 +272,8 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
 
         - ``tau1`` and ``tau2`` must be less than or equal to one.
         - ``mu`` must be in [0, 1].
-        - ``max_degree`` must be in {1, …, *n*}.
-        - ``min_community`` and ``max_community`` must be in {0, …,
+        - ``max_degree`` must be in {1, ..., *n*}.
+        - ``min_community`` and ``max_community`` must be in {0, ...,
           *n*}.
 
         If not exactly one of ``average_degree`` and ``min_degree`` is
