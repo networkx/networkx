@@ -290,7 +290,7 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
     if len(G) == 0:
         return {}
     if len(G) == 1:
-        return {G.nodes()[0]: center}
+        return {next(G.nodes()): center}
 
     try:
         # Sparse matrix
