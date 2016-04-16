@@ -14,6 +14,7 @@ from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.dominance import *
 from networkx.algorithms.dominating import *
+from networkx.algorithms.efficiency import *
 from networkx.algorithms.hierarchy import *
 from networkx.algorithms.hybrid import *
 from networkx.algorithms.matching import *
