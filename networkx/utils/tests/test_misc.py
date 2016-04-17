@@ -119,6 +119,7 @@ class TestNumpyArray(object):
         a = dict_to_numpy_array1(d)
         assert_allclose(a.sum(), 3)
 
+
 def test_pairwise():
     nodes = range(4)
     node_pairs = [(0, 1), (1, 2), (2, 3)]
@@ -143,10 +144,15 @@ def test_groups():
 def test_to_tuple():
     a_list = [1, 2, [1, 3]]
     actual = to_tuple(a_list)
-    expected = ((1, 2, (1, 3)))
+    expected = (1, 2, (1, 3))
     assert_equal(actual, expected)
 
     a_tuple = (1, 2)
     actual = to_tuple(a_tuple)
     expected = a_tuple
+    assert_equal(actual, expected)
+
+    a_mix = (1, 2, [1, 3])
+    actual = to_tuple(a_mix)
+    expected = (1, 2, (1, 3))
     assert_equal(actual, expected)

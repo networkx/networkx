@@ -267,6 +267,6 @@ def to_tuple(x):
         (1, 2, (1, 4))
 
     """
-    if isinstance(x, (tuple, list)):
-        return tuple([to_tuple(xx) for xx in x])
-    return x
+    if not isinstance(x, (tuple, list)):
+        return x
+    return tuple(map(to_tuple, x))
