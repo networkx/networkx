@@ -44,6 +44,16 @@ class TestNodeLink:
         nx.is_isomorphic(G, H)
         assert_equal(H[1][2]['second']['color'], 'blue')
 
+    def test_graph_with_tuple_nodes(self):
+        G = nx.Graph()
+        G.add_edge((0, 0), (1, 0), color=[255, 255, 0])
+        d = node_link_data(G)
+        dumped_d = json.dumps(d)
+        dd = json.loads(dumped_d)
+        H = node_link_graph(dd)
+        assert_equal(H.node[(0, 0)], G.node[(0, 0)])
+        assert_equal(H[(0, 0)][(1, 0)]['color'], [255, 255, 0])
+
     def test_unicode_keys(self):
         try:
             q = unicode("qualité", 'utf-8')
