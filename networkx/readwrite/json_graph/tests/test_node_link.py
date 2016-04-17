@@ -53,7 +53,7 @@ class TestNodeLink:
         d = node_link_data(G)
         with NamedTemporaryFile('w', delete=False) as file:
             json.dump(d, file)
-        with open(file.name, 'r') as fp:
+        with open(file.name, 'r') as fp:
             dd = json.load(fp)
         H = node_link_graph(dd)
         os.unlink(file.name)
