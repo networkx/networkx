@@ -10,7 +10,8 @@
 from itertools import chain, count
 import json
 import networkx as nx
-from networkx.utils import make_str
+from networkx.utils import make_str, to_tuple
+from tempfile import NamedTemporaryFile
 __all__ = ['node_link_data', 'node_link_graph']
 
 
@@ -171,7 +172,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     graph.graph = data.get('graph', {})
     c = count()
     for d in data['nodes']:
-        node = d.get(name, next(c))
+        node = to_tuple(d.get(name, next(c)))
         mapping.append(node)
         nodedata = dict((make_str(k), v) for k, v in d.items() if k != name)
         graph.add_node(node, **nodedata)

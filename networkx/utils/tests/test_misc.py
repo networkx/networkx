@@ -138,3 +138,15 @@ def test_groups():
     expected = {0: {'a', 'b'}, 1: {'c', 'd'}, 2: {'e'}}
     assert_equal(actual, expected)
     assert_equal({}, groups({}))
+
+
+def test_to_tuple():
+    a_list = [1, 2, [1, 3]]
+    actual = to_tuple(a_list)
+    expected = ((1, 2, (1, 3)))
+    assert_equal(actual, expected)
+
+    a_tuple = (1, 2)
+    actual = to_tuple(a_tuple)
+    expected = a_tuple
+    assert_equal(actual, expected)

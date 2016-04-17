@@ -254,3 +254,19 @@ def groups(many_to_one):
     for v, k in many_to_one.items():
         one_to_many[k].add(v)
     return dict(one_to_many)
+
+
+def to_tuple(x):
+    """Converts lists to tuples.
+
+    For example::
+
+        >>> from networkx.utils import to_tuple
+        >>> a_list = [1, 2, [1, 4]]
+        >>> to_tuple(a_list)
+        (1, 2, (1, 4))
+
+    """
+    if isinstance(x, (tuple, list)):
+        return tuple([to_tuple(xx) for xx in x])
+    return x

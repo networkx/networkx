@@ -1,8 +1,11 @@
 #  -*- coding: utf-8 -*-
 import json
+import os
 from nose.tools import assert_equal, assert_raises, assert_not_equal, assert_true, raises
+from tempfile import NamedTemporaryFile
 import networkx as nx
 from networkx.readwrite.json_graph import *
+
 
 
 class TestNodeLink:
@@ -43,6 +46,21 @@ class TestNodeLink:
         H = node_link_graph(node_link_data(G))
         nx.is_isomorphic(G, H)
         assert_equal(H[1][2]['second']['color'], 'blue')
+
+    def test_graph_with_tuple_nodes(self):
+        G = nx.Graph()
+        G.add_edge((0, 0), (1, 0), color=[255, 255, 0])
+        d = node_link_data(G)
+        with NamedTemporaryFile('w', delete=False) as file:
+            json.dump(d, file)
+        with open(file.name, 'r') as fp:
+            dd = json.load(fp)
+        H = node_link_graph(dd)
+        os.unlink(file.name)
+
+        assert_equal(H.node[(0, 0)], G.node[(0, 0)])
+        assert_equal(H[(0, 0)][(1, 0)]['color'], [255, 255, 0])
+
 
     def test_unicode_keys(self):
         try:
