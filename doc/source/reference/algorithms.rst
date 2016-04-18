@@ -30,6 +30,7 @@ Algorithms
    algorithms.distance_regular
    algorithms.dominance
    algorithms.dominating
+   algorithms.efficiency
    algorithms.euler
    algorithms.flow
    algorithms.graphical
