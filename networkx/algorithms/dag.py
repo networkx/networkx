@@ -429,23 +429,6 @@ def transitive_reduction(G):
     .. [1] http://dept-info.labri.fr/~thibault/tmp/0201008.pdf
     .. [2] https://en.wikipedia.org/wiki/Transitive_reduction#Computing_the_reduction_using_the_closure
     """
-    import numpy as np
-
-    # Define helper functions
-    def itertwo(iterable, wrap=False):
-        """ Return pairs of consecutive elements in a sequence """
-        import six
-        import itertools
-        iter1, iter2 = itertools.tee(iterable, 2)
-        if wrap:
-            iter2 = itertools.cycle(iter2)
-        try:
-            six.next(iter2)
-        except StopIteration:
-            return iter(())
-        else:
-            return zip(iter1, iter2)
-
     def invert_map(mapping):
         """ point each value to a list of its corresponding keys """
         from collections import defaultdict
@@ -465,42 +448,43 @@ def transitive_reduction(G):
     else:
         G_scc = G
 
-    nodes = list(G_scc.nodes())
-    TC = transitive_closure(G_scc)
-    # Let A be the adjacency matrix of the given graph, and B be the adjacency
-    # matrix of its transitive closure.
-    A = nx.adjacency_matrix(G_scc, nodelist=nodes).todense()
-    B = nx.adjacency_matrix(TC, nodelist=nodes).todense()
-    # An edge uv belongs to the transitive reduction if and only if there is a
-    # nonzero entry in row u and column v of matrix A, and there is not a
-    # nonzero entry in the same position of the matrix product AB.
-    AB = A.dot(B)
-    A_and_notAB = np.logical_and(A, np.logical_not(AB))
-    tr_uvs = A_and_notAB.nonzero()
-    TR_edges = [(nodes[u], nodes[v]) for u, v in zip(*tr_uvs)]
+    # Adapted from
+    # http://stackoverflow.com/questions/17078696/transitive-reduction-python
+    # For each node u, perform DFS consider its set of (non-self) children C.
+    # For each descendant v, of a node in C, remove any edge from u to v.
+    TR_scc = G_scc.copy()
+
+    for parent in TR_scc.nodes():
+        # Remove self loops
+        if TR_scc.has_edge(parent, parent):
+            TR_scc.remove_edge(parent, parent)
+        # For each child of the parent
+        for child in list(TR_scc.successors(parent)):
+            # Preorder nodes includes its argument (no added complexity)
+            for gchild in list(TR_scc.successors(child)):
+                # Remove all edges from parent to non-child descendants
+                for descendant in list(nx.dfs_preorder_nodes(TR_scc, gchild)):
+                    if TR_scc.has_edge(parent, descendant):
+                        TR_scc.remove_edge(parent, descendant)
 
     if has_cycles:
         # Uncondense graph.
         mapping = G_scc.graph['mapping']
         inv_mapping = invert_map(mapping)
-
         # Add all original nodes
-        TR = G_scc.__class__()
-        TR.add_nodes_from(mapping.keys())
-        # Add edges from the SCC TR
-        for u, v in TR_edges:
+        TR = G.__class__()
+        TR.add_nodes_from(G.nodes())
+        # Add edges from the TR of the SCC graph
+        for u, v in TR_scc.edges():
             u_ = inv_mapping[u][0]
             v_ = inv_mapping[v][0]
             TR.add_edge(u_, v_)
         # For each SCC make a directed cycle
         for key, path in inv_mapping.items():
             if len(path) > 1:
-                directed_cycle = itertwo(path, wrap=True)
-                TR.add_edges_from(directed_cycle)
+                nx.add_cycle(TR, path)
     else:
-        TR = G_scc.__class__()
-        TR.add_nodes_from(nodes)
-        TR.add_edges_from(TR_edges)
+        TR = TR_scc
     return TR
 
 
