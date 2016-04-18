@@ -1,3 +1,12 @@
+#    Copyright (C) 2004-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: Aric Hagberg <aric.hagberg@gmail.com>,
+#          Dan Schult <dschult@colgate.edu>
 """
 ******
 Layout
@@ -15,15 +24,6 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>,
-#          Dan Schult <dschult@colgate.edu>
-
-#    Copyright (C) 2004-2016 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import collections
 import networkx as nx
 
@@ -34,6 +34,7 @@ __all__ = ['circular_layout',
            'spring_layout',
            'spectral_layout',
            'fruchterman_reingold_layout']
+
 
 def _process_params(G, center, dim):
     # Some boilerplate code.
@@ -121,8 +122,8 @@ def circular_layout(G, scale=1, center=None, dim=2):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> pos=nx.circular_layout(G)
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.circular_layout(G)
 
     Notes
     -----
@@ -147,6 +148,7 @@ def circular_layout(G, scale=1, center=None, dim=2):
         pos = dict(zip(G, pos))
 
     return pos
+
 
 def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     """Position nodes in concentric circles.
@@ -175,7 +177,7 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> shells = [[0], [1,2,3]]
+    >>> shells = [[0], [1, 2, 3]]
     >>> pos = nx.shell_layout(G, shells)
 
     Notes
@@ -193,7 +195,6 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     if len(G) == 1:
         return {nx.utils.arbitrary_element(G): center}
 
-
     if nlist is None:
         # draw the whole graph in one shell
         nlist = [list(G)]
@@ -205,7 +206,7 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
         # else start at r=1
         radius = 1.0
 
-    npos={}
+    npos = {}
     for nodes in nlist:
         # Discard the extra angle since it matches 0 radians.
         theta = np.linspace(0, 1, len(nodes) + 1)[:-1] * 2 * np.pi
@@ -254,7 +255,7 @@ def fruchterman_reingold_layout(G, k=None,
 
     scale : float (default=1.0)
         Scale factor for positions. The nodes are positioned
-        in a box of size [0,scale] x [0,scale].
+        in a box of size [0, scale] x [0, scale].
 
     center : array-like or None
        Coordinate pair around which to center the layout.
@@ -269,11 +270,11 @@ def fruchterman_reingold_layout(G, k=None,
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> pos=nx.spring_layout(G)
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.spring_layout(G)
 
-    # The same using longer function name
-    >>> pos=nx.fruchterman_reingold_layout(G)
+    # The same using longer but equivalent function name
+    >>> pos = nx.fruchterman_reingold_layout(G)
     """
     import numpy as np
 
@@ -288,11 +289,11 @@ def fruchterman_reingold_layout(G, k=None,
         dom_size = max(coord for coord in pos_tup for pos_tup in pos.values())
         shape = (len(G), dim)
         pos_arr = np.random.random(shape) * dom_size + center
-        for i,n in enumerate(G):
+        for i, n in enumerate(G):
             if n in pos:
                 pos_arr[i] = np.asarray(pos[n])
     else:
-        pos_arr=None
+        pos_arr = None
 
     if len(G) == 0:
         return {}
@@ -303,52 +304,58 @@ def fruchterman_reingold_layout(G, k=None,
         # Sparse matrix
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
-        A = nx.to_scipy_sparse_matrix(G,weight=weight,dtype='f')
+        A = nx.to_scipy_sparse_matrix(G, weight=weight, dtype='f')
         if k is None and fixed is not None:
-           # We must adjust k by domain size for layouts that are not near 1x1
-           nnodes,_ = A.shape
-           k = dom_size / np.sqrt(nnodes)
-        pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed, iterations, dim)
+            # We must adjust k by domain size for layouts not near 1x1
+            nnodes, _ = A.shape
+            k = dom_size / np.sqrt(nnodes)
+        pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
+                                           iterations, dim)
     except:
-        A = nx.to_numpy_matrix(G,weight=weight)
+        A = nx.to_numpy_matrix(G, weight=weight)
         if k is None and fixed is not None:
-           # We must adjust k by domain size for layouts that are not near 1x1
-           nnodes,_ = A.shape
-           k = dom_size / np.sqrt(nnodes)
+            # We must adjust k by domain size for layouts not near 1x1
+            nnodes, _ = A.shape
+            k = dom_size / np.sqrt(nnodes)
         pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations, dim)
     if fixed is None:
         pos = rescale_layout(pos, scale=scale) + center
-    pos = dict(zip(G,pos))
+    pos = dict(zip(G, pos))
     return pos
 
-spring_layout=fruchterman_reingold_layout
 
-def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50, dim=2):
+spring_layout = fruchterman_reingold_layout
+
+
+def _fruchterman_reingold(A, k=None, pos=None, fixed=None,
+                          iterations=50, dim=2):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     try:
         import numpy as np
     except ImportError:
-        raise ImportError("_fruchterman_reingold() requires numpy: http://scipy.org/ ")
+        msg = "_fruchterman_reingold() requires numpy: http://scipy.org/ "
+        raise ImportError(msg)
 
     try:
-        nnodes,_=A.shape
+        nnodes, _ = A.shape
     except AttributeError:
-        raise nx.NetworkXError(
-            "fruchterman_reingold() takes an adjacency matrix as input")
+        msg = "fruchterman_reingold() takes an adjacency matrix as input"
+        raise nx.NetworkXError(msg)
 
-    A=np.asarray(A) # make sure we have an array instead of a matrix
+    # make sure we have an array instead of a matrix
+    A = np.asarray(A)
 
     if pos is None:
         # random initial positions
-        pos=np.asarray(np.random.random((nnodes,dim)),dtype=A.dtype)
+        pos = np.asarray(np.random.random((nnodes, dim)), dtype=A.dtype)
     else:
         # make sure positions are of same type as matrix
-        pos=pos.astype(A.dtype)
+        pos = pos.astype(A.dtype)
 
     # optimal distance between nodes
     if k is None:
-        k=np.sqrt(1.0/nnodes)
+        k = np.sqrt(1.0/nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     # We need to calculate this in case our fixed positions force our domain
@@ -356,33 +363,33 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50, dim=2)
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1]))*0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt=t/float(iterations+1)
-    delta = np.zeros((pos.shape[0],pos.shape[0],pos.shape[1]),dtype=A.dtype)
+    dt = t/float(iterations+1)
+    delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
     # could use multilevel methods to speed this up significantly
     for iteration in range(iterations):
         # matrix of difference between points
         for i in range(pos.shape[1]):
-            delta[:,:,i]= pos[:,i,None]-pos[:,i]
+            delta[:, :, i] = pos[:, i, None] - pos[:, i]
         # distance between points
-        distance=np.sqrt((delta**2).sum(axis=-1))
+        distance = np.sqrt((delta**2).sum(axis=-1))
         # enforce minimum distance of 0.01
-        distance=np.where(distance<0.01,0.01,distance)
+        distance = np.where(distance < 0.01, 0.01, distance)
         # displacement "force"
-        displacement=np.transpose(np.transpose(delta)*\
-                                  (k*k/distance**2-A*distance/k))\
-                                  .sum(axis=1)
+        displacement = np.transpose(np.transpose(delta) *
+                                    (k * k / distance**2 - A * distance / k)
+                                    ).sum(axis=1)
         # update positions
-        length=np.sqrt((displacement**2).sum(axis=1))
-        length=np.where(length<0.01,0.1,length)
-        delta_pos=np.transpose(np.transpose(displacement)*t/length)
+        length = np.sqrt((displacement**2).sum(axis=1))
+        length = np.where(length < 0.01, 0.1, length)
+        delta_pos = np.transpose(np.transpose(displacement) * t / length)
         if fixed is not None:
             # don't change positions of fixed nodes
-            delta_pos[fixed]=0.0
-        pos+=delta_pos
+            delta_pos[fixed] = 0.0
+        pos += delta_pos
         # cool temperature
-        t-=dt
+        t -= dt
     return pos
 
 
@@ -394,67 +401,69 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError("_sparse_fruchterman_reingold() requires numpy: http://scipy.org/ ")
+        m = "_sparse_fruchterman_reingold() requires numpy: http://scipy.org/"
+        raise ImportError(m)
     try:
-        nnodes,_=A.shape
+        nnodes, _ = A.shape
     except AttributeError:
-        raise nx.NetworkXError(
-            "fruchterman_reingold() takes an adjacency matrix as input")
+        msg = "fruchterman_reingold() takes an adjacency matrix as input"
+        raise nx.NetworkXError(msg)
     try:
-        from scipy.sparse import spdiags,coo_matrix
+        from scipy.sparse import spdiags, coo_matrix
     except ImportError:
-        raise ImportError("_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ ")
+        msg = "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
+        raise ImportError(msg)
     # make sure we have a LIst of Lists representation
     try:
-        A=A.tolil()
+        A = A.tolil()
     except:
-        A=(coo_matrix(A)).tolil()
+        A = (coo_matrix(A)).tolil()
 
     if pos is None:
         # random initial positions
-        pos=np.asarray(np.random.random((nnodes,dim)),dtype=A.dtype)
+        pos = np.asarray(np.random.random((nnodes, dim)), dtype=A.dtype)
     else:
         # make sure positions are of same type as matrix
-        pos=pos.astype(A.dtype)
+        pos = pos.astype(A.dtype)
 
     # no fixed nodes
     if fixed is None:
-        fixed=[]
+        fixed = []
 
     # optimal distance between nodes
     if k is None:
-        k=np.sqrt(1.0/nnodes)
+        k = np.sqrt(1.0/nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
-    t=0.1
+    t = 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt=t/float(iterations+1)
+    dt = t / float(iterations+1)
 
-    displacement=np.zeros((dim,nnodes))
+    displacement = np.zeros((dim, nnodes))
     for iteration in range(iterations):
-        displacement*=0
+        displacement *= 0
         # loop over rows
         for i in range(A.shape[0]):
             if i in fixed:
                 continue
             # difference between this row's node position and all others
-            delta=(pos[i]-pos).T
+            delta = (pos[i] - pos).T
             # distance between points
-            distance=np.sqrt((delta**2).sum(axis=0))
+            distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
-            distance=np.where(distance<0.01,0.01,distance)
+            distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
-            Ai=np.asarray(A.getrowview(i).toarray())
+            Ai = np.asarray(A.getrowview(i).toarray())
             # displacement "force"
-            displacement[:,i]+=\
-                (delta*(k*k/distance**2-Ai*distance/k)).sum(axis=1)
+            displacement[:, i] +=\
+                (delta * (k * k / distance**2 - Ai * distance / k)).sum(axis=1)
         # update positions
-        length=np.sqrt((displacement**2).sum(axis=0))
-        length=np.where(length<0.01,0.1,length)
-        pos+=(displacement*t/length).T
+        length = np.sqrt((displacement**2).sum(axis=0))
+        length = np.where(length < 0.01, 0.1, length)
+        pos += (displacement * t / length).T
         # cool temperature
-        t-=dt
+        t -= dt
     return pos
 
 
@@ -485,8 +494,8 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> pos=nx.spectral_layout(G)
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.spectral_layout(G)
 
     Notes
     -----
@@ -508,16 +517,16 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
             pos = np.array([center])
         else:
             pos = np.array([np.zeros(dim), np.array(center)*2.0])
-        return dict(zip(G,pos))
+        return dict(zip(G, pos))
     try:
         # Sparse matrix
-        if len(G)< 500:  # dense solver is faster for small graphs
+        if len(G) < 500:  # dense solver is faster for small graphs
             raise ValueError
         A = nx.to_scipy_sparse_matrix(G, weight=weight, dtype='d')
         # Symmetrize directed graphs
         if G.is_directed():
             A = A + np.transpose(A)
-        pos = _sparse_spectral(A,dim)
+        pos = _sparse_spectral(A, dim)
     except (ImportError, ValueError):
         # Dense matrix
         A = nx.to_numpy_matrix(G, weight=weight)
@@ -527,7 +536,7 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
         pos = _spectral(A, dim)
 
     pos = rescale_layout(pos, scale) + center
-    pos = dict(zip(G,pos))
+    pos = dict(zip(G, pos))
     return pos
 
 
@@ -537,24 +546,26 @@ def _spectral(A, dim=2):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError("spectral_layout() requires numpy: http://scipy.org/ ")
+        msg = "spectral_layout() requires numpy: http://scipy.org/ "
+        raise ImportError(msg)
     try:
-        nnodes,_=A.shape
+        nnodes, _ = A.shape
     except AttributeError:
-        raise nx.NetworkXError(\
-            "spectral() takes an adjacency matrix as input")
+        msg = "spectral() takes an adjacency matrix as input"
+        raise nx.NetworkXError(msg)
 
     # form Laplacian matrix
     # make sure we have an array instead of a matrix
-    A=np.asarray(A)
-    I=np.identity(nnodes,dtype=A.dtype)
-    D=I*np.sum(A,axis=1) # diagonal of degrees
-    L=D-A
+    A = np.asarray(A)
+    I = np.identity(nnodes, dtype=A.dtype)
+    D = I * np.sum(A, axis=1)  # diagonal of degrees
+    L = D - A
 
-    eigenvalues,eigenvectors=np.linalg.eig(L)
+    eigenvalues, eigenvectors = np.linalg.eig(L)
     # sort and keep smallest nonzero
-    index=np.argsort(eigenvalues)[1:dim+1] # 0 index is zero eigenvalue
-    return np.real(eigenvectors[:,index])
+    index = np.argsort(eigenvalues)[1:dim + 1]  # 0 index is zero eigenvalue
+    return np.real(eigenvectors[:, index])
+
 
 def _sparse_spectral(A, dim=2):
     # Input adjacency matrix A
@@ -564,34 +575,35 @@ def _sparse_spectral(A, dim=2):
         import numpy as np
         from scipy.sparse import spdiags
     except ImportError:
-        raise ImportError("_sparse_spectral() requires scipy & numpy: http://scipy.org/ ")
+        msg = "_sparse_spectral() requires scipy & numpy: http://scipy.org/ "
+        raise ImportError(msg)
     try:
         from scipy.sparse.linalg.eigen import eigsh
     except ImportError:
         # scipy <0.9.0 names eigsh differently
         from scipy.sparse.linalg import eigen_symmetric as eigsh
     try:
-        nnodes,_=A.shape
+        nnodes, _ = A.shape
     except AttributeError:
-        raise nx.NetworkXError(\
-            "sparse_spectral() takes an adjacency matrix as input")
+        msg = "sparse_spectral() takes an adjacency matrix as input"
+        raise nx.NetworkXError(msg)
 
     # form Laplacian matrix
-    data=np.asarray(A.sum(axis=1).T)
-    D=spdiags(data,0,nnodes,nnodes)
-    L=D-A
+    data = np.asarray(A.sum(axis=1).T)
+    D = spdiags(data, 0, nnodes, nnodes)
+    L = D - A
 
-    k=dim+1
+    k = dim + 1
     # number of Lanczos vectors for ARPACK solver.What is the right scaling?
-    ncv=max(2*k+1,int(np.sqrt(nnodes)))
+    ncv = max(2 * k + 1, int(np.sqrt(nnodes)))
     # return smallest k eigenvalues and eigenvectors
-    eigenvalues,eigenvectors=eigsh(L,k,which='SM',ncv=ncv)
-    index=np.argsort(eigenvalues)[1:k] # 0 index is zero eigenvalue
-    return np.real(eigenvectors[:,index])
+    eigenvalues, eigenvectors = eigsh(L, k, which='SM', ncv=ncv)
+    index = np.argsort(eigenvalues)[1:k]  # 0 index is zero eigenvalue
+    return np.real(eigenvectors[:, index])
 
 
 def rescale_layout(pos, scale=1):
-    """Return scaled position array to (-scale,scale) in all axes.
+    """Return scaled position array to (-scale, scale) in all axes.
 
     The function acts on NumPy arrays which hold position information.
     Each position is one row of the array. The dimension of the space
@@ -617,14 +629,14 @@ def rescale_layout(pos, scale=1):
 
     """
     # Find max length over all dimensions
-    lim=0 # max coordinate for all axes
+    lim = 0  # max coordinate for all axes
     for i in range(pos.shape[1]):
-        pos[:,i]-=pos[:,i].mean()
-        lim=max(pos[:,i].max(),lim)
-    # rescale to (-scale,scale) in all directions, preserves aspect
+        pos[:, i] -= pos[:, i].mean()
+        lim = max(pos[:, i].max(), lim)
+    # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
         for i in range(pos.shape[1]):
-            pos[:,i]*=scale/lim
+            pos[:, i] *= scale / lim
     return pos
 
 

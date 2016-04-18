@@ -78,6 +78,7 @@ Graph Layout
 
    circular_layout
    random_layout
+   rescale_layout
    shell_layout
    spring_layout
    spectral_layout
