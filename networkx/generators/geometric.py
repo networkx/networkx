@@ -72,6 +72,8 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
         If this argument is not specified, the Euclidean distance metric is
         used.
 
+        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+
     Returns
     -------
     Graph
@@ -97,8 +99,6 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
 
     .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
     .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
-    .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
-
 
     Notes
     -----
@@ -205,6 +205,8 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
         If this argument is not specified, the Euclidean distance metric is
         used.
 
+        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+
     Returns
     -------
     Graph
@@ -229,8 +231,6 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
     .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
     .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
-    .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
-
 
     Notes
     -----
@@ -338,6 +338,8 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
         If this argument is not specified, the Euclidean distance metric is
         used.
 
+        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+
     Returns
     -------
     Graph
@@ -356,8 +358,6 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
 
     .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
     .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
-    .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
-
 
     References
     ----------
