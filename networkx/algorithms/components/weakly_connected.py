@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Weakly connected components.
-"""
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+#
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Christopher Ellison
+"""Weakly connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-
-__authors__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison'])
 
 __all__ = [
     'number_weakly_connected_components',
@@ -37,6 +35,11 @@ def weakly_connected_components(G):
         A generator of sets of nodes, one for each weakly connected
         component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     Generate a sorted list of weakly connected components, largest first.
@@ -48,13 +51,14 @@ def weakly_connected_components(G):
     [4, 3]
 
     If you only want the largest component, it's more efficient to
-    use max instead of sort.
+    use max instead of sort:
 
     >>> largest_cc = max(nx.weakly_connected_components(G), key=len)
 
     See Also
     --------
-    strongly_connected_components
+    components.connected_components
+    components.strongly_connected_components
 
     Notes
     -----
@@ -83,9 +87,16 @@ def number_weakly_connected_components(G):
     n : integer
         Number of weakly connected components
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
-    connected_components
+    weakly_connected_components
+    components.number_connected_components
+    components.number_strongly_connected_components
 
     Notes
     -----
@@ -112,6 +123,11 @@ def weakly_connected_component_subgraphs(G, copy=True):
     comp : generator
         A generator of graphs, one for each weakly connected component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     Generate a sorted list of weakly connected components, largest first.
@@ -123,14 +139,15 @@ def weakly_connected_component_subgraphs(G, copy=True):
     [4, 3]
 
     If you only want the largest component, it's more efficient to
-    use max instead of sort.
+    use max instead of sort:
 
     >>> Gc = max(nx.weakly_connected_component_subgraphs(G), key=len)
 
     See Also
     --------
-    strongly_connected_components
-    connected_components
+    weakly_connected_components
+    components.strongly_connected_component_subgraphs
+    components.connected_component_subgraphs
 
     Notes
     -----
@@ -162,11 +179,18 @@ def is_weakly_connected(G):
     connected : bool
         True if the graph is weakly connected, False otherwise.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
-    is_strongly_connected
-    is_semiconnected
-    is_connected
+    components.is_strongly_connected
+    components.is_semiconnected
+    components.is_connected
+    components.is_biconnected
+    weakly_connected_components
 
     Notes
     -----

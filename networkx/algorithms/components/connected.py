@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
-"""
-Connected components.
-"""
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Eben Kenah
+#          Aric Hagberg (hagberg@lanl.gov)
+#          Christopher Ellison
+"""Connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from ...utils import arbitrary_element
 
-__authors__ = "\n".join(['Eben Kenah',
-                         'Aric Hagberg <aric.hagberg@gmail.com>'
-                         'Christopher Ellison'])
 __all__ = [
     'number_connected_components',
     'connected_components',
@@ -38,6 +37,11 @@ def connected_components(G):
     comp : generator of sets
        A generator of sets of nodes, one for each component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     Generate a sorted list of connected components, largest first.
@@ -54,7 +58,8 @@ def connected_components(G):
 
     See Also
     --------
-    strongly_connected_components
+    components.strongly_connected_components
+    components.weakly_connected_components
 
     Notes
     -----
@@ -86,6 +91,11 @@ def connected_component_subgraphs(G, copy=True):
     comp : generator
       A generator of graphs, one for each connected component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -93,13 +103,15 @@ def connected_component_subgraphs(G, copy=True):
     >>> graphs = list(nx.connected_component_subgraphs(G))
 
     If you only want the largest connected component, it's more
-    efficient to use max than sort.
+    efficient to use max instead of sort:
 
     >>> Gc = max(nx.connected_component_subgraphs(G), key=len)
 
     See Also
     --------
     connected_components
+    components.strongly_connected_component_subgraphs
+    components.weakly_connected_component_subgraphs
 
     Notes
     -----
@@ -130,6 +142,8 @@ def number_connected_components(G):
     See Also
     --------
     connected_components
+    components.number_weakly_connected_components
+    components.number_strongly_connected_components
 
     Notes
     -----
@@ -153,6 +167,11 @@ def is_connected(G):
     connected : bool
       True if the graph is connected, false otherwise.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -161,6 +180,10 @@ def is_connected(G):
 
     See Also
     --------
+    components.is_strongly_connected
+    components.is_weakly_connected
+    components.is_semiconnected
+    components.is_biconnected
     connected_components
 
     Notes
@@ -190,6 +213,11 @@ def node_connected_component(G, n):
     -------
     comp : set
        A set of nodes in the component of G containing node n.
+
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
 
     See Also
     --------
