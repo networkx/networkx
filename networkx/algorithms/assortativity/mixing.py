@@ -166,13 +166,15 @@ def degree_mixing_matrix(G, x='out', y='in', weight=None,
 def numeric_mixing_matrix(G,attribute,nodes=None,normalized=True):
     """Return numeric mixing matrix for attribute.
 
+    The attribute must be an integer.
+
     Parameters
     ----------
     G : graph 
        NetworkX graph object.
 
     attribute : string 
-       Node attribute key.
+       Node attribute key.  The corresponding attribute must be an integer.
 
     nodes: list or iterable (optional)
         Build the matrix only with nodes in container. The default is all nodes.
