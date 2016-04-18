@@ -149,11 +149,11 @@ class TestDominanceFrontiers(object):
         edges = [(1, 2), (2, 3), (2, 4), (2, 6), (3, 5), (4, 5), (5, 2)]
         G = nx.DiGraph(edges)
         assert_equal(nx.dominance_frontiers(G, 1),
-                     {1: [], 2: [], 3: [5], 4: [5], 5: [2], 6: []})
+                     {1: [], 2: [2], 3: [5], 4: [5], 5: [2], 6: []})
         # Test postdominance.
         with nx.utils.reversed(G):
             assert_equal(nx.dominance_frontiers(G, 6),
-                         {1: [], 2: [], 3: [2], 4: [2], 5: [2], 6: []})
+                         {1: [], 2: [2], 3: [2], 4: [2], 5: [2], 6: []})
 
     def test_boost_example(self):
         # Graph taken from Figure 1 of
@@ -162,10 +162,97 @@ class TestDominanceFrontiers(object):
                  (5, 7), (6, 4)]
         G = nx.DiGraph(edges)
         assert_equal(nx.dominance_frontiers(G, 0),
-                     {0: [], 1: [], 2: [7], 3: [7], 4: [7], 5: [7], 6: [4],
+                     {0: [], 1: [], 2: [7], 3: [7], 4: [4,7], 5: [7], 6: [4],
                       7: []})
         # Test postdominance.
         with nx.utils.reversed(G):
             assert_equal(nx.dominance_frontiers(G, 7),
-                         {0: [], 1: [], 2: [1], 3: [1], 4: [1], 5: [1], 6: [4],
-                          7: []})
+                         {0: [], 1: [], 2: [1], 3: [1], 4: [1,4], 5: [1],
+                          6: [4], 7: []})
+
+
+    def test_discard_issue(self):
+        # https://github.com/networkx/networkx/issues/2071
+        g = nx.DiGraph()
+        g.add_edges_from([
+            ('b0','b1'),
+            ('b1', 'b2'),
+            ('b2', 'b3'),
+            ('b3','b1'),
+            ('b1','b5'),
+            ('b5', 'b6'),
+            ('b5', 'b8'),
+            ('b6', 'b7'),
+            ('b8', 'b7'),
+            ('b7', 'b3'),
+            ('b3', 'b4')
+        ]
+        )
+        df = nx.dominance_frontiers(g, 'b0')
+        assert_equal(df, {'b4': [], 'b5': ['b3'], 'b6': ['b7'], 'b7': ['b3'],
+                          'b0': [], 'b1': ['b1'], 'b2': ['b3'], 'b3': ['b1'],
+                          'b8': ['b7']})
+
+    def test_loop(self):
+        g = nx.DiGraph()
+        g.add_edges_from([('a','b'),('b','c'),('b','a')])
+        df = nx.dominance_frontiers(g, 'a')
+        # should df['a']=['a']?
+        assert_equal(df, {'a': [], 'b': [], 'c': []})
+
+    def test_missing_immediate_doms(self):
+        # see https://github.com/networkx/networkx/issues/2070
+        g = nx.DiGraph()
+        edges = [
+            ('entry_1', 'b1'),
+            ('b1', 'b2'),
+            ('b2', 'b3'),
+            ('b3', 'exit'),
+            ('entry_2', 'b3')
+        ]
+
+        # entry_1
+        #   |
+        #   b1
+        #   |
+        #   b2  entry_2
+        #    |  /
+        #    b3
+        #    |
+        #   exit
+
+        g.add_edges_from(edges)
+        # formerly raised KeyError on entry_2 when parsing b3
+        # because entry_2 does not have immediate doms (no path)
+        nx.dominance_frontiers(g,'entry_1')
+
+    def test_loops_larger(self):
+        # from
+        # http://ecee.colorado.edu/~waite/Darmstadt/motion.html
+        g = nx.DiGraph()
+        edges = [
+            ('entry', 'exit'),
+            ('entry', '1'),
+            ('1', '2'),
+            ('2', '3'),
+            ('3', '4'),
+            ('4', '5'),
+            ('5', '6'),
+            ('6', 'exit'),
+            ('6', '2'),
+            ('5', '3'),
+            ('4', '4')
+        ]
+
+        g.add_edges_from(edges)
+        df = nx.dominance_frontiers(g,'entry')
+        answer = {'entry': [],
+                  '1': ['exit'],
+                  '2': ['exit', '2'],
+                  '3': ['exit', '3', '2'],
+                  '4': ['exit', '3', '2'], # missing 4?
+                  '5': ['exit', '3', '2'],
+                  '6': ['exit', '2'],
+                  'exit': []}
+        for n in df:
+            assert_equal(set(df[n]),set(answer[n]))

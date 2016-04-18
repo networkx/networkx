@@ -132,11 +132,10 @@ def dominance_frontiers(G, start):
         if len(G.pred[u]) - int(u in G.pred[u]) >= 2:
             p = set()
             for v in G.pred[u]:
-                while v != idom[u] and v not in p:
+                while v != idom[u] and v in idom and v not in p:
                     p.add(v)
                     v = idom[v]
-            p.discard(u)
-            for v in p:
-                df[v].append(u)
+            for w in p:
+                df[w].append(u)
 
     return df
