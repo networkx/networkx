@@ -57,8 +57,8 @@ def weakly_connected_components(G):
 
     See Also
     --------
-    components.connected_components
-    components.strongly_connected_components
+    connected_components
+    strongly_connected_components
 
     Notes
     -----
@@ -95,8 +95,8 @@ def number_weakly_connected_components(G):
     See Also
     --------
     weakly_connected_components
-    components.number_connected_components
-    components.number_strongly_connected_components
+    number_connected_components
+    number_strongly_connected_components
 
     Notes
     -----
@@ -146,8 +146,8 @@ def weakly_connected_component_subgraphs(G, copy=True):
     See Also
     --------
     weakly_connected_components
-    components.strongly_connected_component_subgraphs
-    components.connected_component_subgraphs
+    strongly_connected_component_subgraphs
+    connected_component_subgraphs
 
     Notes
     -----
@@ -186,10 +186,10 @@ def is_weakly_connected(G):
 
     See Also
     --------
-    components.is_strongly_connected
-    components.is_semiconnected
-    components.is_connected
-    components.is_biconnected
+    is_strongly_connected
+    is_semiconnected
+    is_connected
+    is_biconnected
     weakly_connected_components
 
     Notes

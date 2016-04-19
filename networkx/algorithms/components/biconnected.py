@@ -63,10 +63,10 @@ def is_biconnected(G):
     articulation_points
     biconnected_component_edges
     biconnected_component_subgraphs
-    components.is_strongly_connected
-    components.is_weakly_connected
-    components.is_connected
-    components.is_semiconnected
+    is_strongly_connected
+    is_weakly_connected
+    is_connected
+    is_semiconnected
 
     Notes
     -----
