@@ -14,7 +14,7 @@ Layout
 
 Node positioning algorithms for graph drawing.
 
-For `random_layout` the possible resulting shape
+For `random_layout()` the possible resulting shape
 is a square of side [0, scale] (default: [0, 1])
 Changing `center` shifts the layout by that amount.
 
@@ -24,6 +24,7 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
+from __future__ import division
 import collections
 import networkx as nx
 
@@ -68,18 +69,18 @@ def random_layout(G, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
-       A position will be assigned to every node in G.
+        A position will be assigned to every node in G.
 
     center : array-like or None
-       Coordinate pair around which to center the layout.
+        Coordinate pair around which to center the layout.
 
     dim : int
-       Dimension of layout.
+        Dimension of layout.
 
     Returns
     -------
     pos : dict
-       A dictionary of positions keyed by node
+        A dictionary of positions keyed by node
 
     Examples
     --------
@@ -110,10 +111,10 @@ def circular_layout(G, scale=1, center=None, dim=2):
         Scale factor for positions
 
     center : array-like or None
-       Coordinate pair around which to center the layout.
+        Coordinate pair around which to center the layout.
 
     dim : int
-       Dimension of layout, currently only dim=2 is supported
+        Dimension of layout, currently only dim=2 is supported
 
     Returns
     -------
@@ -164,10 +165,10 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
         Scale factor for positions
 
     center : array-like or None
-       Coordinate pair around which to center the layout.
+        Coordinate pair around which to center the layout.
 
     dim : int
-       Dimension of layout, currently only dim=2 is supported
+        Dimension of layout, currently only dim=2 is supported
 
     Returns
     -------
@@ -234,20 +235,20 @@ def fruchterman_reingold_layout(G, k=None,
     G : NetworkX graph or list of nodes
 
     k : float (default=None)
-       Optimal distance between nodes.  If None the distance is set to
-       1/sqrt(n) where n is the number of nodes.  Increase this value
-       to move nodes farther apart.
+        Optimal distance between nodes.  If None the distance is set to
+        1/sqrt(n) where n is the number of nodes.  Increase this value
+        to move nodes farther apart.
 
     pos : dict or None  optional (default=None)
-       Initial positions for nodes as a dictionary with node as keys
-       and values as a coordinate list or tuple.  If None, then use
-       random initial positions.
+        Initial positions for nodes as a dictionary with node as keys
+        and values as a coordinate list or tuple.  If None, then use
+        random initial positions.
 
     fixed : list or None  optional (default=None)
-      Nodes to keep fixed at initial position.
+        Nodes to keep fixed at initial position.
 
     iterations : int  optional (default=50)
-       Number of iterations of spring-force relaxation
+        Number of iterations of spring-force relaxation
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
@@ -258,10 +259,10 @@ def fruchterman_reingold_layout(G, k=None,
         in a box of size [0, scale] x [0, scale].
 
     center : array-like or None
-       Coordinate pair around which to center the layout.
+        Coordinate pair around which to center the layout.
 
     dim : int
-       Dimension of layout
+        Dimension of layout
 
     Returns
     -------
@@ -482,10 +483,10 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
         Scale factor for positions
 
     center : array-like or None
-       Coordinate pair around which to center the layout.
+        Coordinate pair around which to center the layout.
 
     dim : int
-       Dimension of layout
+        Dimension of layout
 
     Returns
     -------
