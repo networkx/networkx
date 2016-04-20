@@ -50,10 +50,10 @@ def is_semiconnected(G):
 
     See Also
     --------
-    components.is_strongly_connected
-    components.is_weakly_connected
-    components.is_connected
-    components.is_biconnected
+    is_strongly_connected
+    is_weakly_connected
+    is_connected
+    is_biconnected
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
