@@ -9,6 +9,8 @@ import random
 
 from networkx.utils import groups
 
+__all__ = ['asyn_lpa_communities']
+
 
 def asyn_lpa_communities(G, weight=None):
     """Returns communities in `G` as detected by asynchronous label
