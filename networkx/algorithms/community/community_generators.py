@@ -43,6 +43,8 @@ except ImportError:
 
 import networkx as nx
 
+__all__ = ['LFR_benchmark_graph']
+
 
 def _zipf_rv_below(gamma, xmin, threshold):
     """Returns a random value chosen from the Zipf distribution,
