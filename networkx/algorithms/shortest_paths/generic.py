@@ -156,7 +156,7 @@ def shortest_path_length(G, source=None, target=None, weight=None):
     source : node, optional
         Starting node for path.
         If not specified, compute shortest path lengths using all nodes as
-        source nodes.i
+        source nodes.
 
     target : node, optional
         Ending node for path.
