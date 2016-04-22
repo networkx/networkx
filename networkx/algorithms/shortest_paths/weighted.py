@@ -1003,7 +1003,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, w
 
     """
     if source not in G:
-        raise KeyError("Node %s is not found in the graph" % source)
+        raise nx.NodeNotFound("Node %s is not found in the graph" % source)
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
@@ -1532,7 +1532,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
     """
     if source not in G:
-        raise KeyError("Node %s is not found in the graph" % source)
+        raise nx.NodeNotFound("Node %s is not found in the graph" % source)
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
@@ -1767,6 +1767,10 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     shortest_path
     shortest_path_length
     """
+    if source not in G or target not in G:
+        msg = 'Either source {} or target {} is not in G'
+        raise nx.NodeNotFound(msg.format(source, target))
+
     if source == target:
         return (0, [source])
     push = heappush
