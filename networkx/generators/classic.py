@@ -570,8 +570,8 @@ def triangular_lattice(rows, cols, sidelength, offset=(0, 0), sig_dig=2,
 
     dx = sidelength
     a = sqrt(3) / 2.
-    for row in xrange(rows):
-        for col in xrange(cols):
+    for row in range(rows):
+        for col in range(cols):
             # triangle points down if same parity, else up
             # set (xstart, ystart) to be leftmost point of triangle
             xstart = offset[0] + sidelength * col / 2.
@@ -594,12 +594,12 @@ def triangular_lattice(rows, cols, sidelength, offset=(0, 0), sig_dig=2,
         xmin = round(offset[0], sig_dig)
         xmax = round(offset[0] + (cols + 1) * sidelength / 2, sig_dig)
         leftmost = [(xmin, round(offset[1] + sidelength * a * (val + 1),
-                    sig_dig)) for val in xrange(rows) if val % 2 == 0]
+                    sig_dig)) for val in range(rows) if val % 2 == 0]
         left2ndmost = [(round(xmin + sidelength / 2, sig_dig),
                        round(y - a * sidelength, sig_dig))
                        for (x, y) in leftmost]
         rightmost = [(xmax, round(offset[1] + sidelength * a * val, sig_dig))
-                     for val in xrange(rows) if val % 2 == 0]
+                     for val in range(rows) if val % 2 == 0]
         right2ndmost = [(round(xmax - sidelength / 2., sig_dig),
                         round(y + a * sidelength, sig_dig))
                         for (x, y) in rightmost]
@@ -613,9 +613,9 @@ def triangular_lattice(rows, cols, sidelength, offset=(0, 0), sig_dig=2,
         ymin = round(offset[1], sig_dig)
         ymax = round(offset[1] + a * sidelength * rows, sig_dig)
         bottomrow = [(round(offset[0] + sidelength * (val + 1) / 2., sig_dig),
-                      ymin) for val in xrange(cols + 1) if val % 2 == 0]
+                      ymin) for val in range(cols + 1) if val % 2 == 0]
         toprow = [(round(offset[0] + (sidelength * val) / 2., sig_dig), ymax)
-                  for val in xrange(cols + 1) if val % 2 == 0]
+                  for val in range(cols + 1) if val % 2 == 0]
         G.add_edges_from(zip(bottomrow, toprow))
         G.add_edges_from(zip(bottomrow[:-1], toprow[1:]))
         # There's one pair missed out in joining the rows, but it's the same
@@ -675,11 +675,11 @@ def hexagonal_lattice(rows, cols, sidelength=1., offset=(0, 0), sig_dig=2,
 
     # From the triangular lattice, remove nodes to leave hexagonal lattice behind
     a = sqrt(3) / 2.
-    for row in xrange(-1, rows + 1):
+    for row in range(-1, rows + 1):
         y = round(offset[1] + (row + 1) * a * sidelength, sig_dig)
         nodes_to_delete = [(round(offset[0] + (col * 3. / 2. + 1) * sidelength,
                            sig_dig), y)
-                           for col in xrange(cols) if col % 2 == row % 2]
+                           for col in range(cols) if col % 2 == row % 2]
         G.remove_nodes_from(nodes_to_delete)
 
     # if it's periodic, add edges between top and bottom and left and right.
@@ -697,9 +697,9 @@ def hexagonal_lattice(rows, cols, sidelength=1., offset=(0, 0), sig_dig=2,
         xmax = round(offset[0] + (3 * (cols + 1) // 2 - 1) * sidelength,
                      sig_dig)
         leftrow = [(xmin, round(offset[1] + (val + 1) * a * sidelength,
-                   sig_dig)) for val in xrange(rows + 1) if val % 2 == 0]
+                   sig_dig)) for val in range(rows + 1) if val % 2 == 0]
         rightrow = [(xmax, round(offset[1] + (val + 1) * a * sidelength,
-                    sig_dig)) for val in xrange(rows + 1) if val % 2 == 0]
+                    sig_dig)) for val in range(rows + 1) if val % 2 == 0]
         G.add_edges_from(zip(leftrow, rightrow))
         G.name = "periodic_hexagonal_lattice(%d, %d)" % (rows, cols)
     return G
