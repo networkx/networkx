@@ -14,7 +14,6 @@ from heapq import heappush, heappop
 from itertools import count
 
 import networkx as nx
-from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = ['astar_path', 'astar_path_length']
@@ -69,6 +68,10 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     shortest_path, dijkstra_path
 
     """
+    if source not in G or target not in G:
+        msg = 'Either source {} or target {} is not in G'
+        raise nx.NodeNotFound(msg.format(source, target))
+
     if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
         def heuristic(u, v):
@@ -159,5 +162,9 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
     astar_path
 
     """
+    if source not in G or target not in G:
+        msg = 'Either source {} or target {} is not in G'
+        raise nx.NodeNotFound(msg.format(source, target))
+
     path = astar_path(G, source, target, heuristic, weight)
     return sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))

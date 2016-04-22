@@ -306,8 +306,8 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.single_source_bellman_ford(G, 0), ({0: 0}, {0: [0]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0), ({0: [None]}, {0: 0}))
         assert_equal(nx.goldberg_radzik(G, 0), ({0: None}, {0: 0}))
-        assert_raises(KeyError, nx.bellman_ford_predecessor_and_distance, G, 1)
-        assert_raises(KeyError, nx.goldberg_radzik, G, 1)
+        assert_raises(nx.NodeNotFound, nx.bellman_ford_predecessor_and_distance, G, 1)
+        assert_raises(nx.NodeNotFound, nx.goldberg_radzik, G, 1)
 
     def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())

@@ -92,3 +92,8 @@ API changes
        # recommended
        >>> tree.minimum_spanning_tree(G, algorithm='kruskal', weight='mass')
        >>> tree.minimum_spanning_edges(G, algorithm='prim', weight='mass')
+
+* [`#1445 <https://github.com/networkx/networkx/pull/1445>`_]
+   Most of the shortest_path algorithms now raise a NodeNotFound exception
+   when a source or a target are not present in the graph.
+
