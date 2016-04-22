@@ -147,9 +147,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     all_shortest_paths, shortest_path
     """
     if source not in G:
-        raise nx.NetworkXError('source node %s not in graph'%source)
+        raise nx.NodeNotFound('source node %s not in graph'%source)
     if target not in G:
-        raise nx.NetworkXError('target node %s not in graph'%target)
+        raise nx.NodeNotFound('target node %s not in graph'%target)
     if cutoff is None:
         cutoff = len(G)-1
     if G.is_multigraph():
@@ -286,10 +286,10 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     """
     if source not in G:
-        raise nx.NetworkXError('source node %s not in graph' % source)
+        raise nx.NodeNotFound('source node %s not in graph' % source)
 
     if target not in G:
-        raise nx.NetworkXError('target node %s not in graph' % target)
+        raise nx.NodeNotFound('target node %s not in graph' % target)
 
     if weight is None:
         length_func = len
@@ -365,7 +365,7 @@ def _bidirectional_shortest_path(G, source, target,
     """Return the shortest path between source and target ignoring
        nodes and edges in the containers ignore_nodes and ignore_edges.
 
-    This is a custom modification of the standard bidirectional shortest 
+    This is a custom modification of the standard bidirectional shortest
     path implementation at networkx.algorithms.unweighted
 
     Parameters
@@ -385,7 +385,7 @@ def _bidirectional_shortest_path(G, source, target,
        edges to ignore, optional
 
     weight : None
-       This function accepts a weight argument for convinience of 
+       This function accepts a weight argument for convinience of
        shortest_simple_paths function. It will be ignored.
 
     Returns
@@ -524,7 +524,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     """Dijkstra's algorithm for shortest paths using bidirectional search.
 
     This function returns the shortest path between source and target
-    ignoring nodes and edges in the containers ignore_nodes and 
+    ignoring nodes and edges in the containers ignore_nodes and
     ignore_edges.
 
     This is a custom modification of the standard Dijkstra bidirectional
