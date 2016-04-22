@@ -297,6 +297,16 @@ class TestGeneratorClassic():
         assert_equal(number_of_nodes(g), 2*3)
         assert_true(is_isomorphic(g, grid_graph([2,3])))
 
+    def test_triangular_lattice(self):
+        G = triangular_lattice(3,4,.1,(.1,.1),periodic=True)
+        assert_equal(number_of_nodes(G), 19)
+        assert_equal(G.size(), 36)
+
+    def test_hexagonal_lattice(self):
+        G = hexagonal_lattice(4,3,.1,(.1,.1),periodic=True)
+        assert_equal(number_of_nodes(G), 40)
+        assert_equal(G.size(), 80)
+
     def test_hypercube_graph(self):
         for n, G in [(0, null_graph()), (1, path_graph(2)),
                      (2, cycle_graph(4)), (3, cubical_graph())]:

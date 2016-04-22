@@ -1,3 +1,13 @@
+#    Copyright (C) 2004-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Pieter Swart (swart@lanl.gov)
+#          Joel Miller (jmiller@lanl.gov)
 """
 Generators for some classic graphs.
 
@@ -10,17 +20,10 @@ as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-# Authors: Aric Hagberg (hagberg@lanl.gov) and Pieter Swart (swart@lanl.gov)
-
-#    Copyright (C) 2004-2016 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from __future__ import division
 
 import itertools
+from math import sqrt
 
 import networkx as nx
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph
@@ -41,19 +44,21 @@ __all__ = ['balanced_tree',
            'full_rary_tree',
            'grid_graph',
            'grid_2d_graph',
+           'hexagonal_lattice',
            'hypercube_graph',
            'ladder_graph',
            'lollipop_graph',
            'null_graph',
            'path_graph',
            'star_graph',
+           'triangular_lattice',
            'trivial_graph',
            'wheel_graph']
 
 
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 #   Some Classic Graphs
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 def _tree_edges(n, r):
     # helper function for trees
@@ -164,8 +169,8 @@ def barbell_graph(m1, m2, create_using=None):
         `m1, ..., m1+m2-1` for the path,
         and `m1+m2, ..., 2*m1+m2-1` for the right barbell.
 
-    The 3 subgraphs are joined via the edges `(m1-1, m1)` and 
-    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete 
+    The 3 subgraphs are joined via the edges `(m1-1, m1)` and
+    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete
     graphs joined together.
 
     This graph is an extremal example in David Aldous
@@ -276,9 +281,9 @@ def circulant_graph(n, offsets, create_using=None):
 
     Examples
     --------
-    Many well-known graph families are subfamilies of the circulant graphs; for
-    example, to generate the cycle graph on n points, we connect every vertex to
-    every other at offset plus or minus one. For n = 10,
+    Many well-known graph families are subfamilies of the circulant graphs;
+    for example, to generate the cycle graph on n points, we connect every
+    vertex to every other at offset plus or minus one. For n = 10,
 
     >>> import networkx
     >>> G = networkx.generators.classic.circulant_graph(10, [1])
@@ -434,7 +439,7 @@ def empty_graph(n=0, create_using=None):
 @nodes_or_number([0, 1])
 def grid_2d_graph(m, n, periodic=False, create_using=None):
     """ Return the 2d grid graph of mxn nodes
-    
+
     The grid graph has each node connected to its four nearest neighbors.
 
     Parameters
@@ -488,7 +493,7 @@ def grid_graph(dim, periodic=False):
 
     E.g. G=grid_graph(dim=[2, 3]) produces a 2x3 grid graph.
 
-    E.g. G=grid_graph(dim=[range(7, 9), range(3, 6)]) produces a 2x3 grid graph.
+    E.g. G=grid_graph(dim=[range(7, 9), range(3, 6)]) produces a 2x3 grid graph
 
     If periodic=True then join grid edges with periodic boundary conditions.
 
@@ -521,6 +526,185 @@ def grid_graph(dim, periodic=False):
     return H
 
 
+def triangular_lattice(rows, cols, sidelength, offset=(0, 0), sig_dig=2,
+                     periodic=False, create_using=None):
+    """Returns a triangular lattice graph with `rows` rows and `cols` columns.
+
+    Each triangle has edges of length sidelength.
+    All triangles either point up or down.
+    A row is a horizontal row of triangles that point up and point down
+    - their center points are in a line
+    A column is a vertical column of triangles that point up and point down
+    - again their center points are in a line.
+
+    The node names are given by their coordinates as tuples, rounded to
+    sig_dig decimal places.
+    This can be offset in space with offset=(xshift,yshift).
+
+    Parameters
+    ----------
+    rows,cols : numbers
+        The number of rows and columns of triangles.
+    sidelength : number
+        length of the edges of all three sides of each triangle
+    offset : 2-tuple of numbers
+        Shift the coordinates by this 2-tuple (xshift, yshift)
+    sig_dig : int
+        Number of digits after the decimal to keep for all positions.
+    periodic : bool
+        If True, connect the sides of the lattice to each other.
+    create_using : Networkx Graph
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
+
+    Returns
+    -------
+    NetworkX Graph
+
+    """
+    G = nx.empty_graph(0, create_using)
+    G.name = "triangular(%d, %d)" % (rows, cols)
+    if periodic and (rows % 2 != 1 or cols % 2 != 0):
+        msg = "periodic triangular lattice must have odd rows and even columns"
+        raise nx.NetworkXError(msg)
+
+    dx = sidelength
+    a = sqrt(3) / 2.
+    for row in xrange(rows):
+        for col in xrange(cols):
+            # triangle points down if same parity, else up
+            # set (xstart, ystart) to be leftmost point of triangle
+            xstart = offset[0] + sidelength * col / 2.
+
+            if row % 2 == col % 2:  # points down
+                ystart = offset[1] + (row + 1) * a
+                dy = -a  # since it points down
+            else:  # points up,
+                ystart = offset[1] + row * a
+                dy = a  # it points up
+            # The node names will be coordinates.  We need to round them
+            # carefully otherwise numerical precision leads to confusion
+            node1 = (round(xstart, sig_dig), round(ystart, sig_dig))
+            node2 = (round(xstart + dx, sig_dig), round(ystart, sig_dig))
+            node3 = (round(xstart + dx / 2, sig_dig),
+                     round(ystart + dy, sig_dig))
+            G.add_edges_from([(node1, node2), (node1, node3), (node2, node3)])
+
+    if periodic:  # We need to add a bunch more edges.
+        xmin = round(offset[0], sig_dig)
+        xmax = round(offset[0] + (cols + 1) * sidelength / 2, sig_dig)
+        leftmost = [(xmin, round(offset[1] + sidelength * a * (val + 1),
+                    sig_dig)) for val in xrange(rows) if val % 2 == 0]
+        left2ndmost = [(round(xmin + sidelength / 2, sig_dig),
+                       round(y - a * sidelength, sig_dig))
+                       for (x, y) in leftmost]
+        rightmost = [(xmax, round(offset[1] + sidelength * a * val, sig_dig))
+                     for val in xrange(rows) if val % 2 == 0]
+        right2ndmost = [(round(xmax - sidelength / 2., sig_dig),
+                        round(y + a * sidelength, sig_dig))
+                        for (x, y) in rightmost]
+        G.add_edges_from(zip(leftmost, rightmost))
+        G.add_edges_from(zip(leftmost, right2ndmost))
+        G.add_edges_from(zip(leftmost[:-1], rightmost[1:]))
+        G.add_edges_from(zip(left2ndmost, rightmost))
+        # one pair doesn't get joined up in the zipped lists
+        G.add_edge(leftmost[-1], rightmost[0])
+
+        ymin = round(offset[1], sig_dig)
+        ymax = round(offset[1] + a * sidelength * rows, sig_dig)
+        bottomrow = [(round(offset[0] + sidelength * (val + 1) / 2., sig_dig),
+                      ymin) for val in xrange(cols + 1) if val % 2 == 0]
+        toprow = [(round(offset[0] + (sidelength * val) / 2., sig_dig), ymax)
+                  for val in xrange(cols + 1) if val % 2 == 0]
+        G.add_edges_from(zip(bottomrow, toprow))
+        G.add_edges_from(zip(bottomrow[:-1], toprow[1:]))
+        # There's one pair missed out in joining the rows, but it's the same
+        # pair that was handled specially for the columns.
+
+        G.name = "periodic_triangular_lattice(%d, %d)" % (rows, cols)
+    return G
+
+
+def hexagonal_lattice(rows, cols, sidelength=1., offset=(0, 0), sig_dig=2,
+                      periodic=False, create_using=None):
+    """Return a hexagonal lattice having `rows` rows and `cols` columns.
+
+    Node names are their coordinates rounded to sig_dig decimal places.
+    The side lengths are sidelength.
+    It can be offset with offset=(xshift,yshift).
+
+    This works by generating a triangular lattice and then deleting some
+    nodes.  There are sometimes some nodes with degree 1, depending on
+    how many rows/columns.   These can be removed by G = nx.k_core(G, 2),
+    or by simply deleting all degree 1 nodes.
+    optional argument periodic = True will connect boundaries.
+
+    Parameters
+    ----------
+    rows,cols : numbers
+        The number of rows and columns of hexagons.
+    sidelength : number
+        length of the edges of all six sides of each hexagon
+    offset : 2-tuple of numbers
+        Shift the coordinates by this 2-tuple (xshift, yshift)
+    sig_dig : int
+        Number of digits after the decimal to keep for all positions.
+    periodic : bool
+        If True, connect the sides of the lattice to each other.
+    create_using : Networkx Graph
+        If provided this graph is cleared of nodes and edges and filled
+        with the new graph. Usually used to set the type of the graph.
+
+    Returns
+    -------
+    NetworkX Graph
+
+    """
+    G = nx.empty_graph(0, create_using)
+    G.name = "hexagonal_lattice(%d, %d)" % (rows, cols)
+    if rows == 0 or cols == 0:
+        return G
+    if periodic and (rows % 2 != 0 or cols % 2 != 1):
+        msg = "periodic hexagonal lattice must have even rows and odd columns"
+        raise nx.NetworkXError(msg)
+
+    trows = rows + 1
+    tcols = 3 * cols
+    G = triangular_lattice(trows, tcols, sidelength=sidelength, offset=offset,
+                         sig_dig=sig_dig, create_using=create_using)
+
+    # From the triangular lattice, remove nodes to leave hexagonal lattice behind
+    a = sqrt(3) / 2.
+    for row in xrange(-1, rows + 1):
+        y = round(offset[1] + (row + 1) * a * sidelength, sig_dig)
+        nodes_to_delete = [(round(offset[0] + (col * 3. / 2. + 1) * sidelength,
+                           sig_dig), y)
+                           for col in xrange(cols) if col % 2 == row % 2]
+        G.remove_nodes_from(nodes_to_delete)
+
+    # if it's periodic, add edges between top and bottom and left and right.
+    if periodic:
+        ymin = round(offset[1], sig_dig)
+        ymax = round(offset[1] + (rows + 1) * a * sidelength, sig_dig)
+        bottomrow = [(round(offset[0] + sidelength / 2. + val * sidelength,
+                     sig_dig), ymin) for val in range(3 * (cols + 1) // 2)
+                     if val % 3 != 2]
+        toprow = [(round(offset[0] + val * sidelength, sig_dig), ymax)
+                  for val in range(3 * (cols + 1) // 2) if val % 3 != 1]
+        G.add_edges_from(zip(bottomrow, toprow))
+
+        xmin = round(offset[0], sig_dig)
+        xmax = round(offset[0] + (3 * (cols + 1) // 2 - 1) * sidelength,
+                     sig_dig)
+        leftrow = [(xmin, round(offset[1] + (val + 1) * a * sidelength,
+                   sig_dig)) for val in xrange(rows + 1) if val % 2 == 0]
+        rightrow = [(xmax, round(offset[1] + (val + 1) * a * sidelength,
+                    sig_dig)) for val in xrange(rows + 1) if val % 2 == 0]
+        G.add_edges_from(zip(leftrow, rightrow))
+        G.name = "periodic_hexagonal_lattice(%d, %d)" % (rows, cols)
+    return G
+
+
 def hypercube_graph(n):
     """Return the n-dimensional hypercube.
 
@@ -536,7 +720,7 @@ def hypercube_graph(n):
 def ladder_graph(n, create_using=None):
     """Return the Ladder graph of length n.
 
-    This is two rows of n nodes, with
+    This is two paths of n nodes, with
     each pair connected by a single edge.
 
     Node labels are the integers 0 to 2*n - 1.
@@ -572,7 +756,7 @@ def lollipop_graph(m, n, create_using=None):
 
     Notes
     =====
-    The 2 subgraphs are joined via an edge (m-1, m).  
+    The 2 subgraphs are joined via an edge (m-1, m).
     If n=0, this is merely a complete graph.
 
     (This graph is an extremal example in David Aldous and Jim
@@ -642,7 +826,7 @@ def path_graph(n, create_using=None):
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
     """ Return the star graph
-    
+
     The star graph consists of one center node connected to n outer nodes.
 
     Parameters
@@ -683,7 +867,7 @@ def trivial_graph(create_using=None):
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """ Return the wheel graph
-    
+
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
 
     Parameters
