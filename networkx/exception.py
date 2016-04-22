@@ -53,8 +53,5 @@ class NetworkXUnbounded(NetworkXAlgorithmError):
 class NetworkXNotImplemented(NetworkXException):
     """Exception raised by algorithms not implemented for a type of graph."""
 
-class NotFound(NetworkXException):
-    """Exception"""
-
-class NodeNotFound(NotFound):
-    """Exception raised if node is not present in the graph"""
+class NodeNotFound(NetworkXException):
+    """Exception raised if requested node is not present in the graph"""
