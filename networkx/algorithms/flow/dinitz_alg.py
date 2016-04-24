@@ -177,7 +177,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
         target_in_previous_layer = False
         while queue and not target_in_previous_layer:
             u = queue.popleft()
-            for v in G[u]:
+            for v in R[u]:
                 attr = R.succ[u][v]
                 if v not in rank and attr['capacity'] - attr['flow'] > 0:
                     rank[v] = rank[u] + 1
@@ -188,7 +188,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
     def depth_first_search(G, R, u, t, flow, rank):
         if u == t:
             return flow
-        for v in (n for n in G[u] if n in rank and rank[n] == rank[u] + 1):
+        for v in (n for n in R[u] if n in rank and rank[n] == rank[u] + 1):
             attr = R.succ[u][v]
             if attr['capacity'] > attr['flow']:
                 min_flow = min(flow, attr['capacity'] - attr['flow'])
