@@ -6,6 +6,8 @@
 #
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
+#
+# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Dinitz' algorithm for maximum flow problems.
 """
@@ -170,35 +172,34 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
     if cutoff is None:
         cutoff = INF
 
+    R_succ = R.succ
+
     def breath_first_search(G, R, s, t):
         rank = {}
         rank[s] = 0
         queue = deque([s])
-        target_in_previous_layer = False
-        while queue and not target_in_previous_layer:
+        while queue:
+            if t in rank:
+                break
             u = queue.popleft()
-            for v in R[u]:
-                attr = R.succ[u][v]
+            for v in R_succ[u]:
+                attr = R_succ[u][v]
                 if v not in rank and attr['capacity'] - attr['flow'] > 0:
                     rank[v] = rank[u] + 1
                     queue.append(v)
-                    target_in_previous_layer = t in rank and rank[t] < rank[v]
         return rank
 
     def depth_first_search(G, R, u, t, flow, rank):
         if u == t:
             return flow
-        for v in (n for n in R[u] if n in rank and rank[n] == rank[u] + 1):
-            attr = R.succ[u][v]
+        for v in (n for n in R_succ[u] if n in rank and rank[n] == rank[u] + 1):
+            attr = R_succ[u][v]
             if attr['capacity'] > attr['flow']:
                 min_flow = min(flow, attr['capacity'] - attr['flow'])
                 this_flow = depth_first_search(G, R, v, t, min_flow, rank)
-                if this_flow * 2 > INF:
-                    raise nx.NetworkXUnbounded(
-                        'Infinite capacity path, flow unbounded above.')
                 if this_flow > 0:
-                    R.succ[u][v]['flow'] += this_flow
-                    R.succ[v][u]['flow'] -= this_flow
+                    R_succ[u][v]['flow'] += this_flow
+                    R_succ[v][u]['flow'] -= this_flow
                     return this_flow
         return 0
 
@@ -209,7 +210,10 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
             break
         while flow_value < cutoff:
             blocking_flow = depth_first_search(G, R, s, t, INF, rank)
-            if blocking_flow == 0:
+            if blocking_flow * 2 > INF:
+                raise nx.NetworkXUnbounded(
+                        'Infinite capacity path, flow unbounded above.')
+            elif blocking_flow == 0:
                 break
             flow_value += blocking_flow
 
