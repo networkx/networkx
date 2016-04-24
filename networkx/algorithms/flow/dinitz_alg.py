@@ -207,7 +207,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
         rank = breath_first_search(G, R, s, t)
         if t not in rank:
             break
-        while True:
+        while flow_value < cutoff:
             blocking_flow = depth_first_search(G, R, s, t, INF, rank)
             if blocking_flow == 0:
                 break

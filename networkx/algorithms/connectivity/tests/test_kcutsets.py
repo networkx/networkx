@@ -2,14 +2,18 @@
 # Test for k-cutsets
 from operator import itemgetter
 from nose.tools import assert_equal, assert_false, assert_true, assert_raises
+
 import networkx as nx
+from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
-from networkx.algorithms.flow import (
-    edmonds_karp,
-    shortest_augmenting_path,
-    preflow_push,
-)
+
+flow_funcs = [
+    flow.dinitz,
+    flow.edmonds_karp,
+    flow.preflow_push,
+    flow.shortest_augmenting_path,
+]
 
 
 ##
@@ -204,7 +208,6 @@ def test_disconnected_graph():
 
 
 def test_alternative_flow_functions():
-    flow_funcs = [edmonds_karp, shortest_augmenting_path, preflow_push]
     graph_funcs = [graph_example_1, nx.davis_southern_women_graph]
     for graph_func in graph_funcs:
         G = graph_func()
