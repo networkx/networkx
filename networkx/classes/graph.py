@@ -803,14 +803,15 @@ class Graph(object):
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
         # set up attribute dictionary
+        edge_attr = {}
         if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
+            attr_dict = {}
+        try:
+                edge_attr.update(attr_dict)
+        except TypeError:
                 raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
+                        "The attr_dict argument must be a dictionary.")
+        edge_attr.update(attr)
         # add nodes
         if u not in self.node:
             self.adj[u] = self.adjlist_dict_factory()
@@ -820,7 +821,7 @@ class Graph(object):
             self.node[v] = {}
         # add the edge
         datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
-        datadict.update(attr_dict)
+        datadict.update(edge_attr)
         self.adj[u][v] = datadict
         self.adj[v][u] = datadict
 
@@ -866,14 +867,15 @@ class Graph(object):
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
         # set up attribute dict
+        edge_attr = {}
         if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
+            attr_dict = {}
+        try:
+                edge_attr.update(attr_dict)
+        except TypeError:
                 raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
+                        "The attr_dict argument must be a dictionary.")
+        edge_attr.update(attr)
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -892,7 +894,7 @@ class Graph(object):
                 self.adj[v] = self.adjlist_dict_factory()
                 self.node[v] = {}
             datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
-            datadict.update(attr_dict)
+            datadict.update(edge_attr)
             datadict.update(dd)
             self.adj[u][v] = datadict
             self.adj[v][u] = datadict

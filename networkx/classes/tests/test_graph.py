@@ -153,7 +153,7 @@ class BaseAttrGraphTester(BaseGraphTester):
         G.add_edge(1,2,foo=ll)
         G.add_edge(2,1,foo=ll)
         # attr_dict must be dict
-        assert_raises(networkx.NetworkXError,G.add_edge,0,1,attr_dict=[])
+        assert_raises(networkx.NetworkXError,G.add_edge,0,1,attr_dict=[1])
 
     def test_name(self):
         G=self.Graph(name='')
@@ -384,7 +384,7 @@ class BaseAttrGraphTester(BaseGraphTester):
         G=self.Graph()
         edges=[(1,2)]
         assert_raises(networkx.NetworkXError,G.add_edges_from,edges,
-                      attr_dict=[])
+                      attr_dict=[1])
 
     def test_to_undirected(self):
         G=self.K3
