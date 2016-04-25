@@ -449,19 +449,20 @@ class Graph(object):
         doesn't change on mutables.
         """
         # set up attribute dict
+        node_attr = {}
         if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
+            attr_dict = {}
+        try:
+                node_attr.update(attr_dict)
+        except TypeError:
                 raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
+                        "The attr_dict argument must be a dictionary.")
+        node_attr.update(attr)
         if n not in self.node:
             self.adj[n] = self.adjlist_dict_factory()
-            self.node[n] = attr_dict
+            self.node[n] = node_attr
         else:  # update attr even if node already exists
-            self.node[n].update(attr_dict)
+            self.node[n].update(node_attr)
 
     def add_nodes_from(self, nodes, **attr):
         """Add multiple nodes.
@@ -488,7 +489,20 @@ class Graph(object):
         >>> G.add_nodes_from('Hello')
         >>> K3 = nx.Graph([(0,1),(1,2),(2,0)])
         >>> G.add_nodes_from(K3)
-        >>> sorted(G.nodes(),key=str)
+        >>> sorted(G.nodes(        # set up attribute dict
+        if attr_dict is None:
+            attr_dict = attr
+        else:
+            try:
+                attr_dict.update(attr)
+            except AttributeError:
+                raise NetworkXError(
+                    "The attr_dict argument must be a dictionary.")
+        if n not in self.node:
+            self.adj[n] = self.adjlist_dict_factory()
+            self.node[n] = attr_dict
+        else:  # update attr even if node already exists
+            self.node[n].update(attr_dict)),key=str)
         [0, 1, 2, 'H', 'e', 'l', 'o']
 
         Use keywords to update specific node attributes for every node.

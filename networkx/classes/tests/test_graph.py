@@ -475,7 +475,7 @@ class TestGraph(BaseAttrGraphTester):
         G.add_node(1,c='red')
         G.add_node(2,{'c':'blue'})
         G.add_node(3,{'c':'blue'},c='red')
-        assert_raises(networkx.NetworkXError, G.add_node, 4, [])
+        assert_raises(networkx.NetworkXError, G.add_node, 4, [4])
         assert_raises(networkx.NetworkXError, G.add_node, 4, 4)
         assert_equal(G.node[1]['c'],'red')
         assert_equal(G.node[2]['c'],'blue')
