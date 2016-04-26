@@ -81,6 +81,14 @@ def min_cost_flow_cost(G, demand = 'demand', capacity = 'capacity',
     --------
     cost_of_flow, max_flow_min_cost, min_cost_flow, network_simplex
 
+    Notes
+    -----
+    This algorithm is not guaranteed to work if edge weights or demands
+    are floating point numbers (overflows and roundoff errors can
+    cause problems). As a workaround you can use integer numbers by
+    multiplying the relevant edge attributes by a convenient
+    constant factor (eg 100).
+
     Examples
     --------
     A simple example of a min cost flow problem.
@@ -166,6 +174,14 @@ def min_cost_flow(G, demand = 'demand', capacity = 'capacity',
     --------
     cost_of_flow, max_flow_min_cost, min_cost_flow_cost, network_simplex
 
+    Notes
+    -----
+    This algorithm is not guaranteed to work if edge weights or demands
+    are floating point numbers (overflows and roundoff errors can
+    cause problems). As a workaround you can use integer numbers by
+    multiplying the relevant edge attributes by a convenient
+    constant factor (eg 100).
+
     Examples
     --------
     A simple example of a min cost flow problem.
@@ -216,6 +232,14 @@ def cost_of_flow(G, flowDict, weight = 'weight'):
     See also
     --------
     max_flow_min_cost, min_cost_flow, min_cost_flow_cost, network_simplex
+
+    Notes
+    -----
+    This algorithm is not guaranteed to work if edge weights or demands
+    are floating point numbers (overflows and roundoff errors can
+    cause problems). As a workaround you can use integer numbers by
+    multiplying the relevant edge attributes by a convenient
+    constant factor (eg 100).
     """
     return sum((flowDict[u][v] * d.get(weight, 0)
                 for u, v, d in G.edges(data = True)))
@@ -275,6 +299,14 @@ def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
     --------
     cost_of_flow, min_cost_flow, min_cost_flow_cost, network_simplex
 
+    Notes
+    -----
+    This algorithm is not guaranteed to work if edge weights or demands
+    are floating point numbers (overflows and roundoff errors can
+    cause problems). As a workaround you can use integer numbers by
+    multiplying the relevant edge attributes by a convenient
+    constant factor (eg 100).
+
     Examples
     --------
     >>> G = nx.DiGraph()
@@ -302,7 +334,6 @@ def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
     ...                     - sum((mincostFlow[7][v] for v in G.successors(7))))
     >>> mincostFlowValue == nx.maximum_flow_value(G, 1, 7)
     True
-
 
     """
     maxFlow = nx.maximum_flow_value(G, s, t, capacity = capacity)
