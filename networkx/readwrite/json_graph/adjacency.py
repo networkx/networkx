@@ -145,7 +145,7 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
         node_data = d.copy()
         node = node_data.pop(id_)
         mapping.append(node)
-        graph.add_node(node, attr_dict=node_data)
+        graph.add_node(node, **node_data)
     for i, d in enumerate(data['adjacency']):
         source = mapping[i]
         for tdata in d:

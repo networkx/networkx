@@ -406,18 +406,15 @@ class Graph(object):
         """
         return self.adj[n]
 
-    def add_node(self, n, attr_dict=None, **attr):
+    def add_node(self, n, **attr):
         """Add a single node n and update node attributes.
 
         Parameters
         ----------
         n : node
             A node can be any hashable Python object except None.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of node attributes.  Key/value pairs will
-            update existing data associated with the node.
         attr : keyword arguments, optional
-            Set or change attributes using key=value.
+            Set or change node attributes using key=value.
 
         See Also
         --------
@@ -449,20 +446,11 @@ class Graph(object):
         doesn't change on mutables.
         """
         # set up attribute dict
-        node_attr = {}
-        if attr_dict is None:
-            attr_dict = {}
-        try:
-                node_attr.update(attr_dict)
-        except TypeError:
-                raise NetworkXError(
-                        "The attr_dict argument must be a dictionary.")
-        node_attr.update(attr)
         if n not in self.node:
             self.adj[n] = self.adjlist_dict_factory()
-            self.node[n] = node_attr
+            self.node[n] = attr
         else:  # update attr even if node already exists
-            self.node[n].update(node_attr)
+            self.node[n].update(attr)
 
     def add_nodes_from(self, nodes, **attr):
         """Add multiple nodes.

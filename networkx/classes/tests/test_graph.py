@@ -152,8 +152,6 @@ class BaseAttrGraphTester(BaseGraphTester):
         ll=[]
         G.add_edge(1,2,foo=ll)
         G.add_edge(2,1,foo=ll)
-        # attr_dict must be dict
-        assert_raises(networkx.NetworkXError,G.add_edge,0,1,attr_dict=[1])
 
     def test_name(self):
         G=self.Graph(name='')
@@ -327,13 +325,13 @@ class BaseAttrGraphTester(BaseGraphTester):
                      [(0, 'bar'), (1, 'baz'), (2, 'bar')])
 
 
-    def test_node_attr2(self):
-        G=self.K3
-        a={'foo':'bar'}
-        G.add_node(3,attr_dict=a)
-        assert_equal(list(G.nodes()), [0, 1, 2, 3])
-        assert_equal(list(G.nodes(data=True)),
-                     [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])
+#    def test_node_attr2(self):
+#        G=self.K3
+#        a={'foo':'bar'}
+#        G.add_node(3,attr_dict=a)
+#        assert_equal(list(G.nodes()), [0, 1, 2, 3])
+#        assert_equal(list(G.nodes(data=True)),
+#                     [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])
 
     def test_edge_attr(self):
         G=self.Graph()
@@ -473,17 +471,15 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(G.adj,{0:{}})
         # test add attributes
         G.add_node(1,c='red')
-        G.add_node(2,{'c':'blue'})
-        G.add_node(3,{'c':'blue'},c='red')
-        assert_raises(networkx.NetworkXError, G.add_node, 4, [4])
-        assert_raises(networkx.NetworkXError, G.add_node, 4, 4)
+        G.add_node(2,c='blue')
+        G.add_node(3,c='red')
         assert_equal(G.node[1]['c'],'red')
         assert_equal(G.node[2]['c'],'blue')
         assert_equal(G.node[3]['c'],'red')
         # test updating attributes
         G.add_node(1,c='blue')
-        G.add_node(2,{'c':'red'})
-        G.add_node(3,{'c':'red'},c='blue')
+        G.add_node(2,c='red')
+        G.add_node(3,c='blue')
         assert_equal(G.node[1]['c'],'blue')
         assert_equal(G.node[2]['c'],'red')
         assert_equal(G.node[3]['c'],'blue')

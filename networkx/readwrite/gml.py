@@ -406,7 +406,7 @@ def parse_gml_lines(lines, label, destringizer):
                 raise NetworkXError('node label %r is duplicated' % (label,))
             labels.add(label)
             mapping[id] = label
-        G.add_node(id, node)
+        G.add_node(id, **node)
 
     edges = graph.get('edge', [])
     for i, edge in enumerate(edges if isinstance(edges, list) else [edges]):
