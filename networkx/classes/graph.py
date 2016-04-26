@@ -853,6 +853,47 @@ class Graph(object):
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
+    def add_edges_from(self, ebunch, attr_dict=None, **attr):
+        """Add all the edges in ebunch.
+
+        Parameters
+        ----------
+        ebunch : container of edges
+            Each edge given in the container will be added to the
+            graph. The edges must be given as as 2-tuples (u,v) or
+            3-tuples (u,v,d) where d is a dictionary containing edge data.
+        attr_dict : dictionary, optional (default= no attributes)
+            Dictionary of edge attributes.  Key/value pairs will
+            update existing data associated with each edge.
+        attr : keyword arguments, optional
+            Edge data (or labels or objects) can be assigned using
+            keyword arguments.
+
+        See Also
+        --------
+        add_edge : add a single edge
+        add_weighted_edges_from : convenient way to add weighted edges
+
+        Notes
+        -----
+        Adding the same edge twice has no effect but any edge data
+        will be updated when each duplicate edge is added.
+
+        Edge attributes specified in edges take precedence
+        over attributes specified generally.
+
+        Examples
+        --------
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_edges_from([(0,1),(1,2)]) # using a list of edge tuples
+        >>> e = zip(range(0,3),range(1,4))
+        >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
+
+        Associate data to edges
+
+        >>> G.add_edges_from([(1,2),(2,3)], weight=3)
+        >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
+        """
         # set up attribute dict
         edge_attr = {}
         if attr_dict is not None:
