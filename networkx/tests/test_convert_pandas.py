@@ -39,7 +39,7 @@ class TestConvertPandas(object):
         self.assert_equal(G, Gtrue)
         # MultiGraph
         MGtrue = nx.MultiGraph(Gtrue)
-        MGtrue.add_edge('A', 'D', attr_dict={'cost': 16, 'weight': 4})
+        MGtrue.add_edge('A', 'D', cost=16, weight=4)
         MG=nx.from_pandas_dataframe(self.mdf, 0, 'b', True, nx.MultiGraph())
         self.assert_equal(MG, MGtrue)
 

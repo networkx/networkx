@@ -420,7 +420,7 @@ def parse_gml_lines(lines, label, destringizer):
                 'edge #%d has an undefined target %r' % (i, target))
         if not multigraph:
             if not G.has_edge(source, target):
-                G.add_edge(source, target, edge)
+                G.add_edge(source, target, **edge)
             else:
                 raise nx.NetworkXError(
                     'edge #%d (%r%s%r) is duplicated' %
@@ -431,7 +431,7 @@ def parse_gml_lines(lines, label, destringizer):
                 raise nx.NetworkXError(
                     'edge #%d (%r%s%r, %r) is duplicated' %
                     (i, source, '->' if directed else '--', target, key))
-            G.add_edge(source, target, key, edge)
+            G.add_edge(source, target, key, **edge)
 
     if label != 'id':
         G = nx.relabel_nodes(G, mapping)
