@@ -65,7 +65,7 @@ class TestPajek(object):
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', attr_dict={'foo': name2})
+        G.add_edge(name1, 'Radiohead', foo=name2)
         fh = io.BytesIO()
         nx.write_pajek(G,fh)
         fh.seek(0)

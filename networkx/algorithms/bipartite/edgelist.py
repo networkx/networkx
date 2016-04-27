@@ -273,7 +273,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
                 edgedata.update({edge_key:edge_value})
         G.add_node(u, bipartite=0)
         G.add_node(v, bipartite=1)
-        G.add_edge(u, v, attr_dict=edgedata)
+        G.add_edge(u, v, **edgedata)
     return G
 
 

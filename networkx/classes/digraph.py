@@ -295,6 +295,7 @@ class DiGraph(Graph):
         self.edge=self.adj
 
 
+
     def add_node(self, n, attr_dict=None, **attr):
         """Add a single node n and update node attributes.
 
@@ -338,20 +339,21 @@ class DiGraph(Graph):
         doesn't change on mutables.
         """
         # set up attribute dict
-        if attr_dict is None:
-            attr_dict=attr
-        else:
+        node_attr = dict()
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(\
-                    "The attr_dict argument must be a dictionary.")
+                node_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+		       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        node_attr.update(attr)
         if n not in self.succ:
             self.succ[n] = self.adjlist_dict_factory()
             self.pred[n] = self.adjlist_dict_factory()
-            self.node[n] = attr_dict
+            self.node[n] = node_attr
         else: # update attr even if node already exists
-            self.node[n].update(attr_dict)
+            self.node[n].update(node_attr)
 
 
     def add_nodes_from(self, nodes, **attr):
@@ -554,14 +556,15 @@ class DiGraph(Graph):
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
         # set up attribute dict
-        if attr_dict is None:
-            attr_dict=attr
-        else:
+        edge_attr = {}
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(\
-                    "The attr_dict argument must be a dictionary.")
+                edge_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+                       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        edge_attr.update(attr)
         # add nodes
         if u not in self.succ:
             self.succ[u]= self.adjlist_dict_factory()
@@ -573,7 +576,7 @@ class DiGraph(Graph):
             self.node[v] = {}
         # add the edge
         datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
-        datadict.update(attr_dict)
+        datadict.update(edge_attr)
         self.succ[u][v]=datadict
         self.pred[v][u]=datadict
 
@@ -619,14 +622,15 @@ class DiGraph(Graph):
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
         # set up attribute dict
-        if attr_dict is None:
-            attr_dict=attr
-        else:
+        edge_attr = {}
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(\
-                    "The attr_dict argument must be a dict.")
+                edge_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+                       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        edge_attr.update(attr)
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -648,11 +652,10 @@ class DiGraph(Graph):
                 self.pred[v] = self.adjlist_dict_factory()
                 self.node[v] = {}
             datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
-            datadict.update(attr_dict)
+            datadict.update(edge_attr)
             datadict.update(dd)
             self.succ[u][v] = datadict
             self.pred[v][u] = datadict
-
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.

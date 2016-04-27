@@ -124,7 +124,7 @@ def _relabel_inplace(G, mapping):
         if new == old:
             continue
         try:
-            G.add_node(new, attr_dict=G.node[old])
+            G.add_node(new, **G.node[old])
         except KeyError:
             raise KeyError("Node %s is not in the graph"%old)
         if multigraph:

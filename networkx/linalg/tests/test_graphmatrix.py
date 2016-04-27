@@ -69,7 +69,7 @@ class TestGraphMatrix(object):
         assert_equal(nx.incidence_matrix(self.WG,oriented=True,weight='other').todense(),
                      0.3*self.OI)
         WMG=nx.MultiGraph(self.WG)
-        WMG.add_edge(0,1,attr_dict={'weight':0.5,'other':0.3})
+        WMG.add_edge(0,1,weight=0.5,other=0.3)
         assert_equal(nx.incidence_matrix(WMG,weight='weight').todense(),
                      numpy.abs(0.5*self.MGOI))
         assert_equal(nx.incidence_matrix(WMG,weight='weight',oriented=True).todense(),

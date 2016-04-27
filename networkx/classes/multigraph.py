@@ -307,14 +307,15 @@ class MultiGraph(Graph):
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
         # set up attribute dict
-        if attr_dict is None:
-            attr_dict = attr
-        else:
+        edge_attr = {}
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
+                edge_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+                       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        edge_attr.update(attr)
         # add nodes
         if u not in self.adj:
             self.adj[u] = self.adjlist_dict_factory()
@@ -331,14 +332,14 @@ class MultiGraph(Graph):
                 while key in keydict:
                     key += 1
             datadict = keydict.get(key, self.edge_attr_dict_factory())
-            datadict.update(attr_dict)
+            datadict.update(edge_attr)
             keydict[key] = datadict
         else:
             # selfloops work this way without special treatment
             if key is None:
                 key = 0
             datadict = self.edge_attr_dict_factory()
-            datadict.update(attr_dict)
+            datadict.update(edge_attr)
             keydict = self.edge_key_dict_factory()
             keydict[key] = datadict
             self.adj[u][v] = keydict
@@ -390,14 +391,15 @@ class MultiGraph(Graph):
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
         # set up attribute dict
-        if attr_dict is None:
-            attr_dict = attr
-        else:
+        edge_attr = {}
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
+                edge_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+                       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        edge_attr.update(attr)
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -414,7 +416,7 @@ class MultiGraph(Graph):
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple, 3-tuple or 4-tuple." % (e,))
             ddd = {}
-            ddd.update(attr_dict)
+            ddd.update(edge_attr)
             ddd.update(dd)
             self.add_edge(u, v, key, ddd)
 

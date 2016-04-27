@@ -324,14 +324,13 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_equal(list(G.nodes(data='foo', default='bar')),
                      [(0, 'bar'), (1, 'baz'), (2, 'bar')])
 
-
-#    def test_node_attr2(self):
-#        G=self.K3
-#        a={'foo':'bar'}
-#        G.add_node(3,attr_dict=a)
-#        assert_equal(list(G.nodes()), [0, 1, 2, 3])
-#        assert_equal(list(G.nodes(data=True)),
-#                     [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])
+    def test_node_attr2(self):
+        G=self.K3
+        a={'foo':'bar'}
+        G.add_node(3,attr_dict=a)
+        assert_equal(list(G.nodes()), [0, 1, 2, 3])
+        assert_equal(list(G.nodes(data=True)),
+                     [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])
 
     def test_edge_attr(self):
         G=self.Graph()

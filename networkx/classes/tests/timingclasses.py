@@ -361,19 +361,20 @@ class TimingGraph(object):
         doesn't change on mutables.
         """
         # set up attribute dict
-        if attr_dict is None:
-            attr_dict=attr
-        else:
+        node_attr = dict()
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(\
-                    "The attr_dict argument must be a dictionary.")
+                node_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+		       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        node_attr.update(attr)
         if n not in self.node:
             self.adj[n] = {}
-            self.node[n] = attr_dict
+            self.node[n] = node_attr
         else: # update attr even if node already exists
-            self.node[n].update(attr_dict)
+            self.node[n].update(node_attr)
 
 
     def add_nodes_from(self, nodes, **attr):
@@ -690,15 +691,16 @@ class TimingGraph(object):
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
-        # set up attribute dictionary
-        if attr_dict is None:
-            attr_dict=attr
-        else:
+        # set up attribute dict
+        edge_attr = {}
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(\
-                    "The attr_dict argument must be a dictionary.")
+                edge_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+                       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        edge_attr.update(attr)
         # add nodes
         if u not in self.node:
             self.adj[u] = {}
@@ -708,7 +710,7 @@ class TimingGraph(object):
             self.node[v] = {}
         # add the edge
         datadict=self.adj[u].get(v,{})
-        datadict.update(attr_dict)
+        datadict.update(edge_attr)
         self.adj[u][v] = datadict
         self.adj[v][u] = datadict
 
@@ -757,14 +759,15 @@ class TimingGraph(object):
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
         # set up attribute dict
-        if attr_dict is None:
-            attr_dict=attr
-        else:
+        edge_attr = {}
+        if attr_dict is not None:
             try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(\
-                    "The attr_dict argument must be a dictionary.")
+                edge_attr.update(attr_dict)
+            except TypeError:
+                msg = ("The attr_dict argument must be a dict or "
+                       "iterable of 2-tuples")
+                raise NetworkXError(msg)
+        edge_attr.update(attr)
         # process ebunch
         for e in ebunch:
             ne=len(e)
@@ -783,7 +786,7 @@ class TimingGraph(object):
                 self.adj[v] = {}
                 self.node[v] = {}
             datadict=self.adj[u].get(v,{})
-            datadict.update(attr_dict)
+            datadict.update(edge_attr)
             datadict.update(dd)
             self.adj[u][v] = datadict
             self.adj[v][u] = datadict
