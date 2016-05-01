@@ -307,9 +307,6 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         For non-string associations, directly access the edge's attribute
         dictionary.
-
-        >>> G.add_edge(1, 2, key=0)
-        >>> G[1][2][0].update({0: 5})
         """
         # add nodes
         if u not in self.succ:

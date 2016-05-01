@@ -90,7 +90,9 @@ def read_shp(path, simplify=True, geom_attrs=True):
                                          ogr.wkbMultiLineString):
                 for edge in edges_from_line(g, attributes, simplify,
                                             geom_attrs):
-                    net.add_edge(*edge)
+                    e1, e2, attr = edge
+                    net.add_edge(e1, e2)
+                    net[e1][e2].update(attr)
             else:
                 raise ImportError("GeometryType {} not supported".
                                   format(g.GetGeometryType()))

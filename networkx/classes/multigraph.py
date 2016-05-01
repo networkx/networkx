@@ -302,12 +302,6 @@ class MultiGraph(Graph):
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 2, key=0, weight=4)   # update data for key=0
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
-
-        For non-string associations, directly access the edge's attribute
-        dictionary.
-
-        >>> G.add_edge(1, 2, key=0)
-        >>> G[1][2][0].update({9: 5})
         """
         # add nodes
         if u not in self.adj:
