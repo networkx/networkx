@@ -327,7 +327,7 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_node_attr2(self):
         G=self.K3
         a={'foo':'bar'}
-        G.add_node(3,attr_dict=a)
+        G.add_node(3,**a)
         assert_equal(list(G.nodes()), [0, 1, 2, 3])
         assert_equal(list(G.nodes(data=True)),
                      [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])

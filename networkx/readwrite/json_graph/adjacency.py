@@ -145,15 +145,18 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
         node_data = d.copy()
         node = node_data.pop(id_)
         mapping.append(node)
-        graph.add_node(node, **node_data)
+        graph.add_node(node)
+        graph.node[node].update(node_data)
     for i, d in enumerate(data['adjacency']):
         source = mapping[i]
         for tdata in d:
             target_data = tdata.copy()
             target = target_data.pop(id_)
             if not multigraph:
-                graph.add_edge(source, target, attr_dict=tdata)
+                graph.add_edge(source, target)
+                graph[source][target].update(tdata)
             else:
                 ky = target_data.pop(key, None)
-                graph.add_edge(source, target, key=ky, attr_dict=tdata)
+                graph.add_edge(source, target, key=ky)
+                graph[source][target][ky].update(target_data)
     return graph
