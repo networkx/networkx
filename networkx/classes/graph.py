@@ -445,7 +445,6 @@ class Graph(object):
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        # set up attribute dict
         if n not in self.node:
             self.adj[n] = self.adjlist_dict_factory()
             self.node[n] = attr
@@ -743,9 +742,6 @@ class Graph(object):
         u, v : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -777,17 +773,6 @@ class Graph(object):
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
-        # set up attribute dict
-        attr_dict = None
-        edge_attr = {}
-        if attr_dict is not None:
-            try:
-                edge_attr.update(attr_dict)
-            except TypeError:
-                msg = ("The attr_dict argument must be a dict or "
-                       "iterable of 2-tuples")
-                raise NetworkXError(msg)
-        edge_attr.update(attr)
         # add nodes
         if u not in self.node:
             self.adj[u] = self.adjlist_dict_factory()
@@ -797,11 +782,11 @@ class Graph(object):
             self.node[v] = {}
         # add the edge
         datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
-        datadict.update(edge_attr)
+        datadict.update(attr)
         self.adj[u][v] = datadict
         self.adj[v][u] = datadict
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
+    def add_edges_from(self, ebunch, **attr):
         """Add all the edges in ebunch.
 
         Parameters
@@ -810,9 +795,6 @@ class Graph(object):
             Each edge given in the container will be added to the
             graph. The edges must be given as as 2-tuples (u,v) or
             3-tuples (u,v,d) where d is a dictionary containing edge data.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -842,57 +824,6 @@ class Graph(object):
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
-        """Add all the edges in ebunch.
-
-        Parameters
-        ----------
-        ebunch : container of edges
-            Each edge given in the container will be added to the
-            graph. The edges must be given as as 2-tuples (u,v) or
-            3-tuples (u,v,d) where d is a dictionary containing edge data.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with each edge.
-        attr : keyword arguments, optional
-            Edge data (or labels or objects) can be assigned using
-            keyword arguments.
-
-        See Also
-        --------
-        add_edge : add a single edge
-        add_weighted_edges_from : convenient way to add weighted edges
-
-        Notes
-        -----
-        Adding the same edge twice has no effect but any edge data
-        will be updated when each duplicate edge is added.
-
-        Edge attributes specified in edges take precedence
-        over attributes specified generally.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edges_from([(0,1),(1,2)]) # using a list of edge tuples
-        >>> e = zip(range(0,3),range(1,4))
-        >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
-
-        Associate data to edges
-
-        >>> G.add_edges_from([(1,2),(2,3)], weight=3)
-        >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
-        """
-        # set up attribute dict
-        edge_attr = {}
-        if attr_dict is not None:
-            try:
-                edge_attr.update(attr_dict)
-            except TypeError:
-                msg = ("The attr_dict argument must be a dict or "
-                       "iterable of 2-tuples")
-                raise NetworkXError(msg)
-        edge_attr.update(attr)
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -911,7 +842,7 @@ class Graph(object):
                 self.adj[v] = self.adjlist_dict_factory()
                 self.node[v] = {}
             datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
-            datadict.update(edge_attr)
+            datadict.update(attr)
             datadict.update(dd)
             self.adj[u][v] = datadict
             self.adj[v][u] = datadict

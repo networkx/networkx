@@ -376,13 +376,6 @@ class BaseAttrGraphTester(BaseGraphTester):
                      [(1,2,{'data':20,'spam':'bar',
                             'bar':'foo','listdata':[20,200],'weight':20})])
 
-    def test_attr_dict_not_dict(self):
-        # attr_dict must be dict
-        G=self.Graph()
-        edges=[(1,2)]
-        assert_raises(networkx.NetworkXError,G.add_edges_from,edges,
-                      attr_dict=[1])
-
     def test_to_undirected(self):
         G=self.K3
         self.add_attributes(G)
