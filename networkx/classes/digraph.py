@@ -560,7 +560,7 @@ class DiGraph(Graph):
         self.succ[u][v]=datadict
         self.pred[v][u]=datadict
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
+    def add_edges_from(self, ebunch, **attr):
         """Add all the edges in ebunch.
 
         Parameters
@@ -569,9 +569,6 @@ class DiGraph(Graph):
             Each edge given in the container will be added to the
             graph. The edges must be given as 2-tuples (u,v) or
             3-tuples (u,v,d) where d is a dictionary containing edge data.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -601,16 +598,6 @@ class DiGraph(Graph):
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
-        # set up attribute dict
-        edge_attr = {}
-        if attr_dict is not None:
-            try:
-                edge_attr.update(attr_dict)
-            except TypeError:
-                msg = ("The attr_dict argument must be a dict or "
-                       "iterable of 2-tuples")
-                raise NetworkXError(msg)
-        edge_attr.update(attr)
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -632,7 +619,7 @@ class DiGraph(Graph):
                 self.pred[v] = self.adjlist_dict_factory()
                 self.node[v] = {}
             datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
-            datadict.update(edge_attr)
+            datadict.update(attr)
             datadict.update(dd)
             self.succ[u][v] = datadict
             self.pred[v][u] = datadict
