@@ -331,7 +331,6 @@ class MultiGraph(Graph):
             keydict[key] = datadict
             self.adj[u][v] = keydict
             self.adj[v][u] = keydict
-        return self[u][v][key]
 
     def add_edges_from(self, ebunch, **attr):
         """Add all the edges in ebunch.
