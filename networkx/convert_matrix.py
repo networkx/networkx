@@ -212,7 +212,7 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
         for row in df.values:
             if g.is_multigraph():
                 g.add_edge(row[src_i], row[tar_i], key=0)
-                g[row[src_i]][row[tar_i]][key].update((i, row[j]) for i, j in edge_i)                
+                g[row[src_i]][row[tar_i]][0].update((i, row[j]) for i, j in edge_i)                
             else:
                 g.add_edge(row[src_i], row[tar_i])
                 g[row[src_i]][row[tar_i]].update((i, row[j]) for i, j in edge_i)
