@@ -392,7 +392,7 @@ class MultiGraph(Graph):
             ddd = {}
             ddd.update(attr)
             ddd.update(dd)
-            if key:
+            if key is not None:
                 self.add_edge(u, v, key)
                 self[u][v][key].update(ddd)
             else:
