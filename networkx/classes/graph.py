@@ -734,8 +734,8 @@ class Graph(object):
         The nodes u and v will be automatically added if they are
         not already in the graph.
 
-        Edge attributes can be specified with keywords or by providing
-        a dictionary with key/value pairs.  See examples below.
+        Edge attributes can be specified with keywords or by directly
+        accessing the edge's attribute dictionary. See examples below.
 
         Parameters
         ----------
@@ -772,6 +772,12 @@ class Graph(object):
 
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
+
+        For non-string associations, directly access the edge's attribute
+        dictionary.
+
+        >>> G.add_edge(1, 2)
+        >>> G[1][2].update({0: 5})
         """
         # add nodes
         if u not in self.node:

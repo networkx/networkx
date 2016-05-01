@@ -296,18 +296,15 @@ class DiGraph(Graph):
 
 
 
-    def add_node(self, n, attr_dict=None, **attr):
+    def add_node(self, n, **attr):
         """Add a single node n and update node attributes.
 
         Parameters
         ----------
         n : node
             A node can be any hashable Python object except None.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of node attributes.  Key/value pairs will
-            update existing data associated with the node.
         attr : keyword arguments, optional
-            Set or change attributes using key=value.
+            Set or change node attributes using key=value.
 
         See Also
         --------
@@ -338,22 +335,12 @@ class DiGraph(Graph):
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        # set up attribute dict
-        node_attr = dict()
-        if attr_dict is not None:
-            try:
-                node_attr.update(attr_dict)
-            except TypeError:
-                msg = ("The attr_dict argument must be a dict or "
-		       "iterable of 2-tuples")
-                raise NetworkXError(msg)
-        node_attr.update(attr)
         if n not in self.succ:
             self.succ[n] = self.adjlist_dict_factory()
             self.pred[n] = self.adjlist_dict_factory()
-            self.node[n] = node_attr
+            self.node[n] = attr
         else: # update attr even if node already exists
-            self.node[n].update(node_attr)
+            self.node[n].update(attr)
 
 
     def add_nodes_from(self, nodes, **attr):
@@ -507,23 +494,20 @@ class DiGraph(Graph):
                 pass # silent failure on remove
 
 
-    def add_edge(self, u, v, attr_dict=None, **attr):
+    def add_edge(self, u, v, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
         not already in the graph.
 
-        Edge attributes can be specified with keywords or by providing
-        a dictionary with key/value pairs.  See examples below.
+        Edge attributes can be specified with keywords or by directly
+        accessing the edge's attribute dictionary. See examples below.
 
         Parameters
         ----------
         u, v : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -554,17 +538,13 @@ class DiGraph(Graph):
 
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
+
+        For non-string associations, directly access the edge's attribute
+        dictionary.
+
+        >>> G.add_edge(1, 2)
+        >>> G[1][2].update({0: 5})
         """
-        # set up attribute dict
-        edge_attr = {}
-        if attr_dict is not None:
-            try:
-                edge_attr.update(attr_dict)
-            except TypeError:
-                msg = ("The attr_dict argument must be a dict or "
-                       "iterable of 2-tuples")
-                raise NetworkXError(msg)
-        edge_attr.update(attr)
         # add nodes
         if u not in self.succ:
             self.succ[u]= self.adjlist_dict_factory()
@@ -576,7 +556,7 @@ class DiGraph(Graph):
             self.node[v] = {}
         # add the edge
         datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
-        datadict.update(edge_attr)
+        datadict.update(attr)
         self.succ[u][v]=datadict
         self.pred[v][u]=datadict
 
