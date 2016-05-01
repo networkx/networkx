@@ -210,8 +210,12 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
 
         # Iteration on values returns the rows as Numpy arrays
         for row in df.values:
-            g.add_edge(row[src_i], row[tar_i])
-            g[row[src_i]][row[tar_i]].update((i, row[j]) for i, j in edge_i)
+            if g.is_multigraph():
+                g.add_edge(row[src_i], row[tar_i], key=0)
+                g[row[src_i]][row[tar_i]][key].update((i, row[j]) for i, j in edge_i)                
+            else:
+                g.add_edge(row[src_i], row[tar_i])
+                g[row[src_i]][row[tar_i]].update((i, row[j]) for i, j in edge_i)
     
     # If no column names are given, then just return the edges.
     else:

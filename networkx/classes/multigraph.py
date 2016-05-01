@@ -392,18 +392,15 @@ class MultiGraph(Graph):
             ddd = {}
             ddd.update(attr)
             ddd.update(dd)
-            if key is not None:
-                self.add_edge(u, v, key)
-                self[u][v][key].update(ddd)
-            else:
-                if u in self and v in self and v in self[u]:
-                    k = len(self[u][v])
+            if key is None:
+                k = 0
+                if u in self and v in self[u]:
                     while k in self[u][v]:
                         k += 1
-                else:
-                    k = 0
-                self.add_edge(u, v, k)
-                self[u][v][k].update(ddd)
+            else:
+                k = key
+            self.add_edge(u, v, k)
+            self[u][v][k].update(ddd)
 
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.
