@@ -396,12 +396,14 @@ class MultiGraph(Graph):
                 self.add_edge(u, v, key)
                 self[u][v][key].update(ddd)
             else:
-                try:
-                    self.add_edge(u, v, key, **ddd)
-                except TypeError:
-                    unique_key = object()
-                    self.add_edge(u, v, key=unique_key)
-                    self[u][v][unique_key].update(ddd)
+                if u in self and v in self and v in self[u]:
+                    k = len(self[u][v])
+                    while k in self[u][v]:
+                        k += 1
+                else:
+                    k = 0
+                self.add_edge(u, v, k)
+                self[u][v][k].update(ddd)
 
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.
