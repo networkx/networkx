@@ -210,7 +210,8 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
 
         # Iteration on values returns the rows as Numpy arrays
         for row in df.values:
-            g.add_edge(row[src_i], row[tar_i], **{i:row[j] for i, j in edge_i})
+            g.add_edge(row[src_i], row[tar_i])
+            g[row[src_i]][row[tar_i]].update((i, row[j]) for i, j in edge_i)
     
     # If no column names are given, then just return the edges.
     else:
