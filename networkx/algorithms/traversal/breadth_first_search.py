@@ -8,10 +8,11 @@ Basic algorithms for breadth-first searching the nodes of a graph.
 import networkx as nx
 from collections import deque
 
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>', 'Matus Cimerman <matus.cimerman@gmail.com>'])
 __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
-def bfs_edges(G, source, reverse=False):
+
+def bfs_edges(G, source, reverse=False, depth_limit=None):
     """Produce edges in a breadth-first-search starting at source.
 
     Parameters
@@ -24,6 +25,9 @@ def bfs_edges(G, source, reverse=False):
 
     reverse : bool, optional
        If True traverse a directed graph in the reverse direction
+
+    depth_limit : integer, optional
+       Depth limit where should breadth-first stop exploring graph space.
 
     Returns
     -------
@@ -41,24 +45,39 @@ def bfs_edges(G, source, reverse=False):
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
     """
+    if depth_limit < 0:
+        return
     if reverse and isinstance(G, nx.DiGraph):
         neighbors = G.predecessors
     else:
         neighbors = G.neighbors
     visited = set([source])
     queue = deque([(source, neighbors(source))])
+    timeToDepthIncrease = len(queue)
+    current_depth = 1
+    pendingDepthIncrease = False
     while queue:
+        if current_depth > depth_limit and depth_limit is not None:
+            break
         parent, children = queue[0]
         try:
             child = next(children)
             if child not in visited:
                 yield parent, child
                 visited.add(child)
+                if pendingDepthIncrease == True:
+                    timeToDepthIncrease = len(queue)
+                    pendingDepthIncrease = False
                 queue.append((child, neighbors(child)))
         except StopIteration:
             queue.popleft()
+            timeToDepthIncrease -= 1
+            if timeToDepthIncrease == 0:
+                current_depth += 1
+                pendingDepthIncrease = True
 
-def bfs_tree(G, source, reverse=False):
+
+def bfs_tree(G, source, reverse=False, depth_limit=None):
     """Return an oriented tree constructed from of a breadth-first-search
     starting at source.
 
@@ -91,10 +110,11 @@ def bfs_tree(G, source, reverse=False):
     """
     T = nx.DiGraph()
     T.add_node(source)
-    T.add_edges_from(bfs_edges(G, source, reverse=reverse))
+    T.add_edges_from(bfs_edges(G, source, reverse=reverse, depth_limit=depth_limit))
     return T
 
-def bfs_predecessors(G, source):
+
+def bfs_predecessors(G, source, depth_limit=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
     Parameters
@@ -126,11 +146,11 @@ def bfs_predecessors(G, source):
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
     """
-    for s, t in bfs_edges(G, source):
+    for s, t in bfs_edges(G, source, depth_limit=depth_limit):
         yield (t, s)
 
 
-def bfs_successors(G, source):
+def bfs_successors(G, source, depth_limit=None):
     """Returns an iterator of successors in breadth-first-search from source.
 
     Parameters
@@ -165,7 +185,7 @@ def bfs_successors(G, source):
     """
     parent = source
     children = []
-    for p, c in bfs_edges(G, source):
+    for p, c in bfs_edges(G, source, depth_limit=depth_limit):
         if p == parent:
             children.append(c)
             continue

@@ -34,3 +34,6 @@ networkx.egg-info/
 
 #Spyder project file
 .spyderproject
+
+# PyCharm files
+.idea/
