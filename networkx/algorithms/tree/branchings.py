@@ -33,11 +33,12 @@ from __future__ import print_function
 
 import string
 import random
+
 from operator import itemgetter
 
 import networkx as nx
 
-from .recognition import *
+#from .recognition import *
 
 __all__ = [
     'branching_weight', 'greedy_branching',
@@ -55,7 +56,6 @@ STYLES = {
 }
 
 INF = float('inf')
-
 
 def random_string(L=15, seed=None):
     random.seed(seed)
@@ -229,7 +229,6 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     def remove_edges_from(self, ebunch):
         raise NotImplementedError
 
-
 def get_path(G, u, v):
     """
     Returns the edge keys of the unique path between u and v.
@@ -264,6 +263,9 @@ class Edmonds(object):
 
         # The final answer.
         self.edges = []
+
+        # Edges for rebuild the graph from circuits, indexed by self.level
+        self.unroll = {}
 
         # Since we will be creating graphs with new nodes, we need to make
         # sure that our node names do not conflict with the real node names.
@@ -300,6 +302,8 @@ class Edmonds(object):
 
         self.level = 0
 
+        self.unroll[self.level] = []
+
         # These are the "buckets" from the paper.
         #
         # As in the paper, G^i are modified versions of the original graph.
@@ -309,7 +313,6 @@ class Edmonds(object):
         # graph B^i. So we will have strictly more B^i than the paper does.
         self.B = MultiDiGraph_EdgeKey()
         self.B.edge_index = {}
-
         if store_results:
             self.graphs = []
             self.branchings = []
