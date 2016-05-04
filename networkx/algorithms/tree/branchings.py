@@ -494,6 +494,7 @@ class Edmonds(object):
                                         self.unroll[self.level].append((u, v, key, dd))                                       
                                     else:
                                         # Outgoing edge. Make it from new node
+
                                         new_edges.append((new_node, v, key, data.copy()))
                                         if not(store_results):
                                             dd = data.copy()
@@ -509,14 +510,14 @@ class Edmonds(object):
                                         dd = data.copy()
                                         dd[attr] = w
                                         new_edges.append((u, new_node, key, dd))
-                                        
+
                                         if not(store_results):
                                             ddcp = data.copy()
                                             if 'candidate' in ddcp:
                                                 del ddcp['candidate']
                                             # The edge must be saved to rebuild the graph                                       
                                             self.unroll[self.level].append((u, v, key, ddcp))
-                                    else:
+                                   else:
                                         # Outside edge. No modification necessary.
                                         continue
 
@@ -533,7 +534,6 @@ class Edmonds(object):
 
                             nodes = iter(list(G.nodes()))
                             self.level += 1
-
 
         def is_root(G, u, edgekeys):
             """
