@@ -33,12 +33,11 @@ from __future__ import print_function
 
 import string
 import random
-
 from operator import itemgetter
 
 import networkx as nx
 
-#from .recognition import *
+from .recognition import *
 
 __all__ = [
     'branching_weight', 'greedy_branching',
@@ -228,6 +227,7 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
 
     def remove_edges_from(self, ebunch):
         raise NotImplementedError
+
 
 def get_path(G, u, v):
     """
