@@ -341,8 +341,6 @@ class Edmonds(object):
         self._init(attr, default, kind, style)
         uf = self.uf
 
-        # This enormous while loop could use some refactoring...
-
         G, B = self.G, self.B
         nodes = iter(list(G.nodes()))
         attr = self._attr
@@ -363,8 +361,8 @@ class Edmonds(object):
 
             return edge, weight
 
-        def getFinalGraphAndBranch(nodes):
-            D = set([])
+        def get_final_graph_and_branch(nodes):
+            D = set()
             while True:
                 # (I1): Choose a node v in G^i not in D^i.
                 try:
@@ -374,9 +372,11 @@ class Edmonds(object):
                     # meet the break condition (b) from the paper:
                     #   (b) every node of G^i is in D^i and E^i is a branching
                     # Construction guarantees that it's a branching.
-                    assert( len(G) == len(B) )
+                    if len(G) != len(B):
+                        raise Exception('Graph and branching must be of the same lenght.')
                     if len(B):
-                        assert( is_branching(B) )
+                        if not(is_branching(B)):
+                            raise Exception('The branching must be a branching by definition.')
 
                     # Add these to keep the lengths equal. Element i is the
                     # circuit at level i that was merged to form branching i+1.
@@ -386,7 +386,6 @@ class Edmonds(object):
                     return G, B 
                 else:
                     if v in D:
-                        #print("v in D", v)
                         continue
 
                 # Put v into bucket D^i.
@@ -395,7 +394,6 @@ class Edmonds(object):
                 B.add_node(v)
 
                 edge, weight = desired_edge(v)
-                #print("Max edge is {0!r}".format(edge))
                 if edge is None:
                     # If there is no edge, continue with a new node at (I1).
                     continue
@@ -418,21 +416,12 @@ class Edmonds(object):
 
                     # Conditions for adding the edge.
                     # If weight < 0, then it cannot help in finding a maximum branching.
-                    if self.style == 'branching' and weight <= 0:
-                        acceptable = False
-                    else:
-                        acceptable = True
-
-                    #print("Edge is acceptable: {0}".format(acceptable))
-                    if acceptable:
+                    if not(self.style == 'branching' and weight <= 0):
                         dd = {attr: weight}
                         B.add_edge(u, v, key=edge[2], **dd)
                         G[u][v][edge[2]]['candidate'] = True
                         uf.union(u, v)
                         if Q_edges is not None:
-                            #print("Edge introduced a simple cycle:")
-                            #print(Q_nodes, Q_edges)
-
                             # Move to method
                             # Previous meaning of u and v is no longer important.
 
@@ -456,8 +445,6 @@ class Edmonds(object):
                             # Now we mutate it.
                             new_node = self.template.format(self.level)
 
-                            #print(minweight, minedge, Q_incoming_weight)
-
                             G.add_node(new_node)
                             new_edges = []
 
@@ -471,31 +458,29 @@ class Edmonds(object):
                                         dd = data.copy()
                                         if 'candidate' in dd:
                                             del dd['candidate']
-                                        self.unroll[self.level].append((u, v, key, data.copy()))                                       
+                                        self.unroll[self.level].append((u, v, key, dd))                                       
                                     else:
                                         # Outgoing edge. Make it from new node
-                                        # The edge must be saved to rebuild the graph
-                                        dd = data.copy()
-                                        if 'candidate' in dd:
-                                            del dd['candidate']
-                                        self.unroll[self.level].append((u, v, key, data.copy()))
-
                                         dd = data.copy()
                                         new_edges.append((new_node, v, key, dd))
-                                else:
-                                    if v in Q_incoming_weight:
-                                        # The edge must be saved to rebuild the graph                                       
-                                        dd = data.copy()
+
                                         if 'candidate' in dd:
                                             del dd['candidate']
-                                        self.unroll[self.level].append((u, v, key, data.copy()))
-
+                                        # The edge must be saved to rebuild the graph
+                                        self.unroll[self.level].append((u, v, key, dd))
+                                else:
+                                    if v in Q_incoming_weight:
                                         # Incoming edge. Change its weight
                                         w = data[attr]
                                         w += minweight - Q_incoming_weight[v]
                                         dd = data.copy()
                                         dd[attr] = w
                                         new_edges.append((u, new_node, key, dd))
+
+                                        if 'candidate' in dd:
+                                            del dd['candidate']
+                                        # The edge must be saved to rebuild the graph                                       
+                                        self.unroll[self.level].append((u, v, key, dd))
                                     else:
                                         # Outside edge. No modification necessary.
                                         continue
@@ -515,10 +500,9 @@ class Edmonds(object):
                             self.level += 1
             return None, None
 
-        G, B = getFinalGraphAndBranch(nodes)
+        G, B = get_final_graph_and_branch(nodes)
 
         # (I3) Branch construction.
-        #print(self.level)
         H = self.G_original.__class__()
 
         def is_root(G, u, edgekeys):
@@ -530,7 +514,6 @@ class Edmonds(object):
 
             """
             if u not in G:
-                #print(G.nodes(), u)
                 raise Exception('{0!r} not in G'.format(u))
             for v in G.pred[u]:
                 for edgekey in G.pred[u][v]:
@@ -557,9 +540,6 @@ class Edmonds(object):
             # The circuit at level i that was merged as a node the graph
             # at level i+1.
             circuit = self.circuits[self.level]
-            #print
-            #print(merged_node, self.level, circuit)
-            #print("before", edges)
             # Note, we ask if it is a root in the full graph, not the branching.
             # The branching alone doesn't have all the edges.
             isroot, edgekey = is_root(G, merged_node, edges)
@@ -589,7 +569,6 @@ class Edmonds(object):
                 #print("circuit is: ", circuit)
                 # The branching at level i
                 
-                #print(G.edge_index)
                 target = G.edge_index[edgekey][1]
                 for edgekey in circuit:
                     u, v, data = G.edge_index[edgekey]
@@ -597,7 +576,6 @@ class Edmonds(object):
                         break
                 else:
                     raise Exception("Couldn't find edge incoming to merged node.")
-                #print("not a root. removing {0}".format(edgekey))
 
                 edges.remove(edgekey)
 
