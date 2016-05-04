@@ -33,12 +33,11 @@ from __future__ import print_function
 
 import string
 import random
-
 from operator import itemgetter
 
 import networkx as nx
 
-#from .recognition import *
+from .recognition import *
 
 __all__ = [
     'branching_weight', 'greedy_branching',
@@ -56,72 +55,6 @@ STYLES = {
 }
 
 INF = float('inf')
-
-def edge_subgraph(G, ebunch):
-    """Return the subgraph induced on edges in `ebunch`.
-
-    The induced subgraph of the graph contains the edges appearing in `ebunch`
-    and only the nodes that appear in some edge in `ebunch`.
-
-    Parameters
-    ----------
-    ebunch : list, iterable
-        A container of edges as 3-tuples (u, v, key), which will be iterated
-        through exactly once.
-
-    Returns
-    -------
-    H : MultiDiGraph
-        A subgraph of the graph with the same graph, node, and edge attributes.
-
-    Notes
-    -----
-    The graph, edge or node attributes just point to the original graph.
-    So changes to the node or edge structure will not be reflected in
-    the original graph while changes to the attributes will.
-
-    To create a subgraph with its own copy of the edge/node attributes use:
-    nx.Graph(G.subgraph(nbunch))
-
-    If edge attributes are containers, a deep copy can be obtained using:
-    G.subgraph(nbunch).copy()
-
-    For an inplace reduction of a graph to a subgraph you can remove nodes:
-    G.remove_nodes_from([ n in G if n not in set(nbunch)])
-
-    Examples
-    --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-    >>> G.add_path([0,1,2,3])
-    >>> H = G.subgraph([0,1,2])
-    >>> H.edges()
-    [(0, 1), (1, 2)]
-
-    """
-    # TODO: Add all the bells and whistles that G.subgraph has.
-    # Note: MultiDiGraph seems to point to node/graph and copy edge attributes.
-    # Seems inconsistent.
-
-    # create new graph and copy subgraph into it
-    H = G.__class__()
-
-    # add edges
-    G_succ = G.succ
-    for u, v, key in ebunch:
-        try:
-            attrs = G_succ[u][v][key]
-        except KeyError:
-            raise KeyError('Invalid edge: ({0}, {1}, {2})'.format(u, v, key))
-
-        H.add_edge(u, v, key=key, **attrs)
-
-    # copy node and graph attributes
-    for u in H:
-        H.node[u] = G.node[u].copy()
-
-    H.graph = G.graph.copy()
-
-    return H
 
 def random_string(L=15, seed=None):
     random.seed(seed)
@@ -283,6 +216,7 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     def remove_edges_from(self, ebunch):
         raise NotImplementedError
 
+
 def get_path(G, u, v):
     """
     Returns the edge keys of the unique path between u and v.
@@ -429,40 +363,6 @@ class Edmonds(object):
 
             return edge, weight
 
-        def is_forest(G):
-            """
-            A forest is a graph with no undirected cycles.
-
-            For directed graphs, `G` is a forest if the underlying graph is a forest.
-            The underlying graph is obtained by treating each directed edge as a single
-            undirected edge in a multigraph.
-
-            """
-            if len(G) == 0:
-                raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
-
-            if G.is_directed():
-                components = nx.weakly_connected_component_subgraphs
-            else:
-                components = nx.connected_component_subgraphs
-
-            for component in components(G):
-                # Make sure the component is a tree.
-                if component.number_of_edges() != component.number_of_nodes() - 1:
-                    return False
-
-            return True
-
-        def is_branching(G):
-            if not is_forest(G):
-                return False
-
-            if max(G.in_degree().values()) > 1:
-                return False
-
-            return True
-
-
         def getFinalGraphAndBranch(nodes):
             D = set([])
             while True:
@@ -477,7 +377,6 @@ class Edmonds(object):
                     assert( len(G) == len(B) )
                     if len(B):
                         assert( is_branching(B) )
-
 
                     # Add these to keep the lengths equal. Element i is the
                     # circuit at level i that was merged to form branching i+1.
@@ -561,7 +460,6 @@ class Edmonds(object):
 
                             G.add_node(new_node)
                             new_edges = []
-
 
                             if self.level not in self.unroll:
                                 self.unroll[self.level] = []
@@ -714,45 +612,6 @@ class Edmonds(object):
             H.add_edge(u, v, **dd)
 
         return H
-
-def is_tree(G):
-    """
-    Returns `True` if `G` is a tree.
-
-    A tree is a connected graph with no undirected cycles.
-
-    For directed graphs, `G` is a tree if the underlying graph is a tree. The
-    underlying graph is obtained by treating each directed edge as a single
-    undirected edge in a multigraph.
-    """
-    if len(G) == 0:
-        raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
-
-    # A connected graph with no cycles has n-1 edges.
-    if G.number_of_edges() != len(G) - 1:
-        return False
-
-    if G.is_directed():
-        is_connected = nx.is_weakly_connected
-    else:
-        is_connected = nx.is_connected
-
-    return is_connected(G)
-
-
-def is_arborescence(G):
-    """
-    Returns `True` if `G` is an arborescence.
-
-    An arborescence is a directed tree with maximum in-degree equal to 1.
-    """
-    if not is_tree(G):
-        return False
-
-    if max(G.in_degree().values()) > 1:
-        return False
-
-    return True
 
 def maximum_branching(G, attr='weight', default=1):
     ed = Edmonds(G)
