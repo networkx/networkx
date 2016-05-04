@@ -518,6 +518,7 @@ class Edmonds(object):
                                             # The edge must be saved to rebuild the graph                                       
                                             self.unroll[self.level].append((u, v, key, ddcp))
                                    else:
+
                                         # Outside edge. No modification necessary.
                                         continue
 
