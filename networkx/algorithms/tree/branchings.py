@@ -373,7 +373,7 @@ class Edmonds(object):
                     #   (b) every node of G^i is in D^i and E^i is a branching
                     # Construction guarantees that it's a branching.
                     if len(G) != len(B):
-                        raise Exception('Graph and branching must be of the same lenght.')
+                        raise Exception('Graph and branching must have the same number of nodes.')
                     if len(B):
                         if not(is_branching(B)):
                             raise Exception('The branching must be a branching by definition.')
