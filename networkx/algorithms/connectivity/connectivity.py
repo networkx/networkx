@@ -10,6 +10,7 @@ from operator import itemgetter
 import networkx as nx
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms.
+from networkx.algorithms.flow import boykov_kolmogorov
 from networkx.algorithms.flow import dinitz
 from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import shortest_augmenting_path
@@ -202,6 +203,8 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     elif flow_func is edmonds_karp:
         kwargs['cutoff'] = cutoff
     elif flow_func is dinitz:
+        kwargs['cutoff'] = cutoff
+    elif flow_func is boykov_kolmogorov:
         kwargs['cutoff'] = cutoff
 
     return nx.maximum_flow_value(H, '%sB' % mapping[s], '%sA' % mapping[t], **kwargs)
@@ -637,6 +640,8 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     elif flow_func is edmonds_karp:
         kwargs['cutoff'] = cutoff
     elif flow_func is dinitz:
+        kwargs['cutoff'] = cutoff
+    elif flow_func is boykov_kolmogorov:
         kwargs['cutoff'] = cutoff
 
     return nx.maximum_flow_value(H, u, v, **kwargs)
