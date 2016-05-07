@@ -357,11 +357,16 @@ def generic_multiedge_match(attr, default, op):
                 x = tuple( data2.get(attr, d) for attr, d in attrs )
                 values2.append(x)
             for vals2 in permutations(values2):
-                for xi, yi, operator in zip(values1, vals2, op):
-                    if not operator(xi, yi):
-                        return False
+                for xi, yi in zip(values1, vals2):
+                    if not all(map(lambda x,y,z: z(x,y), xi, yi, op)):
+                        # This is not an isomorphism, go to next permutation.
+                        break
+                else:
+                    # Then we found an isomorphism.
+                    return True
             else:
-                return True
+                # Then there are no isomorphisms between the multiedges.
+                return False
     return match
 
 # Docstrings for numerical functions.
