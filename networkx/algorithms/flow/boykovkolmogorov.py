@@ -159,7 +159,12 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         R = residual
 
     # Initialize/reset the residual network.
-    nx.set_edge_attributes(R, 'flow', 0)
+    # This is way too slow
+    #nx.set_edge_attributes(R, 'flow', 0)
+    for u in R:
+        for e in R[u].values():
+            e['flow'] = 0
+
 
     # Use an arbitrary high value as infinite. It is computed
     # when building the residual network.
@@ -184,31 +189,39 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         while active:
             u = active[0]
             if u in source_tree:
-                for v, attr in R_succ[u].items():
-                    if v not in source_tree and attr['capacity'] - attr['flow'] > 0:
-                        if v in target_tree:
-                            return u, v
-                        source_tree[v] = u
+                this_tree = source_tree
+                other_tree = target_tree
+                neighbors = R_succ
+            else:
+                this_tree = target_tree
+                other_tree = source_tree
+                neighbors = R_pred
+            for v, attr in neighbors[u].items():
+                if attr['capacity'] - attr['flow'] > 0:
+                    if v not in this_tree:
+                        if v in other_tree:
+                            return (u, v) if this_tree is source_tree else (v, u)
+                        this_tree[v] = u
+                        dist[v] = dist[u] + 1
+                        timestamp[v] = timestamp[u]
                         active.append(v)
-                _ = active.popleft()
-            elif u in target_tree:
-                for v, attr in R_pred[u].items():
-                    if v not in target_tree and attr['capacity'] - attr['flow'] > 0:
-                        if v in source_tree:
-                            return v, u
-                        target_tree[v] = u
-                        active.append(v)
-                _ = active.popleft()
+                    elif v in this_tree and _is_closer(u, v):
+                        this_tree[v] = u
+                        dist[v] = dist[u] + 1
+                        timestamp[v] = timestamp[u]
+            _ = active.popleft()
         return None, None
 
 
     def augment(u, v):
         """Augmentation stage.
+
+           Reconstruct path and determine its residual capacity.
+           We start from a connecting edge, which links a node
+           from the source tree to a node from the target tree.
+           The connecting edge is the output of the grow function
+           and the input of this function.
         """
-        # Reconstruct path and determine its residual capacity.
-        # We start from a connecting edge, which links a node
-        # from the source tree to a node from the target tree.
-        # The connecting edge is the output of the grow function.
         attr = R_succ[u][v]
         flow = min(INF, attr['capacity'] - attr['flow'])
         path = [u]
@@ -233,31 +246,47 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         # Augment flow along the path and check for saturated edges.
         it = iter(path)
         u = next(it)
+        these_orphans = []
         for v in it:
             R_succ[u][v]['flow'] += flow
             R_succ[v][u]['flow'] -= flow
             if R_succ[u][v]['flow'] == R_succ[u][v]['capacity']:
                 if v in source_tree:
                     source_tree[v] = None
-                    orphans.append(v)
+                    these_orphans.append(v)
                 if u in target_tree:
                     target_tree[u] = None
-                    orphans.append(u)
+                    these_orphans.append(u)
             u = v
+        orphans.extend(sorted(these_orphans, key=dist.get))
         return flow
 
 
     def adopt():
-        """Reconstruct the trees by adopting or discarding orphans.
+        """Adoption stage.
+
+           Reconstruct search trees by adopting or discarding orphans.
+           During augmentation stage some edges got saturated and thus
+           the source and target search trees broke down to forests, with
+           orphans as roots of some of its trees. We have to reconstruct
+           the search trees rooted to source and target before we can grow
+           them again.
         """
         while orphans:
             u = orphans.popleft()
-            tree, neighbors = _get_tree_and_neighbors(u)
+            if u in source_tree:
+                tree = source_tree
+                neighbors = R_pred
+            else:
+                tree = target_tree
+                neighbors = R_succ
             nbrs = ((n, attr) for n, attr in neighbors[u].items() if n in tree)
-            for v, attr in nbrs:
+            for v, attr in sorted(nbrs, key=lambda x: dist[x[0]]):
                 if attr['capacity'] - attr['flow'] > 0:
                     if _has_valid_root(v, tree):
                         tree[u] = v
+                        dist[u] = dist[v] + 1
+                        timestamp[u] = time
                         break
             else:
                 nbrs = ((n, attr) for n, attr in neighbors[u].items() if n in tree)
@@ -274,19 +303,28 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
 
 
     def _has_valid_root(n, tree):
+        path = []
         v = n
         while v is not None:
+            path.append(v)
             if v == s or v == t:
-                return True
+                base_dist = 0
+                break
+            elif timestamp[v] == time:
+                base_dist = dist[v]
+                break
             v = tree[v]
-        return False
+        else:
+            return False
+        length = len(path)
+        for i, u in enumerate(path, 1):
+            dist[u] = base_dist + length - i
+            timestamp[u] = time
+        return True
 
 
-    def _get_tree_and_neighbors(n):
-        if n in source_tree:
-            return source_tree, R_pred
-        elif n in target_tree:
-            return target_tree, R_succ
+    def _is_closer(u, v):
+        return timestamp[v] <= timestamp[u] and dist[v] > dist[u] + 1
 
 
     source_tree = {s: None}
@@ -294,11 +332,16 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     active = deque([s, t])
     orphans = deque()
     flow_value = 0
+    # data structures for the marking heuristic
+    time = 1
+    timestamp = {s: time, t: time}
+    dist = {s: 0, t: 0}
     while flow_value < cutoff:
         # Growth stage
         u, v = grow()
         if u is None:
             break
+        time += 1
         # Augmentation stage
         flow_value += augment(u, v)
         # Adoption stage
