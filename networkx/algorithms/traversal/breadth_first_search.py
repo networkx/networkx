@@ -53,9 +53,9 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
         neighbors = G.neighbors
     visited = set([source])
     queue = deque([(source, neighbors(source))])
-    timeToDepthIncrease = len(queue)
+    time_to_depth_increase = len(queue)
     current_depth = 1
-    pendingDepthIncrease = False
+    pending_depth_increase = False
     while queue:
         if current_depth > depth_limit and depth_limit is not None:
             break
@@ -65,16 +65,16 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
             if child not in visited:
                 yield parent, child
                 visited.add(child)
-                if pendingDepthIncrease == True:
-                    timeToDepthIncrease = len(queue)
-                    pendingDepthIncrease = False
+                if pending_depth_increase == True:
+                    time_to_depth_increase = len(queue)
+                    pending_depth_increase = False
                 queue.append((child, neighbors(child)))
         except StopIteration:
             queue.popleft()
-            timeToDepthIncrease -= 1
-            if timeToDepthIncrease == 0:
+            time_to_depth_increase -= 1
+            if time_to_depth_increase == 0:
                 current_depth += 1
-                pendingDepthIncrease = True
+                pending_depth_increase = True
 
 
 def bfs_tree(G, source, reverse=False, depth_limit=None):
