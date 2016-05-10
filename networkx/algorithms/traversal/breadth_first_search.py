@@ -45,7 +45,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
     """
-    if depth_limit < 0:
+    if depth_limit is not None and depth_limit < 0:
         return
     if reverse and isinstance(G, nx.DiGraph):
         neighbors = G.predecessors
