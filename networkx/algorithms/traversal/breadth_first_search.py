@@ -57,7 +57,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
     current_depth = 1
     pending_depth_increase = False
     while queue:
-        if current_depth > depth_limit and depth_limit is not None:
+        if depth_limit is not None and current_depth > depth_limit:
             break
         parent, children = queue[0]
         try:
