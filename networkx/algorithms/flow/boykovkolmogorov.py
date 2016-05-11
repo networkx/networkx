@@ -12,6 +12,7 @@
 Boykov-Kolmogorov algorithm for maximum flow problems.
 """
 from collections import deque
+from operator import itemgetter
 
 import networkx as nx
 from networkx.algorithms.flow.utils import build_residual_network
@@ -280,8 +281,9 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             else:
                 tree = target_tree
                 neighbors = R_succ
-            nbrs = ((n, attr) for n, attr in neighbors[u].items() if n in tree)
-            for v, attr in sorted(nbrs, key=lambda x: dist[x[0]]):
+            nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items()
+                    if n in tree)
+            for v, attr, d in sorted(nbrs, key=itemgetter(2)):
                 if attr['capacity'] - attr['flow'] > 0:
                     if _has_valid_root(v, tree):
                         tree[u] = v
@@ -289,8 +291,9 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
                         timestamp[u] = time
                         break
             else:
-                nbrs = ((n, attr) for n, attr in neighbors[u].items() if n in tree)
-                for v, attr in nbrs:
+                nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items()
+                        if n in tree)
+                for v, attr, d in sorted(nbrs, key=itemgetter(2)):
                     if attr['capacity'] - attr['flow'] > 0:
                         if v not in active:
                             active.append(v)
