@@ -19,7 +19,8 @@ from networkx.algorithms.flow.utils import build_residual_network
 
 __all__ = ['boykov_kolmogorov']
 
-def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff=None):
+def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
+                      value_only=False, cutoff=None):
     r"""Find a maximum single-commodity flow using Boykov-Kolmogorov algorithm.
 
     This function returns the residual network resulting after computing
@@ -27,7 +28,9 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None, value_only=Fa
     NetworkX uses for defining residual networks.
 
     This algorithm has worse case complexity `O(n^2 m |C|)` for `n` nodes, `m`
-    edges, and `|C|` the cost of the minimum cut [1]_.
+    edges, and `|C|` the cost of the minimum cut [1]_. This implementation
+    uses the marking heuristic defined in [2]_ which improves its running
+    time in many practical problems.
 
     Parameters
     ----------
@@ -133,12 +136,30 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None, value_only=Fa
     >>> flow_value == R.graph['flow_value']
     True
 
+    A nice feature of the Boykov-Kolmogorov algorithm is that a partition
+    of the nodes that defines a minimum cut can be easily computed based
+    on the search trees used during the algorithm. These trees are stored
+    in the graph attribute `trees` of the residual network.
+
+    >>> source_tree, target_tree = R.graph['trees']
+    >>> partition = (set(source_tree), set(G) - set(source_tree))
+
+    Or equivalently:
+
+    >>> partition = (set(G) - set(target_tree), set(target_tree))
+
     References
     ----------
     .. [1] Boykov, Y., & Kolmogorov, V. (2004). An experimental comparison
            of min-cut/max-flow algorithms for energy minimization in vision.
            Pattern Analysis and Machine Intelligence, IEEE Transactions on,
            26(9), 1124-1137.
+           http://www.csd.uwo.ca/~yuri/Papers/pami04.pdf
+
+    .. [2] Vladimir Kolmogorov. Graph-based Algorithms for Multi-camera
+           Reconstruction Problem. PhD thesis, Cornell University, CS Department,
+           2003. pp. 109-114.
+           https://pub.ist.ac.at/~vnk/papers/thesis.pdf
 
     """
     R = boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff)
@@ -354,5 +375,10 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     if flow_value * 2 > INF:
         raise nx.NetworkXUnbounded('Infinite capacity path, flow unbounded above.')
 
+    # Add source and target tree in a graph attribute.
+    # A partition that defines a minimum cut can be directly
+    # computed from the search trees as explained in the docstrings.
+    R.graph['trees'] = (source_tree, target_tree)
+    # Add the standard flow_value graph attribute.
     R.graph['flow_value'] = flow_value
     return R
