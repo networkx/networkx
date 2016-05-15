@@ -12,7 +12,7 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>', 'Matus Cime
 __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
 
-def bfs_edges(G, source, reverse=False, depth_limit=None):
+def bfs_edges(G, source, reverse=False, depth_limit=float('inf')):
     """Produce edges in a breadth-first-search starting at source.
 
     Parameters
@@ -45,8 +45,6 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
     """
-    if depth_limit is not None and depth_limit < 0:
-        return
     if reverse and isinstance(G, nx.DiGraph):
         neighbors = G.predecessors
     else:
@@ -56,16 +54,14 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
     time_to_depth_increase = len(queue)
     current_depth = 1
     pending_depth_increase = False
-    while queue:
-        if depth_limit is not None and current_depth > depth_limit:
-            break
+    while queue and current_depth <= depth_limit:
         parent, children = queue[0]
         try:
             child = next(children)
             if child not in visited:
                 yield parent, child
                 visited.add(child)
-                if pending_depth_increase == True:
+                if pending_depth_increase:
                     time_to_depth_increase = len(queue)
                     pending_depth_increase = False
                 queue.append((child, neighbors(child)))
