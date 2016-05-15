@@ -73,7 +73,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=float('inf')):
                 pending_depth_increase = True
 
 
-def bfs_tree(G, source, reverse=False, depth_limit=None):
+def bfs_tree(G, source, reverse=False, depth_limit=float('inf')):
     """Return an oriented tree constructed from of a breadth-first-search
     starting at source.
 
@@ -110,7 +110,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     return T
 
 
-def bfs_predecessors(G, source, depth_limit=None):
+def bfs_predecessors(G, source, depth_limit=float('inf')):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
     Parameters
@@ -146,7 +146,7 @@ def bfs_predecessors(G, source, depth_limit=None):
         yield (t, s)
 
 
-def bfs_successors(G, source, depth_limit=None):
+def bfs_successors(G, source, depth_limit=float('inf')):
     """Returns an iterator of successors in breadth-first-search from source.
 
     Parameters
