@@ -44,7 +44,7 @@ class TestAdjlist():
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', {name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_multiline_adjlist(G, fname)
         H = nx.read_multiline_adjlist(fname)
@@ -60,7 +60,7 @@ class TestAdjlist():
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', {name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         assert_raises(UnicodeEncodeError,
                       nx.write_multiline_adjlist,
@@ -77,7 +77,7 @@ class TestAdjlist():
         except ValueError: # Python 2.6+
             name1 = 'Bj' + unichr(246) + 'rk'
             name2 = unichr(220) + 'ber'
-        G.add_edge(name1, 'Radiohead', {name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_multiline_adjlist(G, fname, encoding = 'latin-1')
         H = nx.read_multiline_adjlist(fname, encoding = 'latin-1')

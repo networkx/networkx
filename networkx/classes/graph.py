@@ -406,18 +406,15 @@ class Graph(object):
         """
         return self.adj[n]
 
-    def add_node(self, n, attr_dict=None, **attr):
+    def add_node(self, n, **attr):
         """Add a single node n and update node attributes.
 
         Parameters
         ----------
         n : node
             A node can be any hashable Python object except None.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of node attributes.  Key/value pairs will
-            update existing data associated with the node.
         attr : keyword arguments, optional
-            Set or change attributes using key=value.
+            Set or change node attributes using key=value.
 
         See Also
         --------
@@ -448,20 +445,11 @@ class Graph(object):
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        # set up attribute dict
-        if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
         if n not in self.node:
             self.adj[n] = self.adjlist_dict_factory()
-            self.node[n] = attr_dict
+            self.node[n] = attr
         else:  # update attr even if node already exists
-            self.node[n].update(attr_dict)
+            self.node[n].update(attr)
 
     def add_nodes_from(self, nodes, **attr):
         """Add multiple nodes.
@@ -475,8 +463,8 @@ class Graph(object):
             Node attributes are updated using the attribute dict.
         attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
-            Node attributes specified in nodes as a tuple
-            take precedence over attributes specified generally.
+            Node attributes specified in nodes as a tuple take 
+            precedence over attributes specified via keyword arguments.
 
         See Also
         --------
@@ -740,23 +728,20 @@ class Graph(object):
         except TypeError:
             return False
 
-    def add_edge(self, u, v, attr_dict=None, **attr):
+    def add_edge(self, u, v, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
         not already in the graph.
 
-        Edge attributes can be specified with keywords or by providing
-        a dictionary with key/value pairs.  See examples below.
+        Edge attributes can be specified with keywords or by directly
+        accessing the edge's attribute dictionary. See examples below.
 
         Parameters
         ----------
         u, v : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -787,16 +772,13 @@ class Graph(object):
 
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
+
+        For non-string associations, directly access the edge's attribute
+        dictionary.
+
+        >>> G.add_edge(1, 2)
+        >>> G[1][2].update({0: 5})
         """
-        # set up attribute dictionary
-        if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
         # add nodes
         if u not in self.node:
             self.adj[u] = self.adjlist_dict_factory()
@@ -806,11 +788,11 @@ class Graph(object):
             self.node[v] = {}
         # add the edge
         datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
-        datadict.update(attr_dict)
+        datadict.update(attr)
         self.adj[u][v] = datadict
         self.adj[v][u] = datadict
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
+    def add_edges_from(self, ebunch, **attr):
         """Add all the edges in ebunch.
 
         Parameters
@@ -819,9 +801,6 @@ class Graph(object):
             Each edge given in the container will be added to the
             graph. The edges must be given as as 2-tuples (u,v) or
             3-tuples (u,v,d) where d is a dictionary containing edge data.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -836,8 +815,8 @@ class Graph(object):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in edges take precedence
-        over attributes specified generally.
+        Edge attributes specified in an ebunch take precedence over 
+        attributes specified via keyword arguments.
 
         Examples
         --------
@@ -851,15 +830,6 @@ class Graph(object):
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
-        # set up attribute dict
-        if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -878,7 +848,7 @@ class Graph(object):
                 self.adj[v] = self.adjlist_dict_factory()
                 self.node[v] = {}
             datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
-            datadict.update(attr_dict)
+            datadict.update(attr)
             datadict.update(dd)
             self.adj[u][v] = datadict
             self.adj[v][u] = datadict
