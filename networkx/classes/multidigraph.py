@@ -252,14 +252,14 @@ class MultiDiGraph(MultiGraph,DiGraph):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         DiGraph.__init__(self, data, **attr)
 
-    def add_edge(self, u, v, key=None, attr_dict=None, **attr):
+    def add_edge(self, u, v, key=None, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
         not already in the graph.
 
-        Edge attributes can be specified with keywords or by providing
-        a dictionary with key/value pairs.  See examples below.
+        Edge attributes can be specified with keywords or by directly
+        accessing the edge's attribute dictionary. See examples below.
 
         Parameters
         ----------
@@ -304,16 +304,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 2, key=0, weight=4)   # update data for key=0
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
+
+        For non-string associations, directly access the edge's attribute
+        dictionary.
         """
-        # set up attribute dict
-        if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
         # add nodes
         if u not in self.succ:
             self.succ[u] = self.adjlist_dict_factory()
@@ -332,18 +326,19 @@ class MultiDiGraph(MultiGraph,DiGraph):
                 while key in keydict:
                     key += 1
             datadict = keydict.get(key, self.edge_key_dict_factory())
-            datadict.update(attr_dict)
+            datadict.update(attr)
             keydict[key] = datadict
         else:
             # selfloops work this way without special treatment
             if key is None:
                 key = 0
             datadict = self.edge_attr_dict_factory()
-            datadict.update(attr_dict)
+            datadict.update(attr)
             keydict = self.edge_key_dict_factory()
             keydict[key] = datadict
             self.succ[u][v] = keydict
             self.pred[v][u] = keydict
+
 
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.

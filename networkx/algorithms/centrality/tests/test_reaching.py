@@ -69,7 +69,7 @@ class TestGlobalReachingCentrality(TestCase):
 
     def test_cycle_undirected_weighted(self):
         G = nx.Graph()
-        G.add_edge(1, 2, {"weight": 1})
+        G.add_edge(1, 2, weight=1)
         grc = nx.global_reaching_centrality
         assert_equal(grc(G, weight="weight", normalized=False), 0)
 

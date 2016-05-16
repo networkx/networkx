@@ -510,7 +510,7 @@ class GraphMLReader(GraphML):
         node_id = self.node_type(node_xml.get("id"))
         # get data/attributes for node
         data = self.decode_data_elements(graphml_keys, node_xml)
-        G.add_node(node_id, data)
+        G.add_node(node_id, **data)
 
     def add_edge(self, G, edge_element, graphml_keys):
         """Add an edge to the graph.

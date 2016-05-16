@@ -293,7 +293,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
                         "Failed to convert %s data %s to type %s."
                         %(edge_key, edge_value, edge_type))
                 edgedata.update({edge_key:edge_value})
-        G.add_edge(u, v, attr_dict=edgedata)
+        G.add_edge(u, v, **edgedata)
     return G
 
 @open_file(0,mode='rb')

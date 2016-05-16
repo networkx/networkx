@@ -60,7 +60,7 @@ class TestNodeLink:
         except NameError:
             q = "qualité"
         G = nx.Graph()
-        G.add_node(1, {q:q})
+        G.add_node(1, **{q:q})
         s = node_link_data(G)
         output = json.dumps(s, ensure_ascii=False)
         data = json.loads(output)

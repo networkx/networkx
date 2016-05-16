@@ -452,7 +452,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
             node_type=unicode
-        G.add_edge(name1, 'Radiohead', attr_dict={'foo': name2})
+        G.add_edge(name1, 'Radiohead', foo=name2)
         fd, fname = tempfile.mkstemp()
         nx.write_graphml(G, fname)
         H = nx.read_graphml(fname,node_type=node_type)

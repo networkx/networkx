@@ -210,7 +210,14 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
 
         # Iteration on values returns the rows as Numpy arrays
         for row in df.values:
-            g.add_edge(row[src_i], row[tar_i], attr_dict={i:row[j] for i, j in edge_i})
+            s, t = row[src_i], row[tar_i]
+            if g.is_multigraph():
+                g.add_edge(s, t)
+                key = max(g[s][t])  # default keys just count, so max is most recent 
+                g[s][t][key].update((i, row[j]) for i, j in edge_i)
+            else:
+                g.add_edge(s, t)
+                g[s][t].update((i, row[j]) for i, j in edge_i)
     
     # If no column names are given, then just return the edges.
     else:

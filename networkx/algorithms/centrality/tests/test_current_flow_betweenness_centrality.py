@@ -28,7 +28,7 @@ class TestFlowBetweennessCentrality(object):
         b_answer={0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
-        G.add_edge(0,1,{'weight':0.5,'other':0.3})
+        G.add_edge(0,1,weight=0.5,other=0.3)
         b=nx.current_flow_betweenness_centrality(G,normalized=True,weight=None)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])

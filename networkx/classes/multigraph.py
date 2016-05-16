@@ -253,14 +253,14 @@ class MultiGraph(Graph):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         Graph.__init__(self, data, **attr)
 
-    def add_edge(self, u, v, key=None, attr_dict=None, **attr):
+    def add_edge(self, u, v, key=None, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
         not already in the graph.
 
-        Edge attributes can be specified with keywords or by providing
-        a dictionary with key/value pairs.  See examples below.
+        Edge attributes can be specified with keywords or by directly
+        accessing the edge's attribute dictionary. See examples below.
 
         Parameters
         ----------
@@ -269,9 +269,6 @@ class MultiGraph(Graph):
             Nodes must be hashable (and not None) Python objects.
         key : hashable identifier, optional (default=lowest unused integer)
             Used to distinguish multiedges between a pair of nodes.
-        attr_dict : dictionary, optional (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -306,15 +303,6 @@ class MultiGraph(Graph):
         >>> G.add_edge(1, 2, key=0, weight=4)   # update data for key=0
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
-        # set up attribute dict
-        if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
         # add nodes
         if u not in self.adj:
             self.adj[u] = self.adjlist_dict_factory()
@@ -331,20 +319,20 @@ class MultiGraph(Graph):
                 while key in keydict:
                     key += 1
             datadict = keydict.get(key, self.edge_attr_dict_factory())
-            datadict.update(attr_dict)
+            datadict.update(attr)
             keydict[key] = datadict
         else:
             # selfloops work this way without special treatment
             if key is None:
                 key = 0
             datadict = self.edge_attr_dict_factory()
-            datadict.update(attr_dict)
+            datadict.update(attr)
             keydict = self.edge_key_dict_factory()
             keydict[key] = datadict
             self.adj[u][v] = keydict
             self.adj[v][u] = keydict
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
+    def add_edges_from(self, ebunch, **attr):
         """Add all the edges in ebunch.
 
         Parameters
@@ -357,9 +345,6 @@ class MultiGraph(Graph):
                 - 3-tuples (u,v,d) for an edge attribute dict d, or
                 - 4-tuples (u,v,k,d) for an edge identified by key k
 
-        attr_dict : dictionary, optional  (default= no attributes)
-            Dictionary of edge attributes.  Key/value pairs will
-            update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -374,8 +359,8 @@ class MultiGraph(Graph):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in edges take precedence
-        over attributes specified generally.
+        Edge attributes specified in an ebunch take precedence over 
+        attributes specified via keyword arguments.
 
         Examples
         --------
@@ -389,15 +374,6 @@ class MultiGraph(Graph):
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
-        # set up attribute dict
-        if attr_dict is None:
-            attr_dict = attr
-        else:
-            try:
-                attr_dict.update(attr)
-            except AttributeError:
-                raise NetworkXError(
-                    "The attr_dict argument must be a dictionary.")
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -414,9 +390,17 @@ class MultiGraph(Graph):
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple, 3-tuple or 4-tuple." % (e,))
             ddd = {}
-            ddd.update(attr_dict)
+            ddd.update(attr)
             ddd.update(dd)
-            self.add_edge(u, v, key, ddd)
+            if key is None:
+                k = 0
+                if u in self and v in self[u]:
+                    while k in self[u][v]:
+                        k += 1
+            else:
+                k = key
+            self.add_edge(u, v, k)
+            self[u][v][k].update(ddd)
 
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.

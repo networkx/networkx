@@ -142,12 +142,12 @@ def tree_graph(data, attrs=_attrs):
                 add_children(child, grandchildren)
             nodedata = dict((make_str(k), v) for k, v in data.items()
                             if k != id_ and k != children)
-            graph.add_node(child, attr_dict=nodedata)
+            graph.add_node(child, **nodedata)
 
     root = data[id_]
     children_ = data.get(children, [])
     nodedata = dict((make_str(k), v) for k, v in data.items()
                     if k != id_ and k != children)
-    graph.add_node(root, attr_dict=nodedata)
+    graph.add_node(root, **nodedata)
     add_children(root, children_)
     return graph

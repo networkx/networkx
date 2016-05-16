@@ -222,12 +222,18 @@ class TestMinCostFlow:
         by mfrasca."""
 
         G = nx.DiGraph()
-        G.add_edge('s', 'a', {0: 2, 1: 4})
-        G.add_edge('s', 'b', {0: 2, 1: 1})
-        G.add_edge('a', 'b', {0: 5, 1: 2})
-        G.add_edge('a', 't', {0: 1, 1: 5})
-        G.add_edge('b', 'a', {0: 1, 1: 3})
-        G.add_edge('b', 't', {0: 3, 1: 2})
+        G.add_edge('s', 'a')
+        G['s']['a'].update({0: 2, 1: 4}) 
+        G.add_edge('s', 'b')
+        G['s']['b'].update({0: 2, 1: 1}) 
+        G.add_edge('a', 'b')
+        G['a']['b'].update({0: 5, 1: 2}) 
+        G.add_edge('a', 't')
+        G['a']['t'].update({0: 1, 1: 5}) 
+        G.add_edge('b', 'a')
+        G['b']['a'].update({0: 1, 1: 3}) 
+        G.add_edge('b', 't')
+        G['b']['t'].update({0: 3, 1: 2}) 
 
         "PS.ex.7.1: testing main function"
         sol = nx.max_flow_min_cost(G, 's', 't', capacity=0, weight=1)
@@ -239,7 +245,8 @@ class TestMinCostFlow:
         assert_equal(sol['b'], {'a': 0, 't': 3})
         assert_equal(sol['t'], {})
 
-        G.add_edge('t', 's', {1: -100})
+        G.add_edge('t', 's')
+        G['t']['s'].update({1: -100})
         flowCost, sol = nx.capacity_scaling(G, capacity=0, weight=1)
         G.remove_edge('t', 's')
         flow = sum(v for v in sol['s'].values())
