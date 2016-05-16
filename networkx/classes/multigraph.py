@@ -359,8 +359,8 @@ class MultiGraph(Graph):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in edges take precedence
-        over attributes specified generally.
+        Edge attributes specified in an ebunch take precedence over 
+        attributes specified via keyword arguments.
 
         Examples
         --------
