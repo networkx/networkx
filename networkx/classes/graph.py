@@ -463,8 +463,8 @@ class Graph(object):
             Node attributes are updated using the attribute dict.
         attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
-            Node attributes specified in nodes as a tuple
-            take precedence over attributes specified generally.
+            Node attributes specified in nodes as a tuple take 
+            precedence over attributes specified via keyword arguments.
 
         See Also
         --------
@@ -815,8 +815,8 @@ class Graph(object):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in edges take precedence
-        over attributes specified generally.
+        Edge attributes specified in an ebunch take precedence over 
+        attributes specified via keyword arguments.
 
         Examples
         --------
