@@ -158,5 +158,5 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
             else:
                 ky = target_data.pop(key, None)
                 graph.add_edge(source, target, key=ky)
-                graph[source][target][ky].update(target_data)
+                graph[source][target][ky].update(tdata)
     return graph
