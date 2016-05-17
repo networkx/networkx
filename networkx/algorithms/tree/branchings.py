@@ -264,9 +264,6 @@ class Edmonds(object):
         # The final answer.
         self.edges = []
 
-        # Edges for rebuild the graph from circuits, indexed by self.level
-        self.unroll = {}
-
         # Since we will be creating graphs with new nodes, we need to make
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + '_{0}'
@@ -302,8 +299,6 @@ class Edmonds(object):
 
         self.level = 0
 
-        self.unroll[self.level] = []
-
         # These are the "buckets" from the paper.
         #
         # As in the paper, G^i are modified versions of the original graph.
@@ -313,6 +308,7 @@ class Edmonds(object):
         # graph B^i. So we will have strictly more B^i than the paper does.
         self.B = MultiDiGraph_EdgeKey()
         self.B.edge_index = {}
+
         if store_results:
             self.graphs = []
             self.branchings = []
@@ -517,8 +513,8 @@ class Edmonds(object):
                                                 del ddcp['candidate']
                                             # The edge must be saved to rebuild the graph                                       
                                             self.unroll[self.level].append((u, v, key, ddcp))
-                                   else:
 
+                                    else:
                                         # Outside edge. No modification necessary.
                                         continue
 
@@ -554,7 +550,7 @@ class Edmonds(object):
                 return True, None
 
         # (I3) Branch construction.
-        def branch_construction(graph, branching, store_intermediate_results):
+        def branch_construction(graph, branching, store_results):
             H = self.G_original.__class__()
 
             # Start with the branching edges in the last level.
@@ -585,6 +581,7 @@ class Edmonds(object):
                 
                     # Rebuilding the graph of the level i
                     graph.remove_node(merged_node)
+
 
                     for u,v,key,data in self.unroll[self.level]:
                         graph.add_edge(u,v,key,**data)
@@ -639,6 +636,7 @@ class Edmonds(object):
         G, B = get_final_graph_and_branch(nodes, store_results)
         return branch_construction(G, B, store_results)
 
+<<<<<<< HEAD
 def maximum_branching(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
     B = ed.find_optimum(attr, default, kind='max', style='branching', store_results=store_results)
