@@ -566,8 +566,8 @@ class Edmonds(object):
                     # Rebuilding the graph of the level i
                     graph.remove_node(merged_node)
 
-                    for edge in self.unroll[self.level]:
-                        graph.add_edge(*edge)
+                    for u,v,key,data in self.unroll[self.level]:
+                        graph.add_edge(u,v,key,**data)
 
                 edges.update(circuit)
 
