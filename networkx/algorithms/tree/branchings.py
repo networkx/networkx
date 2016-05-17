@@ -619,27 +619,27 @@ class Edmonds(object):
         G, B = get_final_graph_and_branch(nodes, store_results)
         return branch_construction(G, B, store_results)
 
-def maximum_branching(G, attr='weight', default=1, store_intermediate_results=False):
+ef maximum_branching(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='max', style='branching', store_intermediate_results)
+    B = ed.find_optimum(attr, default, kind='max', style='branching', store_results=store_results)
     return B
 
-def minimum_branching(G, attr='weight', default=1, store_intermediate_results=False):
+def minimum_branching(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='min', style='branching', store_intermediate_results)
+    B = ed.find_optimum(attr, default, kind='min', style='branching', store_results=store_results)
     return B
 
-def maximum_spanning_arborescence(G, attr='weight', default=1, store_intermediate_results=False):
+def maximum_spanning_arborescence(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='max', style='arborescence', store_intermediate_results)
+    B = ed.find_optimum(attr, default, kind='max', style='arborescence', store_results=store_results)
     if not is_arborescence(B):
         msg = 'No maximum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
 
-def minimum_spanning_arborescence(G, attr='weight', default=1, store_intermediate_results=False):
+def minimum_spanning_arborescence(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='min', style='arborescence', store_intermediate_results)
+    B = ed.find_optimum(attr, default, kind='min', style='arborescence', store_results=store_results)
     if not is_arborescence(B):
         msg = 'No maximum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
@@ -673,13 +673,13 @@ NetworkXException
 """
 
 maximum_branching.__doc__ = \
-    docstring_branching.format(kind='maximum', style='branching')
+    docstring_branching.format(kind='maximum', style='branching', store_results=False)
 
 minimum_branching.__doc__ = \
-    docstring_branching.format(kind='minimum', style='branching')
+    docstring_branching.format(kind='minimum', style='branching', store_results=False)
 
 maximum_spanning_arborescence.__doc__ = \
-    docstring_arborescence.format(kind='maximum', style='spanning arborescence')
+    docstring_arborescence.format(kind='maximum', style='spanning arborescence', store_results=False)
 
 minimum_spanning_arborescence.__doc__ = \
-    docstring_arborescence.format(kind='minimum', style='spanning arborescence')
+    docstring_arborescence.format(kind='minimum', style='spanning arborescence', store_results=False)
