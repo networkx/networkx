@@ -10,14 +10,14 @@
 """
 Generators for the small graph atlas.
 """
-
-__all__ = ['graph_atlas', 'graph_atlas_g']
-
+import gzip
 from itertools import islice
 import os
 import os.path
 
 import networkx as nx
+
+__all__ = ['graph_atlas', 'graph_atlas_g']
 
 #: The total number of graphs in the atlas.
 #:
@@ -25,17 +25,23 @@ import networkx as nx
 #: including) this number.
 NUM_GRAPHS = 1253
 
-#: The absolute path of the data file containing the edge list of each
-#: graph in the atlas.
+#: The absolute path representing the directory containing this file.
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+#: The path to the data file containing the graph edge lists.
 #:
-#: The file contains one entry per graph in the atlas, in sequential
-#: order, starting from graph number 0 and extending through graph
-#: number 1252 (see :data:`NUM_GRAPHS`). Each entry looks like this::
+#: This is the absolute filename of the gzipped text file containing the
+#: edge list for each graph in the atlas. The file contains one entry
+#: per graph in the atlas, in sequential order, starting from graph
+#: number 0 and extending through graph number 1252 (see
+#: :data:`NUM_GRAPHS`). Each entry looks like
 #:
-#:     GRAPH 6
-#:     NODES 3
-#:     0 1
-#:     0 2
+#: .. sourcecode:: text
+#:
+#:    GRAPH 6
+#:    NODES 3
+#:    0 1
+#:    0 2
 #:
 #: where the first two lines are the graph's index in the atlas and the
 #: number of nodes in the graph, and the remaining lines are the edge
@@ -44,16 +50,17 @@ NUM_GRAPHS = 1253
 #: This file was generated from a Python list of graphs via code like
 #: the following::
 #:
+#:     import gzip
 #:     from networkx.generators.atlas import graph_atlas_g
 #:     from networkx.readwrite.edgelist import write_edgelist
-#:     with open('atlas.dat', 'wb') as f:
+#:
+#:     with gzip.open('atlas.dat.gz', 'wb') as f:
 #:         for i, G in enumerate(graph_atlas_g()):
 #:             f.write(bytes('GRAPH {}\n'.format(i), encoding='utf-8'))
 #:             f.write(bytes('NODES {}\n'.format(len(G)), encoding='utf-8'))
 #:             write_edgelist(G, f, data=False)
 #:
-ATLAS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          'atlas.dat')
+ATLAS_FILE = os.path.join(THIS_DIR, 'atlas.dat.gz')
 
 
 def _generate_graphs():
@@ -63,9 +70,9 @@ def _generate_graphs():
     This function reads the file given in :data:`.ATLAS_FILE`.
 
     """
-    with open(ATLAS_FILE) as f:
+    with gzip.open(ATLAS_FILE, 'rb') as f:
         line = f.readline()
-        while line and line.startswith('GRAPH'):
+        while line and line.startswith(b'GRAPH'):
             # The first two lines of each entry tell us the index of the
             # graph in the list and the number of nodes in the graph.
             # They look like this:
@@ -80,7 +87,7 @@ def _generate_graphs():
             # GRAPH line (or until the end of the file).
             edgelist = []
             line = f.readline()
-            while line and not line.startswith('GRAPH'):
+            while line and not line.startswith(b'GRAPH'):
                 edgelist.append(line.rstrip())
                 line = f.readline()
             G = nx.Graph()
