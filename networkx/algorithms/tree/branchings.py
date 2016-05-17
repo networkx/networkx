@@ -619,7 +619,7 @@ class Edmonds(object):
         G, B = get_final_graph_and_branch(nodes, store_results)
         return branch_construction(G, B, store_results)
 
-ef maximum_branching(G, attr='weight', default=1, store_results=False):
+def maximum_branching(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
     B = ed.find_optimum(attr, default, kind='max', style='branching', store_results=store_results)
     return B
