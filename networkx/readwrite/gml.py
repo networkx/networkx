@@ -435,10 +435,6 @@ def parse_gml_lines(lines, label, destringizer):
 
     if label != 'id':
         G = nx.relabel_nodes(G, mapping)
-        if 'name' in graph:
-            G.graph['name'] = graph['name']
-        else:
-            del G.graph['name']
     return G
 
 
