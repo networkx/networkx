@@ -77,7 +77,7 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters):
 
     ``max_iters`` indicates the number of times to generate a list
     satisfying ``length``. If the number of iterations exceeds this
-    value, :exc:`~networkx.exception.NetworkXError` is raised.
+    value, :exc:`~networkx.exception.ExceededMaxIterations` is raised.
 
     """
     for i in range(max_iters):
@@ -86,7 +86,7 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters):
             seq.append(_zipf_rv_below(gamma, low, high))
         if condition(seq):
             return seq
-    raise nx.NetworkXError("Could not create power law sequence")
+    raise nx.ExceededMaxIterations("Could not create power law sequence")
 
 
 # TODO Needs documentation.
@@ -100,7 +100,7 @@ def _generate_min_degree(gamma, average_degree, max_degree, tolerance,
     mid_avg_deg = 0
     while abs(mid_avg_deg - average_degree) > tolerance:
         if itrs > max_iters:
-            raise nx.NetworkXError("Could not match average_degree")
+            raise nx.ExceededMaxIterations("Could not match average_degree")
         mid_avg_deg = 0
         for x in range(int(min_deg_mid), max_degree + 1):
             mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid,
@@ -129,15 +129,11 @@ def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
     ``mu`` is a float in the interval [0, 1] indicating the fraction of
     intra-community edges incident to each node.
 
-    ``max_iters`` indicates the number of times to generate a list
-    satisfying ``length``. If the number of iterations exceeds this
-    value, :exc:`~networkx.exception.NetworkXError` is raised.
-
     ``max_iters`` is the number of times to try to add a node to a
     community. This must be greater than the length of
     ``degree_sequence``, otherwise this function will always fail. If
     the number of iterations exceeds this value,
-    :exc:`~networkx.exception.NetworkXError` is raised.
+    :exc:`~networkx.exception.ExceededMaxIterations` is raised.
 
     The communities returned by this are sets of integers in the set {0,
     ..., *n* - 1}, where *n* is the length of ``degree_sequence``.
@@ -164,8 +160,8 @@ def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
             free.append(result[c].pop())
         if not free:
             return result
-    raise nx.NetworkXError('Could not assign communities; try increasing'
-                           ' min_community')
+    msg = 'Could not assign communities; try increasing min_community'
+    raise nx.ExceededMaxIterations(msg)
 
 
 def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
@@ -284,6 +280,7 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
         If ``min_degree`` is not specified and a suitable ``min_degree``
         cannot be found.
 
+    ExceededMaxIterations
         If a valid degree sequence cannot be created within
         ``max_iters`` number of iterations.
 

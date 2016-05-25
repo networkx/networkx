@@ -72,9 +72,11 @@ def pagerank(G, alpha=0.85, personalization=None,
     Notes
     -----
     The eigenvector calculation is done by the power iteration method
-    and has no guarantee of convergence.  The iteration will stop
-    after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
+    and has no guarantee of convergence.  The iteration will stop after
+    an error tolerance of ``len(G) * tol`` has been reached. If the
+    number of iterations exceed `max_iter`, a
+    :exc:`networkx.exception.PowerIterationFailedConvergence` exception
+    is raised.
 
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
@@ -85,6 +87,13 @@ def pagerank(G, alpha=0.85, personalization=None,
     --------
     pagerank_numpy, pagerank_scipy, google_matrix
 
+    Raises
+    ------
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     References
     ----------
     .. [1] A. Langville and C. Meyer,
@@ -93,6 +102,7 @@ def pagerank(G, alpha=0.85, personalization=None,
     .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
+
     """
     if len(G) == 0:
         return {}
@@ -154,8 +164,7 @@ def pagerank(G, alpha=0.85, personalization=None,
         err = sum([abs(x[n] - xlast[n]) for n in x])
         if err < N*tol:
             return x
-    raise NetworkXError('pagerank: power iteration failed to converge '
-                        'in %d iterations.' % max_iter)
+    raise nx.PowerIterationFailedConvergence(max_iter)
 
 
 def google_matrix(G, alpha=0.85, personalization=None,
@@ -405,6 +414,13 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     --------
     pagerank, pagerank_numpy, google_matrix
 
+    Raises
+    ------
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     References
     ----------
     .. [1] A. Langville and C. Meyer,
@@ -468,8 +484,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         err = scipy.absolute(x - xlast).sum()
         if err < N * tol:
             return dict(zip(nodelist, map(float, x)))
-    raise NetworkXError('pagerank_scipy: power iteration failed to converge '
-                        'in %d iterations.' % max_iter)
+    raise nx.PowerIterationFailedConvergence(max_iter)
 
 
 # fixture for nose tests

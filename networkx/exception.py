@@ -55,3 +55,29 @@ class NetworkXNotImplemented(NetworkXException):
 
 class NodeNotFound(NetworkXException):
     """Exception raised if requested node is not present in the graph"""
+
+
+class ExceededMaxIterations(NetworkXException):
+    """Raised if a loop iterates too many times without breaking.
+
+    This may occur, for example, in an algorithm that computes
+    progressively better approximations to a value but exceeds an
+    iteration bound specified by the user.
+
+    """
+
+
+class PowerIterationFailedConvergence(ExceededMaxIterations):
+    """Raised when the power iteration method fails to converge within a
+    specified iteration limit.
+
+    `num_iterations` is the number of iterations that have been
+    completed when this exception was raised.
+
+    """
+
+    def __init__(self, num_iterations, *args, **kw):
+        msg = 'power iteration failed to converge within {} iterations'
+        msg = msg.format(num_iterations)
+        superinit = super(PowerIterationFailedConvergence, self).__init__
+        superinit(self, msg, *args, **kw)

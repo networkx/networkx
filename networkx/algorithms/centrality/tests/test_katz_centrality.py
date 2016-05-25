@@ -30,7 +30,7 @@ class TestKatzCentrality(object):
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n], places=4)
 
-    @raises(nx.NetworkXError)
+    @raises(nx.PowerIterationFailedConvergence)
     def test_maxiter(self):
         alpha = 0.1
         G = nx.path_graph(3)

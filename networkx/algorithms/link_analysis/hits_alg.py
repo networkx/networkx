@@ -42,6 +42,13 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
        Two dictionaries keyed by node containing the hub and authority
        values.
 
+    Raises
+    ------
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     Examples
     --------
     >>> G=nx.path_graph(4)
@@ -107,8 +114,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
         if err < tol:
             break
         if i>max_iter:
-            raise NetworkXError(\
-            "HITS: power iteration failed to converge in %d iterations."%(i+1))
+            raise nx.PowerIterationFailedConvergence(max_iter)
         i+=1
     if normalized:
         s = 1.0/sum(a.values())
@@ -247,6 +253,13 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     algorithm does not check if the input graph is directed and will
     execute on undirected graphs.
 
+    Raises
+    ------
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     References
     ----------
     .. [1] A. Langville and C. Meyer,
@@ -281,8 +294,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
         if err < tol:
             break
         if i>max_iter:
-            raise NetworkXError(\
-            "HITS: power iteration failed to converge in %d iterations."%(i+1))
+            raise nx.PowerIterationFailedConvergence(max_iter)
         i+=1
 
     a=np.asarray(x).flatten()
