@@ -89,7 +89,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
         s=1.0/sum(h.values())
         for k in h:
             h[k]*=s
-    for i in range(max_iter):  # power iteration: make up to max_iter iterations
+    for _ in range(max_iter):  # power iteration: make up to max_iter iterations
         hlast=h
         h=dict.fromkeys(hlast.keys(),0)
         a=dict.fromkeys(hlast.keys(),0)
