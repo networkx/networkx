@@ -78,6 +78,11 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     NetworkXError
         If each value in `nstart` is zero.
 
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     See Also
     --------
     eigenvector_centrality_numpy
@@ -141,8 +146,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
         # Check for convergence (in the L_1 norm).
         if sum(abs(x[n] - xlast[n]) for n in x) < nnodes * tol:
             return x
-    raise nx.NetworkXError('power iteration failed to converge within {}'
-                           ' iterations'.format(max_iter))
+    raise nx.PowerIterationFailedConvergence(max_iter)
 
 
 def eigenvector_centrality_numpy(G, weight='weight', max_iter=50, tol=0):

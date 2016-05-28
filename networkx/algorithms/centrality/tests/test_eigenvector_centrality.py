@@ -56,7 +56,7 @@ class TestEigenvectorCentrality(object):
 
 
 
-    @raises(nx.NetworkXError)
+    @raises(nx.PowerIterationFailedConvergence)
     def test_maxiter(self):
         G=nx.path_graph(3)
         b=nx.eigenvector_centrality(G,max_iter=0)

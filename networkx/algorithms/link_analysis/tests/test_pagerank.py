@@ -52,8 +52,9 @@ class TestPageRank(object):
         for n in G:
             assert_almost_equal(p[n], G.pagerank[n], places=4)
 
-        assert_raises(networkx.NetworkXError, networkx.pagerank, G,
-                      max_iter=0)
+    @raises(networkx.PowerIterationFailedConvergence)
+    def test_pagerank_max_iter(self):
+        networkx.pagerank(self.G, max_iter=0)
 
     def test_numpy_pagerank(self):
         G = self.G
@@ -147,8 +148,9 @@ class TestPageRankScipy(TestPageRank):
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08,
                                     personalization=personalize)
 
-        assert_raises(networkx.NetworkXError, networkx.pagerank_scipy, G,
-                      max_iter=0)
+    @raises(networkx.PowerIterationFailedConvergence)
+    def test_scipy_pagerank_max_iter(self):
+        networkx.pagerank_scipy(self.G, max_iter=0)
 
     def test_dangling_scipy_pagerank(self):
         pr = networkx.pagerank_scipy(self.G, dangling=self.dangling_edges)
