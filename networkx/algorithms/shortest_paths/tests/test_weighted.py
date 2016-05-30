@@ -8,7 +8,6 @@ from nose.tools import raises
 import networkx as nx
 from networkx.utils import pairwise
 
-
 def validate_path(G, s, t, soln_len, path):
     assert_equal(path[0], s)
     assert_equal(path[-1], t)
@@ -25,6 +24,8 @@ def validate_length_path(G, s, t, soln_len, length, path):
     assert_equal(soln_len, length)
     validate_path(G, s, t, length, path)
 
+def validate_solution(path, expected_path):
+    assert_equal(path, expected_path)
 
 class WeightedTestBase(object):
     """Base class for test classes that test functions for computing
@@ -71,7 +72,6 @@ class WeightedTestBase(object):
                                ('v', 'y'), ('x', 'u'),
                                ('x', 'v'), ('x', 'y'),
                                ('y', 's'), ('y', 'v')])
-
 
 class TestWeightedPath(WeightedTestBase):
 
@@ -400,7 +400,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(D['v'], 9)
         P, D = nx.goldberg_radzik(self.MXG, 's')
         assert_equal(P['v'], 'u')
-        assert_equal(D['v'], 9)        
+        assert_equal(D['v'], 9)
         assert_equal(nx.bellman_ford_path(self.MXG4, 0, 2), [0, 1, 2])
         assert_equal(nx.bellman_ford_path_length(self.MXG4, 0, 2), 4)
         assert_equal(nx.single_source_bellman_ford_path(self.MXG4, 0)[2], [0, 1, 2])
@@ -519,3 +519,30 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         validate_path(self.XG4, 0, 2, 4, nx.johnson(self.XG4)[0][2])
         validate_path(self.MXG4, 0, 2, 4, nx.johnson(self.MXG4)[0][2])
 
+class TestCtp(WeightedTestBase):
+
+    @raises(nx.NetworkXError)
+    def test_unweighted_graph(self):
+        G = nx.path_graph(5)
+        blocked = [(1,2), (3,2), (4, 2)]
+        nx.ctp(G, blocked, 0, 2)
+
+    def test_ctp_path(self):
+        G = nx.MultiGraph()
+        G.add_weighted_edges_from([(0, 1, 4), (0, 2, 6), (1, 2, 1), (1, 3, 8),
+        (3, 2, 1), (3, 4, 16), (4, 2, 1), (4, 5, 32), (5, 2, 1)])
+
+        blocked = [(1,2), (3,2), (4, 2)]
+
+        output = nx.ctp(G, blocked, 0, 2)
+        validate_solution(output, [0, 2])
+
+        G = nx.MultiGraph()
+        G.add_weighted_edges_from([('a', 'b', 4), ('a', 'c', 6), ('b', 'c', 1),
+        ('b', 'd', 8), ('d', 'c', 1), ('d', 'e', 16), ('e', 'c', 1),
+        ('e', 'f', 32), ('f', 'c', 1)])
+
+        blocked = [('b','c'), ('d','c'), ('e', 'c')]
+
+        output = nx.ctp(G, blocked, 'a', 'b')
+        validate_solution(output, ['a', 'b'])

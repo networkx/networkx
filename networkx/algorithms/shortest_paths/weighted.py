@@ -21,7 +21,6 @@ import networkx as nx
 from networkx.utils import generate_unique_node
 import warnings as _warnings
 
-
 __all__ = ['dijkstra_path',
            'dijkstra_path_length',
            'bidirectional_dijkstra',
@@ -45,7 +44,8 @@ __all__ = ['dijkstra_path',
            'bellman_ford_predecessor_and_distance',
            'negative_edge_cycle',
            'goldberg_radzik',
-           'johnson']
+           'johnson',
+           'ctp']
 
 def _weight_function(G, weight):
     """Returns a function that returns the weight of an edge.
@@ -926,9 +926,9 @@ def bellman_ford(G, source, weight='weight'):
     """
     _warnings.warn("Function bellman_ford() is deprecated, use function bellman_ford_predecessor_and_distance() instead.",
                    DeprecationWarning)
-                   
-    return bellman_ford_predecessor_and_distance(G, source, weight=weight) 
-    
+
+    return bellman_ford_predecessor_and_distance(G, source, weight=weight)
+
 def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
@@ -1015,7 +1015,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, w
         return pred, dist
 
     weight = _weight_function(G, weight)
-        
+
     return (pred, _bellman_ford(G, [source], weight,pred=pred, dist=dist, cutoff=cutoff, target=target))
 
 
@@ -1026,7 +1026,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     Parameters
     ----------
     G : NetworkX graph
-    
+
     source: list
         List of source nodes
 
@@ -1051,7 +1051,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     cutoff: integer or float, optional
         Depth to stop the search. Only paths of length <= cutoff are returned
-        
+
     target: node label, optional
         Ending node for path. Path lengths to other destinations may (and
         probably will) be incorrect.
@@ -1072,7 +1072,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     if pred is None:
         pred = {v: [None] for v in source}
-    
+
     if dist is None:
         dist = {v: 0 for v in source}
 
@@ -1096,11 +1096,11 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                 if cutoff is not None:
                     if dist_v > cutoff:
                         continue
-                                    
+
                 if target is not None:
                     if dist_v > dist.get(target, inf):
                         continue
-                    
+
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
@@ -1112,24 +1112,24 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
-                    
+
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
     if paths is not None:
         dsts = [target] if target is not None else pred
         for dst in dsts:
-        
+
             path = [dst]
             cur = dst
-            
+
             while pred[cur][0] is not None:
                 cur = pred[cur][0]
                 path.append(cur)
-            
+
             path.reverse()
             paths[dst] = path
-    
+
 
     return dist
 
@@ -1180,7 +1180,7 @@ def bellman_ford_path(G, source, target, weight='weight'):
     except KeyError:
         raise nx.NetworkXNoPath(
             "node %s not reachable from %s" % (source, target))
-            
+
 def bellman_ford_path_length(G, source, target, weight='weight'):
     """Returns the shortest path length from source to target
     in a weighted graph.
@@ -1227,9 +1227,9 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
         return 0
 
     weight = _weight_function(G, weight)
-    
+
     length =  _bellman_ford(G, [source], weight, target=target)
-    
+
     try:
         return length[target]
     except KeyError:
@@ -1935,3 +1935,85 @@ def johnson(G, weight='weight'):
 
     return {v: dist_path(v) for v in G}
 
+def ctp(G, blocked, starting, ending, weight='weight'):
+    """
+    Canadian Travelling Problem (CTP) aimed to find the best feasible path given
+    some blocked edges.
+
+    CTP solved using a repositioning algorithm.
+    First, the initial path is found using Dijkstra's algorithm and then the
+    repostitioning algorithm is implemented using taking into consideration
+    the edges that are blocked.
+
+    Parameters
+    ----------
+    G: A weighted graph.
+
+    blocked: list
+        A list with the blocked edges.
+
+    starting: node
+        Starting node.
+
+    ending: node
+        Ending node.
+
+    weight: string, optional (default='weight')
+        Represents the edge weight of each edge data key.
+
+    Returns
+    -------
+    dis: list
+        The path followed taking into consideration the blocked edges.
+
+    Example
+    -------
+    >>> import networkx as nx
+    >>>e = [(0, 1, 4), (0, 2, 6), (1, 2, 1), (1, 3, 8), (3, 2, 1), (3, 4, 16),
+            (4, 2, 1), (4, 5, 32), (5, 2, 1)]
+    >>> blocked=[(1,2), (3,2), (4,2)]
+    >>> output = op_with_simulated_annealing(G, 0, 2)
+    [0, 2]
+
+    Notes
+    -----
+    CTP is a generalization of the shortest path problem to graphs that are
+    partially observable.
+
+    The current solution is implemented using a repositioning algorithm. More
+    specifically: If f is the node from which we start, and t is the node where
+    we want to go, we perform the Dijkstra's algorithm to find the shortest path
+    from f in t. We begin to follow the path. If along the way, when we are
+    ready to cross link (u, v), we see that the link is closed, then we return
+    to our original f node and perform the Dijkstra's algorithm to find the
+    shortest path from f to t having removed from our link graph (u, v). We
+    begin to execute the new path found by f in t. If we see that a link we are
+    going to cross is closed, we go back to the beginning, we remove the
+    enclosed link of the graph, we execute the algorithm of Dijkstra, etc. So
+    again we perform the Dijkstra's algorithm as many times as we fall in a
+    closed link, but each time we return to the beginning. Our overall path
+    resulting to the feasible and appropriate path given the blocked edges.
+
+    The problem is said to have applications in operations research,
+    transportation planning, artificial intelligence, machine learning,
+    communication networks, and routing. A variant of the problem has been
+    studied for robot navigation with probabilistic landmark recognition
+
+    For more information, see here:
+    https://en.wikipedia.org/wiki/Canadian_traveller_problem
+
+    """
+
+    dis = nx.dijkstra_path(G, starting, ending)
+
+    if not nx.is_weighted(G):
+        raise nx.NetworkXError('Given graph is not weighted.')
+
+    for i in range(0, len(dis)-1):
+        dis_edge = tuple((dis[i], dis[i+1]))
+        if dis_edge in blocked:
+            if dis_edge in G.edges():
+                G.remove_edge(dis[i], dis[i+1])
+            dis = nx.dijkstra_path(G, starting, ending)
+            ctp(G, blocked, starting, ending)
+    return dis
