@@ -25,7 +25,6 @@ def validate_length_path(G, s, t, soln_len, length, path):
     assert_equal(soln_len, length)
     validate_path(G, s, t, length, path)
 
-
 class WeightedTestBase(object):
     """Base class for test classes that test functions for computing
     shortest paths in weighted graphs.
@@ -72,6 +71,21 @@ class WeightedTestBase(object):
                                ('x', 'v'), ('x', 'y'),
                                ('y', 's'), ('y', 'v')])
 
+        self.DiG = nx.DiGraph()
+        self.DiG.add_weighted_edges_from([(1, 2, 13), (1, 3, 17), (1, 4, 14),
+                                        (1, 5, 11), (1, 6, 12), (1, 7, 15),
+                                        (2, 1, 13), (2, 3, 12), (2, 4, 16),
+                                        (2, 5, 11), (2, 6, 15), (2, 7 ,14),
+                                        (3, 1, 17), (3, 2, 12), (3, 4 ,11),
+                                        (3, 5, 13), (3, 6, 18), (3, 7, 10),
+                                        (4, 1 ,14), (4, 2, 16), (4, 3, 11),
+                                        (4, 5, 15), (4, 6, 12), (4, 7, 11),
+                                        (5, 1, 11), (5, 2, 11), (5, 3, 13),
+                                        (5, 4, 15), (5, 6, 10), (5, 7, 13),
+                                        (6, 1, 12), (6, 2, 15), (6, 3, 18),
+                                        (6, 4, 12), (6, 5, 10), (6, 7, 10),
+                                        (7, 1, 15), (7, 2, 14), (7, 3, 10),
+                                        (7, 4, 11), (7, 5, 13), (7, 6, 10)])
 
 class TestWeightedPath(WeightedTestBase):
 
@@ -400,7 +414,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(D['v'], 9)
         P, D = nx.goldberg_radzik(self.MXG, 's')
         assert_equal(P['v'], 'u')
-        assert_equal(D['v'], 9)        
+        assert_equal(D['v'], 9)
         assert_equal(nx.bellman_ford_path(self.MXG4, 0, 2), [0, 1, 2])
         assert_equal(nx.bellman_ford_path_length(self.MXG4, 0, 2), 4)
         assert_equal(nx.single_source_bellman_ford_path(self.MXG4, 0)[2], [0, 1, 2])
@@ -519,3 +533,40 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         validate_path(self.XG4, 0, 2, 4, nx.johnson(self.XG4)[0][2])
         validate_path(self.MXG4, 0, 2, 4, nx.johnson(self.MXG4)[0][2])
 
+class TestOrienteering(WeightedTestBase):
+
+    @raises(nx.NetworkXError)
+    def test_completed_graph(self):
+
+        scores = {'1': 20, '2': 27, '3':35, '4':25, '5':31, '6':22, '7':24}
+
+        nx.orienteering(self.DiG, [1,2,3,5,7], 1, 7, scores)
+
+    @raises(nx.NetworkXError)
+    def test_unweighted_graph(self):
+        G = nx.path_graph(5)
+        scores = {'1': 20, '2': 27, '3':35, '4':25, '5':31, '6':22, '7':24}
+
+        nx.orienteering(G, [1,2,3,5,7], 1, 7, scores)
+
+    @raises(nx.NetworkXError)
+    def test_no_feasible_initial_solution(self):
+
+        scores = {'1': 20, '2': 27, '3':35, '4':25, '5':31, '6':22, '7':24}
+
+        nx.orienteering(self.DiG, [1,2,3,5,7], 1, 7, scores)
+
+    @raises(nx.NetworkXError)
+    def test_temperature(self):
+
+        scores = {'1': 20, '2': 27, '3':35, '4':25, '5':31, '6':22, '7':24}
+
+        output = nx.orienteering(self.DiG, [1,2,3,4,7], 1, 7, scores, -100)
+
+    def validate_feasible_solution(self):
+
+        scores = {'1': 20, '2': 27, '3':35, '4':25, '5':31, '6':22, '7':24}
+
+        output = nx.orienteering(self.DiG, [1,2,3,4,7], 1, 7, scores)
+
+        assert_true(output[2] < 50)

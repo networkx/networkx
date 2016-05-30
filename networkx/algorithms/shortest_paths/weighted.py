@@ -20,6 +20,9 @@ from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
 import warnings as _warnings
+import copy
+from math import exp
+from random import randint, random
 
 
 __all__ = ['dijkstra_path',
@@ -45,7 +48,8 @@ __all__ = ['dijkstra_path',
            'bellman_ford_predecessor_and_distance',
            'negative_edge_cycle',
            'goldberg_radzik',
-           'johnson']
+           'johnson',
+           'orienteering']
 
 def _weight_function(G, weight):
     """Returns a function that returns the weight of an edge.
@@ -926,9 +930,9 @@ def bellman_ford(G, source, weight='weight'):
     """
     _warnings.warn("Function bellman_ford() is deprecated, use function bellman_ford_predecessor_and_distance() instead.",
                    DeprecationWarning)
-                   
-    return bellman_ford_predecessor_and_distance(G, source, weight=weight) 
-    
+
+    return bellman_ford_predecessor_and_distance(G, source, weight=weight)
+
 def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
@@ -1015,7 +1019,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, w
         return pred, dist
 
     weight = _weight_function(G, weight)
-        
+
     return (pred, _bellman_ford(G, [source], weight,pred=pred, dist=dist, cutoff=cutoff, target=target))
 
 
@@ -1026,7 +1030,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     Parameters
     ----------
     G : NetworkX graph
-    
+
     source: list
         List of source nodes
 
@@ -1051,7 +1055,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     cutoff: integer or float, optional
         Depth to stop the search. Only paths of length <= cutoff are returned
-        
+
     target: node label, optional
         Ending node for path. Path lengths to other destinations may (and
         probably will) be incorrect.
@@ -1072,7 +1076,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     if pred is None:
         pred = {v: [None] for v in source}
-    
+
     if dist is None:
         dist = {v: 0 for v in source}
 
@@ -1096,11 +1100,11 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                 if cutoff is not None:
                     if dist_v > cutoff:
                         continue
-                                    
+
                 if target is not None:
                     if dist_v > dist.get(target, inf):
                         continue
-                    
+
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
@@ -1112,24 +1116,24 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
-                    
+
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
     if paths is not None:
         dsts = [target] if target is not None else pred
         for dst in dsts:
-        
+
             path = [dst]
             cur = dst
-            
+
             while pred[cur][0] is not None:
                 cur = pred[cur][0]
                 path.append(cur)
-            
+
             path.reverse()
             paths[dst] = path
-    
+
 
     return dist
 
@@ -1180,7 +1184,7 @@ def bellman_ford_path(G, source, target, weight='weight'):
     except KeyError:
         raise nx.NetworkXNoPath(
             "node %s not reachable from %s" % (source, target))
-            
+
 def bellman_ford_path_length(G, source, target, weight='weight'):
     """Returns the shortest path length from source to target
     in a weighted graph.
@@ -1227,9 +1231,9 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
         return 0
 
     weight = _weight_function(G, weight)
-    
+
     length =  _bellman_ford(G, [source], weight, target=target)
-    
+
     try:
         return length[target]
     except KeyError:
@@ -1935,3 +1939,230 @@ def johnson(G, weight='weight'):
 
     return {v: dist_path(v) for v in G}
 
+def orienteering(G, init_sol, starting, ending, scores, temp=100,
+                                outer_loop=2, inner_loop=3, a=0.5, tmax=50,
+                                weight='weight'):
+    """
+    Given a fixed amount of time, the goal is to determine a path from the start
+    point to the end point through a subset of locations in order to maximize the
+    total path score. The move that is applied to generate a neigbor solution is
+    based on interchange '1-1'.
+
+    Parameters
+    ----------
+    G: A completed weighted graph.
+
+    starting : node
+        Starting node
+
+    ending : node
+        Ending node
+
+    scores: dictionary
+        The score of each node
+
+    temp : int, optional (default=100)
+        The initial temperature of the algorithm.
+
+    outer_loop : int, optional (default = 2)
+        Number of iterations the outer loop is being executed.
+
+    inner_loop : int, optional (default = 3)
+        Number of iterations the inner loop is being executed.
+
+    a : float between (0, 1), optional (default=0.5)
+        The percentage that the temperature is being decreased in each of the
+        outer's loop iteration.
+
+    init_sol : list
+        List containing the initial solution which contains the sequence of the
+        nodes visited.
+
+    tmax : int, optional (default = 50)
+        Represents the fixed amount of time.
+
+    weight: string, optional (default='weight')
+        Represents the edge weight of each edge data key.
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm raises an exception if the graph is not completed or
+        weighted. An exception can be raised also if the given initial solution is
+        not feasible, meaning the sum of the scores of each sequential node is
+        more than the fixed amount of time.
+
+    Returns
+    -------
+    best_sol : list
+        The best solution, meaning the route ( list of sequential nodes ) followed.
+
+    best_score : int
+        The total score of the algorithm's best solution.
+
+    cost : int
+        The total cost of the algorithm's solution.
+
+    Example
+    -------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from([(1, 2, 13), (1, 3, 17), (1, 4, 14), (1, 5, 11),
+                                  (1, 6, 12), (1, 7, 15), (2, 1, 13), (2, 3, 12),
+                                  (2, 4, 16), (2, 5, 11), (2, 6, 15), (2, 7 ,14),
+                                  (3, 1, 17), (3, 2, 12), (3, 4 ,11), (3, 5, 13),
+                                  (3, 6, 18), (3, 7, 10), (4, 1 ,14), (4, 2, 16),
+                                  (4, 3, 11), (4, 5, 15), (4, 6, 12), (4, 7, 11),
+                                  (5, 1, 11), (5, 2, 11), (5, 3, 13), (5, 4, 15),
+                                  (5, 6, 10), (5, 7, 13), (6, 1, 12), (6, 2, 15),
+                                  (6, 3, 18), (6, 4, 12), (6, 5, 10), (6, 7, 10),
+                                  (7, 1, 15), (7, 2, 14), (7, 3, 10), (7, 4, 11),
+                                  (7, 5, 13), (7, 6, 10)])
+    >>> scores = {'1': 20, '2': 27, '3':35, '4':25, '5':31, '6':22, '7':24}
+    >>> op_solution = orienteering(G, 1, 7, scores, 100,
+                    2, 3, 0.5, [1,2,3,4,7], 50)
+
+    Notes
+    -----
+    According to the OP, a set of nodes N i is given, each of which is
+    characterized by a score Si. The starting point (node ​​1) and the end point
+    (node ​​N) are data (ie known).The tij transition time from a node i to a node
+    j is given (ie known) for each pair of nodes. All the nodes of the problems
+    cannot be used due to the existence of a time limit Tmax, within which the
+    journey has to be made. The aim of the OP is to determine the route, given
+    the time limit Tmax and the start and end nodes, which will include some of
+    the other nodes of the problem in order to maximize the total collected
+    score. Each node is selected only once, and the overall score will result by
+    summing the scores of the nodes that are selected.
+
+    The algorithm needs an initial solution and at every iteration it selects a
+    neigbor solution.
+
+    Considering c(x) the cost of current solution and c(x') the cost of
+    neighbor solution, then:
+    If c(x') - c(x) <= 0, the neighbor solution becomes current solution for the
+    next iteration. Otherwise, algorithm accepts the neighbor solution to become
+    current solution for the next iteration with probability
+    p = exp - ([c(x') - c(x)] / temp).
+
+    Temp is a parameter of the algorithm that represents temperature in every
+    iteration.
+
+    For more information about Simulated Annealing, see here:
+    https://en.wikipedia.org/wiki/Simulated_annealing
+
+    """
+    if not nx.is_weighted(G):
+        raise nx.NetworkXError('Given graph is not weighted.')
+
+    if not _graph_is_full_completed(G):
+        raise nx.NetworkXError('The graph you have given is not completed.')
+
+    if init_sol is not None:
+        if not _check_feasible_init_sol(G, init_sol, tmax):
+            raise nx.NetworkXError('The initial solution is not feasible.')
+
+    if temp <= 0:
+        raise nx.NetworkXError('The temperature must be greater than 0.')
+
+    best_sol = list(init_sol)
+    current_sol = list(init_sol)
+    for i in range(0, outer_loop):
+        for j in range(0, inner_loop):
+            neighbor_sol = list(_moving(G, current_sol, tmax))
+            score_of_current = _score_calculation(scores, current_sol)
+            score_of_neighbor = _score_calculation(scores, neighbor_sol)
+            df = score_of_neighbor - score_of_current
+            if df >= 0:
+                current_sol = list(neighbor_sol)
+                if  _score_calculation(scores, current_sol) > _score_calculation(scores, best_sol):
+                    best_sol = list(current_sol)
+            else:
+                p = float("{0:.2f}".format(exp(df/temp)))
+                r = float("{0:.2f}".format(random()))
+                if r < p:
+                    current_sol = list(neighbor_sol)
+                else:
+                    current_sol = list(current_sol)
+        temp = temp - temp * a
+    best_score = _score_calculation(scores, current_sol)
+    return best_sol, best_score, _cost_calculation(G, best_sol)
+
+def _moving(G, current_sol, tmax):
+    """
+    Method to apply a movement to the current solution in order to generate the
+    neighbor solution.
+
+    :param G: The graph of the problem. A Networkx DiGraph.
+    :param current_sol: List of nodes containing the sequence of the current
+    solution's nodes
+    :param tmax: int, The fixed amount of time.
+    :return: list, A neighbor solution
+    """
+    cs = list(current_sol)
+    current_sol_backup = list(current_sol)
+    current_sol_item = randint(1, len(current_sol) - 2)
+    helping_list = []
+    for n in G.nodes():
+        if n not in current_sol:
+            helping_list.append(n)
+    a =  randint(0, len(helping_list) - 1)
+    item = helping_list[a]
+    cs[current_sol_item], helping_list[a] = helping_list[a], cs[current_sol_item]
+    if _cost_calculation(G, cs) <= tmax:
+        return cs
+    else:
+        return current_sol_backup
+
+def _cost_calculation(G, sol):
+    """
+    Method to calculate the cost (distance) of the solution.
+
+    :param G: The graph of the problem. A Networkx DiGraph.
+    :param sol: List of nodes containing the sequence with which they must be
+    visited
+    :return: float, cost of solution (distance)
+    """
+    return sum(G.edge[sol[i]][sol[i + 1]]['weight'] for i in range(0, len(sol) - 1))
+
+
+def _score_calculation(scores, sol):
+    """
+    Method to calculate the sum of scores for the nodes of the solution
+
+    :scores: dictionary, The scores of each node
+    :param sol: List of nodes containing the sequence with which they must be
+    visited
+    :return: int, Total  sum of scores
+    """
+    return sum(scores.get(str(sol[i]), 0) for i in range(0, len(sol)))
+
+
+def _graph_is_full_completed(G):
+    """
+     Function to test if the graph is completed.
+
+     :param G: A networkX Graph
+     :return: True if the graph is completed; Else return False
+     """
+    nodes = G.number_of_nodes()
+    edges = G.number_of_edges()
+    if edges == (nodes*nodes - nodes):
+        return True
+    else:
+        return False
+
+def _check_feasible_init_sol(G, sol, tmax):
+    """
+     Function to test the feasibility of the current solution
+
+     :param G: A networkX DiGraph
+     :param sol: List of nodes containing the sequence with which they must be
+     visited
+     :param tmax: int, The fixed amount of time.
+     :return: True if solution is feasible; Else return False.
+     """
+    if _cost_calculation(G, sol) <= tmax:
+        return True
+    else:
+        return False
