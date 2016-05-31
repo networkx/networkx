@@ -35,7 +35,8 @@ def pagerank(G, alpha=0.85, personalization=None,
 
     personalization: dict, optional
       The "personalization vector" consisting of a dictionary with a
-      key for every graph node and nonzero personalization value for each node.
+      key for every graph node and personalization value for each node.
+      At least one personalization value must be non-zero.
       By default, a uniform distribution is used.
 
     max_iter : integer, optional

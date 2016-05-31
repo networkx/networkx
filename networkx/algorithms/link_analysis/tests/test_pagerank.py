@@ -89,6 +89,20 @@ class TestPageRank(object):
         assert_raises(networkx.NetworkXError, networkx.pagerank, G,
                       personalization=personalize)
 
+    def test_zero_personalization_vector(self):
+        G = networkx.complete_graph(4)
+        personalize = {0: 0, 1: 0, 2: 0, 3: 0}
+        assert_raises(ZeroDivisionError, networkx.pagerank, G,
+                  personalization=personalize)
+
+    def test_one_nonzero_personalization_value(self):
+        G = networkx.complete_graph(4)
+        personalize = {0: 0, 1: 0, 2: 0, 3: 1}
+        answer = {0: 0.22077931820379187, 1: 0.22077931820379187, 2: 0.22077931820379187, 3: 0.3376620453886241}
+        p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
+        for n in G:
+            assert_almost_equal(p[n], answer[n], places=4)
+
     def test_dangling_matrix(self):
         """
         Tests that the google_matrix doesn't change except for the dangling
