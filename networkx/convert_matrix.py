@@ -105,9 +105,13 @@ def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
     --------
     >>> G = nx.MultiDiGraph()
     >>> G.add_edge(0,1,weight=2)
+    0
     >>> G.add_edge(1,0)
+    0
     >>> G.add_edge(2,2,weight=3)
+    0
     >>> G.add_edge(2,2)
+    1
     >>> nx.to_pandas_dataframe(G, nodelist=[0,1,2], dtype=int)
        0  1  2
     0  0  2  0
@@ -304,9 +308,13 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     --------
     >>> G = nx.MultiDiGraph()
     >>> G.add_edge(0,1,weight=2)
+    0
     >>> G.add_edge(1,0)
+    0
     >>> G.add_edge(2,2,weight=3)
+    0
     >>> G.add_edge(2,2)
+    1
     >>> nx.to_numpy_matrix(G, nodelist=[0,1,2])
     matrix([[ 0.,  2.,  0.],
             [ 1.,  0.,  0.],
@@ -680,9 +688,13 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     --------
     >>> G = nx.MultiDiGraph()
     >>> G.add_edge(0,1,weight=2)
+    0
     >>> G.add_edge(1,0)
+    0
     >>> G.add_edge(2,2,weight=3)
+    0
     >>> G.add_edge(2,2)
+    1
     >>> S = nx.to_scipy_sparse_matrix(G, nodelist=[0,1,2])
     >>> print(S.todense())
     [[0 2 0]

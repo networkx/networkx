@@ -186,7 +186,9 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     For multidigraphs G1 and G2, using 'weight' edge attribute (default: 7)
 
     >>> G1.add_edge(1,2, weight=7)
+    1
     >>> G2.add_edge(10,20)
+    1
     >>> em = iso.numerical_multiedge_match('weight', 7, rtol=1e-6)
     >>> nx.is_isomorphic(G1, G2, edge_match=em)
     True

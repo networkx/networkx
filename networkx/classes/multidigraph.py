@@ -84,21 +84,23 @@ class MultiDiGraph(MultiGraph,DiGraph):
     Add one edge,
 
     >>> G.add_edge(1, 2)
+    0
 
     a list of edges,
 
     >>> G.add_edges_from([(1,2),(1,3)])
+    [1, 0]
 
     or a collection of edges,
 
-    >>> G.add_edges_from(H.edges())
+    >>> keys = G.add_edges_from(H.edges())
 
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  If an edge already exists, an additional
     edge is created and stored using a key to identify the edge.
     By default the key is the lowest unused integer.
 
-    >>> G.add_edges_from([(4,5,dict(route=282)), (4,5,dict(route=37))])
+    >>> keys = G.add_edges_from([(4,5,dict(route=282)), (4,5,dict(route=37))])
     >>> G[4]
     {5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}}
 
@@ -130,9 +132,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
     Add edge attributes using add_edge(), add_edges_from(), subscript
     notation, or G.edge.
 
-    >>> G.add_edge(1, 2, weight=4.7 )
-    >>> G.add_edges_from([(3,4),(4,5)], color='red')
-    >>> G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
+    >>> key = G.add_edge(1, 2, weight=4.7 )
+    >>> keys = G.add_edges_from([(3,4),(4,5)], color='red')
+    >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
     >>> G.edge[1][2][0]['weight'] = 4
 
@@ -223,6 +225,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
+    [0, 0, 1, 0]
     >>> list(G.edges())
     [(2, 1), (2, 1), (2, 2), (1, 1)]
 
@@ -239,6 +242,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1)) )
+    [0, 2, 1, 0]
     >>> list(G.edges(keys=True))
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
 
@@ -275,6 +279,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
+        Returns
+        -------
+        The edge key assigned to the edge.
+
         See Also
         --------
         add_edges_from : add a collection of edges
@@ -289,6 +297,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
         multiedge weights.  Convert to Graph using edge attribute
         'weight' to enable weighted graph algorithms.
 
+        Default keys are generated using the method ``new_edge_key(u,v)``.
+        This method can be used elsewhere and/or overloaded if desired.
+
         Examples
         --------
         The following all add the edge e=(1,2) to graph G:
@@ -296,14 +307,20 @@ class MultiDiGraph(MultiGraph,DiGraph):
         >>> G = nx.MultiDiGraph()
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
+        0
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
+        1
         >>> G.add_edges_from( [(1,2)] ) # add edges from iterable container
+        [2]
 
         Associate data to edges using keywords:
 
         >>> G.add_edge(1, 2, weight=3)
+        3
         >>> G.add_edge(1, 2, key=0, weight=4)   # update data for key=0
+        0
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
+        0
 
         For non-string associations, directly access the edge's attribute
         dictionary.
@@ -317,27 +334,22 @@ class MultiDiGraph(MultiGraph,DiGraph):
             self.succ[v] = self.adjlist_dict_factory()
             self.pred[v] = self.adjlist_dict_factory()
             self.node[v] = {}
+        if key is None:
+            key = self.new_edge_key(u, v)
         if v in self.succ[u]:
             keydict = self.adj[u][v]
-            if key is None:
-                # find a unique integer key
-                # other methods might be better here?
-                key = len(keydict)
-                while key in keydict:
-                    key += 1
             datadict = keydict.get(key, self.edge_key_dict_factory())
             datadict.update(attr)
             keydict[key] = datadict
         else:
             # selfloops work this way without special treatment
-            if key is None:
-                key = 0
             datadict = self.edge_attr_dict_factory()
             datadict.update(attr)
             keydict = self.edge_key_dict_factory()
             keydict[key] = datadict
             self.succ[u][v] = keydict
             self.pred[v][u] = keydict
+        return key
 
 
     def remove_edge(self, u, v, key=None):
@@ -373,13 +385,16 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         >>> G = nx.MultiDiGraph()
         >>> G.add_edges_from([(1,2),(1,2),(1,2)])
+        [0, 1, 2]
         >>> G.remove_edge(1,2) # remove a single (arbitrary) edge
 
         For edges with keys
 
         >>> G = nx.MultiDiGraph()
         >>> G.add_edge(1,2,key='first')
+        'first'
         >>> G.add_edge(1,2,key='second')
+        'second'
         >>> G.remove_edge(1,2,key='second')
 
         """
@@ -438,6 +453,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         >>> G = nx.MultiDiGraph()
         >>> nx.add_path(G, [0, 1, 2])
         >>> G.add_edge(2,3,weight=5)
+        0
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges(data=True)) # default data is {} (empty dict)
@@ -796,6 +812,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         >>> G = nx.MultiDiGraph()
         >>> G.add_edge(0, 1)
+        0
         >>> H = G.to_directed()
         >>> list(H.edges())
         [(0, 1)]
@@ -964,10 +981,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
             >>> # Create a graph in which some edges are "good" and some "bad".
             >>> G = nx.MultiDiGraph()
-            >>> G.add_edge(0, 1, key=0, good=True)
-            >>> G.add_edge(0, 1, key=1, good=False)
-            >>> G.add_edge(1, 2, key=0, good=False)
-            >>> G.add_edge(1, 2, key=1, good=True)
+            >>> key = G.add_edge(0, 1, key=0, good=True)
+            >>> key = G.add_edge(0, 1, key=1, good=False)
+            >>> key = G.add_edge(1, 2, key=0, good=False)
+            >>> key = G.add_edge(1, 2, key=1, good=True)
             >>> # Keep only those edges that are marked as "good".
             >>> edges = G.edges(keys=True, data='good')
             >>> edges = ((u, v, k) for (u, v, k, good) in edges if good)

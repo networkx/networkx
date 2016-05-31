@@ -82,22 +82,22 @@ class MultiGraph(Graph):
 
     Add one edge,
 
-    >>> G.add_edge(1, 2)
+    >>> key = G.add_edge(1, 2)
 
     a list of edges,
 
-    >>> G.add_edges_from([(1,2),(1,3)])
+    >>> keys = G.add_edges_from([(1,2),(1,3)])
 
     or a collection of edges,
 
-    >>> G.add_edges_from(list(H.edges()))
+    >>> keys = G.add_edges_from(list(H.edges()))
 
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  If an edge already exists, an additional
     edge is created and stored using a key to identify the edge.
     By default the key is the lowest unused integer.
 
-    >>> G.add_edges_from([(4,5,dict(route=282)), (4,5,dict(route=37))])
+    >>> keys = G.add_edges_from([(4,5,dict(route=282)), (4,5,dict(route=37))])
     >>> G[4]
     {3: {0: {}}, 5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}}
 
@@ -130,8 +130,11 @@ class MultiGraph(Graph):
     notation, or G.edge.
 
     >>> G.add_edge(1, 2, weight=4.7 )
+    0
     >>> G.add_edges_from([(3,4),(4,5)], color='red')
+    [0, 0]
     >>> G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
+    [1, 0]
     >>> G[1][2][0]['weight'] = 4.7
     >>> G.edge[1][2][0]['weight'] = 4
 
@@ -223,7 +226,7 @@ class MultiGraph(Graph):
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
     [2, 1]
-    >>> G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
+    >>> keys = G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
     >>> list(G.edges())
     [(2, 1), (2, 1), (2, 2), (1, 1)]
 
@@ -239,7 +242,7 @@ class MultiGraph(Graph):
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
     [2, 1]
-    >>> G.add_edges_from( ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1)) )
+    >>> keys = G.add_edges_from( ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1)) )
     >>> list(G.edges(keys=True))
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
 
@@ -252,6 +255,31 @@ class MultiGraph(Graph):
     def __init__(self, data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         Graph.__init__(self, data, **attr)
+
+    def new_edge_key(self, u, v):
+        """Return an unused key for edges between nodes `u` and `v`.
+
+        The nodes `u` and `v` do not need to be already in the graph.
+
+        In the standard graph class the new key is the number of existing
+        edges between `u` and `v` (increased if necessary to ensure unused).
+
+        Parameters
+        ----------
+        u, v : nodes
+
+        Returns
+        -------
+        key
+        """
+        try:
+            keydict = self.adj[u][v]
+        except KeyError:
+            return 0
+        key = len(keydict)
+        while key in keydict:
+            key += 1
+        return key
 
     def add_edge(self, u, v, key=None, **attr):
         """Add an edge between u and v.
@@ -273,6 +301,10 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
+        Returns
+        -------
+        The edge key assigned to the edge.
+
         See Also
         --------
         add_edges_from : add a collection of edges
@@ -286,6 +318,9 @@ class MultiGraph(Graph):
         multigraphs directly because it is not clear how to handle
         multiedge weights.  Convert to Graph using edge attribute
         'weight' to enable weighted graph algorithms.
+
+        Default keys are generated using the method ``new_edge_key(u,v)``.
+        This method can be used elsewhere and/or overloaded if desired.
 
         Examples
         --------
@@ -310,27 +345,22 @@ class MultiGraph(Graph):
         if v not in self.adj:
             self.adj[v] = self.adjlist_dict_factory()
             self.node[v] = {}
+        if key is None:
+            key = self.new_edge_key(u, v)
         if v in self.adj[u]:
             keydict = self.adj[u][v]
-            if key is None:
-                # find a unique integer key
-                # other methods might be better here?
-                key = len(keydict)
-                while key in keydict:
-                    key += 1
             datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr)
             keydict[key] = datadict
         else:
             # selfloops work this way without special treatment
-            if key is None:
-                key = 0
             datadict = self.edge_attr_dict_factory()
             datadict.update(attr)
             keydict = self.edge_key_dict_factory()
             keydict[key] = datadict
             self.adj[u][v] = keydict
             self.adj[v][u] = keydict
+        return key
 
     def add_edges_from(self, ebunch, **attr):
         """Add all the edges in ebunch.
@@ -349,6 +379,10 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
+        Returns
+        -------
+        A list of edge keys assigned to the edges in `ebunch`.
+
         See Also
         --------
         add_edge : add a single edge
@@ -362,6 +396,9 @@ class MultiGraph(Graph):
         Edge attributes specified in an ebunch take precedence over 
         attributes specified via keyword arguments.
 
+        Default keys are generated using the method ``new_edge_key(u,v)``.
+        This method can be used elsewhere and/or overloaded if desired.
+
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -374,6 +411,7 @@ class MultiGraph(Graph):
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
         """
+        keylist=[]
         # process ebunch
         for e in ebunch:
             ne = len(e)
@@ -392,15 +430,10 @@ class MultiGraph(Graph):
             ddd = {}
             ddd.update(attr)
             ddd.update(dd)
-            if key is None:
-                k = 0
-                if u in self and v in self[u]:
-                    while k in self[u][v]:
-                        k += 1
-            else:
-                k = key
-            self.add_edge(u, v, k)
-            self[u][v][k].update(ddd)
+            key = self.add_edge(u, v, key)
+            self[u][v][key].update(ddd)
+            keylist.append(key)
+        return keylist
 
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.
@@ -435,13 +468,16 @@ class MultiGraph(Graph):
 
         >>> G = nx.MultiGraph()   # or MultiDiGraph, etc
         >>> G.add_edges_from([(1,2),(1,2),(1,2)])
+        [0, 1, 2]
         >>> G.remove_edge(1,2) # remove a single (arbitrary) edge
 
         For edges with keys
 
         >>> G = nx.MultiGraph()   # or MultiDiGraph, etc
         >>> G.add_edge(1,2,key='first')
+        'first'
         >>> G.add_edge(1,2,key='second')
+        'second'
         >>> G.remove_edge(1,2,key='second')
 
         """
@@ -497,6 +533,7 @@ class MultiGraph(Graph):
 
         >>> G = nx.MultiGraph()
         >>> G.add_edges_from([(1,2),(1,2),(1,2)])
+        [0, 1, 2]
         >>> G.remove_edges_from([(1,2),(1,2)])
         >>> list(G.edges())
         [(1, 2)]
@@ -540,6 +577,7 @@ class MultiGraph(Graph):
         >>> G.has_edge(*e)  #  e is a 2-tuple (u,v)
         True
         >>> G.add_edge(0,1,key='a')
+        'a'
         >>> G.has_edge(0,1,key='a')  # specify key
         True
         >>> e=(0,1,'a')
@@ -600,7 +638,7 @@ class MultiGraph(Graph):
         --------
         >>> G = nx.MultiGraph()   # or MultiDiGraph
         >>> nx.add_path(G, [0, 1, 2])
-        >>> G.add_edge(2,3,weight=5)
+        >>> key = G.add_edge(2,3,weight=5)
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges(data=True)) # default data is {} (empty dict)
@@ -672,7 +710,7 @@ class MultiGraph(Graph):
         It is faster to use G[u][v][key].
 
         >>> G = nx.MultiGraph() # or MultiDiGraph
-        >>> G.add_edge(0,1,key='a',weight=7)
+        >>> key = G.add_edge(0,1,key='a',weight=7)
         >>> G[0][1]['a']  # key='a'
         {'weight': 7}
 
@@ -868,7 +906,9 @@ class MultiGraph(Graph):
         --------
         >>> G = nx.MultiGraph()   # or MultiDiGraph
         >>> G.add_edge(1,1)
+        0
         >>> G.add_edge(1,2)
+        0
         >>> list(G.selfloop_edges())
         [(1, 1)]
         >>> list(G.selfloop_edges(data=True))
@@ -1048,10 +1088,10 @@ class MultiGraph(Graph):
 
             >>> # Create a graph in which some edges are "good" and some "bad".
             >>> G = nx.MultiGraph()
-            >>> G.add_edge(0, 1, key=0, good=True)
-            >>> G.add_edge(0, 1, key=1, good=False)
-            >>> G.add_edge(1, 2, key=0, good=False)
-            >>> G.add_edge(1, 2, key=1, good=True)
+            >>> key = G.add_edge(0, 1, key=0, good=True)
+            >>> key = G.add_edge(0, 1, key=1, good=False)
+            >>> key = G.add_edge(1, 2, key=0, good=False)
+            >>> key = G.add_edge(1, 2, key=1, good=True)
             >>> # Keep only those edges that are marked as "good".
             >>> edges = G.edges(keys=True, data='good')
             >>> edges = ((u, v, k) for (u, v, k, good) in edges if good)
