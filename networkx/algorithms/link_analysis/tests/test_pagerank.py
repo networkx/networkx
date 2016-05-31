@@ -81,8 +81,8 @@ class TestPageRank(object):
     def test_personalization(self):
         G = networkx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
-        answer = {0: 0.1, 1: 0.1, 2: 0.4, 3: 0.4}
-        p = networkx.pagerank(G, alpha=0.0, personalization=personalize)
+        answer = {0: 0.23246732615667579, 1: 0.23246732615667579, 2: 0.267532673843324, 3: 0.2675326738433241}
+        p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
             assert_almost_equal(p[n], answer[n], places=4)
         personalize.pop(0)
