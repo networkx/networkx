@@ -1969,10 +1969,12 @@ def ctp(G, blocked, starting, ending, weight='weight'):
     Example
     -------
     >>> import networkx as nx
-    >>>e = [(0, 1, 4), (0, 2, 6), (1, 2, 1), (1, 3, 8), (3, 2, 1), (3, 4, 16),
+    >>> e = [(0, 1, 4), (0, 2, 6), (1, 2, 1), (1, 3, 8), (3, 2, 1), (3, 4, 16),
             (4, 2, 1), (4, 5, 32), (5, 2, 1)]
+    >>> G =nx.MultiGraph()
+    >>> G.add_weighted_edges_from(e)
     >>> blocked=[(1,2), (3,2), (4,2)]
-    >>> output = op_with_simulated_annealing(G, 0, 2)
+    >>> output = ctp(G, blocked, 0, 2)
     [0, 2]
 
     Notes
