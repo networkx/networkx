@@ -91,3 +91,9 @@ class TestHITS:
             raise SkipTest('scipy not available.')
         G=networkx.Graph()
         assert_equal(networkx.hits_scipy(G),({},{}))
+
+
+    @raises(networkx.PowerIterationFailedConvergence)
+    def test_hits_not_convergent(self):
+        G = self.G
+        networkx.hits(G, max_iter=0)

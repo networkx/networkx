@@ -69,7 +69,7 @@ def dfs_edges(G, source=None):
             except StopIteration:
                 stack.pop()
 
-def dfs_tree(G, source):
+def dfs_tree(G, source=None):
     """Return oriented tree constructed from a depth-first-search from source.
 
     Parameters

@@ -89,8 +89,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
         s=1.0/sum(h.values())
         for k in h:
             h[k]*=s
-    i=0
-    while True: # power iteration: make up to max_iter iterations
+    for _ in range(max_iter):  # power iteration: make up to max_iter iterations
         hlast=h
         h=dict.fromkeys(hlast.keys(),0)
         a=dict.fromkeys(hlast.keys(),0)
@@ -113,9 +112,8 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
         err=sum([abs(h[n]-hlast[n]) for n in h])
         if err < tol:
             break
-        if i>max_iter:
-            raise nx.PowerIterationFailedConvergence(max_iter)
-        i+=1
+    else:
+        raise nx.PowerIterationFailedConvergence(max_iter)
     if normalized:
         s = 1.0/sum(a.values())
         for n in a:
