@@ -1988,14 +1988,15 @@ def orienteering(G, init_sol, starting, ending, scores, temp=100,
     ------
     NetworkXError
         The algorithm raises an exception if the graph is not completed or
-        weighted. An exception can be raised also if the given initial solution is
-        not feasible, meaning the sum of the scores of each sequential node is
-        more than the fixed amount of time.
+        weighted. An exception can be raised also if the given initial solution
+        is not feasible, meaning the sum of the scores of each sequential node
+        is more than the fixed amount of time.
 
     Returns
     -------
     best_sol : list
-        The best solution, meaning the route ( list of sequential nodes ) followed.
+        The best solution, meaning the route ( list of sequential nodes )
+        followed.
 
     best_score : int
         The total score of the algorithm's best solution.
@@ -2067,8 +2068,8 @@ def orienteering(G, init_sol, starting, ending, scores, temp=100,
 
     best_sol = list(init_sol)
     current_sol = list(init_sol)
-    for i in range(0, outer_loop):
-        for j in range(0, inner_loop):
+    for i in range(outer_loop):
+        for j in range(inner_loop):
             neighbor_sol = list(_moving(G, current_sol, tmax))
             score_of_current = _score_calculation(scores, current_sol)
             score_of_neighbor = _score_calculation(scores, neighbor_sol)
@@ -2080,10 +2081,7 @@ def orienteering(G, init_sol, starting, ending, scores, temp=100,
             else:
                 p = float("{0:.2f}".format(exp(df/temp)))
                 r = float("{0:.2f}".format(random()))
-                if r < p:
-                    current_sol = list(neighbor_sol)
-                else:
-                    current_sol = list(current_sol)
+                current_sol = list(neighbor_sol) if r < p else list(current_sol)
         temp = temp - temp * a
     best_score = _score_calculation(scores, current_sol)
     return best_sol, best_score, _cost_calculation(G, best_sol)
@@ -2109,10 +2107,7 @@ def _moving(G, current_sol, tmax):
     a =  randint(0, len(helping_list) - 1)
     item = helping_list[a]
     cs[current_sol_item], helping_list[a] = helping_list[a], cs[current_sol_item]
-    if _cost_calculation(G, cs) <= tmax:
-        return cs
-    else:
-        return current_sol_backup
+    return cs if _cost_calculation(G, cs) <= tmax else current_sol_backup
 
 def _cost_calculation(G, sol):
     """
@@ -2123,7 +2118,7 @@ def _cost_calculation(G, sol):
     visited
     :return: float, cost of solution (distance)
     """
-    return sum(G.edge[sol[i]][sol[i + 1]]['weight'] for i in range(0, len(sol) - 1))
+    return sum(G.edge[u][v]['weight'] for u, v in zip(sol, sol[1:]))
 
 
 def _score_calculation(scores, sol):
@@ -2135,7 +2130,7 @@ def _score_calculation(scores, sol):
     visited
     :return: int, Total  sum of scores
     """
-    return sum(scores.get(str(sol[i]), 0) for i in range(0, len(sol)))
+    return sum(scores.get(str(i), 0) for i in sol)
 
 
 def _graph_is_full_completed(G):
@@ -2147,10 +2142,7 @@ def _graph_is_full_completed(G):
      """
     nodes = G.number_of_nodes()
     edges = G.number_of_edges()
-    if edges == (nodes*nodes - nodes):
-        return True
-    else:
-        return False
+    return edges == (nodes * nodes - nodes)
 
 def _check_feasible_init_sol(G, sol, tmax):
     """
@@ -2162,7 +2154,4 @@ def _check_feasible_init_sol(G, sol, tmax):
      :param tmax: int, The fixed amount of time.
      :return: True if solution is feasible; Else return False.
      """
-    if _cost_calculation(G, sol) <= tmax:
-        return True
-    else:
-        return False
+    return _cost_calculation(G, sol) <= tmax
