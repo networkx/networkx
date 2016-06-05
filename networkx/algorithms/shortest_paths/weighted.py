@@ -1970,7 +1970,7 @@ def ctp(G, blocked, starting, ending, weight='weight'):
     -------
     >>> import networkx as nx
     >>> e = [(0, 1, 4), (0, 2, 6), (1, 2, 1), (1, 3, 8), (3, 2, 1), (3, 4, 16),
-            (4, 2, 1), (4, 5, 32), (5, 2, 1)]
+    ...        (4, 2, 1), (4, 5, 32), (5, 2, 1)]
     >>> G =nx.MultiGraph()
     >>> G.add_weighted_edges_from(e)
     >>> blocked=[(1,2), (3,2), (4,2)]
@@ -2011,8 +2011,8 @@ def ctp(G, blocked, starting, ending, weight='weight'):
     if not nx.is_weighted(G):
         raise nx.NetworkXError('Given graph is not weighted.')
 
-    for i in range(0, len(dis)-1):
-        dis_edge = tuple((dis[i], dis[i+1]))
+    for i in range(len(dis)-1):
+        dis_edge = dis[i], dis[i+1]
         if dis_edge in blocked:
             if dis_edge in G.edges():
                 G.remove_edge(dis[i], dis[i+1])
