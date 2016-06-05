@@ -2021,7 +2021,7 @@ def orienteering(G, init_sol, starting, ending, scores, temp=100,
     ...                         (7, 5, 13), (7, 6, 10)])
     >>> scores = {'1': 20, '2': 27, '3':35, '4':25, '5':31, '6':22, '7':24}
     >>> op_solution = orienteering(G, 1, 7, scores, 100,
-                    2, 3, 0.5, [1,2,3,4,7], 50)
+    ...                         2, 3, 0.5, [1,2,3,4,7], 50)
 
     Notes
     -----
