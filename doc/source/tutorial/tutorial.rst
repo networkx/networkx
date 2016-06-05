@@ -388,8 +388,8 @@ functions such as:
 >>> G.add_edges_from([(1,2),(1,3)])
 >>> G.add_node("spam")       # adds node "spam"
 
->>> nx.connected_components(G)
-[[1, 2, 3], ['spam']]
+>>> list(nx.connected_components(G))
+[{1, 2, 3}, {'spam'}]
 
 >>> sorted(d for n, d in G.degree())
 [0, 1, 1, 2]
