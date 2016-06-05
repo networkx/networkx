@@ -2118,7 +2118,7 @@ def _cost_calculation(G, sol):
     visited
     :return: float, cost of solution (distance)
     """
-    return sum(G.edge[u][v]['weight'] for u, v in zip(sol, sol[1:]))
+    return sum(G.edge[sol[i]][sol[i + 1]]['weight'] for i in range(len(sol) - 1))
 
 
 def _score_calculation(scores, sol):
