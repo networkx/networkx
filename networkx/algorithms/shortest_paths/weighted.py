@@ -1971,10 +1971,11 @@ def ctp(G, blocked, starting, ending, weight='weight'):
     >>> import networkx as nx
     >>> e = [(0, 1, 4), (0, 2, 6), (1, 2, 1), (1, 3, 8), (3, 2, 1), (3, 4, 16),
     ...        (4, 2, 1), (4, 5, 32), (5, 2, 1)]
-    >>> G =nx.MultiGraph()
+    >>> G = nx.MultiGraph()
     >>> G.add_weighted_edges_from(e)
-    >>> blocked=[(1,2), (3,2), (4,2)]
+    >>> blocked = [(1,2), (3,2), (4,2)]
     >>> output = ctp(G, blocked, 0, 2)
+    >>> print(output)
     [0, 2]
 
     Notes
