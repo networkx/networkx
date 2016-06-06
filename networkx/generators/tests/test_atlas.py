@@ -60,16 +60,18 @@ class TestAtlasGraphG(object):
                 assert_less_equal(m2, m1 + 1)
 
     def test_nondecreasing_degree_sequence(self):
-        # check for nondecreasing degree sequence (for fixed number f
-        # nodes and edges) note that 111223 < 112222
+        # Check for lexicographically nondecreasing degree sequences
+        # (for fixed number of nodes and edges).
         #
-        # FAILS on graphs 55 and 56. Both are graphs on six nodes, the
-        # former has edges [(0, 3), (4, 5)], so a degree sequence of
-        # 001111 and the latter has edges [(1, 2), (1, 3)], so a degree
-        # sequence of 000112.
+        # There are three exceptions to this rule in the order given in
+        # the "Atlas of Graphs" book, so we need to manually exclude
+        # those.
+        exceptions = [('G55', 'G56'), ('G1007', 'G1008'), ('G1012', 'G1013')]
         for n, group in groupby(self.GAG, key=nx.number_of_nodes):
             for m, group in groupby(group, key=nx.number_of_edges):
                 for G1, G2 in pairwise(group):
+                    if (G1.name, G2.name) in exceptions:
+                        continue
                     d1 = sorted(d for v, d in G1.degree())
                     d2 = sorted(d for v, d in G2.degree())
                     assert_less_equal(d1, d2)

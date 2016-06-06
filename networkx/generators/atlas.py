@@ -147,7 +147,8 @@ def graph_atlas_g():
     3. degree sequence (for example 111223 < 112222),
     4. number of automorphisms,
 
-    in that order. This causes the list to correspond with the index of
+    in that order, with three exceptions as described in the *Notes*
+    section below. This causes the list to correspond with the index of
     the graphs in the Graph Atlas [atlas]_, with the first graph,
     ``G[0]``, being the null graph.
 
@@ -165,6 +166,16 @@ def graph_atlas_g():
     -----
     This function may be expensive in both time and space, since it
     reads a large file sequentially in order to populate the list.
+
+    Although the NetworkX atlas functions match the order of graphs
+    given in the "Atlas of Graphs" book, there are (at least) three
+    errors in the ordering described in the book. The following three
+    pairs of nodes violate the lexicographically nondecreasing sorted
+    degree sequence rule:
+
+    - graphs 55 and 56 with degree sequences 001111 and 000112,
+    - graphs 1007 and 1008 with degree sequences 3333444 and 3333336,
+    - graphs 1012 and 1213 with degree sequences 1244555 and 1244456.
 
     References
     ----------
