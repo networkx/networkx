@@ -83,13 +83,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
     Add one edge,
 
-    >>> G.add_edge(1, 2)
-    0
+    >>> key = G.add_edge(1, 2)
 
     a list of edges,
 
-    >>> G.add_edges_from([(1,2),(1,3)])
-    [1, 0]
+    >>> keys = G.add_edges_from([(1,2),(1,3)])
 
     or a collection of edges,
 
@@ -224,8 +222,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
     [2, 1]
-    >>> G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
-    [0, 0, 1, 0]
+    >>> keys = G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
     >>> list(G.edges())
     [(2, 1), (2, 1), (2, 2), (1, 1)]
 
@@ -241,8 +238,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
     [2, 1]
-    >>> G.add_edges_from( ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1)) )
-    [0, 2, 1, 0]
+    >>> elist = ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1))
+    >>> keys = G.add_edges_from(elist)
     >>> list(G.edges(keys=True))
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
 
@@ -297,8 +294,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
         multiedge weights.  Convert to Graph using edge attribute
         'weight' to enable weighted graph algorithms.
 
-        Default keys are generated using the method ``new_edge_key(u,v)``.
-        This method can be used elsewhere and/or overloaded if desired.
+        Default keys are generated using the method `new_edge_key()`.
+        This method can be overridden by subclassing the base class and
+        providing a custom `new_edge_key()` method.
 
         Examples
         --------
@@ -306,8 +304,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         >>> G = nx.MultiDiGraph()
         >>> e = (1,2)
-        >>> G.add_edge(1, 2)           # explicit two-node form
-        0
+        >>> key = G.add_edge(1, 2)     # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
         1
         >>> G.add_edges_from( [(1,2)] ) # add edges from iterable container
@@ -315,12 +312,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Associate data to edges using keywords:
 
-        >>> G.add_edge(1, 2, weight=3)
-        3
-        >>> G.add_edge(1, 2, key=0, weight=4)   # update data for key=0
-        0
-        >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
-        0
+        >>> key = G.add_edge(1, 2, weight=3)
+        >>> key = G.add_edge(1, 2, key=0, weight=4)  # update data for key=0
+        >>> key = G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
 
         For non-string associations, directly access the edge's attribute
         dictionary.
@@ -384,7 +378,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         For multiple edges
 
         >>> G = nx.MultiDiGraph()
-        >>> G.add_edges_from([(1,2),(1,2),(1,2)])
+        >>> G.add_edges_from([(1,2),(1,2),(1,2)])  # key_list returned
         [0, 1, 2]
         >>> G.remove_edge(1,2) # remove a single (arbitrary) edge
 
@@ -452,8 +446,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         >>> G = nx.MultiDiGraph()
         >>> nx.add_path(G, [0, 1, 2])
-        >>> G.add_edge(2,3,weight=5)
-        0
+        >>> key = G.add_edge(2,3,weight=5)
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges(data=True)) # default data is {} (empty dict)
@@ -811,8 +804,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         If already directed, return a (deep) copy
 
         >>> G = nx.MultiDiGraph()
-        >>> G.add_edge(0, 1)
-        0
+        >>> key = G.add_edge(0, 1)
         >>> H = G.to_directed()
         >>> list(H.edges())
         [(0, 1)]
@@ -850,7 +842,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
 
-        Warning: If you have subclassed MultiGraph to use dict-like objects 
+        Warning: If you have subclassed MultiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the MultiDiGraph
         created by this method.
 

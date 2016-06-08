@@ -129,12 +129,9 @@ class MultiGraph(Graph):
     Add edge attributes using add_edge(), add_edges_from(), subscript
     notation, or G.edge.
 
-    >>> G.add_edge(1, 2, weight=4.7 )
-    0
-    >>> G.add_edges_from([(3,4),(4,5)], color='red')
-    [0, 0]
-    >>> G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
-    [1, 0]
+    >>> key = G.add_edge(1, 2, weight=4.7 )
+    >>> keys = G.add_edges_from([(3,4),(4,5)], color='red')
+    >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
     >>> G.edge[1][2][0]['weight'] = 4
 
@@ -242,7 +239,8 @@ class MultiGraph(Graph):
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
     [2, 1]
-    >>> keys = G.add_edges_from( ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1)) )
+    >>> elist = ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1))
+    >>> keys = G.add_edges_from(elist)
     >>> list(G.edges(keys=True))
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
 
@@ -261,8 +259,13 @@ class MultiGraph(Graph):
 
         The nodes `u` and `v` do not need to be already in the graph.
 
-        In the standard graph class the new key is the number of existing
+        Notes
+        -----
+
+        In the standard MultiGraph class the new key is the number of existing
         edges between `u` and `v` (increased if necessary to ensure unused).
+        The first edge will have key 0, then 1, etc. If an edge is removed
+        further new_edge_keys may not be in this order.
 
         Parameters
         ----------
@@ -270,7 +273,7 @@ class MultiGraph(Graph):
 
         Returns
         -------
-        key
+        key : int
         """
         try:
             keydict = self.adj[u][v]
@@ -319,8 +322,9 @@ class MultiGraph(Graph):
         multiedge weights.  Convert to Graph using edge attribute
         'weight' to enable weighted graph algorithms.
 
-        Default keys are generated using the method ``new_edge_key(u,v)``.
-        This method can be used elsewhere and/or overloaded if desired.
+        Default keys are generated using the method `new_edge_key()`.
+        This method can be overridden by subclassing the base class and
+        providing a custom `new_edge_key()` method.
 
         Examples
         --------
@@ -393,11 +397,12 @@ class MultiGraph(Graph):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in an ebunch take precedence over 
+        Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
-        Default keys are generated using the method ``new_edge_key(u,v)``.
-        This method can be used elsewhere and/or overloaded if desired.
+        Default keys are generated using the method ``new_edge_key()``.
+        This method can be overridden by subclassing the base class and
+        providing a custom ``new_edge_key()`` method.
 
         Examples
         --------
@@ -467,7 +472,7 @@ class MultiGraph(Graph):
         For multiple edges
 
         >>> G = nx.MultiGraph()   # or MultiDiGraph, etc
-        >>> G.add_edges_from([(1,2),(1,2),(1,2)])
+        >>> G.add_edges_from([(1,2),(1,2),(1,2)])  # key_list returned
         [0, 1, 2]
         >>> G.remove_edge(1,2) # remove a single (arbitrary) edge
 
@@ -532,8 +537,7 @@ class MultiGraph(Graph):
         Removing multiple copies of edges
 
         >>> G = nx.MultiGraph()
-        >>> G.add_edges_from([(1,2),(1,2),(1,2)])
-        [0, 1, 2]
+        >>> keys = G.add_edges_from([(1,2),(1,2),(1,2)])
         >>> G.remove_edges_from([(1,2),(1,2)])
         >>> list(G.edges())
         [(1, 2)]
