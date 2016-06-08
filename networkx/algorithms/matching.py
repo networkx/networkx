@@ -21,10 +21,10 @@ __all__ = ['is_matching', 'is_maximal_matching', 'max_weight_matching',
 
 
 def maximal_matching(G):
-    r"""Find a maximal cardinality matching in the graph.
+    r"""Find a maximal matching in the graph.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
+    A maximal matching cannot add more edges and still be a matching.
 
     Parameters
     ----------
@@ -152,8 +152,9 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
     """Compute a maximum-weighted matching of G.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
     The weight of a matching is the sum of the weights of its edges.
+    A maximal matching cannot add more edges and still be a matching.
+    The cardinality of a matching is the number of matched edges.
 
     Parameters
     ----------

@@ -131,7 +131,7 @@ def tensor_product(G, H):
     r"""Return the tensor product of G and H.
 
     The tensor product P of the graphs G and H has a node set that
-    is the Cartesian product of the node sets, :math:`V(P)=V(G) \times V(H)`.
+    is the tensor product of the node sets, :math:`V(P)=V(G) \times V(H)`.
     P has an edge ((u,v),(x,y)) if and only if (u,x) is an edge in G
     and (v,y) is an edge in H.
 
