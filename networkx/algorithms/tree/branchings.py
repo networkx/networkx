@@ -608,7 +608,7 @@ class Edmonds(object):
 
             H.add_nodes_from(self.G_original)
             for edgekey in edges: 
-                u, v, d = G.edge_index[edgekey]
+                u, v, d = graph.edge_index[edgekey]
                 dd = {self.attr: self.trans(d[self.attr])}
                 # TODO: make this preserve the key. In fact, make this use the
                 # same edge attributes as the original graph.
