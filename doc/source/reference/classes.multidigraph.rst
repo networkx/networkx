@@ -28,6 +28,7 @@ Adding and Removing Nodes and Edges
    MultiDiGraph.add_edge
    MultiDiGraph.add_edges_from
    MultiDiGraph.add_weighted_edges_from
+   MultiDiGraph.new_edge_key
    MultiDiGraph.remove_edge
    MultiDiGraph.remove_edges_from
    MultiDiGraph.clear
