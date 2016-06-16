@@ -436,6 +436,13 @@ class TestGeneratorClassic():
     def test_trivial_graph(self):
         assert_equal(number_of_nodes(trivial_graph()), 1)
 
+    def test_turan_graph(self):
+        G=turan_graph(13,4)
+        assert_equal(G.size(),63)
+        assert_equal(len(G),13)
+        assert_raises(networkx.exception.NetworkXError,
+                      turan_graph,4,15)
+
     def test_wheel_graph(self):
         for n, G in [(0, null_graph()), (1, empty_graph(1)),
                      (2, path_graph(2)), (3, complete_graph(3)),
