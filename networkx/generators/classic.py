@@ -186,9 +186,9 @@ def barbell_graph(m1, m2, create_using=None):
     G.name = "barbell_graph(%d,%d)" % (m1, m2)
 
     # connecting path
-    G.add_nodes_from([v for v in range(m1, m1 + m2 - 1)])
+    G.add_nodes_from(v for v in range(m1, m1 + m2 - 1))
     if m2 > 1:
-        G.add_edges_from([(v, v + 1) for v in range(m1, m1 + m2 - 1)])
+        G.add_edges_from((v, v + 1) for v in range(m1, m1 + m2 - 1))
     # right barbell
     G.add_edges_from((u, v) for u in range(m1 + m2, 2 * m1 + m2)
                      for v in range(u + 1, 2 * m1 + m2))
@@ -546,9 +546,9 @@ def ladder_graph(n, create_using=None):
         raise nx.NetworkXError("Directed Graph not supported")
     G = empty_graph(2 * n, create_using)
     G.name = "ladder_graph_(%d)" % n
-    G.add_edges_from([(v, v + 1) for v in range(n - 1)])
-    G.add_edges_from([(v, v + 1) for v in range(n, 2 * n - 1)])
-    G.add_edges_from([(v, v + n) for v in range(n)])
+    G.add_edges_from((v, v + 1) for v in range(n - 1))
+    G.add_edges_from((v, v + 1) for v in range(n, 2 * n - 1))
+    G.add_edges_from((v, v + n) for v in range(n))
     return G
 
 
