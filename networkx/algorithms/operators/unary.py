@@ -80,7 +80,7 @@ def mycielski(G, iterations=1):
     Given a graph, `G = (V,E)`, it is constructed by creating
     a graph, M, with vertices `\{0,2|V|\}` and edges
     `\{(u,v+|V|): (u,v) \in E\} \cup \{(u+|V|,v): (u,v) \in E\}
-    \cup \{(u,2|V|) : u \in \[|V|-1,...,2|V|-1\]\}`.
+    \cup \{(u,2|V|) : u \in [|V|-1,...,2|V|-1]\}`.
 
     Parameters
     ----------
@@ -102,16 +102,20 @@ def mycielski(G, iterations=1):
     """
     if not isinstance(iterations, int) or iterations < 1:
         raise nx.NetworkXError('iterations must be a non-negative integer')
+    
+    n = G.number_of_nodes()
+    M = nx.convert_node_labels_to_integers(G)
+    M.add_nodes_from(range(n, 2*n))
+    old_edges = list(M.edges())
+    M.add_edges_from((e[0], e[1]+n) for e in old_edges)
+    M.add_edges_from((e[0]+n, e[1]) for e in old_edges)
+    M.add_node(2*n)
+    M.add_edges_from((u+n, 2*n) for u in range(n))
+
     if iterations == 1:
-        n = G.number_of_nodes()
-        M = nx.convert_node_labels_to_integers(G)
-        M.add_nodes_from(range(n, 2*n))
-        old_edges = list(M.edges())
-        M.add_edges_from((e[0], e[1]+n) for e in old_edges)
-        M.add_edges_from((e[0]+n, e[1]) for e in old_edges)
-        M.add_node(2*n)
-        M.add_edges_from((u+n, 2*n) for u in range(n))
         return M
+
     else:
-        M = mycielski(G)
-        return mycielski(M, iterations-1)
+        for i in range(iterations-1):
+            M=mycielski(M)
+        return M
