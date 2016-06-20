@@ -79,7 +79,7 @@ def mycielski(G, iterations=1):
     property while increasing the chromatic number by 1.
     Given a graph, `G = (V,E)`, it is constructed by creating
     a graph, M, with vertices `\{0,2|V|\}` and edges
-    `\{(u,v+|V|): (u,v) \in E\} \cup \{(u+|V|,v): (u,v) \in E\}
+    `\{(u,v+|V|) : (u,v) \in E\} \cup \{(u+|V|,v) : (u,v) \in E\}
     \cup \{(u,2|V|) : u \in [|V|-1,...,2|V|-1]\}`.
 
     Parameters
