@@ -654,7 +654,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     """
     if not sources:
         raise ValueError('sources must not be empty')
-    if target in sources:
+    if target != None and target in sources:
         return ({target: 0}, {target: [target]})
     weight = _weight_function(G, weight)
     paths = {source: [source] for source in sources}  # dictionary of paths
