@@ -77,10 +77,6 @@ def mycielski(G, iterations=1):
 
     The Mycielskian of graph preserves a graph's triangle free
     property while increasing the chromatic number by 1.
-    Given a graph, `G = (V,E)`, it is constructed by creating
-    a graph, M, with vertices `\{0,2|V|\}` and edges
-    `\{(u,v+|V|) : (u,v) \in E\} \cup \{(u+|V|,v) : (u,v) \in E\}
-    \cup \{(u,2|V|) : u \in [|V|-1,...,2|V|-1]\}`.
 
     Parameters
     ----------
@@ -112,10 +108,6 @@ def mycielski(G, iterations=1):
     M.add_node(2*n)
     M.add_edges_from((u+n, 2*n) for u in range(n))
 
-    if iterations == 1:
-        return M
-
-    else:
-        for i in range(iterations-1):
-            M=mycielski(M)
-        return M
+    for i in range(iterations-1):
+        M=mycielski(M)
+    return M

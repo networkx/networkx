@@ -9,6 +9,7 @@ Operators
 
    complement
    reverse
+   mycielski
 
 .. automodule:: networkx.algorithms.operators.binary
 .. autosummary::
