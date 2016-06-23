@@ -10,7 +10,6 @@
 #     Pieter Swart <swart@lanl.gov>
 #     Dan Schult <dschult@colgate.edu>
 #     Ben Edwards <bedwards@cs.unm.edu>
-#     Marco Cognetta <cognetta.marco@gmail.com>
 """
 Graph products.
 """
