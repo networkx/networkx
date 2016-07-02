@@ -22,7 +22,6 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 
-import numpy
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
@@ -103,6 +102,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -259,6 +259,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -446,6 +447,7 @@ def draw_networkx_nodes(G, pos,
 
 
 def _get_node_artist(shape, position, size, facecolor, zorder=2):
+    import numpy
     import matplotlib
     if shape == 'o': # circle
         artist = matplotlib.patches.Circle(xy=position,
@@ -616,6 +618,7 @@ def draw_networkx_edges(G, pos,
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter, Colormap
         from matplotlib.collections import LineCollection
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -743,21 +746,26 @@ def draw_networkx_edges(G, pos,
     return artists
 
 def _rgba_to_grayscale(rgba_array):
+    import numpy
     intensity = numpy.sum(numpy.array(rgba_array)[:,:3], axis=1)
     alpha = numpy.array(rgba_array)[:,3]
     return intensity * alpha
 
 def _shift_edge(x1, y1, x2, y2, delta):
+    import numpy
     dx, dy = delta * _unit_vector(_orthogonal(numpy.r_[x2-x1, y2-y1]))
     return x1+dx, y1+dy, x2+dx, y2+dy
 
 def _orthogonal(v):
+    import numpy
     return numpy.r_[-v[1], v[0]]
 
 def _unit_vector(v):
+    import numpy
     return v / numpy.linalg.norm(v)
 
 def _arrow(ax, x1, y1, dx, dy, offset, **kwargs):
+    import numpy
     # offset to prevent occlusion of head from nodes
     r = numpy.sqrt(dx**2 + dy**2)
     dx *= (r-offset)/r
@@ -767,6 +775,7 @@ def _arrow(ax, x1, y1, dx, dy, offset, **kwargs):
 
 def _line(ax, x1, y1, dx, dy, **kwargs):
     import matplotlib
+    import numpy
     # use FancyArrow instead of e.g. LineCollection to ensure consistent scaling across elements;
     return matplotlib.patches.FancyArrow(x1, y1, dx, dy, **kwargs)
 
@@ -837,6 +846,7 @@ def draw_networkx_labels(G, pos,
     try:
         import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -954,6 +964,7 @@ def draw_networkx_edge_labels(G, pos,
     try:
         import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -1105,6 +1116,7 @@ def draw_nx(G, pos, **kwds):
     draw(G, pos, **kwds)
 
 def _handle_colors(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
+    import numpy
     rgba_colors = apply_alpha(colors, alpha, elem_list,
                               cmap, vmin, vmax)
     if len(rgba_colors) == 1:
