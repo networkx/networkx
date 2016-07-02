@@ -1166,6 +1166,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     import numbers
     import itertools
+    import numpy
 
     try:
         from matplotlib.colors import colorConverter
