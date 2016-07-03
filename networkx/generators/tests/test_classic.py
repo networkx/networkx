@@ -436,6 +436,12 @@ class TestGeneratorClassic():
     def test_trivial_graph(self):
         assert_equal(number_of_nodes(trivial_graph()), 1)
 
+    def test_turan_graph(self):
+        assert_raises(nx.NetworkXError, turan_graph,3,5)
+        assert_raises(nx.NetworkXError, turan_graph,1.0,1)
+        assert_equal(number_of_edges(turan_graph(13,4)),63)
+        assert_true(is_isomorphic(turan_graph(13,4),complete_multipartite_graph(3,4,3,3)))
+
     def test_wheel_graph(self):
         for n, G in [(0, null_graph()), (1, empty_graph(1)),
                      (2, path_graph(2)), (3, complete_graph(3)),

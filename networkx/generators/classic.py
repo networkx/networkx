@@ -48,6 +48,7 @@ __all__ = ['balanced_tree',
            'path_graph',
            'star_graph',
            'trivial_graph',
+           'turan_graph',
            'wheel_graph']
 
 
@@ -677,6 +678,43 @@ def trivial_graph(create_using=None):
     """
     G = empty_graph(1, create_using)
     G.name = "trivial_graph()"
+    return G
+
+
+def turan_graph(n,r):
+    """ Return the Turan Graph
+    
+    The Turan Graph is a complete multipartite graph on `n` vertices
+    with `r` partitions with the property that it has the maximum number
+    of edges for any graph with the same number of vertices and partitions.
+
+    Given n and r, we get a complete multipartite graph with `r-(n mod r)`
+    partitions of size `n/r`, rounded down, and `n mod r` partitions of size
+    `n/r+1`, rounded down.
+
+    Parameters
+    ==========
+    n : int
+        The number of vertices.
+    r : int
+        The number of partitions.
+        Must be less than or equal to n.
+
+    Notes
+    =====
+    Must satisfy `1 <= r <= n`.
+    The graph has `(r-1)(n^2)/(2r)` edges, rounded down.
+    """
+
+    if not isinstance(n,int) or not isinstance(r,int):
+        raise nx.NetworkXError("n and r must be type int") 
+
+    if not 1 <= r <= n:
+        raise nx.NetworkXError("Must satisfy 1 <= r <= n")
+
+    partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
+    G = complete_multipartite_graph(*partitions)
+    G.name = "turan_graph({},{})".format(n,r)
     return G
 
 
