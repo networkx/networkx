@@ -406,13 +406,14 @@ def draw_networkx_nodes(G, pos,
 
     # circles made with plt.scatter / networkx.draw_nodes scale with axis dimensions
     # which in practice makes it hard to have one consistent layout
-    # -> use patches.Circle instead which creates circles that remain constant size
+    # -> use patches.Circle instead which creates circles that are in data coordinates
     artists = []
     for ii, node_id in enumerate(nodelist):
         # simulate node edge by drawing a slightly larger circle;
         # I wish there was a better way to do this,
         # but this seems to be the only way to guarantee constant proportions,
-        # as linewidth argument in matplotlib.patches will not be proportional to radius
+        # as linewidth argument in matplotlib.patches will not be proportional
+        # to radius as it is in axis coordinates
         node_edge_artist = _get_node_artist(shape=node_shape,
                                             position=positions[ii],
                                             size=node_size[ii],
@@ -739,19 +740,15 @@ def draw_networkx_edges(G, pos,
 
     return artists
 
-
 def _shift_edge(x1, y1, x2, y2, delta):
     import numpy
-    dx, dy = delta * _unit_vector(_orthogonal(numpy.r_[x2-x1, y2-y1]))
+    # get orthogonal unit vector
+    v = numpy.r_[x2-x1, y2-y1] # original
+    v = numpy.r_[-v[1], v[0]] # orthogonal
+    v = v / numpy.linalg.norm(v) # unit
+
+    dx, dy = delta * v
     return x1+dx, y1+dy, x2+dx, y2+dy
-
-def _orthogonal(v):
-    import numpy
-    return numpy.r_[-v[1], v[0]]
-
-def _unit_vector(v):
-    import numpy
-    return v / numpy.linalg.norm(v)
 
 def _arrow(ax, x1, y1, dx, dy, offset, **kwargs):
     import numpy
@@ -764,7 +761,6 @@ def _arrow(ax, x1, y1, dx, dy, offset, **kwargs):
 
 def _line(ax, x1, y1, dx, dy, **kwargs):
     import matplotlib
-    import numpy
     # use FancyArrow instead of e.g. LineCollection to ensure consistent scaling across elements;
     return matplotlib.patches.FancyArrow(x1, y1, dx, dy, **kwargs)
 
