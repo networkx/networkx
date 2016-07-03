@@ -234,8 +234,6 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     -----
     For directed graphs, "arrows" (actually just thicker stubs) are drawn
     at the head end.  Arrows can be turned off with keyword arrows=False.
-    Yes, it is ugly but drawing proper arrows with Matplotlib this
-    way is tricky.
 
     Examples
     --------
@@ -395,15 +393,15 @@ def draw_networkx_nodes(G, pos,
     node_edge_color = _handle_colors(node_edge_color, alpha, nodelist, cmap, vmin, vmax)
 
     if isinstance(node_size, (int, float)):
-        node_size = node_size * numpy.ones((G.number_of_nodes()), dtype=numpy.float)
+        node_size = node_size * numpy.ones((G.number_of_nodes()))
     if isinstance(linewidth, (int, float)):
-        linewidth = linewidth * numpy.ones((G.number_of_nodes()), dtype=numpy.float)
+        linewidth = linewidth * numpy.ones((G.number_of_nodes()))
 
     # rescale
-    node_size *= 1e-2
-    linewidth *= 1e-2
+    node_size = node_size.astype(numpy.float) * 1e-2
+    linewidth = linewidth.astype(numpy.float) * 1e-2
 
-    # circles made with plt.scatter / networkx.draw_nodes scale with axis dimensions
+    # circles made with plt.scatter scale with axis dimensions
     # which in practice makes it hard to have one consistent layout
     # -> use patches.Circle instead which creates circles that are in data coordinates
     artists = []
@@ -425,7 +423,7 @@ def draw_networkx_nodes(G, pos,
                                        position=positions[ii],
                                        size=node_size[ii] -linewidth[ii],
                                        facecolor=node_color[ii],
-                                       zorder=3)
+                                       zorder=2)
         ax.add_artist(node_artist)
         artists.append((node_artist, node_edge_artist))
 
@@ -640,20 +638,22 @@ def draw_networkx_edges(G, pos,
     if isinstance(width, (int, float)):
         width = width * numpy.ones((len(edgelist)))
 
-    # rescale -- all sizes are in axes coordinate units and hence small
-    node_size *= 1e-2
-    width *= 1e-2
+    # rescale -- all sizes are in data coordinates and hence small
+    # as default range of node positions is [(0, 1), (0, 1)]
+    node_size = node_size.astype(numpy.float) * 1e-2
+    width = width.astype(numpy.float) * 1e-2
+
 
     # convert node size to dictionary -> zero-indexing of nodes not guaranteed
     nodelist = list(G)
     node_size = dict([(node_id, node_size[ii]) for ii, node_id in enumerate(nodelist)])
 
     edge_color = _handle_colors(edge_color,
-                               alpha,
-                               edgelist,
-                               cmap=edge_cmap,
-                               vmin=edge_vmin,
-                               vmax=edge_vmax)
+                                alpha,
+                                edgelist,
+                                cmap=edge_cmap,
+                                vmin=edge_vmin,
+                                vmax=edge_vmax)
 
     # construct a more useful edge list
     total_edges = len(edgelist)
