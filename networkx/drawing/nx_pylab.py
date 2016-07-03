@@ -22,6 +22,7 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 
+import ipdb
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
@@ -407,7 +408,7 @@ def draw_networkx_nodes(G, pos,
     # which in practice makes it hard to have one consistent layout
     # -> use patches.Circle instead which creates circles that remain constant size
     artists = []
-    for ii in nodelist:
+    for ii, node_id in enumerate(nodelist):
         # simulate node edge by drawing a slightly larger circle;
         # I wish there was a better way to do this,
         # but this seems to be the only way to guarantee constant proportions,
@@ -642,6 +643,10 @@ def draw_networkx_edges(G, pos,
     # rescale -- all sizes are in axes coordinate units and hence small
     node_size *= 1e-2
     width *= 1e-2
+
+    # convert node size to dictionary -> zero-indexing of nodes not guaranteed
+    nodelist = list(G)
+    node_size = dict([(node_id, node_size[ii]) for ii, node_id in enumerate(nodelist)])
 
     edge_color = _handle_colors(edge_color,
                                alpha,
