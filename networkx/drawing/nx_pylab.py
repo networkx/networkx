@@ -666,17 +666,6 @@ def draw_networkx_edges(G, pos,
         w = width[ii]
         edges[ii] = source, target, x1, y1, x2, y2, dx, dy, w
 
-    # Before plotting, reorder edges and edge_color in order of darkness,
-    # beginning with the lightest weights.
-    # This highlights dark (and presumably strong) edges in the final graph.
-    # Obviously, if two networks are plotted on top of each other
-    # (e.g. to plot +ve and -ve edges), all the work if for nothing.
-    # TODO: do something sensible for edges with weights of different signs
-    intensity = _rgba_to_grayscale(edge_color)
-    order = numpy.argsort(intensity)
-    edges = edges[order]
-    edge_color = tuple([edge_color[ii] for ii in order])
-
     artists = []
     for ii, (edge, color) in enumerate(zip(edges, edge_color)):
         source, target, x1, y1, x2, y2, dx, dy, w = edge
@@ -750,11 +739,6 @@ def draw_networkx_edges(G, pos,
 
     return artists
 
-def _rgba_to_grayscale(rgba_array):
-    import numpy
-    intensity = numpy.sum(numpy.array(rgba_array)[:,:3], axis=1)
-    alpha = numpy.array(rgba_array)[:,3]
-    return intensity * alpha
 
 def _shift_edge(x1, y1, x2, y2, delta):
     import numpy
