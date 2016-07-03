@@ -22,7 +22,6 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 
-import ipdb
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
