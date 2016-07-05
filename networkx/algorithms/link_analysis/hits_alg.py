@@ -12,7 +12,7 @@ from networkx.exception import NetworkXError
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['hits','hits_numpy','hits_scipy','authority_matrix','hub_matrix']
 
-def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
+def hits(G,weight='weight',max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
@@ -97,11 +97,11 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
         # doing a left multiply a^T=hlast^T*G
         for n in h:
             for nbr in G[n]:
-                a[nbr]+=hlast[n]*G[n][nbr].get('weight',1)
+                a[nbr]+=hlast[n]*G[n][nbr].get(weight,1)
         # now multiply h=Ga
         for n in h:
             for nbr in G[n]:
-                h[n]+=a[nbr]*G[n][nbr].get('weight',1)
+                h[n]+=a[nbr]*G[n][nbr].get(weight,1)
         # normalize vector
         s=1.0/max(h.values())
         for n in h: h[n]*=s
