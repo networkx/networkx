@@ -62,13 +62,6 @@ def bfs_beam_edges(G, source, value, width=None):
         >>> for u, v in nx.bfs_beam_edges(G, source, centrality.get, width):
         ...     print((u, v))  # doctest: +SKIP
 
-    Notes
-    -----
-    This implementation is from `PADS`_, which was in the public domain
-    when it was accessed in July, 2004.
-
-    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py
-
     """
 
     if width is None:
