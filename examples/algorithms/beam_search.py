@@ -58,7 +58,9 @@ def progressive_widening_search(G, source, value, condition, initial_width=1):
     # least the number of nodes in the graph, so the final invocation of
     # `bfs_beam_edges` is equivalent to a plain old breadth-first
     # search. Therefore, all nodes will eventually be visited.
-    log_m = math.ceil(math.log(len(G)))
+    #
+    # TODO In Python 3.3+, this should be `math.log2(len(G))`.
+    log_m = math.ceil(math.log(len(G), 2))
     for i in range(log_m):
         width = initial_width * pow(2, i)
         # Since we are always starting from the same source node, this
