@@ -7,7 +7,7 @@ NetworkX
 
     https://networkx.lanl.gov/
 
-Using
+Usage
 -----
 
     Just write in Python
@@ -21,7 +21,7 @@ Using
     >>> print(sorted(G.edges()))
     [(1, 2)]
 """
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -34,6 +34,7 @@ Using
 from __future__ import absolute_import
 
 import sys
+
 if sys.version_info[:2] < (2, 7):
     m = "Python 2.7 or later is required for NetworkX (%d.%d detected)."
     raise ImportError(m % sys.version_info[:2])
@@ -43,8 +44,8 @@ del sys
 from networkx import release
 
 __author__ = '%s <%s>\n%s <%s>\n%s <%s>' % \
-    (release.authors['Hagberg'] + release.authors['Schult'] +
-        release.authors['Swart'])
+             (release.authors['Hagberg'] + release.authors['Schult'] +
+              release.authors['Swart'])
 __license__ = release.license
 
 __date__ = release.date
@@ -70,13 +71,11 @@ import networkx.utils
 import networkx.classes
 from networkx.classes import *
 
-
 import networkx.convert
 from networkx.convert import *
 
 import networkx.convert_matrix
 from networkx.convert_matrix import *
-
 
 import networkx.relabel
 from networkx.relabel import *
