@@ -7,6 +7,7 @@ from networkx.algorithms.connectivity import minimum_st_node_cut
 from networkx.utils import arbitrary_element
 
 flow_funcs = [
+    flow.boykov_kolmogorov,
     flow.dinitz,
     flow.edmonds_karp,
     flow.preflow_push,
