@@ -72,11 +72,27 @@ def reverse(G, copy=True):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def mycielski(G, iterations):
-    """Returns the Mycielskian of a simple, undirected graph G
+def mycielski(G, iterations=1):
+    r"""Returns the Mycielskian of a simple, undirected graph G
 
     The Mycielskian of graph preserves a graph's triangle free
     property while increasing the chromatic number by 1.
+
+    The Mycielski Operation on a graph, `G=(V,E)`, constructs a new graph
+    of size `2|V|+1` with `3|E|+|V|` edges.
+
+    The construction is as follows:
+
+    Let `V = {0, ..., n-1}`. Construct another vertex set `U = {n, ..., 2n}`
+    and a vertex, `w = 2n+1`. Construct a new graph, `M`, with vertices 
+    `U ∪ V ∪ w`. 
+    For edges, `(u,v)`, in `E` add edges `(u,v), (u, v+n), (u+n, v)` to M. 
+    Finally, for all vertices `u` in U, add edge `(u,w)` to M.
+
+    The Mycielski Operation can be done multiple times by repeating the above 
+    process iteratively.
+
+    More information can be found at https://en.wikipedia.org/wiki/Mycielskian
 
     Parameters
     ----------
