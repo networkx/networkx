@@ -40,22 +40,16 @@ def test_complement_2():
                   ('B', 'D'), ('C', 'A'), ('C', 'B'),
                   ('C', 'D'), ('D', 'A'), ('D', 'B'), ('D', 'C')])
 
-def test_mycielski():
+def test_mycielski_construction():
     G=nx.path_graph(2)
     M=mycielski(G)
     assert_true(is_isomorphic(M, cycle_graph(5)))
 
-def test_mycielski_2():
+def test_mycielski_size():
     G=nx.path_graph(2)
     M=mycielski(G, 2)
     assert_equals(len(M), 11)
     assert_equals(M.size(), 20)
-
-def test_mycielski_3():
-    G=nx.path_graph(5)
-    assert_raises(nx.NetworkXError, mycielski, G, -2)
-    assert_raises(nx.NetworkXError, mycielski, G, 2.0)
-    assert_raises(nx.NetworkXError, mycielski, G, 'a')
 
 def test_reverse1():
     # Other tests for reverse are done by the DiGraph and MultiDigraph.
