@@ -84,12 +84,12 @@ def mycielski(G, iterations=1):
     The construction is as follows:
 
     Let `V = {0, ..., n-1}`. Construct another vertex set `U = {n, ..., 2n}`
-    and a vertex, `w = 2n+1`. Construct a new graph, `M`, with vertices 
-    `U ∪ V ∪ w`. 
-    For edges, `(u,v)`, in `E` add edges `(u,v), (u, v+n), (u+n, v)` to M. 
+    and a vertex, `w = 2n+1`. Construct a new graph, `M`, with vertices
+    `U ∪ V ∪ w`.
+    For edges, `(u,v)`, in `E` add edges `(u,v), (u, v+n), (u+n, v)` to M.
     Finally, for all vertices `u` in U, add edge `(u,w)` to M.
 
-    The Mycielski Operation can be done multiple times by repeating the above 
+    The Mycielski Operation can be done multiple times by repeating the above
     process iteratively.
 
     More information can be found at https://en.wikipedia.org/wiki/Mycielskian
@@ -120,8 +120,8 @@ def mycielski(G, iterations=1):
         n = M.number_of_nodes()
         M.add_nodes_from(range(n, 2*n))
         old_edges = list(M.edges())
-        M.add_edges_from((u,v+n) for u,v in old_edges)
-        M.add_edges_from((u+n, v) for u,v in old_edges)
+        M.add_edges_from((u, v+n) for u, v in old_edges)
+        M.add_edges_from((u+n, v) for u, v in old_edges)
         M.add_node(2*n)
         M.add_edges_from((u+n, 2*n) for u in range(n))
 
