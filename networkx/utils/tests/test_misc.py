@@ -119,6 +119,7 @@ class TestNumpyArray(object):
         a = dict_to_numpy_array1(d)
         assert_allclose(a.sum(), 3)
 
+
 def test_pairwise():
     nodes = range(4)
     node_pairs = [(0, 1), (1, 2), (2, 3)]
@@ -130,3 +131,28 @@ def test_pairwise():
     assert_equal(list(pairwise(empty_iter)), [])
     empty_iter = iter(())
     assert_equal(list(pairwise(empty_iter, cyclic=True)), [])
+
+
+def test_groups():
+    many_to_one = dict(zip('abcde', [0, 0, 1, 1, 2]))
+    actual = groups(many_to_one)
+    expected = {0: {'a', 'b'}, 1: {'c', 'd'}, 2: {'e'}}
+    assert_equal(actual, expected)
+    assert_equal({}, groups({}))
+
+
+def test_to_tuple():
+    a_list = [1, 2, [1, 3]]
+    actual = to_tuple(a_list)
+    expected = (1, 2, (1, 3))
+    assert_equal(actual, expected)
+
+    a_tuple = (1, 2)
+    actual = to_tuple(a_tuple)
+    expected = a_tuple
+    assert_equal(actual, expected)
+
+    a_mix = (1, 2, [1, 3])
+    actual = to_tuple(a_mix)
+    expected = (1, 2, (1, 3))
+    assert_equal(actual, expected)

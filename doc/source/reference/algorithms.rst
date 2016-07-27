@@ -26,10 +26,12 @@ Algorithms
    algorithms.cycles
    algorithms.cuts
    algorithms.dag
+   algorithms.dispersion
    algorithms.distance_measures
    algorithms.distance_regular
    algorithms.dominance
    algorithms.dominating
+   algorithms.efficiency
    algorithms.euler
    algorithms.flow
    algorithms.graphical
@@ -53,4 +55,5 @@ Algorithms
    algorithms.tree
    algorithms.triads
    algorithms.vitality
+   algorithms.voronoi
    algorithms.wiener

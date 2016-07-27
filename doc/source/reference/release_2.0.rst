@@ -63,6 +63,15 @@ API changes
     * OrderedGraph and friends
     * Examples such as ThinGraph that inherit from Graph
 
+* [`#2107 <https://github.com/networkx/networkx/pull/2107>`_]
+  The Graph class methods ``add_edge`` and ``add_edges_from`` no longer
+  allow the use of the ``attr_dict`` parameter.  Instead use keyword arguments.
+  Thus ``G.add_edge(1, 2, {'color': 'red'})`` becomes
+  ``G.add_edge(1, 2, color='red')``.  
+  Note that this only works if the attribute name is a string. For non-string
+  attributes you will need to add the edge and then update manually using 
+  e.g. ``G.adj[1][2].update({0: "zero"})``.
+
 * [`#1577 <https://github.com/networkx/networkx/pull/1577>`_]
   In addition to minimum spanning trees, a new function for calculating maximum
   spanning trees is now provided. The new API consists of four functions:
@@ -92,3 +101,8 @@ API changes
        # recommended
        >>> tree.minimum_spanning_tree(G, algorithm='kruskal', weight='mass')
        >>> tree.minimum_spanning_edges(G, algorithm='prim', weight='mass')
+
+* [`#1445 <https://github.com/networkx/networkx/pull/1445>`_]
+   Most of the shortest_path algorithms now raise a NodeNotFound exception
+   when a source or a target are not present in the graph.
+

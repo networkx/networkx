@@ -150,6 +150,17 @@ class TestRelabel():
         mapping={0:'aardvark'}
         G=relabel_nodes(G,mapping,copy=False)
 
+    def test_relabel_copy_name(self):
+        G=Graph()
+        H = relabel_nodes(G, {}, copy=True)
+        assert_equal(H.graph, G.graph)
+        H = relabel_nodes(G, {}, copy=False)
+        assert_equal(H.graph, G.graph)
+        G.name = "first"
+        H = relabel_nodes(G, {}, copy=True)
+        assert_equal(H.graph, G.graph)
+        H = relabel_nodes(G, {}, copy=False)
+        assert_equal(H.graph, G.graph)
 
     def test_relabel_toposort(self):
         K5=nx.complete_graph(4)

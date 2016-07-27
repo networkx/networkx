@@ -39,7 +39,6 @@ Matplotlib
    draw_spectral
    draw_spring
    draw_shell
-   draw_graphviz
 
 
 
@@ -79,6 +78,7 @@ Graph Layout
 
    circular_layout
    random_layout
+   rescale_layout
    shell_layout
    spring_layout
    spectral_layout

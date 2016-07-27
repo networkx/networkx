@@ -1,12 +1,85 @@
-#!/usr/bin/env python
 import random
-from nose.tools import *
+
+from nose.tools import assert_equal
+from nose.tools import assert_false
+from nose.tools import assert_raises
+from nose.tools import assert_true
+from nose.tools import raises
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx.algorithms.simple_paths import _bidirectional_shortest_path
 from networkx.algorithms.simple_paths import _bidirectional_dijkstra
 from networkx.utils import arbitrary_element
+
+
+class TestIsSimplePath(object):
+    """Unit tests for the
+    :func:`networkx.algorithms.simple_paths.is_simple_path` function.
+
+    """
+
+    def test_empty_list(self):
+        """Tests that the empty list is not a valid path, since there
+        should be a one-to-one correspondence between paths as lists of
+        nodes and paths as lists of edges.
+
+        """
+        G = nx.trivial_graph()
+        assert_false(nx.is_simple_path(G, []))
+
+    def test_trivial_path(self):
+        """Tests that the trivial path, a path of length one, is
+        considered a simple path in a graph.
+
+        """
+        G = nx.trivial_graph()
+        assert_true(nx.is_simple_path(G, [0]))
+
+    def test_trivial_nonpath(self):
+        """Tests that a list whose sole element is an object not in the
+        graph is not considered a simple path.
+
+        """
+        G = nx.trivial_graph()
+        assert_false(nx.is_simple_path(G, ['not a node']))
+
+    def test_simple_path(self):
+        G = nx.path_graph(2)
+        assert_true(nx.is_simple_path(G, [0, 1]))
+
+    def test_non_simple_path(self):
+        G = nx.path_graph(2)
+        assert_false(nx.is_simple_path(G, [0, 1, 0]))
+
+    def test_cycle(self):
+        G = nx.cycle_graph(3)
+        assert_false(nx.is_simple_path(G, [0, 1, 2, 0]))
+
+    def test_missing_node(self):
+        G = nx.path_graph(2)
+        assert_false(nx.is_simple_path(G, [0, 2]))
+
+    def test_directed_path(self):
+        G = nx.DiGraph([(0, 1), (1, 2)])
+        assert_true(nx.is_simple_path(G, [0, 1, 2]))
+
+    def test_directed_non_path(self):
+        G = nx.DiGraph([(0, 1), (1, 2)])
+        assert_false(nx.is_simple_path(G, [2, 1, 0]))
+
+    def test_directed_cycle(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+        assert_false(nx.is_simple_path(G, [0, 1, 2, 0]))
+
+    def test_multigraph(self):
+        G = nx.MultiGraph([(0, 1), (0, 1)])
+        assert_true(nx.is_simple_path(G, [0, 1]))
+
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph([(0, 1), (0, 1), (1, 0), (1, 0)])
+        assert_true(nx.is_simple_path(G, [0, 1]))
+
 
 # Tests for all_simple_paths
 def test_all_simple_paths():
@@ -67,13 +140,13 @@ def test_cutoff_zero():
     paths = nx.all_simple_paths(nx.MultiGraph(G),0,3,cutoff=0)
     assert_equal(list(list(p) for p in paths),[])
 
-@raises(nx.NetworkXError)
+@raises(nx.NodeNotFound)
 def test_source_missing():
     G = nx.Graph()
     nx.add_path(G, [1, 2, 3])
     paths = list(nx.all_simple_paths(nx.MultiGraph(G),0,3))
 
-@raises(nx.NetworkXError)
+@raises(nx.NodeNotFound)
 def test_target_missing():
     G = nx.Graph()
     nx.add_path(G, [1, 2, 3])
@@ -139,14 +212,14 @@ def test_weight_name():
     paths = list(nx.shortest_simple_paths(G, 0, 3, weight='foo'))
     solution = [[0, 6, 5, 4, 3], [0, 1, 2, 3]]
     assert_equal(paths, solution)
-    
-@raises(nx.NetworkXError)
+
+@raises(nx.NodeNotFound)
 def test_ssp_source_missing():
     G = nx.Graph()
     nx.add_path(G, [1, 2, 3])
     paths = list(nx.shortest_simple_paths(G, 0, 3))
 
-@raises(nx.NetworkXError)
+@raises(nx.NodeNotFound)
 def test_ssp_target_missing():
     G = nx.Graph()
     nx.add_path(G, [1, 2, 3])
@@ -199,7 +272,7 @@ def test_bidirectional_shortest_path_restricted():
         nx.NetworkXNoPath,
         _bidirectional_shortest_path,
         directed_cycle,
-        0, 3, 
+        0, 3,
         ignore_edges=[(1, 2)],
     )
 
@@ -225,7 +298,7 @@ def test_bidirectional_dijksta_restricted():
     XG3.add_weighted_edges_from([[0, 1, 2], [1, 2, 12],
                                  [2, 3, 1], [3, 4, 5],
                                  [4, 5, 1], [5, 0, 10]])
-    validate_length_path(XG, 's', 'v', 9, 
+    validate_length_path(XG, 's', 'v', 9,
                          *_bidirectional_dijkstra(XG, 's', 'v'))
     validate_length_path(XG, 's', 'v', 10,
                          *_bidirectional_dijkstra(XG, 's', 'v', ignore_nodes=['u']))
@@ -259,4 +332,3 @@ def test_bidirectional_dijkstra_no_path():
     nx.add_path(G, [1, 2, 3])
     nx.add_path(G, [4, 5, 6])
     path = _bidirectional_dijkstra(G, 1, 6)
-

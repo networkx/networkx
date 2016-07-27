@@ -1,13 +1,17 @@
-#!/usr/bin/env python
+from itertools import permutations
 import math
-from nose.tools import *
+
+from nose.tools import assert_equal
+from nose.tools import assert_false
+from nose.tools import assert_true
 import networkx as nx
 
 
-class TestMatching:
+class TestMaxWeightMatching(object):
+    """Unit tests for the
+    :func:`~networkx.algorithms.matching.max_weight_matching` function.
 
-    def setUp(self):
-        pass
+    """
 
     def test_trivial1(self):
         """Empty graph"""
@@ -215,72 +219,101 @@ class TestMatching:
                       6: 7, 7: 6, 8: 10, 9: 4, 10: 8})
 
 
-def test_maximal_matching():
-    graph = nx.Graph()
-    graph.add_edge(0, 1)
-    graph.add_edge(0, 2)
-    graph.add_edge(0, 3)
-    graph.add_edge(0, 4)
-    graph.add_edge(0, 5)
-    graph.add_edge(1, 2)
-    matching = nx.maximal_matching(graph)
+class TestIsMatching(object):
+    """Unit tests for the
+    :func:`~networkx.algorithms.matching.is_matching` function.
 
-    vset = set(u for u, v in matching)
-    vset = vset | set(v for u, v in matching)
+    """
 
-    for edge in graph.edges():
-        u, v = edge
-        ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0,
-            "not a proper matching!")
+    def test_dict(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_matching(G, {0: 1, 1: 0, 2: 3, 3: 2}))
 
-    eq_(1, len(matching), "matching not length 1!")
-    graph = nx.Graph()
-    graph.add_edge(1, 2)
-    graph.add_edge(1, 5)
-    graph.add_edge(2, 3)
-    graph.add_edge(2, 5)
-    graph.add_edge(3, 4)
-    graph.add_edge(3, 6)
-    graph.add_edge(5, 6)
+    def test_empty_matching(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_matching(G, set()))
 
-    matching = nx.maximal_matching(graph)
-    vset = set(u for u, v in matching)
-    vset = vset | set(v for u, v in matching)
+    def test_single_edge(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_matching(G, {(1, 2)}))
 
-    for edge in graph.edges():
-        u, v = edge
-        ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0,
-            "not a proper matching!")
-    graph = nx.Graph()
-    graph.add_edge(1, 1)
-    graph.add_edge(1, 2)
-    graph.add_edge(2, 2)
-    graph.add_edge(2, 3)
-    matching = nx.maximal_matching(graph)
-    assert(len(matching) == 1)
-    vset = set(u for u, v in matching)
-    vset = vset | set(v for u, v in matching)
+    def test_edge_order(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_matching(G, {(0, 1), (2, 3)}))
+        assert_true(nx.is_matching(G, {(1, 0), (2, 3)}))
+        assert_true(nx.is_matching(G, {(0, 1), (3, 2)}))
+        assert_true(nx.is_matching(G, {(1, 0), (3, 2)}))
 
-    for edge in graph.edges():
-        u, v = edge
-        ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0,
-            "not a proper matching!")
+    def test_valid(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_matching(G, {(0, 1), (2, 3)}))
+
+    def test_invalid(self):
+        G = nx.path_graph(4)
+        assert_false(nx.is_matching(G, {(0, 1), (1, 2), (2, 3)}))
 
 
-def test_maximal_matching_ordering():
-    # check edge ordering
-    G = nx.Graph()
-    G.add_nodes_from([100, 200, 300])
-    G.add_edges_from([(100, 200), (100, 300)])
-    matching = nx.maximal_matching(G)
-    assert_equal(len(matching), 1)
-    G = nx.Graph()
-    G.add_nodes_from([200, 100, 300])
-    G.add_edges_from([(100, 200), (100, 300)])
-    matching = nx.maximal_matching(G)
-    assert_equal(len(matching), 1)
-    G = nx.Graph()
-    G.add_nodes_from([300, 200, 100])
-    G.add_edges_from([(100, 200), (100, 300)])
-    matching = nx.maximal_matching(G)
-    assert_equal(len(matching), 1)
+class TestIsMaximalMatching(object):
+    """Unit tests for the
+    :func:`~networkx.algorithms.matching.is_maximal_matching` function.
+
+    """
+
+    def test_dict(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_maximal_matching(G, {0: 1, 1: 0, 2: 3, 3: 2}))
+
+    def test_valid(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_maximal_matching(G, {(0, 1), (2, 3)}))
+
+    def test_not_matching(self):
+        G = nx.path_graph(4)
+        assert_false(nx.is_maximal_matching(G, {(0, 1), (1, 2), (2, 3)}))
+
+    def test_not_maximal(self):
+        G = nx.path_graph(4)
+        assert_false(nx.is_maximal_matching(G, {(0, 1)}))
+
+
+class TestMaximalMatching(object):
+    """Unit tests for the
+    :func:`~networkx.algorithms.matching.maximal_matching`.
+
+    """
+
+    def test_valid_matching(self):
+        edges = [(1, 2), (1, 5), (2, 3), (2, 5), (3, 4), (3, 6), (5, 6)]
+        G = nx.Graph(edges)
+        matching = nx.maximal_matching(G)
+        assert_true(nx.is_maximal_matching(G, matching))
+
+    def test_single_edge_matching(self):
+        # In the star graph, any maximal matching has just one edge.
+        G = nx.star_graph(5)
+        matching = nx.maximal_matching(G)
+        assert_equal(1, len(matching))
+        assert_true(nx.is_maximal_matching(G, matching))
+
+    def test_self_loops(self):
+        # Create the path graph with two self-loops.
+        G = nx.path_graph(3)
+        G.add_edges_from([(0, 0), (1, 1)])
+        matching = nx.maximal_matching(G)
+        assert_equal(len(matching), 1)
+        # The matching should never include self-loops.
+        assert_false(any(u == v for u, v in matching))
+        assert_true(nx.is_maximal_matching(G, matching))
+
+    def test_ordering(self):
+        """Tests that a maximal matching is computed correctly
+        regardless of the order in which nodes are added to the graph.
+
+        """
+        for nodes in permutations(range(3)):
+            G = nx.Graph()
+            G.add_nodes_from(nodes)
+            G.add_edges_from([(0, 1), (0, 2)])
+            matching = nx.maximal_matching(G)
+            assert_equal(len(matching), 1)
+            assert_true(nx.is_maximal_matching(G, matching))

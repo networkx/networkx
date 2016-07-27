@@ -205,6 +205,7 @@ class GEXF(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
+
     # http://www.w3.org/TR/xmlschema-2/#boolean
     convert_bool = {
         'true': True, 'false': False,
@@ -716,7 +717,7 @@ class GEXFReader(GEXF):
             for node_xml in subnodes.findall('{%s}node' % self.NS_GEXF):
                 self.add_node(G, node_xml, node_attr, node_pid=node_id)
 
-        G.add_node(node_id, data)
+        G.add_node(node_id, **data)
 
     def add_start_end(self, data, xml):
         # start and end times

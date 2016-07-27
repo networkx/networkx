@@ -8,8 +8,6 @@ Documentation
    http://networkx.github.io
 Mailing List
    https://groups.google.com/forum/#!forum/networkx-discuss
-IRC
-   #networkx on freenode (for a web client click `here`_)
 Development
    https://github.com/networkx/networkx
 

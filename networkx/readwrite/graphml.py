@@ -226,12 +226,17 @@ class GraphML(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    # http://www.w3.org/TR/xmlschema-2/#boolean
+
+    # This page says that data types in GraphML follow Java(TM).
+    #   http://graphml.graphdrawing.org/primer/graphml-primer.html#AttributesDefinition
+    # true and false are the only boolean literals:
+    #   http://en.wikibooks.org/wiki/Java_Programming/Literals#Boolean_Literals
     convert_bool = {
+        # We use data.lower() in actual use.
         'true': True, 'false': False,
-        'True': True, 'False': False,
+        # Include integer strings for convenience.
         '0': False, 0: False,
-        '1': False, 1: True
+        '1': True, 1: True
     }
 
 class GraphMLWriter(GraphML):
@@ -505,7 +510,7 @@ class GraphMLReader(GraphML):
         node_id = self.node_type(node_xml.get("id"))
         # get data/attributes for node
         data = self.decode_data_elements(graphml_keys, node_xml)
-        G.add_node(node_id, data)
+        G.add_node(node_id, **data)
 
     def add_edge(self, G, edge_element, graphml_keys):
         """Add an edge to the graph.
@@ -554,8 +559,10 @@ class GraphMLReader(GraphML):
             text=data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element))==0:
-                if data_type==bool:
-                    data[data_name] = self.convert_bool[text]
+                if data_type == bool:
+                    # Ignore cases.
+                    # http://docs.oracle.com/javase/6/docs/api/java/lang/Boolean.html#parseBoolean%28java.lang.String%29
+                    data[data_name] = self.convert_bool[text.lower()]
                 else:
                     data[data_name] = data_type(text)
             elif len(list(data_element)) > 0:

@@ -131,7 +131,7 @@ def tensor_product(G, H):
     r"""Return the tensor product of G and H.
 
     The tensor product P of the graphs G and H has a node set that
-    is the Cartesian product of the node sets, :math:`V(P)=V(G) \times V(H)`.
+    is the tensor product of the node sets, :math:`V(P)=V(G) \times V(H)`.
     P has an edge ((u,v),(x,y)) if and only if (u,x) is an edge in G
     and (v,y) is an edge in H.
 
@@ -367,7 +367,7 @@ def power(G, k):
     Returns
     -------
     NetworkX simple graph
-        `G` to the `k`th power.
+        `G` to the power `k`.
 
     Raises
     ------
@@ -406,8 +406,8 @@ def power(G, k):
 
     Notes
     -----
-    This definition of "power graph" comes from Exercise 3.1.6 of *Graph
-    Theory* by Bondy and Murty [1]_.
+    This definition of "power graph" comes from Exercise 3.1.6 of
+    *Graph Theory* by Bondy and Murty [1]_.
 
     """
     if k <= 0:

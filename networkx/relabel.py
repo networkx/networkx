@@ -124,7 +124,7 @@ def _relabel_inplace(G, mapping):
         if new == old:
             continue
         try:
-            G.add_node(new, attr_dict=G.node[old])
+            G.add_node(new, **G.node[old])
         except KeyError:
             raise KeyError("Node %s is not in the graph"%old)
         if multigraph:
@@ -147,7 +147,8 @@ def _relabel_inplace(G, mapping):
 
 def _relabel_copy(G, mapping):
     H = G.__class__()
-    H.name = "(%s)" % G.name
+    if G.name:
+        H.name = "(%s)" % G.name
     if G.is_multigraph():
         H.add_edges_from( (mapping.get(n1, n1),mapping.get(n2, n2),k,d.copy())
                           for (n1,n2,k,d) in G.edges(keys=True, data=True))

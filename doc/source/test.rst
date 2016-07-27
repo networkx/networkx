@@ -6,8 +6,9 @@ Requirements for testing
 ========================
 NetworkX uses the Python nose testing package.
 If you don't already have that package installed, follow
-the directions here
-http://somethingaboutorange.com/mrl/projects/nose
+the directions on the `nose homepage`_.
+
+.. _nose homepage: https://nose.readthedocs.org/
 
 Testing a source distribution
 =============================

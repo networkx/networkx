@@ -452,7 +452,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
             node_type=unicode
-        G.add_edge(name1, 'Radiohead', attr_dict={'foo': name2})
+        G.add_edge(name1, 'Radiohead', foo=name2)
         fd, fname = tempfile.mkstemp()
         nx.write_graphml(G, fname)
         H = nx.read_graphml(fname,node_type=node_type)
@@ -462,7 +462,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
 
     def test_bool(self):
-        s="""<?xml version="1.0" encoding="UTF-8"?>
+        s = """<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
@@ -472,28 +472,34 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
   </key>
   <graph id="G" edgedefault="directed">
     <node id="n0">
-      <data key="d0">True</data>
+      <data key="d0">true</data>
     </node>
     <node id="n1"/>
     <node id="n2">
-      <data key="d0">False</data>
-    </node>
-    <node id="n3">
-      <data key="d0">true</data>
-    </node>
-    <node id="n4">
       <data key="d0">false</data>
     </node>
-
-
+    <node id="n3">
+      <data key="d0">FaLsE</data>
+    </node>
+    <node id="n4">
+      <data key="d0">True</data>
+    </node>
+    <node id="n5">
+      <data key="d0">0</data>
+    </node>
+    <node id="n6">
+      <data key="d0">1</data>
+    </node>
   </graph>
 </graphml>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        G=nx.read_graphml(fh)
-        assert_equal(G.node['n0']['test'],True)
-        assert_equal(G.node['n2']['test'],False)
-
-        H=nx.parse_graphml(s)
-        assert_equal(H.node['n0']['test'],True)
-        assert_equal(H.node['n2']['test'],False)
+        G = nx.read_graphml(fh)
+        H = nx.parse_graphml(s)
+        for graph in [G, H]:
+            assert_equal(graph.node['n0']['test'], True)
+            assert_equal(graph.node['n2']['test'], False)
+            assert_equal(graph.node['n3']['test'], False)
+            assert_equal(graph.node['n4']['test'], True)
+            assert_equal(graph.node['n5']['test'], False)
+            assert_equal(graph.node['n6']['test'], True)

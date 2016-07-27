@@ -126,17 +126,12 @@ def dominance_frontiers(G, start):
     """
     idom = nx.immediate_dominators(G, start)
 
-    df = {u: [] for u in idom}
-
+    df = {u: set() for u in idom}
     for u in idom:
-        if len(G.pred[u]) - int(u in G.pred[u]) >= 2:
-            p = set()
+        if len(G.pred[u]) >= 2:
             for v in G.pred[u]:
-                while v != idom[u] and v not in p:
-                    p.add(v)
-                    v = idom[v]
-            p.discard(u)
-            for v in p:
-                df[v].append(u)
-
+                if v in idom:
+                    while v != idom[u]:
+                        df[v].add(u)
+                        v = idom[v]
     return df

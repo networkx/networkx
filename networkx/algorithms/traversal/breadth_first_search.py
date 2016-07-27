@@ -81,8 +81,8 @@ def bfs_tree(G, source, reverse=False):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_edges(G,0)))
-    [(0, 1), (1, 2)]
+    >>> print(list(nx.bfs_tree(G,1).edges()))
+    [(1, 0), (1, 2)]
 
     Notes
     -----

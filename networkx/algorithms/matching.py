@@ -1,30 +1,30 @@
-"""
-********
-Matching
-********
-"""
-#    Copyright (C) 2004-2016 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#   Copyright (C) 2011 by
+# Copyright 2016 NetworkX developers.
+# Copyright (C) 2004-2016 by
+#   Aric Hagberg <hagberg@lanl.gov>
+#   Dan Schult <dschult@colgate.edu>
+#   Pieter Swart <swart@lanl.gov>
+#
+# Copyright (C) 2008 by
+#   Joris van Rantwijk.
+#
+# Copyright (C) 2011 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
+#
+# All rights reserved.
+# BSD license.
+"""Functions for computing and verifying matchings in a graph."""
+from itertools import combinations
 from itertools import repeat
-__author__ = """\n""".join(['Joris van Rantwijk',
-                            'Nicholas Mancuso (nick.mancuso@gmail.com)'])
 
-__all__ = ['max_weight_matching', 'maximal_matching']
+__all__ = ['is_matching', 'is_maximal_matching', 'max_weight_matching',
+           'maximal_matching']
 
 
 def maximal_matching(G):
-    r"""Find a maximal cardinality matching in the graph.
+    r"""Find a maximal matching in the graph.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
+    A maximal matching cannot add more edges and still be a matching.
 
     Parameters
     ----------
@@ -41,8 +41,8 @@ def maximal_matching(G):
     The algorithm greedily selects a maximal matching M of the graph G
     (i.e. no superset of M exists). It runs in `O(|E|)` time.
     """
-    matching = set([])
-    nodes = set([])
+    matching = set()
+    nodes = set()
     for u, v in G.edges():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
@@ -53,12 +53,108 @@ def maximal_matching(G):
     return matching
 
 
+def matching_dict_to_set(matching):
+    """Converts a dictionary representing a matching (as returned by
+    :func:`max_weight_matching`) to a set representing a matching (as
+    returned by :func:`maximal_matching`).
+
+    In the definition of maximal matching adopted by NetworkX,
+    self-loops are not allowed, so the provided dictionary is expected
+    to never have any mapping from a key to itself. However, the
+    dictionary is expected to have mirrored key/value pairs, for
+    example, key ``u`` with value ``v`` and key ``v`` with value ``u``.
+
+    """
+    # Need to compensate for the fact that both pairs (u, v) and (v, u)
+    # appear in `matching.items()`, so we use a set of sets. This way,
+    # only the (frozen)set `{u, v}` appears as an element in the
+    # returned set.
+    return set(map(frozenset, matching.items()))
+
+
+def is_matching(G, matching):
+    """Decides whether the given set or dictionary represents a valid
+    matching in ``G``.
+
+    A *matching* in a graph is a set of edges in which no two distinct
+    edges share a common endpoint.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    matching : dict or set
+        A dictionary or set representing a matching. If a dictionary, it
+        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        edge ``(u, v)`` in the matching. If a set, it must have elements
+        of the form ``(u, v)``, where ``(u, v)`` is an edge in the
+        matching.
+
+    Returns
+    -------
+    bool
+        Whether the given set or dictionary represents a valid matching
+        in the graph.
+
+    """
+    if isinstance(matching, dict):
+        matching = matching_dict_to_set(matching)
+    # TODO This is parallelizable.
+    return all(len(set(e1) & set(e2)) == 0
+               for e1, e2 in combinations(matching, 2))
+
+
+def is_maximal_matching(G, matching):
+    """Decides whether the given set or dictionary represents a valid
+    maximal matching in ``G``.
+
+    A *maximal matching* in a graph is a matching in which adding any
+    edge would cause the set to no longer be a valid matching.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    matching : dict or set
+        A dictionary or set representing a matching. If a dictionary, it
+        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        edge ``(u, v)`` in the matching. If a set, it must have elements
+        of the form ``(u, v)``, where ``(u, v)`` is an edge in the
+        matching.
+
+    Returns
+    -------
+    bool
+        Whether the given set or dictionary represents a valid maximal
+        matching in the graph.
+
+    """
+    if isinstance(matching, dict):
+        matching = matching_dict_to_set(matching)
+    # If the given set is not a matching, then it is not a maximal matching.
+    if not is_matching(G, matching):
+        return False
+    # A matching is maximal if adding any unmatched edge to it causes
+    # the resulting set to *not* be a valid matching.
+    #
+    # HACK Since the `matching_dict_to_set` function returns a set of
+    # sets, we need to convert the list of edges to a set of sets in
+    # order for the set difference function to work. Ideally, we would
+    # just be able to do `set(G.edges()) - matching`.
+    all_edges = set(map(frozenset, G.edges()))
+    matched_edges = set(map(frozenset, matching))
+    unmatched_edges = all_edges - matched_edges
+    # TODO This is parallelizable.
+    return all(not is_matching(G, matching | {e}) for e in unmatched_edges)
+
+
 def max_weight_matching(G, maxcardinality=False, weight='weight'):
     """Compute a maximum-weighted matching of G.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
     The weight of a matching is the sum of the weights of its edges.
+    A maximal matching cannot add more edges and still be a matching.
+    The cardinality of a matching is the number of matched edges.
 
     Parameters
     ----------

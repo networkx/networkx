@@ -22,6 +22,8 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 from .community_utils import is_partition
 
+__all__ = ['kernighan_lin_bisection']
+
 
 def _compute_delta(G, A, B, weight):
     # helper to compute initial swap deltas for a pass

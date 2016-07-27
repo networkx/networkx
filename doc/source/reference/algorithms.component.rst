@@ -1,13 +1,10 @@
 **********
 Components
 **********
-
 .. automodule:: networkx.algorithms.components
-.. currentmodule:: networkx
 
 Connectivity
-^^^^^^^^^^^^
-.. automodule:: networkx.algorithms.components.connected
+------------
 .. autosummary::
    :toctree: generated/
 
@@ -18,8 +15,7 @@ Connectivity
    node_connected_component
 
 Strong connectivity
-^^^^^^^^^^^^^^^^^^^
-.. automodule:: networkx.algorithms.components.strongly_connected
+-------------------
 .. autosummary::
    :toctree: generated/
 
@@ -31,10 +27,8 @@ Strong connectivity
    kosaraju_strongly_connected_components
    condensation
 
-
 Weak connectivity
-^^^^^^^^^^^^^^^^^
-.. automodule:: networkx.algorithms.components.weakly_connected
+-----------------
 .. autosummary::
    :toctree: generated/
 
@@ -44,8 +38,7 @@ Weak connectivity
    weakly_connected_component_subgraphs
 
 Attracting components
-^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: networkx.algorithms.components.attracting
+---------------------
 .. autosummary::
    :toctree: generated/
 
@@ -54,10 +47,8 @@ Attracting components
    attracting_components
    attracting_component_subgraphs
 
-
 Biconnected components
-^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: networkx.algorithms.components.biconnected
+----------------------
 .. autosummary::
    :toctree: generated/
 
@@ -67,12 +58,9 @@ Biconnected components
    biconnected_component_subgraphs
    articulation_points
 
-
 Semiconnectedness
-^^^^^^^^^^^^^^^^^
-.. automodule:: networkx.algorithms.components.semiconnected
+-----------------
 .. autosummary::
    :toctree: generated/
 
    is_semiconnected
-

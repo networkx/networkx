@@ -10,7 +10,8 @@
 from itertools import chain, count
 import json
 import networkx as nx
-from networkx.utils import make_str
+from networkx.utils import make_str, to_tuple
+from tempfile import NamedTemporaryFile
 __all__ = ['node_link_data', 'node_link_graph']
 
 
@@ -30,9 +31,10 @@ def node_link_data(G, attrs=None):
         A dictionary that contains five keys 'source', 'target', 'name',
         'key' and 'link'.  The corresponding values provide the attribute
         names for storing NetworkX-internal graph data.  The values should
-        be unique.  Default value:
-        :samp:`dict(source='source', target='target', name='name',
-                    key='key', link='links')`.
+        be unique.  Default value::
+
+            dict(source='source', target='target', name='name',
+                 key='key', link='links')
 
         If some user-defined graph data use these attribute names as data keys,
         they may be silently dropped.
@@ -123,13 +125,14 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
         A dictionary that contains five keys 'source', 'target', 'name',
         'key' and 'link'.  The corresponding values provide the attribute
         names for storing NetworkX-internal graph data.  Default value:
-        :samp:`dict(source='source', target='target', name='name',
-                    key='key', link='links')`.
+
+            dict(source='source', target='target', name='name',
+                key='key', link='links')
 
     Returns
     -------
     G : NetworkX graph
-       A NetworkX graph object
+        A NetworkX graph object
 
     Examples
     --------
@@ -169,7 +172,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     graph.graph = data.get('graph', {})
     c = count()
     for d in data['nodes']:
-        node = d.get(name, next(c))
+        node = to_tuple(d.get(name, next(c)))
         mapping.append(node)
         nodedata = dict((make_str(k), v) for k, v in d.items() if k != name)
         graph.add_node(node, **nodedata)

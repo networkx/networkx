@@ -249,3 +249,14 @@ Triads
    :toctree: generated/
 
    triad_graph
+
+
+Joint Degree Sequence
+---------------------
+.. automodule:: networkx.generators.joint_degree_seq
+.. autosummary::
+   :toctree: generated/
+
+   is_valid_joint_degree
+   joint_degree_graph
+

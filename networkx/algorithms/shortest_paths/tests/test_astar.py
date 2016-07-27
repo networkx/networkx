@@ -100,7 +100,7 @@ class TestAStar:
         assert_equal(nx.astar_path(G, 's', 'v'), ['s', 'u', 'v'])
         assert_equal(nx.astar_path_length(G, 's', 'v'), 2)
 
-    @raises(nx.NetworkXNoPath)
+    @raises(nx.NodeNotFound)
     def test_astar_nopath(self):
         nx.astar_path(self.XG, 's', 'moon')
 

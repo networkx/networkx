@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
-"""
-Attracting components.
-"""
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Christopher Ellison
+"""Attracting components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-__authors__ = "\n".join(['Christopher Ellison'])
-__all__ = ['number_attracting_components', 
+
+__all__ = ['number_attracting_components',
            'attracting_components',
-           'is_attracting_component', 
+           'is_attracting_component',
            'attracting_component_subgraphs',
            ]
+
 
 @not_implemented_for('undirected')
 def attracting_components(G):
@@ -39,10 +40,15 @@ def attracting_components(G):
     attractors : generator of sets
         A generator of sets of nodes, one for each attracting component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented :
+        If the input graph is undirected.
+
     See Also
     --------
     number_attracting_components
-    is_attracting_component 
+    is_attracting_component
     attracting_component_subgraphs
 
     """
@@ -51,6 +57,7 @@ def attracting_components(G):
     for n in cG:
         if cG.out_degree(n) == 0:
             yield scc[n]
+
 
 @not_implemented_for('undirected')
 def number_attracting_components(G):
@@ -65,6 +72,11 @@ def number_attracting_components(G):
     -------
     n : int
         The number of attracting components in G.
+
+    Raises
+    ------
+    NetworkXNotImplemented :
+        If the input graph is undirected.
 
     See Also
     --------
@@ -90,6 +102,11 @@ def is_attracting_component(G):
     -------
     attracting : bool
         True if `G` has a single attracting component. Otherwise, False.
+
+    Raises
+    ------
+    NetworkXNotImplemented :
+        If the input graph is undirected.
 
     See Also
     --------
@@ -121,8 +138,13 @@ def attracting_component_subgraphs(G, copy=True):
         A list of node-induced subgraphs of the attracting components of `G`.
 
     copy : bool
-        If copy is True, graph, node, and edge attributes are copied to the 
+        If copy is True, graph, node, and edge attributes are copied to the
         subgraphs.
+
+    Raises
+    ------
+    NetworkXNotImplemented :
+        If the input graph is undirected.
 
     See Also
     --------

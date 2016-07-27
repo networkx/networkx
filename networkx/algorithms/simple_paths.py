@@ -8,6 +8,7 @@ from itertools import count
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.utils import pairwise
 
 __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>',
@@ -16,8 +17,77 @@ __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
 
 __all__ = [
     'all_simple_paths',
+    'is_simple_path',
     'shortest_simple_paths',
 ]
+
+
+def is_simple_path(G, nodes):
+    """Returns True if and only if the given nodes form a simple path in
+    `G`.
+
+    A *simple path* in a graph is a nonempty sequence of nodes in which
+    no node appears more than once in the sequence, and each adjacent
+    pair of nodes in the sequence is adjacent in the graph.
+
+    Parameters
+    ----------
+    nodes : list
+        A list of one or more nodes in the graph `G`.
+
+    Returns
+    -------
+    bool
+        Whether the given list of nodes represents a simple path in
+        `G`.
+
+    Notes
+    -----
+    A list of zero nodes is not a path and a list of one node is a
+    path. Here's an explanation why.
+
+    This function operates on *node paths*. One could also consider
+    *edge paths*. There is a bijection between node paths and edge
+    paths.
+
+    The *length of a path* is the number of edges in the path, so a list
+    of nodes of length *n* corresponds to a path of length *n* - 1.
+    Thus the smallest edge path would be a list of zero edges, the empty
+    path. This corresponds to a list of one node.
+
+    To convert between a node path and an edge path, you can use code
+    like the following::
+
+        >>> from networkx.utils import pairwise
+        >>> nodes = [0, 1, 2, 3]
+        >>> edges = list(pairwise(nodes))
+        >>> edges
+        [(0, 1), (1, 2), (2, 3)]
+        >>> nodes = [edges[0][0]] + [v for u, v in edges]
+        >>> nodes
+        [0, 1, 2, 3]
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> nx.is_simple_path(G, [2, 3, 0])
+    True
+    >>> nx.is_simple_path(G, [0, 2])
+    False
+
+    """
+    # The empty list is not a valid path. Could also return
+    # NetworkXPointlessConcept here.
+    if len(nodes) == 0:
+        return False
+    # If the list is a single node, just check that the node is actually
+    # in the graph.
+    if len(nodes) == 1:
+        return nodes[0] in G
+    # Test that no node appears more than once, and that each
+    # adjacent pair of nodes is adjacent.
+    return (len(set(nodes)) == len(nodes)
+            and all(v in G[u] for u, v in pairwise(nodes)))
 
 
 def all_simple_paths(G, source, target, cutoff=None):
@@ -77,9 +147,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     all_shortest_paths, shortest_path
     """
     if source not in G:
-        raise nx.NetworkXError('source node %s not in graph'%source)
+        raise nx.NodeNotFound('source node %s not in graph'%source)
     if target not in G:
-        raise nx.NetworkXError('target node %s not in graph'%target)
+        raise nx.NodeNotFound('target node %s not in graph'%target)
     if cutoff is None:
         cutoff = len(G)-1
     if G.is_multigraph():
@@ -216,10 +286,10 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     """
     if source not in G:
-        raise nx.NetworkXError('source node %s not in graph' % source)
+        raise nx.NodeNotFound('source node %s not in graph' % source)
 
     if target not in G:
-        raise nx.NetworkXError('target node %s not in graph' % target)
+        raise nx.NodeNotFound('target node %s not in graph' % target)
 
     if weight is None:
         length_func = len
@@ -295,7 +365,7 @@ def _bidirectional_shortest_path(G, source, target,
     """Return the shortest path between source and target ignoring
        nodes and edges in the containers ignore_nodes and ignore_edges.
 
-    This is a custom modification of the standard bidirectional shortest 
+    This is a custom modification of the standard bidirectional shortest
     path implementation at networkx.algorithms.unweighted
 
     Parameters
@@ -315,7 +385,7 @@ def _bidirectional_shortest_path(G, source, target,
        edges to ignore, optional
 
     weight : None
-       This function accepts a weight argument for convinience of 
+       This function accepts a weight argument for convinience of
        shortest_simple_paths function. It will be ignored.
 
     Returns
@@ -454,7 +524,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     """Dijkstra's algorithm for shortest paths using bidirectional search.
 
     This function returns the shortest path between source and target
-    ignoring nodes and edges in the containers ignore_nodes and 
+    ignoring nodes and edges in the containers ignore_nodes and
     ignore_edges.
 
     This is a custom modification of the standard Dijkstra bidirectional

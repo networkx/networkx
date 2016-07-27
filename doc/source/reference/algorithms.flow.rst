@@ -40,6 +40,14 @@ Preflow-Push
    preflow_push
 
 
+Dinitz
+------
+.. autosummary::
+   :toctree: generated/
+
+   dinitz
+
+
 Utils
 -----
 .. autosummary::
