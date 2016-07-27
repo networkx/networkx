@@ -72,7 +72,7 @@ def reverse(G, copy=True):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def mycielski(G, iterations=1):
+def mycielski(G, iterations):
     """Returns the Mycielskian of a simple, undirected graph G
 
     The Mycielskian of graph preserves a graph's triangle free
@@ -96,18 +96,17 @@ def mycielski(G, iterations=1):
     Graph, node, and edge data are not necessarily propagated to the new graph.
 
     """
-    if not isinstance(iterations, int) or iterations < 1:
-        raise nx.NetworkXError('iterations must be a non-negative integer')
-    
+
     n = G.number_of_nodes()
     M = nx.convert_node_labels_to_integers(G)
-    M.add_nodes_from(range(n, 2*n))
-    old_edges = list(M.edges())
-    M.add_edges_from((e[0], e[1]+n) for e in old_edges)
-    M.add_edges_from((e[0]+n, e[1]) for e in old_edges)
-    M.add_node(2*n)
-    M.add_edges_from((u+n, 2*n) for u in range(n))
 
-    for i in range(iterations-1):
-        M=mycielski(M)
+    for i in range(iterations):
+        n = M.number_of_nodes()
+        M.add_nodes_from(range(n, 2*n))
+        old_edges = list(M.edges())
+        M.add_edges_from((u,v+n) for u,v in old_edges)
+        M.add_edges_from((u+n, v) for u,v in old_edges)
+        M.add_node(2*n)
+        M.add_edges_from((u+n, 2*n) for u in range(n))
+
     return M
