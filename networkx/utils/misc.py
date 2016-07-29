@@ -194,7 +194,7 @@ def arbitrary_element(iterable):
     This is most useful for "peeking" at an arbitrary element of a set,
     but can be used for any list, dictionary, etc., as well::
 
-        >>> arbitrary_element({3, 2, 1})
+        >>> arbitrary_element([1, 2, 3])
         1
         >>> arbitrary_element('hello')
         'h'

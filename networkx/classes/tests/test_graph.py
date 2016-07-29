@@ -6,6 +6,7 @@ from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx
+from networkx.testing.utils import *
 
 
 class BaseGraphTester(object):
@@ -48,8 +49,8 @@ class BaseGraphTester(object):
 
     def test_edges(self):
         G=self.K3
-        assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,2)])
-        assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
+        assert_edges_equal(G.edges(),[(0,1),(0,2),(1,2)])
+        assert_edges_equal(G.edges(0),[(0,1),(0,2)])
         f=lambda x:list(G.edges(x))
         assert_raises((KeyError,networkx.NetworkXError), f, -1)
 
@@ -57,14 +58,14 @@ class BaseGraphTester(object):
         G=self.Graph()
         G.add_edge(1,2,weight=2)
         G.add_edge(2,3,weight=3)
-        assert_equal(list(d for n, d in G.degree(weight='weight')), [2, 5, 3])
+        assert_nodes_equal((d for n, d in G.degree(weight='weight')), [2, 5, 3])
         assert_equal(dict(G.degree(weight='weight')), {1: 2, 2: 5, 3: 3})
         assert_equal(G.degree(1,weight='weight'), 2)
-        assert_equal(list(G.degree([1],weight='weight')), [(1, 2)])
+        assert_edges_equal(G.degree([1],weight='weight'), [(1, 2)])
 
     def test_degree(self):
         G=self.K3
-        assert_equal(list(G.degree()),[(0,2),(1,2),(2,2)])
+        assert_edges_equal(G.degree(),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.degree()),{0:2,1:2,2:2})
         assert_equal(G.degree(0), 2)
 
@@ -75,13 +76,13 @@ class BaseGraphTester(object):
 
     def test_nbunch_iter(self):
         G=self.K3
-        assert_equal(list(G.nbunch_iter()),self.k3nodes) # all nodes
-        assert_equal(list(G.nbunch_iter(0)),[0]) # single node
-        assert_equal(list(G.nbunch_iter([0,1])),[0,1]) # sequence
+        assert_nodes_equal(G.nbunch_iter(),self.k3nodes) # all nodes
+        assert_nodes_equal(G.nbunch_iter(0),[0]) # single node
+        assert_nodes_equal(G.nbunch_iter([0,1]),[0,1]) # sequence
         # sequence with none in graph
-        assert_equal(list(G.nbunch_iter([-1])),[])
+        assert_nodes_equal(G.nbunch_iter([-1]),[])
         # string sequence with none in graph
-        assert_equal(list(G.nbunch_iter("foo")),[])
+        assert_nodes_equal(G.nbunch_iter("foo"),[])
         # node not in graph doesn't get caught upon creation of iterator
         bunch=G.nbunch_iter(-1)
         # but gets caught when iterator used
@@ -107,17 +108,17 @@ class BaseGraphTester(object):
     def test_selfloop_degree(self):
         G=self.Graph()
         G.add_edge(1, 1)
-        assert_equal(list(G.degree()), [(1, 2)])
+        assert_edges_equal(G.degree(), [(1, 2)])
         assert_equal(dict(G.degree()), {1: 2})
         assert_equal(G.degree(1), 2)
-        assert_equal(list(G.degree([1])), [(1, 2)])
+        assert_edges_equal(G.degree([1]), [(1, 2)])
         assert_equal(G.degree(1, weight='weight'), 2)
 
     def test_selfloops(self):
         G=self.K3.copy()
         G.add_edge(0,0)
-        assert_equal(list(G.nodes_with_selfloops()), [0])
-        assert_equal(list(G.selfloop_edges()), [(0, 0)])
+        assert_nodes_equal(G.nodes_with_selfloops(), [0])
+        assert_edges_equal(G.selfloop_edges(), [(0, 0)])
         assert_equal(G.number_of_selfloops(),1)
         G.remove_edge(0,0)
         G.add_edge(0,0)
@@ -135,15 +136,15 @@ class BaseAttrGraphTester(BaseGraphTester):
         G=self.Graph()
         G.add_edge(1,2,weight=2,other=3)
         G.add_edge(2,3,weight=3,other=4)
-        assert_equal(list(d for n, d in G.degree(weight='weight')), [2, 5, 3])
+        assert_nodes_equal((d for n, d in G.degree(weight='weight')), [2, 5, 3])
         assert_equal(dict(G.degree(weight='weight')),{1: 2, 2: 5, 3: 3})
         assert_equal(G.degree(1,weight='weight'), 2)
-        assert_equal(list(G.degree([1],weight='weight')), [(1, 2)])
+        assert_nodes_equal((G.degree([1],weight='weight')), [(1, 2)])
 
-        assert_equal(list(d for n, d in G.degree(weight='other')), [3, 7, 4])
+        assert_nodes_equal((d for n, d in G.degree(weight='other')), [3, 7, 4])
         assert_equal(dict(G.degree(weight='other')),{1: 3, 2: 7, 3: 4})
         assert_equal(G.degree(1,weight='other'), 3)
-        assert_equal(list(G.degree([1],weight='other')), [(1, 3)])
+        assert_edges_equal((G.degree([1],weight='other')), [(1, 3)])
 
     def add_attributes(self,G):
         G.graph['foo']=[]
@@ -313,66 +314,66 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_node_attr(self):
         G = self.K3
         G.add_node(1, foo='bar')
-        assert_equal(list(G.nodes()), [0, 1, 2])
-        assert_equal(list(G.nodes(data=True)),
+        assert_nodes_equal(G.nodes(), [0, 1, 2])
+        assert_nodes_equal(G.nodes(data=True),
                      [(0, {}), (1, {'foo':'bar'}), (2, {})])
         G.node[1]['foo'] = 'baz'
-        assert_equal(list(G.nodes(data=True)),
+        assert_nodes_equal(G.nodes(data=True),
                      [(0, {}), (1, {'foo':'baz'}), (2, {})])
-        assert_equal(list(G.nodes(data='foo')),
+        assert_nodes_equal(G.nodes(data='foo'),
                      [(0, None), (1, 'baz'), (2, None)])
-        assert_equal(list(G.nodes(data='foo', default='bar')),
+        assert_nodes_equal(G.nodes(data='foo', default='bar'),
                      [(0, 'bar'), (1, 'baz'), (2, 'bar')])
 
     def test_node_attr2(self):
         G=self.K3
         a={'foo':'bar'}
         G.add_node(3,**a)
-        assert_equal(list(G.nodes()), [0, 1, 2, 3])
-        assert_equal(list(G.nodes(data=True)),
+        assert_nodes_equal(G.nodes(), [0, 1, 2, 3])
+        assert_nodes_equal(G.nodes(data=True),
                      [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])
 
     def test_edge_attr(self):
         G=self.Graph()
         G.add_edge(1,2,foo='bar')
-        assert_equal(list(G.edges(data=True)), [(1,2,{'foo':'bar'})])
-        assert_equal(list(G.edges(data='foo')), [(1,2,'bar')])
+        assert_edges_equal(G.edges(data=True), [(1,2,{'foo':'bar'})])
+        assert_edges_equal(G.edges(data='foo'), [(1,2,'bar')])
 
     def test_edge_attr2(self):
         G=self.Graph()
         G.add_edges_from([(1,2),(3,4)],foo='foo')
-        assert_equal(sorted(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                      [(1,2,{'foo':'foo'}),(3,4,{'foo':'foo'})])
-        assert_equal(sorted(G.edges(data='foo')),
+        assert_edges_equal(G.edges(data='foo'),
                      [(1,2,'foo'),(3,4,'foo')])
 
     def test_edge_attr3(self):
         G=self.Graph()
         G.add_edges_from([(1,2,{'weight':32}),(3,4,{'weight':64})],foo='foo')
-        assert_equal(sorted(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                      [(1,2,{'foo':'foo','weight':32}),\
                       (3,4,{'foo':'foo','weight':64})])
 
         G.remove_edges_from([(1,2),(3,4)])
         G.add_edge(1,2,data=7,spam='bar',bar='foo')
-        assert_equal(sorted(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                       [(1,2,{'data':7,'spam':'bar','bar':'foo'})])
 
     def test_edge_attr4(self):
         G=self.Graph()
         G.add_edge(1,2,data=7,spam='bar',bar='foo')
-        assert_equal(sorted(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                       [(1,2,{'data':7,'spam':'bar','bar':'foo'})])
         G[1][2]['data']=10 # OK to set data like this
-        assert_equal(sorted(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                      [(1,2,{'data':10,'spam':'bar','bar':'foo'})])
 
         G.edge[1][2]['data']=20 # another spelling, "edge"
-        assert_equal(sorted(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                       [(1,2,{'data':20,'spam':'bar','bar':'foo'})])
         G.edge[1][2]['listdata']=[20,200]
         G.edge[1][2]['weight']=20
-        assert_equal(sorted(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                      [(1,2,{'data':20,'spam':'bar',
                             'bar':'foo','listdata':[20,200],'weight':20})])
 
@@ -414,9 +415,9 @@ class BaseAttrGraphTester(BaseGraphTester):
         G=self.K3.copy()
         G.add_edge(0,0)
         G.add_edge(1,1,weight=2)
-        assert_equal(list(G.selfloop_edges(data=True)),
+        assert_edges_equal(G.selfloop_edges(data=True),
                 [(0, 0, {}), (1, 1, {'weight':2})])
-        assert_equal(list(G.selfloop_edges(data='weight')),
+        assert_edges_equal(G.selfloop_edges(data='weight'),
                 [(0, 0, None), (1, 1, 2)])
 
 
@@ -564,8 +565,8 @@ class TestGraph(BaseAttrGraphTester):
 
     def test_edges_data(self):
         G=self.K3
-        assert_equal(sorted(G.edges(data=True)),[(0,1,{}),(0,2,{}),(1,2,{})])
-        assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
+        assert_edges_equal(G.edges(data=True),[(0,1,{}),(0,2,{}),(1,2,{})])
+        assert_edges_equal(G.edges(0,data=True),[(0,1,{}),(0,2,{})])
         f = lambda x: list(G.edges(x))
         assert_raises((KeyError,networkx.NetworkXError), f,-1)
 

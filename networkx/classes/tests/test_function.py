@@ -2,6 +2,7 @@
 import random
 from nose.tools import *
 import networkx as nx
+from networkx.testing.utils import *
 
 class TestFunction(object):
     def setUp(self):
@@ -16,22 +17,22 @@ class TestFunction(object):
         self.DGedges=[(0,1),(0,2),(0,3),(1,0),(1,1),(1,2)]
 
     def test_nodes(self):
-        assert_equal(list(self.G.nodes()),list(nx.nodes(self.G)))
-        assert_equal(list(self.DG.nodes()),list(nx.nodes(self.DG)))
+        assert_nodes_equal(self.G.nodes(),list(nx.nodes(self.G)))
+        assert_nodes_equal(self.DG.nodes()),list(nx.nodes(self.DG)))
 
     def test_edges(self):
-        assert_equal(list(self.G.edges()),list(nx.edges(self.G)))
-        assert_equal(list(self.DG.edges()),list(nx.edges(self.DG)))
-        assert_equal(list(self.G.edges(nbunch=[0,1,3])),list(nx.edges(self.G,nbunch=[0,1,3])))
-        assert_equal(list(self.DG.edges(nbunch=[0,1,3])),list(nx.edges(self.DG,nbunch=[0,1,3])))
+        assert_edges_equal(self.G.edges(),list(nx.edges(self.G)))
+        assert_equal(sorted(self.DG.edges()),sorted(nx.edges(self.DG)))
+        assert_edges_equal(self.G.edges(nbunch=[0,1,3]),list(nx.edges(self.G,nbunch=[0,1,3])))
+        assert_equal(sorted(self.DG.edges(nbunch=[0,1,3])),sorted(nx.edges(self.DG,nbunch=[0,1,3])))
 
     def test_degree(self):
-        assert_equal(list(self.G.degree()), list(nx.degree(self.G)))
-        assert_equal(list(self.DG.degree()), list(nx.degree(self.DG)))
-        assert_equal(list(self.G.degree(nbunch=[0, 1])), list(nx.degree(self.G, nbunch=[0, 1])))
-        assert_equal(list(self.DG.degree(nbunch=[0, 1])), list(nx.degree(self.DG, nbunch=[0, 1])))
-        assert_equal(list(self.G.degree(weight='weight')), list(nx.degree(self.G, weight='weight')))
-        assert_equal(list(self.DG.degree(weight='weight')), list(nx.degree(self.DG, weight='weight')))
+        assert_edges_equal(self.G.degree()), list(nx.degree(self.G)))
+        assert_equal(sorted(self.DG.degree()), sorted(nx.degree(self.DG)))
+        assert_edges_equal(self.G.degree(nbunch=[0, 1]), list(nx.degree(self.G, nbunch=[0, 1])))
+        assert_equal(sorted(self.DG.degree(nbunch=[0, 1])), sorted(nx.degree(self.DG, nbunch=[0, 1])))
+        assert_edges_equal(self.G.degree(weight='weight'), list(nx.degree(self.G, weight='weight')))
+        assert_equal(sorted(self.DG.degree(weight='weight')), sorted(nx.degree(self.DG, weight='weight')))
 
     def test_neighbors(self):
         assert_equal(self.G.neighbors(1),nx.neighbors(self.G,1))
@@ -53,10 +54,10 @@ class TestFunction(object):
         G = self.G.copy()
         nlist = [12, 13, 14, 15]
         nx.add_star(G, nlist)
-        assert_equal(sorted(G.edges(nlist)), [(12, 13), (12, 14), (12, 15)])
+        assert_edges_equal(G.edges(nlist), [(12, 13), (12, 14), (12, 15)])
         G = self.G.copy()
         nx.add_star(G, nlist, weight=2.0)
-        assert_equal(sorted(G.edges(nlist, data=True)),
+        assert_edges_equal(G.edges(nlist, data=True),
                      [(12, 13, {'weight': 2.}),
                       (12, 14, {'weight': 2.}),
                       (12, 15, {'weight': 2.})])
@@ -65,10 +66,10 @@ class TestFunction(object):
         G = self.G.copy()
         nlist = [12, 13, 14, 15]
         nx.add_path(G, nlist)
-        assert_equal(sorted(G.edges(nlist)), [(12, 13), (13, 14), (14, 15)])
+        assert_edges_equal(G.edges(nlist), [(12, 13), (13, 14), (14, 15)])
         G = self.G.copy()
         nx.add_path(G, nlist, weight=2.0)
-        assert_equal(sorted(G.edges(nlist, data=True)),
+        assert_edges_equal(G.edges(nlist, data=True),
                      [(12, 13, {'weight': 2.}),
                       (13, 14, {'weight': 2.}),
                       (14, 15, {'weight': 2.})])
@@ -98,12 +99,12 @@ class TestFunction(object):
 
     def test_create_empty_copy(self):
         G=nx.create_empty_copy(self.G, with_data=False)
-        assert_equal(list(G), list(self.G))
+        assert_nodes_equal(G, list(self.G))
         assert_equal(G.graph,{})
         assert_equal(G.node,{}.fromkeys(self.G.nodes(),{}))
         assert_equal(G.edge,{}.fromkeys(self.G.nodes(),{}))
         G=nx.create_empty_copy(self.G)
-        assert_equal(list(G), list(self.G))
+        assert_nodes_equal(G, list(self.G))
         assert_equal(G.graph,self.G.graph)
         assert_equal(G.node,self.G.node)
         assert_equal(G.edge,{}.fromkeys(self.G.nodes(),{}))
