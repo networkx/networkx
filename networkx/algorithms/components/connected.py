@@ -217,7 +217,7 @@ def node_connected_component(G, n):
     Raises
     ------
     NetworkXNotImplemented:
-        If G is undirected.
+        If G is directed.
 
     See Also
     --------
