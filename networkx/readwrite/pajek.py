@@ -165,6 +165,7 @@ def parse_pajek(lines):
         lines = iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
     G = nx.MultiDiGraph()  # are multiedges allowed in Pajek? assume yes
+    labels = [] # in the order of the file, needed for matrix
     while lines:
         try:
             l = next(lines)
@@ -189,6 +190,7 @@ def parse_pajek(lines):
                 except AttributeError:
                     splitline = shlex.split(str(l))
                 id, label = splitline[0:2]
+                labels.append(label)
                 G.add_node(label)
                 nodelabels[id] = label
                 G.node[label] = {'id': id}
@@ -235,6 +237,15 @@ def parse_pajek(lines):
                 # if G.has_edge(u,v):
                 #     multigraph=True
                 G.add_edge(u, v, **edge_data)
+        elif l.lower().startswith("*matrix"):
+            import numpy as np
+            relabel_dict = dict(enumerate(labels))
+            matrix = np.genfromtxt(line.encode('utf-8') for line in lines)
+            G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph())
+            G = nx.relabel_nodes(G, relabel_dict)
+            for (id, label) in nodelabels.items():
+                G.node[label] = {'id': id}
+
     return G
 
 
