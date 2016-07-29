@@ -54,7 +54,7 @@ class TestOpenFileDecorator(object):
     @open_file(2, 'wb')
     def writer_arg2default(self, x, path=None):
         if path is None:
-            with tempfile.NamedTemporaryFile('wb+', delete=False) as fh:
+            with tempfile.NamedTemporaryFile('wb+') as fh:
                 self.write(fh)
         else:
             self.write(path)
@@ -62,7 +62,7 @@ class TestOpenFileDecorator(object):
     @open_file(4, 'wb')
     def writer_arg4default(self, x, y, other='hello', path=None, **kwargs):
         if path is None:
-            with tempfile.NamedTemporaryFile('wb+', delete=False) as fh:
+            with tempfile.NamedTemporaryFile('wb+') as fh:
                 self.write(fh)
         else:
             self.write(path)
@@ -71,7 +71,7 @@ class TestOpenFileDecorator(object):
     def writer_kwarg(self, **kwargs):
         path = kwargs.get('path', None)
         if path is None:
-            with tempfile.NamedTemporaryFile('wb+', delete=False) as fh:
+            with tempfile.NamedTemporaryFile('wb+') as fh:
                 self.write(fh)
         else:
             self.write(path)
@@ -125,3 +125,4 @@ class TestOpenFileDecorator(object):
 
     def tearDown(self):
         self.fobj.close()
+        os.unlink(self.name)
