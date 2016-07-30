@@ -616,10 +616,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     for u,v,attrs in G.edges(data=True):
         if (u in nodeset) and (v in nodeset):
             i,j = index[u],index[v]
-            if names:
-                values=tuple([attrs[n] for n in names])
-            else:
-                values = 1.
+            values=tuple([attrs[n] for n in names])
             M[i,j] = values
             if undirected:
                 M[j,i] = M[i,j]
