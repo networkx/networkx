@@ -18,7 +18,7 @@ class TestFunction(object):
 
     def test_nodes(self):
         assert_nodes_equal(self.G.nodes(),list(nx.nodes(self.G)))
-        assert_nodes_equal(self.DG.nodes()),list(nx.nodes(self.DG)))
+        assert_nodes_equal(self.DG.nodes(),list(nx.nodes(self.DG)))
 
     def test_edges(self):
         assert_edges_equal(self.G.edges(),list(nx.edges(self.G)))
@@ -27,7 +27,7 @@ class TestFunction(object):
         assert_equal(sorted(self.DG.edges(nbunch=[0,1,3])),sorted(nx.edges(self.DG,nbunch=[0,1,3])))
 
     def test_degree(self):
-        assert_edges_equal(self.G.degree()), list(nx.degree(self.G)))
+        assert_edges_equal(self.G.degree(), list(nx.degree(self.G)))
         assert_equal(sorted(self.DG.degree()), sorted(nx.degree(self.DG)))
         assert_edges_equal(self.G.degree(nbunch=[0, 1]), list(nx.degree(self.G, nbunch=[0, 1])))
         assert_equal(sorted(self.DG.degree(nbunch=[0, 1])), sorted(nx.degree(self.DG, nbunch=[0, 1])))
