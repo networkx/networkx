@@ -158,7 +158,7 @@ def communicability_exp(G):
     # convert to 0-1 matrix
     A[A!=0.0] = 1
     # communicability matrix
-    expA = scipy.linalg.expm(A)
+    expA = scipy.linalg.expm(A.A)
     mapping = dict(zip(nodelist,range(len(nodelist))))
     c = {}
     for u in G:
