@@ -44,7 +44,6 @@ class TestPajek(object):
         G=parse_pajek(data)
         assert_equal(set(G.nodes()), {'one', 'two', 'three'})
         assert_equal(G.node['two'], {'id': '2'})
-        print(set(G.edges()))
         assert_edges_equal(set(G.edges()), {('one', 'one'), ('two', 'one'), ('two', 'two'), ('two', 'three')})
 
     def test_read_pajek(self):

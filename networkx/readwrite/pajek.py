@@ -238,13 +238,12 @@ def parse_pajek(lines):
                 #     multigraph=True
                 G.add_edge(u, v, **edge_data)
         elif l.lower().startswith("*matrix"):
-            import numpy as np
-            relabel_dict = dict(enumerate(labels))
-            matrix = np.genfromtxt(line.encode('utf-8') for line in lines)
-            G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph())
-            G = nx.relabel_nodes(G, relabel_dict)
-            for (id, label) in nodelabels.items():
-                G.node[label] = {'id': id}
+            G = nx.DiGraph(G)
+            adj_list = ((labels[row], labels[col], {'weight': int(data)})
+                        for (row, line) in enumerate(lines)
+                        for (col, data) in enumerate(line.split())
+                        if int(data) != 0)
+            G.add_edges_from(adj_list)
 
     return G
 
