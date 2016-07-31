@@ -35,7 +35,7 @@ class TestRelabel():
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
-        assert_equal(list(H.nodes()), [1000, 1001, 1002, 1003])
+        assert_nodes_equal(H.nodes(), [1000, 1001, 1002, 1003])
 
         H=convert_node_labels_to_integers(G,ordering="increasing degree")
         degH = (d for n, d in H.degree())
@@ -98,7 +98,7 @@ class TestRelabel():
         G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
         mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
         H=relabel_nodes(G,mapping)
-        assert_equal(sorted(H.nodes()), ['aardvark', 'bear', 'cat', 'dog'])
+        assert_nodes_equal(H.nodes(), ['aardvark', 'bear', 'cat', 'dog'])
 
     def test_relabel_nodes_function(self):
         G=empty_graph()
@@ -107,42 +107,40 @@ class TestRelabel():
         def mapping(n):
             return ord(n)
         H=relabel_nodes(G,mapping)
-        assert_equal(sorted(H.nodes()), [65, 66, 67, 68])
+        assert_nodes_equal(H.nodes(), [65, 66, 67, 68])
 
     def test_relabel_nodes_graph(self):
         G=Graph([('A','B'),('A','C'),('B','C'),('C','D')])
         mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
         H=relabel_nodes(G,mapping)
-        assert_equal(sorted(H.nodes()), ['aardvark', 'bear', 'cat', 'dog'])
+        assert_nodes_equal(H.nodes(), ['aardvark', 'bear', 'cat', 'dog'])
 
     def test_relabel_nodes_digraph(self):
         G=DiGraph([('A','B'),('A','C'),('B','C'),('C','D')])
         mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
         H=relabel_nodes(G,mapping,copy=False)
-        assert_equal(sorted(H.nodes()), ['aardvark', 'bear', 'cat', 'dog'])
+        assert_nodes_equal(H.nodes(), ['aardvark', 'bear', 'cat', 'dog'])
 
     def test_relabel_nodes_multigraph(self):
         G=MultiGraph([('a','b'),('a','b')])
         mapping={'a':'aardvark','b':'bear'}
         G=relabel_nodes(G,mapping,copy=False)
-        assert_equal(sorted(G.nodes()), ['aardvark', 'bear'])
-        assert_edges_equal(sorted(G.edges()),
-                           [('aardvark', 'bear'), ('aardvark', 'bear')])
+        assert_nodes_equal(G.nodes(),['aardvark', 'bear'])
+        assert_edges_equal(G.edges(),[('aardvark', 'bear'), ('aardvark', 'bear')])
 
     def test_relabel_nodes_multidigraph(self):
         G=MultiDiGraph([('a','b'),('a','b')])
         mapping={'a':'aardvark','b':'bear'}
         G=relabel_nodes(G,mapping,copy=False)
-        assert_equal(sorted(G.nodes()), ['aardvark', 'bear'])
-        assert_equal(sorted(G.edges()),
-                     [('aardvark', 'bear'), ('aardvark', 'bear')])
+        assert_nodes_equal(G.nodes(),['aardvark', 'bear'])
+        assert_edges_equal(G.edges(),[('aardvark', 'bear'), ('aardvark', 'bear')])
 
     def test_relabel_isolated_nodes_to_same(self):
         G=Graph()
         G.add_nodes_from(range(4))
         mapping={1:1}
         H=relabel_nodes(G, mapping, copy=False)
-        assert_equal(sorted(H.nodes()), list(range(4)))
+        assert_nodes_equal(H.nodes(), list(range(4)))
 
     @raises(KeyError)
     def test_relabel_nodes_missing(self):
@@ -175,10 +173,10 @@ class TestRelabel():
     def test_relabel_selfloop(self):
         G = nx.DiGraph([(1, 1), (1, 2), (2, 3)])
         G = nx.relabel_nodes(G, {1: 'One', 2: 'Two', 3: 'Three'}, copy=False)
-        assert_equal(sorted(G.nodes()),['One','Three','Two'])
+        assert_nodes_equal(G.nodes(),['One','Three','Two'])
         G = nx.MultiDiGraph([(1, 1), (1, 2), (2, 3)])
         G = nx.relabel_nodes(G, {1: 'One', 2: 'Two', 3: 'Three'}, copy=False)
-        assert_equal(sorted(G.nodes()),['One','Three','Two'])
+        assert_nodes_equal(G.nodes(),['One','Three','Two'])
         G = nx.MultiDiGraph([(1, 1)])
         G = nx.relabel_nodes(G, {1: 0}, copy=False)
-        assert_equal(sorted(G.nodes()), [0])
+        assert_nodes_equal(G.nodes(), [0])
