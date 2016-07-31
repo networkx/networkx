@@ -3,6 +3,7 @@
 from nose.tools import *
 import networkx
 import networkx as nx
+from networkx.testing.utils import *
 
 from historical_tests import HistoricalTests
 

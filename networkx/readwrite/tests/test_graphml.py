@@ -2,6 +2,7 @@
 from nose.tools import *
 from nose import SkipTest
 import networkx as nx
+from networkx.testing.utils import *
 import io
 import tempfile
 import os
@@ -203,17 +204,13 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
     def test_read_simple_undirected_graphml(self):
         G=self.simple_undirected_graph
         H=nx.read_graphml(self.simple_undirected_fh)
-        assert_equal(sorted(G.nodes()),sorted(H.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in H.edges()))
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
         self.simple_undirected_fh.seek(0)
 
         I=nx.parse_graphml(self.simple_undirected_data)
-        assert_equal(sorted(G.nodes()),sorted(I.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in I.edges()))
+        assert_nodes_equal(G.nodes(), I.nodes())
+        assert_edges_equal(G.edges(), I.edges())
 
     def test_write_read_attribute_numeric_type_graphml(self):
         from xml.etree.ElementTree import parse
@@ -225,10 +222,9 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         H = nx.read_graphml(fh)
         fh.seek(0)
 
-        assert_equal(sorted(G.nodes()), sorted(H.nodes()))
-        assert_equal(sorted(G.edges()), sorted(H.edges()))
-        assert_equal(sorted(G.edges(data=True)),
-                     sorted(H.edges(data=True)))
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
+        assert_edges_equal(G.edges(data=True), H.edges(data=True))
         self.attribute_numeric_type_fh.seek(0)
 
         xml = parse(fh)
@@ -245,7 +241,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
     def test_read_attribute_graphml(self):
         G=self.attribute_graph
         H=nx.read_graphml(self.attribute_fh)
-        assert_equal(sorted(G.nodes(True)),sorted(H.nodes(data=True)))
+        assert_nodes_equal(G.nodes(True),sorted(H.nodes(data=True)))
         ge=sorted(G.edges(data=True))
         he=sorted(H.edges(data=True))
         for a,b in zip(ge,he):
@@ -362,10 +358,8 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         nx.write_graphml(G,fh)
         fh.seek(0)
         H=nx.read_graphml(fh,node_type=int)
-        assert_equal(sorted(G.nodes()),sorted(H.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in H.edges()))
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
         assert_equal(G.graph,H.graph)
 
     def test_multigraph_keys(self):

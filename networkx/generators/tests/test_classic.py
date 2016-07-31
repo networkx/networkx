@@ -130,7 +130,7 @@ class TestGeneratorClassic():
                       create_using=DiGraph())
 
         mb=barbell_graph(m1, m2, create_using=MultiGraph())
-        assert_equal(sorted(mb.edges()), sorted(b.edges()))
+        assert_edges_equal(mb.edges(), b.edges())
 
     def test_complete_graph(self):
         # complete_graph(m) is a connected graph with
@@ -141,7 +141,7 @@ class TestGeneratorClassic():
             assert_true(number_of_edges(g) == m * (m - 1) // 2)
 
         mg=complete_graph(m, create_using=MultiGraph())
-        assert_equal(sorted(mg.edges()), sorted(g.edges()))
+        assert_edges_equal(mg.edges(), g.edges())
 
         g = complete_graph("abc")
         assert_equal(sorted(g.nodes()), ['a', 'b', 'c'])
@@ -203,10 +203,10 @@ class TestGeneratorClassic():
 
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G=dorogovtsev_goltsev_mendes_graph(0)
-        assert_equal(sorted(G.edges()), [(0, 1)])
-        assert_equal(list(G), [0, 1])
+        assert_edges_equal(G.edges(), [(0, 1)])
+        assert_nodes_equal(list(G), [0, 1])
         G=dorogovtsev_goltsev_mendes_graph(1)
-        assert_equal(sorted(G.edges()), [(0, 1), (0, 2), (1, 2)])
+        assert_edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
         assert_equal(average_clustering(G), 1.0)
         assert_equal(sorted(triangles(G).values()), [1, 1, 1])
         G=dorogovtsev_goltsev_mendes_graph(10)
