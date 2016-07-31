@@ -54,7 +54,8 @@ def test_planted_partition_graph():
     C = G.graph['partition']
     assert_equal(len(C),10)
     assert_equal(len(G),40)
-    assert_equal(len(list(G.edges())),108)
+    # number of edges is random, so can't be tested for exact value?
+    # assert_equal(len(list(G.edges())),108)
 
     G = nx.planted_partition_graph(4,3,1,0,directed=True)
     C = G.graph['partition'] 
