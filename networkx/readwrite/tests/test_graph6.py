@@ -29,7 +29,7 @@ class TestGraph6(object):
     def test_parse_graph6(self):
         data="""DF{"""
         G=nx.parse_graph6(data)
-        assert_nodes_equal(sorted(G.nodes()),[0, 1, 2, 3, 4])
+        assert_nodes_equal(G.nodes(),[0, 1, 2, 3, 4])
         assert_edges_equal(G.edges(),
                      [(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
 

@@ -58,14 +58,14 @@ class BaseGraphTester(object):
         G=self.Graph()
         G.add_edge(1,2,weight=2)
         G.add_edge(2,3,weight=3)
-        assert_nodes_equal((d for n, d in G.degree(weight='weight')), [2, 5, 3])
+        assert_equal(sorted(d for n, d in G.degree(weight='weight')), [2, 3, 5])
         assert_equal(dict(G.degree(weight='weight')), {1: 2, 2: 5, 3: 3})
         assert_equal(G.degree(1,weight='weight'), 2)
-        assert_edges_equal(G.degree([1],weight='weight'), [(1, 2)])
+        assert_equal(G.degree([1],weight='weight'), [(1, 2)])
 
     def test_degree(self):
         G=self.K3
-        assert_edges_equal(G.degree(),[(0,2),(1,2),(2,2)])
+        assert_equal(sorted(G.degree()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.degree()),{0:2,1:2,2:2})
         assert_equal(G.degree(0), 2)
 
@@ -108,10 +108,10 @@ class BaseGraphTester(object):
     def test_selfloop_degree(self):
         G=self.Graph()
         G.add_edge(1, 1)
-        assert_edges_equal(G.degree(), [(1, 2)])
+        assert_equal(sorted(G.degree()), [(1, 2)])
         assert_equal(dict(G.degree()), {1: 2})
         assert_equal(G.degree(1), 2)
-        assert_edges_equal(G.degree([1]), [(1, 2)])
+        assert_equal(sorted(G.degree([1])), [(1, 2)])
         assert_equal(G.degree(1, weight='weight'), 2)
 
     def test_selfloops(self):

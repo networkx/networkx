@@ -20,7 +20,7 @@ class TestDiGraphHistorical(HistoricalTests):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('B', 'C'), ('C', 'D')])
 
-        assert_nodes_equal((d for n, d in G.in_degree()),[0, 0, 0, 0, 1, 2, 2])
+        assert_equal(sorted(d for n, d in G.in_degree()),[0, 0, 0, 0, 1, 2, 2])
         assert_equal(dict(G.in_degree()),
                      {'A': 0, 'C': 2, 'B': 1, 'D': 2, 'G': 0, 'K': 0, 'J': 0})
 
