@@ -70,13 +70,19 @@ class TestGeneratorLine():
         G = nx.DiGraph()
         G.add_edges_from([(0,1),(1,2),(2,3)])
         L = nx.line_graph(G)
+        assert_true(L.is_directed())
         assert_equal(sorted(L.edges()), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create1(self):
         G = nx.DiGraph()
         G.add_edges_from([(0,1),(1,2),(2,3)])
         L = nx.line_graph(G, create_using=nx.Graph())
-        assert_equal(sorted(L.edges()), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        # Be careful about orders here.
+        # Node names are tuples and the order is fixed (it's from an *arc).
+        # However, edges are tuples of nodes (ie. tuples of tuples), and
+        # the graph is undirected so the order of the outer tuple may be
+        # different.
+        assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create2(self):
         G = nx.Graph()
