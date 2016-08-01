@@ -255,6 +255,7 @@ Trees
    :toctree: generated/
 
    random_tree
+   prefix_tree
 
 
 Non Isomorphic Trees
@@ -265,15 +266,6 @@ Non Isomorphic Trees
 
    nonisomorphic_trees
    number_of_nonisomorphic_trees
-
-
-Trees
------
-.. automodule:: networkx.generators.trees
-.. autosummary::
-   :toctree: generated/
-
-   prefix_tree
 
 
 Triads
@@ -293,3 +285,12 @@ Joint Degree Sequence
 
    is_valid_joint_degree
    joint_degree_graph
+
+Mycielski
+---------
+.. automodule:: networkx.generators.mycielski
+.. autosummary::
+   :toctree: generated/
+
+   mycielskian
+   mycielski_graph
