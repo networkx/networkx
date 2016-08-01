@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_raises, assert_not_equal
+from nose.tools import *
 import networkx as nx
 import io
 import tempfile
@@ -35,7 +35,9 @@ c
         assert_edges_equal(G.edges(),[('a','c'),('a','b'),('c','a'),('c','c')])
 
     def test_write_p2g(self):
-        s=b"""foo
+        possibilities = {
+# 1 2 3
+b"""foo
 3 2
 1
 1 
@@ -43,7 +45,57 @@ c
 2 
 3
 
-"""
+""",
+# 2 1 3
+b"""foo
+3 2
+2
+2 
+1
+0 
+3
+
+""",
+# 1 3 2
+b"""foo
+3 2
+1
+2 
+3
+
+2
+1 
+""",
+# 2 3 1
+b"""foo
+3 2
+2
+1 
+3
+
+1
+0 
+""",
+# 3 1 2
+b"""foo
+3 2
+3
+
+1
+2 
+2
+0 
+""",
+# 3 2 1
+b"""foo
+3 2
+3
+
+2
+0 
+1
+1 
+"""}
         fh=io.BytesIO()
         G=nx.DiGraph()
         G.name='foo'
@@ -51,7 +103,7 @@ c
         write_p2g(G,fh)
         fh.seek(0)
         r=fh.read()
-        assert_equal(r,s)
+        assert_in(r,possibilities)
 
     def test_write_read_p2g(self):
         fh=io.BytesIO()

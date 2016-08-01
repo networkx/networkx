@@ -1,7 +1,7 @@
 """
     Unit tests for edgelists.
 """
-from nose.tools import assert_equal, assert_raises, assert_not_equal
+from nose.tools import *
 import io
 import tempfile
 import os
@@ -72,7 +72,12 @@ class TestEdgelist:
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=False)
         fh.seek(0)
-        assert_equal(fh.read(),b"1 2\n2 3\n")
+        possibilities = set()
+        for (a,b) in [(1, 2), (2, 1)]:
+            for (c,d) in [(2, 3), (3, 2)]:
+                possibilities.add(b'%d %d\n%d %d\n' % (a, b, c, d))
+                possibilities.add(b'%d %d\n%d %d\n' % (c, d, a, b))
+        assert_in(fh.read(),possibilities)
 
     def test_write_edgelist_2(self):
         fh=io.BytesIO()
@@ -80,7 +85,12 @@ class TestEdgelist:
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=True)
         fh.seek(0)
-        assert_equal(fh.read(),b"1 2 {}\n2 3 {}\n")
+        possibilities = set()
+        for (a,b) in [(1, 2), (2, 1)]:
+            for (c,d) in [(2, 3), (3, 2)]:
+                possibilities.add(b'%d %d {}\n%d %d {}\n' % (a, b, c, d))
+                possibilities.add(b'%d %d {}\n%d %d {}\n' % (c, d, a, b))
+        assert_in(fh.read(),possibilities)
 
     def test_write_edgelist_3(self):
         fh=io.BytesIO()
@@ -89,7 +99,12 @@ class TestEdgelist:
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=True)
         fh.seek(0)
-        assert_equal(fh.read(),b"1 2 {'weight': 2.0}\n2 3 {'weight': 3.0}\n")
+        possibilities = set()
+        for (a,b) in [(1, 2), (2, 1)]:
+            for (c,d) in [(2, 3), (3, 2)]:
+                possibilities.add(b"%d %d {'weight': 2.0}\n%d %d {'weight': 3.0}\n" % (a, b, c, d))
+                possibilities.add(b"%d %d {'weight': 3.0}\n%d %d {'weight': 2.0}\n" % (c, d, a, b))
+        assert_in(fh.read(),possibilities)
 
     def test_write_edgelist_4(self):
         fh=io.BytesIO()
@@ -98,7 +113,12 @@ class TestEdgelist:
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=[('weight')])
         fh.seek(0)
-        assert_equal(fh.read(),b"1 2 2.0\n2 3 3.0\n")
+        possibilities = set()
+        for (a,b) in [(1, 2), (2, 1)]:
+            for (c,d) in [(2, 3), (3, 2)]:
+                possibilities.add(b"%d %d 2.0\n%d %d 3.0\n" % (a, b, c, d))
+                possibilities.add(b"%d %d 3.0\n%d %d 2.0\n" % (c, d, a, b))
+        assert_in(fh.read(),possibilities)
 
     def test_unicode(self):
         G = nx.Graph()
