@@ -31,7 +31,8 @@ class TestTriangles:
         assert_equal(sum(nx.triangles(G).values())/3.0,10)
         assert_equal(nx.triangles(G,1),6)
         G.remove_edge(1,2)
-        assert_equal(list(nx.triangles(G).values()),[5, 3, 3, 5, 5])
+        assert_equal(nx.triangles(G),
+                {0: 5, 1: 3, 2: 3, 3: 5, 4: 5})
         assert_equal(nx.triangles(G,1),3)
 
 
@@ -64,8 +65,8 @@ class TestWeightedClustering:
         assert_equal(list(nx.clustering(G,weight='weight').values()),[1, 1, 1, 1, 1])
         assert_equal(nx.average_clustering(G,weight='weight'),1)
         G.remove_edge(1,2)
-        assert_equal(list(nx.clustering(G,weight='weight').values()),
-                     [5./6., 1.0, 1.0, 5./6., 5./6.])
+        assert_equal(nx.clustering(G,weight='weight'),
+                {0: 5./6., 1: 1.0, 2: 1.0, 3: 5./6., 4: 5./6.})
         assert_equal(nx.clustering(G,[1,4],weight='weight'),{1: 1.0, 4: 0.83333333333333337})
 
 
@@ -104,8 +105,8 @@ class TestClustering:
         assert_equal(list(nx.clustering(G).values()),[1, 1, 1, 1, 1])
         assert_equal(nx.average_clustering(G),1)
         G.remove_edge(1,2)
-        assert_equal(list(nx.clustering(G).values()),
-                     [5./6., 1.0, 1.0, 5./6., 5./6.])
+        assert_equal(nx.clustering(G),
+                {0: 5./6., 1: 1.0, 2: 1.0, 3: 5./6., 4: 5./6.})
         assert_equal(nx.clustering(G,[1,4]),{1: 1.0, 4: 0.83333333333333337})
 
 
@@ -189,6 +190,6 @@ class TestSquareClustering:
 def test_average_clustering():
     G=nx.cycle_graph(3)
     G.add_edge(2,3)
-    assert_equal(nx.average_clustering(G),(1+1+1/3.0)/4.0)
-    assert_equal(nx.average_clustering(G,count_zeros=True),(1+1+1/3.0)/4.0)
-    assert_equal(nx.average_clustering(G,count_zeros=False),(1+1+1/3.0)/3.0)
+    assert_almost_equal(nx.average_clustering(G),(1+1+1/3.0)/4.0)
+    assert_almost_equal(nx.average_clustering(G,count_zeros=True),(1+1+1/3.0)/4.0)
+    assert_almost_equal(nx.average_clustering(G,count_zeros=False),(1+1+1/3.0)/3.0)

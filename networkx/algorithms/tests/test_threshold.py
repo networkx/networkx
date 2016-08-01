@@ -9,6 +9,7 @@ from nose import SkipTest
 from nose.plugins.attrib import attr
 import networkx as nx
 import networkx.algorithms.threshold as nxt
+from networkx.testing.utils import *
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 
 cnlti = nx.convert_node_labels_to_integers
@@ -107,7 +108,11 @@ class TestGeneratorThreshold():
         G.add_edge(4,6)
 
         # Alternating 4 cycle
-        assert_equal(nxt.find_alternating_4_cycle(G), [1, 2, 3, 6])
+        cycle = nxt.find_alternating_4_cycle(G)
+        assert_true(G.has_edge(cycle[0], cycle[1]), cycle)
+        assert_true(G.has_edge(cycle[2], cycle[3]), cycle)
+        assert_false(G.has_edge(cycle[0], cycle[2]), cycle)
+        assert_false(G.has_edge(cycle[1], cycle[3]), cycle)
 
         # Threshold graph
         TG=nxt.find_threshold_graph(G)
@@ -115,7 +120,8 @@ class TestGeneratorThreshold():
         assert_equal(sorted(TG.nodes()), [1, 2, 3, 4, 5, 7])
 
         cs=nxt.creation_sequence(dict(TG.degree()), with_labels=True)
-        assert_equal(nxt.find_creation_sequence(G), cs)
+        assert_graphs_equal(TG, nxt.threshold_graph(cs))
+        assert_graphs_equal(TG, nxt.threshold_graph(nxt.find_creation_sequence(G)))
 
     def test_fast_versions_properties_threshold_graphs(self):
         cs='ddiiddid'
@@ -125,16 +131,18 @@ class TestGeneratorThreshold():
                      sorted(d for n, d in G.degree()))
 
         ts=nxt.triangle_sequence(cs)
-        assert_equal(ts, list(nx.triangles(G).values()))
+        assert_equal(dict(enumerate(ts)), nx.triangles(G))
         assert_equal(sum(ts) // 3, nxt.triangles(cs))
 
-        c1=nxt.cluster_sequence(cs)
-        c2=list(nx.clustering(G).values())
-        assert_almost_equal(sum([abs(c-d) for c,d in zip(c1,c2)]), 0)
+        c1=dict(enumerate(nxt.cluster_sequence(cs)))
+        c2=nx.clustering(G)
+        assert_equal(set(c1), set(c2))
+        assert_almost_equal(sum([abs(c1[k]-c2[k]) for k in c1]), 0)
 
-        b1=nx.betweenness_centrality(G).values()
-        b2=nxt.betweenness_sequence(cs)
-        assert_true(sum([abs(c-d) for c,d in zip(b1,b2)]) < 1e-14)
+        b1=nx.betweenness_centrality(G)
+        b2=dict(enumerate(nxt.betweenness_sequence(cs)))
+        assert_equal(set(b1), set(b2))
+        assert_true(sum([abs(b1[k]-b2[k]) for k in b1]) < 1e-14)
 
         assert_equal(nxt.eigenvalues(cs), [0, 1, 3, 3, 5, 7, 7, 8])
 

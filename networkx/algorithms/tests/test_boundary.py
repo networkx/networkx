@@ -16,7 +16,6 @@ from nose.tools import assert_equal
 
 import networkx as nx
 from networkx.testing.utils import *
-from networkx import convert_node_labels_to_integers as cnlti
 
 
 class TestNodeBoundary(object):
@@ -32,7 +31,7 @@ class TestNodeBoundary(object):
         assert_equal(nx.node_boundary(null, [1, 2, 3], [3, 4, 5]), set())
 
     def test_path_graph(self):
-        P10 = cnlti(nx.path_graph(10), first_label=1)
+        P10 = nx.path_graph(range(1, 11))
         assert_equal(nx.node_boundary(P10, []), set())
         assert_equal(nx.node_boundary(P10, [], []), set())
         assert_equal(nx.node_boundary(P10, [1, 2, 3]), {4})
@@ -42,7 +41,7 @@ class TestNodeBoundary(object):
         assert_equal(nx.node_boundary(P10, [4, 5, 6], [9, 10]), set())
 
     def test_complete_graph(self):
-        K10 = cnlti(nx.complete_graph(10), first_label=1)
+        K10 = nx.complete_graph(range(1, 11))
         assert_equal(nx.node_boundary(K10, []), set())
         assert_equal(nx.node_boundary(K10, [], []), set())
         assert_equal(nx.node_boundary(K10, [1, 2, 3]), {4, 5, 6, 7, 8, 9, 10})
@@ -108,7 +107,7 @@ class TestEdgeBoundary(object):
         assert_equal(list(nx.edge_boundary(null, [1, 2, 3], [3, 4, 5])), [])
 
     def test_path_graph(self):
-        P10 = cnlti(nx.path_graph(10), first_label=1)
+        P10 = nx.path_graph(range(1, 11))
         assert_equal(list(nx.edge_boundary(P10, [])), [])
         assert_equal(list(nx.edge_boundary(P10, [], [])), [])
         assert_equal(list(nx.edge_boundary(P10, [1, 2, 3])), [(3, 4)])
@@ -122,7 +121,7 @@ class TestEdgeBoundary(object):
                      [(2, 3), (3, 4)])
 
     def test_complete_graph(self):
-        K10 = cnlti(nx.complete_graph(10), first_label=1)
+        K10 = nx.complete_graph(range(1, 11))
         ilen = lambda iterable: sum(1 for i in iterable)
         assert_equal(list(nx.edge_boundary(K10, [])), [])
         assert_equal(list(nx.edge_boundary(K10, [], [])), [])
