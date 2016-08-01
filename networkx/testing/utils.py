@@ -14,6 +14,15 @@ def assert_nodes_equal(nodes1, nodes2):
     assert_equal(d1, d2)
 
 def assert_edges_equal(edges1, edges2):
+    """Compare lists of Graph edges.
+
+    Not suitable for DiGraph or MultiDiGraph, use
+    `sorted(edges1) == sorted(edge2)` instead.
+
+    Not suitable for MultiGraph with multiple edges.
+    If the MultiGraph should not have multiple edges, then use this function
+    *and* `assert_equal(len(edges1), len(edges2))`.
+    """
     # Assumes iterables with u,v nodes as
     # edge tuples (u,v), or
     # edge tuples with data dicts (u,v,d), or
