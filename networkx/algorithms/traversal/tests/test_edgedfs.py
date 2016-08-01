@@ -56,8 +56,6 @@ class TestEdgeDFS(object):
         G = nx.MultiGraph(self.edges)
         x = list(edge_dfs(G, self.nodes))
         x_ = [(0, 1, 0), (1, 0, 1), (0, 1, 2), (1, 2, 0), (1, 3, 0)]
-        print(x)
-        print(x_)
         assert_edges_equal(x[0:3], x_[0:3])
         assert_edges_equal(x[3:], x_[3:])
 

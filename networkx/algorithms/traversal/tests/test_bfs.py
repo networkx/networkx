@@ -27,7 +27,6 @@ class TestBFS:
         T = nx.bfs_tree(self.G, source=0)
         assert_equal(sorted(T.nodes()), sorted(self.G.nodes()))
         edges = list(T.edges())
-        print(edges)
         try:
             assert_edges_equal(edges, [(0, 1), (1, 2), (1, 3), (2, 4)])
         except AssertionError:
