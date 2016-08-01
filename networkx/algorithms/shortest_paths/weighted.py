@@ -385,7 +385,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     distance,path : dictionaries
        Returns a tuple of two dictionaries keyed by node.
        The first dictionary stores distance from the source.
-       The second stores the path from the source to that node.
+       The second stores a path from the source to that node.
 
 
     Examples
@@ -612,7 +612,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     distance, path : pair of dictionaries
        Returns a tuple of two dictionaries keyed by node.
        The first dictionary stores distance from one of the source nodes.
-       The second stores the path from one of the sources to that node.
+       The second stores a path from one of the sources to that node.
 
     Examples
     --------
@@ -1347,7 +1347,7 @@ def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weig
     distance,path : dictionaries
        Returns a tuple of two dictionaries keyed by node.
        The first dictionary stores distance from the source.
-       The second stores the path from the source to that node.
+       The second stores a path from the source to that node.
 
 
     Examples
@@ -1727,7 +1727,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
     Returns a tuple of two dictionaries keyed by node.
     The first dictionary stores distance from the source.
-    The second stores the path from the source to that node.
+    The second stores a path from the source to that node.
 
     Raises
     ------
