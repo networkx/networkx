@@ -14,6 +14,7 @@ from nose.tools import assert_equal
 from nose.tools import raises
 
 import networkx as nx
+from networkx.testing.utils import *
 
 
 @raises(ValueError)
@@ -85,19 +86,17 @@ class MinimumSpanningTreeTestBase(object):
 
     def test_minimum_tree(self):
         T = nx.minimum_spanning_tree(self.G, algorithm=self.algo)
-        actual = sorted(T.edges(data=True))
-        assert_equal(actual, self.minimum_spanning_edgelist)
+        assert_edges_equal(T.edges(data=True), self.minimum_spanning_edgelist)
 
     def test_maximum_tree(self):
         T = nx.maximum_spanning_tree(self.G, algorithm=self.algo)
-        actual = sorted(T.edges(data=True))
-        assert_equal(actual, self.maximum_spanning_edgelist)
+        assert_edges_equal(T.edges(data=True), self.maximum_spanning_edgelist)
 
     def test_disconnected(self):
         G = nx.Graph([(0, 1, dict(weight=1)), (2, 3, dict(weight=2))])
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
-        assert_equal(list(T), list(range(4)))
-        assert_equal(list(T.edges()), [(0, 1), (2, 3)])
+        assert_nodes_equal(T, range(4))
+        assert_edges_equal(T.edges(), [(0, 1), (2, 3)])
 
     def test_empty_graph(self):
         G = nx.empty_graph(3)
@@ -125,10 +124,10 @@ class MinimumSpanningTreeTestBase(object):
         G.add_node(3)
         T = nx.minimum_spanning_tree(G, algorithm=self.algo, weight='distance')
         assert_equal(sorted(T), list(range(4)))
-        assert_equal(sorted(T.edges()), [(0, 2), (1, 2)])
+        assert_edges_equal(T.edges(), [(0, 2), (1, 2)])
         T = nx.maximum_spanning_tree(G, algorithm=self.algo, weight='distance')
         assert_equal(sorted(T), list(range(4)))
-        assert_equal(sorted(T.edges()), [(0, 1), (0, 2)])
+        assert_edges_equal(T.edges(), [(0, 1), (0, 2)])
 
 
 class TestBoruvka(MinimumSpanningTreeTestBase, TestCase):
