@@ -260,3 +260,11 @@ Joint Degree Sequence
    is_valid_joint_degree
    joint_degree_graph
 
+Mycielski
+---------
+.. automodule:: networkx.generators.mycielski
+.. autosummary::
+   :toctree: generated/
+
+   mycielskian
+   mycielski_graph
