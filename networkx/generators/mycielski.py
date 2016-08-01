@@ -13,7 +13,7 @@ of graphs.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['mycielskian, mycielski_graph']
+__all__ = ['mycielskian', 'mycielski_graph']
 
 
 @not_implemented_for('directed')
@@ -77,10 +77,12 @@ def mycielskian(G, iterations=1):
 def mycielski_graph(n):
     """Generator for the n_th Mycielski Graph.
 
-    The Mycielski family of graphs is an infinite set of graphs,
-    starting with the singleton graph and with the n_th graph being
-    the result of the Mycielski Operation being performed n times on
-    the singleton graph. 
+    The Mycielski family of graphs is an infinite set of graphs.
+    `M_1` is the singleton graph, `M_2` is two vertices with an edge,
+    and, for `i > 2`, `M_i` is the Mycielskian of `M_(i-1)`.
+
+    More information can be found at
+    http://mathworld.wolfram.com/MycielskiGraph.html
 
     Parameters
     ----------
@@ -92,9 +94,21 @@ def mycielski_graph(n):
     M : graph
         The n_th Mycielski Graph
 
+    Notes
+    -----
+    The first graph in the Mycielski sequence is the singleton graph.
+    The Mycielskian of this graph is not the P_2 graph, but rather the
+    P_2 graph with an extra, isolated vertex. The second Mycielski graph
+    is the P_2 graph, so the first two are hard coded. The remaining graphs
+    are generated using the Mycielski operation.
+
     """
 
-    if n < 0:
+    if n < 1:
         raise nx.NetworkXError("must satisfy n >= 0")
 
-    return mycielskian(nx.singleton_graph(), n)
+    if n == 1:
+        return nx.empty_graph(1)
+
+    else:
+        return mycielskian(nx.path_graph(2), n-2)
