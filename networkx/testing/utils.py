@@ -1,3 +1,4 @@
+import json
 import itertools
 from nose.tools import assert_equal
 __all__ = ['assert_nodes_equal', 'assert_edges_equal','assert_graphs_equal']
@@ -43,7 +44,11 @@ def assert_edges_equal(edges1, edges2):
     # For MultiGraphs
     for d in itertools.chain(d1.values(), d2.values()):
         for l in d.values():
-            l.sort()
+            try:
+                l.sort()
+            except TypeError:
+                # Dictionaries/sets?
+                l.sort(key=lambda x: json.dumps(x, sort_keys=True))
 
     assert_equal(c1, c2)
     assert_equal(d1, d2)

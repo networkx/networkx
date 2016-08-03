@@ -75,9 +75,9 @@ class TestEdgelist:
         possibilities = set()
         for (a,b) in [(1, 2), (2, 1)]:
             for (c,d) in [(2, 3), (3, 2)]:
-                possibilities.add(b'%d %d\n%d %d\n' % (a, b, c, d))
-                possibilities.add(b'%d %d\n%d %d\n' % (c, d, a, b))
-        assert_in(fh.read(),possibilities)
+                possibilities.add('%d %d\n%d %d\n' % (a, b, c, d))
+                possibilities.add('%d %d\n%d %d\n' % (c, d, a, b))
+        assert_in(fh.read(),map(str.encode, possibilities))
 
     def test_write_edgelist_2(self):
         fh=io.BytesIO()
@@ -88,9 +88,9 @@ class TestEdgelist:
         possibilities = set()
         for (a,b) in [(1, 2), (2, 1)]:
             for (c,d) in [(2, 3), (3, 2)]:
-                possibilities.add(b'%d %d {}\n%d %d {}\n' % (a, b, c, d))
-                possibilities.add(b'%d %d {}\n%d %d {}\n' % (c, d, a, b))
-        assert_in(fh.read(),possibilities)
+                possibilities.add('%d %d {}\n%d %d {}\n' % (a, b, c, d))
+                possibilities.add('%d %d {}\n%d %d {}\n' % (c, d, a, b))
+        assert_in(fh.read(),map(str.encode, possibilities))
 
     def test_write_edgelist_3(self):
         fh=io.BytesIO()
@@ -102,9 +102,9 @@ class TestEdgelist:
         possibilities = set()
         for (a,b) in [(1, 2), (2, 1)]:
             for (c,d) in [(2, 3), (3, 2)]:
-                possibilities.add(b"%d %d {'weight': 2.0}\n%d %d {'weight': 3.0}\n" % (a, b, c, d))
-                possibilities.add(b"%d %d {'weight': 3.0}\n%d %d {'weight': 2.0}\n" % (c, d, a, b))
-        assert_in(fh.read(),possibilities)
+                possibilities.add("%d %d {'weight': 2.0}\n%d %d {'weight': 3.0}\n" % (a, b, c, d))
+                possibilities.add("%d %d {'weight': 3.0}\n%d %d {'weight': 2.0}\n" % (c, d, a, b))
+        assert_in(fh.read(),map(str.encode, possibilities))
 
     def test_write_edgelist_4(self):
         fh=io.BytesIO()
@@ -116,9 +116,9 @@ class TestEdgelist:
         possibilities = set()
         for (a,b) in [(1, 2), (2, 1)]:
             for (c,d) in [(2, 3), (3, 2)]:
-                possibilities.add(b"%d %d 2.0\n%d %d 3.0\n" % (a, b, c, d))
-                possibilities.add(b"%d %d 3.0\n%d %d 2.0\n" % (c, d, a, b))
-        assert_in(fh.read(),possibilities)
+                possibilities.add("%d %d 2.0\n%d %d 3.0\n" % (a, b, c, d))
+                possibilities.add("%d %d 3.0\n%d %d 2.0\n" % (c, d, a, b))
+        assert_in(fh.read(),map(str.encode, possibilities))
 
     def test_unicode(self):
         G = nx.Graph()
