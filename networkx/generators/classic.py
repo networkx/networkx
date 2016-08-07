@@ -681,7 +681,7 @@ def trivial_graph(create_using=None):
     return G
 
 
-def turan_graph(n,r):
+def turan_graph(n, r):
     """ Return the Turan Graph
     
     The Turan Graph is a complete multipartite graph on `n` vertices
@@ -706,15 +706,12 @@ def turan_graph(n,r):
     The graph has :math:`(r-1)(n^2)/(2r)` edges, rounded down.
     """
 
-    if not isinstance(n,int) or not isinstance(r,int):
-        raise nx.NetworkXError("n and r must be type int") 
-
     if not 1 <= r <= n:
         raise nx.NetworkXError("Must satisfy 1 <= r <= n")
 
     partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
     G = complete_multipartite_graph(*partitions)
-    G.name = "turan_graph({},{})".format(n,r)
+    G.name = "turan_graph({},{})".format(n, r)
     return G
 
 
