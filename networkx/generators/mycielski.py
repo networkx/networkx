@@ -24,16 +24,17 @@ def mycielskian(G, iterations=1):
     The Mycielskian of graph preserves a graph's triangle free
     property while increasing the chromatic number by 1.
 
-    The Mycielski Operation on a graph, `G=(V,E)`, constructs a new graph
-    of size `2|V|+1` with `3|E|+|V|` edges.
+    The Mycielski Operation on a graph, :math:`G=(V,E)`, constructs a new graph
+    of size :math:`2|V|+1` with :math:`3|E|+|V|` edges.
 
     The construction is as follows:
 
-    Let `V = {0, ..., n-1}`. Construct another vertex set `U = {n, ..., 2n}`
-    and a vertex, `w = 2n+1`. Construct a new graph, `M`, with vertices
-    `U ∪ V ∪ w`.
-    For edges, `(u,v)`, in `E` add edges `(u,v), (u, v+n), (u+n, v)` to M.
-    Finally, for all vertices `u` in U, add edge `(u,w)` to M.
+    Let :math:`V = {0, ..., n-1}`. Construct another vertex set
+    :math:`U = {n, ..., 2n}` and a vertex, `w`.
+    Construct a new graph, `M`, with vertices :math:`U ∪ V ∪ w`.
+    For edges, :math:`(u,v) \in E` add edges :math:`(u,v), (u, v+n)`, and
+    :math:`(u+n, v)` to M. Finally, for all vertices :math:`u \in U`, add edge
+    :math:`(u,w)` to M.
 
     The Mycielski Operation can be done multiple times by repeating the above
     process iteratively.
@@ -78,8 +79,9 @@ def mycielski_graph(n):
     """Generator for the n_th Mycielski Graph.
 
     The Mycielski family of graphs is an infinite set of graphs.
-    `M_1` is the singleton graph, `M_2` is two vertices with an edge,
-    and, for `i > 2`, `M_i` is the Mycielskian of `M_(i-1)`.
+    :math:`M_1` is the singleton graph, :math:`M_2` is two vertices with an
+    edge, and, for :math:`i > 2`, :math:`M_i` is the Mycielskian of
+    :math:`M_{i-1}`.
 
     More information can be found at
     http://mathworld.wolfram.com/MycielskiGraph.html
@@ -97,10 +99,10 @@ def mycielski_graph(n):
     Notes
     -----
     The first graph in the Mycielski sequence is the singleton graph.
-    The Mycielskian of this graph is not the P_2 graph, but rather the
-    P_2 graph with an extra, isolated vertex. The second Mycielski graph
-    is the P_2 graph, so the first two are hard coded. The remaining graphs
-    are generated using the Mycielski operation.
+    The Mycielskian of this graph is not the :math:`P_2` graph, but rather the
+    :math:`P_2` graph with an extra, isolated vertex. The second Mycielski graph
+    is the :math:`P_2` graph, so the first two are hard coded.
+    The remaining graphs are generated using the Mycielski operation.
 
     """
 
