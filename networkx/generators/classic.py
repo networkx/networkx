@@ -688,9 +688,9 @@ def turan_graph(n,r):
     with `r` partitions with the property that it has the maximum number
     of edges for any graph with the same number of vertices and partitions.
 
-    Given n and r, we get a complete multipartite graph with `r-(n mod r)`
-    partitions of size `n/r`, rounded down, and `n mod r` partitions of size
-    `n/r+1`, rounded down.
+    Given `n` and `r`, we generate a complete multipartite graph with
+    :math:`r-(n \mod r)` partitions of size :math:`n/r`, rounded down, and
+    :math:`n \mod r` partitions of size :math:`n/r+1`, rounded down.
 
     Parameters
     ==========
@@ -702,8 +702,8 @@ def turan_graph(n,r):
 
     Notes
     =====
-    Must satisfy `1 <= r <= n`.
-    The graph has `(r-1)(n^2)/(2r)` edges, rounded down.
+    Must satisfy :math:`1 <= r <= n`.
+    The graph has :math:`(r-1)(n^2)/(2r)` edges, rounded down.
     """
 
     if not isinstance(n,int) or not isinstance(r,int):
