@@ -682,11 +682,11 @@ def trivial_graph(create_using=None):
 
 
 def turan_graph(n, r):
-    """ Return the Turan Graph
-    
+    r""" Return the Turan Graph
+
     The Turan Graph is a complete multipartite graph on `n` vertices
-    with `r` partitions with the property that it has the maximum number
-    of edges for any graph with the same number of vertices and partitions.
+    with `r` disjoint subsets. It is the graph with the edges for any graph with
+    `n` vertices and `r` disjoint subsets.
 
     Given `n` and `r`, we generate a complete multipartite graph with
     :math:`r-(n \mod r)` partitions of size :math:`n/r`, rounded down, and
