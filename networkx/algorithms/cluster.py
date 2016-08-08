@@ -247,9 +247,12 @@ def clustering(G, nodes=None, weight=None):
     """
     if weight is not None:
         td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
+        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for\
+         v,d,t in td_iter}
     else:
         td_iter = _triangles_and_degree_iter(G, nodes)
-    clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for v, d, t, _ in td_iter}
+        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for\
+         v,d,t, _ in td_iter}
     if nodes in G:
         # Return the value of the sole entry in the dictionary.
         return clusterc[nodes]
