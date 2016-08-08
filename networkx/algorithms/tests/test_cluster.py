@@ -211,5 +211,5 @@ class TestGeneralizedDegree:
     def test_k5(self):
         G = nx.complete_graph(5)
         assert_equal(nx.generalized_degree(G,0), {3: 4})
-        G.remove_edge(1,2)
+        G.remove_edge(0,1)
         assert_equal(nx.generalized_degree(G, 0), {2: 3})
