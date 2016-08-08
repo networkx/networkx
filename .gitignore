@@ -3,6 +3,7 @@ __pycache__
 *~
 .DS_Store
 build/*
+dist/
 networkx/version.py
 examples/*/*.png
 doc/source/networkx-documentation.zip
