@@ -85,7 +85,7 @@ def _triangles_and_degree_iter(G, nodes=None):
     for v, v_nbrs in nodes_nbrs:
         vs = set(v_nbrs) - {v}
         gen_degree = Counter([len(vs & (set(G[w]) - {w})) for w in vs])
-        ntriangles = sum([k*v for k, v in gen_degree.items()])
+        ntriangles = sum([k*val for k, val in gen_degree.items()])
         yield (v, len(vs), ntriangles, gen_degree)
 
 
