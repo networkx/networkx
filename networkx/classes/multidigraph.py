@@ -493,7 +493,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     out_edges = edges
 
 
-    def in_edges(self, nbunch=None, data=False, keys=False):
+    def in_edges(self, nbunch=None, data=False, keys=False, default=None):
         """Return an iterator over the incoming edges.
 
         Parameters
@@ -501,10 +501,17 @@ class MultiDiGraph(MultiGraph,DiGraph):
         nbunch : iterable container, optional (default= all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        data : bool, optional (default=False)
-            If True, return edge attribute dict with each edge.
+        data : string or bool, optional (default=False)
+            The edge attribute returned in 3-tuple (u,v,ddict[data]).
+            If True, return edge attribute dict in 3-tuple (u,v,ddict).
+            If False, return 2-tuple (u,v). 
+
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
+        default : value, optional (default=None)
+            Value used for edges that dont have the requested attribute.
+            Only relevant if data is not True or False.
+
 
         Returns
         -------
@@ -519,7 +526,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             nodes_nbrs = self.pred.items()
         else:
             nodes_nbrs = ((n, self.pred[n]) for n in self.nbunch_iter(nbunch))
-        if data:
+        if data is True:
             for n, nbrs in nodes_nbrs:
                 for nbr, keydict in nbrs.items():
                     for key, data in keydict.items():
@@ -527,6 +534,15 @@ class MultiDiGraph(MultiGraph,DiGraph):
                             yield (nbr, n, key, data)
                         else:
                             yield (nbr, n, data)
+        elif data is not False:
+            for n, nbrs in nodes_nbrs:
+                for nbr, keydict in nbrs.items():
+                    for key, ddict in keydict.items():
+                        d = ddict[data] if data in ddict else default
+                        if keys:
+                            yield (nbr, n, key, d)
+                        else:
+                            yield (nbr, n, d)
         else:
             for n, nbrs in nodes_nbrs:
                 for nbr, keydict in nbrs.items():

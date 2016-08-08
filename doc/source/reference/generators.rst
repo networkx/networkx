@@ -13,6 +13,7 @@ Atlas
 .. autosummary::
    :toctree: generated/
 
+   graph_atlas
    graph_atlas_g
 
 

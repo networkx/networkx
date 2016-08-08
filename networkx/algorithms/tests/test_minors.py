@@ -12,6 +12,7 @@ from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx
+from networkx.testing.utils import *
 from networkx.utils import arbitrary_element
 
 
@@ -90,8 +91,8 @@ class TestQuotient(object):
         G = nx.path_graph(6)
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_equal(sorted(M), [0, 1, 2])
-        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert_equal(M.node[n]['nedges'], 1)
             assert_equal(M.node[n]['nnodes'], 2)
@@ -101,8 +102,8 @@ class TestQuotient(object):
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_equal(sorted(M), [0, 1, 2])
-        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert_equal(M.node[n]['nedges'], 1)
             assert_equal(M.node[n]['nnodes'], 2)
@@ -113,8 +114,8 @@ class TestQuotient(object):
         nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_equal(sorted(M), [0, 1, 2])
-        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert_equal(M.node[n]['nedges'], 1)
             assert_equal(M.node[n]['nnodes'], 2)
@@ -125,8 +126,8 @@ class TestQuotient(object):
         nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_equal(sorted(M), [0, 1, 2])
-        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert_equal(M.node[n]['nedges'], 1)
             assert_equal(M.node[n]['nnodes'], 2)
@@ -144,8 +145,8 @@ class TestQuotient(object):
             G[i][i + 1]['weight'] = i + 1
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_equal(sorted(M), [0, 1, 2])
-        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         assert_equal(M[0][1]['weight'], 2)
         assert_equal(M[1][2]['weight'], 4)
         for n in M:
@@ -157,8 +158,8 @@ class TestQuotient(object):
         G = nx.barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_equal(sorted(M), [0, 1])
-        assert_equal(sorted(M.edges()), [(0, 1)])
+        assert_nodes_equal(M, [0, 1])
+        assert_edges_equal(M.edges(), [(0, 1)])
         for n in M:
             assert_equal(M.node[n]['nedges'], 3)
             assert_equal(M.node[n]['nnodes'], 3)
@@ -170,8 +171,8 @@ class TestQuotient(object):
         G.add_edge(0, 5)
         partition = [{0, 1, 2}, {3, 4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_equal(sorted(M), [0, 1])
-        assert_equal(sorted(M.edges()), [(0, 1)])
+        assert_nodes_equal(M, [0, 1])
+        assert_edges_equal(M.edges(), [(0, 1)])
         assert_equal(M[0][1]['weight'], 2)
         for n in M:
             assert_equal(M.node[n]['nedges'], 3)
@@ -182,8 +183,8 @@ class TestQuotient(object):
         G = nx.path_graph(6)
         partition = [[0, 1], [2, 3], [4, 5]]
         M = nx.blockmodel(G, partition)
-        assert_equal(sorted(M.nodes()), [0, 1, 2])
-        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_nodes_equal(M.nodes(), [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():
             assert_equal(M.node[n]['nedges'], 1)
             assert_equal(M.node[n]['nnodes'], 2)
@@ -193,8 +194,8 @@ class TestQuotient(object):
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [[0, 1], [2, 3], [4, 5]]
         M = nx.blockmodel(G, partition, multigraph=True)
-        assert_equal(sorted(M.nodes()), [0, 1, 2])
-        assert_equal(sorted(M.edges()), [(0, 1), (1, 2)])
+        assert_nodes_equal(M.nodes(), [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():
             assert_equal(M.node[n]['nedges'], 1)
             assert_equal(M.node[n]['nnodes'], 2)

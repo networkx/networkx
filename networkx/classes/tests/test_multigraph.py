@@ -5,6 +5,7 @@ from nose.tools import assert_not_equal
 from nose.tools import assert_raises
 
 import networkx as nx
+from networkx.testing.utils import *
 
 from test_graph import BaseAttrGraphTester, TestGraph
 
@@ -95,9 +96,9 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_selfloops(self):
         G=self.K3
         G.add_edge(0,0)
-        assert_equal(list(G.nodes_with_selfloops()), [0])
-        assert_equal(list(G.selfloop_edges()), [(0, 0)])
-        assert_equal(list(G.selfloop_edges(data=True)), [(0, 0, {})])
+        assert_nodes_equal(G.nodes_with_selfloops(), [0])
+        assert_edges_equal(G.selfloop_edges(), [(0, 0)])
+        assert_edges_equal(G.selfloop_edges(data=True), [(0, 0, {})])
         assert_equal(G.number_of_selfloops(),1)
 
     def test_selfloops2(self):
@@ -113,18 +114,18 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_edge_attr4(self):
         G=self.Graph()
         G.add_edge(1,2,key=0,data=7,spam='bar',bar='foo')
-        assert_equal(list(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                       [(1,2,{'data':7,'spam':'bar','bar':'foo'})])
         G[1][2][0]['data']=10 # OK to set data like this
-        assert_equal(list(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                      [(1,2,{'data':10,'spam':'bar','bar':'foo'})])
 
         G.edge[1][2][0]['data']=20 # another spelling, "edge"
-        assert_equal(list(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                       [(1,2,{'data':20,'spam':'bar','bar':'foo'})])
         G.edge[1][2][0]['listdata']=[20,200]
         G.edge[1][2][0]['weight']=20
-        assert_equal(list(G.edges(data=True)),
+        assert_edges_equal(G.edges(data=True),
                      [(1,2,{'data':20,'spam':'bar',
                             'bar':'foo','listdata':[20,200],'weight':20})])
 

@@ -70,6 +70,13 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.out_edges(0)),[(0, 1)])
         assert_equal(sorted(G.out_edges(2)),[])
 
+    def test_out_edges_data(self):
+        G=networkx.DiGraph([(0, 1, {'data' : 0}), (1, 0, {})])
+        assert_equal(sorted(G.out_edges(data=True)), [(0, 1, {'data' : 0}), (1, 0, {})])
+        assert_equal(sorted(G.out_edges(0, data=True)), [(0, 1, {'data' : 0})])
+        assert_equal(sorted(G.out_edges(data='data')), [(0, 1, 0), (1, 0, None)])
+        assert_equal(sorted(G.out_edges(0, data='data')), [(0, 1, 0)])
+
     def test_in_edges_dir(self):
         G=self.P3
         assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
@@ -81,6 +88,13 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
         assert_equal(sorted(G.in_edges(0)),[])
         assert_equal(sorted(G.in_edges(2)),[(1,2)])
+
+    def test_in_edges_data(self):
+        G=networkx.DiGraph([(0, 1, {'data' : 0}), (1, 0, {})])
+        assert_equal(sorted(G.in_edges(data=True)), [(0, 1, {'data' : 0}), (1, 0, {})])
+        assert_equal(sorted(G.in_edges(1, data=True)), [(0, 1, {'data' : 0})])
+        assert_equal(sorted(G.in_edges(data='data')), [(0, 1, 0), (1, 0, None)])
+        assert_equal(sorted(G.in_edges(1, data='data')), [(0, 1, 0)])
 
     def test_degree(self):
         G=self.K3

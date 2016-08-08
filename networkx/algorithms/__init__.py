@@ -8,6 +8,7 @@ from networkx.algorithms.community import *
 from networkx.algorithms.components import *
 from networkx.algorithms.coloring import *
 from networkx.algorithms.core import *
+from networkx.algorithms.covering import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.cuts import *
 from networkx.algorithms.dag import *
