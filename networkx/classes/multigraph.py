@@ -189,15 +189,20 @@ class MultiGraph(Graph):
     extra features can be added. To replace one of the dicts create
     a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names
-    are node_dict_factory, adjlist_dict_factory, edge_key_dict_factory
+    are node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
     and edge_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
+        Factory function to be used to create the dict containing node
+        attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    adjlist_outer_dict_factory : function, (default: dict)
         Factory function to be used to create the outer-most dict
         in the data structure that holds adjacency info keyed by node.
         It should require no arguments and return a dict-like object.
 
-    adjlist_dict_factory : function, (default: dict)
+    adjlist_inner_dict_factory : function, (default: dict)
         Factory function to be used to create the adjacency list
         dict which holds multiedge key dicts keyed by neighbor.
         It should require no arguments and return a dict-like object.
@@ -219,6 +224,7 @@ class MultiGraph(Graph):
     >>> from collections import OrderedDict
     >>> class OrderedGraph(nx.MultiGraph):
     ...    node_dict_factory = OrderedDict
+    ...    adjlist_outer_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
@@ -233,7 +239,8 @@ class MultiGraph(Graph):
 
     >>> class OrderedGraph(nx.MultiGraph):
     ...    node_dict_factory = OrderedDict
-    ...    adjlist_dict_factory = OrderedDict
+    ...    adjlist_outer_dict_factory = OrderedDict
+    ...    adjlist_inner_dict_factory = OrderedDict
     ...    edge_key_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
@@ -246,7 +253,8 @@ class MultiGraph(Graph):
 
     """
     # node_dict_factory=dict    # already assigned in Graph
-    # adjlist_dict_factory=dict
+    # adjlist_outer_dict_factory=dict
+    # adjlist_inner_dict_factory=dict
     edge_key_dict_factory = dict
     # edge_attr_dict_factory=dict
 
@@ -344,10 +352,10 @@ class MultiGraph(Graph):
         """
         # add nodes
         if u not in self.adj:
-            self.adj[u] = self.adjlist_dict_factory()
+            self.adj[u] = self.adjlist_inner_dict_factory()
             self.node[u] = {}
         if v not in self.adj:
-            self.adj[v] = self.adjlist_dict_factory()
+            self.adj[v] = self.adjlist_inner_dict_factory()
             self.node[v] = {}
         if key is None:
             key = self.new_edge_key(u, v)
@@ -1038,7 +1046,7 @@ class MultiGraph(Graph):
         self_adj = self.adj
         # add nodes and edges (undirected method)
         for n in H:
-            Hnbrs = H.adjlist_dict_factory()
+            Hnbrs = H.adjlist_inner_dict_factory()
             H_adj[n] = Hnbrs
             for nbr, edgedict in self_adj[n].items():
                 if nbr in H_adj:
@@ -1120,9 +1128,9 @@ class MultiGraph(Graph):
             # Create an entry in the adjacency dictionary for the
             # nodes u and v if they don't exist yet.
             if u not in H.adj:
-                H.adj[u] = H.adjlist_dict_factory()
+                H.adj[u] = H.adjlist_inner_dict_factory()
             if v not in H.adj:
-                H.adj[v] = H.adjlist_dict_factory()
+                H.adj[v] = H.adjlist_inner_dict_factory()
             # Create an entry in the edge dictionary for the edges (u,
             # v) and (v, u) if the don't exist yet.
             if v not in H.adj[u]:
