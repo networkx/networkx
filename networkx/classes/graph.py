@@ -189,14 +189,20 @@ class Graph(object):
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
     holding the factory for that dict-like structure. The variable names
-    are node_dict_factory, adjlist_dict_factory and edge_attr_dict_factory.
+    are node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
+    and edge_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
+        Factory function to be used to create the dict containing node
+        attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    adjlist_outer_dict_factory : function, (default: dict)
         Factory function to be used to create the outer-most dict
         in the data structure that holds adjacency info keyed by node.
         It should require no arguments and return a dict-like object.
 
-    adjlist_dict_factory : function, (default: dict)
+    adjlist_inner_dict_factory : function, (default: dict)
         Factory function to be used to create the adjacency list
         dict which holds edge data keyed by neighbor.
         It should require no arguments and return a dict-like object
@@ -213,6 +219,7 @@ class Graph(object):
     >>> from collections import OrderedDict
     >>> class OrderedNodeGraph(nx.Graph):
     ...     node_dict_factory=OrderedDict
+    ...     adjlist_outer_dict_factory=OrderedDict
     >>> G=OrderedNodeGraph()
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
@@ -226,7 +233,8 @@ class Graph(object):
 
     >>> class OrderedGraph(nx.Graph):
     ...    node_dict_factory = OrderedDict
-    ...    adjlist_dict_factory = OrderedDict
+    ...    adjlist_outer_dict_factory = OrderedDict
+    ...    adjlist_inner_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
@@ -254,7 +262,8 @@ class Graph(object):
 
     """
     node_dict_factory = dict
-    adjlist_dict_factory = dict
+    adjlist_outer_dict_factory = dict
+    adjlist_inner_dict_factory = dict
     edge_attr_dict_factory = dict
 
     def __init__(self, data=None, **attr):
@@ -292,12 +301,13 @@ class Graph(object):
 
         """
         self.node_dict_factory = ndf = self.node_dict_factory
-        self.adjlist_dict_factory = self.adjlist_dict_factory
+        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
+        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
         self.graph = {}   # dictionary for graph attributes
         self.node = ndf()  # empty node attribute dict
-        self.adj = ndf()  # empty adjacency dict
+        self.adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # attempt to load graph with data
         if data is not None:
             convert.to_networkx_graph(data, create_using=self)
@@ -446,7 +456,7 @@ class Graph(object):
         doesn't change on mutables.
         """
         if n not in self.node:
-            self.adj[n] = self.adjlist_dict_factory()
+            self.adj[n] = self.adjlist_inner_dict_factory()
             self.node[n] = attr
         else:  # update attr even if node already exists
             self.node[n].update(attr)
@@ -502,14 +512,14 @@ class Graph(object):
             # while pre-2.7.5 ironpython throws on self.adj[n]
             try:
                 if n not in self.node:
-                    self.adj[n] = self.adjlist_dict_factory()
+                    self.adj[n] = self.adjlist_inner_dict_factory()
                     self.node[n] = attr.copy()
                 else:
                     self.node[n].update(attr)
             except TypeError:
                 nn, ndict = n
                 if nn not in self.node:
-                    self.adj[nn] = self.adjlist_dict_factory()
+                    self.adj[nn] = self.adjlist_inner_dict_factory()
                     newdict = attr.copy()
                     newdict.update(ndict)
                     self.node[nn] = newdict
@@ -781,10 +791,10 @@ class Graph(object):
         """
         # add nodes
         if u not in self.node:
-            self.adj[u] = self.adjlist_dict_factory()
+            self.adj[u] = self.adjlist_inner_dict_factory()
             self.node[u] = {}
         if v not in self.node:
-            self.adj[v] = self.adjlist_dict_factory()
+            self.adj[v] = self.adjlist_inner_dict_factory()
             self.node[v] = {}
         # add the edge
         datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
@@ -842,10 +852,10 @@ class Graph(object):
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
             if u not in self.node:
-                self.adj[u] = self.adjlist_dict_factory()
+                self.adj[u] = self.adjlist_inner_dict_factory()
                 self.node[u] = {}
             if v not in self.node:
-                self.adj[v] = self.adjlist_dict_factory()
+                self.adj[v] = self.adjlist_inner_dict_factory()
                 self.node[v] = {}
             datadict = self.adj[u].get(v, self.edge_attr_dict_factory())
             datadict.update(attr)
@@ -1470,7 +1480,7 @@ class Graph(object):
         # add nodes and edges (undirected method)
         # Note that changing this may affect the deep-ness of self.copy()
         for n in H.node:
-            Hnbrs = H.adjlist_dict_factory()
+            Hnbrs = H.adjlist_inner_dict_factory()
             H_adj[n] = Hnbrs
             for nbr, d in self_adj[n].items():
                 if nbr in H_adj:
@@ -1539,9 +1549,9 @@ class Graph(object):
             # Create an entry in the adjacency dictionary for the
             # nodes u and v if they don't exist yet.
             if u not in H.adj:
-                H.adj[u] = H.adjlist_dict_factory()
+                H.adj[u] = H.adjlist_inner_dict_factory()
             if v not in H.adj:
-                H.adj[v] = H.adjlist_dict_factory()
+                H.adj[v] = H.adjlist_inner_dict_factory()
             # Copy the edge attributes.
             H.edge[u][v] = self.edge[u][v]
             H.edge[v][u] = self.edge[v][u]

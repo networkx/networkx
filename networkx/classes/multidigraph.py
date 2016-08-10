@@ -188,15 +188,20 @@ class MultiDiGraph(MultiGraph,DiGraph):
     extra features can be added. To replace one of the dicts create
     a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names
-    are node_dict_factory, adjlist_dict_factory, edge_key_dict_factory
+    are node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
     and edge_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
+        Factory function to be used to create the dict containing node
+        attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    adjlist_outer_dict_factory : function, (default: dict)
         Factory function to be used to create the outer-most dict
         in the data structure that holds adjacency info keyed by node.
         It should require no arguments and return a dict-like object.
 
-    adjlist_dict_factory : function, (default: dict)
+    adjlist_inner_dict_factory : function, (default: dict)
         Factory function to be used to create the adjacency list
         dict which holds multiedge key dicts keyed by neighbor.
         It should require no arguments and return a dict-like object.
@@ -218,6 +223,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     >>> from collections import OrderedDict
     >>> class OrderedGraph(nx.MultiDiGraph):
     ...    node_dict_factory = OrderedDict
+    ...    adjlist_outer_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
@@ -232,7 +238,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
     >>> class OrderedGraph(nx.MultiDiGraph):
     ...    node_dict_factory = OrderedDict
-    ...    adjlist_dict_factory = OrderedDict
+    ...    adjlist_outer_dict_factory = OrderedDict
+    ...    adjlist_inner_dict_factory = OrderedDict
     ...    edge_key_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
@@ -245,7 +252,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
     """
     # node_dict_factory=dict    # already assigned in Graph
-    # adjlist_dict_factory=dict
+    # adjlist_outer_dict_factory=dict
+    # adjlist_inner_dict_factory=dict
     edge_key_dict_factory = dict
     # edge_attr_dict_factory=dict
 
@@ -321,12 +329,12 @@ class MultiDiGraph(MultiGraph,DiGraph):
         """
         # add nodes
         if u not in self.succ:
-            self.succ[u] = self.adjlist_dict_factory()
-            self.pred[u] = self.adjlist_dict_factory()
+            self.succ[u] = self.adjlist_inner_dict_factory()
+            self.pred[u] = self.adjlist_inner_dict_factory()
             self.node[u] = {}
         if v not in self.succ:
-            self.succ[v] = self.adjlist_dict_factory()
-            self.pred[v] = self.adjlist_dict_factory()
+            self.succ[v] = self.adjlist_inner_dict_factory()
+            self.pred[v] = self.adjlist_inner_dict_factory()
             self.node[v] = {}
         if key is None:
             key = self.new_edge_key(u, v)
@@ -932,8 +940,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
         self_pred = self.pred
         # add nodes
         for n in H:
-            H_succ[n] = H.adjlist_dict_factory()
-            H_pred[n] = H.adjlist_dict_factory()
+            H_succ[n] = H.adjlist_inner_dict_factory()
+            H_pred[n] = H.adjlist_inner_dict_factory()
         # add edges
         for u in H_succ:
             Hnbrs = H_succ[u]
@@ -1017,9 +1025,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
             # Create an entry in the successors and predecessors
             # dictionary for the nodes u and v if they don't exist yet.
             if u not in H.succ:
-                H.succ[u] = H.adjlist_dict_factory()
+                H.succ[u] = H.adjlist_inner_dict_factory()
             if v not in H.pred:
-                H.pred[v] = H.adjlist_dict_factory()
+                H.pred[v] = H.adjlist_inner_dict_factory()
             # Create an entry in the edge dictionary for the edges (u,
             # v) and (v, u) if the don't exist yet.
             if v not in H.succ[u]:

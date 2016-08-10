@@ -25,7 +25,8 @@ class OrderedGraphTester(TestGraph):
         TestGraph.setUp(self)
         class MyGraph(nx.Graph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
         self.Graph=MyGraph
 
@@ -62,7 +63,8 @@ class OrderedDiGraphTester(TestDiGraph):
         TestGraph.setUp(self)
         class MyGraph(nx.DiGraph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
         self.Graph=MyGraph
 
@@ -98,7 +100,8 @@ class OrderedMultiGraphTester(TestMultiGraph):
         TestMultiGraph.setUp(self)
         class MyGraph(nx.MultiGraph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
         self.Graph=MyGraph
@@ -114,7 +117,8 @@ class OrderedMultiDiGraphTester(TestMultiDiGraph):
         TestMultiDiGraph.setUp(self)
         class MyGraph(nx.MultiDiGraph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
         self.Graph=MyGraph

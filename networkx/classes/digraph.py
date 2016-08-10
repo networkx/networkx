@@ -176,14 +176,20 @@ class DiGraph(Graph):
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
     holding the factory for that dict-like structure. The variable names
-    are node_dict_factory, adjlist_dict_factory and edge_attr_dict_factory.
+    are node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
+    and edge_attr_dict_factory.
 
-    node_dict_factory : function, optional (default: dict)
+    node_dict_factory : function, (default: dict)
+        Factory function to be used to create the dict containing node
+        attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    adjlist_outer_dict_factory : function, (default: dict)
         Factory function to be used to create the outer-most dict
         in the data structure that holds adjacency info keyed by node.
         It should require no arguments and return a dict-like object.
 
-    adjlist_dict_factory : function, optional (default: dict)
+    adjlist_inner_dict_factory : function, optional (default: dict)
         Factory function to be used to create the adjacency list
         dict which holds edge data keyed by neighbor.
         It should require no arguments and return a dict-like object
@@ -200,6 +206,7 @@ class DiGraph(Graph):
     >>> from collections import OrderedDict
     >>> class OrderedNodeGraph(nx.Graph):
     ...     node_dict_factory=OrderedDict
+    ...     adjlist_outer_dict_factory=OrderedDict
     >>> G=OrderedNodeGraph()
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
@@ -212,8 +219,9 @@ class DiGraph(Graph):
     and for each node track the order that neighbors are added.
 
     >>> class OrderedGraph(nx.Graph):
-    ...    node_dict_factory = OrderedDict
-    ...    adjlist_dict_factory = OrderedDict
+    ...     node_dict_factory = OrderedDict
+    ...     adjlist_outer_dict_factory=OrderedDict
+    ...     adjlist_inner_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
     >>> list(G.nodes())
@@ -275,7 +283,8 @@ class DiGraph(Graph):
 
         """
         self.node_dict_factory = ndf = self.node_dict_factory
-        self.adjlist_dict_factory = self.adjlist_dict_factory
+        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
+        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
         self.graph = {} # dictionary for graph attributes
@@ -336,8 +345,8 @@ class DiGraph(Graph):
         doesn't change on mutables.
         """
         if n not in self.succ:
-            self.succ[n] = self.adjlist_dict_factory()
-            self.pred[n] = self.adjlist_dict_factory()
+            self.succ[n] = self.adjlist_inner_dict_factory()
+            self.pred[n] = self.adjlist_inner_dict_factory()
             self.node[n] = attr
         else: # update attr even if node already exists
             self.node[n].update(attr)
@@ -394,16 +403,16 @@ class DiGraph(Graph):
             # while pre-2.7.5 ironpython throws on self.succ[n] 
             try:
                 if n not in self.succ:
-                    self.succ[n] = self.adjlist_dict_factory()
-                    self.pred[n] = self.adjlist_dict_factory()
+                    self.succ[n] = self.adjlist_inner_dict_factory()
+                    self.pred[n] = self.adjlist_inner_dict_factory()
                     self.node[n] = attr.copy()
                 else:
                     self.node[n].update(attr)
             except TypeError:
                 nn,ndict = n
                 if nn not in self.succ:
-                    self.succ[nn] = self.adjlist_dict_factory()
-                    self.pred[nn] = self.adjlist_dict_factory()
+                    self.succ[nn] = self.adjlist_inner_dict_factory()
+                    self.pred[nn] = self.adjlist_inner_dict_factory()
                     newdict = attr.copy()
                     newdict.update(ndict)
                     self.node[nn] = newdict
@@ -547,12 +556,12 @@ class DiGraph(Graph):
         """
         # add nodes
         if u not in self.succ:
-            self.succ[u]= self.adjlist_dict_factory()
-            self.pred[u]= self.adjlist_dict_factory()
+            self.succ[u]= self.adjlist_inner_dict_factory()
+            self.pred[u]= self.adjlist_inner_dict_factory()
             self.node[u] = {}
         if v not in self.succ:
-            self.succ[v]= self.adjlist_dict_factory()
-            self.pred[v]= self.adjlist_dict_factory()
+            self.succ[v]= self.adjlist_inner_dict_factory()
+            self.pred[v]= self.adjlist_inner_dict_factory()
             self.node[v] = {}
         # add the edge
         datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
@@ -611,12 +620,12 @@ class DiGraph(Graph):
                 raise NetworkXError(\
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
             if u not in self.succ:
-                self.succ[u] = self.adjlist_dict_factory()
-                self.pred[u] = self.adjlist_dict_factory()
+                self.succ[u] = self.adjlist_inner_dict_factory()
+                self.pred[u] = self.adjlist_inner_dict_factory()
                 self.node[u] = {}
             if v not in self.succ:
-                self.succ[v] = self.adjlist_dict_factory()
-                self.pred[v] = self.adjlist_dict_factory()
+                self.succ[v] = self.adjlist_inner_dict_factory()
+                self.pred[v] = self.adjlist_inner_dict_factory()
                 self.node[v] = {}
             datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
             datadict.update(attr)
@@ -1250,8 +1259,8 @@ class DiGraph(Graph):
         self_succ=self.succ
         # add nodes
         for n in H:
-            H_succ[n]=H.adjlist_dict_factory()
-            H_pred[n]=H.adjlist_dict_factory()
+            H_succ[n]=H.adjlist_inner_dict_factory()
+            H_pred[n]=H.adjlist_inner_dict_factory()
         # add edges
         for u in H_succ:
             Hnbrs=H_succ[u]
@@ -1322,9 +1331,9 @@ class DiGraph(Graph):
             # Create an entry in the successors and predecessors
             # dictionary for the nodes u and v if they don't exist yet.
             if u not in H.succ:
-                H.succ[u] = H.adjlist_dict_factory()
+                H.succ[u] = H.adjlist_inner_dict_factory()
             if v not in H.pred:
-                H.pred[v] = H.adjlist_dict_factory()
+                H.pred[v] = H.adjlist_inner_dict_factory()
             # Copy the edge attributes.
             H.edge[u][v] = self.edge[u][v]
             H.pred[v][u] = self.pred[v][u]
