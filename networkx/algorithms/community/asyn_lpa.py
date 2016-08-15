@@ -57,6 +57,11 @@ def asyn_lpa_communities(G, weight=None):
            linear time algorithm to detect community structures in large-scale
            networks." Physical Review E 76.3 (2007): 036106.
     """
+    def count_labels(ls):
+        res = {}
+        for l, w in ls:
+            res[l] = res.get(l, 0) + w
+        return res
 
     labels = {n: i for i, n in enumerate(G)}
     cont = True
@@ -72,8 +77,8 @@ def asyn_lpa_communities(G, weight=None):
             # Get label frequencies. Depending on the order they are processed
             # in some nodes with be in t and others in t-1, making the
             # algorithm asynchronous.
-            label_freq = Counter({labels[v]: G.edge[v][node][weight]
-                                  if weight else 1 for v in G[node]})
+            label_freq = count_labels([(labels[v], G.edge[v][node][weight]
+                                  if weight else 1) for v in G[node]])
 
             # Choose the label with the highest frecuency. If more than 1 label
             # has the highest frecuency choose one randomly.

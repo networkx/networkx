@@ -87,3 +87,46 @@ def test_several_communities():
     communities = asyn_lpa.asyn_lpa_communities(test)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
+
+def test_two_communities():
+    test = Graph()
+
+    # c1
+    test.add_edge('0', '2')
+    test.add_edge('0', '3')
+    test.add_edge('0', '4')
+    test.add_edge('0', '5')
+    test.add_edge('1', '2')
+    test.add_edge('1', '4')
+    test.add_edge('1', '7')
+    test.add_edge('2', '4')
+    test.add_edge('2', '5')
+    test.add_edge('2', '6')
+    test.add_edge('3', '7')
+    test.add_edge('4', '10')
+    test.add_edge('5', '7')
+    test.add_edge('5', '11')
+    test.add_edge('6', '7')
+    test.add_edge('6', '11')
+
+    # c2
+    test.add_edge('8', '9')
+    test.add_edge('8', '10')
+    test.add_edge('8', '11')
+    test.add_edge('8', '14')
+    test.add_edge('8', '15')
+    test.add_edge('9', '12')
+    test.add_edge('9', '14')
+    test.add_edge('10', '11')
+    test.add_edge('10', '12')
+    test.add_edge('10', '13')
+    test.add_edge('10', '14')
+    test.add_edge('11', '13')
+
+    # ground truth
+    ground_truth = set([frozenset(['0', '1', '2', '3', '4', '5', '6', '7']),
+                        frozenset(['8', '9', '10', '11', '12', '13', '14', '15'])])
+
+    communities = asyn_lpa.asyn_lpa_communities(test)
+    result = {frozenset(c) for c in communities}
+    assert_equal(result, ground_truth)
