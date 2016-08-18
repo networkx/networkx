@@ -10,7 +10,6 @@ from nose.tools import ok_
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
 from networkx.utils import consume
-from networkx.utils import pairwise
 
 
 class TestDagLongestPath(object):
@@ -30,10 +29,10 @@ class TestDagLongestPath(object):
 
     def test_weighted(self):
         G = nx.DiGraph()
-        edges = [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4),
-                 (5, 6, 0), (1, 6, 2)]
+        edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4),
+                 (1, 6, 2)]
         G.add_weighted_edges_from(edges)
-        assert_equal(nx.dag_longest_path(G), [2, 3, 5, 6])
+        assert_equal(nx.dag_longest_path(G), [2, 3, 5])
 
     def test_undirected_not_implemented(self):
         G = nx.Graph()
@@ -53,20 +52,22 @@ class TestDagLongestPath(object):
         # support for Python 2 is dropped, this test can be simplified
         # by replacing `Unorderable()` by `object()`.
         class Unorderable(object):
+            def __lt__(self, other):
+                error_msg = "< not supported between instances of " \
+                  "{} and {}".format(type(self).__name__, type(other).__name__)
+                raise TypeError(error_msg)
 
-            def __le__(self):
-                raise NotImplemented
-
-            def __ge__(self):
-                raise NotImplemented
-
-        # Create the directed path graph on four nodes, with nodes
-        # represented as (unorderable) Python objects.
+        # Create the directed path graph on four nodes in a diamond shape,
+        # with nodes represented as (unorderable) Python objects.
         nodes = [Unorderable() for n in range(4)]
         G = nx.DiGraph()
-        G.add_edges_from(pairwise(nodes))
-        path = list(nx.dag_longest_path(G))
-        assert_equal(path, nodes)
+        G.add_edge(nodes[0], nodes[1])
+        G.add_edge(nodes[0], nodes[2])
+        G.add_edge(nodes[2], nodes[3])
+        G.add_edge(nodes[1], nodes[3])
+
+        # this will raise NotImplementedError when nodes need to be ordered
+        nx.dag_longest_path(G)
 
 
 class TestDagLongestPathLength(object):
@@ -89,11 +90,11 @@ class TestDagLongestPathLength(object):
         assert_raises(nx.NetworkXNotImplemented, nx.dag_longest_path_length, G)
 
     def test_weighted(self):
-        edges = [(1, 2, -5), (2, 3, 0), (3, 4, 1), (4, 5, 2), (3, 5, 4),
-                 (5, 6, 0), (1, 6, 2)]
+        edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4),
+                 (1, 6, 2)]
         G = nx.DiGraph()
         G.add_weighted_edges_from(edges)
-        assert_equal(nx.dag_longest_path_length(G), 3)
+        assert_equal(nx.dag_longest_path_length(G), 2)
 
 
 class TestDAG:
