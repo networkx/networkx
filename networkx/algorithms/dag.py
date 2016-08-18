@@ -442,10 +442,10 @@ def dag_longest_path(G, weight='weight', default_weight=1):
         us = [(dist[u][0] + data.get(weight, default_weight), u)
             for u, data in G.pred[v].items()]
         # Use the best predecessor if there is one and its distance is non-negative, otherwise terminate.
-        maxu = max(us) if us else (0, v)
+        maxu = max(us, key=lambda x: x[0]) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
     u = None
-    v = max(dist, key=dist.get)
+    v = max(dist, key=lambda x: dist[x][0])
     path = []
     while u != v:
         path.append(v)
