@@ -11,7 +11,8 @@ import heapq
 
 import networkx as nx
 from networkx.utils import consume, arbitrary_element
-from networkx.utils.decorators import *
+#from networkx.utils.decorators import *
+from networkx.utils.decorators import not_implemented_for
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
@@ -23,7 +24,10 @@ __all__ = ['descendants',
            'lexicographical_topological_sort',
            'is_directed_acyclic_graph',
            'is_aperiodic',
+           'source_nodes',
+           'sink_nodes',
            'transitive_closure',
+           'transitive_reduction',
            'antichains',
            'dag_longest_path',
            'dag_longest_path_length']
@@ -171,6 +175,32 @@ def topological_sort(G):
                                     "during iteration")
 
 
+@not_implemented_for('undirected')
+def source_nodes(graph):
+    """ Returns a generator of source nodes (nodes without incoming edges) in a directed graph
+
+    Parameters
+    ----------
+    G : NetworkX digraph
+        A directed graph
+    """
+    source_iter = (node for node in graph.nodes() if graph.in_degree(node) == 0)
+    return source_iter
+
+
+@not_implemented_for('undirected')
+def sink_nodes(graph):
+    """ Returns a generator of sink nodes (nodes without outgoing edges) in a directed graph
+
+    Parameters
+    ----------
+    G : NetworkX digraph
+        A directed graph
+    """
+    sink_iter = (node for node in graph.nodes() if graph.out_degree(node) == 0)
+    return sink_iter
+
+
 def lexicographical_topological_sort(G, key=None):
     """Return a generator of nodes in lexicographically topologically sorted
     order.
@@ -226,7 +256,9 @@ def lexicographical_topological_sort(G, key=None):
             "Topological sort not defined on undirected graphs.")
 
     if key is None:
-        key = lambda x: x
+        def identity(x):
+            return x
+        key = identity
 
     def create_tuple(node):
         return key(node), node
@@ -355,6 +387,108 @@ def transitive_closure(G):
 
 
 @not_implemented_for('undirected')
+def transitive_reduction(G):
+    r"""
+    Returns transitive closure of a directed graph.
+
+    The transitive closure minimizes the number of edges in a graph while
+    maintaining reachability.  Formally, the transitive closure of G = (V,E) is
+    a graph G+ = (V,E+) such that for all directed paths from u to v in G there
+    is a directed path from u to v in G+ and if there is no graph with fewer
+    edges than G+ that satisfies the first condition. When the graph is acyclic
+    this is also the unique minimal graph. The transitive reduction of a cyclic
+    graph may not be unique.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        Graph
+
+    Returns
+    -------
+    TR : NetworkX DiGraph
+        Graph
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is not directed
+
+    Examples
+    ---------
+
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 4),
+    ...                 (0, 3), (1, 3), (2, 4),
+    ...                 (3, 4), (2, 4), (2, 3)])
+    >>> TR = nx.algorithms.dag.transitive_reduction(G)
+    >>> list(TR.edges())
+    [(0, 1), (0, 2), (1, 3), (2, 3), (3, 4)]
+
+    References
+    ----------
+    .. [1] http://dept-info.labri.fr/~thibault/tmp/0201008.pdf
+    .. [2] https://en.wikipedia.org/wiki/Transitive_reduction#Computing_the_reduction_using_the_closure
+    """
+    def invert_map(mapping):
+        """ point each value to a list of its corresponding keys """
+        from collections import defaultdict
+        pair_list = [(val, key) for key, val in mapping.items()]
+        # Initialize dict of lists
+        groupid2_items = defaultdict(list)
+        # Insert each item into the correct group
+        for groupid, item in pair_list:
+            groupid2_items[groupid].append(item)
+        return groupid2_items
+
+    has_cycles = not nx.is_directed_acyclic_graph(G)
+    if has_cycles:
+        # To handle cycles convert to graph of SCCs, find transitive reduction
+        # and then make a directed cycle for every SCC.
+        G_scc = nx.condensation(G)
+    else:
+        G_scc = G
+
+    # Adapted from
+    # http://stackoverflow.com/questions/17078696/transitive-reduction-python
+    # For each node u, perform DFS consider its set of (non-self) children C.
+    # For each descendant v, of a node in C, remove any edge from u to v.
+    TR_scc = G_scc.copy()
+
+    for parent in TR_scc.nodes():
+        # Remove self loops
+        if TR_scc.has_edge(parent, parent):
+            TR_scc.remove_edge(parent, parent)
+        # For each child of the parent
+        for child in list(TR_scc.successors(parent)):
+            # Preorder nodes includes its argument (no added complexity)
+            for gchild in list(TR_scc.successors(child)):
+                # Remove all edges from parent to non-child descendants
+                for descendant in list(nx.dfs_preorder_nodes(TR_scc, gchild)):
+                    if TR_scc.has_edge(parent, descendant):
+                        TR_scc.remove_edge(parent, descendant)
+
+    if has_cycles:
+        # Uncondense graph.
+        mapping = G_scc.graph['mapping']
+        inv_mapping = invert_map(mapping)
+        # Add all original nodes
+        TR = G.__class__()
+        TR.add_nodes_from(G.nodes())
+        # Add edges from the TR of the SCC graph
+        for u, v in TR_scc.edges():
+            u_ = inv_mapping[u][0]
+            v_ = inv_mapping[v][0]
+            TR.add_edge(u_, v_)
+        # For each SCC make a directed cycle
+        for key, path in inv_mapping.items():
+            if len(path) > 1:
+                nx.add_cycle(TR, path)
+    else:
+        TR = TR_scc
+    return TR
+
+
+@not_implemented_for('undirected')
 def antichains(G):
     """Generates antichains from a DAG.
 
@@ -437,10 +571,10 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     --------
     dag_longest_path_length
     """
-    dist = {} # stores {v : (length, u)}
+    dist = {}  # stores {v : (length, u)}
     for v in nx.topological_sort(G):
         us = [(dist[u][0] + data.get(weight, default_weight), u)
-            for u, data in G.pred[v].items()]
+              for u, data in G.pred[v].items()]
         # Use the best predecessor if there is one and its distance is non-negative, otherwise terminate.
         maxu = max(us) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
