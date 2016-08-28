@@ -94,7 +94,7 @@ If G'=(N',E') is a node-induced subgraph, then:
     N' is a subset of N
     E' is the subset of edges in E relating nodes in N'
 
-If G'=(N',E') is an edge-induced subgrpah, then:
+If G'=(N',E') is an edge-induced subgraph, then:
     N' is the subset of nodes in N related by edges in E'
     E' is a subset of E
 
