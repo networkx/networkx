@@ -85,6 +85,11 @@ class TestDagLongestPathLength(object):
         G = nx.DiGraph(edges)
         assert_equal(nx.dag_longest_path_length(G), 4)
 
+        # test degenerate graphs
+        G = nx.DiGraph()
+        G.add_node(1)
+        assert_equal(nx.dag_longest_path_length(G), 0)
+
     def test_undirected_not_implemented(self):
         G = nx.Graph()
         assert_raises(nx.NetworkXNotImplemented, nx.dag_longest_path_length, G)
@@ -94,7 +99,8 @@ class TestDagLongestPathLength(object):
                  (1, 6, 2)]
         G = nx.DiGraph()
         G.add_weighted_edges_from(edges)
-        assert_equal(nx.dag_longest_path_length(G), 2)
+        assert_equal(nx.dag_longest_path_length(G), 5)
+
 
 
 class TestDAG:

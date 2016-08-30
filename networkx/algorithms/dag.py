@@ -10,7 +10,7 @@ from fractions import gcd
 import heapq
 
 import networkx as nx
-from networkx.utils import consume, arbitrary_element
+from networkx.utils import consume, arbitrary_element, pairwise
 from networkx.utils.decorators import *
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
@@ -456,13 +456,19 @@ def dag_longest_path(G, weight='weight', default_weight=1):
 
 
 @not_implemented_for('undirected')
-def dag_longest_path_length(G):
+def dag_longest_path_length(G, weight='weight', default_weight=1):
     """Returns the longest path length in a DAG
 
     Parameters
     ----------
     G : NetworkX DiGraph
         Graph
+
+    weight : string (default 'weight')
+        Edge data key to use for weight
+
+    default_weight : integer (default 1)
+        The weight of edges that do not have a weight attribute
 
     Returns
     -------
@@ -478,5 +484,9 @@ def dag_longest_path_length(G):
     --------
     dag_longest_path
     """
-    path_length = len(nx.dag_longest_path(G)) - 1
+    path = nx.dag_longest_path(G, weight, default_weight)
+    path_length = 0
+    for (u, v) in pairwise(path):
+        path_length += G[u][v].get(weight, default_weight)
+
     return path_length
