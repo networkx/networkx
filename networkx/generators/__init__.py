@@ -12,6 +12,7 @@ from networkx.generators.ego import *
 from networkx.generators.expanders import *
 from networkx.generators.geometric import *
 from networkx.generators.intersection import *
+from networkx.generators.inverse_line import *
 from networkx.generators.joint_degree_seq import *
 from networkx.generators.line import *
 from networkx.generators.nonisomorphic_trees import *
