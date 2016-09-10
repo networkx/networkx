@@ -24,6 +24,7 @@ __all__ = ['descendants',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
+           'transitive_reduction',
            'antichains',
            'dag_longest_path',
            'dag_longest_path_length']
@@ -352,6 +353,48 @@ def transitive_closure(G):
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
     return TC
+
+
+@not_implemented_for('undirected')
+def transitive_reduction(G):
+    """ Returns transitive reduction of a directed graph
+
+    The transitive reduction of G = (V,E) is a graph G- = (V,E-) such that
+    for all v,w in V there is an edge (v,w) in E- if and only if (v,w) is
+    in E and there is no path from v to w in G with length greater than 1.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        Graph
+
+    Returns
+    -------
+    TR : NetworkX DiGraph
+        Graph
+
+    Raises
+    ------
+    NetworkXError
+        If G is not a directed acyclic graph (DAG) transitive reduction is
+        not uniquely defined and a NetworkXError exception is raised.
+
+    References 
+    ----------
+    https://en.wikipedia.org/wiki/Transitive_reduction
+
+    """   
+    if not is_directed_acyclic_graph(G):
+        raise nx.NetworkXError(
+            "Transitive reduction only uniquely defined on directed acyclic graphs.") 
+    TR = nx.DiGraph()
+    TR.add_nodes_from(G.nodes())
+    for u in G:
+        u_edges = set(G[u])
+        for v in G[u]:
+            u_edges -= {y for x, y in nx.dfs_edges(G, v)}
+        TR.add_edges_from((u,v) for v in u_edges)
+    return TR
 
 
 @not_implemented_for('undirected')

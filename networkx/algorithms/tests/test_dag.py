@@ -241,6 +241,18 @@ class TestDAG:
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         assert_raises(nx.NetworkXNotImplemented, transitive_closure, G)
 
+    def test_transitive_reduction(self):
+        G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
+        transitive_reduction = nx.algorithms.dag.transitive_reduction
+        solution = [(1, 2), (2, 3), (3, 4)]
+        assert_edges_equal(transitive_reduction(G).edges(), solution)
+        G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)])
+        transitive_reduction = nx.algorithms.dag.transitive_reduction
+        solution = [(1, 2), (2, 3), (2, 4)]
+        assert_edges_equal(transitive_reduction(G).edges(), solution)        
+        G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        assert_raises(nx.NetworkXNotImplemented, transitive_reduction, G)
+
     def _check_antichains(self, solution, result):
         sol = [frozenset(a) for a in solution]
         res = [frozenset(a) for a in result]
