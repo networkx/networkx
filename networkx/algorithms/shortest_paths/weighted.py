@@ -140,6 +140,16 @@ def dijkstra_path(G, source, target, weight='weight'):
     So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
     will find the shortest red path.
 
+    The weight function can be used to include node weights.
+    ```
+    def func(u, v, d):
+        return G.node[u].get('node_weight', 1)/2 + \
+               G.node[v].get('node_weight', 1)/2 + \
+               d.get('weight', 1)
+    ```
+    In this example we take the average of start and end node
+    weights of an edge and add it to the weight of the edge.
+
     See Also
     --------
     bidirectional_dijkstra(), bellman_ford_path()
