@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from networkx import convert_node_labels_to_integers as cnlti
 
 
 class TestCliques:
 
     def setUp(self):
-        z = [3, 4, 3, 4, 2, 4, 2, 1, 1, 1, 1]
-        self.G = cnlti(nx.generators.havel_hakimi_graph(z), first_label=1)
+        self.G = nx.from_edgelist([(1, 2), (1, 3), (1, 6), (2, 3),
+            (2, 4), (2, 6), (3, 6), (4, 5), (4, 6), (4, 7), (5, 7),
+            (8, 9), (10, 11)])
         self.cl = list(nx.find_cliques(self.G))
         H = nx.complete_graph(6)
         H = nx.relabel_nodes(H, dict([(i, i + 1) for i in range(6)]))
@@ -24,11 +24,11 @@ class TestCliques:
 
     def test_selfloops(self):
         self.G.add_edge(1, 1)
-        cl = list(nx.find_cliques(self.G))
+        cl = sorted(map(sorted, nx.find_cliques(self.G)))
         rcl = nx.find_cliques_recursive(self.G)
-        assert_equal(sorted(map(sorted, cl)), sorted(map(sorted, rcl)))
+        assert_equal(cl, sorted(map(sorted, rcl)))
         assert_equal(cl,
-                     [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]])
+                     [[1, 2, 3, 6], [2, 4, 6], [4, 5, 7], [8, 9], [10, 11]])
 
     def test_find_cliques2(self):
         hcl = list(nx.find_cliques(self.H))
@@ -45,8 +45,7 @@ class TestCliques:
         assert_equal(nx.graph_number_of_cliques(G), 5)
         assert_equal(nx.graph_number_of_cliques(G, cliques=self.cl), 5)
         assert_equal(nx.number_of_cliques(G, 1), 1)
-        assert_equal(list(nx.number_of_cliques(G, [1]).values()), [1])
-        assert_equal(list(nx.number_of_cliques(G, [1, 2]).values()), [1, 2])
+        assert_equal(nx.number_of_cliques(G, [1]), {1: 1})
         assert_equal(nx.number_of_cliques(G, [1, 2]), {1: 1, 2: 2})
         assert_equal(nx.number_of_cliques(G, 2), 2)
         assert_equal(nx.number_of_cliques(G),
@@ -80,20 +79,27 @@ class TestCliques:
 
     def test_cliques_containing_node(self):
         G = self.G
-        assert_equal(nx.cliques_containing_node(G, 1),
-                     [[2, 6, 1, 3]])
-        assert_equal(list(nx.cliques_containing_node(G, [1]).values()),
-                     [[[2, 6, 1, 3]]])
-        assert_equal(list(nx.cliques_containing_node(G, [1, 2]).values()),
-                     [[[2, 6, 1, 3]], [[2, 6, 1, 3], [2, 6, 4]]])
-        assert_equal(nx.cliques_containing_node(G, [1, 2]),
-                     {1: [[2, 6, 1, 3]], 2: [[2, 6, 1, 3], [2, 6, 4]]})
-        assert_equal(nx.cliques_containing_node(G, 1),
-                     [[2, 6, 1, 3]])
-        assert_equal(nx.cliques_containing_node(G, 2),
-                     [[2, 6, 1, 3], [2, 6, 4]])
-        assert_equal(nx.cliques_containing_node(G, 2, cliques=self.cl),
-                     [[2, 6, 1, 3], [2, 6, 4]])
+        assert_equal(sorted(map(sorted, nx.cliques_containing_node(G, 1))),
+                     [[1, 2, 3, 6]])
+
+        cliques = nx.cliques_containing_node(G, [1])
+        assert_equal(set(cliques), {1})
+        assert_equal(sorted(map(sorted, cliques[1])),
+                     [[1, 2, 3, 6]])
+
+        cliques = nx.cliques_containing_node(G, [1, 2])
+        assert_equal(set(cliques), {1, 2})
+        assert_equal(sorted(map(sorted, cliques[1])),
+                    [[1, 2, 3, 6]])
+        assert_equal(sorted(map(sorted, cliques[2])),
+                    [[1, 2, 3, 6], [2, 4, 6]])
+
+        assert_equal(sorted(map(sorted, nx.cliques_containing_node(G, 1))),
+                     [[1, 2, 3, 6]])
+        assert_equal(sorted(map(sorted, nx.cliques_containing_node(G, 2))),
+                     [[1, 2, 3, 6], [2, 4, 6]])
+        assert_equal(sorted(map(sorted, nx.cliques_containing_node(G, 2, cliques=self.cl))),
+                     [[1, 2, 3, 6], [2, 4, 6]])
         assert_equal(len(nx.cliques_containing_node(G)), 11)
 
     def test_make_clique_bipartite(self):

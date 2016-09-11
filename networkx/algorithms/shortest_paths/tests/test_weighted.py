@@ -157,11 +157,16 @@ class TestWeightedPath(WeightedTestBase):
                      ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
         G = nx.grid_2d_graph(2, 2)
         pred, dist = nx.dijkstra_predecessor_and_distance(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), []), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
+        assert_equal({k: sorted(v) for (k,v) in pred.items()}, {
+                (0, 0): [],
+                (0, 1): [(0, 0)],
+                (1, 0): [(0, 0)],
+                (1, 1): [(0, 1), (1, 0)]})
+        assert_equal(dist, {
+                (0, 0): 0,
+                (0, 1): 1,
+                (1, 0): 1,
+                (1, 1): 2})
 
         XG = nx.DiGraph()
         XG.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
@@ -454,23 +459,52 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
         G = nx.grid_2d_graph(2, 2)
         dist, path = nx.single_source_bellman_ford(G, (0, 0))
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
-        assert_equal(sorted(path.items()),
-                     [((0, 0), [(0, 0)]), ((0, 1), [(0, 0), (0, 1)]),
-                      ((1, 0), [(0, 0), (1, 0)]),  ((1, 1), [(0, 0), (0, 1), (1, 1)])])
+        assert_equal(dist, {
+                (0, 0): 0,
+                (0, 1): 1,
+                (1, 0): 1,
+                (1, 1): 2})
+        try:
+            assert_equal(path, {
+                    (0, 0): [(0, 0)],
+                    (0, 1): [(0, 0), (0, 1)],
+                    (1, 0): [(0, 0), (1, 0)],
+                    (1, 1): [(0, 0), (0, 1), (1, 1)]})
+        except AssertionError:
+            assert_equal(path, {
+                    (0, 0): [(0, 0)],
+                    (0, 1): [(0, 0), (0, 1)],
+                    (1, 0): [(0, 0), (1, 0)],
+                    (1, 1): [(0, 0), (1, 0), (1, 1)]})
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), [None]), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
+        assert_equal({k: sorted(v) for (k,v) in pred.items()}, {
+                (0, 0): [None],
+                (0, 1): [(0, 0)],
+                (1, 0): [(0, 0)],
+                (1, 1): [(0, 1), (1, 0)]})
+        assert_equal(dist, {
+                (0, 0): 0,
+                (0, 1): 1,
+                (1, 0): 1,
+                (1, 1): 2})
         pred, dist = nx.goldberg_radzik(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), None), ((0, 1), (0, 0)),
-                      ((1, 0), (0, 0)), ((1, 1), (0, 1))])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
+        try:
+            assert_equal(pred, {
+                    (0, 0): None,
+                    (0, 1): (0, 0),
+                    (1, 0): (0, 0),
+                    (1, 1): (0, 1)})
+        except AssertionError:
+            assert_equal(pred, {
+                    (0, 0): None,
+                    (0, 1): (0, 0),
+                    (1, 0): (0, 0),
+                    (1, 1): (1, 0)})
+        assert_equal(dist, {
+                (0, 0): 0,
+                (0, 1): 1,
+                (1, 0): 1,
+                (1, 1): 2})
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):

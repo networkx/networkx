@@ -439,12 +439,13 @@ def test_get_edge_attributes():
         vals = 100
         nx.set_edge_attributes(G, attr, vals)
         attrs = nx.get_edge_attributes(G, attr)
+        attrs = {frozenset(key): value for (key, value) in attrs.items()}
 
         assert_equal(len(attrs), 2)
         if G.is_multigraph():
-            keys = [(0,1,0), (1,2,0)]
+            keys = [frozenset([0,1,0]), frozenset([1,2,0])]
         else:
-            keys = [(0,1), (1,2)]
+            keys = [frozenset([0,1]), frozenset([1,2])]
         for key in keys:
             assert_equal(attrs[key], 100)
 

@@ -211,4 +211,7 @@ class TestFindCycle(object):
         assert_raises(nx.exception.NetworkXNoCycle,
                       find_cycle, G, orientation='original')
         x = list(find_cycle(G, orientation='ignore'))
-        assert_equal(x, [(0,1,FORWARD), (1,2,FORWARD), (0,2,REVERSE)])
+        assert_in(x, [
+            [(0,1,FORWARD), (1,2,FORWARD), (0,2,REVERSE)],
+            [(0,2,FORWARD), (1,2,REVERSE), (0,1,REVERSE)]
+            ])

@@ -155,9 +155,9 @@ def test_target_missing():
 # Tests for shortest_simple_paths
 def test_shortest_simple_paths():
     G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
-    paths = nx.shortest_simple_paths(G, 1, 12)
-    assert_equal(next(paths), [1, 2, 3, 4, 8, 12])
-    assert_equal(next(paths), [1, 5, 6, 7, 8, 12])
+    paths = list(nx.shortest_simple_paths(G, 1, 12))
+    assert_true([1, 2, 3, 4, 8, 12] in paths, paths)
+    assert_true([1, 5, 6, 7, 8, 12] in paths, paths)
     assert_equal([len(path) for path in nx.shortest_simple_paths(G, 1, 12)],
                  sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
 
@@ -239,6 +239,8 @@ def test_ssp_source_missing():
     paths = list(nx.shortest_simple_paths(G, 0, 3))
 
 def test_bidirectional_shortest_path_restricted():
+    def assert_not_in(item, l):
+        assert_false(item in l, l)
     grid = cnlti(nx.grid_2d_graph(4,4), first_label=1, ordering="sorted")
     cycle = nx.cycle_graph(7)
     directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
@@ -247,15 +249,26 @@ def test_bidirectional_shortest_path_restricted():
     length, path = _bidirectional_shortest_path(cycle, 0, 3, ignore_nodes=[1])
     assert_equal(path, [0, 6, 5, 4, 3])
     length, path = _bidirectional_shortest_path(grid, 1, 12)
-    assert_equal(path, [1, 2, 3, 4, 8, 12])
+    assert_equal(len(path), 3+3, path)
+    assert_true(all(x < y for x,y in zip(path, path[1:])), path) # Always increasing
     length, path = _bidirectional_shortest_path(grid, 1, 12, ignore_nodes=[2])
-    assert_equal(path, [1, 5, 6, 10, 11, 12])
+    assert_not_in(2, path)
+    assert_equal(len(path), 3+3, path)
+    assert_true(all(x < y for x,y in zip(path, path[1:])), path) # Always increasing
     length, path = _bidirectional_shortest_path(grid, 1, 12, ignore_nodes=[2, 6])
-    assert_equal(path, [1, 5, 9, 10, 11, 12])
+    assert_not_in(2, path)
+    assert_not_in(6, path)
+    assert_equal(len(path), 3+3, path)
+    assert_true(all(x < y for x,y in zip(path, path[1:])), path) # Always increasing
     length, path = _bidirectional_shortest_path(grid, 1, 12,
                                                 ignore_nodes=[2, 6],
                                                 ignore_edges=[(10, 11)])
-    assert_equal(path, [1, 5, 9, 10, 14, 15, 16, 12])
+    assert_not_in(2, path)
+    assert_not_in(6, path)
+    assert_not_in((10, 11), zip(path, path[1:]))
+    assert_not_in((11, 10), zip(path, path[1:]))
+    assert_equal(len(path), 8, path)
+    assert_false(all(x < y for x,y in zip(path, path[1:])), path) # Not always increasing
     length, path = _bidirectional_shortest_path(directed_cycle, 0, 3)
     assert_equal(path, [0, 1, 2, 3])
     assert_raises(

@@ -185,9 +185,10 @@ class TestGeneratorClassic():
 
     def test_cycle_graph(self):
         G=cycle_graph(4)
-        assert_equal(sorted(G.edges()), [(0, 1), (0, 3), (1, 2), (2, 3)])
+        assert_edges_equal(G.edges(), [(0, 1), (0, 3), (1, 2), (2, 3)])
         mG=cycle_graph(4, create_using=MultiGraph())
-        assert_equal(sorted(mG.edges()), [(0, 1), (0, 3), (1, 2), (2, 3)])
+        assert_edges_equal(mG.edges(), [(0, 1), (0, 3), (1, 2), (2, 3)])
+        assert_equal(len(list(mG.edges())), 4)
         G=cycle_graph(4, create_using=DiGraph())
         assert_false(G.has_edge(2,1))
         assert_true(G.has_edge(1,2))

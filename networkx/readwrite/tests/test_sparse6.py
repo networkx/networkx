@@ -5,6 +5,7 @@ except ImportError:
     from io import StringIO
 from nose.tools import *
 import networkx as nx
+from networkx.testing.utils import *
 import networkx.readwrite.sparse6 as sg6
 import os,tempfile
 
@@ -95,7 +96,7 @@ class TestSparseGraph6(object):
             gstr = nx.generate_sparse6(g, header=False)
             g2 = nx.parse_sparse6(gstr)
             assert_equal(g2.order(), g.order())
-            assert_equal(sorted(g2.edges()), sorted(g.edges()))
+            assert_edges_equal(g2.edges(), g.edges())
 
     @raises(nx.NetworkXError)
     def directed_raises(self):

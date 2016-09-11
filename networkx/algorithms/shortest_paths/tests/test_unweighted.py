@@ -71,9 +71,11 @@ class TestUnweightedPath:
         assert_equal(nx.predecessor(G,0),{0: [], 1: [0], 2: [1], 3: [2]})
         assert_equal(nx.predecessor(G,0,3),[2])
         G=nx.grid_2d_graph(2,2)
-        assert_equal(sorted(nx.predecessor(G,(0,0)).items()),
-                     [((0, 0), []), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
+        assert_equal({k: sorted(v) for (k,v) in nx.predecessor(G,(0,0)).items()}, {
+                (0, 0): [],
+                (0, 1): [(0, 0)],
+                (1, 0): [(0, 0)],
+                (1, 1): [(0, 1), (1, 0)]})
 
     def test_predecessor_cutoff(self):
         G=nx.path_graph(4)
