@@ -54,7 +54,8 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See :py:mod:`networkx.drawing.layout` for functions that
+       compute node positions.
 
     ax : Matplotlib Axes object, optional
        Draw the graph in specified Matplotlib axes.
@@ -152,7 +153,8 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See :py:mod:`networkx.drawing.layout` for functions that
+       compute node positions.
 
     arrows : bool, optional (default=True)
        For directed graphs, if True draw arrowheads.

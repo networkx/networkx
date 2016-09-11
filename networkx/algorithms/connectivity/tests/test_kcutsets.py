@@ -9,6 +9,7 @@ from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
 
 flow_funcs = [
+    flow.boykov_kolmogorov,
     flow.dinitz,
     flow.edmonds_karp,
     flow.preflow_push,

@@ -48,6 +48,14 @@ Dinitz
    dinitz
 
 
+Boykov-Kolmogorov
+-----------------
+.. autosummary::
+   :toctree: generated/
+
+   boykov_kolmogorov
+
+
 Utils
 -----
 .. autosummary::

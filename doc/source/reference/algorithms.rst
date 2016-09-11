@@ -23,6 +23,7 @@ Algorithms
    algorithms.component
    algorithms.connectivity
    algorithms.core
+   algorithms.covering
    algorithms.cycles
    algorithms.cuts
    algorithms.dag

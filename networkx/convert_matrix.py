@@ -718,12 +718,15 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         raise nx.NetworkXError(msg)
 
     index = dict(zip(nodelist,range(nlen)))
-    if G.number_of_edges() == 0:
-        row,col,data=[],[],[]
-    else:
-        row,col,data = zip(*((index[u],index[v],d.get(weight,1))
-                             for u,v,d in G.edges(nodelist, data=True)
-                             if u in index and v in index))
+    coefficients = zip(*((index[u],index[v],d.get(weight,1))
+                         for u,v,d in G.edges(nodelist, data=True)
+                         if u in index and v in index))
+    try:
+        row,col,data = coefficients
+    except ValueError:
+        # there is no edge in the subgraph
+        row,col,data = [],[],[]
+
     if G.is_directed():
         M = sparse.coo_matrix((data,(row,col)),
                               shape=(nlen,nlen), dtype=dtype)

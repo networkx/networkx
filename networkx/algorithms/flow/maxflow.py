@@ -4,6 +4,7 @@ Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
 import networkx as nx
 
+from .boykovkolmogorov import boykov_kolmogorov
 from .dinitz_alg import dinitz
 from .edmondskarp import edmonds_karp
 from .preflowpush import preflow_push
@@ -12,7 +13,13 @@ from .utils import build_flow_dict
 # Define the default flow function for computing maximum flow.
 default_flow_func = preflow_push
 # Functions that don't support cutoff for minimum cut computations.
-flow_funcs = [dinitz, edmonds_karp, preflow_push, shortest_augmenting_path]
+flow_funcs = [
+    boykov_kolmogorov,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+]
 
 __all__ = ['maximum_flow',
            'maximum_flow_value',

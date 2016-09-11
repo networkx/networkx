@@ -15,6 +15,7 @@ from collections import deque
 
 import networkx as nx
 from networkx.algorithms.flow.utils import build_residual_network
+from networkx.utils import pairwise
 
 __all__ = ['dinitz']
 
@@ -165,57 +166,61 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
             e['flow'] = 0
 
     # Use an arbitrary high value as infinite. It is computed
-    # when building the residual network. Useful when checking
-    # for infinite capacity paths.
+    # when building the residual network.
     INF = R.graph['inf']
 
     if cutoff is None:
         cutoff = INF
 
     R_succ = R.succ
+    R_pred = R.pred
 
-    def breath_first_search(G, R, s, t):
-        rank = {}
-        rank[s] = 0
+
+    def breath_first_search():
+        parents = {}
         queue = deque([s])
         while queue:
-            if t in rank:
+            if t in parents:
                 break
             u = queue.popleft()
             for v in R_succ[u]:
                 attr = R_succ[u][v]
-                if v not in rank and attr['capacity'] - attr['flow'] > 0:
-                    rank[v] = rank[u] + 1
+                if v not in parents and attr['capacity'] - attr['flow'] > 0:
+                    parents[v] = u
                     queue.append(v)
-        return rank
+        return parents
 
-    def depth_first_search(G, R, u, t, flow, rank):
-        if u == t:
-            return flow
-        for v in (n for n in R_succ[u] if n in rank and rank[n] == rank[u] + 1):
-            attr = R_succ[u][v]
-            if attr['capacity'] > attr['flow']:
-                min_flow = min(flow, attr['capacity'] - attr['flow'])
-                this_flow = depth_first_search(G, R, v, t, min_flow, rank)
-                if this_flow > 0:
-                    R_succ[u][v]['flow'] += this_flow
-                    R_succ[v][u]['flow'] -= this_flow
-                    return this_flow
-        return 0
+
+    def depth_first_search(parents):
+        """Build a path using DFS starting from the sink"""
+        path = []
+        u = t
+        flow = INF
+        while u != s:
+            path.append(u)
+            v = parents[u]
+            flow = min(flow, R_pred[u][v]['capacity'] - R_pred[u][v]['flow'])
+            u = v
+        path.append(s)
+        # Augment the flow along the path found
+        if flow > 0:
+            for u, v in pairwise(path):
+                R_pred[u][v]['flow'] += flow
+                R_pred[v][u]['flow'] -= flow
+        return flow
+
 
     flow_value = 0
     while flow_value < cutoff:
-        rank = breath_first_search(G, R, s, t)
-        if t not in rank:
+        parents = breath_first_search()
+        if t not in parents:
             break
-        while flow_value < cutoff:
-            blocking_flow = depth_first_search(G, R, s, t, INF, rank)
-            if blocking_flow * 2 > INF:
-                raise nx.NetworkXUnbounded(
-                        'Infinite capacity path, flow unbounded above.')
-            elif blocking_flow == 0:
-                break
-            flow_value += blocking_flow
+        this_flow = depth_first_search(parents)
+        if this_flow * 2 > INF:
+            raise nx.NetworkXUnbounded(
+                    'Infinite capacity path, flow unbounded above.')
+        flow_value += this_flow
+
 
     R.graph['flow_value'] = flow_value
     return R
