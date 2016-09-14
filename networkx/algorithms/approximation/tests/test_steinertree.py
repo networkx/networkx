@@ -1,10 +1,10 @@
 from nose.tools import assert_equal
 import networkx as nx
-from networkx.algorithms.steinertree import metric_closure, steiner_tree
+from networkx.algorithms.approximation.steinertree import metric_closure, steiner_tree
 
 
 class TestSteinerTree:
-    def set_up(self):
+    def setUp(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=1)
         G.add_edge(2, 3, weight=1)
