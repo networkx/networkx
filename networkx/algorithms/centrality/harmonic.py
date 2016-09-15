@@ -14,7 +14,7 @@ import networkx as nx
 __all__ = ['harmonic_centrality']
 
 
-def harmonic_centrality(G, distance=None):
+def harmonic_centrality(G, nbunch=None, distance=None):
     r"""Compute harmonic centrality for nodes.
 
     Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
@@ -32,6 +32,10 @@ def harmonic_centrality(G, distance=None):
     ----------
     G : graph
       A NetworkX graph
+    
+    nbunch : container
+      Container of nodes. If provided harmonic centrality will be computed
+      only over the nodes in nbunch.
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
@@ -61,4 +65,4 @@ def harmonic_centrality(G, distance=None):
     if G.is_directed():
         G = G.reverse()
     spl = partial(nx.shortest_path_length, G, weight=distance)
-    return {u: sum(1 / d if d > 0 else 0 for v, d in spl(source=u)) for u in G}
+    return {u: sum(1 / d if d > 0 else 0 for v, d in spl(source=u)) for u in G.nbunch_iter(nbunch)}
