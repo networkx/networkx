@@ -41,9 +41,9 @@ def dfs_edges(G, source=None, depth_limit=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> list(nx.dfs_edges(G,0))
+    >>> list(nx.dfs_edges(G, source=0))
     [(0, 1), (1, 2), (2, 3), (3, 4)]
-    >>> list(nx.dfs_edges(G,0,2))
+    >>> list(nx.dfs_edges(G, source=0, depth_limit=2))
     [(0, 1), (1, 2)]
 
     Notes
@@ -107,11 +107,10 @@ def dfs_tree(G, source=None, depth_limit=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> T = nx.dfs_tree(G,0,2)
+    >>> T = nx.dfs_tree(G, source=0, depth_limit=2)
     >>> list(T.edges())
     [(0, 1), (1, 2)]
-
-    >>> T = nx.dfs_tree(G,0)
+    >>> T = nx.dfs_tree(G, source=0)
     >>> list(T.edges())
     [(0, 1), (1, 2), (2, 3), (3, 4)]
 
@@ -147,9 +146,9 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.dfs_predecessors(G,0)
+    >>> nx.dfs_predecessors(G, source=0)
     {1: 0, 2: 1, 3: 2}
-    >>> nx.dfs_predecessors(G,0,2)
+    >>> nx.dfs_predecessors(G, source=0, depth_limit=2)
     {1: 0, 2: 1}
 
     Notes
@@ -190,9 +189,9 @@ def dfs_successors(G, source=None, depth_limit=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> nx.dfs_successors(G,0)
+    >>> nx.dfs_successors(G, source=0)
     {0: [1], 1: [2], 2: [3], 3: [4]}
-    >>> nx.dfs_successors(G,0,2)
+    >>> nx.dfs_successors(G, source=0, depth_limit=2)
     {0: [1], 1: [2]}
 
     Notes
@@ -237,9 +236,9 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> list(nx.dfs_postorder_nodes(G,0))
+    >>> list(nx.dfs_postorder_nodes(G, source=0))
     [4, 3, 2, 1, 0]
-    >>> list(nx.dfs_postorder_nodes(G,0,2))
+    >>> list(nx.dfs_postorder_nodes(G, source=0, depth_limit=2))
     [1, 0]
 
     Notes
@@ -282,9 +281,9 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> list(nx.dfs_preorder_nodes(G,0))
+    >>> list(nx.dfs_preorder_nodes(G, source=0))
     [0, 1, 2, 3, 4]
-    >>> list(nx.dfs_preorder_nodes(G,0,2))
+    >>> list(nx.dfs_preorder_nodes(G, source=0, depth_limit=2))
     [0, 1, 2]
 
     Notes
