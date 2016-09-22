@@ -173,16 +173,6 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
     return
 
 
-def convert_to_undirected(G):
-    """Return a new undirected representation of the graph G."""
-    return G.to_undirected()
-
-
-def convert_to_directed(G):
-    """Return a new directed representation of the graph G."""
-    return G.to_directed()
-
-
 def to_dict_of_lists(G,nodelist=None):
     """Return adjacency representation of graph as a dictionary of lists.
 
