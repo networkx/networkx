@@ -1,37 +1,31 @@
-import networkx as nx
 from itertools import combinations, chain
+
 from networkx.utils import pairwise, not_implemented_for
+import networkx as nx
 
 __all__ = ['metric_closure', 'steiner_tree']
 
 
 @not_implemented_for('directed')
-def metric_closure(G, nodes, weight="weight"):
-    """  Returns the sub-graph of the metric closure of the graph G induced by
-        the nodes.
+def metric_closure(G, weight='weight'):
+    """  Return the metric closure of a graph.
 
-    Parameters:
-    -----------
+    The metric closure of a graph G is the complete graph in which each edge is
+    weighted by the shortest path distance between the nodes in G.
+
+    Parameters
+    ----------
     G : Networkx graph
 
-    nodes : List
-            The function returns the sub-graph of metric closure induced by the
-            nodes specified in this list.
-
-    Returns:
-    --------
-    Metric closure of G induced by nodes.
-
-    M : Networkx graph
-
-    Note: If parameter nodes contain all nodes of the graph G then the function
-        returns metric closure of the entire
-        graph.
+    Returns
+    -------
+    Networkx graph
+        Metric closure of the graph G.
 
     """
     M = nx.Graph()
 
-    for u, v in combinations(nodes, 2):
+    for u, v in combinations(G, 2):
         distance, path = nx.single_source_dijkstra(G, u, v, weight=weight)
         M.add_edge(u, v, distance=distance[v], path=path[v])
 
@@ -40,36 +34,41 @@ def metric_closure(G, nodes, weight="weight"):
 
 @not_implemented_for('directed')
 def steiner_tree(G, terminal_nodes, weight='weight'):
-    """ Returns steiner tree of the graph induced by terminal_nodes.
+    """ Returns an approximation to minimum steiner tree of the graph G.
 
-    Parameters:
-    -----------
-
+    Parameters
+    ----------
     G : Networkx graph
 
     terminal_nodes : List
-                     A list of terminal nodes for which steiner tree is to be
-                     found.
+                     A list of terminal nodes for which minimum steiner tree is
+                     to be found.
 
-    Returns:
-    --------
-    The steiner tree for the given terminal nodes.
-    T : Networkx graph
-        Steiner tree.
+    Returns
+    -------
+    Networkx graph
+        Approximation to the minimum steiner tree of G induced by
+        terminal_nodes.
 
-    Note: Steiner tree can be approximated by computing the minimum spanning
-        tree of the sub-graph of the metric closure of the graph induced by the
+    Notes
+    -----
+
+        Steiner tree can be approximated by computing the minimum spanning
+        tree of the subgraph of the metric closure of the graph induced by the
         terminal nodes, where the metric closure of G is the complete graph in
         which each edge is weighted by the shortest path distance between the
         nodes in G.
+        This algorithm produces a tree whose weight is within a (2 - (2 / t))
+        factor of the weight of the optimal Steiner tree.
 
     """
-    # M is the sub-graph of the metric closure induced by the terminal nodes of
+    # M is the subgraph of the metric closure induced by the terminal nodes of
     #  G.
-    M = metric_closure(G, terminal_nodes, weight=weight)
+    M = metric_closure(G, weight=weight)
     # Use the 'distance' attribute of each edge provided by the metric closure
     # graph.
-    mst_edges = nx.minimum_spanning_edges(M, weight='distance', data=True)
+    H = M.subgraph(terminal_nodes)
+    mst_edges = nx.minimum_spanning_edges(H, weight='distance', data=True)
     # Create an iterator over each edge in each shortest path; repeats are okay
     edges = chain.from_iterable(pairwise(d['path']) for u, v, d in mst_edges)
     T = G.edge_subgraph(edges)
