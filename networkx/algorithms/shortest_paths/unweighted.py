@@ -10,6 +10,9 @@
 """
 Shortest path algorithms for unweighted graphs.
 """
+from functools import partial
+from multiprocessing import Pool
+
 import networkx as nx
 
 __all__ = ['bidirectional_shortest_path',
@@ -449,14 +452,21 @@ def all_pairs_shortest_path(G, cutoff=None):
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
+    Notes
+    -----
+    This implementation uses Python's :mod:`multiprocessing` module to
+    compute each shortest path in parallel.
+
     See Also
     --------
     floyd_warshall()
 
     """
-    # TODO This can be trivially parallelized.
-    for n in G:
-        yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
+    nodes = list(G)
+    shortest_path = partial(single_source_shortest_path, G, cutoff=cutoff)
+    with Pool() as pool:
+        paths = pool.map(shortest_path, nodes)
+    return dict(zip(nodes, paths))
 
 
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
