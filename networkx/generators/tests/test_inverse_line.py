@@ -13,6 +13,12 @@ def test_triangles():
     assert_true(len(T) == 2)
     assert_true((1,2,3) in T)
     assert_true((1,2,4) in T)
+    # edge not in graph
+    assert_raises(NetworkXError, inverse_line._triangles, G, (3,4))
+    # first vertex not in graph
+    assert_raises(NetworkXError, inverse_line._triangles, G, (1,5))
+    # second vertex not in graph
+    assert_raises(NetworkXError, inverse_line._triangles, G, (5,1))
     
 def test_odd_triangle():
     G = nx.Graph()
@@ -31,6 +37,13 @@ def test_odd_triangle():
     # not in G
     assert_raises(NetworkXError, inverse_line._odd_triangle, G, (1,2,5))
 
+def test_select_starting_cell():
+    G = nx.Graph()
+    G_edges = [[1,2], [2,3], [1,3], [1,4], [2,4]]
+    G.add_edges_from(G_edges)
+    # starting edge not in G
+    assert_raises(NetworkXError, inverse_line._select_starting_cell, G, (3,4))
+
 class TestGeneratorInverseLine():
     def test_example(self):
         G = nx.Graph()
@@ -44,6 +57,17 @@ class TestGeneratorInverseLine():
         solution.add_edges_from(solution_edges)
         assert_true(nx.is_isomorphic(H, solution))
     
+    def test_example_2(self):
+        G = nx.Graph()
+        G_edges = [[1,2], [1,3], [2,3], 
+                   [3,4], [3,5], [4,5]]
+        G.add_edges_from(G_edges)
+        H = nx.inverse_line_graph(G)
+        solution = nx.Graph()
+        solution_edges = [('a', 'c'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('d', 'f')]
+        solution.add_edges_from(solution_edges)
+        assert_true(nx.is_isomorphic(H, solution))        
+
     def test_pair(self):
         G = nx.path_graph(2)
         H = nx.inverse_line_graph(G)

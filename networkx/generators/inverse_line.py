@@ -80,8 +80,10 @@ def inverse_line_graph(G):
 def _triangles(G, e):
     """ Return list of all triangles containing edge e"""
     u, v = e
+    if u not in G:
+        raise nx.NetworkXError("Vertex %s not in graph" % u)
     if v not in G.neighbors(u):
-        raise nx.NetworkXError("Edge %s not in graph" % e)
+        raise nx.NetworkXError("Edge (%s, %s) not in graph" % (u,v))
     triangle_list = []
     for x in G.neighbors(u):
         if x in G.neighbors(v):
@@ -109,7 +111,9 @@ def _odd_triangle(G, T):
     Notes
     -----
     An odd triangle is one in which there exists another vertex in G which is adjacent
-    to either exactly one or exactly all three of the vertices in the triangle"""
+    to either exactly one or exactly all three of the vertices in the triangle
+    
+    """
     for u in T:
         if u not in G.nodes():
             raise nx.NetworkXError("Vertex %s not in graph" % u)
@@ -133,7 +137,7 @@ def _find_partition(G, starting_cell):
     G_partition.remove_edges_from(list(combinations(starting_cell, 2)))
     
     while G_partition.number_of_edges() > 0:
-        for u in G_partition.nodes(): # TODO don't need to search them all every time
+        for u in G_partition.nodes():
             deg_u = len(G_partition[u])
             if deg_u > 0:
                 # u has some incident edges left in the graph
@@ -149,14 +153,16 @@ def _find_partition(G, starting_cell):
     return P
     
 def _select_starting_cell(G, starting_edge=None):
-    # If starting edge not specified pick an arbitrary edge - doesn't matter which
-    # However, this function may call itself requiring a specific starting edge
+    # If starting edge not specified then pick an arbitrary edge - doesn't matter which.
+    # However, this function may call itself requiring a specific starting edge.
+    # Note that the r, s notation for counting triangles is the same as in the Roussopoulos
+    # paper cited above.
     if starting_edge == None:
         e = arbitrary_element(list(G.edges()))
     else:
         e = starting_edge
         if e[0] not in G.neighbors(e[1]):
-            raise nx.NetworkXError('starting_edge %s is not in the Graph' % e) 
+            raise nx.NetworkXError('starting_edge (%s, %s) is not in the Graph' % e) 
     e_triangles = _triangles(G, e)
     r = len(e_triangles)
     if r == 0:
@@ -205,6 +211,5 @@ def _select_starting_cell(G, starting_edge=None):
                 raise nx.NetworkXError("G is not a line graph (odd triangles do not form complete subgraph)")
         else:
             raise nx.NetworkXError("G is not a line graph (incorrect number of odd triangles around starting edge)")
-            # TODO JC - are these recursive calls OK or should we do something else?
     return starting_cell    
     
