@@ -8,3 +8,4 @@ Dominance
 
    immediate_dominators
    dominance_frontiers
+   dominator_tree

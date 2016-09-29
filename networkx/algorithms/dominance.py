@@ -11,7 +11,7 @@ from functools import reduce
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['immediate_dominators', 'dominance_frontiers']
+__all__ = ['immediate_dominators', 'dominance_frontiers', 'dominator_tree']
 
 
 @not_implemented_for('undirected')
@@ -135,3 +135,37 @@ def dominance_frontiers(G, start):
                         df[v].add(u)
                         v = idom[v]
     return df
+
+
+def dominator_tree(G, start):
+    """Returns the dominator tree from a directed graph.
+
+
+    Parameters
+    ----------
+    G : a DiGraph or MultiDiGraph
+        The graph where dominance is to be computed.
+
+    start : node
+        The start node of dominance computation.
+
+    Returns
+    -------
+    T : DiGraph
+        Dominator tree where each node's children are those it immediately dominates
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is undirected.
+
+    NetworkXError
+        If `start` is not in `G`.
+
+    Notes
+    -----
+    Note that if a CFG has a single exit node,
+    then postdominance is equivalent to dominance if
+    flow is reversed (going from the exit node to the start node)
+    """
+    return nx.DiGraph(((v, u) for u, v in nx.immediate_dominators(G, start).items() if u != start))
