@@ -27,11 +27,11 @@ try:
     layout = graphviz_layout
 except ImportError:
     try:
-        import pydotplus
+        import pydot
         from networkx.drawing.nx_pydot import graphviz_layout
         layout = graphviz_layout
     except ImportError:
-        print("PyGraphviz and PyDotPlus not found;\n"
+        print("PyGraphviz and pydot not found;\n"
               "drawing with spring layout;\n"
               "will be slow.")
         layout = nx.spring_layout

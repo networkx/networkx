@@ -467,7 +467,7 @@ To save drawings to a file, use, for example
 >>> plt.savefig("path.png")
 
 writes to the file "path.png" in the local directory. If Graphviz
-and PyGraphviz or pydotplus, are available on your system, you can also use
+and PyGraphviz or pydot, are available on your system, you can also use
 ``nx_agraph.graphviz_layout(G)`` or ``nx_pydot.graphviz_layout(G)`` to
 get the node positions, or write the graph in dot format for further
 processing.
