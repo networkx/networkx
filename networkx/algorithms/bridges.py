@@ -72,8 +72,8 @@ def all_local_bridges(G, first_match=False):
     >>> G=nx.cycle_graph(5)
     >>> bridges_dict = all_local_bridges(G)
     >>> print ("Edges: ",bridges_dict["edges"])
-    >>> print ("Spans: ",bridges_dict["spans"])
     ('Edges: ', [[0, 1], [0, 4], [1, 2], [2, 3], [3, 4]])
+    >>> print ("Spans: ",bridges_dict["spans"])
     ('Spans: ', [4, 4, 4, 4, 4])
 
     Notes
@@ -228,11 +228,17 @@ def all_bridges(G):
     T = 0
     bridges = []
     allnodes = G.nodes()
-    for node in allnodes:
-        lowest[node] = 0
-        vals[node] = 0
-    # select a starting node
-    startnode = allnodes[0]
-    # run the DFS
-    dfs(startnode, -1)
+    # The algorithm finds bridges in a connected component. Run this for
+    # all components
+    all_components = list(nx.connected_component_subgraphs(G))
+    for comp in all_components:
+        T = 0
+        allnodes = comp.nodes()
+        for node in allnodes:
+            lowest[node] = 0
+            vals[node] = 0
+        # select a starting node
+        startnode = allnodes[0]
+        # run the DFS
+        dfs(startnode, -1)
     return bridges
