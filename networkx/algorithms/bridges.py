@@ -3,49 +3,10 @@ import networkx as nx
 __author__ = "Rohail Syed <rohailsyed@gmail.com>"
 
 __all__ = [
-    'bridges_exist',
     'all_bridges',
-    'all_local_bridges'
+    'all_local_bridges',
+    'bridges_exist'
 ]
-
-
-def bridges_exist(G):
-    """ Checks if any bridges exist in this network. We will simply call the
-    all_bridges() function with the first-match stop parameter. Since the
-    search for bridges will terminate after finding one instance, this function
-    is faster if we just want to know if at least one bridge exists in the
-    network and what it is.
-
-    Parameters
-    ----------
-    G : Undirected Graph object
-
-    Returns
-    ----------
-    boolean
-        True if we found at least one bridge.
-        False otherwise.
-
-    Examples
-    --------
-    >>> G = nx.cycle_graph(5)
-    >>> print (bridges_exist(G))
-    False
-    >>> G.remove_edge(1,2)
-    >>> print (bridges_exist(G))
-    True
-
-    Notes
-    ----------
-    This function can be useful to quickly determine whether or not bridges
-    exist in a given network.
-    """
-
-    results = all_bridges(G)
-    if len(results) > 0:
-        return True
-    else:
-        return False
 
 
 def all_local_bridges(G, first_match=False):
@@ -230,7 +191,7 @@ def all_bridges(G):
     allnodes = G.nodes()
     # The algorithm finds bridges in a connected component. Run this for
     # all components
-    all_components = list(nx.connected_component_subgraphs(G))
+    all_components = (nx.connected_component_subgraphs(G))
     for comp in all_components:
         T = 0
         allnodes = comp.nodes()
@@ -242,3 +203,42 @@ def all_bridges(G):
         # run the DFS
         dfs(startnode, -1)
     return bridges
+
+
+def bridges_exist(G):
+    """ Checks if any bridges exist in this network. We will simply call the
+    all_bridges() function with the first-match stop parameter. Since the
+    search for bridges will terminate after finding one instance, this function
+    is faster if we just want to know if at least one bridge exists in the
+    network and what it is.
+
+    Parameters
+    ----------
+    G : Undirected Graph object
+
+    Returns
+    ----------
+    boolean
+        True if we found at least one bridge.
+        False otherwise.
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(5)
+    >>> print (bridges_exist(G))
+    False
+    >>> G.remove_edge(1,2)
+    >>> print (bridges_exist(G))
+    True
+
+    Notes
+    ----------
+    This function can be useful to quickly determine whether or not bridges
+    exist in a given network.
+    """
+
+    results = all_bridges(G)
+    if len(results) > 0:
+        return True
+    else:
+        return False
