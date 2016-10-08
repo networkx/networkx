@@ -611,6 +611,10 @@ def draw_networkx_edges(G, pos,
             
             ax.arrow(x1, y1, dx, dy, 
                     label = label if i else '', #adds a label to first arrow
+                    fc=arrow_colors[i],
+                    linewidth = lw[i],
+                    antialiased = 1,
+                    transform = ax.transData,
                     **kwds)
             
             
