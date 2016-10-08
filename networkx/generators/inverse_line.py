@@ -132,31 +132,72 @@ def _odd_triangle(G, T):
     return False  
                 
 def _find_partition(G, starting_cell):
+    """ Find a partition of the vertices of G into cells of complete graphs
+    
+    Parameters
+    ----------
+    G : NetworkX Graph
+    starting_cell : tuple of vertices in G which form a cell
+    
+    Returns
+    -------
+    List of tuples of vertices of G
+    
+    Raises
+    ------
+    NetworkXError
+        If a cell is found but is not a complete subgraph then G is not a line graph
+    """
     G_partition = G.copy()
     P = [starting_cell] # partition set
     G_partition.remove_edges_from(list(combinations(starting_cell, 2)))
-    
+    # keep a list of all the partitioned vertices which still might have an edge in G_partition
+    partitioned_vertices = list(starting_cell)
     while G_partition.number_of_edges() > 0:
-        for u in G_partition.nodes():
-            deg_u = len(G_partition[u])
-            if deg_u > 0:
-                # u has some incident edges left in the graph
-                # we now want to find the one other cell u is in (as it can be in 2 max)
-                new_cell = [u] + list(G_partition.neighbors(u))
-                # check that new_cell is a complete subgraph in G
-                for u in new_cell:
-                    for v in new_cell:
-                        if (u!=v) and (v not in G.neighbors(u)):
-                            raise nx.NetworkXError("G is not a line graph (partition cell was not a complete subgraph)")
-                P.append(tuple(new_cell))
-                G_partition.remove_edges_from(list(combinations(new_cell, 2)))
+        # there are still edges left and so more cells to be made
+        u = partitioned_vertices[-1]
+        deg_u = len(G_partition[u])
+        if deg_u == 0:
+            # if u has no edges left in G_partition then we have found all of its cells
+            # so we do not need to keep looking
+            partitioned_vertices.pop()
+        else:
+            # if u still has edges then we need to find its other cell
+            # this other cell must be a complete subgraph or else G is not a line graph
+            new_cell = [u] + list(G_partition.neighbors(u))
+            for u in new_cell:
+                for v in new_cell:
+                    if (u!=v) and (v not in G.neighbors(u)):
+                        raise nx.NetworkXError("G is not a line graph (partition cell was not a complete subgraph)")
+            P.append(tuple(new_cell))
+            G_partition.remove_edges_from(list(combinations(new_cell, 2)))
+            partitioned_vertices += new_cell
     return P
     
 def _select_starting_cell(G, starting_edge=None):
-    # If starting edge not specified then pick an arbitrary edge - doesn't matter which.
-    # However, this function may call itself requiring a specific starting edge.
-    # Note that the r, s notation for counting triangles is the same as in the Roussopoulos
-    # paper cited above.
+    """ Select a cell to initiate _find_partition
+    
+    Parameters
+    ----------
+    G : NetworkX Graph
+    starting_edge: an edge to build the starting cell from
+    
+    Returns
+    -------
+    Tuple of vertices in G
+    
+    Raises
+    ------
+    NetworkXError
+        If it is determined that G is not a line graph
+
+    Notes
+    -----
+    If starting edge not specified then pick an arbitrary edge - doesn't matter which.
+    However, this function may call itself requiring a specific starting edge.
+    Note that the r, s notation for counting triangles is the same as in the Roussopoulos
+    paper cited above.
+    """
     if starting_edge == None:
         e = arbitrary_element(list(G.edges()))
     else:
@@ -166,9 +207,11 @@ def _select_starting_cell(G, starting_edge=None):
     e_triangles = _triangles(G, e)
     r = len(e_triangles)
     if r == 0:
+        # there are no triangles containing e, so the starting cell is just e
         starting_cell = e
     elif r == 1:
-        # if other 2 edges of this triangle belong only to T then T is starting cell
+        # there is exactly one triangle, T, containing e
+        # if other 2 edges of T belong only to this triangle then T is starting cell
         T = e_triangles[0]
         a,b,c = T
         # ab was original edge so check the other 2 edges
@@ -182,13 +225,13 @@ def _select_starting_cell(G, starting_edge=None):
         else:
             return _select_starting_cell(G, starting_edge=(a,c))
     else:
+        # r >= 2 so we need to count the number of odd triangles, s
         s = 0
         odd_triangles = []
         for T in e_triangles:
             if _odd_triangle(G, T):
                 s += 1
-                odd_triangles.append(T)
-                
+                odd_triangles.append(T)       
         if r==2 and s==0:
             # in this case it doesn't matter which of our two triangles we choose, so just use T
             starting_cell = T 
@@ -211,5 +254,4 @@ def _select_starting_cell(G, starting_edge=None):
                 raise nx.NetworkXError("G is not a line graph (odd triangles do not form complete subgraph)")
         else:
             raise nx.NetworkXError("G is not a line graph (incorrect number of odd triangles around starting edge)")
-    return starting_cell    
-    
+    return starting_cell

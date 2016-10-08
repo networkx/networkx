@@ -5,44 +5,6 @@ import networkx.generators.inverse_line as inverse_line
 from networkx.testing.utils import *
 from networkx.exception import NetworkXError, NetworkXNotImplemented
 
-def test_triangles():
-    G = nx.Graph()
-    G_edges = [[1,2], [2,3], [1,3], [1,4], [2,4]]
-    G.add_edges_from(G_edges)
-    T = inverse_line._triangles(G, (1,2))
-    assert_true(len(T) == 2)
-    assert_true((1,2,3) in T)
-    assert_true((1,2,4) in T)
-    # edge not in graph
-    assert_raises(NetworkXError, inverse_line._triangles, G, (3,4))
-    # first vertex not in graph
-    assert_raises(NetworkXError, inverse_line._triangles, G, (1,5))
-    # second vertex not in graph
-    assert_raises(NetworkXError, inverse_line._triangles, G, (5,1))
-    
-def test_odd_triangle():
-    G = nx.Graph()
-    G_edges = [[1,2], [1,3], [2,3], [2,4], [3,4]]
-    G.add_edges_from(G_edges)
-    assert_false(inverse_line._odd_triangle(G, (1,2,3)))
-
-    # not a triangle
-    assert_raises(NetworkXError, inverse_line._odd_triangle, G, (1,2,4))
-
-    G = nx.Graph()
-    G_edges = [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]
-    G.add_edges_from(G_edges)
-    assert_true(inverse_line._odd_triangle(G, (4,3,2)))
-    
-    # not in G
-    assert_raises(NetworkXError, inverse_line._odd_triangle, G, (1,2,5))
-
-def test_select_starting_cell():
-    G = nx.Graph()
-    G_edges = [[1,2], [2,3], [1,3], [1,4], [2,4]]
-    G.add_edges_from(G_edges)
-    # starting edge not in G
-    assert_raises(NetworkXError, inverse_line._select_starting_cell, G, (3,4))
 
 class TestGeneratorInverseLine():
     def test_example(self):
@@ -127,3 +89,46 @@ class TestGeneratorInverseLine():
         G_edges = [[0,1], [0,2], [0,3]]
         G.add_edges_from(G_edges)
         assert_raises(NetworkXNotImplemented, nx.inverse_line_graph, G) 
+
+    def test_line_inverse_line_complete(self):
+        G = nx.complete_graph(10)
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert_true(nx.is_isomorphic(G, J))
+
+    def test_line_inverse_line_path(self):
+        G = nx.path_graph(10)
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert_true(nx.is_isomorphic(G, J))
+
+    def test_line_inverse_line_hypercube(self):
+        G = nx.hypercube_graph(5)    
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert_true(nx.is_isomorphic(G, J))
+
+    def test_line_inverse_line_cycle(self):
+        G = nx.cycle_graph(10)    
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert_true(nx.is_isomorphic(G, J))        
+
+    def test_line_inverse_line_star(self):
+        G = nx.star_graph(20)    
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert_true(nx.is_isomorphic(G, J)) 
+
+    def test_line_inverse_line_multipartite(self):
+        G = nx.complete_multipartite_graph(3,4,5)    
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert_true(nx.is_isomorphic(G, J)) 
+
+    def test_line_inverse_line_dgm(self):
+        G = nx.dorogovtsev_goltsev_mendes_graph(4)   
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert_true(nx.is_isomorphic(G, J)) 
+
