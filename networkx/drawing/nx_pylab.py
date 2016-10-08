@@ -596,7 +596,8 @@ def draw_networkx_edges(G, pos,
             x2, y2 = dst
             dx = x2-x1   # x offset
             dy = y2-y1   # y offset
-
+            
+            d = numpy.sqrt(float(dx**2 + dy**2))
             if d == 0:   # source and target at same position
                 continue #TODO: this should draw a loop!
             
