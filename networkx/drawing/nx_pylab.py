@@ -420,8 +420,6 @@ def draw_networkx_edges(G, pos,
                         arrows=True,
                         label=None,
                         **kwds): 
-                        # AM: kwds don't get used in ths function, I'm 
-                        #   going to appropriate them for ax.arrow
     """Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
@@ -588,19 +586,12 @@ def draw_networkx_edges(G, pos,
 
     if G.is_directed() and arrows:
     
-        '''
-        ax.arrow(x1,y1, x2,y2, **kwds)
-        
-        
-        '''
-        
         # a directed graph hack
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work
         arrow_colors = edge_colors
-        a_pos = []
         p = 1.0-0.25  # make head segment 25 percent of edge length
-        for src, dst in edge_pos:
+        for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
             x2, y2 = dst
             dx = x2-x1   # x offset
@@ -617,8 +608,6 @@ def draw_networkx_edges(G, pos,
                     transform = ax.transData,
                     **kwds)
             
-            
-
     # update view
     minx = numpy.amin(numpy.ravel(edge_pos[:, :, 0]))
     maxx = numpy.amax(numpy.ravel(edge_pos[:, :, 0]))
@@ -631,9 +620,7 @@ def draw_networkx_edges(G, pos,
     corners = (minx-padx, miny-pady), (maxx+padx, maxy+pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
-
-#    if arrow_collection:
-
+    
     return edge_collection
 
 
