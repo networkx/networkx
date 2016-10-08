@@ -5,7 +5,8 @@ __author__ = "Rohail Syed <rohailsyed@gmail.com>"
 __all__ = [
     'all_bridges',
     'all_local_bridges',
-    'bridges_exist'
+    'bridges_exist',
+    'local_bridges_exist'
 ]
 
 
@@ -32,10 +33,10 @@ def all_local_bridges(G, first_match=False):
     --------
     >>> G=nx.cycle_graph(5)
     >>> bridges_dict = all_local_bridges(G)
-    >>> print ("Edges: ",bridges_dict["edges"])
-    ('Edges: ', [[0, 1], [0, 4], [1, 2], [2, 3], [3, 4]])
-    >>> print ("Spans: ",bridges_dict["spans"])
-    ('Spans: ', [4, 4, 4, 4, 4])
+    >>> bridges_dict["edges"]
+    [[0, 1], [0, 4], [1, 2], [2, 3], [3, 4]]
+    >>> bridges_dict["spans"]
+    [4, 4, 4, 4, 4]
 
     Notes
     ----------
@@ -49,12 +50,13 @@ def all_local_bridges(G, first_match=False):
     process for all edges.
     """
 
-    nodeset = G.nodes()
+    nodeset = sorted(G.nodes())  # only need to sort for consistency in output.
     allBridges = []
     allSpans = []
+    bridgeObjs = []
     usedNodes = []
     for startNode in nodeset:
-        neighbors = G.neighbors(startNode)
+        neighbors = sorted(G.neighbors(startNode))  # same as above
         for endNode in neighbors:
             if endNode in usedNodes:
                 # this edge has already been checked. move on
@@ -68,19 +70,32 @@ def all_local_bridges(G, first_match=False):
                 G.add_edge(startNode, endNode)
                 if pathLength > 2:
                     # found a local bridge
-                    allBridges.append([startNode, endNode])
-                    allSpans.append(pathLength)
+                    bridgeObjs.append(
+                        {"edge": [startNode, endNode], "span": pathLength})
                     if first_match:
+                        allBridges.append(sorted([startNode, endNode]))
+                        allSpans.append(pathLength)
                         return {"edges": allBridges, "spans": allSpans}
 
             except nx.NetworkXNoPath:
                 # found a bridge
-                allBridges.append([startNode, endNode])
-                allSpans.append(-1)
+                bridgeObjs.append({"edge": [startNode, endNode], "span": -1})
                 G.add_edge(startNode, endNode)
                 if first_match:
+                    allBridges.append(sorted([startNode, endNode]))
+                    allSpans.append(-1)
                     return {"edges": allBridges, "spans": allSpans}
         usedNodes.append(startNode)
+
+    # sort the list in ascending order (for consistency in output)
+    for bridge in bridgeObjs:
+        bridge["edge"] = sorted(bridge["edge"])
+    bridgeObjs = sorted(bridgeObjs, key=lambda x: x["edge"])
+    allBridges = []
+    allSpans = []
+    for bridge in bridgeObjs:
+        allBridges.append(bridge["edge"])
+        allSpans.append(bridge["span"])
 
     return {"edges": allBridges, "spans": allSpans}
 
@@ -147,11 +162,11 @@ def all_bridges(G):
     --------
     >>> G = nx.cycle_graph(5)
     >>> bridges = all_bridges(G)
-    >>> print (bridges)
+    >>> bridges
     []
     >>> G.remove_edge(0,1)
-    >>> print (all_bridges(G))
-    [[2, 1], [3, 2], [4, 3], [0, 4]]
+    >>> all_bridges(G)
+    [[0, 4], [1, 2], [2, 3], [3, 4]]
 
     Notes
     ----------
@@ -202,15 +217,22 @@ def all_bridges(G):
         startnode = allnodes[0]
         # run the DFS
         dfs(startnode, -1)
+    # sort the bridges ascending order (for consistency in output)
+    for edge in bridges:
+        if edge[0] > edge[1]:
+            temp = edge[1]
+            edge[1] = edge[0]
+            edge[0] = temp
+    bridges = sorted(bridges)
     return bridges
 
 
-def bridges_exist(G):
-    """ Checks if any bridges exist in this network. We will simply call the
-    all_bridges() function with the first-match stop parameter. Since the
-    search for bridges will terminate after finding one instance, this function
-    is faster if we just want to know if at least one bridge exists in the
-    network and what it is.
+def local_bridges_exist(G):
+    """ Checks if any local bridges exist in this network. We will simply call
+    the all_local_bridges() function with the first-match stop parameter.
+    Since the search for local bridges will terminate after finding one
+    instance, this function is faster if we just want to know if at least
+    one local bridge exists in the network and what it is.
 
     Parameters
     ----------
@@ -225,10 +247,46 @@ def bridges_exist(G):
     Examples
     --------
     >>> G = nx.cycle_graph(5)
-    >>> print (bridges_exist(G))
+    >>> local_bridges_exist(G)
+    True
+    >>> G = nx.complete_graph(5)
+    >>> local_bridges_exist(G)
+    False
+
+    Notes
+    ----------
+    This function can be useful to quickly determine whether or not local
+    bridges exist in a given network.
+    """
+
+    results = all_local_bridges(G, first_match=True)
+    if len(results["spans"]) > 0:
+        return True
+    else:
+        return False
+
+
+def bridges_exist(G):
+    """ Checks if any bridges exist in this network. We will simply call the
+    all_bridges() function and look for non-zero list length.
+
+    Parameters
+    ----------
+    G : Undirected Graph object
+
+    Returns
+    ----------
+    boolean
+        True if we found at least one bridge.
+        False otherwise.
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(5)
+    >>> bridges_exist(G)
     False
     >>> G.remove_edge(1,2)
-    >>> print (bridges_exist(G))
+    >>> bridges_exist(G)
     True
 
     Notes
