@@ -12,10 +12,10 @@ __all__ = [
 
 def local_bridges(G, first_match=False):
     """ Looks through the graph object `G` for all local bridges.
-    We formally define a local bridge to be any edge `AB` such that the removal
+    We formally define a local bridge to be any edge `(u,v)` such that the removal
     of the edge results in a distance strictly greater than 2 between
-    nodes `A` and `B`. We formally define *span* as the distance between two
-    nodes `A` and `B` when the edge connecting them is removed. Note that all
+    nodes `u` and `v`. We formally define *span* as the distance between two
+    nodes `u` and `v` when the edge connecting them is removed. Note that all
     bridges are local bridges with span of infinity (outputs span of -1
     in this function).
 
@@ -45,15 +45,15 @@ def local_bridges(G, first_match=False):
     ----------
     This function can be useful to quickly determine what local bridges exist
     in a given network and what their spans are. The function finds the local
-    bridges as follows. For each edge E in graph G, determine the start and
-    end nodes (A and B) and delete the edge. Attempt to find the new shortest
-    path between A and B. If none exists, we have a bridge(which we represent
+    bridges as follows. For each edge `E` in graph `G`, determine the start and
+    end nodes (`u` and `v`) and delete the edge. Attempt to find the new shortest
+    path between `u` and `v`. If none exists, we have a bridge(which we represent
     as having span=-1). Otherwise, if the span is strictly greater than 2,
-    that edge is a local bridge. Add edge E back in the graph and repeat this
+    that edge is a local bridge. Add edge `E` back in the graph and repeat this
     process for all edges.
     """
 
-    # Arya's suggestion
+    # aryamccarthy's suggestion
     bridges = {}
     for e in G.edges():
         G.remove_edge(*e)
@@ -74,6 +74,7 @@ def local_bridges(G, first_match=False):
     return bridges
 
 
+# aryamccarthy's cleaned implementation of Tarjan's algorithm.
 def bridges(G):
     """ Looks through the graph object `G` for all bridges.
 
@@ -186,7 +187,7 @@ def local_bridges_exist(G):
 
 def bridges_exist(G):
     """ Checks if any bridges exist in this network. We will simply call the
-    `bridges()` function and look for non-zero list length.
+    `bridges()` function and attempt to retieve at least one bridge.
 
     Parameters
     ----------
@@ -213,8 +214,8 @@ def bridges_exist(G):
     exist in a given network.
     """
 
-    results = bridges(G)
-    if len(list(results)) > 0:
-        return True
-    else:
+    try:
+        next(bridges(G))
+    except StopIteration:
         return False
+    return True
