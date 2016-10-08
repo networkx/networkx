@@ -419,7 +419,9 @@ def draw_networkx_edges(G, pos,
                         ax=None,
                         arrows=True,
                         label=None,
-                        **kwds):
+                        **kwds): 
+                        # AM: kwds don't get used in ths function, I'm 
+                        #   going to appropriate them for ax.arrow
     """Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
@@ -465,6 +467,8 @@ def draw_networkx_edges(G, pos,
 
     label : [None| string]
        Label for legend
+       
+    **kwds : see matplotlib.pyplot.axes.arrow
 
     Returns
     -------
@@ -583,7 +587,13 @@ def draw_networkx_edges(G, pos,
     arrow_collection = None
 
     if G.is_directed() and arrows:
-
+    
+        '''
+        ax.arrow(x1,y1, x2,y2, **kwds)
+        
+        
+        '''
+        
         # a directed graph hack
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work
@@ -595,32 +605,15 @@ def draw_networkx_edges(G, pos,
             x2, y2 = dst
             dx = x2-x1   # x offset
             dy = y2-y1   # y offset
-            d = numpy.sqrt(float(dx**2 + dy**2))  # length of edge
+
             if d == 0:   # source and target at same position
-                continue
-            if dx == 0:  # vertical edge
-                xa = x2
-                ya = dy*p+y1
-            if dy == 0:  # horizontal edge
-                ya = y2
-                xa = dx*p+x1
-            else:
-                theta = numpy.arctan2(dy, dx)
-                xa = p*d*numpy.cos(theta)+x1
-                ya = p*d*numpy.sin(theta)+y1
-
-            a_pos.append(((xa, ya), (x2, y2)))
-
-        arrow_collection = LineCollection(a_pos,
-                                colors=arrow_colors,
-                                linewidths=[4*ww for ww in lw],
-                                antialiaseds=(1,),
-                                transOffset = ax.transData,
-                                )
-
-        arrow_collection.set_zorder(1)  # edges go behind nodes
-        arrow_collection.set_label(label)
-        ax.add_collection(arrow_collection)
+                continue #TODO: this should draw a loop!
+            
+            ax.arrow(x1, y1, dx, dy, 
+                    label = label if i else '', #adds a label to first arrow
+                    **kwds)
+            
+            
 
     # update view
     minx = numpy.amin(numpy.ravel(edge_pos[:, :, 0]))
