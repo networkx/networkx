@@ -6,14 +6,14 @@
 
 __author__ = "\n".join(["James Clough (james.clough91@gmail.com)"])
 
-__all__ = ['feedback_vertex_set']
+__all__ = ['minimum_feedback_vertex_set']
 
 import networkx as nx
 from networkx.utils.decorators import *
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def feedback_vertex_set(G, vertex_weights=None):
+def minimum_feedback_vertex_set(G, vertex_weights=None):
     """ Returns a feedback vertex set (FVS) for graph G
     
     A feedback vertex set is a set of vertices which, if removed from G, make it acyclic.
@@ -80,7 +80,6 @@ def feedback_vertex_set(G, vertex_weights=None):
             # we have a semidisjoint cycle
             min_w_in_C = min([vertex_weights[u] for u in C_nodes])
             vertex_weights = {u:vertex_weights[u] - min_w_in_C for u in G.nodes()}
-            # some stuff in square brackets I don't understand
         else:
             # there are no semidisjoint cycles left
             min_w_in_C = min([(vertex_weights[u] / (G.degree(u)-1)) for u in G.nodes()])
