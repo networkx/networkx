@@ -615,7 +615,7 @@ def minimum_spanning_arborescence(G, attr='weight', default=1):
     ed = Edmonds(G)
     B = ed.find_optimum(attr, default, kind='min', style='arborescence')
     if not is_arborescence(B):
-        msg = 'No maximum spanning arborescence in G.'
+        msg = 'No minimum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
 
