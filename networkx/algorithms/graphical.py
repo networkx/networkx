@@ -112,7 +112,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     Notes
     -----
     The ZZ condition says that for the sequence d if
-    
+
     .. math::
         |d| >= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}
 
@@ -200,7 +200,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     This particular rearrangement comes from the proof of Theorem 3 in [2]_.
 
     The ZZ condition says that for the sequence d if
-    
+
     .. math::
         |d| >= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}
 
@@ -308,7 +308,7 @@ def is_pseudographical(sequence):
     return sum(s)%2 == 0 and min(s) >= 0
 
 def is_digraphical(in_sequence, out_sequence):
-    r"""Returns True if some directed graph can realize the in- and out-degree 
+    r"""Returns True if some directed graph can realize the in- and out-degree
     sequences.
 
     Parameters

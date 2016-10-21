@@ -42,7 +42,7 @@ class TestYaml(object):
 
         os.close(fd)
         os.unlink(fname)
-   
+
     def testUndirected(self):
         self.assert_equal(self.G, False)
 

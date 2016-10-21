@@ -36,22 +36,22 @@ def node_attribute_xy(G, attribute, nodes=None):
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u,v) and (v,u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
         nodes = set(G)
     else:
         nodes = set(nodes)
-    node = G.node 
+    node = G.node
     for u,nbrsdict in G.adjacency():
         if u not in nodes:
             continue
         uattr = node[u].get(attribute,None)
         if G.is_multigraph():
             for v,keys in nbrsdict.items():
-                vattr = node[v].get(attribute,None)                
+                vattr = node[v].get(attribute,None)
                 for k,d in keys.items():
                     yield (uattr,vattr)
         else:
@@ -74,7 +74,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
        The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
+       The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
@@ -99,8 +99,8 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u,v) and (v,u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
@@ -119,7 +119,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
         neighbors = (nbr for _,nbr in G.edges(u) if nbr in nodes)
         for v,degv in ydeg(neighbors, weight=weight):
             yield degu,degv
- 
+
 
 # fixture for nose tests
 def setup_module(module):

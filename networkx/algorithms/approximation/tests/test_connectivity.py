@@ -111,7 +111,7 @@ class TestAllPairsNodeConnectivityApprox:
         self.K10 = nx.complete_graph(10)
         self.K5 = nx.complete_graph(5)
         self.G_list = [self.path, self.directed_path, self.cycle,
-            self.directed_cycle, self.gnp, self.directed_gnp, self.K10, 
+            self.directed_cycle, self.gnp, self.directed_gnp, self.K10,
             self.K5, self.K20]
 
     def test_cycles(self):

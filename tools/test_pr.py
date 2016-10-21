@@ -38,7 +38,7 @@ gh_project="networkx/networkx"
 # TODO Add PyPy support
 supported_pythons = ['python2.6', 'python2.7', 'python3.2','python3.3']
 
-# Report missing libraries during tests and number of skipped 
+# Report missing libraries during tests and number of skipped
 # and passed tests.
 missing_libs_re = re.compile('SKIP: (\w+) not available')
 def get_missing_libraries(log):
@@ -68,13 +68,13 @@ class TestRun(object):
         self.unavailable_pythons = []
         self.venvs = []
         self.pr_num = pr_num
-        
+
         self.pr = gh_api.get_pull_request(gh_project, pr_num)
-        
+
         self.setup()
-        
+
         self.results = []
-    
+
     def available_python_versions(self):
         """Get the executable names of available versions of Python on the system.
         """
@@ -86,14 +86,14 @@ class TestRun(object):
                 self.unavailable_pythons.append(py)
 
     def setup(self):
-        """Prepare the repository and virtualenvs."""        
+        """Prepare the repository and virtualenvs."""
         try:
             os.mkdir(basedir)
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
         os.chdir(basedir)
-        
+
         # Delete virtualenvs and recreate
         for venv in glob('venv-*'):
             shutil.rmtree(venv)
@@ -102,7 +102,7 @@ class TestRun(object):
                             '--system-site-packages', 'venv-%s' % py])
 
             self.venvs.append((py, 'venv-%s' % py))
-        
+
         # Check out and update the repository
         if not os.path.exists('networkx'):
             try :
@@ -115,16 +115,16 @@ class TestRun(object):
             check_call(['git', 'pull', 'origin', 'master'])
         except CalledProcessError:
             check_call(['git', 'pull', nx_http_repository, 'master'])
-        self.master_sha = check_output(['git', 'log', '-1', 
+        self.master_sha = check_output(['git', 'log', '-1',
                                         '--format=%h']).decode('ascii').strip()
         os.chdir(basedir)
-    
+
     def get_branch(self):
         repo = self.pr['head']['repo']['clone_url']
         branch = self.pr['head']['ref']
         owner = self.pr['head']['repo']['owner']['login']
         mergeable = self.pr['mergeable']
-        
+
         os.chdir(repodir)
         if mergeable:
             merged_branch = "%s-%s" % (owner, branch)
@@ -138,7 +138,7 @@ class TestRun(object):
             check_call(['git', 'fetch', repo, branch])
             check_call(['git', 'checkout', 'FETCH_HEAD'])
         os.chdir(basedir)
-    
+
     def markdown_format(self):
         def format_result(result):
             s = "* %s: " % result.py
@@ -177,11 +177,11 @@ class TestRun(object):
                         "Not available for testing: "  \
                             + ", ".join(self.unavailable_pythons)]
         return "\n".join(lines)
-    
+
     def post_results_comment(self):
         body = self.markdown_format()
         gh_api.post_issue_comment(gh_project, self.pr_num, body)
-    
+
     def print_results(self):
         pr_num = self.pr_num
         branch = self.pr['head']['ref']
@@ -190,7 +190,7 @@ class TestRun(object):
         mergeable = self.pr['mergeable']
         master_sha = self.master_sha
         branch_sha = self.pr['head']['sha'][:7]
-        
+
         print("\n")
         print("**NetworkX: Test results for pull request %s " % pr_num,
               "(%s '%s' branch at %s)**" % (owner, branch, branch_url))
@@ -211,7 +211,7 @@ class TestRun(object):
             if result.missing_libraries:
                 print("    Libraries not available:", result.missing_libraries)
         if self.unavailable_pythons:
-            print("Not available for testing:", 
+            print("Not available for testing:",
                     ", ".join(self.unavailable_pythons))
 
     def dump_results(self):
@@ -230,7 +230,7 @@ class TestRun(object):
                                             self.pr['head']['sha'][:7]+".log"))
                 with io.open(result_locn, 'w', encoding='utf-8') as f:
                     f.write(result.log)
-            
+
                 result.log_file = result_locn
 
     def post_logs(self):
@@ -239,7 +239,7 @@ class TestRun(object):
                 result.log_url = gh_api.post_gist(result.log,
                                                 description='NetworkX test log',
                                                 filename="results.log", auth=True)
-    
+
     def run(self):
         for py, venv in self.venvs:
             tic = time.time()
@@ -249,7 +249,7 @@ class TestRun(object):
             missing_libraries = get_missing_libraries(log)
             skipped = get_skipped(log)
             num_tests = get_number_tests(log)
-            
+
             self.results.append(Obj(py=py,
                                     passed=passed,
                                     log=log,
@@ -295,8 +295,8 @@ def run_tests(venv):
         print(msg, file=sys.stderr)
         return False, msg
 
-    # Run tests: this is different than in ipython's test_pr, they use 
-    # a script for running their tests. It gets installed at 
+    # Run tests: this is different than in ipython's test_pr, they use
+    # a script for running their tests. It gets installed at
     # os.path.join(basedir, venv, 'bin', 'iptest')
     print("\nRunning tests with %s ..." % version)
     cmd = [py, '-c', 'import networkx as nx; nx.test(verbosity=2,doctest=True)']
@@ -311,18 +311,18 @@ def test_pr(num, post_results=True):
     # if their login is needed.
     if post_results:
         gh_api.get_auth_token()
-    
+
     testrun = TestRun(num)
-    
+
     testrun.get_branch()
-    
+
     testrun.run()
 
     testrun.dump_results()
-    
+
     testrun.save_logs()
     testrun.print_results()
-    
+
     if post_results:
         results_urls = testrun.post_logs()
         testrun.post_results_comment()
@@ -330,7 +330,7 @@ def test_pr(num, post_results=True):
     else:
         post_script = os.path.join(os.path.dirname(sys.argv[0]), "post_pr_test.py")
         print("To post the results to Github, run", post_script)
-    
+
 
 if __name__ == '__main__':
     import argparse
@@ -338,7 +338,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--publish', action='store_true',
                         help="Publish the results to Github")
     parser.add_argument('number', type=int, help="The pull request number")
-    
+
     args = parser.parse_args()
 
     # Test for requests version.

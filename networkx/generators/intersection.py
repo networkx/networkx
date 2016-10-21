@@ -2,7 +2,7 @@
 """
 Generators for random intersection graphs.
 """
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -29,9 +29,9 @@ def uniform_random_intersection_graph(n, m, p, seed=None):
     m : int
         The number of nodes in the second bipartite set (attributes)
     p : float
-        Probability of connecting nodes between bipartite sets  
+        Probability of connecting nodes between bipartite sets
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
 
     See Also
     --------
@@ -41,17 +41,17 @@ def uniform_random_intersection_graph(n, m, p, seed=None):
     ----------
     .. [1] K.B. Singer-Cohen, Random Intersection Graphs, 1995,
        PhD thesis, Johns Hopkins University
-    .. [2] Fill, J. A., Scheinerman, E. R., and Singer-Cohen, K. B., 
-       Random intersection graphs when m = !(n): 
+    .. [2] Fill, J. A., Scheinerman, E. R., and Singer-Cohen, K. B.,
+       Random intersection graphs when m = !(n):
        An equivalence theorem relating the evolution of the g(n, m, p)
        and g(n, p) models. Random Struct. Algorithms 16, 2 (2000), 156–176.
     """
     G=bipartite.random_graph(n, m, p, seed=seed)
-    return nx.projected_graph(G, range(n)) 
+    return nx.projected_graph(G, range(n))
 
 def k_random_intersection_graph(n,m,k):
     """Return a intersection graph with randomly chosen attribute sets for
-    each node that are of equal size (k). 
+    each node that are of equal size (k).
 
     Parameters
     ----------
@@ -62,7 +62,7 @@ def k_random_intersection_graph(n,m,k):
     k : float
         Size of attribute set to assign to each node.
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
 
     See Also
     --------
@@ -94,17 +94,17 @@ def general_random_intersection_graph(n,m,p):
     p : list of floats of length m
         Probabilities for connecting nodes to each attribute
     seed : int, optional
-        Seed for random number generator (default=None). 
-    
+        Seed for random number generator (default=None).
+
     See Also
     --------
     gnp_random_graph, uniform_random_intersection_graph
 
     References
     ----------
-    .. [1] Nikoletseas, S. E., Raptopoulos, C., and Spirakis, P. G. 
-       The existence and efficient construction of large independent sets 
-       in general random intersection graphs. In ICALP (2004), J. D´ıaz, 
+    .. [1] Nikoletseas, S. E., Raptopoulos, C., and Spirakis, P. G.
+       The existence and efficient construction of large independent sets
+       in general random intersection graphs. In ICALP (2004), J. D´ıaz,
        J. Karhum¨aki, A. Lepist¨o, and D. Sannella, Eds., vol. 3142
        of Lecture Notes in Computer Science, Springer, pp. 1029–1040.
     """

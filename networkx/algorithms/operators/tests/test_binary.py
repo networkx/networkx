@@ -34,8 +34,8 @@ def test_intersection():
     H.add_edge(2,3)
     H.add_edge(3,4)
     I=nx.intersection(G,H)
-    assert_equal( set(I.nodes()) , set([1,2,3,4]) )    
-    assert_equal( sorted(I.edges()) , [(2,3)] )    
+    assert_equal( set(I.nodes()) , set([1,2,3,4]) )
+    assert_equal( sorted(I.edges()) , [(2,3)] )
 
 
 def test_intersection_attributes():
@@ -85,14 +85,14 @@ def test_difference():
     H.add_edge(2,3)
     H.add_edge(3,4)
     D=nx.difference(G,H)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
-    assert_equal( sorted(D.edges()) , [(1,2)] )    
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )
+    assert_equal( sorted(D.edges()) , [(1,2)] )
     D=nx.difference(H,G)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
-    assert_equal( sorted(D.edges()) , [(3,4)] )    
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )
+    assert_equal( sorted(D.edges()) , [(3,4)] )
     D=nx.symmetric_difference(G,H)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
-    assert_equal( sorted(D.edges()) , [(1,2),(3,4)] )    
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )
+    assert_equal( sorted(D.edges()) , [(1,2),(3,4)] )
 
 
 def test_difference2():
@@ -104,15 +104,15 @@ def test_difference2():
     H.add_edge(1,2)
     G.add_edge(2,3)
     D=nx.difference(G,H)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
-    assert_equal( sorted(D.edges()) , [(2,3)] )    
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )
+    assert_equal( sorted(D.edges()) , [(2,3)] )
     D=nx.difference(H,G)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
-    assert_equal( sorted(D.edges()) , [] )    
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )
+    assert_equal( sorted(D.edges()) , [] )
     H.add_edge(3,4)
     D=nx.difference(H,G)
-    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
-    assert_equal( sorted(D.edges()) , [(3,4)] )    
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )
+    assert_equal( sorted(D.edges()) , [(3,4)] )
 
 
 def test_difference_attributes():
@@ -168,7 +168,7 @@ def test_symmetric_difference_multigraph():
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
     assert_equal( set(gh.nodes()) , set(h.nodes()) )
     assert_equal( sorted(gh.edges()) , 3*[(0,1)] )
-    assert_equal( sorted(sorted(e) for e in gh.edges(keys=True)), 
+    assert_equal( sorted(sorted(e) for e in gh.edges(keys=True)),
                   [[0,1,1],[0,1,2],[0,1,3]] )
 
 @raises(nx.NetworkXError)
@@ -197,12 +197,12 @@ def test_union_and_compose():
     assert_raises(nx.NetworkXError, nx.union, K3, P3)
     H1=union(H,G1,rename=('H','G1'))
     assert_equal(sorted(H1.nodes()),
-                 ['G1A', 'G1B', 'G1C', 'G1D', 
+                 ['G1A', 'G1B', 'G1C', 'G1D',
                   'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
 
     H2=union(H,G2,rename=("H",""))
     assert_equal(sorted(H2.nodes()),
-                 ['1', '2', '3', '4', 
+                 ['1', '2', '3', '4',
                   'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
 
     assert_false(H1.has_edge('NB','NA'))
@@ -243,7 +243,7 @@ def test_union_multigraph():
     H.add_edge(3,4,key=1)
     GH=nx.union(G,H)
     assert_equal( set(GH) , set(G)|set(H))
-    assert_equal( set(GH.edges(keys=True)) , 
+    assert_equal( set(GH.edges(keys=True)) ,
                   set(G.edges(keys=True))|set(H.edges(keys=True)))
 
 def test_disjoint_union_multigraph():
@@ -255,7 +255,7 @@ def test_disjoint_union_multigraph():
     H.add_edge(2,3,key=1)
     GH=nx.disjoint_union(G,H)
     assert_equal( set(GH) , set(G)|set(H))
-    assert_equal( set(GH.edges(keys=True)) , 
+    assert_equal( set(GH.edges(keys=True)) ,
                   set(G.edges(keys=True))|set(H.edges(keys=True)))
 
 
@@ -268,13 +268,13 @@ def test_compose_multigraph():
     H.add_edge(3,4,key=1)
     GH=nx.compose(G,H)
     assert_equal( set(GH) , set(G)|set(H))
-    assert_equal( set(GH.edges(keys=True)) , 
+    assert_equal( set(GH.edges(keys=True)) ,
                   set(G.edges(keys=True))|set(H.edges(keys=True)))
     H.add_edge(1,2,key=2)
     GH=nx.compose(G,H)
     assert_equal( set(GH) , set(G)|set(H))
-    assert_equal( set(GH.edges(keys=True)) , 
-                  set(G.edges(keys=True))|set(H.edges(keys=True)))    
+    assert_equal( set(GH.edges(keys=True)) ,
+                  set(G.edges(keys=True))|set(H.edges(keys=True)))
 
 
 @raises(nx.NetworkXError)

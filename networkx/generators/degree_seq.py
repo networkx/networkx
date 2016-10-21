@@ -76,16 +76,16 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
     This configuration model construction process can lead to
     duplicate edges and loops.  You can remove the self-loops and
     parallel edges (see below) which will likely result in a graph
-    that doesn't have the exact degree sequence specified.  
-    
-    The density of self-loops and parallel edges tends to decrease 
-    as the number of nodes increases. However, typically the number 
-    of self-loops will approach a Poisson distribution with a nonzero 
-    mean, and similarly for the number of parallel edges.   Consider a 
-    node with k stubs. The probability of being joined to another stub of 
-    the same node is basically (k-1)/N where k is the degree and N is 
-    the number of nodes. So the probability of a self-loop  scales like c/N 
-    for some constant c.  As N grows, this means we expect c self-loops. 
+    that doesn't have the exact degree sequence specified.
+
+    The density of self-loops and parallel edges tends to decrease
+    as the number of nodes increases. However, typically the number
+    of self-loops will approach a Poisson distribution with a nonzero
+    mean, and similarly for the number of parallel edges.   Consider a
+    node with k stubs. The probability of being joined to another stub of
+    the same node is basically (k-1)/N where k is the degree and N is
+    the number of nodes. So the probability of a self-loop  scales like c/N
+    for some constant c.  As N grows, this means we expect c self-loops.
     Similarly for parallel edges.
 
     References
@@ -126,7 +126,7 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
     G=nx.empty_graph(N,create_using)
 
     if N==0 or max(deg_sequence)==0: # done if no edges
-        return G 
+        return G
 
     # build stublist, a list of available degree-repeated stubs
     # e.g. for deg_sequence=[3,2,1,1,1]
@@ -416,12 +416,12 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
 
     References
     ----------
-    .. [1] Hakimi S., On Realizability of a Set of Integers as 
+    .. [1] Hakimi S., On Realizability of a Set of Integers as
        Degrees of the Vertices of a Linear Graph. I,
        Journal of SIAM, 10(3), pp. 496-506 (1962)
     .. [2] Kleitman D.J. and Wang D.L.
        Algorithms for Constructing Graphs and Digraphs with Given Valences
-       and Factors  Discrete Mathematics, 6(1), pp. 79-88 (1973) 
+       and Factors  Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
     if not nx.is_valid_degree_sequence(deg_sequence):
         raise nx.NetworkXError('Invalid degree sequence')
@@ -486,9 +486,9 @@ def directed_havel_hakimi_graph(in_deg_sequence,
 
     Parameters
     ----------
-    in_deg_sequence :  list of integers 
+    in_deg_sequence :  list of integers
        Each list entry corresponds to the in-degree of a node.
-    out_deg_sequence : list of integers 
+    out_deg_sequence : list of integers
        Each list entry corresponds to the out-degree of a node.
     create_using : graph, optional (default DiGraph)
        Return graph of this type. The instance will be cleared.
@@ -508,7 +508,7 @@ def directed_havel_hakimi_graph(in_deg_sequence,
     See Also
     --------
     configuration_model
-    
+
     Notes
     -----
     Algorithm as described by Kleitman and Wang [1]_.
@@ -517,7 +517,7 @@ def directed_havel_hakimi_graph(in_deg_sequence,
     ----------
     .. [1] D.J. Kleitman and D.L. Wang
        Algorithms for Constructing Graphs and Digraphs with Given Valences
-       and Factors Discrete Mathematics, 6(1), pp. 79-88 (1973) 
+       and Factors Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
     assert(nx.utils.is_list_of_ints(in_deg_sequence))
     assert(nx.utils.is_list_of_ints(out_deg_sequence))
@@ -528,7 +528,7 @@ def directed_havel_hakimi_graph(in_deg_sequence,
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or nonzero out degrees
     sumin, sumout, nin, nout = 0, 0, len(in_deg_sequence), len(out_deg_sequence)
-    maxn = max(nin, nout) 
+    maxn = max(nin, nout)
     G = nx.empty_graph(maxn,create_using)
     if maxn==0:
         return G
@@ -545,9 +545,9 @@ def directed_havel_hakimi_graph(in_deg_sequence,
                 'Invalid degree sequences. Sequence values must be positive.')
         sumin, sumout, maxin = sumin+in_deg, sumout+out_deg, max(maxin, in_deg)
         if in_deg > 0:
-            stubheap.append((-1*out_deg, -1*in_deg,n)) 
+            stubheap.append((-1*out_deg, -1*in_deg,n))
         elif out_deg > 0:
-            zeroheap.append((-1*out_deg,n)) 
+            zeroheap.append((-1*out_deg,n))
     if sumin != sumout:
         raise nx.NetworkXError(
             'Invalid degree sequences. Sequences must have equal sums.')
@@ -555,11 +555,11 @@ def directed_havel_hakimi_graph(in_deg_sequence,
     heapq.heapify(zeroheap)
 
     modstubs = [(0,0,0)]*(maxin+1)
-    # Successively reduce degree sequence by removing the maximum 
+    # Successively reduce degree sequence by removing the maximum
     while stubheap:
         # Remove first value in the sequence with a non-zero in degree
         (freeout, freein, target) =  heapq.heappop(stubheap)
-        freein *= -1   
+        freein *= -1
         if freein > len(stubheap)+len(zeroheap):
             raise nx.NetworkXError('Non-digraphical integer sequence')
 

@@ -379,7 +379,7 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True,
         def sample(v, nodes):
             if not self_loops:
                 nodes = nodes - {v}
-            return (random.choice(list(nodes)) for i in range(k))
+            return (random.choice(list(nodes)) for _ in range(k))
 
     else:
         create_using = nx.DiGraph()

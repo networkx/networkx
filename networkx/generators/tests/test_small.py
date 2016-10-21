@@ -64,7 +64,7 @@ class TestGeneratorsSmall():
         assert_equal(G.number_of_nodes(), 20)
         assert_equal(G.number_of_edges(), 30)
         assert_equal(list(d for n, d in G.degree()), 20 * [3])
-        
+
         G=diamond_graph()
         assert_equal(G.number_of_nodes(), 4)
         assert_equal(sorted(d for n, d in G.degree()), [2, 2, 3, 3])

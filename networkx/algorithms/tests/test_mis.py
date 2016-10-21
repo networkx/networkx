@@ -42,7 +42,7 @@ class TestMaximalIndependantSet(object):
         self.florentine.add_edge('Albizzi','Guadagni')
         self.florentine.add_edge('Bischeri','Guadagni')
         self.florentine.add_edge('Guadagni','Lamberteschi')
-        
+
     def test_K5(self):
         """Maximal independent set: K5"""
         G = nx.complete_graph(5)

@@ -128,7 +128,7 @@ class TestTimeRespectingGraphMatcher(object):
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 4)
-    
+
     def test_timdelta_one_config2_returns_ten_embeddings(self):
         G1 = self.provide_g1_topology()
         temporal_name = 'date'
@@ -139,7 +139,7 @@ class TestTimeRespectingGraphMatcher(object):
         L = list(gm.subgraph_isomorphisms_iter())
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 10)
-    
+
 
 class TestDiTimeRespectingGraphMatcher(object):
     """
@@ -193,7 +193,7 @@ class TestDiTimeRespectingGraphMatcher(object):
         gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
         assert_true(count_match == 1)
-    
+
     def test_timdelta_one_config2_returns_two_embeddings(self):
         G1 = self.provide_g1_topology()
         temporal_name = 'date'

@@ -362,7 +362,7 @@ def find_cycle(G, source=None, orientation='original'):
         direction. When the direction is forward, the value of `direction`
         is 'forward'. When the direction is reverse, the value of `direction`
         is 'reverse'.
-        
+
     Raises
     ------
     NetworkXNoCycle

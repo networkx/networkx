@@ -27,10 +27,10 @@ def maximal_independent_set(G, nodes=None):
     of G induced by these nodes contains no edges. A maximal
     independent set is an independent set such that it is not possible
     to add a new node and still get an independent set.
-    
+
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
 
     nodes : list or iterable
        Nodes that must be part of the independent set. This set of nodes
@@ -38,7 +38,7 @@ def maximal_independent_set(G, nodes=None):
 
     Returns
     -------
-    indep_nodes : list 
+    indep_nodes : list
        List of nodes that are part of a maximal independent set.
 
     Raises
@@ -54,7 +54,7 @@ def maximal_independent_set(G, nodes=None):
     [4, 0, 2]
     >>> nx.maximal_independent_set(G, [1]) # doctest: +SKIP
     [1, 3]
-    
+
     Notes
     -----
     This algorithm does not solve the maximum independent set problem.

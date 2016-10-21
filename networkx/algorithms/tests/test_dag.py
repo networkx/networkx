@@ -249,7 +249,7 @@ class TestDAG:
         G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)])
         transitive_reduction = nx.algorithms.dag.transitive_reduction
         solution = [(1, 2), (2, 3), (2, 4)]
-        assert_edges_equal(transitive_reduction(G).edges(), solution)        
+        assert_edges_equal(transitive_reduction(G).edges(), solution)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         assert_raises(nx.NetworkXNotImplemented, transitive_reduction, G)
 

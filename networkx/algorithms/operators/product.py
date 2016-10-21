@@ -142,7 +142,7 @@ def tensor_product(G, H):
     Parameters
     ----------
     G, H: graphs
-     Networkx graphs. 
+     Networkx graphs.
 
     Returns
     -------

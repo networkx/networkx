@@ -2,7 +2,7 @@ from nose.tools import assert_equal
 import networkx as nx
 from networkx.algorithms.approximation import average_clustering
 
-# This approximation has to be be exact in regular graphs 
+# This approximation has to be be exact in regular graphs
 # with no triangles or with all possible triangles.
 def test_petersen():
     # Actual coefficient is 0

@@ -1,4 +1,4 @@
-# needs mayavi2 
+# needs mayavi2
 # run with ipython -wthread
 import networkx as nx
 import numpy as np
@@ -28,7 +28,7 @@ pts = mlab.points3d(xyz[:,0], xyz[:,1], xyz[:,2],
                     scale_mode='none',
                     colormap='Blues',
                     resolution=20)
-                                   
+
 pts.mlab_source.dataset.lines = np.array(list(G.edges()))
 tube = mlab.pipeline.tube(pts, tube_radius=0.01)
 mlab.pipeline.surface(tube, color=(0.8, 0.8, 0.8))

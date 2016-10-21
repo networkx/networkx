@@ -16,15 +16,15 @@ class TestWikipediaExample(object):
 
     # Nodes 'a', 'b', 'c' and 'd' form a column.
     # Nodes 'g', 'h', 'i' and 'j' form a column.
-    g1edges = [['a','g'], ['a','h'], ['a','i'], 
-               ['b','g'], ['b','h'], ['b','j'], 
-               ['c','g'], ['c','i'], ['c','j'], 
+    g1edges = [['a','g'], ['a','h'], ['a','i'],
+               ['b','g'], ['b','h'], ['b','j'],
+               ['c','g'], ['c','i'], ['c','j'],
                ['d','h'], ['d','i'], ['d','j']]
 
     # Nodes 1,2,3,4 form the clockwise corners of a large square.
-    # Nodes 5,6,7,8 form the clockwise corners of a small square 
-    g2edges = [[1,2], [2,3], [3,4], [4,1], 
-               [5,6], [6,7], [7,8], [8,5], 
+    # Nodes 5,6,7,8 form the clockwise corners of a small square
+    g2edges = [[1,2], [2,3], [3,4], [4,1],
+               [5,6], [6,7], [7,8], [8,5],
                [1,5], [2,6], [3,7], [4,8]]
 
     def test_graph(self):
@@ -36,12 +36,12 @@ class TestWikipediaExample(object):
         assert_true(gm.is_isomorphic())
 
         mapping = sorted(gm.mapping.items())
-# this mapping is only one of the possibilies 
-# so this test needs to be reconsidered 
-#        isomap = [('a', 1), ('b', 6), ('c', 3), ('d', 8), 
+# this mapping is only one of the possibilies
+# so this test needs to be reconsidered
+#        isomap = [('a', 1), ('b', 6), ('c', 3), ('d', 8),
 #                  ('g', 2), ('h', 5), ('i', 4), ('j', 7)]
 #        assert_equal(mapping, isomap)
-        
+
     def test_subgraph(self):
         g1 = nx.Graph()
         g2 = nx.Graph()
@@ -109,7 +109,7 @@ class TestAtlas(object):
         if platform.python_implementation()=='Jython':
             raise SkipTest('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas
-            
+
     def setUp(self):
         self.GAG=atlas.graph_atlas_g()
 
@@ -130,12 +130,12 @@ class TestAtlas(object):
 def test_multiedge():
     # Simple test for multigraphs
     # Need something much more rigorous
-    edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), 
-             (5, 6), (6, 7), (7, 8), (8, 9), (9, 10), 
-             (10, 11), (10, 11), (11, 12), (11, 12), 
-             (12, 13), (12, 13), (13, 14), (13, 14), 
-             (14, 15), (14, 15), (15, 16), (15, 16), 
-             (16, 17), (16, 17), (17, 18), (17, 18), 
+    edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5),
+             (5, 6), (6, 7), (7, 8), (8, 9), (9, 10),
+             (10, 11), (10, 11), (11, 12), (11, 12),
+             (12, 13), (12, 13), (13, 14), (13, 14),
+             (14, 15), (14, 15), (15, 16), (15, 16),
+             (16, 17), (16, 17), (17, 18), (17, 18),
              (18, 19), (18, 19), (19, 0), (19, 0)]
     nodes = list(range(20))
 
@@ -154,7 +154,7 @@ def test_multiedge():
 
 def test_selfloop():
     # Simple test for graphs with selfloops
-    edges = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 2), 
+    edges = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 2),
              (2, 4), (3, 1), (3, 2), (4, 2), (4, 5), (5, 4)]
     nodes = list(range(6))
 

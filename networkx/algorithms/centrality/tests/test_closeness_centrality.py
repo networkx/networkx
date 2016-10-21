@@ -15,7 +15,7 @@ class TestClosenessCentrality:
         self.C4=nx.cycle_graph(4)
         self.T=nx.balanced_tree(r=2, h=2)
         self.Gb = nx.Graph()
-        self.Gb.add_edges_from([(0,1), (0,2), (1,3), (2,3), 
+        self.Gb.add_edges_from([(0,1), (0,2), (1,3), (2,3),
                                 (2,4), (4,5), (3,5)])
 
 

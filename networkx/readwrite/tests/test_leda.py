@@ -12,12 +12,12 @@ class TestLEDA(object):
         assert_equal(sorted(G.nodes()),
                      ['v1', 'v2', 'v3', 'v4', 'v5'])
         assert_equal(sorted(G.edges(data=True)),
-                     [('v1', 'v2', {'label': '4'}), 
-                      ('v1', 'v3', {'label': '3'}), 
-                      ('v2', 'v3', {'label': '2'}), 
-                      ('v3', 'v4', {'label': '3'}), 
-                      ('v3', 'v5', {'label': '7'}), 
-                      ('v4', 'v5', {'label': '6'}), 
+                     [('v1', 'v2', {'label': '4'}),
+                      ('v1', 'v3', {'label': '3'}),
+                      ('v2', 'v3', {'label': '2'}),
+                      ('v3', 'v4', {'label': '3'}),
+                      ('v3', 'v5', {'label': '7'}),
+                      ('v4', 'v5', {'label': '6'}),
                       ('v5', 'v1', {'label': 'foo'})])
 
 

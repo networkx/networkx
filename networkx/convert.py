@@ -166,11 +166,8 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
         warnings.warn('scipy not found, skipping conversion test.',
                       ImportWarning)
 
-
     raise nx.NetworkXError(\
           "Input is not a known data type for conversion.")
-
-    return
 
 
 def convert_to_undirected(G):

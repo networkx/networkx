@@ -1,6 +1,6 @@
 """ Fast approximation for node connectivity
 """
-#    Copyright (C) 2015 by 
+#    Copyright (C) 2015 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    All rights reserved.
 #    BSD license.
@@ -20,15 +20,15 @@ INF = float('inf')
 
 def local_node_connectivity(G, source, target, cutoff=None):
     """Compute node connectivity between source and target.
-    
-    Pairwise or local node connectivity between two distinct and nonadjacent 
-    nodes is the minimum number of nodes that must be removed (minimum 
-    separating cutset) to disconnect them. By Menger's theorem, this is equal 
+
+    Pairwise or local node connectivity between two distinct and nonadjacent
+    nodes is the minimum number of nodes that must be removed (minimum
+    separating cutset) to disconnect them. By Menger's theorem, this is equal
     to the number of node independent paths (paths that share no nodes other
     than source and target). Which is what we compute in this function.
 
     This algorithm is a fast approximation that gives an strict lower
-    bound on the actual number of node independent paths between two nodes [1]_. 
+    bound on the actual number of node independent paths between two nodes [1]_.
     It works for both directed and undirected graphs.
 
     Parameters
@@ -53,24 +53,24 @@ def local_node_connectivity(G, source, target, cutoff=None):
 
     Examples
     --------
-    >>> # Platonic icosahedral graph has node connectivity 5 
+    >>> # Platonic icosahedral graph has node connectivity 5
     >>> # for each non adjacent node pair
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.icosahedral_graph()
     >>> approx.local_node_connectivity(G, 0, 6)
     5
 
-    Notes 
+    Notes
     -----
-    This algorithm [1]_ finds node independents paths between two nodes by 
-    computing their shortest path using BFS, marking the nodes of the path 
-    found as 'used' and then searching other shortest paths excluding the 
-    nodes marked as used until no more paths exist. It is not exact because 
+    This algorithm [1]_ finds node independents paths between two nodes by
+    computing their shortest path using BFS, marking the nodes of the path
+    found as 'used' and then searching other shortest paths excluding the
+    nodes marked as used until no more paths exist. It is not exact because
     a shortest path could use nodes that, if the path were longer, may belong
     to two different node independent paths. Thus it only guarantees an
     strict lower bound on node connectivity.
 
-    Note that the authors propose a further refinement, losing accuracy and 
+    Note that the authors propose a further refinement, losing accuracy and
     gaining speed, which is not implemented yet.
 
     See also
@@ -80,10 +80,10 @@ def local_node_connectivity(G, source, target, cutoff=None):
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
- 
+
     """
     if target == source:
         raise nx.NetworkXError("source and target have to be different nodes.")
@@ -97,7 +97,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     K = 0
     if not possible:
         return K
-    
+
     if cutoff is None:
         cutoff = INF
 
@@ -118,17 +118,17 @@ def node_connectivity(G, s=None, t=None):
 
     Node connectivity is equal to the minimum number of nodes that
     must be removed to disconnect G or render it trivial. By Menger's theorem,
-    this is equal to the number of node independent paths (paths that 
+    this is equal to the number of node independent paths (paths that
     share no nodes other than source and target).
 
-    If source and target nodes are provided, this function returns the 
-    local node connectivity: the minimum number of nodes that must be 
+    If source and target nodes are provided, this function returns the
+    local node connectivity: the minimum number of nodes that must be
     removed to break all paths from source to target in G.
 
     This algorithm is based on a fast approximation that gives an strict lower
-    bound on the actual number of node independent paths between two nodes [1]_. 
+    bound on the actual number of node independent paths between two nodes [1]_.
     It works for both directed and undirected graphs.
-   
+
     Parameters
     ----------
     G : NetworkX graph
@@ -148,18 +148,18 @@ def node_connectivity(G, s=None, t=None):
 
     Examples
     --------
-    >>> # Platonic icosahedral graph is 5-node-connected 
+    >>> # Platonic icosahedral graph is 5-node-connected
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.icosahedral_graph()
     >>> approx.node_connectivity(G)
     5
-    
+
     Notes
     -----
-    This algorithm [1]_ finds node independents paths between two nodes by 
-    computing their shortest path using BFS, marking the nodes of the path 
-    found as 'used' and then searching other shortest paths excluding the 
-    nodes marked as used until no more paths exist. It is not exact because 
+    This algorithm [1]_ finds node independents paths between two nodes by
+    computing their shortest path using BFS, marking the nodes of the path
+    found as 'used' and then searching other shortest paths excluding the
+    nodes marked as used until no more paths exist. It is not exact because
     a shortest path could use nodes that, if the path were longer, may belong
     to two different node independent paths. Thus it only guarantees an
     strict lower bound on node connectivity.
@@ -171,7 +171,7 @@ def node_connectivity(G, s=None, t=None):
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
 
@@ -219,14 +219,14 @@ def node_connectivity(G, s=None, t=None):
 def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     """ Compute node connectivity between all pairs of nodes.
 
-    Pairwise or local node connectivity between two distinct and nonadjacent 
-    nodes is the minimum number of nodes that must be removed (minimum 
-    separating cutset) to disconnect them. By Menger's theorem, this is equal 
+    Pairwise or local node connectivity between two distinct and nonadjacent
+    nodes is the minimum number of nodes that must be removed (minimum
+    separating cutset) to disconnect them. By Menger's theorem, this is equal
     to the number of node independent paths (paths that share no nodes other
     than source and target). Which is what we compute in this function.
 
     This algorithm is a fast approximation that gives an strict lower
-    bound on the actual number of node independent paths between two nodes [1]_. 
+    bound on the actual number of node independent paths between two nodes [1]_.
     It works for both directed and undirected graphs.
 
 
@@ -255,7 +255,7 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
     """
@@ -313,16 +313,16 @@ def _bidirectional_shortest_path(G, source, target, exclude):
     Notes
     -----
     This function and its helper are originaly from
-    networkx.algorithms.shortest_paths.unweighted and are modified to 
-    accept the extra parameter 'exclude', which is a container for nodes 
+    networkx.algorithms.shortest_paths.unweighted and are modified to
+    accept the extra parameter 'exclude', which is a container for nodes
     already used in other paths that should be ignored.
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
-    
+
     """
     # call helper to do the real work
     results = _bidirectional_pred_succ(G, source, target, exclude)
@@ -370,7 +370,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
     reverse_fringe = [target]
 
     level = 0
-    
+
     while forward_fringe and reverse_fringe:
         # Make sure that we iterate one step forward and one step backwards
         # thus source and target will only tigger "found path" when they are
@@ -398,7 +398,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                     if w not in succ:
                         succ[w] = v
                         reverse_fringe.append(w)
-                    if w in pred: 
+                    if w in pred:
                         return pred, succ, w # found path
 
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))

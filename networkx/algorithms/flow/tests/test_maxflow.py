@@ -404,7 +404,7 @@ class TestMaxFlowMinCutInterface:
                     result = result[0]
                 assert_equal(fv, result, msg=msgi.format(flow_func.__name__,
                                                     interface_func.__name__))
- 
+
     def test_minimum_cut_no_cutoff(self):
         G = self.G
         for flow_func in flow_funcs:

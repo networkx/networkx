@@ -17,7 +17,7 @@ class TestDiGraphHistorical(HistoricalTests):
     def test_in_degree(self):
         G=self.G()
         G.add_nodes_from('GJK')
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('B', 'C'), ('C', 'D')])
 
         assert_equal(sorted(d for n, d in G.in_degree()),[0, 0, 0, 0, 1, 2, 2])
@@ -27,7 +27,7 @@ class TestDiGraphHistorical(HistoricalTests):
     def test_out_degree(self):
         G=self.G()
         G.add_nodes_from('GJK')
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('B', 'C'), ('C', 'D')])
         assert_equal(sorted([v for k,v in G.in_degree()]),
                      [0, 0, 0, 0, 1, 2, 2])
@@ -46,7 +46,7 @@ class TestDiGraphHistorical(HistoricalTests):
     def test_neighbors(self):
         G=self.G()
         G.add_nodes_from('GJK')
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('B', 'C'), ('C', 'D')])
 
         assert_equal(sorted(G.neighbors('C')),['D'])
@@ -58,7 +58,7 @@ class TestDiGraphHistorical(HistoricalTests):
     def test_successors(self):
         G=self.G()
         G.add_nodes_from('GJK')
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('B', 'C'), ('C', 'D')])
         assert_equal(sorted(G.successors('A')),['B', 'C'])
         assert_equal(sorted(G.successors('A')),['B', 'C'])
@@ -67,12 +67,12 @@ class TestDiGraphHistorical(HistoricalTests):
         assert_equal(sorted(G.successors('G')),[])
         assert_raises(nx.NetworkXError,G.successors,'j')
         assert_raises(nx.NetworkXError,G.successors,'j')
-        
+
 
     def test_predecessors(self):
         G=self.G()
         G.add_nodes_from('GJK')
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('B', 'C'), ('C', 'D')])
         assert_equal(sorted(G.predecessors('C')),['A', 'B'])
         assert_equal(sorted(G.predecessors('C')),['A', 'B'])

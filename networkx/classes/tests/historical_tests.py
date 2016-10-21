@@ -63,7 +63,7 @@ class HistoricalTests(object):
         G.add_node('A')
         assert_true('A' in G)
         assert_false([] in G)  # never raise a Key or TypeError in this test
-        assert_false({1:1} in G) 
+        assert_false({1:1} in G)
 
     def test_add_remove(self):
         # Test add_node and remove_node acting for various nbunch
@@ -77,7 +77,7 @@ class HistoricalTests(object):
 
     def test_nbunch_is_list(self):
         G=self.G()
-        G.add_nodes_from(list("ABCD")) 
+        G.add_nodes_from(list("ABCD"))
         G.add_nodes_from(self.P3) # add nbunch of nodes (nbunch=Graph)
         assert_equal(sorted(G.nodes(),key=str),
                      [1, 2, 3, 'A', 'B', 'C', 'D'])
@@ -135,20 +135,20 @@ class HistoricalTests(object):
         assert_false(G.has_edge('A','C'))
         assert_true(G.has_edge( *('A','B') ))
         if G.is_directed():
-            assert_false(G.has_edge('B','A')) 
+            assert_false(G.has_edge('B','A'))
         else:
             # G is undirected, so B->A is an edge
-            assert_true(G.has_edge('B','A')) 
+            assert_true(G.has_edge('B','A'))
 
 
         G.add_edge('A','C')  # test directedness
         G.add_edge('C','A')
         G.remove_edge('C','A')
         if G.is_directed():
-            assert_true(G.has_edge('A','C')) 
+            assert_true(G.has_edge('A','C'))
         else:
-            assert_false(G.has_edge('A','C')) 
-        assert_false(G.has_edge('C','A')) 
+            assert_false(G.has_edge('A','C'))
+        assert_false(G.has_edge('C','A'))
 
 
     def test_self_loop(self):
@@ -157,7 +157,7 @@ class HistoricalTests(object):
         assert_true(G.has_edge('A','A'))
         G.remove_edge('A','A')
         G.add_edge('X','X')
-        assert_true(G.has_node('X')) 
+        assert_true(G.has_node('X'))
         G.remove_node('X')
         G.add_edge('A','Z') # should add the node silently
         assert_true(G.has_node('Z'))
@@ -167,7 +167,7 @@ class HistoricalTests(object):
         G.add_edges_from([('B','C')])   # test add_edges_from()
         assert_true(G.has_edge('B','C'))
         if G.is_directed():
-            assert_false(G.has_edge('C','B')) 
+            assert_false(G.has_edge('C','B'))
         else:
             assert_true(G.has_edge('C','B'))  # undirected
 
@@ -176,14 +176,14 @@ class HistoricalTests(object):
         assert_true(G.has_edge('B','D'))
 
         if G.is_directed():
-            assert_false(G.has_edge('D','B')) 
+            assert_false(G.has_edge('D','B'))
         else:
             assert_true(G.has_edge('D','B'))  # undirected
 
     def test_add_edges_from2(self):
         G=self.G()
         # after failing silently, should add 2nd edge
-        G.add_edges_from([tuple('IJ'),list('KK'),tuple('JK')]) 
+        G.add_edges_from([tuple('IJ'),list('KK'),tuple('JK')])
         assert_true(G.has_edge(*('I','J')))
         assert_true(G.has_edge(*('K','K')))
         assert_true(G.has_edge(*('J','K')))
@@ -191,10 +191,10 @@ class HistoricalTests(object):
             assert_false(G.has_edge(*('K','J')))
         else:
             assert_true(G.has_edge(*('K','J')))
-            
+
     def test_add_edges_from3(self):
         G=self.G()
-        G.add_edges_from(zip(list('ACD'),list('CDE'))) 
+        G.add_edges_from(zip(list('ACD'),list('CDE')))
         assert_true(G.has_edge('D','E'))
         assert_false(G.has_edge('E','C'))
 
@@ -209,14 +209,14 @@ class HistoricalTests(object):
         assert_false(G.has_edge('P','M'))
         assert_raises(TypeError,G.remove_edge,'M')
 
-        G.add_edge('N','M')  
+        G.add_edge('N','M')
         assert_true(G.has_edge('M','N'))
         G.remove_edge('M','N')
         assert_false(G.has_edge('M','N'))
-                        
+
         # self loop fails silently
         G.remove_edges_from([list('HI'),list('DF'),
-                             tuple('KK'),tuple('JK')]) 
+                             tuple('KK'),tuple('JK')])
         assert_false(G.has_edge('H','I'))
         assert_false(G.has_edge('J','K'))
         G.remove_edges_from([list('IJ'),list('KK'),list('JK')])
@@ -228,7 +228,7 @@ class HistoricalTests(object):
     def test_edges_nbunch(self):
         # Test G.edges(nbunch) with various forms of nbunch
         G=self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
         # node not in nbunch should be quietly ignored
         assert_raises(nx.NetworkXError,G.edges,6)
@@ -256,7 +256,7 @@ class HistoricalTests(object):
 
     def test_edges_nbunch(self):
         G=self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
         # Test G.edges(nbunch) with various forms of nbunch
         # node not in nbunch should be quietly ignored
@@ -282,13 +282,13 @@ class HistoricalTests(object):
         assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
 
         # nbunch can be nothing (whole graph)
-        assert_edges_equal(G.edges(), [('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        assert_edges_equal(G.edges(), [('A', 'B'), ('A', 'C'), ('B', 'D'),
                            ('C', 'B'), ('C', 'D')])
 
 
     def test_degree(self):
         G=self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
         assert_equal(G.degree('A'),2)
 
@@ -321,7 +321,7 @@ class HistoricalTests(object):
 
     def test_order_size(self):
         G=self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
         assert_equal(G.order(),4)
         assert_equal(G.size(),5)
@@ -338,16 +338,16 @@ class HistoricalTests(object):
 
     def test_subgraph(self):
         G=self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
-        SG=G.subgraph(['A','B','D']) 
+        SG=G.subgraph(['A','B','D'])
         assert_nodes_equal(list(SG), ['A', 'B', 'D'])
         assert_edges_equal(list(SG.edges()), [('A', 'B'), ('B', 'D')])
 
     def test_to_directed(self):
         G=self.G()
         if not G.is_directed():
-            G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+            G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                               ('C', 'B'), ('C', 'D')])
 
             DG=G.to_directed()
@@ -357,7 +357,7 @@ class HistoricalTests(object):
             assert_equal(DG.name,G.name)
             assert_equal(DG.adj,G.adj)
             assert_equal(sorted(DG.out_edges(list('AB'))),
-                         [('A', 'B'), ('A', 'C'), ('B', 'A'), 
+                         [('A', 'B'), ('A', 'C'), ('B', 'A'),
                           ('B', 'C'), ('B', 'D')])
             DG.remove_edge('A','B')
             assert_true(DG.has_edge('B','A')) # this removes B-A but not  A-B
@@ -366,7 +366,7 @@ class HistoricalTests(object):
     def test_to_undirected(self):
         G=self.G()
         if G.is_directed():
-            G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+            G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                               ('C', 'B'), ('C', 'D')])
             UG=G.to_undirected()       # to_undirected
             assert_not_equal(UG,G)
@@ -386,7 +386,7 @@ class HistoricalTests(object):
 
     def test_neighbors(self):
         G=self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
         G.add_nodes_from('GJK')
         assert_equal(sorted(G['A']),['B', 'C'])
@@ -397,7 +397,7 @@ class HistoricalTests(object):
 
     def test_iterators(self):
         G=self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
         G.add_nodes_from('GJK')
         assert_equal(sorted(G.nodes()),
@@ -408,7 +408,7 @@ class HistoricalTests(object):
         assert_equal(sorted([v for k,v in G.degree()]),
                      [0, 0, 0, 2, 2, 3, 3])
         assert_equal(sorted(G.degree(), key=str),
-                     [('A', 2), ('B', 3), ('C', 3), ('D', 2), 
+                     [('A', 2), ('B', 3), ('C', 3), ('D', 2),
                       ('G', 0), ('J', 0), ('K', 0)])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])
         assert_raises(nx.NetworkXError,G.neighbors,'X')
@@ -425,7 +425,7 @@ class HistoricalTests(object):
         assert_true(nx.is_isomorphic(H,nullgraph))
 
     def test_empty_subgraph(self):
-        # Subgraph of an empty graph is an empty graph. test 1 
+        # Subgraph of an empty graph is an empty graph. test 1
         nullgraph=nx.null_graph()
         E5=nx.empty_graph(5)
         E10=nx.empty_graph(10)

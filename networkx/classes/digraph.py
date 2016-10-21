@@ -171,7 +171,7 @@ class DiGraph(Graph):
     edge data keyed by neighbor.  The inner dict (edge_attr_dict) represents
     the edge data and holds edge attribute values keyed by attribute names.
 
-    Each of these three dicts can be replaced in a subclass by a user defined 
+    Each of these three dicts can be replaced in a subclass by a user defined
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
@@ -364,7 +364,7 @@ class DiGraph(Graph):
             Node attributes are updated using the attribute dict.
         attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
-            Node attributes specified in nodes as a tuple take 
+            Node attributes specified in nodes as a tuple take
             precedence over attributes specified via keyword arguments.
 
         See Also
@@ -400,7 +400,7 @@ class DiGraph(Graph):
         for n in nodes:
             # keep all this inside try/except because
             # CPython throws TypeError on n not in self.succ,
-            # while pre-2.7.5 ironpython throws on self.succ[n] 
+            # while pre-2.7.5 ironpython throws on self.succ[n]
             try:
                 if n not in self.succ:
                     self.succ[n] = self.adjlist_inner_dict_factory()
@@ -592,7 +592,7 @@ class DiGraph(Graph):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in an ebunch take precedence over 
+        Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
         Examples
@@ -748,7 +748,7 @@ class DiGraph(Graph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
@@ -776,7 +776,7 @@ class DiGraph(Graph):
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges(data='weight', default=1)) 
+        >>> list(G.edges(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges([0,2]))
         [(0, 1), (2, 3)]
@@ -816,7 +816,7 @@ class DiGraph(Graph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
@@ -1161,7 +1161,7 @@ class DiGraph(Graph):
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
 
-        Warning: If you have subclassed DiGraph to use dict-like objects 
+        Warning: If you have subclassed DiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the Graph
         created by this method.
         """

@@ -6,8 +6,8 @@ You must have matplotlib for this to work.
 try:
     import matplotlib.pyplot as plt
 except:
-    raise 
-    
+    raise
+
 import networkx as nx
 
 G=nx.path_graph(8)

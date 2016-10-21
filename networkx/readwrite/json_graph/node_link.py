@@ -1,10 +1,10 @@
 #    Copyright (C) 2011-2016 by
-# 
+#
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Michael E. Rose <Michael.Ernst.Rose@gmail.com>
-#    
+#
 #    All rights reserved.
 #    BSD license.
 from itertools import chain, count
@@ -55,7 +55,7 @@ def node_link_data(G, attrs=None):
     >>> G = nx.Graph([('A', 'B')])
     >>> data1 = json_graph.node_link_data(G)
     >>> H = nx.gn_graph(2)
-    >>> data2 = json_graph.node_link_data(H, {'link': 'edges', 'source': 'from', 'target': 'to'})    
+    >>> data2 = json_graph.node_link_data(H, {'link': 'edges', 'source': 'from', 'target': 'to'})
 
     To serialize with json
 

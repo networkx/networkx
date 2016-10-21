@@ -15,7 +15,7 @@ class TestNeighborConnectivity(object):
         answer={1:2.0,2:1.5}
         nd = nx.average_degree_connectivity(G)
         assert_equal(nd,answer)
-        
+
         D=G.to_directed()
         answer={2:2.0,4:1.5}
         nd = nx.average_degree_connectivity(D)
@@ -39,7 +39,7 @@ class TestNeighborConnectivity(object):
         answer={1:2.0,2:1.5}
         nd = nx.average_degree_connectivity(G)
         assert_equal(nd,answer)
-        
+
         D=G.to_directed()
         answer={2:2.0,4:1.8}
         nd = nx.average_degree_connectivity(D,weight='weight')
@@ -65,7 +65,7 @@ class TestNeighborConnectivity(object):
         answer={1:2.0,2:1.5}
         nd = nx.average_degree_connectivity(G,weight=None)
         assert_equal(nd,answer)
-        
+
         D=G.to_directed()
         answer={2:2.0,4:1.8}
         nd = nx.average_degree_connectivity(D,weight='other')

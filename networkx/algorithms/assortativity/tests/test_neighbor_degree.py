@@ -9,7 +9,7 @@ class TestAverageNeighbor(object):
         answer={0:2,1:1.5,2:1.5,3:2}
         nd = nx.average_neighbor_degree(G)
         assert_equal(nd,answer)
-        
+
         D=G.to_directed()
         nd = nx.average_neighbor_degree(D)
         assert_equal(nd,answer)
@@ -28,7 +28,7 @@ class TestAverageNeighbor(object):
         answer={0:2,1:1.8,2:1.8,3:2}
         nd = nx.average_neighbor_degree(G,weight='weight')
         assert_equal(nd,answer)
-        
+
         D=G.to_directed()
         nd = nx.average_neighbor_degree(D,weight='weight')
         assert_equal(nd,answer)
@@ -51,7 +51,7 @@ class TestAverageNeighbor(object):
         answer={0:3,1:3,2:3,3:3}
         nd = nx.average_neighbor_degree(G)
         assert_equal(nd,answer)
-        
+
         D=G.to_directed()
         nd = nx.average_neighbor_degree(D)
         assert_equal(nd,answer)
@@ -79,4 +79,4 @@ class TestAverageNeighbor(object):
         nd = nx.average_neighbor_degree(G,weight='weight')[5]
         assert_almost_equal(nd,3.222222,places=5)
 
-    
+

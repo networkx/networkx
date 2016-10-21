@@ -165,8 +165,8 @@ def barbell_graph(m1, m2, create_using=None):
         `m1, ..., m1+m2-1` for the path,
         and `m1+m2, ..., 2*m1+m2-1` for the right barbell.
 
-    The 3 subgraphs are joined via the edges `(m1-1, m1)` and 
-    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete 
+    The 3 subgraphs are joined via the edges `(m1-1, m1)` and
+    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete
     graphs joined together.
 
     This graph is an extremal example in David Aldous
@@ -435,7 +435,7 @@ def empty_graph(n=0, create_using=None):
 @nodes_or_number([0, 1])
 def grid_2d_graph(m, n, periodic=False, create_using=None):
     """ Return the 2d grid graph of mxn nodes
-    
+
     The grid graph has each node connected to its four nearest neighbors.
 
     Parameters
@@ -573,7 +573,7 @@ def lollipop_graph(m, n, create_using=None):
 
     Notes
     =====
-    The 2 subgraphs are joined via an edge (m-1, m).  
+    The 2 subgraphs are joined via an edge (m-1, m).
     If n=0, this is merely a complete graph.
 
     (This graph is an extremal example in David Aldous and Jim
@@ -643,7 +643,7 @@ def path_graph(n, create_using=None):
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
     """ Return the star graph
-    
+
     The star graph consists of one center node connected to n outer nodes.
 
     Parameters
@@ -683,7 +683,7 @@ def trivial_graph(create_using=None):
 
 def turan_graph(n,r):
     """ Return the Turan Graph
-    
+
     The Turan Graph is a complete multipartite graph on `n` vertices
     with `r` partitions with the property that it has the maximum number
     of edges for any graph with the same number of vertices and partitions.
@@ -707,7 +707,7 @@ def turan_graph(n,r):
     """
 
     if not isinstance(n,int) or not isinstance(r,int):
-        raise nx.NetworkXError("n and r must be type int") 
+        raise nx.NetworkXError("n and r must be type int")
 
     if not 1 <= r <= n:
         raise nx.NetworkXError("Must satisfy 1 <= r <= n")
@@ -721,7 +721,7 @@ def turan_graph(n,r):
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """ Return the wheel graph
-    
+
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
 
     Parameters

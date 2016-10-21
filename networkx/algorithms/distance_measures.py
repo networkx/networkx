@@ -27,9 +27,9 @@ def eccentricity(G, v=None, sp=None):
        A graph
 
     v : node, optional
-       Return value of specified node       
+       Return value of specified node
 
-    sp : dict of dicts, optional       
+    sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
 
     Returns
@@ -39,7 +39,7 @@ def eccentricity(G, v=None, sp=None):
     """
 #    nodes=
 #    nodes=[]
-#    if v is None:                # none, use entire graph 
+#    if v is None:                # none, use entire graph
 #        nodes=G.nodes()
 #    elif v in G:               # is v a single node
 #        nodes=[v]
@@ -102,9 +102,9 @@ def diameter(G, e=None):
     return max(e.values())
 
 def periphery(G, e=None):
-    """Return the periphery of the graph G. 
+    """Return the periphery of the graph G.
 
-    The periphery is the set of nodes with eccentricity equal to the diameter. 
+    The periphery is the set of nodes with eccentricity equal to the diameter.
 
     Parameters
     ----------
@@ -149,9 +149,9 @@ def radius(G, e=None):
     return min(e.values())
 
 def center(G, e=None):
-    """Return the center of the graph G. 
+    """Return the center of the graph G.
 
-    The center is the set of nodes with eccentricity equal to radius. 
+    The center is the set of nodes with eccentricity equal to radius.
 
     Parameters
     ----------

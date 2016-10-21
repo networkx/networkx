@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
@@ -14,7 +14,7 @@ __all__=['degree_centrality',
 def degree_centrality(G, nodes):
     r"""Compute the degree centrality for nodes in a bipartite network.
 
-    The degree centrality for a node `v` is the fraction of nodes 
+    The degree centrality for a node `v` is the fraction of nodes
     connected to it.
 
     Parameters
@@ -43,9 +43,9 @@ def degree_centrality(G, nodes):
     but the dictionary returned contains all nodes from both bipartite node
     sets.
 
-    For unipartite networks, the degree centrality values are 
-    normalized by dividing by the maximum possible degree (which is 
-    `n-1` where `n` is the number of nodes in G). 
+    For unipartite networks, the degree centrality values are
+    normalized by dividing by the maximum possible degree (which is
+    `n-1` where `n` is the number of nodes in G).
 
     In the bipartite case, the maximum possible degree of a node in a
     bipartite node set is the number of nodes in the opposite node set
@@ -59,12 +59,12 @@ def degree_centrality(G, nodes):
         d_{v} = \frac{deg(v)}{n}, \mbox{for} v \in V ,
 
 
-    where `deg(v)` is the degree of node `v`.        
+    where `deg(v)` is the degree of node `v`.
 
     References
     ----------
-    .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation 
-        Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook 
+    .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
+        Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
         http://www.steveborgatti.com/papers/bhaffiliations.pdf
     """
@@ -81,34 +81,34 @@ def betweenness_centrality(G, nodes):
     r"""Compute betweenness centrality for nodes in a bipartite network.
 
     Betweenness centrality of a node `v` is the sum of the
-    fraction of all-pairs shortest paths that pass through `v`. 
+    fraction of all-pairs shortest paths that pass through `v`.
 
     Values of betweenness are normalized by the maximum possible
-    value which for bipartite graphs is limited by the relative size 
+    value which for bipartite graphs is limited by the relative size
     of the two node sets [1]_.
 
     Let `n` be the number of nodes in the node set `U` and
     `m` be the number of nodes in the node set `V`, then
-    nodes in `U` are normalized by dividing by 
+    nodes in `U` are normalized by dividing by
 
     .. math::
 
        \frac{1}{2} [m^2 (s + 1)^2 + m (s + 1)(2t - s - 1) - t (2s - t + 3)] ,
 
     where
-    
+
     .. math::
-        
+
         s = (n - 1) \div m , t = (n - 1) \mod m ,
-    
+
     and nodes in `V` are normalized by dividing by
 
-    .. math::    
+    .. math::
 
         \frac{1}{2} [n^2 (p + 1)^2 + n (p + 1)(2r - p - 1) - r (2p - r + 3)] ,
 
     where,
-    
+
     .. math::
 
         p = (m - 1) \div n , r = (m - 1) \mod n .
@@ -124,7 +124,7 @@ def betweenness_centrality(G, nodes):
     Returns
     -------
     betweenness : dictionary
-        Dictionary keyed by node with bipartite betweenness centrality 
+        Dictionary keyed by node with bipartite betweenness centrality
         as the value.
 
     See Also
@@ -141,8 +141,8 @@ def betweenness_centrality(G, nodes):
 
     References
     ----------
-    .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation 
-        Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook 
+    .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
+        Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
         http://www.steveborgatti.com/papers/bhaffiliations.pdf
     """
@@ -160,7 +160,7 @@ def betweenness_centrality(G, nodes):
     bet_max_bot = (((n**2)*((p+1)**2))+
                    (n*(p+1)*(2*r-p-1))-
                    (r*((2*p)-r+3)))/2.0
-    betweenness = nx.betweenness_centrality(G, normalized=False, 
+    betweenness = nx.betweenness_centrality(G, normalized=False,
                                             weight=None)
     for node in top:
         betweenness[node]/=bet_max_top
@@ -171,7 +171,7 @@ def betweenness_centrality(G, nodes):
 def closeness_centrality(G, nodes, normalized=True):
     r"""Compute the closeness centrality for nodes in a bipartite network.
 
-    The closeness of a node is the distance to all other nodes in the 
+    The closeness of a node is the distance to all other nodes in the
     graph or in the case that the graph is not connected to all other nodes
     in the connected component containing that node.
 
@@ -183,13 +183,13 @@ def closeness_centrality(G, nodes, normalized=True):
     nodes : list or container
         Container with all nodes in one bipartite node set.
 
-    normalized : bool, optional      
+    normalized : bool, optional
       If True (default) normalize by connected component size.
 
     Returns
     -------
     closeness : dictionary
-        Dictionary keyed by node with bipartite closeness centrality 
+        Dictionary keyed by node with bipartite closeness centrality
         as the value.
 
     See Also
@@ -204,13 +204,13 @@ def closeness_centrality(G, nodes, normalized=True):
     The nodes input parameter must conatin all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both node sets.
 
-    Closeness centrality is normalized by the minimum distance possible. 
-    In the bipartite case the minimum distance for a node in one bipartite 
-    node set is 1 from all nodes in the other node set and 2 from all 
+    Closeness centrality is normalized by the minimum distance possible.
+    In the bipartite case the minimum distance for a node in one bipartite
+    node set is 1 from all nodes in the other node set and 2 from all
     other nodes in its own set [1]_. Thus the closeness centrality
-    for node `v`  in the two bipartite sets `U` with 
-    `n` nodes and `V` with `m` nodes is 
- 
+    for node `v`  in the two bipartite sets `U` with
+    `n` nodes and `V` with `m` nodes is
+
     .. math::
 
         c_{v} = \frac{m + 2(n - 1)}{d}, \mbox{for} v \in U,
@@ -231,8 +231,8 @@ def closeness_centrality(G, nodes, normalized=True):
 
     References
     ----------
-    .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation 
-        Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook 
+    .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
+        Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
         http://www.steveborgatti.com/papers/bhaffiliations.pdf
     """

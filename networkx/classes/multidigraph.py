@@ -512,7 +512,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
 
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.

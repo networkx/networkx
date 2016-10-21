@@ -89,7 +89,7 @@ if __name__ == '__main__':
         except CalledProcessError:
             print("using development as label")
             tag = "development"   # Fallback
-    
+
     startdir = os.getcwdu()
     if not os.path.exists(pages_dir):
         # init the repo

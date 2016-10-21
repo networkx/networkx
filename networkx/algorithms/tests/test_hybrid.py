@@ -2,7 +2,7 @@ from nose.tools import *
 import networkx as nx
 
 def test_2d_grid_graph():
-    # FC article claims 2d grid graph of size n is (3,3)-connected 
+    # FC article claims 2d grid graph of size n is (3,3)-connected
     # and (5,9)-connected, but I don't think it is (5,9)-connected
     G=nx.grid_2d_graph(8,8,periodic=True)
     assert_true(nx.is_kl_connected(G,3,3))
@@ -21,4 +21,4 @@ def test_small_graph():
                                          low_memory=True,
                                          same_as_graph=True)
     assert_true(graphOK)
-    
+

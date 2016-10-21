@@ -19,7 +19,7 @@ def weighted_G():
 
 
 class TestBetweennessCentrality(object):
-        
+
     def test_K5(self):
         """Betweenness centrality: K5"""
         G=nx.complete_graph(5)
@@ -133,7 +133,7 @@ class TestBetweennessCentrality(object):
     def test_ladder_graph(self):
         """Betweenness centrality: Ladder graph"""
         G = nx.Graph() # ladder_graph(3)
-        G.add_edges_from([(0,1), (0,2), (1,3), (2,3), 
+        G.add_edges_from([(0,1), (0,2), (1,3), (2,3),
                           (2,4), (4,5), (3,5)])
         b_answer={0:1.667,1: 1.667,2: 6.667,
                   3: 6.667,4: 1.667,5: 1.667}
@@ -196,7 +196,7 @@ class TestBetweennessCentrality(object):
 
 
 class TestWeightedBetweennessCentrality(object):
-        
+
     def test_K5(self):
         """Weighted betweenness centrality: K5"""
         G=nx.complete_graph(5)
@@ -245,7 +245,7 @@ class TestWeightedBetweennessCentrality(object):
 
 
     def test_krackhardt_kite_graph_normalized(self):
-        """Weighted betweenness centrality: 
+        """Weighted betweenness centrality:
         Krackhardt kite graph normalized
         """
         G=nx.krackhardt_kite_graph()
@@ -260,7 +260,7 @@ class TestWeightedBetweennessCentrality(object):
 
 
     def test_florentine_families_graph(self):
-        """Weighted betweenness centrality: 
+        """Weighted betweenness centrality:
         Florentine families graph"""
         G=nx.florentine_families_graph()
         b_answer=\
@@ -290,7 +290,7 @@ class TestWeightedBetweennessCentrality(object):
     def test_ladder_graph(self):
         """Weighted betweenness centrality: Ladder graph"""
         G = nx.Graph() # ladder_graph(3)
-        G.add_edges_from([(0,1), (0,2), (1,3), (2,3), 
+        G.add_edges_from([(0,1), (0,2), (1,3), (2,3),
                           (2,4), (4,5), (3,5)])
         b_answer={0:1.667,1: 1.667,2: 6.667,
                   3: 6.667,4: 1.667,5: 1.667}
@@ -303,8 +303,8 @@ class TestWeightedBetweennessCentrality(object):
             assert_almost_equal(b[n],b_answer[n],places=3)
 
     def test_G(self):
-        """Weighted betweenness centrality: G"""                   
-        G = weighted_G()               
+        """Weighted betweenness centrality: G"""
+        G = weighted_G()
         b_answer={0: 2.0, 1: 0.0, 2: 4.0, 3: 3.0, 4: 4.0, 5: 0.0}
         b=nx.betweenness_centrality(G,
                                           weight='weight',
@@ -313,7 +313,7 @@ class TestWeightedBetweennessCentrality(object):
             assert_almost_equal(b[n],b_answer[n])
 
     def test_G2(self):
-        """Weighted betweenness centrality: G2"""                   
+        """Weighted betweenness centrality: G2"""
         G=nx.DiGraph()
         G.add_weighted_edges_from([('s','u',10) ,('s','x',5) ,
                                    ('u','v',1) ,('u','x',2) ,
@@ -331,7 +331,7 @@ class TestWeightedBetweennessCentrality(object):
 
 
 class TestEdgeBetweennessCentrality(object):
-        
+
     def test_K5(self):
         """Edge betweenness centrality: K5"""
         G=nx.complete_graph(5)
@@ -384,7 +384,7 @@ class TestEdgeBetweennessCentrality(object):
             assert_almost_equal(b[n],b_answer[n])
 
 class TestWeightedEdgeBetweennessCentrality(object):
-        
+
     def test_K5(self):
         """Edge betweenness centrality: K5"""
         G=nx.complete_graph(5)
@@ -420,8 +420,8 @@ class TestWeightedEdgeBetweennessCentrality(object):
             assert_almost_equal(b[n],b_answer[n])
 
     def test_weighted_graph(self):
-        eList = [(0, 1, 5), (0, 2, 4), (0, 3, 3), 
-                 (0, 4, 2), (1, 2, 4), (1, 3, 1), 
+        eList = [(0, 1, 5), (0, 2, 4), (0, 3, 3),
+                 (0, 4, 2), (1, 2, 4), (1, 3, 1),
                  (1, 4, 3), (2, 4, 5), (3, 4, 4)]
         G = nx.Graph()
         G.add_weighted_edges_from(eList)
@@ -440,8 +440,8 @@ class TestWeightedEdgeBetweennessCentrality(object):
             assert_almost_equal(b[n],b_answer[n])
 
     def test_normalized_weighted_graph(self):
-        eList = [(0, 1, 5), (0, 2, 4), (0, 3, 3), 
-                 (0, 4, 2), (1, 2, 4), (1, 3, 1), 
+        eList = [(0, 1, 5), (0, 2, 4), (0, 3, 3),
+                 (0, 4, 2), (1, 2, 4), (1, 3, 1),
                  (1, 4, 3), (2, 4, 5), (3, 4, 4)]
         G = nx.Graph()
         G.add_weighted_edges_from(eList)

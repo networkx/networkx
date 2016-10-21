@@ -24,8 +24,8 @@ def test_zachary():
     z = nx.karate_club_graph()
     # clique percolation with k=2 is just connected components
     zachary_k2_ground_truth = set([frozenset(z.nodes())])
-    zachary_k3_ground_truth = set([frozenset([0, 1, 2, 3, 7, 8, 12, 13, 14, 
-                                              15, 17, 18, 19, 20, 21, 22, 23, 
+    zachary_k3_ground_truth = set([frozenset([0, 1, 2, 3, 7, 8, 12, 13, 14,
+                                              15, 17, 18, 19, 20, 21, 22, 23,
                                               26, 27, 28, 29, 30, 31, 32, 33]),
                                    frozenset([0, 4, 5, 6, 10, 16]),
                                    frozenset([24, 25, 31])])

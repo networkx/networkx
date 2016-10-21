@@ -54,7 +54,7 @@ class TestShp(object):
 
         shp = drv.CreateDataSource(shppath)
         lyr = createlayer(shp)
- 
+
         for path, name in zip(self.paths, self.names):
             feat = ogr.Feature(lyr.GetLayerDefn())
             g = ogr.Geometry(ogr.wkbLineString)
@@ -67,10 +67,10 @@ class TestShp(object):
         # create single record multiline shapefile for testing
         multi_shp = drv.CreateDataSource(multi_shppath)
         multi_lyr = createlayer(multi_shp, ogr.wkbMultiLineString)
-         
+
         multi_g = ogr.Geometry(ogr.wkbMultiLineString)
         for path in self.paths:
-            
+
             g = ogr.Geometry(ogr.wkbLineString)
             for p in path:
                 g.AddPoint_2D(*p)
@@ -79,7 +79,7 @@ class TestShp(object):
 
         multi_feat = ogr.Feature(multi_lyr.GetLayerDefn())
         multi_feat.SetGeometry(multi_g)
-        multi_feat.SetField("Name", 'a') 
+        multi_feat.SetField("Name", 'a')
         multi_lyr.CreateFeature(multi_feat)
 
         self.shppath = shppath
@@ -97,12 +97,12 @@ class TestShp(object):
             assert_equal(sorted(expected.edges()), sorted(g.edges()))
             g_names = [g.get_edge_data(s, e)['Name'] for s, e in g.edges()]
             assert_equal(names, sorted(g_names))
-                
+
         # simplified
         G = nx.read_shp(self.shppath)
         compare_graph_paths_names(G, self.simplified_paths, \
                                     self.simplified_names)
-       
+
         # unsimplified
         G = nx.read_shp(self.shppath, simplify=False)
         compare_graph_paths_names(G, self.paths, self.names)
@@ -155,8 +155,8 @@ class TestShp(object):
         self.checkgeom(shpdir.GetLayerByName("nodes"), expectedpoints_simple)
         self.checkgeom(shpdir.GetLayerByName("edges"), expectedlines_simple)
 
-        # Test unsimplified 
-        # Nodes should have additional point, 
+        # Test unsimplified
+        # Nodes should have additional point,
         # edges should be 'flattened'
         G = nx.read_shp(self.shppath, simplify=False)
         nx.write_shp(G, tpath)

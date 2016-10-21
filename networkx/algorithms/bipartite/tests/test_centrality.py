@@ -9,7 +9,7 @@ class TestBipartiteCentrality(object):
         self.K3 = nx.complete_bipartite_graph(3,3)
         self.C4 = nx.cycle_graph(4)
         self.davis = nx.davis_southern_women_graph()
-        self.top_nodes = [n for n,d in self.davis.nodes(data=True) 
+        self.top_nodes = [n for n,d in self.davis.nodes(data=True)
                           if d['bipartite']==0]
 
     def test_degree_centrality(self):

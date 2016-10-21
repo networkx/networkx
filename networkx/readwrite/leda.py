@@ -20,7 +20,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_leda', 'parse_leda']
 
-import networkx as nx 
+import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, is_string_like
 
@@ -31,7 +31,7 @@ def read_leda(path, encoding='UTF-8'):
     Parameters
     ----------
     path : file or string
-       File or filename to read.  Filenames ending in .gz or .bz2  will be 
+       File or filename to read.  Filenames ending in .gz or .bz2  will be
        uncompressed.
 
     Returns
@@ -41,7 +41,7 @@ def read_leda(path, encoding='UTF-8'):
     Examples
     --------
     G=nx.read_leda('file.leda')
- 
+
     References
     ----------
     .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
@@ -66,7 +66,7 @@ def parse_leda(lines):
     Examples
     --------
     G=nx.parse_leda(string)
- 
+
     References
     ----------
     .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
@@ -82,7 +82,7 @@ def parse_leda(lines):
         G = nx.DiGraph()
     else:
         G = nx.Graph()
-        
+
     # Nodes
     n =int(next(lines)) # number of nodes
     node={}
@@ -92,7 +92,7 @@ def parse_leda(lines):
         node[i]=symbol
 
     G.add_nodes_from([s for i,s in node.items()])
-	
+
     # Edges
     m = int(next(lines)) # number of edges
     for i in range(m):
@@ -103,4 +103,3 @@ def parse_leda(lines):
         # BEWARE: no handling of reversal edges
         G.add_edge(node[int(s)],node[int(t)],label=label[2:-2])
     return G
-

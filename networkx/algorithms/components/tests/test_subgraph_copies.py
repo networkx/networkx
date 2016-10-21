@@ -17,7 +17,7 @@ class TestSubgraphAttributesDicts:
             nx.attracting_component_subgraphs,
         ]
         self.subgraph_funcs = self.undirected + self.directed
-        
+
         self.D = nx.DiGraph()
         self.D.add_edge(1, 2, eattr='red')
         self.D.add_edge(2, 1, eattr='red')
@@ -30,7 +30,7 @@ class TestSubgraphAttributesDicts:
         self.G.graph['gattr'] = 'green'
 
     def test_subgraphs_default_copy_behavior(self):
-        # Test the default behavior of subgraph functions 
+        # Test the default behavior of subgraph functions
         # For the moment (1.10) the default is to copy
         for subgraph_func in self.subgraph_funcs:
             G = deepcopy(self.G if subgraph_func in self.undirected else self.D)

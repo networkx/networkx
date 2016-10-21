@@ -8,7 +8,7 @@ def run(verbosity=1,doctest=False,numpy=True):
     Parameters
     ----------
     verbosity: integer, optional
-      Level of detail in test reports.  Higher numbers provide  more detail.  
+      Level of detail in test reports.  Higher numbers provide  more detail.
 
     doctest: bool, optional
       True to run doctests in code modules

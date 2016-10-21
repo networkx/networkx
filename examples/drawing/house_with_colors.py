@@ -8,7 +8,7 @@ try:
     import matplotlib.pyplot as plt
 except:
     raise
-    
+
 import networkx as nx
 
 G=nx.house_graph()

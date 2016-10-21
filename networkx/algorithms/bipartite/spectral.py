@@ -4,7 +4,7 @@ Spectral bipartivity measure.
 """
 import networkx as nx
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,7 +17,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
 
     nodes : list or container  optional(default is all nodes)
       Nodes to return value of spectral bipartivity contribution.
@@ -31,7 +31,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
        A single number if the keyword nodes is not specified, or
        a dictionary keyed by node with the spectral bipartivity contribution
        of that node as the value.
-       
+
     Examples
     --------
     >>> from networkx.algorithms import bipartite
@@ -42,7 +42,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
     Notes
     -----
     This implementation uses Numpy (dense) matrices which are not efficient
-    for storing large sparse graphs.  
+    for storing large sparse graphs.
 
     See Also
     --------

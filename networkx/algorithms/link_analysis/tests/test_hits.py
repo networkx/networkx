@@ -12,7 +12,7 @@ import networkx
 class TestHITS:
 
     def setUp(self):
-        
+
         G=networkx.DiGraph()
 
         edges=[(1,3),(1,5),\
@@ -20,12 +20,12 @@ class TestHITS:
            (3,5),\
            (5,4),(5,3),\
            (6,5)]
-           
+
         G.add_edges_from(edges,weight=1)
         self.G=G
         self.G.a=dict(zip(G,[0.000000, 0.000000, 0.366025,
                              0.133975, 0.500000, 0.000000]))
-        self.G.h=dict(zip(G,[ 0.366025, 0.000000, 0.211325, 
+        self.G.h=dict(zip(G,[ 0.366025, 0.000000, 0.211325,
                               0.000000, 0.211325, 0.211325]))
 
 

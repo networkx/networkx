@@ -223,17 +223,17 @@ class TestMinCostFlow:
 
         G = nx.DiGraph()
         G.add_edge('s', 'a')
-        G['s']['a'].update({0: 2, 1: 4}) 
+        G['s']['a'].update({0: 2, 1: 4})
         G.add_edge('s', 'b')
-        G['s']['b'].update({0: 2, 1: 1}) 
+        G['s']['b'].update({0: 2, 1: 1})
         G.add_edge('a', 'b')
-        G['a']['b'].update({0: 5, 1: 2}) 
+        G['a']['b'].update({0: 5, 1: 2})
         G.add_edge('a', 't')
-        G['a']['t'].update({0: 1, 1: 5}) 
+        G['a']['t'].update({0: 1, 1: 5})
         G.add_edge('b', 'a')
-        G['b']['a'].update({0: 1, 1: 3}) 
+        G['b']['a'].update({0: 1, 1: 3})
         G.add_edge('b', 't')
-        G['b']['t'].update({0: 3, 1: 2}) 
+        G['b']['t'].update({0: 3, 1: 2})
 
         "PS.ex.7.1: testing main function"
         sol = nx.max_flow_min_cost(G, 's', 't', capacity=0, weight=1)
