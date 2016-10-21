@@ -10,68 +10,57 @@ __all__ = [
 ]
 
 
-def local_bridges(G, first_match=False):
+def local_bridges(G):
     """ Looks through the graph object `G` for all local bridges.
-    We formally define a local bridge to be any edge `AB` such that the removal
-    of the edge results in a distance strictly greater than 2 between
-    nodes `A` and `B`. We formally define *span* as the distance between two
-    nodes `A` and `B` when the edge connecting them is removed. Note that all
-    bridges are local bridges with span of infinity (outputs span of -1
-    in this function).
+    We formally define a local bridge to be any edge `(u, v)` such that the
+    removal of the edge results in a distance strictly greater than 2 between
+    nodes `u` and `v`. We formally define *span* as the distance between two
+    nodes `u` and `v` when the edge connecting them is removed. Note that all
+    bridges are local bridges with span of infinity (outputs span of
+    float('inf') in this function).
 
     Parameters
     ----------
     G : Undirected Graph object
-    first_match : boolean
-        Tells us if we should only look for at least one instance of a local
-        bridge (True) or look for all (False).
 
     Returns
     ----------
-    dict
-        key : (tuple) edge that is a local bridge
-        value : (int) span of corresponding local bridge
+    iterable
+        Yields a tuple for each local bridge found.
+        Format : `(u, v, d)`
+        `u, v` : edge nodes for this local bridge
+        `d` : span of this local bridge
 
     Examples
     --------
     >>> G = nx.cycle_graph(5)
-    >>> bridges_dict = local_bridges(G)
-    >>> list(bridges_dict.keys())
-    [(0, 1), (1, 2), (3, 4), (2, 3), (0, 4)]
-    >>> list(bridges_dict.values())
-    [4, 4, 4, 4, 4]
+    >>> bridges_list = local_bridges(G)
+    >>> list(bridges_list)
+    [(0, 1, 4), (0, 4, 4), (1, 2, 4), (2, 3, 4), (3, 4, 4)]
 
     Notes
     ----------
-    This function can be useful to quickly determine what local bridges exist
+    This function can be useful to determine what local bridges exist
     in a given network and what their spans are. The function finds the local
-    bridges as follows. For each edge E in graph G, determine the start and
-    end nodes (A and B) and delete the edge. Attempt to find the new shortest
-    path between A and B. If none exists, we have a bridge(which we represent
-    as having span=-1). Otherwise, if the span is strictly greater than 2,
-    that edge is a local bridge. Add edge E back in the graph and repeat this
-    process for all edges.
+    bridges as follows. For each edge `(u, v)`, determine if its a local bridge
+    by checking for no intersection in the neighbors of `u` and `v`. If the
+    edge is a local bridge, determine its span by removing `(u, v)` from the
+    graph, computing the new distance between `u` and `v` and then adding the
+    edge back. If removal of the edge results in an impossible path, we have
+    a bridge. Standard convention is to assign infinite span to bridges.
     """
 
-    # aryamccarthy's suggestion
-    bridges_dict = {}
-    for e in G.edges():
-        G.remove_edge(*e)
-        try:
-            (u, v) = e
-            path_length = nx.shortest_path_length(G, u, v)
-        except nx.NetworkXNoPath:
-            bridges_dict[e] = -1  # found a bridge
-            if first_match:
-                return bridges_dict
-        else:
-            if path_length > 2:  # found a local bridge
-                bridges_dict[e] = path_length
-                if first_match:
-                    return bridges_dict
-        finally:
-            G.add_edge(*e)
-    return bridges_dict
+    H = G.copy(with_data=False)
+    for u, v in G.edges():
+        if not (set(G[u]) & set(G[v])):
+            # edge has a span of at least 2. this is a local bridge
+            H.remove_edge(u, v)
+            try:
+                d = nx.shortest_path_length(H, u, v)
+            except NetworkXNoPath:
+                d = float('inf')
+            H.add_edge(u, v)
+            yield u, v, d
 
 
 def bridges(G):
@@ -147,16 +136,16 @@ def local_bridges_exist(G):
     bridges exist in a given network.
     """
 
-    results = local_bridges(G, first_match=True)
-    if len(results) > 0:
-        return True
-    else:
+    try:
+        next(local_bridges(G))
+    except StopIteration:
         return False
+    return True
 
 
 def bridges_exist(G):
     """ Checks if any bridges exist in this network. We will simply call the
-    `bridges()` function and look for non-zero list length.
+    `bridges()` function and attempt to retrieve at least one bridge.
 
     Parameters
     ----------
