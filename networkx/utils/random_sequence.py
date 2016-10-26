@@ -1,5 +1,5 @@
 """
-Utilities for generating random numbers, random sequences, and 
+Utilities for generating random numbers, random sequences, and
 random selections.
 """
 #    Copyright (C) 2004-2016 by
@@ -37,7 +37,7 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     Repeatedly create a degree sequence by calling sfunction(n,**kwds)
     until achieving a valid degree sequence. If unsuccessful after
     max_tries attempts, raise an exception.
-    
+
     For examples of sfunctions that return sequences of random numbers,
     see networkx.Utils.
 
@@ -85,11 +85,11 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
         p(x)=\frac{x^{-\alpha}}{\zeta(\alpha,x_{min})},
 
-    where `\zeta(\alpha,x_{min})` is the Hurwitz zeta function.        
+    where `\zeta(\alpha,x_{min})` is the Hurwitz zeta function.
 
     Parameters
     ----------
-    alpha : float 
+    alpha : float
       Exponent value of the distribution
     xmin : int
       Minimum value
@@ -119,7 +119,7 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
     References
     ----------
-    ..[1] Luc Devroye, Non-Uniform Random Variate Generation, 
+    ..[1] Luc Devroye, Non-Uniform Random Variate Generation,
        Springer-Verlag, New York, 1986.
     """
     if xmin < 1:
@@ -163,18 +163,18 @@ def cumulative_distribution(distribution):
     psum=float(sum(distribution))
     for i in range(0,len(distribution)):
         cdf.append(cdf[i]+distribution[i]/psum)
-    return cdf        
+    return cdf
 
 
 def discrete_sequence(n, distribution=None, cdistribution=None):
     """
     Return sample sequence of length n from a given discrete distribution
-    or discrete cumulative distribution. 
+    or discrete cumulative distribution.
 
-    One of the following must be specified.  
+    One of the following must be specified.
 
     distribution = histogram of values, will be normalized
-    
+
     cdistribution = normalized discrete cumulative distribution
 
     """
@@ -187,7 +187,7 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
     else:
         raise nx.NetworkXError(
                 "discrete_sequence: distribution or cdistribution missing")
-        
+
 
     # get a uniform random number
     inputseq=[random.random() for i in range(n)]

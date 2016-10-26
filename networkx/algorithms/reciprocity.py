@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#    Copyright (C) 2015 by 
+#    Copyright (C) 2015 by
 #    Haochen Wu <wuhaochen42@gmail.com>
 #    All rights reserved.
 #    BSD license.
@@ -41,7 +41,7 @@ def reciprocity(G, nodes=None):
     -----
     The reciprocity is not defined for isolated nodes.
     In such cases this function will return None.
-    
+
     """
     # If `nodes` is not specified, calculate the reciprocity of the graph.
     if nodes is None:
@@ -61,7 +61,7 @@ def reciprocity(G, nodes=None):
     return dict(_reciprocity_iter(G,nodes))
 
 def _reciprocity_iter(G,nodes):
-    """ Return an iterator of (node, reciprocity).  
+    """ Return an iterator of (node, reciprocity).
 
     """
     n = G.nbunch_iter(nodes)
@@ -78,7 +78,7 @@ def _reciprocity_iter(G,nodes):
         else:
             reciprocity = 2.0*float(len(overlap))/float(n_total)
             yield (node,reciprocity)
-        
+
 @not_implemented_for('undirected','multigraph')
 def overall_reciprocity(G):
     """Compute the reciprocity for the whole graph.
@@ -89,7 +89,7 @@ def overall_reciprocity(G):
     ----------
     G : graph
        A networkx graph
-    
+
     """
     n_all_edge = G.number_of_edges()
     n_overlap_edge = (n_all_edge - G.to_undirected().number_of_edges()) *2

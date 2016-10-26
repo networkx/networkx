@@ -61,7 +61,7 @@ def make_small_graph(graph_description, create_using=None):
     Here ltype is one of "adjacencylist" or "edgelist",
     name is the name of the graph and n the number of nodes.
     This constructs a graph of n nodes with integer labels 0,..,n-1.
-    
+
     If ltype="adjacencylist"  then xlist is an adjacency list
     with exactly n entries, in with the j'th entry (which can be empty)
     specifies the nodes connected to vertex j.
@@ -70,17 +70,17 @@ def make_small_graph(graph_description, create_using=None):
     >>> G=nx.make_small_graph(["adjacencylist","C_4",4,[[2,4],[1,3],[2,4],[1,3]]])
 
     or, since we do not need to add edges twice,
-    
+
     >>> G=nx.make_small_graph(["adjacencylist","C_4",4,[[2,4],[3],[4],[]]])
-    
-    If ltype="edgelist" then xlist is an edge list 
+
+    If ltype="edgelist" then xlist is an edge list
     written as [[v1,w2],[v2,w2],...,[vk,wk]],
     where vj and wj integers in the range 1,..,n
     e.g. the "square" graph C_4 can be obtained by
- 
+
     >>> G=nx.make_small_graph(["edgelist","C_4",4,[[1,2],[3,4],[2,3],[4,1]]])
 
-    Use the create_using argument to choose the graph class/type. 
+    Use the create_using argument to choose the graph class/type.
     """
     ltype=graph_description[0]
     name=graph_description[1]
@@ -115,7 +115,7 @@ def LCF_graph(n,shift_list,repeats,create_using=None):
     notation used in the generation of various cubic Hamiltonian
     graphs of high symmetry. See, for example, dodecahedral_graph,
     desargues_graph, heawood_graph and pappus_graph below.
-    
+
     n (number of nodes)
       The starting graph is the n-cycle with nodes 0,...,n-1.
       (The null graph is returned if n < 0.)
@@ -130,18 +130,18 @@ def LCF_graph(n,shift_list,repeats,create_using=None):
     For v1 cycling through the n-cycle a total of k*repeats
     with shift cycling through shiftlist repeats times connect
     v1 with v1+shift mod n
-          
+
     The utility graph K_{3,3}
 
     >>> G=nx.LCF_graph(6,[3,-3],3)
-    
+
     The Heawood graph
 
     >>> G=nx.LCF_graph(14,[5,-5],7)
 
     See http://mathworld.wolfram.com/LCFNotation.html for a description
     and references.
-    
+
     """
     if create_using is not None and create_using.is_directed():
         raise NetworkXError("Directed Graph not supported")
@@ -154,7 +154,7 @@ def LCF_graph(n,shift_list,repeats,create_using=None):
     G.name="LCF_graph"
     nodes = list(G)
 
-    n_extra_edges=repeats*len(shift_list)    
+    n_extra_edges=repeats*len(shift_list)
     # edges are added n_extra_edges times
     # (not all of these need be new)
     if n_extra_edges < 1:
@@ -285,18 +285,18 @@ def icosahedral_graph(create_using=None):
         ]
     G=make_small_undirected_graph(description, create_using)
     return G
-    
+
 
 def krackhardt_kite_graph(create_using=None):
     """
     Return the Krackhardt Kite Social Network.
- 
+
     A 10 actor social network introduced by David Krackhardt
-    to illustrate: degree, betweenness, centrality, closeness, etc. 
+    to illustrate: degree, betweenness, centrality, closeness, etc.
     The traditional labeling is:
     Andre=1, Beverley=2, Carol=3, Diane=4,
     Ed=5, Fernando=6, Garth=7, Heather=8, Ike=9, Jane=10.
-    
+
     """
     description=[
         "adjacencylist",
@@ -312,7 +312,7 @@ def moebius_kantor_graph(create_using=None):
     """Return the Moebius-Kantor graph."""
     G=LCF_graph(16, [5,-5], 8, create_using)
     G.name="Moebius-Kantor Graph"
-    return G    
+    return G
 
 def octahedral_graph(create_using=None):
     """Return the Platonic Octahedral graph."""
@@ -324,7 +324,7 @@ def octahedral_graph(create_using=None):
         ]
     G=make_small_undirected_graph(description, create_using)
     return G
-    
+
 def pappus_graph():
     """ Return the Pappus graph."""
     G=LCF_graph(18,[5,7,-7,7,-7,-5],3)
@@ -351,7 +351,7 @@ def sedgewick_maze_graph(create_using=None):
     This is the maze used in Sedgewick,3rd Edition, Part 5, Graph
     Algorithms, Chapter 18, e.g. Figure 18.2 and following.
     Nodes are numbered 0,..,7
-    """ 
+    """
     G=empty_graph(0, create_using)
     G.add_nodes_from(range(8))
     G.add_edges_from([[0,2],[0,7],[0,5]])

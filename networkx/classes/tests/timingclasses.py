@@ -3,7 +3,7 @@
 The idea is to use these classes to compare timing with the
 current classes to see if adding features has slowed any methods.
 
-The classes are named TimingGraph, TimingDiGraph, 
+The classes are named TimingGraph, TimingDiGraph,
 TimingMultiGraph and TimingMultiDiGraph
 """
 #    Copyright (C) 2004-2016 by
@@ -3735,7 +3735,7 @@ class TimingMultiGraph(TimingGraph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -3832,7 +3832,7 @@ class TimingMultiGraph(TimingGraph):
         G.add_edges_from( (u,v,key,deepcopy(datadict))
                            for u,nbrs in self.adjacency_iter()
                            for v,keydict in nbrs.items()
-                           for key,datadict in keydict.items() ) 
+                           for key,datadict in keydict.items() )
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
         return G
@@ -3876,22 +3876,22 @@ class TimingMultiGraph(TimingGraph):
         """
         if data:
             if keys:
-                return [ (n,n,k,d) 
-                         for n,nbrs in self.adj.items() 
+                return [ (n,n,k,d)
+                         for n,nbrs in self.adj.items()
                          if n in nbrs for k,d in nbrs[n].items()]
             else:
-                return [ (n,n,d) 
-                         for n,nbrs in self.adj.items() 
+                return [ (n,n,d)
+                         for n,nbrs in self.adj.items()
                          if n in nbrs for d in nbrs[n].values()]
         else:
             if keys:
                 return [ (n,n,k)
-                     for n,nbrs in self.adj.items() 
+                     for n,nbrs in self.adj.items()
                      if n in nbrs for k in nbrs[n].keys()]
 
             else:
                 return [ (n,n)
-                     for n,nbrs in self.adj.items() 
+                     for n,nbrs in self.adj.items()
                      if n in nbrs for d in nbrs[n].values()]
 
 
@@ -4490,7 +4490,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights.
 
@@ -4549,7 +4549,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -4601,7 +4601,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights.
 
@@ -4697,8 +4697,8 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         Parameters
         ----------
         reciprocal : bool (optional)
-          If True only keep edges that appear in both directions 
-          in the original digraph. 
+          If True only keep edges that appear in both directions
+          in the original digraph.
 
         Returns
         -------
@@ -4823,7 +4823,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         if copy:
             H = self.__class__(name="Reverse of (%s)"%self.name)
             H.add_nodes_from(self)
-            H.add_edges_from( (v,u,k,deepcopy(d)) for u,v,k,d 
+            H.add_edges_from( (v,u,k,deepcopy(d)) for u,v,k,d
                               in self.edges(keys=True, data=True) )
             H.graph=deepcopy(self.graph)
             H.node=deepcopy(self.node)

@@ -30,7 +30,7 @@ def _generate_no_biconnected(max_attempts=50):
                 raise Exception(msg % max_attempts)
             else:
                 attempts += 1
- 
+
 def test_articulation_points():
     Ggen = _generate_no_biconnected()
     for flow_func in flow_funcs:

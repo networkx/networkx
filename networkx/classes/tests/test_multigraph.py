@@ -24,7 +24,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         assert_equal(G[0][1][0],{})
         assert_equal(G.get_edge_data(10,20),None)
         assert_equal(G.get_edge_data(0,1,0),{})
-        
+
 
     def test_adjacency(self):
         G=self.K3
@@ -171,7 +171,7 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
         G=self.Graph()
         G.add_edge(*(0,1))
         assert_equal(G.adj,{0: {1: {0:{}}}, 1: {0: {0:{}}}})
-        
+
     def test_add_edge_conflicting_key(self):
         G=self.Graph()
         G.add_edge(0,1,key=1)
@@ -210,7 +210,7 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
         assert_raises((KeyError,nx.NetworkXError), G.remove_edge,-1,0)
         assert_raises((KeyError,nx.NetworkXError), G.remove_edge,0,2,
                       key=1)
-        
+
     def test_remove_edges_from(self):
         G=self.K3.copy()
         G.remove_edges_from([(0,1)])

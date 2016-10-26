@@ -7,7 +7,7 @@ import tempfile
 import os
 
 import networkx as nx
-from networkx.testing import (assert_edges_equal, assert_nodes_equal, 
+from networkx.testing import (assert_edges_equal, assert_nodes_equal,
                                 assert_graphs_equal)
 
 
@@ -152,7 +152,7 @@ class TestEdgelist:
     def test_edgelist_graph(self):
         G=self.G
         (fd,fname)=tempfile.mkstemp()
-        nx.write_edgelist(G,fname)  
+        nx.write_edgelist(G,fname)
         H=nx.read_edgelist(fname)
         H2=nx.read_edgelist(fname)
         assert_not_equal(H,H2) # they should be different graphs
@@ -165,7 +165,7 @@ class TestEdgelist:
     def test_edgelist_digraph(self):
         G=self.DG
         (fd,fname)=tempfile.mkstemp()
-        nx.write_edgelist(G,fname) 
+        nx.write_edgelist(G,fname)
         H=nx.read_edgelist(fname,create_using=nx.DiGraph())
         H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
@@ -178,7 +178,7 @@ class TestEdgelist:
     def test_edgelist_integers(self):
         G=nx.convert_node_labels_to_integers(self.G)
         (fd,fname)=tempfile.mkstemp()
-        nx.write_edgelist(G,fname)  
+        nx.write_edgelist(G,fname)
         H=nx.read_edgelist(fname,nodetype=int)
         # isolated nodes are not written in edgelist
         G.remove_nodes_from(list(nx.isolates(G)))
@@ -190,7 +190,7 @@ class TestEdgelist:
     def test_edgelist_digraph(self):
         G=self.DG
         (fd,fname)=tempfile.mkstemp()
-        nx.write_edgelist(G,fname)  
+        nx.write_edgelist(G,fname)
         H=nx.read_edgelist(fname,create_using=nx.DiGraph())
         G.remove_node('g') # isolated nodes are not written in edgelist
         H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
@@ -203,7 +203,7 @@ class TestEdgelist:
     def test_edgelist_multigraph(self):
         G=self.XG
         (fd,fname)=tempfile.mkstemp()
-        nx.write_edgelist(G,fname) 
+        nx.write_edgelist(G,fname)
         H=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         H2=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         assert_not_equal(H,H2) # they should be different graphs
@@ -215,7 +215,7 @@ class TestEdgelist:
     def test_edgelist_multidigraph(self):
         G=self.XDG
         (fd,fname)=tempfile.mkstemp()
-        nx.write_edgelist(G,fname) 
+        nx.write_edgelist(G,fname)
         H=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiDiGraph())
         H2=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiDiGraph())
         assert_not_equal(H,H2) # they should be different graphs

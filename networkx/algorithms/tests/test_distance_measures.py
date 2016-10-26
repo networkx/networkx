@@ -37,7 +37,7 @@ class TestDistance:
 
 
 
-        
+
     def test_diameter(self):
         assert_equal(networkx.diameter(self.G),6)
 

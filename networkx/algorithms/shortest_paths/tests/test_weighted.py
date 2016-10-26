@@ -400,7 +400,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(D['v'], 9)
         P, D = nx.goldberg_radzik(self.MXG, 's')
         assert_equal(P['v'], 'u')
-        assert_equal(D['v'], 9)        
+        assert_equal(D['v'], 9)
         assert_equal(nx.bellman_ford_path(self.MXG4, 0, 2), [0, 1, 2])
         assert_equal(nx.bellman_ford_path_length(self.MXG4, 0, 2), 4)
         assert_equal(nx.single_source_bellman_ford_path(self.MXG4, 0)[2], [0, 1, 2])

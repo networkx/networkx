@@ -35,7 +35,7 @@ def _generate_no_biconnected(max_attempts=50):
 
 def test_average_connectivity():
     # figure 1 from:
-    # Beineke, L., O. Oellermann, and R. Pippert (2002). The average 
+    # Beineke, L., O. Oellermann, and R. Pippert (2002). The average
     # connectivity of a graph. Discrete mathematics 252(1-3), 31-45
     # http://www.sciencedirect.com/science/article/pii/S0012365X01001807
     G1 = nx.path_graph(3)

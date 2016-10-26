@@ -106,12 +106,12 @@ class TestConvertNumpy(object):
 
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
-        assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3, 
+        assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3,
                       nodelist=nodelist)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3)) 
+        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3))
                             for n in range(3) )
         P4 = path_graph(4)
         A = nx.to_scipy_sparse_matrix(P4)

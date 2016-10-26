@@ -82,7 +82,7 @@ def generate_adjlist(G, delimiter=' '):
             if not directed and t in seen:
                 continue
             if G.is_multigraph():
-                for d in data.values():
+                for _ in data.values():
                     line += make_str(t) + delimiter
             else:
                 line += make_str(t) + delimiter

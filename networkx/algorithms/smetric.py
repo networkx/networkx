@@ -17,7 +17,7 @@ def s_metric(G, normalized=True):
            Normalize the value.
 
     Returns
-    -------       
+    -------
     s : float
         The s-metric of the graph.
 
@@ -32,6 +32,6 @@ def s_metric(G, normalized=True):
         raise nx.NetworkXError("Normalization not implemented")
 #        Gmax = li_smax_graph(list(G.degree().values()))
 #        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
-#    else:    
+#    else:
     return float(sum([G.degree(u)*G.degree(v) for (u,v) in G.edges()]))
 

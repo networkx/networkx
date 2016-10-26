@@ -11,7 +11,7 @@ from sphinx.util import ws_re, caption_ref_re
 # http://www.doughellmann.com/articles/how-tos/sphinx-custom-roles/index.html
 def sample_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     """Custom role.
-   
+
     Parameters
     ----------
     name : str
@@ -28,21 +28,21 @@ def sample_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
         Directive options for customizatoin.
     content : list
         The directive content for customization.
-        
+
     Returns
     -------
     nodes : list
         The list of nodes to insert into the document.
     msgs : list
         The list of system messages, perhaps an error message.
-        
+
     """
     pass
-    
-    
-##################   
-    
-    
+
+
+##################
+
+
 prefixed_roles = {
     # name: (prefix, baseuri)
     'arxiv': ('arXiv:', 'http://arxiv.org/abs/'),
@@ -62,15 +62,15 @@ def prefixed_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     ref = nodes.reference(rawtext, display, refuri=uri, **options)
     node += ref # keep it in the 'literal' background
     return [node], []
-    
+
 def url_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     uri = text
     display = 'url'
     node = nodes.literal('', '')
     node += nodes.reference(rawtext, name, refuri=uri, **options)
     return [node], []
-    
-def trac_ticket_role(name, rawtext, text, lineno, inliner, 
+
+def trac_ticket_role(name, rawtext, text, lineno, inliner,
                      options={}, content=[]):
     app = inliner.document.settings.env.app
     try:
@@ -87,9 +87,9 @@ def trac_ticket_role(name, rawtext, text, lineno, inliner,
     display = utils.unescape(text)
     uri = base + slash + 'ticket/' + text
     node += nodes.reference(rawtext, display, refuri=uri, **options)
-    return [node], []  
+    return [node], []
 
-def trac_changeset_role(name, rawtext, text, lineno, inliner, 
+def trac_changeset_role(name, rawtext, text, lineno, inliner,
                         options={}, content=[]):
     app = inliner.document.settings.env.app
     try:
@@ -98,7 +98,7 @@ def trac_changeset_role(name, rawtext, text, lineno, inliner,
             raise AttributeError
     except AttributeError as err:
         msg = 'trac_url configuration value is not set (%s)'
-        raise ValueError(msg % str(err))    
+        raise ValueError(msg % str(err))
 
     slash = '/' if base[-1] != '/' else ''
     unescaped = utils.unescape(text)
@@ -112,7 +112,7 @@ def trac_changeset_role(name, rawtext, text, lineno, inliner,
     else:
         # hg: use the first 12 hash characters
         display = unescaped[:12]
-        
+
     uri = base + slash + 'changeset/' + text
     node += nodes.reference(rawtext, display, refuri=uri, **options)
     return [node], []
@@ -134,5 +134,5 @@ def setup(app):
     for role, func in active_roles.items():
         roles.register_local_role(role, func)
     app.add_config_value('trac_url', None, 'env')
-        
+
 

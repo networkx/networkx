@@ -21,7 +21,7 @@ class TestFlowBetweennessCentrality(object):
         except ImportError:
             raise SkipTest('NumPy not available.')
 
-        
+
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""
         G=nx.complete_graph(4)
@@ -121,7 +121,7 @@ class TestEdgeFlowBetweennessCentrality(object):
             import scipy
         except ImportError:
             raise SkipTest('NumPy not available.')
-      
+
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""
         G=nx.complete_graph(4)

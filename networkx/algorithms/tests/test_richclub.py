@@ -6,7 +6,7 @@ def test_richclub():
     G = nx.Graph([(0,1),(0,2),(1,2),(1,3),(1,4),(4,5)])
     rc = nx.richclub.rich_club_coefficient(G,normalized=False)
     assert_equal(rc,{0: 12.0/30,1:8.0/12})
-    
+
     # test single value
     rc0 = nx.richclub.rich_club_coefficient(G,normalized=False)[0]
     assert_equal(rc0,12.0/30.0)
@@ -43,7 +43,7 @@ def test_richclub3():
                      13:0.0,
                      14:0.0,
                      15:0.0,})
-    
+
 def test_richclub4():
     G = nx.Graph()
     G.add_edges_from([(0,1),(0,2),(0,3),(0,4),(4,5),(5,9),(6,9),(7,9),(8,9)])

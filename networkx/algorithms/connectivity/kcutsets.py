@@ -20,20 +20,20 @@ __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 __all__ = ['all_node_cuts']
 
 def all_node_cuts(G, k=None, flow_func=None):
-    r"""Returns all minimum k cutsets of an undirected graph G. 
+    r"""Returns all minimum k cutsets of an undirected graph G.
 
     This implementation is based on Kanevsky's algorithm [1]_ for finding all
-    minimum-size node cut-sets of an undirected graph G; ie the set (or sets) 
-    of nodes of cardinality equal to the node connectivity of G. Thus if 
+    minimum-size node cut-sets of an undirected graph G; ie the set (or sets)
+    of nodes of cardinality equal to the node connectivity of G. Thus if
     removed, would break G into two or more connected components.
-   
+
     Parameters
     ----------
     G : NetworkX graph
         Undirected graph
 
     k : Integer
-        Node connectivity of the input graph. If k is None, then it is 
+        Node connectivity of the input graph. If k is None, then it is
         computed. Default value: None.
 
     flow_func : function
@@ -41,7 +41,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         edmonds_karp. This function performs better in sparse graphs with
         right tailed degree distributions. shortest_augmenting_path will
         perform better in denser graphs.
-        
+
 
     Returns
     -------
@@ -65,10 +65,10 @@ def all_node_cuts(G, k=None, flow_func=None):
     -----
     This implementation is based on the sequential algorithm for finding all
     minimum-size separating vertex sets in a graph [1]_. The main idea is to
-    compute minimum cuts using local maximum flow computations among a set 
+    compute minimum cuts using local maximum flow computations among a set
     of nodes of highest degree and all other non-adjacent nodes in the Graph.
     Once we find a minimum cut, we add an edge between the high degree
-    node and the target node of the local maximum flow computation to make 
+    node and the target node of the local maximum flow computation to make
     sure that we will not find that minimum cut again.
 
     See also
@@ -79,7 +79,7 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     References
     ----------
-    .. [1]  Kanevsky, A. (1993). Finding all minimum-size separating vertex 
+    .. [1]  Kanevsky, A. (1993). Finding all minimum-size separating vertex
             sets in a graph. Networks 23(6), 533--541.
             http://onlinelibrary.wiley.com/doi/10.1002/net.3230230604/abstract
 
@@ -106,7 +106,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Initialize data structures.
     # Keep track of the cuts already computed so we do not repeat them.
     seen = []
-    # Even-Tarjan reduction is what we call auxiliary digraph 
+    # Even-Tarjan reduction is what we call auxiliary digraph
     # for node connectivity.
     H = build_auxiliary_node_connectivity(G)
     mapping = H.graph['mapping']
@@ -121,7 +121,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # step 1: Find node connectivity k of G
     if k is None:
         k = nx.node_connectivity(G, flow_func=flow_func)
-    # step 2: 
+    # step 2:
     # Find k nodes with top degree, call it X:
     X = {n for n, d in sorted(G.degree(), key=itemgetter(1), reverse=True)[:k]}
     # Check if X is a k-node-cutset
@@ -145,7 +145,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                                     R.edges(data=True)
                                     if d['capacity'] == d['flow']]
                 R.remove_edges_from(saturated_edges)
-                # step 6: shrink the strongly connected components of 
+                # step 6: shrink the strongly connected components of
                 # residual flow network R and call it L
                 L = nx.condensation(R)
                 cmap = L.graph['mapping']
@@ -170,7 +170,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                             seen.append(node_cut)
                         # Add an edge (x, v) to make sure that we do not
                         # find this cutset again. This is equivalent
-                        # of adding the edge in the input graph 
+                        # of adding the edge in the input graph
                         # G.add_edge(x, v) and then regenerate H and R:
                         # Add edges to the auxiliary digraph.
                         H.add_edge('%sB' % mapping[x], '%sA' % mapping[v],

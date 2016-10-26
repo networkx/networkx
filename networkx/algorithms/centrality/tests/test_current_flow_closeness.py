@@ -13,8 +13,8 @@ class TestFlowClosenessCentrality(object):
             import scipy
         except ImportError:
             raise SkipTest('NumPy not available.')
-        
-        
+
+
     def test_K4(self):
         """Closeness centrality: K4"""
         G=nx.complete_graph(4)

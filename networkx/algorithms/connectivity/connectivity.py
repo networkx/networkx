@@ -471,7 +471,6 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
 
     # Reuse auxiliary digraph and residual network
     H = build_auxiliary_node_connectivity(G)
-    mapping = H.graph['mapping']
     R = build_residual_network(H, 'capacity')
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 

@@ -39,7 +39,7 @@ __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
 
-def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None, 
+def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
                         multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a Pandas DataFrame.
 
@@ -119,8 +119,8 @@ def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
     2  0  0  4
     """
     import pandas as pd
-    M = to_numpy_matrix(G, nodelist=nodelist, dtype=dtype, order=order, 
-                        multigraph_weight=multigraph_weight, weight=weight, 
+    M = to_numpy_matrix(G, nodelist=nodelist, dtype=dtype, order=order,
+                        multigraph_weight=multigraph_weight, weight=weight,
                         nonedge=nonedge)
     if nodelist is None:
         nodelist = list(G)
@@ -217,12 +217,12 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
             s, t = row[src_i], row[tar_i]
             if g.is_multigraph():
                 g.add_edge(s, t)
-                key = max(g[s][t])  # default keys just count, so max is most recent 
+                key = max(g[s][t])  # default keys just count, so max is most recent
                 g[s][t][key].update((i, row[j]) for i, j in edge_i)
             else:
                 g.add_edge(s, t)
                 g[s][t].update((i, row[j]) for i, j in edge_i)
-    
+
     # If no column names are given, then just return the edges.
     else:
         for row in df.values:

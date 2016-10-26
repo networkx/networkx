@@ -54,7 +54,7 @@ class TestGeneratorsBipartite():
         bseq=[2,2,2,2,2]
         assert_raises(networkx.exception.NetworkXError,
                       configuration_model, aseq, bseq)
-        
+
         aseq=[3,3,3,3]
         bseq=[2,2,2,2,2,2]
         G=configuration_model(aseq,bseq)
@@ -88,7 +88,7 @@ class TestGeneratorsBipartite():
         bseq=[2,2,2,2,2]
         assert_raises(networkx.exception.NetworkXError,
                       havel_hakimi_graph, aseq, bseq)
-        
+
         bseq=[2,2,2,2,2,2]
         G=havel_hakimi_graph(aseq,bseq)
         assert_equal(sorted(d for n,d in G.degree()),
@@ -108,13 +108,13 @@ class TestGeneratorsBipartite():
         assert_raises(networkx.exception.NetworkXError,
                       havel_hakimi_graph, aseq, bseq,
                       create_using=DiGraph())
-            
+
     def test_reverse_havel_hakimi_graph(self):
         aseq=[3,3,3,3]
         bseq=[2,2,2,2,2]
         assert_raises(networkx.exception.NetworkXError,
                       reverse_havel_hakimi_graph, aseq, bseq)
-        
+
         bseq=[2,2,2,2,2,2]
         G=reverse_havel_hakimi_graph(aseq,bseq)
         assert_equal(sorted(d for n,d in G.degree()),
@@ -140,13 +140,13 @@ class TestGeneratorsBipartite():
         assert_raises(networkx.exception.NetworkXError,
                       reverse_havel_hakimi_graph, aseq, bseq,
                       create_using=DiGraph())
-        
+
     def test_alternating_havel_hakimi_graph(self):
         aseq=[3,3,3,3]
         bseq=[2,2,2,2,2]
         assert_raises(networkx.exception.NetworkXError,
                       alternating_havel_hakimi_graph, aseq, bseq)
-        
+
         bseq=[2,2,2,2,2,2]
         G=alternating_havel_hakimi_graph(aseq,bseq)
         assert_equal(sorted(d for n,d in G.degree()),
@@ -173,7 +173,7 @@ class TestGeneratorsBipartite():
         assert_raises(networkx.exception.NetworkXError,
                       alternating_havel_hakimi_graph, aseq, bseq,
                       create_using=DiGraph())
-        
+
     def test_preferential_attachment(self):
         aseq=[3,2,1,1]
         G=preferential_attachment_graph(aseq,0.5)

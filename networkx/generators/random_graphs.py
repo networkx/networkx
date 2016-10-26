@@ -936,8 +936,8 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     """Return an random graph based on the specified kernel.
 
     The algorithm chooses each of the `[n(n-1)]/2` possible edges with
-    probability specified by a kernel `\kappa(x,y)` [1]_.  The kernel 
-    `\kappa(x,y)` must be a symmetric (in `x,y`), non-negative, 
+    probability specified by a kernel `\kappa(x,y)` [1]_.  The kernel
+    `\kappa(x,y)` must be a symmetric (in `x,y`), non-negative,
     bounded function.
 
     Parameters
@@ -949,16 +949,16 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
         `F(y,a,b) := \int_a^b \kappa(x,y)dx`
     kernel_root: function (optional)
         Function that returns the root `b` of the equation `F(y,a,b) = r`.
-        If None, the root is found using :func:`scipy.optimize.brentq` 
+        If None, the root is found using :func:`scipy.optimize.brentq`
         (this requires SciPy).
     seed : int, optional
         Seed for random number generator (default=None)
 
     Notes
     -----
-    The kernel is specified through its definite integral which must be 
-    provided as one of the arguments. If the integral and root of the 
-    kernel integral can be found in `O(1)` time then this algorithm runs in 
+    The kernel is specified through its definite integral which must be
+    provided as one of the arguments. If the integral and root of the
+    kernel integral can be found in `O(1)` time then this algorithm runs in
     time `O(n+m)` where m is the expected number of edges [2]_.
 
     The nodes are set to integers from 0 to n-1.

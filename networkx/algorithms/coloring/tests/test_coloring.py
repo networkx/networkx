@@ -30,7 +30,7 @@ INTERCHANGE_INVALID = [
     'saturation_largest_first',
     'DSATUR'
 ]
-    
+
 
 class TestColoring:
     def test_basic_cases(self):
@@ -61,7 +61,7 @@ class TestColoring:
             assert_true(any(verify_length(coloring, n_colors)
                             for n_colors in colors))
             assert_true(verify_coloring(graph, coloring))
-            
+
         for strategy, arglist in SPECIAL_TEST_CASES.items():
             for args in arglist:
                 yield (check_special_case, strategy, args[0], args[1], args[2])
@@ -192,9 +192,9 @@ def slf_hc():
         (5,8),
         (6,7),
         (6,8),
-        (7,8)  
+        (7,8)
     ])
-    return graph    
+    return graph
 
 def lf_shc():
     graph = nx.Graph()
@@ -225,7 +225,7 @@ def lf_hc():
         (4, 3)
     ])
     return graph
-    
+
 def sl_shc():
     graph = nx.Graph()
     graph.add_nodes_from([1, 2, 3, 4, 5, 6])

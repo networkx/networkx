@@ -1,6 +1,7 @@
 from nose.tools import assert_equal
 __all__ = ['assert_nodes_equal', 'assert_edges_equal','assert_graphs_equal']
 
+
 def assert_nodes_equal(nodes1, nodes2):
     # Assumes iterables of nodes, or (node,datadict) tuples
     nlist1 = list(nodes1)
@@ -13,6 +14,7 @@ def assert_nodes_equal(nodes1, nodes2):
         d2 = dict.fromkeys(nlist2)
     assert_equal(d1, d2)
 
+
 def assert_edges_equal(edges1, edges2):
     # Assumes iterables with u,v nodes as
     # edge tuples (u,v), or
@@ -22,14 +24,14 @@ def assert_edges_equal(edges1, edges2):
     d1 = defaultdict(dict)
     d2 = defaultdict(dict)
     c1 = 0
-    for c1,e in enumerate(edges1):
-        u,v = e[0],e[1]
+    for c1, e in enumerate(edges1):
+        u, v = e[0],e[1]
         data = e[2:]
         d1[u][v] = data
         d1[v][u] = data
     c2 = 0
     for c2,e in enumerate(edges2):
-        u,v = e[0],e[1]
+        u,v = e[0], e[1]
         data = e[2:]
         d2[u][v] = data
         d2[v][u] = data

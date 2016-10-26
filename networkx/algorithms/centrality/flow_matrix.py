@@ -11,7 +11,7 @@ def flow_matrix_row(G, weight='weight', dtype=float, solver='lu'):
                 "lu": SuperLUInverseLaplacian,
                 "cg": CGInverseLaplacian}
     n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(G, nodelist=range(n), weight=weight, 
+    L = laplacian_sparse_matrix(G, nodelist=range(n), weight=weight,
                                 dtype=dtype, format='csc')
     C = solvername[solver](L, dtype=dtype) # initialize solver
     w = C.w # w is the Laplacian matrix width
@@ -21,10 +21,10 @@ def flow_matrix_row(G, weight='weight', dtype=float, solver='lu'):
         c = d.get(weight,1.0)
         B[u%w] = c
         B[v%w] = -c
-        # get only the rows needed in the inverse laplacian 
+        # get only the rows needed in the inverse laplacian
         # and multiply to get the flow matrix row
-        row = np.dot(B, C.get_rows(u,v))  
-        yield row,(u,v) 
+        row = np.dot(B, C.get_rows(u,v))
+        yield row,(u,v)
 
 
 # Class to compute the inverse laplacian only for specified rows
@@ -131,7 +131,7 @@ def laplacian_sparse_matrix(G, nodelist=None, weight='weight', dtype=None,
                             format='csr'):
     import numpy as np
     import scipy.sparse
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, 
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   dtype=dtype, format=format)
     (n,n) = A.shape
     data = np.asarray(A.sum(axis=1).T)

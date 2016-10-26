@@ -21,7 +21,7 @@ def is_threshold_graph(G):
     Returns True if G is a threshold graph.
     """
     return is_threshold_sequence(list(d for n, d in G.degree()))
-    
+
 def is_threshold_sequence(degree_sequence):
     """
     Returns True if the sequence is a threshold degree seqeunce.
@@ -312,7 +312,7 @@ def threshold_graph(creation_sequence, create_using=None):
             # the loop. Hence using an iterator will result in
             # `RuntimeError: dictionary changed size during iteration`
             for u in list(G):
-                G.add_edge(v, u) 
+                G.add_edge(v, u)
         G.add_node(v)
     return G
 

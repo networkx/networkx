@@ -101,7 +101,7 @@ def davis_southern_women_graph():
 
     References
     ----------
-    .. [1] A. Davis, Gardner, B. B., Gardner, M. R., 1941. Deep South.    
+    .. [1] A. Davis, Gardner, B. B., Gardner, M. R., 1941. Deep South.
         University of Chicago Press, Chicago, IL.
     """
     G = nx.Graph()
@@ -237,12 +237,12 @@ def davis_southern_women_graph():
 
 def florentine_families_graph():
     """Return Florentine families graph.
-    
+
     References
     ----------
     .. [1] Ronald L. Breiger and Philippa E. Pattison
        Cumulated social roles: The duality of persons and their algebras,1
-       Social Networks, Volume 8, Issue 3, September 1986, Pages 215-256 
+       Social Networks, Volume 8, Issue 3, September 1986, Pages 215-256
     """
     G=nx.Graph()
     G.add_edge('Acciaiuoli','Medici')

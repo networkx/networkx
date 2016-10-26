@@ -1,6 +1,6 @@
 '''
     .. warning:: The approximation submodule is not imported automatically with networkx.
-    
+
     Approximate algorithms can be imported with ``from networkx.algorithms import approximation``.
 '''
 from networkx.algorithms.approximation.clustering_coefficient import *

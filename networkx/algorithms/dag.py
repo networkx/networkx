@@ -379,14 +379,14 @@ def transitive_reduction(G):
         If G is not a directed acyclic graph (DAG) transitive reduction is
         not uniquely defined and a NetworkXError exception is raised.
 
-    References 
+    References
     ----------
     https://en.wikipedia.org/wiki/Transitive_reduction
 
-    """   
+    """
     if not is_directed_acyclic_graph(G):
         raise nx.NetworkXError(
-            "Transitive reduction only uniquely defined on directed acyclic graphs.") 
+            "Transitive reduction only uniquely defined on directed acyclic graphs.")
     TR = nx.DiGraph()
     TR.add_nodes_from(G.nodes())
     for u in G:

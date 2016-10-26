@@ -124,11 +124,11 @@ class TestBetweennessCentralitySources:
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
 
-    
+
 
 
 class TestEdgeSubsetBetweennessCentrality:
-    
+
     def test_K5(self):
         """Edge betweenness centrality: K5"""
         G=nx.complete_graph(5)

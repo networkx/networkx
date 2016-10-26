@@ -30,8 +30,8 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
     edges. The number `d_{u,t}` is the *triangle degree* of `u` and the number
     `d_{u,i}` is the *independent edge degree*.
 
-    Parameters 
-    ---------- 
+    Parameters
+    ----------
     joint_degree_sequence : list of integer pairs
         Each list entry corresponds to the independent edge degree and
         triangle degree of a node.

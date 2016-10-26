@@ -10,7 +10,7 @@ def test_valid_degree_sequence1():
         G = nx.erdos_renyi_graph(n,p)
         deg = (d for n, d in G.degree())
         assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
-        assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
+        assert_true( nx.is_valid_degree_sequence(deg, method='hh') )
 
 def test_valid_degree_sequence2():
     n = 100
@@ -18,7 +18,7 @@ def test_valid_degree_sequence2():
         G = nx.barabasi_albert_graph(n,1)
         deg = (d for n, d in G.degree())
         assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
-        assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
+        assert_true( nx.is_valid_degree_sequence(deg, method='hh') )
 
 @raises(nx.NetworkXException)
 def test_string_input():
@@ -40,23 +40,23 @@ class TestAtlas(object):
 
     def setUp(self):
         self.GAG=atlas.graph_atlas_g()
-        
+
     def test_atlas(self):
         for graph in self.GAG:
             deg = (d for n, d in graph.degree())
             assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
-            assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
-        
+            assert_true( nx.is_valid_degree_sequence(deg, method='hh') )
+
 def test_small_graph_true():
         z=[5,3,3,3,3,2,2,2,1,1,1]
         assert_true(nx.is_valid_degree_sequence(z, method='hh'))
-        assert_true(nx.is_valid_degree_sequence(z, method='eg'))       
+        assert_true(nx.is_valid_degree_sequence(z, method='eg'))
         z=[10,3,3,3,3,2,2,2,2,2,2]
         assert_true(nx.is_valid_degree_sequence(z, method='hh'))
-        assert_true(nx.is_valid_degree_sequence(z, method='eg'))        
+        assert_true(nx.is_valid_degree_sequence(z, method='eg'))
         z=[1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
         assert_true(nx.is_valid_degree_sequence(z, method='hh'))
-        assert_true(nx.is_valid_degree_sequence(z, method='eg'))        
+        assert_true(nx.is_valid_degree_sequence(z, method='eg'))
 
 
 
@@ -69,7 +69,7 @@ def test_small_graph_false():
     assert_false(nx.is_valid_degree_sequence(z, method='eg'))
     z=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     assert_false(nx.is_valid_degree_sequence(z, method='hh'))
-    assert_false(nx.is_valid_degree_sequence(z, method='eg'))        
+    assert_false(nx.is_valid_degree_sequence(z, method='eg'))
 
 def test_directed_degree_sequence():
     # Test a range of valid directed degree sequences
@@ -113,7 +113,7 @@ def test_multi_sequence():
     # Test for sequence with odd sum
     seq=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     assert_false(nx.is_multigraphical(seq))
-        
+
 def test_pseudo_sequence():
     # Test small valid pseudo sequence
     seq=[1000,3,3,3,3,2,2,2,1,1]

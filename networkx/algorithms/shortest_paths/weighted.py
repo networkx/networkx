@@ -926,9 +926,9 @@ def bellman_ford(G, source, weight='weight'):
     """
     _warnings.warn("Function bellman_ford() is deprecated, use function bellman_ford_predecessor_and_distance() instead.",
                    DeprecationWarning)
-                   
-    return bellman_ford_predecessor_and_distance(G, source, weight=weight) 
-    
+
+    return bellman_ford_predecessor_and_distance(G, source, weight=weight)
+
 def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
@@ -1015,7 +1015,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, w
         return pred, dist
 
     weight = _weight_function(G, weight)
-        
+
     return (pred, _bellman_ford(G, [source], weight,pred=pred, dist=dist, cutoff=cutoff, target=target))
 
 
@@ -1026,7 +1026,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     Parameters
     ----------
     G : NetworkX graph
-    
+
     source: list
         List of source nodes
 
@@ -1051,7 +1051,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     cutoff: integer or float, optional
         Depth to stop the search. Only paths of length <= cutoff are returned
-        
+
     target: node label, optional
         Ending node for path. Path lengths to other destinations may (and
         probably will) be incorrect.
@@ -1072,7 +1072,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     if pred is None:
         pred = {v: [None] for v in source}
-    
+
     if dist is None:
         dist = {v: 0 for v in source}
 
@@ -1096,11 +1096,11 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                 if cutoff is not None:
                     if dist_v > cutoff:
                         continue
-                                    
+
                 if target is not None:
                     if dist_v > dist.get(target, inf):
                         continue
-                    
+
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
@@ -1112,24 +1112,24 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
-                    
+
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
     if paths is not None:
         dsts = [target] if target is not None else pred
         for dst in dsts:
-        
+
             path = [dst]
             cur = dst
-            
+
             while pred[cur][0] is not None:
                 cur = pred[cur][0]
                 path.append(cur)
-            
+
             path.reverse()
             paths[dst] = path
-    
+
 
     return dist
 
@@ -1180,7 +1180,7 @@ def bellman_ford_path(G, source, target, weight='weight'):
     except KeyError:
         raise nx.NetworkXNoPath(
             "node %s not reachable from %s" % (source, target))
-            
+
 def bellman_ford_path_length(G, source, target, weight='weight'):
     """Returns the shortest path length from source to target
     in a weighted graph.
@@ -1227,9 +1227,9 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
         return 0
 
     weight = _weight_function(G, weight)
-    
+
     length =  _bellman_ford(G, [source], weight, target=target)
-    
+
     try:
         return length[target]
     except KeyError:

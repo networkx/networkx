@@ -20,7 +20,7 @@ __all__ = ['k_components']
 @not_implemented_for('directed')
 def k_components(G, flow_func=None):
     r"""Returns the k-component structure of a graph G.
-    
+
     A `k`-component is a maximal subgraph of a graph G that has, at least,
     node connectivity `k`: we need to remove at least `k` nodes to break it
     into more components. `k`-components have an inherent hierarchical
@@ -56,7 +56,7 @@ def k_components(G, flow_func=None):
     >>> # nodes are in a single component on all three connectivity levels
     >>> G = nx.petersen_graph()
     >>> k_components = nx.k_components(G)
-   
+
     Notes
     -----
     Moody and White [1]_ (appendix A) provide an algorithm for identifying
@@ -76,7 +76,7 @@ def k_components(G, flow_func=None):
         4. If the graph is neither complete nor trivial, return to 1;
            else end.
 
-    This implementation also uses some heuristics (see [3]_ for details) 
+    This implementation also uses some heuristics (see [3]_ for details)
     to speed up the computation.
 
     See also
@@ -101,7 +101,7 @@ def k_components(G, flow_func=None):
 
     """
     # Dictionary with connectivity level (k) as keys and a list of
-    # sets of nodes that form a k-component as values. Note that 
+    # sets of nodes that form a k-component as values. Note that
     # k-compoents can overlap (but only k - 1 nodes).
     k_components = defaultdict(list)
     # Define default flow function

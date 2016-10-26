@@ -134,12 +134,10 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     # build lists of degree-repeated vertex numbers
     stubs=[]
     stubs.extend([[v]*aseq[v] for v in range(0,lena)])
-    astubs=[]
     astubs=[x for subseq in stubs for x in subseq]
 
     stubs=[]
     stubs.extend([[v]*bseq[v-lena] for v in range(lena,lena+lenb)])
-    bstubs=[]
     bstubs=[x for subseq in stubs for x in subseq]
 
     # shuffle lists

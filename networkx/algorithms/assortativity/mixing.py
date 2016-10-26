@@ -19,10 +19,10 @@ def attribute_mixing_dict(G,attribute,nodes=None,normalized=False):
 
     Parameters
     ----------
-    G : graph 
+    G : graph
        NetworkX graph object.
 
-    attribute : string 
+    attribute : string
        Node attribute key.
 
     nodes: list or iterable (optional)
@@ -58,20 +58,20 @@ def attribute_mixing_matrix(G,attribute,nodes=None,mapping=None,
 
     Parameters
     ----------
-    G : graph 
+    G : graph
        NetworkX graph object.
 
-    attribute : string 
+    attribute : string
        Node attribute key.
 
     nodes: list or iterable (optional)
-        Use only nodes in container to build the matrix. The default is 
+        Use only nodes in container to build the matrix. The default is
         all nodes.
 
-    mapping : dictionary, optional        
-       Mapping from node attribute to integer index in matrix.  
-       If not specified, an arbitrary ordering will be used. 
-    
+    mapping : dictionary, optional
+       Mapping from node attribute to integer index in matrix.
+       If not specified, an arbitrary ordering will be used.
+
     normalized : bool (default=False)
        Return counts if False or probabilities if True.
 
@@ -87,13 +87,13 @@ def attribute_mixing_matrix(G,attribute,nodes=None,mapping=None,
     return a
 
 
-def degree_mixing_dict(G, x='out', y='in', weight=None, 
+def degree_mixing_dict(G, x='out', y='in', weight=None,
                        nodes=None, normalized=False):
     """Return dictionary representation of mixing matrix for degree.
 
     Parameters
     ----------
-    G : graph 
+    G : graph
         NetworkX graph object.
 
     x: string ('in','out')
@@ -103,7 +103,7 @@ def degree_mixing_dict(G, x='out', y='in', weight=None,
        The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
+       The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
@@ -120,13 +120,13 @@ def degree_mixing_dict(G, x='out', y='in', weight=None,
 
 
 
-def degree_mixing_matrix(G, x='out', y='in', weight=None, 
+def degree_mixing_matrix(G, x='out', y='in', weight=None,
                          nodes=None, normalized=True):
     """Return mixing matrix for attribute.
 
     Parameters
     ----------
-    G : graph 
+    G : graph
        NetworkX graph object.
 
     x: string ('in','out')
@@ -136,11 +136,11 @@ def degree_mixing_matrix(G, x='out', y='in', weight=None,
        The degree type for target node (directed graphs only).
 
     nodes: list or iterable (optional)
-        Build the matrix using only nodes in container. 
+        Build the matrix using only nodes in container.
         The default is all nodes.
 
     weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
+       The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
@@ -156,7 +156,7 @@ def degree_mixing_matrix(G, x='out', y='in', weight=None,
     s=set(d.keys())
     for k,v in d.items():
         s.update(v.keys())
-    m=max(s)            
+    m=max(s)
     mapping=dict(zip(range(m+1),range(m+1)))
     a=dict_to_numpy_array(d,mapping=mapping)
     if normalized:
@@ -170,15 +170,15 @@ def numeric_mixing_matrix(G,attribute,nodes=None,normalized=True):
 
     Parameters
     ----------
-    G : graph 
+    G : graph
        NetworkX graph object.
 
-    attribute : string 
+    attribute : string
        Node attribute key.  The corresponding attribute must be an integer.
 
     nodes: list or iterable (optional)
         Build the matrix only with nodes in container. The default is all nodes.
-    
+
     normalized : bool (default=False)
        Return counts if False or probabilities if True.
 
@@ -191,7 +191,7 @@ def numeric_mixing_matrix(G,attribute,nodes=None,normalized=True):
     s=set(d.keys())
     for k,v in d.items():
         s.update(v.keys())
-    m=max(s)            
+    m=max(s)
     mapping=dict(zip(range(m+1),range(m+1)))
     a=dict_to_numpy_array(d,mapping=mapping)
     if normalized:
@@ -204,10 +204,10 @@ def mixing_dict(xy,normalized=False):
     Parameters
     ----------
     xy : list or container of two-tuples
-       Pairs of (x,y) items. 
+       Pairs of (x,y) items.
 
-    attribute : string 
-       Node attribute key 
+    attribute : string
+       Node attribute key
 
     normalized : bool (default=False)
        Return counts if False or probabilities if True.

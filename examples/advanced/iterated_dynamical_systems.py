@@ -41,7 +41,7 @@ The smallest number that requires 13 iterations to reach 153, is 177, i.e.,
 
 177->687->1071->345->216->225->141->66->432->99->1458->702->351->153
 
-The resulting large digraphs are useful for testing network software. 
+The resulting large digraphs are useful for testing network software.
 
 The general problem
 -------------------
@@ -69,13 +69,13 @@ The 3n+1 problem
 ----------------
 
 There is a rich history of mathematical recreations
-associated with discrete dynamical systems.  The most famous 
-is the Collatz 3n+1 problem. See the function 
+associated with discrete dynamical systems.  The most famous
+is the Collatz 3n+1 problem. See the function
 collatz_problem_digraph below. The Collatz conjecture
---- that every orbit returrns to the fixed point 1 in finite time 
+--- that every orbit returrns to the fixed point 1 in finite time
 --- is still unproven. Even the great Paul Erdos said "Mathematics
-is not yet ready for such problems", and offered $500 
-for its solution. 
+is not yet ready for such problems", and offered $500
+for its solution.
 
 keywords: "3n+1", "3x+1", "Collatz problem", "Thwaite's conjecture"
 
@@ -135,11 +135,11 @@ def squaring_cycle_graph_old(n,b=10):
         G.add_node(k1) # case k1==knext, at least add node
         knext=powersum(k1,2,b)
         G.add_edge(k1,knext)
-        while k1!=knext: # stop if fixed point 
+        while k1!=knext: # stop if fixed point
              k1=knext
              knext=powersum(k1,2,b)
              G.add_edge(k1,knext)
-             if G.out_degree(knext) >=1: 
+             if G.out_degree(knext) >=1:
                  # knext has already been iterated in and out
                  break
     return G
@@ -163,12 +163,12 @@ def discrete_dynamics_digraph(nmax,f,itermax=50000):
         G.add_node(kold)
         knew=f(kold)
         G.add_edge(kold,knew)
-        while kold!=knew and kold<<itermax: 
+        while kold!=knew and kold<<itermax:
         # iterate until fixed point reached or itermax is exceeded
             kold=knew
             knew=f(kold)
             G.add_edge(kold,knew)
-            if G.out_degree(knew) >=1: 
+            if G.out_degree(knew) >=1:
                # knew has already been iterated in and out
                break
     return G
@@ -182,12 +182,12 @@ def collatz_problem_digraph(nmax):
     return discrete_dynamics_digraph(nmax,f)
 
 def fixed_points(G):
-    """Return a list of fixed points for the discrete dynamical 
+    """Return a list of fixed points for the discrete dynamical
     system represented by the digraph G.
     """
     return [n for n in G if G.out_degree(n)==0]
 
-    
+
 if __name__ == "__main__":
     nmax=10000
     print("Building cubing_153_digraph(%d)"% nmax)

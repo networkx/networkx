@@ -16,7 +16,7 @@ def main(argv):
         new_filename = re.sub(source, dest, filename)
         if new_filename != filename:
             coverage_data._lines[new_filename] = coverage_data._lines.pop(filename)
-        
+
     coverage_data.write_file('.coverage')
 
 if __name__ == '__main__':

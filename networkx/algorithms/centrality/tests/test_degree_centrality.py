@@ -34,7 +34,7 @@ class TestDegreeCentrality:
         F.add_edge('Albizzi','Ginori')
         F.add_edge('Albizzi','Guadagni')
         F.add_edge('Bischeri','Guadagni')
-        F.add_edge('Guadagni','Lamberteschi')    
+        F.add_edge('Guadagni','Lamberteschi')
         self.F = F
 
         G = nx.DiGraph()
@@ -70,7 +70,7 @@ class TestDegreeCentrality:
     def test_degree_centrality_4(self):
         d = nx.degree_centrality(self.F)
         names = sorted(self.F.nodes())
-        dcs = [0.071, 0.214, 0.143, 0.214, 0.214, 0.071, 0.286, 
+        dcs = [0.071, 0.214, 0.143, 0.214, 0.214, 0.071, 0.286,
                0.071, 0.429, 0.071, 0.214, 0.214, 0.143, 0.286, 0.214]
         exact = dict(zip(names, dcs))
         for n,dc in d.items():
@@ -78,14 +78,14 @@ class TestDegreeCentrality:
 
     def test_indegree_centrality(self):
         d = nx.in_degree_centrality(self.G)
-        exact = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
+        exact = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
                  5: 0.625, 6: 0.125, 7: 0.125, 8: 0.125}
         for n,dc in d.items():
             assert_almost_equal(exact[n], dc)
 
     def test_outdegree_centrality(self):
         d = nx.out_degree_centrality(self.G)
-        exact = {0: 0.125, 1: 0.125, 2: 0.125, 3: 0.125,    
+        exact = {0: 0.125, 1: 0.125, 2: 0.125, 3: 0.125,
                  4: 0.125, 5: 0.375, 6: 0.0, 7: 0.0, 8: 0.0}
         for n,dc in d.items():
             assert_almost_equal(exact[n], dc)

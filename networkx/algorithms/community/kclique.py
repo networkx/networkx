@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Conrad Lee <conradlee@gmail.com>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
@@ -23,7 +23,7 @@ def k_clique_communities(G, k, cliques=None):
     k : int
        Size of smallest clique
 
-    cliques: list or generator       
+    cliques: list or generator
        Precomputed cliques (use networkx.find_cliques(G))
 
     Returns
@@ -44,7 +44,7 @@ def k_clique_communities(G, k, cliques=None):
     References
     ----------
     .. [1] Gergely Palla, Imre Derényi, Illés Farkas1, and Tamás Vicsek,
-       Uncovering the overlapping community structure of complex networks 
+       Uncovering the overlapping community structure of complex networks
        in nature and society Nature 435, 814-818, 2005,
        doi:10.1038/nature03607
     """

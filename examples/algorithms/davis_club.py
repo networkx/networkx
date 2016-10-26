@@ -5,8 +5,8 @@ Davis Southern Club Women
 Shows how to make unipartite projections of the graph and compute the
 properties of those graphs.
 
-These data were collected by Davis et al. in the 1930s.  
-They represent observed attendance at 14 social events by 18 Southern women.  
+These data were collected by Davis et al. in the 1930s.
+They represent observed attendance at 14 social events by 18 Southern women.
 The graph is bipartite (clubs, women).
 """
 import networkx as nx
@@ -21,7 +21,7 @@ print(bipartite.biadjacency_matrix(G,women,clubs))
 
 # project bipartite graph onto women nodes
 W = bipartite.projected_graph(G, women)
-print('') 
+print('')
 print("#Friends, Member")
 for w in women:
     print('%d %s' % (W.degree(w),w))
@@ -29,7 +29,7 @@ for w in women:
 # project bipartite graph onto women nodes keeping number of co-occurence
 # the degree computed is weighted and counts the total number of shared contacts
 W = bipartite.weighted_projected_graph(G, women)
-print('') 
+print('')
 print("#Friend meetings, Member")
 for w in women:
     print('%d %s' % (W.degree(w,weight='weight'),w))
