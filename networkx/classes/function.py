@@ -28,9 +28,9 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
            'add_star', 'add_path', 'add_cycle',
            'create_empty_copy', 'set_node_attributes',
-           'get_node_attributes', 'set_edge_attributes',
-           'get_edge_attributes', 'all_neighbors', 'non_neighbors',
-           'non_edges', 'common_neighbors', 'is_weighted',
+           'get_node_attributes', 'set_edge_attributes', 'get_edge_attributes',
+           'delete_edge_attributes', 'delete_node_attributes', 'all_neighbors',
+           'non_neighbors', 'non_edges', 'common_neighbors', 'is_weighted',
            'is_negatively_weighted', 'is_empty']
 
 
@@ -535,6 +535,120 @@ def get_edge_attributes(G, name):
     else:
         edges = G.edges(data=True)
     return {x[:-1]: x[-1][name] for x in edges if name in x[-1]}
+
+
+def delete_edge_attributes(G, key, edges=None):
+    """Remove edge attributes from graph
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    name : string or list
+       Attribute name or list of attribute names
+
+    edges : list, optional
+       If specified removes attributes from all edges otherwise only removes
+       attributes from the subset of edges specified.
+
+    Returns
+    -------
+    The number of edge attributes removed
+
+    Examples
+    --------
+    >>> G=nx.Graph()
+    >>> nx.add_path(G, [1, 2, 3], color='red')
+    >>> nx.delete_edge_attributes(G, 'color', [(3, 2)])
+    1
+    >>> G.edge[1]
+    {2: {'color': u'red'}}
+    >>> G.edge[3]
+    {2: {}}
+
+    >>> G=nx.Graph()
+    >>> nx.add_path(G, [1, 2, 3], color='red')
+    >>> nx.delete_edge_attributes(G, 'color')
+    2
+    >>> G.edge[1]
+    {2: {}}
+    """
+    n_removed = 0
+    # Ensure keys are specified in a list
+    keys = [key] if not isinstance(key, list) else key
+    if edges is None:
+        # Get all edges if a subset is not specified
+        edges = list(G.edges(keys=G.is_multigraph()))
+    if G.is_multigraph():
+        for key in keys:
+            for edge in edges:
+                u, v, k = edge
+                try:
+                    del G[u][v][k][key]
+                    n_removed += 1
+                except KeyError:
+                    pass
+    else:
+        for key in keys:
+            for edge in edges:
+                u, v = edge
+                try:
+                    del G[u][v][key]
+                    n_removed += 1
+                except KeyError:
+                    pass
+    return n_removed
+
+
+def delete_node_attributes(graph, key, nodes=None):
+    """Remove node attributes from graph
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    name : string or list
+       Attribute name or list of attribute names
+
+    nodes : list, optional
+       If specified removes attributes from all nodes otherwise only removes
+       attributes from the subset of nodes specified.
+
+    Returns
+    -------
+    The number of node attributes removed
+
+    Examples
+    --------
+    >>> G=nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3], color='red')
+    >>> nx.delete_node_attributes(G, 'color', [2])
+    1
+    >>> G.node
+    {1: {'color': u'red'}, 2: {}, 3: {'color': u'red'}}
+
+    >>> G=nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3], color='red')
+    >>> G.node
+    {1: {'color': u'red'}, 2: {'color': u'red'}, 3: {'color': u'red'}}
+    >>> nx.delete_node_attributes(G, 'color')
+    3
+    >>> G.node
+    {1: {}, 2: {}, 3: {}}
+    """
+    removed = 0
+    keys = [key] if not isinstance(key, list) else key
+    if nodes is None:
+        # Get all nodes if subset is not specified
+        nodes = list(graph.nodes())
+    for key in keys:
+        for node in nodes:
+            try:
+                del graph.node[node][key]
+                removed += 1
+            except KeyError:
+                pass
+    return removed
 
 
 def all_neighbors(graph, node):
