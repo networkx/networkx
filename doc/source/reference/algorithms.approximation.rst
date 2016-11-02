@@ -16,6 +16,15 @@ Connectivity
    node_connectivity
 
 
+Feedback vertex set
+-------------------
+.. automodule:: networkx.algorithms.approximation.fvs
+.. autosummary::
+   :toctree: generated/
+
+   min_feedback_vertex_set
+
+
 K-components
 ------------
 .. automodule:: networkx.algorithms.approximation.kcomponents
