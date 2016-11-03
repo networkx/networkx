@@ -118,13 +118,25 @@ syntactic_feasibliity(), semantic_feasibility()
 
 Notes
 -----
-Modified to handle undirected graphs.
-Modified to handle multiple edges.
 
+The implementation handles both directed and undirected graphs as well
+as multigraphs. However, it does require that nodes in the graph are
+orderable (in addition to the general NetworkX requirement that nodes
+are hashable). If the nodes in your graph are not orderable, you can
+convert them to an orderable type (`int`, for example) by using the
+:func:`networkx.relabel` function. You can store the dictionary of
+old-to-new node labels to retrieve the original node labels after
+running the isomorphism algorithm::
 
-In general, this problem is NP-Complete.
+    >>> G = nx.Graph()
+    >>> node1, node2 = object(), object()
+    >>> G.add_nodes_from([node1, node2])
+    >>> mapping = {k: v for v, k in enumerate(G)}
+    >>> G = nx.relabel_nodes(G, mapping)
 
-
+In general, the subgraph isomorphism problem is NP-complete whereas the
+graph isomorphism problem is most likely not NP-complete (although no
+polynomial-time algorithm is known to exist).
 
 """
 
