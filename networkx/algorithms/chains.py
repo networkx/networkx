@@ -99,7 +99,7 @@ def chain_decomposition(G, root=None):
         H = nx.DiGraph()
         nodes = []
         for u, v, d in nx.dfs_labeled_edges(G, source=root):
-            if d['dir'] == 'forward':
+            if d == 'forward':
                 # `dfs_labeled_edges()` yields (root, root, 'forward')
                 # if it is beginning the search on a new connected
                 # component.
@@ -113,7 +113,7 @@ def chain_decomposition(G, root=None):
             # `dfs_labeled_edges` considers nontree edges in both
             # orientations, so we need to not add the edge if it its
             # other orientation has been added.
-            elif d['dir'] == 'nontree' and v not in H[u]:
+            elif d == 'nontree' and v not in H[u]:
                 H.add_edge(v, u, nontree=True)
             else:
                 # Do nothing on 'reverse' edges; we only care about
