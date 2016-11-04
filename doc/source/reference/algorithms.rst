@@ -14,6 +14,7 @@ Algorithms
    algorithms.bipartite
    algorithms.boundary
    algorithms.centrality
+   algorithms.chains
    algorithms.chordal
    algorithms.clique
    algorithms.clustering
