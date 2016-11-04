@@ -40,6 +40,7 @@ Classic
    path_graph
    star_graph
    trivial_graph
+   turan_graph
    wheel_graph
 
 

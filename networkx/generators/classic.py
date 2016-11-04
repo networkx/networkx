@@ -681,16 +681,16 @@ def trivial_graph(create_using=None):
     return G
 
 
-def turan_graph(n,r):
-    """ Return the Turan Graph
-    
-    The Turan Graph is a complete multipartite graph on `n` vertices
-    with `r` partitions with the property that it has the maximum number
-    of edges for any graph with the same number of vertices and partitions.
+def turan_graph(n, r):
+    r""" Return the Turan Graph
 
-    Given n and r, we get a complete multipartite graph with `r-(n mod r)`
-    partitions of size `n/r`, rounded down, and `n mod r` partitions of size
-    `n/r+1`, rounded down.
+    The Turan Graph is a complete multipartite graph on `n` vertices
+    with `r` disjoint subsets. It is the graph with the edges for any graph with
+    `n` vertices and `r` disjoint subsets.
+
+    Given `n` and `r`, we generate a complete multipartite graph with
+    :math:`r-(n \mod r)` partitions of size :math:`n/r`, rounded down, and
+    :math:`n \mod r` partitions of size :math:`n/r+1`, rounded down.
 
     Parameters
     ==========
@@ -702,19 +702,16 @@ def turan_graph(n,r):
 
     Notes
     =====
-    Must satisfy `1 <= r <= n`.
-    The graph has `(r-1)(n^2)/(2r)` edges, rounded down.
+    Must satisfy :math:`1 <= r <= n`.
+    The graph has :math:`(r-1)(n^2)/(2r)` edges, rounded down.
     """
-
-    if not isinstance(n,int) or not isinstance(r,int):
-        raise nx.NetworkXError("n and r must be type int") 
 
     if not 1 <= r <= n:
         raise nx.NetworkXError("Must satisfy 1 <= r <= n")
 
     partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
     G = complete_multipartite_graph(*partitions)
-    G.name = "turan_graph({},{})".format(n,r)
+    G.name = "turan_graph({},{})".format(n, r)
     return G
 
 
