@@ -64,7 +64,7 @@ class TestGeneratorsSmall():
         assert_equal(G.number_of_nodes(), 20)
         assert_equal(G.number_of_edges(), 30)
         assert_equal(list(d for n, d in G.degree()), 20 * [3])
-        
+
         G=diamond_graph()
         assert_equal(G.number_of_nodes(), 4)
         assert_equal(sorted(d for n, d in G.degree()), [2, 2, 3, 3])
@@ -91,6 +91,13 @@ class TestGeneratorsSmall():
         assert_equal(list(d for n, d in G.degree()), 14 * [3])
         assert_equal(diameter(G), 3)
         assert_equal(radius(G), 3)
+
+        G=hoffman_singleton_graph()
+        assert_equal(G.number_of_nodes(), 50)
+        assert_equal(G.number_of_edges(), 175)
+        assert_equal(list(d for n, d in G.degree()), 50 * [7])
+        assert_equal(diameter(G), 2)
+        assert_equal(radius(G), 2)
 
         G=house_graph()
         assert_equal(G.number_of_nodes(), 5)
@@ -178,4 +185,3 @@ class TestGeneratorsSmall():
                       create_using=DiGraph())
         MG=tutte_graph(create_using=MultiGraph())
         assert_equal(sorted(MG.edges()), sorted(G.edges()))
-
