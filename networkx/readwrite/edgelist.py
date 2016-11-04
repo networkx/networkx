@@ -109,8 +109,13 @@ def generate_edgelist(G, delimiter=' ', data=True):
     --------
     write_adjlist, read_adjlist
     """
-    if data is True or data is False:
-        for e in G.edges(data=data):
+    if data is True:
+        for u,v,d in G.edges(data=True):
+            e = u,v,dict(d)
+            yield delimiter.join(map(make_str,e))
+    elif data is False:
+        for u,v in G.edges(data=False):
+            e = u,v
             yield delimiter.join(map(make_str,e))
     else:
         for u,v,d in G.edges(data=True):

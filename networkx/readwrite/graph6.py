@@ -178,10 +178,9 @@ def generate_graph6(G, nodes = None, header=True):
 
     """
     if nodes is not None:
-        ns = list(nodes)
-    else:
-        ns = list(G)
-
+        G = G.subgraph(nodes)
+    H = nx.convert_node_labels_to_integers(G)
+    ns = sorted(H.nodes())
     def bits():
         for (i,j) in [(i,j) for j in range(1,n) for i in range(j)]:
             yield G.has_edge(ns[i],ns[j])
