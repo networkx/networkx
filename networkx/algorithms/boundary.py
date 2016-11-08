@@ -77,9 +77,10 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     """
     nset1 = {v for v in G if v in nbunch1}
     # Here we create an iterator over edges incident to nodes in the set
-    # `nset1`. We will assume that the first two elements of the tuples
-    # over which this iterator iterates are the source and target nodes
-    # of the edge.
+    # `nset1`. The `Graph.edges()` method does not provide a guarantee
+    # on the orientation of the edges, so our algorithm below must
+    # handle the case in which exactly one orientation, either (u, v) or
+    # (v, u), appears in this iterable.
     if G.is_multigraph():
         edges = G.edges(nset1, data=data, keys=keys, default=default)
     else:
