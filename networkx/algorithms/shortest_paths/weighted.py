@@ -160,7 +160,7 @@ def dijkstra_path(G, source, target, weight='weight'):
         return path[target]
     except KeyError:
         raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (source, target))
+            "node %s not reachable from %s" % (target, source))
 
 
 def dijkstra_path_length(G, source, target, weight='weight'):
@@ -230,7 +230,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
         return length[target]
     except KeyError:
         raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (source, target))
+            "Node %s not reachable from %s" % (target, source))
 
 
 def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
@@ -1189,7 +1189,7 @@ def bellman_ford_path(G, source, target, weight='weight'):
         return paths[target]
     except KeyError:
         raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (source, target))
+            "Node %s not reachable from %s" % (source, target))
             
 def bellman_ford_path_length(G, source, target, weight='weight'):
     """Returns the shortest path length from source to target
