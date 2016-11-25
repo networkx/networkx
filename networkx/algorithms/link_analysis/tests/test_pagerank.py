@@ -31,13 +31,13 @@ class TestPageRank(object):
                  (6, 4)]
         G.add_edges_from(edges)
         self.G = G
-        self.G.pagerank = dict(zip(G,
+        self.G.pagerank = dict(zip(sorted(G),
                                    [0.03721197, 0.05395735, 0.04150565,
                                     0.37508082, 0.20599833, 0.28624589]))
         self.dangling_node_index = 1
         self.dangling_edges = {1: 2, 2: 3,
                                3: 0, 4: 0, 5: 0, 6: 0}
-        self.G.dangling_pagerank = dict(zip(G,
+        self.G.dangling_pagerank = dict(zip(sorted(G),
                                             [0.10844518, 0.18618601, 0.0710892,
                                              0.2683668, 0.15919783, 0.20671497]))
 
@@ -66,7 +66,7 @@ class TestPageRank(object):
 
     def test_google_matrix(self):
         G = self.G
-        M = networkx.google_matrix(G, alpha=0.9)
+        M = networkx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
         e, ev = numpy.linalg.eig(M.T)
         p = numpy.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
         for (a, b) in zip(p, self.G.pagerank.values()):

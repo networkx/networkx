@@ -238,24 +238,27 @@ def test_ssp_source_missing():
     nx.add_path(G, [3, 4, 5])
     paths = list(nx.shortest_simple_paths(G, 0, 3))
 
-def test_bidirectional_shortest_path_restricted():
-    grid = cnlti(nx.grid_2d_graph(4,4), first_label=1, ordering="sorted")
+def test_bidirectional_shortest_path_restricted_cycle():
     cycle = nx.cycle_graph(7)
-    directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
     length, path = _bidirectional_shortest_path(cycle, 0, 3)
     assert_equal(path, [0, 1, 2, 3])
     length, path = _bidirectional_shortest_path(cycle, 0, 3, ignore_nodes=[1])
     assert_equal(path, [0, 6, 5, 4, 3])
-    length, path = _bidirectional_shortest_path(grid, 1, 12)
-    assert_equal(path, [1, 2, 3, 4, 8, 12])
-    length, path = _bidirectional_shortest_path(grid, 1, 12, ignore_nodes=[2])
-    assert_equal(path, [1, 5, 6, 10, 11, 12])
-    length, path = _bidirectional_shortest_path(grid, 1, 12, ignore_nodes=[2, 6])
-    assert_equal(path, [1, 5, 9, 10, 11, 12])
-    length, path = _bidirectional_shortest_path(grid, 1, 12,
-                                                ignore_nodes=[2, 6],
-                                                ignore_edges=[(10, 11)])
-    assert_equal(path, [1, 5, 9, 10, 14, 15, 16, 12])
+
+def test_bidirectional_shortest_path_restricted_wheel():
+    wheel = nx.wheel_graph(6)
+    length, path = _bidirectional_shortest_path(wheel, 1, 3)
+    assert_true(path in [[1, 0, 3], [1, 2, 3]])
+    length, path = _bidirectional_shortest_path(wheel, 1, 3, ignore_nodes=[0])
+    assert_equal(path, [1, 2, 3])
+    length, path = _bidirectional_shortest_path(wheel, 1, 3, ignore_nodes=[0,2])
+    assert_equal(path, [1, 5, 4, 3])
+    length, path = _bidirectional_shortest_path(wheel, 1, 3,
+                                            ignore_edges = [(1,0), (5,0), (2,3)])
+    assert_true(path in [[1, 2, 0, 3], [1, 5, 4, 3]])
+
+def test_bidirectional_shortest_path_restricted_directed_cycle():
+    directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
     length, path = _bidirectional_shortest_path(directed_cycle, 0, 3)
     assert_equal(path, [0, 1, 2, 3])
     assert_raises(
