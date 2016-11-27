@@ -297,6 +297,26 @@ class TestGeneratorClassic():
         assert_equal(number_of_nodes(g), 2*3)
         assert_true(is_isomorphic(g, grid_graph([2,3])))
 
+        """Tuple dim arguments of the above tests
+        """
+        for n, m in [(3, 5), (5, 3), (4, 5), (5, 4)]:
+            dim=(n,m)
+            g=grid_graph(dim)
+            assert_equal(number_of_nodes(g), n*m)
+            assert_equal(degree_histogram(g), [0,0,4,2*(n+m)-8,(n-2)*(m-2)])
+            assert_equal(dim,(n,m))
+
+        for n, m in [(1, 5), (5, 1)]:
+            dim=(n,m)
+            g=grid_graph(dim)
+            assert_equal(number_of_nodes(g), n*m)
+            assert_true(is_isomorphic(g,path_graph(5)))
+            assert_equal(dim,(n,m))
+
+        g=grid_graph((range(7,9), range(3,6)))
+        assert_equal(number_of_nodes(g), 2*3)
+        assert_true(is_isomorphic(g, grid_graph((2,3))))
+
     def test_hypercube_graph(self):
         for n, G in [(0, null_graph()), (1, path_graph(2)),
                      (2, cycle_graph(4)), (3, cubical_graph())]:

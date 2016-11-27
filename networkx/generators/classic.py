@@ -483,9 +483,9 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
 def grid_graph(dim, periodic=False):
     """ Return the n-dimensional grid graph.
 
-    'dim' is a list with the size in each dimension or an
+    'dim' is a tuple or list with the size in each dimension or an
     iterable of nodes for each dimension. The dimension of
-    the grid_graph is the length of the list 'dim'.
+    the grid_graph is the length of the tuple or list 'dim'.
 
     E.g. G=grid_graph(dim=[2, 3]) produces a 2x3 grid graph.
 
@@ -494,21 +494,18 @@ def grid_graph(dim, periodic=False):
     If periodic=True then join grid edges with periodic boundary conditions.
 
     """
-    dlabel = "%s" % dim
-    if dim == []:
+    dlabel = "%s" % str(dim)
+    if not dim:
         G = empty_graph(0)
-        G.name = "grid_graph(%s)" % dim
+        G.name = "grid_graph(%s)" % dlabel
         return G
     if periodic:
         func = cycle_graph
     else:
         func = path_graph
 
-    dim = list(dim)
-    current_dim = dim.pop()
-    G = func(current_dim)
-    while len(dim) > 0:
-        current_dim = dim.pop()
+    G = func(dim[0])
+    for current_dim in dim[1:]:
         # order matters: copy before it is cleared during the creation of Gnew
         Gold = G.copy()
         Gnew = func(current_dim)
