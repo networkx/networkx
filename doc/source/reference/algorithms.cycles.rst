@@ -9,3 +9,4 @@ Cycles
    cycle_basis
    simple_cycles
    find_cycle
+   minimum_cycle_basis
