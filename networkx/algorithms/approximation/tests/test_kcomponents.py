@@ -1,5 +1,6 @@
 # Test for approximation to k-components algorithm
-from nose.tools import assert_equal, assert_true, assert_false, assert_raises, raises
+from nose.tools import assert_equal, assert_true, assert_false
+from nose.tools import assert_raises, raises, assert_greater_equal
 import networkx as nx
 from networkx.algorithms.approximation import k_components
 from networkx.algorithms.approximation.kcomponents import _AntiGraph, _same
@@ -122,7 +123,7 @@ def _check_connectivity(G):
         for component in components:
             C = G.subgraph(component)
             K = nx.node_connectivity(C)
-            assert_true(K >= k)
+            assert_greater_equal(K, k)
 
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
@@ -151,11 +152,11 @@ def test_example_1_detail_3_and_4():
     result = k_components(G)
     # In this example graph there are 8 3-components, 4 with 15 nodes
     # and 4 with 5 nodes.
-    assert_true(len(result[3]) == 8)
-    assert_true(len([c for c in result[3] if len(c) == 15]) == 4)
-    assert_true(len([c for c in result[3] if len(c) == 5]) == 4)
+    assert_equal(len(result[3]), 8)
+    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
+    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
     # There are also 8 4-components all with 5 nodes.
-    assert_true(len(result[4]) == 8)
+    assert_equal(len(result[4]), 8)
     assert_true(all(len(c) == 5 for c in result[4]))
     # Finally check that the k-components detected have actually node
     # connectivity >= k.
@@ -163,7 +164,8 @@ def test_example_1_detail_3_and_4():
         if k < 3:
             continue
         for component in components:
-            assert_true(nx.node_connectivity(G.subgraph(component)) >= k)
+            K = nx.node_connectivity(G.subgraph(component))
+            assert_greater_equal(K, k)
 
 @raises(nx.NetworkXNotImplemented)
 def test_directed():

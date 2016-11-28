@@ -1,5 +1,5 @@
 # Test for Moody and White k-components algorithm
-from nose.tools import assert_equal, assert_true, raises
+from nose.tools import assert_equal, assert_true, raises, assert_greater_equal
 import networkx as nx
 from networkx.algorithms.connectivity.kcomponents import (
     build_k_number_dict,
@@ -87,7 +87,8 @@ def _check_connectivity(G):
             continue
         for component in components:
             C = G.subgraph(component)
-            assert_true(nx.node_connectivity(C) >= k)
+            K = nx.node_connectivity(C)
+            assert_greater_equal(K, k)
 
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
@@ -130,11 +131,11 @@ def test_torrents_and_ferraro_detail_3_and_4():
     result = nx.k_components(G)
     # In this example graph there are 8 3-components, 4 with 15 nodes
     # and 4 with 5 nodes.
-    assert_true(len(result[3]) == 8)
-    assert_true(len([c for c in result[3] if len(c) == 15]) == 4)
-    assert_true(len([c for c in result[3] if len(c) == 5]) == 4)
+    assert_equal(len(result[3]), 8)
+    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
+    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
     # There are also 8 4-components all with 5 nodes.
-    assert_true(len(result[4]) == 8)
+    assert_equal(len(result[4]), 8)
     assert_true(all(len(c) == 5 for c in result[4]))
     # Finally check that the k-components detected have actually node
     # connectivity >= k.
@@ -142,7 +143,8 @@ def test_torrents_and_ferraro_detail_3_and_4():
         if k < 3:
             continue
         for component in components:
-            assert_true(nx.node_connectivity(G.subgraph(component)) >= k)
+            K = nx.node_connectivity(G.subgraph(component))
+            assert_greater_equal(K, k)
 
 def test_davis_southern_women():
     G = nx.davis_southern_women_graph()
