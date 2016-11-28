@@ -147,36 +147,23 @@ def test_karate_1():
     assert_equal(karate_k_num, k_num)
 
 def test_example_1_detail_3_and_4():
-    solution = {
-        3: [set([40, 41, 42, 43, 39]),
-            set([32, 33, 34, 35, 36, 37, 38, 42, 25, 26, 27, 28, 29, 30, 31]),
-            set([58, 59, 60, 61, 62]),
-            set([44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 61]),
-            set([80, 81, 77, 78, 79]),
-            set([64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 80, 63]),
-            set([97, 98, 99, 100, 101]),
-            set([96, 100, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 94, 95])
-        ],
-        4: [set([40, 41, 42, 43, 39]),
-            set([42, 35, 36, 37, 38]),
-            set([58, 59, 60, 61, 62]),
-            set([56, 57, 61, 54, 55]),
-            set([80, 81, 77, 78, 79]),
-            set([80, 73, 74, 75, 76]),
-            set([97, 98, 99, 100, 101]),
-            set([96, 100, 92, 94, 95])
-        ],
-    }
     G = graph_example_1()
     result = k_components(G)
+    # In this example graph there are 8 3-components, 4 with 15 nodes
+    # and 4 with 5 nodes.
+    assert_true(len(result[3]) == 8)
+    assert_true(len([c for c in result[3] if len(c) == 15]) == 4)
+    assert_true(len([c for c in result[3] if len(c) == 5]) == 4)
+    # There are also 8 4-components all with 5 nodes.
+    assert_true(len(result[4]) == 8)
+    assert_true(all(len(c) == 5 for c in result[4]))
+    # Finally check that the k-components detected have actually node
+    # connectivity >= k.
     for k, components in result.items():
-        print(k)
-        print(components)
         if k < 3:
             continue
-# Skip tests for nonunique results
-#        for component in components:
-#            assert_true(component in solution[k])
+        for component in components:
+            assert_true(nx.node_connectivity(G.subgraph(component)) >= k)
 
 @raises(nx.NetworkXNotImplemented)
 def test_directed():
