@@ -419,7 +419,8 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     Parameters
     ----------
     n : int
-        The number of nodes.
+        The length of one side of the lattice; the number of nodes in
+        the graph is therefore :math:`n^2`.
     p : int
         The diameter of short range connections. Each node is joined with every
         other node within this lattice distance.
