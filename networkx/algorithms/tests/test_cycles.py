@@ -212,3 +212,18 @@ class TestFindCycle(object):
                       find_cycle, G, orientation='original')
         x = list(find_cycle(G, orientation='ignore'))
         assert_equal(x, [(0,1,FORWARD), (1,2,FORWARD), (0,2,REVERSE)])
+
+    def test_prev_explored(self):
+        # https://github.com/networkx/networkx/issues/2323
+
+        G = nx.DiGraph()
+        G.add_edges_from([(1,0), (2,0), (1,2), (2,1)])
+        assert_raises(nx.exception.NetworkXNoCycle,
+                      find_cycle, G, source=0)
+        x = list(nx.find_cycle(G, 1))
+        x_ = [(1, 2), (2, 1)]
+        assert_equal(x, x_)
+
+        x = list(nx.find_cycle(G, 2))
+        x_ = [(2, 1), (1, 2)]
+        assert_equal(x, x_)
