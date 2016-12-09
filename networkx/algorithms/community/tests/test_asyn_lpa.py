@@ -1,4 +1,10 @@
 from nose.tools import assert_equal
+try:
+    from nose.tools import assert_count_equal
+except ImportError:
+    from nose.tools import assert_items_equal as assert_count_equal
+
+import networkx as nx
 from networkx import asyn_lpa, Graph
 
 
@@ -88,22 +94,9 @@ def test_several_communities():
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
+
 def test_two_communities():
-    test = Graph()
-
-    # c1
-    c1_edges = [(0, 2), (0, 3), (0, 4), (0, 5), (1, 2), (1, 4), (1, 7), (2, 4), (2, 5),\
-                    (2, 6), (3, 7), (4, 10), (5, 7), (5, 11), (6, 7), (6, 11)]
-
-    # c2
-    c2_edges = [(8, 9), (8, 10), (8, 11), (8, 14), (8, 15), (9, 12), (9, 14), (10, 11),\
-                    (10, 12), (10, 13), (10, 14), (11, 13)]
-    test.add_edges_from(c1_edges + c2_edges)
-
-    # ground truth
-    ground_truth = set([frozenset([0, 1, 2, 3, 4, 5, 6, 7]),
-                        frozenset([8, 9, 10, 11, 12, 13, 14, 15])])
-
-    communities = asyn_lpa.asyn_lpa_communities(test)
-    result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    G = nx.barbell_graph(5, 0)
+    ground_truth = [set(range(5)), set(range(5, 10))]
+    result = asyn_lpa.asyn_lpa_communities(G)
+    assert_count_equal(result, ground_truth)
