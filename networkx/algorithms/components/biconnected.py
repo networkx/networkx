@@ -417,7 +417,11 @@ def articulation_points(G):
            Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    return _biconnected_dfs(G, components=False)
+    seen = set()
+    for articulation in _biconnected_dfs(G, components=False):
+        if articulation not in seen:
+            seen.add(articulation)
+            yield articulation
 
 
 @not_implemented_for('directed')

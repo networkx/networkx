@@ -42,6 +42,11 @@ def test_barbell():
     pts = set(nx.articulation_points(G))
     assert_equal(pts, {7, 20, 21, 22})
 
+def test_articulation_points_repetitions():
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (1, 2), (1, 3)])
+    assert_equal(list(articulation_points(G)), [1])
+
 def test_articulation_points_cycle():
     G=nx.cycle_graph(3)
     nx.add_cycle(G, [1, 3, 4])
