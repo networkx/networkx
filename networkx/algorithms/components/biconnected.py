@@ -351,7 +351,7 @@ def biconnected_component_subgraphs(G, copy=True):
 
 @not_implemented_for('directed')
 def articulation_points(G):
-    """Return a generator of articulation points, or cut vertices, of a graph.
+    """Yield the articulation points, or cut vertices, of a graph.
 
     An articulation point or cut vertex is any node whose removal (along with
     all its incident edges) increases the number of connected components of
@@ -366,10 +366,10 @@ def articulation_points(G):
     G : NetworkX Graph
         An undirected graph.
 
-    Returns
-    -------
-    articulation points : generator
-        generator of nodes
+    Yields
+    ------
+    node
+        An articulation point in the graph.
 
     Raises
     ------
