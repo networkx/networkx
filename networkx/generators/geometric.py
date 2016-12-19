@@ -9,6 +9,7 @@
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Dan Schult (dschult@colgate.edu)
 #          Ben Edwards (BJEdwards@gmail.com)
+#          Arya McCarthy (admccarthy@smu.edu)
 """Generators for geometric graphs.
 """
 from __future__ import division
@@ -20,6 +21,7 @@ from math import sqrt
 import math
 import random
 from random import uniform
+from scipy.spatial import KDTree
 
 import networkx as nx
 from networkx.utils import nodes_or_number
@@ -39,7 +41,7 @@ def euclidean(x, y):
 
 
 @nodes_or_number(0)
-def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
+def random_geometric_graph(n, radius, dim=2, pos=None, norm=2):
     """Returns a random geometric graph in the unit cube.
 
     The random geometric graph model places `n` nodes uniformly at
@@ -56,23 +58,12 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    metric : function
-        A metric on vectors of numbers (represented as lists or
-        tuples). This must be a function that accepts two lists (or
-        tuples) as input and yields a number as output. The function
-        must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+    norm : float
+        Which Minkowski norm to use.  `p` has to meet the condition
+            ``1 <= p <= infinity``.
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
-
-        If this argument is not specified, the Euclidean distance metric is
-        used.
-
-        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+        If this argument is not specified, the L2 norm (the Euclidean distance 
+        metric) is used.
 
     Returns
     -------
@@ -90,20 +81,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
 
     >>> G = nx.random_geometric_graph(20, 0.1)
 
-    Specify an alternate distance metric using the ``metric`` keyword
-    argument. For example, to use the "`taxicab metric`_" instead of the
-    default `Euclidean metric`_::
-
-        >>> dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
-        >>> G = nx.random_geometric_graph(10, 0.1, metric=dist)
-
-    .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
-    .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
-
     Notes
     -----
-    This uses an `O(n^2)` algorithm to build the graph.  A faster algorithm
-    is possible using k-d trees.
+    This uses a *k*-d tree to build the graph.
 
     The `pos` keyword argument can be used to specify node positions so you
     can create an arbitrary distribution and domain for positions.
@@ -139,23 +119,13 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
     if pos is None:
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
     nx.set_node_attributes(G, 'pos', pos)
-    # If no distance metric is provided, use Euclidean distance.
-    if metric is None:
-        metric = euclidean
 
-    def should_join(pair):
-        u, v = pair
-        u_pos, v_pos = pos[u], pos[v]
-        return metric(u_pos, v_pos) <= radius
+    nodes, coords = list(zip(*pos.items()))
+    kdtree = KDTree(coords)  # Cannot provide generator.
+    edge_indexes = kdtree.query_pairs(radius, p=norm)
+    edges = ((nodes[u], nodes[v]) for u, v in edge_indexes)
+    G.add_edges_from(edges)
 
-    # Join each pair of nodes whose distance is at most `radius`. (We
-    # know each node has a data attribute ``'pos'`` because we created
-    # such an attribute for each node above.)
-    #
-    # TODO This is an O(n^2) algorithm, a k-d tree could be used
-    # instead.
-    nodes = G.nodes(data='pos')
-    G.add_edges_from(filter(should_join, combinations(G, 2)))
     return G
 
 
