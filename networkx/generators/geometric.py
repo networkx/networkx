@@ -21,7 +21,12 @@ from math import sqrt
 import math
 import random
 from random import uniform
-from scipy.spatial import KDTree
+try:
+    from scipy.spatial import cKDTree as KDTree
+except ImportError:
+    _is_scipy_available = False
+else:
+    _is_scipy_available = True
 
 import networkx as nx
 from networkx.utils import nodes_or_number
@@ -40,8 +45,37 @@ def euclidean(x, y):
     return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
 
 
+def _fast_construct_edges(G, radius, p):
+    """Construct edges for random geometric graph.
+
+    Requires scipy to be installed.
+    """
+    pos = nx.get_node_attributes(G, 'pos')
+    nodes, coords = list(zip(*pos.items()))
+    kdtree = KDTree(coords)  # Cannot provide generator.
+    edge_indexes = kdtree.query_pairs(radius, p)
+    edges = ((nodes[u], nodes[v]) for u, v in edge_indexes)
+    G.add_edges_from(edges)
+
+
+def _slow_construct_edges(G, radius, p):
+    """Construct edges for random geometric graph.
+
+    Works without scipy, but in `O(n^2)` time.
+    """
+    nodes = list(G.nodes(data=True))
+    while nodes:
+        u, du = nodes.pop()
+        pu = du['pos']
+        for v, dv in nodes:
+            pv = dv['pos']
+            d = sum(((a - b) ** p for a, b in zip(pu, pv)))
+            if d <= radius ** p:
+                G.add_edge(u, v)
+
+
 @nodes_or_number(0)
-def random_geometric_graph(n, radius, dim=2, pos=None, norm=2):
+def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     """Returns a random geometric graph in the unit cube.
 
     The random geometric graph model places `n` nodes uniformly at
@@ -58,12 +92,15 @@ def random_geometric_graph(n, radius, dim=2, pos=None, norm=2):
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    norm : float
-        Which Minkowski norm to use.  `p` has to meet the condition
-            ``1 <= p <= infinity``.
+    p : float
+        Which Minkowski distance metric to use.  `p` has to meet the condition
+        ``1 <= p <= infinity``.
 
-        If this argument is not specified, the L2 norm (the Euclidean distance 
-        metric) is used.
+        If this argument is not specified, the :math:`L^2` metric (the Euclidean
+        distance metric) is used.
+
+        This should not be confused with the `p` of an Erdős-Rényi random
+        graph, which represents probability.
 
     Returns
     -------
@@ -120,11 +157,10 @@ def random_geometric_graph(n, radius, dim=2, pos=None, norm=2):
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
     nx.set_node_attributes(G, 'pos', pos)
 
-    nodes, coords = list(zip(*pos.items()))
-    kdtree = KDTree(coords)  # Cannot provide generator.
-    edge_indexes = kdtree.query_pairs(radius, p=norm)
-    edges = ((nodes[u], nodes[v]) for u, v in edge_indexes)
-    G.add_edges_from(edges)
+    if _is_scipy_available:
+        _fast_construct_edges(G, radius, p)
+    else:
+        _slow_construct_edges(G, radius, p)
 
     return G
 

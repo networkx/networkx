@@ -37,14 +37,14 @@ class TestRandomGeometricGraph(object):
             else:
                 assert_false(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
 
-    def test_norm(self):
+    def test_p(self):
         """Tests for providing an alternate distance metric to the
         generator.
 
         """
         # Use the L1 metric.
         dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
-        G = nx.random_geometric_graph(50, 0.25, norm=1)
+        G = nx.random_geometric_graph(50, 0.25, p=1)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
