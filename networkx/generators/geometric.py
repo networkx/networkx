@@ -69,7 +69,7 @@ def _slow_construct_edges(G, radius, p):
         pu = du['pos']
         for v, dv in nodes:
             pv = dv['pos']
-            d = sum(((a - b) ** p for a, b in zip(pu, pv)))
+            d = sum((abs(a - b) ** p for a, b in zip(pu, pv)))
             if d <= radius ** p:
                 G.add_edge(u, v)
 
