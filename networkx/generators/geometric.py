@@ -63,15 +63,10 @@ def _slow_construct_edges(G, radius, p):
 
     Works without scipy, but in `O(n^2)` time.
     """
-    nodes = list(G.nodes(data=True))
-    while nodes:
-        u, du = nodes.pop()
-        pu = du['pos']
-        for v, dv in nodes:
-            pv = dv['pos']
-            d = sum((abs(a - b) ** p for a, b in zip(pu, pv)))
-            if d <= radius ** p:
-                G.add_edge(u, v)
+    # TODO This can be parallelized.
+    for (u, pu), (v, pv) in combinations(G.nodes(data='pos'), 2):
+        if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius ** p:
+            G.add_edge(u, v)
 
 
 @nodes_or_number(0)
@@ -81,6 +76,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     The random geometric graph model places `n` nodes uniformly at
     random in the unit cube. Two nodes are joined by an edge if the
     distance between the nodes is at most `radius`.
+
+    Edges are determined using a KDTree when SciPy is available.
+    This reduces the time complexity from :math:`O(n^2)` to :math:`O(n)`.
 
     Parameters
     ----------
