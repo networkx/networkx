@@ -5,6 +5,7 @@ from nose.tools import assert_less_equal
 from nose.tools import raises
 
 import networkx as nx
+from networkx.testing import *
 from networkx import graph_atlas
 from networkx import graph_atlas_g
 from networkx.generators.atlas import NUM_GRAPHS
@@ -24,8 +25,8 @@ class TestAtlasGraph(object):
 
     def test_graph(self):
         G = graph_atlas(6)
-        assert_equal(set(G), set(range(3)))
-        assert_equal(list(G.edges()), [(0, 1), (0, 2)])
+        assert_nodes_equal(G.nodes(), range(3))
+        assert_edges_equal(G.edges(), [(0, 1), (0, 2)])
 
 
 class TestAtlasGraphG(object):

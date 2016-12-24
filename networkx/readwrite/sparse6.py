@@ -219,15 +219,10 @@ def generate_sparse6(G, nodes=None, header=True):
         """Big endian k-bit encoding of x"""
         return [1 if (x & 1 << (k-1-i)) else 0 for i in range(k)]
 
-    if nodes is None:
-        ns = list(G.nodes()) # number -> node
-    else:
-        ns = list(nodes)
-    ndict = dict(((ns[i], i) for i in range(len(ns)))) # node -> number
-    edges = [(ndict[u], ndict[v]) for (u, v) in G.edges()]
-    edges = [(max(u,v), min(u,v)) for (u, v) in edges]
-    edges.sort()
-
+    if nodes is not None:
+        G = G.subgraph(nodes)
+    H = nx.convert_node_labels_to_integers(G,ordering='sorted')
+    edges = sorted(((max(u,v), min(u,v)) for (u, v) in H.edges()))
     bits = []
     curv = 0
     for (v, u) in edges:

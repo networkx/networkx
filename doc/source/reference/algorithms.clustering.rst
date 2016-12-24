@@ -11,3 +11,4 @@ Clustering
    clustering
    average_clustering   
    square_clustering
+   generalized_degree

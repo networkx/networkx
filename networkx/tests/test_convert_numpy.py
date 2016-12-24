@@ -218,3 +218,23 @@ class TestConvertNumpy(object):
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
         assert_graphs_equal(G, expected)
+
+    def test_dtype_int_graph(self):
+        """Test that setting dtype int actually gives an integer matrix.
+
+        For more information, see GitHub pull request #1363.
+
+        """
+        G = nx.complete_graph(3)
+        A = nx.to_numpy_matrix(G, dtype=int)
+        assert_equal(A.dtype, int)
+
+    def test_dtype_int_multigraph(self):
+        """Test that setting dtype int actually gives an integer matrix.
+
+        For more information, see GitHub pull request #1363.
+
+        """
+        G = nx.MultiGraph(nx.complete_graph(3))
+        A = nx.to_numpy_matrix(G, dtype=int)
+        assert_equal(A.dtype, int)

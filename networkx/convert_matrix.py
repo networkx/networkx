@@ -366,7 +366,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     if G.is_multigraph():
         # Handle MultiGraphs and MultiDiGraphs
-        M = np.zeros((nlen, nlen), dtype=dtype, order=order) + np.nan
+        M = np.full((nlen, nlen), np.nan, order=order)
         # use numpy nan-aware operations
         operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
         try:
@@ -383,7 +383,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     M[j,i] = M[i,j]
     else:
         # Graph or DiGraph, this is much faster than above
-        M = np.zeros((nlen,nlen), dtype=dtype, order=order) + np.nan
+        M = np.full((nlen, nlen), np.nan, order=order)
         for u,nbrdict in G.adjacency():
             for v,d in nbrdict.items():
                 try:

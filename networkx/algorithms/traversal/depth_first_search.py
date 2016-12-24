@@ -1,8 +1,15 @@
+# depth_first_search.py - depth-first traversals of a graph
+#
+# Copyright 2004-2016 NetworkX developers.
+#
+# This file is part of NetworkX.
+#
+# NetworkX is distributed under a BSD license; see LICENSE.txt for more
+# information.
+#
+# Author:
+#   Aric Hagberg <aric.hagberg@gmail.com>
 """
-==================
-Depth-first search
-==================
-
 Basic algorithms for depth-first searching the nodes of a graph.
 
 Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
@@ -10,7 +17,7 @@ by D. Eppstein, July 2004.
 """
 import networkx as nx
 from collections import defaultdict
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['dfs_edges', 'dfs_tree',
            'dfs_predecessors', 'dfs_successors',
            'dfs_preorder_nodes','dfs_postorder_nodes',
@@ -199,8 +206,8 @@ def dfs_postorder_nodes(G,source=None):
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
-    post=(v for u,v,d in nx.dfs_labeled_edges(G,source=source)
-          if d['dir']=='reverse')
+    post = (v for u, v, d in nx.dfs_labeled_edges(G, source=source)
+            if d == 'reverse')
     # potential modification: chain source to end of post-ordering
     # return chain(post,[source])
     return post
@@ -237,8 +244,8 @@ def dfs_preorder_nodes(G, source=None):
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
-    pre=(v for u,v,d in nx.dfs_labeled_edges(G,source=source)
-         if d['dir']=='forward')
+    pre = (v for u, v, d in nx.dfs_labeled_edges(G, source=source)
+           if d == 'forward')
     # potential modification: chain source to beginning of pre-ordering
     # return chain([source],pre)
     return pre
@@ -258,13 +265,32 @@ def dfs_labeled_edges(G, source=None):
     Returns
     -------
     edges: generator
-       A generator of edges in the depth-first-search labeled with 'forward',
-       'nontree', and 'reverse'.
+       A generator of triples of the form (*u*, *v*, *d*), where (*u*,
+       *v*) is the edge being explored in the depth-first search and *d*
+       is one of the strings 'forward', 'nontree', or 'reverse'. A
+       'forward' edge is one in which *u* has been visited but *v* has
+       not. A 'nontree' edge is one in which both *u* and *v* have been
+       visited but the edge is not in the DFS tree. A 'reverse' edge is
+       on in which both *u* and *v* have been visited and the edge is in
+       the DFS tree.
 
     Examples
     --------
-    >>> G = nx.path_graph(3)
-    >>> edges = (list(nx.dfs_labeled_edges(G,0)))
+
+    The labels reveal the complete transcript of the depth-first search
+    algorithm in more detail than, for example, :func:`dfs_edges`::
+
+        >>> from pprint import pprint
+        >>>
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 1)])
+        >>> pprint(list(nx.dfs_labeled_edges(G, source=0)))
+        [(0, 0, 'forward'),
+         (0, 1, 'forward'),
+         (1, 2, 'forward'),
+         (2, 1, 'nontree'),
+         (1, 2, 'reverse'),
+         (0, 1, 'reverse'),
+         (0, 0, 'reverse')]
 
     Notes
     -----
@@ -273,6 +299,7 @@ def dfs_labeled_edges(G, source=None):
 
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
+
     """
     # Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
     # by D. Eppstein, July 2004.
@@ -286,7 +313,7 @@ def dfs_labeled_edges(G, source=None):
     for start in nodes:
         if start in visited:
             continue
-        yield start,start,{'dir':'forward'}
+        yield start, start, 'forward'
         visited.add(start)
         stack = [(start,iter(G[start]))]
         while stack:
@@ -294,13 +321,13 @@ def dfs_labeled_edges(G, source=None):
             try:
                 child = next(children)
                 if child in visited:
-                    yield parent,child,{'dir':'nontree'}
+                    yield parent, child, 'nontree'
                 else:
-                    yield parent,child,{'dir':'forward'}
+                    yield parent, child, 'forward'
                     visited.add(child)
                     stack.append((child,iter(G[child])))
             except StopIteration:
                 stack.pop()
                 if stack:
-                    yield stack[-1][0],parent,{'dir':'reverse'}
-        yield start,start,{'dir':'reverse'}
+                    yield stack[-1][0], parent, 'reverse'
+        yield start, start, 'reverse'

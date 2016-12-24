@@ -362,7 +362,7 @@ def find_cycle(G, source=None, orientation='original'):
         direction. When the direction is forward, the value of `direction`
         is 'forward'. When the direction is reverse, the value of `direction`
         is 'reverse'.
-        
+
     Raises
     ------
     NetworkXNoCycle
@@ -391,11 +391,36 @@ def find_cycle(G, source=None, orientation='original'):
     """
     out_edge, key, tailhead = helper_funcs(G, orientation)
 
+    def prune(edges, active_nodes):
+        # This edge results from backtracking.
+        # Pop until we get a node whose head equals the current tail.
+        # So for example, we might have:
+        #  [(0,1), (1,2), (2,3)], (1,4)
+        # which must become:
+        #  [(0,1)], (1,4)
+        while True:
+            try:
+                popped_edge = edges.pop()
+            except IndexError:
+                edges = []
+                active_nodes = {tail}
+                break
+            else:
+                popped_head = tailhead(popped_edge)[1]
+                active_nodes.remove(popped_head)
+
+            if edges:
+                previous_head = tailhead(edges[-1])[1]
+                if tail == previous_head:
+                    break
+            else:
+                previous_head = None
+        return edges, active_nodes, previous_head
+
     explored = set()
     cycle = []
     final_node = None
     for start_node in G.nbunch_iter(source):
-
         if start_node in explored:
             # No loop is possible.
             continue
@@ -405,33 +430,13 @@ def find_cycle(G, source=None, orientation='original'):
         seen = {start_node}
         # Nodes in active path.
         active_nodes = {start_node}
-        previous_node = None
+        previous_head = None
+
         for edge in edge_dfs(G, start_node, orientation):
             # Determine if this edge is a continuation of the active path.
             tail, head = tailhead(edge)
-            if previous_node is not None and tail != previous_node:
-                # This edge results from backtracking.
-                # Pop until we get a node whose head equals the current tail.
-                # So for example, we might have:
-                #  (0,1), (1,2), (2,3), (1,4)
-                # which must become:
-                #  (0,1), (1,4)
-                while True:
-                    try:
-                        popped_edge = edges.pop()
-                    except IndexError:
-                        edges = []
-                        active_nodes = {tail}
-                        break
-                    else:
-                        popped_head = tailhead(popped_edge)[1]
-                        active_nodes.remove(popped_head)
-
-                    if edges:
-                        last_head = tailhead(edges[-1])[1]
-                        if tail == last_head:
-                            break
-
+            if previous_head is not None and tail != previous_head:
+                edges, active_nodes, previous_head = prune(edges, active_nodes)
             edges.append(edge)
 
             if head in active_nodes:
@@ -439,13 +444,12 @@ def find_cycle(G, source=None, orientation='original'):
                 cycle.extend(edges)
                 final_node = head
                 break
-            elif head in explored:
-                # Then we've already explored it. No loop is possible.
-                break
             else:
+                previous_head = head
                 seen.add(head)
                 active_nodes.add(head)
-                previous_node = head
+                if head in explored:
+                    edges, active_nodes, previous_head = prune(edges, active_nodes)
 
         if cycle:
             break

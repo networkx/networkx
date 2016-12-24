@@ -140,6 +140,16 @@ def dijkstra_path(G, source, target, weight='weight'):
     So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
     will find the shortest red path.
 
+    The weight function can be used to include node weights.
+    ```
+    def func(u, v, d):
+        return G.node[u].get('node_weight', 1)/2 + \
+               G.node[v].get('node_weight', 1)/2 + \
+               d.get('weight', 1)
+    ```
+    In this example we take the average of start and end node
+    weights of an edge and add it to the weight of the edge.
+
     See Also
     --------
     bidirectional_dijkstra(), bellman_ford_path()
@@ -150,7 +160,7 @@ def dijkstra_path(G, source, target, weight='weight'):
         return path[target]
     except KeyError:
         raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (source, target))
+            "node %s not reachable from %s" % (target, source))
 
 
 def dijkstra_path_length(G, source, target, weight='weight'):
@@ -220,7 +230,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
         return length[target]
     except KeyError:
         raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (source, target))
+            "Node %s not reachable from %s" % (target, source))
 
 
 def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
@@ -1179,7 +1189,7 @@ def bellman_ford_path(G, source, target, weight='weight'):
         return paths[target]
     except KeyError:
         raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (source, target))
+            "Node %s not reachable from %s" % (source, target))
             
 def bellman_ford_path_length(G, source, target, weight='weight'):
     """Returns the shortest path length from source to target

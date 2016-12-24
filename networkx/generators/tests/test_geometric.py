@@ -7,6 +7,7 @@ from nose.tools import assert_true
 
 import networkx as nx
 
+
 class TestRandomGeometricGraph(object):
     """Unit tests for the :func:`~networkx.random_geometric_graph`
     function.
@@ -36,14 +37,32 @@ class TestRandomGeometricGraph(object):
             else:
                 assert_false(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
 
-    def test_metric(self):
+    def test_p(self):
         """Tests for providing an alternate distance metric to the
         generator.
 
         """
         # Use the L1 metric.
         dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
-        G = nx.random_geometric_graph(50, 0.25, metric=dist)
+        G = nx.random_geometric_graph(50, 0.25, p=1)
+        for u, v in combinations(G, 2):
+            # Adjacent vertices must be within the given distance.
+            if v in G[u]:
+                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+            # Nonadjacent vertices must be at greater distance.
+            else:
+                assert_false(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+
+    def test_node_names(self):
+        """Tests using values other than sequential numbers as node IDs.
+
+        """
+        import string
+        nodes = list(string.ascii_lowercase)
+        G = nx.random_geometric_graph(nodes, 0.25)
+        assert_equal(len(G), len(nodes))
+
+        dist = lambda x, y: sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
@@ -145,14 +164,14 @@ class TestWaxmanGraph(object):
 class TestNavigableSmallWorldGraph(object):
 
     def test_navigable_small_world(self):
-        G = nx.navigable_small_world_graph(5,p=1,q=0)
-        gg = nx.grid_2d_graph(5,5).to_directed()
-        assert_true(nx.is_isomorphic(G,gg))
+        G = nx.navigable_small_world_graph(5, p=1, q=0)
+        gg = nx.grid_2d_graph(5, 5).to_directed()
+        assert_true(nx.is_isomorphic(G, gg))
 
-        G = nx.navigable_small_world_graph(5,p=1,q=0,dim=3)
-        gg = nx.grid_graph([5,5,5]).to_directed()
-        assert_true(nx.is_isomorphic(G,gg))
+        G = nx.navigable_small_world_graph(5, p=1, q=0, dim=3)
+        gg = nx.grid_graph([5, 5, 5]).to_directed()
+        assert_true(nx.is_isomorphic(G, gg))
 
-        G = nx.navigable_small_world_graph(5,p=1,q=0,dim=1)
+        G = nx.navigable_small_world_graph(5, p=1, q=0, dim=1)
         gg = nx.grid_graph([5]).to_directed()
-        assert_true(nx.is_isomorphic(G,gg))
+        assert_true(nx.is_isomorphic(G, gg))

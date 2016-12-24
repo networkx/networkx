@@ -68,7 +68,7 @@ class TestEdgelist:
 
     def test_write_edgelist_1(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=False)
         fh.seek(0)
@@ -76,7 +76,7 @@ class TestEdgelist:
 
     def test_write_edgelist_2(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=True)
         fh.seek(0)
@@ -84,7 +84,7 @@ class TestEdgelist:
 
     def test_write_edgelist_3(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edge(1,2,weight=2.0)
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=True)
@@ -93,7 +93,7 @@ class TestEdgelist:
 
     def test_write_edgelist_4(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edge(1,2,weight=2.0)
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=[('weight')])

@@ -59,12 +59,12 @@ class TestDFS:
 
     def test_dfs_labeled_edges(self):
         edges=list(nx.dfs_labeled_edges(self.G,source=0))
-        forward=[(u,v) for (u,v,d) in edges if d['dir']=='forward']
+        forward=[(u,v) for (u,v,d) in edges if d == 'forward']
         assert_equal(forward,[(0,0), (0, 1), (1, 2), (2, 4), (4, 3)])
 
     def test_dfs_labeled_disconnected_edges(self):
         edges=list(nx.dfs_labeled_edges(self.D))
-        forward=[(u,v) for (u,v,d) in edges if d['dir']=='forward']
+        forward=[(u,v) for (u,v,d) in edges if d == 'forward']
         assert_equal(forward,[(0, 0), (0, 1), (2, 2), (2, 3)])
 
     def test_dfs_tree_isolates(self):

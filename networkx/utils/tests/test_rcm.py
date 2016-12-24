@@ -31,7 +31,8 @@ def test_rcm_alternate_heuristic():
                   (6, 6),
                   (7, 7)])
 
-    answers = [[6, 3, 5, 7, 1, 2, 4, 0], [6, 3, 7, 5, 1, 2, 4, 0]]
+    answers = [[6, 3, 5, 7, 1, 2, 4, 0], [6, 3, 7, 5, 1, 2, 4, 0],
+               [7, 5, 1, 2, 4, 0, 6, 3]]
 
     def smallest_degree(G):
         deg, node = min((d, n) for n, d in G.degree())

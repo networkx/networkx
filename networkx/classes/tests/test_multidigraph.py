@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from networkx.testing import assert_edges_equal
 import networkx as nx
 from test_multigraph import BaseMultiGraphTester, TestMultiGraph
 from test_multigraph import TestEdgeSubgraph as TestMultiGraphEdgeSubgraph
@@ -119,7 +120,13 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G=self.K3
         self.add_attributes(G)
         H=nx.MultiGraph(G)
-        self.is_shallow(H,G)
+        # self.is_shallow(H,G)
+        # the result is traversal order dependent so we can't use the is_shallow()
+        # test here.
+        try:
+            assert_edges_equal(H.edges(),[(0,1),(1,2),(2,0)])
+        except AssertionError:
+            assert_edges_equal(H.edges(),[(0,1),(1,2),(1,2),(2,0)])
         H=G.to_undirected()
         self.is_deep(H,G)
 
@@ -155,17 +162,17 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
 
     def test_degree(self):
         G=self.K3
-        assert_equal(list(G.degree()),[(0,4),(1,4),(2,4)])
+        assert_equal(sorted(G.degree()),[(0,4),(1,4),(2,4)])
         assert_equal(dict(G.degree()),{0:4,1:4,2:4})
         assert_equal(G.degree(0), 4)
         assert_equal(list(G.degree(iter([0]))), [(0, 4)])
         G.add_edge(0,1,weight=0.3,other=1.2)
-        assert_equal(list(G.degree(weight='weight')),[(0,4.3),(1,4.3),(2,4)])
-        assert_equal(list(G.degree(weight='other')),[(0,5.2),(1,5.2),(2,4)])
+        assert_equal(sorted(G.degree(weight='weight')),[(0,4.3),(1,4.3),(2,4)])
+        assert_equal(sorted(G.degree(weight='other')),[(0,5.2),(1,5.2),(2,4)])
 
     def test_in_degree(self):
         G=self.K3
-        assert_equal(list(G.in_degree()),[(0,2),(1,2),(2,2)])
+        assert_equal(sorted(G.in_degree()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.in_degree()),{0:2,1:2,2:2})
         assert_equal(G.in_degree(0), 2)
         assert_equal(list(G.in_degree(iter([0]))), [(0, 2)])
@@ -173,7 +180,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
 
     def test_out_degree(self):
         G=self.K3
-        assert_equal(list(G.out_degree()),[(0,2),(1,2),(2,2)])
+        assert_equal(sorted(G.out_degree()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.out_degree()),{0:2,1:2,2:2})
         assert_equal(G.out_degree(0), 2)
         assert_equal(list(G.out_degree(iter([0]))), [(0, 2)])
@@ -185,8 +192,8 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert_equal(G.size(),6)
         assert_equal(G.number_of_edges(),6)
         G.add_edge(0,1,weight=0.3,other=1.2)
-        assert_equal(G.size(weight='weight'),6.3)
-        assert_equal(G.size(weight='other'),7.2)
+        assert_equal(round(G.size(weight='weight'),2),6.3)
+        assert_equal(round(G.size(weight='other'),2),7.2)
 
     def test_to_undirected_reciprocal(self):
         G=self.Graph()
