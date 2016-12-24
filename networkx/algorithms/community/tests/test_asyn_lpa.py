@@ -106,4 +106,5 @@ def test_two_communities():
 
     communities = asyn_lpa.asyn_lpa_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    # probabilitistic result could be all nodes in one community. So test result is either.
+    assert(result in [ground_truth, set(frozenset(range(16)))])
