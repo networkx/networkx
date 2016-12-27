@@ -35,8 +35,9 @@ def pagerank(G, alpha=0.85, personalization=None,
 
     personalization: dict, optional
       The "personalization vector" consisting of a dictionary with a
-      key for every graph node and personalization value for each node.
+      key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
+      If not specfiied, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     max_iter : integer, optional
@@ -129,11 +130,6 @@ def pagerank(G, alpha=0.85, personalization=None,
         # Assign uniform personalization vector if not given
         p = dict.fromkeys(W, 1.0 / N)
     else:
-        missing = set(G) - set(personalization)
-        if missing:
-            raise NetworkXError('Personalization dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
         s = float(sum(personalization.values()))
         p = dict((k, v / s) for k, v in personalization.items())
 
@@ -141,11 +137,6 @@ def pagerank(G, alpha=0.85, personalization=None,
         # Use personalization vector if dangling vector not specified
         dangling_weights = p
     else:
-        missing = set(G) - set(dangling)
-        if missing:
-            raise NetworkXError('Dangling node dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
         s = float(sum(dangling.values()))
         dangling_weights = dict((k, v/s) for k, v in dangling.items())
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
@@ -160,7 +151,7 @@ def pagerank(G, alpha=0.85, personalization=None,
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
                 x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
-            x[n] += danglesum * dangling_weights[n] + (1.0 - alpha) * p[n]
+            x[n] += danglesum * dangling_weights.get(n,0) + (1.0 - alpha) * p.get(n,0)
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
         if err < N*tol:
@@ -183,7 +174,9 @@ def google_matrix(G, alpha=0.85, personalization=None,
 
     personalization: dict, optional
       The "personalization vector" consisting of a dictionary with a
-      key for every graph node and nonzero personalization value for each node.
+      key some subset of graph nodes and personalization value each of those.
+      At least one personalization value must be non-zero.
+      If not specfiied, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     nodelist : list, optional
@@ -238,25 +231,15 @@ def google_matrix(G, alpha=0.85, personalization=None,
     if personalization is None:
         p = np.repeat(1.0 / N, N)
     else:
-        missing = set(nodelist) - set(personalization)
-        if missing:
-            raise NetworkXError('Personalization vector dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
-        p = np.array([personalization[n] for n in nodelist], dtype=float)
+        p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
         p /= p.sum()
 
     # Dangling nodes
     if dangling is None:
         dangling_weights = p
     else:
-        missing = set(nodelist) - set(dangling)
-        if missing:
-            raise NetworkXError('Dangling node dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
         # Convert the dangling dictionary into an array in nodelist order
-        dangling_weights = np.array([dangling[n] for n in nodelist],
+        dangling_weights = np.array([dangling.get(n, 0) for n in nodelist],
                                     dtype=float)
         dangling_weights /= dangling_weights.sum()
     dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
@@ -288,9 +271,11 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
       Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
-       The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each
-       node. By default, a uniform distribution is used.
+      The "personalization vector" consisting of a dictionary with a
+      key some subset of graph nodes and personalization value each of those.
+      At least one personalization value must be non-zero.
+      If not specfiied, a nodes personalization value will be zero.
+      By default, a uniform distribution is used.
 
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
@@ -370,9 +355,11 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
       Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
-       The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each
-       node. By default, a uniform distribution is used.
+      The "personalization vector" consisting of a dictionary with a
+      key some subset of graph nodes and personalization value each of those.
+      At least one personalization value must be non-zero.
+      If not specfiied, a nodes personalization value will be zero.
+      By default, a uniform distribution is used.
 
     max_iter : integer, optional
       Maximum number of iterations in power method eigenvalue solver.
@@ -452,26 +439,15 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     if personalization is None:
         p = scipy.repeat(1.0 / N, N)
     else:
-        missing = set(nodelist) - set(personalization)
-        if missing:
-            raise NetworkXError('Personalization vector dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
-        p = scipy.array([personalization[n] for n in nodelist],
-                        dtype=float)
+        p = scipy.array([personalization.get(n, 0) for n in nodelist], dtype=float)
         p = p / p.sum()
 
     # Dangling nodes
     if dangling is None:
         dangling_weights = p
     else:
-        missing = set(nodelist) - set(dangling)
-        if missing:
-            raise NetworkXError('Dangling node dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
         # Convert the dangling dictionary into an array in nodelist order
-        dangling_weights = scipy.array([dangling[n] for n in nodelist],
+        dangling_weights = scipy.array([dangling.get(n, 0) for n in nodelist],
                                        dtype=float)
         dangling_weights /= dangling_weights.sum()
     is_dangling = scipy.where(S == 0)[0]
