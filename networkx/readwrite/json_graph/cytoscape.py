@@ -48,7 +48,7 @@ def cytoscape_data(G, attrs=None):
         n = {"data" : j.copy()}
         n["data"]["id"] = str(i)
         n["data"]["value"] = i
-        n["data"]["name"] = n.get(name) or str(i)
+        n["data"]["name"] = j.get(name) or str(i)
         nodes.append(n)
         
     for e in G.edges():
