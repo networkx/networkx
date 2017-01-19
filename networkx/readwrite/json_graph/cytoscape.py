@@ -5,7 +5,7 @@ import networkx as nx
 
 __all__ = ['cytoscape_data', 'cytoscape_graph']
 
-_attrs = dict(source='source', target='target', name='name', id='id')
+_attrs = dict(name='name', ident='id')
 
 def cytoscape_data(G, attrs=None):
     """Return data in Cytoscape JSON format (cyjs).
@@ -31,10 +31,9 @@ def cytoscape_data(G, attrs=None):
         attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
 
     name = attrs["name"]
-    source = attrs["source"]
-    target = attrs["target"]
+    ident = attrs["ident"]
     
-    if len(set([source, target, name])) < 3:
+    if len(set([name, ident])) < 2:
         raise nx.NetworkXError('Attribute names are not unique.')
     
     jsondata = {"data" : list(G.graph.items())}
@@ -46,15 +45,15 @@ def cytoscape_data(G, attrs=None):
 
     for i, j in G.node.items():
         n = {"data" : j.copy()}
-        n["data"]["id"] = str(i)
+        n["data"]["id"] = j.get(ident) or str(i)
         n["data"]["value"] = i
         n["data"]["name"] = j.get(name) or str(i)
         nodes.append(n)
         
     for e in G.edges():
-        n = {"data" : G.edge[e[0]][e[1]].copy().copy()}
-        n["data"]["source"] = n["data"].get(source) or e[0]
-        n["data"]["target"] = n["data"].get(target) or e[1]
+        n = {"data" : G.edge[e[0]][e[1]].copy()}
+        n["data"]["source"] = e[0]
+        n["data"]["target"] = e[1]
         edges.append(n)
     return jsondata
 
@@ -66,9 +65,9 @@ def cytoscape_graph(data, attrs=None):
         attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
     
     name = attrs["name"]
-    source = attrs["source"]
-    target = attrs["target"]
-    if len(set([source, target, name])) < 3:
+    ident = attrs["ident"]
+    
+    if len(set([ident, name])) < 2:
         raise nx.NetworkXError('Attribute names are not unique.')
         
     multigraph = data.get('multigraph')
@@ -86,10 +85,12 @@ def cytoscape_graph(data, attrs=None):
         
         if d["data"].get(name):
             node_data[name] = d["data"].get(name)
-#            continue
-        
+        if d["data"].get(ident):
+            node_data[ident] = d["data"].get(ident)
+
         graph.add_node(node)
         graph.node[node].update(node_data)
+        
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()
         sour = d["data"].get("source")
