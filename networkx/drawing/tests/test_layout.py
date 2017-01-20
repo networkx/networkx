@@ -28,6 +28,10 @@ class TestLayout(object):
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.fruchterman_reingold_layout(self.bigG)
+        vpos = nx.generalized_fruchterman_reingold_layout(G)
+        vpos = nx.generalized_fruchterman_reingold_layout(self.bigG)
+        vpos = nx.force_atlas_2_layout(G, iterations=200)
+        vpos = nx.force_atlas_2_layout(self.bigG, iterations=200)
         vpos = nx.spectral_layout(G)
         vpos = nx.spectral_layout(self.bigG)
         vpos = nx.shell_layout(G)
@@ -38,6 +42,8 @@ class TestLayout(object):
         vpos = nx.circular_layout(G)
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
+        vpos = nx.generalized_fruchterman_reingold_layout(G)
+        vpos = nx.force_atlas_2_layout(G, iterations=200)
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
 
@@ -83,6 +89,26 @@ class TestLayout(object):
         npos = nx.fruchterman_reingold_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         assert_equal(tuple(pos[(0, 0)]), tuple(npos[(0, 0)]))
 
+    def test_smoke_initial_pos_generalized_fruchterman_reingold_layout(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.generalized_fruchterman_reingold_layout(self.Gi, pos=pos)
+
+    def test_fixed_node_generalized_fruchterman_reingold_layout(self):
+        # Dense version (numpy based)
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.generalized_fruchterman_reingold_layout(self.Gi, pos=pos, fixed=[(0, 0)])
+        assert_equal(tuple(pos[(0, 0)]), tuple(npos[(0, 0)]))
+
+    def test_smoke_initial_pos_force_atlas_2(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.force_atlas_2_layout(self.Gi, pos=pos, iterations=200)
+
+    def test_fixed_node_force_atlas_2(self):
+        # Dense version (numpy based)
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.force_atlas_2_layout(self.Gi, pos=pos, fixed=[(0, 0)], iterations=200)
+        assert_equal(tuple(pos[(0, 0)]), tuple(npos[(0, 0)]))
+
     def test_center_parameter(self):
         G =  nx.path_graph(1)
         vpos = nx.random_layout(G, center=(1, 1))
@@ -91,6 +117,10 @@ class TestLayout(object):
         vpos = nx.spring_layout(G, center=(1, 1))
         assert_equal(tuple(vpos[0]), (1, 1))
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
+        assert_equal(tuple(vpos[0]), (1, 1))
+        vpos = nx.generalized_fruchterman_reingold_layout(G, center=(1, 1))
+        assert_equal(tuple(vpos[0]), (1, 1))
+        vpos = nx.force_atlas_2_layout(G, center=(1, 1), iterations=200)
         assert_equal(tuple(vpos[0]), (1, 1))
         vpos = nx.spectral_layout(G, center=(1, 1))
         assert_equal(tuple(vpos[0]), (1, 1))
@@ -104,6 +134,10 @@ class TestLayout(object):
         assert_raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.fruchterman_reingold_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.fruchterman_reingold_layout, G, dim=3, center=(1, 1))
+        assert_raises(ValueError, nx.generalized_fruchterman_reingold_layout, G, center=(1, 1, 1))
+        assert_raises(ValueError, nx.generalized_fruchterman_reingold_layout, G, dim=3, center=(1, 1))
+        assert_raises(ValueError, nx.force_atlas_2_layout, G, center=(1, 1, 1), iterations=200)
+        assert_raises(ValueError, nx.force_atlas_2_layout, G, dim=3, center=(1, 1), iterations=200)
         assert_raises(ValueError, nx.spectral_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
         assert_raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
@@ -117,6 +151,10 @@ class TestLayout(object):
         vpos = nx.spring_layout(G, center=(1, 1))
         assert_equal(vpos, {})
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
+        assert_equal(vpos, {})
+        vpos = nx.generalized_fruchterman_reingold_layout(G, center=(1, 1))
+        assert_equal(vpos, {})
+        vpos = nx.force_atlas_2_layout(G, center=(1, 1), iterations=200)
         assert_equal(vpos, {})
         vpos = nx.spectral_layout(G, center=(1, 1))
         assert_equal(vpos, {})

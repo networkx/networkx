@@ -1,0 +1,17 @@
+[user]
+        name = 'Kevin Dezaphi'
+        email = dezaphi@live.fr
+
+[alias]
+        ci = 'commit -a'
+        co = checkout
+        st = status
+        stat = status
+        br = branch
+        wdiff = 'diff --color-words'
+
+[core]
+        editor = vim
+
+[merge]
+        summary = true
