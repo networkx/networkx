@@ -269,12 +269,11 @@ def diameter(G, e=None, usebounds=False):
     --------
     eccentricity
     """
-    if G.is_directed() or (e is not None) or usebounds is False:
-        if e is None:
-            e=eccentricity(G)
-        return max(e.values())
-    else:
+    if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="diameter")
+    if e is None:
+        e=eccentricity(G)
+    return max(e.values())
 
 def periphery(G, e=None, usebounds=False):
     """Return the periphery of the graph G. 
@@ -294,14 +293,13 @@ def periphery(G, e=None, usebounds=False):
     p : list
        List of nodes in periphery
     """
-    if G.is_directed() or (e is not None) or usebounds is False:
-        if e is None:
-            e=eccentricity(G)
-        diameter=max(e.values())
-        p=[v for v in e if e[v]==diameter]
-        return p
-    else:
+    if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="periphery")
+    if e is None:
+        e=eccentricity(G)
+    diameter=max(e.values())
+    p=[v for v in e if e[v]==diameter]
+    return p
 
 
 def radius(G, e=None, usebounds=False):
@@ -322,12 +320,11 @@ def radius(G, e=None, usebounds=False):
     r : integer
        Radius of graph
     """
-    if G.is_directed() or (e is not None) or usebounds is False:
-        if e is None:
-            e=eccentricity(G)
-        return min(e.values())
-    else:
+    if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="radius")
+    if e is None:
+        e=eccentricity(G)
+    return min(e.values())
 
 
 def center(G, e=None, usebounds=False):
@@ -348,12 +345,11 @@ def center(G, e=None, usebounds=False):
     c : list
        List of nodes in center
     """
-    if G.is_directed() or (e is not None) or usebounds is False:
-        if e is None:
-            e=eccentricity(G)
-        radius=min(e.values())
-        p=[v for v in e if e[v]==radius]
-        return p
-    else:
+    if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="center")
+    if e is None:
+        e=eccentricity(G)
+    radius=min(e.values())
+    p=[v for v in e if e[v]==radius]
+    return p
 
