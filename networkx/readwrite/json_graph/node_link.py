@@ -179,10 +179,18 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
         if not multigraph:
             edgedata = dict((make_str(k), v) for k, v in d.items()
                             if k != source and k != target)
+            if (isinstance(src, list)):
+                src = tuple(src)
+            if (isinstance(tgt, list)):
+                tgt = tuple(tgt)
             graph.add_edge(src, tgt, **edgedata)
         else:
             ky = d.get(key, None)
             edgedata = dict((make_str(k), v) for k, v in d.items()
                             if k != source and k != target and k != key)
+            if (isinstance(src, list)):
+                src = tuple(src)
+            if (isinstance(tgt, list)):
+                tgt = tuple(tgt)
             graph.add_edge(src, tgt, ky, **edgedata)
     return graph
