@@ -1707,8 +1707,10 @@ class Graph(object):
         Returns
         -------
         nedges : int
-            The number of edges in the graph.  If nodes u and v are specified
-            return the number of edges between those nodes.
+            The number of edges in the graph.  If nodes `u` and `v` are
+            specified return the number of edges between those nodes. If
+            the graph is directed, this only returns the number of edges
+            from `u` to `v`.
 
         See Also
         --------
@@ -1716,14 +1718,28 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.number_of_edges()
-        3
-        >>> G.number_of_edges(0,1)
-        1
-        >>> e = (0,1)
-        >>> G.number_of_edges(*e)
-        1
+        For undirected graphs, this method counts the total number of
+        edges in the graph::
+
+            >>> G = nx.path_graph(4)
+            >>> G.number_of_edges()
+            3
+
+        If you specify two nodes, this counts the total number of edges
+        joining the two nodes::
+
+            >>> G.number_of_edges(0, 1)
+            1
+
+        For directed graphs, this method can count the total number of
+        directed edges from `u` to `v`::
+
+            >>> G = nx.DiGraph()
+            >>> G.add_edge(0, 1)
+            >>> G.add_edge(1, 0)
+            >>> G.number_of_edges(0, 1)
+            1
+
         """
         if u is None: return int(self.size())
         if v in self.adj[u]:
