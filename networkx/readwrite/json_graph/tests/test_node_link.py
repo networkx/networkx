@@ -79,7 +79,7 @@ class TestNodeLink:
         except NameError:
             q = "qualité"
 
-        G = nx.Graph()
+        G = nx.DiGraph()
         G.add_node('A')
         G.add_node(q)
         G.add_edge('A', q)
