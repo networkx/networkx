@@ -1,42 +1,43 @@
 .. This (-*- rst -*-) format file contains commonly used link targets
-   and name substitutions. It may be included in many files,
+   and name substitutions.  It may be included in many files,
    therefore it should only contain link targets and name
-   substitutions. Try grepping for "^\.\. _" to find plausible
+   substitutions.  Try grepping for "^\.\. _" to find plausible
    candidates for this list.
 
 .. NOTE: reST targets are
    __not_case_sensitive__, so only one target definition is needed for
    nipy, NIPY, Nipy, etc...
 
-.. git stuff
+.. git internals
 .. _git: http://git-scm.com/
 .. _github: http://github.com
-.. _github help: http://help.github.com
-.. _github more help: https://help.github.com/articles/what-are-other-good-resources-for-learning-git-and-github/
+.. _github help: https://git-scm.com/docs/git
+.. _github more help: https://help.github.com/articles/git-and-github-learning-resources/
+.. _git svn crash course: http://git-scm.com/course/svn.html
+.. _network graph visualizer: http://github.com/blog/39-say-hello-to-the-network-graph-visualizer
+.. _git tutorial: https://git-scm.com/docs/gittutorial
+.. _git clone: https://git-scm.com/docs/git-clone
+.. _git checkout: https://git-scm.com/docs/git-checkout
+.. _git commit: https://git-scm.com/docs/git-commit
+.. _git push: https://git-scm.com/docs/git-push
+.. _git pull: https://git-scm.com/docs/git-pull
+.. _git add: https://git-scm.com/docs/git-add
+.. _git status: https://git-scm.com/docs/git-status
+.. _git diff: https://git-scm.com/docs/git-diff
+.. _git log: https://git-scm.com/docs/git-log
+.. _git branch: https://git-scm.com/docs/git-branch
+.. _git remote: https://git-scm.com/docs/git-remote
+.. _git rebase: https://git-scm.com/docs/git-rebase
+.. _git config: https://git-scm.com/docs/git-config
+
+.. git guides
+.. _git concepts: http://www.eecs.harvard.edu/~cduan/technical/git/
+.. _git magic: http://www-cs-students.stanford.edu/~blynn/gitmagic/index.html
 .. _msysgit: http://code.google.com/p/msysgit/downloads/list
 .. _git-osx-installer: http://code.google.com/p/git-osx-installer/downloads/list
 .. _subversion: http://subversion.tigris.org/
-.. _git svn crash course: http://git-scm.com/course/svn.html
-.. _network graph visualizer: http://github.com/blog/39-say-hello-to-the-network-graph-visualizer
-.. _git user manual: http://schacon.github.com/git/user-manual.html
-.. _git tutorial: http://schacon.github.com/git/gittutorial.html
 .. _Nick Quaranto: http://www.gitready.com/
 .. _Fernando Perez: http://www.fperez.org/py4science/git.html
-.. _git magic: http://www-cs-students.stanford.edu/~blynn/gitmagic/index.html
-.. _git concepts: http://www.eecs.harvard.edu/~cduan/technical/git/
-.. _git clone: http://schacon.github.com/git/git-clone.html
-.. _git checkout: http://schacon.github.com/git/git-checkout.html
-.. _git commit: http://schacon.github.com/git/git-commit.html
-.. _git push: http://schacon.github.com/git/git-push.html
-.. _git pull: http://schacon.github.com/git/git-pull.html
-.. _git add: http://schacon.github.com/git/git-add.html
-.. _git status: http://schacon.github.com/git/git-status.html
-.. _git diff: http://schacon.github.com/git/git-diff.html
-.. _git log: http://schacon.github.com/git/git-log.html
-.. _git branch: http://schacon.github.com/git/git-branch.html
-.. _git remote: http://schacon.github.com/git/git-remote.html
-.. _git rebase: http://schacon.github.com/git/git-rebase.html
-.. _git config: http://schacon.github.com/git/git-config.html
 .. _why the -a flag?: http://www.gitready.com/beginner/2009/01/18/the-staging-area.html
 .. _git staging area: http://www.gitready.com/beginner/2009/01/18/the-staging-area.html
 .. _tangled working copy problem: http://tomayko.com/writings/the-thing-about-git 
