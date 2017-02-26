@@ -1324,16 +1324,17 @@ class DiGraph(Graph):
         for u, v in edges:
             # Copy the node attributes if they haven't been copied
             # already.
+            #
+            # Also, create an entry in the successors and predecessors
+            # dictionary for the nodes u and v.
             if u not in H.node:
                 H.node[u] = self.node[u]
+                H.pred[u] = H.adjlist_inner_dict_factory()
+                H.succ[u] = H.adjlist_inner_dict_factory()
             if v not in H.node:
                 H.node[v] = self.node[v]
-            # Create an entry in the successors and predecessors
-            # dictionary for the nodes u and v if they don't exist yet.
-            if u not in H.succ:
-                H.succ[u] = H.adjlist_inner_dict_factory()
-            if v not in H.pred:
                 H.pred[v] = H.adjlist_inner_dict_factory()
+                H.succ[v] = H.adjlist_inner_dict_factory()
             # Copy the edge attributes.
             H.edge[u][v] = self.edge[u][v]
             H.pred[v][u] = self.pred[v][u]

@@ -260,3 +260,17 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
         # Get the subgraph induced by the first and last edges.
         self.G = G
         self.H = G.edge_subgraph([(0, 1), (3, 4)])
+
+    def test_pred_succ(self):
+        """Test that nodes are added to predecessors and successors.
+
+        For more information, see GitHub issue #2370.
+
+        """
+        G = networkx.DiGraph()
+        G.add_edge(0, 1)
+        H = G.edge_subgraph([(0, 1)])
+        assert_equal(list(H.predecessors(0)), [])
+        assert_equal(list(H.successors(0)), [1])
+        assert_equal(list(H.predecessors(1)), [0])
+        assert_equal(list(H.successors(1)), [])
