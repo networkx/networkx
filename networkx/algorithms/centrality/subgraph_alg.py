@@ -239,7 +239,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:,i].copy()
         A[i,:] = 0
         A[:,i] = 0
-        B = (expA - scipy.linalg.expm(A)) / expA
+        B = (expA - scipy.linalg.expm(A.A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i,:] = 0
         B[:,i] = 0
