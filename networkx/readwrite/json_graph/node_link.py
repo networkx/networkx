@@ -1,10 +1,10 @@
 #    Copyright (C) 2011-2016 by
-# 
+#
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Michael E. Rose <Michael.Ernst.Rose@gmail.com>
-#    
+#
 #    All rights reserved.
 #    BSD license.
 from itertools import chain, count
@@ -55,7 +55,7 @@ def node_link_data(G, attrs=None):
     >>> G = nx.Graph([('A', 'B')])
     >>> data1 = json_graph.node_link_data(G)
     >>> H = nx.gn_graph(2)
-    >>> data2 = json_graph.node_link_data(H, {'link': 'edges', 'source': 'from', 'target': 'to'})    
+    >>> data2 = json_graph.node_link_data(H, {'link': 'edges', 'source': 'from', 'target': 'to'})
 
     To serialize with json
 
@@ -174,23 +174,15 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
         nodedata = dict((make_str(k), v) for k, v in d.items() if k != name)
         graph.add_node(node, **nodedata)
     for d in data[links]:
-        src = d[source]
-        tgt = d[target]
+        src = tuple(d[source]) if isinstance(d[source], list) else d[source]
+        tgt = tuple(d[target]) if isinstance(d[target], list) else d[target]
         if not multigraph:
             edgedata = dict((make_str(k), v) for k, v in d.items()
                             if k != source and k != target)
-            if (isinstance(src, list)):
-                src = tuple(src)
-            if (isinstance(tgt, list)):
-                tgt = tuple(tgt)
             graph.add_edge(src, tgt, **edgedata)
         else:
             ky = d.get(key, None)
             edgedata = dict((make_str(k), v) for k, v in d.items()
                             if k != source and k != target and k != key)
-            if (isinstance(src, list)):
-                src = tuple(src)
-            if (isinstance(tgt, list)):
-                tgt = tuple(tgt)
             graph.add_edge(src, tgt, ky, **edgedata)
     return graph
