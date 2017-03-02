@@ -139,19 +139,39 @@ def is_bipartite_node_set(G,nodes):
     return True
 
 
-def sets(G):
+def sets(G, top_nodes=None):
     """Returns bipartite node sets of graph G.
 
-    Raises an exception if the graph is not bipartite.
+    Raises an exception if the graph is not bipartite or if the input
+    graph is disconnected and thus more than one valid solution exists.
 
     Parameters
     ----------
     G : NetworkX graph
 
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
+
     Returns
     -------
     (X,Y) : two-tuple of sets
        One set of nodes for each part of the bipartite graph.
+
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
+
+    NetworkXError: Exception
+
+      Raised if the input graph is not bipartite.
 
     Examples
     --------
@@ -166,10 +186,22 @@ def sets(G):
     See Also
     --------
     color
+
     """
-    c = color(G)
-    X = set(n for n in c if c[n]) # c[n] == 1
-    Y = set(n for n in c if not c[n]) # c[n] == 0
+    if G.is_directed():
+        is_connected = nx.is_weakly_connected
+    else:
+        is_connected = nx.is_connected
+    if top_nodes is not None:
+        X = set(top_nodes)
+        Y = set(G) - X
+    else:
+        if not is_connected(G):
+            msg = 'Disconnected graph: Ambiguous solution for bipartite sets.'
+            raise nx.AmbiguousSolution(msg)
+        c = color(G)
+        X = {n for n in c if c[n]} # c[n] == 1
+        Y = {n for n in c if not c[n]} # c[n] == 0
     return (X, Y)
 
 def density(B, nodes):
