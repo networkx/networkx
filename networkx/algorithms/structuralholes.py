@@ -2,7 +2,7 @@
 #
 # structuralholes.py - functions for computing measures of structural holes
 #
-# Copyright 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 NetworkX developers.
+# Copyright 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -11,182 +11,162 @@
 """Functions for computing measures of structural holes."""
 from __future__ import division
 
-import itertools
-import math
-
 import networkx as nx
-from networkx.utils import not_implemented_for
 
-__all__ = ['aggregate_constraint', 'constraint', 'effective_size',
-           'efficiency', 'hierarchy', 'local_constraint']
+__all__ = ['constraint', 'local_constraint', 'effective_size']
 
 
-def all_neighbors(G, n):
-    """Returns an iterator over all in- and out-neighbors of node `n` in
-    the graph `G`.
-
-    If `G` is an undirected graph, this simply returns an iterator over
-    the neighbors of `n`.
-
-    """
-    if G.is_directed():
-        return itertools.chain(G.predecessors(n), G.successors(n))
-    return G.neighbors(n)
-
-
-@not_implemented_for('multigraph')
-def mutual_weight(G, u, v, weight='weight'):
+def mutual_weight(G, u, v, weight=None):
     """Returns the sum of the weights of the edge from `u` to `v` and
     the edge from `v` to `u` in `G`.
 
     `weight` is the edge data key that represents the edge weight. If
-    the specified key is not in the edge data for an edge, that edge is
-    assumed to have weight 1.
+    the specified key is `None` or is not in the edge data for an edge,
+    that edge is assumed to have weight 1.
 
     Pre-conditions: `u` and `v` must both be in `G`.
 
     """
-    return (G[u][v].get(weight, 1) if v in G[u] else 0
-            + G[v][u].get(weight, 1) if u in G[v] else 0)
+    try:
+        a_uv = G[u][v].get(weight, 1)
+    except KeyError:
+        a_uv = 0
+    try:
+        a_vu = G[v][u].get(weight, 1)
+    except KeyError:
+        a_vu = 0
+    return a_uv + a_vu
 
 
-def normalized_mutual_weight(G, u, v, normalization=sum):
+def normalized_mutual_weight(G, u, v, norm=sum, weight=None):
     """Returns normalized mutual weight of the edges from `u` to `v`
     with respect to the mutual weights of the neighbors of `u` in `G`.
 
-    `normalization` specifies how the normalization factor is
-    computed. It must be a function that takes a single argument and
-    returns a number. The argument will be an iterable of mutual weights
+    `norm` specifies how the normalization factor is computed. It must
+    be a function that takes a single argument and returns a number.
+    The argument will be an iterable of mutual weights
     of pairs ``(u, w)``, where ``w`` ranges over each (in- and
     out-)neighbor of ``u``. Commons values for `normalization` are
     ``sum`` and ``max``.
 
+    `weight` can be ``None`` or a string, if None, all edge weights
+    are considered equal. Otherwise holds the name of the edge
+    attribute used as weight.
+
     """
-    scale = normalization(mutual_weight(G, u, w) for w in all_neighbors(G, u))
-    return 0 if scale == 0 else mutual_weight(G, u, v) / scale
+    scale = norm(mutual_weight(G, u, w, weight)
+                 for w in set(nx.all_neighbors(G, u)))
+    return 0 if scale == 0 else mutual_weight(G, u, v, weight) / scale
 
 
-# def ego_density(G, v):
-#     """Returns the density of the ego graph of ``v``.
+def effective_size(G, nodes=None, weight=None):
+    r"""Returns the effective size of all nodes in the graph ``G``.
 
-#     This function ignores edge weights.
+    The *effective size* of a node's ego network is based on the concept
+    of redundancy. A person's ego network has redundancy to the extent
+    that her contacts are connected to each other as well. The
+    nonredundant part of a person's relationships it's the effective
+    size of her ego network [1]_.  Formally, the effective size of a
+    node `u`, denoted `e(u)`, is defined by
 
-#     Parameters
-#     ----------
-#     G : NetworkX graph
+    .. math::
 
-#     v : node
-#         The node whose ego density will be returned. This must be a node in
-#         the graph ``G``.
+       e(u) = \sum_{v \in N(u) \setminus \{u\}}
+       \left(1 - \sum_{w \in N(v)} p_{uw} m_{vw}\right)
 
-#     Returns
-#     -------
-#     float
-#         The ego density of ``v`` in ``G``.
+    where `N(u)` is the set of neighbors of `u` and :math:`p_{uw}` is the
+    normalized mutual weight of the (directed or undirected) edges
+    joining `u` and `v`, for each vertex `u` and `v` [1]_. And :math:`m_{vw}`
+    is the mutual weight of `v` and `w` divided by `v` highest mutual
+    weight with any of its neighbors. The *mutual weight* of `u` and `v`
+    is the sum of the weights of edges joining them (edge weights are
+    assumed to be one if the graph is unweighted).
 
-#     See also
-#     --------
-#     density
-#     ego_graph
+    For the case of unweighted and undirected graphs, Borgatti proposed
+    a simplified formula to compute effective size [2]_ 
 
-#     Examples
-#     --------
-#     Compute the ego density as a percentage by multiplying the density by one
-#     hundred::
+    .. math::
 
-#         >>> from networkx import complete_graph, ego_density
-#         >>> G = complete_graph(5)
-#         >>> density = ego_density(G, 0)
-#         >>> density * 100
-#         100
+       e(u) = n - \frac{2t}{n}
 
-#     """
-#     # TODO Is there a definition that makes sense for weighted graphs?
-#     return nx.density(nx.ego_graph(G, v, center=False, undirected=True))
-
-
-def effective_size(G, v):
-    """Returns the effective size of ``v`` in the graph ``G``.
-
-    The *effective size* of a node is the difference between the degree
-    of the node and the average degree in the subgraph induced by its
-    neighbors [1]_.
+    where `t` is the number of ties in the ego network (not including
+    ties to ego) and `n` is the number of nodes (excluding ego).
 
     Parameters
     ----------
     G : NetworkX graph
         The graph containing ``v``. Directed graphs are treated like
         undirected graphs when computing neighbors of ``v``.
-    v : node
-        A node in the graph ``G``.
+
+    nodes : container, optional
+        Container of nodes in the graph ``G``.
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
 
     Returns
     -------
-    float
-        The effective size of the node ``v`` in the graph ``G``.
+    dict
+        Dictionary with nodes as keys and the constraint on the node as values.
 
     Notes
     -----
-    This function ignores edge weights.
+    Burt also defined the related concept of *efficency* of a node's ego
+    network, which is its effective size divided by the degree of that
+    node [1]_. So you can easily compute efficencty:
+
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(0, 1), (0, 2), (1, 0), (2, 1)])
+    >>> esize = nx.effective_size(G)
+    >>> efficency = {n: v / G.degree(n) for n, v in esize.items()}
 
     See also
     --------
-    efficiency
+    constraint
 
     References
     ----------
     .. [1] Burt, Ronald S.
            *Structural Holes: The Social Structure of Competition.*
-           Harvard University Press, 2009.
+           Cambridge: Harvard University Press, 1995.
+
+    .. [2] Borgatti, S.
+           "Structural Holes: Unpacking Burt's Redundancy Measures"
+           CONNECTIONS 20(1):35-38.
+           http://www.analytictech.com/connections/v20(1)/holes.htm
 
     """
-    ndeg = G.degree(v)
-    E = nx.ego_graph(G, v, center=False, undirected=True)
-    return ndeg - sum(d for v, d in E.degree()) / (ndeg - 1)
+    def redundancy(G, u, v, weight=None):
+        nmw = normalized_mutual_weight
+        r = sum(nmw(G, u, w, weight=weight) * nmw(G, v, w, norm=max, weight=weight)
+                for w in set(nx.all_neighbors(G, u)))
+        return 1 - r
+    effective_size = {}
+    if nodes is None:
+        nodes = G
+    # Use Borgatti's simplified formula for unweighted and undirected graphs
+    if not G.is_directed() and weight is None:
+        for v in G:
+            # Effective size is not defined for isolated nodes
+            if len(G[v]) == 0:
+                effective_size[v] = float('nan')
+                continue
+            E = nx.ego_graph(G, v, center=False, undirected=True)
+            effective_size[v] = len(E) - (2 * E.size()) / len(E)
+    else:
+        for v in G:
+            # Effective size is not defined for isolated nodes
+            if len(G[v]) == 0:
+                effective_size[v] = float('nan')
+                continue
+            effective_size[v] = sum(redundancy(G, v, u, weight) 
+                                    for u in set(nx.all_neighbors(G, v)))
+    return effective_size
 
 
-# TODO This name will clash with the global/local/nodal efficiency in
-# pull request #1521.
-def efficiency(G, v):
-    """Returns the efficiency of ``v`` in the graph ``G``.
-
-    The *efficiency* of a node is the effective size of the node
-    normalized by the degree of that node [1]_. For the definition of
-    effective size, see :func:`effective_size`.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        The graph containing ``v``. Directed graphs are treated like
-        undirected graphs when computing neighbors of ``v``.
-    v : node
-        A node in the graph ``G``.
-
-    Returns
-    -------
-    float
-        The efficiency of the node ``v`` in the graph ``G``.
-
-    Notes
-    -----
-    This function ignores edge weights.
-
-    See also
-    --------
-    efficiency
-
-    References
-    ----------
-    .. [1] Burt, Ronald S.
-           *Structural Holes: The Social Structure of Competition.*
-           Harvard University Press, 2009.
-
-    """
-    return effective_size(G, v) / G.degree(v)
-
-
-def constraint(G, v):
-    r"""Returns the constraint on the node ``v`` in the graph ``G``.
+def constraint(G, nodes=None, weight=None):
+    r"""Returns the constraint on all nodes in the graph ``G``.
 
     The *constraint* is a measure of the extent to which a node *v* is
     invested in those nodes that are themselves invested in the
@@ -197,8 +177,8 @@ def constraint(G, v):
 
        c(v) = \sum_{w \in N(v) \setminus \{v\}} \ell(v, w)
 
-    where `N(v)` is the subset of the neighbors of `v` that are both
-    predecessors and successors of `v` and `\ell(v, w)` is the local
+    where `N(v)` is the subset of the neighbors of `v` that are either
+    predecessors or successors of `v` and `\ell(v, w)` is the local
     constraint on `v` with respect to `w` [1]_. For the definition of local
     constraint, see :func:`local_constraint`.
 
@@ -206,18 +186,18 @@ def constraint(G, v):
     ----------
     G : NetworkX graph
         The graph containing ``v``. This can be either directed or undirected.
-    v : node
-        A node in the graph ``G``.
+
+    nodes : container, optional
+        Container of nodes in the graph ``G``.
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
 
     Returns
     -------
-    float
-        The constraint on the node ``v`` in the graph ``G``.
-
-    Notes
-    -----
-    This function takes edge weights into account, assuming they are
-    stored under the edge data key ``'weight'``.
+    dict
+        Dictionary with nodes as keys and the constraint on the node as values.
 
     See also
     --------
@@ -226,18 +206,24 @@ def constraint(G, v):
     References
     ----------
     .. [1] Burt, Ronald S.
-           *Structural Holes: The Social Structure of Competition.*
-           Harvard University Press, 2009.
+           "Structural holes and good ideas".
+           American Journal of Sociology (110): 349–399.
 
     """
-    if G.is_directed():
-        neighbors = set(G.successors(v)) & set(G.predecessors(v))
-    else:
-        neighbors = G.neighbors(v)
-    return sum(local_constraint(G, v, n) for n in neighbors)
+    if nodes is None:
+        nodes = G
+    constraint = {}
+    for v in nodes:
+        # Constraint is not defined for isolated nodes
+        if len(G[v]) == 0:
+            constraint[v] = float('nan')
+            continue
+        constraint[v] = sum(local_constraint(G, v, n, weight)
+                            for n in set(nx.all_neighbors(G, v)))
+    return constraint
 
 
-def local_constraint(G, u, v):
+def local_constraint(G, u, v, weight=None):
     r"""Returns the local constraint on the node ``u`` with respect to
     the node ``v`` in the graph ``G``.
 
@@ -246,12 +232,12 @@ def local_constraint(G, u, v):
 
     .. math::
 
-       ell(u, v) = \left(p(u, v) + \sum_{w \in N(v)} p(u, w) p(w, v)\right)^2,
+       ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p{wv}\right)^2,
 
-    where `N(v)` is the set of neighbors of `v` and `p(x, y)` is the
+    where `N(v)` is the set of neighbors of `v` and :math:`p_{uv}` is the
     normalized mutual weight of the (directed or undirected) edges
-    joining `x` and `y`, for each vertex `x` and `y` [1]_. The *mutual
-    weight* of `x` and `y` is the sum of the weights of edges joining
+    joining `u` and `v`, for each vertex `u` and `v` [1]_. The *mutual
+    weight* of `u` and `v` is the sum of the weights of edges joining
     them (edge weights are assumed to be one if the graph is
     unweighted).
 
@@ -267,16 +253,15 @@ def local_constraint(G, u, v):
     v : node
         A node in the graph ``G``.
 
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
+
     Returns
     -------
     float
         The constraint of the node ``v`` in the graph ``G``.
 
-    Notes
-    -----
-    This function takes edge weights into account, assuming they are
-    stored under the edge data key ``'weight'``.
-
     See also
     --------
     constraint
@@ -284,156 +269,12 @@ def local_constraint(G, u, v):
     References
     ----------
     .. [1] Burt, Ronald S.
-           *Structural Holes: The Social Structure of Competition.*
-           Harvard University Press, 2009.
+           "Structural holes and good ideas".
+           American Journal of Sociology (110): 349–399.
 
     """
     nmw = normalized_mutual_weight
-    weight = nmw(G, u, v)
-    r = sum(nmw(G, u, w) * nmw(G, w, v) for w in all_neighbors(G, u))
-    return (weight + r) ** 2
-
-
-def aggregate_constraint(G, v, organizational_measure=None):
-    r"""Returns the hierarchy value of the node ``v`` in the graph ``G``.
-
-    Formally, the *aggregate constraint* of `v`, denoted `a(v)`, is defined
-    by
-
-    .. math::
-
-       a(v) = \sum_{w \in N(v)} \ell(v, w) * M(w),
-
-    where `N(v)` is the set of neighbors of `v` and `M(w)`, the
-    organizational measure of node `w`, is a `[0, 1]`-valued
-    function. Informally, the organizational measure of a node is an
-    indication of how "replaceable" the node is by any other element of
-    its neighbor subgraph.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        The graph containing ``v``. This can be either directed or
-        undirected.
-
-    v : node
-        A node in the graph ``G``.
-
-    organizational_measure : function
-        A parameter that indicates how "replaceable" any node is within
-        its neighbor subgraph. If specified, this must be a function
-        that takes two inputs, a graph and a node (any node) in the
-        graph, and produces a single output, a number between zero and
-        one, inclusive. If no function is specified, it is the constant
-        function of value one.
-
-    Returns
-    -------
-    float
-        The aggregate constraint on the node ``v`` in the graph ``G``.
-
-    Notes
-    -----
-    This function takes edge weights into account, assuming they are
-    stored under the edge data key ``'weight'``.
-
-    See also
-    --------
-    constraint
-    local_constraint
-
-    References
-    ----------
-    .. [1] Burt, Ronald S.
-           *Structural Holes: The Social Structure of Competition.*
-           Harvard University Press, 2009.
-
-    """
-    if organizational_measure is None:
-        organizational_measure = lambda G, w: 1
-    return sum(local_constraint(G, v, w) * organizational_measure(G, w)
-               for w in all_neighbors(G, v))
-
-
-def hierarchy(G, v):
-    r"""Returns the hierarchy value of the node ``v`` in the graph ``G``.
-
-    Formally, the *hierarchy value* of `v`, denoted `h(v)`, is defined
-    by
-
-    .. math::
-
-       h(v) = \frac{\sum_{w \in N(v) \setminus \{v\}} s(v, w) \log s(v, w))}
-                   {\deg(v) \log \deg(v)},
-
-    where
-
-    .. math::
-
-       s(v, w) = \frac{\ell(v, w) \deg(v)}{a(v)},
-
-    the set `N(v)` is the set of neighbors of `v`, the value `\ell(v,
-    w)` is the local constraint on `v` with respect to `w`, the value
-    `\deg(v)` is the degree of `v` in the graph, and `a(v)` is the
-    aggregate constraint on `v` [1]_. For the definitions of these
-    functions, see :func:`local_constraint` and
-    :func:`aggregate_constraint`.
-
-    In the special case that the degree of ``v`` is one, the hierarchy
-    value is defined to be one.
-
-    The constraint functions take edge weights into account if the graph
-    is weighted, otherwise edges are assumed to have weight one.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        The graph containing ``u`` and ``v``. This can be either
-        directed or undirected.
-
-    v : node
-        A node in the graph ``G``.
-
-    Returns
-    -------
-    float
-        The hierarchy value of the node ``v`` in the graph ``G``.
-
-    Raises
-    ------
-    :exc:`NetworkXError`
-        If the degree of ``v`` is zero.
-
-    Notes
-    -----
-    This function takes edge weights into account, assuming they are
-    stored under the edge data key ``'weight'``.
-
-    See also
-    --------
-    aggregate_constraint
-    local_constraint
-
-    References
-    ----------
-    .. [1] Burt, Ronald S.
-           *Structural Holes: The Social Structure of Competition.*
-           Harvard University Press, 2009.
-
-    """
-    degv = G.degree(v)
-    if degv == 0:
-        msg = 'hierarchy not defined for degree zero node {}'.format(v)
-        raise nx.NetworkXError(msg)
-    # If we allowed the computation to continue with degree one, we
-    # would get a division by zero error when attempting to divide by
-    # the logarithm of the degree.
-    if degv == 1:
-        return 1
-    v_constraint = aggregate_constraint(G, v)
-    sl_constraint = 0
-    numerator = 0
-    for w in all_neighbors(G, v):
-        sl_constraint = degv * local_constraint(G, v, w) / v_constraint
-        numerator += sl_constraint * math.log(sl_constraint)
-    return numerator / (degv * math.log(degv))
+    direct = nmw(G, u, v, weight=weight)
+    indirect = sum(nmw(G, u, w, weight=weight) * nmw(G, w, v, weight=weight)
+                   for w in set(nx.all_neighbors(G, u)))
+    return (direct + indirect) ** 2
