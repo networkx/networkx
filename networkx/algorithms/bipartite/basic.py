@@ -200,8 +200,8 @@ def sets(G, top_nodes=None):
             msg = 'Disconnected graph: Ambiguous solution for bipartite sets.'
             raise nx.AmbiguousSolution(msg)
         c = color(G)
-        X = {n for n in c if c[n]} # c[n] == 1
-        Y = {n for n in c if not c[n]} # c[n] == 0
+        X = {n for n, is_top in c.items() if is_top}
+        Y = {n for n, is_top in c.items() if not is_top}
     return (X, Y)
 
 def density(B, nodes):
