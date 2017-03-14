@@ -28,7 +28,7 @@ def not_implemented_for(*graph_types):
 
     Raises
     ------
-    NetworkXNotImplemnted
+    NetworkXNotImplemented
     If any of the packages cannot be imported
 
     Notes
