@@ -166,6 +166,25 @@ class TestMatching():
         independent_set = set(G) - {v for _, v in vertex_cover}
         assert_equal({'B', 'D', 'F', 'I', 'H'}, independent_set)
 
+    def test_vertex_cover_issue_2384(self):
+        G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 3)])
+        matching = maximum_matching(G)
+        vertex_cover = to_vertex_cover(G, matching)
+        for u, v in G.edges():
+            assert_true(u in vertex_cover or v in vertex_cover)
+
+    def test_unorderable_nodes(self):
+        a = object()
+        b = object()
+        c = object()
+        d = object()
+        e = object()
+        G = nx.Graph([(a, d), (b, d), (b, e), (c, d)])
+        matching = maximum_matching(G)
+        vertex_cover = to_vertex_cover(G, matching)
+        for u, v in G.edges():
+            assert_true(u in vertex_cover or v in vertex_cover)
+
 
 def test_eppstein_matching():
     """Test in accordance to issue #1927"""

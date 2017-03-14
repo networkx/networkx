@@ -300,7 +300,8 @@ def eppstein_matching(G, top_nodes=None):
             recurse(v)
 
 
-def _is_connected_by_alternating_path(G, v, matching, targets):
+def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges,
+                                      targets):
     """Returns True if and only if the vertex `v` is connected to one of
     the target vertices by an alternating path in `G`.
 
@@ -314,65 +315,56 @@ def _is_connected_by_alternating_path(G, v, matching, targets):
 
     `v` is a vertex in `G`.
 
-    `matching` is a dictionary representing a maximum matching in `G`, as
-    returned by, for example, :func:`maximum_matching`.
+    `matched_edges` is a set of edges present in a maximum matching in `G`.
+
+    `unmatched_edges` is a set of edges not present in a maximum
+    matching in `G`.
 
     `targets` is a set of vertices.
 
     """
-    # Get the set of matched edges and the set of unmatched edges. Only include
-    # one version of each undirected edge (for example, include edge (1, 2) but
-    # not edge (2, 1)).
-    matched_edges = {(u, v) for u, v in matching.items() if u <= v}
-    unmatched_edges = set(G.edges()) - matched_edges
-
-    def _alternating_dfs(u, depth, along_matched=True):
+    def _alternating_dfs(u, along_matched=True):
         """Returns True if and only if `u` is connected to one of the
         targets by an alternating path.
 
         `u` is a vertex in the graph `G`.
-
-        `depth` specifies the maximum recursion depth of the depth-first
-        search.
 
         If `along_matched` is True, this step of the depth-first search
         will continue only through edges in the given matching. Otherwise, it
         will continue only through edges *not* in the given matching.
 
         """
-        # Base case 1: u is one of the target vertices. `u` is connected to one
-        # of the target vertices by an alternating path of length zero.
-        if u in targets:
-            return True
-        # Base case 2: we have exceeded are allowed depth. In this case, we
-        # have looked at a path of length `n`, so looking any further won't
-        # help.
-        if depth < 0:
-            return False
-        # Determine which set of edges to look across.
-        valid_edges = matched_edges if along_matched else unmatched_edges
-        for v in G[u]:
-            # Consider only those neighbors connected via a valid edge.
-            if (u, v) in valid_edges or (v, u) in valid_edges:
-                # Recursively perform a depth-first search starting from the
-                # neighbor. Decrement the depth limit and switch which set of
-                # vertices will be valid for next time.
-                return _alternating_dfs(v, depth - 1, not along_matched)
-        # If there are no more vertices to look through and we haven't yet
-        # found a target vertex, simply say that no path exists.
+        if along_matched:
+            edges = itertools.cycle([matched_edges, unmatched_edges])
+        else:
+            edges = itertools.cycle([unmatched_edges, matched_edges])
+        visited = set()
+        stack = [(u, iter(G[u]), next(edges))]
+        while stack:
+            parent, children, valid_edges = stack[-1]
+            try:
+                child = next(children)
+                if child not in visited:
+                    if ((parent, child) in valid_edges
+                            or (child, parent) in valid_edges):
+                        if child in targets:
+                            return True
+                        visited.add(child)
+                        stack.append((child, iter(G[child]), next(edges)))
+            except StopIteration:
+                stack.pop()
         return False
 
     # Check for alternating paths starting with edges in the matching, then
     # check for alternating paths starting with edges not in the
-    # matching. Initiate the depth-first search with the current depth equal to
-    # the number of nodes in the graph.
-    return (_alternating_dfs(v, len(G), along_matched=True) or
-            _alternating_dfs(v, len(G), along_matched=False))
+    # matching.
+    return (_alternating_dfs(v, along_matched=True) or
+            _alternating_dfs(v, along_matched=False))
 
 
 def _connected_by_alternating_paths(G, matching, targets):
     """Returns the set of vertices that are connected to one of the target
-    vertices by an alternating path in `G`.
+    vertices by an alternating path in `G` or are themselves a target.
 
     An *alternating path* is a path in which every other edge is in the
     specified maximum matching (and the remaining edges in the path are not in
@@ -388,9 +380,18 @@ def _connected_by_alternating_paths(G, matching, targets):
     `targets` is a set of vertices.
 
     """
-    # TODO This can be parallelized.
-    return {v for v in G if _is_connected_by_alternating_path(G, v, matching,
-                                                              targets)}
+    # Get the set of matched edges and the set of unmatched edges. Only include
+    # one version of each undirected edge (for example, include edge (1, 2) but
+    # not edge (2, 1)). Using frozensets as an intermediary step we do not
+    # require nodes to be orderable.
+    edge_sets = {frozenset((u, v)) for u, v in matching.items()}
+    matched_edges = {tuple(edge) for edge in edge_sets}
+    unmatched_edges = {(u, v) for (u, v) in G.edges()
+                       if frozenset((u, v)) not in edge_sets}
+
+    return {v for v in G if v in targets or
+            _is_connected_by_alternating_path(G, v, matched_edges,
+                                              unmatched_edges, targets)}
 
 
 def to_vertex_cover(G, matching, top_nodes=None):
