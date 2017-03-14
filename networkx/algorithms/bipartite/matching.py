@@ -53,7 +53,7 @@ __all__ = ['maximum_matching', 'hopcroft_karp_matching', 'eppstein_matching',
 INFINITY = float('inf')
 
 
-def hopcroft_karp_matching(G):
+def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
     Parameters
@@ -62,6 +62,12 @@ def hopcroft_karp_matching(G):
 
       Undirected bipartite graph
 
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
+
     Returns
     -------
     matches : dictionary
@@ -69,6 +75,15 @@ def hopcroft_karp_matching(G):
       The matching is returned as a dictionary, `matches`, such that
       ``matches[v] == w`` if node `v` is matched to node `w`. Unmatched
       nodes do not occur as a key in mate.
+
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
 
     Notes
     -----
@@ -125,7 +140,7 @@ def hopcroft_karp_matching(G):
         return True
 
     # Initialize the "global" variables that maintain state during the search.
-    left, right = bipartite_sets(G)
+    left, right = bipartite_sets(G, top_nodes)
     leftmatches = {v: None for v in left}
     rightmatches = {v: None for v in right}
     distances = {}
@@ -153,7 +168,7 @@ def hopcroft_karp_matching(G):
     return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
 
 
-def eppstein_matching(G):
+def eppstein_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
     Parameters
@@ -162,6 +177,12 @@ def eppstein_matching(G):
 
       Undirected bipartite graph
 
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
+
     Returns
     -------
     matches : dictionary
@@ -169,6 +190,15 @@ def eppstein_matching(G):
       The matching is returned as a dictionary, `matching`, such that
       ``matching[v] == w`` if node `v` is matched to node `w`. Unmatched
       nodes do not occur as a key in mate.
+
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
 
     Notes
     -----
@@ -186,7 +216,7 @@ def eppstein_matching(G):
     """
     # Due to its original implementation, a directed graph is needed
     # so that the two sets of bipartite nodes can be distinguished
-    left = bipartite_sets(G)[0]
+    left, right = bipartite_sets(G, top_nodes)
     G = nx.DiGraph(G.edges(left))
     # initialize greedy matching (redundant, but faster than full search)
     matching = {}
@@ -363,7 +393,7 @@ def _connected_by_alternating_paths(G, matching, targets):
                                                               targets)}
 
 
-def to_vertex_cover(G, matching):
+def to_vertex_cover(G, matching, top_nodes=None):
     """Returns the minimum vertex cover corresponding to the given maximum
     matching of the bipartite graph `G`.
 
@@ -381,12 +411,27 @@ def to_vertex_cover(G, matching):
       by, for example, :func:`maximum_matching`. The dictionary *must*
       represent the maximum matching.
 
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
+ 
     Returns
     -------
 
     vertex_cover : :class:`set`
 
       The minimum vertex cover in `G`.
+
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
 
     Notes
     -----
@@ -412,7 +457,7 @@ def to_vertex_cover(G, matching):
     """
     # This is a Python implementation of the algorithm described at
     # <https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29#Proof>.
-    L, R = bipartite_sets(G)
+    L, R = bipartite_sets(G, top_nodes)
     # Let U be the set of unmatched vertices in the left vertex set.
     unmatched_vertices = set(G) - set(matching)
     U = unmatched_vertices & L
