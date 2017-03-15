@@ -589,12 +589,12 @@ def force_atlas_2_layout(G, k=None,
     ones = np.ones((nnodes, 1))
 
     # ∀ x, Hub[i, x] is 1 + the number of outgoing edges from node i
-    Hub = np.matmul((1 + np.sum(A, axis=1)).reshape((nnodes, 1)), ones.T)
+    Hub = np.dot((1 + np.sum(A, axis=1)).reshape((nnodes, 1)), ones.T)
     # Hub times 1 + the number of incoming edges is used as the degree in
     # Force Atlas 2. It has the nice property of never being 0.
-    Deg = Hub * np.matmul(ones, (1 + np.sum(A, axis=0)).reshape((1, nnodes)))
+    Deg = Hub * np.dot(ones, (1 + np.sum(A, axis=0)).reshape((1, nnodes)))
 
-    def force_atlas_2(Dis, Δ_unit, Pos, distance=None):
+    def force_atlas_2(Dis, delta_unit, Pos, distance=None):
         """Return the n x dim displacement vector for Force Atlas 2.
 
         The forces are computed according to the paper
@@ -608,8 +608,8 @@ def force_atlas_2_layout(G, k=None,
         Dis : n x n array-like
             Dis[i, j] is the scalar distance between i and j
 
-        Δ_unit : n x n x dim array-like
-            Δ_unit[i, j] is the unit vector pointing from i to j
+        delta_unit : n x n x dim array-like
+            delta_unit[i, j] is the unit vector pointing from i to j
 
         Pos : n x dim array-like
             Pos[i] is the position of node i
@@ -629,7 +629,7 @@ def force_atlas_2_layout(G, k=None,
         f_gra = f_gra.reshape(nnodes, 1) * Pos / Dis_center.reshape(nnodes, 1)
 
         f_rep = k * Deg / Dis
-        f_rep = f_rep.reshape(nnodes, nnodes, 1) * Δ_unit
+        f_rep = f_rep.reshape(nnodes, nnodes, 1) * delta_unit
 
         if log_attraction:
             f_att = np.log(Dis) * W
@@ -637,7 +637,7 @@ def force_atlas_2_layout(G, k=None,
             f_att = Dis * W
         if dissuade_hubs:
             f_att /= Hub
-        f_att = f_att.reshape((nnodes, nnodes, 1)) * Δ_unit
+        f_att = f_att.reshape((nnodes, nnodes, 1)) * delta_unit
 
         return np.sum(f_att - f_rep, axis=1) - f_gra
 
@@ -698,8 +698,8 @@ def generalized_fruchterman_reingold_layout(G, k=None,
         Dimension of layout
 
     displacement_min : float  optional (default=1)
-        The algorithm stops if an iteration would make the node that moves the most
-        move less than displacement_min.
+        The algorithm stops if an iteration would make the node that moves
+        the most move less than displacement_min.
         The default of one pixel makes a lot of sense. Values < 1 will lead to
         much slower convergence.
 
@@ -749,7 +749,7 @@ def generalized_fruchterman_reingold_layout(G, k=None,
         else:
             k = np.sqrt(1.0/nnodes)
 
-    def fruchterman_reingold(Dis, Δ_unit, Pos, _):
+    def fruchterman_reingold(Dis, delta_unit, Pos, _):
         """Return the n x dim displacement vector for Fruchterman Reingold.
 
         The forces are computed according to the paper
@@ -762,8 +762,8 @@ def generalized_fruchterman_reingold_layout(G, k=None,
         Dis : n x n array-like
             Dis[i, j] is the scalar distance between i and j
 
-        Δ_unit : n x n x dim array-like
-            Δ_unit[i, j] is the unit vector pointing from i to j
+        delta_unit : n x n x dim array-like
+            delta_unit[i, j] is the unit vector pointing from i to j
 
         Pos : n x dim array-like
             Pos[i] is the position of node i
@@ -771,9 +771,9 @@ def generalized_fruchterman_reingold_layout(G, k=None,
         _ : Some algos (e.g. Force Atlas 2) need to know the distance
             function, we dont.
         """
-        f_rep = (k * k / Dis**2).reshape((nnodes, nnodes, 1)) * Δ_unit
+        f_rep = (k * k / Dis**2).reshape((nnodes, nnodes, 1)) * delta_unit
 
-        f_att = (W * Dis / k).reshape((nnodes, nnodes, 1)) * Δ_unit
+        f_att = (W * Dis / k).reshape((nnodes, nnodes, 1)) * delta_unit
 
         return np.sum(f_att - f_rep, axis=1)
 
@@ -801,11 +801,11 @@ def force_directed(G, get_displacement,
 
     G : NetworkX graph or list of nodes
 
-    get_displacement : function of Dis, Δ_unit, Pos, distance, where:
+    get_displacement : function of Dis, delta_unit, Pos, distance, where:
         - Dis is a n x n array-like, Dis[i, j] is the scalar distance
           between node i and node j,
-        - Δ_unit: n x n x dim array-like, Δ_unit[i, j] is the unit vector
-          pointing from i to j,
+        - delta_unit: n x n x dim array-like, delta_unit[i, j] is the unit
+          vector pointing from i to j,
         - Pos: n x dim array-like, Pos[i] is the position of i,
         - distance: function  that take an _ x dim array of deltas between
             coordinates and return the _ array of the scalar distances
@@ -842,8 +842,8 @@ def force_directed(G, get_displacement,
         Dimension of layout
 
     displacement_min : float  optional (default=1)
-        The algorithm stops if an iteration would make the node that moves the most
-        move less than displacement_min.
+        The algorithm stops if an iteration would make the node that moves
+        the most move less than displacement_min.
         The default of one pixel makes a lot of sense. Values < 1 will lead to
         much slower convergence.
 
@@ -900,13 +900,14 @@ def force_directed(G, get_displacement,
             return np.linalg.norm(x, axis=-1)
 
     def deltas(Pos):
-        '''Return the n x n array Δ of dim-dimensional vectors between nodes.
+        '''Return the n x n array delta of dim-dimensional vectors between
+        nodes.
 
-        Δ[i, j, k] is the delta along dimension k between nodes i and j,
+        delta[i, j, k] is the delta along dimension k between nodes i and j,
         therefore:
-        - Δ[i, j k] == - Δ[j, i, k],
-        - Pos[i] + Δ[i, j] == Pos[j]
-        - and distance bewteen i and j is distance(Δ[i, j,:])
+        - delta[i, j k] == - delta[j, i, k],
+        - Pos[i] + delta[i, j] == Pos[j]
+        - and distance bewteen i and j is distance(delta[i, j,:])
 
         Parameters
         -----------
@@ -930,26 +931,28 @@ def force_directed(G, get_displacement,
     M = np.array([[1] if not fixed or node not in fixed else [0]
                   for node in G])
 
-    Pos_changed = True  # We only recompute δa nd Q if the positions changed
+    # We only recompute displacementa nd Q if the positions changed
+    Pos_changed = True
     Q = np.inf
     α = 1
     i = 0
     while i < iterations:
         i += 1
         if Pos_changed:
-            Δ = deltas(Pos)
-            Dis = distance(Δ)
+            delta = deltas(Pos)
+            Dis = distance(delta)
             Dis = np.where(Dis < 0.01, 0.01, Dis)
-            Δ_unit = Δ / Dis.reshape((nnodes, nnodes, 1))
-            δ = get_displacement(Dis, Δ_unit, Pos, distance) * M
+            delta_unit = delta / Dis.reshape((nnodes, nnodes, 1))
+            displacement = get_displacement(Dis, delta_unit, Pos, distance) * M
             Pos_changed = False
-        Pos_2 = Pos + δ * α
-        Δ_2 = deltas(Pos_2)
-        Dis_2 = distance(Δ_2)
+        Pos_2 = Pos + displacement * α
+        delta_2 = deltas(Pos_2)
+        Dis_2 = distance(delta_2)
         Dis_2 = np.where(Dis_2 < 0.01, 0.01, Dis_2)
-        Δ_unit_2 = Δ_2 / Dis_2.reshape((nnodes, nnodes, 1))
-        δ_2 = get_displacement(Dis_2, Δ_unit_2, Pos_2, distance) * M
-        Q_2 = np.linalg.norm(δ_2)
+        delta_unit_2 = delta_2 / Dis_2.reshape((nnodes, nnodes, 1))
+        displacement_2 = get_displacement(Dis_2, delta_unit_2,
+                                          Pos_2, distance) * M
+        Q_2 = np.linalg.norm(displacement_2)
         if Q != np.inf:
             α = α * Q / Q_2
         if Q_2 < Q:
@@ -958,7 +961,7 @@ def force_directed(G, get_displacement,
             Pos_changed = True
         else:
             α /= 2
-        if max(map(np.max, map(np.abs, δ * α))) <= displacement_min:
+        if max(map(np.max, map(np.abs, displacement * α))) <= displacement_min:
             break
     if fixed is None:
         Pos = nx.rescale_layout(Pos, scale=scale) + center
