@@ -934,7 +934,7 @@ def force_directed(G, get_displacement,
     # We only recompute displacementa nd Q if the positions changed
     Pos_changed = True
     Q = np.inf
-    α = 1
+    alpha = 1
     i = 0
     while i < iterations:
         i += 1
@@ -945,7 +945,7 @@ def force_directed(G, get_displacement,
             delta_unit = delta / Dis.reshape((nnodes, nnodes, 1))
             displacement = get_displacement(Dis, delta_unit, Pos, distance) * M
             Pos_changed = False
-        Pos_2 = Pos + displacement * α
+        Pos_2 = Pos + displacement * alpha
         delta_2 = deltas(Pos_2)
         Dis_2 = distance(delta_2)
         Dis_2 = np.where(Dis_2 < 0.01, 0.01, Dis_2)
@@ -954,14 +954,15 @@ def force_directed(G, get_displacement,
                                           Pos_2, distance) * M
         Q_2 = np.linalg.norm(displacement_2)
         if Q != np.inf:
-            α = α * Q / Q_2
+            alpha = alpha * Q / Q_2
         if Q_2 < Q:
             Q = Q_2
             Pos = Pos_2
             Pos_changed = True
         else:
-            α /= 2
-        if max(map(np.max, map(np.abs, displacement * α))) <= displacement_min:
+            alpha /= 2
+        if max(map(np.max, map(np.abs,
+                               displacement * alpha))) <= displacement_min:
             break
     if fixed is None:
         Pos = nx.rescale_layout(Pos, scale=scale) + center
