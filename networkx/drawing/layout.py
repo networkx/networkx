@@ -588,7 +588,7 @@ def force_atlas_2_layout(G, k=None,
 
     ones = np.ones((nnodes, 1))
 
-    # ∀ x, Hub[i, x] is 1 + the number of outgoing edges from node i
+    # For all x, Hub[i, x] is 1 + the number of outgoing edges from node i
     Hub = np.dot((1 + np.sum(A, axis=1)).reshape((nnodes, 1)), ones.T)
     # Hub times 1 + the number of incoming edges is used as the degree in
     # Force Atlas 2. It has the nice property of never being 0.
