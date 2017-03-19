@@ -25,13 +25,15 @@ __all__ = ['kronecker_graph',
            'kronecker_random_graph',
            'kronecker2_random_graph']
 
+
 def kronecker_graph(k, G):
-    I = adjacency_matrix(G)
+    I = nx.adjacency_matrix(G)
 
     if G.is_directed():
         return kronecker_random_graph(k,I,True)
     else:
         return kronecker_random_graph(k,I,False)
+
 
 def kronecker_random_graph(k, P, seed=None, directed=True):
     """Return a random graph K_k[P] (Stochastic Kronecker graph).
