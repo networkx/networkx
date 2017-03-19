@@ -21,6 +21,7 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
+
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
@@ -36,7 +37,6 @@ __all__ = ['draw',
            'draw_spectral',
            'draw_spring',
            'draw_shell']
-
 
 def draw(G, pos=None, ax=None, hold=None, **kwds):
     """Draw the graph G with Matplotlib.
@@ -103,6 +103,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -120,6 +121,8 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
         else:
             ax = cf.gca()
 
+    ax.set_aspect('equal')
+
     if 'with_labels' not in kwds:
         kwds['with_labels'] = 'labels' in kwds
     b = plt.ishold()
@@ -135,7 +138,6 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
         plt.hold(b)
         raise
     plt.hold(b)
-    return
 
 
 def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
@@ -171,11 +173,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     edgelist : list, optional (default=G.edges())
        Draw only specified edges
 
-    node_size : scalar or array, optional (default=300)
+    node_size : scalar or array, optional (default=3)
        Size of nodes.  If an array is specified it must be the
        same length as nodelist.
 
-    node_color : color string, or array of floats, (default='r')
+    node_color : color string, or array of floats, (default='w')
        Node color. Can be a single color format string,
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
@@ -196,12 +198,12 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        Minimum and maximum for node colormap scaling
 
     linewidths : [None | scalar | sequence]
-       Line width of symbol border (default =1.0)
+       Line width of symbol border (default=0.5)
 
     width : float, optional (default=1.0)
        Line width of edges
 
-    edge_color : color string, or array of floats (default='r')
+    edge_color : color string, or array of floats (default='k')
        Edge color. Can be a single color format string,
        or a sequence of colors with the same length as edgelist.
        If numeric values are specified they will be mapped to
@@ -212,9 +214,6 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 
     edge_vmin,edge_vmax : floats, optional (default=None)
        Minimum and maximum for edge colormap scaling
-
-    style : string, optional (default='solid')
-       Edge line style (solid|dashed|dotted,dashdot)
 
     labels : dictionary, optional (default=None)
        Node labels in a dictionary keyed by node of text labels
@@ -238,8 +237,6 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     -----
     For directed graphs, "arrows" (actually just thicker stubs) are drawn
     at the head end.  Arrows can be turned off with keyword arrows=False.
-    Yes, it is ugly but drawing proper arrows with Matplotlib this
-    way is tricky.
 
     Examples
     --------
@@ -263,6 +260,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -278,18 +276,18 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         draw_networkx_labels(G, pos, **kwds)
     plt.draw_if_interactive()
 
-
 def draw_networkx_nodes(G, pos,
                         nodelist=None,
-                        node_size=300,
-                        node_color='r',
+                        node_size=3.,
+                        node_color='w',
+                        node_edge_color='k',
                         node_shape='o',
                         alpha=1.0,
                         cmap=None,
                         vmin=None,
                         vmax=None,
                         ax=None,
-                        linewidths=None,
+                        linewidth=0.5,
                         label=None,
                         **kwds):
     """Draw the nodes of the graph G.
@@ -312,18 +310,23 @@ def draw_networkx_nodes(G, pos,
        Draw only specified nodes (default G.nodes())
 
     node_size : scalar or array
-       Size of nodes (default=300).  If an array is specified it must be the
-       same length as nodelist.
+       Size (radius) of nodes (default=3.0).
+       If an array is specified it must be the same length as nodelist.
 
     node_color : color string, or array of floats
-       Node color. Can be a single color format string (default='r'),
+       Node color. Can be a single color format string (default='w'),
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
-       colors using the cmap and vmin,vmax parameters.  See
-       matplotlib.scatter for more details.
+       colors using the cmap and vmin,vmax parameters.
 
-    node_shape :  string
-       The shape of the node.  Specification is as matplotlib.scatter
+    node_edge_color : color string, or array of floats
+       Node color. Can be a single color format string (default='k'),
+       or a  sequence of colors with the same length as nodelist.
+       If numeric values are specified they will be mapped to
+       colors using the cmap and vmin,vmax parameters.
+
+    node_shape : string
+       The shape of the node. Specification is as matplotlib.scatter
        marker, one of 'so^>v<dph8' (default='o').
 
     alpha : float
@@ -332,19 +335,19 @@ def draw_networkx_nodes(G, pos,
     cmap : Matplotlib colormap
        Colormap for mapping intensities of nodes (default=None)
 
-    vmin,vmax : floats
+    vmin, vmax : floats
        Minimum and maximum for node colormap scaling (default=None)
 
-    linewidths : [None | scalar | sequence]
-       Line width of symbol border (default =1.0)
+    linewidth : [scalar | sequence]
+       Line width of symbol border (default=0.5)
 
-    label : [None| string]
+    label : [None| string] (TODO: currently ignored)
        Label for legend
 
     Returns
     -------
-    matplotlib.collections.PathCollection
-        `PathCollection` of the nodes.
+        list of (node edge artist, node artist) tuples,
+        where both artists are instances of matplotlib.patches
 
     Examples
     --------
@@ -364,6 +367,7 @@ def draw_networkx_nodes(G, pos,
     """
     import collections
     try:
+        import matplotlib
         import matplotlib.pyplot as plt
         import numpy
     except ImportError:
@@ -382,43 +386,164 @@ def draw_networkx_nodes(G, pos,
         return None
 
     try:
-        xy = numpy.asarray([pos[v] for v in nodelist])
+        positions = numpy.asarray([pos[v] for v in nodelist])
     except KeyError as e:
         raise nx.NetworkXError('Node %s has no position.'%e)
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
 
-    if isinstance(alpha, collections.Iterable):
-        node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
-        alpha = None
+    node_color = _handle_colors(node_color, alpha, nodelist, cmap, vmin, vmax)
+    node_edge_color = _handle_colors(node_edge_color, alpha, nodelist, cmap, vmin, vmax)
 
-    node_collection = ax.scatter(xy[:, 0], xy[:, 1],
-                                 s=node_size,
-                                 c=node_color,
-                                 marker=node_shape,
-                                 cmap=cmap,
-                                 vmin=vmin,
-                                 vmax=vmax,
-                                 alpha=alpha,
-                                 linewidths=linewidths,
-                                 label=label)
+    if isinstance(node_size, (int, float)):
+        node_size = node_size * numpy.ones((G.number_of_nodes()))
+    if isinstance(linewidth, (int, float)):
+        linewidth = linewidth * numpy.ones((G.number_of_nodes()))
 
-    node_collection.set_zorder(2)
-    return node_collection
+    # rescale
+    node_size = node_size.astype(numpy.float) * 1e-2
+    linewidth = linewidth.astype(numpy.float) * 1e-2
+
+    # circles made with plt.scatter scale with axis dimensions
+    # which in practice makes it hard to have one consistent layout
+    # -> use patches.Circle instead which creates circles that are in data coordinates
+    artists = []
+    for ii, node_id in enumerate(nodelist):
+        # simulate node edge by drawing a slightly larger circle;
+        # I wish there was a better way to do this,
+        # but this seems to be the only way to guarantee constant proportions,
+        # as linewidth argument in matplotlib.patches will not be proportional
+        # to radius as it is in axis coordinates
+        node_edge_artist = _get_node_artist(shape=node_shape,
+                                            position=positions[ii],
+                                            size=node_size[ii],
+                                            facecolor=node_edge_color[ii],
+                                            zorder=2)
+        ax.add_artist(node_edge_artist)
+
+        # draw node
+        node_artist = _get_node_artist(shape=node_shape,
+                                       position=positions[ii],
+                                       size=node_size[ii] -linewidth[ii],
+                                       facecolor=node_color[ii],
+                                       zorder=2)
+        ax.add_artist(node_artist)
+        artists.append((node_artist, node_edge_artist))
+
+    # pad x and y limits as patches are not registered properly
+    # when matplotlib sets axis limits automatically
+    maxs = numpy.max(node_size)
+    maxx = numpy.amax(positions[:,0])
+    minx = numpy.amin(positions[:,0])
+    maxy = numpy.amax(positions[:,1])
+    miny = numpy.amin(positions[:,1])
+
+    w = maxx-minx
+    h = maxy-miny
+    padx, pady = 0.05*w + maxs, 0.05*h + maxs
+    corners = (minx-padx, miny-pady), (maxx+padx, maxy+pady)
+    ax.update_datalim(corners)
+    ax.autoscale_view()
+
+    return artists
+
+
+def _get_node_artist(shape, position, size, facecolor, zorder=2):
+    import numpy
+    import matplotlib
+    if shape == 'o': # circle
+        artist = matplotlib.patches.Circle(xy=position,
+                                           radius=size,
+                                           facecolor=facecolor,
+                                           linewidth=0.,
+                                           zorder=zorder)
+    elif shape == '^': # triangle up
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=3,
+                                                   facecolor=facecolor,
+                                                   orientation=0,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == '<': # triangle left
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=3,
+                                                   facecolor=facecolor,
+                                                   orientation=numpy.pi*0.5,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == 'v': # triangle down
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=3,
+                                                   facecolor=facecolor,
+                                                   orientation=numpy.pi,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == '>': # triangle right
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=3,
+                                                   facecolor=facecolor,
+                                                   orientation=numpy.pi*1.5,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == 's': # square
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=4,
+                                                   facecolor=facecolor,
+                                                   orientation=numpy.pi*0.25,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == 'd': # diamond
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=4,
+                                                   facecolor=facecolor,
+                                                   orientation=numpy.pi*0.5,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == 'p': # pentagon
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=5,
+                                                   facecolor=facecolor,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == 'h': # hexagon
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=6,
+                                                   facecolor=facecolor,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    elif shape == 8: # octagon
+        artist = matplotlib.patches.RegularPolygon(xy=position,
+                                                   radius=size,
+                                                   numVertices=8,
+                                                   facecolor=facecolor,
+                                                   linewidth=0.,
+                                                   zorder=zorder)
+    else:
+        raise ValueError("Node shape one of: ''so^>v<dph8'. Current shape:{}".format(shape))
+
+    return artist
 
 
 def draw_networkx_edges(G, pos,
                         edgelist=None,
-                        width=1.0,
+                        width=1.,
                         edge_color='k',
-                        style='solid',
-                        alpha=1.0,
+                        alpha=1.,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None,
                         ax=None,
                         arrows=True,
                         label=None,
+                        node_size=0.,
                         **kwds):
     """Draw the edges of the graph G.
 
@@ -445,16 +570,13 @@ def draw_networkx_edges(G, pos,
        If numeric values are specified they will be mapped to
        colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    style : string
-       Edge line style (default='solid') (solid|dashed|dotted,dashdot)
-
     alpha : float
        The edge transparency (default=1.0)
 
-    edge_ cmap : Matplotlib colormap
+    edge_cmap : Matplotlib colormap
        Colormap for mapping intensities of edges (default=None)
 
-    edge_vmin,edge_vmax : floats
+    edge_vmin, edge_vmax : floats
        Minimum and maximum for edge colormap scaling (default=None)
 
     ax : Matplotlib Axes object, optional
@@ -466,17 +588,15 @@ def draw_networkx_edges(G, pos,
     label : [None| string]
        Label for legend
 
+    node_size: float, or array of floats (default=0.0)
+       'Size' of nodes (radius/greatest distance of node edge to node centre);
+       used to offset arrow heads such that they are not occluded.
+       If draw_networkx_nodes() is called independently, node_size should be set
+       to the same value (draw_networkx_nodes() default=3.0).
+
     Returns
     -------
-    matplotlib.collection.LineCollection
-        `LineCollection` of the edges
-
-    Notes
-    -----
-    For directed graphs, "arrows" (actually just thicker stubs) are drawn
-    at the head end.  Arrows can be turned off with keyword arrows=False.
-    Yes, it is ugly but drawing proper arrows with Matplotlib this
-    way is tricky.
+        list of matplotlib.patches.FancyArrow artists
 
     Examples
     --------
@@ -516,129 +636,135 @@ def draw_networkx_edges(G, pos,
     if not edgelist or len(edgelist) == 0:  # no edges!
         return None
 
-    # set edge positions
-    edge_pos = numpy.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
+    if isinstance(node_size, (int, float)):
+        node_size = node_size * numpy.ones((G.number_of_nodes()))
+    if isinstance(width, (int, float)):
+        width = width * numpy.ones((len(edgelist)))
 
-    if not cb.iterable(width):
-        lw = (width,)
-    else:
-        lw = width
+    # rescale -- all sizes are in data coordinates and hence small
+    # as default range of node positions is [(0, 1), (0, 1)]
+    node_size = node_size.astype(numpy.float) * 1e-2
+    width = width.astype(numpy.float) * 1e-2
 
-    if not cb.is_string_like(edge_color) \
-           and cb.iterable(edge_color) \
-           and len(edge_color) == len(edge_pos):
-        if numpy.alltrue([cb.is_string_like(c)
-                         for c in edge_color]):
-            # (should check ALL elements)
-            # list of color letters such as ['k','r','k',...]
-            edge_colors = tuple([colorConverter.to_rgba(c, alpha)
-                                 for c in edge_color])
-        elif numpy.alltrue([not cb.is_string_like(c)
-                           for c in edge_color]):
-            # If color specs are given as (rgb) or (rgba) tuples, we're OK
-            if numpy.alltrue([cb.iterable(c) and len(c) in (3, 4)
-                             for c in edge_color]):
-                edge_colors = tuple(edge_color)
-            else:
-                # numbers (which are going to be mapped with a colormap)
-                edge_colors = None
-        else:
-            raise ValueError('edge_color must consist of either color names or numbers')
-    else:
-        if cb.is_string_like(edge_color) or len(edge_color) == 1:
-            edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
-        else:
-            raise ValueError('edge_color must be a single color or list of exactly m colors where m is the number or edges')
 
-    edge_collection = LineCollection(edge_pos,
-                                     colors=edge_colors,
-                                     linewidths=lw,
-                                     antialiaseds=(1,),
-                                     linestyle=style,
-                                     transOffset = ax.transData,
-                                     )
+    # convert node size to dictionary -> zero-indexing of nodes not guaranteed
+    nodelist = list(G)
+    node_size = dict([(node_id, node_size[ii]) for ii, node_id in enumerate(nodelist)])
 
-    edge_collection.set_zorder(1)  # edges go behind nodes
-    edge_collection.set_label(label)
-    ax.add_collection(edge_collection)
+    edge_color = _handle_colors(edge_color,
+                                alpha,
+                                edgelist,
+                                cmap=edge_cmap,
+                                vmin=edge_vmin,
+                                vmax=edge_vmax)
 
-    # Note: there was a bug in mpl regarding the handling of alpha values for
-    # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
-    # r7189 (June 6 2009).  We should then not set the alpha value globally,
-    # since the user can instead provide per-edge alphas now.  Only set it
-    # globally if provided as a scalar.
-    if cb.is_numlike(alpha):
-        edge_collection.set_alpha(alpha)
+    # construct a more useful edge list
+    total_edges = len(edgelist)
+    edges = numpy.zeros((total_edges, 9))
+    for ii, (source, target) in enumerate(edgelist):
+        x1, y1 = pos[source]
+        x2, y2 = pos[target]
+        dx = x2-x1
+        dy = y2-y1
+        w = width[ii]
+        edges[ii] = source, target, x1, y1, x2, y2, dx, dy, w
 
-    if edge_colors is None:
-        if edge_cmap is not None:
-            assert(isinstance(edge_cmap, Colormap))
-        edge_collection.set_array(numpy.asarray(edge_color))
-        edge_collection.set_cmap(edge_cmap)
-        if edge_vmin is not None or edge_vmax is not None:
-            edge_collection.set_clim(edge_vmin, edge_vmax)
-        else:
-            edge_collection.autoscale()
+    artists = []
+    for ii, (edge, color) in enumerate(zip(edges, edge_color)):
+        source, target, x1, y1, x2, y2, dx, dy, w = edge
+        bidirectional = (target, source) in edgelist
 
-    arrow_collection = None
+        if arrows and bidirectional:
+            # shift edge to the right (looking along the arrow)
+            x1, y1, x2, y2 = _shift_edge(x1, y1, x2, y2, delta=0.5*w)
+            # plot half arrow
+            patch = _arrow(ax,
+                           x1, y1, dx, dy,
+                           offset=node_size[target],
+                           facecolor=color,
+                           width=w,
+                           head_length=2*w,
+                           head_width=3*w,
+                           length_includes_head=True,
+                           zorder=1,
+                           # edgecolor='none',
+                           linewidth=0.1,
+                           shape='right',
+                           )
 
-    if G.is_directed() and arrows:
+        elif arrows and not bidirectional:
+            # don't shift edge, plot full arrow
+            patch = _arrow(ax,
+                           x1, y1, dx, dy,
+                           offset=node_size[target],
+                           facecolor=color,
+                           width=w,
+                           head_length=2*w,
+                           head_width=3*w,
+                           length_includes_head=True,
+                           # edgecolor='none',
+                           linewidth=0.1,
+                           zorder=1,
+                           shape='full',
+                           )
 
-        # a directed graph hack
-        # draw thick line segments at head end of edge
-        # waiting for someone else to implement arrows that will work
-        arrow_colors = edge_colors
-        a_pos = []
-        p = 1.0-0.25  # make head segment 25 percent of edge length
-        for src, dst in edge_pos:
-            x1, y1 = src
-            x2, y2 = dst
-            dx = x2-x1   # x offset
-            dy = y2-y1   # y offset
-            d = numpy.sqrt(float(dx**2 + dy**2))  # length of edge
-            if d == 0:   # source and target at same position
-                continue
-            if dx == 0:  # vertical edge
-                xa = x2
-                ya = dy*p+y1
-            if dy == 0:  # horizontal edge
-                ya = y2
-                xa = dx*p+x1
-            else:
-                theta = numpy.arctan2(dy, dx)
-                xa = p*d*numpy.cos(theta)+x1
-                ya = p*d*numpy.sin(theta)+y1
+        else: # i.e. undirected
+            patch = _line(ax,
+                          x1, y1, dx, dy,
+                          facecolor=color,
+                          width=w,
+                          head_length=1e-10, # 0 throws error
+                          head_width=1e-10, # 0 throws error
+                          length_includes_head=False,
+                          # edgecolor='none',
+                          linewidth=0.1,
+                          zorder=1,
+                          shape='full',
+                          )
 
-            a_pos.append(((xa, ya), (x2, y2)))
-
-        arrow_collection = LineCollection(a_pos,
-                                colors=arrow_colors,
-                                linewidths=[4*ww for ww in lw],
-                                antialiaseds=(1,),
-                                transOffset = ax.transData,
-                                )
-
-        arrow_collection.set_zorder(1)  # edges go behind nodes
-        arrow_collection.set_label(label)
-        ax.add_collection(arrow_collection)
+        artists.append(patch)
+        ax.add_artist(patch)
 
     # update view
-    minx = numpy.amin(numpy.ravel(edge_pos[:, :, 0]))
-    maxx = numpy.amax(numpy.ravel(edge_pos[:, :, 0]))
-    miny = numpy.amin(numpy.ravel(edge_pos[:, :, 1]))
-    maxy = numpy.amax(numpy.ravel(edge_pos[:, :, 1]))
+    unique_nodes = numpy.unique(numpy.array(edgelist))
+    positions = numpy.array([pos[ii] for ii in unique_nodes])
+    maxx = numpy.amax(positions[:,0])
+    minx = numpy.amin(positions[:,0])
+    maxy = numpy.amax(positions[:,1])
+    miny = numpy.amin(positions[:,1])
 
     w = maxx-minx
     h = maxy-miny
-    padx,  pady = 0.05*w, 0.05*h
+    padx, pady = 0.05*w, 0.05*h
     corners = (minx-padx, miny-pady), (maxx+padx, maxy+pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
 
-#    if arrow_collection:
+    return artists
 
-    return edge_collection
+def _shift_edge(x1, y1, x2, y2, delta):
+    import numpy
+    # get orthogonal unit vector
+    v = numpy.r_[x2-x1, y2-y1] # original
+    v = numpy.r_[-v[1], v[0]] # orthogonal
+    v = v / numpy.linalg.norm(v) # unit
 
+    dx, dy = delta * v
+    return x1+dx, y1+dy, x2+dx, y2+dy
+
+def _arrow(ax, x1, y1, dx, dy, offset, **kwargs):
+    import numpy
+    # offset to prevent occlusion of head from nodes
+    r = numpy.sqrt(dx**2 + dy**2)
+    dx *= (r-offset)/r
+    dy *= (r-offset)/r
+
+    return _line(ax, x1, y1, dx, dy, **kwargs)
+
+def _line(ax, x1, y1, dx, dy, **kwargs):
+    import matplotlib
+    # use FancyArrow instead of e.g. LineCollection to ensure consistent scaling across elements;
+    return matplotlib.patches.FancyArrow(x1, y1, dx, dy, **kwargs)
 
 def draw_networkx_labels(G, pos,
                          labels=None,
@@ -707,6 +833,7 @@ def draw_networkx_labels(G, pos,
     try:
         import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
+        import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -973,14 +1100,23 @@ def draw_shell(G, **kwargs):
         del(kwargs['nlist'])
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
 
-
 def draw_nx(G, pos, **kwds):
     """For backward compatibility; use draw or draw_networkx."""
     draw(G, pos, **kwds)
 
+def _handle_colors(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
+    import numpy
+    rgba_colors = apply_alpha(colors, alpha, elem_list,
+                              cmap, vmin, vmax)
+    if len(rgba_colors) == 1:
+        rgba_colors = numpy.repeat(rgba_colors, len(elem_list), axis=0)
+    return rgba_colors
 
+# TODO: fix naming of function -- this function does a hell of a lot more than the name suggests
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
-    """Apply an alpha (or list of alphas) to the colors provided.
+    """
+    Apply an alpha (or list of alphas) to the colors provided.
+    If colors are specified as strings, this function converts them to RGBA arrays.
 
     Parameters
     ----------
@@ -1016,11 +1152,12 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         Array containing RGBA format values for each of the node colours.
 
     """
+
     import numbers
     import itertools
+    import numpy
 
     try:
-        import numpy
         from matplotlib.colors import colorConverter
         import matplotlib.cm as cm
     except ImportError:
@@ -1051,6 +1188,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         rgba_colors[:,  3] = list(itertools.islice(itertools.cycle(alpha), len(rgba_colors)))
     except TypeError:
         rgba_colors[:, -1] = alpha
+
     return rgba_colors
 
 # fixture for nose tests
