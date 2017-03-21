@@ -38,7 +38,7 @@ __all__ = ['draw',
            'draw_shell']
 
 
-def draw(G, pos=None, ax=None, hold=None, **kwds):
+def draw(G, pos=None, ax=None, **kwds):
     """Draw the graph G with Matplotlib.
 
     Draw the graph as a simple representation with no node
@@ -59,10 +59,6 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     ax : Matplotlib Axes object, optional
        Draw the graph in specified Matplotlib axes.
-
-    hold : bool, optional
-       Set the Matplotlib hold state.  If True subsequent draw
-       commands will be added to the current axes.
 
     kwds : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
@@ -122,19 +118,13 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     if 'with_labels' not in kwds:
         kwds['with_labels'] = 'labels' in kwds
-    b = plt.ishold()
-    # allow callers to override the hold state by passing hold=True|False
-    h = kwds.pop('hold', None)
-    if h is not None:
-        plt.hold(h)
+
     try:
         draw_networkx(G, pos=pos, ax=ax, **kwds)
         ax.set_axis_off()
         plt.draw_if_interactive()
     except:
-        plt.hold(b)
         raise
-    plt.hold(b)
     return
 
 
