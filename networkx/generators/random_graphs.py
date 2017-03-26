@@ -33,6 +33,7 @@ __all__ = ['fast_gnp_random_graph',
            'connected_watts_strogatz_graph',
            'random_regular_graph',
            'barabasi_albert_graph',
+           'extended_barabasi_albert_graph',
            'powerlaw_cluster_graph',
            'random_lobster',
            'random_shell_graph',
@@ -656,6 +657,160 @@ def barabasi_albert_graph(n, m, seed=None):
         targets = _random_subset(repeated_nodes,m)
         source += 1
     return G
+    
+def extended_barabasi_albert_graph(n, m, p, q, seed=None):
+    """
+    Returns a random graph according to the extended Barabási–Albert preferential attachment model.
+
+    Based on the probabilities 'p' and 'q', the growing behavior of the graph is determined. 
+    It holds that (p+q) < 1.
+    
+    1) With 'p' probability, 'm' new edges are added to the graph, starting from randomly chosen existing nodes and attached preferentially at the other end.
+    
+    2) With 'q' probability, 'm' existing edges are rewired, taking a randomly chosen edge and rewired to a preferentially-chosen node.
+    
+    3) With (1-p-q) probability, 'm' new nodes are added to the graph, with edges attached preferentially.
+    
+    In any case, p=q=0 means that the model behaves just like Barabasi-Albert model.
+    
+    Parameters
+    ----------
+    n : int
+        Number of nodes
+    m : int
+        Number of edges to attach from a new node to existing nodes
+    p : float
+        Probability value for addition of an edge between existing nodes. p+q<=1.
+    q : float
+        Probability value for rewiring of existing edges. p+q<1.
+    seed : int, optional
+        Seed for random number generator (default=None).
+
+    Returns
+    -------
+    G : Graph
+
+    Raises
+    ------
+    NetworkXError
+        If `m` does not satisfy ``1 <= m < n`` or ``1 >= p + q``
+
+    References
+    ----------
+    .. Albert, R., & Barabási, A. L. (2000). Topology of evolving networks: local events and universality. Physical review letters, 85(24), 5234.
+    """
+
+    if m < 1 or  m >=n :
+       raise nx.NetworkXError("Extended Barabasi-Albert network must have m>=1 and m<n, m=%d,n=%d" % (m,n))
+    if  p+q >= 1:
+       raise nx.NetworkXError("Extended Barabasi-Albert network must have p+q<=1, p=%d,q=%d" % (p,q))
+    if seed is not None:
+        random.seed(seed)
+
+    # Add m initial nodes (m0 in barabasi-speak)
+    G=empty_graph(m)
+    G.name="extended_barabasi_albert_graph(%s,%s,%s,%s)" % (n,m,p,q)
+    
+    # List of existing nodes. The existance of a node makes it appear once, and once more per each edge it has.
+    # This list it used to perform preferential attachment random selection.
+    # In order to select even isolated nodes (for rewiring and adding edges), this list starts with all the nodes.
+    existent_nodes=[]
+    existent_nodes.extend(list(range(m)))
+    
+    # Start adding the other n-m nodes. The first node is m.
+    new_node = m
+    while new_node < n:
+      
+        a_probability = random.random()
+        
+        # Total number of edges of a Click for all the nodes
+        click_node_degree = G.number_of_nodes() - 1
+        click_edges = (G.number_of_nodes()*(click_node_degree))/2
+        
+        # Adding new m edges, if there is room to add them
+        if a_probability < p and (G.number_of_edges() <= (click_edges - m)):
+           
+            # Select the nodes where an edge can be added 
+            all_viable_nodes = [n for n in G.nodes() if (G.degree(n) < (click_node_degree)) ]
+            
+            ####!!!! Removable check !!!
+            #In theory, there are enough viable nodes because it was checked before that there is space for m edges
+            if (len(all_viable_nodes) == 0):
+                raise ValueError
+            
+            for i in range(m):
+                
+                
+                #Choosing a random source node
+                #The nodes that have all possible edges were already removed before
+                src_node = random.choice(all_viable_nodes)
+                    
+                
+                #Picking a possible node that is not 'src_node' or already neighbor with 'src_node', with preferential attachment
+                prohibited_nodes = G.neighbors(src_node)
+                prohibited_nodes.append(src_node)
+                dest_node = random.choice( [ n for n in existent_nodes if n not in prohibited_nodes ])
+                
+                #Adding the new edge
+                G.add_edge(src_node,dest_node)
+                existent_nodes.append(src_node)
+                existent_nodes.append(dest_node)
+                        
+                # Adjusting the viable nodes, as the new edge could have saturated the nodes.
+                if (G.degree(src_node) == click_node_degree):
+                    all_viable_nodes.remove(src_node)
+                if (G.degree(dest_node) == click_node_degree):
+                    all_viable_nodes.remove(dest_node)
+                
+                 
+        # Rewiring m edges, if there are enough edges
+        elif p <= a_probability < (p + q) and click_edges > G.number_of_edges() >= m :
+            
+            #Selecting nodes that have at least 1 edge but that are not wired to ALL other nodes (center of star).
+            #This is the pivot node of the edge to rewire
+            all_viable_nodes = [n for n in G.nodes() if ( G.degree(n) !=0 and G.degree(n) != click_node_degree  ) ]
+            
+            for i in range(m):
+                node = random.choice(all_viable_nodes)
+                
+                  #The available nodes do have a neighbor, at least.
+                neighbor_nodes = list(G.neighbors(node))
+                src_node = random.choice(neighbor_nodes)
+                
+                #Picking a target node that is not 'node' or already neighbor with 'node', with preferential attachment
+                neighbor_nodes.append(node)
+                dest_node = random.choice( [ n for n in existent_nodes if n not in neighbor_nodes ])
+                
+                #Rewire
+                G.remove_edge(node,src_node)
+                G.add_edge(node,dest_node)
+                    
+                existent_nodes.remove(src_node)                                                    
+                existent_nodes.append(dest_node)
+                
+                # Adjusting the viable nodes, as the rewired edge could have saturated the nodes or isolated the original one.
+                if (G.degree(src_node) == 0):
+                    all_viable_nodes.remove(src_node)
+                if (G.degree(dest_node) == 1):
+                    all_viable_nodes.add(dest_node)
+                if (G.degree(dest_node) == click_node_degree):
+                    all_viable_nodes.remove(dest_node)
+                 
+            
+        # Adding new m nodes
+        else: 
+            # Select the edges' nodes by preferential attachment
+            targets = _random_subset(existent_nodes,m)
+            G.add_edges_from(zip([new_node]*m,targets))
+
+            # Add one node to the list for each new edge just created.
+            existent_nodes.extend(targets)
+            # The new node has m edges to it, plus itself was added to the graph. (m+1)
+            existent_nodes.extend([new_node]*(m+1)) 
+            new_node += 1
+    
+    print "edges = %d , nodes = %d" % (G.number_of_edges(),G.number_of_nodes())
+    return G  
 
 def powerlaw_cluster_graph(n, m, p, seed=None):
     """Holme and Kim algorithm for growing graphs with powerlaw
