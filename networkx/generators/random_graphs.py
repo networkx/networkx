@@ -747,7 +747,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                     
                 
                 #Picking a possible node that is not 'src_node' or already neighbor with 'src_node', with preferential attachment
-                prohibited_nodes = G.neighbors(src_node)
+                prohibited_nodes = list(G.neighbors(src_node))
                 prohibited_nodes.append(src_node)
                 dest_node = random.choice( [ n for n in existent_nodes if n not in prohibited_nodes ])
                 
@@ -768,18 +768,18 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
             
             #Selecting nodes that have at least 1 edge but that are not wired to ALL other nodes (center of star).
             #This is the pivot node of the edge to rewire
-            all_viable_nodes = [n for n in G.nodes() if ( G.degree(n) !=0 and G.degree(n) != click_node_degree  ) ]
             
+            all_viable_nodes = [n for n in G.nodes() if ( G.degree(n) !=0 and G.degree(n) != click_node_degree ) ]
+
             for i in range(m):
                 node = random.choice(all_viable_nodes)
-                
                   #The available nodes do have a neighbor, at least.
                 neighbor_nodes = list(G.neighbors(node))
                 src_node = random.choice(neighbor_nodes)
                 
                 #Picking a target node that is not 'node' or already neighbor with 'node', with preferential attachment
                 neighbor_nodes.append(node)
-                dest_node = random.choice( [ n for n in existent_nodes if n not in neighbor_nodes ])
+                dest_node = random.choice( [ n for n in existent_nodes if n not in neighbor_nodes ] )
                 
                 #Rewire
                 G.remove_edge(node,src_node)
@@ -793,9 +793,13 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                     all_viable_nodes.remove(src_node)
                 if (G.degree(dest_node) == 1):
                     all_viable_nodes.add(dest_node)
+                #dest_node is not in the all_viable_nodes already
+                #if (G.degree(dest_node) == click_node_degree):
+                #    all_viable_nodes.remove(dest_node)
                 if (G.degree(dest_node) == click_node_degree):
-                    all_viable_nodes.remove(dest_node)
-                 
+                    if(dest_node in all_viable_nodes):
+                        all_viable_nodes.remove(dest_node)
+                    existent_nodes.remove(dest_node)
             
         # Adding new m nodes
         else: 
