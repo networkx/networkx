@@ -749,6 +749,8 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 #Picking a possible node that is not 'src_node' or already neighbor with 'src_node', with preferential attachment
                 prohibited_nodes = list(G.neighbors(src_node))
                 prohibited_nodes.append(src_node)
+                
+                #If there was an empty sequence in random.choice, this method will raise an exception
                 dest_node = random.choice( [ nd for nd in existent_nodes if n not in prohibited_nodes ])
                 
                 #Adding the new edge
@@ -771,9 +773,15 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
             
             all_viable_nodes = [nd for nd in G.nodes() if ( G.degree(nd) !=0 and G.degree(nd) != click_node_degree ) ]
 
+            ####!!!! Removable check !!!
+            #In theory, there are enough viable nodes because it was checked before that there is space for m edges
+            if (len(all_viable_nodes) == 0):
+                raise ValueError
+                
             for i in range(m):
                 node = random.choice(all_viable_nodes)
-                  #The available nodes do have a neighbor, at least.
+                
+                #The available nodes do have a neighbor, at least.
                 neighbor_nodes = list(G.neighbors(node))
                 src_node = random.choice(neighbor_nodes)
                 
@@ -789,17 +797,20 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 existent_nodes.append(dest_node)
                 
                 # Adjusting the viable nodes, as the rewired edge could have saturated the nodes or isolated the original one.
-                if (G.degree(src_node) == 0):
+                if (G.degree(src_node) == 0) and (src_node in all_viable_nodes):
                     all_viable_nodes.remove(src_node)
-                if (G.degree(dest_node) == 1):
-                    all_viable_nodes.add(dest_node)
+                if (G.degree(dest_node) == 1) and (dest_node not in all_viable_nodes):
+                    all_viable_nodes.append(dest_node)
                 #dest_node is not in the all_viable_nodes already
+                if (G.degree(dest_node) == click_node_degree) and (dest_node in all_viable_nodes):
+                    all_viable_nodes.remove(dest_node)
+                
                 #if (G.degree(dest_node) == click_node_degree):
-                #    all_viable_nodes.remove(dest_node)
-                if (G.degree(dest_node) == click_node_degree):
-                    if(dest_node in all_viable_nodes):
-                        all_viable_nodes.remove(dest_node)
-                    existent_nodes.remove(dest_node)
+                    #if(dest_node in all_viable_nodes):
+                        #all_viable_nodes.remove(dest_node)
+                    # Even if the node now is fully connected as a click, it should still be left in the list of existent nodes.
+                    # It will not be considered as the next destination of the link because of the filter in line 790
+                    #existent_nodes.remove(dest_node)
             
         # Adding new m nodes
         else: 
