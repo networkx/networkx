@@ -40,15 +40,15 @@ def main(argv):
       sys.exit(9)
     for opt, arg in opts:
       if opt in ("-n", "--n"):
-         n_arg = arg
+         n_arg = int(arg)
       elif opt in ("-m", "--m"):
-         m_arg = arg
+         m_arg = int(arg)
       elif opt in ("-p", "--p"):
-         p_arg = arg
+         p_arg = float(arg)
       elif opt in ("-q", "--q"):
-         q_arg = arg   
+         q_arg = float(arg)
    
-    print 'eBA graph of %d nodes, with %d attachment, and (p=%f,q=%f) probabilities  "', (n_arg,m_arg,p_arg,q_arg)
+    print 'eBA graph of %d nodes, with %d attachment, and (p=%f,q=%f) probabilities  "' % (n_arg,m_arg,p_arg,q_arg)
    
     G = extended_barabasi_albert_graph(n=n_arg, m=m_arg, p=p_arg,q=q_arg)
     

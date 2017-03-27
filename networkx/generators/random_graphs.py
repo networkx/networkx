@@ -731,7 +731,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
         if a_probability < p and (G.number_of_edges() <= (click_edges - m)):
            
             # Select the nodes where an edge can be added 
-            all_viable_nodes = [n for n in G.nodes() if (G.degree(n) < (click_node_degree)) ]
+            all_viable_nodes = [nd for nd in G.nodes() if (G.degree(nd) < (click_node_degree)) ]
             
             ####!!!! Removable check !!!
             #In theory, there are enough viable nodes because it was checked before that there is space for m edges
@@ -749,7 +749,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 #Picking a possible node that is not 'src_node' or already neighbor with 'src_node', with preferential attachment
                 prohibited_nodes = list(G.neighbors(src_node))
                 prohibited_nodes.append(src_node)
-                dest_node = random.choice( [ n for n in existent_nodes if n not in prohibited_nodes ])
+                dest_node = random.choice( [ nd for nd in existent_nodes if n not in prohibited_nodes ])
                 
                 #Adding the new edge
                 G.add_edge(src_node,dest_node)
@@ -769,7 +769,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
             #Selecting nodes that have at least 1 edge but that are not wired to ALL other nodes (center of star).
             #This is the pivot node of the edge to rewire
             
-            all_viable_nodes = [n for n in G.nodes() if ( G.degree(n) !=0 and G.degree(n) != click_node_degree ) ]
+            all_viable_nodes = [nd for nd in G.nodes() if ( G.degree(nd) !=0 and G.degree(nd) != click_node_degree ) ]
 
             for i in range(m):
                 node = random.choice(all_viable_nodes)
@@ -779,7 +779,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 
                 #Picking a target node that is not 'node' or already neighbor with 'node', with preferential attachment
                 neighbor_nodes.append(node)
-                dest_node = random.choice( [ n for n in existent_nodes if n not in neighbor_nodes ] )
+                dest_node = random.choice( [ nd for nd in existent_nodes if n not in neighbor_nodes ] )
                 
                 #Rewire
                 G.remove_edge(node,src_node)
