@@ -128,7 +128,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     if h is not None:
         plt.hold(h)
     try:
-        draw_networkx(G, pos=pos, ax=ax, **kwds)
+        nodes, edges = draw_networkx(G, pos=pos, ax=ax, **kwds)
         ax.set_axis_off()
         plt.draw_if_interactive()
     except:
@@ -277,6 +277,8 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     if with_labels:
         draw_networkx_labels(G, pos, **kwds)
     plt.draw_if_interactive()
+    
+    return node_collection, edge_collection
 
 
 def draw_networkx_nodes(G, pos,
