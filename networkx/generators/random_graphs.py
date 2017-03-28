@@ -751,7 +751,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 prohibited_nodes.append(src_node)
                 
                 #If there was an empty sequence in random.choice, this method will raise an exception
-                dest_node = random.choice( [ nd for nd in existent_nodes if n not in prohibited_nodes ])
+                dest_node = random.choice( [ nd for nd in existent_nodes if nd not in prohibited_nodes ])
                 
                 #Adding the new edge
                 G.add_edge(src_node,dest_node)
@@ -759,9 +759,9 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 existent_nodes.append(dest_node)
                         
                 # Adjusting the viable nodes, as the new edge could have saturated the nodes.
-                if (G.degree(src_node) == click_node_degree):
+                if (G.degree(src_node) == click_node_degree and (src_node in all_viable_nodes)):
                     all_viable_nodes.remove(src_node)
-                if (G.degree(dest_node) == click_node_degree):
+                if (G.degree(dest_node) == click_node_degree and (dest_node in all_viable_nodes)):
                     all_viable_nodes.remove(dest_node)
                 
                  
@@ -787,7 +787,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 
                 #Picking a target node that is not 'node' or already neighbor with 'node', with preferential attachment
                 neighbor_nodes.append(node)
-                dest_node = random.choice( [ nd for nd in existent_nodes if n not in neighbor_nodes ] )
+                dest_node = random.choice( [ nd for nd in existent_nodes if nd not in neighbor_nodes ] )
                 
                 #Rewire
                 G.remove_edge(node,src_node)
