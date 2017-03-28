@@ -76,8 +76,7 @@ class TestGeneratorsRandom(object):
         G=extended_barabasi_albert_graph(100,3,0,0,seed)
         assert_equal(G.number_of_edges(),(97*3))
         G=extended_barabasi_albert_graph(100,1,0,0.5,seed)
-        assert_greater(G.number_of_edges(),(100*0.8))
-        assert_less(G.number_of_edges(),(100))
+        assert_equal(G.number_of_edges(),(99))
         G=extended_barabasi_albert_graph(100,2,0.5,0,seed)
         assert_greater(G.number_of_edges(),(100*3))
         assert_less(G.number_of_edges(),(100*4))
@@ -125,8 +124,8 @@ class TestGeneratorsRandom(object):
             assert_greater(G1.number_of_edges(),BA_model_edges*2)
             
             # As there was only edge rewiring, the number of edges must less than the original
-            G2=extended_barabasi_albert_graph(100,m,0,0.6,seed)
-            assert_less(G2.number_of_edges(),BA_model_edges)
+            G2=extended_barabasi_albert_graph(100,m,0,0.8,seed)
+            assert_equal(G2.number_of_edges(),BA_model_edges)
             
             # This is a mixed scenario, more than edges should have been added, less than G1 and more than G2
             G3=extended_barabasi_albert_graph(100,m,0.3,0.3,seed)
