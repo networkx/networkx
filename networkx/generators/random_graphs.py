@@ -732,12 +732,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
            
             # Select the nodes where an edge can be added 
             all_viable_nodes = [nd for nd in G.nodes() if (G.degree(nd) < (click_node_degree)) ]
-            
-            ####!!!! Removable check !!!
-            #In theory, there are enough viable nodes because it was checked before that there is space for m edges
-            if (len(all_viable_nodes) == 0):
-                raise ValueError
-            
+             
             for i in range(m):
                 
                 
@@ -761,7 +756,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 # Adjusting the viable nodes, as the new edge could have saturated the nodes.
                 if (G.degree(src_node) == click_node_degree):
                     all_viable_nodes.remove(src_node)
-                if (G.degree(dest_node) == click_node_degree):
+                if (G.degree(dest_node) == click_node_degree) and dest_node in all_viable_nodes:
                     all_viable_nodes.remove(dest_node)
                 
                  
@@ -773,11 +768,6 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
             
             all_viable_nodes = [nd for nd in G.nodes() if ( G.degree(nd) !=0 and G.degree(nd) != click_node_degree ) ]
 
-            ####!!!! Removable check !!!
-            #In theory, there are enough viable nodes because it was checked before that there is space for m edges
-            if (len(all_viable_nodes) == 0):
-                raise ValueError
-                
             for i in range(m):
                 node = random.choice(all_viable_nodes)
                 
@@ -805,13 +795,6 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 if (G.degree(dest_node) == click_node_degree) and (dest_node in all_viable_nodes):
                     all_viable_nodes.remove(dest_node)
                 
-                #if (G.degree(dest_node) == click_node_degree):
-                    #if(dest_node in all_viable_nodes):
-                        #all_viable_nodes.remove(dest_node)
-                    # Even if the node now is fully connected as a click, it should still be left in the list of existent nodes.
-                    # It will not be considered as the next destination of the link because of the filter in line 790
-                    #existent_nodes.remove(dest_node)
-            
         # Adding new m nodes
         else: 
             # Select the edges' nodes by preferential attachment

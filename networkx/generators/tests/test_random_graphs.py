@@ -12,6 +12,7 @@
 """
 from nose.tools import assert_almost_equal
 from nose.tools import assert_greater
+from nose.tools import assert_less
 from nose.tools import assert_equal
 from nose.tools import assert_raises
 from nose.tools import assert_true
@@ -70,16 +71,20 @@ class TestGeneratorsRandom(object):
         G=barabasi_albert_graph(100,3,seed)
         assert_equal(G.number_of_edges(),(97*3))
 
-        #G=extended_barabasi_albert_graph(100,1,0,0,seed)
-        #assert_equal(G.number_of_edges(),(99))
-        #G=extended_barabasi_albert_graph(100,3,0,0,seed)
-        #assert_equal(G.number_of_edges(),(97*3))
-        #G=extended_barabasi_albert_graph(100,1,0,0.5,seed)
-        #G=extended_barabasi_albert_graph(100,2,0.5,0,seed)
+        G=extended_barabasi_albert_graph(100,1,0,0,seed)
+        assert_equal(G.number_of_edges(),(99))
+        G=extended_barabasi_albert_graph(100,3,0,0,seed)
+        assert_equal(G.number_of_edges(),(97*3))
+        G=extended_barabasi_albert_graph(100,1,0,0.5,seed)
+        assert_greater(G.number_of_edges(),(100*0.8))
+        assert_less(G.number_of_edges(),(100))
+        G=extended_barabasi_albert_graph(100,2,0.5,0,seed)
+        assert_greater(G.number_of_edges(),(100*3))
+        assert_less(G.number_of_edges(),(100*4))
        
-        #G=extended_barabasi_albert_graph(100,2,0.3,0.3,seed)
-        #G=extended_barabasi_albert_graph(100,3,0,0,seed)
-        #assert_equal(G.number_of_edges(),(97*3))
+        G=extended_barabasi_albert_graph(100,2,0.3,0.3,seed)
+        assert_greater(G.number_of_edges(),(100*2))
+        assert_less(G.number_of_edges(),(100*4))
 
         G=powerlaw_cluster_graph(100,1,1.0,seed)
         G=powerlaw_cluster_graph(100,3,0.0,seed)
@@ -94,34 +99,40 @@ class TestGeneratorsRandom(object):
 
         G=random_lobster(10,0.1,0.5,seed)
 
-    def test_extended_barabasi_albert(self,m=1):
+    def test_extended_barabasi_albert(self,m=2):
         """ 
-        Tests that the extended BA random graph behaves consistenly.
+        Tests that the extended BA random graph geneated behaves consistenly.
         
-        Tests the exceptions are raised as expected
+        Tests the exceptions are raised as expected.
+        
+        The graphs generation are repeated several times to prevent lucky-shots
+        
         """
         seed = 42
+        repeats = 100
         BA_model = barabasi_albert_graph(100,m,seed)
         BA_model_edges = BA_model.number_of_edges()
         
+        while repeats:
+            repeats = repeats -1
+            
+            # This behaves just like BA, the number of edges must be the same
+            G1=extended_barabasi_albert_graph(100,m,0,0,seed)
+            assert_equal(G1.number_of_edges(),BA_model_edges)
         
-        # This behaves just like BA, the number of edges must be the same
-        G1=extended_barabasi_albert_graph(100,m,0,0,seed)
-        assert_equal(G1.number_of_edges(),BA_model_edges)
-        
-        # Many more edges should be added,  more than twice more edges should have been added
-        G1=extended_barabasi_albert_graph(100,m,0.8,0,seed)
-        assert_greater(G1.number_of_edges(),BA_model_edges*2)
-        
-        # This is a mixed scenario, more than edges should have been added, less than G1
-        G2=extended_barabasi_albert_graph(100,m,0.3,0.3,seed)
-        assert_greater(G2.number_of_edges(),BA_model_edges)
-        assert_greater(G1.number_of_edges(),G2.number_of_edges())
-        
-         # As there was only edge rewiring, the number of edges must be the same
-        G1=extended_barabasi_albert_graph(100,m,0,0.6,seed)
-        assert_equal(G1.number_of_edges(),BA_model_edges)
-        
+            # Many more edges should be added,  more than twice more edges should have been added
+            G1=extended_barabasi_albert_graph(100,m,0.8,0,seed)
+            assert_greater(G1.number_of_edges(),BA_model_edges*2)
+            
+            # As there was only edge rewiring, the number of edges must less than the original
+            G2=extended_barabasi_albert_graph(100,m,0,0.6,seed)
+            assert_less(G2.number_of_edges(),BA_model_edges)
+            
+            # This is a mixed scenario, more than edges should have been added, less than G1 and more than G2
+            G3=extended_barabasi_albert_graph(100,m,0.3,0.3,seed)
+            assert_greater(G3.number_of_edges(),G2.number_of_edges()   )
+            assert_less(G3.number_of_edges(),G1.number_of_edges()    )
+            
         #Testing exceptions
         assert_raises(NetworkXError, extended_barabasi_albert_graph, m,m,0,0)
         assert_raises(NetworkXError, extended_barabasi_albert_graph, 1,0.5,0,0)
