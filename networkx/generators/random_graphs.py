@@ -9,6 +9,7 @@ Generators for random graphs.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+
 from __future__ import division
 import itertools
 import math
@@ -659,8 +660,7 @@ def barabasi_albert_graph(n, m, seed=None):
     return G
     
 def extended_barabasi_albert_graph(n, m, p, q, seed=None):
-    """
-    Returns a random graph according to the extended Barabási–Albert preferential attachment model.
+    """Returns a random graph according to the extended Barabási–Albert preferential attachment model.
 
     Based on the probabilities 'p' and 'q', the growing behavior of the graph is determined. 
     It holds that (p+q) < 1.
@@ -680,7 +680,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     m : int
         Number of edges to attach from a new node to existing nodes
     p : float
-        Probability value for addition of an edge between existing nodes. p+q<=1.
+        Probability value for addition of an edge between existing nodes. p+q<1.
     q : float
         Probability value for rewiring of existing edges. p+q<1.
     seed : int, optional
@@ -781,7 +781,8 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 #Rewire
                 G.remove_edge(node,src_node)
                 G.add_edge(node,dest_node)
-                    
+                
+                #Register that the nodes have changed their edges
                 existent_nodes.remove(src_node)                                                    
                 existent_nodes.append(dest_node)
                 
