@@ -662,27 +662,28 @@ def barabasi_albert_graph(n, m, seed=None):
 def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     """Returns a random graph according to the extended Barabási–Albert preferential attachment model.
 
-    Based on the probabilities 'p' and 'q', the growing behavior of the graph is determined. 
-    It holds that (p+q) < 1.
+    Based on the probabilities 'p' and 'q' with (p+q) < 1, the growing behavior of the graph is determined as follows:
     
-    1) With 'p' probability, 'm' new edges are added to the graph, starting from randomly chosen existing nodes and attached preferentially at the other end.
+    1) With 'p' probability, 'm' new edges are added to the graph, 
+    starting from randomly chosen existing nodes and attached preferentially at the other end.
     
-    2) With 'q' probability, 'm' existing edges are rewired, taking a randomly chosen edge and rewired to a preferentially-chosen node.
+    2) With 'q' probability, 'm' existing edges are rewired
+    by randomly chosing an edge and rewiring one end to a preferentially chosen node.
     
     3) With (1-p-q) probability, 'm' new nodes are added to the graph, with edges attached preferentially.
     
-    In any case, p=q=0 means that the model behaves just like Barabasi-Albert model.
+    When p=q=0,the model behaves just like Barabasi-Albert model.
     
     Parameters
     ----------
     n : int
         Number of nodes
     m : int
-        Number of edges to attach from a new node to existing nodes
+        Number of edges with which a new node attaches to existing nodes
     p : float
         Probability value for addition of an edge between existing nodes. p+q<1.
     q : float
-        Probability value for rewiring of existing edges. p+q<1.
+        Probability value of rewiring of existing edges. p+q<1.
     seed : int, optional
         Seed for random number generator (default=None).
 
@@ -697,7 +698,8 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
 
     References
     ----------
-    .. Albert, R., & Barabási, A. L. (2000). Topology of evolving networks: local events and universality. Physical review letters, 85(24), 5234.
+    .. [1] Albert, R., & Barabási, A. L. (2000). Topology of evolving networks: local events and universality. 
+       Physical review letters, 85(24), 5234.
     """
 
     if m < 1 or  m >=n :
@@ -711,11 +713,12 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     G=empty_graph(m)
     G.name="extended_barabasi_albert_graph(%s,%s,%s,%s)" % (n,m,p,q)
     
-    # List of existing nodes. The existance of a node makes it appear once, and once more per each edge it has.
-    # This list it used to perform preferential attachment random selection.
-    # In order to select even isolated nodes (for rewiring and adding edges), this list starts with all the nodes.
-    existent_nodes=[]
-    existent_nodes.extend(list(range(m)))
+    # List of nodes to represent the preferential attachment random selection. 
+    # At the creation of the graph, all nodes are added to the list 
+    # so that even nodes that are not connected have a chance to get selected, for rewiring and adding of edges.
+    # With each new edge, nodes at the ends of the edge are added to the list.
+    attachment_preference=[]
+    attachment_preference.extend(list(range(m)))
     
     # Start adding the other n-m nodes. The first node is m.
     new_node = m
@@ -723,88 +726,90 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
       
         a_probability = random.random()
         
-        # Total number of edges of a Click for all the nodes
-        click_node_degree = G.number_of_nodes() - 1
-        click_edges = (G.number_of_nodes()*(click_node_degree))/2
+        # Total number of edges of a Clique of all the nodes
+        clique_node_degree = G.number_of_nodes() - 1
+        clique_number_of_edges = (G.number_of_nodes()*(clique_node_degree))/2
         
-        # Adding new m edges, if there is room to add them
-        if a_probability < p and (G.number_of_edges() <= (click_edges - m)):
+        # Adding m new edges, if there is room to add them
+        if a_probability < p and (G.number_of_edges() <= (clique_number_of_edges - m)):
            
             # Select the nodes where an edge can be added 
-            all_viable_nodes = [nd for nd in G.nodes() if (G.degree(nd) < (click_node_degree)) ]
+            elligible_nodes = [nd for nd in G.nodes() if (G.degree(nd) < (clique_node_degree)) ]
              
             for i in range(m):
                 
                 
                 #Choosing a random source node
-                #The nodes that have all possible edges were already removed before
-                src_node = random.choice(all_viable_nodes)
+                #The nodes that have all fully connected to all other nodes are already filtered out
+                src_node = random.choice(elligible_nodes)
                 
                 #Picking a possible node that is not 'src_node' or already neighbor with 'src_node', with preferential attachment
                 prohibited_nodes = list(G.neighbors(src_node))
-                prohibited_nodes.append(src_node)
-                
+                prohibited_nodes.append(src_node)                
                 #If there was an empty sequence in random.choice, this method will raise an exception
-                dest_node = random.choice( [ nd for nd in existent_nodes if nd not in prohibited_nodes ])
+                dest_node = random.choice( [ nd for nd in attachment_preference if nd not in prohibited_nodes ])
                 
                 #Adding the new edge
                 G.add_edge(src_node,dest_node)
-                existent_nodes.append(src_node)
-                existent_nodes.append(dest_node)
+
+                #Appending both ends of the new edge to the list to increase their preferential attachment
+                attachment_preference.append(src_node)
+                attachment_preference.append(dest_node)
                         
-                # Adjusting the viable nodes, as the new edge could have saturated the nodes.
-                if (G.degree(src_node) == click_node_degree ):
-                    all_viable_nodes.remove(src_node)
-                if (G.degree(dest_node) == click_node_degree and (dest_node in all_viable_nodes)):
-                    all_viable_nodes.remove(dest_node)
+                # Adjusting the elligible nodes, as the new edge could have saturated the nodes.
+                if (G.degree(src_node) == clique_node_degree ):
+                    elligible_nodes.remove(src_node)
+                if (G.degree(dest_node) == clique_node_degree and (dest_node in elligible_nodes)):
+                    elligible_nodes.remove(dest_node)
                 
                  
         # Rewiring m edges, if there are enough edges
-        elif p <= a_probability < (p + q) and click_edges > G.number_of_edges() >= m :
+        elif p <= a_probability < (p + q) and  m <= G.number_of_edges() < clique_number_of_edges :
             
-            #Selecting nodes that have at least 1 edge but that are not wired to ALL other nodes (center of star).
-            #This nodes are the pivot node of the edge to rewire
-            
-            all_viable_nodes = [nd for nd in G.nodes() if ( G.degree(nd) !=0 and G.degree(nd) != click_node_degree ) ]
+            #Selecting nodes that have at least 1 edge but that are not fully connected to ALL other nodes (center of star).
+            #These nodes are the pivot nodes of the edges to rewire
+            elligible_nodes = [nd for nd in G.nodes() if ( G.degree(nd) !=0 and G.degree(nd) != clique_node_degree ) ]
 
             for i in range(m):
-                node = random.choice(all_viable_nodes)
+                #Choosing a random source node
+                node = random.choice(elligible_nodes)
                 
-                #The available nodes do have a neighbor, at least.
+                #The available nodes do have a neighbor at least.
                 neighbor_nodes = list(G.neighbors(node))
+
+                #Choosing the other end that will get dettached
                 src_node = random.choice(neighbor_nodes)
                 
                 #Picking a target node that is not 'node' or already neighbor with 'node', with preferential attachment
                 neighbor_nodes.append(node)
-                dest_node = random.choice( [ nd for nd in existent_nodes if nd not in neighbor_nodes ] )
+                dest_node = random.choice( [ nd for nd in attachment_preference if nd not in neighbor_nodes ] )
                 
                 #Rewire
                 G.remove_edge(node,src_node)
                 G.add_edge(node,dest_node)
                 
-                #Register that the nodes have changed their edges
-                existent_nodes.remove(src_node)                                                    
-                existent_nodes.append(dest_node)
+                #Adjusting the preferential attachment list
+                attachment_preference.remove(src_node)                                                    
+                attachment_preference.append(dest_node)
                 
-                # Adjusting the viable nodes, as the rewired edge could have saturated the nodes or isolated the original one.
-                if (G.degree(src_node) == 0) and (src_node in all_viable_nodes):
-                    all_viable_nodes.remove(src_node)
-                if (G.degree(dest_node) == 1) and (dest_node not in all_viable_nodes):
-                    all_viable_nodes.append(dest_node)
-                #dest_node is not in the all_viable_nodes already
-                if (G.degree(dest_node) == click_node_degree) and (dest_node in all_viable_nodes):
-                    all_viable_nodes.remove(dest_node)
+                # Adjusting the elligible nodes, as the rewired edge could have saturated the nodes or isolated the original one.
+                if (G.degree(src_node) == 0) and (src_node in elligible_nodes):
+                    elligible_nodes.remove(src_node)
+                if (G.degree(dest_node) == 1) and (dest_node not in elligible_nodes):
+                    elligible_nodes.append(dest_node)
+                if (G.degree(dest_node) == clique_node_degree) and (dest_node in elligible_nodes):
+                    elligible_nodes.remove(dest_node)
                 
-        # Adding new m nodes
+        # Adding new node with m edges
         else: 
             # Select the edges' nodes by preferential attachment
-            targets = _random_subset(existent_nodes,m)
+            targets = _random_subset(attachment_preference,m)
             G.add_edges_from(zip([new_node]*m,targets))
 
             # Add one node to the list for each new edge just created.
-            existent_nodes.extend(targets)
+            attachment_preference.extend(targets)
             # The new node has m edges to it, plus itself was added to the graph. (m+1)
-            existent_nodes.extend([new_node]*(m+1)) 
+            attachment_preference.extend([new_node]*(m+1)) 
             new_node += 1
     
     print "edges = %d , nodes = %d" % (G.number_of_edges(),G.number_of_nodes())
