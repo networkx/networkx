@@ -151,17 +151,21 @@ class MultiDiGraph(MultiGraph,DiGraph):
     {2: {0: {'weight': 4}, 1: {'color': 'blue'}}}
 
     The fastest way to traverse all edges of a graph is via
-    adjacency(), but the edges() method is often more convenient.
+    adjacency():
 
     >>> for n,nbrsdict in G.adjacency():
     ...     for nbr,keydict in nbrsdict.items():
     ...        for key,eattr in keydict.items():
     ...            if 'weight' in eattr:
-    ...                (n,nbr,eattr['weight'])
-    (1, 2, 4)
-    (2, 3, 8)
-    >>> list(G.edges(data='weight'))
-    [(1, 2, 4), (1, 2, None), (2, 3, 8), (3, 4, None), (4, 5, None)]
+    ...                # Do something useful with the edges
+    ...                pass
+
+    But the edges() method is often more convenient:
+
+    >>> for u, v, keys, weight in G.edges(data='weight', keys=True):
+    ...     if weight is not None:
+    ...         # Do something useful with the edges
+    ...         pass
 
     **Reporting:**
 
@@ -225,12 +229,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
     ...    node_dict_factory = OrderedDict
     ...    adjlist_outer_dict_factory = OrderedDict
     >>> G = OrderedGraph()
-    >>> G.add_nodes_from( (2,1) )
+    >>> G.add_nodes_from((2, 1))
     >>> list(G.nodes())
     [2, 1]
-    >>> keys = G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
-    >>> list(G.edges())
-    [(2, 1), (2, 1), (2, 2), (1, 1)]
+    >>> keys = G.add_edges_from(((2, 2), (2, 1), (2, 1), (1, 1)))
+    >>> # Edge addition order is not preserved
 
     Create a multdigraph object that tracks the order nodes are added
     and for each node track the order that neighbors are added and for
@@ -242,10 +245,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
     ...    adjlist_inner_dict_factory = OrderedDict
     ...    edge_key_dict_factory = OrderedDict
     >>> G = OrderedGraph()
-    >>> G.add_nodes_from( (2,1) )
+    >>> G.add_nodes_from((2, 1))
     >>> list(G.nodes())
     [2, 1]
-    >>> elist = ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1))
+    >>> elist = ((2, 2), (2, 1, 2, {'weight': 0.1}), (2, 1, 1, {'weight': 0.2}), (1, 1))
     >>> keys = G.add_edges_from(elist)
     >>> list(G.edges(keys=True))
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]

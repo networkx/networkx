@@ -61,7 +61,7 @@ def node_link_data(G, attrs=None):
 
     >>> import json
     >>> s1 = json.dumps(data1)
-    >>> s2 = json.dumps(data2, {'link': 'edges', 'source': 'from', 'target': 'to'})
+    >>> s2 = json.dumps(data2, default={'link': 'edges', 'source': 'from', 'target': 'to'})
 
     Notes
     -----

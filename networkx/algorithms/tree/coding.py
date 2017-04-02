@@ -176,8 +176,9 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
 
         >>> balanced = (((), ()), ((), ()))
         >>> T = nx.from_nested_tuple(balanced, sensible_relabeling=True)
-        >>> list(T.edges())
-        [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
+        >>> edges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
+        >>> all((u, v) in T.edges() or (v, u) in T.edges() for (u, v) in edges)
+        True
 
     """
 
