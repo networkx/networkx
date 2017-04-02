@@ -110,6 +110,8 @@ package_data     = {
     }
 
 install_requires = ['decorator>=3.4.0']
+extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
+                          'pygraphviz', 'pydot', 'pyyaml', 'gdal']}
 
 if __name__ == "__main__":
 
@@ -132,6 +134,7 @@ if __name__ == "__main__":
         data_files       = data,
         package_data     = package_data,
         install_requires = install_requires,
+        extras_require   = extras_require,
         test_suite       = 'nose.collector',
         tests_require    = ['nose>=0.10.1'],
         zip_safe         = False
