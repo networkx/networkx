@@ -144,6 +144,8 @@ def sets(G, top_nodes=None):
 
     Raises an exception if the graph is not bipartite or if the input
     graph is disconnected and thus more than one valid solution exists.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     Parameters
     ----------
@@ -212,7 +214,7 @@ def density(B, nodes):
     G : NetworkX graph
 
     nodes: list or container
-      Nodes in one set of the bipartite graph.
+      Nodes in one node set of the bipartite graph.
 
     Returns
     -------
@@ -229,6 +231,14 @@ def density(B, nodes):
     >>> Y=set([3,4])
     >>> bipartite.density(G,Y)
     1.0
+
+    Notes
+    -----
+    The container of nodes passed as argument must contain all nodes
+    in one of the two bipartite node sets to avoid ambiguity in the
+    case of disconnected graphs.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
@@ -255,7 +265,7 @@ def degrees(B, nodes, weight=None):
     G : NetworkX graph
 
     nodes: list or container
-      Nodes in one set of the bipartite graph.
+      Nodes in one node set of the bipartite graph.
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -275,6 +285,14 @@ def degrees(B, nodes, weight=None):
     >>> degX,degY=bipartite.degrees(G,Y)
     >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
+
+    Notes
+    -----
+    The container of nodes passed as argument must contain all nodes
+    in one of the two bipartite node sets to avoid ambiguity in the
+    case of disconnected graphs.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
