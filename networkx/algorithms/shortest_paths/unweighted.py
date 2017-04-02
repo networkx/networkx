@@ -41,9 +41,16 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = nx.single_source_shortest_path_length(G, 0)
-    >>> dict(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> length = dict(nx.single_source_shortest_path_length(G, 0))
+    >>> length[4]
+    4
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
 
     See Also
     --------
@@ -92,9 +99,18 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = nx.all_pairs_shortest_path_length(G)
-    >>> dict(length)[1]
-    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+    >>> length = dict(nx.all_pairs_shortest_path_length(G))
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    1 - 0: 1
+    1 - 1: 0
+    1 - 2: 1
+    1 - 3: 2
+    1 - 4: 3
+    >>> length[3][2]
+    1
+    >>> length[2][2]
+    0
 
     """
     length = single_source_shortest_path_length
