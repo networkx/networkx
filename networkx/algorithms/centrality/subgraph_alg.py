@@ -70,7 +70,7 @@ def subgraph_centrality_exp(G):
     (from [1]_)
     >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
     >>> sc = nx.subgraph_centrality_exp(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sc])
+    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
     """
     # alternative implementation that calculates the matrix exponential
@@ -132,7 +132,7 @@ def subgraph_centrality(G):
     --------
     >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
     >>> sc = nx.subgraph_centrality(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sc])
+    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
 
     References
