@@ -391,7 +391,7 @@ class GEXFWriter(GEXF):
             if k == 'key':
                 k = 'networkx_key'
             val_type = type(v)
-            if type(v) == list:
+            if isinstance(v, list):
                 # dynamic data
                 for val, start, end in v:
                     val_type = type(val)
@@ -418,7 +418,7 @@ class GEXFWriter(GEXF):
                                            node_or_edge, default, mode)
                 e = Element('attvalue')
                 e.attrib['for'] = attr_id
-                if type(v) == bool:
+                if isinstance(v, bool):
                     e.attrib['value'] = make_str(v).lower()
                 else:
                     e.attrib['value'] = make_str(v)
@@ -545,12 +545,15 @@ class GEXFWriter(GEXF):
         # if 'start' or 'end' appears, alter Graph mode to dynamic and set timeformat
         if self.graph_element.get('mode') == 'static':
             if start_or_end is not None:
-                if type(start_or_end) == str:
+                if isinstance(start_or_end, str):
                     timeformat = 'date'
-                elif type(start_or_end) == float:
+                elif isinstance(start_or_end, float):
                     timeformat = 'double'
-                elif type(start_or_end) == int:
+                elif isinstance(start_or_end, int):
                     timeformat = 'long'
+                else:
+                    raise nx.NetworkXError(\
+                          'timeformat should be of the type int, float or str')
                 self.graph_element.set('timeformat', timeformat)
                 self.graph_element.set('mode', 'dynamic')
 
