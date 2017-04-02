@@ -144,14 +144,18 @@ class DiGraph(Graph):
     The fastest way to traverse all edges of a graph is via
     adjacency(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency():
-    ...     for nbr,eattr in nbrsdict.items():
+    >>> for n, nbrsdict in G.adjacency():
+    ...     for nbr, eattr in nbrsdict.items():
     ...        if 'weight' in eattr:
-    ...            (n,nbr,eattr['weight'])
-    (1, 2, 4)
-    (2, 3, 8)
-    >>> list(G.edges(data='weight'))
-    [(1, 2, 4), (2, 3, 8), (3, 4, None), (4, 5, None)]
+    ...            # Do something useful with the edges
+    ...            pass
+
+    But the edges() method is often more convenient:
+
+    >>> for u, v, weight in G.edges(data='weight'):
+    ...     if weight is not None:
+    ...         # Do something useful with the edges
+    ...         pass
 
     **Reporting:**
 
@@ -208,12 +212,11 @@ class DiGraph(Graph):
     ...     node_dict_factory=OrderedDict
     ...     adjlist_outer_dict_factory=OrderedDict
     >>> G=OrderedNodeGraph()
-    >>> G.add_nodes_from( (2,1) )
+    >>> G.add_nodes_from((2, 1))
     >>> list(G.nodes())
     [2, 1]
-    >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
-    >>> list(G.edges())
-    [(2, 1), (2, 2), (1, 1)]
+    >>> G.add_edges_from(((2, 2), (2, 1), (1, 1)))
+    >>> # Edge addition order is not preserved
 
     Create a graph object that tracks the order nodes are added
     and for each node track the order that neighbors are added.
@@ -223,10 +226,10 @@ class DiGraph(Graph):
     ...     adjlist_outer_dict_factory=OrderedDict
     ...     adjlist_inner_dict_factory = OrderedDict
     >>> G = OrderedGraph()
-    >>> G.add_nodes_from( (2,1) )
+    >>> G.add_nodes_from((2, 1))
     >>> list(G.nodes())
     [2, 1]
-    >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
+    >>> G.add_edges_from(((2, 2), (2, 1), (1, 1)))
     >>> list(G.edges())
     [(2, 2), (2, 1), (1, 1)]
 
@@ -240,10 +243,10 @@ class DiGraph(Graph):
     ...         return self.all_edge_dict
     ...     edge_attr_dict_factory = single_edge_dict
     >>> G = ThinGraph()
-    >>> G.add_edge(2,1)
-    >>> list(G.edges(data= True))
-    [(1, 2, {'weight': 1})]
-    >>> G.add_edge(2,2)
+    >>> G.add_edge(2, 1)
+    >>> G[2][1]
+    {'weight': 1}
+    >>> G.add_edge(2, 2)
     >>> G[2][1] is G[2][2]
     True
 
