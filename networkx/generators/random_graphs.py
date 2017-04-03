@@ -811,8 +811,6 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
             # The new node has m edges to it, plus itself was added to the graph. (m+1)
             attachment_preference.extend([new_node]*(m+1)) 
             new_node += 1
-    
-    print "edges = %d , nodes = %d" % (G.number_of_edges(),G.number_of_nodes())
     return G  
 
 def powerlaw_cluster_graph(n, m, p, seed=None):
