@@ -75,6 +75,9 @@ def projected_graph(B, nodes, multigraph=False):
 
     The graph and node properties are (shallow) copied to the projected graph.
 
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
     See Also
     --------
     is_bipartite, 
@@ -161,6 +164,9 @@ def weighted_projected_graph(B, nodes, ratio=False):
     -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
+
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
@@ -256,6 +262,9 @@ def collaboration_weighted_projected_graph(B, nodes):
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
 
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
     See Also
     --------
     is_bipartite, 
@@ -347,6 +356,9 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
+
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
@@ -460,6 +472,9 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     -----
     No attempt is made to verify that the input graph B is bipartite.
     The graph and node properties are (shallow) copied to the projected graph.
+
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------

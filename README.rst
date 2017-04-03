@@ -44,6 +44,12 @@ Decorator package is required for NetworkX.
 
     $ pip install decorator
 
+Install networkx with optional dependencies
+
+::
+
+    $ pip install networkx[all]
+
 Usage
 -----
 

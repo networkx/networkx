@@ -333,8 +333,13 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     >>> length = dict(nx.single_source_dijkstra_path_length(G, 0))
     >>> length[4]
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
 
     Notes
     -----
@@ -401,11 +406,16 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> length,path=nx.single_source_dijkstra(G,0)
+    >>> length, path=nx.single_source_dijkstra(G, 0)
     >>> print(length[4])
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
     >>> path[4]
     [0, 1, 2, 3, 4]
 
@@ -549,8 +559,13 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     --------
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.multi_source_dijkstra_path_length(G, {0, 4}))
-    >>> length
-    {0: 0, 1: 1, 2: 2, 3: 1, 4: 0}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 1
+    4: 0
 
     Notes
     -----
@@ -628,8 +643,13 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     --------
     >>> G = nx.path_graph(5)
     >>> length, path = nx.multi_source_dijkstra(G, {0, 4})
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 1, 4: 0}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 1
+    4: 0
     >>> path[1]
     [0, 1]
     >>> path[3]
@@ -863,10 +883,17 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     --------
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.all_pairs_dijkstra_path_length(G))
-    >>> length[1][4]
-    3
-    >>> length[1]
-    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    1 - 0: 1
+    1 - 1: 0
+    1 - 2: 1
+    1 - 3: 2
+    1 - 4: 3
+    >>> length[3][2]
+    1
+    >>> length[2][2]
+    0
 
     Notes
     -----
@@ -1317,8 +1344,13 @@ def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weigh
     >>> length = dict(nx.single_source_bellman_ford_path_length(G, 0))
     >>> length[4]
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
 
     Notes
     -----
@@ -1366,8 +1398,13 @@ def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weig
     >>> length,path=nx.single_source_bellman_ford(G,0)
     >>> print(length[4])
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
     >>> path[4]
     [0, 1, 2, 3, 4]
 
@@ -1414,10 +1451,17 @@ def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
     --------
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.all_pairs_bellman_ford_path_length(G))
-    >>> length[1][4]
-    3
-    >>> length[1]
-    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    1 - 0: 1
+    1 - 1: 0
+    1 - 2: 1
+    1 - 3: 2
+    1 - 4: 3
+    >>> length[3][2]
+    1
+    >>> length[2][2]
+    0
 
     Notes
     -----

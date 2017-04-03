@@ -53,12 +53,12 @@ def local_node_connectivity(G, source, target, cutoff=None):
 
     Examples
     --------
-    >>> # Platonic icosahedral graph has node connectivity 5 
+    >>> # Platonic octahedral graph has node connectivity 4
     >>> # for each non adjacent node pair
     >>> from networkx.algorithms import approximation as approx
-    >>> G = nx.icosahedral_graph()
-    >>> approx.local_node_connectivity(G, 0, 6)
-    5
+    >>> G = nx.octahedral_graph()
+    >>> approx.local_node_connectivity(G, 0, 5)
+    4
 
     Notes 
     -----
@@ -148,11 +148,11 @@ def node_connectivity(G, s=None, t=None):
 
     Examples
     --------
-    >>> # Platonic icosahedral graph is 5-node-connected 
+    >>> # Platonic octahedral graph is 4-node-connected 
     >>> from networkx.algorithms import approximation as approx
-    >>> G = nx.icosahedral_graph()
+    >>> G = nx.octahedral_graph()
     >>> approx.node_connectivity(G)
-    5
+    4
     
     Notes
     -----

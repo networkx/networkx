@@ -1,6 +1,7 @@
 from __future__ import division
 
 from nose.tools import assert_equal
+from nose.tools import assert_true
 from nose.tools import assert_false
 from nose.tools import assert_raises
 from nose.tools import raises
@@ -151,18 +152,21 @@ class TestWeightedPath(WeightedTestBase):
         nx.add_path(G, [4, 5, 6])
         path = nx.bidirectional_dijkstra(G, 1, 6)
 
-    def test_dijkstra_predecessor(self):
+    def test_dijkstra_predecessor1(self):
         G = nx.path_graph(4)
         assert_equal(nx.dijkstra_predecessor_and_distance(G, 0),
                      ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
-        G = nx.grid_2d_graph(2, 2)
-        pred, dist = nx.dijkstra_predecessor_and_distance(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), []), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
+    def test_dijkstra_predecessor2(self):
+        # 4-cycle
+        G = nx.Graph([(0,1),(1,2),(2,3),(3,0)])
+        pred, dist = nx.dijkstra_predecessor_and_distance(G, (0))
+        assert_equal(pred[0],[])
+        assert_equal(pred[1],[0])
+        assert_true(pred[2] in [[1,3],[3,1]])
+        assert_equal(pred[3],[0])
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
 
+    def test_dijkstra_predecessor3(self):
         XG = nx.DiGraph()
         XG.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
                                     ('u', 'v', 1), ('u', 'x', 2),
@@ -430,6 +434,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(P['v'], 'u')
         assert_equal(D['v'], 9)
 
+    def test_path_graph(self):
         G = nx.path_graph(4)
         assert_equal(nx.single_source_bellman_ford_path(G, 0),
                      {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3]})
@@ -452,25 +457,30 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.goldberg_radzik(G, 3),
                      ({0: 1, 1: 2, 2: 3, 3: None}, {0: 3, 1: 2, 2: 1, 3: 0}))
 
-        G = nx.grid_2d_graph(2, 2)
-        dist, path = nx.single_source_bellman_ford(G, (0, 0))
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
-        assert_equal(sorted(path.items()),
-                     [((0, 0), [(0, 0)]), ((0, 1), [(0, 0), (0, 1)]),
-                      ((1, 0), [(0, 0), (1, 0)]),  ((1, 1), [(0, 0), (0, 1), (1, 1)])])
-        pred, dist = nx.bellman_ford_predecessor_and_distance(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), [None]), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
-        pred, dist = nx.goldberg_radzik(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), None), ((0, 1), (0, 0)),
-                      ((1, 0), (0, 0)), ((1, 1), (0, 1))])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
+    def test_4_cycle(self):
+        # 4-cycle
+        G = nx.Graph([(0,1),(1,2),(2,3),(3,0)])
+        dist, path = nx.single_source_bellman_ford(G, 0)
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
+        assert_equal(path[0],[0])
+        assert_equal(path[1],[0,1])
+        assert_true(path[2] in [[0,1,2],[0,3,2]])
+        assert_equal(path[3],[0,3])
+
+        pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
+        assert_equal(pred[0],[None])
+        assert_equal(pred[1],[0])
+        assert_true(pred[2] in [[1,3],[3,1]])
+        assert_equal(pred[3],[0])
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
+
+        pred, dist = nx.goldberg_radzik(G, 0)
+        assert_equal(pred[0],None)
+        assert_equal(pred[1],0)
+        assert_true(pred[2] in [1,3])
+        assert_equal(pred[3],0)
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
+
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):

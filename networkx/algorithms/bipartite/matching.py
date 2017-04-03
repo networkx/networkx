@@ -92,6 +92,9 @@ def hopcroft_karp_matching(G, top_nodes=None):
     <https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm>`_ for
     bipartite graphs.
 
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
     See Also
     --------
 
@@ -207,6 +210,9 @@ def eppstein_matching(G, top_nodes=None):
     Hopcroft--Karp algorithm (see :func:`hopcroft_karp_matching`), which
     originally appeared in the `Python Algorithms and Data Structures library
     (PADS) <http://www.ics.uci.edu/~eppstein/PADS/ABOUT-PADS.txt>`_.
+
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
@@ -454,6 +460,9 @@ def to_vertex_cover(G, matching, top_nodes=None):
     >>> independent_set = set(G) - vertex_cover
     >>> print(list(independent_set))
     [2, 3, 4]
+
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     """
     # This is a Python implementation of the algorithm described at
