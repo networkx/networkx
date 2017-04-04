@@ -13,6 +13,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['bidirectional_shortest_path',
            'single_source_shortest_path',
            'single_source_shortest_path_length',
+           'single_target_shortest_path',
+           'single_target_shortest_path_length',
            'all_pairs_shortest_path',
            'all_pairs_shortest_path_length',
            'predecessor']
@@ -73,6 +75,69 @@ def single_source_shortest_path_length(G,source,cutoff=None):
         if (cutoff is not None and cutoff <= level):  break
         level=level+1
     del seen
+
+
+def single_target_shortest_path_length(G,target,cutoff=None):
+    """Compute the shortest path lengths to target from all reachable nodes.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    target : node
+       Target node for path
+
+    cutoff : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    lengths : iterator
+        (source, shortest path length) iterator
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5,create_using=nx.DiGraph())
+    >>> length = dict(nx.single_target_shortest_path_length(G,4))
+    >>> length[0]
+    4
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 4
+    1: 3
+    2: 2
+    3: 1
+    4: 0
+
+    See Also
+    --------
+    single_source_shortest_path_length, shortest_path_length
+    """
+    if target not in G:
+        raise nx.NodeNotFound('Target {} is not in G'.format(source))
+    
+    # handle either directed or undirected
+    if G.is_directed():
+        next_nodes=G.predecessors
+    else:
+        next_nodes=G.neighbors
+    
+    seen = {}                  # level (number of hops) when seen in BFS
+    level = 0                  # the current level
+    nextlevel = {target:1}     # dict of nodes to check at next level
+
+    while nextlevel:
+        thislevel = nextlevel  # advance to next level
+        nextlevel = {}         # and start a new list (fringe)
+        for v in thislevel:
+            if v not in seen:
+                seen[v] = level # set the level of vertex v
+                nextlevel.update({key: {} for key in next_nodes(v)})
+                yield (v, level)
+        if (cutoff is not None and cutoff <= level):  break
+        level=level+1
+    del seen    
+    
 
 
 def all_pairs_shortest_path_length(G, cutoff=None):
@@ -274,6 +339,68 @@ def single_source_shortest_path(G,source,cutoff=None):
         nextlevel={}
         for v in thislevel:
             for w in G[v]:
+                if w not in paths:
+                    paths[w]=paths[v]+[w]
+                    nextlevel[w]=1
+        level=level+1
+        if (cutoff is not None and cutoff <= level):  break
+    return paths
+
+
+def single_target_shortest_path(G,target,cutoff=None):
+    """Compute shortest path between all 
+    nodes that reach target and target.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    target : node label
+       Target node for path
+
+    cutoff : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    lengths : dictionary
+        Dictionary, keyed by target, of shortest paths.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5,create_using=nx.DiGraph())
+    >>> path=nx.single_target_shortest_path(G,4)
+    >>> path[0]
+    [4, 3, 2, 1, 0]
+
+    Notes
+    -----
+    The shortest path is not necessarily unique. So there can be multiple
+    paths between the source and each target node, all of which have the
+    same 'shortest' length. For each target node, this function returns
+    only one of those paths.
+
+    See Also
+    --------
+    shortest_path, single_source_shortest_path
+    """
+    # handle undirected graphs
+    if not G.is_directed():
+        return nx.single_source_shortest_path(G,target,cutoff=None)
+    
+    if target not in G:
+        raise nx.NodeNotFound("Target {} not in G".format(source));
+
+    level=0                  # the current level
+    nextlevel={target:1}     # list of nodes to check at next level
+    paths={target:[target]}  # paths dictionary  (paths to key from source)
+    if cutoff==0:
+        return paths
+    while nextlevel:
+        thislevel=nextlevel
+        nextlevel={}
+        for v in thislevel:
+            for w in G.predecessors(v):
                 if w not in paths:
                     paths[w]=paths[v]+[w]
                     nextlevel[w]=1
