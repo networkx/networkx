@@ -17,11 +17,11 @@ def asyn_fluidc(G, k, max_iter=15):
 
     The asynchronous fluid communities algorithm is described in
     [1]. The algorithm is based on the simple idea of fluids interacting
-	in an environment, expanding and pushing each other. It's initialization is
-	random, so found communities may vary on different executions.
+    in an environment, expanding and pushing each other. It's initialization is
+    random, so found communities may vary on different executions.
 
     The algorithm proceeds as follows. First each of the initial k communities
-	is initialized in a random vertex in the graph. Then the algorithm iterates
+    is initialized in a random vertex in the graph. Then the algorithm iterates
     over all vertices in a random order, updating the community of each vertex
     based on its own community and the communities of its neighbours. This
     process is performed several times until convergence.
@@ -32,17 +32,17 @@ def asyn_fluidc(G, k, max_iter=15):
     no vertex changes the community it belongs to, the algorithm has converged and returns.
 
     This is the original version of the algorithm described in [1]. Unfortunately,
-	it does not support weighted graphs yet.
+    it does not support weighted graphs yet.
 
     Parameters
     ----------
     G : Graph
 
     k : integer
-		The number of communities to be found.
+        The number of communities to be found.
 
-	max_iter : integer
-		The number of maximum iterations allowed. By default 15.
+    max_iter : integer
+        The number of maximum iterations allowed. By default 15.
 
     Returns
     -------
@@ -56,7 +56,7 @@ def asyn_fluidc(G, k, max_iter=15):
     References
     ----------
     .. [1] Parés F., Garcia-Gasulla D. et al. "Fluid Communities: A
-	Community Detection Algorithm". [https://arxiv.org/pdf/1703.09307.pdf].
+    Community Detection Algorithm". [https://arxiv.org/pdf/1703.09307.pdf].
     """
     # Initialization
     max_density = 1.0
