@@ -12,8 +12,7 @@ __all__ = ['asyn_fluidc']
 
 
 def asyn_fluidc(G, k, max_iter=15):
-    """Returns communities in `G` as detected by Fluid Communities
-	algorithm.
+    """Returns communities in `G` as detected by Fluid Communities algorithm.
 
     The asynchronous fluid communities algorithm is described in
     [1]. The algorithm is based on the simple idea of fluids interacting
@@ -29,10 +28,11 @@ def asyn_fluidc(G, k, max_iter=15):
     distributed among the vertices it contains. If a vertex changes of
     community, vertex densities of affected communities are adjusted
     immediately. When a complete iteration over all vertices is done, such that
-    no vertex changes the community it belongs to, the algorithm has converged and returns.
+    no vertex changes the community it belongs to, the algorithm has converged
+    and returns.
 
-    This is the original version of the algorithm described in [1]. Unfortunately,
-    it does not support weighted graphs yet.
+    This is the original version of the algorithm described in [1].
+    Unfortunately, it does not support weighted graphs yet.
 
     Parameters
     ----------
@@ -89,7 +89,8 @@ def asyn_fluidc(G, k, max_iter=15):
             # Gather neighbour vertex communities
             for v in G[vertex]:
                 try:
-                    com_counter.update({communities[v]: density[communities[v]]})
+                    com_counter.update({communities[v]: \
+                    density[communities[v]]})
                 except KeyError:
                     continue
             # Check which is the community with highest density
