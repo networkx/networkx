@@ -52,6 +52,14 @@ Dominating Set
    min_weighted_dominating_set
    min_edge_dominating_set
 
+Feedback Vertex Set
+-------------------
+.. automodule:: networkx.algorithms.approximation.feedback_vertex_set
+.. autosummary::
+   :toctree: generated/
+
+   feedback_vertex_set
+
 
 Independent Set
 ---------------
