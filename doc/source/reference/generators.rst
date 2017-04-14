@@ -232,6 +232,7 @@ Community
    planted_partition_graph
    gaussian_random_partition_graph
    ring_of_cliques
+   windmill_graph
 
 
 Trees
@@ -270,4 +271,3 @@ Joint Degree Sequence
 
    is_valid_joint_degree
    joint_degree_graph
-
