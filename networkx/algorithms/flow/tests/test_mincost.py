@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import division
 import networkx as nx
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_raises, assert_almost_equal
 import os
 
 class TestMinCostFlow:
@@ -28,6 +28,59 @@ class TestMinCostFlow:
         assert_equal(flowCost, 24)
         assert_equal(nx.cost_of_flow(G, H), 24)
         assert_equal(H, soln)
+
+    def test_floats_digraph(self):
+        G = nx.Graph()
+        G.add_nodes_from(['i', 'j', 'k', 'l'])
+        G.node['i']['demand'] = -1
+        G.node['j']['demand'] = 1 / 3
+        G.node['k']['demand'] = 1 / 3
+        G.node['l']['demand'] = 1 / 3
+        G.add_edge('i','j', {'weight': 1})
+        G.add_edge('j','k', {'weight': 11})
+        G.add_edge('k','l', {'weight': 21})
+        soln = {'i': {'j': 1.0},
+                'k': {'j': 0, 'l': 0.3333333333333333},
+                'j': {'i': 0, 'k': 0.6666666666666666},
+                'l': {'k': 0}}
+        cost, H = nx.network_simplex(G.to_directed())
+        assert_almost_equal(cost, 15.3333333333)
+        assert_equal(H, soln)
+
+    def test_floats_digraph_scaled(self):
+        G = nx.Graph()
+        G.add_nodes_from(['i', 'j', 'k', 'l'])
+        G.node['i']['demand'] = -1
+        G.node['j']['demand'] = 1 / 3
+        G.node['k']['demand'] = 1 / 3
+        G.node['l']['demand'] = 1 / 3
+        G.add_edge('i','j', {'weight': 1})
+        G.add_edge('j','k', {'weight': 11})
+        G.add_edge('k','l', {'weight': 21})
+
+        N = list(G)                                  # nodes
+        D = [G.node[u].get('demand', 0) for u in N]  # node demands
+        for u in list(G):
+            if 'demand' in G.node[u]:
+                G.node[u]['demand'] = G.node[u]['demand'] / 7
+
+        cost, H = nx.network_simplex(G.to_directed())
+        assert_almost_equal(cost, 15.3333333333 / 7)
+
+    def test_floats_numerical(self):
+        fname = os.path.join(os.path.dirname(__file__), 'netgen-2.gpickle.bz2')
+        G = nx.read_gpickle(fname)
+        N = list(G)                                  # nodes
+        D = [G.node[u].get('demand', 0) for u in N]  # node demands
+        for u in list(G):
+            if 'demand' in G.node[u]:
+                G.node[u]['demand'] = G.node[u]['demand'] / 7
+        flowCost, flowDict = nx.network_simplex(G)
+        assert_equal(6749969302/7, flowCost)
+        assert_equal(6749969302/7, nx.cost_of_flow(G, flowDict))
+        flowCost, flowDict = nx.capacity_scaling(G)
+        assert_equal(6749969302/7, flowCost)
+        assert_equal(6749969302/7, nx.cost_of_flow(G, flowDict))
 
     def test_negcycle_infcap(self):
         G = nx.DiGraph()

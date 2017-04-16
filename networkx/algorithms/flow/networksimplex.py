@@ -26,7 +26,8 @@ except NameError:
 
 
 @not_implemented_for('undirected')
-def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
+def network_simplex(G, demand='demand', capacity='capacity', weight='weight',
+                    tolerance=1e-7):
     r"""Find a minimum cost flow satisfying all demands in digraph G.
 
     This is a primal network simplex algorithm that uses the leaving
@@ -64,6 +65,11 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         that indicates the cost incurred by sending one unit of flow on
         that edge. If not present, the weight is considered to be 0.
         Default value: 'weight'.
+
+    tolerance : float
+        Used to check that the sum of all of the demands is approximately
+        zero.  This is done by looking at the absolute value of the sum of the
+        demands and checking to see if this is less than `tolerance`.
 
     Returns
     -------
@@ -193,7 +199,6 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     N = list(G)                                # nodes
     I = {u: i for i, u in enumerate(N)}        # node indices
     D = [G.node[u].get(demand, 0) for u in N]  # node demands
-
     inf = float('inf')
     for p, b in zip(N, D):
         if abs(b) == inf:
@@ -238,7 +243,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     # Quick infeasibility detection
     ###########################################################################
 
-    if sum(D) != 0:
+    if abs(sum(D)) > tolerance:
         raise nx.NetworkXUnfeasible('total node demand is not zero')
     for e, u in zip(E, U):
         if u < 0:
@@ -542,7 +547,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     # Infeasibility and unboundedness detection
     ###########################################################################
 
-    if any(x[i] != 0 for i in range(-n, 0)):
+    if any(abs(d) > tolerance for d in x[-n:]):
         raise nx.NetworkXUnfeasible('no flow satisfies all node demands')
 
     if (any(x[i] * 2 >= faux_inf for i in range(e)) or
