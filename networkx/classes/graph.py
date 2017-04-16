@@ -315,6 +315,7 @@ class Graph(object):
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.edge = self.adj
+        self.frozen = False
 
     @property
     def name(self):
@@ -323,6 +324,12 @@ class Graph(object):
     @name.setter
     def name(self, s):
         self.graph['name'] = s
+
+    def freeze(self):
+        """Freezes the graph so that no more mutations can occur."""
+        if not self.frozen:
+            nx.freeze(self)
+        return self
 
     def __str__(self):
         """Return the graph name.

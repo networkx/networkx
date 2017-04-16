@@ -305,6 +305,7 @@ class DiGraph(Graph):
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.edge=self.adj
+        self.frozen = False
 
 
 
