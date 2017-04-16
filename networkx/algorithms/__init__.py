@@ -73,7 +73,8 @@ from networkx.algorithms.isomorphism import (is_isomorphic, could_be_isomorphic,
 # flow
 from networkx.algorithms.flow import (maximum_flow, maximum_flow_value,
     minimum_cut, minimum_cut_value, capacity_scaling, network_simplex,
-    min_cost_flow_cost, max_flow_min_cost, min_cost_flow, cost_of_flow)
+    min_cost_flow_cost, max_flow_min_cost, min_cost_flow, cost_of_flow,
+    gomory_hu_tree)
 
 from .tree.recognition import *
 from .tree.branchings import (
