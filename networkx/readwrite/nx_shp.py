@@ -229,7 +229,7 @@ def write_shp(G, outdir):
     def create_feature(geometry, lyr, attributes=None):
         feature = ogr.Feature(lyr.GetLayerDefn())
         feature.SetGeometry(g)
-        if attributes != None:
+        if attributes is not None:
             # Loop through attributes, assigning data to each field
             for field, data in attributes.items():
                 feature.SetField(field, data)
