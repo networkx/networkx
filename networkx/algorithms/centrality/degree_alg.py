@@ -17,7 +17,7 @@ __all__ = ['degree_centrality',
            'out_degree_centrality']
 
 
-def degree_centrality(G):
+def degree_centrality(G,weight=None):
     """Compute the degree centrality for nodes.
 
     The degree centrality for a node v is the fraction of nodes it
@@ -48,12 +48,12 @@ def degree_centrality(G):
     """
     centrality = {}
     s = 1.0/(len(G)-1.0)
-    centrality = {n: d*s for n, d in G.degree()}
+    centrality = {n: d*s for n, d in G.degree(weight=weight)}
     return centrality
 
 
 @not_implemented_for('undirected')
-def in_degree_centrality(G):
+def in_degree_centrality(G,weight=None):
     """Compute the in-degree centrality for nodes.
 
     The in-degree centrality for a node v is the fraction of nodes its
@@ -89,12 +89,12 @@ def in_degree_centrality(G):
     """
     centrality = {}
     s = 1.0/(len(G)-1.0)
-    centrality = {n: d*s for n, d in G.in_degree()}
+    centrality = {n: d*s for n, d in G.in_degree(weight=weight)}
     return centrality
 
 
 @not_implemented_for('undirected')
-def out_degree_centrality(G):
+def out_degree_centrality(G,weight=None):
     """Compute the out-degree centrality for nodes.
 
     The out-degree centrality for a node v is the fraction of nodes its
@@ -130,5 +130,5 @@ def out_degree_centrality(G):
     """
     centrality = {}
     s = 1.0/(len(G)-1.0)
-    centrality = {n: d*s for n, d in G.out_degree()}
+    centrality = {n: d*s for n, d in G.out_degree(weight=weight)}
     return centrality
