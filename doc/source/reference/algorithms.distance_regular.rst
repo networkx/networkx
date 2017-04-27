@@ -7,6 +7,6 @@ Distance-Regular Graphs
    :toctree: generated/
 
    is_distance_regular
+   is_strongly_regular
    intersection_array
    global_parameters
-   

@@ -39,7 +39,15 @@ class TestGeneratorsBipartite():
                       complete_bipartite_graph, 7, 3, create_using=DiGraph())
 
         mG=complete_bipartite_graph(7, 3, create_using=MultiGraph())
-        assert_equal(mG.edges(), G.edges())
+        assert_equal(sorted(mG.edges()), sorted(G.edges()))
+
+        # specify nodes rather than number of nodes
+        G = complete_bipartite_graph([1, 2], ['a', 'b'])
+        has_edges = G.has_edge(1,'a') & G.has_edge(1,'b') &\
+                G.has_edge(2,'a') & G.has_edge(2,'b')
+        assert_true(has_edges)
+        assert_equal(G.size(), 4)
+
 
     def test_configuration_model(self):
         aseq=[3,3,3,3]
@@ -50,19 +58,19 @@ class TestGeneratorsBipartite():
         aseq=[3,3,3,3]
         bseq=[2,2,2,2,2,2]
         G=configuration_model(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq=[2,2,2,2,2,2]
         bseq=[3,3,3,3]
         G=configuration_model(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq=[2,2,2,1,1,1]
         bseq=[3,3,3]
         G=configuration_model(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
         GU=project(Graph(G),range(len(aseq)))
@@ -83,13 +91,13 @@ class TestGeneratorsBipartite():
         
         bseq=[2,2,2,2,2,2]
         G=havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq=[2,2,2,2,2,2]
         bseq=[3,3,3,3]
         G=havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         GU=project(Graph(G),range(len(aseq)))
@@ -109,19 +117,19 @@ class TestGeneratorsBipartite():
         
         bseq=[2,2,2,2,2,2]
         G=reverse_havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq=[2,2,2,2,2,2]
         bseq=[3,3,3,3]
         G=reverse_havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq=[2,2,2,1,1,1]
         bseq=[3,3,3]
         G=reverse_havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
         GU=project(Graph(G),range(len(aseq)))
@@ -141,19 +149,19 @@ class TestGeneratorsBipartite():
         
         bseq=[2,2,2,2,2,2]
         G=alternating_havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq=[2,2,2,2,2,2]
         bseq=[3,3,3,3]
         G=alternating_havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq=[2,2,2,1,1,1]
         bseq=[3,3,3]
         G=alternating_havel_hakimi_graph(aseq,bseq)
-        assert_equal(sorted(G.degree().values()),
+        assert_equal(sorted(d for n,d in G.degree()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
         GU=project(Graph(G),range(len(aseq)))
@@ -196,7 +204,7 @@ class TestGeneratorsBipartite():
     def test_gnmk_random_graph(self):
         n = 10
         m = 20
-        edges = 100
+        edges = 200
         G = gnmk_random_graph(n, m, edges)
         assert_equal(len(G),30)
         assert_true(is_bipartite(G))
@@ -204,5 +212,4 @@ class TestGeneratorsBipartite():
         print(X)
         assert_equal(set(range(n)),X)
         assert_equal(set(range(n,n+m)),Y)
-        assert_equal(edges, len(G.edges()))
-
+        assert_equal(edges, len(list(G.edges())))

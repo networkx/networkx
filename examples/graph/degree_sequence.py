@@ -2,11 +2,11 @@
 """
 Random graph from given degree sequence.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2004-11-03 08:11:09 -0700 (Wed, 03 Nov 2004) $"
-__credits__ = """"""
-__revision__ = "$Revision: 503 $"
-#    Copyright (C) 2004 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+# Date: 2004-11-03 08:11:09 -0700 (Wed, 03 Nov 2004)
+# Revision: 503
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -20,7 +20,7 @@ print(is_valid_degree_sequence(z))
 
 print("Configuration model")
 G=configuration_model(z)  # configuration model
-degree_sequence=list(degree(G).values()) # degree sequence
+degree_sequence = [d for n,d in G.degree()] # degree sequence
 print("Degree sequence %s" % degree_sequence)
 print("Degree histogram")
 hist={}

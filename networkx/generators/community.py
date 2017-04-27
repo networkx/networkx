@@ -1,32 +1,33 @@
+"""Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
 import random
 import networkx as nx
-#    Copyright(C) 2011 by
+#    Copyright(C) 2011, 2015 by
 #    Ben Edwards <bedwards@cs.unm.edu>
 #    Aric Hagberg <hagberg@lanl.gov>
+#    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
 #    All rights reserved.
 #    BSD license.
 __author__ = """\n""".join(['Ben Edwards (bedwards@cs.unm.edu)',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+                            'Aric Hagberg (hagberg@lanl.gov)',
+                            'Konstantinos Karakatsanis '
+                            '<dinoskarakas@gmail.com>'])
 __all__ = ['caveman_graph', 'connected_caveman_graph',
            'relaxed_caveman_graph', 'random_partition_graph',
-           'planted_partition_graph', 'gaussian_random_partition_graph']
+           'planted_partition_graph', 'gaussian_random_partition_graph',
+           'ring_of_cliques']
 
 
 def caveman_graph(l, k):
-    """Returns a caveman graph of l cliques of size k.
-
-    The caveman graph is formed by creating n cliques of size k.
+    """Returns a caveman graph of `l` cliques of size `k`.
 
     Parameters
     ----------
-    n : int
+    l : int
       Number of cliques
     k : int
       Size of cliques
-    directed : boolean optional (default=True)
-      If true return directed caveman graph
 
     Returns
     -------
@@ -36,17 +37,22 @@ def caveman_graph(l, k):
     Notes
     -----
     This returns an undirected graph, it can be converted to a directed
-    graph using nx.to_directed(), or a multigraph using
-    nx.MultiGraph(nx.caveman_graph). Only the undirected version is
+    graph using :func:`nx.to_directed`, or a multigraph using
+    ``nx.MultiGraph(nx.caveman_graph(l, k))``. Only the undirected version is
     described in [1]_ and it is unclear which of the directed
     generalizations is most useful.
 
     Examples
     --------
-    >>> G = nx.caveman_graph(3,3)
+    >>> G = nx.caveman_graph(3, 3)
 
-    Reference
-    ---------
+    See also
+    --------
+
+    connected_caveman_graph
+
+    References
+    ----------
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
@@ -61,39 +67,38 @@ def caveman_graph(l, k):
 
 
 def connected_caveman_graph(l, k):
-    """Returns a connected caveman graph of n cliques of size k.
+    """Returns a connected caveman graph of `l` cliques of size `k`.
 
-    The connected caveman graph is formed by creating n cliques of size k. Then
-    a single node in each clique is rewired to a node in the adjacent clique.
+    The connected caveman graph is formed by creating `n` cliques of size
+    `k`, then a single edge in each clique is rewired to a node in an
+    adjacent clique.
 
     Parameters
     ----------
-    n : int
+    l : int
       number of cliques
     k : int
       size of cliques
-    directed : boolean optional (default=True)
-      if true return directed caveman graph
 
     Returns
     -------
     G : NetworkX Graph
-      caveman graph
+      connected caveman graph
 
     Notes
     -----
     This returns an undirected graph, it can be converted to a directed
-    graph using nx.to_directed(), or a multigraph using
-    nx.MultiGraph(nx.caveman_graph). Only the undirected version is
+    graph using :func:`nx.to_directed`, or a multigraph using
+    ``nx.MultiGraph(nx.caveman_graph(l, k))``. Only the undirected version is
     described in [1]_ and it is unclear which of the directed
     generalizations is most useful.
 
     Examples
     --------
-    >>> G = nx.caveman_graph(3, 3)
+    >>> G = nx.connected_caveman_graph(3, 3)
 
-    Reference
-    ---------
+    References
+    ----------
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
@@ -105,12 +110,11 @@ def connected_caveman_graph(l, k):
     return G
 
 
-def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
+def relaxed_caveman_graph(l, k, p, seed=None):
     """Return a relaxed caveman graph.
 
-    A relaxed caveman graph starts with l cliques of size k.  Edges
-    are then randomly rewired with probability p to link different
-    cliques.
+    A relaxed caveman graph starts with `l` cliques of size `k`.  Edges are
+    then randomly rewired with probability `p` to link different cliques.
 
     Parameters
     ----------
@@ -122,8 +126,6 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
       Probabilty of rewiring each edge.
     seed : int,optional
       Seed for random number generator(default=None)
-    directed : bool,optional (default=False)
-      If True return a directed graph
 
     Returns
     -------
@@ -139,7 +141,7 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
     --------
     >>> G = nx.relaxed_caveman_graph(2, 3, 0.1, seed=42)
 
-     References
+    References
     ----------
     .. [1] Santo Fortunato, Community Detection in Graphs,
        Physics Reports Volume 486, Issues 3-5, February 2010, Pages 75-174.
@@ -148,7 +150,7 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
     if not seed is None:
         random.seed(seed)
     G = nx.caveman_graph(l, k)
-    nodes = G.nodes()
+    nodes = list(G)
     G.name = "relaxed_caveman_graph (%s,%s,%s)" % (l, k, p)
     for (u, v) in G.edges():
         if random.random() < p:  # rewire the edge
@@ -168,8 +170,8 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     p_in and nodes of different groups are connected with probability
     p_out.
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     sizes : list of ints
       Sizes of groups
     p_in : float
@@ -408,3 +410,57 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
         assigned += size
         sizes.append(size)
     return random_partition_graph(sizes, p_in, p_out, directed, seed)
+
+
+def ring_of_cliques(num_cliques, clique_size):
+    """Defines a "ring of cliques" graph.
+
+    A ring of cliques graph is consisting of cliques, connected through single
+    links. Each clique is a complete graph.
+
+    Parameters
+    ----------
+    num_cliques : int
+      Number of cliques
+    clique_size : int
+      Size of cliques
+
+    Returns
+    -------
+    G : NetworkX Graph
+      ring of cliques graph
+
+    Raises
+    ------
+    NetworkXError
+        If the number of cliques is lower than 2 or
+        if the size of cliques is smaller than 2.
+
+    Examples
+    --------
+    >>> G = nx.ring_of_cliques(8, 4)
+
+    See Also
+    --------
+    connected_caveman_graph
+
+    Notes
+    -----
+    The `connected_caveman_graph` graph removes a link from each clique to
+    connect it with the next clique. Instead, the `ring_of_cliques` graph
+    simply adds the link without removing any link from the cliques.
+    """
+    if num_cliques < 2:
+        raise nx.NetworkXError('A ring of cliques must have at least '
+                               'two cliques')
+    if clique_size < 2:
+        raise nx.NetworkXError('The cliques must have at least two nodes')
+
+    G = nx.Graph()
+    for i in range(num_cliques):
+        edges = itertools.combinations(range(i*clique_size, i*clique_size +
+                                             clique_size), 2)
+        G.add_edges_from(edges)
+        G.add_edge(i*clique_size+1, (i+1)*clique_size %
+                   (num_cliques*clique_size))
+    return G

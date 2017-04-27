@@ -41,6 +41,7 @@ __author__ = """\n""".join(['Salim Fadhley',
 __all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
            'parse_graphml', 'GraphMLWriter', 'GraphMLReader']
 
+from collections import defaultdict
 import networkx as nx
 from networkx.utils import open_file, make_str
 import warnings
@@ -53,13 +54,17 @@ except ImportError:
         pass
 
 @open_file(1,mode='wb')
-def write_graphml(G, path, encoding='utf-8',prettyprint=True):
+def write_graphml(G, path, encoding='utf-8', prettyprint=True, infer_numeric_types=False):
     """Write G in GraphML XML format to path
 
     Parameters
     ----------
     G : graph
        A networkx graph
+    infer_numeric_types : boolean
+       Determine if numeric types should be generalized despite different python values.
+       For example, if edges have both int and float 'weight' attributes, it will be
+       inferred in GraphML that they are both floats (which translates to double in GraphML).
     path : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
@@ -78,7 +83,7 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     This implementation does not support mixed graphs (directed and unidirected
     edges together) hyperedges, nested graphs, or ports.
     """
-    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
+    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint,infer_numeric_types=infer_numeric_types)
     writer.add_graph_element(G)
     writer.dump(path)
 
@@ -221,21 +226,27 @@ class GraphML(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    # http://www.w3.org/TR/xmlschema-2/#boolean
+
+    # This page says that data types in GraphML follow Java(TM).
+    #   http://graphml.graphdrawing.org/primer/graphml-primer.html#AttributesDefinition
+    # true and false are the only boolean literals:
+    #   http://en.wikibooks.org/wiki/Java_Programming/Literals#Boolean_Literals
     convert_bool = {
+        # We use data.lower() in actual use.
         'true': True, 'false': False,
-        'True': True, 'False': False,
+        # Include integer strings for convenience.
         '0': False, 0: False,
-        '1': False, 1: True
+        '1': True, 1: True
     }
 
 class GraphMLWriter(GraphML):
-    def __init__(self, graph=None, encoding="utf-8",prettyprint=True):
+    def __init__(self, graph=None, encoding="utf-8", prettyprint=True, infer_numeric_types=False):
         try:
             import xml.etree.ElementTree
         except ImportError:
              raise ImportError('GraphML writer requires '
                                'xml.elementtree.ElementTree')
+        self.infer_numeric_types = infer_numeric_types
         self.prettyprint=prettyprint
         self.encoding = encoding
         self.xml = Element("graphml",
@@ -244,6 +255,8 @@ class GraphMLWriter(GraphML):
                             'xsi:schemaLocation':self.SCHEMALOCATION}
                            )
         self.keys={}
+        self.attributes = defaultdict(list)
+        self.attribute_types = defaultdict(set)
 
         if graph is not None:
             self.add_graph_element(graph)
@@ -254,6 +267,37 @@ class GraphMLWriter(GraphML):
             self.indent(self.xml)
         s=tostring(self.xml).decode(self.encoding)
         return s
+
+    def attr_type(self, name, scope, value):
+        """Infer the attribute type of data named name. Currently this only
+        supports inference of numeric types.
+
+        If self.infer_numeric_types is false, type is used. Otherwise, pick the
+        most general of types found across all values with name and scope. This
+        means edges with data named 'weight' are treated separately from nodes
+        with data named 'weight'.
+        """
+        if self.infer_numeric_types:
+            types = self.attribute_types[(name, scope)]
+
+            try:
+                chr(12345)     # Fails on Py!=3.
+                long = int     # Py3K's int is our long type
+            except ValueError:
+                # Python 2.x
+                pass
+
+            if len(types) > 1:
+                if float in types:
+                    return float
+                elif long in types:
+                    return long
+                else:
+                    return int
+            else:
+                return list(types)[0]
+        else:
+            return type(value)
 
     def get_key(self, name, attr_type, scope, default):
         keys_key = (name, attr_type, scope)
@@ -292,16 +336,15 @@ class GraphMLWriter(GraphML):
         return data_element
 
     def add_attributes(self, scope, xml_obj, data, default):
-        """Appends attributes to edges or nodes.
+        """Appends attribute data to edges or nodes, and stores type information
+        to be added later. See add_graph_element.
         """
         for k,v in data.items():
-            default_value=default.get(k)
-            obj=self.add_data(make_str(k), type(v), make_str(v),
-                              scope=scope, default=default_value)
-            xml_obj.append(obj)
+            self.attribute_types[(make_str(k), scope)].add(type(v))
+            self.attributes[xml_obj].append([k, v, scope, default.get(k)])
 
     def add_nodes(self, G, graph_element):
-        for node,data in G.nodes_iter(data=True):
+        for node,data in G.nodes(data=True):
             node_element = Element("node", id = make_str(node))
             default=G.graph.get('node_default',{})
             self.add_attributes("node", node_element, data, default)
@@ -309,7 +352,7 @@ class GraphMLWriter(GraphML):
 
     def add_edges(self, G, graph_element):
         if G.is_multigraph():
-            for u,v,key,data in G.edges_iter(data=True,keys=True):
+            for u,v,key,data in G.edges(data=True,keys=True):
                 edge_element = Element("edge",source=make_str(u),
                                        target=make_str(v))
                 default=G.graph.get('edge_default',{})
@@ -318,7 +361,7 @@ class GraphMLWriter(GraphML):
                                     {'key':key}, default)
                 graph_element.append(edge_element)
         else:
-            for u,v,data in G.edges_iter(data=True):
+            for u,v,data in G.edges(data=True):
                 edge_element = Element("edge",source=make_str(u),
                                        target=make_str(v))
                 default=G.graph.get('edge_default',{})
@@ -349,7 +392,18 @@ class GraphMLWriter(GraphML):
         self.add_attributes("graph", graph_element, data, default)
         self.add_nodes(G,graph_element)
         self.add_edges(G,graph_element)
+
+        # self.attributes contains a mapping from XML Objects to a list of
+        # data that needs to be added to them.
+        # We postpone processing of this in order to do type inference/generalization.
+        # See self.attr_type
+        for (xml_obj, data) in self.attributes.items():
+            for (k, v, scope, default) in data:
+                xml_obj.append(self.add_data(make_str(k), self.attr_type(k, scope, v), make_str(v),
+                                             scope, default))
+
         self.xml.append(graph_element)
+
 
     def add_graphs(self, graph_list):
         """
@@ -456,7 +510,7 @@ class GraphMLReader(GraphML):
         node_id = self.node_type(node_xml.get("id"))
         # get data/attributes for node
         data = self.decode_data_elements(graphml_keys, node_xml)
-        G.add_node(node_id, data)
+        G.add_node(node_id, **data)
 
     def add_edge(self, G, edge_element, graphml_keys):
         """Add an edge to the graph.
@@ -505,8 +559,10 @@ class GraphMLReader(GraphML):
             text=data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element))==0:
-                if data_type==bool:
-                    data[data_name] = self.convert_bool[text]
+                if data_type == bool:
+                    # Ignore cases.
+                    # http://docs.oracle.com/javase/6/docs/api/java/lang/Boolean.html#parseBoolean%28java.lang.String%29
+                    data[data_name] = self.convert_bool[text.lower()]
                 else:
                     data[data_name] = data_type(text)
             elif len(list(data_element)) > 0:
@@ -526,10 +582,10 @@ class GraphMLReader(GraphML):
 
                 # check all the diffrent types of edges avaivable in yEd.
                 for e in ['PolyLineEdge', 'SplineEdge', 'QuadCurveEdge', 'BezierEdge', 'ArcEdge']:
-                	edge_label = data_element.find("{%s}%s/{%s}EdgeLabel"%
+                        edge_label = data_element.find("{%s}%s/{%s}EdgeLabel"%
                                                (self.NS_Y, e, (self.NS_Y)))
-                	if edge_label is not None:
-                		break
+                        if edge_label is not None:
+                                break
 
                 if edge_label is not None:
                     data['label'] = edge_label.text

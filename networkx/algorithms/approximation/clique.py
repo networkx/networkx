@@ -81,7 +81,7 @@ def clique_removal(G):
         Approximating maximum independent sets by excluding subgraphs.
         BIT Numerical Mathematics, 32(2), 180–196. Springer.
     """
-    graph = G.copy()
+    graph = G.copy(with_data=False)
     c_i, i_i = ramsey.ramsey_R2(graph)
     cliques = [c_i]
     isets = [i_i]
@@ -92,6 +92,6 @@ def clique_removal(G):
             cliques.append(c_i)
         if i_i:
             isets.append(i_i)
-
-    maxiset = max(isets)
+    # Determine the largest independent set as measured by cardinality.
+    maxiset = max(isets, key=len)
     return maxiset, cliques

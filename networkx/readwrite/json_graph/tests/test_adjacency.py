@@ -31,14 +31,14 @@ class TestAdjacency:
 
     def test_digraph(self):
         G = nx.DiGraph()
-        G.add_path([1,2,3])
+        nx.add_path(G, [1, 2, 3])
         H = adjacency_graph(adjacency_data(G))
         assert_true(H.is_directed())
         nx.is_isomorphic(G,H)
 
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
-        G.add_path([1,2,3])
+        nx.add_path(G, [1, 2, 3])
         H = adjacency_graph(adjacency_data(G))
         assert_true(H.is_directed())
         assert_true(H.is_multigraph())

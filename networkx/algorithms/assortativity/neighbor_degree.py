@@ -13,16 +13,16 @@ __all__ = ["average_neighbor_degree"]
 def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
     # average degree of neighbors
     avg = {}
-    for n,deg in source_degree(nodes,weight=weight).items():
+    for n,deg in source_degree(nodes,weight=weight):
         # normalize but not by zero degree
         if deg == 0:
             deg = 1
         nbrdeg = target_degree(G[n])
         if weight is None:
-            avg[n] = sum(nbrdeg.values())/float(deg)
+            avg[n] = sum(d for n, d in nbrdeg) / float(deg)
         else:
             avg[n] = sum((G[n][nbr].get(weight,1)*d 
-                          for nbr,d in nbrdeg.items()))/float(deg)
+                          for nbr,d in nbrdeg)) / float(deg)
     return avg
 
 def average_neighbor_degree(G, source='out', target='out',
@@ -64,7 +64,6 @@ def average_neighbor_degree(G, source='out', target='out',
         Compute neighbor degree for specified nodes.  The default is
         all nodes in the graph.
 
-
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
        If None, then each edge has weight 1.
@@ -86,7 +85,7 @@ def average_neighbor_degree(G, source='out', target='out',
     {0: 2.0, 1: 1.1666666666666667, 2: 1.25, 3: 2.0}
 
     >>> G=nx.DiGraph()
-    >>> G.add_path([0,1,2,3])
+    >>> nx.add_path(G, [0, 1, 2, 3])
     >>> nx.average_neighbor_degree(G, source='in', target='in')
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
 

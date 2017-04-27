@@ -11,7 +11,7 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See http://en.wikipedia.org/wiki/Shapefile for additional information.
 """
-#    Copyright (C) 2004-2010 by
+#    Copyright (C) 2004-2016 by
 #    Ben Reilly <benwreilly@gmail.com>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -23,7 +23,7 @@ __author__ = """Ben Reilly (benwreilly@gmail.com)"""
 __all__ = ['read_shp', 'write_shp']
 
 
-def read_shp(path):
+def read_shp(path, simplify=True, geom_attrs=True):
     """Generates a networkx.DiGraph from shapefiles. Point geometries are
     translated into nodes, lines into edges. Coordinate tuples are used as
     keys. Attributes are preserved, line geometries are simplified into start
@@ -37,6 +37,22 @@ def read_shp(path):
     ----------
     path : file or string
        File, directory, or filename to read.
+
+    simplify:  bool
+        If True, simplify line geometries to start and end coordinates.
+        If False, and line feature geometry has multiple segments, the
+        non-geometric attributes for that feature will be repeated for each
+        edge comprising that feature.
+
+    geom_attrs: bool
+        If True, include the Wkb, Wkt and Json geometry attributes with
+        each edge.
+
+        NOTE:  if these attributes are available, write_shp will use them
+        to write the geometry.  If nodes store the underlying coordinates for
+        the edge geometry as well (as they do when they are read via
+        this method) and they change, your geomety will be out of sync.
+
 
     Returns
     -------
@@ -67,15 +83,85 @@ def read_shp(path):
             g = f.geometry()
             attributes = dict(zip(fields, flddata))
             attributes["ShpName"] = lyr.GetName()
-            if g.GetGeometryType() == 1:  # point
+            # Note:  Using layer level geometry type
+            if g.GetGeometryType() == ogr.wkbPoint:
                 net.add_node((g.GetPoint_2D(0)), attributes)
-            if g.GetGeometryType() == 2:  # linestring
-                attributes["Wkb"] = g.ExportToWkb()
-                attributes["Wkt"] = g.ExportToWkt()
-                attributes["Json"] = g.ExportToJson()
-                last = g.GetPointCount() - 1
-                net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
+            elif g.GetGeometryType() in (ogr.wkbLineString,
+                                         ogr.wkbMultiLineString):
+                for edge in edges_from_line(g, attributes, simplify,
+                                            geom_attrs):
+                    e1, e2, attr = edge
+                    net.add_edge(e1, e2)
+                    net[e1][e2].update(attr)
+            else:
+                raise ImportError("GeometryType {} not supported".
+                                  format(g.GetGeometryType()))
+
     return net
+
+
+def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
+    """
+    Generate edges for each line in geom
+    Written as a helper for read_shp
+
+    Parameters
+    ----------
+
+    geom:  ogr line geometry
+        To be converted into an edge or edges
+
+    attrs:  dict
+        Attributes to be associated with all geoms
+
+    simplify:  bool
+        If True, simplify the line as in read_shp
+
+    geom_attrs:  bool
+        If True, add geom attributes to edge as in read_shp
+
+
+    Returns
+    -------
+     edges:  generator of edges
+        each edge is a tuple of form
+        (node1_coord, node2_coord, attribute_dict)
+        suitable for expanding into a networkx Graph add_edge call
+    """
+    try:
+        from osgeo import ogr
+    except ImportError:
+        raise ImportError("edges_from_line requires OGR: http://www.gdal.org/")
+
+    if geom.GetGeometryType() == ogr.wkbLineString:
+        if simplify:
+            edge_attrs = attrs.copy()
+            last = geom.GetPointCount() - 1
+            if geom_attrs:
+                edge_attrs["Wkb"] = geom.ExportToWkb()
+                edge_attrs["Wkt"] = geom.ExportToWkt()
+                edge_attrs["Json"] = geom.ExportToJson()
+            yield (geom.GetPoint_2D(0), geom.GetPoint_2D(last), edge_attrs)
+        else:
+            for i in range(0, geom.GetPointCount() - 1):
+                pt1 = geom.GetPoint_2D(i)
+                pt2 = geom.GetPoint_2D(i + 1)
+                edge_attrs = attrs.copy()
+                if geom_attrs:
+                    segment = ogr.Geometry(ogr.wkbLineString)
+                    segment.AddPoint_2D(pt1[0], pt1[1])
+                    segment.AddPoint_2D(pt2[0], pt2[1])
+                    edge_attrs["Wkb"] = segment.ExportToWkb()
+                    edge_attrs["Wkt"] = segment.ExportToWkt()
+                    edge_attrs["Json"] = segment.ExportToJson()
+                    del segment
+                yield (pt1, pt2, edge_attrs)
+
+    elif geom.GetGeometryType() == ogr.wkbMultiLineString:
+        for i in range(geom.GetGeometryCount()):
+            geom_i = geom.GetGeometryRef(i)
+            for edge in edges_from_line(geom_i, attrs, simplify, geom_attrs):
+                yield edge
 
 
 def write_shp(G, outdir):

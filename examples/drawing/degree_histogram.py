@@ -1,29 +1,35 @@
 #!/usr/bin/env python
 """
-Random graph from given degree sequence.
-Draw degree rank plot and graph with matplotlib.
+Draw degree histogram with matplotlib.
+Random graph shown as inset
 """
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
-import networkx as nx
+import collections
 import matplotlib.pyplot as plt
-G = nx.gnp_random_graph(100,0.02)
+import networkx as nx
 
-degree_sequence=sorted(nx.degree(G).values(),reverse=True) # degree sequence
+G = nx.gnp_random_graph(100, 0.02)
+
+degree_sequence=sorted([d for n,d in G.degree()], reverse=True) # degree sequence
 #print "Degree sequence", degree_sequence
-dmax=max(degree_sequence)
+degreeCount=collections.Counter(degree_sequence)
+deg, cnt = zip(*degreeCount.items())
 
-plt.loglog(degree_sequence,'b-',marker='o')
-plt.title("Degree rank plot")
-plt.ylabel("degree")
-plt.xlabel("rank")
+fig, ax = plt.subplots()
+plt.bar(deg, cnt, width=0.80, color='b')
 
-# draw graph in inset 
-plt.axes([0.45,0.45,0.45,0.45])
+plt.title("Degree Histogram")
+plt.ylabel("Count")
+plt.xlabel("Degree")
+ax.set_xticks([d+0.4 for d in deg])
+ax.set_xticklabels(deg)
+
+# draw graph in inset
+plt.axes([0.4, 0.4, 0.5, 0.5])
 Gcc=sorted(nx.connected_component_subgraphs(G), key = len, reverse=True)[0]
-pos=nx.spring_layout(Gcc)
+pos=nx.spring_layout(G)
 plt.axis('off')
-nx.draw_networkx_nodes(Gcc,pos,node_size=20)
-nx.draw_networkx_edges(Gcc,pos,alpha=0.4)
+nx.draw_networkx_nodes(G, pos, node_size=20)
+nx.draw_networkx_edges(G, pos, alpha=0.4)
 
 plt.savefig("degree_histogram.png")
 plt.show()

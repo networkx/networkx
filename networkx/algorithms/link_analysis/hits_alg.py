@@ -42,6 +42,13 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
        Two dictionaries keyed by node containing the hub and authority
        values.
 
+    Raises
+    ------
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     Examples
     --------
     >>> G=nx.path_graph(4)
@@ -82,8 +89,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
         s=1.0/sum(h.values())
         for k in h:
             h[k]*=s
-    i=0
-    while True: # power iteration: make up to max_iter iterations
+    for _ in range(max_iter):  # power iteration: make up to max_iter iterations
         hlast=h
         h=dict.fromkeys(hlast.keys(),0)
         a=dict.fromkeys(hlast.keys(),0)
@@ -106,10 +112,8 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
         err=sum([abs(h[n]-hlast[n]) for n in h])
         if err < tol:
             break
-        if i>max_iter:
-            raise NetworkXError(\
-            "HITS: power iteration failed to converge in %d iterations."%(i+1))
-        i+=1
+    else:
+        raise nx.PowerIterationFailedConvergence(max_iter)
     if normalized:
         s = 1.0/sum(a.values())
         for n in a:
@@ -137,7 +141,7 @@ def hits_numpy(G,normalized=True):
     Hubs estimates the node value based on outgoing links.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph
 
@@ -181,11 +185,11 @@ def hits_numpy(G,normalized=True):
             "hits_numpy() requires NumPy: http://scipy.org/")
     if len(G) == 0:
         return {},{}
-    H=nx.hub_matrix(G,G.nodes())
+    H = nx.hub_matrix(G, list(G))
     e,ev=np.linalg.eig(H)
     m=e.argsort()[-1] # index of maximum eigenvalue
     h=np.array(ev[:,m]).flatten()
-    A=nx.authority_matrix(G,G.nodes())
+    A=nx.authority_matrix(G, list(G))
     e,ev=np.linalg.eig(A)
     m=e.argsort()[-1] # index of maximum eigenvalue
     a=np.array(ev[:,m]).flatten()
@@ -195,8 +199,8 @@ def hits_numpy(G,normalized=True):
     else:
         h = h/h.max()
         a = a/a.max()
-    hubs=dict(zip(G.nodes(),map(float,h)))
-    authorities=dict(zip(G.nodes(),map(float,a)))
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
     return hubs,authorities
 
 def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
@@ -207,7 +211,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     Hubs estimates the node value based on outgoing links.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph
 
@@ -247,6 +251,13 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     algorithm does not check if the input graph is directed and will
     execute on undirected graphs.
 
+    Raises
+    ------
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     References
     ----------
     .. [1] A. Langville and C. Meyer,
@@ -266,7 +277,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
             "hits_scipy() requires SciPy: http://scipy.org/")
     if len(G) == 0:
         return {},{}
-    M=nx.to_scipy_sparse_matrix(G,nodelist=G.nodes())
+    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
     (n,m)=M.shape # should be square
     A=M.T*M # authority matrix
     x=scipy.ones((n,1))/n  # initial guess
@@ -281,8 +292,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
         if err < tol:
             break
         if i>max_iter:
-            raise NetworkXError(\
-            "HITS: power iteration failed to converge in %d iterations."%(i+1))
+            raise nx.PowerIterationFailedConvergence(max_iter)
         i+=1
 
     a=np.asarray(x).flatten()
@@ -291,8 +301,8 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     if normalized:
         h = h/h.sum()
         a = a/a.sum()
-    hubs=dict(zip(G.nodes(),map(float,h)))
-    authorities=dict(zip(G.nodes(),map(float,a)))
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
     return hubs,authorities
 
 # fixture for nose tests

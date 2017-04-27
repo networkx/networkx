@@ -4,7 +4,7 @@ Create a directed graph, allowing multiple edges and self loops, from
 a unix mailbox.  The nodes are email addresses with links
 that point from the sender to the recievers.  The edge data
 is a Python email.Message object which contains all of
-the email message data. 
+the email message data.
 
 This example shows the power of XDiGraph to hold edge data
 of arbitrary Python objects (in this case a list of email messages).
@@ -15,8 +15,9 @@ You can load your own mailbox by naming it on the command line, eg
 python unixemail.py /var/spool/mail/username
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2005 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2005-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -42,7 +43,7 @@ def msgfactory(fp):
 if __name__ == '__main__':
 
     import networkx as nx
-    try: 
+    try:
         import matplotlib.pyplot as plt
     except:
         pass
@@ -56,7 +57,7 @@ if __name__ == '__main__':
 
     G=nx.MultiDiGraph() # create empty graph
 
-    # parse each messages and build graph 
+    # parse each messages and build graph
     for msg in mbox: # msg is python email.Message.Message object
         (source_name,source_addr) = parseaddr(msg['From']) # sender
         # get all recipients
@@ -68,12 +69,12 @@ if __name__ == '__main__':
         all_recipients = getaddresses(tos + ccs + resent_tos + resent_ccs)
         # now add the edges for this mail message
         for (target_name,target_addr) in all_recipients:
-            G.add_edge(source_addr,target_addr,message=msg)  
+            G.add_edge(source_addr,target_addr,message=msg)
 
     # print edges with message subject
-    for (u,v,d) in G.edges_iter(data=True):
+    for (u,v,d) in G.edges(data=True):
         print("From: %s To: %s Subject: %s"%(u,v,d['message']["Subject"]))
-    
+
 
     try: # draw
         pos=nx.spring_layout(G,iterations=10)

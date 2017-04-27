@@ -9,8 +9,9 @@ Requires Internet connection to download the URL
 http://www-personal.umich.edu/~mejn/netdata/football.zip
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2007 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2007-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -41,5 +42,5 @@ G=parse_gml(gml) # parse gml data
 
 print(txt)
 # print degree for each team - number of games
-for n,d in G.degree_iter():
+for n,d in G.degree():
     print('%s %d' % (n, d))

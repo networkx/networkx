@@ -29,14 +29,14 @@ help:
 
 
 clean:
-	-rm -rf build/* source/reference/generated/* source/examples/* source/static/examples doc/source/*.pdf doc/source/*.zip 
+	-rm -rf build/* source/reference/generated/* source/examples/* source/static/examples/* doc/source/*.pdf doc/source/*.zip 
 	-rm -rf ../examples/*/*.png
 
 generate: build/generate-stamp
 build/generate-stamp: $(wildcard source/reference/*.rst)
 	mkdir -p build
-	./make_gallery.py 
-	./make_examples_rst.py ../examples source
+	python make_gallery.py 
+	python make_examples_rst.py ../examples source
 	touch build/generate-stamp
 
 
@@ -45,17 +45,10 @@ dist: html
 	make -C build/latex all-pdf
 	-rm -rf build/dist
 	(cd build/html; cp -r . ../../build/dist)
-	-rm -f build/dist/_downloads/*
-	(cd build/html && zip -9r ../dist/_downloads/networkx-documentation.zip .)
-	cp build/latex/*.pdf build/dist/_downloads
-#	(cd build/dist && ln -s _downloads/* .)
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
 
 html: generate
-	touch source/networkx_tutorial.pdf	
-	touch source/networkx_reference.pdf	
-	touch source/networkx-documentation.zip
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."

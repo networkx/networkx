@@ -1,30 +1,30 @@
-"""
-********
-Matching
-********
-"""
-#    Copyright (C) 2004-2008 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#   Copyright (C) 2011 by
+# Copyright 2016 NetworkX developers.
+# Copyright (C) 2004-2016 by
+#   Aric Hagberg <hagberg@lanl.gov>
+#   Dan Schult <dschult@colgate.edu>
+#   Pieter Swart <swart@lanl.gov>
+#
+# Copyright (C) 2008 by
+#   Joris van Rantwijk.
+#
+# Copyright (C) 2011 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
+#
+# All rights reserved.
+# BSD license.
+"""Functions for computing and verifying matchings in a graph."""
+from itertools import combinations
 from itertools import repeat
-__author__ = """\n""".join(['Joris van Rantwijk',
-                            'Nicholas Mancuso (nick.mancuso@gmail.com)'])
 
-__all__ = ['max_weight_matching', 'maximal_matching']
+__all__ = ['is_matching', 'is_maximal_matching', 'max_weight_matching',
+           'maximal_matching']
 
 
 def maximal_matching(G):
-    r"""Find a maximal cardinality matching in the graph.
+    r"""Find a maximal matching in the graph.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
+    A maximal matching cannot add more edges and still be a matching.
 
     Parameters
     ----------
@@ -41,33 +41,134 @@ def maximal_matching(G):
     The algorithm greedily selects a maximal matching M of the graph G
     (i.e. no superset of M exists). It runs in `O(|E|)` time.
     """
-    matching = set([])
-    edges = set([])
-    for u,v in G.edges_iter():
+    matching = set()
+    nodes = set()
+    for u, v in G.edges():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
-        if (u,v) not in edges and (v,u) not in edges:
-            matching.add((u,v))
-            edges |= set(G.edges(u))
-            edges |= set(G.edges(v))
+        if u not in nodes and v not in nodes and u != v:
+            matching.add((u, v))
+            nodes.add(u)
+            nodes.add(v)
     return matching
 
 
-def max_weight_matching(G, maxcardinality=False):
+def matching_dict_to_set(matching):
+    """Converts a dictionary representing a matching (as returned by
+    :func:`max_weight_matching`) to a set representing a matching (as
+    returned by :func:`maximal_matching`).
+
+    In the definition of maximal matching adopted by NetworkX,
+    self-loops are not allowed, so the provided dictionary is expected
+    to never have any mapping from a key to itself. However, the
+    dictionary is expected to have mirrored key/value pairs, for
+    example, key ``u`` with value ``v`` and key ``v`` with value ``u``.
+
+    """
+    # Need to compensate for the fact that both pairs (u, v) and (v, u)
+    # appear in `matching.items()`, so we use a set of sets. This way,
+    # only the (frozen)set `{u, v}` appears as an element in the
+    # returned set.
+    return set(map(frozenset, matching.items()))
+
+
+def is_matching(G, matching):
+    """Decides whether the given set or dictionary represents a valid
+    matching in ``G``.
+
+    A *matching* in a graph is a set of edges in which no two distinct
+    edges share a common endpoint.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    matching : dict or set
+        A dictionary or set representing a matching. If a dictionary, it
+        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        edge ``(u, v)`` in the matching. If a set, it must have elements
+        of the form ``(u, v)``, where ``(u, v)`` is an edge in the
+        matching.
+
+    Returns
+    -------
+    bool
+        Whether the given set or dictionary represents a valid matching
+        in the graph.
+
+    """
+    if isinstance(matching, dict):
+        matching = matching_dict_to_set(matching)
+    # TODO This is parallelizable.
+    return all(len(set(e1) & set(e2)) == 0
+               for e1, e2 in combinations(matching, 2))
+
+
+def is_maximal_matching(G, matching):
+    """Decides whether the given set or dictionary represents a valid
+    maximal matching in ``G``.
+
+    A *maximal matching* in a graph is a matching in which adding any
+    edge would cause the set to no longer be a valid matching.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    matching : dict or set
+        A dictionary or set representing a matching. If a dictionary, it
+        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        edge ``(u, v)`` in the matching. If a set, it must have elements
+        of the form ``(u, v)``, where ``(u, v)`` is an edge in the
+        matching.
+
+    Returns
+    -------
+    bool
+        Whether the given set or dictionary represents a valid maximal
+        matching in the graph.
+
+    """
+    if isinstance(matching, dict):
+        matching = matching_dict_to_set(matching)
+    # If the given set is not a matching, then it is not a maximal matching.
+    if not is_matching(G, matching):
+        return False
+    # A matching is maximal if adding any unmatched edge to it causes
+    # the resulting set to *not* be a valid matching.
+    #
+    # HACK Since the `matching_dict_to_set` function returns a set of
+    # sets, we need to convert the list of edges to a set of sets in
+    # order for the set difference function to work. Ideally, we would
+    # just be able to do `set(G.edges()) - matching`.
+    all_edges = set(map(frozenset, G.edges()))
+    matched_edges = set(map(frozenset, matching))
+    unmatched_edges = all_edges - matched_edges
+    # TODO This is parallelizable.
+    return all(not is_matching(G, matching | {e}) for e in unmatched_edges)
+
+
+def max_weight_matching(G, maxcardinality=False, weight='weight'):
     """Compute a maximum-weighted matching of G.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
     The weight of a matching is the sum of the weights of its edges.
+    A maximal matching cannot add more edges and still be a matching.
+    The cardinality of a matching is the number of matched edges.
 
     Parameters
     ----------
     G : NetworkX graph
       Undirected graph
 
-    maxcardinality: bool, optional
+    maxcardinality: bool, optional (default=False)
        If maxcardinality is True, compute the maximum-cardinality matching
        with maximum weight among all maximum-cardinality matchings.
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
+       If key not found, uses 1 as weight.
+
 
     Returns
     -------
@@ -78,8 +179,8 @@ def max_weight_matching(G, maxcardinality=False):
 
 
     Notes
-    ------
-    If G has edges with 'weight' attribute the edge data are used as
+    -----
+    If G has edges with weight attributes the edge data are used as
     weight values else the weights are assumed to be 1.
 
     This function takes time O(number_of_nodes ** 3).
@@ -92,6 +193,9 @@ def max_weight_matching(G, maxcardinality=False):
     This method is based on the "blossom" method for finding augmenting
     paths and the "primal-dual" method for finding a matching of maximum
     weight, both methods invented by Jack Edmonds [1]_.
+
+    Bipartite graphs can also be matched using the functions present in
+    :mod:`networkx.algorithms.bipartite.matching`.
 
     References
     ----------
@@ -119,7 +223,7 @@ def max_weight_matching(G, maxcardinality=False):
     class Blossom:
         """Representation of a non-trivial blossom or sub-blossom."""
 
-        __slots__ = [ 'childs', 'edges', 'mybestedges' ]
+        __slots__ = ['childs', 'edges', 'mybestedges']
 
         # b.childs is an ordered list of b's sub-blossoms, starting with
         # the base and going round the blossom.
@@ -143,15 +247,15 @@ def max_weight_matching(G, maxcardinality=False):
                     yield t
 
     # Get a list of vertices.
-    gnodes = G.nodes()
+    gnodes = list(G)
     if not gnodes:
-        return { }  # don't bother with empty graphs
+        return {}  # don't bother with empty graphs
 
     # Find the maximum edge weight.
     maxweight = 0
     allinteger = True
-    for i,j,d in G.edges_iter(data=True):
-        wt=d.get('weight',1)
+    for i, j, d in G.edges(data=True):
+        wt = d.get(weight, 1)
         if i != j and wt > maxweight:
             maxweight = wt
         allinteger = allinteger and (str(type(wt)).split("'")[1]
@@ -160,7 +264,7 @@ def max_weight_matching(G, maxcardinality=False):
     # If v is a matched vertex, mate[v] is its partner vertex.
     # If v is a single vertex, v does not occur as a key in mate.
     # Initially all vertices are single; updated during augmentation.
-    mate = { }
+    mate = {}
 
     # If b is a top-level blossom,
     # label.get(b) is None if b is unlabeled (free),
@@ -171,7 +275,7 @@ def max_weight_matching(G, maxcardinality=False):
     # If v is a vertex inside a T-blossom, label[v] is 2 iff v is reachable
     # from an S-vertex outside the blossom.
     # Labels are assigned during a stage and reset after each augmentation.
-    label = { }
+    label = {}
 
     # If b is a labeled top-level blossom,
     # labeledge[b] = (v, w) is the edge through which b obtained its label
@@ -179,7 +283,7 @@ def max_weight_matching(G, maxcardinality=False):
     # If w is a vertex inside a T-blossom and label[w] == 2,
     # labeledge[w] = (v, w) is an edge through which w is reachable from
     # outside the blossom.
-    labeledge = { }
+    labeledge = {}
 
     # If v is a vertex, inblossom[v] is the top-level blossom to which v
     # belongs.
@@ -204,7 +308,7 @@ def max_weight_matching(G, maxcardinality=False):
     # bestedge[b] = (v, w) is the least-slack edge to a different S-blossom
     # (v inside b), or None if there is no such edge.
     # This is used for efficient computation of delta2 and delta3.
-    bestedge = { }
+    bestedge = {}
 
     # If v is a vertex,
     # dualvar[v] = 2 * u(v) where u(v) is the v's variable in the dual
@@ -216,19 +320,19 @@ def max_weight_matching(G, maxcardinality=False):
     # If b is a non-trivial blossom,
     # blossomdual[b] = z(b) where z(b) is b's variable in the dual
     # optimization problem.
-    blossomdual = { }
+    blossomdual = {}
 
     # If (v, w) in allowedge or (w, v) in allowedg, then the edge
     # (v, w) is known to have zero slack in the optimization problem;
     # otherwise the edge may or may not have zero slack.
-    allowedge = { }
+    allowedge = {}
 
     # Queue of newly discovered S-vertices.
-    queue = [ ]
+    queue = []
 
     # Return 2 * slack of edge (v, w) (does not work inside blossoms).
     def slack(v, w):
-        return dualvar[v] + dualvar[w] - 2 * G[v][w].get('weight',1)
+        return dualvar[v] + dualvar[w] - 2 * G[v][w].get(weight, 1)
 
     # Assign label t to the top-level blossom containing vertex w,
     # coming through an edge from vertex v.
@@ -259,7 +363,7 @@ def max_weight_matching(G, maxcardinality=False):
     # or NoNode if an augmenting path was found.
     def scanBlossom(v, w):
         # Trace back from v and w, placing breadcrumbs as we go.
-        path = [ ]
+        path = []
         base = NoNode
         while v is not NoNode:
             # Look for a breadcrumb in v's blossom or put a new breadcrumb.
@@ -285,7 +389,7 @@ def max_weight_matching(G, maxcardinality=False):
             # Swap v and w so that we alternate between both paths.
             if w is not NoNode:
                 v, w = w, v
-       # Remove breadcrumbs.
+        # Remove breadcrumbs.
         for b in path:
             label[b] = 1
         # Return base vertex, if we found one.
@@ -304,15 +408,16 @@ def max_weight_matching(G, maxcardinality=False):
         blossomparent[b] = None
         blossomparent[bb] = b
         # Make list of sub-blossoms and their interconnecting edge endpoints.
-        b.childs = path = [ ]
-        b.edges  = edgs = [ (v, w) ]
+        b.childs = path = []
+        b.edges = edgs = [(v, w)]
         # Trace back from v to base.
         while bv != bb:
             # Add bv to the new blossom.
             blossomparent[bv] = b
             path.append(bv)
             edgs.append(labeledge[bv])
-            assert label[bv] == 2 or (label[bv] == 1 and labeledge[bv][0] == mate[blossombase[bv]])
+            assert label[bv] == 2 or (label[bv] == 1 and labeledge[
+                                      bv][0] == mate[blossombase[bv]])
             # Trace one step back.
             v = labeledge[bv][0]
             bv = inblossom[v]
@@ -326,7 +431,8 @@ def max_weight_matching(G, maxcardinality=False):
             blossomparent[bw] = b
             path.append(bw)
             edgs.append((labeledge[bw][1], labeledge[bw][0]))
-            assert label[bw] == 2 or (label[bw] == 1 and labeledge[bw][0] == mate[blossombase[bw]])
+            assert label[bw] == 2 or (label[bw] == 1 and labeledge[
+                                      bw][0] == mate[blossombase[bw]])
             # Trace one step back.
             w = labeledge[bw][0]
             bw = inblossom[w]
@@ -344,7 +450,7 @@ def max_weight_matching(G, maxcardinality=False):
                 queue.append(v)
             inblossom[v] = b
         # Compute b.mybestedges.
-        bestedgeto = { }
+        bestedgeto = {}
         for bv in path:
             if isinstance(bv, Blossom):
                 if bv.mybestedges is not None:
@@ -355,14 +461,14 @@ def max_weight_matching(G, maxcardinality=False):
                 else:
                     # This subblossom does not have a list of least-slack
                     # edges; get the information from the vertices.
-                    nblist = [ (v, w)
-                                for v in bv.leaves()
-                                for w in G.neighbors_iter(v)
-                                if v != w ]
+                    nblist = [(v, w)
+                              for v in bv.leaves()
+                              for w in G.neighbors(v)
+                              if v != w]
             else:
-                nblist = [ (bv, w)
-                           for w in G.neighbors_iter(bv)
-                           if bv != w ]
+                nblist = [(bv, w)
+                          for w in G.neighbors(bv)
+                          if bv != w]
             for k in nblist:
                 (i, j) = k
                 if inblossom[j] == b:
@@ -422,9 +528,9 @@ def max_weight_matching(G, maxcardinality=False):
             while j != 0:
                 # Relabel the T-sub-blossom.
                 if jstep == 1:
-                    p, q  = b.edges[j]
+                    p, q = b.edges[j]
                 else:
-                    q, p = b.edges[j-1]
+                    q, p = b.edges[j - 1]
                 label[w] = None
                 label[q] = None
                 assignLabel(w, 2, v)
@@ -434,7 +540,7 @@ def max_weight_matching(G, maxcardinality=False):
                 if jstep == 1:
                     v, w = b.edges[j]
                 else:
-                    w, v = b.edges[j-1]
+                    w, v = b.edges[j - 1]
                 # Step to the next T-sub-blossom.
                 allowedge[(v, w)] = allowedge[(w, v)] = True
                 j += jstep
@@ -480,7 +586,8 @@ def max_weight_matching(G, maxcardinality=False):
         del blossomdual[b]
 
     # Swap matched/unmatched edges over an alternating path through blossom b
-    # between vertex v and the base vertex. Keep blossom bookkeeping consistent.
+    # between vertex v and the base vertex. Keep blossom bookkeeping
+    # consistent.
     def augmentBlossom(b, v):
         # Bubble up through the blossom tree from vertex v to an immediate
         # sub-blossom of b.
@@ -507,7 +614,7 @@ def max_weight_matching(G, maxcardinality=False):
             if jstep == 1:
                 w, x = b.edges[j]
             else:
-                x, w = b.edges[j-1]
+                x, w = b.edges[j - 1]
             if isinstance(t, Blossom):
                 augmentBlossom(t, w)
             # Step to the next sub-blossom and augment it recursively.
@@ -520,7 +627,7 @@ def max_weight_matching(G, maxcardinality=False):
             mate[x] = w
         # Rotate the list of sub-blossoms to put the new base at the front.
         b.childs = b.childs[i:] + b.childs[:i]
-        b.edges  = b.edges[i:]  + b.edges[:i]
+        b.edges = b.edges[i:] + b.edges[:i]
         blossombase[b] = blossombase[b.childs[0]]
         assert blossombase[b] == v
 
@@ -534,7 +641,9 @@ def max_weight_matching(G, maxcardinality=False):
             while 1:
                 bs = inblossom[s]
                 assert label[bs] == 1
-                assert (labeledge[bs] is None and blossombase[bs] not in mate) or (labeledge[bs][0] == mate[blossombase[bs]])
+                assert (
+                        labeledge[bs] is None and blossombase[bs] not in mate)\
+                    or (labeledge[bs][0] == mate[blossombase[bs]])
                 # Augment through the S-blossom from s to base.
                 if isinstance(bs, Blossom):
                     augmentBlossom(bs, s)
@@ -569,13 +678,13 @@ def max_weight_matching(G, maxcardinality=False):
         assert len(blossomdual) == 0 or min(blossomdual.values()) >= 0
         # 0. all edges have non-negative slack and
         # 1. all matched edges have zero slack;
-        for i,j,d in G.edges_iter(data=True):
-            wt=d.get('weight',1)
+        for i, j, d in G.edges(data=True):
+            wt = d.get(weight, 1)
             if i == j:
-                continue # ignore self-loops
+                continue  # ignore self-loops
             s = dualvar[i] + dualvar[j] - 2 * wt
-            iblossoms = [ i ]
-            jblossoms = [ j ]
+            iblossoms = [i]
+            jblossoms = [j]
             while blossomparent[iblossoms[-1]] is not None:
                 iblossoms.append(blossomparent[iblossoms[-1]])
             while blossomparent[jblossoms[-1]] is not None:
@@ -622,13 +731,12 @@ def max_weight_matching(G, maxcardinality=False):
         allowedge.clear()
 
         # Make queue empty.
-        queue[:] = [ ]
+        queue[:] = []
 
         # Label single blossoms/vertices with S and put them in the queue.
         for v in gnodes:
             if (v not in mate) and label.get(inblossom[v]) is None:
                 assignLabel(v, 1, None)
-
 
         # Loop until we succeed in augmenting the matching.
         augmented = 0
@@ -650,9 +758,9 @@ def max_weight_matching(G, maxcardinality=False):
                 assert label[inblossom[v]] == 1
 
                 # Scan its neighbours:
-                for w in G.neighbors_iter(v):
+                for w in G.neighbors(v):
                     if w == v:
-                        continue # ignore self-loops
+                        continue  # ignore self-loops
                     # w is a neighbour to v
                     bv = inblossom[v]
                     bw = inblossom[w]
@@ -695,13 +803,15 @@ def max_weight_matching(G, maxcardinality=False):
                     elif label.get(bw) == 1:
                         # keep track of the least-slack non-allowable edge to
                         # a different S-blossom.
-                        if bestedge.get(bv) is None or kslack < slack(*bestedge[bv]):
+                        if bestedge.get(bv) is None or \
+                         kslack < slack(*bestedge[bv]):
                             bestedge[bv] = (v, w)
                     elif label.get(w) is None:
                         # w is a free vertex (or an unreached vertex inside
                         # a T-blossom) but we can not reach it yet;
                         # keep track of the least-slack edge that reaches w.
-                        if bestedge.get(w) is None or kslack < slack(*bestedge[w]):
+                        if bestedge.get(w) is None or \
+                         kslack < slack(*bestedge[w]):
                             bestedge[w] = (v, w)
 
             if augmented:
@@ -721,8 +831,9 @@ def max_weight_matching(G, maxcardinality=False):
 
             # Compute delta2: the minimum slack on any edge between
             # an S-vertex and a free vertex.
-            for v in G.nodes_iter():
-                if label.get(inblossom[v]) is None and bestedge.get(v) is not None:
+            for v in G.nodes():
+                if label.get(inblossom[v]) is None and \
+                 bestedge.get(v) is not None:
                     d = slack(*bestedge[v])
                     if deltatype == -1 or d < delta:
                         delta = d
@@ -732,8 +843,8 @@ def max_weight_matching(G, maxcardinality=False):
             # Compute delta3: half the minimum slack on any edge between
             # a pair of S-blossoms.
             for b in blossomparent:
-                if ( blossomparent[b] is None and label.get(b) == 1 and
-                     bestedge.get(b) is not None ):
+                if (blossomparent[b] is None and label.get(b) == 1 and
+                        bestedge.get(b) is not None):
                     kslack = slack(*bestedge[b])
                     if allinteger:
                         assert (kslack % 2) == 0
@@ -747,8 +858,8 @@ def max_weight_matching(G, maxcardinality=False):
 
             # Compute delta4: minimum z variable of any T-blossom.
             for b in blossomdual:
-                if ( blossomparent[b] is None and label.get(b) == 2 and
-                     (deltatype == -1 or blossomdual[b] < delta) ):
+                if (blossomparent[b] is None and label.get(b) == 2 and
+                        (deltatype == -1 or blossomdual[b] < delta)):
                     delta = blossomdual[b]
                     deltatype = 4
                     deltablossom = b
@@ -811,9 +922,9 @@ def max_weight_matching(G, maxcardinality=False):
         # End of a stage; expand all S-blossoms which have zero dual.
         for b in list(blossomdual.keys()):
             if b not in blossomdual:
-                continue # already expanded
-            if ( blossomparent[b] is None and label.get(b) == 1 and
-                 blossomdual[b] == 0 ):
+                continue  # already expanded
+            if (blossomparent[b] is None and label.get(b) == 1 and
+                    blossomdual[b] == 0):
                 expandBlossom(b, True)
 
     # Verify that we reached the optimum solution (only for integer weights).
@@ -821,3 +932,4 @@ def max_weight_matching(G, maxcardinality=False):
         verifyOptimum()
 
     return mate
+

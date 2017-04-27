@@ -8,20 +8,45 @@ can be accessed, for example, as
 >>> networkx.utils.is_string_like('spam')
 True
 """
-#    Copyright (C) 2004-2011 by
+# Authors:      Aric Hagberg (hagberg@lanl.gov),
+#               Dan Schult(dschult@colgate.edu),
+#               Ben Edwards(bedwards@cs.unm.edu)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from collections import defaultdict
+from collections import deque
 import sys
 import uuid
+from itertools import tee, chain
 
-import networkx as nx
+# itertools.accumulate is only available on Python 3.2 or later.
+#
+# Once support for Python versions less than 3.2 is dropped, this code should
+# be removed.
+try:
+    from itertools import accumulate
+except ImportError:
+    import operator
 
-__author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Ben Edwards(bedwards@cs.unm.edu)'])
+    # The code for this function is from the Python 3.5 documentation,
+    # distributed under the PSF license:
+    # <https://docs.python.org/3.5/library/itertools.html#itertools.accumulate>
+    def accumulate(iterable, func=operator.add):
+        it = iter(iterable)
+        try:
+            total = next(it)
+        except StopIteration:
+            return
+        yield total
+        for element in it:
+            total = func(total, element)
+            yield total
+
 ### some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
@@ -84,17 +109,6 @@ else:
         """Return the string representation of t."""
         return str(x)
 
-def cumulative_sum(numbers):
-    """Yield cumulative sum of numbers.
-
-    >>> import networkx.utils as utils
-    >>> list(utils.cumulative_sum([1,2,3,4]))
-    [1, 3, 6, 10]
-    """
-    csum = 0
-    for n in numbers:
-        csum += n
-        yield csum
 
 def generate_unique_node():
     """ Generate a unique node label."""
@@ -164,3 +178,95 @@ def dict_to_numpy_array1(d,mapping=None):
         i = mapping[k1]
         a[i] = d[k1]
     return a
+
+def is_iterator(obj):
+    """Returns True if and only if the given object is an iterator
+    object.
+
+    """
+    has_next_attr = hasattr(obj, '__next__') or hasattr(obj, 'next')
+    return iter(obj) is obj and has_next_attr
+
+
+def arbitrary_element(iterable):
+    """Returns an arbitrary element of `iterable` without removing it.
+
+    This is most useful for "peeking" at an arbitrary element of a set,
+    but can be used for any list, dictionary, etc., as well::
+
+        >>> arbitrary_element({3, 2, 1})
+        1
+        >>> arbitrary_element('hello')
+        'h'
+
+    This function raises a :exc:`ValueError` if `iterable` is an
+    iterator (because the current implementation of this function would
+    consume an element from the iterator)::
+
+        >>> iterator = iter([1, 2, 3])
+        >>> arbitrary_element(iterator)
+        Traceback (most recent call last):
+            ...
+        ValueError: cannot return an arbitrary item from an iterator
+
+    """
+    if is_iterator(iterable):
+        raise ValueError('cannot return an arbitrary item from an iterator')
+    # Another possible implementation is ``for x in iterable: return x``.
+    return next(iter(iterable))
+
+
+# Recipe from the itertools documentation.
+def consume(iterator):
+    "Consume the iterator entirely."
+    # Feed the entire iterator into a zero-length deque.
+    deque(iterator, maxlen=0)
+
+
+# Recipe from the itertools documentation.
+def pairwise(iterable, cyclic=False):
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    first = next(b, None)
+    if cyclic is True:
+        return zip(a, chain(b, (first,)))
+    return zip(a, b)
+
+
+def groups(many_to_one):
+    """Converts a many-to-one mapping into a one-to-many mapping.
+
+    `many_to_one` must be a dictionary whose keys and values are all
+    :term:`hashable`.
+
+    The return value is a dictionary mapping values from `many_to_one`
+    to sets of keys from `many_to_one` that have that value.
+
+    For example::
+
+        >>> from networkx.utils import groups
+        >>> many_to_one = {'a': 1, 'b': 1, 'c': 2, 'd': 3, 'e': 3}
+        >>> groups(many_to_one)  # doctest: +SKIP
+        {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
+
+    """
+    one_to_many = defaultdict(set)
+    for v, k in many_to_one.items():
+        one_to_many[k].add(v)
+    return dict(one_to_many)
+
+
+def to_tuple(x):
+    """Converts lists to tuples.
+
+    For example::
+
+        >>> from networkx.utils import to_tuple
+        >>> a_list = [1, 2, [1, 4]]
+        >>> to_tuple(a_list)
+        (1, 2, (1, 4))
+
+    """
+    if not isinstance(x, (tuple, list)):
+        return x
+    return tuple(map(to_tuple, x))

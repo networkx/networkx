@@ -52,7 +52,7 @@ class TestCliques:
         assert_equal(nx.number_of_cliques(G),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
-        assert_equal(nx.number_of_cliques(G, nodes=G.nodes()),
+        assert_equal(nx.number_of_cliques(G, nodes=list(G)),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
         assert_equal(nx.number_of_cliques(G, nodes=[2, 3, 4]),
@@ -60,7 +60,7 @@ class TestCliques:
         assert_equal(nx.number_of_cliques(G, cliques=self.cl),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
-        assert_equal(nx.number_of_cliques(G, G.nodes(), cliques=self.cl),
+        assert_equal(nx.number_of_cliques(G, list(G), cliques=self.cl),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
 
@@ -99,12 +99,30 @@ class TestCliques:
     def test_make_clique_bipartite(self):
         G = self.G
         B = nx.make_clique_bipartite(G)
-        assert_equal(sorted(B.nodes()),
+        assert_equal(sorted(B),
                      [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-        H = nx.project_down(B)
+        # Project onto the nodes of the original graph.
+        H = nx.project(B, range(1, 12))
         assert_equal(H.adj, G.adj)
-        H1 = nx.project_up(B)
-        assert_equal(H1.nodes(), [1, 2, 3, 4, 5])
+        # Project onto the nodes representing the cliques.
+        H1 = nx.project(B, range(-5, 0))
+        # Relabel the negative numbers as positive ones.
+        H1 = nx.relabel_nodes(H1, {-v: v for v in range(1, 6)})
+        assert_equal(sorted(H1), [1, 2, 3, 4, 5])
+
+    def test_make_max_clique_graph(self):
+        """Tests that the maximal clique graph is the same as the bipartite
+        clique graph after being projected onto the nodes representing the
+        cliques.
+
+        """
+        G = self.G
+        B = nx.make_clique_bipartite(G)
+        # Project onto the nodes representing the cliques.
+        H1 = nx.project(B, range(-5, 0))
+        # Relabel the negative numbers as nonnegative ones, starting at
+        # 0.
+        H1 = nx.relabel_nodes(H1, {-v: v - 1 for v in range(1, 6)})
         H2 = nx.make_max_clique_graph(G)
         assert_equal(H1.adj, H2.adj)
 

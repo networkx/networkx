@@ -5,9 +5,13 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import edmonds_karp, preflow_push, shortest_augmenting_path
+from networkx.algorithms.flow import boykov_kolmogorov
+from networkx.algorithms.flow import edmonds_karp
+from networkx.algorithms.flow import preflow_push
+from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.algorithms.flow import dinitz
 
-flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
+flow_funcs = [boykov_kolmogorov, dinitz, edmonds_karp, preflow_push, shortest_augmenting_path]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
 flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
 interface_funcs = sum([max_min_funcs, flow_value_funcs], [])
@@ -195,6 +199,28 @@ class TestMaxflowMinCutCommon:
              'y': {}}
 
         compare_flows_and_cuts(G, 'x', 'y', H, 3.0)
+
+    def test_wikipedia_dinitz_example(self):
+        # Nice example from https://en.wikipedia.org/wiki/Dinic's_algorithm
+        G = nx.DiGraph()
+        G.add_edge('s', 1, capacity=10)
+        G.add_edge('s', 2, capacity=10)
+        G.add_edge(1, 3, capacity=4)
+        G.add_edge(1, 4, capacity=8)
+        G.add_edge(1, 2, capacity=2)
+        G.add_edge(2, 4, capacity=9)
+        G.add_edge(3, 't', capacity=10)
+        G.add_edge(4, 3, capacity=6)
+        G.add_edge(4, 't', capacity=10)
+
+        solnFlows = {1: {2: 0, 3: 4, 4: 6},
+                     2: {4: 9},
+                     3: {'t': 9},
+                     4: {3: 5, 't': 10},
+                     's': {1: 10, 2: 9},
+                     't': {}}
+
+        compare_flows_and_cuts(G, 's', 't', solnFlows, 19)
 
     def test_optional_capacity(self):
         # Test optional capacity parameter.
@@ -405,7 +431,7 @@ class TestMaxFlowMinCutInterface:
     def test_kwargs_default_flow_func(self):
         G = self.H
         for interface_func in interface_funcs:
-            assert_raises(nx.NetworkXError, interface_func, 
+            assert_raises(nx.NetworkXError, interface_func,
                           G, 0, 1, global_relabel_freq=2)
 
     def test_reusing_residual(self):
@@ -434,13 +460,21 @@ def test_preflow_push_global_relabel_freq():
     assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
                   global_relabel_freq=-1)
 
+def test_preflow_push_makes_enough_space():
+    #From ticket #1542
+    G = nx.DiGraph()
+    nx.add_path(G, [0, 1, 3], capacity=1)
+    nx.add_path(G, [1, 2, 3], capacity=1)
+    R = preflow_push(G, 0, 3, value_only=False)
+    assert_equal(R.graph['flow_value'], 1)
+
 def test_shortest_augmenting_path_two_phase():
     k = 5
     p = 1000
     G = nx.DiGraph()
     for i in range(k):
         G.add_edge('s', (i, 0), capacity=1)
-        G.add_path(((i, j) for j in range(p)), capacity=1)
+        nx.add_path(G, ((i, j) for j in range(p)), capacity=1)
         G.add_edge((i, p - 1), 't', capacity=1)
     R = shortest_augmenting_path(G, 's', 't', two_phase=True)
     assert_equal(R.graph['flow_value'], k)
@@ -456,7 +490,7 @@ class TestCutoff:
         G = nx.DiGraph()
         for i in range(k):
             G.add_edge('s', (i, 0), capacity=2)
-            G.add_path(((i, j) for j in range(p)), capacity=2)
+            nx.add_path(G, ((i, j) for j in range(p)), capacity=2)
             G.add_edge((i, p - 1), 't', capacity=2)
         R = shortest_augmenting_path(G, 's', 't', two_phase=True, cutoff=k)
         ok_(k <= R.graph['flow_value'] <= 2 * k)
@@ -468,11 +502,11 @@ class TestCutoff:
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
-        nx.set_edge_attributes(G, 'capacity', 
+        nx.set_edge_attributes(G, 'capacity',
                                dict(((u, v), 1) for u, v in G.edges()))
         for flow_func in [shortest_augmenting_path, edmonds_karp]:
             for cutoff in [3, 2, 1]:
                 result = nx.maximum_flow_value(G, 0, 4, flow_func=flow_func,
                                                cutoff=cutoff)
-                assert_equal(cutoff, result, 
+                assert_equal(cutoff, result,
                             msg="cutoff error in {0}".format(flow_func.__name__))

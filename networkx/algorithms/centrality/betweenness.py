@@ -2,7 +2,7 @@
 """
 Betweenness centrality measures.
 """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -25,17 +25,17 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     r"""Compute the shortest-path betweenness centrality for nodes.
 
     Betweenness centrality of a node `v` is the sum of the
-    fraction of all-pairs shortest paths that pass through `v`:
+    fraction of all-pairs shortest paths that pass through `v`
 
     .. math::
 
        c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
-    where `V` is the set of nodes, `\sigma(s, t)` is the number of
-    shortest `(s, t)`-paths,  and `\sigma(s, t|v)` is the number of those
-    paths  passing through some  node `v` other than `s, t`.
-    If `s = t`, `\sigma(s, t) = 1`, and if `v \in {s, t}`,
-    `\sigma(s, t|v) = 0` [2]_.
+    where `V` is the set of nodes, :math:`\sigma(s, t)` is the number of
+    shortest `(s, t)`-paths,  and :math:`\sigma(s, t|v)` is the number of
+    those paths  passing through some  node `v` other than `s, t`.
+    If :math:`s = t`, :math:`\sigma(s, t) = 1`, and if :math:`v \in {s, t}`,
+    :math:`\sigma(s, t|v) = 0` [2]_.
 
     Parameters
     ----------
@@ -134,14 +134,14 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     r"""Compute betweenness centrality for edges.
 
     Betweenness centrality of an edge `e` is the sum of the
-    fraction of all-pairs shortest paths that pass through `e`:
+    fraction of all-pairs shortest paths that pass through `e`
 
     .. math::
 
-       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
+       c_B(e) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
-    where `V` is the set of nodes,`\sigma(s, t)` is the number of
-    shortest `(s, t)`-paths, and `\sigma(s, t|e)` is the number of
+    where `V` is the set of nodes, :math:`\sigma(s, t)` is the number of
+    shortest `(s, t)`-paths, and :math:`\sigma(s, t|e)` is the number of
     those paths passing through edge `e` [2]_.
 
     Parameters

@@ -2,6 +2,7 @@
 from nose.tools import *
 from nose import SkipTest
 import networkx as nx
+from networkx.testing.utils import *
 import io
 import tempfile
 import os
@@ -121,6 +122,34 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         self.attribute_graph.add_edge('n5','n4',id='e6',weight=1.1)
         self.attribute_fh = io.BytesIO(self.attribute_data.encode('UTF-8'))
 
+        self.attribute_numeric_type_data = """<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="weight" attr.type="double" for="node" id="d1" />
+  <key attr.name="weight" attr.type="double" for="edge" id="d0" />
+  <graph edgedefault="directed">
+    <node id="n0">
+      <data key="d1">1</data>
+    </node>
+    <node id="n1">
+      <data key="d1">2.0</data>
+    </node>
+    <edge source="n0" target="n1">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="n1" target="n1">
+      <data key="d0">1.0</data>
+    </edge>
+  </graph>
+</graphml>
+"""
+
+        self.attribute_numeric_type_graph = nx.DiGraph()
+        self.attribute_numeric_type_graph.add_node('n0', weight=1)
+        self.attribute_numeric_type_graph.add_node('n1', weight=2.0)
+        self.attribute_numeric_type_graph.add_edge('n0', 'n1', weight=1)
+        self.attribute_numeric_type_graph.add_edge('n1', 'n1', weight=1.0)
+        self.attribute_numeric_type_fh = io.BytesIO(self.attribute_numeric_type_data.encode('UTF-8'))
+
         self.simple_undirected_data="""<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
@@ -175,22 +204,44 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
     def test_read_simple_undirected_graphml(self):
         G=self.simple_undirected_graph
         H=nx.read_graphml(self.simple_undirected_fh)
-        assert_equal(sorted(G.nodes()),sorted(H.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in H.edges()))
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
         self.simple_undirected_fh.seek(0)
 
         I=nx.parse_graphml(self.simple_undirected_data)
-        assert_equal(sorted(G.nodes()),sorted(I.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in I.edges()))
+        assert_nodes_equal(G.nodes(), I.nodes())
+        assert_edges_equal(G.edges(), I.edges())
+
+    def test_write_read_attribute_numeric_type_graphml(self):
+        from xml.etree.ElementTree import parse
+
+        G = self.attribute_numeric_type_graph
+        fh = io.BytesIO()
+        nx.write_graphml(G, fh, infer_numeric_types=True)
+        fh.seek(0)
+        H = nx.read_graphml(fh)
+        fh.seek(0)
+
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
+        assert_edges_equal(G.edges(data=True), H.edges(data=True))
+        self.attribute_numeric_type_fh.seek(0)
+
+        xml = parse(fh)
+        # Children are the key elements, and the graph element
+        children = xml.getroot().getchildren()
+        assert_equal(len(children), 3)
+
+        keys = [child.items() for child in children[:2]]
+
+        assert_equal(len(keys), 2)
+        assert_in(('attr.type', 'double'), keys[0])
+        assert_in(('attr.type', 'double'), keys[1])
 
     def test_read_attribute_graphml(self):
         G=self.attribute_graph
         H=nx.read_graphml(self.attribute_fh)
-        assert_equal(sorted(G.nodes(True)),sorted(H.nodes(data=True)))
+        assert_nodes_equal(G.nodes(True),sorted(H.nodes(data=True)))
         ge=sorted(G.edges(data=True))
         he=sorted(H.edges(data=True))
         for a,b in zip(ge,he):
@@ -236,7 +287,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
         assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
-    def test_key_error(self):
+    def test_key_raise(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -264,7 +315,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
         assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
-    def test_hyperedge_error(self):
+    def test_hyperedge_raise(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -299,7 +350,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
     def test_default_attribute(self):
         G=nx.Graph()
         G.add_node(1,label=1,color='green')
-        G.add_path([0,1,2,3])
+        nx.add_path(G, [0, 1, 2, 3])
         G.add_edge(1,2,weight=3)
         G.graph['node_default']={'color':'yellow'}
         G.graph['edge_default']={'weight':7}
@@ -307,10 +358,8 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         nx.write_graphml(G,fh)
         fh.seek(0)
         H=nx.read_graphml(fh,node_type=int)
-        assert_equal(sorted(G.nodes()),sorted(H.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in H.edges()))
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
         assert_equal(G.graph,H.graph)
 
     def test_multigraph_keys(self):
@@ -376,13 +425,13 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 """
         fh = io.BytesIO(data.encode('UTF-8'))
         G=nx.read_graphml(fh)
-        assert_equal(G.edges(),[('n0','n1')])
+        assert_equal(list(G.edges()),[('n0','n1')])
         assert_equal(G['n0']['n1']['id'],'e0')
         assert_equal(G.node['n0']['label'],'1')
         assert_equal(G.node['n1']['label'],'2')
 
         H=nx.parse_graphml(data)
-        assert_equal(H.edges(),[('n0','n1')])
+        assert_equal(list(H.edges()),[('n0','n1')])
         assert_equal(H['n0']['n1']['id'],'e0')
         assert_equal(H.node['n0']['label'],'1')
         assert_equal(H.node['n1']['label'],'2')
@@ -397,7 +446,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
             node_type=unicode
-        G.add_edge(name1, 'Radiohead', attr_dict={'foo': name2})
+        G.add_edge(name1, 'Radiohead', foo=name2)
         fd, fname = tempfile.mkstemp()
         nx.write_graphml(G, fname)
         H = nx.read_graphml(fname,node_type=node_type)
@@ -407,7 +456,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
 
     def test_bool(self):
-        s="""<?xml version="1.0" encoding="UTF-8"?>
+        s = """<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
@@ -417,29 +466,34 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
   </key>
   <graph id="G" edgedefault="directed">
     <node id="n0">
-      <data key="d0">True</data>
+      <data key="d0">true</data>
     </node>
     <node id="n1"/>
     <node id="n2">
-      <data key="d0">False</data>
-    </node>
-    <node id="n3">
-      <data key="d0">true</data>
-    </node>
-    <node id="n4">
       <data key="d0">false</data>
     </node>
-
-
+    <node id="n3">
+      <data key="d0">FaLsE</data>
+    </node>
+    <node id="n4">
+      <data key="d0">True</data>
+    </node>
+    <node id="n5">
+      <data key="d0">0</data>
+    </node>
+    <node id="n6">
+      <data key="d0">1</data>
+    </node>
   </graph>
 </graphml>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        G=nx.read_graphml(fh)
-        assert_equal(G.node['n0']['test'],True)
-        assert_equal(G.node['n2']['test'],False)
-
-        H=nx.parse_graphml(s)
-        assert_equal(H.node['n0']['test'],True)
-        assert_equal(H.node['n2']['test'],False)
-
+        G = nx.read_graphml(fh)
+        H = nx.parse_graphml(s)
+        for graph in [G, H]:
+            assert_equal(graph.node['n0']['test'], True)
+            assert_equal(graph.node['n2']['test'], False)
+            assert_equal(graph.node['n3']['test'], False)
+            assert_equal(graph.node['n4']['test'], True)
+            assert_equal(graph.node['n5']['test'], False)
+            assert_equal(graph.node['n6']['test'], True)

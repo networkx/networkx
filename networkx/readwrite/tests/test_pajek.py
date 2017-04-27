@@ -39,6 +39,13 @@ class TestPajek(object):
                                        ('A1', 'C'), ('Bb', 'A1'),
                                        ('C', 'C'), ('C', 'D2'), ('D2', 'Bb')])
 
+    def test_parse_pajet_mat(self):
+        data = """*Vertices 3\n1 "one"\n2 "two"\n3 "three"\n*Matrix\n1 1 0\n0 1 0\n0 1 0\n"""
+        G=parse_pajek(data)
+        assert_equal(set(G.nodes()), {'one', 'two', 'three'})
+        assert_equal(G.node['two'], {'id': '2'})
+        assert_edges_equal(set(G.edges()), {('one', 'one'), ('two', 'one'), ('two', 'two'), ('two', 'three')})
+
     def test_read_pajek(self):
         G=parse_pajek(self.data)
         Gin=read_pajek(self.fname)
@@ -65,11 +72,11 @@ class TestPajek(object):
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', attr_dict={'foo': name2})
+        G.add_edge(name1, 'Radiohead', foo=name2)
         fh = io.BytesIO()
         nx.write_pajek(G,fh)
         fh.seek(0)
         H=nx.read_pajek(fh)
-        assert_nodes_equal(G.nodes(), H.nodes())
-        assert_edges_equal(G.edges(), H.edges())
-        assert_equal(G.graph,H.graph)
+        assert_nodes_equal(list(G), list(H))
+        assert_edges_equal(list(G.edges()), list(H.edges()))
+        assert_equal(G.graph, H.graph)

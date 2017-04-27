@@ -1,40 +1,45 @@
-"""
-Harmonic centrality measure.
-"""
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2015 by
 #    Alessandro Luongo
 #    BSD license.
+#
+# Authors:
+#    Alessandro Luongo <alessandro.luongo@studenti.unimi.it>
+#
+"""Functions for computing the harmonic centrality of a graph."""
 from __future__ import division
-import functools
+from functools import partial
+
 import networkx as nx
 
-
-__author__ = "\n".join(['Alessandro Luongo (alessandro.luongo@studenti.unimi.it'])
 __all__ = ['harmonic_centrality']
 
 
-def harmonic_centrality(G, distance=None):
+def harmonic_centrality(G, nbunch=None, distance=None):
     r"""Compute harmonic centrality for nodes.
 
-    Harmonic centrality [1] of a node `u` is the sum of the reciprocal of the
-    nonzero shortest paths from all other nodes.
+    Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
+    of the shortest path distances from all other nodes to `u`
 
     .. math::
 
-        C(u) = \sum_{v=1}^{n-1} \frac{1}{d(v, u)},
+        C(u) = \sum_{v \neq u} \frac{1}{d(v, u)}
 
-    where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes in the graph.
+    where `d(v, u)` is the shortest-path distance between `v` and `u`.
 
     Notice that higher values indicate higher centrality.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph
+    
+    nbunch : container
+      Container of nodes. If provided harmonic centrality will be computed
+      only over the nodes in nbunch.
+
     distance : edge attribute key, optional (default=None)
-      Use the specified edge attribute as the edge distance in shortest path
-      calculations. If `None`, then each edge will have distance equal to 1.
+      Use the specified edge attribute as the edge distance in shortest
+      path calculations.  If `None`, then each edge will have distance equal to 1.
 
     Returns
     -------
@@ -55,30 +60,9 @@ def harmonic_centrality(G, distance=None):
     References
     ----------
     .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
-    Internet Mathematics 10.3-4 (2014): 222-262.
+           Internet Mathematics 10.3-4 (2014): 222-262.
     """
-
-    if distance is not None:
-        # use Dijkstra's algorithm with specified attribute as edge weight
-        path_length = functools.partial(nx.all_pairs_dijkstra_path_length,
-                                        weight=distance)
-    else:
-        path_length = nx.all_pairs_shortest_path_length
-
-    nodes = G.nodes()
-    harmonic_centrality = {}
-
-    if len(G) <= 1:
-        for singleton in nodes:
-            harmonic_centrality[singleton] = 0.0
-        return harmonic_centrality
-
-    sp = path_length(G.reverse() if G.is_directed() else G)
-
-    for n in nodes:
-        harmonic_centrality[n] = sum([1/i if i > 0 else 0
-                                      for i in sp[n].values()])
-
-    return harmonic_centrality
-
-
+    if G.is_directed():
+        G = G.reverse()
+    spl = partial(nx.shortest_path_length, G, weight=distance)
+    return {u: sum(1 / d if d > 0 else 0 for v, d in spl(source=u)) for u in G.nbunch_iter(nbunch)}

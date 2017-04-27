@@ -101,12 +101,13 @@ def build_branching(edges):
 
 def sorted_edges(G, attr='weight', default=1):
     edges = [(u,v,data.get(attr, default)) for (u,v,data) in G.edges(data=True)]
-    edges = sorted(edges, key=lambda x: x[2])
+    edges = sorted(edges, key=lambda x: (x[2],x[1],x[0]))
     return edges
 
 def assert_equal_branchings(G1, G2, attr='weight', default=1):
-    edges1 = G1.edges(data=True)
-    edges2 = G2.edges(data=True)
+    edges1 = list(G1.edges(data=True))
+    edges2 = list(G2.edges(data=True))
+    assert_equal(len(edges1), len(edges2))
 
     # Grab the weights only.
     e1 = sorted_edges(G1, attr, default)
@@ -121,7 +122,7 @@ def assert_equal_branchings(G1, G2, attr='weight', default=1):
         assert_equal(a[:2], b[:2])
         np.testing.assert_almost_equal(a[2], b[2])
 
-    assert_equal(len(edges1), len(edges2))
+
 
 ################
 
@@ -160,7 +161,6 @@ def test_greedy_max1():
     #
     G = G1()
     B = branchings.greedy_branching(G)
-
     # There are only two possible greedy branchings. The sorting is such
     # that it should equal the second suboptimal branching: 1b.
     B_ = build_branching(greedy_subopt_branching_1b)

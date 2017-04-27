@@ -8,7 +8,6 @@ from nose.tools import assert_equal
 
 import networkx as nx
 
-
 class TestShp(object):
     @classmethod
     def setupClass(cls):
@@ -25,8 +24,8 @@ class TestShp(object):
 
     def setUp(self):
 
-        def createlayer(driver):
-            lyr = shp.CreateLayer("edges", None, ogr.wkbLineString)
+        def createlayer(driver, layerType=ogr.wkbLineString):
+            lyr = driver.CreateLayer("edges", None, layerType)
             namedef = ogr.FieldDefn("Name", ogr.OFTString)
             namedef.SetWidth(32)
             lyr.CreateField(namedef)
@@ -36,17 +35,26 @@ class TestShp(object):
 
         testdir = os.path.join(tempfile.gettempdir(), 'shpdir')
         shppath = os.path.join(tempfile.gettempdir(), 'tmpshp.shp')
+        multi_shppath = os.path.join(tempfile.gettempdir(), 'tmp_mshp.shp')
 
-        self.deletetmp(drv, testdir, shppath)
+        self.deletetmp(drv, testdir, shppath, multi_shppath)
         os.mkdir(testdir)
+
+        self.names = ['a', 'b', 'c', 'c']  # edgenames
+        self.paths = ([(1.0, 1.0), (2.0, 2.0)],
+                      [(2.0, 2.0), (3.0, 3.0)],
+                      [(0.9, 0.9), (4.0, 0.9), (4.0, 2.0)])
+
+        self.simplified_names = ['a', 'b', 'c']  # edgenames
+        self.simplified_paths = ([(1.0, 1.0), (2.0, 2.0)],
+                                 [(2.0, 2.0), (3.0, 3.0)],
+                                 [(0.9, 0.9), (4.0, 2.0)])
+
+        self.multi_names = ['a', 'a', 'a', 'a']  # edgenames
 
         shp = drv.CreateDataSource(shppath)
         lyr = createlayer(shp)
-        self.names = ['a', 'b', 'c']  # edgenames
-        self.paths = (  [(1.0, 1.0), (2.0, 2.0)],
-                        [(2.0, 2.0), (3.0, 3.0)],
-                        [(0.9, 0.9), (4.0, 2.0)]
-                    )
+ 
         for path, name in zip(self.paths, self.names):
             feat = ogr.Feature(lyr.GetLayerDefn())
             g = ogr.Geometry(ogr.wkbLineString)
@@ -55,19 +63,53 @@ class TestShp(object):
             feat.SetGeometry(g)
             feat.SetField("Name", name)
             lyr.CreateFeature(feat)
+
+        # create single record multiline shapefile for testing
+        multi_shp = drv.CreateDataSource(multi_shppath)
+        multi_lyr = createlayer(multi_shp, ogr.wkbMultiLineString)
+         
+        multi_g = ogr.Geometry(ogr.wkbMultiLineString)
+        for path in self.paths:
+            
+            g = ogr.Geometry(ogr.wkbLineString)
+            for p in path:
+                g.AddPoint_2D(*p)
+
+            multi_g.AddGeometry(g)
+
+        multi_feat = ogr.Feature(multi_lyr.GetLayerDefn())
+        multi_feat.SetGeometry(multi_g)
+        multi_feat.SetField("Name", 'a') 
+        multi_lyr.CreateFeature(multi_feat)
+
         self.shppath = shppath
+        self.multi_shppath = multi_shppath
         self.testdir = testdir
         self.drv = drv
 
     def testload(self):
-        expected = nx.DiGraph()
-        for p in self.paths:
-            expected.add_path(p)
+
+        def compare_graph_paths_names(g, paths, names):
+            expected = nx.DiGraph()
+            for p in paths:
+                nx.add_path(expected, p)
+            assert_equal(sorted(expected.node), sorted(g.node))
+            assert_equal(sorted(expected.edges()), sorted(g.edges()))
+            g_names = [g.get_edge_data(s, e)['Name'] for s, e in g.edges()]
+            assert_equal(names, sorted(g_names))
+                
+        # simplified
         G = nx.read_shp(self.shppath)
-        assert_equal(sorted(expected.node), sorted(G.node))
-        assert_equal(sorted(expected.edges()), sorted(G.edges()))
-        names = [G.get_edge_data(s, e)['Name'] for s, e in G.edges()]
-        assert_equal(self.names, sorted(names))
+        compare_graph_paths_names(G, self.simplified_paths, \
+                                    self.simplified_names)
+       
+        # unsimplified
+        G = nx.read_shp(self.shppath, simplify=False)
+        compare_graph_paths_names(G, self.paths, self.names)
+
+        # multiline unsimplified
+        G = nx.read_shp(self.multi_shppath, simplify=False)
+        compare_graph_paths_names(G, self.paths, self.multi_names)
 
     def checkgeom(self, lyr, expected):
         feature = lyr.GetNextFeature()
@@ -78,24 +120,50 @@ class TestShp(object):
         assert_equal(sorted(expected), sorted(actualwkt))
 
     def test_geometryexport(self):
-        expectedpoints = (
+        expectedpoints_simple = (
             "POINT (1 1)",
             "POINT (2 2)",
             "POINT (3 3)",
             "POINT (0.9 0.9)",
             "POINT (4 2)"
         )
+        expectedlines_simple = (
+            "LINESTRING (1 1,2 2)",
+            "LINESTRING (2 2,3 3)",
+            "LINESTRING (0.9 0.9,4.0 0.9,4 2)"
+        )
+        expectedpoints = (
+            "POINT (1 1)",
+            "POINT (2 2)",
+            "POINT (3 3)",
+            "POINT (0.9 0.9)",
+            "POINT (4.0 0.9)",
+            "POINT (4 2)"
+        )
         expectedlines = (
             "LINESTRING (1 1,2 2)",
             "LINESTRING (2 2,3 3)",
-            "LINESTRING (0.9 0.9,4 2)"
+            "LINESTRING (0.9 0.9,4.0 0.9)",
+            "LINESTRING (4.0 0.9,4 2)"
         )
+
+
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
         shpdir = ogr.Open(tpath)
+        self.checkgeom(shpdir.GetLayerByName("nodes"), expectedpoints_simple)
+        self.checkgeom(shpdir.GetLayerByName("edges"), expectedlines_simple)
+
+        # Test unsimplified 
+        # Nodes should have additional point, 
+        # edges should be 'flattened'
+        G = nx.read_shp(self.shppath, simplify=False)
+        nx.write_shp(G, tpath)
+        shpdir = ogr.Open(tpath)
         self.checkgeom(shpdir.GetLayerByName("nodes"), expectedpoints)
         self.checkgeom(shpdir.GetLayerByName("edges"), expectedlines)
+
 
     def test_attributeexport(self):
         def testattributes(lyr, graph):
@@ -103,10 +171,10 @@ class TestShp(object):
             while feature:
                 coords = []
                 ref = feature.GetGeometryRef()
-                for i in range(ref.GetPointCount()):
-                    coords.append(ref.GetPoint_2D(i))
+                last = ref.GetPointCount() - 1
+                edge_nodes = (ref.GetPoint_2D(0), ref.GetPoint_2D(last))
                 name = feature.GetFieldAsString('Name')
-                assert_equal(graph.get_edge_data(*coords)['Name'], name)
+                assert_equal(graph.get_edge_data(*edge_nodes)['Name'], name)
                 feature = lyr.GetNextFeature()
 
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')

@@ -13,7 +13,7 @@ Create a graph with a single edge from a dictionary of dictionaries
 
 See Also
 --------
-nx_pygraphviz, nx_pydot
+nx_agraph, nx_pydot
 """
 #    Copyright (C) 2006-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -62,7 +62,8 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
 
     Parameters
     ----------
-    data : a object to be converted
+    data : object to be converted
+
        Current known types are:
          any NetworkX graph
          dict-of-dicts
@@ -89,10 +90,10 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
             result= from_dict_of_dicts(data.adj,\
                     create_using=create_using,\
                     multigraph_input=data.is_multigraph())
-            if hasattr(data,'graph') and isinstance(data.graph,dict):
-                result.graph=data.graph.copy()
-            if hasattr(data,'node') and isinstance(data.node,dict):
-                result.node=dict( (n,dd.copy()) for n,dd in data.node.items() )
+            if hasattr(data,'graph'): # data.graph should be dict-like
+                result.graph.update(data.graph)
+            if hasattr(data,'node'): # data.node should be dict-like
+                result.node.update( (n,dd.copy()) for n,dd in data.node.items() )
             return result
         except:
             raise nx.NetworkXError("Input is not a correct NetworkX graph.")
@@ -100,7 +101,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
     # pygraphviz  agraph
     if hasattr(data,"is_strict"):
         try:
-            return nx.from_agraph(data,create_using=create_using)
+            return nx.nx_agraph.from_agraph(data,create_using=create_using)
         except:
             raise nx.NetworkXError("Input is not a correct pygraphviz graph.")
 
@@ -170,16 +171,6 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
           "Input is not a known data type for conversion.")
 
     return
-
-
-def convert_to_undirected(G):
-    """Return a new undirected representation of the graph G."""
-    return G.to_undirected()
-
-
-def convert_to_directed(G):
-    """Return a new directed representation of the graph G."""
-    return G.to_directed()
 
 
 def to_dict_of_lists(G,nodelist=None):
@@ -265,10 +256,10 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
     dod={}
     if nodelist is None:
         if edge_data is None:
-            for u,nbrdict in G.adjacency_iter():
+            for u,nbrdict in G.adjacency():
                 dod[u]=nbrdict.copy()
         else: # edge_data is not None
-            for u,nbrdict in G.adjacency_iter():
+            for u,nbrdict in G.adjacency():
                 dod[u]=dod.fromkeys(nbrdict, edge_data)
     else: # nodelist is not None
         if edge_data is None:
@@ -354,7 +345,8 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
             for u,nbrs in d.items():
                 for v,data in nbrs.items():
                     if (u,v) not in seen:
-                        G.add_edge(u,v,attr_dict=data)
+                        G.add_edge(u,v,key=0)
+                        G[u][v][0].update(data)
                     seen.add((v,u))
         else:
             G.add_edges_from( ( (u,v,data)

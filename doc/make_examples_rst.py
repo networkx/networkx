@@ -1,9 +1,9 @@
-#!/usr/bin/env python
 """
 generate the rst files for the examples by iterating over the networkx examples
 """
 # This code was developed from the Matplotlib gen_rst.py module
 # and is distributed with the same license as Matplotlib
+from __future__ import print_function
 import os, glob
 
 import os
@@ -27,7 +27,7 @@ def out_of_date(original, derived):
     return (not os.path.exists(derived) or
             os.stat(derived).st_mtime < os.stat(original).st_mtime)
 
-def main(exampledir,sourcedir):    
+def main(exampledir,sourcedir):
 
     noplot_regex = re.compile(r"#\s*-\*-\s*noplot\s*-\*-")
 
@@ -124,7 +124,7 @@ NetworkX Examples
                 not out_of_date(fullpath, outfile)):
                 continue
 
-            print '%s/%s'%(subdir,fname)
+            print('%s/%s' % (subdir,fname))
 
             fhstatic = file(static_file, 'w')
             fhstatic.write(contents)
@@ -167,13 +167,13 @@ if __name__ == '__main__':
         arg0,arg1,arg2=sys.argv[:3]
     except:
         arg0=sys.argv[0]
-        print """
-Usage:  %s exampledir sourcedir 
+        print("""
+Usage:  %s exampledir sourcedir
 
     exampledir: a directory containing the python code for the examples.
     sourcedir: a directory to put the generated documentation source for these examples.
 
-        """%arg0
+        """ % (arg0))
     else:
         main(arg1,arg2)
 

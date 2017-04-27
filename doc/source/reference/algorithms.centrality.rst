@@ -1,6 +1,7 @@
 **********
 Centrality
 **********
+
 .. automodule:: networkx.algorithms.centrality
 
 Degree
@@ -12,39 +13,6 @@ Degree
    in_degree_centrality
    out_degree_centrality
 
-Closeness
----------
-.. autosummary::
-   :toctree: generated/
-
-   closeness_centrality
-
-Betweenness
------------
-.. autosummary::
-   :toctree: generated/
-
-   betweenness_centrality
-   edge_betweenness_centrality
-
-Current Flow Closeness
-----------------------
-.. autosummary::
-   :toctree: generated/
-
-   current_flow_closeness_centrality
-
-
-Current-Flow Betweenness
-------------------------
-.. autosummary::
-   :toctree: generated/
-
-   current_flow_betweenness_centrality
-   edge_current_flow_betweenness_centrality
-   approximate_current_flow_betweenness_centrality
-
-
 Eigenvector
 -----------
 .. autosummary::
@@ -55,17 +23,48 @@ Eigenvector
    katz_centrality
    katz_centrality_numpy
 
-Communicability
----------------
+Closeness
+---------
 .. autosummary::
    :toctree: generated/
 
-   communicability
-   communicability_exp
-   communicability_centrality
-   communicability_centrality_exp
+   closeness_centrality
+
+Current Flow Closeness
+----------------------
+.. autosummary::
+   :toctree: generated/
+
+   current_flow_closeness_centrality
+
+(Shortest Path) Betweenness
+---------------------------
+.. autosummary::
+   :toctree: generated/
+
+   betweenness_centrality
+   edge_betweenness_centrality
+   betweenness_centrality_subset
+   edge_betweenness_centrality_subset
+
+
+Current Flow Betweenness
+------------------------
+.. autosummary::
+   :toctree: generated/
+
+   current_flow_betweenness_centrality
+   edge_current_flow_betweenness_centrality
+   approximate_current_flow_betweenness_centrality
+   current_flow_betweenness_centrality_subset
+   edge_current_flow_betweenness_centrality_subset
+
+Communicability Betweenness
+---------------------------
+.. autosummary::
+   :toctree: generated/
+
    communicability_betweenness_centrality
-   estrada_index
 
 Load
 ----
@@ -73,15 +72,28 @@ Load
    :toctree: generated/
 
    load_centrality
-   edge_load
+   edge_load_centrality
 
-Dispersion
-----------
+Subgraph
+--------
 .. autosummary::
    :toctree: generated/
 
-   dispersion
+   subgraph_centrality
+   subgraph_centrality_exp
+   estrada_index
 
+Harmonic Centrality
+-------------------
+.. autosummary::
+   :toctree: generated/
 
+   harmonic_centrality
 
+Reaching
+--------
+.. autosummary::
+   :toctree: generated/
 
+   local_reaching_centrality
+   global_reaching_centrality

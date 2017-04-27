@@ -1,3 +1,11 @@
+#    Copyright (C) 2004-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 **********
 Matplotlib
@@ -13,16 +21,10 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
-#    Copyright (C) 2004-2012 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['draw',
            'draw_networkx',
            'draw_networkx_nodes',
@@ -33,11 +35,10 @@ __all__ = ['draw',
            'draw_random',
            'draw_spectral',
            'draw_spring',
-           'draw_shell',
-           'draw_graphviz']
+           'draw_shell']
 
 
-def draw(G, pos=None, ax=None, hold=None, **kwds):
+def draw(G, pos=None, ax=None, **kwds):
     """Draw the graph G with Matplotlib.
 
     Draw the graph as a simple representation with no node
@@ -53,18 +54,14 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See :py:mod:`networkx.drawing.layout` for functions that
+       compute node positions.
 
     ax : Matplotlib Axes object, optional
        Draw the graph in specified Matplotlib axes.
 
-    hold : bool, optional
-       Set the Matplotlib hold state.  If True subsequent draw
-       commands will be added to the current axes.
-
-    **kwds : optional keywords
+    kwds : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
-
 
     Examples
     --------
@@ -98,7 +95,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -121,23 +118,17 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     if 'with_labels' not in kwds:
         kwds['with_labels'] = 'labels' in kwds
-    b = plt.ishold()
-    # allow callers to override the hold state by passing hold=True|False
-    h = kwds.pop('hold', None)
-    if h is not None:
-        plt.hold(h)
+
     try:
         draw_networkx(G, pos=pos, ax=ax, **kwds)
         ax.set_axis_off()
         plt.draw_if_interactive()
     except:
-        plt.hold(b)
         raise
-    plt.hold(b)
     return
 
 
-def draw_networkx(G, pos=None, with_labels=True, **kwds):
+def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     """Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
@@ -152,7 +143,11 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See :py:mod:`networkx.drawing.layout` for functions that
+       compute node positions.
+
+    arrows : bool, optional (default=True)
+       For directed graphs, if True draw arrowheads.
 
     with_labels :  bool, optional (default=True)
        Set to True to draw labels on the nodes.
@@ -229,6 +224,13 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     label : string, optional
         Label for graph legend
 
+    Notes
+    -----
+    For directed graphs, "arrows" (actually just thicker stubs) are drawn
+    at the head end.  Arrows can be turned off with keyword arrows=False.
+    Yes, it is ugly but drawing proper arrows with Matplotlib this
+    way is tricky.
+
     Examples
     --------
     >>> G=nx.dodecahedral_graph()
@@ -239,7 +241,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     >>> limits=plt.axis('off') # turn of axis
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------
@@ -261,7 +263,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
         pos = nx.drawing.spring_layout(G)  # default to spring layout
 
     node_collection = draw_networkx_nodes(G, pos, **kwds)
-    edge_collection = draw_networkx_edges(G, pos, **kwds)
+    edge_collection = draw_networkx_edges(G, pos, arrows=arrows, **kwds)
     if with_labels:
         draw_networkx_labels(G, pos, **kwds)
     plt.draw_if_interactive()
@@ -340,7 +342,7 @@ def draw_networkx_nodes(G, pos,
     >>> nodes=nx.draw_networkx_nodes(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------
@@ -350,6 +352,7 @@ def draw_networkx_nodes(G, pos,
     draw_networkx_labels()
     draw_networkx_edge_labels()
     """
+    import collections
     try:
         import matplotlib.pyplot as plt
         import numpy
@@ -363,7 +366,7 @@ def draw_networkx_nodes(G, pos,
         ax = plt.gca()
 
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
 
     if not nodelist or len(nodelist) == 0:  # empty nodelist, no drawing
         return None
@@ -374,6 +377,10 @@ def draw_networkx_nodes(G, pos,
         raise nx.NetworkXError('Node %s has no position.'%e)
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
+
+    if isinstance(alpha, collections.Iterable):
+        node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
+        alpha = None
 
     node_collection = ax.scatter(xy[:, 0], xy[:, 1],
                                  s=node_size,
@@ -467,7 +474,7 @@ def draw_networkx_edges(G, pos,
     >>> edges=nx.draw_networkx_edges(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------
@@ -494,7 +501,7 @@ def draw_networkx_edges(G, pos,
         ax = plt.gca()
 
     if edgelist is None:
-        edgelist = G.edges()
+        edgelist = list(G.edges())
 
     if not edgelist or len(edgelist) == 0:  # no edges!
         return None
@@ -676,7 +683,7 @@ def draw_networkx_labels(G, pos,
     >>> labels=nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
 
     See Also
@@ -717,6 +724,7 @@ def draw_networkx_labels(G, pos,
                   color=font_color,
                   family=font_family,
                   weight=font_weight,
+                  alpha=alpha,
                   horizontalalignment=horizontalalignment,
                   verticalalignment=verticalalignment,
                   transform=ax.transData,
@@ -794,7 +802,7 @@ def draw_networkx_edge_labels(G, pos,
     >>> edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------
@@ -859,6 +867,7 @@ def draw_networkx_edge_labels(G, pos,
                     color=font_color,
                     family=font_family,
                     weight=font_weight,
+                    alpha=alpha,
                     horizontalalignment=horizontalalignment,
                     verticalalignment=verticalalignment,
                     rotation=trans_angle,
@@ -880,7 +889,7 @@ def draw_circular(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -896,7 +905,7 @@ def draw_random(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -912,7 +921,7 @@ def draw_spectral(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -928,7 +937,7 @@ def draw_spring(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -944,7 +953,7 @@ def draw_shell(G, **kwargs):
     G : graph
        A networkx graph
 
-    **kwargs : optional keywords
+    kwargs : optional keywords
        See networkx.draw_networkx() for a description of optional keywords,
        with the exception of the pos parameter which is not used by this
        function.
@@ -955,28 +964,84 @@ def draw_shell(G, **kwargs):
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
 
 
-def draw_graphviz(G, prog="neato", **kwargs):
-    """Draw networkx graph with graphviz layout.
-
-    Parameters
-    ----------
-    G : graph
-       A networkx graph
-
-    prog : string, optional
-      Name of Graphviz layout program
-
-    **kwargs : optional keywords
-       See networkx.draw_networkx() for a description of optional keywords.
-    """
-    pos = nx.drawing.graphviz_layout(G, prog)
-    draw(G, pos, **kwargs)
-
-
 def draw_nx(G, pos, **kwds):
     """For backward compatibility; use draw or draw_networkx."""
     draw(G, pos, **kwds)
 
+
+def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
+    """Apply an alpha (or list of alphas) to the colors provided.
+
+    Parameters
+    ----------
+
+    color : color string, or array of floats
+       Color of element. Can be a single color format string (default='r'),
+       or a  sequence of colors with the same length as nodelist.
+       If numeric values are specified they will be mapped to
+       colors using the cmap and vmin,vmax parameters.  See
+       matplotlib.scatter for more details.
+
+    alpha : float or array of floats
+       Alpha values for elements. This can be a single alpha value, in
+       which case it will be applied to all the elements of color. Otherwise,
+       if it is an array, the elements of alpha will be applied to the colors
+       in order (cycling through alpha multiple times if necessary).
+
+    elem_list : array of networkx objects
+       The list of elements which are being colored. These could be nodes, edges
+       or labels.
+
+    cmap : matplotlib colormap
+       Color map for use if colors is a list of floats corresponding to points on
+       a color mapping.
+
+    vmin, vmax : float
+       Minimum and maximum values for normalizing colors if a color mapping is used.
+
+    Returns
+    -------
+
+    rgba_colors : numpy ndarray
+        Array containing RGBA format values for each of the node colours.
+
+    """
+    import numbers
+    import itertools
+
+    try:
+        import numpy
+        from matplotlib.colors import colorConverter
+        import matplotlib.cm as cm
+    except ImportError:
+        raise ImportError("Matplotlib required for draw()")
+
+    # If we have been provided with a list of numbers as long as elem_list, apply the color mapping.
+    if len(colors) == len(elem_list) and isinstance(colors[0], numbers.Number):
+        mapper = cm.ScalarMappable(cmap=cmap)
+        mapper.set_clim(vmin, vmax)
+        rgba_colors = mapper.to_rgba(colors)
+    # Otherwise, convert colors to matplotlib's RGB using the colorConverter object.
+    # These are converted to numpy ndarrays to be consistent with the to_rgba method of ScalarMappable.
+    else:
+        try:
+            rgba_colors = numpy.array([colorConverter.to_rgba(colors)])
+        except ValueError:
+            rgba_colors = numpy.array([colorConverter.to_rgba(color) for color in colors])
+    # Set the final column of the rgba_colors to have the relevant alpha values.
+    try:
+        # If alpha is longer than the number of colors, resize to the number of elements.
+        # Also, if rgba_colors.size (the number of elements of rgba_colors) is the same as the number of
+        # elements, resize the array, to avoid it being interpreted as a colormap by scatter()
+        if len(alpha) > len(rgba_colors) or rgba_colors.size == len(elem_list):
+            rgba_colors.resize((len(elem_list), 4))
+            rgba_colors[1:, 0] = rgba_colors[0, 0]
+            rgba_colors[1:, 1] = rgba_colors[0, 1]
+            rgba_colors[1:, 2] = rgba_colors[0, 2]
+        rgba_colors[:,  3] = list(itertools.islice(itertools.cycle(alpha), len(rgba_colors)))
+    except TypeError:
+        rgba_colors[:, -1] = alpha
+    return rgba_colors
 
 # fixture for nose tests
 def setup_module(module):

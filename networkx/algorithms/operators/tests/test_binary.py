@@ -214,7 +214,7 @@ def test_union_and_compose():
     assert_equal(sorted(G2.nodes()),
                  ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
 
-    assert_equal(G2.neighbors('copy4'),[])
+    assert_equal(sorted(G2.neighbors('copy4')),[])
     assert_equal(sorted(G2.neighbors('copy1')),['copy2', 'copy3', 'copy4'])
     assert_equal(len(G),8)
     assert_equal(number_of_edges(G),6)
@@ -225,6 +225,13 @@ def test_union_and_compose():
 
     E=disjoint_union(G1,G2)
     assert_equal(sorted(E.nodes()),[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+
+    G = nx.Graph()
+    H = nx.Graph()
+    G.add_nodes_from([(1, {'a1': 1})])
+    H.add_nodes_from([(1, {'b1': 1})])
+    R = compose(G, H)
+    assert_equal(R.node, {1: {'a1': 1, 'b1': 1}})
 
 
 def test_union_multigraph():

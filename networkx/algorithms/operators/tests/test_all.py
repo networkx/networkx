@@ -119,7 +119,7 @@ def test_union_all_and_compose_all():
     assert_equal(sorted(G2.nodes()),
         ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
 
-    assert_equal(G2.neighbors('copy4'),[])
+    assert_equal(sorted(G2.neighbors('copy4')),[])
     assert_equal(sorted(G2.neighbors('copy1')),['copy2', 'copy3', 'copy4'])
     assert_equal(len(G),8)
     assert_equal(nx.number_of_edges(G),6)

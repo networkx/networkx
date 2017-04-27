@@ -36,9 +36,20 @@ class TestDFS:
         assert_equal(nx.dfs_predecessors(self.D), {1: 0, 3: 2})
 
     def test_dfs_tree(self):
+        exp_nodes = sorted(self.G.nodes())
+        exp_edges = [(0, 1), (1, 2), (2, 4), (4, 3)]
+        # Search from first node
         T=nx.dfs_tree(self.G,source=0)
-        assert_equal(sorted(T.nodes()),sorted(self.G.nodes()))
-        assert_equal(sorted(T.edges()),[(0, 1), (1, 2), (2, 4), (4, 3)])
+        assert_equal(sorted(T.nodes()), exp_nodes)
+        assert_equal(sorted(T.edges()), exp_edges)
+        # Check source=None
+        T = nx.dfs_tree(self.G, source=None)
+        assert_equal(sorted(T.nodes()), exp_nodes)
+        assert_equal(sorted(T.edges()), exp_edges)
+        # Check source=None is the default
+        T = nx.dfs_tree(self.G)
+        assert_equal(sorted(T.nodes()), exp_nodes)
+        assert_equal(sorted(T.edges()), exp_edges)
 
     def test_dfs_edges(self):
         edges=nx.dfs_edges(self.G,source=0)
@@ -48,12 +59,12 @@ class TestDFS:
 
     def test_dfs_labeled_edges(self):
         edges=list(nx.dfs_labeled_edges(self.G,source=0))
-        forward=[(u,v) for (u,v,d) in edges if d['dir']=='forward']
+        forward=[(u,v) for (u,v,d) in edges if d == 'forward']
         assert_equal(forward,[(0,0), (0, 1), (1, 2), (2, 4), (4, 3)])
 
     def test_dfs_labeled_disconnected_edges(self):
         edges=list(nx.dfs_labeled_edges(self.D))
-        forward=[(u,v) for (u,v,d) in edges if d['dir']=='forward']
+        forward=[(u,v) for (u,v,d) in edges if d == 'forward']
         assert_equal(forward,[(0, 0), (0, 1), (2, 2), (2, 3)])
 
     def test_dfs_tree_isolates(self):

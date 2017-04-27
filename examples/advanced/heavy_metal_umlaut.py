@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Example using unicode strings as graph labels.  
+Example using unicode strings as graph labels.
 
 Also shows creative use of the Heavy Metal Umlaut:
 http://en.wikipedia.org/wiki/Heavy_metal_umlaut
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = ""
-__credits__ = """"""
-__revision__ = ""
-#    Copyright (C) 2006 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2006-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -64,7 +62,7 @@ for n in G.nodes():
     if n not in H:
         print(False)
 
-print(G.nodes())
+print(list(G.nodes()))
 
 try:
     pos=NX.spring_layout(G)

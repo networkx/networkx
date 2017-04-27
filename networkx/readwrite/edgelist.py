@@ -27,7 +27,7 @@ Arbitrary data::
  1 2 7 green
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -109,8 +109,13 @@ def generate_edgelist(G, delimiter=' ', data=True):
     --------
     write_adjlist, read_adjlist
     """
-    if data is True or data is False:
-        for e in G.edges(data=data):
+    if data is True:
+        for u,v,d in G.edges(data=True):
+            e = u,v,dict(d)
+            yield delimiter.join(map(make_str,e))
+    elif data is False:
+        for u,v in G.edges(data=False):
+            e = u,v
             yield delimiter.join(map(make_str,e))
     else:
         for u,v,d in G.edges(data=True):
@@ -205,9 +210,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     ...          "2 3",
     ...          "3 4"]
     >>> G = nx.parse_edgelist(lines, nodetype = int)
-    >>> G.nodes()
+    >>> list(G)
     [1, 2, 3, 4]
-    >>> G.edges()
+    >>> list(G.edges())
     [(1, 2), (2, 3), (3, 4)]
 
     Edgelist with data in Python dictionary representation:
@@ -216,9 +221,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     ...          "2 3 {'weight':27}",
     ...          "3 4 {'weight':3.0}"]
     >>> G = nx.parse_edgelist(lines, nodetype = int)
-    >>> G.nodes()
+    >>> list(G)
     [1, 2, 3, 4]
-    >>> G.edges(data = True)
+    >>> list(G.edges(data=True))
     [(1, 2, {'weight': 3}), (2, 3, {'weight': 27}), (3, 4, {'weight': 3.0})]
 
     Edgelist with data in a list:
@@ -227,9 +232,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     ...          "2 3 27",
     ...          "3 4 3.0"]
     >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),))
-    >>> G.nodes()
+    >>> list(G)
     [1, 2, 3, 4]
-    >>> G.edges(data = True)
+    >>> list(G.edges(data=True))
     [(1, 2, {'weight': 3.0}), (2, 3, {'weight': 27.0}), (3, 4, {'weight': 3.0})]
 
     See Also
@@ -293,7 +298,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
                         "Failed to convert %s data %s to type %s."
                         %(edge_key, edge_value, edge_type))
                 edgedata.update({edge_key:edge_value})
-        G.add_edge(u, v, attr_dict=edgedata)
+        G.add_edge(u, v, **edgedata)
     return G
 
 @open_file(0,mode='rb')
@@ -347,9 +352,9 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     >>> d = fh.write(textline)
     >>> fh.close()
     >>> G = nx.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
-    >>> G.nodes()
+    >>> list(G)
     [1, 2]
-    >>> G.edges(data = True)
+    >>> list(G.edges(data=True))
     [(1, 2, {'weight': 3.0})]
 
     See parse_edgelist() for more examples of formatting.

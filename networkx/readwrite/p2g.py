@@ -2,7 +2,7 @@
 This module provides the following: read and write of p2g format 
 used in metabolic pathway studies.
 
-See http://www.cs.purdue.edu/homes/koyuturk/pathway/ for a description.
+See https://web.archive.org/web/20080626113807/http://www.cs.purdue.edu/homes/koyuturk/pathway/ for a description.
 
 The summary is included here:
 
@@ -53,7 +53,7 @@ def write_p2g(G, path, encoding = 'utf-8'):
     """
     path.write(("%s\n"%G.name).encode(encoding))
     path.write(("%s %s\n"%(G.order(),G.size())).encode(encoding))
-    nodes = G.nodes()
+    nodes = list(G)
     # make dictionary mapping nodes to integers
     nodenumber=dict(zip(nodes,range(len(nodes)))) 
     for n in nodes:

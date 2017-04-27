@@ -7,15 +7,17 @@ Interface to pygraphviz AGraph class.
 
 Examples
 --------
->>> G=nx.complete_graph(5)
->>> A=nx.to_agraph(G)
->>> H=nx.from_agraph(A)
+>>> G = nx.complete_graph(5)
+>>> A = nx.nx_agraph.to_agraph(G)
+>>> H = nx.nx_agraph.from_agraph(A)
 
 See Also
 --------
 Pygraphviz: http://pygraphviz.github.io/
 """
-#    Copyright (C) 2004-2012 by
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -25,7 +27,7 @@ import os
 import sys
 import tempfile
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['from_agraph', 'to_agraph',
            'write_dot', 'read_dot',
            'graphviz_layout',
@@ -45,10 +47,10 @@ def from_agraph(A,create_using=None):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_agraph(K5)
-    >>> G=nx.from_agraph(A)
-    >>> G=nx.from_agraph(A)
+    >>> K5 = nx.complete_graph(5)
+    >>> A = nx.nx_agraph.to_agraph(K5)
+    >>> G = nx.nx_agraph.from_agraph(A)
+    >>> G = nx.nx_agraph.from_agraph(A)
 
 
     Notes
@@ -116,8 +118,8 @@ def to_agraph(N):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_agraph(K5)
+    >>> K5 = nx.complete_graph(5)
+    >>> A = nx.nx_agraph.to_agraph(K5)
 
     Notes
     -----
@@ -147,11 +149,11 @@ def to_agraph(N):
     # loop over edges
 
     if N.is_multigraph():
-        for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
+        for u,v,key,edgedata in N.edges(data=True,keys=True):
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.items() if k != 'key')
             A.add_edge(u,v,key=str(key),**str_edgedata)
     else:
-        for u,v,edgedata in N.edges_iter(data=True):
+        for u,v,edgedata in N.edges(data=True):
             str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             A.add_edge(u,v,**str_edgedata)
 
@@ -214,9 +216,9 @@ def graphviz_layout(G,prog='neato',root=None, args=''):
 
     Examples
     --------
-    >>> G=nx.petersen_graph()
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> G = nx.petersen_graph()
+    >>> pos = nx.nx_agraph.graphviz_layout(G)
+    >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
 
     Notes
     -----
@@ -244,9 +246,9 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
 
     Examples
     --------
-    >>> G=nx.petersen_graph()
-    >>> pos=nx.graphviz_layout(G)
-    >>> pos=nx.graphviz_layout(G,prog='dot')
+    >>> G = nx.petersen_graph()
+    >>> pos = nx.nx_agraph.graphviz_layout(G)
+    >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
 
     """
     try:
@@ -373,12 +375,12 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
 
         # update all the edge labels
         if G.is_multigraph():
-            for u,v,key,data in G.edges_iter(keys=True, data=True):
+            for u,v,key,data in G.edges(keys=True, data=True):
                 # PyGraphviz doesn't convert the key to a string. See #339
                 edge = A.get_edge(u,v,str(key))
                 edge.attr['label'] = str(func(data))
         else:
-            for u,v,data in G.edges_iter(data=True):
+            for u,v,data in G.edges(data=True):
                 edge = A.get_edge(u,v)
                 edge.attr['label'] = str(func(data))
 

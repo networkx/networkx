@@ -42,10 +42,10 @@ class TestGpickle(object):
             (fd,fname)=tempfile.mkstemp()
             nx.write_gpickle(G,fname)
             Gin=nx.read_gpickle(fname)
-            assert_nodes_equal(G.nodes(data=True),
-                                Gin.nodes(data=True))
-            assert_edges_equal(G.edges(data=True),
-                                Gin.edges(data=True))
+            assert_nodes_equal(list(G.nodes(data=True)),
+                               list(Gin.nodes(data=True)))
+            assert_edges_equal(list(G.edges(data=True)),
+                               list(Gin.edges(data=True)))
             assert_graphs_equal(G, Gin)
             os.close(fd)
             os.unlink(fname)
@@ -57,8 +57,8 @@ class TestGpickle(object):
                 nx.write_gpickle(G, f, 0)
                 f.seek(0)
                 Gin = nx.read_gpickle(f)
-                assert_nodes_equal(G.nodes(data=True),
-                                   Gin.nodes(data=True))
-                assert_edges_equal(G.edges(data=True),
-                                   Gin.edges(data=True))
+                assert_nodes_equal(list(G.nodes(data=True)),
+                                   list(Gin.nodes(data=True)))
+                assert_edges_equal(list(G.edges(data=True)),
+                                   list(Gin.edges(data=True)))
                 assert_graphs_equal(G, Gin)

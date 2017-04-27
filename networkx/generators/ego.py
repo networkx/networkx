@@ -54,15 +54,15 @@ def ego_graph(G,n,radius=1,center=True,undirected=False,distance=None):
                                            n,cutoff=radius,
                                            weight=distance)
         else:
-            sp=nx.single_source_shortest_path_length(G.to_undirected(),
-                                                     n,cutoff=radius)
+            sp = dict(nx.single_source_shortest_path_length(G.to_undirected(),
+                                                     n,cutoff=radius))
     else:
         if distance is not None:
             sp,_=nx.single_source_dijkstra(G,
                                            n,cutoff=radius,
                                            weight=distance)
         else:
-            sp=nx.single_source_shortest_path_length(G,n,cutoff=radius)
+            sp = dict(nx.single_source_shortest_path_length(G,n,cutoff=radius))
 
     H=G.subgraph(sp).copy()
     if not center:

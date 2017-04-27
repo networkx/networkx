@@ -35,7 +35,6 @@ packages=["networkx",
           "networkx.algorithms.assortativity",
           "networkx.algorithms.bipartite",
           "networkx.algorithms.centrality",
-          "networkx.algorithms.chordal",
           "networkx.algorithms.community",
           "networkx.algorithms.components",
           "networkx.algorithms.connectivity",
@@ -87,7 +86,6 @@ package_data     = {
     'networkx.algorithms.assortativity': ['tests/*.py'],
     'networkx.algorithms.bipartite': ['tests/*.py'],
     'networkx.algorithms.centrality': ['tests/*.py'],
-    'networkx.algorithms.chordal': ['tests/*.py'],
     'networkx.algorithms.community': ['tests/*.py'],
     'networkx.algorithms.components': ['tests/*.py'],
     'networkx.algorithms.connectivity': ['tests/*.py'],
@@ -102,7 +100,7 @@ package_data     = {
     'networkx.algorithms.traversal': ['tests/*.py'],
     'networkx.algorithms.tree': ['tests/*.py'],
     'networkx.classes': ['tests/*.py'],
-    'networkx.generators': ['tests/*.py'],
+    'networkx.generators': ['tests/*.py', 'atlas.dat.gz'],
     'networkx.drawing': ['tests/*.py'],
     'networkx.linalg': ['tests/*.py'],
     'networkx.readwrite': ['tests/*.py'],
@@ -112,6 +110,8 @@ package_data     = {
     }
 
 install_requires = ['decorator>=3.4.0']
+extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
+                          'pygraphviz', 'pydot', 'pyyaml', 'gdal']}
 
 if __name__ == "__main__":
 
@@ -134,6 +134,7 @@ if __name__ == "__main__":
         data_files       = data,
         package_data     = package_data,
         install_requires = install_requires,
+        extras_require   = extras_require,
         test_suite       = 'nose.collector',
         tests_require    = ['nose>=0.10.1'],
         zip_safe         = False

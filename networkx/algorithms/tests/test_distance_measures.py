@@ -14,7 +14,7 @@ class TestDistance:
         assert_equal(networkx.eccentricity(self.G,1),6)
         e=networkx.eccentricity(self.G)
         assert_equal(e[1],6)
-        sp=networkx.shortest_path_length(self.G)
+        sp = dict(networkx.shortest_path_length(self.G))
         e=networkx.eccentricity(self.G,sp=sp)
         assert_equal(e[1],6)
         e=networkx.eccentricity(self.G,v=1)
@@ -62,8 +62,11 @@ class TestDistance:
         e = networkx.eccentricity(G)
 
     @raises(networkx.NetworkXError)
-    def test_eccentricity_invalid(self):
+    def test_eccentricity_undirected_not_connected(self):
         G=networkx.Graph([(1,2),(3,4)])
         e = networkx.eccentricity(G,sp=1)
 
-
+    @raises(networkx.NetworkXError)
+    def test_eccentricity_directed_weakly_connected(self):
+        DG = networkx.DiGraph([(1,2),(1,3)])
+        networkx.eccentricity(DG)

@@ -5,19 +5,13 @@ Download
 Software
 ~~~~~~~~
 
-Source and binary releases: http://cheeseshop.python.org/pypi/networkx/
+Source and binary releases: http://pypi.python.org/pypi/networkx/
 
 Github (latest development): https://github.com/networkx/networkx/
 
 
 Documentation
 ~~~~~~~~~~~~~
-*PDF*
+As .pdf file: https://media.readthedocs.org/pdf/networkx/stable/networkx.pdf
 
-http://networkx.github.io/documentation/latest/_downloads/networkx_tutorial.pdf
-
-http://networkx.github.io/documentation/latest/_downloads/networkx_reference.pdf
-
-*HTML in zip file*
-
-http://networkx.github.io/documentation/latest/_downloads/networkx-documentation.zip
+As html in .zip file: https://readthedocs.org/projects/networkx/downloads/htmlzip/stable/

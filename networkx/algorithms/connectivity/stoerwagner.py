@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
-Stoer-Wagner minimum cut algorithm.
-"""
-from itertools import islice
-import networkx as nx
-from networkx.utils import *
-
-__author__ = 'ysitu <ysitu@users.noreply.github.com>'
+#
 # Copyright (C) 2014
 # ysitu <ysitu@users.noreply.github.com>
 # All rights reserved.
 # BSD license.
+"""
+Stoer-Wagner minimum cut algorithm.
+"""
+from itertools import islice
+
+import networkx as nx
+from ...utils import BinaryHeap
+from ...utils import not_implemented_for
+from ...utils import arbitrary_element
+
+__author__ = 'ysitu <ysitu@users.noreply.github.com>'
 
 __all__ = ['stoer_wagner']
 
@@ -96,9 +100,9 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
 
     # Make a copy of the graph for internal use.
     G = nx.Graph((u, v, {'weight': e.get(weight, 1)})
-                 for u, v, e in G.edges_iter(data=True) if u != v)
+                 for u, v, e in G.edges(data=True) if u != v)
 
-    for u, v, e, in G.edges_iter(data=True):
+    for u, v, e, in G.edges(data=True):
         if e['weight'] < 0:
             raise nx.NetworkXError('graph has a negative-weighted edge.')
 
@@ -109,7 +113,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     # Repeatedly pick a pair of nodes to contract until only one node is left.
     for i in range(n - 1):
         # Pick an arbitrary node u and create a set A = {u}.
-        u = next(iter(G))
+        u = arbitrary_element(G)
         A = set([u])
         # Repeatedly pick the node "most tightly connected" to A and add it to
         # A. The tightness of connectivity of a node not in A is defined by the
@@ -147,7 +151,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     G = nx.Graph(islice(contractions, best_phase))
     v = contractions[best_phase][1]
     G.add_node(v)
-    reachable = set(nx.single_source_shortest_path_length(G, v))
+    reachable = set(n for n, d in nx.single_source_shortest_path_length(G, v))
     partition = (list(reachable), list(nodes - reachable))
 
     return cut_value, partition

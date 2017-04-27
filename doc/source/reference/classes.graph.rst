@@ -9,6 +9,10 @@ Overview
 .. currentmodule:: networkx
 .. autofunction:: Graph
 
+=======
+Methods
+=======
+
 Adding and removing nodes and edges
 ===================================
 
@@ -25,9 +29,6 @@ Adding and removing nodes and edges
    Graph.add_weighted_edges_from
    Graph.remove_edge
    Graph.remove_edges_from
-   Graph.add_star
-   Graph.add_path
-   Graph.add_cycle
    Graph.clear
 
 
@@ -38,16 +39,12 @@ Iterating over nodes and edges
    :toctree: generated/
 
    Graph.nodes
-   Graph.nodes_iter
    Graph.__iter__
    Graph.edges
-   Graph.edges_iter
    Graph.get_edge_data
    Graph.neighbors
-   Graph.neighbors_iter
    Graph.__getitem__
-   Graph.adjacency_list
-   Graph.adjacency_iter
+   Graph.adjacency
    Graph.nbunch_iter
 
 
@@ -64,7 +61,6 @@ Information about graph structure
    Graph.number_of_nodes
    Graph.__len__
    Graph.degree
-   Graph.degree_iter
    Graph.size
    Graph.number_of_edges
    Graph.nodes_with_selfloops
@@ -81,7 +77,4 @@ Making copies and subgraphs
    Graph.to_undirected
    Graph.to_directed
    Graph.subgraph
-
-
-
-
+   Graph.edge_subgraph

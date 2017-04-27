@@ -1,15 +1,18 @@
 import itertools
 from nose.tools import assert_equal, assert_true, assert_false, assert_raises
+
 import networkx as nx
+from networkx.algorithms import flow
+from networkx.algorithms.connectivity import local_edge_connectivity
+from networkx.algorithms.connectivity import local_node_connectivity
 
-from networkx.algorithms.flow import (edmonds_karp, preflow_push,
-    shortest_augmenting_path) 
-
-flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
-
-# connectivity functions not imported to the base namespace
-from networkx.algorithms.connectivity import (local_edge_connectivity,
-    local_node_connectivity)
+flow_funcs = [
+    flow.boykov_kolmogorov,
+    flow.dinitz,
+    flow.edmonds_karp,
+    flow.preflow_push,
+    flow.shortest_augmenting_path,
+]
 
 
 msg = "Assertion failed in function: {0}"
@@ -207,8 +210,8 @@ def test_edge_missing_target():
 
 def test_not_weakly_connected():
     G = nx.DiGraph()
-    G.add_path([1, 2, 3])
-    G.add_path([4, 5])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5])
     for flow_func in flow_funcs:
         assert_equal(nx.node_connectivity(G), 0,
                      msg=msg.format(flow_func.__name__))
@@ -217,8 +220,8 @@ def test_not_weakly_connected():
 
 def test_not_connected():
     G = nx.Graph()
-    G.add_path([1, 2, 3])
-    G.add_path([4, 5])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5])
     for flow_func in flow_funcs:
         assert_equal(nx.node_connectivity(G), 0,
                      msg=msg.format(flow_func.__name__))
@@ -246,7 +249,7 @@ def test_cutoff():
     G = nx.complete_graph(5)
     for local_func in [local_edge_connectivity, local_node_connectivity]:
         for flow_func in flow_funcs:
-            if flow_func is preflow_push:
+            if flow_func is flow.preflow_push:
                 # cutoff is not supported by preflow_push
                 continue
             for cutoff in [3, 2, 1]:
@@ -340,7 +343,7 @@ class TestAllPairsNodeConnectivity:
     def test_all_pairs_connectivity(self):
         G = nx.Graph()
         nodes = [0, 1, 2, 3]
-        G.add_path(nodes)
+        nx.add_path(G, nodes)
         A = {n: {} for n in G}
         for u, v in itertools.combinations(nodes,2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
@@ -351,7 +354,7 @@ class TestAllPairsNodeConnectivity:
     def test_all_pairs_connectivity_directed(self):
         G = nx.DiGraph()
         nodes = [0, 1, 2, 3]
-        G.add_path(nodes)
+        nx.add_path(G, nodes)
         A = {n: {} for n in G}
         for u, v in itertools.permutations(nodes, 2):
             A[u][v] = nx.node_connectivity(G, u, v)

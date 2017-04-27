@@ -68,7 +68,7 @@ class TestEdgelist:
 
     def test_write_edgelist_1(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=False)
         fh.seek(0)
@@ -76,7 +76,7 @@ class TestEdgelist:
 
     def test_write_edgelist_2(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=True)
         fh.seek(0)
@@ -84,7 +84,7 @@ class TestEdgelist:
 
     def test_write_edgelist_3(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edge(1,2,weight=2.0)
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=True)
@@ -93,7 +93,7 @@ class TestEdgelist:
 
     def test_write_edgelist_4(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edge(1,2,weight=2.0)
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=[('weight')])
@@ -108,7 +108,7 @@ class TestEdgelist:
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', attr_dict={name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname)
@@ -116,7 +116,7 @@ class TestEdgelist:
         os.close(fd)
         os.unlink(fname)
 
-    def test_latin1_error(self):
+    def test_latin1_issue(self):
         G = nx.Graph()
         try: # Python 3.x
             name1 = chr(2344) + chr(123) + chr(6543)
@@ -124,7 +124,7 @@ class TestEdgelist:
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', attr_dict={name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         assert_raises(UnicodeEncodeError,
                       nx.write_edgelist,
@@ -141,7 +141,7 @@ class TestEdgelist:
         except ValueError: # Python 2.6+
             name1 = 'Bj' + unichr(246) + 'rk'
             name2 = unichr(220) + 'ber'
-        G.add_edge(name1, 'Radiohead', attr_dict={name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname, encoding = 'latin-1')
         H = nx.read_edgelist(fname, encoding = 'latin-1')
@@ -157,8 +157,8 @@ class TestEdgelist:
         H2=nx.read_edgelist(fname)
         assert_not_equal(H,H2) # they should be different graphs
         G.remove_node('g') # isolated nodes are not written in edgelist
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -170,8 +170,8 @@ class TestEdgelist:
         H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
         G.remove_node('g') # isolated nodes are not written in edgelist
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -181,9 +181,9 @@ class TestEdgelist:
         nx.write_edgelist(G,fname)  
         H=nx.read_edgelist(fname,nodetype=int)
         # isolated nodes are not written in edgelist
-        G.remove_nodes_from(nx.isolates(G))
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        G.remove_nodes_from(list(nx.isolates(G)))
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -195,8 +195,8 @@ class TestEdgelist:
         G.remove_node('g') # isolated nodes are not written in edgelist
         H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -207,8 +207,8 @@ class TestEdgelist:
         H=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         H2=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -219,7 +219,7 @@ class TestEdgelist:
         H=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiDiGraph())
         H2=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiDiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)

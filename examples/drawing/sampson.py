@@ -2,11 +2,12 @@
 """
 Sampson's monastery data.
 
-Shows how to read data from a zip file and plot multiple frames. 
+Shows how to read data from a zip file and plot multiple frames.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2010 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2010-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -38,9 +39,8 @@ plt.title('samplike3')
 nx.draw(G3,pos,node_size=50,with_labels=False)
 plt.subplot(224)
 plt.title('samplike1,2,3')
-nx.draw(G3,pos,edgelist=G3.edges(),node_size=50,with_labels=False)
+nx.draw(G3, pos, edgelist=list(G3.edges()), node_size=50, with_labels=False)
 nx.draw_networkx_edges(G1,pos,alpha=0.25)
 nx.draw_networkx_edges(G2,pos,alpha=0.25)
 plt.savefig("sampson.png") # save as png
 plt.show() # display
-

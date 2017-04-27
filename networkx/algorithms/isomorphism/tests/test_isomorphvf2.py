@@ -118,7 +118,7 @@ class TestAtlas(object):
         Atlas = self.GAG[0:100]
         alphabet = list(range(26))
         for graph in Atlas:
-            nlist = graph.nodes()
+            nlist = list(graph)
             labels = alphabet[:len(nlist)]
             for s in range(10):
                 random.shuffle(labels)

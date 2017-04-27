@@ -16,9 +16,9 @@ def flow_matrix_row(G, weight='weight', dtype=float, solver='lu'):
     C = solvername[solver](L, dtype=dtype) # initialize solver
     w = C.w # w is the Laplacian matrix width
     # row-by-row flow matrix
-    for u,v,d in G.edges_iter(data=True):
+    for u,v in sorted(sorted((u,v)) for u,v in G.edges()):
         B = np.zeros(w, dtype=dtype)
-        c = d.get(weight,1.0)
+        c = G[u][v].get(weight,1.0)
         B[u%w] = c
         B[v%w] = -c
         # get only the rows needed in the inverse laplacian 

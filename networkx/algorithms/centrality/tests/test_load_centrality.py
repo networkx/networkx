@@ -7,7 +7,7 @@ class TestLoadCentrality:
 
     def setUp(self):
 
-        G=nx.Graph();
+        G=nx.Graph()
         G.add_edge(0,1,weight=3)
         G.add_edge(0,2,weight=2)
         G.add_edge(0,3,weight=6)
@@ -28,7 +28,7 @@ class TestLoadCentrality:
         self.C4=nx.cycle_graph(4)
         self.T=nx.balanced_tree(r=2, h=2)
         self.Gb = nx.Graph()
-        self.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3), 
+        self.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
                                 (2, 4), (4, 5), (3, 5)])
         self.F = nx.florentine_families_graph()
         self.D = nx.cycle_graph(3, create_using=nx.DiGraph())
@@ -165,7 +165,7 @@ class TestLoadCentrality:
         c=nx.load_centrality(G,normalized=False)
 
         d={'Acciaiuoli':  0.000,
-           'Albizzi':    38.333, 
+           'Albizzi':    38.333,
            'Barbadori':  17.000,
            'Bischeri':   19.000,
            'Castellani': 10.000,
@@ -190,7 +190,7 @@ class TestLoadCentrality:
         # G=ladder_graph(3) (Graph B below)
 
         # Graph A and B are from Tao Zhou, Jian-Guo Liu, Bing-Hong
-        # Wang: Comment on ``Scientific collaboration
+        # Wang: Comment on "Scientific collaboration
         # networks. II. Shortest paths, weighted networks, and
         # centrality". http://arxiv.org/pdf/physics/0511084
 
@@ -209,8 +209,8 @@ class TestLoadCentrality:
         # paper - personal communication).
 
         # A = nx.Graph()
-        # A.add_edges_from([(0,1), (1,2), (1,3), (2,4), 
-        #                  (3,5), (4,6), (4,7), (4,8), 
+        # A.add_edges_from([(0,1), (1,2), (1,3), (2,4),
+        #                  (3,5), (4,6), (4,7), (4,8),
         #                  (5,8), (6,9), (7,9), (8,9)])
         B = nx.Graph() # ladder_graph(3)
         B.add_edges_from([(0,1), (0,2), (1,3), (2,3), (2,4), (4,5), (3,5)])
@@ -227,7 +227,7 @@ class TestLoadCentrality:
 
     def test_c4_edge_load(self):
         G=self.C4
-        c = nx.edge_load(G)
+        c = nx.edge_load_centrality(G)
         d={(0, 1): 6.000,
            (0, 3): 6.000,
            (1, 2): 6.000,
@@ -237,7 +237,7 @@ class TestLoadCentrality:
 
     def test_p4_edge_load(self):
         G=self.P4
-        c = nx.edge_load(G)
+        c = nx.edge_load_centrality(G)
         d={(0, 1): 6.000,
            (1, 2): 8.000,
            (2, 3): 6.000}
@@ -246,7 +246,7 @@ class TestLoadCentrality:
 
     def test_k5_edge_load(self):
         G=self.K5
-        c = nx.edge_load(G)
+        c = nx.edge_load_centrality(G)
         d={(0, 1): 5.000,
            (0, 2): 5.000,
            (0, 3): 5.000,
@@ -262,7 +262,7 @@ class TestLoadCentrality:
 
     def test_tree_edge_load(self):
         G=self.T
-        c = nx.edge_load(G)
+        c = nx.edge_load_centrality(G)
         d={(0, 1): 24.000,
            (0, 2): 24.000,
            (1, 3): 12.000,

@@ -100,7 +100,7 @@ class TestConvertNumpy(object):
         """Conversion from graph to matrix to graph with nodelist."""
         P4 = path_graph(4)
         P3 = path_graph(3)
-        nodelist = P3.nodes()
+        nodelist = list(P3)
         A = nx.to_numpy_matrix(P4, nodelist=nodelist)
         GA = nx.Graph(A)
         self.assert_equal(GA, P3)
@@ -171,7 +171,7 @@ class TestConvertNumpy(object):
         assert_equal(A[1,0],7)
         A=nx.to_numpy_matrix(G,multigraph_weight=max)
         assert_equal(A[1,0],70)
-                         
+
     def test_from_numpy_matrix_parallel_edges(self):
         """Tests that the :func:`networkx.from_numpy_matrix` function
         interprets integer weights as the number of parallel edges when
@@ -218,3 +218,23 @@ class TestConvertNumpy(object):
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
         assert_graphs_equal(G, expected)
+
+    def test_dtype_int_graph(self):
+        """Test that setting dtype int actually gives an integer matrix.
+
+        For more information, see GitHub pull request #1363.
+
+        """
+        G = nx.complete_graph(3)
+        A = nx.to_numpy_matrix(G, dtype=int)
+        assert_equal(A.dtype, int)
+
+    def test_dtype_int_multigraph(self):
+        """Test that setting dtype int actually gives an integer matrix.
+
+        For more information, see GitHub pull request #1363.
+
+        """
+        G = nx.MultiGraph(nx.complete_graph(3))
+        A = nx.to_numpy_matrix(G, dtype=int)
+        assert_equal(A.dtype, int)

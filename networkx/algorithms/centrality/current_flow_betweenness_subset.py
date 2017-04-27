@@ -235,7 +235,8 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
     # this could be done without a copy if we really wanted to
     mapping=dict(zip(ordering,range(n)))
     H = nx.relabel_nodes(G,mapping)
-    betweenness=(dict.fromkeys(H.edges(),0.0))
+    edges = (tuple(sorted((u,v))) for u,v in H.edges())
+    betweenness= dict.fromkeys(edges,0.0)
     if normalized:
         nb=(n-1.0)*(n-2.0) # normalization factor
     else:

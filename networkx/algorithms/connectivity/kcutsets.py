@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Kanevsky all minimum node k cutsets
+Kanevsky all minimum node k cutsets algorithm.
 """
 from operator import itemgetter
+from itertools import combinations
 
 import networkx as nx
 from .utils import build_auxiliary_node_connectivity
@@ -11,7 +12,6 @@ from networkx.algorithms.flow import (
     edmonds_karp,
     shortest_augmenting_path,
 )
-# Define the default maximum flow function.
 default_flow_func = edmonds_karp
 
 
@@ -87,6 +87,22 @@ def all_node_cuts(G, k=None, flow_func=None):
     if not nx.is_connected(G):
         raise nx.NetworkXError('Input graph is disconnected.')
 
+    # Addess some corner cases first.
+    # For cycle graphs
+    if G.order() == G.size():
+        if all(2 == d for n, d in G.degree()):
+            seen = set()
+            for u in G:
+                for v in nx.non_neighbors(G, u):
+                    if (u, v) not in seen and (v, u) not in seen:
+                        yield {v, u}
+                        seen.add((v, u))
+            return
+    # For complete Graphs
+    if nx.density(G) == 1:
+        for cut_set in combinations(G, len(G)-1):
+            yield set(cut_set)
+        return
     # Initialize data structures.
     # Keep track of the cuts already computed so we do not repeat them.
     seen = []
@@ -107,8 +123,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         k = nx.node_connectivity(G, flow_func=flow_func)
     # step 2: 
     # Find k nodes with top degree, call it X:
-    degree = G.degree().items()
-    X = set(n for n, d in sorted(degree, key=itemgetter(1), reverse=True)[:k])
+    X = {n for n, d in sorted(G.degree(), key=itemgetter(1), reverse=True)[:k]}
     # Check if X is a k-node-cutset
     if _is_separating_set(G, X):
         seen.append(X)
@@ -127,7 +142,7 @@ def all_node_cuts(G, k=None, flow_func=None):
             if flow_value == k:
                 ## Remove saturated edges form the residual network
                 saturated_edges = [(u, w, d) for (u, w, d) in
-                                    R.edges_iter(data=True)
+                                    R.edges(data=True)
                                     if d['capacity'] == d['flow']]
                 R.remove_edges_from(saturated_edges)
                 # step 6: shrink the strongly connected components of 
@@ -136,18 +151,18 @@ def all_node_cuts(G, k=None, flow_func=None):
                 cmap = L.graph['mapping']
                 # step 7: Compute antichains of L; they map to closed sets in H
                 # Any edge in H that links a closed set is part of a cutset
-                for antichain in antichain_generator(L):
+                for antichain in nx.antichains(L):
                     # Nodes in an antichain of the condensation graph of
                     # the residual network map to a closed set of nodes that
                     # define a node partition of the auxiliary digraph H.
-                    S = set(n for n, scc in cmap.items() if scc in antichain)
+                    S = {n for n, scc in cmap.items() if scc in antichain}
                     # Find the cutset that links the node partition (S,~S) in H
                     cutset = set()
                     for u in S:
                         cutset.update((u, w) for w in H[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    node_cut = set(H.node[n]['id'] for edge in cutset for n in edge)
+                    node_cut = {H.node[n]['id'] for edge in cutset for n in edge}
 
                     if len(node_cut) == k:
                         if node_cut not in seen:
@@ -172,49 +187,12 @@ def all_node_cuts(G, k=None, flow_func=None):
                 R.add_edges_from(saturated_edges)
 
 
-def transitive_closure(G):
-    """Based on http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py"""
-    TC = nx.DiGraph()
-    TC.add_nodes_from(G.nodes_iter())
-    TC.add_edges_from(G.edges_iter())
-    for v in G:
-        TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
-                          if v != u)
-    return TC
-
-   
-def antichain_generator(G):
-    """Generates antichains from a DAG.
-
-    This function was originally developed by Peter Jipsen and Franco Saliola
-    for the SAGE project. It's included in NetworkX with permission from the 
-    authors. Original SAGE code at:
-
-    https://sage.informatik.uni-goettingen.de/src/combinat/posets/hasse_diagram.py
-
-    """
-    # Based on SAGE combinat.posets.hasse_diagram.py
-    TC = transitive_closure(G)
-    antichains_queues = [([], nx.topological_sort(G, reverse=True))]
-    while antichains_queues:
-        (antichain, queue) = antichains_queues.pop()
-        # Invariant:
-        #  - the elements of antichain are independent
-        #  - the elements of queue are independent from those of antichain
-        yield antichain
-        while queue:
-            x = queue.pop()
-            new_antichain = antichain + [x]
-            new_queue = [t for t in queue if not ((t in TC[x]) or (x in TC[t]))]
-            antichains_queues.append((new_antichain, new_queue))
-
-
 def _is_separating_set(G, cut):
     """Assumes that the input graph is connected"""
     if len(cut) == len(G) - 1:
         return True
 
-    H = G.copy()
+    H = G.copy(with_data=False)
     H.remove_nodes_from(cut)
     if nx.is_connected(H):
         return False

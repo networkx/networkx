@@ -1,84 +1,87 @@
+# Copyright (C) 2010 by
+#   Aric Hagberg (hagberg@lanl.gov)
+#   Renato Fabbri
+# Copyright (C) 2012 by
+#   Aric Hagberg <hagberg@lanl.gov>
+#   Dan Schult <dschult@colgate.edu>
+#   Pieter Swart <swart@lanl.gov>
+# Copyright (C) 2016 by NetworkX developers.
+#
+# All rights reserved.
+# BSD license.
 """
 Vitality measures.
 """
-#    Copyright (C) 2012 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+from functools import partial
+
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Renato Fabbri'])
+
 __all__ = ['closeness_vitality']
 
-def weiner_index(G, weight=None):
-    # compute sum of distances between all node pairs
-    # (with optional weights)
-    weiner=0.0
-    if weight is None:
-        for n in G:
-            path_length=nx.single_source_shortest_path_length(G,n)
-            weiner+=sum(path_length.values())
-    else:
-        for n in G:
-            path_length=nx.single_source_dijkstra_path_length(G,
-                    n,weight=weight)
-            weiner+=sum(path_length.values())
-    return weiner
 
+def closeness_vitality(G, node=None, weight=None, wiener_index=None):
+    """Returns the closeness vitality for nodes in the graph.
 
-def closeness_vitality(G, weight=None):
-    """Compute closeness vitality for nodes.
-
-    Closeness vitality of a node is the change in the sum of distances
-    between all node pairs when excluding that node.
+    The *closeness vitality* of a node, defined in Section 3.6.2 of [1],
+    is the change in the sum of distances between all node pairs when
+    excluding that node.
 
     Parameters
     ----------
-    G : graph
+    G : NetworkX graph
+        A strongly-connected graph.
 
-    weight : None or string (optional)
-       The name of the edge attribute used as weight. If None the edge
-       weights are ignored.
+    weight : string
+        The name of the edge attribute used as weight. This is passed
+        directly to the :func:`~networkx.wiener_index` function.
+
+    node : object
+        If specified, only the closeness vitality for this node will be
+        returned. Otherwise, a dictionary mappping each node to its
+        closeness vitality will be returned.
+
+    Other parameters
+    ----------------
+    wiener_index : number
+        If you have already computed the Wiener index of the graph
+        `G`, you can provide that value here. Otherwise, it will be
+        computed for you.
 
     Returns
     -------
-    nodes : dictionary
-       Dictionary with nodes as keys and closeness vitality as the value.
+    dictionary or float
+        If `node` is None, this function returnes a dictionary
+        with nodes as keys and closeness vitality as the
+        value. Otherwise, it returns only the closeness vitality for the
+        specified `node`.
+
+        The closeness vitality of a node may be negative infinity if
+        removing that node would disconnect the graph.
 
     Examples
     --------
-    >>> G=nx.cycle_graph(3)
+    >>> G = nx.cycle_graph(3)
     >>> nx.closeness_vitality(G)
-    {0: 4.0, 1: 4.0, 2: 4.0}
+    {0: 2.0, 1: 2.0, 2: 2.0}
 
     See Also
     --------
-    closeness_centrality()
+    closeness_centrality
 
     References
     ----------
-    .. [1] Ulrik Brandes, Sec. 3.6.2 in
-       Network Analysis: Methodological Foundations, Springer, 2005.
-       http://books.google.com/books?id=TTNhSm7HYrIC
+    .. [1] Ulrik Brandes, Thomas Erlebach (eds.).
+           *Network Analysis: Methodological Foundations*.
+           Springer, 2005.
+           <http://books.google.com/books?id=TTNhSm7HYrIC>
+
     """
-    multigraph = G.is_multigraph()
-    wig = weiner_index(G,weight)
-    closeness_vitality = {}
-    for n in G:
-        # remove edges connected to node n and keep list of edges with data
-        # could remove node n but it doesn't count anyway
-        if multigraph:
-            edges = G.edges(n,data=True,keys=True)
-            if G.is_directed():
-                edges += G.in_edges(n,data=True,keys=True)
-        else:
-            edges = G.edges(n,data=True)
-            if G.is_directed():
-                edges += G.in_edges(n,data=True)
-        G.remove_edges_from(edges)
-        closeness_vitality[n] = wig - weiner_index(G,weight)
-        # add edges and data back to graph
-        G.add_edges_from(edges)
-    return closeness_vitality
+    if wiener_index is None:
+        wiener_index = nx.wiener_index(G, weight=weight)
+    if node is not None:
+        after = nx.wiener_index(G.subgraph(set(G) - {node}), weight=weight)
+        return wiener_index - after
+    vitality = partial(closeness_vitality, G, weight=weight,
+                       wiener_index=wiener_index)
+    # TODO This can be trivially parallelized.
+    return {v: vitality(node=v) for v in G}

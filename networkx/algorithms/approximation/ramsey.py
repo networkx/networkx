@@ -7,6 +7,8 @@ Ramsey numbers.
 #   All rights reserved.
 #   BSD license.
 import networkx as nx
+from ...utils import arbitrary_element
+
 __all__ = ["ramsey_R2"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
@@ -24,9 +26,9 @@ def ramsey_R2(G):
         Maximum clique, Maximum independent set.
     """
     if not G:
-        return (set([]), set([]))
+        return set(), set()
 
-    node = next(G.nodes_iter())
+    node = arbitrary_element(G)
     nbrs = nx.all_neighbors(G, node)
     nnbrs = nx.non_neighbors(G, node)
     c_1, i_1 = ramsey_R2(G.subgraph(nbrs))
@@ -34,4 +36,6 @@ def ramsey_R2(G):
 
     c_1.add(node)
     i_2.add(node)
-    return (max([c_1, c_2]), max([i_1, i_2]))
+    # Choose the larger of the two cliques and the larger of the two
+    # independent sets, according to cardinality.
+    return max(c_1, c_2, key=len), max(i_1, i_2, key=len)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test sequences for graphiness.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -36,7 +36,6 @@ def is_graphical(sequence, method='eg'):
     sequence : list or iterable container
         A sequence of integer node degrees
 
-
     method : "eg" | "hh"
         The method used to validate the degree sequence.
         "eg" corresponds to the Erdős-Gallai algorithm, and
@@ -50,7 +49,7 @@ def is_graphical(sequence, method='eg'):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> sequence = G.degree().values()
+    >>> sequence = (d for n, d in G.degree())
     >>> nx.is_valid_degree_sequence(sequence)
     True
 
@@ -129,7 +128,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """
     try:
         dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible: 
+    except nx.NetworkXUnfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
@@ -140,7 +139,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     while n > 0:
         # Retrieve the maximum degree in the sequence
         while num_degs[dmax] == 0:
-            dmax -= 1;
+            dmax -= 1
         # If there are not enough stubs to connect to, then the sequence is
         # not graphical
         if dmax > n-1:
@@ -194,7 +193,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
        \sum_{i=1}^{k} d_i \leq k(k-1) + \sum_{j=k+1}^{n} \min(d_i,k)
              = k(n-1) - ( k \sum_{j=0}^{k-1} n_j - \sum_{j=0}^{k-1} j n_j )
 
-    A strong index k is any index where `d_k \geq k` and the value `n_j` is the
+    A strong index k is any index where d_k >= k and the value n_j is the
     number of occurrences of j in d.  The maximal strong index is called the
     Durfee index.
 
@@ -218,7 +217,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     """
     try:
         dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible: 
+    except nx.NetworkXUnfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):

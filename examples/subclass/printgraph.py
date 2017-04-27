@@ -1,8 +1,9 @@
 """
 Example subclass of the Graph class.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2009 by 
+# Author: Aric Hagberg (hagberg@lanl.gov)
+
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -48,27 +49,27 @@ class PrintGraph(Graph):
         for n in nodes:
             self.remove_node(n)
 
-    def add_edge(self, u, v, attr_dict=None, **attr):  
+    def add_edge(self, u, v, attr_dict=None, **attr):
         Graph.add_edge(self,u,v,attr_dict=attr_dict,**attr)
         self.fh.write("Add edge: %s-%s\n"%(u,v))
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):  
+    def add_edges_from(self, ebunch, attr_dict=None, **attr):
         for e in ebunch:
             u,v=e[0:2]
             self.add_edge(u,v,attr_dict=attr_dict,**attr)
 
-    def remove_edge(self, u, v): 
+    def remove_edge(self, u, v):
         Graph.remove_edge(self,u,v)
         self.fh.write("Remove edge: %s-%s\n"%(u,v))
 
-    def remove_edges_from(self, ebunch): 
+    def remove_edges_from(self, ebunch):
         for e in ebunch:
             u,v=e[0:2]
             self.remove_edge(u,v)
 
     def clear(self):
         self.name = ''
-        self.adj.clear() 
+        self.adj.clear()
         self.node.clear()
         self.graph.clear()
         self.fh.write("Clear graph\n")
@@ -81,13 +82,13 @@ class PrintGraph(Graph):
         # Here we use H.add_edge()
         bunch =set(self.nbunch_iter(nbunch))
 
-        if not copy: 
+        if not copy:
             # remove all nodes (and attached edges) not in nbunch
             self.remove_nodes_from([n for n in self if n not in bunch])
             self.name = "Subgraph of (%s)"%(self.name)
             return self
         else:
-            # create new graph and copy subgraph into it       
+            # create new graph and copy subgraph into it
             H = self.__class__()
             H.name = "Subgraph of (%s)"%(self.name)
             # add nodes
@@ -102,7 +103,7 @@ class PrintGraph(Graph):
                             H.add_edge(u,v,dd)
                     seen.add(u)
             # copy node and graph attr dicts
-            H.node=dict( (n,deepcopy(d)) 
+            H.node=dict( (n,deepcopy(d))
                          for (n,d) in self.node.items() if n in H)
             H.graph=deepcopy(self.graph)
             return H
@@ -117,19 +118,18 @@ if __name__=='__main__':
     G.remove_nodes_from('ar')
     print(G.nodes(data=True))
     G.add_edge(0,1,weight=10)
-    print(G.edges(data=True))
+    print(list(G.edges(data=True)))
     G.remove_edge(0,1)
     G.add_edges_from(list(zip(list(range(0o3)),list(range(1,4)))),weight=10)
-    print(G.edges(data=True))
+    print(list(G.edges(data=True)))
     G.remove_edges_from(list(zip(list(range(0o3)),list(range(1,4)))))
-    print(G.edges(data=True))
+    print(list(G.edges(data=True)))
 
-    
+
     G=PrintGraph()
-    G.add_path(list(range(10)))
+    nx.add_path(G, range(10))
     print("subgraph")
-    H1=G.subgraph(list(range(4)),copy=False)
-    H2=G.subgraph(list(range(4)),copy=False)
-    print(H1.edges())
-    print(H2.edges())
-                 
+    H1=G.subgraph(range(4), copy=False)
+    H2=G.subgraph(range(4), copy=False)
+    print(list(H1.edges()))
+    print(list(H2.edges()))

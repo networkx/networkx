@@ -37,7 +37,7 @@ list of names that have commits in ``networkx``'s
 
 A historical, partial listing of contributors and their contributions to some
 of the earlier versions of NetworkX can be found
-`here </reference/credits_old.html>`_.
+`here <https://github.com/networkx/networkx/blob/886e790437bcf30e9f58368829d483efef7a2acc/doc/source/reference/credits_old.rst>`_.
 
 
 Original Authors
@@ -78,7 +78,6 @@ is partially historical, and now, mostly arbitrary.
 - Andrew Conway
 - Raf Guns
 - Salim Fadhley
-- Matteo Dell'Amico
 - Fabrice Desclaux
 - Arpad Horvath
 - Minh Van Nguyen
@@ -104,9 +103,16 @@ is partially historical, and now, mostly arbitrary.
 - Dustin Smith
 - Mathieu Larose
 - Vincent Gauthier
-- Sérgio Nery Simões
 - chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
-
+- Jeffrey Finkelstein
+- Jean-Gabriel Young, Github: `jg-you <https://github.com/jgyou>`_
+- Andrey Paramonov, http://aparamon.msk.ru
+- Mridul Seth, GitHub: `MridulS <https://github.com/MridulS>`_
+- Thodoris Sotiropoulos, GitHub: `theosotr <https://github.com/theosotr>`_
+- Konstantinos Karakatsanis, GitHub: `k-karakatsanis <https://github.com/k-karakatsanis>`_
+- Ryan Nelson, GitHub: `rnelsonchem <https://github.com/rnelsonchem>`_
+- Niels van Adrichem, GitHub: `NvanAdrichem <https://github.com/NvanAdrichem>`_
+- Michael E. Rose, GitHub: `Michael-E-Rose <https://github.com/Michael-E-Rose>`_
 
 Support
 -------

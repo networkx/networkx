@@ -65,6 +65,90 @@ graph [
   ]
 ]
 """
+    def test_parse_gml_cytoscape_bug(self):
+        # example from issue #321, originally #324 in trac
+        cytoscape_example = """
+Creator "Cytoscape"
+Version 1.0
+graph   [
+    node    [
+        root_index  -3
+        id  -3
+        graphics    [
+            x   -96.0
+            y   -67.0
+            w   40.0
+            h   40.0
+            fill    "#ff9999"
+            type    "ellipse"
+            outline "#666666"
+            outline_width   1.5
+        ]
+        label   "node2"
+    ]
+    node    [
+        root_index  -2
+        id  -2
+        graphics    [
+            x   63.0
+            y   37.0
+            w   40.0
+            h   40.0
+            fill    "#ff9999"
+            type    "ellipse"
+            outline "#666666"
+            outline_width   1.5
+        ]
+        label   "node1"
+    ]
+    node    [
+        root_index  -1
+        id  -1
+        graphics    [
+            x   -31.0
+            y   -17.0
+            w   40.0
+            h   40.0
+            fill    "#ff9999"
+            type    "ellipse"
+            outline "#666666"
+            outline_width   1.5
+        ]
+        label   "node0"
+    ]
+    edge    [
+        root_index  -2
+        target  -2
+        source  -1
+        graphics    [
+            width   1.5
+            fill    "#0000ff"
+            type    "line"
+            Line    [
+            ]
+            source_arrow    0
+            target_arrow    3
+        ]
+        label   "DirectedEdge"
+    ]
+    edge    [
+        root_index  -1
+        target  -1
+        source  -3
+        graphics    [
+            width   1.5
+            fill    "#0000ff"
+            type    "line"
+            Line    [
+            ]
+            source_arrow    0
+            target_arrow    3
+        ]
+        label   "DirectedEdge"
+    ]
+]
+"""
+        nx.parse_gml(cytoscape_example)
 
     def test_parse_gml(self):
         G = nx.parse_gml(self.simple_data, label='label')
@@ -122,7 +206,7 @@ graph
     def test_tuplelabels(self):
         # https://github.com/networkx/networkx/pull/1048
         # Writing tuple labels to GML failed.
-        G = nx.Graph()
+        G = nx.OrderedGraph()
         G.add_edge((0, 1), (1, 0))
         data = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
         answer = """graph [
@@ -221,9 +305,9 @@ graph
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert_equal(data, G.name)
         assert_equal({'name': data, unicode('data'): data}, G.graph)
-        assert_equal(G.nodes(data=True),
+        assert_equal(list(G.nodes(data=True)),
                      [(0, dict(int=-1, data=dict(data=data)))])
-        assert_equal(G.edges(data=True), [(0, 0, dict(float=-2.5, data=data))])
+        assert_equal(list(G.edges(data=True)), [(0, 0, dict(float=-2.5, data=data))])
         G = nx.Graph()
         G.graph['data'] = 'frozenset([1, 2, 3])'
         G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)

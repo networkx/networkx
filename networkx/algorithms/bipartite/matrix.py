@@ -4,7 +4,7 @@
 Biadjacency matrices
 ====================
 """
-#    Copyright (C) 2013-2015 by
+#    Copyright (C) 2013-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -101,7 +101,7 @@ def biadjacency_matrix(G, row_order, column_order=None,
         row,col,data=[],[],[]
     else:
         row,col,data = zip(*((row_index[u],col_index[v],d.get(weight,1))
-                             for u,v,d in G.edges_iter(row_order,data=True)
+                             for u,v,d in G.edges(row_order,data=True)
                              if u in row_index and v in col_index))
     M = sparse.coo_matrix((data,(row,col)),
                           shape=(nlen,mlen), dtype=dtype)
@@ -112,7 +112,7 @@ def biadjacency_matrix(G, row_order, column_order=None,
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
-    r"""Creates a new bipartite graph from a biadjacency matrix given as a 
+    r"""Creates a new bipartite graph from a biadjacency matrix given as a
     SciPy sparse matrix.
 
     Parameters
@@ -129,14 +129,14 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
 
     Notes
     -----
-    The nodes are labeled with the attribute `bipartite` set to an integer 
+    The nodes are labeled with the attribute `bipartite` set to an integer
     0 or 1 representing membership in part 0 or part 1 of the bipartite graph.
 
     If `create_using` is an instance of :class:`networkx.MultiGraph` or
-    :class:`networkx.MultiDiGraph` and the entries of `A` are of type ``int``,
-    then this function returns a multigraph (of the same type as
-    `create_using`) with parallel edges. In this case, `edge_attribute` will be
-    ignored.
+    :class:`networkx.MultiDiGraph` and the entries of `A` are of
+    type :class:`int`, then this function returns a multigraph (of the same
+    type as `create_using`) with parallel edges. In this case, `edge_attribute`
+    will be ignored.
 
     See Also
     --------

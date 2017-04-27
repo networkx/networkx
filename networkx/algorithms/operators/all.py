@@ -8,10 +8,10 @@
 #    BSD license.
 try:
     from itertools import izip_longest as zip_longest
-except ImportError: # Python3 has zip_longest
+except ImportError:  # Python3 has zip_longest
     from itertools import zip_longest
 import networkx as nx
-#from networkx.utils import is_string_like
+# from networkx.utils import is_string_like
 
 __author__ = """\n""".join([ 'Robert King <kingrobertking@gmail.com>',
                              'Aric Hagberg <aric.hagberg@gmail.com>'])
@@ -19,7 +19,8 @@ __author__ = """\n""".join([ 'Robert King <kingrobertking@gmail.com>',
 __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
            'intersection_all']
 
-def union_all(graphs, rename=(None,) , name=None):
+
+def union_all(graphs, rename=(None,), name=None):
     """Return the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
@@ -62,6 +63,7 @@ def union_all(graphs, rename=(None,) , name=None):
         gname = None
     return U
 
+
 def disjoint_union_all(graphs):
     """Return the disjoint union of all graphs.
 
@@ -90,6 +92,7 @@ def disjoint_union_all(graphs):
     for H in graphs:
         U = nx.disjoint_union(U, H)
     return U
+
 
 def compose_all(graphs, name=None):
     """Return the composition of all graphs.
@@ -123,6 +126,7 @@ def compose_all(graphs, name=None):
     for H in graphs:
         C = nx.compose(C, H, name=name)
     return C
+
 
 def intersection_all(graphs):
     """Return a new graph that contains only the edges that exist in

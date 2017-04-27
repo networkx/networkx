@@ -1,6 +1,6 @@
 """Laplacian matrix of graphs.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -52,7 +52,7 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     """
     import scipy.sparse
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   format='csr')
     n,m = A.shape
@@ -114,7 +114,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     import scipy
     import scipy.sparse
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   format='csr')
     n,m = A.shape

@@ -3,7 +3,7 @@
 Generators and functions for bipartite graphs.
 
 """
-#    Copyright (C) 2006-2011 by 
+#    Copyright (C) 2006-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,9 +11,11 @@ Generators and functions for bipartite graphs.
 #    BSD license.
 import math
 import random
-import networkx 
+import networkx
 from functools import reduce
 import networkx as nx
+from networkx.utils import nodes_or_number
+
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
@@ -28,6 +30,7 @@ __all__=['configuration_model',
          ]
 
 
+@nodes_or_number([0, 1])
 def complete_bipartite_graph(n1, n2, create_using=None):
     """Return the complete bipartite graph `K_{n_1,n_2}`.
 
@@ -58,13 +61,15 @@ def complete_bipartite_graph(n1, n2, create_using=None):
             raise nx.NetworkXError("Directed Graph not supported")
         G = create_using
         G.clear()
-    
-    top = set(range(n1))
-    bottom = set(range(n1, n1+n2))
+
+    n1, top = n1
+    n2, bottom = n2
+    if isinstance(n2, int):
+        bottom = [n1 + i for i in bottom]
     G.add_nodes_from(top, bipartite=0)
     G.add_nodes_from(bottom, bipartite=1)
     G.add_edges_from((u, v) for u in top for v in bottom)
-    G.graph['name'] = "complete_bipartite_graph(%d,%d)" % (n1, n2)
+    G.graph['name'] = "complete_bipartite_graph(%s,%s)" % (n1, n2)
     return G
 
 
@@ -80,7 +85,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     create_using : NetworkX graph instance, optional
        Return graph of this type.
     seed : integer, optional
-       Seed for random number generator. 
+       Seed for random number generator.
 
     Nodes from the set A are connected to nodes in the set B by
     choosing randomly from the possible free stubs, one in A and
@@ -104,12 +109,12 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     elif create_using.is_directed():
         raise networkx.NetworkXError(\
                 "Directed Graph not supported")
-        
+
 
     G=networkx.empty_graph(0,create_using)
 
     if not seed is None:
-        random.seed(seed)    
+        random.seed(seed)
 
     # length and sum of each sequence
     lena=len(aseq)
@@ -123,17 +128,17 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
               %(suma,sumb))
 
     G=_add_nodes_with_bipartite_label(G,lena,lenb)
-                       
+
     if max(aseq)==0: return G  # done if no edges
 
     # build lists of degree-repeated vertex numbers
     stubs=[]
-    stubs.extend([[v]*aseq[v] for v in range(0,lena)])  
+    stubs.extend([[v]*aseq[v] for v in range(0,lena)])
     astubs=[]
     astubs=[x for subseq in stubs for x in subseq]
 
     stubs=[]
-    stubs.extend([[v]*bseq[v-lena] for v in range(lena,lena+lenb)])  
+    stubs.extend([[v]*bseq[v-lena] for v in range(lena,lena+lenb)])
     bstubs=[]
     bstubs=[x for subseq in stubs for x in subseq]
 
@@ -148,7 +153,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
 
 
 def havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences using a 
+    """Return a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
 
     Nodes from the set A are connected to nodes in the set B by
@@ -202,8 +207,8 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     if max(aseq)==0: return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
-    astubs=[[aseq[v],v] for v in range(0,naseq)]  
-    bstubs=[[bseq[v-naseq],v] for v in range(naseq,naseq+nbseq)]  
+    astubs=[[aseq[v],v] for v in range(0,naseq)]
+    bstubs=[[bseq[v-naseq],v] for v in range(naseq,naseq+nbseq)]
     astubs.sort()
     while astubs:
         (degree,u)=astubs.pop() # take of largest degree node in the a set
@@ -236,7 +241,6 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
-
 
     Notes
     -----
@@ -276,8 +280,8 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     if max(aseq)==0: return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
-    astubs=[[aseq[v],v] for v in range(0,lena)]  
-    bstubs=[[bseq[v-lena],v] for v in range(lena,lena+lenb)]  
+    astubs=[[aseq[v],v] for v in range(0,lena)]
+    bstubs=[[bseq[v-lena],v] for v in range(lena,lena+lenb)]
     astubs.sort()
     bstubs.sort()
     while astubs:
@@ -296,7 +300,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
-    """Return a bipartite graph from two given degree sequences using 
+    """Return a bipartite graph from two given degree sequences using
     an alternating Havel-Hakimi style construction.
 
     Nodes from the set A are connected to nodes in the set B by
@@ -312,7 +316,6 @@ def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
-
 
     Notes
     -----
@@ -350,14 +353,14 @@ def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
 
     if max(aseq)==0: return G  # done if no edges
     # build list of degree-repeated vertex numbers
-    astubs=[[aseq[v],v] for v in range(0,naseq)]  
-    bstubs=[[bseq[v-naseq],v] for v in range(naseq,naseq+nbseq)]  
+    astubs=[[aseq[v],v] for v in range(0,naseq)]
+    bstubs=[[bseq[v-naseq],v] for v in range(naseq,naseq+nbseq)]
     while astubs:
         astubs.sort()
         (degree,u)=astubs.pop() # take of largest degree node in the a set
         if degree==0: break # done, all are zero
         bstubs.sort()
-        small=bstubs[0:degree // 2]  # add these low degree targets     
+        small=bstubs[0:degree // 2]  # add these low degree targets
         large=bstubs[(-degree+degree // 2):] # and these high degree targets
         stubs=[x for z in zip(large,small) for x in z] # combine, sorry
         if len(stubs)<len(small)+len(large): # check for zip truncation
@@ -373,7 +376,7 @@ def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     return G
 
 def preferential_attachment_graph(aseq,p,create_using=None,seed=None):
-    """Create a bipartite graph with a preferential attachment model from 
+    """Create a bipartite graph with a preferential attachment model from
     a given single degree sequence.
 
     Parameters
@@ -385,7 +388,7 @@ def preferential_attachment_graph(aseq,p,create_using=None,seed=None):
     create_using : NetworkX graph instance, optional
        Return graph of this type.
     seed : integer, optional
-       Seed for random number generator. 
+       Seed for random number generator.
 
     References
     ----------
@@ -406,13 +409,13 @@ def preferential_attachment_graph(aseq,p,create_using=None,seed=None):
         raise networkx.NetworkXError(\
                 "Directed Graph not supported")
 
-    if p > 1: 
+    if p > 1:
         raise networkx.NetworkXError("probability %s > 1"%(p))
 
     G=networkx.empty_graph(0,create_using)
 
     if not seed is None:
-        random.seed(seed)    
+        random.seed(seed)
 
     naseq=len(aseq)
     G=_add_nodes_with_bipartite_label(G,naseq,0)
@@ -428,9 +431,9 @@ def preferential_attachment_graph(aseq,p,create_using=None,seed=None):
             else:
                 bb=[ [b]*G.degree(b) for b in range(naseq,G.number_of_nodes())]
                 # flatten the list of lists into a list.
-                bbstubs=reduce(lambda x,y: x+y, bb) 
+                bbstubs=reduce(lambda x,y: x+y, bb)
                 # choose preferentially a bottom node.
-                target=random.choice(bbstubs) 
+                target=random.choice(bbstubs)
                 G.add_node(target,bipartite=1)
                 G.add_edge(source,target)
         vv.remove(vv[0])
@@ -453,20 +456,20 @@ def random_graph(n, m, p, seed=None, directed=False):
     p : float
         Probability for edge creation.
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
     directed : bool, optional (default=False)
-        If True return a directed graph 
-      
+        If True return a directed graph
+
     Notes
     -----
     This function is not imported in the main namespace.
     To use it you have to explicitly import the bipartite package.
 
-    The bipartite random graph algorithm chooses each of the n*m (undirected) 
+    The bipartite random graph algorithm chooses each of the n*m (undirected)
     or 2*nm (directed) possible edges with probability p.
 
     This algorithm is O(n+m) where m is the expected number of edges.
-    
+
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
 
@@ -476,7 +479,7 @@ def random_graph(n, m, p, seed=None, directed=False):
 
     References
     ----------
-    .. [1] Vladimir Batagelj and Ulrik Brandes, 
+    .. [1] Vladimir Batagelj and Ulrik Brandes,
        "Efficient generation of large random networks",
        Phys. Rev. E, 71, 036113, 2005.
     """
@@ -493,10 +496,10 @@ def random_graph(n, m, p, seed=None, directed=False):
         return G
     if p >= 1:
         return nx.complete_bipartite_graph(n,m)
-        
-    lp = math.log(1.0 - p)  
 
-    v = 0 
+    lp = math.log(1.0 - p)
+
+    v = 0
     w = -1
     while v < n:
         lr = math.log(1.0 - random.random())
@@ -508,9 +511,9 @@ def random_graph(n, m, p, seed=None, directed=False):
             G.add_edge(v, n+w)
 
     if directed:
-        # use the same algorithm to 
+        # use the same algorithm to
         # add edges from the "m" to "n" set
-        v = 0 
+        v = 0
         w = -1
         while v < n:
             lr = math.log(1.0 - random.random())
@@ -538,10 +541,10 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
     k : int
         The number of edges
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
     directed : bool, optional (default=False)
-        If True return a directed graph 
-        
+        If True return a directed graph
+
     Examples
     --------
     from networkx.algorithms import bipartite

@@ -2,14 +2,19 @@
 # Test for k-cutsets
 from operator import itemgetter
 from nose.tools import assert_equal, assert_false, assert_true, assert_raises
+
 import networkx as nx
+from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
-from networkx.algorithms.flow import (
-    edmonds_karp,
-    shortest_augmenting_path,
-    preflow_push,
-)
+
+flow_funcs = [
+    flow.boykov_kolmogorov,
+    flow.dinitz,
+    flow.edmonds_karp,
+    flow.preflow_push,
+    flow.shortest_augmenting_path,
+]
 
 
 ##
@@ -204,7 +209,6 @@ def test_disconnected_graph():
 
 
 def test_alternative_flow_functions():
-    flow_funcs = [edmonds_karp, shortest_augmenting_path, preflow_push]
     graph_funcs = [graph_example_1, nx.davis_southern_women_graph]
     for graph_func in graph_funcs:
         G = graph_func()
@@ -233,6 +237,34 @@ def test_non_repeated_cuts():
     K = nx.karate_club_graph()
     G = max(list(nx.biconnected_component_subgraphs(K)), key=len)
     solution = [{32, 33}, {2, 33}, {0, 3}, {0, 1}, {29, 33}]
+    cuts = list(nx.all_node_cuts(G))
+    if len(solution) != len(cuts):
+        print(nx.info(G))
+        print("Solution: {}".format(solution))
+        print("Result: {}".format(cuts))
+    assert_true(len(solution) == len(cuts))
+    for cut in cuts:
+        assert_true(cut in solution)
+
+
+def test_cycle_graph():
+    G = nx.cycle_graph(5)
+    solution = [{0, 2}, {0, 3}, {1, 3}, {1, 4}, {2, 4}]
+    cuts = list(nx.all_node_cuts(G))
+    assert_true(len(solution) == len(cuts))
+    for cut in cuts:
+        assert_true(cut in solution)
+
+
+def test_complete_graph():
+    G = nx.complete_graph(5)
+    solution = [
+        {0, 1, 2, 3},
+        {0, 1, 2, 4},
+        {0, 1, 3, 4},
+        {0, 2, 3, 4},
+        {1, 2, 3, 4},
+    ]
     cuts = list(nx.all_node_cuts(G))
     assert_true(len(solution) == len(cuts))
     for cut in cuts:

@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
-"""Shortest paths and path lengths using A* ("A star") algorithm.
-"""
-
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+#
+# Authors: Salim Fadhley <salimfadhley@gmail.com>
+#          Matteo Dell'Amico <matteodellamico@gmail.com>
+"""Shortest paths and path lengths using the A* ("A star") algorithm.
+"""
 from heapq import heappush, heappop
 from itertools import count
-from networkx import NetworkXError
-import networkx as nx
 
-__author__ = "\n".join(["Salim Fadhley <salimfadhley@gmail.com>",
-                        "Matteo Dell'Amico <matteodellamico@gmail.com>"])
+import networkx as nx
+from networkx.utils import not_implemented_for
+
 __all__ = ['astar_path', 'astar_path_length']
 
 
+@not_implemented_for('multigraph')
 def astar_path(G, source, target, heuristic=None, weight='weight'):
     """Return a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
@@ -50,16 +51,17 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> print(nx.astar_path(G,0,4))
+    >>> G = nx.path_graph(5)
+    >>> print(nx.astar_path(G, 0, 4))
     [0, 1, 2, 3, 4]
-    >>> G=nx.grid_graph(dim=[3,3])  # nodes are two-tuples (x,y)
+    >>> G = nx.grid_graph(dim=[3, 3])  # nodes are two-tuples (x,y)
+    >>> nx.set_edge_attributes(G, 'cost', {e: e[1][0]*2 for e in G.edges()})
     >>> def dist(a, b):
     ...    (x1, y1) = a
     ...    (x2, y2) = b
     ...    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
-    >>> print(nx.astar_path(G,(0,0),(2,2),dist))
-    [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2)]
+    >>> print(nx.astar_path(G, (0, 0), (2, 2), heuristic=dist, weight='cost'))
+    [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]
 
 
     See Also
@@ -67,8 +69,9 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     shortest_path, dijkstra_path
 
     """
-    if G.is_multigraph():
-        raise NetworkXError("astar_path() not implemented for Multi(Di)Graphs")
+    if source not in G or target not in G:
+        msg = 'Either source {} or target {} is not in G'
+        raise nx.NodeNotFound(msg.format(source, target))
 
     if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
@@ -160,5 +163,9 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
     astar_path
 
     """
+    if source not in G or target not in G:
+        msg = 'Either source {} or target {} is not in G'
+        raise nx.NodeNotFound(msg.format(source, target))
+
     path = astar_path(G, source, target, heuristic, weight)
     return sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))

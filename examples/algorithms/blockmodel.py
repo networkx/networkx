@@ -18,9 +18,7 @@ Example of creating a block model using the blockmodel function in NX.  Data use
 }
 
 """
-
-__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
+# Authors:  Drew Conway <drew.conway@nyu.edu>, Aric Hagberg <hagberg@lanl.gov>
 
 from collections import defaultdict
 import networkx as nx
@@ -41,8 +39,8 @@ def create_hc(G):
     Y=distance.squareform(distances)
     Z=hierarchy.complete(Y)  # Creates HC using farthest point linkage
     # This partition selection is arbitrary, for illustrive purposes
-    membership=list(hierarchy.fcluster(Z,t=1.15)) 
-    # Create collection of lists for blockmodel 
+    membership=list(hierarchy.fcluster(Z,t=1.15))
+    # Create collection of lists for blockmodel
     partition=defaultdict(list)
     for n,p in zip(list(range(len(G))),membership):
         partition[p].append(n)
@@ -50,16 +48,16 @@ def create_hc(G):
 
 if __name__ == '__main__':
     G=nx.read_edgelist("hartford_drug.edgelist")
-    
+
     # Extract largest connected component into graph H
-    H=nx.connected_component_subgraphs(G)[0]
+    H = next(nx.connected_component_subgraphs(G))
     # Makes life easier to have consecutively labeled integer nodes
-    H=nx.convert_node_labels_to_integers(H) 
+    H=nx.convert_node_labels_to_integers(H)
     # Create parititions with hierarchical clustering
     partitions=create_hc(H)
     # Build blockmodel graph
     BM=nx.blockmodel(H,partitions)
-    
+
 
     # Draw original graph
     pos=nx.spring_layout(H,iterations=100)
@@ -83,6 +81,3 @@ if __name__ == '__main__':
     plt.ylim(0,1)
     plt.axis('off')
     plt.savefig('hartford_drug_block_model.png')
-    
-    
-    

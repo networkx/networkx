@@ -1,243 +1,299 @@
 # -*- coding: utf-8 -*-
-"""
-Greedy graph coloring using various strategies.
-"""
 #    Copyright (C) 2014 by
 #    Christian Olsson <chro@itu.dk>
 #    Jan Aagaard Meier <jmei@itu.dk>
 #    Henrik Haugbølle <hhau@itu.dk>
+#    Arya McCarthy <admccarthy@smu.edu>
 #    All rights reserved.
 #    BSD license.
-import networkx as nx
-import random
+"""
+Greedy graph coloring using various strategies.
+"""
+from collections import defaultdict, deque
 import itertools
+import random
+
+import networkx as nx
+from networkx.utils import arbitrary_element
 from . import greedy_coloring_with_interchange as _interchange
 
-__author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
-                        "Jan Aagaard Meier <jmei@itu.dk>",
-                        "Henrik Haugbølle <hhau@itu.dk>"])
-__all__ = [
-    'greedy_color',
-    'strategy_largest_first',
-    'strategy_random_sequential',
-    'strategy_smallest_last',
-    'strategy_independent_set',
-    'strategy_connected_sequential',
-    'strategy_connected_sequential_dfs',
-    'strategy_connected_sequential_bfs',
-    'strategy_saturation_largest_first'
-]
-
-
-def min_degree_node(G):
-    return min(G, key=G.degree)
-
-
-def max_degree_node(G):
-    return max(G, key=G.degree)
+__all__ = ['greedy_color', 'strategy_connected_sequential',
+           'strategy_connected_sequential_bfs',
+           'strategy_connected_sequential_dfs', 'strategy_independent_set',
+           'strategy_largest_first', 'strategy_random_sequential',
+           'strategy_saturation_largest_first', 'strategy_smallest_last']
 
 
 def strategy_largest_first(G, colors):
-    """
-    Largest first (lf) ordering. Ordering the nodes by largest degree
-    first.
-    """
-    nodes = G.nodes()
-    nodes.sort(key=lambda node: -G.degree(node))
+    """Returns a list of the nodes of ``G`` in decreasing order by
+    degree.
 
-    return nodes
+    ``G`` is a NetworkX graph. ``colors`` is ignored.
+
+    """
+    return sorted(G, key=G.degree, reverse=True)
 
 
 def strategy_random_sequential(G, colors):
-    """
-    Random sequential (RS) ordering. Scrambles nodes into random ordering.
-    """
-    nodes = G.nodes()
-    random.shuffle(nodes)
+    """Returns a random permutation of the nodes of ``G`` as a list.
 
+    ``G`` is a NetworkX graph. ``colors`` is ignored.
+
+    """
+    nodes = list(G)
+    random.shuffle(nodes)
     return nodes
 
 
 def strategy_smallest_last(G, colors):
+    """Returns a deque of the nodes of ``G``, "smallest" last.
+
+    Specifically, the degrees of each node are tracked in a bucket queue. 
+    From this, the node of minimum degree is repeatedly popped from the
+    graph, updating its neighbors' degrees. 
+
+    ``G`` is a NetworkX graph. ``colors`` is ignored.
+
+    This implementation of the strategy runs in :math:`O(n + m)` time 
+    (ignoring polylogarithmic factors), where *n* is the number of nodes
+    and *m* is the number of edges.
+
+    This strategy is related to :func:`strategy_independent_set`: if we
+    interpret each node removed as an independent set of size one, then
+    this strategy chooses an independent set of size one instead of a
+    maximal independent set.
+
     """
-    Smallest last (sl). Picking the node with smallest degree first,
-    subtracting it from the graph, and starting over with the new smallest
-    degree node. When the graph is empty, the reverse ordering of the one
-    built is returned.
+    H = G.copy(with_data=False)
+    result = deque()
+
+    # Build initial degree list (i.e. the bucket queue data structure)
+    degrees = defaultdict(set)  # set(), for fast random-access removals
+    lbound = float('inf')
+    for node, d in H.degree():
+        degrees[d].add(node)
+        lbound = min(lbound, d)  # Lower bound on min-degree.
+
+    def find_min_degree():
+        # Save time by starting the iterator at `lbound`, not 0.
+        # The value that we find will be our new `lbound`, which we set later.
+        return next(d for d in itertools.count(lbound) if d in degrees)
+
+    for _ in G:
+        # Pop a min-degree node and add it to the list.
+        min_degree = find_min_degree()
+        u = degrees[min_degree].pop()
+        if not degrees[min_degree]:  # Clean up the degree list.
+            del degrees[min_degree]
+        result.appendleft(u)
+
+        # Update degrees of removed node's neighbors.
+        for v in H[u]:
+            degree = H.degree(v)
+            degrees[degree].remove(v)
+            if not degrees[degree]:  # Clean up the degree list.
+                del degrees[degree]
+            degrees[degree - 1].add(v)
+
+        # Finally, remove the node.
+        H.remove_node(u)
+        lbound = min_degree - 1  # Subtract 1 in case of tied neighbors.
+
+    return result
+
+
+def _maximal_independent_set(G):
+    """Returns a maximal independent set of nodes in ``G`` by repeatedly
+    choosing an independent node of minimum degree (with respect to the
+    subgraph of unchosen nodes).
+
     """
-    len_g = len(G)
-    available_g = G.copy()
-    nodes = [None] * len_g
-
-    for i in range(len_g):
-        node = min_degree_node(available_g)
-
-        available_g.remove_node(node)
-        nodes[len_g - i - 1] = node
-
-    return nodes
+    result = set()
+    remaining = set(G)
+    while remaining:
+        G = G.subgraph(remaining)
+        v = min(remaining, key=G.degree)
+        result.add(v)
+        remaining -= set(G[v]) | {v}
+    return result
 
 
 def strategy_independent_set(G, colors):
+    """Uses a greedy independent set removal strategy to determine the
+    colors.
+
+    This function updates ``colors`` **in-place** and return ``None``,
+    unlike the other strategy functions in this module.
+
+    This algorithm repeatedly finds and removes a maximal independent
+    set, assigning each node in the set an unused color.
+
+    ``G`` is a NetworkX graph.
+
+    This strategy is related to :func:`strategy_smallest_last`: in that
+    strategy, an independent set of size one is chosen at each step
+    instead of a maximal independent set.
+
     """
-    Greedy independent set ordering (GIS). Generates a maximal independent
-    set of nodes, and assigns color C to all nodes in this set. This set
-    of nodes is now removed from the graph, and the algorithm runs again.
-    """
-    len_g = len(G)
-    no_colored = 0
-    k = 0
-
-    uncolored_g = G.copy()
-    while no_colored < len_g:  # While there are uncolored nodes
-        available_g = uncolored_g.copy()
-
-        while len(available_g):  # While there are still nodes available
-            node = min_degree_node(available_g)
-            colors[node] = k  # assign color to values
-
-            no_colored += 1
-            uncolored_g.remove_node(node)
-            # Remove node and its neighbors from available
-            available_g.remove_nodes_from(available_g.neighbors(node) + [node])
-        k += 1
-    return None
+    remaining_nodes = set(G)
+    while len(remaining_nodes) > 0:
+        nodes = _maximal_independent_set(G.subgraph(remaining_nodes))
+        remaining_nodes -= nodes
+        for v in nodes:
+            yield v
 
 
 def strategy_connected_sequential_bfs(G, colors):
-    """
-    Connected sequential ordering (CS). Yield nodes in such an order, that
-    each node, except the first one, has at least one neighbour in the
-    preceeding sequence. The sequence is generated using BFS)
+    """Returns an iterable over nodes in ``G`` in the order given by a
+    breadth-first traversal.
+
+    The generated sequence has the property that for each node except
+    the first, at least one neighbor appeared earlier in the sequence.
+
+    ``G`` is a NetworkX graph. ``colors`` is ignored.
+
     """
     return strategy_connected_sequential(G, colors, 'bfs')
 
 
 def strategy_connected_sequential_dfs(G, colors):
-    """
-    Connected sequential ordering (CS). Yield nodes in such an order, that
-    each node, except the first one, has at least one neighbour in the
-    preceeding sequence. The sequence is generated using DFS)
+    """Returns an iterable over nodes in ``G`` in the order given by a
+    depth-first traversal.
+
+    The generated sequence has the property that for each node except
+    the first, at least one neighbor appeared earlier in the sequence.
+
+    ``G`` is a NetworkX graph. ``colors`` is ignored.
+
     """
     return strategy_connected_sequential(G, colors, 'dfs')
 
 
 def strategy_connected_sequential(G, colors, traversal='bfs'):
+    """Returns an iterable over nodes in ``G`` in the order given by a
+    breadth-first or depth-first traversal.
+
+    ``traversal`` must be one of the strings ``'dfs'`` or ``'bfs'``,
+    representing depth-first traversal or breadth-first traversal,
+    respectively.
+
+    The generated sequence has the property that for each node except
+    the first, at least one neighbor appeared earlier in the sequence.
+
+    ``G`` is a NetworkX graph. ``colors`` is ignored.
+
     """
-    Connected sequential ordering (CS). Yield nodes in such an order, that
-    each node, except the first one, has at least one neighbour in the
-    preceeding sequence. The sequence can be generated using both BFS and
-    DFS search (using the strategy_connected_sequential_bfs and
-    strategy_connected_sequential_dfs method). The default is bfs.
-    """
-    for component_graph in nx.connected_component_subgraphs(G):
-        source = component_graph.nodes()[0]
-
-        yield source  # Pick the first node as source
-
-        if traversal == 'bfs':
-            tree = nx.bfs_edges(component_graph, source)
-        elif traversal == 'dfs':
-            tree = nx.dfs_edges(component_graph, source)
-        else:
-            raise nx.NetworkXError(
-                'Please specify bfs or dfs for connected sequential ordering')
-
-        for (_, end) in tree:
-            # Then yield nodes in the order traversed by either BFS or DFS
+    if traversal == 'bfs':
+        traverse = nx.bfs_edges
+    elif traversal == 'dfs':
+        traverse = nx.dfs_edges
+    else:
+        raise nx.NetworkXError("Please specify one of the strings 'bfs' or"
+                               " 'dfs' for connected sequential ordering")
+    for component in nx.connected_component_subgraphs(G):
+        source = arbitrary_element(component)
+        # Yield the source node, then all the nodes in the specified
+        # traversal order.
+        yield source
+        for (_, end) in traverse(component, source):
             yield end
 
 
 def strategy_saturation_largest_first(G, colors):
-    """
-    Saturation largest first (SLF). Also known as degree saturation (DSATUR).
-    """
-    len_g = len(G)
-    no_colored = 0
-    distinct_colors = {}
+    """Iterates over all the nodes of ``G`` in "saturation order" (also
+    known as "DSATUR").
 
-    for node in G.nodes_iter():
-        distinct_colors[node] = set()
+    ``G`` is a NetworkX graph. ``colors`` is a dictionary mapping nodes of
+    ``G`` to colors, for those nodes that have already been colored.
 
-    while no_colored != len_g:
-        if no_colored == 0:
-             # When sat. for all nodes is 0, yield the node with highest degree
-            no_colored += 1
-            node = max_degree_node(G)
+    """
+    distinct_colors = {v: set() for v in G}
+    for i in range(len(G)):
+        # On the first time through, simply choose the node of highest degree.
+        if i == 0:
+            node = max(G, key=G.degree)
             yield node
-            for neighbour in G.neighbors_iter(node):
-                distinct_colors[neighbour].add(0)
+            # Add the color 0 to the distinct colors set for each
+            # neighbors of that node.
+            for v in G[node]:
+                distinct_colors[v].add(0)
         else:
-            highest_saturation = -1
-            highest_saturation_nodes = []
-
-            for node, distinct in distinct_colors.items():
-                if node not in colors:  # If the node is not already colored
-                    saturation = len(distinct)
-                    if saturation > highest_saturation:
-                        highest_saturation = saturation
-                        highest_saturation_nodes = [node]
-                    elif saturation == highest_saturation:
-                        highest_saturation_nodes.append(node)
-
-            if len(highest_saturation_nodes) == 1:
-                node = highest_saturation_nodes[0]
-            else:
-                # Return the node with highest degree
-                max_degree = -1
-                max_node = None
-
-                for node in highest_saturation_nodes:
-                    degree = G.degree(node)
-                    if degree > max_degree:
-                        max_node = node
-                        max_degree = degree
-
-                node = max_node
-
-            no_colored += 1
+            # Compute the maximum saturation and the set of nodes that
+            # achieve that saturation.
+            saturation = {v: len(c) for v, c in distinct_colors.items()
+                          if v not in colors}
+            # Yield the node with the highest saturation, and break ties by
+            # degree.
+            node = max(saturation, key=lambda v: (saturation[v], G.degree(v)))
             yield node
+            # Update the distinct color sets for the neighbors.
             color = colors[node]
-            for neighbour in G.neighbors_iter(node):
-                distinct_colors[neighbour].add(color)
+            for v in G[node]:
+                distinct_colors[v].add(color)
 
 
-def greedy_color(G, strategy=strategy_largest_first, interchange=False):
+#: Dictionary mapping name of a strategy as a string to the strategy function.
+STRATEGIES = {
+    'largest_first': strategy_largest_first,
+    'random_sequential': strategy_random_sequential,
+    'smallest_last': strategy_smallest_last,
+    'independent_set': strategy_independent_set,
+    'connected_sequential_bfs': strategy_connected_sequential_bfs,
+    'connected_sequential_dfs': strategy_connected_sequential_dfs,
+    'connected_sequential': strategy_connected_sequential,
+    'saturation_largest_first': strategy_saturation_largest_first,
+    'DSATUR': strategy_saturation_largest_first,
+}
+
+
+def greedy_color(G, strategy='largest_first', interchange=False):
     """Color a graph using various strategies of greedy graph coloring.
-    The strategies are described in [1]_.
 
     Attempts to color a graph using as few colors as possible, where no
-    neighbours of a node can have same color as the node itself.
+    neighbours of a node can have same color as the node itself. The
+    given strategy determines the order in which nodes are colored.
+
+    The strategies are described in [1]_, and smallest-last is based on
+    [2]_.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    strategy : function(G, colors)
-       A function that provides the coloring strategy, by returning nodes
-       in the ordering they should be colored. G is the graph, and colors
-       is a dict of the currently assigned colors, keyed by nodes.
+    strategy : string or function(G, colors)
+       A function (or a string representing a function) that provides
+       the coloring strategy, by returning nodes in the ordering they
+       should be colored. ``G`` is the graph, and ``colors`` is a
+       dictionary of the currently assigned colors, keyed by nodes. The
+       function must return an iterable over all the nodes in ``G``.
 
-       You can pass your own ordering function, or use one of the built in:
+       If the strategy function is an iterator generator (that is, a
+       function with ``yield`` statements), keep in mind that the
+       ``colors`` dictionary will be updated after each ``yield``, since
+       this function chooses colors greedily.
 
-       * strategy_largest_first
-       * strategy_random_sequential
-       * strategy_smallest_last
-       * strategy_independent_set
-       * strategy_connected_sequential_bfs
-       * strategy_connected_sequential_dfs
-       * strategy_connected_sequential
-         (alias of strategy_connected_sequential_bfs)
-       * strategy_saturation_largest_first (also known as DSATUR)
+       If ``strategy`` is a string, it must be one of the following,
+       each of which represents one of the built-in strategy functions.
+
+       * ``'largest_first'``
+       * ``'random_sequential'``
+       * ``'smallest_last'``
+       * ``'independent_set'``
+       * ``'connected_sequential_bfs'``
+       * ``'connected_sequential_dfs'``
+       * ``'connected_sequential'`` (alias for the previous strategy)
+       * ``'strategy_saturation_largest_first'``
+       * ``'DSATUR'`` (alias for the previous strategy)
 
     interchange: bool
-       Will use the color interchange algorithm described by [2]_ if set
-       to true.
+       Will use the color interchange algorithm described by [3]_ if set
+       to ``True``.
 
-       Note that saturation largest first and independent set do not
-       work with interchange. Furthermore, if you use interchange with
-       your own strategy function, you cannot rely on the values in the
-       colors argument.
+       Note that ``strategy_saturation_largest_first`` and
+       ``strategy_independent_set`` do not work with
+       interchange. Furthermore, if you use interchange with your own
+       strategy function, you cannot rely on the values in the
+       ``colors`` argument.
 
     Returns
     -------
@@ -247,48 +303,57 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> d = nx.coloring.greedy_color(G, strategy=nx.coloring.strategy_largest_first)
+    >>> d = nx.coloring.greedy_color(G, strategy='largest_first')
     >>> d in [{0: 0, 1: 1, 2: 0, 3: 1}, {0: 1, 1: 0, 2: 1, 3: 0}]
     True
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If ``strategy`` is ``strategy_saturation_largest_first`` or
+        ``strategy_independent_set`` and ``interchange`` is ``True``.
 
     References
     ----------
     .. [1] Adrian Kosowski, and Krzysztof Manuszewski,
        Classical Coloring of Graphs, Graph Colorings, 2-19, 2004.
        ISBN 0-8218-3458-4.
-    .. [2] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
+    .. [2] David W. Matula, and Leland L. Beck, "Smallest-last 
+       ordering and clustering and graph coloring algorithms." *J. ACM* 30, 
+       3 (July 1983), 417–427. <http://dx.doi.org/10.1145/2402.322385>
+    .. [3] Maciej M. Sysło, Marsingh Deo, Janusz S. Kowalik,
        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.
        ISBN 0-486-45353-7.
+
     """
-    colors = {}  # dictionary to keep track of the colors of the nodes
-
-    if len(G):
-        if interchange and (
-                strategy == strategy_independent_set or
-                strategy == strategy_saturation_largest_first):
-            raise nx.NetworkXPointlessConcept(
-                'Interchange is not applicable for GIS and SLF')
-
-        nodes = strategy(G, colors)
-
-        if nodes:
-            if interchange:
-                return (_interchange
-                        .greedy_coloring_with_interchange(G, nodes))
-            else:
-                for node in nodes:
-                     # set to keep track of colors of neighbours
-                    neighbour_colors = set()
-
-                    for neighbour in G.neighbors_iter(node):
-                        if neighbour in colors:
-                            neighbour_colors.add(colors[neighbour])
-
-                    for color in itertools.count():
-                        if color not in neighbour_colors:
-                            break
-
-                     # assign the node the newly found color
-                    colors[node] = color
-
+    if len(G) == 0:
+        return {}
+    # Determine the strategy provided by the caller.
+    strategy = STRATEGIES.get(strategy, strategy)
+    if not callable(strategy):
+        raise nx.NetworkXError('strategy must be callable or a valid string. '
+                               '{0} not valid.'.format(strategy))
+    # Perform some validation on the arguments before executing any
+    # strategy functions.
+    if interchange:
+        if strategy is strategy_independent_set:
+            msg = 'interchange cannot be used with strategy_independent_set'
+            raise nx.NetworkXPointlessConcept(msg)
+        if strategy is strategy_saturation_largest_first:
+            msg = ('interchange cannot be used with'
+                   ' strategy_saturation_largest_first')
+            raise nx.NetworkXPointlessConcept(msg)
+    colors = {}
+    nodes = strategy(G, colors)
+    if interchange:
+        return _interchange.greedy_coloring_with_interchange(G, nodes)
+    for u in nodes:
+        # Set to keep track of colors of neighbours
+        neighbour_colors = {colors[v] for v in G[u] if v in colors}
+        # Find the first unused color.
+        for color in itertools.count():
+            if color not in neighbour_colors:
+                break
+        # Assign the new color to the current node.
+        colors[u] = color
     return colors
