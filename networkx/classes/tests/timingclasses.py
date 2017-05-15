@@ -4396,7 +4396,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         Returns
         -------
         out_edges : list
-            An listr of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+            A list of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
 
         Notes
         -----
