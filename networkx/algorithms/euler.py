@@ -23,7 +23,7 @@ __all__ = ['is_eulerian', 'eulerian_circuit']
 def is_eulerian(G):
     """Returns True if and only if `G` is Eulerian.
 
-    An graph is *Eulerian* if it has an Eulerian circuit. An *Eulerian
+    A graph is *Eulerian* if it has an Eulerian circuit. An *Eulerian
     circuit* is a closed walk that includes each edge of a graph exactly
     once.
 
