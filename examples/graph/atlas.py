@@ -64,11 +64,11 @@ if __name__ == '__main__':
         from networkx.drawing.nx_agraph import graphviz_layout
     except ImportError:
         try:
-            import pydotplus
+            import pydot
             from networkx.drawing.nx_pydot import graphviz_layout
         except ImportError:
             raise ImportError("This example needs Graphviz and either "
-                              "PyGraphviz or PyDotPlus")
+                              "PyGraphviz or pydot")
 
     import matplotlib.pyplot as plt
     plt.figure(1, figsize=(8, 8))

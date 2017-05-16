@@ -1,5 +1,7 @@
 from .maxflow import *
 from .mincost import *
+from .boykovkolmogorov import *
+from .dinitz_alg import *
 from .edmondskarp import *
 from .preflowpush import *
 from .shortestaugmentingpath import *

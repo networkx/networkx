@@ -6,6 +6,7 @@ except ImportError:
 from nose.tools import *
 import networkx as nx
 import networkx.readwrite.graph6 as g6
+from networkx.testing.utils import *
 
 class TestGraph6Utils(object):
 
@@ -28,8 +29,8 @@ class TestGraph6(object):
     def test_parse_graph6(self):
         data="""DF{"""
         G=nx.parse_graph6(data)
-        assert_equal(sorted(G.nodes()),[0, 1, 2, 3, 4])
-        assert_equal([e for e in sorted(G.edges())],
+        assert_nodes_equal(G.nodes(),[0, 1, 2, 3, 4])
+        assert_edges_equal(G.edges(),
                      [(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
 
     def test_read_graph6(self):
@@ -37,8 +38,8 @@ class TestGraph6(object):
         G=nx.parse_graph6(data)
         fh = StringIO(data)
         Gin=nx.read_graph6(fh)
-        assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
-        assert_equal(sorted(G.edges()),sorted(Gin.edges()))
+        assert_nodes_equal(G.nodes(),Gin.nodes())
+        assert_edges_equal(G.edges(),Gin.edges())
 
     def test_read_many_graph6(self):
         # Read many graphs into list
@@ -79,8 +80,8 @@ class TestGraph6(object):
                          ((i-1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
             g2 = nx.parse_graph6(gstr)
             assert_equal(g2.order(), g.order())
-            assert_equal(sorted(g2.edges()), sorted(g.edges()))
+            assert_edges_equal(g2.edges(), g.edges())
 
     @raises(nx.NetworkXError)
-    def directed_error(self):
+    def directed_raise(self):
         nx.generate_graph6(nx.DiGraph())

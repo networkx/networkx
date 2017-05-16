@@ -28,14 +28,12 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
 
     This function returns the set of edges of minimum cardinality that,
     if removed, would destroy all paths among source and target in G.
-    Edge weights are not considered
+    Edge weights are not considered. See :meth:`minimum_cut` for
+    computing minimum cuts considering edge weights.
 
     Parameters
     ----------
     G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
 
     s : node
         Source node for the flow.
@@ -515,6 +513,8 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     flow between an arbitrary node in the dominating set and the rest of
     nodes in it. This is an implementation of algorithm 6 in [1]_. For 
     directed graphs, the algorithm does n calls to the max flow function.
+    The function raises an error if the directed graph is not weakly
+    connected and returns an empty set if it is weakly connected.
     It is an implementation of algorithm 8 in [1]_.
 
     See also

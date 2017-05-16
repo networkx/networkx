@@ -62,7 +62,8 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
 
     Parameters
     ----------
-    data : a object to be converted
+    data : object to be converted
+
        Current known types are:
          any NetworkX graph
          dict-of-dicts
@@ -171,16 +172,6 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
           "Input is not a known data type for conversion.")
 
     return
-
-
-def convert_to_undirected(G):
-    """Return a new undirected representation of the graph G."""
-    return G.to_undirected()
-
-
-def convert_to_directed(G):
-    """Return a new directed representation of the graph G."""
-    return G.to_directed()
 
 
 def to_dict_of_lists(G,nodelist=None):
@@ -355,7 +346,8 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
             for u,nbrs in d.items():
                 for v,data in nbrs.items():
                     if (u,v) not in seen:
-                        G.add_edge(u,v,attr_dict=data)
+                        G.add_edge(u,v,key=0)
+                        G[u][v][0].update(data)
                     seen.add((v,u))
         else:
             G.add_edges_from( ( (u,v,data)

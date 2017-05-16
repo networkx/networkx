@@ -46,27 +46,27 @@ class TestBiadjacencyMatrix:
         assert_equal(M[1,2], 2)
 
     @raises(nx.NetworkXError)
-    def test_null_fail(self):
+    def test_null_graph(self):
         bipartite.biadjacency_matrix(nx.Graph(),[])
 
     @raises(nx.NetworkXError)
-    def test_empty_fail(self):
+    def test_empty_graph(self):
         bipartite.biadjacency_matrix(nx.Graph([(1,0)]),[])
 
     @raises(nx.NetworkXError)
-    def test_duplicate_row_fail(self):
+    def test_duplicate_row(self):
         bipartite.biadjacency_matrix(nx.Graph([(1,0)]),[1,1])
 
     @raises(nx.NetworkXError)
-    def test_duplicate_col_fail(self):
+    def test_duplicate_col(self):
         bipartite.biadjacency_matrix(nx.Graph([(1,0)]),[0],[1,1])
 
     @raises(nx.NetworkXError)
-    def test_duplicate_col_fail(self):
+    def test_duplicate_col(self):
         bipartite.biadjacency_matrix(nx.Graph([(1,0)]),[0],[1,1])
 
     @raises(nx.NetworkXError)
-    def test_format_keyword_fail(self):
+    def test_format_keyword(self):
         bipartite.biadjacency_matrix(nx.Graph([(1,0)]),[0],format='foo')
 
     def test_from_biadjacency_roundtrip(self):

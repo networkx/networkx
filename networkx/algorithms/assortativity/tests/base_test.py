@@ -1,9 +1,9 @@
 import networkx as nx
 
 class BaseTestAttributeMixing(object):
-    
+
     def setUp(self):
-        G=nx.Graph() 
+        G=nx.Graph()
         G.add_nodes_from([0,1],fish='one')
         G.add_nodes_from([2,3],fish='two')
         G.add_nodes_from([4],fish='red')
@@ -11,7 +11,7 @@ class BaseTestAttributeMixing(object):
         G.add_edges_from([(0,1),(2,3),(0,4),(2,5)])
         self.G=G
 
-        D=nx.DiGraph() 
+        D=nx.DiGraph()
         D.add_nodes_from([0,1],fish='one')
         D.add_nodes_from([2,3],fish='two')
         D.add_nodes_from([4],fish='red')
@@ -19,7 +19,7 @@ class BaseTestAttributeMixing(object):
         D.add_edges_from([(0,1),(2,3),(0,4),(2,5)])
         self.D=D
 
-        M=nx.MultiGraph() 
+        M=nx.MultiGraph()
         M.add_nodes_from([0,1],fish='one')
         M.add_nodes_from([2,3],fish='two')
         M.add_nodes_from([4],fish='red')
@@ -37,13 +37,13 @@ class BaseTestAttributeMixing(object):
         self.S=S
 
 class BaseTestDegreeMixing(object):
-    
+
     def setUp(self):
         self.P4=nx.path_graph(4)
-        self.D=nx.DiGraph() 
+        self.D=nx.DiGraph()
         self.D.add_edges_from([(0, 2), (0, 3), (1, 3), (2, 3)])
-        self.M=nx.MultiGraph() 
-        self.M.add_path(list(range(4)))
+        self.M=nx.MultiGraph()
+        nx.add_path(self.M, range(4))
         self.M.add_edge(0,1)
         self.S=nx.Graph()
         self.S.add_edges_from([(0,0),(1,1)])

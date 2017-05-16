@@ -24,7 +24,7 @@ __all__ = ['edge_boundary', 'node_boundary']
 
 def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
                   default=None):
-    """Returns the edge boundary of ``nbunch1``.
+    """Returns the edge boundary of `nbunch1`.
 
     The *edge boundary* of a set *S* with respect to a set *T* is the
     set of edges (*u*, *v*) such that *u* is in *S* and *v* is in *T*.
@@ -43,8 +43,8 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     nbunch2 : iterable
         Iterable of nodes representing the target (or "exterior") set of
         nodes. (This is the set *T* from the definition above.) If not
-        specified, this is assumed to be the set of all nodes in ``G``
-        not in ``nbunch1``.
+        specified, this is assumed to be the set of all nodes in `G`
+        not in `nbunch1`.
 
     keys : bool
         This parameter has the same meaning as in
@@ -61,17 +61,17 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     Returns
     -------
     iterator
-        An iterator over the edges in the boundary of ``nbunch1`` with
-        respect to ``nbunch2``. If ``keys``, ``data``, or ``default``
-        are specified and ``G`` is a multigraph, then edges are returned
+        An iterator over the edges in the boundary of `nbunch1` with
+        respect to `nbunch2`. If `keys`, `data`, or `default`
+        are specified and `G` is a multigraph, then edges are returned
         with keys and/or data, as in :meth:`MultiGraph.edges`.
 
     Notes
     -----
-    Any element of ``nbunch`` that is not in the graph ``G`` will be
+    Any element of `nbunch` that is not in the graph `G` will be
     ignored.
 
-    ``nbunch1`` and ``nbunch2`` are usually meant to be disjoint, but in
+    `nbunch1` and `nbunch2` are usually meant to be disjoint, but in
     the interest of speed and generality, that is not required here.
 
     """
@@ -95,7 +95,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
 
 
 def node_boundary(G, nbunch1, nbunch2=None):
-    """Returns the node boundary of ``nbunch1``.
+    """Returns the node boundary of `nbunch1`.
 
     The *node boundary* of a set *S* with respect to a set *T* is the
     set of nodes *v* in *T* such that for some *u* in *S*, there is an
@@ -114,20 +114,20 @@ def node_boundary(G, nbunch1, nbunch2=None):
     nbunch2 : iterable
         Iterable of nodes representing the target (or "exterior") set of
         nodes. (This is the set *T* from the definition above.) If not
-        specified, this is assumed to be the set of all nodes in ``G``
-        not in ``nbunch1``.
+        specified, this is assumed to be the set of all nodes in `G`
+        not in `nbunch1`.
 
     Returns
     -------
     set
-        The node boundary of ``nbunch1`` with respect to ``nbunch2``.
+        The node boundary of `nbunch1` with respect to `nbunch2`.
 
     Notes
     -----
-    Any element of ``nbunch`` that is not in the graph ``G`` will be
+    Any element of `nbunch` that is not in the graph `G` will be
     ignored.
 
-    ``nbunch1`` and ``nbunch2`` are usually meant to be disjoint, but in
+    `nbunch1` and `nbunch2` are usually meant to be disjoint, but in
     the interest of speed and generality, that is not required here.
 
     """

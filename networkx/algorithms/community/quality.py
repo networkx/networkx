@@ -1,6 +1,6 @@
 # quality.py - functions for measuring partitions of a graph
 #
-# Copyright 2015 NetworkX developers.
+# Copyright 2015-2016 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -13,24 +13,37 @@ communities).
 from __future__ import division
 
 from functools import wraps
+from itertools import product
 
 import networkx as nx
+from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
-__all__ = ['coverage', 'performance']
+__all__ = ['coverage', 'modularity', 'performance']
+
+
+class NotAPartition(NetworkXError):
+    """Raised if a given collection is not a partition.
+
+    """
+
+    def __init__(self, G, collection):
+        msg = '{} is not a valid partition of the graph {}'
+        msg = msg.format(G, collection)
+        super(NotAPartition, self).__init__(msg)
 
 
 def is_partition(G, partition):
-    """Returns ``True`` if and only if ``partition`` is a partition of
-    the nodes of ``G``.
+    """Returns True if and only if `partition` is a partition of
+    the nodes of `G`.
 
     A partition of a universe set is a family of pairwise disjoint sets
     whose union equals the universe set.
 
-    ``G`` is a NetworkX graph.
+    `G` is a NetworkX graph.
 
-    ``partition`` is a sequence (not an iterator) of sets of nodes of
-    ``G``.
+    `partition` is a sequence (not an iterator) of sets of nodes of
+    `G`.
 
     """
     # Alternate implementation:
@@ -84,11 +97,11 @@ def require_partition(func):
 
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges according to the given
-    partition of the nodes of ``G``.
+    partition of the nodes of `G`.
 
-    ``G`` must be a NetworkX graph.
+    `G` must be a NetworkX graph.
 
-    ``partition`` must be a partition of the nodes of ``G``.
+    `partition` must be a partition of the nodes of `G`.
 
     The "intra-community edges" are those edges joining a pair of nodes
     in the same block of the partition.
@@ -99,18 +112,18 @@ def intra_community_edges(G, partition):
 
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges according to the given
-    partition of the nodes of ``G``.
+    partition of the nodes of `G`.
 
-    ``G`` must be a NetworkX graph.
+    `G` must be a NetworkX graph.
 
-    ``partition`` must be a partition of the nodes of ``G``.
+    `partition` must be a partition of the nodes of `G`.
 
     The *inter-community edges* are those edges joining a pair of nodes
     in different blocks of the partition.
 
     Implementation note: this function creates an intermediate graph
     that may require the same amount of memory as required to store
-    ``G``.
+    `G`.
 
     """
     # Alternate implementation that does not require constructing a new
@@ -126,20 +139,20 @@ def inter_community_edges(G, partition):
 
 def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
-    given partition of the nodes of ``G``.
+    given partition of the nodes of `G`.
 
-    ``G`` must be a NetworkX graph.
+    `G` must be a NetworkX graph.
 
-    ``partition`` must be a partition of the nodes of ``G``.
+    `partition` must be a partition of the nodes of `G`.
 
-    A *non-edge* is a pair of nodes (undirected if ``G`` is undirected)
-    that are not adjacent in ``G``. The *inter-community non-edges* are
+    A *non-edge* is a pair of nodes (undirected if `G` is undirected)
+    that are not adjacent in `G`. The *inter-community non-edges* are
     those non-edges on a pair of nodes in different blocks of the
     partition.
 
     Implementation note: this function creates two intermediate graphs,
     which may require up to twice the amount of memory as required to
-    store ``G``.
+    store `G`.
 
     """
     # Alternate implementation that does not require constructing two
@@ -169,7 +182,7 @@ def performance(G, partition):
 
     partition : sequence
 
-        Partition of the nodes of ``G``, represented as a sequence of
+        Partition of the nodes of `G`, represented as a sequence of
         sets of nodes. Each block of the partition represents a
         community.
 
@@ -181,7 +194,7 @@ def performance(G, partition):
     Raises
     ------
     NetworkXError
-        If ``partition`` is not a valid partition of the nodes of ``G``.
+        If `partition` is not a valid partition of the nodes of `G`.
 
     References
     ----------
@@ -220,7 +233,7 @@ def coverage(G, partition):
     G : NetworkX graph
 
     partition : sequence
-        Partition of the nodes of ``G``, represented as a sequence of
+        Partition of the nodes of `G`, represented as a sequence of
         sets of nodes. Each block of the partition represents a
         community.
 
@@ -232,18 +245,11 @@ def coverage(G, partition):
     Raises
     ------
     NetworkXError
-        If ``partition`` is not a valid partition of the nodes of ``G``.
-
-    References
-    ----------
-    .. [1] Santo Fortunato.
-           "Community Detection in Graphs".
-           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <http://arxiv.org/abs/0906.0612>
+        If `partition` is not a valid partition of the nodes of `G`.
 
     Notes
     -----
-    If ``G`` is a multigraph, the multiplicity of edges is counted.
+    If `G` is a multigraph, the multiplicity of edges is counted.
 
     References
     ----------
@@ -256,3 +262,79 @@ def coverage(G, partition):
     intra_edges = intra_community_edges(G, partition)
     total_edges = G.number_of_edges()
     return intra_edges / total_edges
+
+
+def modularity(G, communities, weight='weight'):
+    r"""Returns the modularity of the given partition of the graph.
+
+    Modularity is defined in [1]_ as
+
+    .. math::
+
+        Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \frac{k_ik_j}{2m}\right)
+            \delta(c_i,c_j)
+
+    where *m* is the number of edges, *A* is the adjacency matrix of
+    `G`, :math:`k_i` is the degree of *i* and :math:`\delta(c_i, c_j)`
+    is 1 if *i* and *j* are in the same community and 0 otherwise.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    communities : list
+        List of sets of nodes of `G` representing a partition of the
+        nodes.
+
+    Returns
+    -------
+    Q : float
+        The modularity of the paritition.
+
+    Raises
+    ------
+    NotAPartition
+        If `communities` is not a partition of the nodes of `G`.
+
+    Examples
+    --------
+    >>> G = nx.barbell_graph(3, 0)
+    >>> nx.modularity(G, [{0, 1, 2}, {3, 4, 5}])
+    0.35714285714285704
+
+    References
+    ----------
+    .. [1] M. E. J. Newman *Networks: An Introduction*, page 224.
+       Oxford University Press, 2011.
+
+    """
+    if not is_partition(G, communities):
+        raise NotAPartition(G, communities)
+
+    multigraph = G.is_multigraph()
+    directed = G.is_directed()
+    m = G.size(weight=weight)
+    if directed:
+        out_degree = dict(G.out_degree(weight=weight))
+        in_degree = dict(G.in_degree(weight=weight))
+        norm = 1 / m
+    else:
+        out_degree = dict(G.degree(weight=weight))
+        in_degree = out_degree
+        norm = 1 / (2 * m)
+
+    def val(u, v):
+        try:
+            if multigraph:
+                w = sum(d.get(weight, 1) for k, d in G[u][v].items())
+            else:
+                w = G[u][v].get(weight, 1)
+        except KeyError:
+            w = 0
+        # Double count self-loops if the graph is undirected.
+        if u == v and not directed:
+            w *= 2
+        return w - in_degree[u] * out_degree[v] * norm
+
+    Q = sum(val(u, v) for c in communities for u, v in product(c, repeat=2))
+    return Q * norm

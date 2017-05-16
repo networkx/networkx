@@ -6,11 +6,11 @@ try:
     from networkx.drawing.nx_agraph import graphviz_layout
 except ImportError:
     try:
-        import pydotplus
+        import pydot
         from networkx.drawing.nx_pydot import graphviz_layout
     except ImportError:
         raise ImportError("This example needs Graphviz and either "
-                          "PyGraphviz or PyDotPlus")
+                          "PyGraphviz or pydot")
 
 G = nx.balanced_tree(3, 5)
 pos = graphviz_layout(G, prog='twopi', args='')

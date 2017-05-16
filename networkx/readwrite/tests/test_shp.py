@@ -92,7 +92,7 @@ class TestShp(object):
         def compare_graph_paths_names(g, paths, names):
             expected = nx.DiGraph()
             for p in paths:
-                expected.add_path(p)
+                nx.add_path(expected, p)
             assert_equal(sorted(expected.node), sorted(g.node))
             assert_equal(sorted(expected.edges()), sorted(g.edges()))
             g_names = [g.get_edge_data(s, e)['Name'] for s, e in g.edges()]

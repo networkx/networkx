@@ -1,16 +1,3 @@
-"""Graph6
-
-Read and write graphs in graph6 format.
-
-Format
-------
-
-"graph6 and sparse6 are formats for storing undirected graphs in a
-compact manner, using only printable ASCII characters. Files in these
-formats have text type and contain one line per graph."
-
-See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
-"""
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 #    Copyright (C) 2004-2016 by
@@ -20,12 +7,25 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 #    Tomas Gavenciak <gavento@ucw.cz>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Tomas Gavenciak <gavento@ucw.cz>
+#          Aric Hagberg <aric.hagberg@lanl.gov>
+"""Functions for reading and writing graphs in the *graph6* format.
+
+The *graph6* file format is suitable for small graphs or large dense
+graphs. For large sparse graphs, use the *sparse6* format.
+
+For more information, see the `graph6`_ homepage.
+
+.. _graph6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
+
+"""
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
-__author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
-                            'Aric Hagberg <aric.hagberg@lanl.gov'])
+
 __all__ = ['read_graph6', 'parse_graph6', 'generate_graph6', 'write_graph6']
+
 
 def parse_graph6(string):
     """Read a simple undirected graph in graph6 format from string.
@@ -56,8 +56,9 @@ def parse_graph6(string):
 
     References
     ----------
-    Graph6 specification:
-    http://cs.anu.edu.au/~bdm/data/formats.txt for details.
+    .. [1] Graph6 specification
+           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+
     """
     def bits():
         """Return sequence of individual bits from 6-bit-per-value
@@ -115,8 +116,9 @@ def read_graph6(path):
 
     References
     ----------
-    Graph6 specification:
-    http://cs.anu.edu.au/~bdm/data/formats.txt for details.
+    .. [1] Graph6 specification
+           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+
     """
     glist = []
     for line in path:
@@ -171,14 +173,14 @@ def generate_graph6(G, nodes = None, header=True):
 
     References
     ----------
-    Graph6 specification:
-    http://cs.anu.edu.au/~bdm/data/formats.txt for details.
+    .. [1] Graph6 specification
+           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+
     """
     if nodes is not None:
-        ns = list(nodes)
-    else:
-        ns = list(G)
-
+        G = G.subgraph(nodes)
+    H = nx.convert_node_labels_to_integers(G)
+    ns = sorted(H.nodes())
     def bits():
         for (i,j) in [(i,j) for j in range(1,n) for i in range(j)]:
             yield G.has_edge(ns[i],ns[j])
@@ -242,8 +244,9 @@ def write_graph6(G, path, nodes = None, header=True):
 
     References
     ----------
-    Graph6 specification:
-    http://cs.anu.edu.au/~bdm/data/formats.txt for details.
+    .. [1] Graph6 specification
+           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+
     """
     path.write(generate_graph6(G, nodes=nodes, header=header))
     path.write('\n')

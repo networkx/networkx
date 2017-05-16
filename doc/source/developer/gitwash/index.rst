@@ -11,8 +11,5 @@ Contents:
    git_intro
    git_install
    following_latest
-   patching
    git_development
    git_resources
-
-

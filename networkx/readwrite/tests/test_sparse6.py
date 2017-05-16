@@ -5,6 +5,7 @@ except ImportError:
     from io import StringIO
 from nose.tools import *
 import networkx as nx
+from networkx.testing import *
 import networkx.readwrite.sparse6 as sg6
 import os,tempfile
 
@@ -13,10 +14,10 @@ class TestSparseGraph6(object):
     def test_parse_sparse6(self):
         data=""":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
         G=nx.parse_sparse6(data)
-        assert_equal(sorted(G.nodes()),
+        assert_nodes_equal(G.nodes(),
                      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
                       10, 11, 12, 13, 14, 15, 16, 17])
-        assert_equal([e for e in sorted(G.edges())],
+        assert_edges_equal(G.edges(),
                      [(0, 1), (0, 2), (0, 3), (1, 12), (1, 14), (2, 13),
                       (2, 15), (3, 16), (3, 17), (4, 7), (4, 9), (4, 11),
                       (5, 6), (5, 8), (5, 9), (6, 10), (6, 11), (7, 8),
@@ -36,8 +37,8 @@ class TestSparseGraph6(object):
         G=nx.parse_sparse6(data)
         fh = StringIO(data)
         Gin=nx.read_sparse6(fh)
-        assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
-        assert_equal(sorted(G.edges()),sorted(Gin.edges()))
+        assert_nodes_equal(G.nodes(),Gin.nodes())
+        assert_edges_equal(G.edges(),Gin.edges())
 
     def test_read_many_graph6(self):
         # Read many graphs into list
@@ -47,7 +48,7 @@ class TestSparseGraph6(object):
         glist=nx.read_sparse6(fh)
         assert_equal(len(glist),2)
         for G in glist:
-            assert_equal(sorted(G.nodes()),
+            assert_nodes_equal(G.nodes(),
                          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
                           10, 11, 12, 13, 14, 15, 16, 17])
 
@@ -95,8 +96,8 @@ class TestSparseGraph6(object):
             gstr = nx.generate_sparse6(g, header=False)
             g2 = nx.parse_sparse6(gstr)
             assert_equal(g2.order(), g.order())
-            assert_equal(sorted(g2.edges()), sorted(g.edges()))
+            assert_edges_equal(g2.edges(), g.edges())
 
     @raises(nx.NetworkXError)
-    def directed_error(self):
+    def directed_raises(self):
         nx.generate_sparse6(nx.DiGraph())

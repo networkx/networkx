@@ -10,7 +10,7 @@ from fractions import gcd
 import heapq
 
 import networkx as nx
-from networkx.utils import consume, arbitrary_element
+from networkx.utils import consume, arbitrary_element, pairwise
 from networkx.utils.decorators import *
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
@@ -24,6 +24,7 @@ __all__ = ['descendants',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
+           'transitive_reduction',
            'antichains',
            'dag_longest_path',
            'dag_longest_path_length']
@@ -111,7 +112,7 @@ def topological_sort(G):
     ------
     NetworkXError
         Topological sort is defined for directed graphs only. If the graph G
-        is undirected, a NetworkXError is raised.
+        is undirected, a :exc:`NetworkXError` is raised.
 
     NetworkXUnfeasible
         If G is not a directed acyclic graph (DAG) no topological sort exists
@@ -122,12 +123,12 @@ def topological_sort(G):
         If G is changed while the returned iterator is being processed.
 
     Examples
-    ---------
+    --------
     To get the reverse order of the topological sort::
 
-    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
-    >>> list(reversed(list(nx.topological_sort(DG))))
-    [3, 2, 1]
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> list(reversed(list(nx.topological_sort(DG))))
+        [3, 2, 1]
 
     Notes
     -----
@@ -197,7 +198,7 @@ def lexicographical_topological_sort(G, key=None):
     ------
     NetworkXError
         Topological sort is defined for directed graphs only. If the graph G
-        is undirected, a NetworkXError is raised.
+        is undirected, a :exc:`NetworkXError` is raised.
 
     NetworkXUnfeasible
         If G is not a directed acyclic graph (DAG) no topological sort exists
@@ -355,6 +356,48 @@ def transitive_closure(G):
 
 
 @not_implemented_for('undirected')
+def transitive_reduction(G):
+    """ Returns transitive reduction of a directed graph
+
+    The transitive reduction of G = (V,E) is a graph G- = (V,E-) such that
+    for all v,w in V there is an edge (v,w) in E- if and only if (v,w) is
+    in E and there is no path from v to w in G with length greater than 1.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        Graph
+
+    Returns
+    -------
+    TR : NetworkX DiGraph
+        Graph
+
+    Raises
+    ------
+    NetworkXError
+        If G is not a directed acyclic graph (DAG) transitive reduction is
+        not uniquely defined and a NetworkXError exception is raised.
+
+    References 
+    ----------
+    https://en.wikipedia.org/wiki/Transitive_reduction
+
+    """   
+    if not is_directed_acyclic_graph(G):
+        raise nx.NetworkXError(
+            "Transitive reduction only uniquely defined on directed acyclic graphs.") 
+    TR = nx.DiGraph()
+    TR.add_nodes_from(G.nodes())
+    for u in G:
+        u_edges = set(G[u])
+        for v in G[u]:
+            u_edges -= {y for x, y in nx.dfs_edges(G, v)}
+        TR.add_edges_from((u,v) for v in u_edges)
+    return TR
+
+
+@not_implemented_for('undirected')
 def antichains(G):
     """Generates antichains from a DAG.
 
@@ -442,10 +485,10 @@ def dag_longest_path(G, weight='weight', default_weight=1):
         us = [(dist[u][0] + data.get(weight, default_weight), u)
             for u, data in G.pred[v].items()]
         # Use the best predecessor if there is one and its distance is non-negative, otherwise terminate.
-        maxu = max(us) if us else (0, v)
+        maxu = max(us, key=lambda x: x[0]) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
     u = None
-    v = max(dist, key=dist.get)
+    v = max(dist, key=lambda x: dist[x][0])
     path = []
     while u != v:
         path.append(v)
@@ -456,13 +499,19 @@ def dag_longest_path(G, weight='weight', default_weight=1):
 
 
 @not_implemented_for('undirected')
-def dag_longest_path_length(G):
+def dag_longest_path_length(G, weight='weight', default_weight=1):
     """Returns the longest path length in a DAG
 
     Parameters
     ----------
     G : NetworkX DiGraph
         Graph
+
+    weight : string (default 'weight')
+        Edge data key to use for weight
+
+    default_weight : integer (default 1)
+        The weight of edges that do not have a weight attribute
 
     Returns
     -------
@@ -478,5 +527,9 @@ def dag_longest_path_length(G):
     --------
     dag_longest_path
     """
-    path_length = len(nx.dag_longest_path(G)) - 1
+    path = nx.dag_longest_path(G, weight, default_weight)
+    path_length = 0
+    for (u, v) in pairwise(path):
+        path_length += G[u][v].get(weight, default_weight)
+
     return path_length

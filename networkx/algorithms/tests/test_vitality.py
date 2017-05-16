@@ -11,7 +11,7 @@ class TestClosenessVitality(object):
 
     def test_weighted(self):
         G = nx.Graph()
-        G.add_cycle([0, 1, 2], weight=2)
+        nx.add_cycle(G, [0, 1, 2], weight=2)
         vitality = nx.closeness_vitality(G, weight='weight')
         assert_equal(vitality, {0: 4, 1: 4, 2: 4})
 
@@ -22,15 +22,15 @@ class TestClosenessVitality(object):
 
     def test_weighted_digraph(self):
         G = nx.DiGraph()
-        G.add_cycle([0, 1, 2], weight=2)
-        G.add_cycle([2, 1, 0], weight=2)
+        nx.add_cycle(G, [0, 1, 2], weight=2)
+        nx.add_cycle(G, [2, 1, 0], weight=2)
         vitality = nx.closeness_vitality(G, weight='weight')
         assert_equal(vitality, {0: 8, 1: 8, 2: 8})
 
     def test_weighted_multidigraph(self):
         G = nx.MultiDiGraph()
-        G.add_cycle([0, 1, 2], weight=2)
-        G.add_cycle([2, 1, 0], weight=2)
+        nx.add_cycle(G, [0, 1, 2], weight=2)
+        nx.add_cycle(G, [2, 1, 0], weight=2)
         vitality = nx.closeness_vitality(G,weight='weight')
         assert_equal(vitality, {0: 8, 1: 8, 2: 8})
 

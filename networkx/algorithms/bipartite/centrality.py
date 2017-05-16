@@ -41,7 +41,8 @@ def degree_centrality(G, nodes):
     -----
     The nodes input parameter must conatin all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both bipartite node
-    sets.
+    sets. See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     For unipartite networks, the degree centrality values are 
     normalized by dividing by the maximum possible degree (which is 
@@ -138,6 +139,9 @@ def betweenness_centrality(G, nodes):
     -----
     The nodes input parameter must contain all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both node sets.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
 
     References
     ----------
@@ -203,6 +207,9 @@ def closeness_centrality(G, nodes, normalized=True):
     -----
     The nodes input parameter must conatin all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both node sets.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
 
     Closeness centrality is normalized by the minimum distance possible. 
     In the bipartite case the minimum distance for a node in one bipartite 

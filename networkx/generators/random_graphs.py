@@ -34,7 +34,6 @@ __all__ = ['fast_gnp_random_graph',
            'random_regular_graph',
            'barabasi_albert_graph',
            'powerlaw_cluster_graph',
-           'duplication_divergence_graph',
            'random_lobster',
            'random_shell_graph',
            'random_powerlaw_tree',
@@ -60,7 +59,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     seed : int, optional
         Seed for random number generator (default=None).
     directed : bool, optional (default=False)
-        If ``True``, this function returns a directed graph.
+        If True, this function returns a directed graph.
 
     Notes
     -----
@@ -128,8 +127,8 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     """Returns a `G_{n,p}` random graph, also known as an Erdős-Rényi graph or
     a binomial graph.
 
-    The `G_{n,p}` model chooses each of the possible edges with probability
-    ``p``.
+    The :math:`G_{n,p}` model chooses each of the possible edges with probability
+    :math:`p`.
 
     The functions :func:`binomial_graph` and :func:`erdos_renyi_graph` are
     aliases of this function.
@@ -143,7 +142,7 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     seed : int, optional
         Seed for random number generator (default=None).
     directed : bool, optional (default=False)
-        If ``True``, this function returns a directed graph.
+        If True, this function returns a directed graph.
 
     See Also
     --------
@@ -314,21 +313,21 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     n : int
         The number of nodes.
     k : int
-        Each node is joined with its ``k`` nearest neighbors in a ring
+        Each node is joined with its `k` nearest neighbors in a ring
         topology.
     p : float
         The probability of adding a new edge for each edge.
     seed : int, optional
-        The seed for the random number generator (the default is ``None``).
+        The seed for the random number generator (the default is None).
 
     Notes
     -----
-    First create a ring over ``n`` nodes.  Then each node in the ring is
-    connected with its ``k`` nearest neighbors (or ``k - 1`` neighbors if ``k``
+    First create a ring over `n` nodes.  Then each node in the ring is
+    connected with its `k` nearest neighbors (or `k - 1` neighbors if `k`
     is odd).  Then shortcuts are created by adding new edges as follows: for
-    each edge ``(u, v)`` in the underlying "``n``-ring with ``k`` nearest
-    neighbors" with probability ``p`` add a new edge ``(u, w)`` with
-    randomly-chosen existing node ``w``.  In contrast with
+    each edge `(u, v)` in the underlying "`n`-ring with `k` nearest
+    neighbors" with probability :math:`p` add a new edge `(u, w)` with
+    randomly-chosen existing node `w`.  In contrast with
     :func:`watts_strogatz_graph`, no edges are removed.
 
     See Also
@@ -380,7 +379,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
     n : int
         The number of nodes
     k : int
-        Each node is joined with its ``k`` nearest neighbors in a ring
+        Each node is joined with its `k` nearest neighbors in a ring
         topology.
     p : float
         The probability of rewiring each edge
@@ -394,12 +393,12 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     Notes
     -----
-    First create a ring over ``n`` nodes.  Then each node in the ring is joined
-    to its ``k`` nearest neighbors (or ``k - 1`` neighbors if ``k`` is odd).
+    First create a ring over `n` nodes.  Then each node in the ring is joined
+    to its `k` nearest neighbors (or `k - 1` neighbors if `k` is odd).
     Then shortcuts are created by replacing some edges as follows: for each
-    edge ``(u, v)`` in the underlying "``n``-ring with ``k`` nearest neighbors"
-    with probability ``p`` replace it with a new edge ``(u, w)`` with uniformly
-    random choice of existing node ``w``.
+    edge `(u, v)` in the underlying "`n`-ring with `k` nearest neighbors"
+    with probability :math:`p` replace it with a new edge `(u, w)` with uniformly
+    random choice of existing node `w`.
 
     In contrast with :func:`newman_watts_strogatz_graph`, the random rewiring
     does not increase the number of edges. The rewired graph is not guaranteed
@@ -454,7 +453,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     n : int
         The number of nodes
     k : int
-        Each node is joined with its ``k`` nearest neighbors in a ring
+        Each node is joined with its `k` nearest neighbors in a ring
         topology.
     p : float
         The probability of rewiring each edge
@@ -477,7 +476,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
 
 def random_regular_graph(d, n, seed=None):
-    """Returns a random ``d``-regular graph on ``n`` nodes.
+    """Returns a random `d`-regular graph on `n` nodes.
 
     The resulting graph has no self-loops or parallel edges.
 
@@ -486,13 +485,13 @@ def random_regular_graph(d, n, seed=None):
     d : int
       The degree of each node.
     n : integer
-      The number of nodes. The value of ``n * d`` must be even.
+      The number of nodes. The value of :math:`n * d` must be even.
     seed : hashable object
         The seed for random number generator.
 
     Notes
     -----
-    The nodes are numbered from ``0`` to ``n - 1``.
+    The nodes are numbered from `0` to `n - 1`.
 
     Kim and Vu's paper [2]_ shows that this algorithm samples in an
     asymptotically uniform way from the space of random graphs when
@@ -502,7 +501,7 @@ def random_regular_graph(d, n, seed=None):
     ------
 
     NetworkXError
-        If ``n * d`` is odd or ``d`` is greater than or equal to ``n``.
+        If :math:`n * d` is odd or `d` is greater than or equal to `n`.
 
     References
     ----------
@@ -603,7 +602,7 @@ def barabasi_albert_graph(n, m, seed=None):
     """Returns a random graph according to the Barabási–Albert preferential
     attachment model.
 
-    A graph of ``n`` nodes is grown by attaching new nodes each with ``m``
+    A graph of `n` nodes is grown by attaching new nodes each with `m`
     edges that are preferentially attached to existing nodes with high degree.
 
     Parameters
@@ -622,7 +621,7 @@ def barabasi_albert_graph(n, m, seed=None):
     Raises
     ------
     NetworkXError
-        If ``m`` does not satisfy ``1 <= m < n``.
+        If `m` does not satisfy ``1 <= m < n``.
 
     References
     ----------
@@ -676,7 +675,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     Notes
     -----
     The average clustering has a hard time getting above a certain
-    cutoff that depends on ``m``.  This cutoff is often quite low.  The
+    cutoff that depends on `m`.  This cutoff is often quite low.  The
     transitivity (fraction of triangles to possible triangles) seems to
     decrease with network size.
 
@@ -688,13 +687,13 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     higher average clustering to be attained if desired.
 
     It seems possible to have a disconnected graph with this algorithm
-    since the initial ``m`` nodes may not be all linked to a new node
+    since the initial `m` nodes may not be all linked to a new node
     on the first iteration like the BA model.
 
     Raises
     ------
     NetworkXError
-        If ``m`` does not satisfy ``1 <= m <= n`` or ``p`` does not
+        If `m` does not satisfy ``1 <= m <= n`` or `p` does not
         satisfy ``0 <= p <= 1``.
 
     References
@@ -747,80 +746,13 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
         source += 1
     return G
 
-def duplication_divergence_graph(n, p, seed=None):
-    """Returns an undirected graph using the duplication-divergence model.
-
-    A graph of ``n`` nodes is created by duplicating the initial nodes
-    and retaining edges incident to the original nodes with a retention
-    probability ``p``.
-
-    Parameters
-    ----------
-    n : int
-        The desired number of nodes in the graph.
-    p : float
-        The probability for retaining the edge of the replicated node.
-    seed : int, optional
-        A seed for the random number generator of ``random`` (default=None).
-
-    Returns
-    -------
-    G : Graph
-
-    Raises
-    ------
-    NetworkXError
-        If `p` is not a valid probability.
-        If `n` is less than 2.
-
-    References
-    ----------
-    .. [1] I. Ispolatov, P. L. Krapivsky, A. Yuryev,
-       "Duplication-divergence model of protein interaction network",
-       Phys. Rev. E, 71, 061911, 2005.
-
-    """
-    if p > 1 or p < 0:
-        msg = "NetworkXError p={0} is not in [0,1].".format(p)
-        raise nx.NetworkXError(msg)
-    if n < 2:
-        msg = 'n must be greater than or equal to 2'
-        raise nx.NetworkXError(msg)
-    if seed is not None:
-        random.seed(seed)
-
-    G = nx.Graph()
-    G.graph['name'] = "Duplication-Divergence Graph"
-
-    # Initialize the graph with two connected nodes.
-    G.add_edge(0,1)
-    i = 2
-    while i < n:
-        # Choose a random node from current graph to duplicate.
-        random_node = random.choice(list(G.nodes()))
-        # Make the replica.
-        G.add_node(i)
-        # flag indicates whether at least one edge is connected on the replica.
-        flag=False
-        for nbr in G.neighbors(random_node):
-            if random.random() < p:
-                # Link retention step.
-                G.add_edge(i, nbr)
-                flag = True
-        if not flag:
-            # Delete replica if no edges retained.
-            G.remove_node(i)
-        else:
-            # Successful duplication.
-            i += 1
-    return G
 
 def random_lobster(n, p1, p2, seed=None):
     """Returns a random lobster graph.
 
      A lobster is a tree that reduces to a caterpillar when pruning all
      leaf nodes. A caterpillar is a tree that reduces to a path graph
-     when pruning all leaf nodes; setting ``p2`` to zero produces a caterillar.
+     when pruning all leaf nodes; setting `p2` to zero produces a caterillar.
 
      Parameters
      ----------
@@ -857,11 +789,11 @@ def random_shell_graph(constructor, seed=None):
     ----------
     constructor : list of three-tuples
         Represents the parameters for a shell, starting at the center
-        shell.  Each element of the list must be of the form ``(n, m,
-        d)``, where ``n`` is the number of nodes in the shell, ``m`` is
-        the number of edges in the shell, and ``d`` is the ratio of
-        inter-shell (next) edges to intra-shell edges. If ``d`` is zero,
-        there will be no intra-shell edges, and if ``d`` is one there
+        shell.  Each element of the list must be of the form `(n, m,
+        d)`, where `n` is the number of nodes in the shell, `m` is
+        the number of edges in the shell, and `d` is the ratio of
+        inter-shell (next) edges to intra-shell edges. If `d` is zero,
+        there will be no intra-shell edges, and if `d` is one there
         will be all possible intra-shell edges.
     seed : int, optional
         Seed for random number generator (default=None).
@@ -988,7 +920,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     for deg in swap:
         # If this degree sequence can be the degree sequence of a tree, return
         # it. It can be a tree if the number of edges is one fewer than the
-        # number of nodes, or in other words, ``n - sum(zseq) / 2 == 1``. We
+        # number of nodes, or in other words, `n - sum(zseq) / 2 == 1`. We
         # use an equivalent condition below that avoids floating point
         # operations.
         if 2 * n - sum(zseq) == 2:
@@ -1017,7 +949,7 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
         `F(y,a,b) := \int_a^b \kappa(x,y)dx`
     kernel_root: function (optional)
         Function that returns the root `b` of the equation `F(y,a,b) = r`.
-        If ``None``, the root is found using :func:`scipy.optimize.brentq` 
+        If None, the root is found using :func:`scipy.optimize.brentq` 
         (this requires SciPy).
     seed : int, optional
         Seed for random number generator (default=None)

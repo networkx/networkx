@@ -14,9 +14,11 @@ from __future__ import division
 
 from nose.tools import assert_almost_equal
 
-from networkx.generators.classic import barbell_graph
-from networkx.algorithms.community.quality import coverage
-from networkx.algorithms.community.quality import performance
+import networkx as nx
+from networkx import barbell_graph
+from networkx import coverage
+from networkx import performance
+
 
 class TestPerformance(object):
     """Unit tests for the :func:`performance` function."""
@@ -50,3 +52,11 @@ class TestCoverage(object):
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert_almost_equal(6 / 7, coverage(G, partition))
+
+
+def test_modularity():
+    G = nx.barbell_graph(3, 0)
+    C = [{0, 1, 4}, {2, 3, 5}]
+    assert_almost_equal(-16 / (14 ** 2), nx.modularity(G, C))
+    C = [{0, 1, 2}, {3, 4, 5}]
+    assert_almost_equal((35 * 2) / (14 ** 2), nx.modularity(G, C))

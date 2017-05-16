@@ -1,6 +1,15 @@
-#!/usr/bin/env python
-from nose.tools import *
+from __future__ import division
+
+from nose.tools import assert_almost_equal
+from nose.tools import assert_equal
+from nose.tools import assert_false
+from nose.tools import assert_true
+from nose.tools import assert_raises
+from nose.tools import ok_
+from nose.tools import raises
+
 import networkx as nx
+
 
 def validate_grid_path(r, c, s, t, p):
     ok_(isinstance(p, list))
@@ -112,49 +121,66 @@ class TestGenericPath:
         l = dict(nx.shortest_path_length(self.grid, weight='weight'))
         assert_equal(l[1][16], 6)
 
-    def test_average_shortest_path(self):
-        l=nx.average_shortest_path_length(self.cycle)
-        assert_almost_equal(l,2)
-        l=nx.average_shortest_path_length(nx.path_graph(5))
-        assert_almost_equal(l,2)
-
-
-    def test_weighted_average_shortest_path(self):
-        G=nx.Graph()
-        G.add_cycle(range(7),weight=2)
-        l=nx.average_shortest_path_length(G,weight='weight')
-        assert_almost_equal(l,4)
-        G=nx.Graph()
-        G.add_path(range(5),weight=2)
-        l=nx.average_shortest_path_length(G,weight='weight')
-        assert_almost_equal(l,4)
-
-
-    def test_average_shortest_disconnected(self):
-        g = nx.Graph()
-        g.add_nodes_from(range(3))
-        g.add_edge(0, 1)
-        assert_raises(nx.NetworkXError,nx.average_shortest_path_length,g)
-        g = g.to_directed()
-        assert_raises(nx.NetworkXError,nx.average_shortest_path_length,g)
-
     def test_has_path(self):
         G = nx.Graph()
-        G.add_path(range(3))
-        G.add_path(range(3,5))
+        nx.add_path(G, range(3))
+        nx.add_path(G, range(3, 5))
         assert_true(nx.has_path(G,0,2))
         assert_false(nx.has_path(G,0,4))
 
     def test_all_shortest_paths(self):
         G = nx.Graph()
-        G.add_path([0,1,2,3])
-        G.add_path([0,10,20,3])
+        nx.add_path(G, [0, 1, 2, 3])
+        nx.add_path(G, [0, 10, 20, 3])
         assert_equal([[0,1,2,3],[0,10,20,3]],
                      sorted(nx.all_shortest_paths(G,0,3)))
 
     @raises(nx.NetworkXNoPath)
     def test_all_shortest_paths_raise(self):
-        G = nx.Graph()
-        G.add_path([0,1,2,3])
+        G = nx.path_graph(4)
         G.add_node(4)
         paths = list(nx.all_shortest_paths(G,0,4))
+
+
+class TestAverageShortestPathLength(object):
+
+    def test_cycle_graph(self):
+        l = nx.average_shortest_path_length(nx.cycle_graph(7))
+        assert_almost_equal(l, 2)
+
+    def test_path_graph(self):
+        l = nx.average_shortest_path_length(nx.path_graph(5))
+        assert_almost_equal(l, 2)
+
+    def test_weighted(self):
+        G = nx.Graph()
+        nx.add_cycle(G, range(7), weight=2)
+        l = nx.average_shortest_path_length(G, weight='weight')
+        assert_almost_equal(l, 4)
+        G = nx.Graph()
+        nx.add_path(G, range(5), weight=2)
+        l = nx.average_shortest_path_length(G, weight='weight')
+        assert_almost_equal(l, 4)
+
+    def test_disconnected(self):
+        g = nx.Graph()
+        g.add_nodes_from(range(3))
+        g.add_edge(0, 1)
+        assert_raises(nx.NetworkXError, nx.average_shortest_path_length, g)
+        g = g.to_directed()
+        assert_raises(nx.NetworkXError, nx.average_shortest_path_length, g)
+
+    def test_trivial_graph(self):
+        """Tests that the trivial graph has average path length zero,
+        since there is exactly one path of length zero in the trivial
+        graph.
+
+        For more information, see issue #1960.
+
+        """
+        G = nx.trivial_graph()
+        assert_equal(nx.average_shortest_path_length(G), 0)
+
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null_graph(self):
+        nx.average_shortest_path_length(nx.null_graph())

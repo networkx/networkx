@@ -1,6 +1,12 @@
-#!/usr/bin/env python
-from nose.tools import *
+from itertools import permutations
+
+from nose.tools import assert_almost_equal
+from nose.tools import assert_equal
+from nose.tools import assert_true
+from nose.tools import raises
+
 import networkx as nx
+
 
 class TestNeighborConnectivity(object):
 
@@ -107,15 +113,31 @@ class TestNeighborConnectivity(object):
         c = nx.average_degree_connectivity(G, source='out', target='in+out')
         assert_equal(c,{0:0,3:1})
 
-
     def test_in_out_weight(self):
-        from itertools import permutations
-        G=nx.DiGraph()
-        G.add_edge(1,2,weight=1)
-        G.add_edge(1,3,weight=1)
-        G.add_edge(3,1,weight=1)
-        for s,t in permutations(['in','out','in+out'],2):
+        G = nx.DiGraph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=1)
+        G.add_edge(3, 1, weight=1)
+        for s, t in permutations(['in', 'out', 'in+out'], 2):
             c = nx.average_degree_connectivity(G, source=s, target=t)
-            cw = nx.average_degree_connectivity(G,source=s, target=t, 
+            cw = nx.average_degree_connectivity(G, source=s, target=t,
                                                 weight='weight')
-            assert_equal(c,cw)
+            assert_equal(c, cw)
+
+    @raises(ValueError)
+    def test_invalid_source(self):
+        G = nx.DiGraph()
+        nx.average_degree_connectivity(G, source='bogus')
+
+    @raises(ValueError)
+    def test_invalid_target(self):
+        G = nx.DiGraph()
+        nx.average_degree_connectivity(G, target='bogus')
+
+    def test_single_node(self):
+        # TODO Is this really the intended behavior for providing a
+        # single node as the argument `nodes`? Shouldn't the function
+        # just return the connectivity value itself?
+        G = nx.trivial_graph()
+        conn = nx.average_degree_connectivity(G, nodes=0)
+        assert_equal(conn, {0: 0})

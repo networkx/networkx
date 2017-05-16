@@ -23,9 +23,9 @@ class TestHITS:
            
         G.add_edges_from(edges,weight=1)
         self.G=G
-        self.G.a=dict(zip(G,[0.000000, 0.000000, 0.366025,
+        self.G.a=dict(zip(sorted(G),[0.000000, 0.000000, 0.366025,
                              0.133975, 0.500000, 0.000000]))
-        self.G.h=dict(zip(G,[ 0.366025, 0.000000, 0.211325, 
+        self.G.h=dict(zip(sorted(G),[ 0.366025, 0.000000, 0.211325, 
                               0.000000, 0.211325, 0.211325]))
 
 
@@ -91,3 +91,9 @@ class TestHITS:
             raise SkipTest('scipy not available.')
         G=networkx.Graph()
         assert_equal(networkx.hits_scipy(G),({},{}))
+
+
+    @raises(networkx.PowerIterationFailedConvergence)
+    def test_hits_not_convergent(self):
+        G = self.G
+        networkx.hits(G, max_iter=0)

@@ -1,25 +1,26 @@
-# coding: utf-8
-"""
-Provides functions for finding and testing for locally `(k, l)`-connected
-graphs.
-
-"""
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
+# -*- coding: utf-8 -*-
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors:  Aric Hagberg (hagberg@lanl.gov) and Dan Schult (dschult@colgate.edu)
+#
+"""
+Provides functions for finding and testing for locally `(k, l)`-connected
+graphs.
 
-_all__ = ['kl_connected_subgraph', 'is_kl_connected']
-
+"""
 import copy
 import networkx as nx
 
+__all__ = ['kl_connected_subgraph', 'is_kl_connected']
+
 
 def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
-    """Returns the maximum locally `(k, l)`-connected subgraph of ``G``.
+    """Returns the maximum locally `(k, l)`-connected subgraph of `G`.
 
     A graph is locally `(k, l)`-connected if for each edge `(u, v)` in the
     graph there are at least `l` edge-disjoint paths of length at most `k`
@@ -40,20 +41,20 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
         connectivity requirement.
 
     low_memory : bool
-        If this is ``True``, this function uses an algorithm that uses slightly
+        If this is True, this function uses an algorithm that uses slightly
         more time but less memory.
 
     same_as_graph : bool
-        If this is ``True`` then return a tuple of the form ``(H, is_same)``,
-        where ``H`` is the maximum locally `(k, l)`-connected subgraph and
-        ``is_same`` is a Boolean representing whether ``G`` is locally `(k,
-        l)`-connected (and hence, whether ``H`` is simply a copy of the input
-        graph ``G``).
+        If True then return a tuple of the form `(H, is_same)`,
+        where `H` is the maximum locally `(k, l)`-connected subgraph and
+        `is_same` is a Boolean representing whether `G` is locally `(k,
+        l)`-connected (and hence, whether `H` is simply a copy of the input
+        graph `G`).
 
     Returns
     -------
     NetworkX graph or two-tuple
-        If ``same_as_graph`` is ``True``, then this function returns a
+        If `same_as_graph` is True, then this function returns a
         two-tuple as described above. Otherwise, it returns only the maximum
         locally `(k, l)`-connected subgraph.
 
@@ -121,7 +122,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
 
 
 def is_kl_connected(G, k, l, low_memory=False):
-    """Returns ``True`` if and only if ``G`` is locally `(k, l)`-connected.
+    """Returns True if and only if `G` is locally `(k, l)`-connected.
 
     A graph is locally `(k, l)`-connected if for each edge `(u, v)` in the
     graph there are at least `l` edge-disjoint paths of length at most `k`
@@ -141,7 +142,7 @@ def is_kl_connected(G, k, l, low_memory=False):
         connectivity requirement.
 
     low_memory : bool
-        If this is ``True``, this function uses an algorithm that uses slightly
+        If this is True, this function uses an algorithm that uses slightly
         more time but less memory.
 
     Returns

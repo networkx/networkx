@@ -31,6 +31,25 @@ Branchings and Spanning Arborescences
    minimum_spanning_arborescence
    Edmonds
 
+Encoding and decoding
+---------------------
+.. automodule:: networkx.algorithms.tree.coding
+.. autosummary::
+   :toctree: generated/
+
+   from_nested_tuple
+   to_nested_tuple
+   from_prufer_sequence
+   to_prufer_sequence
+
+Operations
+----------
+.. automodule:: networkx.algorithms.tree.operations
+.. autosummary::
+   :toctree: generated/
+
+   join
+
 Spanning Trees
 --------------
 .. automodule:: networkx.algorithms.tree.mst
@@ -41,3 +60,11 @@ Spanning Trees
    maximum_spanning_tree
    minimum_spanning_edges
    maximum_spanning_edges
+
+Exceptions
+----------
+.. automodule:: networkx.algorithms.tree.coding
+.. autosummary::
+   :toctree: generated/
+
+   NotATree

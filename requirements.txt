@@ -3,6 +3,7 @@ matplotlib
 scipy
 numpy
 nose
+nose-ignore-docstring
 pandas
 gdal
 pyyaml
@@ -10,4 +11,4 @@ pygraphviz
 sphinx
 sphinxcontrib-bibtex
 sphinx_rtd_theme
-pydotplus
+pydot >= 1.2.3

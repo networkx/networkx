@@ -94,6 +94,11 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
        If the parameter `beta` is not a scalar but lacks a value for at least
        one node
 
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     Examples
     --------
     >>> import math
@@ -190,9 +195,8 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
             for n in x:
                 x[n] *= s
             return x
+    raise nx.PowerIterationFailedConvergence(max_iter)
 
-    raise nx.NetworkXError('Power iteration failed to converge in '
-                           '%d iterations.' % max_iter)
 
 @not_implemented_for('multigraph')
 def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
@@ -323,7 +327,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
             raise nx.NetworkXError('beta must be a number')
 
     A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
-    n = np.array(A).shape[0]
+    n = A.shape[0]
     centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , b)
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)

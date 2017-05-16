@@ -22,7 +22,7 @@ class TestDistanceRegular(object):
 
     def test_not_connected(self):
         G=nx.cycle_graph(4)
-        G.add_cycle([5,6,7])
+        nx.add_cycle(G, [5, 6, 7])
         assert_false(nx.is_distance_regular(G))
 
 

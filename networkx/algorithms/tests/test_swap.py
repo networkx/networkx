@@ -33,7 +33,7 @@ def test_connected_double_edge_swap_small():
 @raises(NetworkXError)
 def test_connected_double_edge_swap_not_connected():
     G = nx.path_graph(3)
-    G.add_path([10,11,12])
+    nx.add_path(G, [10, 11, 12])
     G = nx.connected_double_edge_swap(G)
 
 def test_degree_seq_c4():

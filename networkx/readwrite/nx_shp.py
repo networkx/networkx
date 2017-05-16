@@ -39,13 +39,13 @@ def read_shp(path, simplify=True, geom_attrs=True):
        File, directory, or filename to read.
 
     simplify:  bool
-        If ``True``, simplify line geometries to start and end coordinates.
-        If ``False``, and line feature geometry has multiple segments, the
+        If True, simplify line geometries to start and end coordinates.
+        If False, and line feature geometry has multiple segments, the
         non-geometric attributes for that feature will be repeated for each
         edge comprising that feature.
 
     geom_attrs: bool
-        If ``True``, include the Wkb, Wkt and Json geometry attributes with
+        If True, include the Wkb, Wkt and Json geometry attributes with
         each edge.
 
         NOTE:  if these attributes are available, write_shp will use them
@@ -90,7 +90,9 @@ def read_shp(path, simplify=True, geom_attrs=True):
                                          ogr.wkbMultiLineString):
                 for edge in edges_from_line(g, attributes, simplify,
                                             geom_attrs):
-                    net.add_edge(*edge)
+                    e1, e2, attr = edge
+                    net.add_edge(e1, e2)
+                    net[e1][e2].update(attr)
             else:
                 raise ImportError("GeometryType {} not supported".
                                   format(g.GetGeometryType()))
@@ -113,10 +115,10 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
         Attributes to be associated with all geoms
 
     simplify:  bool
-        If ``True``, simplify the line as in read_shp
+        If True, simplify the line as in read_shp
 
     geom_attrs:  bool
-        If ``True``, add geom attributes to edge as in read_shp
+        If True, add geom attributes to edge as in read_shp
 
 
     Returns

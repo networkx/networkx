@@ -1,4 +1,12 @@
 # encoding: utf-8
+#    Copyright (C) 2008-2016 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 Read graphs in GML format.
 
@@ -18,20 +26,10 @@ Format
 See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
 for format specification.
 
-Example graphs in GML format:
+Example graphs in GML format
 http://www-personal.umich.edu/~mejn/netdata/
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008-2010 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
-__all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
-
 try:
     try:
         from cStringIO import StringIO
@@ -41,9 +39,6 @@ except ImportError:
     from io import StringIO
 from ast import literal_eval
 from collections import defaultdict
-from lib2to3.pgen2.parse import ParseError
-from lib2to3.pgen2.tokenize import TokenError
-from lib2to3.refactor import RefactoringTool
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
@@ -54,6 +49,9 @@ try:
 except ImportError:
     # Python 3.x
     import html.entities as htmlentitydefs
+
+__all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
+
 
 try:
     long
@@ -71,15 +69,16 @@ try:
     literal_eval(r"u'\u4444'")
 except SyntaxError:
     # Remove 'u' prefixes in unicode literals in Python 3
-    rtp_fix_unicode = RefactoringTool(['lib2to3.fixes.fix_unicode'],
-                                      {'print_function': True})
+    rtp_fix_unicode = lambda s: s[1:]
 else:
     rtp_fix_unicode = None
 
 
 def escape(text):
-    """Escape unprintable or non-ASCII characters, double quotes and ampersands
-    in a string using XML character references.
+    """Use XML character references to escape characters.
+
+    Use XML character references for unprintable or non-ASCII
+    characters, double quotes and ampersands in a string
     """
     def fixup(m):
         ch = m.group(0)
@@ -90,9 +89,7 @@ def escape(text):
 
 
 def unescape(text):
-    """Replace XML character references in a string with the referenced
-    characters.
-    """
+    """Replace XML character references with the referenced characters"""
     def fixup(m):
         text = m.group(0)
         if text[1] == '#':
@@ -131,17 +128,15 @@ def literal_destringizer(rep):
     Raises
     ------
     ValueError
-        If ``rep`` is not a Python literal.
+        If `rep` is not a Python literal.
     """
     if isinstance(rep, (str, unicode)):
         orig_rep = rep
+        if rtp_fix_unicode is not None:
+            rep = rtp_fix_unicode(rep)
         try:
-            # Python 3.2 does not recognize 'u' prefixes before string literals
-            if rtp_fix_unicode:
-                rep = str(rtp_fix_unicode.refactor_string(
-                    rep + '\n', '<string>'))[:-1]
             return literal_eval(rep)
-        except (ParseError, SyntaxError, TokenError):
+        except SyntaxError:
             raise ValueError('%r is not a valid Python literal' % (orig_rep,))
     else:
         raise ValueError('%r is not a string' % (rep,))
@@ -158,12 +153,12 @@ def read_gml(path, label='label', destringizer=None):
 
     label : string, optional
         If not None, the parsed nodes will be renamed according to node
-        attributes indicated by ``label``. Default value: ``'label'``.
+        attributes indicated by `label`. Default value: 'label'.
 
     destringizer : callable, optional
         A destringizer that recovers values stored as strings in GML. If it
-        cannot convert a string to a value, a ``ValueError`` is raised. Default
-        value : ``None``.
+        cannot convert a string to a value, a `ValueError` is raised. Default
+        value : None.
 
     Returns
     -------
@@ -221,12 +216,12 @@ def parse_gml(lines, label='label', destringizer=None):
 
     label : string, optional
         If not None, the parsed nodes will be renamed according to node
-        attributes indicated by ``label``. Default value: ``'label'``.
+        attributes indicated by `label`. Default value: 'label'.
 
     destringizer : callable, optional
         A destringizer that recovers values stored as strings in GML. If it
-        cannot convert a string to a value, a ``ValueError`` is raised. Default
-        value : ``None``.
+        cannot convert a string to a value, a `ValueError` is raised. Default
+        value : None.
 
     Returns
     -------
@@ -286,7 +281,7 @@ def parse_gml_lines(lines, label, destringizer):
     """
     def tokenize():
         patterns = [
-            r'[A-Za-z][0-9A-Za-z_]*\s+',  # keys
+            r'[A-Za-z][0-9A-Za-z_]*\b',  # keys
             r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
             r'[+-]?[0-9]+',   # ints
             r'".*?"',         # strings
@@ -325,14 +320,14 @@ def parse_gml_lines(lines, label, destringizer):
         yield (None, None, lineno + 1, 1)  # EOF
 
     def unexpected(curr_token, expected):
-        type, value, lineno, pos = curr_token
+        category, value, lineno, pos = curr_token
         raise NetworkXError(
             'expected %s, found %s at (%d, %d)' %
             (expected, repr(value) if value is not None else 'EOF', lineno,
              pos))
 
-    def consume(curr_token, type, expected):
-        if curr_token[0] == type:
+    def consume(curr_token, category, expected):
+        if curr_token[0] == category:
             return next(tokens)
         unexpected(curr_token, expected)
 
@@ -341,11 +336,11 @@ def parse_gml_lines(lines, label, destringizer):
         while curr_token[0] == 0:  # keys
             key = curr_token[1]
             curr_token = next(tokens)
-            type = curr_token[0]
-            if type == 1 or type == 2:  # reals or ints
+            category = curr_token[0]
+            if category == 1 or category == 2:  # reals or ints
                 value = curr_token[1]
                 curr_token = next(tokens)
-            elif type == 3:  # strings
+            elif category == 3:  # strings
                 value = unescape(curr_token[1][1:-1])
                 if destringizer:
                     try:
@@ -353,7 +348,7 @@ def parse_gml_lines(lines, label, destringizer):
                     except ValueError:
                         pass
                 curr_token = next(tokens)
-            elif type == 4:  # dict start
+            elif category == 4:  # dict start
                 curr_token, value = parse_dict(curr_token)
             else:
                 unexpected(curr_token, "an int, float, string or '['")
@@ -391,12 +386,12 @@ def parse_gml_lines(lines, label, destringizer):
     G.graph.update((key, value) for key, value in graph.items()
                    if key != 'node' and key != 'edge')
 
-    def pop_attr(dct, type, attr, i):
+    def pop_attr(dct, category, attr, i):
         try:
             return dct.pop(attr)
         except KeyError:
             raise NetworkXError(
-                "%s #%d has no '%s' attribute" % (type, i, attr))
+                "%s #%d has no '%s' attribute" % (category, i, attr))
 
     nodes = graph.get('node', [])
     mapping = {}
@@ -411,7 +406,7 @@ def parse_gml_lines(lines, label, destringizer):
                 raise NetworkXError('node label %r is duplicated' % (label,))
             labels.add(label)
             mapping[id] = label
-        G.add_node(id, node)
+        G.add_node(id, **node)
 
     edges = graph.get('edge', [])
     for i, edge in enumerate(edges if isinstance(edges, list) else [edges]):
@@ -425,7 +420,7 @@ def parse_gml_lines(lines, label, destringizer):
                 'edge #%d has an undefined target %r' % (i, target))
         if not multigraph:
             if not G.has_edge(source, target):
-                G.add_edge(source, target, edge)
+                G.add_edge(source, target, **edge)
             else:
                 raise nx.NetworkXError(
                     'edge #%d (%r%s%r) is duplicated' %
@@ -436,14 +431,10 @@ def parse_gml_lines(lines, label, destringizer):
                 raise nx.NetworkXError(
                     'edge #%d (%r%s%r, %r) is duplicated' %
                     (i, source, '->' if directed else '--', target, key))
-            G.add_edge(source, target, key, edge)
+            G.add_edge(source, target, key, **edge)
 
     if label != 'id':
         G = nx.relabel_nodes(G, mapping)
-        if 'name' in graph:
-            G.graph['name'] = graph['name']
-        else:
-            del G.graph['name']
     return G
 
 
@@ -464,17 +455,17 @@ def literal_stringizer(value):
     Raises
     ------
     ValueError
-        If ``value`` cannot be converted to GML.
+        If `value` cannot be converted to GML.
 
     Notes
     -----
-    ``literal_stringizer`` is largely the same as ``repr`` in terms of
-    functionality but attempts prefix ``unicode`` and ``bytes`` literals with
-    ``u`` and ``b`` to provide better interoperability of data generated by
+    `literal_stringizer` is largely the same as `repr` in terms of
+    functionality but attempts prefix `unicode` and `bytes` literals with
+    `u` and `b` to provide better interoperability of data generated by
     Python 2 and Python 3.
 
     The original value can be recovered using the
-    ``networkx.readwrite.gml.literal_destringizer`` function.
+    :func:`networkx.readwrite.gml.literal_destringizer` function.
     """
     def stringize(value):
         if isinstance(value, (int, long, bool)) or value is None:
@@ -558,7 +549,7 @@ def generate_gml(G, stringizer=None):
     stringizer : callable, optional
         A stringizer which converts non-int/float/dict values into strings. If
         it cannot convert a value into a string, it should raise a
-        ``ValueError`` raised to indicate that. Default value: ``None``.
+        `ValueError` raised to indicate that. Default value: None.
 
     Returns
     -------
@@ -568,14 +559,14 @@ def generate_gml(G, stringizer=None):
     Raises
     ------
     NetworkXError
-        If ``stringizer`` cannot convert a value into a string, or the value to
-        convert is not a string while ``stringizer`` is ``None``.
+        If `stringizer` cannot convert a value into a string, or the value to
+        convert is not a string while `stringizer` is None.
 
     Notes
     -----
-    Graph attributes named ``'directed'``, ``'multigraph'``, ``'node'`` or
-    ``'edge'``,node attributes named ``'id'`` or ``'label'``, edge attributes
-    named ``'source'`` or ``'target'`` (or ``'key'`` if ``G`` is a multigraph)
+    Graph attributes named 'directed', 'multigraph', 'node' or
+    'edge',node attributes named 'id' or 'label', edge attributes
+    named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
     """
@@ -671,7 +662,7 @@ def generate_gml(G, stringizer=None):
 
 @open_file(1, mode='wb')
 def write_gml(G, path, stringizer=None):
-    """Write a graph ``G`` in GML format to the file or file handle ``path``.
+    """Write a graph `G` in GML format to the file or file handle `path`.
 
     Parameters
     ----------
@@ -685,13 +676,13 @@ def write_gml(G, path, stringizer=None):
     stringizer : callable, optional
         A stringizer which converts non-int/non-float/non-dict values into
         strings. If it cannot convert a value into a string, it should raise a
-        ``ValueError`` to indicate that. Default value: ``None``.
+        `ValueError` to indicate that. Default value: None.
 
     Raises
     ------
     NetworkXError
-        If ``stringizer`` cannot convert a value into a string, or the value to
-        convert is not a string while ``stringizer`` is ``None``.
+        If `stringizer` cannot convert a value into a string, or the value to
+        convert is not a string while `stringizer` is None.
 
     See Also
     --------
@@ -699,9 +690,9 @@ def write_gml(G, path, stringizer=None):
 
     Notes
     -----
-    Graph attributes named ``'directed'``, ``'multigraph'``, ``'node'`` or
-    ``'edge'``,node attributes named ``'id'`` or ``'label'``, edge attributes
-    named ``'source'`` or ``'target'`` (or ``'key'`` if ``G`` is a multigraph)
+    Graph attributes named 'directed', 'multigraph', 'node' or
+    'edge',node attributes named 'id' or 'label', edge attributes
+    named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
 

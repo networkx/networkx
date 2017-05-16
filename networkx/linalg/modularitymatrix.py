@@ -18,7 +18,7 @@ __all__ = ['modularity_matrix', 'directed_modularity_matrix']
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def modularity_matrix(G, nodelist=None):
+def modularity_matrix(G, nodelist=None, weight=None):
     """Return the modularity matrix of G.
 
     The modularity matrix is the matrix B = A - <A>, where A is the adjacency
@@ -26,9 +26,10 @@ def modularity_matrix(G, nodelist=None):
     is described by the configuration model.
 
     More specifically, the element B_ij of B is defined as
-        A_ij - k_i k_j/m
+        A_ij - k_i k_j / 2 * m
     where k_i(in) is the degree of node i, and were m is the number of edges
-    in the graph.
+    in the graph. When weight is set to a name of an attribute edge, Aij, k_i, 
+    k_j and m are computed using its value. 
 
     Parameters
     ----------
@@ -38,6 +39,10 @@ def modularity_matrix(G, nodelist=None):
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
+    
+    weight : string or None, optional (default=None)
+       The edge attribute that holds the numerical value used for
+       the edge weight.  If None then all edge weights are 1.
 
     Returns
     -------
@@ -66,9 +71,10 @@ def modularity_matrix(G, nodelist=None):
     """
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  format='csr')
     k = A.sum(axis=1)
-    m = G.number_of_edges()
+    m = k.sum() * 0.5
     # Expected adjacency matrix
     X = k * k.transpose() / (2 * m)
     return A - X
@@ -76,7 +82,7 @@ def modularity_matrix(G, nodelist=None):
 
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
-def directed_modularity_matrix(G, nodelist=None):
+def directed_modularity_matrix(G, nodelist=None, weight=None):
     """Return the directed modularity matrix of G.
 
     The modularity matrix is the matrix B = A - <A>, where A is the adjacency
@@ -84,9 +90,11 @@ def directed_modularity_matrix(G, nodelist=None):
     is described by the configuration model.
 
     More specifically, the element B_ij of B is defined as
-        B_ij = A_ij - k_i(out) k_j(in)/m
+        B_ij = A_ij - k_i(out) k_j(in) / m
     where k_i(in) is the in degree of node i, and k_j(out) is the out degree
-    of node j, with m the number of edges in the graph.
+    of node j, with m the number of edges in the graph. When weight is set
+    to a name of an attribute edge, Aij, k_i, k_j and m are computed using
+    its value.
 
     Parameters
     ----------
@@ -96,6 +104,10 @@ def directed_modularity_matrix(G, nodelist=None):
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
+
+    weight : string or None, optional (default=None)
+       The edge attribute that holds the numerical value used for
+       the edge weight.  If None then all edge weights are 1.
 
     Returns
     -------
@@ -132,10 +144,11 @@ def directed_modularity_matrix(G, nodelist=None):
     """
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  format='csr')
     k_in = A.sum(axis=0)
     k_out = A.sum(axis=1)
-    m = G.number_of_edges()
+    m = k_in.sum()
     # Expected adjacency matrix
     X = k_out * k_in / m
     return A - X

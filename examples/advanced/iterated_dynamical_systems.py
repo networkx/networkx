@@ -87,23 +87,20 @@ from math import *
 
 nmax=10000
 p=3
-mach_eps=0.00000000001
 
-def digitsrep(n,b=10):
+def digitsrep(n, b=10):
     """Return list of digits comprising n represented in base b.
     n must be a nonnegative integer"""
 
-    # very inefficient if you only work with base 10
-    dlist=[]
-    if n<=0:
+    if n <= 0:
         return [0]
-    maxpow=int(floor( log(n)/log(b) + mach_eps ))
-    pow=maxpow
-    while pow>=0:
-        x=int(floor(n // b**pow))
-        dlist.append(x)
-        n=n-x*b**pow
-        pow=pow-1
+
+    dlist = []
+    while (n > 0) :
+        # Prepend next least-significant digit
+        dlist = [n % b] + dlist
+        # Floor-division
+        n = n // b
     return dlist
 
 def powersum(n,p,b=10):

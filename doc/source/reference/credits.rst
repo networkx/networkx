@@ -78,7 +78,6 @@ is partially historical, and now, mostly arbitrary.
 - Andrew Conway
 - Raf Guns
 - Salim Fadhley
-- Matteo Dell'Amico
 - Fabrice Desclaux
 - Arpad Horvath
 - Minh Van Nguyen
@@ -104,7 +103,6 @@ is partially historical, and now, mostly arbitrary.
 - Dustin Smith
 - Mathieu Larose
 - Vincent Gauthier
-- Sérgio Nery Simões
 - chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
 - Jeffrey Finkelstein
 - Jean-Gabriel Young, Github: `jg-you <https://github.com/jgyou>`_
@@ -114,6 +112,7 @@ is partially historical, and now, mostly arbitrary.
 - Konstantinos Karakatsanis, GitHub: `k-karakatsanis <https://github.com/k-karakatsanis>`_
 - Ryan Nelson, GitHub: `rnelsonchem <https://github.com/rnelsonchem>`_
 - Niels van Adrichem, GitHub: `NvanAdrichem <https://github.com/NvanAdrichem>`_
+- Michael E. Rose, GitHub: `Michael-E-Rose <https://github.com/Michael-E-Rose>`_
 
 Support
 -------

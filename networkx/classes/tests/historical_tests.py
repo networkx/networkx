@@ -462,7 +462,7 @@ class HistoricalTests(object):
         H=K5.subgraph([9])
         assert_true(nx.is_isomorphic(H,nullgraph))
 
-    def test_node_tuple_error(self):
+    def test_node_tuple_issue(self):
         H=self.G()
         # Test error handling of tuple as a node
         assert_raises(nx.NetworkXError,H.remove_node,(1,2))

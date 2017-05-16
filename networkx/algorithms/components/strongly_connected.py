@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Strongly connected components.
-"""
 #    Copyright (C) 2004-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Eben Kenah
+#          Aric Hagberg (hagberg@lanl.gov)
+#          Christopher Ellison
+#          Ben Edwards (bedwards@cs.unm.edu)
+"""Strongly connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-
-__authors__ = "\n".join(['Eben Kenah',
-                         'Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison',
-                         'Ben Edwards (bedwards@cs.unm.edu)'])
 
 __all__ = ['number_strongly_connected_components',
            'strongly_connected_components',
@@ -31,7 +30,7 @@ def strongly_connected_components(G):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -41,7 +40,7 @@ def strongly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented :
         If G is undirected.
 
     Examples
@@ -49,7 +48,7 @@ def strongly_connected_components(G):
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.strongly_connected_components(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -61,12 +60,13 @@ def strongly_connected_components(G):
 
     See Also
     --------
-    connected_components,
+    connected_components
     weakly_connected_components
+    kosaraju_strongly_connected_components
 
     Notes
     -----
-    Uses Tarjan's algorithm with Nuutila's modifications.
+    Uses Tarjan's algorithm[1]_ with Nuutila's modifications[2]_.
     Nonrecursive version of algorithm.
 
     References
@@ -127,7 +127,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -145,7 +145,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.kosaraju_strongly_connected_components(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -157,8 +157,7 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     See Also
     --------
-    connected_components
-    weakly_connected_components
+    strongly_connected_components
 
     Notes
     -----
@@ -188,7 +187,7 @@ def strongly_connected_components_recursive(G):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -198,15 +197,15 @@ def strongly_connected_components_recursive(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
-        If G is undirected
+    NetworkXNotImplemented :
+        If G is undirected.
 
     Examples
     --------
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.strongly_connected_components_recursive(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -222,7 +221,7 @@ def strongly_connected_components_recursive(G):
 
     Notes
     -----
-    Uses Tarjan's algorithm with Nuutila's modifications.
+    Uses Tarjan's algorithm[1]_ with Nuutila's modifications[2]_.
 
     References
     ----------
@@ -284,12 +283,17 @@ def strongly_connected_component_subgraphs(G, copy=True):
     comp : generator of graphs
       A generator of graphs, one for each strongly connected component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     Generate a sorted list of strongly connected components, largest first.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> G.add_cycle([10, 11, 12])
+    >>> nx.add_cycle(G, [10, 11, 12])
     >>> [len(Gc) for Gc in sorted(nx.strongly_connected_component_subgraphs(G),
     ...                         key=len, reverse=True)]
     [4, 3]
@@ -301,6 +305,7 @@ def strongly_connected_component_subgraphs(G, copy=True):
 
     See Also
     --------
+    strongly_connected_components
     connected_component_subgraphs
     weakly_connected_component_subgraphs
 
@@ -326,9 +331,16 @@ def number_strongly_connected_components(G):
     n : integer
        Number of strongly connected components
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
-    connected_components
+    strongly_connected_components
+    number_connected_components
+    number_weakly_connected_components
 
     Notes
     -----
@@ -351,8 +363,17 @@ def is_strongly_connected(G):
     connected : bool
       True if the graph is strongly connected, False otherwise.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
+    is_weakly_connected
+    is_semiconnected
+    is_connected
+    is_biconnected
     strongly_connected_components
 
     Notes
@@ -386,18 +407,18 @@ def condensation(G, scc=None):
     Returns
     -------
     C : NetworkX DiGraph
-       The condensation graph C of G. The node labels are integers
+       The condensation graph C of G.  The node labels are integers
        corresponding to the index of the component in the list of
-       strongly connected components of G. C has a graph attribute named
+       strongly connected components of G.  C has a graph attribute named
        'mapping' with a dictionary mapping the original nodes to the
-       nodes in C to which they belong. Each node in C also has a node
+       nodes in C to which they belong.  Each node in C also has a node
        attribute 'members' with the set of original nodes in G that
        form the SCC that the node in C represents.
 
     Raises
     ------
     NetworkXNotImplemented:
-        If G is not directed
+        If G is undirected.
 
     Notes
     -----
@@ -410,6 +431,7 @@ def condensation(G, scc=None):
     mapping = {}
     members = {}
     C = nx.DiGraph()
+    i = 0  # required if G is empty
     for i, component in enumerate(scc):
         members[i] = component
         mapping.update((n, i) for n in component)

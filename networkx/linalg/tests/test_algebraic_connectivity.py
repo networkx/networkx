@@ -243,7 +243,7 @@ class TestSpectralOrdering(object):
         path = list(range(10))
         shuffle(path)
         G = nx.Graph()
-        G.add_path(path)
+        nx.add_path(G, path)
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             ok_(order in [path, list(reversed(path))])
@@ -251,8 +251,8 @@ class TestSpectralOrdering(object):
     @preserve_random_state
     def test_disconnected(self):
         G = nx.Graph()
-        G.add_path(range(0, 10, 2))
-        G.add_path(range(1, 10, 2))
+        nx.add_path(G, range(0, 10, 2))
+        nx.add_path(G, range(1, 10, 2))
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             assert_equal(set(order), set(G))
@@ -265,7 +265,7 @@ class TestSpectralOrdering(object):
     def test_cycle(self):
         path = list(range(10))
         G = nx.Graph()
-        G.add_path(path, weight=5)
+        nx.add_path(G, path, weight=5)
         G.add_edge(path[-1], path[0], weight=1)
         A = nx.laplacian_matrix(G).todense()
         for normalized in (False, True):

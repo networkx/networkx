@@ -4,15 +4,16 @@
 #    BSD license.
 """Asynchronous label propagation algorithms for community detection."""
 
-import random
-from itertools import groupby
 from collections import Counter
+import random
 
-import networkx as nx
+from networkx.utils import groups
+
+__all__ = ['asyn_lpa_communities']
 
 
 def asyn_lpa_communities(G, weight=None):
-    """Returns communities in ``G`` as detected by asynchronous label
+    """Returns communities in `G` as detected by asynchronous label
     propagation.
 
     The asynchronous label propagation algorithm is described in
@@ -35,8 +36,8 @@ def asyn_lpa_communities(G, weight=None):
     G : Graph
 
     weight : string
-        The edge attribute representing the weight of an edge. If
-        ``None``, each edge is assumed to have weight one. In this
+        The edge attribute representing the weight of an edge.
+        If None, each edge is assumed to have weight one. In this
         algorithm, the weight of an edge is used in determining the
         frequency with which a label appears among the neighbors of a
         node: a higher weight means the label appears more often.
@@ -71,9 +72,10 @@ def asyn_lpa_communities(G, weight=None):
             # Get label frequencies. Depending on the order they are processed
             # in some nodes with be in t and others in t-1, making the
             # algorithm asynchronous.
-            label_freq = Counter({labels[v]: G.edge[v][node][weight]
-                                  if weight else 1 for v in G[node]})
-
+            label_freq = Counter()
+            for v in G[node]:
+                label_freq.update({labels[v]: G.edge[v][node][weight]
+                                    if weight else 1})
             # Choose the label with the highest frecuency. If more than 1 label
             # has the highest frecuency choose one randomly.
             max_freq = max(label_freq.values())
@@ -85,5 +87,5 @@ def asyn_lpa_communities(G, weight=None):
             # neighbour labels (only one label has max_freq for each node).
             cont = cont or len(best_labels) > 1
 
-    return (set(v) for k, v in groupby(sorted(labels, key=labels.get),
-                                       key=labels.get))
+    # TODO In Python 3.3 or later, this should be `yield from ...`.
+    return iter(groups(labels).values())

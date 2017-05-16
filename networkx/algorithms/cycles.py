@@ -50,8 +50,8 @@ def cycle_basis(G,root=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
+    >>> nx.add_cycle(G, [0, 1, 2, 3])
+    >>> nx.add_cycle(G, [0, 3, 4, 5])
     >>> print(nx.cycle_basis(G,0))
     [[3, 4, 5, 0], [1, 2, 3, 0]]
 
@@ -105,7 +105,7 @@ def cycle_basis(G,root=None):
 def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    A `simple cycle`, or `elementary circuit`, is a closed path where
     no node appears twice. Two elementary circuits are distinct if they
     are not cyclic permutations of each other.
 
@@ -225,7 +225,7 @@ def simple_cycles(G):
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
-    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    A `simple cycle`, or `elementary circuit`, is a closed path where
     no node appears twice. Two elementary circuits are distinct if they
     are not cyclic permutations of each other.
 
@@ -334,7 +334,7 @@ def find_cycle(G, source=None, orientation='original'):
         A directed/undirected graph/multigraph.
 
     source : node, list of nodes
-        The node from which the traversal begins. If ``None``, then a source
+        The node from which the traversal begins. If None, then a source
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
@@ -352,17 +352,17 @@ def find_cycle(G, source=None, orientation='original'):
     edges : directed edges
         A list of directed edges indicating the path taken for the loop. If
         no cycle is found, then an exception is raised. For graphs, an
-        edge is of the form (u, v) where ``u`` and ``v`` are the tail and head
+        edge is of the form `(u, v)` where `u` and `v` are the tail and head
         of the edge as determined by the traversal. For multigraphs, an edge is
-        of the form (u, v, key), where ``key`` is the key of the edge. When the
-        graph is directed, then ``u`` and ``v`` are always in the order of the
+        of the form `(u, v, key)`, where `key` is the key of the edge. When the
+        graph is directed, then `u` and `v` are always in the order of the
         actual directed edge. If orientation is 'ignore', then an edge takes
-        the form (u, v, key, direction) where direction indicates if the edge
+        the form `(u, v, key, direction)` where direction indicates if the edge
         was followed in the forward (tail to head) or reverse (head to tail)
-        direction. When the direction is forward, the value of ``direction``
-        is 'forward'. When the direction is reverse, the value of ``direction``
+        direction. When the direction is forward, the value of `direction`
+        is 'forward'. When the direction is reverse, the value of `direction`
         is 'reverse'.
-        
+
     Raises
     ------
     NetworkXNoCycle
@@ -391,11 +391,36 @@ def find_cycle(G, source=None, orientation='original'):
     """
     out_edge, key, tailhead = helper_funcs(G, orientation)
 
+    def prune(edges, active_nodes):
+        # This edge results from backtracking.
+        # Pop until we get a node whose head equals the current tail.
+        # So for example, we might have:
+        #  [(0,1), (1,2), (2,3)], (1,4)
+        # which must become:
+        #  [(0,1)], (1,4)
+        while True:
+            try:
+                popped_edge = edges.pop()
+            except IndexError:
+                edges = []
+                active_nodes = {tail}
+                break
+            else:
+                popped_head = tailhead(popped_edge)[1]
+                active_nodes.remove(popped_head)
+
+            if edges:
+                previous_head = tailhead(edges[-1])[1]
+                if tail == previous_head:
+                    break
+            else:
+                previous_head = None
+        return edges, active_nodes, previous_head
+
     explored = set()
     cycle = []
     final_node = None
     for start_node in G.nbunch_iter(source):
-
         if start_node in explored:
             # No loop is possible.
             continue
@@ -405,33 +430,13 @@ def find_cycle(G, source=None, orientation='original'):
         seen = {start_node}
         # Nodes in active path.
         active_nodes = {start_node}
-        previous_node = None
+        previous_head = None
+
         for edge in edge_dfs(G, start_node, orientation):
             # Determine if this edge is a continuation of the active path.
             tail, head = tailhead(edge)
-            if previous_node is not None and tail != previous_node:
-                # This edge results from backtracking.
-                # Pop until we get a node whose head equals the current tail.
-                # So for example, we might have:
-                #  (0,1), (1,2), (2,3), (1,4)
-                # which must become:
-                #  (0,1), (1,4)
-                while True:
-                    try:
-                        popped_edge = edges.pop()
-                    except IndexError:
-                        edges = []
-                        active_nodes = {tail}
-                        break
-                    else:
-                        popped_head = tailhead(popped_edge)[1]
-                        active_nodes.remove(popped_head)
-
-                    if edges:
-                        last_head = tailhead(edges[-1])[1]
-                        if tail == last_head:
-                            break
-
+            if previous_head is not None and tail != previous_head:
+                edges, active_nodes, previous_head = prune(edges, active_nodes)
             edges.append(edge)
 
             if head in active_nodes:
@@ -439,13 +444,12 @@ def find_cycle(G, source=None, orientation='original'):
                 cycle.extend(edges)
                 final_node = head
                 break
-            elif head in explored:
-                # Then we've already explored it. No loop is possible.
-                break
             else:
+                previous_head = head
                 seen.add(head)
                 active_nodes.add(head)
-                previous_node = head
+                if head in explored:
+                    edges, active_nodes, previous_head = prune(edges, active_nodes)
 
         if cycle:
             break

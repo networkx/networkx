@@ -2,7 +2,7 @@
 This module provides the following: read and write of p2g format 
 used in metabolic pathway studies.
 
-See http://www.cs.purdue.edu/homes/koyuturk/pathway/ for a description.
+See https://web.archive.org/web/20080626113807/http://www.cs.purdue.edu/homes/koyuturk/pathway/ for a description.
 
 The summary is included here:
 

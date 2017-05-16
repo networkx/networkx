@@ -3386,7 +3386,7 @@ class TimingMultiGraph(TimingGraph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
-            If None remove a single (abritrary) edge between u and v.
+            If None remove a single (arbitrary) edge between u and v.
 
         Raises
         ------
@@ -4255,7 +4255,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
-            If None remove a single (abritrary) edge between u and v.
+            If None remove a single (arbitrary) edge between u and v.
 
         Raises
         ------
@@ -4396,7 +4396,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         Returns
         -------
         out_edges : list
-            An listr of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+            A list of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
 
         Notes
         -----

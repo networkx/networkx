@@ -74,7 +74,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
-    'sphinx.ext.pngmath',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     #'sphinxcontrib.bibtex',
@@ -139,6 +138,8 @@ modindex_common_prefix=['networkx.']
 
 doctest_global_setup="import networkx as nx"
 
+# treat ``x, y : type`` as vars x and y instead of default ``y(x,) : type``
+napoleon_use_param = False
 
 # Options for HTML output
 # -----------------------
@@ -223,7 +224,7 @@ intersphinx_mapping = {'http://docs.python.org/': None,
 
 # For trac custom roles
 
-default_role = 'math'
+default_role = 'obj'
 trac_url = 'https://networkx.lanl.gov/trac/'
 mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
 

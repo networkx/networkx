@@ -41,17 +41,27 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = nx.single_source_shortest_path_length(G, 0)
-    >>> dict(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> length = dict(nx.single_source_shortest_path_length(G, 0))
+    >>> length[4]
+    4
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
 
     See Also
     --------
     shortest_path_length
     """
+    if source not in G:
+        raise nx.NodeNotFound('Source {} is not in G'.format(source))
     seen = {}                  # level (number of hops) when seen in BFS
     level = 0                  # the current level
     nextlevel = {source:1}  # dict of nodes to check at next level
+
     while nextlevel:
         thislevel = nextlevel  # advance to next level
         nextlevel = {}         # and start a new list (fringe)
@@ -66,7 +76,7 @@ def single_source_shortest_path_length(G,source,cutoff=None):
 
 
 def all_pairs_shortest_path_length(G, cutoff=None):
-    """Computes the shortest path lengths between all nodes in ``G``.
+    """Computes the shortest path lengths between all nodes in `G`.
 
     Parameters
     ----------
@@ -74,7 +84,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     cutoff : integer, optional
         Depth at which to stop the search. Only paths of length at most
-        ``cutoff`` are returned.
+        `cutoff` are returned.
 
     Returns
     -------
@@ -89,9 +99,18 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = nx.all_pairs_shortest_path_length(G)
-    >>> dict(length)[1]
-    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+    >>> length = dict(nx.all_pairs_shortest_path_length(G))
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    1 - 0: 1
+    1 - 1: 0
+    1 - 2: 1
+    1 - 3: 2
+    1 - 4: 3
+    >>> length[3][2]
+    1
+    >>> length[2][2]
+    0
 
     """
     length = single_source_shortest_path_length
@@ -131,6 +150,11 @@ def bidirectional_shortest_path(G,source,target):
     -----
     This algorithm is used by shortest_path(G,source,target).
     """
+
+    if source not in G or target not in G:
+        msg = 'Either source {} or target {} is not in G'
+        raise nx.NodeNotFound(msg.format(source, target))
+
     # call helper to do the real work
     results=_bidirectional_pred_succ(G,source,target)
     pred,succ,w=results
@@ -237,6 +261,9 @@ def single_source_shortest_path(G,source,cutoff=None):
     --------
     shortest_path
     """
+    if source not in G:
+        raise nx.NodeNotFound("Source {} not in G".format(source));
+
     level=0                  # the current level
     nextlevel={source:1}       # list of nodes to check at next level
     paths={source:[source]}  # paths dictionary  (paths to key from source)
@@ -264,7 +291,7 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     cutoff : integer, optional
         Depth at which to stop the search. Only paths of length at most
-        ``cutoff`` are returned.
+        `cutoff` are returned.
 
     Returns
     -------
@@ -320,6 +347,9 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
     {0: [], 1: [0], 2: [1], 3: [2]}
 
     """
+    if source not in G:
+        raise nx.NodeNotFound("Source {} not in G".format(source));
+
     level=0                  # the current level
     nextlevel=[source]       # list of nodes to check at next level
     seen={source:level}      # level (number of hops) when seen in BFS

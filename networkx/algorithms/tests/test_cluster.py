@@ -13,7 +13,7 @@ class TestTriangles:
         assert_equal(list(nx.triangles(G).values()),
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         assert_equal(nx.triangles(G),
-                     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 
+                     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0,
                       5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
 
     def test_cubical(self):
@@ -47,7 +47,7 @@ class TestWeightedClustering:
         assert_equal(list(nx.clustering(G,weight='weight').values()),
                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert_equal(nx.clustering(G,weight='weight'),
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
+                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
                       5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
@@ -70,8 +70,7 @@ class TestWeightedClustering:
 
 
     def test_triangle_and_edge(self):
-        G=nx.Graph()
-        G.add_cycle([0,1,2])
+        G=nx.cycle_graph(3)
         G.add_edge(0,4,weight=2)
         assert_equal(nx.clustering(G)[0],1.0/3.0)
         assert_equal(nx.clustering(G,weight='weight')[0],1.0/6.0)
@@ -88,7 +87,7 @@ class TestClustering:
         assert_equal(list(nx.clustering(G).values()),
                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert_equal(nx.clustering(G),
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
+                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
                       5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
@@ -155,7 +154,7 @@ class TestSquareClustering:
         assert_equal(list(nx.square_clustering(G).values()),
                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert_equal(nx.square_clustering(G),
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
+                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
                       5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
@@ -193,3 +192,24 @@ def test_average_clustering():
     assert_equal(nx.average_clustering(G),(1+1+1/3.0)/4.0)
     assert_equal(nx.average_clustering(G,count_zeros=True),(1+1+1/3.0)/4.0)
     assert_equal(nx.average_clustering(G,count_zeros=False),(1+1+1/3.0)/3.0)
+
+class TestGeneralizedDegree:
+
+    def test_generalized_degree(self):
+        G = nx.Graph()
+        assert_equal(nx.generalized_degree(G),{})
+
+    def test_path(self):
+        G = nx.path_graph(5)
+        assert_equal(nx.generalized_degree(G,0), {0: 1})
+        assert_equal(nx.generalized_degree(G,1), {0: 2})
+
+    def test_cubical(self):
+        G = nx.cubical_graph()
+        assert_equal(nx.generalized_degree(G,0), {0: 3})
+
+    def test_k5(self):
+        G = nx.complete_graph(5)
+        assert_equal(nx.generalized_degree(G,0), {3: 4})
+        G.remove_edge(0,1)
+        assert_equal(nx.generalized_degree(G, 0), {2: 3})

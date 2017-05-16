@@ -36,7 +36,6 @@ def is_graphical(sequence, method='eg'):
     sequence : list or iterable container
         A sequence of integer node degrees
 
-
     method : "eg" | "hh"
         The method used to validate the degree sequence.
         "eg" corresponds to the Erdős-Gallai algorithm, and
@@ -129,7 +128,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """
     try:
         dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible: 
+    except nx.NetworkXUnfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
@@ -194,7 +193,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
        \sum_{i=1}^{k} d_i \leq k(k-1) + \sum_{j=k+1}^{n} \min(d_i,k)
              = k(n-1) - ( k \sum_{j=0}^{k-1} n_j - \sum_{j=0}^{k-1} j n_j )
 
-    A strong index k is any index where `d_k \geq k` and the value `n_j` is the
+    A strong index k is any index where d_k >= k and the value n_j is the
     number of occurrences of j in d.  The maximal strong index is called the
     Durfee index.
 
@@ -218,7 +217,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     """
     try:
         dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible: 
+    except nx.NetworkXUnfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):

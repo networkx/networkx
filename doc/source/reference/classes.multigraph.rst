@@ -27,11 +27,9 @@ Adding and removing nodes and edges
    MultiGraph.add_edge
    MultiGraph.add_edges_from
    MultiGraph.add_weighted_edges_from
+   MultiGraph.new_edge_key
    MultiGraph.remove_edge
    MultiGraph.remove_edges_from
-   MultiGraph.add_star
-   MultiGraph.add_path
-   MultiGraph.add_cycle
    MultiGraph.clear
 
 
@@ -80,7 +78,4 @@ Making copies and subgraphs
    MultiGraph.to_undirected
    MultiGraph.to_directed
    MultiGraph.subgraph
-
-
-
-
+   MultiGraph.edge_subgraph

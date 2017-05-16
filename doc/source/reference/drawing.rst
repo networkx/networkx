@@ -19,7 +19,7 @@ dedicated and fully-featured graph visualization tools are
 `PGF/TikZ <http://sourceforge.net/projects/pgf/>`_.
 To use these and other such tools, you should export your NetworkX graph into
 a format that can be read by those tools. For example, Cytoscape can read the
-GraphML format, and so, `networkx.write_graphml(G)` might be an appropriate
+GraphML format, and so, ``networkx.write_graphml(G)`` might be an appropriate
 choice.
 
 Matplotlib
@@ -39,7 +39,6 @@ Matplotlib
    draw_spectral
    draw_spring
    draw_shell
-   draw_graphviz
 
 
 
@@ -79,6 +78,7 @@ Graph Layout
 
    circular_layout
    random_layout
+   rescale_layout
    shell_layout
    spring_layout
    spectral_layout

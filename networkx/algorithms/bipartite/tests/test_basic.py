@@ -28,17 +28,37 @@ class TestBipartiteBasic:
         assert_true(bipartite.is_bipartite(G))
 
     def test_bipartite_sets(self):
+        G = nx.path_graph(4)
+        X, Y = bipartite.sets(G)
+        assert_equal(X, {0, 2})
+        assert_equal(Y, {1, 3})
+
+    def test_bipartite_sets_directed(self):
+        G = nx.path_graph(4)
+        D = G.to_directed()
+        X, Y = bipartite.sets(D)
+        assert_equal(X, {0, 2})
+        assert_equal(Y, {1, 3})
+
+    def test_bipartite_sets_given_top_nodes(self):
         G=nx.path_graph(4)
-        X,Y=bipartite.sets(G)
-        assert_equal(X,set([0,2]))
-        assert_equal(Y,set([1,3]))
+        top_nodes = [0, 2]
+        X, Y = bipartite.sets(G, top_nodes)
+        assert_equal(X, {0, 2})
+        assert_equal(Y, {1, 3})
+
+    @raises(nx.AmbiguousSolution)
+    def test_bipartite_sets_disconnected(self):
+        G = nx.path_graph(4)
+        G.add_edges_from([(5, 6), (6, 7)])
+        X, Y = bipartite.sets(G)
 
     def test_is_bipartite_node_set(self):
         G=nx.path_graph(4)
         assert_true(bipartite.is_bipartite_node_set(G,[0,2]))
         assert_true(bipartite.is_bipartite_node_set(G,[1,3]))
         assert_false(bipartite.is_bipartite_node_set(G,[1,2]))
-        G.add_path([10,20])
+        G.add_edge(10, 20)
         assert_true(bipartite.is_bipartite_node_set(G,[0,2,10]))
         assert_true(bipartite.is_bipartite_node_set(G,[0,2,20]))
         assert_true(bipartite.is_bipartite_node_set(G,[1,3,10]))

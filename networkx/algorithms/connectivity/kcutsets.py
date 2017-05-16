@@ -3,6 +3,7 @@
 Kanevsky all minimum node k cutsets algorithm.
 """
 from operator import itemgetter
+from itertools import combinations
 
 import networkx as nx
 from .utils import build_auxiliary_node_connectivity
@@ -86,6 +87,22 @@ def all_node_cuts(G, k=None, flow_func=None):
     if not nx.is_connected(G):
         raise nx.NetworkXError('Input graph is disconnected.')
 
+    # Addess some corner cases first.
+    # For cycle graphs
+    if G.order() == G.size():
+        if all(2 == d for n, d in G.degree()):
+            seen = set()
+            for u in G:
+                for v in nx.non_neighbors(G, u):
+                    if (u, v) not in seen and (v, u) not in seen:
+                        yield {v, u}
+                        seen.add((v, u))
+            return
+    # For complete Graphs
+    if nx.density(G) == 1:
+        for cut_set in combinations(G, len(G)-1):
+            yield set(cut_set)
+        return
     # Initialize data structures.
     # Keep track of the cuts already computed so we do not repeat them.
     seen = []

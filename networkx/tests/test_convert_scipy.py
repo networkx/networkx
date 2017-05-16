@@ -36,39 +36,38 @@ class TestConvertNumpy(object):
         G.add_weighted_edges_from(ex)
         return G
 
-    def assert_equal(self, G1, G2):
-        assert_equal(sorted(G1.nodes()), sorted(G2.nodes()))
-        assert_equal(sorted(G1.edges()), sorted(G2.edges()))
+    def assert_isomorphic(self, G1, G2):
+        assert_true(nx.is_isomorphic(G1,G2))
 
     def identity_conversion(self, G, A, create_using):
         GG = nx.from_scipy_sparse_matrix(A, create_using=create_using)
-        self.assert_equal(G, GG)
+        self.assert_isomorphic(G, GG)
 
         GW = nx.to_networkx_graph(A, create_using=create_using)
-        self.assert_equal(G, GW)
+        self.assert_isomorphic(G, GW)
 
         GI = create_using.__class__(A)
-        self.assert_equal(G, GI)
+        self.assert_isomorphic(G, GI)
 
         ACSR = A.tocsr()
         GI = create_using.__class__(ACSR)
-        self.assert_equal(G, GI)
+        self.assert_isomorphic(G, GI)
 
         ACOO = A.tocoo()
         GI = create_using.__class__(ACOO)
-        self.assert_equal(G, GI)
+        self.assert_isomorphic(G, GI)
 
         ACSC = A.tocsc()
         GI = create_using.__class__(ACSC)
-        self.assert_equal(G, GI)
+        self.assert_isomorphic(G, GI)
 
         AD = A.todense()
         GI = create_using.__class__(AD)
-        self.assert_equal(G, GI)
+        self.assert_isomorphic(G, GI)
 
         AA = A.toarray()
         GI = create_using.__class__(AA)
-        self.assert_equal(G, GI)
+        self.assert_isomorphic(G, GI)
 
     def test_shape(self):
         "Conversion from non-square sparse array."
@@ -102,7 +101,7 @@ class TestConvertNumpy(object):
         nodelist = list(P3.nodes())
         A = nx.to_scipy_sparse_matrix(P4, nodelist=nodelist)
         GA = nx.Graph(A)
-        self.assert_equal(GA, P3)
+        self.assert_isomorphic(GA, P3)
 
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
@@ -156,7 +155,7 @@ class TestConvertNumpy(object):
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
 
     @raises(nx.NetworkXError)
-    def test_format_keyword_fail(self):
+    def test_format_keyword_raise(self):
         WP4 = nx.Graph()
         WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3))
                             for n in range(3) )
@@ -164,7 +163,7 @@ class TestConvertNumpy(object):
         nx.to_scipy_sparse_matrix(P4, format='any_other')
 
     @raises(nx.NetworkXError)
-    def test_null_fail(self):
+    def test_null_raise(self):
         nx.to_scipy_sparse_matrix(nx.Graph())
 
     def test_empty(self):

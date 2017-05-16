@@ -180,7 +180,7 @@ def intersection_array(G):
 # TODO There is a definition for directed strongly regular graphs.
 @not_implemented_for('directed', 'multigraph')
 def is_strongly_regular(G):
-    """Returns ``True`` if and only if the given graph is strongly
+    """Returns True if and only if the given graph is strongly
     regular.
 
     An undirected graph is *strongly regular* if
@@ -204,7 +204,7 @@ def is_strongly_regular(G):
     Returns
     -------
     bool
-        Whether ``G`` is strongly regular.
+        Whether `G` is strongly regular.
 
     Examples
     --------

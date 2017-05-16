@@ -73,7 +73,7 @@ Source archive file
 GitHub
 ------
 
-  1. Clone the networkx repostitory
+  1. Clone the networkx repository
      (see https://github.com/networkx/networkx/ for options)
      ::
 
@@ -166,7 +166,7 @@ In conjunction with either
 
       or
 
-      - pydotplus: https://github.com/carlos-jenkins/pydotplus
+      - pydot: https://github.com/erocarrera/pydot
 
 provides graph drawing and graph layout algorithms.
 

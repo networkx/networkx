@@ -18,7 +18,7 @@ def test_complete():
     assert_equal(len(nx.dominating_set(K5)), 1)
 
 @raises(nx.NetworkXError)
-def test_dominating_set_error():
+def test_raise_dominating_set():
     G = nx.path_graph(4)
     D = nx.dominating_set(G, start_with=10)
 
