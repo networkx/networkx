@@ -8,6 +8,7 @@
 from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
+from networkx.classes.views import DiEdgeView, InDiEdgeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
@@ -787,23 +788,7 @@ class DiGraph(Graph):
         [(0, 1)]
 
         """
-        if nbunch is None:
-            nodes_nbrs=self.adj.items()
-        else:
-            nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data is True:
-            for n,nbrs in nodes_nbrs:
-                for nbr,ddict in nbrs.items():
-                    yield (n,nbr,ddict)
-        elif data is not False:
-            for n,nbrs in nodes_nbrs:
-                for nbr,ddict in nbrs.items():
-                    d=ddict[data] if data in ddict else default
-                    yield (n,nbr,d)
-        else:
-            for n,nbrs in nodes_nbrs:
-                for nbr in nbrs:
-                    yield (n,nbr)
+        return DiEdgeView(self, nbunch, data, default)
 
     # alias out_edges to edges
     out_edges = edges
@@ -824,8 +809,6 @@ class DiGraph(Graph):
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
 
-
-
         Returns
         -------
         in_edge : iterator
@@ -835,23 +818,7 @@ class DiGraph(Graph):
         --------
         edges : return an iterator over edges
         """
-        if nbunch is None:
-            nodes_nbrs=self.pred.items()
-        else:
-            nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
-        if data is True:
-            for n,nbrs in nodes_nbrs:
-                for nbr,data in nbrs.items():
-                    yield (nbr,n,data)
-        elif data is not False:
-            for n,nbrs in nodes_nbrs:
-                for nbr,ddict in nbrs.items():
-                    d=ddict[data] if data in ddict else default
-                    yield (nbr,n,d)
-        else:
-            for n,nbrs in nodes_nbrs:
-                for nbr in nbrs:
-                    yield (nbr,n)
+        return InDiEdgeView(self, nbunch, data, default)
 
 
     def degree(self, nbunch=None, weight=None):

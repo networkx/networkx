@@ -10,6 +10,7 @@ import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
+from networkx.classes.views import MultiDiEdgeView, InMultiDiEdgeView
 from networkx.exception import NetworkXError
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
@@ -422,7 +423,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             del self.succ[u][v]
             del self.pred[v][u]
 
-    def edges(self, nbunch=None, data=False, keys=False, default=None):
+    def edges(self, nbunch=None, keys=False, data=False, default=None):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data and keys
@@ -433,12 +434,12 @@ class MultiDiGraph(MultiGraph,DiGraph):
         nbunch : iterable container, optional (default= all nodes)
             A container of nodes.  The container will be iterated
             through once.
+        keys : bool, optional (default=False)
+            If True, return edge keys with each edge.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
             If False, return 2-tuple (u,v).
-        keys : bool, optional (default=False)
-            If True, return edge keys with each edge.
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
@@ -479,26 +480,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         in_edges, out_edges
         """
-        if nbunch is None:
-            nodes_nbrs = self.adj.items()
-        else:
-            nodes_nbrs = ((n, self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data is True:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    for key, ddict in keydict.items():
-                        yield (n, nbr, key, ddict) if keys else (n, nbr, ddict)
-        elif data is not False:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    for key, ddict in keydict.items():
-                        d = ddict[data] if data in ddict else default
-                        yield (n, nbr, key, d) if keys else (n, nbr, d)
-        else:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    for key in keydict:
-                        yield (n, nbr, key) if keys else (n, nbr)
+        return MultiDiEdgeView(self, nbunch, keys, data, default)
 
     # alias out_edges to edges
     out_edges = edges
@@ -516,13 +498,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
             If False, return 2-tuple (u,v). 
-
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
-
 
         Returns
         -------
@@ -533,35 +513,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         edges : return an iterator over edges
         """
-        if nbunch is None:
-            nodes_nbrs = self.pred.items()
-        else:
-            nodes_nbrs = ((n, self.pred[n]) for n in self.nbunch_iter(nbunch))
-        if data is True:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    for key, data in keydict.items():
-                        if keys:
-                            yield (nbr, n, key, data)
-                        else:
-                            yield (nbr, n, data)
-        elif data is not False:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    for key, ddict in keydict.items():
-                        d = ddict[data] if data in ddict else default
-                        if keys:
-                            yield (nbr, n, key, d)
-                        else:
-                            yield (nbr, n, d)
-        else:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    for key, data in keydict.items():
-                        if keys:
-                            yield (nbr, n, key)
-                        else:
-                            yield (nbr, n)
+        return InMultiDiEdgeView(self, nbunch, data, keys, default)
 
 
     def degree(self, nbunch=None, weight=None):

@@ -8,6 +8,7 @@
 from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
+from networkx.classes.views import MultiEdgeView
 from networkx import NetworkXError
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
@@ -670,34 +671,7 @@ class MultiGraph(Graph):
         [(0, 1)]
 
         """
-        seen = {}     # helper dict to keep track of multiply stored edges
-        if nbunch is None:
-            nodes_nbrs = self.adj.items()
-        else:
-            nodes_nbrs = ((n, self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data is True:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    if nbr not in seen:
-                        for key, ddict in keydict.items():
-                            yield (n, nbr, key, ddict) if keys else (n, nbr, ddict)
-                seen[n] = 1
-        elif data is not False:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    if nbr not in seen:
-                        for key, ddict in keydict.items():
-                            d = ddict[data] if data in ddict else default
-                            yield (n, nbr, key, d) if keys else (n, nbr, d)
-                seen[n] = 1
-        else:
-            for n, nbrs in nodes_nbrs:
-                for nbr, keydict in nbrs.items():
-                    if nbr not in seen:
-                        for key in keydict:
-                            yield (n, nbr, key) if keys else (n, nbr)
-                seen[n] = 1
-        del seen
+        return MultiEdgeView(self, nbunch, keys, data, default)
 
 
     def get_edge_data(self, u, v, key=None, default=None):

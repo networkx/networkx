@@ -16,6 +16,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 from __future__ import division
 from copy import deepcopy
 import networkx as nx
+from networkx.classes.views import NodeView, EdgeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 from networkx.utils import pairwise
@@ -669,16 +670,7 @@ class Graph(object):
             {0: 1, 1: 2, 2: 3}
 
         """
-        if data is True:
-            for n, ddict in self.node.items():
-                yield (n, ddict)
-        elif data is not False:
-            for n, ddict in self.node.items():
-                d = ddict[data] if data in ddict else default
-                yield (n, d)
-        else:
-            for n in self.node:
-                yield n
+        return NodeView(self, data, default)
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -1095,31 +1087,7 @@ class Graph(object):
         [(0, 1)]
 
         """
-        seen = {}     # helper dict to keep track of multiply stored edges
-        if nbunch is None:
-            nodes_nbrs = self.adj.items()
-        else:
-            nodes_nbrs = ((n, self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data is True:
-            for n, nbrs in nodes_nbrs:
-                for nbr, ddict in nbrs.items():
-                    if nbr not in seen:
-                        yield (n, nbr, ddict)
-                seen[n] = 1
-        elif data is not False:
-            for n, nbrs in nodes_nbrs:
-                for nbr, ddict in nbrs.items():
-                    if nbr not in seen:
-                        d = ddict[data] if data in ddict else default
-                        yield (n, nbr, d)
-                seen[n] = 1
-        else:  # data is False
-            for n, nbrs in nodes_nbrs:
-                for nbr in nbrs:
-                    if nbr not in seen:
-                        yield (n, nbr)
-                seen[n] = 1
-        del seen
+        return EdgeView(self, nbunch, data, default)
 
     def get_edge_data(self, u, v, default=None):
         """Return the attribute dictionary associated with edge (u,v).
