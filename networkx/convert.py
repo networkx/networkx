@@ -117,9 +117,10 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
                 raise TypeError("Input is not known type.")
 
     # list or generator of edges
-    if (isinstance(data,list)
-        or isinstance(data,tuple)
-        or hasattr(data,'next')
+    if (isinstance(data, list)
+        or isinstance(data, tuple)
+        or isinstance(data, nx.OutEdgeView)
+        or hasattr(data, 'next')
         or hasattr(data, '__next__')):
         try:
             return from_edgelist(data,create_using=create_using)
