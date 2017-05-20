@@ -27,13 +27,8 @@ class TestConvertNumpy(object):
 
     def create_weighted(self, G):
         g = cycle_graph(4)
-        e = g.edges()
-        source = [u for u,v in e]
-        dest = [v for u,v in e]
-        weight = [s+10 for s in source]
-        ex = zip(source, dest, weight)
         G.add_nodes_from(g)
-        G.add_weighted_edges_from(ex)
+        G.add_weighted_edges_from( (u,v,10+u) for u,v in g.edges())
         return G
 
     def assert_equal(self, G1, G2):
@@ -41,6 +36,7 @@ class TestConvertNumpy(object):
         assert_true( sorted(G1.edges())==sorted(G2.edges()) )
 
     def identity_conversion(self, G, A, create_using):
+        assert(A.sum() > 0)
         GG = nx.from_numpy_matrix(A, create_using=create_using)
         self.assert_equal(G, GG)
         GW = nx.to_networkx_graph(A, create_using=create_using)
