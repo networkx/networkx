@@ -32,6 +32,7 @@ class TestConvertNumpy(object):
         dest = [v for u,v in e]
         weight = [s+10 for s in source]
         ex = zip(source, dest, weight)
+        G.add_nodes_from(g)
         G.add_weighted_edges_from(ex)
         return G
 
