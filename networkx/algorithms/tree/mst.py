@@ -139,6 +139,32 @@ def kruskal_mst_edges(G, minimum, weight='weight', keys=True, data=True):
                     yield (u, v)
                 subtrees.union(u, v)
 
+    if is_multigraph:
+        if keys:
+            for u, v, k, d in edges:
+                if subtrees[u] != subtrees[v]:
+                    if data:
+                        yield (u, v, k, d)
+                    else:
+                        yield (u, v, k)
+                subtrees.union(u, v)
+        else:
+            for u, v, k, d in edges:
+                if subtrees[u] != subtrees[v]:
+                    if data:
+                        yield (u, v, d)
+                    else:
+                        yield (u, v)
+                subtrees.union(u, v)
+    else:
+        for u, v, d in edges:
+            if subtrees[u] != subtrees[v]:
+                if data:
+                    yield (u, v, d)
+                else:
+                    yield (u, v)
+                subtrees.union(u, v)
+
 
 def prim_mst_edges(G, minimum, weight='weight', keys=True, data=True):
     is_multigraph = G.is_multigraph()
