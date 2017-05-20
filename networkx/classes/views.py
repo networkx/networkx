@@ -37,7 +37,7 @@ EdgeView V allows `len(V)`, `e in V`, and iteration over edge tuples.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from collections import KeysView, ItemsView
+from collections import KeysView, ItemsView, Set, Iterator
 
 __all__ = ['NodeView', 'EdgeView', 'OutEdgeView', 'InEdgeView',
            'MultiEdgeView', 'OutMultiEdgeView', 'InMultiEdgeView',
@@ -81,6 +81,17 @@ class NodeView(ItemsView):
         if self._data is True:
             return repr(list(self._mapping.items()))
         return str(dict(self))
+    # Needed for Python 3.3 which doesn't have ItemsView define 
+    # right set operations __rsub__ _rxor__ __rand__ __ror__
+    __rand__ = ItemsView.__and__
+    __ror__ = ItemsView.__or__
+    __rxor__ = ItemsView.__xor__
+    def __rsub__(self, other):
+        if not isinstance(other, Set):
+            if not isinstance(other, Iterable):
+                return NotImplemented
+            other = self._from_iterable(other)
+        return self._from_iterable(e for e in other if e not in self)
 
 ## DegreeViews
 class DiDegreeView(object):
@@ -250,6 +261,17 @@ class OutEdgeView(KeysView):
 
     def __len__(self):
         return sum(len(nbrs) for n, nbrs in self._nodes_nbrs)
+    # Needed for Python 3.3 which doesn't have KeysView define 
+    # right set operations __rsub__ _rxor__ __rand__ __ror__
+    __rand__ = KeysView.__and__
+    __ror__ = KeysView.__or__
+    __rxor__ = KeysView.__xor__
+    def __rsub__(self, other):
+        if not isinstance(other, Set):
+            if not isinstance(other, Iterable):
+                return NotImplemented
+            other = self._from_iterable(other)
+        return self._from_iterable(e for e in other if e not in self)
 
 class EdgeView(OutEdgeView):
     def __iter__(self):
