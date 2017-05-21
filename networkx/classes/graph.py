@@ -16,7 +16,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 from __future__ import division
 from copy import deepcopy
 import networkx as nx
-from networkx.classes.views import NodeView, EdgeView, DegreeView
+from networkx.classes.views import NodeViewer, EdgeViewer, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 from networkx.utils import pairwise
@@ -475,7 +475,7 @@ class Graph(object):
             Node attributes are updated using the attribute dict.
         attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
-            Node attributes specified in nodes as a tuple take 
+            Node attributes specified in nodes as a tuple take
             precedence over attributes specified via keyword arguments.
 
         See Also
@@ -605,8 +605,13 @@ class Graph(object):
             except KeyError:
                 pass
 
-    def nodes(self, data=False, default=None):
-        """Returns an iterator over the nodes.
+    @property
+    def nodes(self):
+        """A NodeViewer Property of the Graph as G.nodes or G.nodes().
+
+        Can be used as `G.nodes` for data lookup and for set-like operations.
+        Can also be used as `G.nodes(data=False, default=None)` to return
+        a NodeView which allows control over node data but no set operations.
 
         Parameters
         ----------
@@ -621,9 +626,13 @@ class Graph(object):
 
         Returns
         -------
-        iterator
-            An iterator over nodes, or (n,d) tuples of node with data.
-            If data is False, an iterator over nodes.
+        NodeViewer
+            Allows set-like operations over the nodes as well as node
+            attribute dict lookup and calling to get a NodeView.
+            A NodeView can iterate over `(n, data)` but has no set operations.
+            A NodeViewer iterates over `n` and includes set operations.
+
+            When called, If data is False, an iterator over nodes.
             Otherwise an iterator of 2-tuples (node, attribute value)
             where the attribute is specified in data.
             If data is True then the attribute becomes the
@@ -647,7 +656,7 @@ class Graph(object):
         To get the node data along with the nodes:
 
         >>> G.add_node(1, time='5pm')
-        >>> G.node[0]['foo'] = 'bar'
+        >>> G.nodes[0]['foo'] = 'bar'
         >>> list(G.nodes(data=True))
         [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
         >>> list(G.nodes(data='foo'))
@@ -670,7 +679,7 @@ class Graph(object):
             {0: 1, 1: 2, 2: 3}
 
         """
-        return NodeView(self, data, default)
+        return NodeViewer(self)
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -818,7 +827,7 @@ class Graph(object):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in an ebunch take precedence over 
+        Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
         Examples
@@ -1042,11 +1051,18 @@ class Graph(object):
             raise NetworkXError("The node %s is not in the graph." % (n,))
 
 
-    def edges(self, nbunch=None, data=False, default=None):
-        """Return an iterator over the edges.
+    @property
+    def edges(self):
+        """An EdgeViewer Property of the Graph as G.edges or G.edges().
 
-        Edges are returned as tuples with optional data
-        in the order (node, neighbor, data).
+        The EdgeViewer provides set-like operations on the edge-tuples
+        as well as edge attribute lookup. When called, it also provides
+        an EdgeView object which allows control of access to edge attributes
+        without providing set-like operations.
+        Hence, `G.edges[u,v]['color']` provides the value of the color attribute
+        for edge `(u,v)` while
+        `for (u,v,c) in G.edges(data='color', default='red'):` iterates through
+        all the edges yielding the color attribute.
 
         Parameters
         ----------
@@ -1087,7 +1103,7 @@ class Graph(object):
         [(0, 1)]
 
         """
-        return EdgeView(self, nbunch, data, default)
+        return EdgeViewer(self)
 
     def get_edge_data(self, u, v, default=None):
         """Return the attribute dictionary associated with edge (u,v).
@@ -1157,12 +1173,13 @@ class Graph(object):
         """
         return iter(self.adj.items())
 
-    def degree(self, nbunch=None, weight=None):
-        """Return an iterator for (node, degree) or degree for single node.
+    @property
+    def degree(self):
+        """A DegreeView Property for the Graph as G.degree or G.degree().
 
         The node degree is the number of edges adjacent to the node.
-        This function returns the degree for a single node or an iterator
-        for a bunch of nodes or if nothing is passed as argument.
+        This object provides an iterator for (node, degree) or
+        the degree for a single node.
 
         Parameters
         ----------
@@ -1182,8 +1199,7 @@ class Graph(object):
             Degree of the node
 
         OR if multiple nodes are requested
-        nd_iter : iterator
-            The iterator returns two-tuples of (node, degree).
+        nd_view : A DegreeView object capable of iterating (node, degree) pairs
 
         Examples
         --------
@@ -1193,12 +1209,7 @@ class Graph(object):
         >>> list(G.degree([0,1]))
         [(0, 1), (1, 2)]
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = DegreeView(self, weight)
-            return deg[nbunch]
-        return DegreeView(self, weight, nbunch)
+        return DegreeView(self)
 
     def clear(self):
         """Remove all nodes and edges from the graph.

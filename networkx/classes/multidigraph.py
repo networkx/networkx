@@ -10,7 +10,7 @@ import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
-from networkx.classes.views import OutMultiEdgeView, InMultiEdgeView, \
+from networkx.classes.views import OutMultiEdgeViewer, InMultiEdgeViewer, \
         DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
 from networkx.exception import NetworkXError
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
@@ -424,8 +424,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
             del self.succ[u][v]
             del self.pred[v][u]
 
-    def edges(self, nbunch=None, data=False, keys=False, default=None):
+    @property
+    def edges(self):
         """Return an iterator over the edges.
+
+        edges(self, nbunch=None, data=False, keys=False, default=None)
 
         Edges are returned as tuples with optional data and keys
         in the order (node, neighbor, key, data).
@@ -481,14 +484,16 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         in_edges, out_edges
         """
-        return OutMultiEdgeView(self, nbunch, data, keys, default)
+        return OutMultiEdgeViewer(self)
 
     # alias out_edges to edges
     out_edges = edges
 
-
-    def in_edges(self, nbunch=None, data=False, keys=False, default=None):
+    @property
+    def in_edges(self):
         """Return an iterator over the incoming edges.
+
+        in_edges(self, nbunch=None, data=False, keys=False, default=None)
 
         Parameters
         ----------
@@ -498,7 +503,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
@@ -514,11 +519,14 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         edges : return an iterator over edges
         """
-        return InMultiEdgeView(self, nbunch, data, keys, default)
+        return InMultiEdgeViewer(self)
 
 
-    def degree(self, nbunch=None, weight=None):
+    @property
+    def degree(self):
         """Return an iterator for (node, degree) or degree for single node.
+
+        degree(self, nbunch=None, weight=None)
 
         The node degree is the number of edges adjacent to the node.
         This function returns the degree for a single node or an iterator
@@ -559,16 +567,13 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 1), (1, 2)]
 
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = DiMultiDegreeView(self, weight)
-            return deg[nbunch]
-        return DiMultiDegreeView(self, weight, nbunch)
+        return DiMultiDegreeView(self)
 
-
-    def in_degree(self, nbunch=None, weight=None):
+    @property
+    def in_degree(self):
         """Return an iterator for (node, in-degree) or in-degree for single node.
+
+        in_degree(self, nbunch=None, weight=None)
 
         The node in-degree is the number of edges pointing in to the node.
         This function returns the in-degree for a single node or an iterator
@@ -609,15 +614,13 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 0), (1, 1)]
 
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = InMultiDegreeView(self, weight)
-            return deg[nbunch]
-        return InMultiDegreeView(self, weight, nbunch)
+        return InMultiDegreeView(self)
 
-    def out_degree(self, nbunch=None, weight=None):
+    @property
+    def out_degree(self):
         """Return an iterator for (node, out-degree) or out-degree for single node.
+
+        out_degree(self, nbunch=None, weight=None)
 
         The node out-degree is the number of edges pointing out of the node.
         This function returns the out-degree for a single node or an iterator
@@ -658,12 +661,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 1), (1, 1)]
 
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = OutMultiDegreeView(self, weight)
-            return deg[nbunch]
-        return OutMultiDegreeView(self, weight, nbunch)
+        return OutMultiDegreeView(self)
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

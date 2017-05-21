@@ -8,7 +8,7 @@
 from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import OutEdgeView, InEdgeView, \
+from networkx.classes.views import OutEdgeViewer, InEdgeViewer, \
         DiDegreeView, InDegreeView, OutDegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
@@ -177,7 +177,7 @@ class DiGraph(Graph):
     edge data keyed by neighbor.  The inner dict (edge_attr_dict) represents
     the edge data and holds edge attribute values keyed by attribute names.
 
-    Each of these three dicts can be replaced in a subclass by a user defined 
+    Each of these three dicts can be replaced in a subclass by a user defined
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
@@ -309,7 +309,6 @@ class DiGraph(Graph):
         self.edge=self.adj
 
 
-
     def add_node(self, n, **attr):
         """Add a single node n and update node attributes.
 
@@ -369,7 +368,7 @@ class DiGraph(Graph):
             Node attributes are updated using the attribute dict.
         attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
-            Node attributes specified in nodes as a tuple take 
+            Node attributes specified in nodes as a tuple take
             precedence over attributes specified via keyword arguments.
 
         See Also
@@ -405,7 +404,7 @@ class DiGraph(Graph):
         for n in nodes:
             # keep all this inside try/except because
             # CPython throws TypeError on n not in self.succ,
-            # while pre-2.7.5 ironpython throws on self.succ[n] 
+            # while pre-2.7.5 ironpython throws on self.succ[n]
             try:
                 if n not in self.succ:
                     self.succ[n] = self.adjlist_inner_dict_factory()
@@ -597,7 +596,7 @@ class DiGraph(Graph):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in an ebunch take precedence over 
+        Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
         Examples
@@ -729,6 +728,9 @@ class DiGraph(Graph):
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
+    # digraph definitions
+    neighbors = successors
+
     def predecessors(self,n):
         """Return an iterator over predecessor nodes of n."""
         try:
@@ -736,14 +738,14 @@ class DiGraph(Graph):
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
-    # digraph definitions
-    neighbors = successors
 
-    def edges(self, nbunch=None, data=False, default=None):
+    @property
+    def edges(self):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data
         in the order (node, neighbor, data).
+        edges(self, nbunch=None, data=False, default=None)
 
         Parameters
         ----------
@@ -753,7 +755,7 @@ class DiGraph(Graph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
@@ -781,7 +783,7 @@ class DiGraph(Graph):
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges(data='weight', default=1)) 
+        >>> list(G.edges(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges([0,2]))
         [(0, 1), (2, 3)]
@@ -789,13 +791,16 @@ class DiGraph(Graph):
         [(0, 1)]
 
         """
-        return OutEdgeView(self, nbunch, data, default)
+        return OutEdgeViewer(self)
 
     # alias out_edges to edges
     out_edges = edges
 
-    def in_edges(self, nbunch=None, data=False, default=None):
+    @property
+    def in_edges(self):
         """Return an iterator over the incoming edges.
+
+        in_edges(self, nbunch=None, data=False, default=None):
 
         Parameters
         ----------
@@ -805,7 +810,7 @@ class DiGraph(Graph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
@@ -819,11 +824,13 @@ class DiGraph(Graph):
         --------
         edges : return an iterator over edges
         """
-        return InEdgeView(self, nbunch, data, default)
+        return InEdgeViewer(self)
 
 
-    def degree(self, nbunch=None, weight=None):
+    @property
+    def degree(self):
         """Return an iterator for (node, degree) or degree for single node.
+        degree(self, nbunch=None, weight=None)
 
         The node degree is the number of edges adjacent to the node.
         This function returns the degree for a single node or an iterator
@@ -864,16 +871,14 @@ class DiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = DiDegreeView(self, weight)
-            return deg[nbunch]
-        return DiDegreeView(self, weight, nbunch)
+        return DiDegreeView(self)
 
 
-    def in_degree(self, nbunch=None, weight=None):
+    @property
+    def in_degree(self):
         """Return an iterator for (node, in-degree) or in-degree for single node.
+
+        in_degree(self, nbunch=None, weight=None)
 
         The node in-degree is the number of edges pointing in to the node.
         This function returns the in-degree for a single node or an iterator
@@ -914,16 +919,14 @@ class DiGraph(Graph):
         [(0, 0), (1, 1)]
 
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = InDegreeView(self, weight)
-            return deg[nbunch]
-        return InDegreeView(self, weight, nbunch)
+        return InDegreeView(self)
 
 
-    def out_degree(self, nbunch=None, weight=None):
+    @property
+    def out_degree(self):
         """Return an iterator for (node, out-degree) or out-degree for single node.
+
+        out_degree(self, nbunch=None, weight=None)
 
         The node out-degree is the number of edges pointing out of the node.
         This function returns the out-degree for a single node or an iterator
@@ -964,12 +967,7 @@ class DiGraph(Graph):
         [(0, 1), (1, 1)]
 
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = OutDegreeView(self, weight)
-            return deg[nbunch]
-        return OutDegreeView(self, weight, nbunch)
+        return OutDegreeView(self)
 
     def clear(self):
         """Remove all nodes and edges from the graph.
@@ -1076,7 +1074,7 @@ class DiGraph(Graph):
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
 
-        Warning: If you have subclassed DiGraph to use dict-like objects 
+        Warning: If you have subclassed DiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the Graph
         created by this method.
         """

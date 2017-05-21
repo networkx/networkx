@@ -8,7 +8,7 @@
 from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import MultiEdgeView, MultiDegreeView
+from networkx.classes.views import MultiEdgeViewer, MultiDegreeView
 from networkx import NetworkXError
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
@@ -263,7 +263,8 @@ class MultiGraph(Graph):
     def __init__(self, data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         Graph.__init__(self, data, **attr)
-
+#        self.edges = MultiEdgeViewer(self)
+#        self.degree = MultiDegreeView(self)
     def new_edge_key(self, u, v):
         """Return an unused key for edges between nodes `u` and `v`.
 
@@ -617,8 +618,11 @@ class MultiGraph(Graph):
             return False
 
 
-    def edges(self, nbunch=None, data=False, keys=False, default=None):
+    @property
+    def edges(self):
         """Return an iterator over the edges.
+
+        edges(self, nbunch=None, data=False, keys=False, default=None)
 
         Edges are returned as tuples with optional data and keys
         in the order (node, neighbor, key, data).
@@ -669,9 +673,8 @@ class MultiGraph(Graph):
         [(0, 1), (3, 2)]
         >>> list(G.edges(0))
         [(0, 1)]
-
         """
-        return MultiEdgeView(self, nbunch, data, keys, default)
+        return MultiEdgeViewer(self)
 
 
     def get_edge_data(self, u, v, key=None, default=None):
@@ -730,8 +733,11 @@ class MultiGraph(Graph):
         except KeyError:
             return default
 
-    def degree(self, nbunch=None, weight=None):
+    @property
+    def degree(self):
         """Return an iterator for (node, degree) or degree for single node.
+
+        degree(self, nbunch=None, weight=None)
 
         The node degree is the number of edges adjacent to the node.
         This function returns the degree for a single node or an iterator
@@ -768,12 +774,7 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
-        # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) means a single node.
-        if nbunch in self:
-            deg = MultiDegreeView(self, weight)
-            return deg[nbunch]
-        return MultiDegreeView(self, weight, nbunch)
+        return MultiDegreeView(self)
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

@@ -246,7 +246,14 @@ class _AntiGraph(nx.Graph):
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
-    def degree(self, nbunch=None, weight=None):
+    class AntiDegreeView(nx.DegreeView):
+        def __getitem__(self, n):
+            nbrs = set(self.succ) - set(self.succ[n]) - set([n])
+            # AntiGraph is a ThinGraph so all edges have weight 1
+            return len(nbrs) + (n in nbrs)
+
+    @property
+    def degree(self):
         """Return an iterator for (node, degree) and degree for single node.
 
         The node degree is the number of edges adjacent to the node.
@@ -282,34 +289,7 @@ class _AntiGraph(nx.Graph):
         [(0, 1), (1, 2)]
 
         """
-        if nbunch in self:
-            nbrs = {v: self.all_edge_dict for v in set(self.adj) - \
-                    set(self.adj[nbunch]) - set([nbunch])}
-            if weight is None:
-                return len(nbrs) + (nbunch in nbrs)
-            return sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) + \
-                              (nbunch in nbrs and nbrs[nbunch].get(weight, 1))
-
-        if nbunch is None:
-            nodes_nbrs = ((n, {v: self.all_edge_dict for v in
-                            set(self.adj) - set(self.adj[n]) - set([n])})
-                            for n in self.nodes())
-        else:
-            nodes_nbrs = ((n, {v: self.all_edge_dict for v in
-                            set(self.nodes()) - set(self.adj[n]) - set([n])})
-                            for n in self.nbunch_iter(nbunch))
-
-        if weight is None:
-            def d_iter():
-                for n,nbrs in nodes_nbrs:
-                    yield (n,len(nbrs)+(n in nbrs)) # return tuple (n,degree)
-        else:
-            def d_iter():
-                # AntiGraph is a ThinGraph so all edges have weight 1
-                for n,nbrs in nodes_nbrs:
-                    yield (n, sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) +
-                                  (n in nbrs and nbrs[n].get(weight, 1)))
-        return d_iter()
+        return self.AntiDegreeView(self)
 
     def adjacency(self):
         """Return an iterator of (node, adjacency set) tuples for all nodes

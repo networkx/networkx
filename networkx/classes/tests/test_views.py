@@ -13,11 +13,11 @@ class test_nodeview(object):
         self.G = nx.path_graph(9)
 
     def test_str(self):
-        nv = nx.NodeView(self.G)
-        assert_equal(str(nv), "[0, 1, 2, 3, 4, 5, 6, 7, 8]")
+        nv = self.G.nodes()  # nx.NodeView(self.G)
+        assert_equal(str(nv), "NodeViewer((0, 1, 2, 3, 4, 5, 6, 7, 8))")
 
     def test_contains(self):
-        nv = nx.NodeView(self.G)
+        nv = self.G.nodes()  # nx.NodeView(self.G)
         assert_true(7 in nv)
         assert_false(9 in nv)
         self.G.remove_node(7)
@@ -26,19 +26,13 @@ class test_nodeview(object):
         assert_true(9 in nv)
 
     def test_contains_data(self):
-        nv = nx.NodeView(self.G, data=True)
+        nvd = self.G.nodes(data=True)  # nx.NodeView(self.G, data=True)
         self.G.node[3]['foo']='bar'
-        assert_true((7,{}) in nv)
-        assert_true((3,{'foo': 'bar'}) in nv)
-        assert_true(7 in nv)
-        assert_false(9 in nv)
-        self.G.remove_node(7)
-        self.G.add_node(9)
-        assert_false(7 in nv)
-        assert_true(9 in nv)
+        assert_true((7,{}) in nvd)
+        assert_true((3,{'foo': 'bar'}) in nvd)
 
     def test_iter(self):
-        nv = nx.NodeView(self.G)
+        nv = self.G.nodes()  # nx.NodeView(self.G)
         for i,n in enumerate(nv):
             assert_equal(i, n)
         inv = iter(nv)
@@ -50,7 +44,7 @@ class test_nodeview(object):
         assert_equal(list(inv), list(inv2))
 
     def test_iter_data(self):
-        nv = nx.NodeView(self.G, data=True)
+        nv = self.G.nodes(data=True)  # nx.NodeView(self.G, data=True)
         for i,(n,d) in enumerate(nv):
             assert_equal(i, n)
             assert_equal(d, {})
@@ -63,7 +57,7 @@ class test_nodeview(object):
                 break
 
     def test_len(self):
-        nv = nx.NodeView(self.G)
+        nv = self.G.nodes()  # nx.NodeView(self.G)
         assert_equal(len(nv), 9)
         self.G.remove_node(7)
         assert_equal(len(nv), 8)
@@ -72,60 +66,54 @@ class test_nodeview(object):
 
     def test_and(self):
         # print("G & H nodes:", gnv & hnv)
-        nv = nx.NodeView(self.G)
+        nv = self.G.nodes()  # nx.NodeView(self.G)
         some_nodes = {n for n in range(5,12)}
         assert_equal(nv & some_nodes, {n for n in range(5,9)})
 
     def test_or(self):
         # print("G | H nodes:", gnv | hnv)
-        nv = nx.NodeView(self.G)
+        nv = self.G.nodes()  # nx.NodeView(self.G)
         some_nodes = {n for n in range(5,12)}
         assert_equal(nv | some_nodes, {n for n in range(12)})
 
     def test_xor(self):
         # print("G ^ H nodes:", gnv ^ hnv)
-        nv = nx.NodeView(self.G)
+        nv = self.G.nodes()  #nx.NodeView(self.G)
         some_nodes = {n for n in range(5,12)}
         assert_equal(nv ^ some_nodes, {0, 1, 2, 3, 4, 9, 10, 11})
 
     def test_sub(self):
         # print("G - H nodes:", gnv - hnv)
-        nv = nx.NodeView(self.G)
+        nv = self.G.nodes()  # nx.NodeView(self.G)
         some_nodes = {n for n in range(5,12)}
         assert_equal(nv - some_nodes, {n for n in range(5)})
 
 
-## Edges
-class test_edges(object):
+## Edges View
+class test_edges_view(object):
     def setup(self):
         self.G = nx.path_graph(9)
+        self.eviewer = nx.EdgeViewer
         self.eview = nx.EdgeView
+        self.makeedge = lambda u,v : (u, v)
         def modify_edge(G, e, **kwds):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
 
-    def test_iter(self):
-        ev = self.eview(self.G)
-        for u,v in ev:
-            pass
-        iev = iter(ev)
-        assert_equal(next(iev), (0,1))
-        assert_not_equal(iter(ev), ev)
-        assert_equal(iter(iev), iev)
-
     def test_iterdata(self):
         G = self.G.copy()
-        ev = self.eview(G, data=True)
+        evr = self.eviewer(G)
+        ev = evr(data=True)
         for u, v, d in ev:
             pass
         assert_equal(d, {})
-        ev = self.eview(G, data='foo', default=1)
+        ev = evr(data='foo', default=1)
         for u, v, wt in ev:
             pass
         assert_equal(wt, 1)
 
         self.modify_edge(G, (2, 3), foo='bar')
-        ev = self.eview(G, data=True)
+        ev = evr(data=True)
         for e in ev:
             if set(e[:2]) == {2, 3}:
                 assert_equal(e[2], {'foo': 'bar'})
@@ -133,7 +121,7 @@ class test_edges(object):
                 checked = True
                 break
         assert_true(checked)
-        ev = self.eview(G, data='foo', default=1)
+        ev = evr(data='foo', default=1)
         for e in ev:
             if set(e[:2]) == {2, 3}:
                 assert_equal(e[2], 'bar')
@@ -142,26 +130,65 @@ class test_edges(object):
                 break
         assert_true(checked_wt)
 
+    def test_iter(self):
+        evr = self.eviewer(self.G)
+        ev = evr()
+        for u,v in ev:
+            pass
+        iev = iter(ev)
+        assert_equal(next(iev), (0,1))
+        assert_not_equal(iter(ev), ev)
+        assert_equal(iter(iev), iev)
+
     def test_contains(self):
-        ev = self.eview(self.G)
+        evr = self.eviewer(self.G)
+        ev = evr()
         assert_true((1, 2) in ev or (2, 1) in ev)
         assert_false((1, 4) in ev)
 
     def test_len(self):
-        ev = self.eview(self.G)
+        evr = self.eviewer(self.G)
+        ev = evr()
         num_ed = 9 if self.G.is_multigraph() else 8
-        print(ev)
-        print(len(ev))
-        print(type(len(ev)))
-        print(type(num_ed))
         assert_equal(len(ev), num_ed)
-        ev = self.eview(self.G, data='foo')
+        ev = evr(data='foo')
+        assert_equal(len(ev), num_ed)
+
+## Edges Viewers
+class test_edges_viewer(object):
+    def setup(self):
+        self.G = nx.path_graph(9)
+        self.eviewer = nx.EdgeViewer
+        self.makeedge = lambda u,v : (u, v)
+        def modify_edge(G, e, **kwds):
+            G.edge[e[0]][e[1]].update(kwds)
+        self.modify_edge = modify_edge
+
+    def test_iter(self):
+        ev = self.eviewer(self.G)
+        for u,v in ev:
+            pass
+        iev = iter(ev)
+        assert_equal(next(iev), (0,1))
+        assert_not_equal(iter(ev), ev)
+        assert_equal(iter(iev), iev)
+
+    def test_contains(self):
+        ev = self.eviewer(self.G)
+        assert_true((1, 2) in ev or (2, 1) in ev)
+        assert_false((1, 4) in ev)
+
+    def test_len(self):
+        ev = self.eviewer(self.G)
+        num_ed = 9 if self.G.is_multigraph() else 8
+        assert_equal(len(ev), num_ed)
+        ev = ev(data='foo')
         assert_equal(len(ev), num_ed)
 
 
     def test_and(self):
         # print("G & H edges:", gnv & hnv)
-        ev = self.eview(self.G)
+        ev = self.eviewer(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if not self.G.is_directed():
             assert_equal(ev & some_edges, {(0, 1), (1, 0)})
@@ -171,7 +198,7 @@ class test_edges(object):
 
     def test_or(self):
         # print("G | H edges:", gnv | hnv)
-        ev = self.eview(self.G)
+        ev = self.eviewer(self.G)
         some_edges = {(0, 1), (0, 2)}
         result1 = {(n, n+1) for n in range(8)}
         result1.update(some_edges)
@@ -181,7 +208,7 @@ class test_edges(object):
 
     def test_xor(self):
         # print("G ^ H edges:", gnv ^ hnv)
-        ev = self.eview(self.G)
+        ev = self.eviewer(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if not self.G.is_directed():
             result = {(n, n+1) for n in range(1, 8)}
@@ -197,7 +224,7 @@ class test_edges(object):
 
     def test_sub(self):
         # print("G - H edges:", gnv - hnv)
-        ev = self.eview(self.G)
+        ev = self.eviewer(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result1 = {(n, n + 1) for n in range(8)}
         result1.remove((0, 1))
@@ -208,46 +235,57 @@ class test_edges(object):
 
 
 
-class test_directed_edges(test_edges):
+class test_directed_edges(test_edges_viewer):
     def setup(self):
         self.G = nx.path_graph(9, nx.DiGraph())
-        self.eview = nx.OutEdgeView
+        self.eviewer = nx.OutEdgeViewer
         def modify_edge(G, e, **kwds):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
 
-class test_inedges(test_edges):
+class test_inedges(test_edges_viewer):
     def setup(self):
         self.G = nx.path_graph(9, nx.DiGraph())
-        self.eview = nx.InEdgeView
+        self.eviewer = nx.InEdgeViewer
         def modify_edge(G, e, **kwds):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
 
-class test_multiedges(test_edges):
+class test_multiedges(test_edges_viewer):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
+        self.eviewer = nx.MultiEdgeViewer
         self.eview = nx.MultiEdgeView
+        self.makeedge = lambda u,v : (u, v, 0)
         def modify_edge(G, e, **kwds):
             if len(e) == 2:
                 e = e + (0,)
             G.edge[e[0]][e[1]][e[2]].update(kwds)
         self.modify_edge = modify_edge
+    def test_iter(self):
+        ev = self.eviewer(self.G)
+        for u,v,k in ev:
+            pass
+        iev = iter(ev)
+        assert_equal(next(iev), (0,1,0))
+        assert_not_equal(iter(ev), ev)
+        assert_equal(iter(iev), iev)
+
     def test_iterkeys(self):
-        eView = self.eview
         G = self.G.copy()
-        ev = eView(G, keys=True)
+        evr = self.eviewer(G)
+        ev = evr(keys=True)
         for u, v, k in ev:
             pass
         assert_equal(k, 0)
-        ev = eView(G, keys=True, data="foo", default=1)
+        ev = evr(keys=True, data="foo", default=1)
         for u, v, k, wt in ev:
             pass
         assert_equal(wt, 1)
 
         self.modify_edge(G, (2, 3, 0), foo='bar')
-        ev = eView(G, keys=True, data=True)
+        ev = evr(keys=True, data=True)
         for e in ev:
             if set(e[:2]) == {2,3}:
                 assert_equal(e[2], 0)
@@ -256,7 +294,7 @@ class test_multiedges(test_edges):
                 checked = True
                 break
         assert_true(checked)
-        ev = eView(G, keys=True, data='foo', default=1)
+        ev = evr(keys=True, data='foo', default=1)
         for e in ev:
             if set(e[:2]) == {1,2} and e[2] == 3:
                 assert_equal(e[3], 'bar')
@@ -268,13 +306,13 @@ class test_multiedges(test_edges):
                 assert_equal(len(e), 4)
                 checked_wt = True
         assert_true(checked_wt)
-        ev = eView(G, keys=True)
+        ev = evr(keys=True)
         for e in ev:
             assert_equal(len(e), 3)
         elist = sorted([(i, i+1, 0) for i in range(8)] + [(1, 2, 3)])
         assert_equal(sorted(list(ev)), elist)
         # test order of arguments:graph, nbunch, data, keys, default
-        ev = eView(G, (1, 2), 'foo', True, 1)
+        ev = evr((1, 2), 'foo', True, 1)
         for e in ev:
             if set(e[:2]) == {1,2}:
                 assert_true(e[2] in {0,3})
@@ -286,11 +324,58 @@ class test_multiedges(test_edges):
             assert_equal(len(list(ev)), 3)
         else:
             assert_equal(len(list(ev)), 4)
+    def test_or(self):
+        # print("G | H edges:", gnv | hnv)
+        ev = self.eviewer(self.G)
+        some_edges = {(0, 1, 0), (0, 2, 0)}
+        result1 = {(n, n+1, 0) for n in range(8)}
+        result1.update(some_edges)
+        result1.update({(1, 2, 3)})
+        result2 = {(n+1, n, 0) for n in range(8)}
+        result2.update(some_edges)
+        result2.update({(1, 2, 3)})
+        assert_true((ev | some_edges) in (result1, result2))
+    def test_sub(self):
+        # print("G - H edges:", gnv - hnv)
+        ev = self.eviewer(self.G)
+        some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
+        result1 = {(n, n + 1, 0) for n in range(8)}
+        result1.remove((0, 1, 0))
+        result1.update({(1, 2, 3)})
+        result2 = {(n + 1, n, 0) for n in range(8)}
+        result2.remove((1, 0, 0))
+        result2.update({(1, 2, 3)})
+        assert_true((ev - some_edges) in (result1, result2))
+    def test_xor(self):
+        # print("G ^ H edges:", gnv ^ hnv)
+        ev = self.eviewer(self.G)
+        some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
+        if not self.G.is_directed():
+            result = {(n, n+1, 0) for n in range(1, 8)}
+            result.update({(0, 2, 0), (1, 2, 3)})
+            assert_equal(ev ^ some_edges, result)
+        else:
+            result1 = {(n, n+1, 0) for n in range(8)}
+            result1.update({(0, 2, 0), (1, 2, 3)})
+            result2 = {(n, n+1, 0) for n in range(1, 8)}
+            result2.update({(1, 0, 0), (0, 2, 0), (1, 2, 3)})
+            assert_true((ev ^ some_edges) in (result1, result2))
+        return
+    def test_and(self):
+        # print("G & H edges:", gnv & hnv)
+        ev = self.eviewer(self.G)
+        some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
+        if not self.G.is_directed():
+            assert_equal(ev & some_edges, {(0, 1, 0), (1, 0, 0)})
+        else:
+            assert_true((ev & some_edges) in ({(0, 1, 0)}, {(1, 0, 0)}))
+        return
 
 class test_directed_multiedges(test_multiedges):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
+        self.eviewer = nx.OutMultiEdgeViewer
         self.eview = nx.OutMultiEdgeView
         def modify_edge(G, e, **kwds):
             if len(e) == 2:
@@ -302,6 +387,7 @@ class test_in_multiedges(test_multiedges):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
+        self.eviewer = nx.InMultiEdgeViewer
         self.eview = nx.InMultiEdgeView
         def modify_edge(G, e, **kwds):
             if len(e) == 2:
