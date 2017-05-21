@@ -864,38 +864,12 @@ class DiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
-        if nbunch is None:
-            return DiDegreeView(self, weight)
-        deg = DiDegreeView(self, weight)
-        if nbunch in self:
-            return deg[nbunch]
-        return ((n, deg[n]) for n in self.nbunch_iter(nbunch))
         # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) is True when nbunch
-        # is a single node.
+        # None(indicating all nodes). (nbunch in self) means a single node.
         if nbunch in self:
-            succ = self.succ[nbunch]
-            pred = self.pred[nbunch]
-            if weight is None:
-                return len(succ) + len(pred)
-            return sum(data.get(weight, 1) for data in succ.values()) + \
-                   sum(data.get(weight, 1) for data in pred.values())
-
-        if nbunch is None:
-            nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.items())
-        else:
-            nodes_nbrs=( (n,self.succ[n],self.pred[n]) for n in self.nbunch_iter(nbunch))
-        if weight is None:
-            def d_iter():
-                for n,succ,pred in nodes_nbrs:
-                    yield (n,len(succ)+len(pred))
-        else:
-            def d_iter():
-                for n,succ,pred in nodes_nbrs:
-                    yield (n,
-                      sum((data.get(weight,1) for data in succ.values()))+
-                      sum((data.get(weight,1) for data in pred.values())))
-        return d_iter()
+            deg = DiDegreeView(self, weight)
+            return deg[nbunch]
+        return DiDegreeView(self, weight, nbunch)
 
 
     def in_degree(self, nbunch=None, weight=None):
@@ -940,36 +914,12 @@ class DiGraph(Graph):
         [(0, 0), (1, 1)]
 
         """
-        if nbunch is None:
-            return InDegreeView(self, weight)
-        deg = InDegreeView(self, weight)
-        if nbunch in self:
-            return deg[nbunch]
-        return ((n, deg[n]) for n in self.nbunch_iter(nbunch))
         # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) is True when nbunch
-        # is a single node.
+        # None(indicating all nodes). (nbunch in self) means a single node.
         if nbunch in self:
-            pred = self.pred[nbunch]
-            if weight is None:
-                return len(pred)
-            return sum(data.get(weight, 1) for data in pred.values())
-
-        if nbunch is None:
-            nodes_nbrs=self.pred.items()
-        else:
-            nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
-
-        if weight is None:
-            def d_iter():
-                for n,nbrs in nodes_nbrs:
-                    yield (n,len(nbrs))
-        else:
-        # edge weighted graph - degree is sum of edge weights
-            def d_iter():
-                for n,nbrs in nodes_nbrs:
-                    yield (n, sum(data.get(weight,1) for data in nbrs.values()))
-        return d_iter()
+            deg = InDegreeView(self, weight)
+            return deg[nbunch]
+        return InDegreeView(self, weight, nbunch)
 
 
     def out_degree(self, nbunch=None, weight=None):
@@ -1014,36 +964,12 @@ class DiGraph(Graph):
         [(0, 1), (1, 1)]
 
         """
-        if nbunch is None:
-            return OutDegreeView(self, weight)
-        deg = OutDegreeView(self, weight)
-        if nbunch in self:
-            return deg[nbunch]
-        return ((n, deg[n]) for n in self.nbunch_iter(nbunch))
         # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) is True when nbunch
-        # is a single node.
+        # None(indicating all nodes). (nbunch in self) means a single node.
         if nbunch in self:
-            succ = self.succ[nbunch]
-            if weight is None:
-                return len(succ)
-            return sum(data.get(weight, 1) for data in succ.values())
-
-        if nbunch is None:
-            nodes_nbrs=self.succ.items()
-        else:
-            nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
-
-        if weight is None:
-            def d_iter():
-                for n,nbrs in nodes_nbrs:
-                    yield (n,len(nbrs))
-        else:
-        # edge weighted graph - degree is sum of edge weights
-            def d_iter():
-                for n,nbrs in nodes_nbrs:
-                    yield (n, sum(data.get(weight,1) for data in nbrs.values()))
-        return d_iter()
+            deg = OutDegreeView(self, weight)
+            return deg[nbunch]
+        return OutDegreeView(self, weight, nbunch)
 
     def clear(self):
         """Remove all nodes and edges from the graph.

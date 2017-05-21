@@ -768,45 +768,12 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
-        if nbunch is None:
-            return MultiDegreeView(self, weight)
-        deg = MultiDegreeView(self, weight)
-        if nbunch in self:
-            return deg[nbunch]
-        return ((n, deg[n]) for n in self.nbunch_iter(nbunch))
         # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) is True when nbunch
-        # is a single node.
+        # None(indicating all nodes). (nbunch in self) means a single node.
         if nbunch in self:
-            nbrs = self.adj[nbunch]
-            if weight is None:
-                return sum([len(data) for data in nbrs.values()]) + (nbunch in nbrs and len(nbrs[nbunch]))
-            deg = sum([d.get(weight, 1) for data in nbrs.values() for d in data.values()])
-            if nbunch in nbrs:
-                deg += sum([d.get(weight, 1) for key, d in nbrs[nbunch].items()])
-            return deg
-        if nbunch is None:
-            nodes_nbrs = self.adj.items()
-        else:
-            nodes_nbrs = ((n, self.adj[n]) for n in self.nbunch_iter(nbunch))
-
-        if weight is None:
-            def d_iter():
-                for n, nbrs in nodes_nbrs:
-                    deg = sum([len(data) for data in nbrs.values()])
-                    yield (n, deg + (n in nbrs and len(nbrs[n])))
-        else:
-            # edge weighted graph - degree is sum of nbr edge weights
-            def d_iter():
-                for n, nbrs in nodes_nbrs:
-                    deg = sum([d.get(weight, 1)
-                               for data in nbrs.values()
-                               for d in data.values()])
-                    if n in nbrs:
-                        deg += sum([d.get(weight, 1)
-                                    for key, d in nbrs[n].items()])
-                    yield (n, deg)
-        return d_iter()
+            deg = MultiDegreeView(self, weight)
+            return deg[nbunch]
+        return MultiDegreeView(self, weight, nbunch)
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

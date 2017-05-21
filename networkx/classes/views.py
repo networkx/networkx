@@ -105,12 +105,13 @@ class DiDegreeView(object):
     graph : NetworkX graph-like class
     weight : bool or string (default=None)
     """
-    def __init__(self, graph, weight=None):
-        self._succ = graph.succ if hasattr(graph,"succ") else graph.adj
-        self._pred = graph.pred if hasattr(graph,"pred") else graph.adj
+    def __init__(self, G, weight=None, nbunch=None):
+        self._nodes = G if nbunch is None else list(G.nbunch_iter(nbunch))
+        self._succ = G.succ if hasattr(G,"succ") else G.adj
+        self._pred = G.pred if hasattr(G,"pred") else G.adj
         self._weight = weight
     def __iter__(self):
-        for n in self._succ:
+        for n in self._nodes:
             yield (n, self[n])
     def __getitem__(self, n):
         weight = self._weight

@@ -1193,36 +1193,12 @@ class Graph(object):
         >>> list(G.degree([0,1]))
         [(0, 1), (1, 2)]
         """
-        if nbunch is None:
-            return DegreeView(self, weight)
-        deg = DegreeView(self, weight)
-        if nbunch in self:
-            return deg[nbunch]
-        return ((n, deg[n]) for n in self.nbunch_iter(nbunch))
         # Test to see if nbunch is a single node, an iterator of nodes or
-        # None(indicating all nodes). (nbunch in self) is True when nbunch
-        # is a single node.
+        # None(indicating all nodes). (nbunch in self) means a single node.
         if nbunch in self:
-            nbrs = self.adj[nbunch]
-            if weight is None:
-                return len(nbrs) + (1 if nbunch in nbrs else 0) # handle self-loops
-            return sum(dd.get(weight, 1) for nbr,dd in nbrs.items()) +\
-                    (nbrs[nbunch].get(weight, 1) if nbunch in nbrs else 0)
-
-        if nbunch is None:
-            nodes_nbrs = self.adj.items()
-        else:
-            nodes_nbrs = ((n, self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if weight is None:
-            def d_iter():
-                for n, nbrs in nodes_nbrs:
-                    yield (n, len(nbrs) + (1 if n in nbrs else 0))  # return tuple (n,degree)
-        else:
-            def d_iter():
-                for n, nbrs in nodes_nbrs:
-                    yield (n, sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) +
-                        (nbrs[n].get(weight, 1) if n in nbrs else 0))
-        return d_iter()
+            deg = DegreeView(self, weight)
+            return deg[nbunch]
+        return DegreeView(self, weight, nbunch)
 
     def clear(self):
         """Remove all nodes and edges from the graph.
