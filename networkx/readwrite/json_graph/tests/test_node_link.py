@@ -88,3 +88,19 @@ class TestNodeLink:
         assert_equal(data['links'][0]['target'], q)
         H = node_link_graph(data)
         assert_true(nx.is_isomorphic(G, H))
+
+    def test_custom_attrs(self):
+        G = nx.path_graph(4)
+        G.add_node(1, color='red')
+        G.add_edge(1, 2, width=7)
+        G.graph[1] = 'one'
+        G.graph['foo'] = 'bar'
+
+        attrs = dict(source='c_source', target='c_target', name='c_id', key='c_key', link='c_links')
+
+        H = node_link_graph(node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs)
+        assert_true(nx.is_isomorphic(G, H))
+        assert_equal(H.graph['foo'], 'bar')
+        assert_equal(H.node[1]['color'], 'red')
+        assert_equal(H[1][2]['width'], 7)
+
