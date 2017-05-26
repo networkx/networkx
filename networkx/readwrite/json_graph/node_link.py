@@ -86,13 +86,10 @@ def node_link_data(G, attrs=None):
     links = attrs['link']
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs['key']
-    if len(set([source, target, key])) < 3:
+    if len({source, target, key}) < 3:
         raise nx.NetworkXError('Attribute names are not unique.')
-    data = {}
-    data['directed'] = G.is_directed()
-    data['multigraph'] = multigraph
-    data['graph'] = G.graph
-    data['nodes'] = [dict(chain(G.node[n].items(), [(name, n)])) for n in G]
+    data = {'directed': G.is_directed(), 'multigraph': multigraph, 'graph': G.graph,
+            'nodes': [dict(chain(G.node[n].items(), [(name, n)])) for n in G]}
     if multigraph:
         data[links] = [
             dict(chain(d.items(),
@@ -152,7 +149,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     if attrs is None:
         attrs = _attrs
     else:
-        attrs.update({k: v for (k, v) in _attrs.iteritems() if k not in attrs})
+        attrs.update({k: v for k, v in _attrs.items() if k not in attrs})
     multigraph = data.get('multigraph', multigraph)
     directed = data.get('directed', directed)
     if multigraph:
