@@ -401,6 +401,19 @@ class EdgeView(OutEdgeView):
             seen[n] = 1
         del seen
 
+    def __contains__(self, e):
+        try:
+            u, v = e[:2]
+            ddict = self._adjdict[u][v]
+        except KeyError:
+            try:
+                ddict = self._adjdict[v][u]
+            except KeyError:
+                return False
+        except ValueError:
+            raise ValueError("Edge must have at least 2 entries")
+        return e == self._report(u, v, ddict)
+
     def __len__(self):
         return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
 
@@ -502,6 +515,27 @@ class MultiEdgeView(OutMultiEdgeView):
             seen[n] = 1
         del seen
 
+    def __contains__(self, e):
+        u, v = e[:2]
+        try:
+            kdict = self._adjdict[u][v]
+        except KeyError:
+            try:
+                kdict = self._adjdict[v][u]
+            except KeyError:
+                return False
+        if self.keys is True:
+            k = e[2]
+            try:
+                dd = kdict[k]
+            except KeyError:
+                return False
+            return e == self._report(u, v, k, dd)
+        for k, dd in kdict.items():
+            if e == self._report(u, v, k, dd):
+                return True
+        return False
+
     def __len__(self):
         return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
                    for nbr, kdict in nbrs.items()) // 2
@@ -589,6 +623,8 @@ class OutEdgeViewer(Set):
         self._nodes_nbrs = self.succ.items
 
     def __call__(self, nbunch=None, data=False, default=None):
+        if nbunch is None and data is False:
+            return self
         return self.view(self, nbunch, data, default)
 
     def __len__(self):
@@ -616,9 +652,9 @@ class OutEdgeViewer(Set):
         return "{0.__class__.__name__}({1!r})".format(self, list(self))
     # Needed for Python 3.3 which doesn't have set define the
     # right-side set operations __rsub__ __xor__ __rand__ __ror__
-    __rand__ = set.__and__
-    __ror__ = set.__or__
-    __rxor__ = set.__xor__
+    __rand__ = Set.__and__
+    __ror__ = Set.__or__
+    __rxor__ = Set.__xor__
 
     def __rsub__(self, other):
         if not isinstance(other, Set):
@@ -676,6 +712,8 @@ class OutMultiEdgeViewer(OutEdgeViewer):
     view = OutMultiEdgeView
 
     def __call__(self, nbunch=None, data=False, keys=False, default=None):
+        if nbunch is None and data is False and keys is True:
+            return self
         return self.view(self, nbunch, data, keys, default)
 
     def __iter__(self):

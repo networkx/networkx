@@ -95,7 +95,6 @@ class test_edges_view(object):
         self.G = nx.path_graph(9)
         self.eviewer = nx.EdgeViewer
         self.eview = nx.EdgeView
-        self.makeedge = lambda u,v : (u, v)
         def modify_edge(G, e, **kwds):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
@@ -143,7 +142,10 @@ class test_edges_view(object):
     def test_contains(self):
         evr = self.eviewer(self.G)
         ev = evr()
-        assert_true((1, 2) in ev or (2, 1) in ev)
+        if self.G.is_directed():
+            assert_true((1, 2) in ev and (2, 1) not in ev)
+        else:
+            assert_true((1, 2) in ev and (2, 1) in ev)
         assert_false((1, 4) in ev)
 
     def test_len(self):
@@ -159,10 +161,15 @@ class test_edges_viewer(object):
     def setup(self):
         self.G = nx.path_graph(9)
         self.eviewer = nx.EdgeViewer
-        self.makeedge = lambda u,v : (u, v)
         def modify_edge(G, e, **kwds):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
+
+    def test_call(self):
+        ev = self.eviewer(self.G)
+        assert_equal(id(ev), id(ev()))
+        assert_not_equal(id(ev), id(ev(data=True)))
+        assert_not_equal(id(ev), id(ev(nbunch=1)))
 
     def test_iter(self):
         ev = self.eviewer(self.G)
@@ -175,7 +182,10 @@ class test_edges_viewer(object):
 
     def test_contains(self):
         ev = self.eviewer(self.G)
-        assert_true((1, 2) in ev or (2, 1) in ev)
+        if self.G.is_directed():
+            assert_true((1, 2) in ev and (2, 1) not in ev)
+        else:
+            assert_true((1, 2) in ev and (2, 1) in ev)
         assert_false((1, 4) in ev)
 
     def test_len(self):
@@ -185,52 +195,54 @@ class test_edges_viewer(object):
         ev = ev(data='foo')
         assert_equal(len(ev), num_ed)
 
-
     def test_and(self):
         # print("G & H edges:", gnv & hnv)
         ev = self.eviewer(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
-        if not self.G.is_directed():
-            assert_equal(ev & some_edges, {(0, 1), (1, 0)})
+        if self.G.is_directed():
+            assert_true(some_edges & ev, {(0, 1)})
+            assert_true(ev & some_edges, {(0, 1)})
         else:
-            assert_true((ev & some_edges) in ({(0, 1)}, {(1, 0)}))
+            assert_equal(ev & some_edges, {(0, 1), (1, 0)})
+            assert_equal(some_edges & ev, {(0, 1), (1, 0)})
         return
 
     def test_or(self):
         # print("G | H edges:", gnv | hnv)
         ev = self.eviewer(self.G)
-        some_edges = {(0, 1), (0, 2)}
+        some_edges = {(0, 1), (1, 0), (0, 2)}
         result1 = {(n, n+1) for n in range(8)}
         result1.update(some_edges)
         result2 = {(n+1, n) for n in range(8)}
         result2.update(some_edges)
         assert_true((ev | some_edges) in (result1, result2))
+        assert_true((some_edges | ev) in (result1, result2))
 
     def test_xor(self):
         # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eviewer(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
-        if not self.G.is_directed():
+        if self.G.is_directed():
+#            result1 = {(n, n+1) for n in range(8)}
+#            result1.update({(0, 2)})
+            result = {(n, n+1) for n in range(1, 8)}
+            result.update({(1, 0), (0, 2)})
+            assert_equal(ev ^ some_edges, result)
+        else:
             result = {(n, n+1) for n in range(1, 8)}
             result.update({(0, 2)})
             assert_equal(ev ^ some_edges, result)
-        else:
-            result1 = {(n, n+1) for n in range(8)}
-            result1.update({(0, 2)})
-            result2 = {(n, n+1) for n in range(1, 8)}
-            result2.update({(1, 0), (0, 2)})
-            assert_true((ev ^ some_edges) in (result1, result2))
         return
 
     def test_sub(self):
         # print("G - H edges:", gnv - hnv)
         ev = self.eviewer(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
-        result1 = {(n, n + 1) for n in range(8)}
-        result1.remove((0, 1))
-        result2 = {(n + 1, n) for n in range(8)}
-        result2.remove((1, 0))
-        assert_true((ev - some_edges) in (result1, result2))
+        result = {(n, n + 1) for n in range(8)}
+        result.remove((0, 1))
+#        result2 = {(n + 1, n) for n in range(8)}
+#        result2.remove((1, 0))
+        assert_true(ev - some_edges, result)
 
 
 
@@ -257,12 +269,18 @@ class test_multiedges(test_edges_viewer):
         self.G.add_edge(1, 2, key=3, foo='bar')
         self.eviewer = nx.MultiEdgeViewer
         self.eview = nx.MultiEdgeView
-        self.makeedge = lambda u,v : (u, v, 0)
         def modify_edge(G, e, **kwds):
             if len(e) == 2:
                 e = e + (0,)
             G.edge[e[0]][e[1]][e[2]].update(kwds)
         self.modify_edge = modify_edge
+
+    def test_call(self):
+        ev = self.eviewer(self.G)
+        assert_equal(id(ev), id(ev(keys=True)))
+        assert_not_equal(id(ev), id(ev(data=True)))
+        assert_not_equal(id(ev), id(ev(nbunch=1)))
+
     def test_iter(self):
         ev = self.eviewer(self.G)
         for u,v,k in ev:
@@ -324,52 +342,59 @@ class test_multiedges(test_edges_viewer):
             assert_equal(len(list(ev)), 3)
         else:
             assert_equal(len(list(ev)), 4)
+
     def test_or(self):
         # print("G | H edges:", gnv | hnv)
         ev = self.eviewer(self.G)
-        some_edges = {(0, 1, 0), (0, 2, 0)}
-        result1 = {(n, n+1, 0) for n in range(8)}
-        result1.update(some_edges)
-        result1.update({(1, 2, 3)})
-        result2 = {(n+1, n, 0) for n in range(8)}
-        result2.update(some_edges)
-        result2.update({(1, 2, 3)})
-        assert_true((ev | some_edges) in (result1, result2))
+        some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
+        result = {(n, n+1, 0) for n in range(8)}
+        result.update(some_edges)
+        result.update({(1, 2, 3)})
+#        result2 = {(n+1, n, 0) for n in range(8)}
+#        result2.update(some_edges)
+#        result2.update({(1, 2, 3)})
+#        assert_true((ev | some_edges) in (result1, result2))
+        assert_equal(ev | some_edges, result)
+        assert_equal(some_edges | ev, result)
+
     def test_sub(self):
         # print("G - H edges:", gnv - hnv)
         ev = self.eviewer(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
-        result1 = {(n, n + 1, 0) for n in range(8)}
-        result1.remove((0, 1, 0))
-        result1.update({(1, 2, 3)})
-        result2 = {(n + 1, n, 0) for n in range(8)}
-        result2.remove((1, 0, 0))
-        result2.update({(1, 2, 3)})
-        assert_true((ev - some_edges) in (result1, result2))
+        result = {(n, n + 1, 0) for n in range(8)}
+        result.remove((0, 1, 0))
+        result.update({(1, 2, 3)})
+#        result2 = {(n + 1, n, 0) for n in range(8)}
+#        result2.remove((1, 0, 0))
+#        result2.update({(1, 2, 3)})
+        assert_true(ev - some_edges, result)
+        assert_true(some_edges - ev, result)
+
     def test_xor(self):
         # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eviewer(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
-        if not self.G.is_directed():
+        if self.G.is_directed():
+            result = {(n, n+1, 0) for n in range(1, 8)}
+            result.update({(1, 0, 0), (0, 2, 0), (1, 2, 3)})
+            assert_equal(ev ^ some_edges, result)
+            assert_equal(some_edges ^ ev, result)
+        else:
             result = {(n, n+1, 0) for n in range(1, 8)}
             result.update({(0, 2, 0), (1, 2, 3)})
             assert_equal(ev ^ some_edges, result)
-        else:
-            result1 = {(n, n+1, 0) for n in range(8)}
-            result1.update({(0, 2, 0), (1, 2, 3)})
-            result2 = {(n, n+1, 0) for n in range(1, 8)}
-            result2.update({(1, 0, 0), (0, 2, 0), (1, 2, 3)})
-            assert_true((ev ^ some_edges) in (result1, result2))
-        return
+            assert_equal(some_edges ^ ev, result)
+
     def test_and(self):
         # print("G & H edges:", gnv & hnv)
         ev = self.eviewer(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
-        if not self.G.is_directed():
-            assert_equal(ev & some_edges, {(0, 1, 0), (1, 0, 0)})
+        if self.G.is_directed():
+            assert_equal(ev & some_edges, {(0, 1, 0)})
+            assert_equal(some_edges & ev, {(0, 1, 0)})
         else:
-            assert_true((ev & some_edges) in ({(0, 1, 0)}, {(1, 0, 0)}))
-        return
+            assert_equal(ev & some_edges, {(0, 1, 0), (1, 0, 0)})
+            assert_equal(some_edges & ev, {(0, 1, 0), (1, 0, 0)})
 
 class test_directed_multiedges(test_multiedges):
     def setup(self):
