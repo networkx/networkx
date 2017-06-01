@@ -1,4 +1,5 @@
-from nose.tools import assert_equal, assert_not_equal, assert_true, assert_false
+from nose.tools import assert_equal, assert_not_equal, \
+        assert_true, assert_false, assert_raises
 
 import networkx as nx
 #   Testing these classes
@@ -223,8 +224,6 @@ class test_edges_viewer(object):
         ev = self.eviewer(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
-#            result1 = {(n, n+1) for n in range(8)}
-#            result1.update({(0, 2)})
             result = {(n, n+1) for n in range(1, 8)}
             result.update({(1, 0), (0, 2)})
             assert_equal(ev ^ some_edges, result)
@@ -240,8 +239,6 @@ class test_edges_viewer(object):
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result = {(n, n + 1) for n in range(8)}
         result.remove((0, 1))
-#        result2 = {(n + 1, n) for n in range(8)}
-#        result2.remove((1, 0))
         assert_true(ev - some_edges, result)
 
 
@@ -350,10 +347,6 @@ class test_multiedges(test_edges_viewer):
         result = {(n, n+1, 0) for n in range(8)}
         result.update(some_edges)
         result.update({(1, 2, 3)})
-#        result2 = {(n+1, n, 0) for n in range(8)}
-#        result2.update(some_edges)
-#        result2.update({(1, 2, 3)})
-#        assert_true((ev | some_edges) in (result1, result2))
         assert_equal(ev | some_edges, result)
         assert_equal(some_edges | ev, result)
 
@@ -364,9 +357,6 @@ class test_multiedges(test_edges_viewer):
         result = {(n, n + 1, 0) for n in range(8)}
         result.remove((0, 1, 0))
         result.update({(1, 2, 3)})
-#        result2 = {(n + 1, n, 0) for n in range(8)}
-#        result2.remove((1, 0, 0))
-#        result2.update({(1, 2, 3)})
         assert_true(ev - some_edges, result)
         assert_true(some_edges - ev, result)
 
@@ -452,6 +442,13 @@ class test_degreeview(object):
         assert_equal(next(idv), (0, dv[0]))
         assert_equal(next(idv), (1, dv[1]))
 
+    def test_nbunch(self):
+        dv = self.dview(self.G)
+        dvn = dv(0)
+        assert_equal(dvn, 1)
+        dvn = dv([2, 3])
+        assert_equal(sorted(dvn), [(2, 2), (3, 3)])
+
     def test_getitem(self):
         dv = self.dview(self.G)
         assert_equal(dv[0], 1)
@@ -464,6 +461,20 @@ class test_degreeview(object):
         assert_equal(dv[2], 2)
         assert_equal(dv[3], 5)
 
+    def test_weight(self):
+        dv = self.dview(self.G)
+        dvw = dv(0, weight='foo')
+        assert_equal(dvw, 1)
+        dvw = dv(1, weight='foo')
+        assert_equal(dvw, 5)
+        dvw = dv([2, 3], weight='foo')
+        assert_equal(sorted(dvw), [(2, 2), (3, 5)])
+        dvd = dict(dv(weight='foo'))
+        assert_equal(dvd[0], 1)
+        assert_equal(dvd[1], 5)
+        assert_equal(dvd[2], 2)
+        assert_equal(dvd[3], 5)
+
     def test_len(self):
         dv = self.dview(self.G)
         assert_equal(len(dv), 9)
@@ -475,6 +486,13 @@ class test_didegreeview(test_degreeview):
 class test_outdegreeview(test_degreeview):
     GRAPH = nx.DiGraph
     dview = nx.OutDegreeView
+    def test_nbunch(self):
+        dv = self.dview(self.G)
+        dvn = dv(0)
+        assert_equal(dvn, 1)
+        dvn = dv([2, 3])
+        assert_equal(sorted(dvn), [(2, 1), (3, 1)])
+
     def test_getitem(self):
         dv = self.dview(self.G)
         assert_equal(dv[0], 1)
@@ -487,9 +505,31 @@ class test_outdegreeview(test_degreeview):
         assert_equal(dv[2], 1)
         assert_equal(dv[3], 1)
 
+    def test_weight(self):
+        dv = self.dview(self.G)
+        dvw = dv(0, weight='foo')
+        assert_equal(dvw, 1)
+        dvw = dv(1, weight='foo')
+        assert_equal(dvw, 4)
+        dvw = dv([2, 3], weight='foo')
+        assert_equal(sorted(dvw), [(2, 1), (3, 1)])
+        dvd = dict(dv(weight='foo'))
+        assert_equal(dvd[0], 1)
+        assert_equal(dvd[1], 4)
+        assert_equal(dvd[2], 1)
+        assert_equal(dvd[3], 1)
+
+
 class test_indegreeview(test_degreeview):
     GRAPH = nx.DiGraph
     dview = nx.InDegreeView
+    def test_nbunch(self):
+        dv = self.dview(self.G)
+        dvn = dv(0)
+        assert_equal(dvn, 0)
+        dvn = dv([2, 3])
+        assert_equal(sorted(dvn), [(2, 1), (3, 2)])
+
     def test_getitem(self):
         dv = self.dview(self.G)
         assert_equal(dv[0], 0)
@@ -502,9 +542,31 @@ class test_indegreeview(test_degreeview):
         assert_equal(dv[2], 1)
         assert_equal(dv[3], 4)
 
+    def test_weight(self):
+        dv = self.dview(self.G)
+        dvw = dv(0, weight='foo')
+        assert_equal(dvw, 0)
+        dvw = dv(1, weight='foo')
+        assert_equal(dvw, 1)
+        dvw = dv([2, 3], weight='foo')
+        assert_equal(sorted(dvw), [(2, 1), (3, 4)])
+        dvd = dict(dv(weight='foo'))
+        assert_equal(dvd[0], 0)
+        assert_equal(dvd[1], 1)
+        assert_equal(dvd[2], 1)
+        assert_equal(dvd[3], 4)
+
+
 class test_multidegreeview(test_degreeview):
     GRAPH = nx.MultiGraph
     dview = nx.MultiDegreeView
+    def test_nbunch(self):
+        dv = self.dview(self.G)
+        dvn = dv(0)
+        assert_equal(dvn, 1)
+        dvn = dv([2, 3])
+        assert_equal(sorted(dvn), [(2, 2), (3, 4)])
+
     def test_getitem(self):
         dv = self.dview(self.G)
         assert_equal(dv[0], 1)
@@ -517,6 +579,21 @@ class test_multidegreeview(test_degreeview):
         assert_equal(dv[2], 2)
         assert_equal(dv[3], 7)
 
+    def test_weight(self):
+        dv = self.dview(self.G)
+        dvw = dv(0, weight='foo')
+        assert_equal(dvw, 1)
+        dvw = dv(1, weight='foo')
+        assert_equal(dvw, 7)
+        dvw = dv([2, 3], weight='foo')
+        assert_equal(sorted(dvw), [(2, 2), (3, 7)])
+        dvd = dict(dv(weight='foo'))
+        assert_equal(dvd[0], 1)
+        assert_equal(dvd[1], 7)
+        assert_equal(dvd[2], 2)
+        assert_equal(dvd[3], 7)
+
+
 class test_dimultidegreeview(test_multidegreeview):
     GRAPH = nx.MultiDiGraph
     dview = nx.DiMultiDegreeView
@@ -524,6 +601,13 @@ class test_dimultidegreeview(test_multidegreeview):
 class test_outmultidegreeview(test_degreeview):
     GRAPH = nx.MultiDiGraph
     dview = nx.OutMultiDegreeView
+    def test_nbunch(self):
+        dv = self.dview(self.G)
+        dvn = dv(0)
+        assert_equal(dvn, 1)
+        dvn = dv([2, 3])
+        assert_equal(sorted(dvn), [(2, 1), (3, 1)])
+
     def test_getitem(self):
         dv = self.dview(self.G)
         assert_equal(dv[0], 1)
@@ -536,9 +620,31 @@ class test_outmultidegreeview(test_degreeview):
         assert_equal(dv[2], 1)
         assert_equal(dv[3], 1)
 
+    def test_weight(self):
+        dv = self.dview(self.G)
+        dvw = dv(0, weight='foo')
+        assert_equal(dvw, 1)
+        dvw = dv(1, weight='foo')
+        assert_equal(dvw, 6)
+        dvw = dv([2, 3], weight='foo')
+        assert_equal(sorted(dvw), [(2, 1), (3, 1)])
+        dvd = dict(dv(weight='foo'))
+        assert_equal(dvd[0], 1)
+        assert_equal(dvd[1], 6)
+        assert_equal(dvd[2], 1)
+        assert_equal(dvd[3], 1)
+
+
 class test_inmultidegreeview(test_degreeview):
     GRAPH = nx.MultiDiGraph
     dview = nx.InMultiDegreeView
+    def test_nbunch(self):
+        dv = self.dview(self.G)
+        dvn = dv(0)
+        assert_equal(dvn, 0)
+        dvn = dv([2, 3])
+        assert_equal(sorted(dvn), [(2, 1), (3, 3)])
+
     def test_getitem(self):
         dv = self.dview(self.G)
         assert_equal(dv[0], 0)
@@ -551,4 +657,16 @@ class test_inmultidegreeview(test_degreeview):
         assert_equal(dv[2], 1)
         assert_equal(dv[3], 6)
 
-
+    def test_weight(self):
+        dv = self.dview(self.G)
+        dvw = dv(0, weight='foo')
+        assert_equal(dvw, 0)
+        dvw = dv(1, weight='foo')
+        assert_equal(dvw, 1)
+        dvw = dv([2, 3], weight='foo')
+        assert_equal(sorted(dvw), [(2, 1), (3, 6)])
+        dvd = dict(dv(weight='foo'))
+        assert_equal(dvd[0], 0)
+        assert_equal(dvd[1], 1)
+        assert_equal(dvd[2], 1)
+        assert_equal(dvd[3], 6)

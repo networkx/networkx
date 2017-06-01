@@ -68,6 +68,7 @@ class BaseGraphTester(object):
         assert_equal(sorted(G.degree()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.degree()),{0:2,1:2,2:2})
         assert_equal(G.degree(0), 2)
+        assert_raises(networkx.NetworkXError, G.degree, -1)  # node not in graph
 
     def test_size(self):
         G=self.K3
