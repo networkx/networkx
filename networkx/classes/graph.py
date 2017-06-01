@@ -191,8 +191,8 @@ class Graph(object):
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
-    holding the factory for that dict-like structure. The variable names
-    are node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
+    holding the factory for that dict-like structure. The variable names are
+    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
     and edge_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
@@ -562,7 +562,7 @@ class Graph(object):
         """
         adj = self.adj
         try:
-            nbrs = list(adj[n].keys())  # keys handles self-loops (allow mutation later)
+            nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self.node[n]
         except KeyError:  # NetworkXError if n not in self
             raise NetworkXError("The node %s is not in the graph." % (n,))
@@ -599,7 +599,7 @@ class Graph(object):
         for n in nodes:
             try:
                 del self.node[n]
-                for u in list(adj[n].keys()):   # keys() handles self-loops
+                for u in list(adj[n]):   # list handles self-loops
                     del adj[u][n]  # (allows mutation of dict in loop)
                 del adj[n]
             except KeyError:
@@ -1007,7 +1007,6 @@ class Graph(object):
         except KeyError:
             return False
 
-
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n.
 
@@ -1050,7 +1049,6 @@ class Graph(object):
         except KeyError:
             raise NetworkXError("The node %s is not in the graph." % (n,))
 
-
     @property
     def edges(self):
         """An EdgeViewer Property of the Graph as G.edges or G.edges().
@@ -1059,10 +1057,10 @@ class Graph(object):
         as well as edge attribute lookup. When called, it also provides
         an EdgeView object which allows control of access to edge attributes
         without providing set-like operations.
-        Hence, `G.edges[u,v]['color']` provides the value of the color attribute
-        for edge `(u,v)` while
-        `for (u,v,c) in G.edges(data='color', default='red'):` iterates through
-        all the edges yielding the color attribute.
+        Hence, `G.edges[u,v]['color']` provides the value of the color
+        attribute for edge `(u,v)` while
+        `for (u,v,c) in G.edges(data='color', default='red'):`
+        iterates through all the edges yielding the color attribute.
 
         Parameters
         ----------
@@ -1349,9 +1347,9 @@ class Graph(object):
         G = DiGraph()
         G.name = self.name
         G.add_nodes_from(self)
-        G.add_edges_from(((u, v, deepcopy(data))
-            for u, nbrs in self.adjacency()
-            for v, data in nbrs.items()))
+        G.add_edges_from((u, v, deepcopy(data))
+                         for u, nbrs in self.adjacency()
+                         for v, data in nbrs.items())
         G.graph = deepcopy(self.graph)
         G.node = deepcopy(self.node)
         return G
@@ -1703,11 +1701,11 @@ class Graph(object):
             1
 
         """
-        if u is None: return int(self.size())
+        if u is None:
+            return int(self.size())
         if v in self.adj[u]:
             return 1
-        else:
-            return 0
+        return 0
 
     def nbunch_iter(self, nbunch=None):
         """Return an iterator over nodes contained in nbunch that are
@@ -1764,12 +1762,12 @@ class Graph(object):
                     message = e.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if 'iter' in message:
-                        raise NetworkXError(
-                            "nbunch is not a node or a sequence of nodes.")
+                        msg = "nbunch is not a node or a sequence of nodes."
+                        raise NetworkXError(msg)
                     # capture error for unhashable node.
                     elif 'hashable' in message:
-                        raise NetworkXError(
-                            "Node {} in the sequence nbunch is not a valid node.".format(n))
+                        msg = "Node {} in sequence nbunch is not a valid node."
+                        raise NetworkXError(msg.format(n))
                     else:
                         raise
             bunch = bunch_iter(nbunch, self.adj)

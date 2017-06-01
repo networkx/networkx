@@ -174,16 +174,16 @@ def freeze(G):
     --------
     is_frozen
     """
-    G.add_node=frozen
-    G.add_nodes_from=frozen
-    G.remove_node=frozen
-    G.remove_nodes_from=frozen
-    G.add_edge=frozen
-    G.add_edges_from=frozen
-    G.remove_edge=frozen
-    G.remove_edges_from=frozen
-    G.clear=frozen
-    G.frozen=True
+    G.add_node = frozen
+    G.add_nodes_from = frozen
+    G.remove_node = frozen
+    G.remove_nodes_from = frozen
+    G.add_edge = frozen
+    G.add_edges_from = frozen
+    G.remove_edge = frozen
+    G.remove_edges_from = frozen
+    G.clear = frozen
+    G.frozen = True
     return G
 
 
@@ -338,32 +338,31 @@ def info(G, n=None):
     n : node (any hashable)
        A node in the graph G
     """
-    info='' # append this all to a string
+    info = ''  # append this all to a string
     if n is None:
-        info+="Name: %s\n"%G.name
+        info += "Name: %s\n" % G.name
         type_name = [type(G).__name__]
-        info+="Type: %s\n"%",".join(type_name)
-        info+="Number of nodes: %d\n"%G.number_of_nodes()
-        info+="Number of edges: %d\n"%G.number_of_edges()
-        nnodes=G.number_of_nodes()
+        info += "Type: %s\n" % ",".join(type_name)
+        info += "Number of nodes: %d\n" % G.number_of_nodes()
+        info += "Number of edges: %d\n" % G.number_of_edges()
+        nnodes = G.number_of_nodes()
         if len(G) > 0:
             if G.is_directed():
-                info+="Average in degree: %8.4f\n"%\
-                    (sum(d for n, d in G.in_degree())/float(nnodes))
-                info+="Average out degree: %8.4f"%\
-                    (sum(d for n, d in G.out_degree())/float(nnodes))
+                deg = sum(d for n, d in G.in_degree())/float(nnodes)
+                info += "Average in degree: %8.4f\n" % deg
+                deg = sum(d for n, d in G.out_degree())/float(nnodes)
+                info += "Average out degree: %8.4f" % deg
             else:
-                s=sum(dict(G.degree()).values())
-                info+="Average degree: %8.4f"%\
-                    (float(s)/float(nnodes))
+                s = sum(dict(G.degree()).values())
+                info += "Average degree: %8.4f" % (float(s) / float(nnodes))
 
     else:
         if n not in G:
-            raise nx.NetworkXError("node %s not in graph"%(n,))
-        info+="Node % s has the following properties:\n"%n
-        info+="Degree: %d\n"%G.degree(n)
-        info+="Neighbors: "
-        info+=' '.join(str(nbr) for nbr in G.neighbors(n))
+            raise nx.NetworkXError("node %s not in graph" % (n,))
+        info += "Node % s has the following properties:\n" % n
+        info += "Degree: %d\n" % G.degree(n)
+        info += "Neighbors: "
+        info += ' '.join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 
@@ -735,7 +734,8 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     >>> nx.is_negatively_weighted(G)
     True
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2)])
+    >>> edges = [('0', '3', 3), ('0', '1', -5), ('1', '0', -2)]
+    >>> G.add_weighted_edges_from(edges)
     >>> nx.is_negatively_weighted(G)
     True
 
@@ -772,4 +772,3 @@ def is_empty(G):
 
     """
     return not any(G.adj.values())
-

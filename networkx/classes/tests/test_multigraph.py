@@ -24,7 +24,6 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         assert_equal(G[0][1][0],{})
         assert_equal(G.get_edge_data(10,20),None)
         assert_equal(G.get_edge_data(0,1,0),{})
-        
 
     def test_adjacency(self):
         G=self.K3
@@ -110,6 +109,13 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         assert_equal(G.number_of_edges(0,0),2)
         G.remove_edge(0,0)
         assert_equal(G.number_of_edges(0,0),1)
+
+    def test_edge_lookup(self):
+        G=self.Graph()
+        G.add_edge(1, 2, foo='bar')
+        G.add_edge(1, 2, 'key', foo='biz')
+        assert_edges_equal(G.edges[1, 2, 0], {'foo': 'bar'})
+        assert_edges_equal(G.edges[1, 2, 'key'], {'foo': 'biz'})
 
     def test_edge_attr4(self):
         G=self.Graph()

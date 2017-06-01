@@ -49,10 +49,9 @@ class BaseGraphTester(object):
 
     def test_edges(self):
         G=self.K3
-        assert_edges_equal(G.edges(),[(0,1),(0,2),(1,2)])
-        assert_edges_equal(G.edges(0),[(0,1),(0,2)])
-        f=lambda x:list(G.edges(x))
-        assert_raises((KeyError,networkx.NetworkXError), f, -1)
+        assert_edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
+        assert_edges_equal(G.edges(0), [(0, 1), (0, 2)])
+        assert_raises((KeyError,networkx.NetworkXError), G.edges, -1)
 
     def test_weighted_degree(self):
         G=self.Graph()
@@ -332,6 +331,11 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_nodes_equal(G.nodes(data=True),
                      [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])
 
+    def test_edge_lookup(self):
+        G=self.Graph()
+        G.add_edge(1, 2, foo='bar')
+        assert_edges_equal(G.edges[1, 2], {'foo': 'bar'})
+
     def test_edge_attr(self):
         G=self.Graph()
         G.add_edge(1,2,foo='bar')
@@ -566,8 +570,7 @@ class TestGraph(BaseAttrGraphTester):
         G=self.K3
         assert_edges_equal(G.edges(data=True),[(0,1,{}),(0,2,{}),(1,2,{})])
         assert_edges_equal(G.edges(0,data=True),[(0,1,{}),(0,2,{})])
-        f = lambda x: list(G.edges(x))
-        assert_raises((KeyError,networkx.NetworkXError), f,-1)
+        assert_raises((KeyError,networkx.NetworkXError), G.edges, -1, True)
 
     def test_get_edge_data(self):
         G=self.K3

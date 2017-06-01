@@ -5,6 +5,10 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors:   Aric Hagberg <hagberg@lanl.gov>
+#            Dan Schult <dschult@colgate.edu>
+#            Pieter Swart <swart@lanl.gov>
 from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
@@ -13,12 +17,9 @@ from networkx.classes.multigraph import MultiGraph
 from networkx.classes.views import OutMultiEdgeViewer, InMultiEdgeViewer, \
         DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
 from networkx.exception import NetworkXError
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
 
 
-class MultiDiGraph(MultiGraph,DiGraph):
+class MultiDiGraph(MultiGraph, DiGraph):
     """A directed graph class that can store multiedges.
 
     Multiedges are multiple edges between two nodes.  Each edge
@@ -193,8 +194,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
     In general, the dict-like features should be maintained but
     extra features can be added. To replace one of the dicts create
     a new graph class by changing the class(!) variable holding the
-    factory for that dict-like structure. The variable names
-    are node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
+    factory for that dict-like structure. The variable names are
+    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
     and edge_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
@@ -250,7 +251,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
     >>> G.add_nodes_from((2, 1))
     >>> list(G.nodes())
     [2, 1]
-    >>> elist = ((2, 2), (2, 1, 2, {'weight': 0.1}), (2, 1, 1, {'weight': 0.2}), (1, 1))
+    >>> elist = ((2, 2), (2, 1, 2, {'weight': 0.1}),
+    ...          (2, 1, 1, {'weight': 0.2}), (1, 1))
     >>> keys = G.add_edges_from(elist)
     >>> list(G.edges(keys=True))
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
@@ -358,7 +360,6 @@ class MultiDiGraph(MultiGraph,DiGraph):
             self.pred[v][u] = keydict
         return key
 
-
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.
 
@@ -407,7 +408,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         """
         try:
             d = self.adj[u][v]
-        except (KeyError):
+        except KeyError:
             raise NetworkXError(
                 "The edge %s-%s is not in the graph." % (u, v))
         # remove the edge with specified data
@@ -416,9 +417,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
         else:
             try:
                 del d[key]
-            except (KeyError):
-                raise NetworkXError(
-                "The edge %s-%s with key %s is not in the graph." % (u, v, key))
+            except KeyError:
+                msg = "The edge %s-%s with key %s is not in the graph."
+                raise NetworkXError(msg % (u, v, key))
         if len(d) == 0:
             # remove the key entries if last edge
             del self.succ[u][v]
@@ -520,7 +521,6 @@ class MultiDiGraph(MultiGraph,DiGraph):
         edges : return an iterator over edges
         """
         return InMultiEdgeViewer(self)
-
 
     @property
     def degree(self):
@@ -747,8 +747,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
         and deep copies, http://docs.python.org/library/copy.html.
 
         Warning: If you have subclassed MultiGraph to use dict-like objects
-        in the data structure, those changes do not transfer to the MultiDiGraph
-        created by this method.
+        in the data structure, those changes do not transfer to the
+        MultiDiGraph created by this method.
 
         """
         H = MultiGraph()
@@ -756,15 +756,15 @@ class MultiDiGraph(MultiGraph,DiGraph):
         H.add_nodes_from(self)
         if reciprocal is True:
             H.add_edges_from((u, v, key, deepcopy(data))
-                            for u, nbrs in self.adjacency()
-                            for v, keydict in nbrs.items()
-                            for key, data in keydict.items()
-                            if self.has_edge(v, u, key))
+                             for u, nbrs in self.adjacency()
+                             for v, keydict in nbrs.items()
+                             for key, data in keydict.items()
+                             if self.has_edge(v, u, key))
         else:
             H.add_edges_from((u, v, key, deepcopy(data))
-                            for u, nbrs in self.adjacency()
-                            for v, keydict in nbrs.items()
-                            for key, data in keydict.items())
+                             for u, nbrs in self.adjacency()
+                             for v, keydict in nbrs.items()
+                             for key, data in keydict.items())
         H.graph = deepcopy(self.graph)
         H.node = deepcopy(self.node)
         return H
@@ -891,9 +891,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
         """
         H = self.__class__()
         succ = self.succ
+
         # Filter out edges that don't correspond to nodes in the graph.
         def is_in_graph(u, v, k):
             return u in succ and v in succ[u] and k in succ[u][v]
+
         edges = (e for e in edges if is_in_graph(*e))
         for u, v, k in edges:
             # Copy the node attributes if they haven't been copied
@@ -934,10 +936,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
             the original graph (this changes the original graph).
         """
         if copy:
-            H = self.__class__(name="Reverse of (%s)"%self.name)
+            H = self.__class__(name="Reverse of (%s)" % self.name)
             H.add_nodes_from(self)
             H.add_edges_from((v, u, k, deepcopy(d)) for u, v, k, d
-                              in self.edges(keys=True, data=True))
+                             in self.edges(keys=True, data=True))
             H.graph = deepcopy(self.graph)
             H.node = deepcopy(self.node)
         else:
