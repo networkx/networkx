@@ -70,8 +70,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Add the nodes from any container (a list, dict, set or
     even the lines from a file or the nodes from another graph).
 
-    >>> G.add_nodes_from([2,3])
-    >>> G.add_nodes_from(range(100,110))
+    >>> G.add_nodes_from([2, 3])
+    >>> G.add_nodes_from(range(100, 110))
     >>> H=nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
@@ -91,7 +91,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     a list of edges,
 
-    >>> keys = G.add_edges_from([(1,2),(1,3)])
+    >>> keys = G.add_edges_from([(1, 2), (1, 3)])
 
     or a collection of edges,
 
@@ -135,7 +135,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     notation, or G.edge.
 
     >>> key = G.add_edge(1, 2, weight=4.7 )
-    >>> keys = G.add_edges_from([(3,4),(4,5)], color='red')
+    >>> keys = G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
     >>> G.edge[1][2][0]['weight'] = 4
@@ -157,9 +157,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
     The fastest way to traverse all edges of a graph is via
     adjacency():
 
-    >>> for n,nbrsdict in G.adjacency():
-    ...     for nbr,keydict in nbrsdict.items():
-    ...        for key,eattr in keydict.items():
+    >>> for n, nbrsdict in G.adjacency():
+    ...     for nbr, keydict in nbrsdict.items():
+    ...        for key, eattr in keydict.items():
     ...            if 'weight' in eattr:
     ...                # Do something useful with the edges
     ...                pass
@@ -259,11 +259,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
 
     """
-    # node_dict_factory=dict    # already assigned in Graph
-    # adjlist_outer_dict_factory=dict
-    # adjlist_inner_dict_factory=dict
+    # node_dict_factory = dict    # already assigned in Graph
+    # adjlist_outer_dict_factory = dict
+    # adjlist_inner_dict_factory = dict
     edge_key_dict_factory = dict
-    # edge_attr_dict_factory=dict
+    # edge_attr_dict_factory = dict
 
     def __init__(self, data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
@@ -316,14 +316,14 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Examples
         --------
-        The following all add the edge e=(1,2) to graph G:
+        The following all add the edge e=(1, 2) to graph G:
 
         >>> G = nx.MultiDiGraph()
-        >>> e = (1,2)
+        >>> e = (1, 2)
         >>> key = G.add_edge(1, 2)     # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
         1
-        >>> G.add_edges_from( [(1,2)] ) # add edges from iterable container
+        >>> G.add_edges_from( [(1, 2)] ) # add edges from iterable container
         [2]
 
         Associate data to edges using keywords:
@@ -386,25 +386,25 @@ class MultiDiGraph(MultiGraph, DiGraph):
         --------
         >>> G = nx.MultiDiGraph()
         >>> nx.add_path(G, [0, 1, 2, 3])
-        >>> G.remove_edge(0,1)
-        >>> e = (1,2)
+        >>> G.remove_edge(0, 1)
+        >>> e = (1, 2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
 
         For multiple edges
 
         >>> G = nx.MultiDiGraph()
-        >>> G.add_edges_from([(1,2),(1,2),(1,2)])  # key_list returned
+        >>> G.add_edges_from([(1, 2), (1, 2), (1, 2)])  # key_list returned
         [0, 1, 2]
-        >>> G.remove_edge(1,2) # remove a single (arbitrary) edge
+        >>> G.remove_edge(1, 2) # remove a single (arbitrary) edge
 
         For edges with keys
 
         >>> G = nx.MultiDiGraph()
-        >>> G.add_edge(1,2,key='first')
+        >>> G.add_edge(1, 2, key='first')
         'first'
-        >>> G.add_edge(1,2,key='second')
+        >>> G.add_edge(1, 2, key='second')
         'second'
-        >>> G.remove_edge(1,2,key='second')
+        >>> G.remove_edge(1, 2, key='second')
 
         """
         try:
@@ -441,9 +441,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
             A container of nodes.  The container will be iterated
             through once.
         data : string or bool, optional (default=False)
-            The edge attribute returned in 3-tuple (u,v,ddict[data]).
-            If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v).
+            The edge attribute returned in 3-tuple (u, v, ddict[data]).
+            If True, return edge attribute dict in 3-tuple (u, v, ddict).
+            If False, return 2-tuple (u, v).
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
@@ -453,7 +453,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Returns
         -------
         edge : iterator
-            An iterator over (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+            An iterator over (u, v), (u, v, d) or (u, v, key, d) edge tuples.
 
         Notes
         -----
@@ -464,7 +464,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         --------
         >>> G = nx.MultiDiGraph()
         >>> nx.add_path(G, [0, 1, 2])
-        >>> key = G.add_edge(2,3,weight=5)
+        >>> key = G.add_edge(2, 3, weight=5)
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges(data=True)) # default data is {} (empty dict)
@@ -473,11 +473,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges(keys=True)) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
-        >>> list(G.edges(data=True,keys=True)) # default keys are integers
+        >>> list(G.edges(data=True, keys=True)) # default keys are integers
         [(0, 1, 0, {}), (1, 2, 0, {}), (2, 3, 0, {'weight': 5})]
-        >>> list(G.edges(data='weight',default=1,keys=True))
+        >>> list(G.edges(data='weight', default=1, keys=True))
         [(0, 1, 0, 1), (1, 2, 0, 1), (2, 3, 0, 5)]
-        >>> list(G.edges([0,2]))
+        >>> list(G.edges([0, 2]))
         [(0, 1), (2, 3)]
         >>> list(G.edges(0))
         [(0, 1)]
@@ -503,9 +503,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
             A container of nodes.  The container will be iterated
             through once.
         data : string or bool, optional (default=False)
-            The edge attribute returned in 3-tuple (u,v,ddict[data]).
-            If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v).
+            The edge attribute returned in 3-tuple (u, v, ddict[data]).
+            If True, return edge attribute dict in 3-tuple (u, v, ddict).
+            If False, return 2-tuple (u, v).
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
@@ -515,7 +515,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Returns
         -------
         in_edge : iterator
-            An iterator over (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+            An iterator over (u, v), (u, v, d) or (u, v, key, d) edge tuples.
 
         See Also
         --------
@@ -564,7 +564,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0) # node 0 with degree 1
         1
-        >>> list(G.degree([0,1]))
+        >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 
         """
@@ -611,7 +611,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0) # node 0 with degree 0
         0
-        >>> list(G.in_degree([0,1]))
+        >>> list(G.in_degree([0, 1]))
         [(0, 0), (1, 1)]
 
         """
@@ -658,7 +658,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0) # node 0 with degree 1
         1
-        >>> list(G.out_degree([0,1]))
+        >>> list(G.out_degree([0, 1]))
         [(0, 1), (1, 1)]
 
         """
@@ -682,7 +682,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Notes
         -----
-        If edges in both directions (u,v) and (v,u) exist in the
+        If edges in both directions (u, v) and (v, u) exist in the
         graph, attributes for the new undirected edge will be a combination of
         the attributes of the directed edges.  The edge data is updated
         in the (arbitrary) order that the edges are encountered.  For
@@ -729,7 +729,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         -------
         G : MultiGraph
             An undirected graph with the same name and nodes and
-            with edge (u,v,data) if either (u,v,data) or (v,u,data)
+            with edge (u, v, data) if either (u, v, data) or (v, u, data)
             is in the digraph.  If both edges exist in digraph and
             their edge data is different, only one edge is created
             with an arbitrary choice of which edge data to use.
@@ -804,7 +804,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> H = G.subgraph([0,1,2])
+        >>> H = G.subgraph([0, 1, 2])
         >>> list(H.edges())
         [(0, 1), (1, 2)]
         """

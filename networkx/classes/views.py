@@ -20,7 +20,7 @@ The views are read-only iterable containers that are updated as the
 graph is updated. Thus the graph should not be updated while iterating
 through the view. Views can be iterated over multiple times.
 Edge and Node views also allow data attribute lookup.
-The resulting attribute dict is writable too as `G.edges[3,4]['color']='red'`
+The resulting attribute dict is writable as `G.edges[3, 4]['color']='red'`
 Degree views allow lookup of degree values for single nodes.
 Weighted degree is supported with the `weight` argument.
 
@@ -176,8 +176,7 @@ class NodeView(KeysView):
     0
     1
     2
-    >>> NV & {1, 2, 3}
-    {1, 2}
+    >>> assert(NV & {1, 2, 3} == {1, 2})
 
     >>> G.add_node(2, color='blue')
     >>> NV[2]
@@ -186,22 +185,22 @@ class NodeView(KeysView):
     >>> NDV = G.nodes(data=True)
     >>> (2, NV[2]) in NDV
     True
-    >>> for n, dd in NDV: print(n, dd.get('color','aqua'))
-    0 aqua
-    1 aqua
-    2 blue
-    8 red
+    >>> for n, dd in NDV: print((n, dd.get('color', 'aqua')))
+    (0, 'aqua')
+    (1, 'aqua')
+    (2, 'blue')
+    (8, 'red')
     >>> NDV[2] == NV[2]
     True
 
     >>> NVdata = G.nodes(data='color', default='aqua')
     >>> (2, NV[2]) in NVdata
     True
-    >>> for n, dd in NVdata: print(n, dd)
-    0 aqua
-    1 aqua
-    2 blue
-    8 red
+    >>> for n, dd in NVdata: print((n, dd))
+    (0, 'aqua')
+    (1, 'aqua')
+    (2, 'blue')
+    (8, 'red')
     >>> NVdata[2] == NV[2]  # NVdata gets 'color', NV gets datadict
     False
 
@@ -715,13 +714,13 @@ class OutEdgeView(Set):
     ========
     >>> G = nx.path_graph(4)
     >>> EV = G.edges()
-    >>> assert((2, 3) in EV)
+    >>> (2, 3) in EV
+    True
     >>> for u, v in EV: print((u, v))
     (0, 1)
     (1, 2)
     (2, 3)
-    >>> EV & {(1, 2), (3, 4)}
-    {(1, 2)}
+    >>> assert(EV & {(1, 2), (3, 4)} == {(1, 2)})
 
     >>> EVdata = G.edges(data='color', default='aqua')
     >>> G.add_edge(2, 3, color='blue')
@@ -743,11 +742,11 @@ class OutEdgeView(Set):
     >>> (2, 3) in EVmulti   # 2-tuples work even when keys is True
     True
     >>> key = MG.add_edge(2, 3)
-    >>> for u, v, k in EVmulti: print(u, v, k)
-    0 1 0
-    1 2 0
-    2 3 0
-    2 3 1
+    >>> for u, v, k in EVmulti: print((u, v, k))
+    (0, 1, 0)
+    (1, 2, 0)
+    (2, 3, 0)
+    (2, 3, 1)
     """
     @classmethod
     def _from_iterable(self, it):

@@ -152,10 +152,10 @@ def freeze(G):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G=nx.freeze(G)
+    >>> G = nx.path_graph(4)
+    >>> G = nx.freeze(G)
     >>> try:
-    ...    G.add_edge(4,5)
+    ...    G.add_edge(4, 5)
     ... except nx.NetworkXError as e:
     ...    print(str(e))
     Frozen graph can't be modified
@@ -433,9 +433,9 @@ def get_node_attributes(G, name):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_nodes_from([1,2,3],color='red')
-    >>> color=nx.get_node_attributes(G,'color')
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3], color='red')
+    >>> color = nx.get_node_attributes(G, 'color')
     >>> color[1]
     'red'
     """
@@ -518,14 +518,14 @@ def get_edge_attributes(G, name):
     Returns
     -------
     Dictionary of attributes keyed by edge. For (di)graphs, the keys are
-    2-tuples of the form: (u,v). For multi(di)graphs, the keys are 3-tuples of
+    2-tuples of the form: (u, v). For multi(di)graphs, the keys are 3-tuples of
     the form: (u, v, key).
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> nx.add_path(G, [1, 2, 3], color='red')
-    >>> color=nx.get_edge_attributes(G, 'color')
+    >>> color = nx.get_edge_attributes(G, 'color')
     >>> color[(1, 2)]
     'red'
     """
@@ -725,7 +725,7 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> G.add_edges_from([(1, 3), (2, 4), (2, 6)])
     >>> G.add_edge(1, 2, weight=4)
     >>> nx.is_negatively_weighted(G, (1, 2))
