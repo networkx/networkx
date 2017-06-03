@@ -1,4 +1,3 @@
-"""Base class for directed graphs."""
 #    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -9,10 +8,12 @@
 # Authors:   Aric Hagberg <hagberg@lanl.gov>
 #            Dan Schult <dschult@colgate.edu>
 #            Pieter Swart <swart@lanl.gov>
+"""Base class for directed graphs."""
 from copy import deepcopy
+
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import OutEdgeViewer, InEdgeViewer, \
+from networkx.classes.views import OutEdgeView, InEdgeView, \
         DiDegreeView, InDegreeView, OutDegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
@@ -786,7 +787,7 @@ class DiGraph(Graph):
         [(0, 1)]
 
         """
-        return OutEdgeViewer(self)
+        return OutEdgeView(self)
 
     # alias out_edges to edges
     out_edges = edges
@@ -819,7 +820,7 @@ class DiGraph(Graph):
         --------
         edges : return an iterator over edges
         """
-        return InEdgeViewer(self)
+        return InEdgeView(self)
 
     @property
     def degree(self):

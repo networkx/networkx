@@ -1,5 +1,4 @@
-"""Base class for MultiDiGraph."""
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -9,12 +8,14 @@
 # Authors:   Aric Hagberg <hagberg@lanl.gov>
 #            Dan Schult <dschult@colgate.edu>
 #            Pieter Swart <swart@lanl.gov>
+"""Base class for MultiDiGraph."""
 from copy import deepcopy
+
 import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
-from networkx.classes.views import OutMultiEdgeViewer, InMultiEdgeViewer, \
+from networkx.classes.views import OutMultiEdgeView, InMultiEdgeView, \
         DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
 from networkx.exception import NetworkXError
 
@@ -485,7 +486,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         --------
         in_edges, out_edges
         """
-        return OutMultiEdgeViewer(self)
+        return OutMultiEdgeView(self)
 
     # alias out_edges to edges
     out_edges = edges
@@ -520,7 +521,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         --------
         edges : return an iterator over edges
         """
-        return InMultiEdgeViewer(self)
+        return InMultiEdgeView(self)
 
     @property
     def degree(self):

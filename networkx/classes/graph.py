@@ -1,3 +1,13 @@
+#    Copyright (C) 2004-2017 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Author:  Aric Hagberg (hagberg@lanl.gov),
+#          Pieter Swart (swart@lanl.gov),
+#          Dan Schult(dschult@colgate.edu)
 """Base class for undirected graphs.
 
 The Graph class allows any hashable object as a node
@@ -7,23 +17,14 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
-#    Copyright (C) 2004-2016 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from __future__ import division
 from copy import deepcopy
+
 import networkx as nx
-from networkx.classes.views import NodeViewer, EdgeViewer, DegreeView
+from networkx.classes.views import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 from networkx.utils import pairwise
-
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
 
 
 class Graph(object):
@@ -607,11 +608,11 @@ class Graph(object):
 
     @property
     def nodes(self):
-        """A NodeViewer Property of the Graph as G.nodes or G.nodes().
+        """A NodeView Property of the Graph as G.nodes or G.nodes().
 
         Can be used as `G.nodes` for data lookup and for set-like operations.
-        Can also be used as `G.nodes(data=False, default=None)` to return
-        a NodeView which allows control over node data but no set operations.
+        Can also be used as `G.nodes(data=False, default=None)` to return a
+        NodeDataView which allows control over node data but no set operations.
 
         Parameters
         ----------
@@ -626,15 +627,15 @@ class Graph(object):
 
         Returns
         -------
-        NodeViewer
+        NodeView
             Allows set-like operations over the nodes as well as node
-            attribute dict lookup and calling to get a NodeView.
-            A NodeView can iterate over `(n, data)` but has no set operations.
-            A NodeViewer iterates over `n` and includes set operations.
+            attribute dict lookup and calling to get a NodeDataView.
+            A NodeDataView iterates over `(n, data)` and has no set operations.
+            A NodeView iterates over `n` and includes set operations.
 
-            When called, If data is False, an iterator over nodes.
+            When called, if data is False, an iterator over nodes.
             Otherwise an iterator of 2-tuples (node, attribute value)
-            where the attribute is specified in data.
+            where the attribute is specified in `data`.
             If data is True then the attribute becomes the
             entire data dictionary.
 
@@ -679,7 +680,7 @@ class Graph(object):
             {0: 1, 1: 2, 2: 3}
 
         """
-        return NodeViewer(self)
+        return NodeView(self)
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -1051,12 +1052,12 @@ class Graph(object):
 
     @property
     def edges(self):
-        """An EdgeViewer Property of the Graph as G.edges or G.edges().
+        """An EdgeView Property of the Graph as G.edges or G.edges().
 
-        The EdgeViewer provides set-like operations on the edge-tuples
+        The EdgeView provides set-like operations on the edge-tuples
         as well as edge attribute lookup. When called, it also provides
-        an EdgeView object which allows control of access to edge attributes
-        without providing set-like operations.
+        an EdgeDataView object which allows control of access to edge
+        attributes without providing set-like operations.
         Hence, `G.edges[u,v]['color']` provides the value of the color
         attribute for edge `(u,v)` while
         `for (u,v,c) in G.edges(data='color', default='red'):`
@@ -1101,7 +1102,7 @@ class Graph(object):
         [(0, 1)]
 
         """
-        return EdgeViewer(self)
+        return EdgeView(self)
 
     def get_edge_data(self, u, v, default=None):
         """Return the attribute dictionary associated with edge (u,v).

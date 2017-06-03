@@ -1,5 +1,4 @@
-"""Base class for MultiGraph."""
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -9,10 +8,12 @@
 # Authors:   Aric Hagberg <hagberg@lanl.gov>
 #            Dan Schult <dschult@colgate.edu>
 #            Pieter Swart <swart@lanl.gov>
+"""Base class for MultiGraph."""
 from copy import deepcopy
+
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import MultiEdgeViewer, MultiDegreeView
+from networkx.classes.views import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
 
 
@@ -673,7 +674,7 @@ class MultiGraph(Graph):
         >>> list(G.edges(0))
         [(0, 1)]
         """
-        return MultiEdgeViewer(self)
+        return MultiEdgeView(self)
 
     def get_edge_data(self, u, v, key=None, default=None):
         """Return the attribute dictionary associated with edge (u,v).
