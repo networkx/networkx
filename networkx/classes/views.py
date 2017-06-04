@@ -194,7 +194,7 @@ class NodeView(KeysView):
     True
 
     >>> NVdata = G.nodes(data='color', default='aqua')
-    >>> (2, NV[2]) in NVdata
+    >>> (2, NVdata[2]) in NVdata
     True
     >>> for n, dd in NVdata: print((n, dd))
     (0, 'aqua')
@@ -210,14 +210,15 @@ class NodeView(KeysView):
     """
     __slots__ = '_mapping',
 
-    def __getstate__(self):
-        return {'_mapping': self._mapping}
-#        return {slot: getattr(self, slot) for slot in self.__slots__}
-
-    def __setstate__(self, d):
-        self._mapping = d['_mapping']
-#        for slot in d:
-#            setattr(self, slot, d[slot])
+    # Python 2 needs getstate and setstate for pickle to work with __slots__
+#    def __getstate__(self):
+#        return {'_mapping': self._mapping}
+#        #return {slot: getattr(self, slot) for slot in self.__slots__}
+#
+#    def __setstate__(self, d):
+#        self._mapping = d['_mapping']
+#        #for slot in d:
+#        #    setattr(self, slot, d[slot])
 
     def __init__(self, graph):
         self._mapping = graph.node
@@ -272,9 +273,7 @@ class NodeDataView(object):
         data = self._data
         if data is False or data is True:
             return ddict
-        if data in ddict:
-            return ddict[data]
-        return self._default
+        return ddict[data] if data in ddict else self._default
 
     def __iter__(self):
         if self._data is False:
@@ -283,10 +282,17 @@ class NodeDataView(object):
 
     def __contains__(self, n):
         try:
-            return n in self._mapping
+            node_in = n in self._mapping
         except TypeError:
             n, d = n
-            return n in self._mapping and self._mapping[n] == d
+            return n in self._mapping and self[n] == d
+        if node_in is True:
+            return node_in
+        try:
+            n, d = n
+        except (TypeError, ValueError):
+            return False
+        return n in self._mapping and self[n] == d
 
     def __repr__(self):
         if self._data is False:
@@ -346,7 +352,7 @@ class DiDegreeView(object):
     def __call__(self, nbunch=None, weight=None):
         try:
             if nbunch in self._nodes:
-                return self.__class__(self, nbunch, weight)[nbunch]
+                return self.__class__(self, None, weight)[nbunch]
         except TypeError:
             pass
         return self.__class__(self, nbunch, weight)
@@ -481,8 +487,6 @@ class OutEdgeDataView(object):
             ddict = self._adjdict[u][v]
         except KeyError:
             return False
-        except ValueError:
-            raise ValueError("Edge must have at least 2 entries")
         return e == self._report(u, v, ddict)
 
     def __repr__(self):
@@ -511,8 +515,6 @@ class EdgeDataView(OutEdgeDataView):
                 ddict = self._adjdict[v][u]
             except KeyError:
                 return False
-        except ValueError:
-            raise ValueError("Edge must have at least 2 entries")
         return e == self._report(u, v, ddict)
 
     def __len__(self):
@@ -543,8 +545,6 @@ class InEdgeDataView(OutEdgeDataView):
             ddict = self._adjdict[v][u]
         except KeyError:
             return False
-        except ValueError:
-            raise ValueError("Edge must have at least 2 entries")
         return e == self._report(v, u, ddict)
 
 
@@ -780,8 +780,6 @@ class OutEdgeView(Set):
             return v in self.succ[u]
         except KeyError:
             return False
-        except ValueError:
-            ValueError("Edge must have 2 entries")
 
     def __getitem__(self, e):
         u, v = e
@@ -842,8 +840,6 @@ class InEdgeView(OutEdgeView):
             return u in self.pred[v]
         except KeyError:
             return False
-        except ValueError:
-            ValueError("Edge must have 2 entries")
 
 
 class OutMultiEdgeView(OutEdgeView):
