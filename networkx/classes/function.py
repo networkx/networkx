@@ -31,7 +31,7 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'get_node_attributes', 'set_edge_attributes',
            'get_edge_attributes', 'all_neighbors', 'non_neighbors',
            'non_edges', 'common_neighbors', 'is_weighted',
-           'is_negatively_weighted', 'is_empty']
+           'is_negatively_weighted', 'is_empty', 'is_full_completed']
 
 
 def nodes(G):
@@ -773,3 +773,57 @@ def is_empty(G):
     """
     return not any(G.adj.values())
 
+
+def is_full_completed(G):
+    """Return True if graph is full completed.
+
+    Parameters
+    ----------
+    G : graph
+      A NetworkX digraph
+
+    Returns
+    -------
+    bool
+        A boolean signifying if `G` is full completed
+
+    Raises
+    ------
+    NetworkXError
+        If the G is not full completed.
+
+    Examples
+    --------
+    >>> G=nx.DiGraph()
+    >>> G.add_weighted_edges_from([(1, 2, 13), (1, 3, 17), (1, 4, 14),
+    ...                         (1, 5, 11), (1, 6, 12), (1, 7, 15), (2, 1, 13),
+    ...                         (2, 3, 12), (2, 4, 16), (2, 5, 11), (2, 6, 15),
+    ...                         (2, 7 ,14), (3, 1, 17), (3, 2, 12), (3, 4 ,11),
+    ...                         (3, 5, 13), (3, 6, 18), (3, 7, 10), (4, 1 ,14),
+    ...                         (4, 2, 16), (4, 3, 11), (4, 5, 15), (4, 6, 12),
+    ...                         (4, 7, 11), (5, 1, 11), (5, 2, 11), (5, 3, 13),
+    ...                         (5, 4, 15), (5, 6, 10), (5, 7, 13), (6, 1, 12),
+    ...                         (6, 2, 15), (6, 3, 18), (6, 4, 12), (6, 5, 10),
+    ...                         (6, 7, 10), (7, 1, 15), (7, 2, 14), (7, 3, 10),
+    ...                         (7, 4, 11), (7, 5, 13), (7, 6, 10)])
+    >>> nx.is_full_completed(G)
+    True
+    >>> G=nx.DiGraph()
+    >>> G.add_weighted_edges_from([(1, 2, 13), (1, 3, 17), (1, 4, 14),
+    ...                         (1, 5, 11), (1, 6, 12), (1, 7, 15), (2, 1, 13),
+    ...                         (2, 3, 12), (2, 4, 16), (2, 5, 11), (2, 6, 15),
+    ...                         (2, 7 ,14), (3, 1, 17), (3, 2, 12), (3, 4 ,11),
+    ...                         (3, 5, 13), (3, 6, 18), (3, 7, 10), (4, 1 ,14),
+    ...                         (4, 2, 16), (4, 3, 11), (4, 5, 15), (4, 6, 12),
+    ...                         (4, 7, 11), (5, 1, 11), (5, 2, 11), (5, 3, 13),
+    ...                         (5, 4, 15), (5, 6, 10), (5, 7, 13), (6, 1, 12),
+    ...                         (6, 2, 15), (6, 3, 18), (6, 4, 12), (6, 5, 10),
+    ...                         (6, 7, 10), (7, 1, 15), (7, 2, 14), (7, 3, 10),
+    ...                         (7, 4, 11), (7, 5, 13)])
+    >>> nx.is_full_completed(G)
+    False
+    """
+
+    nodes = G.number_of_nodes()
+    edges = G.number_of_edges()
+    return edges == (nodes * nodes - nodes)
