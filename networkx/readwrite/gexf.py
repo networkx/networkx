@@ -42,6 +42,15 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.1draft'):
     "GEXF (Graph Exchange XML Format) is a language for describing
     complex networks structures, their associated data and dynamics" [1]_.
 
+    Node attributes are checked according to the version of the GEXF
+    schemas used for parameters which are not user defined,
+    e.g. visualization 'viz' [2]_. See example for usage.
+
+    # visualization data
+    >>> G[0]['viz'] = {'size' : 54}
+    >>> G[0]['viz']['position'] = {'x' : 0, 'y' : 1}}
+    >>> G[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
+
     Parameters
     ----------
     G : graph
@@ -71,6 +80,8 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.1draft'):
     References
     ----------
     .. [1] GEXF graph format, http://gexf.net/format/
+    .. [2] GEXF viz schema 1.1, http://www.gexf.net/1.1draft/viz
+
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint,
                         version=version)
