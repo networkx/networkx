@@ -21,6 +21,7 @@ basic_setup=('for (u,v) in NX.binomial_graph(%s,%s).edges():\n'
 elist_setup=('elist=[(i,i+3) for i in range(%s-3)]\n'
              'G.add_nodes_from(range(%i))'%(N,N)
             )
+
 all_tests=[
     # Format: (name, (test_string, setup_string, runs, reps, cutoff_ratio)),
     ('add_nodes',
@@ -32,13 +33,17 @@ all_tests=[
     ('add_and_remove_edges',
         ('G.add_edges_from(elist)\nG.remove_edges_from(elist)',
          elist_setup, 3, 10) ),
+    ('nodes',
+        ('for n in G.nodes():\n pass', basic_setup, 3, 1) ),
+    ('nodes_data',
+        ('for n, d in G.nodes(data=True):\n pass', basic_setup, 3, 1) ),
     ('neighbors',
         ('for n in G:\n for nbr in G.neighbors(n):\n  pass',
          basic_setup, 3, 1) ),
     ('edges',
-        ('for n in G:\n for e in G.edges(n):\n  pass', basic_setup, 3, 1) ),
+        ('for e in G.edges():\n  pass', basic_setup, 3, 1) ),
     ('edge_data',
-        ('for n in G:\n for e in G.edges(n,data=True):\n  pass',
+        ('for e in G.edges(data=True):\n  pass',
             basic_setup, 3, 1) ),
     ('all_edges',
         (('for n,nbrs in G.adjacency():\n'
@@ -161,6 +166,7 @@ if __name__ == "__main__":
     classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
 #    classes=['SpecialGraph','SpecialMultiGraph',\
 #            'SpecialDiGraph','SpecialMultiDiGraph']
+    #b=Benchmark(classes,tests=(all_tests[4], all_tests[5]))
     b=Benchmark(classes,tests=all_tests)
 #    b=Benchmark(classes,tests=dict( (k,v) for k,v in all_tests.items() if "add" in k ))
     assert b.run(verbose=True)

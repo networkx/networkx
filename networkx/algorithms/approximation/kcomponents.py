@@ -250,7 +250,13 @@ class _AntiGraph(nx.Graph):
         def __getitem__(self, n):
             nbrs = set(self.succ) - set(self.succ[n]) - set([n])
             # AntiGraph is a ThinGraph so all edges have weight 1
-            return len(nbrs) + (n in nbrs)
+            return len(nbrs)
+
+        def __iter__(self):
+            all_nodes = set(self.succ)
+            for n in self._nodes:
+                nbrs = all_nodes - set(self.succ[n]) - set([n])
+                yield (n, len(nbrs))
 
     @property
     def degree(self):

@@ -173,7 +173,7 @@ class Graph(object):
     **Reporting:**
 
     Simple graph information is obtained using methods.
-    Reporting methods usually return iterators instead of containers
+    Reporting methods usually return views instead of containers
     to reduce memory usage.
     Methods exist for reporting nodes(), edges(), neighbors() and degree()
     as well as the number of nodes and edges.
@@ -219,6 +219,7 @@ class Graph(object):
     Examples
     --------
     Create a graph subclass that tracks the order nodes are added.
+    This example is provided as part of NetworkX via nx.OrderedGraph.
 
     >>> from collections import OrderedDict
     >>> class OrderedNodeGraph(nx.Graph):
@@ -1057,7 +1058,7 @@ class Graph(object):
         The EdgeView provides set-like operations on the edge-tuples
         as well as edge attribute lookup. When called, it also provides
         an EdgeDataView object which allows control of access to edge
-        attributes without providing set-like operations.
+        attributes (but does not provide set-like operations).
         Hence, `G.edges[u, v]['color']` provides the value of the color
         attribute for edge `(u, v)` while
         `for (u, v, c) in G.edges(data='color', default='red'):`
@@ -1078,8 +1079,10 @@ class Graph(object):
 
         Returns
         -------
-        edges : iterator
-            An iterator over (u, v) or (u, v, d) tuples of edges.
+        edges : EdgeView
+            A view of edge attributes, usually it iterates over (u, v)
+            or (u, v, d) tuples of edges, but can also be used for
+            attribute lookup as `edges[u, v]['foo']`.
 
         Notes
         -----

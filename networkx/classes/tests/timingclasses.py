@@ -519,7 +519,7 @@ class TimingGraph(object):
                 pass
 
 
-    def nodes(self, data=False):
+    def nodes_iter(self, data=False):
         """Return an iterator over the nodes.
 
         Parameters
@@ -579,7 +579,7 @@ class TimingGraph(object):
         >>> list(G.nodes(data=True))
         [(0, {}), (1, {'time': '5pm'}), (2, {})]
         """
-        return list(self.nodes(data=data))
+        return list(self.nodes_iter(data=data))
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -1207,6 +1207,7 @@ class TimingGraph(object):
 
         """
         return iter(self.adj.items())
+    adjacency = adjacency_iter
 
     def degree(self, nbunch=None, weight=None):
         """Return the degree of a node or nodes.

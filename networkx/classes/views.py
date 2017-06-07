@@ -228,6 +228,9 @@ class NodeView(KeysView):
             return self
         return NodeDataView(self._mapping, data, default)
 
+    def __iter__(self):
+        return iter(self._mapping)
+
     def __getitem__(self, n):
         return self._mapping[n]
 
@@ -266,6 +269,8 @@ class NodeDataView(object):
         self._default = default
 
     def __call__(self, data=False, default=None):
+        if data == self._data and default == self._default:
+            return self
         return NodeDataView(self._mapping, data, default)
 
     def __getitem__(self, n):
@@ -276,9 +281,13 @@ class NodeDataView(object):
         return ddict[data] if data in ddict else self._default
 
     def __iter__(self):
-        if self._data is False:
+        data = self._data
+        if data is False:
             return iter(self._mapping)
-        return ((n, self[n]) for n in self._mapping)
+        if data is True:
+            return iter(self._mapping.items())
+        return ((n, dd[data] if data in dd else self._default) \
+                for n, dd in self._mapping.items())
 
     def __contains__(self, n):
         try:
@@ -350,6 +359,8 @@ class DiDegreeView(object):
         self._weight = weight
 
     def __call__(self, nbunch=None, weight=None):
+        if nbunch is None:
+            return self.__class__(self, None, weight)
         try:
             if nbunch in self._nodes:
                 return self.__class__(self, None, weight)[nbunch]
@@ -367,8 +378,22 @@ class DiDegreeView(object):
             sum(dd.get(weight, 1) for dd in preds.values())
 
     def __iter__(self):
-        for n in self._nodes:
-            yield (n, self[n])
+        # could simply be this except speed is 2 times slower
+        #for n in self._nodes:
+        #    yield (n, self[n])
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                succs = self.succ[n]
+                preds = self.pred[n]
+                yield (n, len(succs) + len(preds))
+        else:
+            for n in self._nodes:
+                succs = self.succ[n]
+                preds = self.pred[n]
+                deg = sum(dd.get(weight, 1) for dd in succs.values()) \
+                      + sum(dd.get(weight, 1) for dd in preds.values())
+                yield (n, deg)
 
     def __len__(self):
         return len(self.succ)
@@ -386,6 +411,19 @@ class DegreeView(DiDegreeView):
         return sum(dd.get(weight, 1) for dd in nbrs.values()) + \
             (n in nbrs and nbrs[n].get(weight, 1))
 
+    def __iter__(self):
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                yield (n, len(nbrs) + (n in nbrs))
+        else:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                deg = sum(dd.get(weight, 1) for dd in nbrs.values()) + \
+                    (n in nbrs and nbrs[n].get(weight, 1))
+                yield (n, deg)
+
 
 class OutDegreeView(DiDegreeView):
     def __getitem__(self, n):
@@ -395,6 +433,18 @@ class OutDegreeView(DiDegreeView):
             return len(nbrs)
         return sum(dd.get(self._weight, 1) for dd in nbrs.values())
 
+    def __iter__(self):
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                yield (n, len(nbrs))
+        else:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                deg = sum(dd.get(weight, 1) for dd in nbrs.values())
+                yield (n, deg)
+
 
 class InDegreeView(DiDegreeView):
     def __getitem__(self, n):
@@ -403,6 +453,18 @@ class InDegreeView(DiDegreeView):
         if weight is None:
             return len(nbrs)
         return sum(dd.get(weight, 1) for dd in nbrs.values())
+
+    def __iter__(self):
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                nbrs = self.pred[n]
+                yield (n, len(nbrs))
+        else:
+            for n in self._nodes:
+                nbrs = self.pred[n]
+                deg = sum(dd.get(weight, 1) for dd in nbrs.values())
+                yield (n, deg)
 
 
 class MultiDegreeView(DiDegreeView):
@@ -418,6 +480,23 @@ class MultiDegreeView(DiDegreeView):
         if n in nbrs:
             deg += sum(d.get(weight, 1) for d in nbrs[n].values())
         return deg
+
+    def __iter__(self):
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                deg = sum(len(keys) for keys in nbrs.values()) + \
+                    (n in nbrs and len(nbrs[n]))
+                yield (n, deg)
+        else:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                deg = sum(d.get(weight, 1) for key_dict in nbrs.values()
+                          for d in key_dict.values())
+                if n in nbrs:
+                    deg += sum(d.get(weight, 1) for d in nbrs[n].values())
+                yield (n, deg)
 
 
 class DiMultiDegreeView(DiDegreeView):
@@ -435,6 +514,26 @@ class DiMultiDegreeView(DiDegreeView):
                 for d in key_dict.values())
         return deg
 
+    def __iter__(self):
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                succs = self.succ[n]
+                preds = self.pred[n]
+                deg = sum(len(keys) for keys in succs.values()) + \
+                    sum(len(keys) for keys in preds.values())
+                yield (n, deg)
+        else:
+            for n in self._nodes:
+                succs = self.succ[n]
+                preds = self.pred[n]
+                deg = sum(d.get(weight, 1) for key_dict in succs.values()
+                          for d in key_dict.values()) + \
+                    sum(d.get(weight, 1) for key_dict in preds.values()
+                        for d in key_dict.values())
+                yield (n, deg)
+
+ 
 
 class InMultiDegreeView(DiDegreeView):
     def __getitem__(self, n):
@@ -446,6 +545,20 @@ class InMultiDegreeView(DiDegreeView):
         return sum(d.get(weight, 1) for key_dict in nbrs.values()
                    for d in key_dict.values())
 
+    def __iter__(self):
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                nbrs = self.pred[n]
+                deg = sum(len(data) for data in nbrs.values())
+                yield (n, deg)
+        else:
+            for n in self._nodes:
+                nbrs = self.pred[n]
+                deg = sum(d.get(weight, 1) for key_dict in nbrs.values()
+                           for d in key_dict.values())
+                yield (n, deg)
+ 
 
 class OutMultiDegreeView(DiDegreeView):
     def __getitem__(self, n):
@@ -457,6 +570,20 @@ class OutMultiDegreeView(DiDegreeView):
         return sum(d.get(weight, 1) for key_dict in nbrs.values()
                    for d in key_dict.values())
 
+    def __iter__(self):
+        weight = self._weight
+        if weight is None:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                deg = sum(len(data) for data in nbrs.values())
+                yield (n, deg)
+        else:
+            for n in self._nodes:
+                nbrs = self.succ[n]
+                deg = sum(d.get(weight, 1) for key_dict in nbrs.values()
+                           for d in key_dict.values())
+                yield (n, deg)
+ 
 
 # EdgeDataViews
 class OutEdgeDataView(object):
