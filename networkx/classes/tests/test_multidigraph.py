@@ -224,52 +224,50 @@ class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
     def setUp(self):
         self.Graph=nx.MultiDiGraph
         # build K3
-        self.k3edges=[(0, 1), (0, 2), (1, 2)]
-        self.k3nodes=[0, 1, 2]
-        self.K3=self.Graph()
-        self.K3.adj={0:{},1:{},2:{}}
-        self.K3.succ=self.K3.adj
-        self.K3.pred={0:{},1:{},2:{}}
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = {0:{}, 1:{}, 2:{}}
+        self.K3._succ = self.K3._adj
+        self.K3._pred = {0:{}, 1:{}, 2:{}}
         for u in self.k3nodes:
             for v in self.k3nodes:
-                if u==v: continue
-                d={0:{}}
-                self.K3.succ[u][v]=d
-                self.K3.pred[v][u]=d
-        self.K3.adj=self.K3.succ
-        self.K3.edge=self.K3.adj
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
+                if u == v: continue
+                d={0: {}}
+                self.K3._succ[u][v] = d
+                self.K3._pred[v][u] = d
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
 
     def test_add_edge(self):
         G=self.Graph()
         G.add_edge(0,1)
-        assert_equal(G.adj,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{}}}})
+        assert_equal(G._adj,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G._succ,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G._pred,{0: {}, 1: {0:{0:{}}}})
         G=self.Graph()
         G.add_edge(*(0,1))
-        assert_equal(G.adj,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{}}}})
+        assert_equal(G._adj,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G._succ,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G._pred,{0: {}, 1: {0:{0:{}}}})
 
     def test_add_edges_from(self):
         G=self.Graph()
         G.add_edges_from([(0,1),(0,1,{'weight':3})])
-        assert_equal(G.adj,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{},1:{'weight':3}}}})
+        assert_equal(G._adj,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
+        assert_equal(G._succ,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
+        assert_equal(G._pred,{0: {}, 1: {0:{0:{},1:{'weight':3}}}})
 
         G.add_edges_from([(0,1),(0,1,{'weight':3})],weight=2)
-        assert_equal(G.succ,{0: {1: {0:{},
+        assert_equal(G._succ,{0: {1: {0:{},
                                      1:{'weight':3},
                                      2:{'weight':2},
                                      3:{'weight':3}}},
                              1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{},1:{'weight':3},
+        assert_equal(G._pred,{0: {}, 1: {0:{0:{},1:{'weight':3},
                                            2:{'weight':2},
                                            3:{'weight':3}}}})
 
@@ -280,10 +278,10 @@ class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
     def test_remove_edge(self):
         G=self.K3
         G.remove_edge(0,1)
-        assert_equal(G.succ,{0:{2:{0:{}}},
+        assert_equal(G._succ,{0:{2:{0:{}}},
                              1:{0:{0:{}},2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
-        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}},
+        assert_equal(G._pred,{0:{1:{0:{}}, 2:{0:{}}},
                              1:{2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
         assert_raises((KeyError,nx.NetworkXError), G.remove_edge,-1,0)
@@ -295,22 +293,22 @@ class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
         G=self.K3
         G.add_edge(0,1,key='parallel edge')
         G.remove_edge(0,1,key='parallel edge')
-        assert_equal(G.adj,{0: {1: {0:{}}, 2: {0:{}}},
+        assert_equal(G._adj,{0: {1: {0:{}}, 2: {0:{}}},
                            1: {0: {0:{}}, 2: {0:{}}},
                            2: {0: {0:{}}, 1: {0:{}}}})
 
-        assert_equal(G.succ,{0: {1: {0:{}}, 2: {0:{}}},
+        assert_equal(G._succ,{0: {1: {0:{}}, 2: {0:{}}},
                            1: {0: {0:{}}, 2: {0:{}}},
                            2: {0: {0:{}}, 1: {0:{}}}})
 
-        assert_equal(G.pred,{0:{1: {0:{}},2:{0:{}}},
+        assert_equal(G._pred,{0:{1: {0:{}},2:{0:{}}},
                              1:{0:{0:{}},2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
         G.remove_edge(0,1)
-        assert_equal(G.succ,{0:{2:{0:{}}},
+        assert_equal(G._succ,{0:{2:{0:{}}},
                              1:{0:{0:{}},2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
-        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}},
+        assert_equal(G._pred,{0:{1:{0:{}}, 2:{0:{}}},
                              1:{2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
         assert_raises((KeyError,nx.NetworkXError), G.remove_edge,-1,0)
@@ -318,10 +316,10 @@ class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
     def test_remove_edges_from(self):
         G=self.K3
         G.remove_edges_from([(0,1)])
-        assert_equal(G.succ,{0:{2:{0:{}}},
+        assert_equal(G._succ,{0:{2:{0:{}}},
                              1:{0:{0:{}},2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
-        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}},
+        assert_equal(G._pred,{0:{1:{0:{}}, 2:{0:{}}},
                              1:{2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
         G.remove_edges_from([(0,0)]) # silent fail
@@ -340,10 +338,10 @@ class TestEdgeSubgraph(TestMultiGraphEdgeSubgraph):
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.node[i]['name'] = 'node{}'.format(i)
-        G.edge[0][1][0]['name'] = 'edge010'
-        G.edge[0][1][1]['name'] = 'edge011'
-        G.edge[3][4][0]['name'] = 'edge340'
-        G.edge[3][4][1]['name'] = 'edge341'
+        G.adj[0][1][0]['name'] = 'edge010'
+        G.adj[0][1][1]['name'] = 'edge011'
+        G.adj[3][4][0]['name'] = 'edge340'
+        G.adj[3][4][1]['name'] = 'edge341'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by one of the first edges and one of
         # the last edges.
