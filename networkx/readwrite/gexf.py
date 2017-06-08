@@ -46,11 +46,6 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.1draft'):
     schemas used for parameters which are not user defined,
     e.g. visualization 'viz' [2]_. See example for usage.
 
-    # visualization data
-    >>> G[0]['viz'] = {'size' : 54}
-    >>> G[0]['viz']['position'] = {'x' : 0, 'y' : 1}}
-    >>> G[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
-
     Parameters
     ----------
     G : graph
@@ -67,6 +62,12 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.1draft'):
     --------
     >>> G = nx.path_graph(4)
     >>> nx.write_gexf(G, "test.gexf")
+
+    # visualization data
+    >>> G[0]['viz'] = {'size' : 54}
+    >>> G[0]['viz']['position'] = {'x' : 0, 'y' : 1}}
+    >>> G[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
+
 
     Notes
     -----
