@@ -78,15 +78,9 @@ class BaseDiGraphTester(BaseGraphTester):
 
     def test_in_edges_dir(self):
         G=self.P3
-        assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
-        assert_equal(sorted(G.in_edges(0)),[])
-        assert_equal(sorted(G.in_edges(2)),[(1,2)])
-
-    def test_in_edges_dir(self):
-        G=self.P3
-        assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
-        assert_equal(sorted(G.in_edges(0)),[])
-        assert_equal(sorted(G.in_edges(2)),[(1,2)])
+        assert_equal(sorted(G.in_edges()), [(0, 1), (1, 2)])
+        assert_equal(sorted(G.in_edges(0)), [])
+        assert_equal(sorted(G.in_edges(2)), [(1,2)])
 
     def test_in_edges_data(self):
         G=networkx.DiGraph([(0, 1, {'data' : 0}), (1, 0, {})])

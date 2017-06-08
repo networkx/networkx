@@ -176,11 +176,8 @@ class test_edgedataview(object):
 
     def test_len(self):
         evr = self.eview(self.G)
-        ev = evr()
-        num_ed = 9 if self.G.is_multigraph() else 8
-        assert_equal(len(ev), num_ed)
         ev = evr(data='foo')
-        assert_equal(len(ev), num_ed)
+        assert_raises(TypeError, len, ev)
 
 
 # Edges
@@ -193,7 +190,7 @@ class test_edgeview(object):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
 
-    def test_repr(self):
+    def test_str(self):
         ev = self.eview(self.G)
         rep = "EdgeView([(0, 1), (1, 2), (2, 3), (3, 4), " + \
             "(4, 5), (5, 6), (6, 7), (7, 8)])"
@@ -234,8 +231,6 @@ class test_edgeview(object):
     def test_len(self):
         ev = self.eview(self.G)
         num_ed = 9 if self.G.is_multigraph() else 8
-        assert_equal(len(ev), num_ed)
-        ev = ev(data='foo')
         assert_equal(len(ev), num_ed)
 
     def test_and(self):
@@ -293,12 +288,6 @@ class test_directed_edges(test_edgeview):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
 
-    def test_repr(self):
-        ev = self.eview(self.G)
-        rep = "OutEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), " + \
-            "(4, 5), (5, 6), (6, 7), (7, 8)])"
-        assert_equal(str(ev), rep)
-
 
 class test_inedges(test_edgeview):
     def setup(self):
@@ -308,12 +297,6 @@ class test_inedges(test_edgeview):
         def modify_edge(G, e, **kwds):
             G.edge[e[0]][e[1]].update(kwds)
         self.modify_edge = modify_edge
-
-    def test_repr(self):
-        ev = self.eview(self.G)
-        rep = "InEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), " + \
-            "(4, 5), (5, 6), (6, 7), (7, 8)])"
-        assert_equal(str(ev), rep)
 
 
 class test_multiedges(test_edgeview):
@@ -328,9 +311,9 @@ class test_multiedges(test_edgeview):
             G.edge[e[0]][e[1]][e[2]].update(kwds)
         self.modify_edge = modify_edge
 
-    def test_repr(self):
+    def test_str(self):
         ev = self.eview(self.G)
-        rep = "MultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), " + \
+        rep = "EdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), " + \
             "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
         assert_equal(str(ev), rep)
 
@@ -461,12 +444,6 @@ class test_directed_multiedges(test_multiedges):
             G.edge[e[0]][e[1]][e[2]].update(kwds)
         self.modify_edge = modify_edge
 
-    def test_repr(self):
-        ev = self.eview(self.G)
-        rep = "OutMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0),"\
-              + " (3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
-        assert_equal(str(ev), rep)
-
 
 class test_in_multiedges(test_multiedges):
     def setup(self):
@@ -479,12 +456,6 @@ class test_in_multiedges(test_multiedges):
                 e = e + (0,)
             G.edge[e[0]][e[1]][e[2]].update(kwds)
         self.modify_edge = modify_edge
-
-    def test_repr(self):
-        ev = self.eview(self.G)
-        rep = "InMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), "\
-              + "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
-        assert_equal(str(ev), rep)
 
 
 # Degrees
@@ -504,7 +475,7 @@ class test_degreeview(object):
     def test_repr(self):
         dv = self.G.degree()  # nx.NodeView(self.G)
         rep = "DegreeView({0: 1, 1: 3, 2: 2, 3: 3, 4: 2, 5: 1})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
     def test_iter(self):
         dv = self.dview(self.G)
@@ -570,7 +541,7 @@ class test_didegreeview(test_degreeview):
     def test_repr(self):
         dv = self.G.degree()  # nx.NodeView(self.G)
         rep = "DiDegreeView({0: 1, 1: 3, 2: 2, 3: 3, 4: 2, 5: 1})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
 
 class test_outdegreeview(test_degreeview):
@@ -580,7 +551,7 @@ class test_outdegreeview(test_degreeview):
     def test_repr(self):
         dv = self.G.out_degree()  # nx.NodeView(self.G)
         rep = "OutDegreeView({0: 1, 1: 2, 2: 1, 3: 1, 4: 1, 5: 0})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
     def test_nbunch(self):
         dv = self.dview(self.G)
@@ -623,7 +594,7 @@ class test_indegreeview(test_degreeview):
     def test_repr(self):
         dv = self.G.in_degree()  # nx.NodeView(self.G)
         rep = "InDegreeView({0: 0, 1: 1, 2: 1, 3: 2, 4: 1, 5: 1})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
     def test_nbunch(self):
         dv = self.dview(self.G)
@@ -666,7 +637,7 @@ class test_multidegreeview(test_degreeview):
     def test_repr(self):
         dv = self.G.degree()  # nx.NodeView(self.G)
         rep = "MultiDegreeView({0: 1, 1: 4, 2: 2, 3: 4, 4: 2, 5: 1})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
     def test_nbunch(self):
         dv = self.dview(self.G)
@@ -709,7 +680,7 @@ class test_dimultidegreeview(test_multidegreeview):
     def test_repr(self):
         dv = self.G.degree()  # nx.NodeView(self.G)
         rep = "DiMultiDegreeView({0: 1, 1: 4, 2: 2, 3: 4, 4: 2, 5: 1})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
 
 class test_outmultidegreeview(test_degreeview):
@@ -719,7 +690,7 @@ class test_outmultidegreeview(test_degreeview):
     def test_repr(self):
         dv = self.G.out_degree()  # nx.NodeView(self.G)
         rep = "OutMultiDegreeView({0: 1, 1: 3, 2: 1, 3: 1, 4: 1, 5: 0})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
     def test_nbunch(self):
         dv = self.dview(self.G)
@@ -762,7 +733,7 @@ class test_inmultidegreeview(test_degreeview):
     def test_repr(self):
         dv = self.G.in_degree()  # nx.NodeView(self.G)
         rep = "InMultiDegreeView({0: 0, 1: 1, 2: 1, 3: 3, 4: 1, 5: 1})"
-        assert_equal(str(dv), rep)
+        assert_equal(repr(dv), rep)
 
     def test_nbunch(self):
         dv = self.dview(self.G)
