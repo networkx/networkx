@@ -193,7 +193,7 @@ def parse_pajek(lines):
                 labels.append(label)
                 G.add_node(label)
                 nodelabels[id] = label
-                G.node[label] = {'id': id}
+                G.node[label]['id'] = id
                 try:
                     x, y, shape = splitline[2:5]
                     G.node[label].update({'x': float(x),

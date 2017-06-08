@@ -133,7 +133,7 @@ class DiGraph(Graph):
     >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> G.add_edges_from([(1, 2, {'color':'blue'}), (2, 3, {'weight':8})])
     >>> G[1][2]['weight'] = 4.7
-    >>> G.edge[1][2]['weight'] = 4
+    >>> G.edge[1, 2]['weight'] = 4
 
     **Shortcuts:**
 

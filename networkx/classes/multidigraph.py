@@ -138,7 +138,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     >>> keys = G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
-    >>> G.edge[1][2][0]['weight'] = 4
+    >>> G.edge[1, 2][0]['weight'] = 4
 
     **Shortcuts:**
 

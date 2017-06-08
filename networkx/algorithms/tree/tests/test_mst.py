@@ -116,7 +116,7 @@ class MinimumSpanningTreeTestBase(object):
         assert_equal(T.graph, G.graph)
         assert_nodes_equal(T, G)
         for u, v in T.edges():
-            assert_equal(T.edge[u][v], G.edge[u][v])
+            assert_equal(T.adj[u][v], G.adj[u][v])
 
     def test_weight_attribute(self):
         G = nx.Graph()

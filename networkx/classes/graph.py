@@ -142,7 +142,7 @@ class Graph(object):
     >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> G.add_edges_from([(1, 2, {'color': 'blue'}), (2, 3, {'weight': 8})])
     >>> G[1][2]['weight'] = 4.7
-    >>> G.edge[1][2]['weight'] = 4
+    >>> G.edge[1, 2]['weight'] = 4
 
     **Shortcuts:**
 
@@ -675,7 +675,7 @@ class Graph(object):
         To get the node data along with the nodes:
 
         >>> G.add_node(1, time='5pm')
-        >>> G.nodes[0]['foo'] = 'bar'
+        >>> G.node[0]['foo'] = 'bar'
         >>> list(G.nodes(data=True))
         [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
         >>> list(G.nodes(data='foo'))

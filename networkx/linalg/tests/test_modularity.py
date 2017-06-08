@@ -53,7 +53,7 @@ class TestModularity(object):
 
         G_weighted = self.G.copy()
         for n1, n2 in G_weighted.edges():
-            G_weighted.edge[n1][n2]["weight"] = 0.5
+            G_weighted.edge[n1, n2]["weight"] = 0.5
         # The following test would fail in networkx 1.1
         assert_equal(nx.modularity_matrix(G_weighted), B)
         # The following test that the modularity matrix get rescaled accordingly

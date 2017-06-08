@@ -159,7 +159,7 @@ __all__ = ['DictView', 'AtlasView', 'MultiAtlasView',
 
 
 # NodeViews
-class NodeView(KeysView):
+class NodeView(Mapping, Set):
     """A Viewer class to act as G.nodes for a NetworkX Graph
 
     Set operations act on the nodes without considering data.
@@ -209,32 +209,48 @@ class NodeView(KeysView):
     ----------
     graph : NetworkX graph-like class
     """
-    __slots__ = '_mapping',
+    __slots__ = '_nodes',
 
     # Python 2 needs getstate and setstate for pickle to work with __slots__
 #    def __getstate__(self):
-#        return {'_mapping': self._mapping}
+#        return {'_nodes': self._nodes}
 #        #return {slot: getattr(self, slot) for slot in self.__slots__}
 #
 #    def __setstate__(self, d):
-#        self._mapping = d['_mapping']
+#        self._nodes = d['_nodes']
 #        #for slot in d:
 #        #    setattr(self, slot, d[slot])
 
     def __init__(self, graph):
-        self._mapping = graph._node
+        self._nodes = graph._node
 
+    # Mapping methods
+    def __len__(self):
+        return len(self._nodes)
+
+    def __iter__(self):
+        return iter(self._nodes)
+
+    def __getitem__(self, n):
+        return self._nodes[n]
+
+    # Set methods
+    def __contains__(self, n):
+        return n in self._nodes
+
+    @classmethod
+    def _from_iterable(self, it):
+        return set(it)
+
+    # DataView method
     def __call__(self, data=False, default=None):
         if data is False:
             return self
-        return NodeDataView(self._mapping, data, default)
+        return NodeDataView(self._nodes, data, default)
 
-    def __getitem__(self, n):
-        return self._mapping[n]
-
-    def __str__(self):
-        return 'NodeView(%r)' % tuple(self)
-
+#    def __str__(self):
+#        return 'NodeView(%r)' % tuple(self)
+#
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, tuple(self))
 
@@ -253,7 +269,7 @@ class NodeView(KeysView):
 
 
 #class NodeDataView(object):
-class NodeDataView(KeysView):
+class NodeDataView(Set):
     """A View class for nodes of a NetworkX Graph
 
     Set operations can be done with NodeView, but not NodeDataView
@@ -265,45 +281,54 @@ class NodeDataView(KeysView):
     data : bool or string (default=False)
     default : object (default=None)
     """
-    def __init__(self, mapping, data=False, default=None):
-        self._mapping = mapping
+    __slots__ = ('_nodes', '_data', '_default')
+
+    def __init__(self, nodedict, data=False, default=None):
+        self._nodes = nodedict
         self._data = data
         self._default = default
 
-    def __call__(self, data=False, default=None):
-        if data == self._data and default == self._default:
-            return self
-        return NodeDataView(self._mapping, data, default)
+    @classmethod
+    def _from_iterable(self, it):
+        return set(it)
 
-    def __getitem__(self, n):
-        ddict = self._mapping[n]
-        data = self._data
-        if data is False or data is True:
-            return ddict
-        return ddict[data] if data in ddict else self._default
+    def __len__(self):
+        return len(self._nodes)
 
     def __iter__(self):
         data = self._data
         if data is False:
-            return iter(self._mapping)
+            return iter(self._nodes)
         if data is True:
-            return iter(self._mapping.items())
-        return ((n, dd.get(data, self._default)) for n, dd in self._mapping.items())
-        #return ((n, dd[data] if data in ddict else self._default) for n, dd in self._mapping.items())
+            return iter(self._nodes.items())
+        return ((n, dd.get(data, self._default)) for n, dd in self._nodes.items())
+        #return ((n, dd[data] if data in ddict else self._default) for n, dd in self._nodes.items())
 
     def __contains__(self, n):
         try:
-            node_in = n in self._mapping
+            node_in = n in self._nodes
         except TypeError:
             n, d = n
-            return n in self._mapping and self[n] == d
+            return n in self._nodes and self[n] == d
         if node_in is True:
             return node_in
         try:
             n, d = n
         except (TypeError, ValueError):
             return False
-        return n in self._mapping and self[n] == d
+        return n in self._nodes and self[n] == d
+
+    def __getitem__(self, n):
+        ddict = self._nodes[n]
+        data = self._data
+        if data is False or data is True:
+            return ddict
+        return ddict[data] if data in ddict else self._default
+
+    def __call__(self, data=False, default=None):
+        if data == self._data and default == self._default:
+            return self
+        return NodeDataView(self._nodes, data, default)
 
     def __repr__(self):
         if self._data is False:
@@ -586,10 +611,10 @@ class OutMultiDegreeView(DiDegreeView):
 
 
 # EdgeDataViews
-class OutEdgeDataView(object):
+class OutEdgeDataView(Set):
+    """ Edge View with data options """
     def __init__(self, graph, nbunch=None, data=False, default=None):
-        self.graph = graph
-        self._adjdict = graph._succ if hasattr(graph, '_succ') else graph._adj
+        self._graph = graph
         if nbunch is None:
             self._nodes_nbrs = self._adjdict.items
         else:
@@ -604,6 +629,14 @@ class OutEdgeDataView(object):
             self._report = lambda n, nbr, dd: \
                     (n, nbr, dd[data]) if data in dd else (n, nbr, default)
 
+    @property
+    def _adjdict(self):
+        G = self._graph
+        return G._succ if hasattr(G, "_succ") else G._adj
+
+    def __len__(self):
+        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
+
     def __iter__(self):
         return (self._report(n, nbr, dd) for n, nbrs in self._nodes_nbrs()
                 for nbr, dd in nbrs.items())
@@ -617,16 +650,16 @@ class OutEdgeDataView(object):
         return e == self._report(u, v, ddict)
 
     def __str__(self):
-        return "EdgeView({!r})".format(list(self))
+        return 'EdgeView(%r)' % list(self)
 
     def __repr__(self):
-        return "{0.__class__.__name__}({1!r})".format(self, list(self))
-
-    def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
+        return '%s(%r)' % (self.__class__.__name__, list(self))
 
 
 class EdgeDataView(OutEdgeDataView):
+    def __len__(self):
+        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
+
     def __iter__(self):
         seen = {}
         for n, nbrs in self._nodes_nbrs():
@@ -647,27 +680,16 @@ class EdgeDataView(OutEdgeDataView):
                 return False
         return e == self._report(u, v, ddict)
 
-    def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
-
 
 class InEdgeDataView(OutEdgeDataView):
-    def __init__(self, graph, nbunch=None, data=False, default=None):
-        self.graph = graph
-        self._adjdict = graph._pred
-        if nbunch is None:
-            self._nodes_nbrs = self._adjdict.items
-        else:
-            nbunch = list(graph.nbunch_iter(nbunch))
-            self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
-        # Set _report based on data and default
-        if data is True:
-            self._report = lambda n, nbr, dd: (nbr, n, dd)
-        elif data is False:
-            self._report = lambda n, nbr, dd: (nbr, n)
-        else:  # data is attribute name
-            self._report = lambda n, nbr, dd: \
-                    (nbr, n, dd[data]) if data in dd else (nbr, n, default)
+    @property
+    def _adjdict(self):
+        G = self._graph
+        return G._pred if hasattr(G, "_pred") else G._adj
+
+    def __iter__(self):
+        return (self._report(nbr, n, dd) for n, nbrs in self._nodes_nbrs()
+                for nbr, dd in nbrs.items())
 
     def __contains__(self, e):
         try:
@@ -675,15 +697,14 @@ class InEdgeDataView(OutEdgeDataView):
             ddict = self._adjdict[v][u]
         except KeyError:
             return False
-        return e == self._report(v, u, ddict)
+        return e == self._report(u, v, ddict)
 
 
-class OutMultiEdgeDataView(OutEdgeDataView):
+class OutMultiEdgeDataView(Set):
     def __init__(self, graph, nbunch=None,
                  data=False, keys=False, default=None):
-        self.graph = graph
-        self._adjdict = graph._succ if hasattr(graph, '_succ') else graph._adj
-        self.keys = keys
+        self._graph = graph
+        self._keys = keys
         if nbunch is None:
             self._nodes_nbrs = self._adjdict.items
         else:
@@ -708,17 +729,31 @@ class OutMultiEdgeDataView(OutEdgeDataView):
                 self._report = lambda n, nbr, k, dd: (n, nbr, dd[data]) \
                         if data in dd else (n, nbr, default)
 
+    @property
+    def _adjdict(self):
+        G = self._graph
+        return G._succ if hasattr(G, "_succ") else G._adj
+
+    def __len__(self):
+        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
+                   for nbr, kdict in nbrs.items())
+
     def __iter__(self):
         return (self._report(n, nbr, k, dd) for n, nbrs in self._nodes_nbrs()
                 for nbr, kd in nbrs.items() for k, dd in kd.items())
 
-    def __contains__(self, e):
-        u, v = e[:2]
+    def get_keydict(self, u, v):
         try:
-            kdict = self._adjdict[u][v]
+            return self._adjdict[u][v]
         except KeyError:
             return False
-        if self.keys is True:
+
+    def __contains__(self, e):
+        u, v = e[:2]
+        kdict = self.get_keydict(u, v)
+        if kdict is False:
+            return False
+        if self._keys is True:
             k = e[2]
             try:
                 dd = kdict[k]
@@ -730,12 +765,17 @@ class OutMultiEdgeDataView(OutEdgeDataView):
                 return True
         return False
 
-    def __len__(self):
-        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kdict in nbrs.items())
+    def __str__(self):
+        return 'EdgeDataView(%r)' % list(self)
 
+    def __repr__(self):
+        return '%s(%r)' % (self.__class__.__name__, list(self))
 
 class MultiEdgeDataView(OutMultiEdgeDataView):
+    def __len__(self):
+        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
+                   for nbr, kdict in nbrs.items()) // 2
+
     def __iter__(self):
         seen = {}
         for n, nbrs in self._nodes_nbrs():
@@ -746,80 +786,36 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
             seen[n] = 1
         del seen
 
-    def __contains__(self, e):
-        u, v = e[:2]
+    def get_keydict(self, u, v):
+        adj = self._adjdict
         try:
-            kdict = self._adjdict[u][v]
+            return adj[u][v]
         except KeyError:
             try:
-                kdict = self._adjdict[v][u]
+                kdict = adj[v][u]
             except KeyError:
                 return False
-        if self.keys is True:
-            k = e[2]
-            try:
-                dd = kdict[k]
-            except KeyError:
-                return False
-            return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
-
-    def __len__(self):
-        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kdict in nbrs.items()) // 2
 
 
 class InMultiEdgeDataView(OutMultiEdgeDataView):
-    def __init__(self, graph, nbunch=None,
-                 data=False, keys=False, default=None):
-        self.graph = graph
-        self._adjdict = graph._pred
-        self.keys = keys
-        if nbunch is None:
-            self._nodes_nbrs = self._adjdict.items
-        else:
-            nbunch = list(graph.nbunch_iter(nbunch))
-            self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
-        # Set _report based on data and default
-        if data is True:
-            if keys is True:
-                self._report = lambda n, nbr, k, dd: (nbr, n, k, dd)
-            else:
-                self._report = lambda n, nbr, k, dd: (nbr, n, dd)
-        elif data is False:
-            if keys is True:
-                self._report = lambda n, nbr, k, dd: (nbr, n, k)
-            else:
-                self._report = lambda n, nbr, k, dd: (nbr, n)
-        else:  # data is attribute name
-            if keys is True:
-                self._report = lambda n, nbr, k, dd: (nbr, n, k, dd[data]) \
-                        if data in dd else (n, nbr, k, default)
-            else:
-                self._report = lambda n, nbr, k, dd: (nbr, n, dd[data]) \
-                        if data in dd else (nbr, n, default)
+    @property
+    def _adjdict(self):
+        G = self._graph
+        return G._pred if hasattr(G, "_pred") else G._adj
 
-    def __contains__(self, e):
-        v, u = e[:2]
+    def __iter__(self):
+        return (self._report(nbr, n, k, dd) for n, nbrs in self._nodes_nbrs()
+                for nbr, kd in nbrs.items() for k, dd in kd.items())
+
+    def get_keydict(self, u, v):
         try:
-            kdict = self._adjdict[u][v]
+            return self._adjdict[v][u]
         except KeyError:
             return False
-        if self.keys is True:
-            k = e[2]
-            dd = kdict[k]
-            return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
 
 
 # EdgeViews    have set operations and no data reported
-class OutEdgeView(Set):
+class OutEdgeView(Set, Mapping):
     """A View class for edges of a NetworkX Graph
 
     Elements are treated as edge tuples for `e in V` or set operations.
@@ -878,6 +874,8 @@ class OutEdgeView(Set):
     (2, 3, 0)
     (2, 3, 1)
     """
+    __slots__ = ('_graph',)
+
     @classmethod
     def _from_iterable(self, it):
         return set(it)
@@ -885,41 +883,20 @@ class OutEdgeView(Set):
     view = OutEdgeDataView
 
     def __init__(self, G):
-        self.graph = G
-        self._adjdict = G._succ if hasattr(G, "_succ") else G._adj
-        self._nodes_nbrs = self._adjdict.items
-        self.nbunch = None
-        self.data = False
-        self.default = None
-        self._report = lambda n, nbr, dd: (n, nbr)
-#        self.nbunch_iter = G.nbunch_iter
-#        self._pred = G._pred if hasattr(G, "_pred") else G._adj
+        self._graph = G
 
-    def __call__(self, nbunch=None, data=False, default=None):
-#        if nbunch == self.nbunch and data == self.data \
-#                and default == self.default:
-#            return self
-#        if nbunch is None:
-#            self._nodes_nbrs = self._adjdict.items
-#        else:
-#            nbunch = list(self.graph.nbunch_iter(nbunch))
-#            self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
-#        self.data = data
-#        self.default = default
-#        if data is True:
-#            self._report = lambda n, nbr, dd: (n, nbr, dd)
-#        elif data is False:
-#            self._report = lambda n, nbr, dd: (n, nbr)
-#        else:  # data is attribute name
-#            self._report = lambda n, nbr, dd: \
-#                    (n, nbr, dd[data]) if data in dd else (n, nbr, default)
-#        return self
+    @property
+    def _adjdict(self):
+        G = self._graph
+        return G._succ if hasattr(G, "_succ") else G._adj
 
-        if nbunch is None and data is False:
-            return self
-        return self.view(self.graph, nbunch, data, default)
-        #return ((n, nbr) for n, nbrs in self._nodes_nbrs()
-        #        for nbr, dd in nbrs.items())
+    @property
+    def _nodes_nbrs(self):
+        return self._adjdict.items
+
+    @staticmethod
+    def _report(n, nbr, dd):
+        return (n, nbr)
 
     def __len__(self):
         return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
@@ -928,29 +905,30 @@ class OutEdgeView(Set):
         for n, nbrs in self._nodes_nbrs():
             for nbr, dd in nbrs.items():
                 yield self._report(n, nbr, dd)
-    #        for nbr in nbrs.items():
-    #            yield (n, nbr)
 
     def __contains__(self, e):
         try:
-            u, v = e[:2]
-            ddict = self._adjdict[u][v]
+            u, v = e
+            return v in self._adjdict[u]
         except KeyError:
             return False
-        return e == self._report(u, v, ddict)
     #def __contains__(self, e):
     #    try:
-    #        u, v = e
-    #        return v in self._adjdict[u]
+    #        u, v = e[:2]
+    #        ddict = self._adjdict[u][v]
     #    except KeyError:
     #        return False
+    #    return e == self._report(u, v, ddict)
 
     def __getitem__(self, e):
         u, v = e
         return self._adjdict[u][v]
 
-    def __repr__(self):
-        return "{0.__class__.__name__}({1!r})".format(self, list(self))
+    def __call__(self, nbunch=None, data=False, default=None):
+        if nbunch is None and data is False:
+            return self
+        return self.view(self._graph, nbunch, data, default)
+
     # Needed for Python 3.3 which doesn't have set define the
     # right-side set operations __rsub__ __xor__ __rand__ __ror__
     __rand__ = Set.__and__
@@ -964,10 +942,18 @@ class OutEdgeView(Set):
             other = self._from_iterable(other)
         return self._from_iterable(e for e in other if e not in self)
 
+    def __str__(self):
+        return 'EdgeView(%r)' % list(self)
+
+    def __repr__(self):
+        return '%s(%r)' % (self.__class__.__name__, list(self))
 
 class EdgeView(OutEdgeView):
 
     view = EdgeDataView
+
+    def __len__(self):
+        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
 
     def __iter__(self):
         seen = {}
@@ -975,46 +961,29 @@ class EdgeView(OutEdgeView):
             for nbr, dd in nbrs.items():
                 if nbr not in seen:
                     yield self._report(n, nbr, dd)
-#            for nbr in nbrs:
-#                if nbr not in seen:
-#                    yield (n, nbr)
             seen[n] = 1
         del seen
 
     def __contains__(self, e):
         try:
             u, v = e[:2]
-            ddict = self._adjdict[u][v]
-        except KeyError:
-            try:
-                ddict = self._adjdict[v][u]
-            except KeyError:
-                return False
-        return e == self._report(u, v, ddict)
-
-    def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
+            return v in self._adjdict[u] or u in self._adjdict[v]
+        except (KeyError, ValueError):
+            return False
 
 
 class InEdgeView(OutEdgeView):
 
     view = InEdgeDataView
 
-    def __init__(self, G):
-        self.graph = G
-        self._adjdict = G._pred if hasattr(G, "_pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
-#        self.nbunch_iter = G.nbunch_iter
-#        self._succ = G._succ if hasattr(G, "_succ") else G._adj
-#        self._pred = G._pred if hasattr(G, "_pred") else G._adj
-#        self.nbunch_iter = G.nbunch_iter
-#        self._adjdict = self._pred
-#        self._nodes_nbrs = self._pred.items
+    @property
+    def _adjdict(self):
+        G = self._graph
+        return G._pred if hasattr(G, "_pred") else G._adj
 
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr in nbrs:
-                yield (nbr, n)
+    @staticmethod
+    def _report(n, nbr, dd):
+        return (nbr, n)   # order determined by _pred
 
     def __contains__(self, e):
         try:
@@ -1022,99 +991,109 @@ class InEdgeView(OutEdgeView):
             return u in self._adjdict[v]
         except KeyError:
             return False
+#    def __contains__(self, e):
+#        try:
+#            u, v = e[:2]
+#            ddict = self._adjdict[v][u]
+#        except KeyError:
+#            return False
+#        return e == self._report(u, v, ddict)
 
 
 class OutMultiEdgeView(OutEdgeView):
 
     view = OutMultiEdgeDataView
 
-    def __call__(self, nbunch=None, data=False, keys=False, default=None):
-        if nbunch is None and data is False and keys is True:
-            return self
-        return self.view(self.graph, nbunch, data, keys, default)
+    @staticmethod
+    def _report(n, nbr, key, dd):
+        return (n, nbr, key)
+
+    def __len__(self):
+        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
+                   for nbr, kdict in nbrs.items())
 
     def __iter__(self):
         for n, nbrs in self._nodes_nbrs():
             for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (n, nbr, key)
+                for key, dd in kdict.items():
+                    yield self._report(n, nbr, key, dd)
 
     def __contains__(self, e):
         N = len(e)
         if N == 3:
             u, v, k = e
+            try:
+                return k in self._adjdict[u][v]
+            except KeyError:
+                return False
         elif N == 2:
             u, v = e
-            k = 0
+            try:
+                return v in self._adjdict[u]
+            except KeyError:
+                return False
         else:
             raise ValueError("MultiEdge must have length 2 or 3")
-        try:
-            return k in self._adjdict[u][v]
-        except KeyError:
-            return False
 
     def __getitem__(self, e):
         u, v, k = e
         return self._adjdict[u][v][k]
 
-    def __len__(self):
-        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kdict in nbrs.items())
+    def __call__(self, nbunch=None, data=False, keys=False, default=None):
+        if nbunch is None and data is False and keys is True:
+            return self
+        return self.view(self._graph, nbunch, data, keys, default)
 
 
 class MultiEdgeView(OutMultiEdgeView):
 
     view = MultiEdgeDataView
 
+    def __len__(self):
+        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
+                   for nbr, kdict in nbrs.items()) // 2
+
     def __iter__(self):
         seen = {}
         for n, nbrs in self._nodes_nbrs():
             for nbr, kd in nbrs.items():
                 if nbr not in seen:
-                    for k, dd in kd.items():
-                        yield (n, nbr, k)
+                    for key, dd in kd.items():
+                        yield self._report(n, nbr, key, dd)
             seen[n] = 1
         del seen
-
-    def __len__(self):
-        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kdict in nbrs.items()) // 2
 
 
 class InMultiEdgeView(OutMultiEdgeView):
 
     view = InMultiEdgeDataView
 
-    def __init__(self, G):
-        self.graph = G
-        self._adjdict = G._pred if hasattr(G, "_pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
-#        self.nbunch_iter = G.nbunch_iter
-#        self._succ = G._succ if hasattr(G, "_succ") else G._adj
-#        self._pred = G._pred if hasattr(G, "_pred") else G._adj
-#        self.nbunch_iter = G.nbunch_iter
-#        self._adjdict = self._pred
-#        self._nodes_nbrs = self._pred.items
+    @property
+    def _adjdict(self):
+        G = self._graph
+        return G._pred if hasattr(G, "_pred") else G._adj
 
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (nbr, n, key)
+    @staticmethod
+    def _report(n, nbr, key, dd):
+        return (nbr, n, key)   # order determined by _pred
 
     def __contains__(self, e):
         N = len(e)
         if N == 3:
             u, v, k = e
+            try:
+                return k in self._adjdict[v][u]
+            except KeyError:
+                return False
         elif N == 2:
             u, v = e
-            k = 0
+            try:
+                return u in self._adjdict[v]
+            except KeyError:
+                return False
         else:
             raise ValueError("MultiEdge must have length 2 or 3")
-        try:
-            return k in self._adjdict[v][u]
-        except KeyError:
-            return False
+
 
 class DictView(Mapping):
     __slots__ = ('_dict',)

@@ -51,7 +51,7 @@ def cytoscape_data(G, attrs=None):
         nodes.append(n)
         
     for e in G.edges():
-        n = {"data" : G.edge[e[0]][e[1]].copy()}
+        n = {"data" : G.edge[e].copy()}
         n["data"]["source"] = e[0]
         n["data"]["target"] = e[1]
         edges.append(n)
@@ -96,6 +96,6 @@ def cytoscape_graph(data, attrs=None):
         sour = d["data"].get("source")
         targ = d["data"].get("target")
         graph.add_edge(sour, targ)
-        graph.edge[sour][targ].update(edge_data)
+        graph.edge[sour, targ].update(edge_data)
     return graph
 

@@ -314,7 +314,7 @@ def shortest_simple_paths(G, source, target, weight=None):
         shortest_path_func = _bidirectional_shortest_path
     else:
         def length_func(path):
-            return sum(G.edge[u][v][weight] for (u, v) in zip(path, path[1:]))
+            return sum(G.adj[u][v][weight] for (u, v) in zip(path, path[1:]))
         shortest_path_func = _bidirectional_dijkstra
 
     listA = list()

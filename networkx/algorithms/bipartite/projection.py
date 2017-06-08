@@ -440,14 +440,14 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     >>> def my_weight(G, u, v, weight='weight'):
     ...     w = 0
     ...     for nbr in set(G[u]) & set(G[v]):
-    ...         w += G.edge[u][nbr].get(weight, 1) + G.edge[v][nbr].get(weight, 1)
+    ...         w += G.edge[u, nbr].get(weight, 1) + G.edge[v, nbr].get(weight, 1)
     ...     return w
     ... 
     >>> # A complete bipartite graph with 4 nodes and 4 edges
     >>> B = nx.complete_bipartite_graph(2,2)
     >>> # Add some arbitrary weight to the edges
     >>> for i,(u,v) in enumerate(B.edges()):
-    ...     B.edge[u][v]['weight'] = i + 1
+    ...     B.edge[u, v]['weight'] = i + 1
     ... 
     >>> for edge in B.edges(data=True):
     ...     print(edge)

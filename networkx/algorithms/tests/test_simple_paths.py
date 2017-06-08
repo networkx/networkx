@@ -181,7 +181,7 @@ def test_Greg_Bernstein():
 
 def test_weighted_shortest_simple_path():
     def cost_func(path):
-        return sum(G.edge[u][v]['weight'] for (u, v) in zip(path, path[1:]))
+        return sum(G.adj[u][v]['weight'] for (u, v) in zip(path, path[1:]))
     G = nx.complete_graph(5)
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
     nx.set_edge_attributes(G, 'weight', weight)
@@ -193,7 +193,7 @@ def test_weighted_shortest_simple_path():
 
 def test_directed_weighted_shortest_simple_path():
     def cost_func(path):
-        return sum(G.edge[u][v]['weight'] for (u, v) in zip(path, path[1:]))
+        return sum(G.adj[u][v]['weight'] for (u, v) in zip(path, path[1:]))
     G = nx.complete_graph(5)
     G = G.to_directed()
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
@@ -208,7 +208,7 @@ def test_weight_name():
     G = nx.cycle_graph(7)
     nx.set_edge_attributes(G, 'weight', 1)
     nx.set_edge_attributes(G, 'foo', 1)
-    G.edge[1][2]['foo'] = 7
+    G.adj[1][2]['foo'] = 7
     paths = list(nx.shortest_simple_paths(G, 0, 3, weight='foo'))
     solution = [[0, 6, 5, 4, 3], [0, 1, 2, 3]]
     assert_equal(paths, solution)
