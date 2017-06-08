@@ -28,7 +28,7 @@ matrix:
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
     - python: "pypy-5.7.1"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-      sudo: true # 5.7.1 is currently published only on trusty
+      dist: trusty # 5.7.1 is currently published only on trusty
     - python: "pypy3"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
 
