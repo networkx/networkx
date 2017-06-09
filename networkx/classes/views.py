@@ -14,11 +14,11 @@ View Classes provide node, edge and degree "views" of a graph.
 Views for nodes, edges and degree are provided for all base graph classes.
 A view means a read-only object that is quick to create, automatically
 updated when the graph changes, and provides basic access like `n in V`,
-`for n in V`, `V[n]` and set operations.
+`for n in V`, `V[n]` and sometimes set operations.
 
 The views are read-only iterable containers that are updated as the
-graph is updated. Thus the graph should not be updated while iterating
-through the view. Views can be iterated over multiple times.
+graph is updated. As with dicts, the graph should not be updated
+while iterating through the view. Views can be iterated multiple times.
 Edge and Node views also allow data attribute lookup.
 The resulting attribute dict is writable as `G.edges[3, 4]['color']='red'`
 Degree views allow lookup of degree values for single nodes.
@@ -28,8 +28,8 @@ NodeView
 ========
 
     `V = G.nodes` (or `V = G.nodes()`) allows `len(V)`, `n in V`, set
-    operations e.g. "V1 & V2", and `ddict = V[n]`, where `ddict` is
-    the node data dict. Iteration is over the nodes by default.
+    operations e.g. "G.nodes & H.nodes", and `dd = G.nodes[n]`, where
+    `dd` is the node data dict. Iteration is over the nodes by default.
 
 NodeDataView
 ============
@@ -37,19 +37,19 @@ NodeDataView
     To iterate over (node, data) pairs, use arguments to `G.nodes()`
     to create a DataView e.g. `DV = G.nodes(data='color', default='red')`.
     The DataView iterates as `for n, color in DV` and allows
-    `(n, 'red') in VD`. For `DV = G.nodes(data=True)`, the DataViews
-    use the full datadict in writeable form also allowing
-    `(n, {'color': 'red'}) in VD`. DataViews do not provide set operations.
-    For hashable data attributes use `set(G.nodes(data='color'))`.
+    `(n, 'red') in DV`. Using `DV = G.nodes(data=True)`, the DataViews
+    use the full datadict in writeable form also allowing contain testing as
+    `(n, {'color': 'red'}) in VD`. DataViews allow set operations when
+    data attributes are hashable.
 
 DegreeView
 ==========
 
-    `V = G.degree()` allows `len(V)`, `deg=V[n]`, and iteration
-    over (n, degree) pairs. There are many flavors of DegreeView
-    for In/Out/Directed/Multi. For Directed Graphs, `G.degree()`
-    counts both in and out going edges. `G.out_degree()` and
-    `G.in_degree()` count only specific directions.
+    `V = G.degree` allows iteration over (node, degree) pairs as well
+    as lookup: `deg=V[n]`. There are many flavors of DegreeView
+    for In/Out/Directed/Multi. For Directed Graphs, `G.degree`
+    counts both in and out going edges. `G.out_degree` and
+    `G.in_degree` count only specific directions.
     Weighted degree using edge data attributes is provide via
     `V = G.degree(weight='attr_name')` where any string with the
     attribute name can be used. `weight=None` is the default.
@@ -61,12 +61,14 @@ DegreeView
 EdgeView
 ========
 
-    `V = G.edges` or `V = G.edges()` allows `len(V)`, `e in V`, and set
-    operations. Iteration is over 2-tuples `(u, v)`. For multigraph
-    edges default iteration is 3-tuples `(u, v, k)` but 2-tuples can
-    be obtained from `V = G.edges(keys=False)`.
+    `V = G.edges` or `V = G.edges()` allows iteration over edges as well as
+    `e in V`, set operations and edge data lookup `dd = G.edge[2, 3]`.
+    Iteration is over 2-tuples `(u, v)` for Graph/DiGraph. For multigraphs
+    edges 3-tuples `(u, v, key)` are the default but 2-tuples can be obtained
+    via `V = G.edges(keys=False)`.
+
     Set operations for directed graphs treat the edges as a set of 2-tuples.
-    For undirected graphs, 2-tuples are not unique representations of edges.
+    For undirected graphs, 2-tuples are not a unique representation of edges.
     So long as the set being compared to contains unique representations
     of its edges, the set operations will act as expected. If the other
     set contains both `(0, 1)` and `(1, 0)` however, the result of set
@@ -75,8 +77,11 @@ EdgeView
 EdgeDataView
 ============
 
-    `V = G.edges(data='weight', default=1)` allows `len(V)`, `e in V`,
-    and iteration over edge tuples.
+    Edge data can be reported using an EdgeDataView typically created
+    by calling an EdgeView: `DV = G.edges(data='weight', default=1)`.
+    The EdgeDataView allows iteration over edge tuples, membership checking
+    but no set operations.
+
     Iteration depends on `data` and `default` and for multigraph `keys`
     If `data is False` (the default) then iterate over 2-tuples `(u, v)`.
     If `data is True` iterate over 3-tuples `(u, v, datadict)`.
@@ -84,67 +89,9 @@ EdgeDataView
     For Multigraphs, if `keys is True`, replace `u, v` with `u, v, key`
     to create 3-tuples and 4-tuples.
 
-
-Examples
-========
-
-NodeView:  options: data, default  (data makes `iter` and `contains`
-                                    act on (node, data) 2-tuples)
-    NV=G.nodes()
-    assert(2 in NV)
-    for n in NV: print(n)
-    datadict = NV[2]
-    NV & {1, 2, 3}
-
-    NVdata=G.nodes(data=True)
-    assert( (2, NV[2]) in NVdata)
-    for n, dd in NVdata: print(dd['color'])
-    assert(NVdata[2] == NV[2])
-
-    NVdata=G.nodes(data='color')
-    assert( (2, NV[2]) in NVdata)
-    for n, dd in NVdata: print(dd['color'])
-    assert(NVdata[2] != NV[2])
-
-EdgeView: options: nbunch; data, default; keys
-
-    EV=G.edges()
-    assert((2, 3) in EV)
-    for u, v in EV: print((u, v))
-    EV & {(1, 2), (3, 4)}
-
-    EVdata=G.edges(data='color')
-    assert((2, 3, 'blue') in EVdata)
-    for u, v, c in EVdata: print("({}, {}) has color:{}".format(u, v, c))
-
-    EVnbunch=G.edges(nbunch=2)
-    assert((2, 3) in EVbunch)
-    assert((5, 6) in EVbunch)   #  at the moment, nbunch ignored in contains
-    for u, v in EVbunch: assert(u == 2 or v == 2)
-
-    EVmulti=MG.edges(keys=True)
-    assert((2, 3, 0) in EVmulti) #  keys==True enforces 3-tuples for contains
-    for u, v, k in EVmulti: print(u, v, k)
-
-DegreeView:  options:  nbunch, weight (default=None)
-
-    DV=G.degree()
-    assert(DV[2] == 4)
-    s = sum(deg for n, deg in DV)
-
-    DVweight = G.degree(weight="span")
-    assert(DVweight[2] == 6)   #  default value for edges without "span" is 1
-    s = sum(span for n, span in DVweight
-
-    DVnbunch = G.degree(nbunch=(2, 3))
-    assert(len(list(DVnbunch)) == 2)     # iteration only passes over nbunch
-
-Note: DegreeView can still lookup any node even if nbunch is specified.
-nbunch only affects iteration. DiDegreeView looks both directions,
-InDegreeView and OutDegreeView look in a directed way.
-DegreeViews do not provide set operations.
+    The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
-from collections import Mapping, KeysView, ItemsView, Set, Iterator
+from collections import Mapping, Set, Iterable
 import networkx as nx
 
 __all__ = ['NodeView', 'NodeDataView',
@@ -159,12 +106,16 @@ __all__ = ['NodeView', 'NodeDataView',
 
 # NodeViews
 class NodeView(Mapping, Set):
-    """A Viewer class to act as G.nodes for a NetworkX Graph
+    """A NodeView class to act as G.nodes for a NetworkX Graph
 
     Set operations act on the nodes without considering data.
-    Iteration is over nodes. Node data can be looked up.
-    Use NodeDataView to iterate over data or to specify data attribute
-    for lookup. NodeDataView is created by calling the NodeView.
+    Iteration is over nodes. Node data can be looked up like a dict.
+    Use NodeDataView to iterate over node data or to specify a data
+    attribute for lookup. NodeDataView is created by calling the NodeView.
+
+    Parameters
+    ----------
+    graph : NetworkX graph-like class
 
     Examples
     --------
@@ -203,10 +154,6 @@ class NodeView(Mapping, Set):
     (8, 'red')
     >>> NVdata[2] == NV[2]  # NVdata gets 'color', NV gets datadict
     False
-
-    Parameters
-    ----------
-    graph : NetworkX graph-like class
     """
     __slots__ = '_nodes',
 
@@ -255,10 +202,15 @@ class NodeView(Mapping, Set):
 
 
 class NodeDataView(Set):
-    """A View class for nodes of a NetworkX Graph
+    """A DataView class for nodes of a NetworkX Graph
 
-    Set operations can be done with NodeView, but not NodeDataView
-    Node data can be iterated over for NodeDataView but not NodeView
+    The main use for this class is to iterate through node-data pairs.
+    The data can be the entire data-dictionary for each node, or it
+    can be a specific attribute (with default) for each node.
+    Set operations are enabled with NodeDataView, but don't work in
+    cases where the data is not hashable. Use with caution.
+    Typically, set operations on nodes use NodeView, not NodeDataView.
+    That is, they use `G.nodes` instead of `G.nodes(data='foo')`.
 
     Parameters
     ==========
@@ -326,42 +278,7 @@ class NodeDataView(Set):
 
 # DegreeViews
 class DiDegreeView(object):
-    """A View class for degree of nodes in a NetworkX Graph
-
-    The functionality is like dict.items() with (node, degree) pairs.
-    Additional functionality includes read-only lookup of node degree,
-    and calling with optional features nbunch (for only a subset of nodes)
-    and weight (use edge weights to compute degree).
-
-    Parameters
-    ==========
-    graph : NetworkX graph-like class
-    nbunch : node, container of nodes, or None meaning all nodes (default=None)
-    weight : bool or string (default=None)
-
-    Notes
-    -----
-    DegreeView can still lookup any node even if nbunch is specified.
-
-    Examples
-    --------
-    >>> G = nx.path_graph(3)
-    >>> DV = G.degree()
-    >>> assert(DV[2] == 1)
-    >>> assert(sum(deg for n, deg in DV) == 4)
-
-    >>> DVweight = G.degree(weight="span")
-    >>> G.add_edge(1, 2, span=34)
-    >>> DVweight[2]
-    34
-    >>> DVweight[0]  #  default edge weight is 1
-    1
-    >>> sum(span for n, span in DVweight)  # sum weighted degrees
-    70
-
-    >>> DVnbunch = G.degree(nbunch=(1, 2))
-    >>> assert(len(list(DVnbunch)) == 2)  # iteration over nbunch only
-    """
+    """A DegreeView class to report degrees for a DiGraph. See DegreeView"""
     def __init__(self, G, nbunch=None, weight=None):
         self.nbunch_iter = G.nbunch_iter
         self.succ = G.succ if hasattr(G, "succ") else G.adj
@@ -405,7 +322,7 @@ class DiDegreeView(object):
                 yield (n, deg)
 
     def __len__(self):
-        return len(self.succ)
+        return len(self._nodes)
 
     def __str__(self):
         return 'DegreeView(%r)' % dict(self)
@@ -415,6 +332,48 @@ class DiDegreeView(object):
 
 
 class DegreeView(DiDegreeView):
+    """A DegreeView class to act as G.degree for a NetworkX Graph
+
+    Typical usage focuses on iteration over `(node, degree)` pairs.
+    The degree is by default the number of edges incident to the node.
+    Optional argument `weight` enables weighted degree using the edge
+    attribute named in the `weight` argument.  Reporting and iteration
+    can also be restricted to a subset of nodes using `nbunch`.
+
+    Additional functionality include node lookup so that `G.degree[n]`
+    reported the (possibly weighted) degree of node `n`. Calling the
+    view creates a view with different arguments `nbunch` or `weight`.
+
+    Parameters
+    ==========
+    graph : NetworkX graph-like class
+    nbunch : node, container of nodes, or None meaning all nodes (default=None)
+    weight : string or None (default=None)
+
+    Notes
+    -----
+    DegreeView can still lookup any node even if nbunch is specified.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> DV = G.degree()
+    >>> assert(DV[2] == 1)
+    >>> assert(G.degree[2] == 1)
+    >>> assert(sum(deg for n, deg in DV) == 4)
+
+    >>> DVweight = G.degree(weight="span")
+    >>> G.add_edge(1, 2, span=34)
+    >>> DVweight[2]
+    34
+    >>> DVweight[0]  #  default edge weight is 1
+    1
+    >>> sum(span for n, span in DVweight)  # sum weighted degrees
+    70
+
+    >>> DVnbunch = G.degree(nbunch=(1, 2))
+    >>> assert(len(list(DVnbunch)) == 2)  # iteration over nbunch only
+    """
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self.succ[n]
@@ -438,6 +397,7 @@ class DegreeView(DiDegreeView):
 
 
 class OutDegreeView(DiDegreeView):
+    """A DegreeView class to report out_degree for a DiGraph; See DegreeView"""
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self.succ[n]
@@ -459,6 +419,7 @@ class OutDegreeView(DiDegreeView):
 
 
 class InDegreeView(DiDegreeView):
+    """A DegreeView class to report in_degree for a DiGraph; See DegreeView"""
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self.pred[n]
@@ -480,6 +441,7 @@ class InDegreeView(DiDegreeView):
 
 
 class MultiDegreeView(DiDegreeView):
+    """A DegreeView class for undirected multigraphs; See DegreeView"""
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self.succ[n]
@@ -512,6 +474,7 @@ class MultiDegreeView(DiDegreeView):
 
 
 class DiMultiDegreeView(DiDegreeView):
+    """A DegreeView class for MultiDiGraph; See DegreeView"""
     def __getitem__(self, n):
         weight = self._weight
         succs = self.succ[n]
@@ -545,9 +508,9 @@ class DiMultiDegreeView(DiDegreeView):
                         for d in key_dict.values())
                 yield (n, deg)
 
- 
 
 class InMultiDegreeView(DiDegreeView):
+    """A DegreeView class for inward degree of MultiDiGraph; See DegreeView"""
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self.pred[n]
@@ -573,6 +536,7 @@ class InMultiDegreeView(DiDegreeView):
  
 
 class OutMultiDegreeView(DiDegreeView):
+    """A DegreeView class for outward degree of MultiDiGraph; See DegreeView"""
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self.succ[n]
@@ -599,7 +563,9 @@ class OutMultiDegreeView(DiDegreeView):
 
 # EdgeDataViews
 class OutEdgeDataView(object):
+    """EdgeDataView for outward edges of DiGraph; See EdgeDataView"""
     __slots__ = ('_adjdict', 'nbunch_iter', '_nodes_nbrs', '_report')
+
     def __init__(self, viewer, nbunch=None, data=False, default=None):
         self.nbunch_iter = viewer.nbunch_iter
         self._adjdict = viewer._adjdict
@@ -637,7 +603,35 @@ class OutEdgeDataView(object):
 
 
 class EdgeDataView(OutEdgeDataView):
+    """A EdgeDataView class for edges of Graph
+        
+    This view is primarily used to iterate over the edges reporting
+    edges as node-tuples with edge data optionally reported. The
+    argument `nbunch` allows restriction to edges incident to nodes
+    in that container/singleton. The default when `nbunch is None`
+    reports all edges. The arguments `data` and `default` control
+    what edge data is reported. The default `data is False` reports
+    only node-tuples for each edge. If `data is True` the entire edge
+    data dict is returned. Otherwise `data` is assumed to hold the name
+    of the edge attribute to report with default `default` if  that
+    edge attribute is not present.
+
+    Parameters
+    ----------
+    nbunch : container of nodes, node or None (default None)
+    data : False, True or string (default False)
+    default : default value (default None)
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> G.add_edge(1, 2, foo='bar')
+    >>> list(G.edges(data='foo', default='biz'))
+    [(0, 1, 'biz'), (1, 2, 'bar')]
+    >>> assert((0, 1, 'biz') in G.edges(data='foo', default='biz'))
+    """
     __slots__ = ()
+
     def __iter__(self):
         seen = {}
         for n, nbrs in self._nodes_nbrs():
@@ -660,6 +654,7 @@ class EdgeDataView(OutEdgeDataView):
 
 
 class InEdgeDataView(OutEdgeDataView):
+    """An EdgeDataView class for outward edges of DiGraph; See EdgeDataView"""
     __slots__ = ()
 
     def __iter__(self):
@@ -676,7 +671,9 @@ class InEdgeDataView(OutEdgeDataView):
 
 
 class OutMultiEdgeDataView(OutEdgeDataView):
+    """An EdgeDataView for outward edges of MultiDiGraph; See EdgeDataView"""
     __slots__ = ('keys',)
+
     def __init__(self, viewer, nbunch=None,
                  data=False, keys=False, default=None):
         self.nbunch_iter = viewer.nbunch_iter
@@ -730,7 +727,9 @@ class OutMultiEdgeDataView(OutEdgeDataView):
 
 
 class MultiEdgeDataView(OutMultiEdgeDataView):
+    """An EdgeDataView class for edges of MultiGraph; See EdgeDataView"""
     __slots__ = ()
+
     def __iter__(self):
         seen = {}
         for n, nbrs in self._nodes_nbrs():
@@ -764,6 +763,7 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
 
 
 class InMultiEdgeDataView(OutMultiEdgeDataView):
+    """An EdgeDataView for inward edges of MultiDiGraph; See EdgeDataView"""
     __slots__ = ()
 
     def __iter__(self):
@@ -788,64 +788,7 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 
 # EdgeViews    have set operations and no data reported
 class OutEdgeView(Set, Mapping):
-    """A View class for edges of a NetworkX Graph
-
-    Elements are treated as edge tuples for `e in V` or set operations.
-    The form of the tuple is controlled by `data`, `default` and `keys`.
-    If the optional `nbunch` argument is provided only edges involving those
-    nodes are reported.
-
-    If `data is False` (the default) then iterate over 2-tuples `(u, v)`.
-    If `data is True` iterate over 3-tuples `(u, v, datadict)`.
-    Otherwise iterate over `(u, v, datadict.get(data, default))`.
-    For Multigraphs, if `keys is True`, replace `u, v` with `u, v, key` above.
-
-    Parameters
-    ==========
-    graph : NetworkX graph-like class
-    nbunch : (default= all nodes in graph) only report edges with these nodes
-    keys : (only for MultiGraph. default=False) report edge key in tuple
-    data : bool or string (default=False) see above
-    default : object (default=None)
-
-    Examples
-    ========
-    >>> G = nx.path_graph(4)
-    >>> EV = G.edges()
-    >>> (2, 3) in EV
-    True
-    >>> for u, v in EV: print((u, v))
-    (0, 1)
-    (1, 2)
-    (2, 3)
-    >>> assert(EV & {(1, 2), (3, 4)} == {(1, 2)})
-
-    >>> EVdata = G.edges(data='color', default='aqua')
-    >>> G.add_edge(2, 3, color='blue')
-    >>> assert((2, 3, 'blue') in EVdata)
-    >>> for u, v, c in EVdata: print("({}, {}) has color: {}".format(u, v, c))
-    (0, 1) has color: aqua
-    (1, 2) has color: aqua
-    (2, 3) has color: blue
-
-    >>> EVnbunch = G.edges(nbunch=2)
-    >>> assert((2, 3) in EVnbunch)
-    >>> assert((0, 1) in EVnbunch)   #  nbunch is ignored in __contains__
-    >>> for u, v in EVnbunch: assert(u == 2 or v == 2)
-
-    >>> MG = nx.path_graph(4, create_using=nx.MultiGraph())
-    >>> EVmulti = MG.edges(keys=True)
-    >>> (2, 3, 0) in EVmulti
-    True
-    >>> (2, 3) in EVmulti   # 2-tuples work even when keys is True
-    True
-    >>> key = MG.add_edge(2, 3)
-    >>> for u, v, k in EVmulti: print((u, v, k))
-    (0, 1, 0)
-    (1, 2, 0)
-    (2, 3, 0)
-    (2, 3, 1)
-    """
+    """A EdgeView class for outward edges of a DiGraph"""
     __slots__ = ('_adjdict', 'nbunch_iter', '_nodes_nbrs')
 
     @classmethod
@@ -908,6 +851,71 @@ class OutEdgeView(Set, Mapping):
 
 
 class EdgeView(OutEdgeView):
+    """A EdgeView class for edges of a Graph
+
+    This densely packed View allows iteration over edges, data lookup
+    like a dict and set operations on edges represented by node-tuples.
+    In addition, edge data can be controlled by calling this object 
+    possibly creating an EdgeDataView. Typically edges are iterated over
+    and reported as `(u, v)` node tuples or `(u, v, key)` node/key tuples
+    for multigraphs. Those edge representations can also be using to
+    lookup the data dict for any edge. Set operations also are available
+    where those tuples are the elements of the set.
+    Calling this object with optional arguments `data`, `default` and `keys`
+    controls the form of the tuple (see EdgeDataView). Optional argument
+    `nbunch` allows restriction to edges only involving certain nodes.
+
+    If `data is False` (the default) then iterate over 2-tuples `(u, v)`.
+    If `data is True` iterate over 3-tuples `(u, v, datadict)`.
+    Otherwise iterate over `(u, v, datadict.get(data, default))`.
+    For Multigraphs, if `keys is True`, replace `u, v` with `u, v, key` above.
+
+    Parameters
+    ==========
+    graph : NetworkX graph-like class
+    nbunch : (default= all nodes in graph) only report edges with these nodes
+    keys : (only for MultiGraph. default=False) report edge key in tuple
+    data : bool or string (default=False) see above
+    default : object (default=None)
+
+    Examples
+    ========
+    >>> G = nx.path_graph(4)
+    >>> EV = G.edges()
+    >>> (2, 3) in EV
+    True
+    >>> for u, v in EV: print((u, v))
+    (0, 1)
+    (1, 2)
+    (2, 3)
+    >>> assert(EV & {(1, 2), (3, 4)} == {(1, 2)})
+
+    >>> EVdata = G.edges(data='color', default='aqua')
+    >>> G.add_edge(2, 3, color='blue')
+    >>> assert((2, 3, 'blue') in EVdata)
+    >>> for u, v, c in EVdata: print("({}, {}) has color: {}".format(u, v, c))
+    (0, 1) has color: aqua
+    (1, 2) has color: aqua
+    (2, 3) has color: blue
+
+    >>> EVnbunch = G.edges(nbunch=2)
+    >>> assert((2, 3) in EVnbunch)
+    >>> assert((0, 1) in EVnbunch)   #  nbunch is ignored in __contains__
+    >>> for u, v in EVnbunch: assert(u == 2 or v == 2)
+
+    >>> MG = nx.path_graph(4, create_using=nx.MultiGraph())
+    >>> EVmulti = MG.edges(keys=True)
+    >>> (2, 3, 0) in EVmulti
+    True
+    >>> (2, 3) in EVmulti   # 2-tuples work even when keys is True
+    True
+    >>> key = MG.add_edge(2, 3)
+    >>> for u, v, k in EVmulti: print((u, v, k))
+    (0, 1, 0)
+    (1, 2, 0)
+    (2, 3, 0)
+    (2, 3, 1)
+    """
     __slots__ = ()
 
     view = EdgeDataView
@@ -926,6 +934,7 @@ class EdgeView(OutEdgeView):
 
 
 class InEdgeView(OutEdgeView):
+    """A EdgeView class for inward edges of a DiGraph"""
     __slots__ = ()
 
     view = InEdgeDataView
@@ -953,6 +962,7 @@ class InEdgeView(OutEdgeView):
         return self._adjdict[v][u]
 
 class OutMultiEdgeView(OutEdgeView):
+    """A EdgeView class for outward edges of a MultiDiGraph"""
     __slots__ = ()
 
     view = OutMultiEdgeDataView
@@ -992,6 +1002,7 @@ class OutMultiEdgeView(OutEdgeView):
 
 
 class MultiEdgeView(OutMultiEdgeView):
+    """A EdgeView class for edges of a MultiGraph"""
     __slots__ = ()
 
     view = MultiEdgeDataView
@@ -1012,6 +1023,7 @@ class MultiEdgeView(OutMultiEdgeView):
 
 
 class InMultiEdgeView(OutMultiEdgeView):
+    """A EdgeView class for inward edges of a MultiDiGraph"""
     __slots__ = ()
 
     view = InMultiEdgeDataView
