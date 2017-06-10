@@ -609,7 +609,7 @@ class Graph(object):
 
     @property
     def nodes(self):
-        """A NodeView Property of the Graph as G.nodes or G.nodes().
+        """A NodeView of the Graph as G.nodes or G.nodes().
 
         Can be used as `G.nodes` for data lookup and for set-like operations.
         Can also be used as `G.nodes(data=False, default=None)` to return a
@@ -681,7 +681,12 @@ class Graph(object):
             {0: 1, 1: 2, 2: 3}
 
         """
-        return NodeView(self)
+        nodes = NodeView(self)
+        # Lazy View creation: overload the (class) property on the instance
+        # Then future G.nodes use the existing View
+        # setattr doesn't work because ?? attribute already exists ??
+        self.__dict__['nodes'] = nodes # overload the property on the instance
+        return nodes
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -1053,7 +1058,7 @@ class Graph(object):
 
     @property
     def edges(self):
-        """An EdgeView Property of the Graph as G.edges or G.edges().
+        """An EdgeView of the Graph as G.edges or G.edges().
 
         The EdgeView provides set-like operations on the edge-tuples
         as well as edge attribute lookup. When called, it also provides
@@ -1105,7 +1110,8 @@ class Graph(object):
         [(0, 1)]
 
         """
-        return EdgeView(self)
+        self.__dict__['edges'] = edges = EdgeView(self)
+        return edges
 
     def get_edge_data(self, u, v, default=None):
         """Return the attribute dictionary associated with edge (u, v).
@@ -1177,7 +1183,7 @@ class Graph(object):
 
     @property
     def degree(self):
-        """A DegreeView Property for the Graph as G.degree or G.degree().
+        """A DegreeView for the Graph as G.degree or G.degree().
 
         The node degree is the number of edges adjacent to the node.
         This object provides an iterator for (node, degree) or
@@ -1211,7 +1217,8 @@ class Graph(object):
         >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
         """
-        return DegreeView(self)
+        self.__dict__['degree'] = degree = DegreeView(self)
+        return degree
 
     def clear(self):
         """Remove all nodes and edges from the graph.

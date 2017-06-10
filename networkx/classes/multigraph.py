@@ -674,7 +674,8 @@ class MultiGraph(Graph):
         >>> list(G.edges(0))
         [(0, 1)]
         """
-        return MultiEdgeView(self)
+        self.__dict__['edges'] = edges = MultiEdgeView(self)
+        return edges
 
     def get_edge_data(self, u, v, key=None, default=None):
         """Return the attribute dictionary associated with edge (u, v).
@@ -773,7 +774,8 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
-        return MultiDegreeView(self)
+        self.__dict__['degree'] = degree = MultiDegreeView(self)
+        return degree
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""
