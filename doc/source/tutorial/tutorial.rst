@@ -263,6 +263,8 @@ notation, or G.edge.
 
 The special attribute 'weight'
 should be numeric and holds values used by algorithms requiring weighted edges.
+Warning: Do not assign anything to `G.edge[u]` or `G.edge[u][v]` as it will 
+corrupt the graph data structure. Change the edge dict as shown above. 
 
 
 Directed graphs

@@ -141,6 +141,10 @@ class Graph(object):
     >>> G[1][2]['weight'] = 4.7
     >>> G.edge[1][2]['weight'] = 4
 
+    Warning: assigning to `G.edge[u]` or `G.edge[u][v]` will almost certainly 
+    corrupt the graph data structure. Use 3 sets of brackets as shown above.
+    (4 for multigraphs: `MG.edge[u][v][key][name] = value`)
+
     **Shortcuts:**
 
     Many common graph features allow python syntax to speed reporting.
