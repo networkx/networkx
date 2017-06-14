@@ -13,7 +13,8 @@ from copy import deepcopy
 
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import MultiAtlasView, MultiEdgeView, MultiDegreeView
+from networkx.classes.views import MultiAtlasView
+from networkx.classes.views import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
 
 
@@ -1099,7 +1100,7 @@ class MultiGraph(Graph):
 
         edges = (e for e in edges if is_in_graph(*e))
         for u, v, k in edges:
-            # Add nodes and copy the node attributes 
+            # Add nodes and copy the node attributes
             # if they haven't been copied already.
             if u not in H._node:
                 H._node[u] = self._node[u]

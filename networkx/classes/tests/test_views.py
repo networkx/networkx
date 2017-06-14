@@ -176,16 +176,8 @@ class test_edgedataview(object):
 
     def test_len(self):
         evr = self.eview(self.G)
-#<<<<<<< HEAD
-#        ev = evr(data='foo')
-#        assert_raises(TypeError, len, ev)
-#=======
-        ev = evr()
-        num_ed = 9 if self.G.is_multigraph() else 8
-        assert_equal(len(ev), num_ed)
         ev = evr(data='foo')
-        assert_equal(len(ev), num_ed)
-#>>>>>>> all_readonly
+        assert_raises(TypeError, len, ev)
 
 
 # Edges
@@ -240,11 +232,6 @@ class test_edgeview(object):
         ev = self.eview(self.G)
         num_ed = 9 if self.G.is_multigraph() else 8
         assert_equal(len(ev), num_ed)
-#<<<<<<< HEAD
-#=======
-#        ev = ev(data='foo')
-#        assert_equal(len(ev), num_ed)
-#>>>>>>> all_readonly
 
     def test_and(self):
         # print("G & H edges:", gnv & hnv)
@@ -474,6 +461,7 @@ class test_directed_multiedges(test_multiedges):
         rep = "OutMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0),"\
               + " (3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
         assert_equal(repr(ev), rep)
+
 
 class test_in_multiedges(test_multiedges):
     def setup(self):

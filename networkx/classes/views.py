@@ -240,7 +240,7 @@ class NodeDataView(Set):
             return iter(self._nodes)
         if data is True:
             return iter(self._nodes.items())
-        return ((n, dd[data] if data in dd else self._default) \
+        return ((n, dd[data] if data in dd else self._default)
                 for n, dd in self._nodes.items())
 
     def __contains__(self, n):
@@ -355,7 +355,7 @@ class DiDegreeView(object):
                 succs = self._succ[n]
                 preds = self._pred[n]
                 deg = sum(dd.get(weight, 1) for dd in succs.values()) \
-                      + sum(dd.get(weight, 1) for dd in preds.values())
+                    + sum(dd.get(weight, 1) for dd in preds.values())
                 yield (n, deg)
 
     def __len__(self):
@@ -568,9 +568,9 @@ class InMultiDegreeView(DiDegreeView):
             for n in self._nodes:
                 nbrs = self._pred[n]
                 deg = sum(d.get(weight, 1) for key_dict in nbrs.values()
-                           for d in key_dict.values())
+                          for d in key_dict.values())
                 yield (n, deg)
- 
+
 
 class OutMultiDegreeView(DiDegreeView):
     """A DegreeView class for outward degree of MultiDiGraph; See DegreeView"""
@@ -594,9 +594,9 @@ class OutMultiDegreeView(DiDegreeView):
             for n in self._nodes:
                 nbrs = self._succ[n]
                 deg = sum(d.get(weight, 1) for key_dict in nbrs.values()
-                           for d in key_dict.values())
+                          for d in key_dict.values())
                 yield (n, deg)
- 
+
 
 # EdgeDataViews
 class OutEdgeDataView(object):
@@ -620,9 +620,6 @@ class OutEdgeDataView(object):
             self._report = lambda n, nbr, dd: \
                     (n, nbr, dd[data]) if data in dd else (n, nbr, default)
 
-    def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
-
     def __iter__(self):
         return (self._report(n, nbr, dd) for n, nbrs in self._nodes_nbrs()
                 for nbr, dd in nbrs.items())
@@ -644,7 +641,7 @@ class OutEdgeDataView(object):
 
 class EdgeDataView(OutEdgeDataView):
     """A EdgeDataView class for edges of Graph
-        
+
     This view is primarily used to iterate over the edges reporting
     edges as node-tuples with edge data optionally reported. The
     argument `nbunch` allows restriction to edges incident to nodes
@@ -671,9 +668,6 @@ class EdgeDataView(OutEdgeDataView):
     >>> assert((0, 1, 'biz') in G.edges(data='foo', default='biz'))
     """
     __slots__ = ()
-
-    def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
 
     def __iter__(self):
         seen = {}
@@ -746,10 +740,6 @@ class OutMultiEdgeDataView(OutEdgeDataView):
                 self._report = lambda n, nbr, k, dd: (n, nbr, dd[data]) \
                         if data in dd else (n, nbr, default)
 
-    def __len__(self):
-        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kdict in nbrs.items())
-
     def __iter__(self):
         return (self._report(n, nbr, k, dd) for n, nbrs in self._nodes_nbrs()
                 for nbr, kd in nbrs.items() for k, dd in kd.items())
@@ -776,10 +766,6 @@ class OutMultiEdgeDataView(OutEdgeDataView):
 class MultiEdgeDataView(OutMultiEdgeDataView):
     """An EdgeDataView class for edges of MultiGraph; See EdgeDataView"""
     __slots__ = ()
-
-    def __len__(self):
-        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kdict in nbrs.items()) // 2
 
     def __iter__(self):
         seen = {}
@@ -906,7 +892,7 @@ class EdgeView(OutEdgeView):
 
     This densely packed View allows iteration over edges, data lookup
     like a dict and set operations on edges represented by node-tuples.
-    In addition, edge data can be controlled by calling this object 
+    In addition, edge data can be controlled by calling this object
     possibly creating an EdgeDataView. Typically edges are iterated over
     and reported as `(u, v)` node tuples or `(u, v, key)` node/key tuples
     for multigraphs. Those edge representations can also be using to
@@ -1120,34 +1106,47 @@ class InMultiEdgeView(OutMultiEdgeView):
 
 class DictView(Mapping):
     __slots__ = ('_dict',)
+
     def __init__(self, d):
         self._dict = d
+
     def __len__(self):
         return len(self._dict)
+
     def __iter__(self):
         return iter(self._dict)
+
     def __getitem__(self, key):
         return self._dict[key]
+
     def copy(self):
         return self._dict.copy()
 
 
 class AtlasView(Mapping):
     __slots__ = ('_atlas',)
+
     def __init__(self, atlas):
         self._atlas = atlas
+
     def __len__(self):
         return len(self._atlas)
+
     def __iter__(self):
         return iter(self._atlas)
+
     def __getitem__(self, name):
         return DictView(self._atlas[name])
+
     def copy(self):
         return self._atlas.copy()
 
+
 class MultiAtlasView(AtlasView):
     __slots__ = ()   # Still uses AtlasView slots names _atlas
+
     def __getitem__(self, name):
         return AtlasView(self._atlas[name])
+
     def copy(self):
         return self._atlas.copy()

@@ -22,7 +22,8 @@ from copy import deepcopy
 from collections import Mapping
 
 import networkx as nx
-from networkx.classes.views import DictView, AtlasView, NodeView, NodeDataView, EdgeView, EdgeDataView, DegreeView
+from networkx.classes.views import DictView, AtlasView
+from networkx.classes.views import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 from networkx.utils import pairwise
@@ -144,7 +145,7 @@ class Graph(object):
     >>> G[1][2]['weight'] = 4.7
     >>> G.edge[1, 2]['weight'] = 4
 
-    Warning: assigning to `G.edge[u]` or `G.edge[u][v]` will almost certainly 
+    Warning: assigning to `G.edge[u]` or `G.edge[u][v]` will almost certainly
     corrupt the graph data structure. Use 3 sets of brackets as shown above.
     (4 for multigraphs: `MG.edge[u][v][key][name] = value`)
 
@@ -701,8 +702,8 @@ class Graph(object):
         nodes = NodeView(self)
         # Lazy View creation: overload the (class) property on the instance
         # Then future G.nodes use the existing View
-        # setattr doesn't work because ?? attribute already exists ??
-        self.__dict__['nodes'] = nodes # overload the property on the instance
+        # setattr doesn't work because attribute already exists
+        self.__dict__['nodes'] = nodes
         return nodes
 
     def number_of_nodes(self):
