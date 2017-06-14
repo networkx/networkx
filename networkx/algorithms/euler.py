@@ -74,7 +74,7 @@ def _simplegraph_eulerian_circuit(G, source):
             last_vertex = current_vertex
             vertex_stack.pop()
         else:
-            _, next_vertex = next(edges(current_vertex))
+            _, next_vertex = arbitrary_element(edges(current_vertex))
             vertex_stack.append(next_vertex)
             G.remove_edge(current_vertex, next_vertex)
 
@@ -97,7 +97,7 @@ def _multigraph_eulerian_circuit(G, source):
             last_vertex, last_key = current_vertex, current_key
             vertex_stack.pop()
         else:
-            _, next_vertex, next_key = next(edges(current_vertex, keys=True))
+            _, next_vertex, next_key = arbitrary_element(edges(current_vertex, keys=True))
             vertex_stack.append((next_vertex, next_key))
             G.remove_edge(current_vertex, next_vertex, next_key)
 

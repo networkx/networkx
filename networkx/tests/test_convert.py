@@ -64,13 +64,10 @@ class TestConvert():
             assert_equal(sorted(G.edges()), sorted(GI.edges()))
 
     def test_graph(self):
-        G=cycle_graph(10)
-        e=G.edges()
-        source=[u for u,v in e]
-        dest=[v for u,v in e]
-        ex=zip(source,dest,source)
-        G=Graph()
-        G.add_weighted_edges_from(ex)
+        g = cycle_graph(10)
+        G = Graph()
+        G.add_nodes_from(g)
+        G.add_weighted_edges_from((u, v, u) for u,v in g.edges())
 
         # Dict of dicts
         dod=to_dict_of_dicts(G)
@@ -100,17 +97,17 @@ class TestConvert():
 
 
     def test_with_multiedges_self_loops(self):
-        G=cycle_graph(10)
-        e=G.edges()
-        source,dest = list(zip(*e))
-        ex=list(zip(source,dest,source))
-        XG=Graph()
-        XG.add_weighted_edges_from(ex)
+        G = cycle_graph(10)
+        XG = Graph()
+        XG.add_nodes_from(G)
+        XG.add_weighted_edges_from((u, v, u) for u,v in G.edges())
         XGM=MultiGraph()
-        XGM.add_weighted_edges_from(ex)
+        XGM.add_nodes_from(G)
+        XGM.add_weighted_edges_from((u, v, u) for u,v in G.edges())
         XGM.add_edge(0,1,weight=2) # multiedge
-        XGS=Graph()
-        XGS.add_weighted_edges_from(ex)
+        XGS = Graph()
+        XGS.add_nodes_from(G)
+        XGS.add_weighted_edges_from((u, v, u) for u,v in G.edges())
         XGS.add_edge(0,0,weight=100) # self loop
 
         # Dict of dicts

@@ -42,8 +42,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.edges(data=True)),
                      [(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),(2,0,{}),(2,1,{})])
         assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
-        f = lambda x: list(G.edges(x))
-        assert_raises((KeyError,networkx.NetworkXError), f,-1)
+        assert_raises((KeyError,networkx.NetworkXError), G.edges, -1, True)
 
     def test_out_edges(self):
         G=self.K3
@@ -79,15 +78,9 @@ class BaseDiGraphTester(BaseGraphTester):
 
     def test_in_edges_dir(self):
         G=self.P3
-        assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
-        assert_equal(sorted(G.in_edges(0)),[])
-        assert_equal(sorted(G.in_edges(2)),[(1,2)])
-
-    def test_in_edges_dir(self):
-        G=self.P3
-        assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
-        assert_equal(sorted(G.in_edges(0)),[])
-        assert_equal(sorted(G.in_edges(2)),[(1,2)])
+        assert_equal(sorted(G.in_edges()), [(0, 1), (1, 2)])
+        assert_equal(sorted(G.in_edges(0)), [])
+        assert_equal(sorted(G.in_edges(2)), [(1,2)])
 
     def test_in_edges_data(self):
         G=networkx.DiGraph([(0, 1, {'data' : 0}), (1, 0, {})])

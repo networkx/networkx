@@ -299,7 +299,7 @@ def fruchterman_reingold_layout(G, k=None,
     if len(G) == 0:
         return {}
     if len(G) == 1:
-        return {next(G.nodes()): center}
+        return {nx.utils.arbitrary_element(G.nodes()): center}
 
     try:
         # Sparse matrix
