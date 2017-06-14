@@ -13,7 +13,7 @@ from copy import deepcopy
 
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import MultiEdgeView, MultiDegreeView
+from networkx.classes.views import MultiAtlasView, MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
 
 
@@ -136,7 +136,7 @@ class MultiGraph(Graph):
     >>> keys = G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
-    >>> G.edge[1][2][0]['weight'] = 4
+    >>> G.edge[1, 2, 0]['weight'] = 4
 
     **Shortcuts:**
 
@@ -267,6 +267,14 @@ class MultiGraph(Graph):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         Graph.__init__(self, data, **attr)
 
+    @property
+    def edge(self):
+        return MultiEdgeView(self)
+
+    @property
+    def adj(self):
+        return MultiAtlasView(self._adj)
+
     def new_edge_key(self, u, v):
         """Return an unused key for edges between nodes `u` and `v`.
 
@@ -289,7 +297,7 @@ class MultiGraph(Graph):
         key : int
         """
         try:
-            keydict = self.adj[u][v]
+            keydict = self._adj[u][v]
         except KeyError:
             return 0
         key = len(keydict)
@@ -356,16 +364,16 @@ class MultiGraph(Graph):
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
         # add nodes
-        if u not in self.adj:
-            self.adj[u] = self.adjlist_inner_dict_factory()
-            self.node[u] = {}
-        if v not in self.adj:
-            self.adj[v] = self.adjlist_inner_dict_factory()
-            self.node[v] = {}
+        if u not in self._adj:
+            self._adj[u] = self.adjlist_inner_dict_factory()
+            self._node[u] = {}
+        if v not in self._adj:
+            self._adj[v] = self.adjlist_inner_dict_factory()
+            self._node[v] = {}
         if key is None:
             key = self.new_edge_key(u, v)
-        if v in self.adj[u]:
-            keydict = self.adj[u][v]
+        if v in self._adj[u]:
+            keydict = self._adj[u][v]
             datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr)
             keydict[key] = datadict
@@ -375,8 +383,8 @@ class MultiGraph(Graph):
             datadict.update(attr)
             keydict = self.edge_key_dict_factory()
             keydict[key] = datadict
-            self.adj[u][v] = keydict
-            self.adj[v][u] = keydict
+            self._adj[u][v] = keydict
+            self._adj[v][u] = keydict
         return key
 
     def add_edges_from(self, ebunch, **attr):
@@ -500,7 +508,7 @@ class MultiGraph(Graph):
 
         """
         try:
-            d = self.adj[u][v]
+            d = self._adj[u][v]
         except KeyError:
             raise NetworkXError(
                 "The edge %s-%s is not in the graph." % (u, v))
@@ -515,9 +523,9 @@ class MultiGraph(Graph):
                 raise NetworkXError(msg % (u, v, key))
         if len(d) == 0:
             # remove the key entries if last edge
-            del self.adj[u][v]
+            del self._adj[u][v]
             if u != v:  # check for selfloop
-                del self.adj[v][u]
+                del self._adj[v][u]
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -612,9 +620,9 @@ class MultiGraph(Graph):
         """
         try:
             if key is None:
-                return v in self.adj[u]
+                return v in self._adj[u]
             else:
-                return key in self.adj[u][v]
+                return key in self._adj[u][v]
         except KeyError:
             return False
 
@@ -727,9 +735,9 @@ class MultiGraph(Graph):
         """
         try:
             if key is None:
-                return self.adj[u][v]
+                return self._adj[u][v]
             else:
-                return self.adj[u][v][key]
+                return self._adj[u][v][key]
         except KeyError:
             return default
 
@@ -835,7 +843,7 @@ class MultiGraph(Graph):
                          for v, keydict in nbrs.items()
                          for key, datadict in keydict.items())
         G.graph = deepcopy(self.graph)
-        G.node = deepcopy(self.node)
+        G._node = deepcopy(self._node)
         return G
 
     def selfloop_edges(self, data=False, keys=False, default=None):
@@ -883,29 +891,29 @@ class MultiGraph(Graph):
         if data is True:
             if keys:
                 return ((n, n, k, d)
-                        for n, nbrs in self.adj.items()
+                        for n, nbrs in self._adj.items()
                         if n in nbrs for k, d in nbrs[n].items())
             else:
                 return ((n, n, d)
-                        for n, nbrs in self.adj.items()
+                        for n, nbrs in self._adj.items()
                         if n in nbrs for d in nbrs[n].values())
         elif data is not False:
             if keys:
                 return ((n, n, k, d.get(data, default))
-                        for n, nbrs in self.adj.items()
+                        for n, nbrs in self._adj.items()
                         if n in nbrs for k, d in nbrs[n].items())
             else:
                 return ((n, n, d.get(data, default))
-                        for n, nbrs in self.adj.items()
+                        for n, nbrs in self._adj.items()
                         if n in nbrs for d in nbrs[n].values())
         else:
             if keys:
                 return ((n, n, k)
-                        for n, nbrs in self.adj.items()
+                        for n, nbrs in self._adj.items()
                         if n in nbrs for k in nbrs[n])
             else:
                 return ((n, n)
-                        for n, nbrs in self.adj.items()
+                        for n, nbrs in self._adj.items()
                         if n in nbrs for d in nbrs[n].values())
 
     def number_of_edges(self, u=None, v=None):
@@ -961,7 +969,7 @@ class MultiGraph(Graph):
         if u is None:
             return self.size()
         try:
-            edgedata = self.adj[u][v]
+            edgedata = self._adj[u][v]
         except KeyError:
             return 0  # no such edge
         return len(edgedata)
@@ -1010,10 +1018,10 @@ class MultiGraph(Graph):
         H = self.__class__()
         # copy node and attribute dictionaries
         for n in bunch:
-            H.node[n] = self.node[n]
+            H._node[n] = self._node[n]
         # namespace shortcuts for speed
-        H_adj = H.adj
-        self_adj = self.adj
+        H_adj = H._adj
+        self_adj = self._adj
         # add nodes and edges (undirected method)
         for n in H:
             Hnbrs = H.adjlist_inner_dict_factory()
@@ -1083,7 +1091,7 @@ class MultiGraph(Graph):
 
         """
         H = self.__class__()
-        adj = self.adj
+        adj = self._adj
 
         # Filter out edges that don't correspond to nodes in the graph.
         def is_in_graph(u, v, k):
@@ -1091,26 +1099,22 @@ class MultiGraph(Graph):
 
         edges = (e for e in edges if is_in_graph(*e))
         for u, v, k in edges:
-            # Copy the node attributes if they haven't been copied
-            # already.
-            if u not in H.node:
-                H.node[u] = self.node[u]
-            if v not in H.node:
-                H.node[v] = self.node[v]
-            # Create an entry in the adjacency dictionary for the
-            # nodes u and v if they don't exist yet.
-            if u not in H.adj:
-                H.adj[u] = H.adjlist_inner_dict_factory()
-            if v not in H.adj:
-                H.adj[v] = H.adjlist_inner_dict_factory()
-            # Create an entry in the edge dictionary for the edges (u,
-            # v) and (v, u) if the don't exist yet.
-            if v not in H.adj[u]:
-                H.adj[u][v] = H.edge_key_dict_factory()
-            if u not in H.adj[v]:
-                H.adj[v][u] = H.edge_key_dict_factory()
+            # Add nodes and copy the node attributes 
+            # if they haven't been copied already.
+            if u not in H._node:
+                H._node[u] = self._node[u]
+                H._adj[u] = H.adjlist_inner_dict_factory()
+            if v not in H._node:
+                H._node[v] = self._node[v]
+                H._adj[v] = H.adjlist_inner_dict_factory()
+            # Create an entry in the edge dictionary for the edges
+            # (u, v) and (v, u) if the don't exist yet.
+            if v not in H._adj[u]:
+                H._adj[u][v] = H.edge_key_dict_factory()
+            if u not in H._adj[v]:
+                H._adj[v][u] = H.edge_key_dict_factory()
             # Copy the edge attributes.
-            H.edge[u][v][k] = self.edge[u][v][k]
-            H.edge[v][u][k] = self.edge[v][u][k]
+            H._adj[u][v][k] = self._adj[u][v][k]
+            H._adj[v][u][k] = self._adj[v][u][k]
         H.graph = self.graph
         return H

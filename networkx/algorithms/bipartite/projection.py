@@ -452,9 +452,9 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     >>> # A complete bipartite graph with 4 nodes and 4 edges
     >>> B = nx.complete_bipartite_graph(2, 2)
     >>> # Add some arbitrary weight to the edges
-    >>> for i, (u, v) in enumerate(B.edges()):
-    ...     B.edge[u][v]['weight'] = i + 1
-    ...
+    >>> for i,(u,v) in enumerate(B.edges()):
+    ...     B.edge[u, v]['weight'] = i + 1
+    ... 
     >>> for edge in B.edges(data=True):
     ...     print(edge)
     ...

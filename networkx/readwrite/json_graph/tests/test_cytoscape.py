@@ -57,7 +57,7 @@ class TestCytoscape:
         G.add_edge(1,2,key='first')
         G.add_edge(1,2,key='second',color='blue')
         H = cytoscape_graph(cytoscape_data(G))
-        nx.is_isomorphic(G,H)
+        assert_true(nx.is_isomorphic(G,H))
         assert_equal(H[1][2]['second']['color'],'blue')
 
     @raises(nx.NetworkXError)

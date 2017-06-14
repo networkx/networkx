@@ -68,7 +68,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> G.edge[1][2]['weight'] = 3
+    >>> G.edge[1, 2]['weight'] = 3
     >>> nx.k_nearest_neighbors(G)
     {1: 2.0, 2: 1.5}
     >>> nx.k_nearest_neighbors(G, weight='weight')

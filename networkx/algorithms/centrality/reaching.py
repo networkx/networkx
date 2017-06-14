@@ -34,7 +34,7 @@ def _average_weight(G, path, weight=None):
         return 0
     if weight is None:
         return 1 / path_length
-    total_weight = sum(G.edge[i][j][weight] for i, j in pairwise(path))
+    total_weight = sum(G.edge[i, j][weight] for i, j in pairwise(path))
     return total_weight / path_length
 
 
