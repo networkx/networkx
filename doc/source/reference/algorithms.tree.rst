@@ -64,6 +64,7 @@ Spanning Trees
 Exceptions
 ----------
 .. automodule:: networkx.algorithms.tree.coding
+   :noindex:
 .. autosummary::
    :toctree: generated/
 
