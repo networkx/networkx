@@ -15,7 +15,7 @@ import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
-from networkx.classes.views import MultiAtlasView
+from networkx.classes.views import AtlasView3
 from networkx.classes.views import OutMultiEdgeView, InMultiEdgeView, \
         DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
 from networkx.exception import NetworkXError
@@ -276,15 +276,15 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @property
     def adj(self):
-        return MultiAtlasView(self._succ)
+        return AtlasView3(self._succ)
 
     @property
     def succ(self):
-        return MultiAtlasView(self._succ)
+        return AtlasView3(self._succ)
 
     @property
     def pred(self):
-        return MultiAtlasView(self._pred)
+        return AtlasView3(self._pred)
 
     def add_edge(self, u, v, key=None, **attr):
         """Add an edge between u and v.

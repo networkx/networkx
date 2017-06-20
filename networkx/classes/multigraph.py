@@ -13,7 +13,7 @@ from copy import deepcopy
 
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import MultiAtlasView
+from networkx.classes.views import AtlasView3
 from networkx.classes.views import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
 
@@ -274,7 +274,7 @@ class MultiGraph(Graph):
 
     @property
     def adj(self):
-        return MultiAtlasView(self._adj)
+        return AtlasView3(self._adj)
 
     def new_edge_key(self, u, v):
         """Return an unused key for edges between nodes `u` and `v`.
