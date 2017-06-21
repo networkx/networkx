@@ -30,7 +30,10 @@ def test_two_nodes():
 
 
 def test_two_clique_communities():
-    random.seed(101)
+    try:
+        random.seed(7, version=1)
+    except TypeError:
+        random.seed(7)
     test = Graph()
 
     # c1
@@ -56,7 +59,10 @@ def test_two_clique_communities():
 
 
 def test_five_clique_ring():
-    random.seed(101)
+    try:
+        random.seed(7, version=1)
+    except TypeError:
+        random.seed(7)
     test = Graph()
 
     # c1
