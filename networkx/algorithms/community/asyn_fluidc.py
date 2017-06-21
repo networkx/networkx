@@ -7,8 +7,8 @@
 
 from collections import Counter
 import random
-from networkx import NetworkXError
-from networkx import is_connected
+from networkx.exception import NetworkXError
+from networkx.algorithms.components import is_connected
 from networkx.utils import groups
 from networkx.utils.decorators import not_implemented_for
 
@@ -61,7 +61,8 @@ def asyn_fluidc(G, k, max_iter=100):
     References
     ----------
     .. [1] Parés F., Garcia-Gasulla D. et al. "Fluid Communities: A
-    Community Detection Algorithm". [https://arxiv.org/pdf/1703.09307.pdf].
+    Competitive and Highly Scalable Community Detection Algorithm".
+    [https://arxiv.org/pdf/1703.09307.pdf].
     """
     # Initial checks
     if not isinstance(k, int):
@@ -71,7 +72,7 @@ def asyn_fluidc(G, k, max_iter=100):
     if not is_connected(G):
         raise NetworkXError("Fluid Communities can only be run on connected\
         Graphs.")
-    if len(G) > k:
+    if len(G) < k:
         raise NetworkXError("k must be greater than graph size.")
     # Initialization
     max_density = 1.0
