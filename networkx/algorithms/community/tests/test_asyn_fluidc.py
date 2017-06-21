@@ -1,6 +1,7 @@
 from nose.tools import assert_equal, assert_in
 from networkx import Graph
-from networkx.algorithms.community import asyn_fluidc
+from networkx.algorithms.community.asyn_fluidc import *
+import random
 
 def test_single_node():
     test = Graph()
@@ -10,7 +11,7 @@ def test_single_node():
     # ground truth
     ground_truth = set([frozenset(['a'])])
 
-    communities = asyn_fluidc.asyn_fluidc(test, 1)
+    communities = asyn_fluidc(test, 1)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
@@ -24,12 +25,13 @@ def test_two_nodes():
     # ground truth
     ground_truth = set([frozenset(['a']), frozenset(['b'])])
 
-    communities = asyn_fluidc.asyn_fluidc(test, 2)
+    communities = asyn_fluidc(test, 2)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
 
 def test_two_clique_communities():
+    random.seed(101)
     test = Graph()
 
     # c1
@@ -49,12 +51,13 @@ def test_two_clique_communities():
     ground_truth = set([frozenset(['a', 'c', 'b']),
                         frozenset(['e', 'd', 'f'])])
 
-    communities = asyn_fluidc.asyn_fluidc(test, 2)
+    communities = asyn_fluidc(test, 2)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
 
 def test_five_clique_ring():
+    random.seed(101)
     test = Graph()
 
     # c1
@@ -111,7 +114,7 @@ def test_five_clique_ring():
                         frozenset(['4a', '4b', '4c', '4d']),
                         frozenset(['5a', '5b', '5c', '5d'])])
 
-    communities = asyn_fluidc.asyn_fluidc(test, 5)
+    communities = asyn_fluidc(test, 5)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
