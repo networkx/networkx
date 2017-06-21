@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2015
+#    Copyright (C) 2017
 #    All rights reserved.
 #    BSD license.
+#    Author: Ferran Parés <ferran.pares@bsc.es>
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter
 import random
+from networkx import NetworkXError
+from networkx import is_connected
 from networkx.utils import groups
 from networkx.utils.decorators import not_implemented_for
 
@@ -62,14 +65,14 @@ def asyn_fluidc(G, k, max_iter=100):
     """
     # Initial checks
     if not isinstance(k, int):
-        raise nx.NetworkXError("k muts be an integer.")
+        raise NetworkXError("k muts be an integer.")
     if not k>0:
-        raise nx.NetworkXError("k muts be greater than 0.")
-    if not nx.is_connected(G):
-        raise nx.NetworkXError("Fluid Communities can only be run on connected\
+        raise NetworkXError("k muts be greater than 0.")
+    if not is_connected(G):
+        raise NetworkXError("Fluid Communities can only be run on connected\
         Graphs.")
     if len(G) > k:
-        raise nx.NetworkXError("k must be greater than graph size.")
+        raise NetworkXError("k must be greater than graph size.")
     # Initialization
     max_density = 1.0
     vertices = list(G)
