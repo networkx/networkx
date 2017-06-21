@@ -19,8 +19,7 @@ def test_single_node():
 def test_two_nodes():
     test = Graph()
 
-    test.add_node('a')
-    test.add_node('b')
+    test.add_edge('a', 'b')
 
     # ground truth
     ground_truth = set([frozenset(['a']), frozenset(['b'])])
