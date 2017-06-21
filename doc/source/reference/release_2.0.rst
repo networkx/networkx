@@ -106,3 +106,8 @@ API changes
    Most of the shortest_path algorithms now raise a NodeNotFound exception
    when a source or a target are not present in the graph.
 
+* [`#2420 <https://github.com/networkx/networkx/pull/2420>`_]
+   New community detection algorithm provided. Fluid Communities is an asynchronous
+   algorithm based on the simple idea of fluids interacting in an environment, 
+   expanding and pushing each other. The algorithm is completly described in 
+   [`https://arxiv.org/pdf/1703.09307.pdf <https://arxiv.org/pdf/1703.09307.pdf>`_]. 
