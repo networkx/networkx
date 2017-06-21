@@ -7,11 +7,13 @@
 from collections import Counter
 import random
 from networkx.utils import groups
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['asyn_fluidc']
 
 
-def asyn_fluidc(G, k, max_iter=15):
+@not_implemented_for('directed', 'multigraph')
+def asyn_fluidc(G, k, max_iter=100):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
     The asynchronous fluid communities algorithm is described in
@@ -58,6 +60,16 @@ def asyn_fluidc(G, k, max_iter=15):
     .. [1] Parés F., Garcia-Gasulla D. et al. "Fluid Communities: A
     Community Detection Algorithm". [https://arxiv.org/pdf/1703.09307.pdf].
     """
+    # Initial checks
+    if not isinstance(k, int):
+        raise nx.NetworkXError("k muts be an integer.")
+    if not k>0:
+        raise nx.NetworkXError("k muts be greater than 0.")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Fluid Communities can only be run on connected\
+        Graphs.")
+    if len(G) > k:
+        raise nx.NetworkXError("k must be greater than graph size.")
     # Initialization
     max_density = 1.0
     vertices = list(G)
