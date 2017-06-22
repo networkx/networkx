@@ -103,7 +103,7 @@ class MultiGraph(Graph):
 
     >>> keys = G.add_edges_from([(4,5,{'route':282}), (4,5,{'route':37})])
     >>> G[4]
-    {3: {0: {}}, 5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}}
+    AtlasView2({3: {0: {}}, 5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}})
 
     **Attributes:**
 
@@ -149,9 +149,8 @@ class MultiGraph(Graph):
     [1, 2]
     >>> len(G)  # number of nodes in graph
     5
-    >>> G[1] # adjacency dict keyed by neighbor to edge attributes
-    ...            # Note: you should not change this dict manually!
-    {2: {0: {'weight': 4}, 1: {'color': 'blue'}}}
+    >>> G[1] # adjacency dict-like view keyed by neighbor to edge attributes
+    AtlasView2({2: {0: {'weight': 4}, 1: {'color': 'blue'}}})
 
     The fastest way to traverse all edges of a graph is via
     adjacency():

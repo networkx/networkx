@@ -434,9 +434,9 @@ class Graph(object):
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G[0]
-        {1: {}}
+        AtlasView({1: {}})
         """
-        return self._adj[n]
+        return self.adj[n]
 
     def add_node(self, n, **attr):
         """Add a single node n and update node attributes.
@@ -1064,7 +1064,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge('a', 'b', weight=7)
         >>> G['a']
-        {'b': {'weight': 7}}
+        AtlasView({'b': {'weight': 7}})
         >>> G = nx.path_graph(4)
         >>> [n for n in G[0]]
         [1]
