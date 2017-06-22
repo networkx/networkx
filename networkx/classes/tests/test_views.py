@@ -40,8 +40,11 @@ class test_nodeview(object):
         assert_true((3, nvdf[3]) in nvdf)
 
     def test_getitem(self):
+        nv = self.G.nodes
         nvd = self.G.nodes(data=True)
         self.G.node[3]['foo'] = 'bar'
+        assert_equal(nv[7], {})
+        assert_equal(nv[3], {'foo': 'bar'})
         assert_equal(nvd[3], {'foo': 'bar'})
         nvdf = self.G.nodes(data='foo', default='biz')
         assert_true(nvdf[7], 'biz')
@@ -117,6 +120,7 @@ class test_nodeview(object):
 class test_edgedataview(object):
     def setup(self):
         self.G = nx.path_graph(9)
+        self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.eview = nx.EdgeView
 
         def modify_edge(G, e, **kwds):
@@ -177,7 +181,22 @@ class test_edgedataview(object):
     def test_len(self):
         evr = self.eview(self.G)
         ev = evr(data='foo')
-        assert_raises(TypeError, len, ev)
+        assert_equal(len(ev), 8)
+        assert_equal(len(evr(1)), 2)
+        assert_equal(len(evr([1, 2, 3])), 4)
+
+        evr = self.eview(self.DG)
+        assert_equal(len(evr(1)), 1)
+        assert_equal(len(evr([1, 2, 3])), 3)
+
+        assert_equal(len(self.G.edges(1)), 2)
+        assert_equal(len(self.G.edges()), 8)
+        assert_equal(len(self.G.edges), 8)
+
+        assert_equal(len(self.DG.edges(1)), 1)
+        assert_equal(len(self.DG.edges()), 8)
+        assert_equal(len(self.DG.edges), 8)
+
 
 
 # Edges

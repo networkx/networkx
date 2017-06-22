@@ -29,13 +29,15 @@ class BaseDiGraphTester(BaseGraphTester):
         G=self.K3
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
         assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
+        assert_equal(sorted(G.edges([0, 1])), [(0, 1), (0, 2), (1, 0), (1, 2)])
         assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
 
     def test_edges_data(self):
         G=self.K3
-        assert_equal(sorted(G.edges(data=True)),
-                     [(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),(2,0,{}),(2,1,{})])
-        assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
+        all_edges = [(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),(2,0,{}),(2,1,{})]
+        assert_equal(sorted(G.edges(data=True)), all_edges)
+        assert_equal(sorted(G.edges(0, data=True)), all_edges[:2])
+        assert_equal(sorted(G.edges([0, 1], data=True)), all_edges[:4])
         assert_raises((KeyError,networkx.NetworkXError), G.edges, -1, True)
 
     def test_out_edges(self):

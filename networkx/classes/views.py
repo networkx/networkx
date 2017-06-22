@@ -160,7 +160,7 @@ class NodeView(Mapping, Set):
     __slots__ = '_nodes',
 
     def __init__(self, graph):
-        self._nodes = graph.node
+        self._nodes = graph._node
 
     # Mapping methods
     def __len__(self):
@@ -326,9 +326,13 @@ class DiDegreeView(object):
 
     def __call__(self, nbunch=None, weight=None):
         if nbunch is None:
+            if weight == self._weight:
+                return self
             return self.__class__(self, None, weight)
         try:
             if nbunch in self._nodes:
+                if weight == self._weight:
+                    return self[nbunch]
                 return self.__class__(self, None, weight)[nbunch]
         except TypeError:
             pass
@@ -620,6 +624,9 @@ class OutEdgeDataView(object):
             self._report = lambda n, nbr, dd: \
                     (n, nbr, dd[data]) if data in dd else (n, nbr, default)
 
+    def __len__(self):
+        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
+
     def __iter__(self):
         return (self._report(n, nbr, dd) for n, nbrs in self._nodes_nbrs()
                 for nbr, dd in nbrs.items())
@@ -668,6 +675,9 @@ class EdgeDataView(OutEdgeDataView):
     >>> assert((0, 1, 'biz') in G.edges(data='foo', default='biz'))
     """
     __slots__ = ()
+
+    def __len__(self):
+        return sum(1 for e in self)
 
     def __iter__(self):
         seen = {}
@@ -740,6 +750,10 @@ class OutMultiEdgeDataView(OutEdgeDataView):
                 self._report = lambda n, nbr, k, dd: (n, nbr, dd[data]) \
                         if data in dd else (n, nbr, default)
 
+    def __len__(self):
+        return sum(len(kd) for n, nbrs in self._nodes_nbrs()
+                   for nbr, kd in nbrs.items())
+
     def __iter__(self):
         return (self._report(n, nbr, k, dd) for n, nbrs in self._nodes_nbrs()
                 for nbr, kd in nbrs.items() for k, dd in kd.items())
@@ -766,6 +780,10 @@ class OutMultiEdgeDataView(OutEdgeDataView):
 class MultiEdgeDataView(OutMultiEdgeDataView):
     """An EdgeDataView class for edges of MultiGraph; See EdgeDataView"""
     __slots__ = ()
+
+    def __len__(self):
+        # nbunch makes it hard to count edges between nodes in nbunch
+        return sum(1 for e in self)
 
     def __iter__(self):
         seen = {}
@@ -835,7 +853,7 @@ class OutEdgeView(Set, Mapping):
     view = OutEdgeDataView
 
     def __init__(self, G):
-        succ = G.succ if hasattr(G, "succ") else G.adj
+        succ = G._succ if hasattr(G, "succ") else G._adj
         self.nbunch_iter = G.nbunch_iter
         self._adjdict = succ
         self._nodes_nbrs = succ.items
@@ -984,7 +1002,7 @@ class InEdgeView(OutEdgeView):
     view = InEdgeDataView
 
     def __init__(self, G):
-        pred = G.pred if hasattr(G, "pred") else G.adj
+        pred = G._pred if hasattr(G, "pred") else G._adj
         self.nbunch_iter = G.nbunch_iter
         self._adjdict = pred
         self._nodes_nbrs = pred.items
@@ -1074,7 +1092,7 @@ class InMultiEdgeView(OutMultiEdgeView):
     view = InMultiEdgeDataView
 
     def __init__(self, G):
-        pred = G.pred if hasattr(G, "pred") else G.adj
+        pred = G._pred if hasattr(G, "pred") else G._adj
         self.nbunch_iter = G.nbunch_iter
         self._adjdict = pred
         self._nodes_nbrs = pred.items
