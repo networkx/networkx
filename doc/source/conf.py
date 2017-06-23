@@ -193,8 +193,6 @@ html_use_opensearch = 'http://networkx.github.io'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NetworkX'
 
-pngmath_use_preview = True
-
 # Options for LaTeX output
 # ------------------------
 
