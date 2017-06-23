@@ -7,12 +7,21 @@ from networkx import NetworkXError,NetworkXNotImplemented
 class TestConnected:
 
     def setUp(self):
-        G1 = cnlti(nx.grid_2d_graph(2, 2), first_label=0, ordering="sorted")
-        G2 = cnlti(nx.lollipop_graph(3, 3), first_label=4, ordering="sorted")
-        G3 = cnlti(nx.house_graph(), first_label=10, ordering="sorted")
-        self.G = nx.union(G1, G2)
-        self.G = nx.union(self.G, G3)
+        # Create union of three separate undirected graphs
+        components = [
+            nx.grid_2d_graph(2, 2),
+            nx.lollipop_graph(3, 3),
+            nx.house_graph()
+        ]
+        self.G = nx.Graph()
+        self.G_components = set()
+        for c in components:
+            c = cnlti(c, first_label=len(self.G) + 1, ordering="sorted")
+            self.G = nx.union(self.G, c)
+            self.G_components.add(frozenset(c.nodes()))
+
         self.DG = nx.DiGraph([(1, 2), (1, 3), (2, 3)])
+        # A larger connected grid
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1)
 
         self.gc = []
@@ -45,16 +54,12 @@ class TestConnected:
     def test_connected_components(self):
         cc = nx.connected_components
         G = self.G
-        C = {
-            frozenset([0, 1, 2, 3]),
-            frozenset([4, 5, 6, 7, 8, 9]),
-            frozenset([10, 11, 12, 13, 14])
-        }
+        C = self.G_components
         assert_equal({frozenset(g) for g in cc(G)}, C)
 
     def test_number_connected_components(self):
         ncc = nx.number_connected_components
-        assert_equal(ncc(self.G), 3)
+        assert_equal(ncc(self.G), len(self.G_components))
 
     def test_number_connected_components2(self):
         ncc = nx.number_connected_components
@@ -63,13 +68,13 @@ class TestConnected:
     def test_connected_components2(self):
         cc = nx.connected_components
         G = self.grid
-        C = {frozenset([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])}
+        C = {frozenset(G.nodes())}
         assert_equal({frozenset(g) for g in cc(G)}, C)
 
     def test_node_connected_components(self):
         ncc = nx.node_connected_component
         G = self.grid
-        C = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+        C = set(G.nodes())
         assert_equal(ncc(G, 1), C)
 
     def test_connected_component_subgraphs(self):
