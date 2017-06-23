@@ -1,4 +1,5 @@
 from networkx.algorithms.community.asyn_lpa import *
+from networkx.algorithms.community.asyn_fluidc import *
 from networkx.algorithms.community.centrality import *
 from networkx.algorithms.community.community_generators import *
 from networkx.algorithms.community.kclique import *
