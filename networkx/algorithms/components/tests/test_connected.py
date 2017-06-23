@@ -40,33 +40,6 @@ class TestConnected:
         # A larger connected grid
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1)
 
-        self.gc = []
-        G = nx.DiGraph()
-        G.add_edges_from([(1, 2), (2, 3), (2, 8), (3, 4), (3, 7), (4, 5),
-                          (5, 3), (5, 6), (7, 4), (7, 6), (8, 1), (8, 7)])
-        C = [[3, 4, 5, 7], [1, 2, 8], [6]]
-        self.gc.append((G, C))
-
-        G = nx.DiGraph()
-        G.add_edges_from([(1, 2), (1, 3), (1, 4), (4, 2), (3, 4), (2, 3)])
-        C = [[2, 3, 4],[1]]
-        self.gc.append((G, C))
-
-        G = nx.DiGraph()
-        G.add_edges_from([(1, 2), (2, 3), (3, 2), (2, 1)])
-        C = [[1, 2, 3]]
-        self.gc.append((G,C))
-
-        # Eppstein's tests
-        G = nx.DiGraph({0:[1], 1:[2, 3], 2:[4, 5], 3:[4, 5], 4:[6], 5:[], 6:[]})
-        C = [[0], [1], [2],[ 3], [4], [5], [6]]
-        self.gc.append((G,C))
-
-        G = nx.DiGraph({0:[1], 1:[2, 3, 4], 2:[0, 3], 3:[4], 4:[3]})
-        C = [[0, 1, 2], [3, 4]]
-        self.gc.append((G, C))
-
-
     def test_connected_components(self):
         cc = nx.connected_components
         G = self.G
@@ -99,15 +72,11 @@ class TestConnected:
         assert_equal(ncc(G, 1), C)
 
     def test_connected_component_subgraphs(self):
-        wcc = nx.weakly_connected_component_subgraphs
-        cc = nx.connected_component_subgraphs
-        for G, C in self.gc:
-            U = G.to_undirected()
-            w = {frozenset(g) for g in wcc(G)}
-            c = {frozenset(g) for g in cc(U)}
-            assert_equal(w, c)
-            d = {frozenset(g) for g in cc(G)}
-            assert_equal(c, d)
+        ccs = nx.connected_component_subgraphs
+        G = self.G
+        C = self.G_components
+        assert_equal({frozenset(g.nodes()) for g in ccs(G)}, C)
+        assert_equal({frozenset(g.nodes()) for g in ccs(to_directed(G))}, C)
 
     def test_is_connected(self):
         assert_true(nx.is_connected(self.grid))
