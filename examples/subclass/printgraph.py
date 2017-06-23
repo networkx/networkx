@@ -45,7 +45,6 @@ class PrintGraph(Graph):
         self.fh.write("Remove node: %s\n"%n)
 
     def remove_nodes_from(self, nodes):
-        adj = self.adj
         for n in nodes:
             self.remove_node(n)
 
@@ -68,10 +67,7 @@ class PrintGraph(Graph):
             self.remove_edge(u,v)
 
     def clear(self):
-        self.name = ''
-        self.adj.clear()
-        self.node.clear()
-        self.graph.clear()
+        Graph.clear(self)
         self.fh.write("Clear graph\n")
 
     def subgraph(self, nbunch, copy=True):
