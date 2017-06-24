@@ -178,7 +178,7 @@ html_last_updated_fmt = '%b %d, %Y'
 html_index = 'contents.html'
 
 # Custom sidebar templates, maps page names to templates.
-#html_sidebars = {'index': 'indexsidebar.html'}
+#html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # templates.
