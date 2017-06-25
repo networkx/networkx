@@ -95,7 +95,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'NetworkX'
-copyright = '2015, NetworkX Developers'
+copyright = '2004-2017, NetworkX Developers'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
