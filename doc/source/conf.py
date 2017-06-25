@@ -220,6 +220,4 @@ intersphinx_mapping = {'http://docs.python.org/': None,
 # documents.
 default_role = 'obj'
 
-mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
-
 numpydoc_show_class_members = False
