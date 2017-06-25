@@ -59,7 +59,6 @@ if on_rtd:
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py
-sys.path.append(os.path.abspath('../sphinxext'))
 
 # General configuration
 # ---------------------
@@ -76,9 +75,6 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    #'sphinxcontrib.bibtex',
-    #'IPython.sphinxext.ipython_console_highlighting',
-    #'IPython.sphinxext.ipython_directive',
 ]
 
 
@@ -220,10 +216,10 @@ intersphinx_mapping = {'http://docs.python.org/': None,
                        'http://docs.scipy.org/doc/numpy/': None,
                       }
 
-# For trac custom roles
-
+# The reST default role (used for this markup: `text`) to use for all
+# documents.
 default_role = 'obj'
-trac_url = 'https://networkx.lanl.gov/trac/'
+
 mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
 
 numpydoc_show_class_members = False
