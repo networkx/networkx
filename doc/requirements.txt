@@ -3,6 +3,5 @@ numpy >= 1.6
 matplotlib
 pandas
 pydot >= 1.2.3
--e git://github.com/sphinx-doc/sphinx.git@stable#egg=Sphinx-origin_stable
-sphinxcontrib-bibtex
+sphinx
 sphinx_rtd_theme
