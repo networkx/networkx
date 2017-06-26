@@ -15,6 +15,7 @@ import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
+from networkx.classes.views import AtlasView3
 from networkx.classes.views import OutMultiEdgeView, InMultiEdgeView, \
         DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
 from networkx.exception import NetworkXError
@@ -104,7 +105,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     >>> keys = G.add_edges_from([(4,5,dict(route=282)), (4,5,dict(route=37))])
     >>> G[4]
-    {5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}}
+    AtlasView2({5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}})
 
     **Attributes:**
 
@@ -138,7 +139,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     >>> keys = G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
-    >>> G.edge[1][2][0]['weight'] = 4
+    >>> G.edge[1, 2, 0]['weight'] = 4
 
     **Shortcuts:**
 
@@ -150,9 +151,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
     [1, 2]
     >>> len(G)  # number of nodes in graph
     5
-    >>> G[1] # adjacency dict keyed by neighbor to edge attributes
-    ...            # Note: you should not change this dict manually!
-    {2: {0: {'weight': 4}, 1: {'color': 'blue'}}}
+    >>> G[1] # adjacency dict-like view keyed by neighbor to edge attributes
+    AtlasView2({2: {0: {'weight': 4}, 1: {'color': 'blue'}}})
 
     The fastest way to traverse all edges of a graph is via
     adjacency():
@@ -269,6 +269,22 @@ class MultiDiGraph(MultiGraph, DiGraph):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         DiGraph.__init__(self, data, **attr)
 
+    @property
+    def edge(self):
+        return OutMultiEdgeView(self)
+
+    @property
+    def adj(self):
+        return AtlasView3(self._succ)
+
+    @property
+    def succ(self):
+        return AtlasView3(self._succ)
+
+    @property
+    def pred(self):
+        return AtlasView3(self._pred)
+
     def add_edge(self, u, v, key=None, **attr):
         """Add an edge between u and v.
 
@@ -336,18 +352,18 @@ class MultiDiGraph(MultiGraph, DiGraph):
         dictionary.
         """
         # add nodes
-        if u not in self.succ:
-            self.succ[u] = self.adjlist_inner_dict_factory()
-            self.pred[u] = self.adjlist_inner_dict_factory()
-            self.node[u] = {}
-        if v not in self.succ:
-            self.succ[v] = self.adjlist_inner_dict_factory()
-            self.pred[v] = self.adjlist_inner_dict_factory()
-            self.node[v] = {}
+        if u not in self._succ:
+            self._succ[u] = self.adjlist_inner_dict_factory()
+            self._pred[u] = self.adjlist_inner_dict_factory()
+            self._node[u] = {}
+        if v not in self._succ:
+            self._succ[v] = self.adjlist_inner_dict_factory()
+            self._pred[v] = self.adjlist_inner_dict_factory()
+            self._node[v] = {}
         if key is None:
             key = self.new_edge_key(u, v)
-        if v in self.succ[u]:
-            keydict = self.adj[u][v]
+        if v in self._succ[u]:
+            keydict = self._adj[u][v]
             datadict = keydict.get(key, self.edge_key_dict_factory())
             datadict.update(attr)
             keydict[key] = datadict
@@ -357,8 +373,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
             datadict.update(attr)
             keydict = self.edge_key_dict_factory()
             keydict[key] = datadict
-            self.succ[u][v] = keydict
-            self.pred[v][u] = keydict
+            self._succ[u][v] = keydict
+            self._pred[v][u] = keydict
         return key
 
     def remove_edge(self, u, v, key=None):
@@ -408,7 +424,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         """
         try:
-            d = self.adj[u][v]
+            d = self._adj[u][v]
         except KeyError:
             raise NetworkXError(
                 "The edge %s-%s is not in the graph." % (u, v))
@@ -423,8 +439,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 raise NetworkXError(msg % (u, v, key))
         if len(d) == 0:
             # remove the key entries if last edge
-            del self.succ[u][v]
-            del self.pred[v][u]
+            del self._succ[u][v]
+            del self._pred[v][u]
 
     @property
     def edges(self):
@@ -773,7 +789,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
                              for v, keydict in nbrs.items()
                              for key, data in keydict.items())
         H.graph = deepcopy(self.graph)
-        H.node = deepcopy(self.node)
+        H._node = deepcopy(self._node)
         return H
 
     def subgraph(self, nbunch):
@@ -819,12 +835,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
         H = self.__class__()
         # copy node and attribute dictionaries
         for n in bunch:
-            H.node[n] = self.node[n]
+            H._node[n] = self._node[n]
         # namespace shortcuts for speed
-        H_succ = H.succ
-        H_pred = H.pred
-        self_succ = self.succ
-        self_pred = self.pred
+        H_succ = H._succ
+        H_pred = H._pred
+        self_succ = self._succ
+        self_pred = self._pred
         # add nodes
         for n in H:
             H_succ[n] = H.adjlist_inner_dict_factory()
@@ -897,7 +913,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         """
         H = self.__class__()
-        succ = self.succ
+        succ = self._succ
 
         # Filter out edges that don't correspond to nodes in the graph.
         def is_in_graph(u, v, k):
@@ -908,24 +924,24 @@ class MultiDiGraph(MultiGraph, DiGraph):
             # Copy the node attributes if they haven't been copied
             # already.
             if u not in H.node:
-                H.node[u] = self.node[u]
+                H._node[u] = self._node[u]
             if v not in H.node:
-                H.node[v] = self.node[v]
+                H._node[v] = self._node[v]
             # Create an entry in the successors and predecessors
             # dictionary for the nodes u and v if they don't exist yet.
-            if u not in H.succ:
-                H.succ[u] = H.adjlist_inner_dict_factory()
-            if v not in H.pred:
-                H.pred[v] = H.adjlist_inner_dict_factory()
+            if u not in H._succ:
+                H._succ[u] = H.adjlist_inner_dict_factory()
+            if v not in H._pred:
+                H._pred[v] = H.adjlist_inner_dict_factory()
             # Create an entry in the edge dictionary for the edges (u,
             # v) and (v, u) if the don't exist yet.
-            if v not in H.succ[u]:
-                H.succ[u][v] = H.edge_key_dict_factory()
-            if u not in H.pred[v]:
-                H.pred[v][u] = H.edge_key_dict_factory()
+            if v not in H._succ[u]:
+                H._succ[u][v] = H.edge_key_dict_factory()
+            if u not in H._pred[v]:
+                H._pred[v][u] = H.edge_key_dict_factory()
             # Copy the edge attributes.
-            H.edge[u][v][k] = self.edge[u][v][k]
-            H.pred[v][u][k] = self.pred[v][u][k]
+            H._succ[u][v][k] = self._succ[u][v][k]
+            H._pred[v][u][k] = self._pred[v][u][k]
         H.graph = self.graph
         return H
 
@@ -948,9 +964,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
             H.add_edges_from((v, u, k, deepcopy(d)) for u, v, k, d
                              in self.edges(keys=True, data=True))
             H.graph = deepcopy(self.graph)
-            H.node = deepcopy(self.node)
+            H._node = deepcopy(self._node)
         else:
-            self.pred, self.succ = self.succ, self.pred
-            self.adj = self.succ
+            self._pred, self._succ = self._succ, self._pred
+            self._adj = self._succ
             H = self
         return H

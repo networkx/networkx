@@ -400,7 +400,7 @@ def _optimum_spanning_tree(G, algorithm, minimum, weight='weight'):
 
     # Add node and graph attributes as shallow copy
     for n in T:
-        T.node[n] = G.node[n].copy()
+        T.node[n].update(G.node[n])
     T.graph = G.graph.copy()
 
     return T

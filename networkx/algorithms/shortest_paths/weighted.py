@@ -753,7 +753,7 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     as arguments. No need to explicitly return pred or paths.
 
     """
-    G_succ = G.succ if G.is_directed() else G.adj
+    G_succ = G._succ if G.is_directed() else G._adj
 
     push = heappush
     pop = heappop

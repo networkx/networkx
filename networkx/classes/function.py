@@ -474,7 +474,7 @@ def set_edge_attributes(G, name, values):
         >>> G = nx.path_graph(3)
         >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
         >>> nx.set_edge_attributes(G, 'betweenness', bb)
-        >>> G.edge[1][2]['betweenness']
+        >>> G.edge[1, 2]['betweenness']
         2.0
 
     If you provide a list as the third argument, updates to the list
@@ -483,9 +483,9 @@ def set_edge_attributes(G, name, values):
         >>> labels = []
         >>> nx.set_edge_attributes(G, 'labels', labels)
         >>> labels.append('foo')
-        >>> G.edge[0][1]['labels']
+        >>> G.edge[0, 1]['labels']
         ['foo']
-        >>> G.edge[1][2]['labels']
+        >>> G.edge[1, 2]['labels']
         ['foo']
 
     """
@@ -771,4 +771,4 @@ def is_empty(G):
     number of nodes in the graph.
 
     """
-    return not any(G.adj.values())
+    return not any(G._adj.values())

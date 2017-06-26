@@ -213,7 +213,7 @@ class TimingGraph(object):
             convert.to_networkx_graph(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-        self.edge = self.adj
+        self.edge = self._adj = self.adj
 
     @property
     def name(self):
@@ -580,6 +580,7 @@ class TimingGraph(object):
         [(0, {}), (1, {'time': '5pm'}), (2, {})]
         """
         return list(self.nodes_iter(data=data))
+    nodes_data = nodes
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -2008,6 +2009,7 @@ class TimingDiGraph(TimingGraph):
         self.adj = {}  # empty adjacency dictionary
         self.pred = {}  # predecessor
         self.succ = self.adj  # successor
+        self._succ = self._adj = self.adj  # successor
 
         # attempt to load graph with data
         if data is not None:

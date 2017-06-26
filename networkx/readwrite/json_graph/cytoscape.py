@@ -24,7 +24,6 @@ def cytoscape_data(G, attrs=None):
     NetworkXError
         If values in attrs are not unique.
     """
-    multigraph = G.is_multigraph()
     if not attrs:
         attrs = _attrs
     else:
@@ -38,7 +37,7 @@ def cytoscape_data(G, attrs=None):
     
     jsondata = {"data" : list(G.graph.items())}
     jsondata['directed'] = G.is_directed()
-    jsondata['multigraph'] = multigraph
+    jsondata['multigraph'] = G.is_multigraph()
     jsondata["elements"] = {"nodes" : [], "edges" : []}
     nodes = jsondata["elements"]["nodes"]
     edges = jsondata["elements"]["edges"]
@@ -50,11 +49,19 @@ def cytoscape_data(G, attrs=None):
         n["data"]["name"] = j.get(name) or str(i)
         nodes.append(n)
         
-    for e in G.edges():
-        n = {"data" : G.edge[e[0]][e[1]].copy()}
-        n["data"]["source"] = e[0]
-        n["data"]["target"] = e[1]
-        edges.append(n)
+    if G.is_multigraph():
+        for e in G.edges(keys=True):
+            n = {"data" : G.adj[e[0]][e[1]][e[2]].copy()}
+            n["data"]["source"] = e[0]
+            n["data"]["target"] = e[1]
+            n["data"]["key"] = e[2]
+            edges.append(n)
+    else:
+        for e in G.edges():
+            n = {"data" : G.adj[e[0]][e[1]].copy()}
+            n["data"]["source"] = e[0]
+            n["data"]["target"] = e[1]
+            edges.append(n)
     return jsondata
 
 
@@ -93,9 +100,14 @@ def cytoscape_graph(data, attrs=None):
         
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()
-        sour = d["data"].get("source")
-        targ = d["data"].get("target")
-        graph.add_edge(sour, targ)
-        graph.edge[sour][targ].update(edge_data)
+        sour = d["data"].pop("source")
+        targ = d["data"].pop("target")
+        if multigraph:
+            key = d["data"].get("key", 0)
+            graph.add_edge(sour, targ, key=key)
+            graph.edge[sour, targ, key].update(edge_data)
+        else:
+            graph.add_edge(sour, targ)
+            graph.edge[sour, targ].update(edge_data)
     return graph
 

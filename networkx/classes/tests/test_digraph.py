@@ -29,19 +29,15 @@ class BaseDiGraphTester(BaseGraphTester):
         G=self.K3
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
         assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
+        assert_equal(sorted(G.edges([0, 1])), [(0, 1), (0, 2), (1, 0), (1, 2)])
         assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
-
-    def test_edges(self):
-        G=self.K3
-        assert_equal(sorted(G.edges()),
-                     [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
-        assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
 
     def test_edges_data(self):
         G=self.K3
-        assert_equal(sorted(G.edges(data=True)),
-                     [(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),(2,0,{}),(2,1,{})])
-        assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
+        all_edges = [(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),(2,0,{}),(2,1,{})]
+        assert_equal(sorted(G.edges(data=True)), all_edges)
+        assert_equal(sorted(G.edges(0, data=True)), all_edges[:2])
+        assert_equal(sorted(G.edges([0, 1], data=True)), all_edges[:4])
         assert_raises((KeyError,networkx.NetworkXError), G.edges, -1, True)
 
     def test_out_edges(self):
@@ -50,18 +46,6 @@ class BaseDiGraphTester(BaseGraphTester):
                      [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
         assert_equal(sorted(G.out_edges(0)),[(0,1),(0,2)])
         assert_raises((KeyError,networkx.NetworkXError), G.out_edges,-1)
-
-    def test_out_edges(self):
-        G=self.K3
-        assert_equal(sorted(G.out_edges()),
-                     [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
-        assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
-
-    def test_out_edges_dir(self):
-        G=self.P3
-        assert_equal(sorted(G.out_edges()),[(0, 1), (1, 2)])
-        assert_equal(sorted(G.out_edges(0)),[(0, 1)])
-        assert_equal(sorted(G.out_edges(2)),[])
 
     def test_out_edges_dir(self):
         G=self.P3
@@ -172,26 +156,26 @@ class TestDiGraph(BaseAttrDiGraphTester,TestGraph):
         self.Graph=networkx.DiGraph
         # build dict-of-dict-of-dict K3
         ed1,ed2,ed3,ed4,ed5,ed6 = ({},{},{},{},{},{})
-        self.k3adj={0: {1: ed1, 2: ed2}, 1: {0: ed3, 2: ed4}, 2: {0: ed5, 1:ed6}}
-        self.k3edges=[(0, 1), (0, 2), (1, 2)]
-        self.k3nodes=[0, 1, 2]
-        self.K3=self.Graph()
-        self.K3.adj = self.K3.succ = self.K3.edge = self.k3adj
-        self.K3.pred={0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1:ed4}}
+        self.k3adj = {0: {1: ed1, 2: ed2}, 1: {0: ed3, 2: ed4}, 2: {0: ed5, 1:ed6}}
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = self.K3._succ = self.k3adj
+        self.K3._pred = {0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1:ed4}}
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
         ed1,ed2 = ({},{})
-        self.P3=self.Graph()
-        self.P3.adj={0: {1: ed1}, 1: {2: ed2}, 2: {}}
-        self.P3.succ=self.P3.adj
-        self.P3.pred={0: {}, 1: {0: ed1}, 2: {1: ed2}}
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
-        self.P3.node={}
-        self.P3.node[0]={}
-        self.P3.node[1]={}
-        self.P3.node[2]={}
+        self.P3 = self.Graph()
+        self.P3._adj = {0: {1: ed1}, 1: {2: ed2}, 2: {}}
+        self.P3._succ = self.P3._adj
+        self.P3._pred = {0: {}, 1: {0: ed1}, 2: {1: ed2}}
+        self.P3._node = {}
+        self.P3._node[0] = {}
+        self.P3._node[1] = {}
+        self.P3._node[2] = {}
 
     def test_data_input(self):
         G=self.Graph(data={1:[2],2:[1]}, name="test")
@@ -247,8 +231,8 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.node[i]['name'] = 'node{}'.format(i)
-        G.edge[0][1]['name'] = 'edge01'
-        G.edge[3][4]['name'] = 'edge34'
+        G.edge[0, 1]['name'] = 'edge01'
+        G.edge[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by the first and last edges.
         self.G = G

@@ -14,7 +14,7 @@ graph_type = {
         }
 
 # Setup tests
-N,p = 200,0.1
+N, p = 200, 0.2
 basic_setup=('for (u,v) in NX.binomial_graph(%s,%s).edges():\n'
              ' G.add_weighted_edges_from([(u,v,2),(v,u,2)])'%(N,p)
             )
@@ -38,27 +38,23 @@ all_tests=[
     ('nodes_data',
         ('for n, d in G.nodes(data=True):\n pass', basic_setup, 3, 1) ),
     ('neighbors',
-        ('for n in G:\n for nbr in G.neighbors(n):\n  pass',
-         basic_setup, 3, 1) ),
+        ('for n in G:\n for nbr in G.neighbors(n):\n  pass', basic_setup, 3, 1) ),
     ('edges',
         ('for e in G.edges():\n  pass', basic_setup, 3, 1) ),
     ('edge_data',
-        ('for e in G.edges(data=True):\n  pass',
-            basic_setup, 3, 1) ),
+        ('for e in G.edges(data=True):\n  pass', basic_setup, 3, 1) ),
     ('all_edges',
         (('for n,nbrs in G.adjacency():\n'
           ' for nbr,data in nbrs.items():\n  pass'),
             basic_setup, 3, 1) ),
     ('degree', ('for d in G.degree():\n  pass', basic_setup, 3, 1) ),
+    ('degree_from_edges', ('for n in G:\n  (n, len(G.edges(n)))', basic_setup, 3, 1) ),
     ('copy', ('H=G.copy()', basic_setup, 3, 1) ),
-    ('dijkstra',
-        ('p=NX.single_source_dijkstra(G,i)', 'i=6\n'+basic_setup, 3, 1) ),
+    ('dijkstra', ('p=NX.single_source_dijkstra(G,i)', 'i=6\n'+basic_setup, 3, 1) ),
     ('shortest_path',
-        ('p=NX.single_source_shortest_path(G,i)',
-         'i=6\n'+basic_setup, 3, 1) ),
+        ('p=NX.single_source_shortest_path(G,i)', 'i=6\n'+basic_setup, 3, 1) ),
     ('subgraph',
-        ('G.subgraph(nlist)',
-         'nlist=range(100,150)\n'+basic_setup, 3, 1) ),
+        ('G.subgraph(nlist)', 'nlist=range(100,150)\n'+basic_setup, 3, 1) ),
     #('numpy_matrix', ('NX.to_numpy_matrix(G)', basic_setup, 3, 1) ),
   ]
 

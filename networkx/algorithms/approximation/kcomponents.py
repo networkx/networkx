@@ -242,21 +242,21 @@ class _AntiGraph(nx.Graph):
 
         """
         try:
-            return iter(set(self.adj) - set(self.adj[n]) - set([n]))
+            return iter(set(self._adj) - set(self._adj[n]) - set([n]))
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
     class AntiDegreeView(nx.DegreeView):
-        def __getitem__(self, n):
-            nbrs = set(self.succ) - set(self.succ[n]) - set([n])
-            # AntiGraph is a ThinGraph so all edges have weight 1
-            return len(nbrs)
-
         def __iter__(self):
-            all_nodes = set(self.succ)
+            all_nodes = set(self._succ)
             for n in self._nodes:
-                nbrs = all_nodes - set(self.succ[n]) - set([n])
+                nbrs = all_nodes - set(self._succ[n]) - set([n])
                 yield (n, len(nbrs))
+
+        def __getitem__(self, n):
+            nbrs = set(self._succ) - set(self._succ[n]) - set([n])
+            # AntiGraph is a ThinGraph so all edges have weight 1
+            return len(nbrs) + (n in nbrs)
 
     @property
     def degree(self):

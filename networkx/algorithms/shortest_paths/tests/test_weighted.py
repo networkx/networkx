@@ -222,9 +222,9 @@ class TestWeightedPath(WeightedTestBase):
         # Create a triangle in which the edge from node 0 to node 2 has
         # a large weight and the other two edges have a small weight.
         G = nx.complete_graph(3)
-        G.edge[0][2]['weight'] = 10
-        G.edge[0][1]['weight'] = 1
-        G.edge[1][2]['weight'] = 1
+        G.adj[0][2]['weight'] = 10
+        G.adj[0][1]['weight'] = 1
+        G.adj[1][2]['weight'] = 1
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
@@ -255,9 +255,9 @@ class TestDijkstraPathLength(object):
         # Create a triangle in which the edge from node 0 to node 2 has
         # a large weight and the other two edges have a small weight.
         G = nx.complete_graph(3)
-        G.edge[0][2]['weight'] = 10
-        G.edge[0][1]['weight'] = 1
-        G.edge[1][2]['weight'] = 1
+        G.adj[0][2]['weight'] = 10
+        G.adj[0][1]['weight'] = 1
+        G.adj[1][2]['weight'] = 1
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
