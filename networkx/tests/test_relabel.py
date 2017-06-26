@@ -115,6 +115,14 @@ class TestRelabel():
         H=relabel_nodes(G,mapping)
         assert_nodes_equal(H.nodes(), ['aardvark', 'bear', 'cat', 'dog'])
 
+    def test_relabel_nodes_orderedgraph(self):
+        G = OrderedGraph()
+        G.add_nodes_from([1, 2, 3])
+        G.add_edges_from([(1, 3), (2, 3)])
+        mapping = {1: 'a', 2: 'b', 3: 'c'}
+        H = relabel_nodes(G, mapping)
+        assert list(H.nodes) == ['a', 'b', 'c']
+
     def test_relabel_nodes_digraph(self):
         G=DiGraph([('A','B'),('A','C'),('B','C'),('C','D')])
         mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
