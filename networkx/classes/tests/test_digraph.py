@@ -4,13 +4,10 @@ from nose.tools import assert_equal
 from nose.tools import assert_false
 from nose.tools import assert_true
 from nose.tools import assert_raises
-try:
-    from nose.tools import assert_count_equal
-except ImportError:
-    from nose.tools import assert_items_equal as assert_count_equal
 
 
 import networkx as nx
+from networkx.testing import assert_nodes_equal
 from test_graph import BaseGraphTester, BaseAttrGraphTester, TestGraph
 from test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
 
@@ -163,8 +160,8 @@ class BaseDiGraphTester(BaseGraphTester):
         y = Foo()
         G = nx.DiGraph()
         G.add_edge(x, y)
-        assert_count_equal(G.nodes(), G.reverse().nodes())
-        assert (y, x) in G.reverse().edges()
+        assert_nodes_equal(G.nodes(), G.reverse().nodes())
+        assert_equal([(y, x)], list(G.reverse().edges()))
 
 
 class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
