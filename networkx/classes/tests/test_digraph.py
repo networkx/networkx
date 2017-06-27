@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-from nose.tools import *
-import networkx
+
+from nose.tools import assert_equal
+from nose.tools import assert_false
+from nose.tools import assert_true
+from nose.tools import assert_raises
+try:
+    from nose.tools import assert_count_equal
+except ImportError:
+    from nose.tools import assert_items_equal as assert_count_equal
+
+
+import networkx as nx
 from test_graph import BaseGraphTester, BaseAttrGraphTester, TestGraph
 from test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
 
@@ -14,7 +24,7 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_successors(self):
         G = self.K3
         assert_equal(sorted(G.successors(0)), [1, 2])
-        assert_raises((KeyError, networkx.NetworkXError), G.successors, -1)
+        assert_raises((KeyError, nx.NetworkXError), G.successors, -1)
 
     def test_has_predecessor(self):
         G = self.K3
@@ -24,14 +34,14 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_predecessors(self):
         G = self.K3
         assert_equal(sorted(G.predecessors(0)), [1, 2])
-        assert_raises((KeyError, networkx.NetworkXError), G.predecessors, -1)
+        assert_raises((KeyError, nx.NetworkXError), G.predecessors, -1)
 
     def test_edges(self):
         G = self.K3
         assert_equal(sorted(G.edges()), [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert_equal(sorted(G.edges(0)), [(0, 1), (0, 2)])
         assert_equal(sorted(G.edges([0, 1])), [(0, 1), (0, 2), (1, 0), (1, 2)])
-        assert_raises((KeyError, networkx.NetworkXError), G.edges, -1)
+        assert_raises((KeyError, nx.NetworkXError), G.edges, -1)
 
     def test_edges_data(self):
         G = self.K3
@@ -39,13 +49,13 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.edges(data=True)), all_edges)
         assert_equal(sorted(G.edges(0, data=True)), all_edges[:2])
         assert_equal(sorted(G.edges([0, 1], data=True)), all_edges[:4])
-        assert_raises((KeyError, networkx.NetworkXError), G.edges, -1, True)
+        assert_raises((KeyError, nx.NetworkXError), G.edges, -1, True)
 
     def test_out_edges(self):
         G = self.K3
         assert_equal(sorted(G.out_edges()), [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert_equal(sorted(G.out_edges(0)), [(0, 1), (0, 2)])
-        assert_raises((KeyError, networkx.NetworkXError), G.out_edges, -1)
+        assert_raises((KeyError, nx.NetworkXError), G.out_edges, -1)
 
     def test_out_edges_dir(self):
         G = self.P3
@@ -54,7 +64,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.out_edges(2)), [])
 
     def test_out_edges_data(self):
-        G = networkx.DiGraph([(0, 1, {'data': 0}), (1, 0, {})])
+        G = nx.DiGraph([(0, 1, {'data': 0}), (1, 0, {})])
         assert_equal(sorted(G.out_edges(data=True)), [(0, 1, {'data': 0}), (1, 0, {})])
         assert_equal(sorted(G.out_edges(0, data=True)), [(0, 1, {'data': 0})])
         assert_equal(sorted(G.out_edges(data='data')), [(0, 1, 0), (1, 0, None)])
@@ -67,7 +77,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.in_edges(2)), [(1, 2)])
 
     def test_in_edges_data(self):
-        G = networkx.DiGraph([(0, 1, {'data': 0}), (1, 0, {})])
+        G = nx.DiGraph([(0, 1, {'data': 0}), (1, 0, {})])
         assert_equal(sorted(G.in_edges(data=True)), [(0, 1, {'data': 0}), (1, 0, {})])
         assert_equal(sorted(G.in_edges(1, data=True)), [(0, 1, {'data': 0})])
         assert_equal(sorted(G.in_edges(data='data')), [(0, 1, 0), (1, 0, None)])
@@ -131,7 +141,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_true(G.to_undirected(reciprocal=True).has_edge(1, 2))
 
     def test_reverse_copy(self):
-        G = networkx.DiGraph([(0, 1), (1, 2)])
+        G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse()
         assert_equal(sorted(R.edges()), [(1, 0), (2, 1)])
         R.remove_edge(1, 0)
@@ -139,7 +149,7 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.edges()), [(0, 1), (1, 2)])
 
     def test_reverse_nocopy(self):
-        G = networkx.DiGraph([(0, 1), (1, 2)])
+        G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse(copy=False)
         assert_equal(sorted(R.edges()), [(1, 0), (2, 1)])
         R.remove_edge(1, 0)
@@ -151,9 +161,9 @@ class BaseDiGraphTester(BaseGraphTester):
             pass
         x = Foo()
         y = Foo()
-        G = networkx.DiGraph()
+        G = nx.DiGraph()
         G.add_edge(x, y)
-        assert_items_equal(G.nodes(), G.reverse().nodes())
+        assert_count_equal(G.nodes(), G.reverse().nodes())
         assert (y, x) in G.reverse().edges()
 
 
@@ -165,7 +175,7 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
     """Tests specific to dict-of-dict-of-dict digraph data structure"""
 
     def setUp(self):
-        self.Graph = networkx.DiGraph
+        self.Graph = nx.DiGraph
         # build dict-of-dict-of-dict K3
         ed1, ed2, ed3, ed4, ed5, ed6 = ({}, {}, {}, {}, {}, {})
         self.k3adj = {0: {1: ed1, 2: ed2}, 1: {0: ed3, 2: ed4}, 2: {0: ed5, 1: ed6}}
@@ -215,8 +225,8 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
         assert_equal(G.succ, {0: {1: {'data': 2}, 2: {'data': 3}}, 1: {}, 2: {}})
         assert_equal(G.pred, {0: {}, 1: {0: {'data': 2}}, 2: {0: {'data': 3}}})
 
-        assert_raises(networkx.NetworkXError, G.add_edges_from, [(0,)])  # too few in tuple
-        assert_raises(networkx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3)])  # too many in tuple
+        assert_raises(nx.NetworkXError, G.add_edges_from, [(0,)])  # too few in tuple
+        assert_raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3)])  # too many in tuple
         assert_raises(TypeError, G.add_edges_from, [0])  # not a tuple
 
     def test_remove_edge(self):
@@ -224,7 +234,7 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
         G.remove_edge(0, 1)
         assert_equal(G.succ, {0: {2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}})
         assert_equal(G.pred, {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}})
-        assert_raises((KeyError, networkx.NetworkXError), G.remove_edge, -1, 0)
+        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
 
     def test_remove_edges_from(self):
         G = self.K3
@@ -239,7 +249,7 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
 
     def setup(self):
         # Create a doubly-linked path graph on five nodes.
-        G = networkx.DiGraph(networkx.path_graph(5))
+        G = nx.DiGraph(nx.path_graph(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.node[i]['name'] = 'node{}'.format(i)
@@ -256,7 +266,7 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
         For more information, see GitHub issue #2370.
 
         """
-        G = networkx.DiGraph()
+        G = nx.DiGraph()
         G.add_edge(0, 1)
         H = G.edge_subgraph([(0, 1)])
         assert_equal(list(H.predecessors(0)), [])
