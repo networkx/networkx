@@ -145,6 +145,14 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(R.edges()),[(2,1)])
         assert_equal(sorted(G.edges()),[(2,1)])
 
+    def test_reverse_hashable(self):
+        class Foo(object): pass
+        x = Foo()
+        y = Foo()
+        G = networkx.DiGraph()
+        G.add_edge(x, y)
+        assert_items_equal(G.nodes(), G.reverse().nodes())
+        assert (y, x) in G.reverse().edges()
 
 class BaseAttrDiGraphTester(BaseDiGraphTester,BaseAttrGraphTester):
     pass
