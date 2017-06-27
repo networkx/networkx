@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
+
+import networkx as nx
 from networkx.testing import *
 from networkx import *
 from networkx.convert import *
@@ -64,8 +66,8 @@ class TestConvert():
             assert_equal(sorted(G.edges()), sorted(GI.edges()))
 
     def test_graph(self):
-        g = cycle_graph(10)
-        G = Graph()
+        g = nx.cycle_graph(10)
+        G = nx.Graph()
         G.add_nodes_from(g)
         G.add_weighted_edges_from((u, v, u) for u,v in g.edges())
 
@@ -94,6 +96,22 @@ class TestConvert():
         GI=Graph(dol)
         assert_nodes_equal(sorted(G.nodes()), sorted(GI.nodes()))
         assert_edges_equal(enone, sorted(GI.edges(data=True)))
+
+        # Pandas DataFrame
+        edgelist = nx.to_edgelist(G)
+        source = [s for s, t, d in edgelist]
+        target = [t for s, t, d in edgelist]
+        weight = [d['weight'] for s, t, d in edgelist]
+        import pandas as pd
+        edges = pd.DataFrame({'source': source,
+                              'target': target,
+                              'weight': weight})
+        GG = nx.from_pandas_dataframe(edges, edge_attr='weight')
+        assert_nodes_equal(sorted(G.nodes()), sorted(GG.nodes()))
+        assert_edges_equal(sorted(G.edges()), sorted(GG.edges()))
+        GW = to_networkx_graph(edges, create_using=Graph())
+        assert_nodes_equal(sorted(G.nodes()), sorted(GW.nodes()))
+        assert_edges_equal(sorted(G.edges()), sorted(GW.edges()))
 
 
     def test_with_multiedges_self_loops(self):

@@ -127,9 +127,9 @@ def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
-def from_pandas_dataframe(df, source, target, edge_attr=None,
+def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
         create_using=None):
-    """Return a graph from Pandas DataFrame.
+    """Return a graph from Pandas DataFrame containing an edge list.
 
     The Pandas DataFrame should contain at least two columns of node names and
     zero or more columns of node attributes. Each row will be processed as one
@@ -189,6 +189,13 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
     10
     >>> G['E']['C']['cost']
     9
+    >>> edges = pd.DataFrame({'source': [0, 1, 2],
+    ...                       'target': [2, 2, 3],
+    ...                       'weight': [3, 4, 5],
+    ...                       'color': ['red', 'blue', 'blue']})
+    >>> G = nx.from_pandas_dataframe(edges, edge_attr=True)
+    >>> G[0][2]['color']
+    'red'
     """
 
     g = _prep_create_using(create_using)

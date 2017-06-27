@@ -132,7 +132,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
         import pandas as pd
         if isinstance(data, pd.DataFrame):
             try:
-                return nx.from_pandas_dataframe(data, create_using=create_using)
+                return nx.from_pandas_dataframe(data, edge_attr=True, create_using=create_using)
             except:
                 msg = "Input is not a correct Pandas DataFrame."
                 raise nx.NetworkXError(msg)
