@@ -186,6 +186,11 @@ class NodeView(Mapping, Set):
             return self
         return NodeDataView(self._nodes, data, default)
 
+    def data(self, data=False, default=None):
+        if data is False:
+            return self
+        return NodeDataView(self._nodes, data, default)
+
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, tuple(self))
 
@@ -885,6 +890,12 @@ class OutEdgeView(Set, Mapping):
             return self
         return self.view(self, nbunch, data, default)
 
+    def data(self, nbunch=None, data=False, default=None):
+        if nbunch is None and data is False:
+            return self
+        return self.view(self, nbunch, data, default)
+
+    # String Methods
     def __str__(self):
         return 'EdgeView(%r)' % list(self)
 
@@ -1059,6 +1070,11 @@ class OutMultiEdgeView(OutEdgeView):
         return self._adjdict[u][v][k]
 
     def __call__(self, nbunch=None, data=False, keys=False, default=None):
+        if nbunch is None and data is False and keys is True:
+            return self
+        return self.view(self, nbunch, data, keys, default)
+
+    def data(self, nbunch=None, data=False, keys=False, default=None):
         if nbunch is None and data is False and keys is True:
             return self
         return self.view(self, nbunch, data, keys, default)
