@@ -11,7 +11,6 @@
 #          Christopher Ellison
 """Connected components."""
 import networkx as nx
-from networkx.utils.decorators import not_implemented_for
 from ...utils import arbitrary_element
 
 __all__ = [
@@ -23,7 +22,6 @@ __all__ = [
 ]
 
 
-@not_implemented_for('directed')
 def connected_components(G):
     """Generate connected components.
 
@@ -36,11 +34,6 @@ def connected_components(G):
     -------
     comp : generator of sets
        A generator of sets of nodes, one for each component of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is undirected.
 
     Examples
     --------
@@ -61,10 +54,6 @@ def connected_components(G):
     strongly_connected_components
     weakly_connected_components
 
-    Notes
-    -----
-    For undirected graphs only.
-
     """
     seen = set()
     for v in G:
@@ -74,7 +63,6 @@ def connected_components(G):
             seen.update(c)
 
 
-@not_implemented_for('directed')
 def connected_component_subgraphs(G, copy=True):
     """Generate connected components as subgraphs.
 
@@ -90,11 +78,6 @@ def connected_component_subgraphs(G, copy=True):
     -------
     comp : generator
       A generator of graphs, one for each connected component of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is undirected.
 
     Examples
     --------
@@ -115,7 +98,6 @@ def connected_component_subgraphs(G, copy=True):
 
     Notes
     -----
-    For undirected graphs only.
     Graph, node, and edge attributes are copied to the subgraphs by default.
 
     """
@@ -145,15 +127,10 @@ def number_connected_components(G):
     number_weakly_connected_components
     number_strongly_connected_components
 
-    Notes
-    -----
-    For undirected graphs only.
-
     """
     return len(list(connected_components(G)))
 
 
-@not_implemented_for('directed')
 def is_connected(G):
     """Return True if the graph is connected, false otherwise.
 
@@ -169,8 +146,8 @@ def is_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
-        If G is undirected.
+    NetworkXPointlessConcept:
+        If G is the null graph.
 
     Examples
     --------
@@ -186,10 +163,6 @@ def is_connected(G):
     is_biconnected
     connected_components
 
-    Notes
-    -----
-    For undirected graphs only.
-
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept('Connectivity is undefined ',
@@ -197,7 +170,6 @@ def is_connected(G):
     return len(set(_plain_bfs(G, arbitrary_element(G)))) == len(G)
 
 
-@not_implemented_for('directed')
 def node_connected_component(G, n):
     """Return the nodes in the component of graph containing node n.
 
@@ -214,18 +186,9 @@ def node_connected_component(G, n):
     comp : set
        A set of nodes in the component of G containing node n.
 
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is directed.
-
     See Also
     --------
     connected_components
-
-    Notes
-    -----
-    For undirected graphs only.
 
     """
     return set(_plain_bfs(G, n))
@@ -233,6 +196,7 @@ def node_connected_component(G, n):
 
 def _plain_bfs(G, source):
     """A fast BFS node generator"""
+    directed = G.is_directed()
     seen = set()
     nextlevel = {source}
     while nextlevel:
@@ -243,3 +207,5 @@ def _plain_bfs(G, source):
                 yield v
                 seen.add(v)
                 nextlevel.update(G[v])
+                if directed:
+                    nextlevel.update(G.pred[v])
