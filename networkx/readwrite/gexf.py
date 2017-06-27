@@ -163,8 +163,6 @@ def read_gexf(path, node_type=None, relabel=False, version='1.1draft'):
 
 
 class GEXF(object):
-#    global register_namespace
-
     versions = {}
     d = {'NS_GEXF': "http://www.gexf.net/1.1draft",
          'NS_VIZ': "http://www.gexf.net/1.1draft/viz",
@@ -241,12 +239,11 @@ class GEXFWriter(GEXF):
         self.prettyprint = prettyprint
         self.encoding = encoding
         self.set_version(version)
-        self.xml = Element("gexf",
-                           {'xmlns':self.NS_GEXF,
-                            'xmlns:xsi':self.NS_XSI,
-                            #'xmlns:viz':self.NS_VIZ,
-                            'xsi:schemaLocation':self.SCHEMALOCATION,
-                            'version':self.VERSION})
+        self.xml = Element('gexf',
+                           {'xmlns': self.NS_GEXF,
+                            'xmlns:xsi': self.NS_XSI,
+                            'xsi:schemaLocation': self.SCHEMALOCATION,
+                            'version': self.VERSION})
 
         ET.register_namespace('viz', self.NS_VIZ)
 
