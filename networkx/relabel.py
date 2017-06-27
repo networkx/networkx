@@ -76,9 +76,14 @@ def relabel_nodes(G, mapping, copy=True):
     Only the nodes specified in the mapping will be relabeled.
 
     The keyword setting copy=False modifies the graph in place.
-    This is not always possible if the mapping is circular.
-    In that case use copy=True.
-
+    Relabel_nodes avoids naming collisions by building a 
+    directed graph from ``mapping`` which specifies the order of
+    relabelings. Naming collisions, such as a->b, b->c, are ordered
+    such that "b" gets renamed to "c" before "a" gets renamed "b".
+    In cases of circular mappings (e.g. a->b, b->a), modifying the 
+    graph is not possible in-place and an exception is raised.
+    In that case, use copy=True.
+    
     See Also
     --------
     convert_node_labels_to_integers
