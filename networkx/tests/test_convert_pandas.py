@@ -2,6 +2,7 @@ from nose import SkipTest
 from nose.tools import assert_true
 
 import networkx as nx
+from networkx.testing import assert_nodes_equal, assert_edges_equal
 
 class TestConvertPandas(object):
     numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
@@ -63,3 +64,25 @@ class TestConvertPandas(object):
                                ('A', 'D', {})])
         G=nx.from_pandas_dataframe(self.df, 0, 'b',)
         self.assert_equal(G, Gtrue)
+
+
+    def test_from_datafram(self, ):
+        # Pandas DataFrame
+        g = nx.cycle_graph(10)
+        G = nx.Graph()
+        G.add_nodes_from(g)
+        G.add_weighted_edges_from((u, v, u) for u,v in g.edges())
+        edgelist = nx.to_edgelist(G)
+        source = [s for s, t, d in edgelist]
+        target = [t for s, t, d in edgelist]
+        weight = [d['weight'] for s, t, d in edgelist]
+        import pandas as pd
+        edges = pd.DataFrame({'source': source,
+                              'target': target,
+                              'weight': weight})
+        GG = nx.from_pandas_dataframe(edges, edge_attr='weight')
+        assert_nodes_equal(sorted(G.nodes()), sorted(GG.nodes()))
+        assert_edges_equal(sorted(G.edges()), sorted(GG.edges()))
+        GW = nx.to_networkx_graph(edges, create_using=nx.Graph())
+        assert_nodes_equal(sorted(G.nodes()), sorted(GW.nodes()))
+        assert_edges_equal(sorted(G.edges()), sorted(GW.edges()))
