@@ -1124,7 +1124,8 @@ class DiGraph(Graph):
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
             H.graph = deepcopy(self.graph)
-            H._node = deepcopy(self._node)
+            for n in self._node:
+                H._node[n] = deepcopy(self._node[n])
         else:
             self._pred, self._succ = self._succ, self._pred
             self._adj = self._succ
