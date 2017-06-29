@@ -263,6 +263,8 @@ notation, or G.edge.
 
 The special attribute 'weight'
 should be numeric and holds values used by algorithms requiring weighted edges.
+Warning: Do not assign anything to `G.edge[u]` or `G.edge[u][v]` as it will 
+corrupt the graph data structure. Change the edge dict as shown above. 
 
 
 Directed graphs
@@ -307,8 +309,8 @@ between any pair of nodes.  The :class:`MultiGraph` and
 :class:`MultiDiGraph`
 classes allow you to add the same edge twice, possibly with different
 edge data.  This can be powerful for some applications, but many
-algorithms are not well defined on such graphs.  Shortest path is one
-example.  Where results are well defined,
+algorithms are not well defined on such graphs.
+Where results are well defined,
 e.g. :meth:`MultiGraph.degree` we provide the function.  Otherwise you
 should convert to a standard graph in a way that makes the measurement
 well defined.

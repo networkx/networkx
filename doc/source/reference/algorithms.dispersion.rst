@@ -2,9 +2,9 @@
 Dispersion
 **********
 
-.. automodule:: networkx.algorithms.dispersion
+.. automodule:: networkx.algorithms.centrality
 
-   Dispersion
+Dispersion
 ----------
 .. autosummary::
    :toctree: generated/

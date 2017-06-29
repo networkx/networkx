@@ -76,8 +76,8 @@ def average_neighbor_degree(G, source='out', target='out',
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> G.edge[0][1]['weight'] = 5
-    >>> G.edge[2][3]['weight'] = 3
+    >>> G.edge[0, 1]['weight'] = 5
+    >>> G.edge[2, 3]['weight'] = 3
 
     >>> nx.average_neighbor_degree(G)
     {0: 2.0, 1: 1.5, 2: 1.5, 3: 2.0}

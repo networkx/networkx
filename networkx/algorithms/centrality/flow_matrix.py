@@ -17,12 +17,12 @@ def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     w = C.w  # w is the Laplacian matrix width
     # row-by-row flow matrix
-    for u, v, d in G.edges(data=True):
+    for u, v in sorted(sorted((u, v)) for u, v in G.edges()):
         B = np.zeros(w, dtype=dtype)
-        c = d.get(weight, 1.0)
-        B[u % w] = c
-        B[v % w] = -c
-        # get only the rows needed in the inverse laplacian
+        c = G[u][v].get(weight, 1.0)
+        B[u%w] = c
+        B[v%w] = -c
+        # get only the rows needed in the inverse laplacian 
         # and multiply to get the flow matrix row
         row = np.dot(B, C.get_rows(u, v))
         yield row, (u, v)

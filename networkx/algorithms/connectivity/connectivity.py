@@ -484,7 +484,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
-def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
+def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None,
                             residual=None, cutoff=None):
     r"""Returns local edge connectivity for nodes s and t in G.
 
@@ -644,7 +644,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     elif flow_func is boykov_kolmogorov:
         kwargs['cutoff'] = cutoff
 
-    return nx.maximum_flow_value(H, u, v, **kwargs)
+    return nx.maximum_flow_value(H, s, t, **kwargs)
 
 def edge_connectivity(G, s=None, t=None, flow_func=None):
     r"""Returns the edge connectivity of the graph or digraph G.

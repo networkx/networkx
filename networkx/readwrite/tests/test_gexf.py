@@ -290,7 +290,7 @@ class TestGEXF(object):
             G.node[i]['label'] = i
             G.node[i]['pid'] = i
 
-        expected = """<gexf version="1.1" xmlns="http://www.gexf.net/1.1draft" xmlns:viz="http://www.gexf.net/1.1draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+        expected = """<gexf version="1.1" xmlns="http://www.gexf.net/1.1draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
   <graph defaultedgetype="undirected" mode="static" name="">
     <meta>
       <creator>NetworkX {}</creator>

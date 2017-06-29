@@ -42,6 +42,10 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.1draft'):
     "GEXF (Graph Exchange XML Format) is a language for describing
     complex networks structures, their associated data and dynamics" [1]_.
 
+    Node attributes are checked according to the version of the GEXF
+    schemas used for parameters which are not user defined,
+    e.g. visualization 'viz' [2]_. See example for usage.
+
     Parameters
     ----------
     G : graph
@@ -59,6 +63,12 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.1draft'):
     >>> G = nx.path_graph(4)
     >>> nx.write_gexf(G, "test.gexf")
 
+    # visualization data
+    >>> G.node[0]['viz'] = {'size': 54}
+    >>> G.node[0]['viz']['position'] = {'x' : 0, 'y' : 1}
+    >>> G.node[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
+
+
     Notes
     -----
     This implementation does not support mixed graphs (directed and undirected
@@ -71,6 +81,8 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.1draft'):
     References
     ----------
     .. [1] GEXF graph format, http://gexf.net/format/
+    .. [2] GEXF viz schema 1.1, http://www.gexf.net/1.1draft/viz
+
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint,
                         version=version)
@@ -232,7 +244,7 @@ class GEXFWriter(GEXF):
     def __init__(self, graph=None, encoding='utf-8', prettyprint=True,
                  version='1.1draft'):
         try:
-            import xml.etree.ElementTree
+            import xml.etree.ElementTree as ET
         except ImportError:
              raise ImportError('GEXF writer requires '
                                'xml.elementtree.ElementTree')
@@ -242,9 +254,10 @@ class GEXFWriter(GEXF):
         self.xml = Element('gexf',
                            {'xmlns': self.NS_GEXF,
                             'xmlns:xsi': self.NS_XSI,
-                            'xmlns:viz': self.NS_VIZ,
                             'xsi:schemaLocation': self.SCHEMALOCATION,
                             'version': self.VERSION})
+
+        ET.register_namespace('viz', self.NS_VIZ)
 
         # counters for edge and attribute identifiers
         self.edge_id = itertools.count()
@@ -391,7 +404,7 @@ class GEXFWriter(GEXF):
             if k == 'key':
                 k = 'networkx_key'
             val_type = type(v)
-            if type(v) == list:
+            if isinstance(v, list):
                 # dynamic data
                 for val, start, end in v:
                     val_type = type(val)
@@ -418,7 +431,7 @@ class GEXFWriter(GEXF):
                                            node_or_edge, default, mode)
                 e = Element('attvalue')
                 e.attrib['for'] = attr_id
-                if type(v) == bool:
+                if isinstance(v, bool):
                     e.attrib['value'] = make_str(v).lower()
                 else:
                     e.attrib['value'] = make_str(v)
@@ -545,12 +558,15 @@ class GEXFWriter(GEXF):
         # if 'start' or 'end' appears, alter Graph mode to dynamic and set timeformat
         if self.graph_element.get('mode') == 'static':
             if start_or_end is not None:
-                if type(start_or_end) == str:
+                if isinstance(start_or_end, str):
                     timeformat = 'date'
-                elif type(start_or_end) == float:
+                elif isinstance(start_or_end, float):
                     timeformat = 'double'
-                elif type(start_or_end) == int:
+                elif isinstance(start_or_end, int):
                     timeformat = 'long'
+                else:
+                    raise nx.NetworkXError(\
+                          'timeformat should be of the type int, float or str')
                 self.graph_element.set('timeformat', timeformat)
                 self.graph_element.set('mode', 'dynamic')
 

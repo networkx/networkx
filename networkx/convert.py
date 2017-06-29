@@ -93,7 +93,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
             if hasattr(data,'graph'): # data.graph should be dict-like
                 result.graph.update(data.graph)
             if hasattr(data,'node'): # data.node should be dict-like
-                result.node.update( (n,dd.copy()) for n,dd in data.node.items() )
+                result._node.update( (n,dd.copy()) for n,dd in data.node.items() )
             return result
         except:
             raise nx.NetworkXError("Input is not a correct NetworkX graph.")
@@ -117,9 +117,10 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
                 raise TypeError("Input is not known type.")
 
     # list or generator of edges
-    if (isinstance(data,list)
-        or isinstance(data,tuple)
-        or hasattr(data,'next')
+    if (isinstance(data, list)
+        or isinstance(data, tuple)
+        or hasattr(data, '_adjdict')
+        or hasattr(data, 'next')
         or hasattr(data, '__next__')):
         try:
             return from_edgelist(data,create_using=create_using)

@@ -38,7 +38,7 @@ __all__ = ['draw',
            'draw_shell']
 
 
-def draw(G, pos=None, ax=None, hold=None, **kwds):
+def draw(G, pos=None, ax=None, **kwds):
     """Draw the graph G with Matplotlib.
 
     Draw the graph as a simple representation with no node
@@ -59,10 +59,6 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     ax : Matplotlib Axes object, optional
        Draw the graph in specified Matplotlib axes.
-
-    hold : bool, optional
-       Set the Matplotlib hold state.  If True subsequent draw
-       commands will be added to the current axes.
 
     kwds : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
@@ -99,7 +95,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -122,19 +118,13 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     if 'with_labels' not in kwds:
         kwds['with_labels'] = 'labels' in kwds
-    b = plt.ishold()
-    # allow callers to override the hold state by passing hold=True|False
-    h = kwds.pop('hold', None)
-    if h is not None:
-        plt.hold(h)
+
     try:
         draw_networkx(G, pos=pos, ax=ax, **kwds)
         ax.set_axis_off()
         plt.draw_if_interactive()
     except:
-        plt.hold(b)
         raise
-    plt.hold(b)
     return
 
 
@@ -251,7 +241,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> limits=plt.axis('off') # turn of axis
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------
@@ -352,7 +342,7 @@ def draw_networkx_nodes(G, pos,
     >>> nodes=nx.draw_networkx_nodes(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------
@@ -484,7 +474,7 @@ def draw_networkx_edges(G, pos,
     >>> edges=nx.draw_networkx_edges(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------
@@ -693,7 +683,7 @@ def draw_networkx_labels(G, pos,
     >>> labels=nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
 
     See Also
@@ -812,7 +802,7 @@ def draw_networkx_edge_labels(G, pos,
     >>> edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.github.io/documentation/latest/gallery.html
+    http://networkx.readthedocs.io/en/latest/gallery.html
 
     See Also
     --------

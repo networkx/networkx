@@ -9,6 +9,7 @@
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Dan Schult (dschult@colgate.edu)
 #          Ben Edwards (BJEdwards@gmail.com)
+#          Arya McCarthy (admccarthy@smu.edu)
 """Generators for geometric graphs.
 """
 from __future__ import division
@@ -20,6 +21,12 @@ from math import sqrt
 import math
 import random
 from random import uniform
+try:
+    from scipy.spatial import cKDTree as KDTree
+except ImportError:
+    _is_scipy_available = False
+else:
+    _is_scipy_available = True
 
 import networkx as nx
 from networkx.utils import nodes_or_number
@@ -38,13 +45,40 @@ def euclidean(x, y):
     return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
 
 
+def _fast_construct_edges(G, radius, p):
+    """Construct edges for random geometric graph.
+
+    Requires scipy to be installed.
+    """
+    pos = nx.get_node_attributes(G, 'pos')
+    nodes, coords = list(zip(*pos.items()))
+    kdtree = KDTree(coords)  # Cannot provide generator.
+    edge_indexes = kdtree.query_pairs(radius, p)
+    edges = ((nodes[u], nodes[v]) for u, v in edge_indexes)
+    G.add_edges_from(edges)
+
+
+def _slow_construct_edges(G, radius, p):
+    """Construct edges for random geometric graph.
+
+    Works without scipy, but in `O(n^2)` time.
+    """
+    # TODO This can be parallelized.
+    for (u, pu), (v, pv) in combinations(G.nodes(data='pos'), 2):
+        if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius ** p:
+            G.add_edge(u, v)
+
+
 @nodes_or_number(0)
-def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
+def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     """Returns a random geometric graph in the unit cube.
 
     The random geometric graph model places `n` nodes uniformly at
     random in the unit cube. Two nodes are joined by an edge if the
     distance between the nodes is at most `radius`.
+
+    Edges are determined using a KDTree when SciPy is available.
+    This reduces the time complexity from :math:`O(n^2)` to :math:`O(n)`.
 
     Parameters
     ----------
@@ -56,23 +90,15 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    metric : function
-        A metric on vectors of numbers (represented as lists or
-        tuples). This must be a function that accepts two lists (or
-        tuples) as input and yields a number as output. The function
-        must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+    p : float
+        Which Minkowski distance metric to use.  `p` has to meet the condition
+        ``1 <= p <= infinity``.
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
+        If this argument is not specified, the :math:`L^2` metric (the Euclidean
+        distance metric) is used.
 
-        If this argument is not specified, the Euclidean distance metric is
-        used.
-
-        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+        This should not be confused with the `p` of an Erdős-Rényi random
+        graph, which represents probability.
 
     Returns
     -------
@@ -90,20 +116,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
 
     >>> G = nx.random_geometric_graph(20, 0.1)
 
-    Specify an alternate distance metric using the ``metric`` keyword
-    argument. For example, to use the "`taxicab metric`_" instead of the
-    default `Euclidean metric`_::
-
-        >>> dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
-        >>> G = nx.random_geometric_graph(10, 0.1, metric=dist)
-
-    .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
-    .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
-
     Notes
     -----
-    This uses an `O(n^2)` algorithm to build the graph.  A faster algorithm
-    is possible using k-d trees.
+    This uses a *k*-d tree to build the graph.
 
     The `pos` keyword argument can be used to specify node positions so you
     can create an arbitrary distribution and domain for positions.
@@ -139,23 +154,12 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
     if pos is None:
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
     nx.set_node_attributes(G, 'pos', pos)
-    # If no distance metric is provided, use Euclidean distance.
-    if metric is None:
-        metric = euclidean
 
-    def should_join(pair):
-        u, v = pair
-        u_pos, v_pos = pos[u], pos[v]
-        return metric(u_pos, v_pos) <= radius
+    if _is_scipy_available:
+        _fast_construct_edges(G, radius, p)
+    else:
+        _slow_construct_edges(G, radius, p)
 
-    # Join each pair of nodes whose distance is at most `radius`. (We
-    # know each node has a data attribute ``'pos'`` because we created
-    # such an attribute for each node above.)
-    #
-    # TODO This is an O(n^2) algorithm, a k-d tree could be used
-    # instead.
-    nodes = G.nodes(data='pos')
-    G.add_edges_from(filter(should_join, combinations(G, 2)))
     return G
 
 

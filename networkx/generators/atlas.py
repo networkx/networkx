@@ -126,9 +126,9 @@ def graph_atlas(i):
 
     References
     ----------
-    .. [atlas] Ronald C. Read and Robin J. Wilson,
-               *An Atlas of Graphs*.
-               Oxford University Press, 1998.
+    .. [graph_atlas] Ronald C. Read and Robin J. Wilson,
+                     *An Atlas of Graphs*.
+                     Oxford University Press, 1998.
 
     """
     if not (0 <= i < NUM_GRAPHS):

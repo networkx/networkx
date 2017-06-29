@@ -101,13 +101,13 @@ class TestFunction(object):
         G=nx.create_empty_copy(self.G, with_data=False)
         assert_nodes_equal(G, list(self.G))
         assert_equal(G.graph,{})
-        assert_equal(G.node,{}.fromkeys(self.G.nodes(),{}))
-        assert_equal(G.edge,{}.fromkeys(self.G.nodes(),{}))
+        assert_equal(G._node,{}.fromkeys(self.G.nodes(),{}))
+        assert_equal(G._adj,{}.fromkeys(self.G.nodes(),{}))
         G=nx.create_empty_copy(self.G)
         assert_nodes_equal(G, list(self.G))
         assert_equal(G.graph,self.G.graph)
-        assert_equal(G.node,self.G.node)
-        assert_equal(G.edge,{}.fromkeys(self.G.nodes(),{}))
+        assert_equal(G._node,self.G._node)
+        assert_equal(G._adj,{}.fromkeys(self.G.nodes(),{}))
 
     def test_degree_histogram(self):
         assert_equal(nx.degree_histogram(self.G), [1,1,1,1,1])

@@ -188,6 +188,9 @@ def average_clustering(G, nodes=None, mode='dot'):
     The container of nodes passed to this function must contain all of the nodes
     in one of the bipartite sets ("top" or "bottom") in order to compute 
     the correct average bipartite clustering coefficients.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
 
     References
     ----------
