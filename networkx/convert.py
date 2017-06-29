@@ -67,8 +67,9 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
        Current known types are:
          any NetworkX graph
          dict-of-dicts
-         dist-of-lists
+         dict-of-lists
          list of edges
+         Pandas DataFrame (row per edge)
          numpy matrix
          numpy ndarray
          scipy sparse matrix
