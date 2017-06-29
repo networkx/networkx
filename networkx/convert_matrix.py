@@ -32,12 +32,13 @@ import networkx as nx
 from networkx.convert import _prep_create_using
 from networkx.utils import not_implemented_for
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
            'from_pandas_dataframe', 'to_pandas_dataframe',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
+
 
 def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
                         multigraph_weight=sum, weight='weight', nonedge=0.0):
@@ -128,7 +129,7 @@ def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
 
 
 def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
-        create_using=None):
+                          create_using=None):
     """Return a graph from Pandas DataFrame containing an edge list.
 
     The Pandas DataFrame should contain at least two columns of node names and
@@ -217,7 +218,7 @@ def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
             edge_i = [(i, df.columns.get_loc(i)) for i in edge_attr]
         # If a string or int is passed
         else:
-            edge_i = [(edge_attr, df.columns.get_loc(edge_attr)),]
+            edge_i = [(edge_attr, df.columns.get_loc(edge_attr)), ]
 
         # Iteration on values returns the rows as Numpy arrays
         for row in df.values:
@@ -236,6 +237,7 @@ def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
             g.add_edge(row[src_i], row[tar_i])
 
     return g
+
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
@@ -335,9 +337,9 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
         raise nx.NetworkXError(msg)
 
-    nlen=len(nodelist)
+    nlen = len(nodelist)
     undirected = not G.is_directed()
-    index=dict(zip(nodelist,range(nlen)))
+    index = dict(zip(nodelist, range(nlen)))
 
     # Initially, we start with an array of nans.  Then we populate the matrix
     # using data from the graph.  Afterwards, any leftover nans will be
@@ -375,26 +377,26 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         # Handle MultiGraphs and MultiDiGraphs
         M = np.full((nlen, nlen), np.nan, order=order)
         # use numpy nan-aware operations
-        operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
+        operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
         try:
-            op=operator[multigraph_weight]
+            op = operator[multigraph_weight]
         except:
             raise ValueError('multigraph_weight must be sum, min, or max')
 
-        for u,v,attrs in G.edges(data=True):
+        for u, v, attrs in G.edges(data=True):
             if (u in nodeset) and (v in nodeset):
                 i, j = index[u], index[v]
                 e_weight = attrs.get(weight, 1)
-                M[i,j] = op([e_weight, M[i,j]])
+                M[i, j] = op([e_weight, M[i, j]])
                 if undirected:
-                    M[j,i] = M[i,j]
+                    M[j, i] = M[i, j]
     else:
         # Graph or DiGraph, this is much faster than above
         M = np.full((nlen, nlen), np.nan, order=order)
-        for u,nbrdict in G.adjacency():
-            for v,d in nbrdict.items():
+        for u, nbrdict in G.adjacency():
+            for v, d in nbrdict.items():
                 try:
-                    M[index[u],index[v]] = d.get(weight,1)
+                    M[index[u], index[v]] = d.get(weight, 1)
                 except KeyError:
                     # This occurs when there are fewer desired nodes than
                     # there are nodes in the graph: len(nodelist) < len(G)
@@ -492,28 +494,28 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     """
     # This should never fail if you have created a numpy matrix with numpy...
     import numpy as np
-    kind_to_python_type={'f':float,
-                         'i':int,
-                         'u':int,
-                         'b':bool,
-                         'c':complex,
-                         'S':str,
-                         'V':'void'}
-    try: # Python 3.x
-        blurb = chr(1245) # just to trigger the exception
-        kind_to_python_type['U']=str
-    except ValueError: # Python 2.6+
-        kind_to_python_type['U']=unicode
-    G=_prep_create_using(create_using)
-    n,m=A.shape
-    if n!=m:
+    kind_to_python_type = {'f': float,
+                           'i': int,
+                           'u': int,
+                           'b': bool,
+                           'c': complex,
+                           'S': str,
+                           'V': 'void'}
+    try:  # Python 3.x
+        blurb = chr(1245)  # just to trigger the exception
+        kind_to_python_type['U'] = str
+    except ValueError:  # Python 2.6+
+        kind_to_python_type['U'] = unicode
+    G = _prep_create_using(create_using)
+    n, m = A.shape
+    if n != m:
         raise nx.NetworkXError("Adjacency matrix is not square.",
-                               "nx,ny=%s"%(A.shape,))
-    dt=A.dtype
+                               "nx,ny=%s" % (A.shape,))
+    dt = A.dtype
     try:
-        python_type=kind_to_python_type[dt.kind]
+        python_type = kind_to_python_type[dt.kind]
     except:
-        raise TypeError("Unknown numpy data type: %s"%dt)
+        raise TypeError("Unknown numpy data type: %s" % dt)
 
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
@@ -614,19 +616,19 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     if len(nodelist) != len(nodeset):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
         raise nx.NetworkXError(msg)
-    nlen=len(nodelist)
+    nlen = len(nodelist)
     undirected = not G.is_directed()
-    index=dict(zip(nodelist,range(nlen)))
-    M = np.zeros((nlen,nlen), dtype=dtype, order=order)
+    index = dict(zip(nodelist, range(nlen)))
+    M = np.zeros((nlen, nlen), dtype=dtype, order=order)
 
-    names=M.dtype.names
-    for u,v,attrs in G.edges(data=True):
+    names = M.dtype.names
+    for u, v, attrs in G.edges(data=True):
         if (u in nodeset) and (v in nodeset):
-            i,j = index[u],index[v]
-            values=tuple([attrs[n] for n in names])
-            M[i,j] = values
+            i, j = index[u], index[v]
+            values = tuple([attrs[n] for n in names])
+            M[i, j] = values
             if undirected:
-                M[j,i] = M[i,j]
+                M[j, i] = M[i, j]
 
     return M.view(np.recarray)
 
@@ -724,19 +726,19 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
         raise nx.NetworkXError(msg)
 
-    index = dict(zip(nodelist,range(nlen)))
-    coefficients = zip(*((index[u],index[v],d.get(weight,1))
-                         for u,v,d in G.edges(nodelist, data=True)
+    index = dict(zip(nodelist, range(nlen)))
+    coefficients = zip(*((index[u], index[v], d.get(weight, 1))
+                         for u, v, d in G.edges(nodelist, data=True)
                          if u in index and v in index))
     try:
-        row,col,data = coefficients
+        row, col, data = coefficients
     except ValueError:
         # there is no edge in the subgraph
-        row,col,data = [],[],[]
+        row, col, data = [], [], []
 
     if G.is_directed():
-        M = sparse.coo_matrix((data,(row,col)),
-                              shape=(nlen,nlen), dtype=dtype)
+        M = sparse.coo_matrix((data, (row, col)),
+                              shape=(nlen, nlen), dtype=dtype)
     else:
         # symmetrize matrix
         d = data + data
@@ -746,17 +748,17 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         # so we subtract the data on the diagonal
         selfloops = list(G.selfloop_edges(data=True))
         if selfloops:
-            diag_index,diag_data = zip(*((index[u],-d.get(weight,1))
-                                         for u,v,d in selfloops
-                                         if u in index and v in index))
+            diag_index, diag_data = zip(*((index[u], -d.get(weight, 1))
+                                          for u, v, d in selfloops
+                                          if u in index and v in index))
             d += diag_data
             r += diag_index
             c += diag_index
-        M = sparse.coo_matrix((d, (r, c)), shape=(nlen,nlen), dtype=dtype)
+        M = sparse.coo_matrix((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
         return M.asformat(format)
     except AttributeError:
-        raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
+        raise nx.NetworkXError("Unknown sparse matrix format: %s" % format)
 
 
 def _csr_gen_triples(A):
@@ -767,7 +769,7 @@ def _csr_gen_triples(A):
     nrows = A.shape[0]
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(nrows):
-        for j in range(indptr[i], indptr[i+1]):
+        for j in range(indptr[i], indptr[i + 1]):
             yield i, indices[j], data[j]
 
 
@@ -779,7 +781,7 @@ def _csc_gen_triples(A):
     ncols = A.shape[1]
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(ncols):
-        for j in range(indptr[i], indptr[i+1]):
+        for j in range(indptr[i], indptr[i + 1]):
             yield indices[j], i, data[j]
 
 
@@ -884,10 +886,10 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
 
     """
     G = _prep_create_using(create_using)
-    n,m = A.shape
+    n, m = A.shape
     if n != m:
-        raise nx.NetworkXError(\
-              "Adjacency matrix is not square. nx,ny=%s"%(A.shape,))
+        raise nx.NetworkXError(
+            "Adjacency matrix is not square. nx,ny=%s" % (A.shape,))
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
     # Create an iterable over (u, v, w) triples and for each triple, add an
