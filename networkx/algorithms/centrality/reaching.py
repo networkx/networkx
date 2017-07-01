@@ -1,16 +1,15 @@
 # -*- encoding: utf-8 -*-
-# reaching.py - functions for computing reaching centrality in a graph
-#
-# Copyright 2015, 2016 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
+#    Copyright (C) 2004-2017 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 """Functions for computing reaching centrality of a node or a graph."""
 from __future__ import division
 
 import networkx as nx
+
 from networkx.utils import pairwise
 
 __all__ = ['global_reaching_centrality', 'local_reaching_centrality']
@@ -19,15 +18,18 @@ __all__ = ['global_reaching_centrality', 'local_reaching_centrality']
 def _average_weight(G, path, weight=None):
     """Returns the average weight of an edge in a weighted path.
 
-    `G` is the graph containing the path.
+    Parameters
+    ----------
+    G : graph
+      A networkx graph.
 
-    `path` is the list of vertices that define the path.
+    path: list
+      A list of vertices that define the path.
 
-    `weight` is the edge attribute that gives the weight of the edge in
-    the graph `G`. If None, the graph is assumed to be unweighted, and
-    the average weight of an edge is assumed to be the multiplicative
-    inverse of the length of the path.
-
+    weight : None or string, optional (default=None)
+      If None, edge weights are ignored.  Then the average weight of an edge
+      is assumed to be the multiplicative inverse of the length of the path.
+      Otherwise holds the name of the edge attribute used as weight.
     """
     path_length = len(path) - 1
     if path_length <= 0:
@@ -52,13 +54,14 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     Parameters
     ----------
     G : DiGraph
+        A networkx DiGraph.
 
-    weight : object
+    weight : None or string, optional (default=None)
         Attribute to use for edge weights. If ``None``, each edge weight
         is assumed to be one. A higher weight implies a stronger
         connection between nodes and a *shorter* path length.
 
-    normalized : bool
+    normalized : bool, optional (default=True)
         Whether to normalize the edge weights by the total sum of edge
         weights.
 
@@ -89,7 +92,6 @@ def global_reaching_centrality(G, weight=None, normalized=True):
            "Hierarchy Measure for Complex Networks."
            *PLoS ONE* 7.3 (2012): e33799.
            https://dx.doi.org/10.1371/journal.pone.0033799
-
     """
     if nx.is_negatively_weighted(G, weight=weight):
         raise nx.NetworkXError('edge weights must be positive')
@@ -132,24 +134,24 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     Parameters
     ----------
     G : DiGraph
-        A NetworkX graph.
+        A NetworkX DiGraph.
 
     v : node
         A node in the directed graph `G`.
 
-    paths : dictionary
-        If this is not ``None`` it must be a dictionary representation
+    paths : dictionary (default=None)
+        If this is not `None` it must be a dictionary representation
         of single-source shortest paths, as computed by, for example,
-        :func:`networkx.shortest_path` with source node ``v``. Use this
+        :func:`networkx.shortest_path` with source node `v`. Use this
         keyword argument if you intend to invoke this function many
         times but don't want the paths to be recomputed each time.
 
-    weight : object
-        Attribute to use for edge weights. If ``None``, each edge weight
+    weight : None or string, optional (default=None)
+        Attribute to use for edge weights.  If `None`, each edge weight
         is assumed to be one. A higher weight implies a stronger
         connection between nodes and a *shorter* path length.
 
-    normalized : bool
+    normalized : bool, optional (default=True)
         Whether to normalize the edge weights by the total sum of edge
         weights.
 
@@ -163,8 +165,7 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     --------
     >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge(1, 2)
-    >>> G.add_edge(1, 3)
+    >>> G.add_edges_from([(1, 2), (1, 3)])
     >>> nx.local_reaching_centrality(G, 3)
     0.0
     >>> G.add_edge(3, 2)
@@ -181,7 +182,6 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
            "Hierarchy Measure for Complex Networks."
            *PLoS ONE* 7.3 (2012): e33799.
            https://dx.doi.org/10.1371/journal.pone.0033799
-
     """
     if paths is None:
         if nx.is_negatively_weighted(G, weight=weight):

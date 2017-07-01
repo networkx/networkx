@@ -115,6 +115,22 @@ API changes
    Most of the shortest_path algorithms now raise a NodeNotFound exception
    when a source or a target are not present in the graph.
 
+* [`#2326 <https://github.com/networkx/networkx/pull/2326>`_]
+   Centrality algorithms were harmonized with respect to the default behavior of
+   the weight parameter. The default value of the ``weight`` keyword argument has
+   been changed from ``weight`` to ``'None'``.  This affects the
+   following centrality functions:
+   - :func:`approximate_current_flow_betweenness_centrality()`
+   - :func:`current_flow_betweenness_centrality()`
+   - :func:`current_flow_betweenness_centrality_subset()`
+   - :func:`current_flow_closeness_centrality()`
+   - :func:`edge_current_flow_betweenness_centrality()`
+   - :func:`edge_current_flow_betweenness_centrality_subset()`
+   - :func:`eigenvector_centrality()`
+   - :func:`eigenvector_centrality_numpy()`
+   - :func:`katz_centrality()`
+   - :func:`katz_centrality_numpy()`
+
 * [`#2420 <https://github.com/networkx/networkx/pull/2420>`_]
    New community detection algorithm provided. Fluid Communities is an asynchronous
    algorithm based on the simple idea of fluids interacting in an environment, 
