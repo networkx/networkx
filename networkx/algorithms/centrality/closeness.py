@@ -15,11 +15,11 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 __all__ = ['closeness_centrality']
 
 
-def closeness_centrality(G, u=None, distance=None, normalized=True):
+def closeness_centrality(G, u=None, distance=None, normalized=True, reverse=False):
     r"""Compute closeness centrality for nodes.
 
     Closeness centrality [1]_ of a node `u` is the reciprocal of the
-    sum of the shortest path distances from `u` to all `n-1` other nodes.
+    sum of the shortest path distances to `u` from all `n-1` other nodes.
     Since the sum of distances depends on the number of nodes in the
     graph, closeness is normalized by the sum of minimum possible
     distances `n-1`.
@@ -45,6 +45,9 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
     normalized : bool, optional
       If True (default) normalize by the number of nodes in the connected
       part of the graph.
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, reverse the edges of G, using successors
+      instead of predecessors.
 
     Returns
     -------
@@ -78,8 +81,11 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
         # use Dijkstra's algorithm with specified attribute as edge weight 
         path_length = functools.partial(nx.single_source_dijkstra_path_length,
                                         weight=distance)
-    else:
-        path_length = nx.single_source_shortest_path_length
+    else: # handle either directed or undirected
+        if G.is_directed() and not reverse:
+            path_length = nx.single_target_shortest_path_length
+        else:
+            path_length = nx.single_source_shortest_path_length
 
     if u is None:
         nodes = G.nodes()
