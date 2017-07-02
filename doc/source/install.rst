@@ -166,7 +166,7 @@ In conjunction with either
 
       or
 
-      - pydotplus: https://github.com/carlos-jenkins/pydotplus
+      - pydot: https://github.com/erocarrera/pydot
 
 provides graph drawing and graph layout algorithms.
 

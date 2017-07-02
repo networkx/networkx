@@ -117,18 +117,36 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.complete_graph(4)
-    >>> for path in nx.all_simple_paths(G, source=0, target=3):
-    ...     print(path)
-    ...
-    [0, 1, 2, 3]
-    [0, 1, 3]
-    [0, 2, 1, 3]
-    [0, 2, 3]
-    [0, 3]
-    >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
-    >>> print(list(paths))
-    [[0, 1, 3], [0, 2, 3], [0, 3]]
+    This iterator generates lists of nodes::
+
+        >>> G = nx.complete_graph(4)
+        >>> for path in nx.all_simple_paths(G, source=0, target=3):
+        ...     print(path)
+        ...
+        [0, 1, 2, 3]
+        [0, 1, 3]
+        [0, 2, 1, 3]
+        [0, 2, 3]
+        [0, 3]
+
+    You can generate only those paths that are shorter than a certain
+    length by using the `cutoff` keyword argument::
+
+        >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
+        >>> print(list(paths))
+        [[0, 1, 3], [0, 2, 3], [0, 3]]
+
+    To get each path as the corresponding list of edges, you can use the
+    :func:`networkx.utils.pairwise` helper function::
+
+        >>> paths = nx.all_simple_paths(G, source=0, target=3)
+        >>> for path in map(nx.utils.pairwise, paths):
+        ...     print(list(path))
+        [(0, 1), (1, 2), (2, 3)]
+        [(0, 1), (1, 3)]
+        [(0, 2), (2, 1), (1, 3)]
+        [(0, 2), (2, 3)]
+        [(0, 3)]
 
     Notes
     -----
@@ -296,7 +314,7 @@ def shortest_simple_paths(G, source, target, weight=None):
         shortest_path_func = _bidirectional_shortest_path
     else:
         def length_func(path):
-            return sum(G.edge[u][v][weight] for (u, v) in zip(path, path[1:]))
+            return sum(G.adj[u][v][weight] for (u, v) in zip(path, path[1:]))
         shortest_path_func = _bidirectional_dijkstra
 
     listA = list()

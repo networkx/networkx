@@ -45,7 +45,7 @@ class TestFlowBetweennessCentrality(object):
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
         # test weighted network
-        G.add_edge(0,1,{'weight':0.5,'other':0.3})
+        G.add_edge(0,1,weight=0.5,other=0.3)
         b=nx.current_flow_betweenness_centrality_subset(G,
                                                         list(G),
                                                         list(G),
@@ -140,7 +140,7 @@ class TestEdgeFlowBetweennessCentrality(object):
             v2=b.get((s,t),b.get((t,s)))
             assert_almost_equal(v1,v2)
         # test weighted network
-        G.add_edge(0,1,{'weight':0.5,'other':0.3})
+        G.add_edge(0,1,weight=0.5,other=0.3)
         b=edge_current_flow_subset(G,list(G),list(G),normalized=False,weight=None)
         # weight is None => same as unweighted network
         for (s,t),v1 in b_answer.items():

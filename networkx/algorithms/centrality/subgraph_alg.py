@@ -67,10 +67,10 @@ def subgraph_centrality_exp(G):
 
     Examples
     --------
-    (from [1]_)
+    (Example from [1]_)
     >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
     >>> sc = nx.subgraph_centrality_exp(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sc])
+    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
     """
     # alternative implementation that calculates the matrix exponential
@@ -79,7 +79,7 @@ def subgraph_centrality_exp(G):
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
-    expA = scipy.linalg.expm(A)
+    expA = scipy.linalg.expm(A.A)
     # convert diagonal to dictionary keyed by node
     sc = dict(zip(nodelist,map(float,expA.diagonal())))
     return sc
@@ -130,9 +130,10 @@ def subgraph_centrality(G):
 
     Examples
     --------
+    (Example from [1]_)
     >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
     >>> sc = nx.subgraph_centrality(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sc])
+    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
 
     References
@@ -149,7 +150,7 @@ def subgraph_centrality(G):
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
-    w,v = numpy.linalg.eigh(A)
+    w,v = numpy.linalg.eigh(A.A)
     vsquare = numpy.array(v)**2
     expw = numpy.exp(w)
     xg = numpy.dot(vsquare,expw)
@@ -229,7 +230,7 @@ def communicability_betweenness_centrality(G, normalized=True):
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
     A[A!=0.0] = 1
-    expA = scipy.linalg.expm(A)
+    expA = scipy.linalg.expm(A.A)
     mapping = dict(zip(nodelist,range(n)))
     cbc = {}
     for v in G:
@@ -239,7 +240,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:,i].copy()
         A[i,:] = 0
         A[:,i] = 0
-        B = (expA - scipy.linalg.expm(A)) / expA
+        B = (expA - scipy.linalg.expm(A.A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i,:] = 0
         B[:,i] = 0

@@ -244,6 +244,9 @@ def shortest_path_length(G, source=None, target=None, weight=None):
                     path_length = nx.single_source_dijkstra_path_length
                     paths = path_length(G, target, weight=weight)
     else:
+        if source not in G:
+            raise nx.NodeNotFound("Source {} not in G".format(source));
+
         if target is None:
             # Find paths to all nodes accessible from the source.
             if weight is None:
@@ -380,8 +383,13 @@ def all_shortest_paths(G, source, target, weight=None):
                                                           weight=weight)
     else:
         pred = nx.predecessor(G, source)
+
+    if source not in G :
+        raise nx.NodeNotFound('Source {} is not in G'.format(source))
+
     if target not in pred:
         raise nx.NetworkXNoPath()
+
     stack = [[target, 0]]
     top = 0
     while top >= 0:

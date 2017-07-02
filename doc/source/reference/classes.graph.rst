@@ -7,14 +7,13 @@ Graph -- Undirected graphs with self loops
 Overview
 ========
 .. currentmodule:: networkx
-.. autofunction:: Graph
+.. autoclass:: Graph
 
-=======
 Methods
 =======
 
 Adding and removing nodes and edges
-===================================
+-----------------------------------
 
 .. autosummary::
    :toctree: generated/
@@ -34,7 +33,7 @@ Adding and removing nodes and edges
 
 
 Iterating over nodes and edges
-==============================
+------------------------------
 .. autosummary::
    :toctree: generated/
 
@@ -50,7 +49,7 @@ Iterating over nodes and edges
 
 
 Information about graph structure
-=================================
+---------------------------------
 .. autosummary::
    :toctree: generated/
 
@@ -69,7 +68,7 @@ Information about graph structure
 
 
 Making copies and subgraphs
-===========================
+---------------------------
 .. autosummary::
    :toctree: generated/
 

@@ -30,7 +30,7 @@ def strongly_connected_components(G):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -127,7 +127,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -187,7 +187,7 @@ def strongly_connected_components_recursive(G):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------

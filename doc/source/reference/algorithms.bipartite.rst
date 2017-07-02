@@ -109,6 +109,13 @@ Generators
    gnmk_random_graph
 
 
+Covering
+--------
+.. automodule:: networkx.algorithms.bipartite.covering
+.. autosummary::
+   :toctree: generated/
+
+   min_edge_cover
 
 
 

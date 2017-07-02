@@ -15,6 +15,7 @@ from nose.tools import assert_almost_equals
 from nose.tools import assert_equal
 
 import networkx as nx
+from networkx.testing.utils import *
 from networkx import convert_node_labels_to_integers as cnlti
 
 
@@ -129,9 +130,9 @@ class TestEdgeBoundary(object):
         assert_equal(ilen(nx.edge_boundary(K10, [4, 5, 6, 7])), 24)
         assert_equal(ilen(nx.edge_boundary(K10, [3, 4, 5, 6, 7])), 25)
         assert_equal(ilen(nx.edge_boundary(K10, [8, 9, 10])), 21)
-        assert_equal(sorted(nx.edge_boundary(K10, [4, 5, 6], [9, 10])),
+        assert_edges_equal(nx.edge_boundary(K10, [4, 5, 6], [9, 10]),
                      [(4, 9), (4, 10), (5, 9), (5, 10), (6, 9), (6, 10)])
-        assert_equal(sorted(nx.edge_boundary(K10, [1, 2, 3], [3, 4, 5])),
+        assert_edges_equal(nx.edge_boundary(K10, [1, 2, 3], [3, 4, 5]),
                      [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4),
                       (2, 5), (3, 4), (3, 5)])
 

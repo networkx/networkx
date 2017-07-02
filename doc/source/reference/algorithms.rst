@@ -14,6 +14,7 @@ Algorithms
    algorithms.bipartite
    algorithms.boundary
    algorithms.centrality
+   algorithms.chains
    algorithms.chordal
    algorithms.clique
    algorithms.clustering
@@ -23,9 +24,11 @@ Algorithms
    algorithms.component
    algorithms.connectivity
    algorithms.core
+   algorithms.covering
    algorithms.cycles
    algorithms.cuts
    algorithms.dag
+   algorithms.dispersion
    algorithms.distance_measures
    algorithms.distance_regular
    algorithms.dominance

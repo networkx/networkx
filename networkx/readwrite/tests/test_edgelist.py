@@ -68,7 +68,7 @@ class TestEdgelist:
 
     def test_write_edgelist_1(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=False)
         fh.seek(0)
@@ -76,7 +76,7 @@ class TestEdgelist:
 
     def test_write_edgelist_2(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edges_from([(1,2),(2,3)])
         nx.write_edgelist(G,fh,data=True)
         fh.seek(0)
@@ -84,7 +84,7 @@ class TestEdgelist:
 
     def test_write_edgelist_3(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edge(1,2,weight=2.0)
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=True)
@@ -93,7 +93,7 @@ class TestEdgelist:
 
     def test_write_edgelist_4(self):
         fh=io.BytesIO()
-        G=nx.Graph()
+        G=nx.OrderedGraph()
         G.add_edge(1,2,weight=2.0)
         G.add_edge(2,3,weight=3.0)
         nx.write_edgelist(G,fh,data=[('weight')])
@@ -108,7 +108,7 @@ class TestEdgelist:
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', attr_dict={name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname)
@@ -124,7 +124,7 @@ class TestEdgelist:
         except ValueError: # Python 2.6+
             name1 = unichr(2344) + unichr(123) + unichr(6543)
             name2 = unichr(5543) + unichr(1543) + unichr(324)
-        G.add_edge(name1, 'Radiohead', attr_dict={name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         assert_raises(UnicodeEncodeError,
                       nx.write_edgelist,
@@ -141,7 +141,7 @@ class TestEdgelist:
         except ValueError: # Python 2.6+
             name1 = 'Bj' + unichr(246) + 'rk'
             name2 = unichr(220) + 'ber'
-        G.add_edge(name1, 'Radiohead', attr_dict={name2: 3})
+        G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname, encoding = 'latin-1')
         H = nx.read_edgelist(fname, encoding = 'latin-1')

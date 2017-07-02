@@ -1,19 +1,13 @@
-# reaching.py - unit tests for the reaching module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
+#    Copyright (C) 2015-2017 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 """Unit tests for the :mod:`networkx.algorithms.centrality.reaching` module."""
 from __future__ import division
-
+from nose.tools import assert_almost_equal, assert_equal, raises
 from unittest import TestCase
-
-from nose.tools import assert_almost_equal
-from nose.tools import assert_equal
-from nose.tools import raises
 
 from networkx import nx
 
@@ -24,7 +18,7 @@ class TestGlobalReachingCentrality(TestCase):
     @raises(nx.NetworkXError)
     def test_non_positive_weights(self):
         G = nx.DiGraph()
-        nx.global_reaching_centrality(G)
+        nx.global_reaching_centrality(G, weight='weight')
 
     @raises(nx.NetworkXError)
     def test_negatively_weighted(self):
@@ -34,44 +28,43 @@ class TestGlobalReachingCentrality(TestCase):
 
     def test_directed_star(self):
         G = nx.DiGraph()
-        G.add_edge(1, 2, weight=0.5)
-        G.add_edge(1, 3, weight=0.5)
+        G.add_weighted_edges_from([(1, 2, 0.5), (1, 3, 0.5)])
         grc = nx.global_reaching_centrality
-        assert_equal(grc(G, weight="weight", normalized=False), 0.5)
-        assert_equal(grc(G, weight="weight", normalized=True), 1)
+        assert_equal(grc(G, normalized=False, weight='weight'), 0.5)
+        assert_equal(grc(G), 1)
 
     def test_undirected_unweighted_star(self):
         G = nx.star_graph(2)
-        assert_equal(nx.global_reaching_centrality(G, normalized=False), 0.25)
+        grc = nx.global_reaching_centrality
+        assert_equal(grc(G, normalized=False, weight=None), 0.25)
 
     def test_undirected_weighted_star(self):
         G = nx.Graph()
-        G.add_edge(1, 2, weight=1)
-        G.add_edge(1, 3, weight=2)
-        assert_equal(nx.global_reaching_centrality(G, normalized=False), 0.25)
+        G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2)])
+        grc = nx.global_reaching_centrality
+        assert_equal(grc(G, normalized=False, weight='weight'), 0.375)
 
     def test_cycle_directed_unweighted(self):
         G = nx.DiGraph()
         G.add_edge(1, 2)
         G.add_edge(2, 1)
-        assert_equal(nx.global_reaching_centrality(G), 0)
+        assert_equal(nx.global_reaching_centrality(G, weight=None), 0)
 
     def test_cycle_undirected_unweighted(self):
         G = nx.Graph()
         G.add_edge(1, 2)
-        assert_equal(nx.global_reaching_centrality(G), 0)
+        assert_equal(nx.global_reaching_centrality(G, weight=None), 0)
 
     def test_cycle_directed_weighted(self):
         G = nx.DiGraph()
-        G.add_edge(1, 2, weight=1)
-        G.add_edge(2, 1, weight=1)
-        assert_equal(nx.global_reaching_centrality(G, weight="weight"), 0)
+        G.add_weighted_edges_from([(1, 2, 1), (2, 1, 1)])
+        assert_equal(nx.global_reaching_centrality(G), 0)
 
     def test_cycle_undirected_weighted(self):
         G = nx.Graph()
-        G.add_edge(1, 2, {"weight": 1})
+        G.add_edge(1, 2, weight=1)
         grc = nx.global_reaching_centrality
-        assert_equal(grc(G, weight="weight", normalized=False), 0)
+        assert_equal(grc(G, normalized=False), 0)
 
     def test_directed_weighted(self):
         G = nx.DiGraph()
@@ -91,7 +84,7 @@ class TestGlobalReachingCentrality(TestCase):
         max_local = max(local_reach_ctrs)
         expected = sum(max_local - lrc for lrc in local_reach_ctrs) / denom
         grc = nx.global_reaching_centrality
-        actual = grc(G, weight="weight", normalized=False)
+        actual = grc(G, normalized=False, weight='weight')
         assert_almost_equal(expected, actual, places=7)
 
 
@@ -112,13 +105,11 @@ class TestLocalReachingCentrality(TestCase):
 
     def test_undirected_unweighted_star(self):
         G = nx.star_graph(2)
-        centrality = nx.local_reaching_centrality(G, 1, normalized=False)
-        assert_equal(centrality, 0.75)
+        grc = nx.local_reaching_centrality
+        assert_equal(grc(G, 1, weight=None, normalized=False), 0.75)
 
     def test_undirected_weighted_star(self):
         G = nx.Graph()
-        G.add_edge(1, 2, weight=1)
-        G.add_edge(1, 3, weight=2)
-        centrality = nx.local_reaching_centrality(G, 1, weight='weight',
-                                                  normalized=False)
+        G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2)])
+        centrality = nx.local_reaching_centrality(G, 1, normalized=False, weight='weight')
         assert_equal(centrality, 1.5)

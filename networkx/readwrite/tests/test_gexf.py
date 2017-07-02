@@ -282,14 +282,16 @@ class TestGEXF(object):
 
     def test_write_with_node_attributes(self):
         # Addresses #673.
-        G = nx.path_graph(4)
+        G = nx.OrderedGraph()
+        G.add_nodes_from([0,1,2,3])
+        G.add_edges_from([(0,1),(1,2),(2,3)])
         for i in range(4):
             G.node[i]['id'] = i
             G.node[i]['label'] = i
             G.node[i]['pid'] = i
 
-        expected = """<gexf version="1.1" xmlns="http://www.gexf.net/1.1draft" xmlns:viz="http://www.gexf.net/1.1draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
-  <graph defaultedgetype="undirected" mode="static" name="path_graph(4)">
+        expected = """<gexf version="1.1" xmlns="http://www.gexf.net/1.1draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+  <graph defaultedgetype="undirected" mode="static" name="">
     <meta>
       <creator>NetworkX {}</creator>
       <lastmodified>{}</lastmodified>

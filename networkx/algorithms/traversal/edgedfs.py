@@ -167,7 +167,7 @@ def edge_dfs(G, source=None, orientation='original'):
         while stack:
             current_node = stack[-1]
             if current_node not in visited_nodes:
-                edges[current_node] = out_edges(current_node, **kwds)
+                edges[current_node] = iter(out_edges(current_node, **kwds))
                 visited_nodes.add(current_node)
 
             try:

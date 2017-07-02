@@ -17,6 +17,16 @@ Exceptions
 
 .. autoclass:: networkx.NetworkXNoPath
 
+.. autoclass:: networkx.NetworkXNoCycle
+
+.. autoclass:: networkx.NodeNotFound
+
 .. autoclass:: networkx.NetworkXUnbounded
 
+.. autoclass:: networkx.NetworkXNotImplemented
 
+.. autoclass:: networkx.AmbiguousSolution
+
+.. autoclass:: networkx.ExceededMaxIterations
+
+.. autoclass:: networkx.PowerIterationFailedConvergence

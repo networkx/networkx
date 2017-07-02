@@ -189,9 +189,9 @@ def barbell_graph(m1, m2, create_using=None):
     G.name = "barbell_graph(%d,%d)" % (m1, m2)
 
     # connecting path
-    G.add_nodes_from([v for v in range(m1, m1 + m2 - 1)])
+    G.add_nodes_from(range(m1, m1 + m2 - 1))
     if m2 > 1:
-        G.add_edges_from([(v, v + 1) for v in range(m1, m1 + m2 - 1)])
+        G.add_edges_from(pairwise(range(m1, m1 + m2)))
     # right barbell
     G.add_edges_from((u, v) for u in range(m1 + m2, 2 * m1 + m2)
                      for v in range(u + 1, 2 * m1 + m2))
@@ -447,9 +447,9 @@ def ladder_graph(n, create_using=None):
         raise NetworkXError("Directed Graph not supported")
     G = empty_graph(2 * n, create_using)
     G.name = "ladder_graph_(%d)" % n
-    G.add_edges_from([(v, v + 1) for v in range(n - 1)])
-    G.add_edges_from([(v, v + 1) for v in range(n, 2 * n - 1)])
-    G.add_edges_from([(v, v + n) for v in range(n)])
+    G.add_edges_from(pairwise(range(n)))
+    G.add_edges_from(pairwise(range(n, 2 * n)))
+    G.add_edges_from((v, v + n) for v in range(n))
     return G
 
 
@@ -644,35 +644,34 @@ def wheel_graph(n, create_using=None):
         G.add_edge(nodes[-1], nodes[1])
     return G
 
-
-def complete_multipartite_graph(*block_sizes):
-    """Returns the complete multipartite graph with the specified block sizes.
+def complete_multipartite_graph(*subset_sizes):
+    """Returns the complete multipartite graph with the specified subset sizes.
 
     Parameters
     ----------
-    block_sizes : tuple of integers or tuple of node iterables
+    subset_sizes : tuple of integers or tuple of node iterables
        The arguments can either all be integer number of nodes or they
        can all be iterables of nodes. If integers, they represent the
-       number of vertices in each block of the multipartite graph.
-       If iterables, each is used to create the nodes for that block.
-       The length of block_sizes is the number of blocks.
+       number of vertices in each subset of the multipartite graph.
+       If iterables, each is used to create the nodes for that subset.
+       The length of subset_sizes is the number of subsets.
 
     Returns
     -------
     G : NetworkX Graph
-       Returns the complete multipartite graph with the specified blocks.
+       Returns the complete multipartite graph with the specified subsets.
 
-       For each node, the node attribute 'block' is an integer
-       indicating which block contains the node.
+       For each node, the node attribute 'subset' is an integer
+       indicating which subset contains the node.
 
     Examples
     --------
-    Creating a complete tripartite graph, with blocks of one, two, and three
+    Creating a complete tripartite graph, with subsets of one, two, and three
     vertices, respectively.
 
         >>> import networkx as nx
         >>> G = nx.complete_multipartite_graph(1, 2, 3)
-        >>> [G.node[u]['block'] for u in G]
+        >>> [G.node[u]['subset'] for u in G]
         [0, 1, 1, 2, 2, 2]
         >>> list(G.edges(0))
         [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
@@ -682,19 +681,19 @@ def complete_multipartite_graph(*block_sizes):
         [(4, 0), (4, 1), (4, 2)]
 
         >>> G = nx.complete_multipartite_graph('a', 'bc', 'def')
-        >>> [G.node[u]['block'] for u in sorted(G)]
+        >>> [G.node[u]['subset'] for u in sorted(G)]
         [0, 1, 1, 2, 2, 2]
 
     Notes
     -----
     This function generalizes several other graph generator functions.
 
-    - If no block sizes are given, this returns the null graph.
-    - If a single block size `n` is given, this returns the empty graph on
+    - If no subset sizes are given, this returns the null graph.
+    - If a single subset size `n` is given, this returns the empty graph on
       `n` nodes.
-    - If two block sizes `m` and `n` are given, this returns the complete
+    - If two subset sizes `m` and `n` are given, this returns the complete
       bipartite graph on `m + n` nodes.
-    - If block sizes `1` and `n` are given, this returns the star graph on
+    - If subset sizes `1` and `n` are given, this returns the star graph on
       `n + 1` nodes.
 
     See also
@@ -703,28 +702,28 @@ def complete_multipartite_graph(*block_sizes):
     """
     # The complete multipartite graph is an undirected simple graph.
     G = Graph()
-    G.name = 'complete_multiparite_graph{}'.format(block_sizes)
+    G.name = 'complete_multiparite_graph{}'.format(subset_sizes)
 
-    if len(block_sizes) == 0:
+    if len(subset_sizes) == 0:
         return G
 
-    # set up blocks of nodes
+    # set up subsets of nodes
     try:
-        extents = pairwise(accumulate((0,) + block_sizes))
-        blocks = [range(start, end) for start, end in extents]
+        extents = pairwise(accumulate((0,) + subset_sizes))
+        subsets = [range(start, end) for start, end in extents]
     except TypeError:
-        blocks = block_sizes
+        subsets = subset_sizes
 
-    # add nodes with block attribute
+    # add nodes with subset attribute
     # while checking that ints are not mixed with iterables
     try:
-        for (i, block) in enumerate(blocks):
-            G.add_nodes_from(block, block=i)
+        for (i, subset) in enumerate(subsets):
+            G.add_nodes_from(subset, subset=i)
     except TypeError:
         raise NetworkXError("Arguments must be all ints or all iterables")
 
-    # Across blocks, all vertices should be adjacent.
+    # Across subsets, all vertices should be adjacent.
     # We can use itertools.combinations() because undirected.
-    for block1, block2 in itertools.combinations(blocks, 2):
-        G.add_edges_from(itertools.product(block1, block2))
+    for subset1, subset2 in itertools.combinations(subsets, 2):
+        G.add_edges_from(itertools.product(subset1, subset2))
     return G

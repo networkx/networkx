@@ -27,12 +27,8 @@ class TestConvertNumpy(object):
 
     def create_weighted(self, G):
         g = cycle_graph(4)
-        e = g.edges()
-        source = [u for u,v in e]
-        dest = [v for u,v in e]
-        weight = [s+10 for s in source]
-        ex = zip(source, dest, weight)
-        G.add_weighted_edges_from(ex)
+        G.add_nodes_from(g)
+        G.add_weighted_edges_from( (u,v,10+u) for u,v in g.edges())
         return G
 
     def assert_equal(self, G1, G2):
@@ -40,6 +36,7 @@ class TestConvertNumpy(object):
         assert_true( sorted(G1.edges())==sorted(G2.edges()) )
 
     def identity_conversion(self, G, A, create_using):
+        assert(A.sum() > 0)
         GG = nx.from_numpy_matrix(A, create_using=create_using)
         self.assert_equal(G, GG)
         GW = nx.to_networkx_graph(A, create_using=create_using)
@@ -218,3 +215,23 @@ class TestConvertNumpy(object):
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
         assert_graphs_equal(G, expected)
+
+    def test_dtype_int_graph(self):
+        """Test that setting dtype int actually gives an integer matrix.
+
+        For more information, see GitHub pull request #1363.
+
+        """
+        G = nx.complete_graph(3)
+        A = nx.to_numpy_matrix(G, dtype=int)
+        assert_equal(A.dtype, int)
+
+    def test_dtype_int_multigraph(self):
+        """Test that setting dtype int actually gives an integer matrix.
+
+        For more information, see GitHub pull request #1363.
+
+        """
+        G = nx.MultiGraph(nx.complete_graph(3))
+        A = nx.to_numpy_matrix(G, dtype=int)
+        assert_equal(A.dtype, int)

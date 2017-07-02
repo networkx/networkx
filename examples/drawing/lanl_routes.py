@@ -2,7 +2,7 @@
 """
 Routes to LANL from 186 sites on the Internet.
 
-This uses Graphviz for layout so you need PyGraphviz or PyDotPlus.
+This uses Graphviz for layout so you need PyGraphviz or pydot.
 
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
@@ -50,11 +50,11 @@ if __name__ == '__main__':
         from networkx.drawing.nx_agraph import graphviz_layout
     except ImportError:
         try:
-            import pydotplus
+            import pydot
             from networkx.drawing.nx_pydot import graphviz_layout
         except ImportError:
             raise ImportError("This example needs Graphviz and either "
-                              "PyGraphviz or PyDotPlus")
+                              "PyGraphviz or pydot")
 
     G=lanl_graph()
 

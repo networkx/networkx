@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import math
-from nose import SkipTest
-from nose.tools import *
+
 import networkx as nx
+from nose import SkipTest
+from nose.tools import assert_almost_equal, assert_equal, raises
+
 
 class TestKatzCentrality(object):
 
@@ -30,7 +32,7 @@ class TestKatzCentrality(object):
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n], places=4)
 
-    @raises(nx.NetworkXError)
+    @raises(nx.PowerIterationFailedConvergence)
     def test_maxiter(self):
         alpha = 0.1
         G = nx.path_graph(3)
@@ -39,7 +41,7 @@ class TestKatzCentrality(object):
             b = nx.katz_centrality(G, alpha, max_iter=max_iter)
         except nx.NetworkXError as e:
             assert str(max_iter) in e.args[0], "max_iter value not in error msg"
-            raise # So that the decorater sees the exception.
+            raise  # So that the decorater sees the exception.
 
     def test_beta_as_scalar(self):
         alpha = 0.1
@@ -60,7 +62,6 @@ class TestKatzCentrality(object):
         b = nx.katz_centrality(G, alpha, beta)
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n], places=4)
-
 
     def test_multiple_alpha(self):
         alpha_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
@@ -92,18 +93,19 @@ class TestKatzCentrality(object):
 
     @raises(nx.NetworkXException)
     def test_bad_beta(self):
-        G = nx.Graph([(0,1)])
-        beta = {0:77}
-        e = nx.katz_centrality(G, 0.1,beta=beta)
+        G = nx.Graph([(0, 1)])
+        beta = {0: 77}
+        e = nx.katz_centrality(G, 0.1, beta=beta)
 
     @raises(nx.NetworkXException)
     def test_bad_beta_numbe(self):
-        G = nx.Graph([(0,1)])
-        e = nx.katz_centrality(G, 0.1,beta='foo')
+        G = nx.Graph([(0, 1)])
+        e = nx.katz_centrality(G, 0.1, beta='foo')
 
 
 class TestKatzCentralityNumpy(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
+
     @classmethod
     def setupClass(cls):
         global np
@@ -137,7 +139,6 @@ class TestKatzCentralityNumpy(object):
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n], places=4)
 
-
     def test_beta_as_scalar(self):
         alpha = 0.1
         beta = 0.1
@@ -148,7 +149,6 @@ class TestKatzCentralityNumpy(object):
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n], places=4)
 
-
     def test_beta_as_dict(self):
         alpha = 0.1
         beta = {0: 1.0, 1: 1.0, 2: 1.0}
@@ -158,7 +158,6 @@ class TestKatzCentralityNumpy(object):
         b = nx.katz_centrality_numpy(G, alpha, beta)
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n], places=4)
-
 
     def test_multiple_alpha(self):
         alpha_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
@@ -190,15 +189,14 @@ class TestKatzCentralityNumpy(object):
 
     @raises(nx.NetworkXException)
     def test_bad_beta(self):
-        G = nx.Graph([(0,1)])
-        beta = {0:77}
-        e = nx.katz_centrality_numpy(G, 0.1,beta=beta)
+        G = nx.Graph([(0, 1)])
+        beta = {0: 77}
+        e = nx.katz_centrality_numpy(G, 0.1, beta=beta)
 
     @raises(nx.NetworkXException)
     def test_bad_beta_numbe(self):
-        G = nx.Graph([(0,1)])
-        e = nx.katz_centrality_numpy(G, 0.1,beta='foo')
-
+        G = nx.Graph([(0, 1)])
+        e = nx.katz_centrality_numpy(G, 0.1, beta='foo')
 
     def test_K5_unweighted(self):
         """Katz centrality: K5"""
@@ -210,7 +208,7 @@ class TestKatzCentralityNumpy(object):
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n])
         nstart = dict([(n, 1) for n in G])
-        b = nx.eigenvector_centrality_numpy(G)
+        b = nx.eigenvector_centrality_numpy(G, weight=None)
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n], places=3)
 
@@ -225,12 +223,12 @@ class TestKatzCentralityNumpy(object):
             assert_almost_equal(b[n], b_answer[n], places=4)
 
 
-
 class TestKatzCentralityDirected(object):
     def setUp(self):
         G = nx.DiGraph()
-        edges = [(1, 2),(1, 3),(2, 4),(3, 2),(3, 5),(4, 2),(4, 5),(4, 6),(5, 6),
-                 (5, 7),(5, 8),(6, 8),(7, 1),(7, 5),(7, 8),(8, 6),(8, 7)]
+        edges = [(1, 2), (1, 3), (2, 4), (3, 2), (3, 5), (4, 2), (4, 5),
+                 (4, 6), (5, 6), (5, 7), (5, 8), (6, 8), (7, 1), (7, 5),
+                 (7, 8), (8, 6), (8, 7)]
         G.add_edges_from(edges, weight=2.0)
         self.G = G.reverse()
         self.G.alpha = 0.1
@@ -262,15 +260,15 @@ class TestKatzCentralityDirected(object):
     def test_katz_centrality_weighted(self):
         G = self.G
         alpha = self.G.alpha
-        p = nx.katz_centrality(G, alpha)
+        p = nx.katz_centrality(G, alpha, weight='weight')
         for (a, b) in zip(list(p.values()), self.G.evc):
             assert_almost_equal(a, b)
 
     def test_katz_centrality_unweighted(self):
-        G = self.H
+        H = self.H
         alpha = self.H.alpha
-        p = nx.katz_centrality(G, alpha)
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        p = nx.katz_centrality(H, alpha, weight='weight')
+        for (a, b) in zip(list(p.values()), self.H.evc):
             assert_almost_equal(a, b)
 
 
@@ -289,16 +287,17 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
     def test_katz_centrality_weighted(self):
         G = self.G
         alpha = self.G.alpha
-        p = nx.katz_centrality_numpy(G, alpha)
+        p = nx.katz_centrality_numpy(G, alpha, weight='weight')
         for (a, b) in zip(list(p.values()), self.G.evc):
             assert_almost_equal(a, b)
 
     def test_katz_centrality_unweighted(self):
-        G = self.H
+        H = self.H
         alpha = self.H.alpha
-        p = nx.katz_centrality_numpy(G, alpha)
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        p = nx.katz_centrality_numpy(H, alpha, weight='weight')
+        for (a, b) in zip(list(p.values()), self.H.evc):
             assert_almost_equal(a, b)
+
 
 class TestKatzEigenvectorVKatz(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
@@ -315,7 +314,7 @@ class TestKatzEigenvectorVKatz(object):
             raise SkipTest('SciPy not available.')
 
     def test_eigenvector_v_katz_random(self):
-        G = nx.gnp_random_graph(10,0.5, seed=1234)
+        G = nx.gnp_random_graph(10, 0.5, seed=1234)
         l = float(max(eigvals(nx.adjacency_matrix(G).todense())))
         e = nx.eigenvector_centrality_numpy(G)
         k = nx.katz_centrality_numpy(G, 1.0/l)

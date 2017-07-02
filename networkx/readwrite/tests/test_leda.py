@@ -11,7 +11,7 @@ class TestLEDA(object):
         G=nx.parse_leda(data.split('\n'))
         assert_equal(sorted(G.nodes()),
                      ['v1', 'v2', 'v3', 'v4', 'v5'])
-        assert_equal([e for e in sorted(G.edges(data=True))],
+        assert_equal(sorted(G.edges(data=True)),
                      [('v1', 'v2', {'label': '4'}), 
                       ('v1', 'v3', {'label': '3'}), 
                       ('v2', 'v3', {'label': '2'}), 

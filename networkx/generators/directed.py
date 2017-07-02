@@ -219,7 +219,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         distribution and the other chosen randomly according to the out-degree
         distribution.
     gamma : float
-        Probability for adding a new node conecgted to an existing node
+        Probability for adding a new node connected to an existing node
         chosen randomly according to the out-degree distribution.
     delta_in : float
         Bias for choosing ndoes from in-degree distribution.

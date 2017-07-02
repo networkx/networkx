@@ -96,8 +96,10 @@ def union(G, H, rename=(None, None), name=None):
     R.add_nodes_from(H)
     R.add_edges_from(H_edges)
     # add node attributes
-    R.node.update(G.node)
-    R.node.update(H.node)
+    for n in G:
+        R.node[n].update(G.node[n])
+    for n in H:
+        R.node[n].update(H.node[n])
     # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
     R.graph.update(H.graph)
@@ -316,6 +318,10 @@ def compose(G, H, name=None):
     -----
     It is recommended that G and H be either both directed or both undirected.
     Attributes from H take precedent over attributes from G.
+
+    For MultiGraphs, the edges are identified by incident nodes AND edge-key.
+    This can cause surprises (i.e., edge `(1, 2)` may or may not be the same
+    in two graphs) if you use MultiGraph without keeping track of edge keys.
     """
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError('G and H must both be graphs or multigraphs.')

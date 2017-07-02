@@ -1,15 +1,18 @@
 import itertools
 from nose.tools import assert_equal, assert_true, assert_false, assert_raises
+
 import networkx as nx
+from networkx.algorithms import flow
+from networkx.algorithms.connectivity import local_edge_connectivity
+from networkx.algorithms.connectivity import local_node_connectivity
 
-from networkx.algorithms.flow import (edmonds_karp, preflow_push,
-    shortest_augmenting_path) 
-
-flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
-
-# connectivity functions not imported to the base namespace
-from networkx.algorithms.connectivity import (local_edge_connectivity,
-    local_node_connectivity)
+flow_funcs = [
+    flow.boykov_kolmogorov,
+    flow.dinitz,
+    flow.edmonds_karp,
+    flow.preflow_push,
+    flow.shortest_augmenting_path,
+]
 
 
 msg = "Assertion failed in function: {0}"
@@ -246,7 +249,7 @@ def test_cutoff():
     G = nx.complete_graph(5)
     for local_func in [local_edge_connectivity, local_node_connectivity]:
         for flow_func in flow_funcs:
-            if flow_func is preflow_push:
+            if flow_func is flow.preflow_push:
                 # cutoff is not supported by preflow_push
                 continue
             for cutoff in [3, 2, 1]:

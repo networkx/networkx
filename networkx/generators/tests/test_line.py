@@ -2,6 +2,7 @@ import networkx as nx
 from nose.tools import *
 
 import networkx.generators.line as line
+from networkx.testing.utils import *
 
 def test_node_func():
     # graph
@@ -26,8 +27,7 @@ def test_edge_func():
     G.add_edge(2,3)
     ef = line._edge_func(G)
     expected = [(1,2),(2,3)]
-    result = sorted(ef())
-    assert_equal(expected, result)
+    assert_edges_equal(ef(), expected)
 
     # digraph
     G = nx.MultiDiGraph()
@@ -70,16 +70,16 @@ class TestGeneratorLine():
         G = nx.DiGraph()
         G.add_edges_from([(0,1),(1,2),(2,3)])
         L = nx.line_graph(G)
-        assert_equal(sorted(L.edges()), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create1(self):
         G = nx.DiGraph()
         G.add_edges_from([(0,1),(1,2),(2,3)])
         L = nx.line_graph(G, create_using=nx.Graph())
-        assert_equal(sorted(L.edges()), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create2(self):
         G = nx.Graph()
         G.add_edges_from([(0,1),(1,2),(2,3)])
         L = nx.line_graph(G, create_using=nx.DiGraph())
-        assert_equal(sorted(L.edges()), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])

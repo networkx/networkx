@@ -178,11 +178,13 @@ def parse_adjlist(lines, comments='#', delimiter=None,
     ...          '3 5',
     ...          '4',
     ...          '5']
-    >>> G = nx.parse_adjlist(lines, nodetype = int)
-    >>> list(G)
-    [1, 2, 3, 4, 5]
-    >>> list(G.edges())
-    [(1, 2), (1, 5), (2, 3), (2, 4), (3, 5)]
+    >>> G = nx.parse_adjlist(lines, nodetype=int)
+    >>> nodes = [1, 2, 3, 4, 5]
+    >>> all(node in G for node in nodes)
+    True
+    >>> edges = [(1, 2), (1, 5), (2, 3), (2, 4), (3, 5)]
+    >>> all((u, v) in G.edges() or (v, u) in G.edges() for (u, v) in edges)
+    True
 
     See Also
     --------

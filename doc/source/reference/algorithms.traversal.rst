@@ -33,6 +33,15 @@ Breadth First Search
    bfs_predecessors
    bfs_successors
 
+Beam search
+-----------
+.. automodule:: networkx.algorithms.traversal.beamsearch
+.. autosummary::
+   :toctree: generated/
+
+   bfs_beam_edges
+
+
 Depth First Search on Edges
 ---------------------------
 .. automodule:: networkx.algorithms.traversal.edgedfs

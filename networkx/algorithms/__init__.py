@@ -1,5 +1,6 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.boundary import *
+from networkx.algorithms.chains import *
 from networkx.algorithms.centrality import *
 from networkx.algorithms.cluster import *
 from networkx.algorithms.clique import *
@@ -8,6 +9,7 @@ from networkx.algorithms.community import *
 from networkx.algorithms.components import *
 from networkx.algorithms.coloring import *
 from networkx.algorithms.core import *
+from networkx.algorithms.covering import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.cuts import *
 from networkx.algorithms.dag import *
@@ -71,11 +73,14 @@ from networkx.algorithms.isomorphism import (is_isomorphic, could_be_isomorphic,
 # flow
 from networkx.algorithms.flow import (maximum_flow, maximum_flow_value,
     minimum_cut, minimum_cut_value, capacity_scaling, network_simplex,
-    min_cost_flow_cost, max_flow_min_cost, min_cost_flow, cost_of_flow)
+    min_cost_flow_cost, max_flow_min_cost, min_cost_flow, cost_of_flow,
+    gomory_hu_tree)
 
 from .tree.recognition import *
-from .tree.mst import *
 from .tree.branchings import (
 	maximum_branching, minimum_branching,
 	maximum_spanning_arborescence, minimum_spanning_arborescence
 )
+from .tree.coding import *
+from .tree.operations import *
+from .tree.mst import *

@@ -213,7 +213,7 @@ class TimingGraph(object):
             convert.to_networkx_graph(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-        self.edge = self.adj
+        self.edge = self._adj = self.adj
 
     @property
     def name(self):
@@ -519,7 +519,7 @@ class TimingGraph(object):
                 pass
 
 
-    def nodes(self, data=False):
+    def nodes_iter(self, data=False):
         """Return an iterator over the nodes.
 
         Parameters
@@ -579,7 +579,8 @@ class TimingGraph(object):
         >>> list(G.nodes(data=True))
         [(0, {}), (1, {'time': '5pm'}), (2, {})]
         """
-        return list(self.nodes(data=data))
+        return list(self.nodes_iter(data=data))
+    nodes_data = nodes
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -1207,6 +1208,7 @@ class TimingGraph(object):
 
         """
         return iter(self.adj.items())
+    adjacency = adjacency_iter
 
     def degree(self, nbunch=None, weight=None):
         """Return the degree of a node or nodes.
@@ -2007,6 +2009,7 @@ class TimingDiGraph(TimingGraph):
         self.adj = {}  # empty adjacency dictionary
         self.pred = {}  # predecessor
         self.succ = self.adj  # successor
+        self._succ = self._adj = self.adj  # successor
 
         # attempt to load graph with data
         if data is not None:
@@ -4396,7 +4399,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         Returns
         -------
         out_edges : list
-            An listr of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+            A list of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
 
         Notes
         -----

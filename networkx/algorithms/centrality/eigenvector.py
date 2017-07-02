@@ -18,13 +18,12 @@ from math import sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['eigenvector_centrality',
-           'eigenvector_centrality_numpy']
+__all__ = ['eigenvector_centrality', 'eigenvector_centrality_numpy']
 
 
 @not_implemented_for('multigraph')
 def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
-                           weight='weight'):
+                           weight=None):
     r"""Compute the eigenvector centrality for the graph `G`.
 
     Eigenvector centrality computes the centrality for a node based on the
@@ -45,16 +44,16 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     G : graph
       A networkx graph
 
-    max_iter : integer, optional
+    max_iter : integer, optional (default=100)
       Maximum number of iterations in power method.
 
-    tol : float, optional
+    tol : float, optional (default=1.0e-6)
       Error tolerance used to check convergence in power method iteration.
 
-    nstart : dictionary, optional
+    nstart : dictionary, optional (default=None)
       Starting value of eigenvector iteration for each node.
 
-    weight : None or string, optional
+    weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
 
@@ -77,6 +76,11 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     NetworkXError
         If each value in `nstart` is zero.
+
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
 
     See Also
     --------
@@ -141,11 +145,10 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
         # Check for convergence (in the L_1 norm).
         if sum(abs(x[n] - xlast[n]) for n in x) < nnodes * tol:
             return x
-    raise nx.NetworkXError('power iteration failed to converge within {}'
-                           ' iterations'.format(max_iter))
+    raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-def eigenvector_centrality_numpy(G, weight='weight', max_iter=50, tol=0):
+def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     r"""Compute the eigenvector centrality for the graph G.
 
     Eigenvector centrality computes the centrality for a node based on the
@@ -165,14 +168,14 @@ def eigenvector_centrality_numpy(G, weight='weight', max_iter=50, tol=0):
     G : graph
       A networkx graph
 
-    weight : None or string, optional
+    weight : None or string, optional (default=None)
       The name of the edge attribute used as weight.
       If None, all edge weights are considered equal.
 
-    max_iter : integer, optional
+    max_iter : integer, optional (default=100)
       Maximum number of iterations in power method.
 
-    tol : float, optional
+    tol : float, optional (default=1.0e-6)
        Relative accuracy for eigenvalues (stopping criterion).
        The default value of 0 implies machine precision.
 

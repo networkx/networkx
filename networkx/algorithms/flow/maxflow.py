@@ -4,12 +4,22 @@ Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
 import networkx as nx
 
-# Define the default flow function for computing maximum flow.
+from .boykovkolmogorov import boykov_kolmogorov
+from .dinitz_alg import dinitz
 from .edmondskarp import edmonds_karp
 from .preflowpush import preflow_push
 from .shortestaugmentingpath import shortest_augmenting_path
 from .utils import build_flow_dict
+# Define the default flow function for computing maximum flow.
 default_flow_func = preflow_push
+# Functions that don't support cutoff for minimum cut computations.
+flow_funcs = [
+    boykov_kolmogorov,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+]
 
 __all__ = ['maximum_flow',
            'maximum_flow_value',
@@ -420,7 +430,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     ...     cutset.update((u, v) for v in nbrs if v in non_reachable)
     >>> print(sorted(cutset))
     [('c', 'y'), ('x', 'b')]
-    >>> cut_value == sum(G.edge[u][v]['capacity'] for (u, v) in cutset)
+    >>> cut_value == sum(G.edge[u, v]['capacity'] for (u, v) in cutset)
     True
 
     You can also use alternative algorithms for computing the
@@ -441,8 +451,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if (kwargs.get('cutoff') is not None and
-        flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
+    if kwargs.get('cutoff') is not None and flow_func in flow_funcs:
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
@@ -592,8 +601,7 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if (kwargs.get('cutoff') is not None and
-        flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
+    if kwargs.get('cutoff') is not None and flow_func in flow_funcs:
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)

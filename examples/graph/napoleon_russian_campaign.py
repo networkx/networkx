@@ -113,7 +113,7 @@ def minard_graph():
             if last is None:
                 last=i
             else:
-                G.add_edge(i,last,{r:int(n)})
+                G.add_edge(i,last,**{r:int(n)})
                 last=i
             i=i+1
         g.append(G)

@@ -1,16 +1,20 @@
 #    Copyright (C) 2015 by
 #    Alessandro Luongo
 #    BSD license.
+#
+# Authors:
+#    Alessandro Luongo <alessandro.luongo@studenti.unimi.it>
+#
 """Functions for computing the harmonic centrality of a graph."""
 from __future__ import division
+from functools import partial
 
 import networkx as nx
 
-__author__ = "\n".join(['Alessandro Luongo (alessandro.luongo@studenti.unimi.it'])
 __all__ = ['harmonic_centrality']
 
 
-def harmonic_centrality(G, distance=None):
+def harmonic_centrality(G, nbunch=None, distance=None):
     r"""Compute harmonic centrality for nodes.
 
     Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
@@ -28,6 +32,10 @@ def harmonic_centrality(G, distance=None):
     ----------
     G : graph
       A NetworkX graph
+    
+    nbunch : container
+      Container of nodes. If provided harmonic centrality will be computed
+      only over the nodes in nbunch.
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
@@ -56,5 +64,5 @@ def harmonic_centrality(G, distance=None):
     """
     if G.is_directed():
         G = G.reverse()
-    sp = nx.shortest_path_length(G, weight=distance)
-    return {n: sum(1 / d if d > 0 else 0 for d in dd.values()) for n, dd in sp}
+    spl = partial(nx.shortest_path_length, G, weight=distance)
+    return {u: sum(1 / d if d > 0 else 0 for v, d in spl(source=u)) for u in G.nbunch_iter(nbunch)}

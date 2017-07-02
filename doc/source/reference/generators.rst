@@ -13,6 +13,7 @@ Atlas
 .. autosummary::
    :toctree: generated/
 
+   graph_atlas
    graph_atlas_g
 
 
@@ -36,6 +37,7 @@ Classic
    path_graph
    star_graph
    trivial_graph
+   turan_graph
    wheel_graph
 
 
@@ -240,6 +242,15 @@ Community
    planted_partition_graph
    gaussian_random_partition_graph
    ring_of_cliques
+
+
+Trees
+-----
+.. automodule:: networkx.generators.tree
+.. autosummary::
+   :toctree: generated/
+
+   random_tree
 
 
 Non Isomorphic Trees

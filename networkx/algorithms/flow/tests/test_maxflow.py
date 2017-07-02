@@ -5,9 +5,13 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import edmonds_karp, preflow_push, shortest_augmenting_path
+from networkx.algorithms.flow import boykov_kolmogorov
+from networkx.algorithms.flow import edmonds_karp
+from networkx.algorithms.flow import preflow_push
+from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.algorithms.flow import dinitz
 
-flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
+flow_funcs = [boykov_kolmogorov, dinitz, edmonds_karp, preflow_push, shortest_augmenting_path]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
 flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
 interface_funcs = sum([max_min_funcs, flow_value_funcs], [])
@@ -195,6 +199,28 @@ class TestMaxflowMinCutCommon:
              'y': {}}
 
         compare_flows_and_cuts(G, 'x', 'y', H, 3.0)
+
+    def test_wikipedia_dinitz_example(self):
+        # Nice example from https://en.wikipedia.org/wiki/Dinic's_algorithm
+        G = nx.DiGraph()
+        G.add_edge('s', 1, capacity=10)
+        G.add_edge('s', 2, capacity=10)
+        G.add_edge(1, 3, capacity=4)
+        G.add_edge(1, 4, capacity=8)
+        G.add_edge(1, 2, capacity=2)
+        G.add_edge(2, 4, capacity=9)
+        G.add_edge(3, 't', capacity=10)
+        G.add_edge(4, 3, capacity=6)
+        G.add_edge(4, 't', capacity=10)
+
+        solnFlows = {1: {2: 0, 3: 4, 4: 6},
+                     2: {4: 9},
+                     3: {'t': 9},
+                     4: {3: 5, 't': 10},
+                     's': {1: 10, 2: 9},
+                     't': {}}
+
+        compare_flows_and_cuts(G, 's', 't', solnFlows, 19)
 
     def test_optional_capacity(self):
         # Test optional capacity parameter.

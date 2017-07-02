@@ -188,7 +188,7 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         for n in nbunch:
             self.remove_node(n)
 
-    def add_edge(self, u, v, key, attr_dict=None, **attr):
+    def add_edge(self, u, v, key, **attr):
         """
         Key is now required.
 
@@ -198,10 +198,10 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
             if (u != uu) or (v != vv):
                 raise Exception("Key {0!r} is already in use.".format(key))
 
-        self._cls.add_edge(u, v, key=key, attr_dict=attr_dict, **attr)
+        self._cls.add_edge(u, v, key=key, **attr)
         self.edge_index[key] = (u, v, self.succ[u][v][key])
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
+    def add_edges_from(self, ebunch, **attr):
         raise NotImplementedError
 
     def remove_edge_with_key(self, key):
@@ -615,7 +615,7 @@ def minimum_spanning_arborescence(G, attr='weight', default=1):
     ed = Edmonds(G)
     B = ed.find_optimum(attr, default, kind='min', style='arborescence')
     if not is_arborescence(B):
-        msg = 'No maximum spanning arborescence in G.'
+        msg = 'No minimum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
 

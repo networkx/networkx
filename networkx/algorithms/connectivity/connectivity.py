@@ -10,7 +10,10 @@ from operator import itemgetter
 import networkx as nx
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms.
-from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import boykov_kolmogorov
+from networkx.algorithms.flow import dinitz
+from networkx.algorithms.flow import edmonds_karp
+from networkx.algorithms.flow import shortest_augmenting_path
 from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
@@ -198,6 +201,10 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
         kwargs['cutoff'] = cutoff
         kwargs['two_phase'] = True
     elif flow_func is edmonds_karp:
+        kwargs['cutoff'] = cutoff
+    elif flow_func is dinitz:
+        kwargs['cutoff'] = cutoff
+    elif flow_func is boykov_kolmogorov:
         kwargs['cutoff'] = cutoff
 
     return nx.maximum_flow_value(H, '%sB' % mapping[s], '%sA' % mapping[t], **kwargs)
@@ -477,7 +484,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
-def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
+def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None,
                             residual=None, cutoff=None):
     r"""Returns local edge connectivity for nodes s and t in G.
 
@@ -632,8 +639,12 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
         kwargs['two_phase'] = True
     elif flow_func is edmonds_karp:
         kwargs['cutoff'] = cutoff
+    elif flow_func is dinitz:
+        kwargs['cutoff'] = cutoff
+    elif flow_func is boykov_kolmogorov:
+        kwargs['cutoff'] = cutoff
 
-    return nx.maximum_flow_value(H, u, v, **kwargs)
+    return nx.maximum_flow_value(H, s, t, **kwargs)
 
 def edge_connectivity(G, s=None, t=None, flow_func=None):
     r"""Returns the edge connectivity of the graph or digraph G.

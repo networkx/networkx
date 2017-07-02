@@ -96,7 +96,9 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     -----
     This algorithm is not guaranteed to work if edge weights or demands
     are floating point numbers (overflows and roundoff errors can
-    cause problems).
+    cause problems). As a workaround you can use integer numbers by
+    multiplying the relevant edge attributes by a convenient
+    constant factor (eg 100).
 
     See also
     --------

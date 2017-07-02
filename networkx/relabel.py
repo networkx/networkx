@@ -6,9 +6,10 @@
 #    BSD license.
 import networkx as nx
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult (dschult@colgate.edu)'])
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult (dschult@colgate.edu)'])
 __all__ = ['convert_node_labels_to_integers', 'relabel_nodes']
+
 
 def relabel_nodes(G, mapping, copy=True):
     """Relabel the nodes of the graph G.
@@ -76,8 +77,13 @@ def relabel_nodes(G, mapping, copy=True):
     Only the nodes specified in the mapping will be relabeled.
 
     The keyword setting copy=False modifies the graph in place.
-    This is not always possible if the mapping is circular.
-    In that case use copy=True.
+    Relabel_nodes avoids naming collisions by building a
+    directed graph from ``mapping`` which specifies the order of
+    relabelings. Naming collisions, such as a->b, b->c, are ordered
+    such that "b" gets renamed to "c" before "a" gets renamed "b".
+    In cases of circular mappings (e.g. a->b, b->a), modifying the
+    graph is not possible in-place and an exception is raised.
+    In that case, use copy=True.
 
     See Also
     --------
@@ -85,7 +91,7 @@ def relabel_nodes(G, mapping, copy=True):
     """
     # you can pass a function f(old_label)->new_label
     # but we'll just make a dictionary here regardless
-    if not hasattr(mapping,"__getitem__"):
+    if not hasattr(mapping, "__getitem__"):
         m = dict((n, mapping(n)) for n in G)
     else:
         m = mapping
@@ -124,39 +130,41 @@ def _relabel_inplace(G, mapping):
         if new == old:
             continue
         try:
-            G.add_node(new, attr_dict=G.node[old])
+            G.add_node(new, **G.node[old])
         except KeyError:
-            raise KeyError("Node %s is not in the graph"%old)
+            raise KeyError("Node %s is not in the graph" % old)
         if multigraph:
             new_edges = [(new, new if old == target else target, key, data)
-                         for (_,target,key,data)
+                         for (_, target, key, data)
                          in G.edges(old, data=True, keys=True)]
             if directed:
                 new_edges += [(new if old == source else source, new, key, data)
-                              for (source, _, key,data)
+                              for (source, _, key, data)
                               in G.in_edges(old, data=True, keys=True)]
         else:
             new_edges = [(new, new if old == target else target, data)
-                         for (_,target,data) in G.edges(old, data=True)]
+                         for (_, target, data) in G.edges(old, data=True)]
             if directed:
-                new_edges += [(new if old == source else source,new,data)
-                              for (source,_,data) in G.in_edges(old, data=True)]
+                new_edges += [(new if old == source else source, new, data)
+                              for (source, _, data) in G.in_edges(old, data=True)]
         G.remove_node(old)
         G.add_edges_from(new_edges)
     return G
 
+
 def _relabel_copy(G, mapping):
     H = G.__class__()
-    H.name = "(%s)" % G.name
-    if G.is_multigraph():
-        H.add_edges_from( (mapping.get(n1, n1),mapping.get(n2, n2),k,d.copy())
-                          for (n1,n2,k,d) in G.edges(keys=True, data=True))
-    else:
-        H.add_edges_from( (mapping.get(n1, n1),mapping.get(n2, n2),d.copy())
-                          for (n1, n2, d) in G.edges(data=True))
-
     H.add_nodes_from(mapping.get(n, n) for n in G)
-    H.node.update(dict((mapping.get(n, n), d.copy()) for n,d in G.node.items()))
+    H._node.update(dict((mapping.get(n, n), d.copy()) for n, d in G.node.items()))
+    if G.name:
+        H.name = "(%s)" % G.name
+    if G.is_multigraph():
+        H.add_edges_from((mapping.get(n1, n1), mapping.get(n2, n2), k, d.copy())
+                         for (n1, n2, k, d) in G.edges(keys=True, data=True))
+    else:
+        H.add_edges_from((mapping.get(n1, n1), mapping.get(n2, n2), d.copy())
+                         for (n1, n2, d) in G.edges(data=True))
+
     H.graph.update(G.graph.copy())
 
     return H
@@ -194,27 +202,27 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     --------
     relabel_nodes
     """
-    N = G.number_of_nodes()+first_label
+    N = G.number_of_nodes() + first_label
     if ordering == "default":
         mapping = dict(zip(G.nodes(), range(first_label, N)))
     elif ordering == "sorted":
         nlist = sorted(G.nodes())
         mapping = dict(zip(nlist, range(first_label, N)))
     elif ordering == "increasing degree":
-        dv_pairs = [(d,n) for (n,d) in G.degree()]
-        dv_pairs.sort() # in-place sort from lowest to highest degree
-        mapping = dict(zip([n for d,n in dv_pairs], range(first_label, N)))
+        dv_pairs = [(d, n) for (n, d) in G.degree()]
+        dv_pairs.sort()  # in-place sort from lowest to highest degree
+        mapping = dict(zip([n for d, n in dv_pairs], range(first_label, N)))
     elif ordering == "decreasing degree":
-        dv_pairs = [(d,n) for (n,d) in G.degree()]
-        dv_pairs.sort() # in-place sort from lowest to highest degree
+        dv_pairs = [(d, n) for (n, d) in G.degree()]
+        dv_pairs.sort()  # in-place sort from lowest to highest degree
         dv_pairs.reverse()
-        mapping = dict(zip([n for d,n in dv_pairs], range(first_label, N)))
+        mapping = dict(zip([n for d, n in dv_pairs], range(first_label, N)))
     else:
-        raise nx.NetworkXError('Unknown node ordering: %s'%ordering)
+        raise nx.NetworkXError('Unknown node ordering: %s' % ordering)
     H = relabel_nodes(G, mapping)
-    H.name = "("+G.name+")_with_int_labels"
+    H.name = "(" + G.name + ")_with_int_labels"
     # create node attribute with the old label
     if label_attribute is not None:
         nx.set_node_attributes(H, label_attribute,
-                               dict((v,k) for k,v in mapping.items()))
+                               dict((v, k) for k, v in mapping.items()))
     return H

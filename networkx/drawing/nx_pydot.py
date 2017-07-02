@@ -3,14 +3,14 @@
 Pydot
 *****
 
-Import and export NetworkX graphs in Graphviz dot format using pydotplus.
+Import and export NetworkX graphs in Graphviz dot format using pydot.
 
 Either this module or nx_agraph can be used to interface with graphviz.
 
 See Also
 --------
-PyDotPlus: https://github.com/carlos-jenkins/pydotplus
-Graphviz:          http://www.research.att.com/sw/tools/graphviz/
+pydot:         https://github.com/erocarrera/pydot
+Graphviz:      http://www.research.att.com/sw/tools/graphviz/
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 # Author: Aric Hagberg (aric.hagberg@gmail.com)
@@ -19,20 +19,30 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Cecil Curry <leycec@gmail.com>
 #    All rights reserved.
 #    BSD license.
-import importlib
+from locale import getpreferredencoding
 from networkx.utils import open_file, make_str
+from pkg_resources import parse_version
 import networkx as nx
 
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
+
+# Minimum required version of pydot, which broke backwards API compatibility in
+# non-trivial ways and is thus a hard NetworkX requirement. Note that, although
+# pydot 1.2.0 was the first to do so, pydot 1.2.3 resolves a critical long-
+# standing Python 2.x issue required for sane NetworkX operation. See also:
+#     https://github.com/erocarrera/pydot/blob/master/ChangeLog
+PYDOT_VERSION_MIN = '1.2.3'
 
 # 2.x/3.x compatibility
 try:
     basestring
 except NameError:
     basestring = str
+    unicode = str
 
 @open_file(1, mode='w')
 def write_dot(G, path):
@@ -46,25 +56,35 @@ def write_dot(G, path):
 
 @open_file(0, mode='r')
 def read_dot(path):
-    """Return a NetworkX MultiGraph or MultiDiGraph from a dot file on path.
+    """Return a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
+    dot file with the passed path.
+
+    If this file contains multiple graphs, only the first such graph is
+    returned. All graphs _except_ the first are silently ignored.
 
     Parameters
     ----------
-    path : filename or file handle
+    path : str or file
+        Filename or file handle.
 
     Returns
     -------
-    G : NetworkX multigraph
-        A MultiGraph or MultiDiGraph.
+    G : MultiGraph or MultiDiGraph
+        A :class:`MultiGraph` or :class:`MultiDiGraph`.
 
     Notes
     -----
-    Use G = nx.Graph(read_dot(path)) to return a Graph instead of a MultiGraph.
+    Use `G = nx.Graph(read_dot(path))` to return a :class:`Graph` instead of a
+    :class:`MultiGraph`.
     """
-    import pydotplus
+    pydot = _import_pydot()
     data = path.read()
-    P = pydotplus.graph_from_dot_data(data)
-    return from_pydot(P)
+
+    # List of one or more "pydot.Dot" instances deserialized from this file.
+    P_list = pydot.graph_from_dot_data(data)
+
+    # Convert only the first such instance into a NetworkX graph.
+    return from_pydot(P_list[0])
 
 def from_pydot(P):
     """Return a NetworkX graph from a Pydot graph.
@@ -86,7 +106,7 @@ def from_pydot(P):
     >>> G = nx.nx_pydot.from_pydot(A) # return MultiGraph
 
     # make a Graph instead of MultiGraph
-    >>> G = nx.Graph(nx.nx_pydot.from_pydot(A)) 
+    >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
 
     """
     if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument
@@ -172,7 +192,8 @@ def to_pydot(N, strict=True):
     -----
 
     """
-    import pydotplus
+    pydot = _import_pydot()
+
     # set Graphviz graph type
     if N.is_directed():
         graph_type='digraph'
@@ -183,10 +204,10 @@ def to_pydot(N, strict=True):
     name = N.name
     graph_defaults=N.graph.get('graph',{})
     if name is '':
-        P = pydotplus.Dot('', graph_type=graph_type, strict=strict,
+        P = pydot.Dot('', graph_type=graph_type, strict=strict,
                       **graph_defaults)
     else:
-        P = pydotplus.Dot('"%s"'%name, graph_type=graph_type, strict=strict,
+        P = pydot.Dot('"%s"'%name, graph_type=graph_type, strict=strict,
                       **graph_defaults)
     try:
         P.set_node_defaults(**N.graph['node'])
@@ -199,20 +220,20 @@ def to_pydot(N, strict=True):
 
     for n,nodedata in N.nodes(data=True):
         str_nodedata=dict((k,make_str(v)) for k,v in nodedata.items())
-        p=pydotplus.Node(make_str(n),**str_nodedata)
+        p=pydot.Node(make_str(n),**str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges(data=True,keys=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items() if k != 'key')
-            edge=pydotplus.Edge(make_str(u), make_str(v),
+            edge=pydot.Edge(make_str(u), make_str(v),
                     key=make_str(key), **str_edgedata)
             P.add_edge(edge)
 
     else:
         for u,v,edgedata in N.edges(data=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
-            edge=pydotplus.Edge(make_str(u),make_str(v),**str_edgedata)
+            edge=pydot.Edge(make_str(u),make_str(v),**str_edgedata)
             P.add_edge(edge)
     return P
 
@@ -248,10 +269,25 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
     return pydot_layout(G=G,prog=prog,root=root,**kwds)
 
 
-def pydot_layout(G,prog='neato',root=None, **kwds):
-    """Create node positions using Pydot and Graphviz.
+#FIXME: Document the "root" parameter.
+#FIXME: Why does this function accept a variadic dictionary of keyword arguments
+#(i.e., "**kwds") but fail to do anything with those arguments? This is probably
+#wrong, as unrecognized keyword arguments will be silently ignored.
+def pydot_layout(G, prog='neato', root=None, **kwds):
+    """Create node positions using :mod:`pydot` and Graphviz.
 
-    Returns a dictionary of positions keyed by node.
+    Parameters
+    --------
+    G : Graph
+        NetworkX graph to be laid out.
+    prog : optional[str]
+        Basename of the GraphViz command with which to layout this graph.
+        Defaults to `neato`, the default GraphViz command for undirected graphs.
+
+    Returns
+    --------
+    dict
+        Dictionary of positions keyed by node.
 
     Examples
     --------
@@ -259,12 +295,17 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     >>> pos = nx.nx_pydot.pydot_layout(G)
     >>> pos = nx.nx_pydot.pydot_layout(G, prog='dot')
     """
-    import pydotplus
+    pydot = _import_pydot()
     P=to_pydot(G)
-    if root is not None :
+    if root is not None:
         P.set("root",make_str(root))
 
-    D=P.create_dot(prog=prog)
+    # List of low-level bytes comprising a string in the dot language converted
+    # from the passed graph with the passed external GraphViz command.
+    D_bytes = P.create_dot(prog=prog)
+
+    # Unique string decoded from these bytes with the preferred locale encoding.
+    D = unicode(D_bytes, encoding=getpreferredencoding())
 
     if D=="":  # no data returned
         print("Graphviz layout with %s failed"%(prog))
@@ -275,11 +316,16 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
         print("And then run %s on file.dot"%(prog))
         return
 
-    Q=pydotplus.graph_from_dot_data(D)
+    # List of one or more "pydot.Dot" instances deserialized from this string.
+    Q_list = pydot.graph_from_dot_data(D)
+    assert len(Q_list) == 1
+
+    # The first and only such instance, as guaranteed by the above assertion.
+    Q = Q_list[0]
 
     node_pos={}
     for n in G.nodes():
-        pydot_node = pydotplus.Node(make_str(n)).get_name()
+        pydot_node = pydot.Node(make_str(n)).get_name()
         node=Q.get_node(pydot_node)
 
         if isinstance(node,list):
@@ -290,10 +336,39 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
             node_pos[n]=(float(xx),float(yy))
     return node_pos
 
+def _import_pydot():
+    '''
+    Import and return the `pydot` module if the currently installed version of
+    this module satisfies NetworkX requirements _or_ raise an exception.
+
+    Returns
+    --------
+    :mod:`pydot`
+        Imported `pydot` module object.
+
+    Raises
+    --------
+    ImportError
+        If the `pydot` module is either unimportable _or_ importable but of
+        insufficient version.
+    '''
+
+    import pydot
+
+    # If the currently installed version of pydot is older than this minimum,
+    # raise an exception. The pkg_resources.parse_version() function bundled
+    # with setuptools is commonly regarded to be the most robust means of
+    # comparing version strings. (Your mileage may vary.)
+    if parse_version(pydot.__version__) < parse_version(PYDOT_VERSION_MIN):
+        raise ImportError(
+            'pydot %s < %s' % (pydot.__version__, PYDOT_VERSION_MIN))
+
+    return pydot
+
 # fixture for nose tests
 def setup_module(module):
     from nose import SkipTest
     try:
-        import pydotplus
+        return _import_pydot()
     except ImportError:
-        raise SkipTest("pydotplus not available")
+        raise SkipTest("pydot not available")

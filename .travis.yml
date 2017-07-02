@@ -10,6 +10,7 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.6"
 
 cache:
   directories:
@@ -23,12 +24,19 @@ matrix:
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
     - python: "pypy"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
+    - python: "pypy-5.3.1"
+      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
+    - python: "pypy-5.7.1"
+      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
+      dist: trusty # 5.7.1 is currently published only on trusty
     - python: "pypy3"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
     - python: "pypy"
+    - python: "pypy-5.3.1"
+    - python: "pypy-5.7.1"
 
 addons:
   apt:
@@ -97,20 +105,16 @@ before_install:
 install:
   ### Install any prerequisites or dependencies necessary to run the build.
   - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
-      DEPS="pyyaml numpy scipy matplotlib Cython pandas pip gdal";
+      DEPS="pyyaml numpy scipy matplotlib Cython pandas pip";
       conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS ;
       source activate test-environment;
+      conda install gdal;
       echo "Testing that gdal installed ok by if osgeo imports";
       python -c "from osgeo import ogr;print('importing ogr worked')";
-      if [[ "${TRAVIS_PYTHON_VERSION}" =~ "3.3" ]]; then
-          pip install https://pypi.python.org/packages/source/p/pydotplus/pydotplus-2.0.2.tar.gz#md5=0e2fc3dbdfd846819d4cd3769cb4595b;
-      else
-          pip install pydotplus;
-      fi;
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
         pip install pygraphviz;
       fi;
-      pip install scikits.sparse;
+      pip install pydot scikits.sparse;
     fi
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       pip install --upgrade nose coverage coveralls;

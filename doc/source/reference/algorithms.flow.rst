@@ -40,6 +40,30 @@ Preflow-Push
    preflow_push
 
 
+Dinitz
+------
+.. autosummary::
+   :toctree: generated/
+
+   dinitz
+
+
+Boykov-Kolmogorov
+-----------------
+.. autosummary::
+   :toctree: generated/
+
+   boykov_kolmogorov
+
+
+Gomory-Hu Tree
+--------------
+.. autosummary::
+   :toctree: generated/
+
+   gomory_hu_tree
+
+
 Utils
 -----
 .. autosummary::
