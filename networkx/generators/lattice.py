@@ -74,8 +74,6 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     row_name, rows = m
     col_name, cols = n
     G.add_nodes_from((i, j) for i in rows for j in cols)
-#    G.add_edges_from(((i, j), (i - 1, j)) for i in rows[1:] for j in cols)
-#    G.add_edges_from(((i, j), (i, j - 1)) for i in rows for j in cols[1:])
     G.add_edges_from(((i, j), (pi, j))
                      for pi, i in pairwise(rows) for j in cols)
     G.add_edges_from(((i, j), (i, pj))
@@ -226,6 +224,8 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
     with_positions : bool (default: True)
         Store the coordinates of each node in the graph node attribute 'pos'.
         The coordinates provide a lattice with equilateral triangles.
+        Periodic positions shift the nodes vertically in a nonlinear way so
+        the edges don't overlap so much.
 
     create_using : NetworkX graph
         If specified, this must be an instance of a NetworkX graph
@@ -272,7 +272,10 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         jj = (j for i in cols for j in rows)
         xx = (0.5 * (j % 2) + i for i in cols for j in rows)
         h = sqrt(3)/2
-        yy = (h * j for i in cols for j in rows)
+        if periodic:
+            yy = (h * j + .01 * i * i for i in cols for j in rows)
+        else:
+            yy = (h * j for i in cols for j in rows)
         pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy)
                if (i, j) in H}
         set_node_attributes(H, 'pos', pos)
@@ -312,10 +315,16 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
 
     periodic : bool
         Whether to make a periodic grid by joining the boundary vertices.
+        For this to work `n` must be odd and both `n > 1` and `m > 1`.
+        The periodic connections create another row and column of hexagons
+        so these graphs have fewer nodes as boundary nodes are identified.
 
     with_positions : bool (default: True)
         Store the coordinates of each node in the graph node attribute 'pos'.
-        The coordinates provide a lattice with equilateral triangles.
+        The coordinates provide a lattice with vertical columns of hexagons
+        offset to interleave and cover the plane.
+        Periodic positions shift the nodes vertically in a nonlinear way so
+        the edges don't overlap so much.
 
     create_using : NetworkX graph
         If specified, this must be an instance of a NetworkX graph
