@@ -13,7 +13,7 @@ Generators for some classic graphs.
 
 The typical graph generator is called as follows:
 
->>> G=nx.complete_graph(100)
+>>> G = nx.complete_graph(100)
 
 returning the complete graph on n nodes labeled 0, .., 99
 as a simple graph. Except for empty_graph, all the generators
@@ -27,6 +27,8 @@ from math import sqrt
 
 import networkx as nx
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph
+from networkx.classes import Graph
+from networkx.exception import NetworkXError
 from networkx.utils import accumulate
 from networkx.utils import flatten
 from networkx.utils import nodes_or_number
@@ -42,17 +44,13 @@ __all__ = ['balanced_tree',
            'dorogovtsev_goltsev_mendes_graph',
            'empty_graph',
            'full_rary_tree',
-           'grid_graph',
-           'grid_2d_graph',
-           'hexagonal_lattice',
-           'hypercube_graph',
            'ladder_graph',
            'lollipop_graph',
            'null_graph',
            'path_graph',
            'star_graph',
-           'triangular_lattice',
            'trivial_graph',
+           'turan_graph',
            'wheel_graph']
 
 
@@ -105,7 +103,7 @@ def full_rary_tree(r, n, create_using=None):
     .. [1] An introduction to data structures and algorithms,
            James Andrew Storer,  Birkhauser Boston 2001, (page 225).
     """
-    G = nx.empty_graph(n, create_using)
+    G = empty_graph(n, create_using)
     G.add_edges_from(_tree_edges(n, r))
     return G
 
@@ -178,12 +176,12 @@ def barbell_graph(m1, m2, create_using=None):
 
     """
     if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     if m1 < 2:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, m1 should be >=2")
     if m2 < 0:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, m2 should be >=0")
 
     # left barbell
@@ -224,7 +222,7 @@ def complete_graph(n, create_using=None):
     9
     >>> G.size()
     36
-    >>> G = nx.complete_graph(range(11,14))
+    >>> G = nx.complete_graph(range(11, 14))
     >>> list(G.nodes())
     [11, 12, 13]
     >>> G = nx.complete_graph(4, nx.DiGraph())
@@ -339,7 +337,7 @@ def cycle_graph(n, create_using=None):
     n_orig, nodes = n
     G = empty_graph(nodes, create_using)
     G.name = "cycle_graph(%s)" % (n_orig,)
-    G.add_edges_from(nx.utils.pairwise(nodes))
+    G.add_edges_from(pairwise(nodes))
     G.add_edge(nodes[-1], nodes[0])
     return G
 
@@ -353,9 +351,9 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """
     if create_using is not None:
         if create_using.is_directed():
-            raise nx.NetworkXError("Directed Graph not supported")
+            raise NetworkXError("Directed Graph not supported")
         if create_using.is_multigraph():
-            raise nx.NetworkXError("Multigraph not supported")
+            raise NetworkXError("Multigraph not supported")
     G = empty_graph(0, create_using)
     G.name = "Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0, 1)
@@ -386,12 +384,12 @@ def empty_graph(n=0, create_using=None):
         with the new graph. Usually used to set the type of the graph.
 
     For example:
-    >>> G=nx.empty_graph(10)
+    >>> G = nx.empty_graph(10)
     >>> G.number_of_nodes()
     10
     >>> G.number_of_edges()
     0
-    >>> G=nx.empty_graph("ABC")
+    >>> G = nx.empty_graph("ABC")
     >>> G.number_of_nodes()
     3
     >>> sorted(G)
@@ -409,8 +407,8 @@ def empty_graph(n=0, create_using=None):
     Firstly, the variable create_using can be used to create an
     empty digraph, multigraph, etc.  For example,
 
-    >>> n=10
-    >>> G=nx.empty_graph(n, create_using=nx.DiGraph())
+    >>> n = 10
+    >>> G = nx.empty_graph(n, create_using=nx.DiGraph())
 
     will create an empty digraph on n nodes.
 
@@ -425,7 +423,7 @@ def empty_graph(n=0, create_using=None):
     """
     if create_using is None:
         # default empty graph is a simple graph
-        G = nx.Graph()
+        G = Graph()
     else:
         G = create_using
         G.clear()
@@ -433,287 +431,6 @@ def empty_graph(n=0, create_using=None):
     n_name, nodes = n
     G.name = "empty_graph(%s)" % (n_name,)
     G.add_nodes_from(nodes)
-    return G
-
-
-@nodes_or_number([0, 1])
-def grid_2d_graph(m, n, periodic=False, create_using=None):
-    """ Return the 2d grid graph of mxn nodes
-
-    The grid graph has each node connected to its four nearest neighbors.
-
-    Parameters
-    ==========
-    m, n : int or iterable container of nodes (default = 0)
-        If an integer, nodes are from `range(n)`.
-        If a container, those become the coordinate of the node.
-    periodic : bool (default = False)
-        If True will connect boundary nodes in periodic fashion.
-    create_using : Graph, optional (default Graph())
-        If provided this graph is cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
-    """
-    G = empty_graph(0, create_using)
-    row_name, rows = m
-    col_name, columns = n
-    G.name = "grid_2d_graph(%s, %s)" % (row_name, col_name)
-    G.add_nodes_from((i, j) for i in rows for j in columns)
-    G.add_edges_from(((i, j), (pi, j))
-                     for pi, i in pairwise(rows) for j in columns)
-    G.add_edges_from(((i, j), (i, pj))
-                     for i in rows for pj, j in pairwise(columns))
-    if G.is_directed():
-        G.add_edges_from(((pi, j), (i, j))
-                         for pi, i in pairwise(rows) for j in columns)
-        G.add_edges_from(((i, pj), (i, j))
-                         for i in rows for pj, j in pairwise(columns))
-    if periodic:
-        if len(columns) > 2:
-            f = columns[0]
-            l = columns[-1]
-            G.add_edges_from(((i, f), (i, l)) for i in rows)
-            if G.is_directed():
-                G.add_edges_from(((i, l), (i, f)) for i in rows)
-        if len(rows) > 2:
-            f = rows[0]
-            l = rows[-1]
-            G.add_edges_from(((f, j), (l, j)) for j in columns)
-            if G.is_directed():
-                G.add_edges_from(((l, j), (f, j)) for j in columns)
-        G.name = "periodic_grid_2d_graph(%s,%s)" % (m, n)
-    return G
-
-
-def grid_graph(dim, periodic=False):
-    """ Return the n-dimensional grid graph.
-
-    'dim' is a list with the size in each dimension or an
-    iterable of nodes for each dimension. The dimension of
-    the grid_graph is the length of the list 'dim'.
-
-    E.g. G=grid_graph(dim=[2, 3]) produces a 2x3 grid graph.
-
-    E.g. G=grid_graph(dim=[range(7, 9), range(3, 6)]) produces a 2x3 grid graph
-
-    If periodic=True then join grid edges with periodic boundary conditions.
-
-    """
-    dlabel = "%s" % dim
-    if dim == []:
-        G = empty_graph(0)
-        G.name = "grid_graph(%s)" % dim
-        return G
-    if periodic:
-        func = cycle_graph
-    else:
-        func = path_graph
-
-    dim = list(dim)
-    current_dim = dim.pop()
-    G = func(current_dim)
-    while len(dim) > 0:
-        current_dim = dim.pop()
-        # order matters: copy before it is cleared during the creation of Gnew
-        Gold = G.copy()
-        Gnew = func(current_dim)
-        # explicit: create_using=None
-        # This is so that we get a new graph of Gnew's class.
-        G = nx.cartesian_product(Gnew, Gold)
-    # graph G is done but has labels of the form (1, (2, (3, 1)))
-    # so relabel
-    H = nx.relabel_nodes(G, flatten)
-    H.name = "grid_graph(%s)" % dlabel
-    return H
-
-
-def triangular_lattice(rows, cols, sidelength, offset=(0, 0), sig_dig=2,
-                     periodic=False, create_using=None):
-    """Returns a triangular lattice graph with `rows` rows and `cols` columns.
-
-    Each triangle has edges of length sidelength.
-    All triangles either point up or down.
-    A row is a horizontal row of triangles that point up and point down
-    - their center points are in a line
-    A column is a vertical column of triangles that point up and point down
-    - again their center points are in a line.
-
-    The node names are given by their coordinates as tuples, rounded to
-    sig_dig decimal places.
-    This can be offset in space with offset=(xshift,yshift).
-
-    Parameters
-    ----------
-    rows,cols : numbers
-        The number of rows and columns of triangles.
-    sidelength : number
-        length of the edges of all three sides of each triangle
-    offset : 2-tuple of numbers
-        Shift the coordinates by this 2-tuple (xshift, yshift)
-    sig_dig : int
-        Number of digits after the decimal to keep for all positions.
-    periodic : bool
-        If True, connect the sides of the lattice to each other.
-    create_using : Networkx Graph
-        If provided this graph is cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
-
-    Returns
-    -------
-    NetworkX Graph
-
-    """
-    G = nx.empty_graph(0, create_using)
-    G.name = "triangular(%d, %d)" % (rows, cols)
-    if periodic and (rows % 2 != 1 or cols % 2 != 0):
-        msg = "periodic triangular lattice must have odd rows and even columns"
-        raise nx.NetworkXError(msg)
-
-    dx = sidelength
-    a = sqrt(3) / 2.
-    for row in range(rows):
-        for col in range(cols):
-            # triangle points down if same parity, else up
-            # set (xstart, ystart) to be leftmost point of triangle
-            xstart = offset[0] + sidelength * col / 2.
-
-            if row % 2 == col % 2:  # points down
-                ystart = offset[1] + (row + 1) * a
-                dy = -a  # since it points down
-            else:  # points up,
-                ystart = offset[1] + row * a
-                dy = a  # it points up
-            # The node names will be coordinates.  We need to round them
-            # carefully otherwise numerical precision leads to confusion
-            node1 = (round(xstart, sig_dig), round(ystart, sig_dig))
-            node2 = (round(xstart + dx, sig_dig), round(ystart, sig_dig))
-            node3 = (round(xstart + dx / 2, sig_dig),
-                     round(ystart + dy, sig_dig))
-            G.add_edges_from([(node1, node2), (node1, node3), (node2, node3)])
-
-    if periodic:  # We need to add a bunch more edges.
-        xmin = round(offset[0], sig_dig)
-        xmax = round(offset[0] + (cols + 1) * sidelength / 2, sig_dig)
-        leftmost = [(xmin, round(offset[1] + sidelength * a * (val + 1),
-                    sig_dig)) for val in range(rows) if val % 2 == 0]
-        left2ndmost = [(round(xmin + sidelength / 2, sig_dig),
-                       round(y - a * sidelength, sig_dig))
-                       for (x, y) in leftmost]
-        rightmost = [(xmax, round(offset[1] + sidelength * a * val, sig_dig))
-                     for val in range(rows) if val % 2 == 0]
-        right2ndmost = [(round(xmax - sidelength / 2., sig_dig),
-                        round(y + a * sidelength, sig_dig))
-                        for (x, y) in rightmost]
-        G.add_edges_from(zip(leftmost, rightmost))
-        G.add_edges_from(zip(leftmost, right2ndmost))
-        G.add_edges_from(zip(leftmost[:-1], rightmost[1:]))
-        G.add_edges_from(zip(left2ndmost, rightmost))
-        # one pair doesn't get joined up in the zipped lists
-        G.add_edge(leftmost[-1], rightmost[0])
-
-        ymin = round(offset[1], sig_dig)
-        ymax = round(offset[1] + a * sidelength * rows, sig_dig)
-        bottomrow = [(round(offset[0] + sidelength * (val + 1) / 2., sig_dig),
-                      ymin) for val in range(cols + 1) if val % 2 == 0]
-        toprow = [(round(offset[0] + (sidelength * val) / 2., sig_dig), ymax)
-                  for val in range(cols + 1) if val % 2 == 0]
-        G.add_edges_from(zip(bottomrow, toprow))
-        G.add_edges_from(zip(bottomrow[:-1], toprow[1:]))
-        # There's one pair missed out in joining the rows, but it's the same
-        # pair that was handled specially for the columns.
-
-        G.name = "periodic_triangular_lattice(%d, %d)" % (rows, cols)
-    return G
-
-
-def hexagonal_lattice(rows, cols, sidelength=1., offset=(0, 0), sig_dig=2,
-                      periodic=False, create_using=None):
-    """Return a hexagonal lattice having `rows` rows and `cols` columns.
-
-    Node names are their coordinates rounded to sig_dig decimal places.
-    The side lengths are sidelength.
-    It can be offset with offset=(xshift,yshift).
-
-    This works by generating a triangular lattice and then deleting some
-    nodes.  There are sometimes some nodes with degree 1, depending on
-    how many rows/columns.   These can be removed by G = nx.k_core(G, 2),
-    or by simply deleting all degree 1 nodes.
-    optional argument periodic = True will connect boundaries.
-
-    Parameters
-    ----------
-    rows,cols : numbers
-        The number of rows and columns of hexagons.
-    sidelength : number
-        length of the edges of all six sides of each hexagon
-    offset : 2-tuple of numbers
-        Shift the coordinates by this 2-tuple (xshift, yshift)
-    sig_dig : int
-        Number of digits after the decimal to keep for all positions.
-    periodic : bool
-        If True, connect the sides of the lattice to each other.
-    create_using : Networkx Graph
-        If provided this graph is cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
-
-    Returns
-    -------
-    NetworkX Graph
-
-    """
-    G = nx.empty_graph(0, create_using)
-    G.name = "hexagonal_lattice(%d, %d)" % (rows, cols)
-    if rows == 0 or cols == 0:
-        return G
-    if periodic and (rows % 2 != 0 or cols % 2 != 1):
-        msg = "periodic hexagonal lattice must have even rows and odd columns"
-        raise nx.NetworkXError(msg)
-
-    trows = rows + 1
-    tcols = 3 * cols
-    G = triangular_lattice(trows, tcols, sidelength=sidelength, offset=offset,
-                         sig_dig=sig_dig, create_using=create_using)
-
-    # From the triangular lattice, remove nodes to leave hexagonal lattice behind
-    a = sqrt(3) / 2.
-    for row in range(-1, rows + 1):
-        y = round(offset[1] + (row + 1) * a * sidelength, sig_dig)
-        nodes_to_delete = [(round(offset[0] + (col * 3. / 2. + 1) * sidelength,
-                           sig_dig), y)
-                           for col in range(cols) if col % 2 == row % 2]
-        G.remove_nodes_from(nodes_to_delete)
-
-    # if it's periodic, add edges between top and bottom and left and right.
-    if periodic:
-        ymin = round(offset[1], sig_dig)
-        ymax = round(offset[1] + (rows + 1) * a * sidelength, sig_dig)
-        bottomrow = [(round(offset[0] + sidelength / 2. + val * sidelength,
-                     sig_dig), ymin) for val in range(3 * (cols + 1) // 2)
-                     if val % 3 != 2]
-        toprow = [(round(offset[0] + val * sidelength, sig_dig), ymax)
-                  for val in range(3 * (cols + 1) // 2) if val % 3 != 1]
-        G.add_edges_from(zip(bottomrow, toprow))
-
-        xmin = round(offset[0], sig_dig)
-        xmax = round(offset[0] + (3 * (cols + 1) // 2 - 1) * sidelength,
-                     sig_dig)
-        leftrow = [(xmin, round(offset[1] + (val + 1) * a * sidelength,
-                   sig_dig)) for val in range(rows + 1) if val % 2 == 0]
-        rightrow = [(xmax, round(offset[1] + (val + 1) * a * sidelength,
-                    sig_dig)) for val in range(rows + 1) if val % 2 == 0]
-        G.add_edges_from(zip(leftrow, rightrow))
-        G.name = "periodic_hexagonal_lattice(%d, %d)" % (rows, cols)
-    return G
-
-
-def hypercube_graph(n):
-    """Return the n-dimensional hypercube.
-
-    Node labels are the integers 0 to 2**n - 1.
-
-    """
-    dim = n * [2]
-    G = grid_graph(dim)
-    G.name = "hypercube_graph_(%d)" % n
     return G
 
 
@@ -727,7 +444,7 @@ def ladder_graph(n, create_using=None):
 
     """
     if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     G = empty_graph(2 * n, create_using)
     G.name = "ladder_graph_(%d)" % n
     G.add_edges_from([(v, v + 1) for v in range(n - 1)])
@@ -770,12 +487,12 @@ def lollipop_graph(m, n, create_using=None):
     if isinstance(m, int):
         n_nodes = [len(m_nodes) + i for i in n_nodes]
     if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     if M < 2:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, m should be >=2")
     if N < 0:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, n should be >=0")
 
     # the ball
@@ -819,7 +536,7 @@ def path_graph(n, create_using=None):
     n_name, nodes = n
     G = empty_graph(nodes, create_using)
     G.name = "path_graph(%s)" % (n_name,)
-    G.add_edges_from(nx.utils.pairwise(nodes))
+    G.add_edges_from(pairwise(nodes))
     return G
 
 
@@ -849,7 +566,7 @@ def star_graph(n, create_using=None):
     first = nodes[0]
     G = empty_graph(nodes, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     G.add_edges_from((first, v) for v in nodes[1:])
     G.name = "star_graph(%s)" % (n_name,)
     return G
@@ -861,6 +578,40 @@ def trivial_graph(create_using=None):
     """
     G = empty_graph(1, create_using)
     G.name = "trivial_graph()"
+    return G
+
+
+def turan_graph(n, r):
+    r""" Return the Turan Graph
+
+    The Turan Graph is a complete multipartite graph on `n` vertices
+    with `r` disjoint subsets. It is the graph with the edges for any graph with
+    `n` vertices and `r` disjoint subsets.
+
+    Given `n` and `r`, we generate a complete multipartite graph with
+    :math:`r-(n \mod r)` partitions of size :math:`n/r`, rounded down, and
+    :math:`n \mod r` partitions of size :math:`n/r+1`, rounded down.
+
+    Parameters
+    ==========
+    n : int
+        The number of vertices.
+    r : int
+        The number of partitions.
+        Must be less than or equal to n.
+
+    Notes
+    =====
+    Must satisfy :math:`1 <= r <= n`.
+    The graph has :math:`(r-1)(n^2)/(2r)` edges, rounded down.
+    """
+
+    if not 1 <= r <= n:
+        raise NetworkXError("Must satisfy 1 <= r <= n")
+
+    partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
+    G = complete_multipartite_graph(*partitions)
+    G.name = "turan_graph({},{})".format(n, r)
     return G
 
 
@@ -883,7 +634,7 @@ def wheel_graph(n, create_using=None):
     """
     n_name, nodes = n
     if n_name == 0:
-        G = nx.empty_graph(0, create_using=create_using)
+        G = empty_graph(0, create_using=create_using)
         G.name = "wheel_graph(0)"
         return G
     G = star_graph(nodes, create_using)
@@ -951,7 +702,7 @@ def complete_multipartite_graph(*block_sizes):
     complete_bipartite_graph
     """
     # The complete multipartite graph is an undirected simple graph.
-    G = nx.Graph()
+    G = Graph()
     G.name = 'complete_multiparite_graph{}'.format(block_sizes)
 
     if len(block_sizes) == 0:
@@ -970,7 +721,7 @@ def complete_multipartite_graph(*block_sizes):
         for (i, block) in enumerate(blocks):
             G.add_nodes_from(block, block=i)
     except TypeError:
-        raise nx.NetworkXError("Arguments must be all ints or all iterables")
+        raise NetworkXError("Arguments must be all ints or all iterables")
 
     # Across blocks, all vertices should be adjacent.
     # We can use itertools.combinations() because undirected.
