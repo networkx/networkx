@@ -221,6 +221,12 @@ class test_edgeview(object):
         assert_not_equal(id(ev), id(ev(data=True)))
         assert_not_equal(id(ev), id(ev(nbunch=1)))
 
+    def test_data(self):
+        ev = self.eview(self.G)
+        assert_equal(id(ev), id(ev.data()))
+        assert_not_equal(id(ev), id(ev.data(data=True)))
+        assert_not_equal(id(ev), id(ev.data(nbunch=1)))
+
     def test_iter(self):
         ev = self.eview(self.G)
         for u, v in ev:
@@ -353,6 +359,12 @@ class test_multiedges(test_edgeview):
         assert_equal(id(ev), id(ev(keys=True)))
         assert_not_equal(id(ev), id(ev(data=True)))
         assert_not_equal(id(ev), id(ev(nbunch=1)))
+
+    def test_data(self):
+        ev = self.eview(self.G)
+        assert_equal(id(ev), id(ev.data(keys=True)))
+        assert_not_equal(id(ev), id(ev.data(data=True)))
+        assert_not_equal(id(ev), id(ev.data(nbunch=1)))
 
     def test_iter(self):
         ev = self.eview(self.G)
