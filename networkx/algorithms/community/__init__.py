@@ -10,8 +10,9 @@ functions as attributes of ``community``. For example::
     >>> G = nx.barbell_graph(5, 1)
     >>> communities_generator = community.girvan_newman(G)
     >>> top_level_communities = next(communities_generator)
-    >>> sorted(map(sorted, top_level_communities))
-    [[0, 1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
+    >>> next_level_communities = next(communities_generator)
+    >>> sorted(map(sorted, next_level_communities))
+    [[0, 1, 2, 3, 4], [5], [6, 7, 8, 9, 10]]
 
 """
 from networkx.algorithms.community.asyn_lpa import *
