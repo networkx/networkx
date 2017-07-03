@@ -56,3 +56,11 @@ Partitions via centrality measures
    :toctree: generated/
 
    girvan_newman
+
+Validating partitions
+---------------------
+.. automodule:: networkx.algorithms.community.utils
+.. autosummary::
+   :toctree: generated/
+
+   is_partition
