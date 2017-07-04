@@ -10,6 +10,8 @@
 #          Dan Schult (dschult@colgate.edu)
 #          Ben Edwards (BJEdwards@gmail.com)
 #          Arya McCarthy (admccarthy@smu.edu)
+#          Cole MacLean (maclean.cole@gmail.com)
+
 """Generators for geometric graphs.
 """
 from __future__ import division
