@@ -299,7 +299,7 @@ def fruchterman_reingold_layout(G, k=None,
     if len(G) == 0:
         return {}
     if len(G) == 1:
-        return {next(G.nodes()): center}
+        return {nx.utils.arbitrary_element(G.nodes()): center}
 
     try:
         # Sparse matrix
@@ -371,20 +371,19 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None,
     # could use multilevel methods to speed this up significantly
     for iteration in range(iterations):
         # matrix of difference between points
-        for i in range(pos.shape[1]):
-            delta[:, :, i] = pos[:, i, None] - pos[:, i]
+        delta = pos[:, np.newaxis, :] - pos[np.newaxis, :, :]
         # distance between points
-        distance = np.sqrt((delta**2).sum(axis=-1))
+        distance = np.linalg.norm(delta, axis=-1)
         # enforce minimum distance of 0.01
-        distance = np.where(distance < 0.01, 0.01, distance)
+        np.clip(distance, 0.01, None, out=distance)
         # displacement "force"
-        displacement = np.transpose(np.transpose(delta) *
-                                    (k * k / distance**2 - A * distance / k)
-                                    ).sum(axis=1)
+        displacement = np.einsum('ijk,ij->ik',
+                                 delta,
+                                 (k * k / distance**2 - A * distance / k))
         # update positions
-        length = np.sqrt((displacement**2).sum(axis=1))
+        length = np.linalg.norm(displacement, axis=-1)
         length = np.where(length < 0.01, 0.1, length)
-        delta_pos = np.transpose(np.transpose(displacement) * t / length)
+        delta_pos = np.einsum('ij,i->ij', displacement, t / length)
         if fixed is not None:
             # don't change positions of fixed nodes
             delta_pos[fixed] = 0.0

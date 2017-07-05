@@ -53,7 +53,7 @@ class TestModularity(object):
 
         G_weighted = self.G.copy()
         for n1, n2 in G_weighted.edges():
-            G_weighted.edge[n1][n2]["weight"] = 0.5
+            G_weighted.edge[n1, n2]["weight"] = 0.5
         # The following test would fail in networkx 1.1
         assert_equal(nx.modularity_matrix(G_weighted), B)
         # The following test that the modularity matrix get rescaled accordingly
@@ -69,6 +69,8 @@ class TestModularity(object):
                           [-0.1, -0.2, -0.1,  0.8, -0.2, -0.2]])
         node_permutation = [5, 1, 2, 3, 4, 6]
         idx_permutation = [4, 0, 1, 2, 3, 5]
-        assert_equal(nx.directed_modularity_matrix(self.DG), B)
-        assert_equal(nx.directed_modularity_matrix(self.DG, nodelist=node_permutation),
+        mm = nx.directed_modularity_matrix(self.DG,  nodelist=sorted(self.DG))
+        assert_equal(mm, B)
+        assert_equal(nx.directed_modularity_matrix(self.DG,
+                                                   nodelist=node_permutation),
                      B[numpy.ix_(idx_permutation, idx_permutation)])

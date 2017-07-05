@@ -36,7 +36,6 @@ class TestDistance:
         assert_equal(e,{})
 
 
-
         
     def test_diameter(self):
         assert_equal(networkx.diameter(self.G),6)
@@ -49,6 +48,18 @@ class TestDistance:
 
     def test_center(self):
         assert_equal(set(networkx.center(self.G)),set([6, 7, 10, 11]))
+
+    def test_bound_diameter(self):
+        assert_equal(networkx.diameter(self.G, usebounds=True),6)
+
+    def test_bound_radius(self):
+        assert_equal(networkx.radius(self.G, usebounds=True),4)
+
+    def test_bound_periphery(self):
+        assert_equal(set(networkx.periphery(self.G, usebounds=True)),set([1, 4, 13, 16]))
+
+    def test_bound_center(self):
+        assert_equal(set(networkx.center(self.G, usebounds=True)),set([6, 7, 10, 11]))
 
     def test_radius_exception(self):
         G=networkx.Graph()

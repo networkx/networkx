@@ -226,15 +226,15 @@ class TestContraction(object):
         """Tests that node contraction preserves node attributes."""
         G = nx.cycle_graph(4)
         # Add some data to the two nodes being contracted.
-        G.node[0] = dict(foo='bar')
-        G.node[1] = dict(baz='xyzzy')
+        G.node[0]['foo'] = 'bar'
+        G.node[1]['baz'] = 'xyzzy'
         actual = nx.contracted_nodes(G, 0, 1)
         # We expect that contracting the nodes 0 and 1 in C_4 yields K_3, but
         # with nodes labeled 0, 2, and 3, and with a self-loop on 0.
         expected = nx.complete_graph(3)
         expected = nx.relabel_nodes(expected, {1: 2, 2: 3})
         expected.add_edge(0, 0)
-        expected.node[0] = dict(foo='bar', contraction={1: dict(baz='xyzzy')})
+        expected.node[0].update(dict(foo='bar', contraction={1: dict(baz='xyzzy')}))
         assert_true(nx.is_isomorphic(actual, expected))
         assert_equal(actual.node, expected.node)
 

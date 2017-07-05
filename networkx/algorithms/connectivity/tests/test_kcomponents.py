@@ -1,5 +1,5 @@
 # Test for Moody and White k-components algorithm
-from nose.tools import assert_equal, assert_true, raises
+from nose.tools import assert_equal, assert_true, raises, assert_greater_equal
 import networkx as nx
 from networkx.algorithms.connectivity.kcomponents import (
     build_k_number_dict,
@@ -87,7 +87,8 @@ def _check_connectivity(G):
             continue
         for component in components:
             C = G.subgraph(component)
-            assert_true(nx.node_connectivity(C) >= k)
+            K = nx.node_connectivity(C)
+            assert_greater_equal(K, k)
 
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
@@ -126,34 +127,24 @@ def test_karate_component_number():
 
 
 def test_torrents_and_ferraro_detail_3_and_4():
-    solution = {
-        3: [{25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 42},
-            {44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 61},
-            {63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 79, 80},
-            {81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 93, 94, 95, 99, 100},
-            {39, 40, 41, 42, 43},
-            {58, 59, 60, 61, 62},
-            {76, 77, 78, 79, 80},
-            {96, 97, 98, 99, 100},
-        ],
-        4: [{35, 36, 37, 38, 42},
-            {39, 40, 41, 42, 43},
-            {54, 55, 56, 57, 61},
-            {58, 59, 60, 61, 62},
-            {73, 74, 75, 79, 80},
-            {76, 77, 78, 79, 80},
-            {93, 94, 95, 99, 100},
-            {96, 97, 98, 99, 100},
-        ],
-    }
     G = torrents_and_ferraro_graph()
     result = nx.k_components(G)
+    # In this example graph there are 8 3-components, 4 with 15 nodes
+    # and 4 with 5 nodes.
+    assert_equal(len(result[3]), 8)
+    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
+    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
+    # There are also 8 4-components all with 5 nodes.
+    assert_equal(len(result[4]), 8)
+    assert_true(all(len(c) == 5 for c in result[4]))
+    # Finally check that the k-components detected have actually node
+    # connectivity >= k.
     for k, components in result.items():
         if k < 3:
             continue
-        assert_true(len(components) == len(solution[k]))
         for component in components:
-            assert_true(component in solution[k])
+            K = nx.node_connectivity(G.subgraph(component))
+            assert_greater_equal(K, k)
 
 def test_davis_southern_women():
     G = nx.davis_southern_women_graph()

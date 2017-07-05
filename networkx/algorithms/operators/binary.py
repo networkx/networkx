@@ -96,8 +96,10 @@ def union(G, H, rename=(None, None), name=None):
     R.add_nodes_from(H)
     R.add_edges_from(H_edges)
     # add node attributes
-    R.node.update(G.node)
-    R.node.update(H.node)
+    for n in G:
+        R.node[n].update(G.node[n])
+    for n in H:
+        R.node[n].update(H.node[n])
     # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
     R.graph.update(H.graph)

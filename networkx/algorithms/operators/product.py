@@ -413,6 +413,7 @@ def power(G, k):
     if k <= 0:
         raise ValueError('k must be a positive integer')
     H = nx.Graph()
+    H.add_nodes_from(G)
     # update BFS code to ignore self loops.
     for n in G:
         seen = {}                  # level (number of hops) when seen in BFS

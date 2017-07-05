@@ -56,6 +56,14 @@ Boykov-Kolmogorov
    boykov_kolmogorov
 
 
+Gomory-Hu Tree
+--------------
+.. autosummary::
+   :toctree: generated/
+
+   gomory_hu_tree
+
+
 Utils
 -----
 .. autosummary::

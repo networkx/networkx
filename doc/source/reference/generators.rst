@@ -234,6 +234,15 @@ Community
    ring_of_cliques
 
 
+Trees
+-----
+.. automodule:: networkx.generators.tree
+.. autosummary::
+   :toctree: generated/
+
+   random_tree
+
+
 Non Isomorphic Trees
 --------------------
 .. automodule:: networkx.generators.nonisomorphic_trees

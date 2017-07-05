@@ -59,7 +59,6 @@ if on_rtd:
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py
-sys.path.append(os.path.abspath('../sphinxext'))
 
 # General configuration
 # ---------------------
@@ -76,9 +75,6 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    #'sphinxcontrib.bibtex',
-    #'IPython.sphinxext.ipython_console_highlighting',
-    #'IPython.sphinxext.ipython_directive',
 ]
 
 
@@ -99,7 +95,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'NetworkX'
-copyright = '2015, NetworkX Developers'
+copyright = '2004-2017, NetworkX Developers'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -178,7 +174,7 @@ html_last_updated_fmt = '%b %d, %Y'
 html_index = 'contents.html'
 
 # Custom sidebar templates, maps page names to templates.
-#html_sidebars = {'index': 'indexsidebar.html'}
+#html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # templates.
@@ -192,8 +188,6 @@ html_use_opensearch = 'http://networkx.github.io'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NetworkX'
-
-pngmath_use_preview = True
 
 # Options for LaTeX output
 # ------------------------
@@ -222,10 +216,8 @@ intersphinx_mapping = {'http://docs.python.org/': None,
                        'http://docs.scipy.org/doc/numpy/': None,
                       }
 
-# For trac custom roles
-
+# The reST default role (used for this markup: `text`) to use for all
+# documents.
 default_role = 'obj'
-trac_url = 'https://networkx.lanl.gov/trac/'
-mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
 
 numpydoc_show_class_members = False

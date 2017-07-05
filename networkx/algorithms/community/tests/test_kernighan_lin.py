@@ -17,6 +17,7 @@ from nose.tools import assert_equal
 from nose.tools import raises
 
 import networkx as nx
+from networkx.algorithms.community import kernighan_lin_bisection
 
 
 def assert_partition_equal(x, y):
@@ -25,7 +26,7 @@ def assert_partition_equal(x, y):
 
 def test_partition():
     G = nx.barbell_graph(3, 0)
-    C = nx.kernighan_lin_bisection(G)
+    C = kernighan_lin_bisection(G)
     assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
 
 
@@ -33,14 +34,14 @@ def test_partition():
 def test_non_disjoint_partition():
     G = nx.barbell_graph(3, 0)
     partition = ({0, 1, 2}, {2, 3, 4, 5})
-    nx.kernighan_lin_bisection(G, partition)
+    kernighan_lin_bisection(G, partition)
 
 
 @raises(nx.NetworkXError)
 def test_too_many_blocks():
     G = nx.barbell_graph(3, 0)
     partition = ({0, 1}, {2}, {3, 4, 5})
-    nx.kernighan_lin_bisection(G, partition)
+    kernighan_lin_bisection(G, partition)
 
 
 def test_multigraph():
@@ -48,5 +49,5 @@ def test_multigraph():
     M = nx.MultiGraph(G.edges())
     M.add_edges_from(G.edges())
     M.remove_edge(1, 2)
-    A, B = nx.kernighan_lin_bisection(M)
+    A, B = kernighan_lin_bisection(M)
     assert_partition_equal([A, B], [{0, 1}, {2, 3}])
