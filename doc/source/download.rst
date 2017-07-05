@@ -14,10 +14,8 @@ Documentation
 ~~~~~~~~~~~~~
 *PDF*
 
-http://networkx.github.io/documentation/latest/_downloads/networkx_tutorial.pdf
-
-http://networkx.github.io/documentation/latest/_downloads/networkx_reference.pdf
+https://media.readthedocs.org/pdf/networkx/stable/networkx.pdf
 
 *HTML in zip file*
 
-http://networkx.github.io/documentation/latest/_downloads/networkx-documentation.zip
+https://readthedocs.org/projects/networkx/downloads/htmlzip/stable/
