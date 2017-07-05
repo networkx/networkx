@@ -74,7 +74,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
-    'sphinx.ext.pngmath',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     #'sphinxcontrib.bibtex',
@@ -192,8 +191,6 @@ html_use_opensearch = 'http://networkx.github.io'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NetworkX'
 
-pngmath_use_preview = True
-
 # Options for LaTeX output
 # ------------------------
 
@@ -225,6 +222,5 @@ intersphinx_mapping = {'http://docs.python.org/': None,
 
 default_role = 'math'
 trac_url = 'https://networkx.lanl.gov/trac/'
-mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
 
 numpydoc_show_class_members = False
