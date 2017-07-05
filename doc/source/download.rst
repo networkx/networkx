@@ -12,6 +12,6 @@ Github (latest development): https://github.com/networkx/networkx/
 
 Documentation
 ~~~~~~~~~~~~~
-As .pdf file: https://media.readthedocs.org/pdf/networkx/stable/networkx.pdf
+As .pdf file: https://media.readthedocs.org/pdf/networkx/latest/networkx.pdf
 
-As html in .zip file: https://readthedocs.org/projects/networkx/downloads/htmlzip/stable/
+As html in .zip file: https://readthedocs.org/projects/networkx/downloads/htmlzip/latest/
