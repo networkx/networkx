@@ -34,7 +34,7 @@ import networkx as nx
 from networkx.utils import nodes_or_number
 
 __all__ = ['geographical_threshold_graph', 'waxman_graph',
-           'navigable_small_world_graph', 'random_geometric_graph']
+           'navigable_small_world_graph', 'random_geometric_graph','soft_random_geometric_graphs']
 
 
 def euclidean(x, y):
@@ -162,6 +162,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
         _slow_construct_edges(G, radius, p)
 
     return G
+
+def soft_random_geometric_graphs():
+    pass
 
 
 @nodes_or_number(0)
