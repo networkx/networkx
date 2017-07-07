@@ -565,7 +565,7 @@ def generate_gml(G, stringizer=None):
     Notes
     -----
     Graph attributes named 'directed', 'multigraph', 'node' or
-    'edge',node attributes named 'id' or 'label', edge attributes
+    'edge', node attributes named 'id' or 'label', edge attributes
     named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
@@ -580,9 +580,9 @@ def generate_gml(G, stringizer=None):
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
-            if isinstance(value, (int, long)):
+            if isinstance(value, (int, long)) and key != 'label':
                 yield indent + key + ' ' + str(value)
-            elif isinstance(value, float):
+            elif isinstance(value, float) and key != 'label':
                 text = repr(value).upper()
                 # GML requires that a real literal contain a decimal point, but
                 # repr may not output a decimal point when the mantissa is
@@ -606,12 +606,15 @@ def generate_gml(G, stringizer=None):
             else:
                 if stringizer:
                     try:
+                        print(isinstance(value, unicode))
                         value = stringizer(value)
+                        print(isinstance(value, unicode))
                     except ValueError:
                         raise NetworkXError(
                             '%r cannot be converted into a string' % (value,))
                 if not isinstance(value, (str, unicode)):
                     raise NetworkXError('%r is not a string' % (value,))
+                print(indent + key + ' "' + escape(value) + '"')
                 yield indent + key + ' "' + escape(value) + '"'
 
     multigraph = G.is_multigraph()
