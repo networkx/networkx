@@ -423,7 +423,9 @@ def parse_gml_lines(lines, label, destringizer):
                 G.add_edge(source, target, **edge)
             else:
                 raise nx.NetworkXError(
-                    'edge #%d (%r%s%r) is duplicated' %
+                    """edge #%d (%r%s%r) is duplicated
+
+Hint:  If this is a multigraph, add "multigraph 1" to the header of the file.""" %
                     (i, source, '->' if directed else '--', target))
         else:
             key = edge.pop('key', None)
