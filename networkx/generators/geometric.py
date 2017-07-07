@@ -34,7 +34,7 @@ import networkx as nx
 from networkx.utils import nodes_or_number
 
 __all__ = ['geographical_threshold_graph', 'waxman_graph',
-           'navigable_small_world_graph', 'random_geometric_graph','soft_random_geometric_graphs']
+           'navigable_small_world_graph', 'random_geometric_graph','soft_random_geometric_graph']
 
 
 def euclidean(x, y):
@@ -170,15 +170,17 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     return G
 
 @nodes_or_number(0)
-def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2):
-    """Returns a random geometric graph in the unit cube.
+def soft_random_geometric_graph(n, radius, dim=2, pos=None, metric=None, p_dist=None):
+    """Returns a soft random geometric graph in the unit cube of dimensions `dim`.
 
-    The random geometric graph model places `n` nodes uniformly at
-    random in the unit cube. Two nodes are joined by an edge if the
-    distance between the nodes is at most `radius`.
+    The soft random geometric graph [1] model places `n` nodes uniformly at
+    random in the unit cube. Two nodes of distance, d, computed by the metric
+    function are joined by an edge with probability `p_dist` if the computed
+    distance metric value, d, of the nodes is at most `radius`, otherwise 
+    they are not joined.
 
-    Edges are determined using a KDTree when SciPy is available.
-    This reduces the time complexity from :math:`O(n^2)` to :math:`O(n)`.
+    Edges within `radius` of each other are determined using a KDTree when SciPy
+    is available. This reduces the time complexity from :math:`O(n^2)` to :math:`O(n)`.
 
     Parameters
     ----------
@@ -190,20 +192,43 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2):
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    p : float
-        Which Minkowski distance metric to use.  `p` has to meet the condition
-        ``1 <= p <= infinity``.
+    metric : function, optional
+        A metric on vectors of numbers (represented as lists or
+        tuples). This must be a function that accepts two lists (or
+        tuples) as input and yields a number as output. The function
+        must also satisfy the four requirements of a `metric`_.
+        Specifically, if *d* is the function and *x*, *y*,
+        and *z* are vectors in the graph, then *d* must satisfy
 
-        If this argument is not specified, the :math:`L^2` metric (the Euclidean
-        distance metric) is used.
+        1. *d*(*x*, *y*) ≥ 0,
+        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
+        3. *d*(*x*, *y*) = *d*(*y*, *x*),
+        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
 
-        This should not be confused with the `p` of an Erdős-Rényi random
-        graph, which represents probability.
+        If this argument is not specified, the Euclidean distance metric is
+        used.
+
+        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+    p_dist : function, optional
+        A probability density function computing the probability of 
+        connecting two nodes that are of distance, d, computed by the 
+        `metric` function. The probability density function, `p_dist`, must
+        be any function that takes the output of the `metric` function as input
+        and outputs a single probability value between 0-1. The function
+        should satisify the properties of real probability density functions,
+        where the integration of the function equals 1. Note that this
+        property is not validated in the current implementation. The scipy.stats
+        package has many probability distribution functions implemented and tools
+        for custom probability distribution defintions [2], and passing the .pdf()
+        method of scipy.stats distributions can be used here. If the probability
+        function, `p_dist`, is not supplied a default uniform distribution is used
+        where nodes are connected with equal probabilty = 0.5 at all distances, d,
+        that are within the maximum connection distance, `radius`.
 
     Returns
     -------
     Graph
-        A random geometric graph, undirected and without self-loops.
+        A soft random geometric graph, undirected and without self-loops.
         Each node has a node attribute ``'pos'`` that stores the
         position of that node in Euclidean space as provided by the
         ``pos`` keyword argument or, if ``pos`` was not provided, as
@@ -211,10 +236,10 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2):
 
     Examples
     --------
-    Create a random geometric graph on twenty nodes where nodes are joined by
-    an edge if their distance is at most 0.1::
-
-    >>> G = nx.random_geometric_graph(20, 0.1)
+    Create a soft random geometric graph on twenty uniformly distributed nodes
+    where nodes are joined by an edge with probability computed from an exponential
+    distribution with rate parameter :math:`\lambda=1` if their Euclidean distance 
+    is at most 0.2::
 
     Notes
     -----
@@ -224,17 +249,25 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     can create an arbitrary distribution and domain for positions.
 
     For example, to use a 2D Gaussian distribution of node positions with mean
-    (0, 0) and standard deviation 2::
+    (0, 0) and standard deviation 2
+
+    The scipy.stats package can be used to define the probaility distribution
+    with the .pdf() method used as `p_dist`.
+
+    ::
 
     >>> import random
+    >>> from scipy.stats import expon
     >>> n = 20
     >>> p = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
-    >>> G = nx.random_geometric_graph(n, 0.2, pos=p)
+    >>> p_dist = expon(scale=1).pdf()
+    >>> G = nx.random_geometric_graph(n, 0.2, pos=p, p_dist=p_dist)
 
     References
     ----------
-    .. [1] Penrose, Mathew, *Random Geometric Graphs*,
-           Oxford Studies in Probability, 5, 2003.
+    .. [1] Penrose, Mathew D. "Connectivity of soft random geometric graphs."
+           The Annals of Applied Probability 26.2 (2016): 986-1028.
+       [2] scipy.stats - https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
 
     """
     # TODO Is this function just a special case of the geographical
