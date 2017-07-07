@@ -541,7 +541,7 @@ def literal_stringizer(value):
 
 
 def generate_gml(G, stringizer=None):
-    """Generate a single entry of the graph G in GML format.
+    r"""Generate a single entry of the graph G in GML format.
 
     Parameters
     ----------
@@ -571,6 +571,41 @@ def generate_gml(G, stringizer=None):
     named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_node("1")
+    >>> print("\n".join(nx.generate_gml(G)))
+    graph [
+      node [
+        id 0
+        label "1"
+      ]
+    ]
+    >>> G = nx.MultiGraph([("a", "b"), ("a", "b")])
+    >>> print("\n".join(nx.generate_gml(G)))
+    graph [
+      multigraph 1
+      node [
+        id 0
+        label "a"
+      ]
+      node [
+        id 1
+        label "b"
+      ]
+      edge [
+        source 0
+        target 1
+        key 0
+      ]
+      edge [
+        source 0
+        target 1
+        key 1
+      ]
+    ]
     """
     valid_keys = re.compile('^[A-Za-z][0-9A-Za-z]*$')
 
