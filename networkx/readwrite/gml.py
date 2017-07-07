@@ -19,16 +19,22 @@ GD'95; this proposal is the outcome of many discussions. GML is the
 standard file format in the Graphlet graph editor system. It has been
 overtaken and adapted by several other systems for drawing graphs."
 
-See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
+GML files are stored using a 7-bit ASCII encoding, with any extended
+ASCII characters (iso8859-1) appearing as HTML character entities.
+You will need to give some thought into how the exported data should
+interact with different languages and even different Python versions.
+Re-importing from gml is also a concern.
 
-Format
-------
-See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
-for format specification.
+Without specifying a `stringizer`/`destringizer`, the code is capable of
+handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
+specification.  For other data types, you need to explicitly supply a
+`stringizer`/`destringizer`.
 
-Example graphs in GML format
-http://www-personal.umich.edu/~mejn/netdata/
+For additional documentation on the GML file format, please see the
+`GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
+Several example graphs in GML format may be found on Mark Newman's
+`Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
 try:
     try:
@@ -176,13 +182,15 @@ def read_gml(path, label='label', destringizer=None):
 
     Notes
     -----
-    The GML specification says that files should be ASCII encoded, with any
-    extended ASCII characters (iso8859-1) appearing as HTML character entities.
+    GML files are stored using a 7-bit ASCII encoding, with any extended
+    ASCII characters (iso8859-1) appearing as HTML character entities.
+    Without specifying a `stringizer`/`destringizer`, the code is capable of
+    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For other data types, you need to explicitly supply a
+    `stringizer`/`destringizer`.
 
-    References
-    ----------
-    GML specification:
-    http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
+    For additional documentation on the GML file format, please see the
+    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     Examples
     --------
@@ -239,13 +247,18 @@ def parse_gml(lines, label='label', destringizer=None):
 
     Notes
     -----
-    This stores nested GML attributes as dictionaries in the
-    NetworkX graph, node, and edge attribute structures.
+    This stores nested GML attributes as dictionaries in the NetworkX graph,
+    node, and edge attribute structures.
 
-    References
-    ----------
-    GML specification:
-    http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
+    GML files are stored using a 7-bit ASCII encoding, with any extended
+    ASCII characters (iso8859-1) appearing as HTML character entities.
+    Without specifying a `stringizer`/`destringizer`, the code is capable of
+    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For other data types, you need to explicitly supply a
+    `stringizer`/`destringizer`.
+
+    For additional documentation on the GML file format, please see the
+    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
     """
     def decode_line(line):
         if isinstance(line, bytes):
@@ -572,6 +585,16 @@ def generate_gml(G, stringizer=None):
     are ignored because these attribute names are used to encode the graph
     structure.
 
+    GML files are stored using a 7-bit ASCII encoding, with any extended
+    ASCII characters (iso8859-1) appearing as HTML character entities.
+    Without specifying a `stringizer`/`destringizer`, the code is capable of
+    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For other data types, you need to explicitly supply a
+    `stringizer`/`destringizer`.
+
+    For additional documentation on the GML file format, please see the
+    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -738,6 +761,16 @@ def write_gml(G, path, stringizer=None):
     named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
+
+    GML files are stored using a 7-bit ASCII encoding, with any extended
+    ASCII characters (iso8859-1) appearing as HTML character entities.
+    Without specifying a `stringizer`/`destringizer`, the code is capable of
+    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For other data types, you need to explicitly supply a
+    `stringizer`/`destringizer`.
+
+    For additional documentation on the GML file format, please see the
+    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     Examples
     --------
