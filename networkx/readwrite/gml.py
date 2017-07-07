@@ -699,7 +699,7 @@ def write_gml(G, path, stringizer=None):
     Notes
     -----
     Graph attributes named 'directed', 'multigraph', 'node' or
-    'edge',node attributes named 'id' or 'label', edge attributes
+    'edge', node attributes named 'id' or 'label', edge attributes
     named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
