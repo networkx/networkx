@@ -48,8 +48,8 @@ def euclidean(x, y):
 
 
 def _fast_edges(G, radius, p):
-    """Returns edge list of node pairs within radius of each other
-       using scipy KDTree and Minkowski distance metric p
+    """Returns edge list of node pairs within `radius` of each other
+       using scipy KDTree and Minkowski distance metric `p`
 
     Requires scipy to be installed.
     """
@@ -62,7 +62,8 @@ def _fast_edges(G, radius, p):
 
 
 def _slow_edges(G, radius, p):
-    """Construct edges for random geometric graph.
+    """Returns edge list of node pairs within `radius` of each other
+       using Minkowski distance metric `p`
 
     Works without scipy, but in `O(n^2)` time.
     """
@@ -76,7 +77,7 @@ def _slow_edges(G, radius, p):
 
 @nodes_or_number(0)
 def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
-    """Returns a random geometric graph in the unit cube.
+    """Returns a random geometric graph in the unit cube of dimensions `dim`.
 
     The random geometric graph model places `n` nodes uniformly at
     random in the unit cube. Two nodes are joined by an edge if the
@@ -253,9 +254,10 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     nx.set_node_attributes(G, 'pos', pos)
 
     if _is_scipy_available:
-        _fast_construct_edges(G, radius, p)
+        edges = _fast_edges(G, radius, p)
     else:
-        _slow_construct_edges(G, radius, p)
+        edges = _slow_edges(G, radius, p)
+    G.add_edges_from(edges)
 
     return G
 
