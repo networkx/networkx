@@ -549,9 +549,9 @@ def generate_gml(G, stringizer=None):
         The graph to be converted to GML.
 
     stringizer : callable, optional
-        A stringizer which converts non-int/float/dict values into strings. If
-        it cannot convert a value into a string, it should raise a
-        `ValueError` raised to indicate that. Default value: None.
+        A stringizer which converts non-int/non-float/non-dict values into
+        strings. If it cannot convert a value into a string, it should raise a
+        `ValueError` to indicate that. Default value: None.
 
     Returns
     -------
