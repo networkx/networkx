@@ -168,13 +168,13 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     return G
 
 @nodes_or_number(0)
-def soft_random_geometric_graph(n, radius, dim=2, pos=None, metric=None, p_dist=None):
+def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=None, p_dist=None):
     """Returns a soft random geometric graph in the unit cube of dimensions `dim`.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
-    random in the unit cube. Two nodes of distance, d, computed by the metric
-    function are joined by an edge with probability `p_dist` if the computed
-    distance metric value, d, of the nodes is at most `radius`, otherwise 
+    random in the unit cube. Two nodes of distance, d, computed by the Minkowski
+    distance metric are joined by an edge with probability `p_dist` if the computed
+    distance metric value of the nodes is at most `radius`, otherwise 
     they are not joined.
 
     Edges within `radius` of each other are determined using a KDTree when SciPy
@@ -190,28 +190,20 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, metric=None, p_dist=
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    metric : function, optional
-        A metric on vectors of numbers (represented as lists or
-        tuples). This must be a function that accepts two lists (or
-        tuples) as input and yields a number as output. The function
-        must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+    p : float
+        Which Minkowski distance metric to use.  `p` has to meet the condition
+        ``1 <= p <= infinity``.
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
+        If this argument is not specified, the :math:`L^2` metric (the Euclidean
+        distance metric) is used.
 
-        If this argument is not specified, the Euclidean distance metric is
-        used.
-
-        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+        This should not be confused with the `p` of an Erdős-Rényi random
+        graph, which represents probability.%29
     p_dist : function, optional
         A probability density function computing the probability of 
         connecting two nodes that are of distance, d, computed by the 
-        `metric` function. The probability density function, `p_dist`, must
-        be any function that takes the output of the `metric` function as input
+        Minkowski distance metric. The probability density function, `p_dist`, must
+        be any function that takes the metric value as input
         and outputs a single probability value between 0-1. The function
         should satisify the properties of real probability density functions,
         where the integration of the function equals 1. Note that this
@@ -268,17 +260,10 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, metric=None, p_dist=
        [2] scipy.stats - https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
 
     """
-    # TODO Is this function just a special case of the geographical
-    # threshold graph?
-    #
-    #     n_name, nodes = n
-    #     half_radius = {v: radius / 2 for v in nodes}
-    #     return geographical_threshold_graph(nodes, theta=1, alpha=1,
-    #                                         weight=half_radius)
-    #
+
     n_name, nodes = n
     G = nx.Graph()
-    G.name = 'random_geometric_graph({}, {}, {})'.format(n, radius, dim)
+    G.name = 'soft_random_geometric_graph({}, {}, {})'.format(n, radius, dim)
     G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
