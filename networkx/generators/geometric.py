@@ -100,9 +100,8 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
         Which Minkowski distance metric to use.  `p` has to meet the condition
         ``1 <= p <= infinity``.
 
-        If this argument is not specified, the $L^2$ metric
-        (the Euclidean distance metric) is used.
-
+        If this argument is not specified, the :math:`L^2` metric (the Euclidean
+        distance metric), p = 2 is used.
         This should not be confused with the `p` of an Erdős-Rényi random
         graph, which represents probability.
 
@@ -168,7 +167,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     return G
 
 @nodes_or_number(0)
-def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=None, p_dist=None):
+def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     """Returns a soft random geometric graph in the unit cube of dimensions `dim`.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
@@ -195,10 +194,10 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=None, p_dist=None)
         ``1 <= p <= infinity``.
 
         If this argument is not specified, the :math:`L^2` metric (the Euclidean
-        distance metric) is used.
+        distance metric), p = 2 is used.
 
         This should not be confused with the `p` of an Erdős-Rényi random
-        graph, which represents probability.%29
+        graph, which represents probability.
     p_dist : function, optional
         A probability density function computing the probability of 
         connecting two nodes that are of distance, d, computed by the 
@@ -209,7 +208,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=None, p_dist=None)
         where the integration of the function equals 1. Note that this
         property is not validated in the current implementation. The scipy.stats
         package has many probability distribution functions implemented and tools
-        for custom probability distribution defintions [2], and passing the .pdf()
+        for custom probability distribution defintions [2], and passing the .pdf
         method of scipy.stats distributions can be used here. If the probability
         function, `p_dist`, is not supplied a default uniform distribution is used
         where nodes are connected with equal probabilty = 0.5 at all distances, d,
@@ -226,7 +225,11 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=None, p_dist=None)
 
     Examples
     --------
-    Create a soft random geometric graph on twenty uniformly distributed nodes
+    Default
+
+    G = nx.soft_random_geometric_graph(n, 0.2)
+
+    Create a soft random geometric graph on 100 uniformly distributed nodes
     where nodes are joined by an edge with probability computed from an exponential
     distribution with rate parameter :math:`\lambda=1` if their Euclidean distance 
     is at most 0.2::
@@ -242,16 +245,16 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=None, p_dist=None)
     (0, 0) and standard deviation 2
 
     The scipy.stats package can be used to define the probaility distribution
-    with the .pdf() method used as `p_dist`.
+    with the .pdf method used as `p_dist`.
 
     ::
 
     >>> import random
     >>> from scipy.stats import expon
-    >>> n = 20
+    >>> n = 100
     >>> p = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
-    >>> p_dist = expon(scale=1).pdf()
-    >>> G = nx.random_geometric_graph(n, 0.2, pos=p, p_dist=p_dist)
+    >>> p_dist = expon(scale=1).pdf
+    >>> G = nx.soft_random_geometric_graph(n, 0.2, pos=p, p_dist=p_dist)
 
     References
     ----------
@@ -271,11 +274,29 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=None, p_dist=None)
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
     nx.set_node_attributes(G, 'pos', pos)
 
+    #if p_dist function not supplied define uniform connection probability function
+    #where all node pairs connect with constant probability = 0.5 at any distance
+    if p_dist is None:
+        def p_dist(dist):
+            return 0.5
+
+    def should_join(pair):
+        u, v = pair
+        u_pos, v_pos = pos[u], pos[v]
+        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1/p)
+        #Check if dist is <= radius parameter. This check is redundant if scipy
+        #is availible and _fast_edges routine is used, but provides the check incase
+        #scipy is not availible and all edge combinations need to be checked
+        if dist <= radius:
+            return random.random() < p_dist(dist)
+        else:
+            return False
+
     if _is_scipy_available:
         edges = _fast_edges(G, radius, p)
+        G.add_edges_from(filter(should_join, edges))
     else:
-        edges = _slow_edges(G, radius, p)
-    G.add_edges_from(edges)
+        G.add_edges_from(filter(should_join, combinations(G, 2)))
 
     return G
 
