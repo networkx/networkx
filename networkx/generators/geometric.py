@@ -34,7 +34,8 @@ import networkx as nx
 from networkx.utils import nodes_or_number
 
 __all__ = ['geographical_threshold_graph', 'waxman_graph',
-           'navigable_small_world_graph', 'random_geometric_graph','soft_random_geometric_graph']
+           'navigable_small_world_graph', 'random_geometric_graph',
+           'soft_random_geometric_graph']
 
 
 def euclidean(x, y):
@@ -225,9 +226,11 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
 
     Examples
     --------
-    Default
+    Default Graph:
 
     G = nx.soft_random_geometric_graph(n, 0.2)
+
+    Custom Graph:
 
     Create a soft random geometric graph on 100 uniformly distributed nodes
     where nodes are joined by an edge with probability computed from an exponential
@@ -250,10 +253,11 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     ::
 
     >>> import random
-    >>> from scipy.stats import expon
+    >>> import math
     >>> n = 100
     >>> p = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
-    >>> p_dist = expon(scale=1).pdf
+    >>> def p_dist(dist):
+    ...     return math.exp(-dist)
     >>> G = nx.soft_random_geometric_graph(n, 0.2, pos=p, p_dist=p_dist)
 
     References
@@ -277,6 +281,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     #if p_dist function not supplied define uniform connection probability function
     #where all node pairs connect with constant probability = 0.5 at any distance
     if p_dist is None:
+
         def p_dist(dist):
             return 0.5
 
