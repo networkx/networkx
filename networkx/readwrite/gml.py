@@ -144,7 +144,7 @@ def literal_destringizer(rep):
 
 @open_file(0, mode='rb')
 def read_gml(path, label='label', destringizer=None):
-    """Read graph in GML format from path.
+    """Read graph in GML format from `path`.
 
     Parameters
     ----------
@@ -156,7 +156,7 @@ def read_gml(path, label='label', destringizer=None):
         attributes indicated by `label`. Default value: 'label'.
 
     destringizer : callable, optional
-        A destringizer that recovers values stored as strings in GML. If it
+        A `destringizer` that recovers values stored as strings in GML. If it
         cannot convert a string to a value, a `ValueError` is raised. Default
         value : None.
 
@@ -219,7 +219,7 @@ def parse_gml(lines, label='label', destringizer=None):
         attributes indicated by `label`. Default value: 'label'.
 
     destringizer : callable, optional
-        A destringizer that recovers values stored as strings in GML. If it
+        A `destringizer` that recovers values stored as strings in GML. If it
         cannot convert a string to a value, a `ValueError` is raised. Default
         value : None.
 
@@ -277,7 +277,7 @@ def parse_gml(lines, label='label', destringizer=None):
 
 
 def parse_gml_lines(lines, label, destringizer):
-    """Parse GML into a graph.
+    """Parse GML `lines` into a graph.
     """
     def tokenize():
         patterns = [
@@ -441,12 +441,12 @@ Hint:  If this is a multigraph, add "multigraph 1" to the header of the file."""
 
 
 def literal_stringizer(value):
-    """Convert a value to a Python literal in GML representation.
+    """Convert a `value` to a Python literal in GML representation.
 
     Parameters
     ----------
     value : object
-        The value to be converted to GML representation.
+        The `value` to be converted to GML representation.
 
     Returns
     -------
@@ -541,7 +541,7 @@ def literal_stringizer(value):
 
 
 def generate_gml(G, stringizer=None):
-    r"""Generate a single entry of the graph G in GML format.
+    r"""Generate a single entry of the graph `G` in GML format.
 
     Parameters
     ----------
@@ -549,7 +549,7 @@ def generate_gml(G, stringizer=None):
         The graph to be converted to GML.
 
     stringizer : callable, optional
-        A stringizer which converts non-int/non-float/non-dict values into
+        A `stringizer` which converts non-int/non-float/non-dict values into
         strings. If it cannot convert a value into a string, it should raise a
         `ValueError` to indicate that. Default value: None.
 
@@ -717,7 +717,7 @@ def write_gml(G, path, stringizer=None):
         .bz2 will be compressed.
 
     stringizer : callable, optional
-        A stringizer which converts non-int/non-float/non-dict values into
+        A `stringizer` which converts non-int/non-float/non-dict values into
         strings. If it cannot convert a value into a string, it should raise a
         `ValueError` to indicate that. Default value: None.
 
