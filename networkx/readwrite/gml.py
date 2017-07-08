@@ -606,7 +606,7 @@ def generate_gml(G, stringizer=None):
         label "1"
       ]
     ]
-    >>> G = nx.MultiGraph([("a", "b"), ("a", "b")])
+    >>> G = nx.OrderedMultiGraph([("a", "b"), ("a", "b")])
     >>> print("\n".join(nx.generate_gml(G)))
     graph [
       multigraph 1
