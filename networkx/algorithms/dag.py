@@ -385,21 +385,21 @@ def transitive_reduction(G):
         If `G` is not a directed acyclic graph (DAG) transitive reduction is
         not uniquely defined and a :exc:`NetworkXError` exception is raised.
 
-    References 
+    References
     ----------
     https://en.wikipedia.org/wiki/Transitive_reduction
 
-    """   
+    """
     if not is_directed_acyclic_graph(G):
         raise nx.NetworkXError(
-            "Transitive reduction only uniquely defined on directed acyclic graphs.") 
+            "Transitive reduction only uniquely defined on directed acyclic graphs.")
     TR = nx.DiGraph()
     TR.add_nodes_from(G.nodes())
     for u in G:
         u_edges = set(G[u])
         for v in G[u]:
             u_edges -= {y for x, y in nx.dfs_edges(G, v)}
-        TR.add_edges_from((u,v) for v in u_edges)
+        TR.add_edges_from((u, v) for v in u_edges)
     return TR
 
 
@@ -487,10 +487,10 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     --------
     dag_longest_path_length
     """
-    dist = {} # stores {v : (length, u)}
+    dist = {}  # stores {v : (length, u)}
     for v in nx.topological_sort(G):
         us = [(dist[u][0] + data.get(weight, default_weight), u)
-            for u, data in G.pred[v].items()]
+              for u, data in G.pred[v].items()]
         # Use the best predecessor if there is one and its distance is non-negative, otherwise terminate.
         maxu = max(us, key=lambda x: x[0]) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
