@@ -730,12 +730,19 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
-    # condition. Only node pairs that are within the maximum connection
-    # distance, ``radius`` are passed to this function.
+    # condition and node pairs are within the maximum connection
+    # distance, ``radius``.
     def should_join(pair):
         u, v = pair
         u_weight, v_weight = weight[u], weight[v]
-        return theta <= u_weight + v_weight
+        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1/p)
+        #Check if dist is <= radius parameter. This check is redundant if scipy
+        #is availible and _fast_edges routine is used, but provides the check incase
+        #scipy is not availible and all edge combinations need to be checked
+        if dist <= radius:
+            return theta <= u_weight + v_weight
+        else:
+            return False     
 
     if _is_scipy_available:
         edges = _fast_edges(G, radius, p)

@@ -260,15 +260,15 @@ class TestNavigableSmallWorldGraph(object):
         assert_true(nx.is_isomorphic(G, gg))
 
 class TestThresholdedRandomGeometricGraph(object):
-    """Unit tests for the :func:`~networkx.geographical_threshold_graph`
+    """Unit tests for the :func:`~networkx.thresholded_random_geometric_graph`
     function.
 
     """
 
     def test_number_of_nodes(self):
-        G = nx.geographical_threshold_graph(50, 100)
+        G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1)
         assert_equal(len(G), 50)
-        G = nx.geographical_threshold_graph(range(50), 100)
+        G = nx.thresholded_random_geometric_graph(range(50), 0.2, 0.1)
         assert_equal(len(G), 50)
 
     def test_distances(self):
