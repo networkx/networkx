@@ -65,6 +65,7 @@ graph [
   ]
 ]
 """
+
     def test_parse_gml_cytoscape_bug(self):
         # example from issue #321, originally #324 in trac
         cytoscape_example = """
@@ -197,18 +198,18 @@ graph   [
         data = """
 graph
 [
-	label	""
-	directed	1
-	node
-	[
-		id	0
-		label	"same"
-	]
-	node
-	[
-		id	1
-		label	"same"
-	]
+        label   ""
+        directed        1
+        node
+        [
+                id      0
+                label   "same"
+        ]
+        node
+        [
+                id      1
+                label   "same"
+        ]
 ]
 """
         fh = io.BytesIO(data.encode('UTF-8'))
