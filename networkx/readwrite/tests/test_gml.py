@@ -245,7 +245,7 @@ graph
         attr = 'This is "quoted" and this is a copyright: ' + unichr(169)
         G.node[0]['demo'] = attr
         fobj = tempfile.NamedTemporaryFile()
-        nx.write_gml(G, fobj, stringizer=literal_stringizer)
+        nx.write_gml(G, fobj)
         fobj.seek(0)
         # Should be bytes in 2.x and 3.x
         data = fobj.read().strip().decode('ascii')
@@ -255,6 +255,23 @@ graph
     id 0
     label "0"
     demo "This is &#34;quoted&#34; and this is a copyright: &#169;"
+  ]
+]"""
+        assert_equal(data, answer)
+
+    def test_unicode_node(self):
+        node = 'node' + unichr(169)
+        G = nx.Graph()
+        G.add_node(node)
+        fobj = tempfile.NamedTemporaryFile()
+        nx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip().decode('ascii')
+        answer = """graph [
+  node [
+    id 0
+    label "node&#169;"
   ]
 ]"""
         assert_equal(data, answer)
