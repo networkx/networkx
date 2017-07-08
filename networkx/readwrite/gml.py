@@ -567,7 +567,7 @@ def generate_gml(G, stringizer=None):
     Notes
     -----
     Graph attributes named 'directed', 'multigraph', 'node' or
-    'edge',node attributes named 'id' or 'label', edge attributes
+    'edge', node attributes named 'id' or 'label', edge attributes
     named 'source' or 'target' (or 'key' if `G` is a multigraph)
     are ignored because these attribute names are used to encode the graph
     structure.
@@ -583,7 +583,10 @@ def generate_gml(G, stringizer=None):
             key = str(key)
         if key not in ignored_keys:
             if isinstance(value, (int, long)):
-                yield indent + key + ' ' + str(value)
+                if key == 'label':
+                    yield indent + key + ' "' + str(value) + '"'
+                else:
+                    yield indent + key + ' ' + str(value)
             elif isinstance(value, float):
                 text = repr(value).upper()
                 # GML requires that a real literal contain a decimal point, but
@@ -592,7 +595,10 @@ def generate_gml(G, stringizer=None):
                 epos = text.rfind('E')
                 if epos != -1 and text.find('.', 0, epos) == -1:
                     text = text[:epos] + '.' + text[epos:]
-                yield indent + key + ' ' + text
+                if key == 'label':
+                    yield indent + key + ' "' + test + '"'
+                else:
+                    yield indent + key + ' ' + text
             elif isinstance(value, dict):
                 yield indent + key + ' ['
                 next_indent = indent + '  '

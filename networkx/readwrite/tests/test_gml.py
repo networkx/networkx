@@ -180,6 +180,19 @@ graph   [
         os.close(fd)
         os.unlink(fname)
 
+    def test_labels_are_strings(self):
+        # GML requires labels to be strings (i.e., in quotes)
+        answer = """graph [
+  node [
+    id 0
+    label "1203"
+  ]
+]"""
+        G = nx.Graph()
+        G.add_node(1203)
+        data = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
+        assert_equal(data, answer)
+
     def test_relabel_duplicate(self):
         data = """
 graph
@@ -240,8 +253,25 @@ graph
   name "path_graph(1)"
   node [
     id 0
-    label 0
+    label "0"
     demo "This is &#34;quoted&#34; and this is a copyright: &#169;"
+  ]
+]"""
+        assert_equal(data, answer)
+
+    def test_unicode_node(self):
+        node = 'node' + unichr(169)
+        G = nx.Graph()
+        G.add_node(node)
+        fobj = tempfile.NamedTemporaryFile()
+        nx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip().decode('ascii')
+        answer = """graph [
+  node [
+    id 0
+    label "node&#169;"
   ]
 ]"""
         assert_equal(data, answer)
@@ -261,7 +291,7 @@ graph
                     gml += ' directed ' + str(int(directed))
                 if multigraph is not None:
                     gml += ' multigraph ' + str(int(multigraph))
-                gml += ' node [ id 0 label 0 ]'
+                gml += ' node [ id 0 label "0" ]'
                 gml += ' edge [ source 0 target 0 ]'
                 gml += ' ]'
                 G = nx.parse_gml(gml)
@@ -274,7 +304,7 @@ graph
                     gml += '  multigraph 1\n'
                 gml += """  node [
     id 0
-    label 0
+    label "0"
   ]
   edge [
     source 0
