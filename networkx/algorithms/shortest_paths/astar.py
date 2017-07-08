@@ -127,7 +127,10 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
                 if qcost <= ncost:
                     continue
             else:
-                h = heuristic(neighbor, target)
+                try:
+                    h = heuristic(neighbor, target)
+                except:
+                    h = heuristic(G.node[neighbor], G.node[target])
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
