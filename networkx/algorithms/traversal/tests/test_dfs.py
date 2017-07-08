@@ -106,10 +106,12 @@ class TestDepthLimitedSearch:
                      source=2, depth_limit=2)),([3, 7, 2]))
 
     def dls_test_successor(self):
-        assert_equal(nx.dfs_successors(self.G, source=4, depth_limit=3),
-                     {2: [1, 7], 3: [2], 4: [3, 5], 5: [6]})
-        assert_equal(nx.dfs_successors(self.D, source=7, depth_limit=2),
-                     {8: [9], 2: [3], 7: [8, 2]})
+        result = nx.dfs_successors(self.G, source=4, depth_limit=3)
+        assert_equal({n: set(v) for n, v in result.items()},
+                     {2: {1, 7}, 3: {2}, 4: {3, 5}, 5: {6}})
+        result = nx.dfs_successors(self.D, source=7, depth_limit=2)
+        assert_equal({n: set(v) for n, v in result.items()},
+                     {8: {9}, 2: {3}, 7: {8, 2}})
 
     def dls_test_predecessor(self):
         assert_equal(nx.dfs_predecessors(self.G, source=0, depth_limit=3),
