@@ -473,24 +473,29 @@ def windmill_graph(n, k):
     selecting one point from each, and contracting all of the selected points.
     Alternatively, one could generate `n` cliques of size `k-1` and one node
     that is connected to all other nodes in the graph.
+
     Parameters
     ----------
     n : int
       Number of cliques
     k : int
       Size of cliques
+
     Returns
     -------
     G : NetworkX Graph
       windmill graph with n cliques of size k
+
     Raises
     ------
     NetworkXError
         If the number of cliques is less than two
         If the size of the cliques are less than two
+
     Examples
     --------
     >>> G = nx.windmill_graph(4, 5)
+
     Notes
     -----
     The node labeled `0` will be the node connected to all other nodes.
@@ -498,8 +503,8 @@ def windmill_graph(n, k):
     are in the opposite order as the parameters of this method.
     """
     if n < 2:
-        raise nx.NetworkXError('A windmill graph must have at least '
-                               'two cliques')
+        msg = 'A windmill graph must have at least two cliques'
+        raise nx.NetworkXError(msg)
     if k < 2:
         raise nx.NetworkXError('The cliques must have at least two nodes')
 
