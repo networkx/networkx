@@ -703,7 +703,7 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
     >>> n = 50
     >>> pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
     >>> w = {i: random.expovariate(5.0) for i in range(n)}
-    >>> G = nx.thresholded_random_geometric_graph(n, 0.2, pos=pos, weight=w)
+    >>> G = nx.thresholded_random_geometric_graph(n, 0.2, 0.1, pos=pos, weight=w)
 
     References
     ----------
