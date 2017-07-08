@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Algorithms for directed acyclic graphs (DAGs)."""
+"""Algorithms for directed acyclic graphs (DAGs).
+
+Note that most of these functions are only guaranteed to work for DAGs.
+In general, these functions do not check for acyclic-ness, so it is up
+to the user to check for that.
+"""
 #    Copyright (C) 2006-2016 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -31,17 +36,18 @@ __all__ = ['descendants',
 
 
 def descendants(G, source):
-    """Return all nodes reachable from `source` in G.
+    """Return all nodes reachable from `source` in `G`.
 
     Parameters
     ----------
     G : NetworkX DiGraph
-    source : node in G
+        A directed acyclic graph (DAG)
+    source : node in `G`
 
     Returns
     -------
-    des : set()
-        The descendants of source in G
+    set()
+        The descendants of `source` in `G`
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
@@ -50,16 +56,17 @@ def descendants(G, source):
 
 
 def ancestors(G, source):
-    """Return all nodes having a path to `source` in G.
+    """Return all nodes having a path to `source` in `G`.
 
     Parameters
     ----------
     G : NetworkX DiGraph
-    source : node in G
+        A directed acyclic graph (DAG)
+    source : node in `G`
 
     Returns
     -------
-    ancestors : set()
+    set()
         The ancestors of source in G
     """
     if not G.has_node(source):
@@ -69,18 +76,17 @@ def ancestors(G, source):
 
 
 def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG) or
+    """Return True if the graph `G` is a directed acyclic graph (DAG) or
     False if not.
 
     Parameters
     ----------
     G : NetworkX graph
-        A graph
 
     Returns
     -------
-    is_dag : bool
-        True if G is a DAG, false otherwise
+    bool
+        True if `G` is a DAG, False otherwise
     """
     if not G.is_directed():
         return False
@@ -101,39 +107,39 @@ def topological_sort(G):
     Parameters
     ----------
     G : NetworkX digraph
-        A directed graph
+        A directed acyclic graph (DAG)
 
     Returns
     -------
-    topologically_sorted_nodes : iterable
+    iterable
         An iterable of node names in topological sorted order.
 
     Raises
     ------
     NetworkXError
-        Topological sort is defined for directed graphs only. If the graph G
+        Topological sort is defined for directed graphs only. If the graph `G`
         is undirected, a :exc:`NetworkXError` is raised.
 
     NetworkXUnfeasible
-        If G is not a directed acyclic graph (DAG) no topological sort exists
-        and a NetworkXUnfeasible exception is raised.  This can also be
-        raised if G is changed while the returned iterator is being processed.
+        If `G` is not a directed acyclic graph (DAG) no topological sort exists
+        and a :exc:`NetworkXUnfeasible` exception is raised.  This can also be
+        raised if `G` is changed while the returned iterator is being processed.
 
     RuntimeError
-        If G is changed while the returned iterator is being processed.
+        If `G` is changed while the returned iterator is being processed.
 
     Examples
     --------
-    To get the reverse order of the topological sort::
+    To get the reverse order of the topological sort:
 
-        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
-        >>> list(reversed(list(nx.topological_sort(DG))))
-        [3, 2, 1]
+    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> list(reversed(list(nx.topological_sort(DG))))
+    [3, 2, 1]
 
     Notes
     -----
     This algorithm is based on a description and proof in
-    Introduction to algorithms - a creative approach [1]_ .
+    "Introduction to Algorithms: A Creative Approach" [1]_ .
 
     See also
     --------
@@ -141,8 +147,8 @@ def topological_sort(G):
 
     References
     ----------
-    .. [1] Manber, U. (1989). Introduction to algorithms - a creative approach. Addison-Wesley.
-        http://www.amazon.com/Introduction-Algorithms-A-Creative-Approach/dp/0201120372
+    .. [1] Manber, U. (1989). "Introduction to Algorithms: A Creative Approach."
+       Addison-Wesley.
     """
     if not G.is_directed():
         raise nx.NetworkXError(
@@ -183,7 +189,7 @@ def lexicographical_topological_sort(G, key=None):
     Parameters
     ----------
     G : NetworkX digraph
-        A directed graph
+        A directed acyclic graph (DAG)
 
     key : function, optional
         This function maps nodes to keys with which to resolve ambiguities in
@@ -191,27 +197,27 @@ def lexicographical_topological_sort(G, key=None):
 
     Returns
     -------
-    lexicographically_topologically_sorted_nodes : iterable
+    iterable
         An iterable of node names in lexicographical topological sort order.
 
     Raises
     ------
     NetworkXError
-        Topological sort is defined for directed graphs only. If the graph G
+        Topological sort is defined for directed graphs only. If the graph `G`
         is undirected, a :exc:`NetworkXError` is raised.
 
     NetworkXUnfeasible
-        If G is not a directed acyclic graph (DAG) no topological sort exists
-        and a NetworkXUnfeasible exception is raised.  This can also be
-        raised if G is changed while the returned iterator is being processed.
+        If `G` is not a directed acyclic graph (DAG) no topological sort exists
+        and a :exc:`NetworkXUnfeasible` exception is raised.  This can also be
+        raised if `G` is changed while the returned iterator is being processed.
 
     RuntimeError
-        If G is changed while the returned iterator is being processed.
+        If `G` is changed while the returned iterator is being processed.
 
     Notes
     -----
     This algorithm is based on a description and proof in
-    Introduction to algorithms - a creative approach [1]_ .
+    "Introduction to Algorithms: A Creative Approach" [1]_ .
 
     See also
     --------
@@ -219,8 +225,8 @@ def lexicographical_topological_sort(G, key=None):
 
     References
     ----------
-    .. [1] Manber, U. (1989). Introduction to algorithms - a creative approach. Addison-Wesley.
-        http://www.amazon.com/Introduction-Algorithms-A-Creative-Approach/dp/0201120372
+    .. [1] Manber, U. (1989). "Introduction to Algorithms: A Creative Approach."
+       Addison-Wesley.
     """
     if not G.is_directed():
         raise nx.NetworkXError(
@@ -259,7 +265,7 @@ def lexicographical_topological_sort(G, key=None):
 
 
 def is_aperiodic(G):
-    """Return True if G is aperiodic.
+    """Return True if `G` is aperiodic.
 
     A directed graph is aperiodic if there is no integer k > 1 that
     divides the length of every cycle in the graph.
@@ -267,28 +273,28 @@ def is_aperiodic(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-        Graph
+        A directed graph
 
     Returns
     -------
-    aperiodic : boolean
+    bool
         True if the graph is aperiodic False otherwise
 
     Raises
     ------
     NetworkXError
-        If G is not directed
+        If `G` is not directed
 
     Notes
     -----
     This uses the method outlined in [1]_, which runs in O(m) time
-    given m edges in G. Note that a graph is not aperiodic if it is
+    given m edges in `G`. Note that a graph is not aperiodic if it is
     acyclic as every integer trivial divides length 0 cycles.
 
     References
     ----------
     .. [1] Jarvis, J. P.; Shier, D. R. (1996),
-       Graph-theoretic analysis of finite Markov chains,
+       "Graph-theoretic analysis of finite Markov chains,"
        in Shier, D. R.; Wallenius, K. T., Applied Mathematical Modeling:
        A Multidisciplinary Approach, CRC Press.
     """
@@ -329,17 +335,17 @@ def transitive_closure(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-        Graph
+        A directed graph
 
     Returns
     -------
-    TC : NetworkX DiGraph
-        Graph
+    NetworkX DiGraph
+        The transitive closure of `G`
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is not directed
+        If `G` is not directed
 
     References
     ----------
@@ -366,18 +372,18 @@ def transitive_reduction(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-        Graph
+        A directed acyclic graph (DAG)
 
     Returns
     -------
-    TR : NetworkX DiGraph
-        Graph
+    NetworkX DiGraph
+        The transitive reduction of `G`
 
     Raises
     ------
     NetworkXError
-        If G is not a directed acyclic graph (DAG) transitive reduction is
-        not uniquely defined and a NetworkXError exception is raised.
+        If `G` is not a directed acyclic graph (DAG) transitive reduction is
+        not uniquely defined and a :exc:`NetworkXError` exception is raised.
 
     References 
     ----------
@@ -399,7 +405,7 @@ def transitive_reduction(G):
 
 @not_implemented_for('undirected')
 def antichains(G):
-    """Generates antichains from a DAG.
+    """Generates antichains from a directed acyclic graph (DAG).
 
     An antichain is a subset of a partially ordered set such that any
     two elements in the subset are incomparable.
@@ -407,19 +413,19 @@ def antichains(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-        Graph
+        A directed acyclic graph (DAG)
 
     Returns
     -------
-    antichain : generator object
+    generator object
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is not directed
+        If `G` is not directed
 
     NetworkXUnfeasible
-        If G contains a cycle
+        If `G` contains a cycle
 
     Notes
     -----
@@ -452,29 +458,30 @@ def antichains(G):
 
 @not_implemented_for('undirected')
 def dag_longest_path(G, weight='weight', default_weight=1):
-    """Returns the longest path in a DAG
-    If G has edges with 'weight' attribute the edge data are used as weight values.
+    """Returns the longest path in a directed acyclic graph (DAG).
+
+    If `G` has edges with `weight` attribute the edge data are used as weight values.
 
     Parameters
     ----------
     G : NetworkX DiGraph
-        Graph
+        A directed acyclic graph (DAG)
 
-    weight : string (default 'weight')
+    weight : str, optional
         Edge data key to use for weight
 
-    default_weight : integer (default 1)
+    default_weight : int, optional
         The weight of edges that do not have a weight attribute
 
     Returns
     -------
-    path : list
+    list
         Longest path
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is not directed
+        If `G` is not directed
 
     See also
     --------
@@ -505,23 +512,23 @@ def dag_longest_path_length(G, weight='weight', default_weight=1):
     Parameters
     ----------
     G : NetworkX DiGraph
-        Graph
+        A directed acyclic graph (DAG)
 
-    weight : string (default 'weight')
+    weight : string, optional
         Edge data key to use for weight
 
-    default_weight : integer (default 1)
+    default_weight : int, optional
         The weight of edges that do not have a weight attribute
 
     Returns
     -------
-    path_length : int
+    int
         Longest path length
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is not directed
+        If `G` is not directed
 
     See also
     --------
