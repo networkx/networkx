@@ -658,22 +658,27 @@ def barabasi_albert_graph(n, m, seed=None):
         targets = _random_subset(repeated_nodes,m)
         source += 1
     return G
-    
-def extended_barabasi_albert_graph(n, m, p, q, seed=None):
-    """Returns a random graph according to the extended Barabási–Albert preferential attachment model.
 
-    Based on the probabilities 'p' and 'q' with (p+q) < 1, the growing behavior of the graph is determined as follows:
-    
-    1) With 'p' probability, 'm' new edges are added to the graph, 
+
+def extended_barabasi_albert_graph(n, m, p, q, seed=None):
+    """Returns an extended Barabási–Alber model graph.
+
+    An extended Barabási–Alber model grap is a random graph constructed
+    using preferential attachment. The extended model allows new egdes,
+    rewired edges or new nodes. Based on the probabilities `p` and `q`
+    with `p + q < 1`, the growing behavior of the graph is determined as:
+
+    1) With `p` probability, `m` new edges are added to the graph,
     starting from randomly chosen existing nodes and attached preferentially at the other end.
-    
-    2) With 'q' probability, 'm' existing edges are rewired
+
+    2) With `q` probability, `m` existing edges are rewired
     by randomly chosing an edge and rewiring one end to a preferentially chosen node.
-    
-    3) With (1-p-q) probability, 'm' new nodes are added to the graph, with edges attached preferentially.
-    
-    When p=q=0,the model behaves just like Barabasi-Albert model.
-    
+
+    3) With `(1 - p - q)` probability, `m` new nodes are added to the graph
+    with edges attached preferentially.
+
+    When `p = q = 0`, the model behaves just like the Barabási–Alber mo
+
     Parameters
     ----------
     n : int
@@ -681,11 +686,11 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     m : int
         Number of edges with which a new node attaches to existing nodes
     p : float
-        Probability value for addition of an edge between existing nodes. p+q<1.
+        Probability value for adding an edge between existing nodes. p + q < 1
     q : float
-        Probability value of rewiring of existing edges. p+q<1.
-    seed : int, optional
-        Seed for random number generator (default=None).
+        Probability value of rewiring of existing edges. p + q < 1
+    seed : int (optional, default: None)
+        Seed for random number generator
 
     Returns
     -------
@@ -698,120 +703,123 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
 
     References
     ----------
-    .. [1] Albert, R., & Barabási, A. L. (2000). Topology of evolving networks: local events and universality. 
+    .. [1] Albert, R., & Barabási, A. L. (2000)
+       Topology of evolving networks: local events and universality
        Physical review letters, 85(24), 5234.
     """
-
-    if m < 1 or  m >=n :
-       raise nx.NetworkXError("Extended Barabasi-Albert network must have m>=1 and m<n, m=%d,n=%d" % (m,n))
-    if  p+q >= 1:
-       raise nx.NetworkXError("Extended Barabasi-Albert network must have p+q<=1, p=%d,q=%d" % (p,q))
+    if m < 1 or m >= n:
+        msg = "Extended Barabasi-Albert network needs m>=1 and m<n, m=%d, n=%d"
+        raise nx.NetworkXError(msg % (m, n))
+    if p + q >= 1:
+        msg = "Extended Barabasi-Albert network needs p + q <= 1, p=%d, q=%d"
+        raise nx.NetworkXError(msg % (p, q))
     if seed is not None:
         random.seed(seed)
 
     # Add m initial nodes (m0 in barabasi-speak)
-    G=empty_graph(m)
-    G.name="extended_barabasi_albert_graph(%s,%s,%s,%s)" % (n,m,p,q)
-    
-    # List of nodes to represent the preferential attachment random selection. 
-    # At the creation of the graph, all nodes are added to the list 
-    # so that even nodes that are not connected have a chance to get selected, for rewiring and adding of edges.
+    G = empty_graph(m)
+    G.name = "extended_barabasi_albert_graph(%s, %s, %s, %s)" % (n, m, p, q)
+
+    # List of nodes to represent the preferential attachment random selection.
+    # At the creation of the graph, all nodes are added to the list
+    # so that even nodes that are not connected have a chance to get selected,
+    # for rewiring and adding of edges.
     # With each new edge, nodes at the ends of the edge are added to the list.
-    attachment_preference=[]
-    attachment_preference.extend(list(range(m)))
-    
+    attachment_preference = []
+    attachment_preference.extend(range(m))
+
     # Start adding the other n-m nodes. The first node is m.
     new_node = m
     while new_node < n:
-      
         a_probability = random.random()
-        
-        # Total number of edges of a Clique of all the nodes
-        clique_node_degree = G.number_of_nodes() - 1
-        clique_number_of_edges = (G.number_of_nodes()*(clique_node_degree))/2
-        
-        # Adding m new edges, if there is room to add them
-        if a_probability < p and (G.number_of_edges() <= (clique_number_of_edges - m)):
-           
-            # Select the nodes where an edge can be added 
-            elligible_nodes = [nd for nd in G.nodes() if (G.degree(nd) < (clique_node_degree)) ]
-             
-            for i in range(m):
-                
-                
-                #Choosing a random source node
-                #The nodes that have all fully connected to all other nodes are already filtered out
-                src_node = random.choice(elligible_nodes)
-                
-                #Picking a possible node that is not 'src_node' or already neighbor with 'src_node', with preferential attachment
-                prohibited_nodes = list(G.neighbors(src_node))
-                prohibited_nodes.append(src_node)                
-                #If there was an empty sequence in random.choice, this method will raise an exception
-                dest_node = random.choice( [ nd for nd in attachment_preference if nd not in prohibited_nodes ])
-                
-                #Adding the new edge
-                G.add_edge(src_node,dest_node)
 
-                #Appending both ends of the new edge to the list to increase their preferential attachment
+        # Total number of edges of a Clique of all the nodes
+        clique_degree = len(G) - 1
+        clique_size = (len(G) * clique_degree) / 2
+
+        # Adding m new edges, if there is room to add them
+        if a_probability < p and G.size() <= clique_size - m:
+            # Select the nodes where an edge can be added
+            elligible_nodes = [nd for nd, deg in G.degree()
+                               if deg < clique_degree]
+            for i in range(m):
+                # Choosing a random source node from elligible_nodes
+                src_node = random.choice(elligible_nodes)
+
+                # Picking a possible node that is not 'src_node' or
+                # neighbor with 'src_node', with preferential attachment
+                prohibited_nodes = list(G[src_node])
+                prohibited_nodes.append(src_node)
+                # This will raise an exception if the sequence is empty
+                dest_node = random.choice([nd for nd in attachment_preference
+                                           if nd not in prohibited_nodes])
+                # Adding the new edge
+                G.add_edge(src_node, dest_node)
+
+                # Appending both nodes to add to their preferential attachment
                 attachment_preference.append(src_node)
                 attachment_preference.append(dest_node)
-                        
-                # Adjusting the elligible nodes, as the new edge could have saturated the nodes.
-                if (G.degree(src_node) == clique_node_degree ):
+
+                # Adjusting the elligible nodes. Degree may be saturated.
+                if G.degree(src_node) == clique_degree:
                     elligible_nodes.remove(src_node)
-                if (G.degree(dest_node) == clique_node_degree and (dest_node in elligible_nodes)):
+                if G.degree(dest_node) == clique_degree \
+                        and dest_node in elligible_nodes:
                     elligible_nodes.remove(dest_node)
-                
-                 
+
         # Rewiring m edges, if there are enough edges
-        elif p <= a_probability < (p + q) and  m <= G.number_of_edges() < clique_number_of_edges :
-            
-            #Selecting nodes that have at least 1 edge but that are not fully connected to ALL other nodes (center of star).
-            #These nodes are the pivot nodes of the edges to rewire
-            elligible_nodes = [nd for nd in G.nodes() if ( G.degree(nd) !=0 and G.degree(nd) != clique_node_degree ) ]
-
+        elif p <= a_probability < (p + q) and m <= G.size() < clique_size:
+            # Selecting nodes that have at least 1 edge but that are not
+            # fully connected to ALL other nodes (center of star).
+            # These nodes are the pivot nodes of the edges to rewire
+            elligible_nodes = [nd for nd, deg in G.degree()
+                               if 0 < deg < clique_degree]
             for i in range(m):
-                #Choosing a random source node
+                # Choosing a random source node
                 node = random.choice(elligible_nodes)
-                
-                #The available nodes do have a neighbor at least.
-                neighbor_nodes = list(G.neighbors(node))
 
-                #Choosing the other end that will get dettached
+                # The available nodes do have a neighbor at least.
+                neighbor_nodes = list(G[node])
+
+                # Choosing the other end that will get dettached
                 src_node = random.choice(neighbor_nodes)
-                
-                #Picking a target node that is not 'node' or already neighbor with 'node', with preferential attachment
+
+                # Picking a target node that is not 'node' or
+                # neighbor with 'node', with preferential attachment
                 neighbor_nodes.append(node)
-                dest_node = random.choice( [ nd for nd in attachment_preference if nd not in neighbor_nodes ] )
-                
-                #Rewire
-                G.remove_edge(node,src_node)
-                G.add_edge(node,dest_node)
-                
-                #Adjusting the preferential attachment list
-                attachment_preference.remove(src_node)                                                    
+                dest_node = random.choice([nd for nd in attachment_preference
+                                           if nd not in neighbor_nodes])
+                # Rewire
+                G.remove_edge(node, src_node)
+                G.add_edge(node, dest_node)
+
+                # Adjusting the preferential attachment list
+                attachment_preference.remove(src_node)
                 attachment_preference.append(dest_node)
-                
-                # Adjusting the elligible nodes, as the rewired edge could have saturated the nodes or isolated the original one.
-                if (G.degree(src_node) == 0) and (src_node in elligible_nodes):
+
+                # Adjusting the elligible nodes.
+                # nodes may be saturated or isolated.
+                if G.degree(src_node) == 0 and src_node in elligible_nodes:
                     elligible_nodes.remove(src_node)
-                if (G.degree(dest_node) == 1) and (dest_node not in elligible_nodes):
-                    elligible_nodes.append(dest_node)
-                if (G.degree(dest_node) == clique_node_degree) and (dest_node in elligible_nodes):
-                    elligible_nodes.remove(dest_node)
-                
+                if dest_node in elligible_nodes:
+                    if G.degree(dest_node) == clique_degree:
+                        elligible_nodes.remove(dest_node)
+                else:
+                    if G.degree(dest_node) == 1:
+                        elligible_nodes.append(dest_node)
+
         # Adding new node with m edges
-        else: 
+        else:
             # Select the edges' nodes by preferential attachment
-            targets = _random_subset(attachment_preference,m)
-            G.add_edges_from(zip([new_node]*m,targets))
+            targets = _random_subset(attachment_preference, m)
+            G.add_edges_from(zip([new_node] * m, targets))
 
             # Add one node to the list for each new edge just created.
             attachment_preference.extend(targets)
-            # The new node has m edges to it, plus itself was added to the graph. (m+1)
-            attachment_preference.extend([new_node]*(m+1)) 
+            # The new node has m edges to it, plus itself: m + 1
+            attachment_preference.extend([new_node] * (m + 1))
             new_node += 1
-    return G  
+    return G
 
 def powerlaw_cluster_graph(n, m, p, seed=None):
     """Holme and Kim algorithm for growing graphs with powerlaw
@@ -1092,8 +1100,8 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     """Return an random graph based on the specified kernel.
 
     The algorithm chooses each of the `[n(n-1)]/2` possible edges with
-    probability specified by a kernel `\kappa(x,y)` [1]_.  The kernel 
-    `\kappa(x,y)` must be a symmetric (in `x,y`), non-negative, 
+    probability specified by a kernel `\kappa(x,y)` [1]_.  The kernel
+    `\kappa(x,y)` must be a symmetric (in `x,y`), non-negative,
     bounded function.
 
     Parameters
@@ -1105,16 +1113,16 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
         `F(y,a,b) := \int_a^b \kappa(x,y)dx`
     kernel_root: function (optional)
         Function that returns the root `b` of the equation `F(y,a,b) = r`.
-        If None, the root is found using :func:`scipy.optimize.brentq` 
+        If None, the root is found using :func:`scipy.optimize.brentq`
         (this requires SciPy).
     seed : int, optional
         Seed for random number generator (default=None)
 
     Notes
     -----
-    The kernel is specified through its definite integral which must be 
-    provided as one of the arguments. If the integral and root of the 
-    kernel integral can be found in `O(1)` time then this algorithm runs in 
+    The kernel is specified through its definite integral which must be
+    provided as one of the arguments. If the integral and root of the
+    kernel integral can be found in `O(1)` time then this algorithm runs in
     time `O(n+m)` where m is the expected number of edges [2]_.
 
     The nodes are set to integers from 0 to n-1.
