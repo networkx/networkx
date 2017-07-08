@@ -181,7 +181,7 @@ graph   [
         os.unlink(fname)
 
     def test_labels_are_strings(self):
-        # GMl requires labels to be stings (i.e., in quotes)
+        # GML requires labels to be strings (i.e., in quotes)
         answer = """graph [
   node [
     id 0
