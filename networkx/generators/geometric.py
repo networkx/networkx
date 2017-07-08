@@ -35,7 +35,7 @@ from networkx.utils import nodes_or_number
 
 __all__ = ['geographical_threshold_graph', 'waxman_graph',
            'navigable_small_world_graph', 'random_geometric_graph',
-           'soft_random_geometric_graph']
+           'soft_random_geometric_graph', 'thresholded_random_geometric_graph']
 
 
 def euclidean(x, y):
@@ -97,7 +97,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    p : float
+    p : float, optional
         Which Minkowski distance metric to use.  `p` has to meet the condition
         ``1 <= p <= infinity``.
 
@@ -134,8 +134,8 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
 
     >>> import random
     >>> n = 20
-    >>> p = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
-    >>> G = nx.random_geometric_graph(n, 0.2, pos=p)
+    >>> pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
+    >>> G = nx.random_geometric_graph(n, 0.2, pos=pos)
 
     References
     ----------
@@ -172,7 +172,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     """Returns a soft random geometric graph in the unit cube of dimensions `dim`.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
-    random in the unit cube. Two nodes of distance, d, computed by the Minkowski
+    random in the unit cube. Two nodes of distance, d, computed by the `p`-Minkowski
     distance metric are joined by an edge with probability `p_dist` if the computed
     distance metric value of the nodes is at most `radius`, otherwise 
     they are not joined.
@@ -190,7 +190,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    p : float
+    p : float, optional
         Which Minkowski distance metric to use.  `p` has to meet the condition
         ``1 <= p <= infinity``.
 
@@ -228,7 +228,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     --------
     Default Graph:
 
-    G = nx.soft_random_geometric_graph(n, 0.2)
+    G = nx.soft_random_geometric_graph(50, 0.2)
 
     Custom Graph:
 
@@ -255,10 +255,9 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     >>> import random
     >>> import math
     >>> n = 100
-    >>> p = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
-    >>> def p_dist(dist):
-    ...     return math.exp(-dist)
-    >>> G = nx.soft_random_geometric_graph(n, 0.2, pos=p, p_dist=p_dist)
+    >>> pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
+    >>> def p_dist(dist): return math.exp(-dist)
+    >>> G = nx.soft_random_geometric_graph(n, 0.2, pos=pos, p_dist=p_dist)
 
     References
     ----------
@@ -616,4 +615,132 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
         for _ in range(q):
             target = nodes[bisect_left(cdf, random.uniform(0, cdf[-1]))]
             G.add_edge(p1, target)
+    return G
+
+@nodes_or_number(0)
+def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight=None, p=2):
+    """Returns a thresholded random geometric graph in the unit cube of dimensions `dim`.
+
+    The thresholded random geometric graph [1] model places `n` nodes uniformly at
+    random in the unit cube. Each node `u` is assigned a weight
+    :math:`w_u`. Two nodes `u` and `v` are joined by an edge if they are within
+    the maximum conenction distance, `radius` computed by the `p`-Minkowski distance
+    and the summation of weights :math:`w_u` + :math:`w_v` is greater than or equal
+    to the threshold parameter `theta`.
+
+    Edges within `radius` of each other are determined using a KDTree when SciPy
+    is available. This reduces the time complexity from :math:`O(n^2)` to :math:`O(n)`.
+
+    Parameters
+    ----------
+    n : int or iterable
+        Number of nodes or iterable of nodes
+    radius: float
+        Distance threshold value
+    theta: float
+        Threshold value
+    dim : int, optional
+        Dimension of graph
+    pos : dict, optional
+        A dictionary keyed by node with node positions as values.
+    weight : dict, optional
+        Node weights as a dictionary of numbers keyed by node.
+    p : float, optional
+        Which Minkowski distance metric to use.  `p` has to meet the condition
+        ``1 <= p <= infinity``.
+
+        If this argument is not specified, the :math:`L^2` metric (the Euclidean
+        distance metric), p = 2 is used.
+
+        This should not be confused with the `p` of an Erdős-Rényi random
+        graph, which represents probability.
+
+    Returns
+    -------
+    Graph
+        A thresholded random geographic threshold graph, undirected and without
+        self-loops.
+
+        Each node has a node attribute ``'pos'`` that stores the
+        position of that node in Euclidean space as provided by the
+        ``pos`` keyword argument or, if ``pos`` was not provided, as
+        generated by this function. Similarly, each node has a node
+        attribute ``'weight'`` that stores the weight of that node as
+        provided or as generated.
+
+    Examples
+    --------
+    Default Graph:
+
+    G = nx.thresholed_random_geometric_graph(50, 0.2, 0.1)
+
+    Custom Graph:
+
+    Create a soft random geometric graph on 100 uniformly distributed nodes
+    where nodes are joined by an edge with probability computed from an exponential
+    distribution with rate parameter :math:`\lambda=1` if their Euclidean distance 
+    is at most 0.2::
+
+    Notes
+    -----
+    This uses a *k*-d tree to build the graph.
+
+    The `pos` keyword argument can be used to specify node positions so you
+    can create an arbitrary distribution and domain for positions.
+
+    For example, to use a 2D Gaussian distribution of node positions with mean
+    (0, 0) and standard deviation 2
+
+    If weights are not specified they are assigned to nodes by drawing randomly
+    from the exponential distribution with rate parameter :math:`\lambda=1`.
+    To specify weights from a different distribution, use the `weight` keyword
+    argument::
+
+    ::
+
+    >>> import random
+    >>> import math
+    >>> n = 50
+    >>> pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
+    >>> w = {i: random.expovariate(5.0) for i in range(n)}
+    >>> G = nx.thresholded_random_geometric_graph(n, 0.2, pos=pos, weight=w)
+
+    References
+    ----------
+    .. [1] http://cole-maclean.github.io/blog/files/thesis.pdf
+
+    """
+
+    n_name, nodes = n
+    G = nx.Graph()
+    G.name = 'thresholded_random_geometric_graph({}, {}, {}, {})'.format(n, radius, theta, dim)
+    G.add_nodes_from(nodes)
+    # If no weights are provided, choose them from an exponential
+    # distribution.
+    if weight is None:
+        weight = {v: random.expovariate(1) for v in G}
+    # If no positions are provided, choose uniformly random vectors in
+    # Euclidean space of the specified dimension.
+    if pos is None:
+        pos = {v: [random.random() for i in range(dim)] for v in nodes}
+    # If no distance metric is provided, use Euclidean distance.
+
+    nx.set_node_attributes(G, 'weight', weight)
+    nx.set_node_attributes(G, 'pos', pos)
+
+    # Returns ``True`` if and only if the nodes whose attributes are
+    # ``du`` and ``dv`` should be joined, according to the threshold
+    # condition. Only node pairs that are within the maximum connection
+    # distance, ``radius`` are passed to this function.
+    def should_join(pair):
+        u, v = pair
+        u_weight, v_weight = weight[u], weight[v]
+        return theta <= u_weight + v_weight
+
+    if _is_scipy_available:
+        edges = _fast_edges(G, radius, p)
+        G.add_edges_from(filter(should_join, edges))
+    else:
+        G.add_edges_from(filter(should_join, combinations(G, 2)))
+
     return G

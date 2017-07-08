@@ -258,3 +258,69 @@ class TestNavigableSmallWorldGraph(object):
         G = nx.navigable_small_world_graph(5, p=1, q=0, dim=1)
         gg = nx.grid_graph([5]).to_directed()
         assert_true(nx.is_isomorphic(G, gg))
+
+class TestThresholdedRandomGeometricGraph(object):
+    """Unit tests for the :func:`~networkx.geographical_threshold_graph`
+    function.
+
+    """
+
+    def test_number_of_nodes(self):
+        G = nx.geographical_threshold_graph(50, 100)
+        assert_equal(len(G), 50)
+        G = nx.geographical_threshold_graph(range(50), 100)
+        assert_equal(len(G), 50)
+
+    def test_distances(self):
+        """Tests that pairs of vertices adjacent if and only if they are
+        within the prescribed radius.
+
+        """
+        # Use the Euclidean metric, the default according to the
+        # documentation.
+        dist = lambda x, y: sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+        G = nx.thresholded_random_geometric_graph(50, 0.25, 0.1)
+        for u, v in combinations(G, 2):
+            # Adjacent vertices must be within the given distance.
+            if v in G[u]:
+                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+
+
+    def test_p(self):
+        """Tests for providing an alternate distance metric to the
+        generator.
+
+        """
+        # Use the L1 metric.
+        dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
+        G = nx.thresholded_random_geometric_graph(50, 0.25, 0.1,  p=1)
+        for u, v in combinations(G, 2):
+            # Adjacent vertices must be within the given distance.
+            if v in G[u]:
+                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+
+    def test_node_names(self):
+        """Tests using values other than sequential numbers as node IDs.
+
+        """
+        import string
+        nodes = list(string.ascii_lowercase)
+        G = nx.thresholded_random_geometric_graph(nodes, 0.25, 0.1)
+        assert_equal(len(G), len(nodes))
+
+        dist = lambda x, y: sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+        for u, v in combinations(G, 2):
+            # Adjacent vertices must be within the given distance.
+            if v in G[u]:
+                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+
+    def test_theta(self):
+        """Tests that pairs of vertices adjacent if and only if their sum
+        weights exceeds the threshold parameter theta.
+        """
+        G = nx.thresholded_random_geometric_graph(50, 0.25, 0.1)
+
+        for u, v in combinations(G, 2):
+            # Adjacent vertices must be within the given distance.
+            if v in G[u]:
+                assert_true((G.node[u]['weight'] + G.node[v]['weight']) >= 0.1)
