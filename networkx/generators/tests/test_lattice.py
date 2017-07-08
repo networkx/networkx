@@ -1,11 +1,3 @@
-# test_lattice.py - unit tests for the lattice module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.generators.lattice` module."""
 import itertools
 

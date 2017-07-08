@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -7,9 +7,7 @@
 #
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Pieter Swart (swart@lanl.gov)
-#          Joel Miller (jmiller@lanl.gov)
-"""
-Generators for some classic graphs.
+"""Generators for some classic graphs.
 
 The typical graph generator is called as follows:
 
@@ -23,7 +21,6 @@ in this module return a Graph class (i.e. a simple, undirected graph).
 from __future__ import division
 
 import itertools
-from math import sqrt
 
 import networkx as nx
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph

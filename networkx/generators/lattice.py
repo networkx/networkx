@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
+#    Copyright (C) 2004-2017 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 #
-# lattice.py - functions for generating grid graphs and lattices
-#
-# Copyright 2017 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Pieter Swart (swart@lanl.gov)
+#          Joel Miller (jmiller@lanl.gov)
+#          Dan Schult (dschult@lanl.gov)
 """Functions for generating grid graphs and lattices
 
 The :func:`grid_2d_graph`, :func:`triangular_lattice_graph`, and
