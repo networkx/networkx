@@ -1,29 +1,31 @@
-"""
-Generators for some classic graphs.
+#    Copyright (C) 2004-2017 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Pieter Swart (swart@lanl.gov)
+"""Generators for some classic graphs.
 
 The typical graph generator is called as follows:
 
->>> G=nx.complete_graph(100)
+>>> G = nx.complete_graph(100)
 
 returning the complete graph on n nodes labeled 0, .., 99
 as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-# Authors: Aric Hagberg (hagberg@lanl.gov) and Pieter Swart (swart@lanl.gov)
-
-#    Copyright (C) 2004-2016 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from __future__ import division
 
 import itertools
 
 import networkx as nx
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph
+from networkx.classes import Graph
+from networkx.exception import NetworkXError
 from networkx.utils import accumulate
 from networkx.utils import flatten
 from networkx.utils import nodes_or_number
@@ -39,9 +41,6 @@ __all__ = ['balanced_tree',
            'dorogovtsev_goltsev_mendes_graph',
            'empty_graph',
            'full_rary_tree',
-           'grid_graph',
-           'grid_2d_graph',
-           'hypercube_graph',
            'ladder_graph',
            'lollipop_graph',
            'null_graph',
@@ -52,9 +51,9 @@ __all__ = ['balanced_tree',
            'wheel_graph']
 
 
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 #   Some Classic Graphs
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 def _tree_edges(n, r):
     # helper function for trees
@@ -101,7 +100,7 @@ def full_rary_tree(r, n, create_using=None):
     .. [1] An introduction to data structures and algorithms,
            James Andrew Storer,  Birkhauser Boston 2001, (page 225).
     """
-    G = nx.empty_graph(n, create_using)
+    G = empty_graph(n, create_using)
     G.add_edges_from(_tree_edges(n, r))
     return G
 
@@ -165,8 +164,8 @@ def barbell_graph(m1, m2, create_using=None):
         `m1, ..., m1+m2-1` for the path,
         and `m1+m2, ..., 2*m1+m2-1` for the right barbell.
 
-    The 3 subgraphs are joined via the edges `(m1-1, m1)` and 
-    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete 
+    The 3 subgraphs are joined via the edges `(m1-1, m1)` and
+    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete
     graphs joined together.
 
     This graph is an extremal example in David Aldous
@@ -174,12 +173,12 @@ def barbell_graph(m1, m2, create_using=None):
 
     """
     if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     if m1 < 2:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, m1 should be >=2")
     if m2 < 0:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, m2 should be >=0")
 
     # left barbell
@@ -220,7 +219,7 @@ def complete_graph(n, create_using=None):
     9
     >>> G.size()
     36
-    >>> G = nx.complete_graph(range(11,14))
+    >>> G = nx.complete_graph(range(11, 14))
     >>> list(G.nodes())
     [11, 12, 13]
     >>> G = nx.complete_graph(4, nx.DiGraph())
@@ -277,9 +276,9 @@ def circulant_graph(n, offsets, create_using=None):
 
     Examples
     --------
-    Many well-known graph families are subfamilies of the circulant graphs; for
-    example, to generate the cycle graph on n points, we connect every vertex to
-    every other at offset plus or minus one. For n = 10,
+    Many well-known graph families are subfamilies of the circulant graphs;
+    for example, to generate the cycle graph on n points, we connect every
+    vertex to every other at offset plus or minus one. For n = 10,
 
     >>> import networkx
     >>> G = networkx.generators.classic.circulant_graph(10, [1])
@@ -335,7 +334,7 @@ def cycle_graph(n, create_using=None):
     n_orig, nodes = n
     G = empty_graph(nodes, create_using)
     G.name = "cycle_graph(%s)" % (n_orig,)
-    G.add_edges_from(nx.utils.pairwise(nodes))
+    G.add_edges_from(pairwise(nodes))
     G.add_edge(nodes[-1], nodes[0])
     return G
 
@@ -349,9 +348,9 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """
     if create_using is not None:
         if create_using.is_directed():
-            raise nx.NetworkXError("Directed Graph not supported")
+            raise NetworkXError("Directed Graph not supported")
         if create_using.is_multigraph():
-            raise nx.NetworkXError("Multigraph not supported")
+            raise NetworkXError("Multigraph not supported")
     G = empty_graph(0, create_using)
     G.name = "Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0, 1)
@@ -382,12 +381,12 @@ def empty_graph(n=0, create_using=None):
         with the new graph. Usually used to set the type of the graph.
 
     For example:
-    >>> G=nx.empty_graph(10)
+    >>> G = nx.empty_graph(10)
     >>> G.number_of_nodes()
     10
     >>> G.number_of_edges()
     0
-    >>> G=nx.empty_graph("ABC")
+    >>> G = nx.empty_graph("ABC")
     >>> G.number_of_nodes()
     3
     >>> sorted(G)
@@ -405,8 +404,8 @@ def empty_graph(n=0, create_using=None):
     Firstly, the variable create_using can be used to create an
     empty digraph, multigraph, etc.  For example,
 
-    >>> n=10
-    >>> G=nx.empty_graph(n, create_using=nx.DiGraph())
+    >>> n = 10
+    >>> G = nx.empty_graph(n, create_using=nx.DiGraph())
 
     will create an empty digraph on n nodes.
 
@@ -421,7 +420,7 @@ def empty_graph(n=0, create_using=None):
     """
     if create_using is None:
         # default empty graph is a simple graph
-        G = nx.Graph()
+        G = Graph()
     else:
         G = create_using
         G.clear()
@@ -432,116 +431,17 @@ def empty_graph(n=0, create_using=None):
     return G
 
 
-@nodes_or_number([0, 1])
-def grid_2d_graph(m, n, periodic=False, create_using=None):
-    """ Return the 2d grid graph of mxn nodes
-    
-    The grid graph has each node connected to its four nearest neighbors.
-
-    Parameters
-    ==========
-    m, n : int or iterable container of nodes (default = 0)
-        If an integer, nodes are from `range(n)`.
-        If a container, those become the coordinate of the node.
-    periodic : bool (default = False)
-        If True will connect boundary nodes in periodic fashion.
-    create_using : Graph, optional (default Graph())
-        If provided this graph is cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
-    """
-    G = empty_graph(0, create_using)
-    row_name, rows = m
-    col_name, columns = n
-    G.name = "grid_2d_graph(%s, %s)" % (row_name, col_name)
-    G.add_nodes_from((i, j) for i in rows for j in columns)
-    G.add_edges_from(((i, j), (pi, j))
-                     for pi, i in pairwise(rows) for j in columns)
-    G.add_edges_from(((i, j), (i, pj))
-                     for i in rows for pj, j in pairwise(columns))
-    if G.is_directed():
-        G.add_edges_from(((pi, j), (i, j))
-                         for pi, i in pairwise(rows) for j in columns)
-        G.add_edges_from(((i, pj), (i, j))
-                         for i in rows for pj, j in pairwise(columns))
-    if periodic:
-        if len(columns) > 2:
-            f = columns[0]
-            l = columns[-1]
-            G.add_edges_from(((i, f), (i, l)) for i in rows)
-            if G.is_directed():
-                G.add_edges_from(((i, l), (i, f)) for i in rows)
-        if len(rows) > 2:
-            f = rows[0]
-            l = rows[-1]
-            G.add_edges_from(((f, j), (l, j)) for j in columns)
-            if G.is_directed():
-                G.add_edges_from(((l, j), (f, j)) for j in columns)
-        G.name = "periodic_grid_2d_graph(%s,%s)" % (m, n)
-    return G
-
-
-def grid_graph(dim, periodic=False):
-    """ Return the n-dimensional grid graph.
-
-    'dim' is a tuple or list with the size in each dimension or an
-    iterable of nodes for each dimension. The dimension of
-    the grid_graph is the length of the tuple or list 'dim'.
-
-    E.g. G=grid_graph(dim=[2, 3]) produces a 2x3 grid graph.
-
-    E.g. G=grid_graph(dim=[range(7, 9), range(3, 6)]) produces a 2x3 grid graph.
-
-    If periodic=True then join grid edges with periodic boundary conditions.
-
-    """
-    dlabel = "%s" % str(dim)
-    if not dim:
-        G = empty_graph(0)
-        G.name = "grid_graph(%s)" % dlabel
-        return G
-    if periodic:
-        func = cycle_graph
-    else:
-        func = path_graph
-
-    G = func(dim[0])
-    for current_dim in dim[1:]:
-        # order matters: copy before it is cleared during the creation of Gnew
-        Gold = G.copy()
-        Gnew = func(current_dim)
-        # explicit: create_using=None
-        # This is so that we get a new graph of Gnew's class.
-        G = nx.cartesian_product(Gnew, Gold)
-    # graph G is done but has labels of the form (1, (2, (3, 1)))
-    # so relabel
-    H = nx.relabel_nodes(G, flatten)
-    H.name = "grid_graph(%s)" % dlabel
-    return H
-
-
-def hypercube_graph(n):
-    """Return the n-dimensional hypercube.
-
-    Node labels are the integers 0 to 2**n - 1.
-
-    """
-    dim = n * [2]
-    G = grid_graph(dim)
-    G.name = "hypercube_graph_(%d)" % n
-    return G
-
-
 def ladder_graph(n, create_using=None):
     """Return the Ladder graph of length n.
 
-    This is two rows of n nodes, with
+    This is two paths of n nodes, with
     each pair connected by a single edge.
 
     Node labels are the integers 0 to 2*n - 1.
 
     """
     if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     G = empty_graph(2 * n, create_using)
     G.name = "ladder_graph_(%d)" % n
     G.add_edges_from(pairwise(range(n)))
@@ -570,7 +470,7 @@ def lollipop_graph(m, n, create_using=None):
 
     Notes
     =====
-    The 2 subgraphs are joined via an edge (m-1, m).  
+    The 2 subgraphs are joined via an edge (m-1, m).
     If n=0, this is merely a complete graph.
 
     (This graph is an extremal example in David Aldous and Jim
@@ -584,12 +484,12 @@ def lollipop_graph(m, n, create_using=None):
     if isinstance(m, int):
         n_nodes = [len(m_nodes) + i for i in n_nodes]
     if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     if M < 2:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, m should be >=2")
     if N < 0:
-        raise nx.NetworkXError(
+        raise NetworkXError(
             "Invalid graph description, n should be >=0")
 
     # the ball
@@ -633,14 +533,14 @@ def path_graph(n, create_using=None):
     n_name, nodes = n
     G = empty_graph(nodes, create_using)
     G.name = "path_graph(%s)" % (n_name,)
-    G.add_edges_from(nx.utils.pairwise(nodes))
+    G.add_edges_from(pairwise(nodes))
     return G
 
 
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
     """ Return the star graph
-    
+
     The star graph consists of one center node connected to n outer nodes.
 
     Parameters
@@ -663,7 +563,7 @@ def star_graph(n, create_using=None):
     first = nodes[0]
     G = empty_graph(nodes, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed Graph not supported")
     G.add_edges_from((first, v) for v in nodes[1:])
     G.name = "star_graph(%s)" % (n_name,)
     return G
@@ -704,7 +604,7 @@ def turan_graph(n, r):
     """
 
     if not 1 <= r <= n:
-        raise nx.NetworkXError("Must satisfy 1 <= r <= n")
+        raise NetworkXError("Must satisfy 1 <= r <= n")
 
     partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
     G = complete_multipartite_graph(*partitions)
@@ -715,7 +615,7 @@ def turan_graph(n, r):
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """ Return the wheel graph
-    
+
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
 
     Parameters
@@ -731,7 +631,7 @@ def wheel_graph(n, create_using=None):
     """
     n_name, nodes = n
     if n_name == 0:
-        G = nx.empty_graph(0, create_using=create_using)
+        G = empty_graph(0, create_using=create_using)
         G.name = "wheel_graph(0)"
         return G
     G = star_graph(nodes, create_using)
@@ -798,7 +698,7 @@ def complete_multipartite_graph(*subset_sizes):
     complete_bipartite_graph
     """
     # The complete multipartite graph is an undirected simple graph.
-    G = nx.Graph()
+    G = Graph()
     G.name = 'complete_multiparite_graph{}'.format(subset_sizes)
 
     if len(subset_sizes) == 0:
@@ -817,7 +717,7 @@ def complete_multipartite_graph(*subset_sizes):
         for (i, subset) in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
     except TypeError:
-        raise nx.NetworkXError("Arguments must be all ints or all iterables")
+        raise NetworkXError("Arguments must be all ints or all iterables")
 
     # Across subsets, all vertices should be adjacent.
     # We can use itertools.combinations() because undirected.

@@ -49,10 +49,10 @@ class BaseGraphTester(object):
 
     def test_edges(self):
         G=self.K3
-        assert_edges_equal(G.edges(),[(0,1),(0,2),(1,2)])
-        assert_edges_equal(G.edges(0),[(0,1),(0,2)])
-        f=lambda x:list(G.edges(x))
-        assert_raises((KeyError,networkx.NetworkXError), f, -1)
+        assert_edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
+        assert_edges_equal(G.edges(0), [(0, 1), (0, 2)])
+        assert_edges_equal(G.edges([0, 1]), [(0, 1), (0, 2), (1, 2)])
+        assert_raises((KeyError,networkx.NetworkXError), G.edges, -1)
 
     def test_weighted_degree(self):
         G=self.Graph()
@@ -68,6 +68,7 @@ class BaseGraphTester(object):
         assert_equal(sorted(G.degree()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.degree()),{0:2,1:2,2:2})
         assert_equal(G.degree(0), 2)
+        assert_raises(networkx.NetworkXError, G.degree, -1)  # node not in graph
 
     def test_size(self):
         G=self.K3
@@ -268,37 +269,36 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_equal(G.node,H.node)
 
     def different_attrdict(self, H, G):
-        old_foo=H[1][2]['foo']
-        H.add_edge(1,2,foo='baz')
-        assert_not_equal(G.edge,H.edge)
-        H.add_edge(1,2,foo=old_foo)
-        assert_equal(G.edge,H.edge)
-        old_foo=H.node[0]['foo']
-        H.node[0]['foo']='baz'
-        assert_not_equal(G.node,H.node)
-        H.node[0]['foo']=old_foo
-        assert_equal(G.node,H.node)
+        old_foo = H[1][2]['foo']
+        H.add_edge(1, 2, foo='baz')
+        assert_not_equal(G._adj, H._adj)
+        H.add_edge(1, 2, foo=old_foo)
+        assert_equal(G._adj, H._adj)
+        old_foo = H.node[0]['foo']
+        H.node[0]['foo'] = 'baz'
+        assert_not_equal(G._node, H._node)
+        H.node[0]['foo'] = old_foo
+        assert_equal(G._node, H._node)
 
     def graphs_equal(self,H,G):
-        assert_equal(G.adj,H.adj)
-        assert_equal(G.edge,H.edge)
-        assert_equal(G.node,H.node)
-        assert_equal(G.graph,H.graph)
-        assert_equal(G.name,H.name)
+        assert_equal(G._adj, H._adj)
+        assert_equal(G._node, H._node)
+        assert_equal(G.graph, H.graph)
+        assert_equal(G.name, H.name)
         if not G.is_directed() and not H.is_directed():
-                assert_true(H.adj[1][2] is H.adj[2][1])
-                assert_true(G.adj[1][2] is G.adj[2][1])
+                assert_true(H._adj[1][2] is H._adj[2][1])
+                assert_true(G._adj[1][2] is G._adj[2][1])
         else: # at least one is directed
             if not G.is_directed():
-                G.pred=G.adj
-                G.succ=G.adj
+                G._pred = G._adj
+                G._succ = G._adj
             if not H.is_directed():
-                H.pred=H.adj
-                H.succ=H.adj
-            assert_equal(G.pred,H.pred)
-            assert_equal(G.succ,H.succ)
-            assert_true(H.succ[1][2] is H.pred[2][1])
-            assert_true(G.succ[1][2] is G.pred[2][1])
+                H._pred = H._adj
+                H._succ = H._adj
+            assert_equal(G._pred, H._pred)
+            assert_equal(G._succ, H._succ)
+            assert_true(H._succ[1][2] is H._pred[2][1])
+            assert_true(G._succ[1][2] is G._pred[2][1])
 
     def test_graph_attr(self):
         G=self.K3
@@ -330,6 +330,11 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_nodes_equal(G.nodes(), [0, 1, 2, 3])
         assert_nodes_equal(G.nodes(data=True),
                      [(0, {}), (1, {}), (2, {}), (3, {'foo':'bar'})])
+
+    def test_edge_lookup(self):
+        G=self.Graph()
+        G.add_edge(1, 2, foo='bar')
+        assert_edges_equal(G.edges[1, 2], {'foo': 'bar'})
 
     def test_edge_attr(self):
         G=self.Graph()
@@ -366,13 +371,16 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_edges_equal(G.edges(data=True),
                      [(1,2,{'data':10,'spam':'bar','bar':'foo'})])
 
-        G.edge[1][2]['data']=20 # another spelling, "edge"
+        G.adj[1][2]['data']=20
         assert_edges_equal(G.edges(data=True),
                       [(1,2,{'data':20,'spam':'bar','bar':'foo'})])
-        G.edge[1][2]['listdata']=[20,200]
-        G.edge[1][2]['weight']=20
+        G.edge[1, 2]['data']=21 # another spelling, "edge"
         assert_edges_equal(G.edges(data=True),
-                     [(1,2,{'data':20,'spam':'bar',
+                      [(1,2,{'data':21,'spam':'bar','bar':'foo'})])
+        G.adj[1][2]['listdata']=[20,200]
+        G.adj[1][2]['weight']=20
+        assert_edges_equal(G.edges(data=True),
+                     [(1,2,{'data':21,'spam':'bar',
                             'bar':'foo','listdata':[20,200],'weight':20})])
 
     def test_to_undirected(self):
@@ -424,18 +432,18 @@ class TestGraph(BaseAttrGraphTester):
     def setUp(self):
         self.Graph=networkx.Graph
         # build dict-of-dict-of-dict K3
-        ed1,ed2,ed3 = ({},{},{})
+        ed1,ed2,ed3 = ({}, {}, {})
         self.k3adj={0: {1: ed1, 2: ed2},
                     1: {0: ed1, 2: ed3},
                     2: {0: ed2, 1: ed3}}
-        self.k3edges=[(0, 1), (0, 2), (1, 2)]
-        self.k3nodes=[0, 1, 2]
-        self.K3=self.Graph()
-        self.K3.adj=self.K3.edge=self.k3adj
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = self.k3adj
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
     def test_data_input(self):
         G=self.Graph(data={1:[2],2:[1]}, name="test")
@@ -562,11 +570,12 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(G.adj,{})
 
     def test_edges_data(self):
-        G=self.K3
-        assert_edges_equal(G.edges(data=True),[(0,1,{}),(0,2,{}),(1,2,{})])
-        assert_edges_equal(G.edges(0,data=True),[(0,1,{}),(0,2,{})])
-        f = lambda x: list(G.edges(x))
-        assert_raises((KeyError,networkx.NetworkXError), f,-1)
+        G = self.K3
+        all_edges = [(0, 1, {}), (0, 2, {}), (1, 2, {})]
+        assert_edges_equal(G.edges(data=True), all_edges)
+        assert_edges_equal(G.edges(0, data=True), [(0, 1, {}), (0, 2, {})])
+        assert_edges_equal(G.edges([0, 1], data=True), all_edges)
+        assert_raises((KeyError, networkx.NetworkXError), G.edges, -1, True)
 
     def test_get_edge_data(self):
         G=self.K3
@@ -586,8 +595,8 @@ class TestEdgeSubgraph(object):
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.node[i]['name'] = 'node{}'.format(i)
-        G.edge[0][1]['name'] = 'edge01'
-        G.edge[3][4]['name'] = 'edge34'
+        G.edge[0, 1]['name'] = 'edge01'
+        G.edge[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by the first and last edges.
         self.G = G
@@ -637,14 +646,14 @@ class TestEdgeSubgraph(object):
 
         """
         for u, v in self.H.edges():
-            assert_equal(self.G.edge[u][v], self.H.edge[u][v])
+            assert_equal(self.G.edge[u, v], self.H.edge[u, v])
         # Making a change to G should make a change in H and vice versa.
-        self.G.edge[0][1]['name'] = 'foo'
-        assert_equal(self.G.edge[0][1]['name'],
-                     self.H.edge[0][1]['name'])
-        self.H.edge[3][4]['name'] = 'bar'
-        assert_equal(self.G.edge[3][4]['name'],
-                     self.H.edge[3][4]['name'])
+        self.G.edge[0, 1]['name'] = 'foo'
+        assert_equal(self.G.edge[0, 1]['name'],
+                     self.H.edge[0, 1]['name'])
+        self.H.edge[3, 4]['name'] = 'bar'
+        assert_equal(self.G.edge[3, 4]['name'],
+                     self.H.edge[3, 4]['name'])
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs

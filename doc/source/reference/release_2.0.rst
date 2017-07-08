@@ -12,13 +12,14 @@ Please send comments and questions to the networkx-discuss [mailing list](http:/
 API changes
 -----------
 * Base Graph Class Changes
-  With the release of NetworkX 2.0 we are moving towards an iterator reporting API.
+  With the release of NetworkX 2.0 we are moving towards a view/iterator reporting API.
   We used to have two methods for the same property of the graph, one that returns a
-  list and one that returns an iterator. With 2.0 we have removed the one that returns
-  a list and renamed the iterator returning method as the original one. For example,
-  ``G.nodes()`` used to return a list and ``G.nodes_iter()`` used to return an iterator, now
-  ``G.nodes()`` returns an iterator and ``G.nodes_iter()`` is removed. Routines that used to
-  return a dict now return an iterator of (key,value) 2-tuples, so that dict(G.degree())
+  list and one that returns an iterator. With 2.0 we have replaced them with a view.
+  A view is a read-only object that is quick to create, automatically updated, and 
+  provides basic access like iteration, membership and set operations where appropriate.
+  For example, ``G.nodes()`` used to return a list and ``G.nodes_iter()`` an iterator.
+  Now ``G.nodes()`` returns a view and ``G.nodes_iter()`` is removed. ``G.degree()``
+  returns a view with (node, degree) iteration, so that dict(G.degree())
   returns a dict keyed by node with degree as value.
   The old behavior
 
@@ -32,10 +33,18 @@ API changes
 
     >>> G = nx.complete_graph(5)
     >>> G.nodes()
-    <dictionary-keyiterator at 0x10898f470>
+    NodesView([0, 1, 2, 3, 4])
     >>> list(G.nodes())
     [0, 1, 2, 3, 4]
 
+  New feature include lookup of node and edge data from the views, property
+  access without parentheses, and set operations.
+
+    >>> G.add_node(3, color='blue')
+    >>> G.nodes[3]
+    'blue'
+    >>> G.nodes & {3, 4, 5}
+    {3, 4}
 
   The following methods have changed:
     * Graph/MultiGraph
@@ -70,7 +79,7 @@ API changes
   ``G.add_edge(1, 2, color='red')``.  
   Note that this only works if the attribute name is a string. For non-string
   attributes you will need to add the edge and then update manually using 
-  e.g. ``G.adj[1][2].update({0: "zero"})``.
+  e.g. ``G.edges[1, 2].update({0: "zero"})``
 
 * [`#1577 <https://github.com/networkx/networkx/pull/1577>`_]
   In addition to minimum spanning trees, a new function for calculating maximum
@@ -106,3 +115,24 @@ API changes
    Most of the shortest_path algorithms now raise a NodeNotFound exception
    when a source or a target are not present in the graph.
 
+* [`#2326 <https://github.com/networkx/networkx/pull/2326>`_]
+   Centrality algorithms were harmonized with respect to the default behavior of
+   the weight parameter. The default value of the ``weight`` keyword argument has
+   been changed from ``weight`` to ``'None'``.  This affects the
+   following centrality functions:
+   - :func:`approximate_current_flow_betweenness_centrality()`
+   - :func:`current_flow_betweenness_centrality()`
+   - :func:`current_flow_betweenness_centrality_subset()`
+   - :func:`current_flow_closeness_centrality()`
+   - :func:`edge_current_flow_betweenness_centrality()`
+   - :func:`edge_current_flow_betweenness_centrality_subset()`
+   - :func:`eigenvector_centrality()`
+   - :func:`eigenvector_centrality_numpy()`
+   - :func:`katz_centrality()`
+   - :func:`katz_centrality_numpy()`
+
+* [`#2420 <https://github.com/networkx/networkx/pull/2420>`_]
+   New community detection algorithm provided. Fluid Communities is an asynchronous
+   algorithm based on the simple idea of fluids interacting in an environment, 
+   expanding and pushing each other. The algorithm is completly described in 
+   [`https://arxiv.org/pdf/1703.09307.pdf <https://arxiv.org/pdf/1703.09307.pdf>`_]. 

@@ -17,7 +17,7 @@ Bipartitions
 
 Generators
 ----------
-.. automodule:: networkx.algorithms.community.generators
+.. automodule:: networkx.algorithms.community.community_generators
 .. autosummary::
    :toctree: generated/
 
@@ -56,3 +56,11 @@ Partitions via centrality measures
    :toctree: generated/
 
    girvan_newman
+
+Validating partitions
+---------------------
+.. automodule:: networkx.algorithms.community.utils
+.. autosummary::
+   :toctree: generated/
+
+   is_partition

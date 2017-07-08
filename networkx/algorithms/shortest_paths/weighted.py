@@ -141,12 +141,13 @@ def dijkstra_path(G, source, target, weight='weight'):
     will find the shortest red path.
 
     The weight function can be used to include node weights.
-    ```
-    def func(u, v, d):
-        return G.node[u].get('node_weight', 1)/2 + \
-               G.node[v].get('node_weight', 1)/2 + \
-               d.get('weight', 1)
-    ```
+
+    >>> def func(u, v, d):
+    ...     node_u_wt = G.node[u].get('node_weight', 1)
+    ...     node_v_wt = G.node[v].get('node_weight', 1)
+    ...     edge_wt = d.get('weight', 1)
+    ...     return node_u_wt/2 + node_v_wt/2 + edge_wt
+
     In this example we take the average of start and end node
     weights of an edge and add it to the weight of the edge.
 
@@ -333,8 +334,13 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     >>> length = dict(nx.single_source_dijkstra_path_length(G, 0))
     >>> length[4]
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
 
     Notes
     -----
@@ -401,11 +407,16 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> length,path=nx.single_source_dijkstra(G,0)
+    >>> length, path=nx.single_source_dijkstra(G, 0)
     >>> print(length[4])
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
     >>> path[4]
     [0, 1, 2, 3, 4]
 
@@ -549,8 +560,13 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     --------
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.multi_source_dijkstra_path_length(G, {0, 4}))
-    >>> length
-    {0: 0, 1: 1, 2: 2, 3: 1, 4: 0}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 1
+    4: 0
 
     Notes
     -----
@@ -628,8 +644,13 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     --------
     >>> G = nx.path_graph(5)
     >>> length, path = nx.multi_source_dijkstra(G, {0, 4})
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 1, 4: 0}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 1
+    4: 0
     >>> path[1]
     [0, 1]
     >>> path[3]
@@ -732,7 +753,7 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     as arguments. No need to explicitly return pred or paths.
 
     """
-    G_succ = G.succ if G.is_directed() else G.adj
+    G_succ = G._succ if G.is_directed() else G._adj
 
     push = heappush
     pop = heappop
@@ -863,10 +884,17 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     --------
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.all_pairs_dijkstra_path_length(G))
-    >>> length[1][4]
-    3
-    >>> length[1]
-    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    1 - 0: 1
+    1 - 1: 0
+    1 - 2: 1
+    1 - 3: 2
+    1 - 4: 3
+    >>> length[3][2]
+    1
+    >>> length[2][2]
+    0
 
     Notes
     -----
@@ -936,9 +964,9 @@ def bellman_ford(G, source, weight='weight'):
     """
     _warnings.warn("Function bellman_ford() is deprecated, use function bellman_ford_predecessor_and_distance() instead.",
                    DeprecationWarning)
-                   
-    return bellman_ford_predecessor_and_distance(G, source, weight=weight) 
-    
+
+    return bellman_ford_predecessor_and_distance(G, source, weight=weight)
+
 def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
@@ -1025,7 +1053,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, w
         return pred, dist
 
     weight = _weight_function(G, weight)
-        
+
     return (pred, _bellman_ford(G, [source], weight,pred=pred, dist=dist, cutoff=cutoff, target=target))
 
 
@@ -1036,7 +1064,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     Parameters
     ----------
     G : NetworkX graph
-    
+
     source: list
         List of source nodes
 
@@ -1061,7 +1089,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     cutoff: integer or float, optional
         Depth to stop the search. Only paths of length <= cutoff are returned
-        
+
     target: node label, optional
         Ending node for path. Path lengths to other destinations may (and
         probably will) be incorrect.
@@ -1082,7 +1110,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     if pred is None:
         pred = {v: [None] for v in source}
-    
+
     if dist is None:
         dist = {v: 0 for v in source}
 
@@ -1106,11 +1134,11 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                 if cutoff is not None:
                     if dist_v > cutoff:
                         continue
-                                    
+
                 if target is not None:
                     if dist_v > dist.get(target, inf):
                         continue
-                    
+
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
@@ -1122,24 +1150,24 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
-                    
+
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
     if paths is not None:
         dsts = [target] if target is not None else pred
         for dst in dsts:
-        
+
             path = [dst]
             cur = dst
-            
+
             while pred[cur][0] is not None:
                 cur = pred[cur][0]
                 path.append(cur)
-            
+
             path.reverse()
             paths[dst] = path
-    
+
 
     return dist
 
@@ -1190,7 +1218,7 @@ def bellman_ford_path(G, source, target, weight='weight'):
     except KeyError:
         raise nx.NetworkXNoPath(
             "Node %s not reachable from %s" % (source, target))
-            
+
 def bellman_ford_path_length(G, source, target, weight='weight'):
     """Returns the shortest path length from source to target
     in a weighted graph.
@@ -1237,9 +1265,9 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
         return 0
 
     weight = _weight_function(G, weight)
-    
+
     length =  _bellman_ford(G, [source], weight, target=target)
-    
+
     try:
         return length[target]
     except KeyError:
@@ -1317,8 +1345,13 @@ def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weigh
     >>> length = dict(nx.single_source_bellman_ford_path_length(G, 0))
     >>> length[4]
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
 
     Notes
     -----
@@ -1366,8 +1399,13 @@ def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weig
     >>> length,path=nx.single_source_bellman_ford(G,0)
     >>> print(length[4])
     4
-    >>> print(length)
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('{}: {}'.format(node, length[node]))
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
     >>> path[4]
     [0, 1, 2, 3, 4]
 
@@ -1414,10 +1452,17 @@ def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
     --------
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.all_pairs_bellman_ford_path_length(G))
-    >>> length[1][4]
-    3
-    >>> length[1]
-    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+    >>> for node in [0, 1, 2, 3, 4]:
+    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    1 - 0: 1
+    1 - 1: 0
+    1 - 2: 1
+    1 - 3: 2
+    1 - 4: 3
+    >>> length[3][2]
+    1
+    >>> length[2][2]
+    0
 
     Notes
     -----

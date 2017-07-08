@@ -17,6 +17,7 @@ from nose.tools import assert_equal
 from nose.tools import assert_true
 
 import networkx as nx
+from networkx.algorithms.community import girvan_newman
 
 
 def set_of_sets(iterable):
@@ -40,14 +41,14 @@ class TestGirvanNewman(object):
 
     def test_no_edges(self):
         G = nx.empty_graph(3)
-        communities = list(nx.girvan_newman(G))
+        communities = list(girvan_newman(G))
         assert_equal(len(communities), 1)
         validate_communities(communities[0], [{0}, {1}, {2}])
 
     def test_undirected(self):
         # Start with the graph .-.-.-.
         G = nx.path_graph(4)
-        communities = list(nx.girvan_newman(G))
+        communities = list(girvan_newman(G))
         assert_equal(len(communities), 3)
         # After one removal, we get the graph .-. .-.
         validate_communities(communities[0], [{0, 1}, {2, 3}])
@@ -60,7 +61,7 @@ class TestGirvanNewman(object):
 
     def test_directed(self):
         G = nx.DiGraph(nx.path_graph(4))
-        communities = list(nx.girvan_newman(G))
+        communities = list(girvan_newman(G))
         assert_equal(len(communities), 3)
         validate_communities(communities[0], [{0, 1}, {2, 3}])
         validate_possible_communities(communities[1], [{0}, {1}, {2, 3}],
@@ -71,7 +72,7 @@ class TestGirvanNewman(object):
         G = nx.path_graph(4)
         G.add_edge(0, 0)
         G.add_edge(2, 2)
-        communities = list(nx.girvan_newman(G))
+        communities = list(girvan_newman(G))
         assert_equal(len(communities), 3)
         validate_communities(communities[0], [{0, 1}, {2, 3}])
         validate_possible_communities(communities[1], [{0}, {1}, {2, 3}],
@@ -83,7 +84,7 @@ class TestGirvanNewman(object):
         G.add_weighted_edges_from([(0, 1, 3), (1, 2, 2), (2, 3, 1)])
         # Let the most valuable edge be the one with the highest weight.
         heaviest = lambda G: max(G.edges(data='weight'), key=itemgetter(2))[:2]
-        communities = list(nx.girvan_newman(G, heaviest))
+        communities = list(girvan_newman(G, heaviest))
         assert_equal(len(communities), 3)
         validate_communities(communities[0], [{0}, {1, 2, 3}])
         validate_communities(communities[1], [{0}, {1}, {2, 3}])

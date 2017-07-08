@@ -152,10 +152,10 @@ def freeze(G):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G=nx.freeze(G)
+    >>> G = nx.path_graph(4)
+    >>> G = nx.freeze(G)
     >>> try:
-    ...    G.add_edge(4,5)
+    ...    G.add_edge(4, 5)
     ... except nx.NetworkXError as e:
     ...    print(str(e))
     Frozen graph can't be modified
@@ -174,16 +174,16 @@ def freeze(G):
     --------
     is_frozen
     """
-    G.add_node=frozen
-    G.add_nodes_from=frozen
-    G.remove_node=frozen
-    G.remove_nodes_from=frozen
-    G.add_edge=frozen
-    G.add_edges_from=frozen
-    G.remove_edge=frozen
-    G.remove_edges_from=frozen
-    G.clear=frozen
-    G.frozen=True
+    G.add_node = frozen
+    G.add_nodes_from = frozen
+    G.remove_node = frozen
+    G.remove_nodes_from = frozen
+    G.add_edge = frozen
+    G.add_edges_from = frozen
+    G.remove_edge = frozen
+    G.remove_edges_from = frozen
+    G.clear = frozen
+    G.frozen = True
     return G
 
 
@@ -338,32 +338,31 @@ def info(G, n=None):
     n : node (any hashable)
        A node in the graph G
     """
-    info='' # append this all to a string
+    info = ''  # append this all to a string
     if n is None:
-        info+="Name: %s\n"%G.name
+        info += "Name: %s\n" % G.name
         type_name = [type(G).__name__]
-        info+="Type: %s\n"%",".join(type_name)
-        info+="Number of nodes: %d\n"%G.number_of_nodes()
-        info+="Number of edges: %d\n"%G.number_of_edges()
-        nnodes=G.number_of_nodes()
+        info += "Type: %s\n" % ",".join(type_name)
+        info += "Number of nodes: %d\n" % G.number_of_nodes()
+        info += "Number of edges: %d\n" % G.number_of_edges()
+        nnodes = G.number_of_nodes()
         if len(G) > 0:
             if G.is_directed():
-                info+="Average in degree: %8.4f\n"%\
-                    (sum(d for n, d in G.in_degree())/float(nnodes))
-                info+="Average out degree: %8.4f"%\
-                    (sum(d for n, d in G.out_degree())/float(nnodes))
+                deg = sum(d for n, d in G.in_degree())/float(nnodes)
+                info += "Average in degree: %8.4f\n" % deg
+                deg = sum(d for n, d in G.out_degree())/float(nnodes)
+                info += "Average out degree: %8.4f" % deg
             else:
-                s=sum(dict(G.degree()).values())
-                info+="Average degree: %8.4f"%\
-                    (float(s)/float(nnodes))
+                s = sum(dict(G.degree()).values())
+                info += "Average degree: %8.4f" % (float(s) / float(nnodes))
 
     else:
         if n not in G:
-            raise nx.NetworkXError("node %s not in graph"%(n,))
-        info+="Node % s has the following properties:\n"%n
-        info+="Degree: %d\n"%G.degree(n)
-        info+="Neighbors: "
-        info+=' '.join(str(nbr) for nbr in G.neighbors(n))
+            raise nx.NetworkXError("node %s not in graph" % (n,))
+        info += "Node % s has the following properties:\n" % n
+        info += "Degree: %d\n" % G.degree(n)
+        info += "Neighbors: "
+        info += ' '.join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 
@@ -434,9 +433,9 @@ def get_node_attributes(G, name):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_nodes_from([1,2,3],color='red')
-    >>> color=nx.get_node_attributes(G,'color')
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3], color='red')
+    >>> color = nx.get_node_attributes(G, 'color')
     >>> color[1]
     'red'
     """
@@ -475,7 +474,7 @@ def set_edge_attributes(G, name, values):
         >>> G = nx.path_graph(3)
         >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
         >>> nx.set_edge_attributes(G, 'betweenness', bb)
-        >>> G.edge[1][2]['betweenness']
+        >>> G.edge[1, 2]['betweenness']
         2.0
 
     If you provide a list as the third argument, updates to the list
@@ -484,9 +483,9 @@ def set_edge_attributes(G, name, values):
         >>> labels = []
         >>> nx.set_edge_attributes(G, 'labels', labels)
         >>> labels.append('foo')
-        >>> G.edge[0][1]['labels']
+        >>> G.edge[0, 1]['labels']
         ['foo']
-        >>> G.edge[1][2]['labels']
+        >>> G.edge[1, 2]['labels']
         ['foo']
 
     """
@@ -519,14 +518,14 @@ def get_edge_attributes(G, name):
     Returns
     -------
     Dictionary of attributes keyed by edge. For (di)graphs, the keys are
-    2-tuples of the form: (u,v). For multi(di)graphs, the keys are 3-tuples of
+    2-tuples of the form: (u, v). For multi(di)graphs, the keys are 3-tuples of
     the form: (u, v, key).
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> nx.add_path(G, [1, 2, 3], color='red')
-    >>> color=nx.get_edge_attributes(G, 'color')
+    >>> color = nx.get_edge_attributes(G, 'color')
     >>> color[(1, 2)]
     'red'
     """
@@ -726,7 +725,7 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> G.add_edges_from([(1, 3), (2, 4), (2, 6)])
     >>> G.add_edge(1, 2, weight=4)
     >>> nx.is_negatively_weighted(G, (1, 2))
@@ -735,7 +734,8 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     >>> nx.is_negatively_weighted(G)
     True
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2)])
+    >>> edges = [('0', '3', 3), ('0', '1', -5), ('1', '0', -2)]
+    >>> G.add_weighted_edges_from(edges)
     >>> nx.is_negatively_weighted(G)
     True
 
@@ -771,5 +771,4 @@ def is_empty(G):
     number of nodes in the graph.
 
     """
-    return not any(G.adj.values())
-
+    return not any(G._adj.values())

@@ -18,6 +18,7 @@ from itertools import product
 import networkx as nx
 from networkx import NetworkXError
 from networkx.utils import not_implemented_for
+from networkx.algorithms.community.community_utils import is_partition
 
 __all__ = ['coverage', 'modularity', 'performance']
 
@@ -31,27 +32,6 @@ class NotAPartition(NetworkXError):
         msg = '{} is not a valid partition of the graph {}'
         msg = msg.format(G, collection)
         super(NotAPartition, self).__init__(msg)
-
-
-def is_partition(G, partition):
-    """Returns True if and only if `partition` is a partition of
-    the nodes of `G`.
-
-    A partition of a universe set is a family of pairwise disjoint sets
-    whose union equals the universe set.
-
-    `G` is a NetworkX graph.
-
-    `partition` is a sequence (not an iterator) of sets of nodes of
-    `G`.
-
-    """
-    # Alternate implementation:
-    #
-    #     return (len(G) == sum(len(c) for c in community) and
-    #             set(G) == set().union(*community))
-    #
-    return all(sum(1 if v in c else 0 for c in partition) == 1 for v in G)
 
 
 def require_partition(func):
@@ -299,7 +279,7 @@ def modularity(G, communities, weight='weight'):
     Examples
     --------
     >>> G = nx.barbell_graph(3, 0)
-    >>> nx.modularity(G, [{0, 1, 2}, {3, 4, 5}])
+    >>> nx.algorithms.community.modularity(G, [{0, 1, 2}, {3, 4, 5}])
     0.35714285714285704
 
     References

@@ -21,7 +21,7 @@ __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
 
 def generic_bfs_edges(G, source, neighbors=None):
-    """Iterates over edges in a breadth-first search.
+    """Iterate over edges in a breadth-first search.
 
     The breadth-first search begins at `source` and enqueues the
     neighbors of newly visited nodes specified by the `neighbors`
@@ -78,7 +78,7 @@ def generic_bfs_edges(G, source, neighbors=None):
 
 
 def bfs_edges(G, source, reverse=False):
-    """Produce edges in a breadth-first-search starting at source.
+    """Iterate over edges in a breadth-first-search starting at source.
 
     Parameters
     ----------

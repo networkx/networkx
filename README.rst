@@ -44,6 +44,12 @@ Decorator package is required for NetworkX.
 
     $ pip install decorator
 
+Install networkx with optional dependencies
+
+::
+
+    $ pip install networkx[all]
+
 Usage
 -----
 
@@ -73,7 +79,7 @@ License
 
 Distributed with a BSD license; see LICENSE.txt::
 
-   Copyright (C) 2004-2016 NetworkX Developers
+   Copyright (C) 2004-2017 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>

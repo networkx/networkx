@@ -10,7 +10,7 @@ class TestNodeLink:
     def test_graph(self):
         G = nx.path_graph(4)
         H = node_link_graph(node_link_data(G))
-        nx.is_isomorphic(G, H)
+        assert_true(nx.is_isomorphic(G, H))
 
     def test_graph_attributes(self):
         G = nx.path_graph(4)
@@ -72,3 +72,35 @@ class TestNodeLink:
         G = nx.MultiDiGraph()
         attrs = dict(name='node', source='node', target='node', key='node')
         node_link_data(G, attrs)
+
+    def test_string_ids(self):
+        try:
+            q = unicode("qualité", 'utf-8')
+        except NameError:
+            q = "qualité"
+
+        G = nx.DiGraph()
+        G.add_node('A')
+        G.add_node(q)
+        G.add_edge('A', q)
+        data = node_link_data(G)
+        assert_equal(data['links'][0]['source'], 'A')
+        assert_equal(data['links'][0]['target'], q)
+        H = node_link_graph(data)
+        assert_true(nx.is_isomorphic(G, H))
+
+    def test_custom_attrs(self):
+        G = nx.path_graph(4)
+        G.add_node(1, color='red')
+        G.add_edge(1, 2, width=7)
+        G.graph[1] = 'one'
+        G.graph['foo'] = 'bar'
+
+        attrs = dict(source='c_source', target='c_target', name='c_id', key='c_key', link='c_links')
+
+        H = node_link_graph(node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs)
+        assert_true(nx.is_isomorphic(G, H))
+        assert_equal(H.graph['foo'], 'bar')
+        assert_equal(H.node[1]['color'], 'red')
+        assert_equal(H[1][2]['width'], 7)
+
