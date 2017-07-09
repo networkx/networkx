@@ -172,7 +172,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     """Returns a soft random geometric graph in the unit cube of dimensions `dim`.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
-    random in the unit cube. Two nodes of distance, d, computed by the `p`-Minkowski
+    random in the unit cube. Two nodes of distance, dist, computed by the `p`-Minkowski
     distance metric are joined by an edge with probability `p_dist` if the computed
     distance metric value of the nodes is at most `radius`, otherwise 
     they are not joined.
@@ -201,7 +201,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         graph, which represents probability.
     p_dist : function, optional
         A probability density function computing the probability of 
-        connecting two nodes that are of distance, d, computed by the 
+        connecting two nodes that are of distance, dist, computed by the 
         Minkowski distance metric. The probability density function, `p_dist`, must
         be any function that takes the metric value as input
         and outputs a single probability value between 0-1. The function
@@ -211,9 +211,8 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         package has many probability distribution functions implemented and tools
         for custom probability distribution defintions [2], and passing the .pdf
         method of scipy.stats distributions can be used here. If the probability
-        function, `p_dist`, is not supplied a default uniform distribution is used
-        where nodes are connected with equal probabilty = 0.5 at all distances, d,
-        that are within the maximum connection distance, `radius`.
+        function, `p_dist`, is not supplied, the default function is an exponential
+        distribution with rate parameter :math:`\lambda=1`.
 
     Returns
     -------
@@ -282,7 +281,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     if p_dist is None:
 
         def p_dist(dist):
-            return 0.5
+            return math.exp(-dist)
 
     def should_join(pair):
         u, v = pair
