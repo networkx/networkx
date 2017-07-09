@@ -117,7 +117,7 @@ Guidelines
 * All code should be documented, to the same
   `standard <http://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt#docstring-standard>`__
   as NumPy and SciPy.
-* No changes are committed without review.  Ask on the
+* All changes are reviewed.  Ask on the
   `mailing list <http://groups.google.com/group/networkx-discuss>`_ if
   you get no response to your pull request.
 
@@ -140,7 +140,7 @@ Stylistic Guidelines
 Pull request codes
 ------------------
 
-When you submit a pull request to github, github will ask you for a summary.  If
+When you submit a pull request to GitHub, GitHub will ask you for a summary.  If
 your code is not ready to merge, but you want to get feedback, please consider
 using ``WIP: experimental optimization`` or similar for the title of your pull
 request. That way we will all know that it's not yet ready to merge and that
