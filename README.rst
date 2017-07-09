@@ -14,6 +14,9 @@ Development
    .. image:: https://travis-ci.org/networkx/networkx.svg?branch=master
       :target: https://travis-ci.org/networkx/networkx
 
+   .. image:: https://ci.appveyor.com/api/projects/status/github/dschult/networkx?branch=master&svg=true
+      :target: https://ci.appveyor.com/project/dschult/networkx-pqott
+
    .. image:: https://readthedocs.org/projects/networkx/badge/?version=latest
       :target: https://readthedocs.org/projects/networkx/?badge=latest
       :alt: Documentation Status
@@ -38,13 +41,7 @@ To get the git version do
 
     $ git clone git://github.com/networkx/networkx.git
 
-Decorator package is required for NetworkX.
-
-::
-
-    $ pip install decorator
-
-Install networkx with optional dependencies
+Install networkx with all optional dependencies
 
 ::
 
