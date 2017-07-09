@@ -1,6 +1,5 @@
-**********
-Installing
-**********
+Install
+=======
 
 NetworkX requires Python 2.7, 3.3, 3.4, 3.5, or 3.6.  If you do not already
 have a Python environment configured on your computer, please see the
@@ -28,8 +27,8 @@ First, make sure you have the latest version of `pip` (the Python package manage
 installed. If you do not, refer to the `Pip documentation
 <https://pip.pypa.io/en/stable/installing/>`_ and install `pip` first.
 
-Installing the released version
-===============================
+Install the released version
+----------------------------
 
 Install the current release of `networkx` with `pip`::
 
@@ -52,8 +51,8 @@ top-level source directory using the Terminal::
 
     $ pip install .
 
-Installing the development version
-==================================
+Install the development version
+-------------------------------
 
 If you have `Git <https://git.com>`_ installed on your system, it is also
 possible to install the development version of `networkx`.
@@ -78,7 +77,7 @@ Then, if you want to update `networkx` at any time, in the same directory do::
     $ git pull
 
 Optional packages
-=================
+-----------------
 
 .. note::
    Some optional packages (e.g., `scipy`, `gdal`) may require compiling

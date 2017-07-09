@@ -1,80 +1,67 @@
 NetworkX
 ========
 
-NetworkX is a Python package for the creation, manipulation, and
-study of the structure, dynamics, and functions of complex networks.
+.. image:: https://travis-ci.org/networkx/networkx.svg?branch=master
+   :target: https://travis-ci.org/networkx/networkx
 
-Documentation
-   http://networkx.github.io
-Mailing List
-   https://groups.google.com/forum/#!forum/networkx-discuss
-Development
-   https://github.com/networkx/networkx
+.. image:: https://ci.appveyor.com/api/projects/status/github/dschult/networkx?branch=master&svg=true
+   :target: https://ci.appveyor.com/project/dschult/networkx-pqott
 
-   .. image:: https://travis-ci.org/networkx/networkx.svg?branch=master
-      :target: https://travis-ci.org/networkx/networkx
+.. image:: https://readthedocs.org/projects/networkx/badge/?version=latest
+   :target: https://readthedocs.org/projects/networkx/?badge=latest
+   :alt: Documentation Status
 
-   .. image:: https://ci.appveyor.com/api/projects/status/github/dschult/networkx?branch=master&svg=true
-      :target: https://ci.appveyor.com/project/dschult/networkx-pqott
+.. image:: https://coveralls.io/repos/networkx/networkx/badge.svg?branch=master
+   :target: https://coveralls.io/r/networkx/networkx?branch=master
 
-   .. image:: https://readthedocs.org/projects/networkx/badge/?version=latest
-      :target: https://readthedocs.org/projects/networkx/?badge=latest
-      :alt: Documentation Status
-
-   .. image:: https://coveralls.io/repos/networkx/networkx/badge.svg?branch=master
-      :target: https://coveralls.io/r/networkx/networkx?branch=master
+NetworkX is a Python package for the creation, manipulation, and study of the
+structure, dynamics, and functions of complex networks.
 
 
-Download
---------
+- **Website (including documentation):** http://networkx.github.io
+- **Mailing list:** https://groups.google.com/forum/#!forum/networkx-discuss
+- **Source:** https://github.com/networkx/networkx
+- **Bug reports:** https://github.com/networkx/networkx/issues
 
-Get the latest version of NetworkX from
-https://pypi.python.org/pypi/networkx/
+Install
+-------
 
-::
+Install the latest version of NetworkX::
 
     $ pip install networkx
 
-To get the git version do
-
-::
-
-    $ git clone git://github.com/networkx/networkx.git
-
-Install networkx with all optional dependencies
-
-::
+Install with all optional dependencies::
 
     $ pip install networkx[all]
 
-Usage
------
+For additional details, please see `INSTALL.rst`.
 
-A quick example that finds the shortest path between two nodes in an undirected graph::
+Simple example
+--------------
 
-   >>> import networkx as nx
-   >>> G = nx.Graph()
-   >>> G.add_edge('A', 'B', weight=4)
-   >>> G.add_edge('B', 'D', weight=2)
-   >>> G.add_edge('A', 'C', weight=3)
-   >>> G.add_edge('C', 'D', weight=4)
-   >>> nx.shortest_path(G, 'A', 'D', weight='weight')
-   ['A', 'B', 'D']
+Find the shortest path between two nodes in an undirected graph::
 
+    >>> import networkx as nx
+    >>> G = nx.Graph()
+    >>> G.add_edge('A', 'B', weight=4)
+    >>> G.add_edge('B', 'D', weight=2)
+    >>> G.add_edge('A', 'C', weight=3)
+    >>> G.add_edge('C', 'D', weight=4)
+    >>> nx.shortest_path(G, 'A', 'D', weight='weight')
+    ['A', 'B', 'D']
 
 Bugs
 ----
 
-Our issue tracker is at https://github.com/networkx/networkx/issues.
-Please report any bugs that you find.  Or, even better, fork the repository on
-GitHub and create a pull request.  We welcome all changes, big or small, and we
-will help you make the pull request if you are new to git
-(just ask on the issue).
+Please report any bugs that you find `here <https://github.com/networkx/networkx/issues>`_.
+Or, even better, fork the repository on GitHub and create a pull request (PR).
+We welcome all changes, big or small, and we will help you make the PR if you are
+new to `git` (just ask on the issue and/or see `CONTRIBUTE.rst`).
 
 License
 -------
 
-Distributed with a BSD license; see LICENSE.txt::
+Released under the 3-Clause BSD license (see `LICENSE.txt`)::
 
    Copyright (C) 2004-2017 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>

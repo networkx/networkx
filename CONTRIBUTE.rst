@@ -1,5 +1,5 @@
-Development process
-===================
+Developer overview
+==================
 
 1. If you are a first-time contributor:
 

@@ -14,7 +14,6 @@ NetworkX documentation
    :maxdepth: 2
 
    overview
-   download
    install
    tutorial/index
    reference/index
