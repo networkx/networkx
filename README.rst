@@ -80,5 +80,3 @@ Distributed with a BSD license; see LICENSE.txt::
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
-
-.. _here: http://webchat.freenode.net?channels=%23networkx

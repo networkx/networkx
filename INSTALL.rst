@@ -2,187 +2,115 @@
 Installing
 **********
 
-Installing with pip
-===================
-Try to install it with
+NetworkX requires Python 2.7, 3.3, 3.4, 3.5, or 3.6.  If you do not already
+have a Python environment configured on your computer, please see the
+instructions for installing the full `scientific Python stack
+<https://scipy.org/install.html>`_.
 
-::
+.. note::
+   If you are on Windows and want to install optional packages (e.g., `scipy`),
+   then you will need to install a Python distribution such as
+   `Anaconda <https://www.continuum.io/downloads>`_,
+   `Enthought Canopy <https://www.enthought.com/products/canopy/>`_,
+   `Python(x,y) <http://python-xy.github.io/>`_,
+   `WinPython <https://winpython.github.io/>`_, or
+   `Pyzo <http://www.pyzo.org/>`_.
+   If you use one of these Python distribution, please refer to their online
+   documentation.
 
-   pip install networkx
+Below we assume you have the default Python environment already configured on
+your computer and you intend to install `networkx` inside of it.  If you want
+to create and work with Python virtual environments, please follow instructions
+on `venv <https://docs.python.org/3/library/venv.html>`_ and `virtual
+environments <http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_.
 
-and an attempt will be made to find and install an appropriate version
-that matches your operating system and Python version.
+First, make sure you have the latest version of `pip` (the Python package manager)
+installed. If you do not, refer to the `Pip documentation
+<https://pip.pypa.io/en/stable/installing/>`_ and install `pip` first.
 
-You can also get NetworkX from the Python Package Index manually
-at http://pypi.python.org/pypi/networkx
-To use pip, you need to have `setuptools <https://pypi.python.org/pypi/setuptools>`_ installed.
+Installing the released version
+===============================
 
-You can install the development version (at github.com) with
+Install the current release of `networkx` with `pip`::
 
-::
+    $ pip install networkx
 
-  pip install git://github.com/networkx/networkx.git#egg=networkx
+To upgrade to a newer release use the `--upgrade` flag::
 
-More download file options are at http://networkx.github.io/download.html.
+    $ pip install --upgrade networkx
 
+If you do not have permission to install software systemwide, you can
+install into your user directory using the `--user` flag::
 
-Installing with conda
-=====================
+    $ pip install --user networkx
 
-If you are using Ananconda/Miniconda distribution of Python then you can
-update/install NetworkX to the latest version with
+Alternatively, you can manually download `networkx` from
+`GitHub <http://github.com/networkx/networkx/releases>`_  or
+`PyPI <http://pypi.python.org/pypi/networkx>`_.
+To install one of these versions, unpack it and run the following from the
+top-level source directory using the Terminal::
 
-::
+    $ pip install .
 
-    conda install networkx
+Installing the development version
+==================================
 
-or to update an existing installation
+If you have `Git <https://git.com>`_ installed on your system, it is also
+possible to install the development version of `networkx`.
 
-::
+Before installing the development version, you may need to uninstall the
+standard version of `networkx` using `pip`::
 
-    conda update networkx
+    $ pip uninstall networkx
 
+Then do::
 
-Installing from source
-======================
+    $ git clone https://github.com/networkx/networkx.git
+    $ cd networkx
+    $ pip install -e .
 
-You can install from source by downloading a source archive file
-(tar.gz or zip) or by checking out the source files from the
-Git source code repository.
+The `pip install -e .` command allows you to follow the development branch as
+it changes by creating links in the right places and installing the command
+line scripts to the appropriate locations.
 
-NetworkX is a pure Python package; you don't need a compiler to build
-or install it.
+Then, if you want to update `networkx` at any time, in the same directory do::
 
-Source archive file
--------------------
-
-  1. Download the source (tar.gz or zip file) from
-     https://pypi.python.org/pypi/networkx/
-     or get the latest development version from
-     https://github.com/networkx/networkx/
-
-  2. Unpack and change directory to the source directory
-     (it should have the files README.txt and setup.py).
-
-  3. Run :samp:`python setup.py install` to build and install
-
-  4. (Optional) Run :samp:`nosetests` to execute the tests if you have
-     `nose <https://pypi.python.org/pypi/nose>`_ installed.
-
-
-GitHub
-------
-
-  1. Clone the networkx repository
-     (see https://github.com/networkx/networkx/ for options)
-     ::
-
-       git clone https://github.com/networkx/networkx.git
-
-
-  2. Change directory to :samp:`networkx`
-
-  3. Run :samp:`python setup.py install` to build and install
-
-  4. (Optional) Run :samp:`nosetests` to execute the tests if you have
-     `nose <https://pypi.python.org/pypi/nose>`_ installed.
-
-
-If you don't have permission to install software on your
-system, you can install into another directory using
-the :samp:`--user`, :samp:`--prefix`, or :samp:`--home` flags to setup.py.
-
-For example
-
-::
-
-    python setup.py install --prefix=/home/username/python
-
-or
-
-::
-
-    python setup.py install --home=~
-
-or
-
-::
-
-    python setup.py install --user
-
-If you didn't install in the standard Python site-packages directory
-you will need to set your PYTHONPATH variable to the alternate location.
-See http://docs.python.org/2/install/index.html#search-path for further details.
-
-
-Requirements
-============
-
-Python
-------
-
-To use NetworkX you need Python 2.7, 3.3 or later.
-
-The easiest way to get Python and most optional packages is to install
-the Enthought Python distribution "`Canopy <https://www.enthought.com/products/canopy/>`_".
-
-There are several other distributions that contain the key packages you need for scientific computing.  See http://scipy.org/install.html for a list.
-
+    $ git pull
 
 Optional packages
 =================
 
-The following are optional packages that NetworkX can use to
-provide additional functions.
+.. note::
+   Some optional packages (e.g., `scipy`, `gdal`) may require compiling
+   C or C++ code.  If you have difficulty installing these packages
+   with `pip`, please review the instructions for installing
+   the full `scientific Python stack <https://scipy.org/install.html>`_.
 
+The following optional packages provide additional functionality.
 
-NumPy
------
-Provides matrix representation of graphs and is used in some graph algorithms for high-performance matrix computations.
+- `NumPy <http://www.numpy.org/>`_ (>= 1.6) provides matrix representation of
+  graphs and is used in some graph algorithms for high-performance matrix
+  computations.
+- `SciPy <http://scipy.org/>`_ (>= 0.10) provides sparse matrix representation
+  of graphs and many numerical scientific tools.
+- `pandas <http://pandas.pydata.org/>`_ (>= 0.8) provides a DataFrame, which
+  is a tabular data structure with labeled axes.
+- `Matplotlib <http://matplotlib.org/>`_ (>= 1.1) provides flexible drawing of
+  graphs.
+- `PyGraphviz <http://pygraphviz.github.io/>`_ and
+  `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.3) provide graph drawing
+  and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
+- `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
+- `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
 
-  - Download: http://scipy.org/Download
+To install `networkx` and all optional packages, do::
 
-SciPy
------
+    $ pip install networkx[all]
 
-Provides sparse matrix representation of graphs and many numerical scientific tools.
+To explicitly install all optional packages, do::
 
-  - Download: http://scipy.org/Download
+    $ pip install numpy scipy pandas matplotlib pygraphviz pydot pyyaml gdal
 
+Or, install any optional package (e.g., `numpy`) individually::
 
-Matplotlib
-----------
-Provides flexible drawing of graphs.
-
-  - Download: http://matplotlib.sourceforge.net/
-
-
-GraphViz
---------
-
-In conjunction with either
-
-      - PyGraphviz:  http://pygraphviz.github.io/
-
-      or
-
-      - pydot: https://github.com/erocarrera/pydot
-
-provides graph drawing and graph layout algorithms.
-
-  - Download: http://graphviz.org/
-
-PyYAML
-------
-
-http://pyyaml.org/
-
-Required for YAML format reading and writing.
-
-
-Other packages
----------------
-
-These are extra packages you may consider using with NetworkX
-
-      - IPython, interactive Python shell, http://ipython.scipy.org/
+    $ pip install numpy
