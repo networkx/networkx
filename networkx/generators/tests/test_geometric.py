@@ -217,6 +217,16 @@ class TestGeographicalThresholdGraph(object):
             else:
                 assert_false(join(G, u, v, 100, 2, dist))
 
+    def test_p_dist_zero(self):
+        """Tests if p_dict = 0 returns disconencted graph with 0 edges
+
+        """
+        def p_dist(dist):
+            return 0
+
+        G = nx.geographical_threshold_graph(50, 1,p_dist=p_dist) 
+        assert_true(len(G.edges) == 0)
+
 
 class TestWaxmanGraph(object):
     """Unit tests for the :func:`~networkx.waxman_graph` function."""

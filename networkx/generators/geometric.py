@@ -204,10 +204,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         connecting two nodes that are of distance, dist, computed by the 
         Minkowski distance metric. The probability density function, `p_dist`, must
         be any function that takes the metric value as input
-        and outputs a single probability value between 0-1. The function
-        should satisify the properties of real probability density functions,
-        where the integration of the function equals 1. Note that this
-        property is not validated in the current implementation. The scipy.stats
+        and outputs a single probability value between 0-1. The scipy.stats
         package has many probability distribution functions implemented and tools
         for custom probability distribution defintions [2], and passing the .pdf
         method of scipy.stats distributions can be used here. If the probability
@@ -306,8 +303,9 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
 
 @nodes_or_number(0)
 def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
-                                 weight=None, metric=None):
-    r"""Returns a geographical threshold graph.
+                                 weight=None, metric=None, p_dist=None):
+    r"""Returns 
+    a geographical threshold graph.
 
     The geographical threshold graph model places $n$ nodes uniformly at
     random in a rectangular domain.  Each node $u$ is assigned a weight
@@ -315,10 +313,11 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
     .. math::
 
-       w_u + w_v \ge \theta r^{\alpha}
+       (w_u + w_v)h(r) \ge \theta 
 
-    where $r$ is the distance between $u$ and $v$, and $\theta$,
-    $\alpha$ are parameters.
+    where `r` is the distance between `u` and `v`, h(r) is a probability of
+    connection as a function of `r`, and :math:`\theta`,
+    :math:`\alpha` are parameters. h(r) corresponds to the p_dist parameter.
 
     Parameters
     ----------
@@ -351,6 +350,17 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
         used.
 
         .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+    p_dist : function, optional
+        A probability density function computing the probability of 
+        connecting two nodes that are of distance, r, computed by metric.
+        The probability density function, `p_dist`, must
+        be any function that takes the metric value as input
+        and outputs a single probability value between 0-1. The scipy.stats
+        package has many probability distribution functions implemented and tools
+        for custom probability distribution defintions [2], and passing the .pdf
+        method of scipy.stats distributions can be used here. If the probability
+        function, `p_dist`, is not supplied, the default exponential function
+        :math: `r^{-\alpha}` is used.
 
     Returns
     -------
@@ -420,6 +430,11 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
     nx.set_node_attributes(G, weight, 'weight')
     nx.set_node_attributes(G, pos, 'pos')
 
+    #if p_dist not supplied, use default r^alpha
+    if p_dist == None:
+        def p_dist(r):
+            return r**-alpha
+
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
     # condition.
@@ -427,7 +442,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
         u, v = pair
         u_pos, v_pos = pos[u], pos[v]
         u_weight, v_weight = weight[u], weight[v]
-        return theta * metric(u_pos, v_pos) ** alpha <= u_weight + v_weight
+        return (u_weight + v_weight)*p_dist(metric(u_pos, v_pos)) >= theta 
 
     G.add_edges_from(filter(should_join, combinations(G, 2)))
     return G
