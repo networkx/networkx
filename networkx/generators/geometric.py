@@ -735,6 +735,7 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
     def should_join(pair):
         u, v = pair
         u_weight, v_weight = weight[u], weight[v]
+        u_pos, v_pos = pos[u], pos[v]
         dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1/p)
         #Check if dist is <= radius parameter. This check is redundant if scipy
         #is availible and _fast_edges routine is used, but provides the check incase
