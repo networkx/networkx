@@ -398,6 +398,7 @@ class MultiGraph(Graph):
 
                 - 2-tuples (u, v) or
                 - 3-tuples (u, v, d) for an edge attribute dict d, or
+                - 3-tuples (u, v, d) for an edge attribute dict d, or
                 - 4-tuples (u, v, k, d) for an edge identified by key k
 
         attr : keyword arguments, optional
@@ -440,13 +441,18 @@ class MultiGraph(Graph):
         keylist = []
         # process ebunch
         for e in ebunch:
-            ne = len(e)
-            if ne == 4:
+            numb_e = len(e)
+            if numb_e == 4:
                 u, v, key, dd = e
-            elif ne == 3:
+            elif numb_e == 3:
                 u, v, dd = e
-                key = None
-            elif ne == 2:
+                try:
+                    {dd}
+                    key = dd
+                    dd = {}
+                except TypeError:  # Not Hashable -- key!
+                    key = None
+            elif numb_e == 2:
                 u, v = e
                 dd = {}
                 key = None
