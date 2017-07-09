@@ -661,9 +661,9 @@ def barabasi_albert_graph(n, m, seed=None):
 
 
 def extended_barabasi_albert_graph(n, m, p, q, seed=None):
-    """Returns an extended Barabási–Alber model graph.
+    """Returns an extended Barabási–Albert model graph.
 
-    An extended Barabási–Alber model grap is a random graph constructed
+    An extended Barabási–Albert model graph is a random graph constructed
     using preferential attachment. The extended model allows new egdes,
     rewired edges or new nodes. Based on the probabilities `p` and `q`
     with `p + q < 1`, the growing behavior of the graph is determined as:
