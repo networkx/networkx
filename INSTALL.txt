@@ -1,3 +1,0 @@
-See doc/source/install.rst
-or
-http://networkx.readthedocs.io/en/stable/install.html

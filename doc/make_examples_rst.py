@@ -53,9 +53,9 @@ def main(exampledir,sourcedir):
     fhindex.write("""\
 .. _examples-index:
 
-*****************
-NetworkX Examples
-*****************
+********
+Examples
+********
 
 .. only:: html
 

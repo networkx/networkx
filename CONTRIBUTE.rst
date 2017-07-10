@@ -1,5 +1,5 @@
-Development process
--------------------
+Developer overview
+==================
 
 1. If you are a first-time contributor:
 
@@ -68,13 +68,13 @@ For a more detailed discussion, read these :doc:`detailed documents
       and commit. As soon as those changes are pushed up (to the same branch as
       before) the pull request will update automatically.
 
-    * `Travis-CI <http://travis-ci.org/>`__, a continuous integration service,
+    * `Travis-CI <http://travis-ci.org/>`_, a continuous integration service,
       is triggered after each Pull Request update to build the code and run unit
       tests of your branch. The Travis tests must pass before your PR can be merged.
       If Travis fails, you can find out why by clicking on the "failed" icon (red
       cross) and inspecting the build and test log.
 
-    * `AppVeyor <http://ci.appveyor.com>`__, is another continuous integration
+    * `AppVeyor <http://ci.appveyor.com>`_, is another continuous integration
       service, which we use.  You will also need to make sure that the AppVeyor
       tests pass.
 
@@ -107,25 +107,26 @@ Finally, you must push your rebased branch::
    git push --force origin bugfix-for-issue-1480
 
 (If you are curious, here's a further discussion on the
-`dangers of rebasing <http://tinyurl.com/lll385>`__.
-Also see this `LWN article <http://tinyurl.com/nqcbkj>`__.)
+`dangers of rebasing <http://tinyurl.com/lll385>`_.
+Also see this `LWN article <http://tinyurl.com/nqcbkj>`_.)
 
 Guidelines
 ----------
 
 * All code should have tests.
 * All code should be documented, to the same
-  `standard <http://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt#docstring-standard>`__
+  `standard <http://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt#docstring-standard>`_
   as NumPy and SciPy.
-* No changes are committed without review.  Ask on the
+* All changes are reviewed.  Ask on the
   `mailing list <http://groups.google.com/group/networkx-discuss>`_ if
   you get no response to your pull request.
 
 Stylistic Guidelines
 --------------------
 
-* Set up your editor to remove trailing whitespace.  Follow `PEP08
-  <www.python.org/dev/peps/pep-0008/>`__.  Check code with pyflakes / flake8.
+* Set up your editor to remove trailing whitespace.
+  Follow `PEP08 <www.python.org/dev/peps/pep-0008/>`_.
+  Check code with `pyflakes` / `flake8`.
 
 * Use the following import conventions::
 
@@ -140,7 +141,7 @@ Stylistic Guidelines
 Pull request codes
 ------------------
 
-When you submit a pull request to github, github will ask you for a summary.  If
+When you submit a pull request to GitHub, GitHub will ask you for a summary.  If
 your code is not ready to merge, but you want to get feedback, please consider
 using ``WIP: experimental optimization`` or similar for the title of your pull
 request. That way we will all know that it's not yet ready to merge and that
