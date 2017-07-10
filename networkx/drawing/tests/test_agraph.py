@@ -2,7 +2,7 @@
 import os
 import tempfile
 from nose import SkipTest
-from nose.tools import assert_true,assert_equal
+from nose.tools import assert_true, assert_equal
 import networkx as nx
 
 
@@ -18,11 +18,13 @@ class TestAGraph(object):
     def build_graph(self, G):
         G.add_edges_from([('A','B'),('A','C'),('A','C'),('B','C'),('A','D')])
         G.add_node('E')
+        G.graph['metal'] = 'bronze'
         return G
 
     def assert_equal(self, G1, G2):
-        assert_true( sorted(G1.nodes()) == sorted(G2.nodes()) )
-        assert_true( sorted(G1.edges()) == sorted(G2.edges()) )
+        assert_equal(sorted(G1.nodes()), sorted(G2.nodes()))
+        assert_equal(sorted(G1.edges()), sorted(G2.edges()))
+        assert_equal(G1.graph['metal'], G2.graph['metal'])
 
     def agraph_checks(self, G):
         G = self.build_graph(G)

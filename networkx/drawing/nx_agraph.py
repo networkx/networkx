@@ -84,6 +84,9 @@ def from_agraph(A,create_using=None):
     if A.name is not None:
         N.name=A.name
 
+    # add graph attributes
+    N.graph.update(A.graph_attr)
+
     # add nodes, attributes to N.node_attr
     for n in A.nodes():
         str_attr=dict((str(k),v) for k,v in n.attr.items())
@@ -141,6 +144,8 @@ def to_agraph(N):
     A.graph_attr.update(N.graph.get('graph',{}))
     A.node_attr.update(N.graph.get('node',{}))
     A.edge_attr.update(N.graph.get('edge',{}))
+
+    A.graph_attr.update(N.graph)
 
     # add nodes
     for n,nodedata in N.nodes(data=True):
