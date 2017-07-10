@@ -47,6 +47,7 @@ __all__ = ['dijkstra_path',
            'goldberg_radzik',
            'johnson']
 
+
 def _weight_function(G, weight):
     """Returns a function that returns the weight of an edge.
 
@@ -85,6 +86,7 @@ def _weight_function(G, weight):
     if G.is_multigraph():
         return lambda u, v, d: min(attr.get(weight, 1) for attr in d.values())
     return lambda u, v, data: data.get(weight, 1)
+
 
 def dijkstra_path(G, source, target, weight='weight'):
     """Returns the shortest weighted path from source to target in G.
@@ -592,7 +594,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
 
 
 def multi_source_dijkstra(G, sources, target=None, cutoff=None,
-                           weight='weight'):
+                          weight='weight'):
     """Find shortest weighted paths and lengths from a given set of
     source nodes.
 
@@ -961,17 +963,20 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     # TODO This can be trivially parallelized.
     return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
 
-def bellman_ford(G, source, weight='weight'):
 
-    """DEPRECATED: Has been replaced by function bellman_ford_predecessor_and_distance().
+def bellman_ford(G, source, weight='weight'):
+    """DEPRECATED: Replaced by bellman_ford_predecessor_and_distance().
 
     """
-    _warnings.warn("Function bellman_ford() is deprecated, use function bellman_ford_predecessor_and_distance() instead.",
-                   DeprecationWarning)
+    msg = "Function bellman_ford() is deprecated, use " \
+        "bellman_ford_predecessor_and_distance() instead."
+    _warnings.warn(msg, DeprecationWarning)
 
     return bellman_ford_predecessor_and_distance(G, source, weight=weight)
 
-def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, weight='weight'):
+
+def bellman_ford_predecessor_and_distance(G, source, target=None,
+                                          cutoff=None, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
@@ -1058,7 +1063,9 @@ def bellman_ford_predecessor_and_distance(G, source, target=None, cutoff=None, w
 
     weight = _weight_function(G, weight)
 
-    return (pred, _bellman_ford(G, [source], weight,pred=pred, dist=dist, cutoff=cutoff, target=target))
+    dist = _bellman_ford(G, [source], weight, pred=pred, dist=dist,
+                         cutoff=cutoff, target=target)
+    return (pred, dist)
 
 
 def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
@@ -1100,8 +1107,8 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     Returns
     -------
-    Returns two dictionaries keyed by node to predecessor in the
-       path and to the distance from the source respectively.
+    Returns a dict keyed by node to the distance from the source.
+    Dicts for paths and pred are in the mutated input dicts by those names.
 
     Raises
     ------
@@ -1172,8 +1179,8 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
             path.reverse()
             paths[dst] = path
 
-
     return dist
+
 
 def bellman_ford_path(G, source, target, weight='weight'):
     """Returns the shortest path from source to target in a weighted graph G.
@@ -1216,12 +1223,14 @@ def bellman_ford_path(G, source, target, weight='weight'):
     --------
     dijkstra_path(), bellman_ford_path_length()
     """
-    (lengths, paths) = single_source_bellman_ford(G, source, target=target, weight=weight)
+    lengths, paths = single_source_bellman_ford(G, source,
+                                                target=target, weight=weight)
     try:
         return paths[target]
     except KeyError:
         raise nx.NetworkXNoPath(
             "Node %s not reachable from %s" % (source, target))
+
 
 def bellman_ford_path_length(G, source, target, weight='weight'):
     """Returns the shortest path length from source to target
@@ -1270,13 +1279,14 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
 
     weight = _weight_function(G, weight)
 
-    length =  _bellman_ford(G, [source], weight, target=target)
+    length = _bellman_ford(G, [source], weight, target=target)
 
     try:
         return length[target]
     except KeyError:
         raise nx.NetworkXNoPath(
             "node %s not reachable from %s" % (source, target))
+
 
 def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
     """Compute shortest path between source and all other reachable
@@ -1321,7 +1331,9 @@ def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
         G, source, cutoff=cutoff, weight=weight)
     return path
 
-def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weight'):
+
+def single_source_bellman_ford_path_length(G, source,
+                                           cutoff=None, weight='weight'):
     """Compute the shortest path length between source and all other
     reachable nodes for a weighted graph.
 
@@ -1371,7 +1383,9 @@ def single_source_bellman_ford_path_length(G, source, cutoff=None, weight='weigh
 
     return iter(_bellman_ford(G, [source], weight, cutoff=cutoff).items())
 
-def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weight'):
+
+def single_source_bellman_ford(G, source,
+                               target=None, cutoff=None, weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
 
     Uses Bellman-Ford algorithm for shortest paths.
@@ -1431,7 +1445,8 @@ def single_source_bellman_ford(G, source, target=None, cutoff=None, weight='weig
 
     paths = {source: [source]}  # dictionary of paths
     return (_bellman_ford(G, [source], weight, paths=paths, cutoff=cutoff,
-                     target=target), paths)
+                          target=target), paths)
+
 
 def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
     """ Compute shortest path lengths between all nodes in a weighted graph.
@@ -1479,6 +1494,7 @@ def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
     for n in G:
         yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
 
+
 def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
     """ Compute shortest paths between all nodes in a weighted graph.
 
@@ -1517,6 +1533,7 @@ def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
     path = single_source_bellman_ford_path
     # TODO This can be trivially parallelized.
     return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
+
 
 def goldberg_radzik(G, source, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
@@ -1736,10 +1753,10 @@ def negative_edge_cycle(G, weight='weight'):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
-    This algorithm uses bellman_ford_predecessor_and_distance() but finds negative cycles
-    on any component by first adding a new node connected to
-    every node, and starting bellman_ford_predecessor_and_distance on that node.  It then
-    removes that extra node.
+    This algorithm uses bellman_ford_predecessor_and_distance() but finds
+    negative cycles on any component by first adding a new node connected to
+    every node, and starting bellman_ford_predecessor_and_distance on that
+    node.  It then removes that extra node.
     """
     newnode = generate_unique_node()
     G.add_edges_from([(newnode, n) for n in G])
@@ -1835,10 +1852,9 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     push = heappush
     pop = heappop
     # Init:  [Forward, Backward]
-    dists = [{}, {}]                   # dictionary of final distances
+    dists = [{}, {}]   # dictionary of final distances
     paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
-    fringe = [[], []]                  # heap of (distance, node) tuples
-                                       # for choosing next node to expand
+    fringe = [[], []]  # heap of (distance, node) for choosing node to expand
     seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
     c = count()
     # initialize fringe heap
@@ -1982,10 +1998,11 @@ def johnson(G, weight='weight'):
 
     # Calculate distance of shortest paths
     dist_bellman = _bellman_ford(G, list(G), weight, pred=pred, dist=dist)
+
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
-    scale = lambda u, v: dist_bellman[u] - dist_bellman[v]
-    new_weight = lambda u, v, d: weight(u, v, d) + scale(u, v)
+    def new_weight(u, v, d):
+        return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
 
     def dist_path(v):
         paths = {v: [v]}
@@ -1993,4 +2010,3 @@ def johnson(G, weight='weight'):
         return paths
 
     return {v: dist_path(v) for v in G}
-
