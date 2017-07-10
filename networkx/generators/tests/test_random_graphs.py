@@ -11,12 +11,15 @@
 
 """
 from nose.tools import assert_almost_equal
+from nose.tools import assert_greater
+from nose.tools import assert_less
 from nose.tools import assert_equal
 from nose.tools import assert_raises
 from nose.tools import assert_true
 
 from networkx.exception import NetworkXError
 from networkx.generators.random_graphs import barabasi_albert_graph
+from networkx.generators.random_graphs import extended_barabasi_albert_graph
 from networkx.generators.random_graphs import binomial_graph
 from networkx.generators.random_graphs import connected_watts_strogatz_graph
 from networkx.generators.random_graphs import dense_gnm_random_graph
@@ -68,6 +71,20 @@ class TestGeneratorsRandom(object):
         G=barabasi_albert_graph(100,3,seed)
         assert_equal(G.number_of_edges(),(97*3))
 
+        G = extended_barabasi_albert_graph(100, 1, 0, 0, seed)
+        assert_equal(G.number_of_edges(), 99)
+        G = extended_barabasi_albert_graph(100, 3, 0, 0, seed)
+        assert_equal(G.number_of_edges(), 97 * 3)
+        G = extended_barabasi_albert_graph(100, 1, 0, 0.5, seed)
+        assert_equal(G.number_of_edges(), 99)
+        G = extended_barabasi_albert_graph(100, 2, 0.5, 0, seed)
+        assert_greater(G.number_of_edges(), 100 * 3)
+        assert_less(G.number_of_edges(), 100 * 4)
+
+        G=extended_barabasi_albert_graph(100, 2, 0.3, 0.3, seed)
+        assert_greater(G.number_of_edges(), 100 * 2)
+        assert_less(G.number_of_edges(), 100 * 4)
+
         G=powerlaw_cluster_graph(100,1,1.0,seed)
         G=powerlaw_cluster_graph(100,3,0.0,seed)
         assert_equal(G.number_of_edges(),(97*3))
@@ -81,11 +98,52 @@ class TestGeneratorsRandom(object):
 
         G=random_lobster(10,0.1,0.5,seed)
 
+    def test_extended_barabasi_albert(self, m=2):
+        """
+        Tests that the extended BA random graph generated behaves consistenly.
+
+        Tests the exceptions are raised as expected.
+
+        The graphs generation are repeated several times to prevent lucky-shots
+
+        """
+        seed = 42
+        repeats = 2
+        BA_model = barabasi_albert_graph(100, m, seed)
+        BA_model_edges = BA_model.number_of_edges()
+
+        while repeats:
+            repeats -= 1
+
+            # This behaves just like BA, the number of edges must be the same
+            G1 = extended_barabasi_albert_graph(100, m, 0, 0, seed)
+            assert_equal(G1.size(), BA_model_edges)
+
+            # More than twice more edges should have been added
+            G1 = extended_barabasi_albert_graph(100, m, 0.8, 0, seed)
+            assert_greater(G1.size(), BA_model_edges*2)
+
+            # Only edge rewiring, so the number of edges less than original
+            G2 = extended_barabasi_albert_graph(100, m, 0, 0.8, seed)
+            assert_equal(G2.size(), BA_model_edges)
+
+            # Mixed scenario: less edges than G1 and more edges than G2
+            G3 = extended_barabasi_albert_graph(100, m, 0.3, 0.3, seed)
+            assert_greater(G3.size(), G2.size())
+            assert_less(G3.size(), G1.size())
+
+        # Testing exceptions
+        ebag = extended_barabasi_albert_graph
+        assert_raises(NetworkXError, ebag, m, m, 0, 0)
+        assert_raises(NetworkXError, ebag, 1, 0.5, 0, 0)
+        assert_raises(NetworkXError, ebag, 100, 2, 0.5, 0.5)
+
     def test_random_zero_regular_graph(self):
         """Tests that a 0-regular graph has the correct number of nodes and
         edges.
 
         """
+        seed = 42
         G = random_regular_graph(0, 10)
         assert_equal(len(G), 10)
         assert_equal(sum(1 for _ in G.edges()), 0)
