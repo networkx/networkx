@@ -396,16 +396,19 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
 
     Returns
     -------
-    distance,path : dictionaries
-       Returns a tuple of two dictionaries keyed by node.
-       The first dictionary stores distance from the source.
-       The second stores the path from the source to that node.
+    distance, path : pair of dictionaries, or numeric and list
+       If target is None, returns a tuple of two dictionaries keyed by node.
+       The first dictionary stores distance from one of the source nodes.
+       The second stores the path from one of the sources to that node.
+       If target is not None, returns a tuple of (distance, path) where
+       distance is the distance from source to target and path is a list
+       representing the path from source to target.
 
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length, path=nx.single_source_dijkstra(G, 0)
+    >>> G = nx.path_graph(5)
+    >>> length, path = nx.single_source_dijkstra(G, 0)
     >>> print(length[4])
     4
     >>> for node in [0, 1, 2, 3, 4]:
@@ -417,6 +420,11 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     4: 4
     >>> path[4]
     [0, 1, 2, 3, 4]
+    >>> length, path = nx.single_source_dijkstra(G, 0, 1)
+    >>> length
+    1
+    >>> path
+    [0, 1]
 
     Notes
     -----
@@ -657,6 +665,12 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     >>> path[3]
     [4, 3]
 
+    >>> length, path = nx.multi_source_dijkstra(G, {0, 4}, 1)
+    >>> length
+    1
+    >>> path
+    [0, 1]
+
     Notes
     -----
     Edge weight attributes must be numerical.
@@ -842,6 +856,8 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     pred, distance : dictionaries
        Returns two dictionaries representing a list of predecessors
        of a node and the distance to each node.
+       Warning: If target is specified, the dicts are incomplete as they
+       only contain information for the nodes along a path to target.
 
     Notes
     -----
@@ -850,6 +866,22 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
 
     The list of predecessors contains more than one element only when
     there are more than one shortest paths to the key node.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.path_graph(5, create_using = nx.DiGraph())
+    >>> pred, dist = nx.dijkstra_predecessor_and_distance(G, 0)
+    >>> sorted(pred.items())
+    [(0, []), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
+    >>> sorted(dist.items())
+    [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
+
+    >>> pred, dist = nx.dijkstra_predecessor_and_distance(G, 0, 1)
+    >>> sorted(pred.items())
+    [(0, []), (1, [0])]
+    >>> sorted(dist.items())
+    [(0, 0), (1, 1)]
     """
 
     weight = _weight_function(G, weight)
@@ -1011,6 +1043,8 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     pred, dist : dictionaries
        Returns two dictionaries keyed by node to predecessor in the
        path and to the distance from the source respectively.
+       Warning: If target is specified, the dicts are incomplete as they
+       only contain information for the nodes along a path to target.
 
     Raises
     ------
@@ -1029,6 +1063,12 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     [(0, [None]), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
+
+    >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0, 1)
+    >>> sorted(pred.items())
+    [(0, [None]), (1, [0])]
+    >>> sorted(dist.items())
+    [(0, 0), (1, 1)]
 
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
@@ -1211,7 +1251,7 @@ def bellman_ford_path(G, source, target, weight='weight'):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print(nx.bellman_ford_path(G,0,4))
+    >>> print(nx.bellman_ford_path(G, 0, 4))
     [0, 1, 2, 3, 4]
 
     Notes
@@ -1223,13 +1263,9 @@ def bellman_ford_path(G, source, target, weight='weight'):
     --------
     dijkstra_path(), bellman_ford_path_length()
     """
-    lengths, paths = single_source_bellman_ford(G, source,
-                                                target=target, weight=weight)
-    try:
-        return paths[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(
-            "Node %s not reachable from %s" % (source, target))
+    length, path = single_source_bellman_ford(G, source,
+                                              target=target, weight=weight)
+    return path
 
 
 def bellman_ford_path_length(G, source, target, weight='weight'):
@@ -1405,16 +1441,19 @@ def single_source_bellman_ford(G, source,
 
     Returns
     -------
-    distance,path : dictionaries
-       Returns a tuple of two dictionaries keyed by node.
-       The first dictionary stores distance from the source.
-       The second stores the path from the source to that node.
+    distance, path : pair of dictionaries, or numeric and list
+       If target is None, returns a tuple of two dictionaries keyed by node.
+       The first dictionary stores distance from one of the source nodes.
+       The second stores the path from one of the sources to that node.
+       If target is not None, returns a tuple of (distance, path) where
+       distance is the distance from source to target and path is a list
+       representing the path from source to target.
 
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length,path=nx.single_source_bellman_ford(G,0)
+    >>> G = nx.path_graph(5)
+    >>> length, path = nx.single_source_bellman_ford(G, 0)
     >>> print(length[4])
     4
     >>> for node in [0, 1, 2, 3, 4]:
@@ -1426,6 +1465,11 @@ def single_source_bellman_ford(G, source,
     4: 4
     >>> path[4]
     [0, 1, 2, 3, 4]
+    >>> length, path = nx.single_source_bellman_ford(G, 0, 1)
+    >>> length
+    1
+    >>> path
+    [0, 1]
 
     Notes
     -----
@@ -1439,13 +1483,20 @@ def single_source_bellman_ford(G, source,
     single_source_bellman_ford_path_length()
     """
     if source == target:
-        return ({source: 0}, {source: [source]})
+        return (0, [source])
 
     weight = _weight_function(G, weight)
 
     paths = {source: [source]}  # dictionary of paths
-    return (_bellman_ford(G, [source], weight, paths=paths, cutoff=cutoff,
-                          target=target), paths)
+    dist = _bellman_ford(G, [source], weight, paths=paths, cutoff=cutoff,
+                          target=target)
+    if target is None:
+        return (dist, paths)
+    try:
+        return (dist[target], paths[target])
+    except KeyError:
+        msg = "Node %s not reachable from %s" % (source, target)
+        raise nx.NetworkXNoPath(msg)
 
 
 def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
@@ -1798,12 +1849,9 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
     Returns
     -------
-    length : number
-        Shortest path length.
-
-    Returns a tuple of two dictionaries keyed by node.
-    The first dictionary stores distance from the source.
-    The second stores the path from the source to that node.
+    length, path : number and list
+       length is the distance from source to target.
+       path is a list of nodes on a path from source to target.
 
     Raises
     ------
@@ -1812,8 +1860,8 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length,path=nx.bidirectional_dijkstra(G,0,4)
+    >>> G = nx.path_graph(5)
+    >>> length, path = nx.bidirectional_dijkstra(G, 0, 4)
     >>> print(length)
     4
     >>> print(path)
