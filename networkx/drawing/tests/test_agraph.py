@@ -16,7 +16,8 @@ class TestAGraph(object):
             raise SkipTest('PyGraphviz not available.')
 
     def build_graph(self, G):
-        G.add_edges_from([('A','B'),('A','C'),('A','C'),('B','C'),('A','D')])
+        edges = [('A', 'B'), ('A', 'C'), ('A', 'C'), ('B', 'C'), ('A', 'D')]
+        G.add_edges_from(edges)
         G.add_node('E')
         G.graph['metal'] = 'bronze'
         return G
@@ -38,7 +39,7 @@ class TestAGraph(object):
         os.unlink(fname)
         self.assert_equal(H, Hin)
 
-        (fd,fname) = tempfile.mkstemp()
+        (fd, fname) = tempfile.mkstemp()
         with open(fname, 'w') as fh:
             nx.drawing.nx_agraph.write_dot(H, fh)
 
