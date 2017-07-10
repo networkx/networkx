@@ -136,3 +136,9 @@ API changes
    algorithm based on the simple idea of fluids interacting in an environment, 
    expanding and pushing each other. The algorithm is completly described in 
    [`https://arxiv.org/pdf/1703.09307.pdf <https://arxiv.org/pdf/1703.09307.pdf>`_]. 
+
+ * [``_]
+   single_source_dijkstra, multi_source_dijkstra and functions that use these
+   now have new behavior when `target` is specified. Instead of returning
+   dicts for distances and paths a 2-tuple of (distance, path) is returned.
+   When `target` is not specified the return value is still 2 dicts. 

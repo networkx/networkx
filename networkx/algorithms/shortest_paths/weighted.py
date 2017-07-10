@@ -157,11 +157,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     """
     (length, path) = single_source_dijkstra(G, source, target=target,
                                             weight=weight)
-    try:
-        return path[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (target, source))
+    return path
 
 
 def dijkstra_path_length(G, source, target, weight='weight'):
@@ -635,10 +631,13 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
 
     Returns
     -------
-    distance, path : pair of dictionaries
-       Returns a tuple of two dictionaries keyed by node.
+    distance, path : pair of dictionaries, or numeric and list
+       If target is None, returns a tuple of two dictionaries keyed by node.
        The first dictionary stores distance from one of the source nodes.
        The second stores the path from one of the sources to that node.
+       If target is not None, returns a tuple of (distance, path) where
+       distance is the distance from source to target and path is a list
+       representing the path from source to target.
 
     Examples
     --------
@@ -686,12 +685,17 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     if not sources:
         raise ValueError('sources must not be empty')
     if target in sources:
-        return ({target: 0}, {target: [target]})
+        return (0, [target])
     weight = _weight_function(G, weight)
     paths = {source: [source] for source in sources}  # dictionary of paths
     dist = _dijkstra_multisource(G, sources, weight, paths=paths,
                                  cutoff=cutoff, target=target)
-    return (dist, paths)
+    if target is None:
+        return (dist, paths)
+    try:
+        return (dist[target], paths[target])
+    except KeyError:
+        raise nx.NetworkXNoPath("No path to {}.".format(target))
 
 
 def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
