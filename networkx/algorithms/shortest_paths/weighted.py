@@ -31,6 +31,7 @@ __all__ = ['dijkstra_path',
            'multi_source_dijkstra',
            'multi_source_dijkstra_path',
            'multi_source_dijkstra_path_length',
+           'all_pairs_dijkstra',
            'all_pairs_dijkstra_path',
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
@@ -396,11 +397,12 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
 
     Returns
     -------
-    distance, path : pair of dictionaries, or numeric and list
-       If target is None, returns a tuple of two dictionaries keyed by node.
-       The first dictionary stores distance from one of the source nodes.
-       The second stores the path from one of the sources to that node.
-       If target is not None, returns a tuple of (distance, path) where
+    distance, path : pair of dictionaries, or numeric and list.
+       If target is None, paths and lengths to all nodes are computed.
+       The return value is a tuple of two dictionaries keyed by target nodes.
+       The first dictionary stores distance to each target node.
+       The second stores the path to each target node.
+       If target is not None, returns a tuple (distance, path), where
        distance is the distance from source to target and path is a list
        representing the path from source to target.
 
@@ -887,6 +889,77 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     weight = _weight_function(G, weight)
     pred = {source: []}  # dictionary of predecessors
     return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff))
+
+
+def all_pairs_dijkstra(G, cutoff=None, weight='weight'):
+    """Find shortest weighted paths and lengths between all nodes.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only return paths with length <= cutoff.
+
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
+
+    Returns
+    -------
+    distance, path : iterator
+       {'distance': distance, 'path': path} iterator, keyed by source nodes.
+       Associated to each source node is a dictionary containing two dicts,
+       'distance' and 'path'. Both dictionaries are keyed by target nodes.
+       (See single_source_dijkstra for the source node / target_node
+       terminology.) The first dictionary, keyed 'distance', stores distances
+       to each target node. The second, keyed 'path', stores the path to each
+       target node.
+
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> len_path = list(nx.all_pairs_dijkstra(G))
+    >>> print(len_path[3]['distance'][1])
+    2
+    >>> for node in [0, 1, 2, 3, 4]:
+            print('3 - {}: {}'.format(node, len_path[3]['distance'][node]))
+    3 - 0: 3
+    3 - 1: 2
+    3 - 2: 1
+    3 - 3: 0
+    3 - 4: 1
+    >>> len_path[3]['path'][1]
+    [3, 2, 1]
+    >>> for pair in nx.all_pairs_dijkstra(G):
+            print(pair['path'][1])
+    [0, 1]
+    [1]
+    [2, 1]
+    [3, 2, 1]
+    [4, 3, 2, 1]
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    The dictionary returned only has keys for reachable node pairs.
+    """
+    for n in G:
+        distance, path = single_source_dijkstra(
+            G, n, cutoff=cutoff, weight=weight)
+        yield {'distance': distance, 'path': path}
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
