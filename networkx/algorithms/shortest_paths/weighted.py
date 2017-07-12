@@ -933,7 +933,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight='weight'):
     >>> print(len_path[3]['distance'][1])
     2
     >>> for node in [0, 1, 2, 3, 4]:
-            print('3 - {}: {}'.format(node, len_path[3]['distance'][node]))
+    ...     print('3 - {}: {}'.format(node, len_path[3]['distance'][node]))
     3 - 0: 3
     3 - 1: 2
     3 - 2: 1
@@ -942,7 +942,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight='weight'):
     >>> len_path[3]['path'][1]
     [3, 2, 1]
     >>> for pair in nx.all_pairs_dijkstra(G):
-            print(pair['path'][1])
+    ...     print(pair['path'][1])
     [0, 1]
     [1]
     [2, 1]
