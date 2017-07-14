@@ -491,7 +491,12 @@ def literal_stringizer(value):
     """
     def stringize(value):
         if isinstance(value, (int, long, bool)) or value is None:
-            buf.write(str(value))
+            if value is True:  # GML uses 1/0 for boolean values.
+                buf.write(str(1))
+            elif value is False:
+                buf.write(str(0))
+            else:
+                buf.write(str(value))
         elif isinstance(value, unicode):
             text = repr(value)
             if text[0] != 'u':
@@ -653,9 +658,14 @@ def generate_gml(G, stringizer=None):
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
-            if isinstance(value, (int, long)):
+            if isinstance(value, (int, long, bool)):
                 if key == 'label':
                     yield indent + key + ' "' + str(value) + '"'
+                elif value is True:
+                    # python bool is an instance of int
+                    yield indent + key + ' 1'
+                elif value is False:
+                    yield indent + key + ' 0'
                 else:
                     yield indent + key + ' ' + str(value)
             elif isinstance(value, float):
@@ -677,10 +687,11 @@ def generate_gml(G, stringizer=None):
                     for line in stringize(key, value, (), next_indent):
                         yield line
                 yield indent + ']'
-            elif isinstance(value, list) and value and not in_list:
+            elif isinstance(value, (list, tuple)) and key is not 'label' \
+                            and value and not in_list:
                 next_indent = indent + '  '
-                for value in value:
-                    for line in stringize(key, value, (), next_indent, True):
+                for val in value:
+                    for line in stringize(key, val, (), next_indent, True):
                         yield line
             else:
                 if stringizer:
