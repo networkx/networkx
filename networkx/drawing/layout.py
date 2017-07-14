@@ -114,7 +114,9 @@ def circular_layout(G, scale=1, center=None, dim=2):
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout, currently only dim=2 is supported
+        Dimension of layout.
+        If dim>2, the remaining dimensions are set to zero
+        in the returned positions.
 
     Returns
     -------
@@ -136,6 +138,8 @@ def circular_layout(G, scale=1, center=None, dim=2):
 
     G, center = _process_params(G, center, dim)
 
+    paddims = max(0, (dim - 2))
+
     if len(G) == 0:
         pos = {}
     elif len(G) == 1:
@@ -144,7 +148,8 @@ def circular_layout(G, scale=1, center=None, dim=2):
         # Discard the extra angle since it matches 0 radians.
         theta = np.linspace(0, 1, len(G) + 1)[:-1] * 2 * np.pi
         theta = theta.astype(np.float32)
-        pos = np.column_stack([np.cos(theta), np.sin(theta)])
+        pos = np.column_stack([np.cos(theta), np.sin(theta),
+                               np.zeros((len(G), paddims))])
         pos = rescale_layout(pos, scale=scale) + center
         pos = dict(zip(G, pos))
 
