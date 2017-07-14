@@ -28,6 +28,7 @@ class TestLayout(object):
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.fruchterman_reingold_layout(self.bigG)
+        vpos = nx.kamada_kawai_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.spectral_layout(self.bigG)
         vpos = nx.shell_layout(G)
@@ -38,6 +39,7 @@ class TestLayout(object):
         vpos = nx.circular_layout(G)
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
+        vpos = nx.kamada_kawai_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
 
@@ -122,3 +124,14 @@ class TestLayout(object):
         assert_equal(vpos, {})
         vpos = nx.shell_layout(G, center=(1, 1))
         assert_equal(vpos, {})
+
+    def test_kamada_kawai_costfn(self):
+        costfn = nx.drawing.layout._kamada_kawai_costfn
+
+        pos1 = numpy.array([4.0, 7.0])
+        invdist1 = 1 / numpy.array([[1.0, 2.0], [2.0, 1.0]])
+
+        cost, grad = costfn(pos1, numpy, invdist1, dim=1)
+
+        assert_equal(cost, ((3 / 2.0 - 1) ** 2))
+        assert_equal(tuple(grad), (-0.5, 0.5))

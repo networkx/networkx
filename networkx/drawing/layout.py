@@ -29,6 +29,7 @@ import collections
 import networkx as nx
 
 __all__ = ['circular_layout',
+           'kamada_kawai_layout',
            'random_layout',
            'rescale_layout',
            'shell_layout',
@@ -470,6 +471,97 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
         # cool temperature
         t -= dt
     return pos
+
+
+def kamada_kawai_layout(G, dist=None,
+                        pos=None,
+                        weight='weight',
+                        scale=1.0,
+                        center=None,
+                        dim=2):
+    """Position nodes using Kamada-Kawai path-length cost-function.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+
+    dist : float (default=None)
+        A two-level dictionary of optimal distances between nodes,
+        indexed by source and destination node.
+        If None, the distance is computed using shortest_path_length().
+
+    pos : dict or None  optional (default=None)
+        Initial positions for nodes as a dictionary with node as keys
+        and values as a coordinate list or tuple.  If None, then use
+        circular_layout().
+
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If None, then all edge weights are 1.
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    dim : int
+        Dimension of layout
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.kamada_kawai_layout(G)
+    """
+    import numpy as np
+
+    G, center = _process_params(G, center, dim)
+
+    if dist is None:
+        dist = dict(nx.shortest_path_length(G, weight=weight))
+    dist_mtx = np.array([ [ dist[src][dst] for dst in G ]
+                            for src in G ])
+
+    if pos is None:
+        pos = circular_layout(G, dim=dim)
+    pos_arr = np.array([ pos[n] for n in G ])
+
+    pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
+
+    pos = rescale_layout(pos, scale=scale) + center
+    return dict(zip(G, pos))
+
+
+def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
+    # Anneal node locations based on the Kamada-Kawai cost-function,
+    # using the supplied matrix of preferred inter-node distances,
+    # and starting locations.
+
+    print('Kamada-Kawai not implemented yet')
+    return pos_arr
+
+
+def _kamada_kawai_costfn(pos_vec, np, invdist, dim):
+    # Cost-function and gradient for Kamada-Kawai layout algorithm
+    nNodes = invdist.shape[0]
+    pos_arr = pos_vec.reshape((nNodes, dim))
+
+    delta = pos_arr[:, np.newaxis, :] - pos_arr[np.newaxis, :, :]
+    nodesep = np.linalg.norm(delta, axis=-1)
+    direction = np.einsum('ijk,ij->ijk',
+                          delta,
+                          1 / (nodesep + np.eye(nNodes) * 1e-3))
+
+    offset = nodesep * invdist - 1.0
+    offset[np.diag_indices(nNodes)] = 0
+    cost = 0.5 * np.sum(offset ** 2)
+
+    grad = (np.einsum('ij,ij,ijk->ik', invdist, offset, direction)
+            - np.einsum('ij,ij,ijk->jk', invdist, offset, direction))
+
+    return (cost, grad.ravel())
 
 
 def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
