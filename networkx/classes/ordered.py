@@ -1,9 +1,9 @@
 """
 OrderedDict variants of the default base classes.
 
-The Ordered (Di/Multi/MultiDi) Graphs are provided as Graphs where the order
-of reporting is the same as the order of edge adding. These classes use
-`collections.OrderedDict` as the basis of their data structure.
+The Ordered (Di/Multi/MultiDi) Graphs give a consistent order for reporting of
+nodes and edges.  The order of node reporting agrees with node adding, but for
+edges, the order is not necessarily the order that the edges were added.
 
 In general, you should use the default (i.e., unordered) graph classes.
 However, there are times (e.g., when testing) when you may need the
