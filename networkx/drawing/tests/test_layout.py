@@ -8,13 +8,18 @@ import networkx as nx
 
 class TestLayout(object):
     numpy = 1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    scipy = None
     @classmethod
     def setupClass(cls):
-        global numpy
+        global numpy, scipy
         try:
             import numpy
         except ImportError:
-            raise SkipTest('numpy not available.')
+            raise SkipTest('NumPy not available.')
+        try:
+            import scipy
+        except ImportError:
+            pass    # Almost all tests still viable
 
     def setUp(self):
         self.Gi = nx.grid_2d_graph(5, 5)
@@ -29,10 +34,11 @@ class TestLayout(object):
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.fruchterman_reingold_layout(self.bigG)
-        vpos = nx.kamada_kawai_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.spectral_layout(self.bigG)
         vpos = nx.shell_layout(G)
+        if scipy is not None:
+            vpos = nx.kamada_kawai_layout(G)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -40,9 +46,10 @@ class TestLayout(object):
         vpos = nx.circular_layout(G)
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
-        vpos = nx.kamada_kawai_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
+        if scipy is not None:
+            vpos = nx.kamada_kawai_layout(G)
 
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_matrix(self.Gs)
