@@ -37,7 +37,7 @@ class TestLayout(object):
         vpos = nx.spectral_layout(G)
         vpos = nx.spectral_layout(self.bigG)
         vpos = nx.shell_layout(G)
-        if scipy is not None:
+        if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
 
     def test_smoke_string(self):
@@ -48,7 +48,7 @@ class TestLayout(object):
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
-        if scipy is not None:
+        if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
 
     def test_adjacency_interface_numpy(self):
@@ -91,7 +91,8 @@ class TestLayout(object):
         # Sparse version (scipy based)
         pos = nx.circular_layout(self.bigG)
         npos = nx.fruchterman_reingold_layout(self.bigG, pos=pos, fixed=[(0, 0)])
-        assert_equal(tuple(pos[(0, 0)]), tuple(npos[(0, 0)]))
+        for axis in range(2):
+            assert_almost_equal(pos[(0,0)][axis], npos[(0,0)][axis])
 
     def test_center_parameter(self):
         G =  nx.path_graph(1)
