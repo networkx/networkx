@@ -34,5 +34,11 @@ Basic graph types
    classes.digraph
    classes.multigraph
    classes.multidigraph
-		
 
+.. note:: NetworkX uses `dicts` to store the nodes and neighbors in a graph.
+   So the reporting of nodes and edges for the base graph classes will not
+   necessarily be the same as the order in which they were created.  If you
+   need the order preserved (e.g., when writing automated tests), please see
+   `OrderedGraph`, `OrderedDiGraph`, `OrderedMultiGraph`, or
+   `OrderedMultiDiGraph`, which behave like the base graph classes but
+   preserve the order in which nodes and edges are added.
