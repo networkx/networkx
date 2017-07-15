@@ -155,7 +155,16 @@ def read_graphml(path,node_type=str):
     """
     reader = GraphMLReader(node_type=node_type)
     # need to check for multiple graphs
-    glist=list(reader(path=path))
+    glist = list(reader(path=path))
+    if len(glist) == 0:
+        # If no graph comes back, try looking for an incomplete header
+        header = b'<graphml xmlns="http://graphml.graphdrawing.org/xmlns">'
+        path.seek(0)
+        old_bytes = path.read()
+        new_bytes = old_bytes.replace(b'<graphml>', header)
+        glist = list(reader(string=new_bytes))
+        if len(glist) == 0:
+            raise nx.NetworkXError('file not successfully read as graphml')
     return glist[0]
 
 
@@ -179,10 +188,10 @@ def parse_graphml(graphml_string,node_type=str):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> linefeed=chr(10) # linefeed=\n
-    >>> s=linefeed.join(nx.generate_graphml(G))
-    >>> H=nx.parse_graphml(s)
+    >>> G = nx.path_graph(4)
+    >>> linefeed = chr(10)  # linefeed=\n
+    >>> s = linefeed.join(nx.generate_graphml(G))
+    >>> H = nx.parse_graphml(s)
 
     Notes
     -----
@@ -197,7 +206,14 @@ def parse_graphml(graphml_string,node_type=str):
     """
     reader = GraphMLReader(node_type=node_type)
     # need to check for multiple graphs
-    glist=list(reader(string=graphml_string))
+    glist = list(reader(string=graphml_string))
+    if len(glist) == 0:
+        # If no graph comes back, try looking for an incomplete header
+        header = '<graphml xmlns="http://graphml.graphdrawing.org/xmlns">'
+        new_string = graphml_string.replace('<graphml>', header)
+        glist = list(reader(string=new_string))
+        if len(glist) == 0:
+            raise nx.NetworkXError('file not successfully read as graphml')
     return glist[0]
 
 

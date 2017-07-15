@@ -497,3 +497,55 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
             assert_equal(graph.node['n4']['test'], True)
             assert_equal(graph.node['n5']['test'], False)
             assert_equal(graph.node['n6']['test'], True)
+
+
+    def test_graphml_header_line(self):
+        good = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+        http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="node" attr.name="test" attr.type="boolean">
+    <default>false</default>
+  </key>
+  <graph id="G">
+    <node id="n0">
+      <data key="d0">true</data>
+    </node>
+  </graph>
+</graphml>
+"""
+        bad = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml>
+  <key id="d0" for="node" attr.name="test" attr.type="boolean">
+    <default>false</default>
+  </key>
+  <graph id="G">
+    <node id="n0">
+      <data key="d0">true</data>
+    </node>
+  </graph>
+</graphml>
+"""
+        ugly = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="https://ghghgh">
+  <key id="d0" for="node" attr.name="test" attr.type="boolean">
+    <default>false</default>
+  </key>
+  <graph id="G">
+    <node id="n0">
+      <data key="d0">true</data>
+    </node>
+  </graph>
+</graphml>
+"""
+        for s in (good, bad):
+            fh = io.BytesIO(s.encode('UTF-8'))
+            G = nx.read_graphml(fh)
+            H = nx.parse_graphml(s)
+            for graph in [G, H]:
+                assert_equal(graph.node['n0']['test'], True)
+
+        fh = io.BytesIO(ugly.encode('UTF-8'))
+        assert_raises(nx.NetworkXError, nx.read_graphml, fh)
+        assert_raises(nx.NetworkXError, nx.parse_graphml, ugly)
