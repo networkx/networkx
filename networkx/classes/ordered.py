@@ -1,6 +1,13 @@
 """
 OrderedDict variants of the default base classes.
 
+The Ordered (Di/Multi/MultiDi) Graphs are provided as Graphs where the order
+of reporting is the same as the order of edge adding. These classes use
+`collections.OrderedDict` as the basis of their data structure.
+
+In general, you should use the default (i.e., unordered) graph classes.
+However, there are times (e.g., when testing) when you may need the
+order preserved.
 """
 from collections import OrderedDict
 
@@ -20,6 +27,7 @@ __all__.extend([
 
 
 class OrderedGraph(Graph):
+    """Ordered variant of Graph."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -27,6 +35,7 @@ class OrderedGraph(Graph):
 
 
 class OrderedDiGraph(DiGraph):
+    """Ordered variant of DiGraph."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -34,6 +43,7 @@ class OrderedDiGraph(DiGraph):
 
 
 class OrderedMultiGraph(MultiGraph):
+    """Ordered variant of MultiGraph."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -42,6 +52,7 @@ class OrderedMultiGraph(MultiGraph):
 
 
 class OrderedMultiDiGraph(MultiDiGraph):
+    """Ordered variant of MultiDiGraph."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
