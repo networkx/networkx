@@ -1,5 +1,5 @@
 from nose.tools import assert_equal, assert_not_equal, \
-        assert_true, assert_false, assert_raises
+    assert_true, assert_false, assert_raises
 
 import networkx as nx
 
@@ -198,7 +198,6 @@ class test_edgedataview(object):
         assert_equal(len(self.DG.edges), 8)
 
 
-
 # Edges
 class test_edgeview(object):
     def setup(self):
@@ -274,9 +273,9 @@ class test_edgeview(object):
         # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
-        result1 = {(n, n+1) for n in range(8)}
+        result1 = {(n, n + 1) for n in range(8)}
         result1.update(some_edges)
-        result2 = {(n+1, n) for n in range(8)}
+        result2 = {(n + 1, n) for n in range(8)}
         result2.update(some_edges)
         assert_true((ev | some_edges) in (result1, result2))
         assert_true((some_edges | ev) in (result1, result2))
@@ -286,11 +285,11 @@ class test_edgeview(object):
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
-            result = {(n, n+1) for n in range(1, 8)}
+            result = {(n, n + 1) for n in range(1, 8)}
             result.update({(1, 0), (0, 2)})
             assert_equal(ev ^ some_edges, result)
         else:
-            result = {(n, n+1) for n in range(1, 8)}
+            result = {(n, n + 1) for n in range(1, 8)}
             result.update({(0, 2)})
             assert_equal(ev ^ some_edges, result)
         return
@@ -412,7 +411,7 @@ class test_multiedges(test_edgeview):
         ev = evr(keys=True)
         for e in ev:
             assert_equal(len(e), 3)
-        elist = sorted([(i, i+1, 0) for i in range(8)] + [(1, 2, 3)])
+        elist = sorted([(i, i + 1, 0) for i in range(8)] + [(1, 2, 3)])
         assert_equal(sorted(list(ev)), elist)
         # test order of arguments:graph, nbunch, data, keys, default
         ev = evr((1, 2), 'foo', True, 1)
@@ -432,7 +431,7 @@ class test_multiedges(test_edgeview):
         # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
-        result = {(n, n+1, 0) for n in range(8)}
+        result = {(n, n + 1, 0) for n in range(8)}
         result.update(some_edges)
         result.update({(1, 2, 3)})
         assert_equal(ev | some_edges, result)
@@ -453,12 +452,12 @@ class test_multiedges(test_edgeview):
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         if self.G.is_directed():
-            result = {(n, n+1, 0) for n in range(1, 8)}
+            result = {(n, n + 1, 0) for n in range(1, 8)}
             result.update({(1, 0, 0), (0, 2, 0), (1, 2, 3)})
             assert_equal(ev ^ some_edges, result)
             assert_equal(some_edges ^ ev, result)
         else:
-            result = {(n, n+1, 0) for n in range(1, 8)}
+            result = {(n, n + 1, 0) for n in range(1, 8)}
             result.update({(0, 2, 0), (1, 2, 3)})
             assert_equal(ev ^ some_edges, result)
             assert_equal(some_edges ^ ev, result)
