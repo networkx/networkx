@@ -90,6 +90,10 @@ def write_graphml(G, path, encoding='utf-8', prettyprint=True,
 
     Notes
     -----
+    It may be a good idea in Python2 to convert strings to unicode
+    before giving the graph to write_gml. At least the strings with
+    either many characters to escape.
+
     This implementation does not support mixed graphs (directed and unidirected
     edges together) hyperedges, nested graphs, or ports.
     """

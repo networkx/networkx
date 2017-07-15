@@ -381,8 +381,8 @@ class TestGraph(object):
 
     def test_yfiles_extension(self):
         data = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:y="http://www.yworks.com/xml/graphml"
          xmlns:yed="http://www.yworks.com/xml/yed/3"
          xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
@@ -571,3 +571,18 @@ class TestGraph(object):
         fh = io.BytesIO(ugly.encode('UTF-8'))
         assert_raises(nx.NetworkXError, nx.read_graphml, fh)
         assert_raises(nx.NetworkXError, nx.parse_graphml, ugly)
+
+    def test_unicode_escape(self):
+        """test for handling json escaped stings in python 2 Issue #1880"""
+        import json
+        a = dict(a='{"a": "123"}')  # an object with many chars to escape
+        try:  # Python 3.x
+            chr(2344)
+            sa = json.dumps(a)
+        except ValueError:  # Python 2.6+
+            sa = unicode(json.dumps(a))
+        G = nx.Graph()
+        G.graph['test'] = sa
+        nx.write_graphml(G, 'text.graphml')
+        H = nx.read_graphml('text.graphml')
+        assert_equal(G.graph['test'], H.graph['test'])
