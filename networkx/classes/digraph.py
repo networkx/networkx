@@ -51,6 +51,7 @@ class DiGraph(Graph):
     Graph
     MultiGraph
     MultiDiGraph
+    OrderedDiGraph
 
     Examples
     --------
@@ -72,7 +73,7 @@ class DiGraph(Graph):
 
     >>> G.add_nodes_from([2, 3])
     >>> G.add_nodes_from(range(100, 110))
-    >>> H=nx.path_graph(10)
+    >>> H = nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -285,7 +286,7 @@ class DiGraph(Graph):
 
         Arbitrary graph attribute pairs (key=value) may be assigned
 
-        >>> G=nx.Graph(e, day="Friday")
+        >>> G = nx.Graph(e, day="Friday")
         >>> G.graph
         {'day': 'Friday'}
 

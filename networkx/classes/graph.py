@@ -61,6 +61,7 @@ class Graph(object):
     DiGraph
     MultiGraph
     MultiDiGraph
+    OrderedGraph
 
     Examples
     --------
@@ -155,7 +156,7 @@ class Graph(object):
 
     >>> 1 in G     # check if node in graph
     True
-    >>> [n for n in G if n<3]   # iterate through nodes
+    >>> [n for n in G if n < 3]   # iterate through nodes
     [1, 2]
     >>> len(G)  # number of nodes in graph
     5
@@ -231,7 +232,7 @@ class Graph(object):
     >>> class OrderedNodeGraph(nx.Graph):
     ...     node_dict_factory=OrderedDict
     ...     adjlist_outer_dict_factory=OrderedDict
-    >>> G=OrderedNodeGraph()
+    >>> G = OrderedNodeGraph()
     >>> G.add_nodes_from((2, 1))
     >>> list(G.nodes())
     [2, 1]
@@ -306,7 +307,7 @@ class Graph(object):
 
         Arbitrary graph attribute pairs (key=value) may be assigned
 
-        >>> G=nx.Graph(e, day="Friday")
+        >>> G = nx.Graph(e, day="Friday")
         >>> G.graph
         {'day': 'Friday'}
 
@@ -1400,7 +1401,7 @@ class Graph(object):
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar G=DiGraph(D) which returns a
+        This is in contrast to the similar `G = nx.DiGraph(D)` which returns a
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
@@ -1632,7 +1633,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1, 1)
         >>> G.add_edge(1, 2)
         >>> G.number_of_selfloops()
@@ -1707,26 +1708,26 @@ class Graph(object):
         Examples
         --------
         For undirected graphs, this method counts the total number of
-        edges in the graph::
+        edges in the graph:
 
-            >>> G = nx.path_graph(4)
-            >>> G.number_of_edges()
-            3
+        >>> G = nx.path_graph(4)
+        >>> G.number_of_edges()
+        3
 
         If you specify two nodes, this counts the total number of edges
-        joining the two nodes::
+        joining the two nodes:
 
-            >>> G.number_of_edges(0, 1)
-            1
+        >>> G.number_of_edges(0, 1)
+        1
 
         For directed graphs, this method can count the total number of
-        directed edges from `u` to `v`::
+        directed edges from `u` to `v`:
 
-            >>> G = nx.DiGraph()
-            >>> G.add_edge(0, 1)
-            >>> G.add_edge(1, 0)
-            >>> G.number_of_edges(0, 1)
-            1
+        >>> G = nx.DiGraph()
+        >>> G.add_edge(0, 1)
+        >>> G.add_edge(1, 0)
+        >>> G.number_of_edges(0, 1)
+        1
 
         """
         if u is None:

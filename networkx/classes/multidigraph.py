@@ -52,6 +52,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Graph
     DiGraph
     MultiGraph
+    OrderedMultiDiGraph
 
     Examples
     --------
@@ -73,7 +74,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     >>> G.add_nodes_from([2, 3])
     >>> G.add_nodes_from(range(100, 110))
-    >>> H=nx.path_graph(10)
+    >>> H = nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
