@@ -687,7 +687,7 @@ def generate_gml(G, stringizer=None):
                     for line in stringize(key, value, (), next_indent):
                         yield line
                 yield indent + ']'
-            elif isinstance(value, (list, tuple)) and key is not 'label' \
+            elif isinstance(value, (list, tuple)) and key != 'label' \
                             and value and not in_list:
                 next_indent = indent + '  '
                 for val in value:
