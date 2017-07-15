@@ -155,6 +155,19 @@ def read_graphml(path, node_type=str):
 
     Notes
     -----
+    Default node and edge attributes are not propagated to each node and edge.
+    They can be obtained from `G.graph` and applied to node and edge attributes
+    if desired using something like this:
+
+    >>> default_color = G.graph['node_default']['color']  # doctest: +SKIP
+    >>> for node, data in G.nodes(data=True):  # doctest: +SKIP
+    ...     if 'color' not in data:
+    ...         data['color']=default_color
+    >>> default_color = G.graph['edge_default']['color']  # doctest: +SKIP
+    >>> for u, v, data in G.edges(data=True):  # doctest: +SKIP
+    ...     if 'color' not in data:
+    ...         data['color']=default_color
+
     This implementation does not support mixed graphs (directed and unidirected
     edges together), hypergraphs, nested graphs, or ports.
 
@@ -212,6 +225,19 @@ def parse_graphml(graphml_string, node_type=str):
 
     Notes
     -----
+    Default node and edge attributes are not propagated to each node and edge.
+    They can be obtained from `G.graph` and applied to node and edge attributes
+    if desired using something like this:
+
+    >>> default_color = G.graph['node_default']['color']  # doctest: +SKIP
+    >>> for node, data in G.nodes(data=True):  # doctest: +SKIP
+    ...    if 'color' not in data:
+    ...        data['color']=default_color
+    >>> default_color = G.graph['edge_default']['color']  # doctest: +SKIP
+    >>> for u, v, data in G.edges(data=True):  # doctest: +SKIP
+    ...    if 'color' not in data:
+    ...        data['color']=default_color
+
     This implementation does not support mixed graphs (directed and unidirected
     edges together), hypergraphs, nested graphs, or ports.
 
