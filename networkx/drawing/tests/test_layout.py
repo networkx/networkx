@@ -1,7 +1,8 @@
 """Unit tests for layout functions."""
 import sys
 from nose import SkipTest
-from nose.tools import assert_equal, assert_false, assert_raises
+from nose.tools import assert_almost_equal, assert_equal, \
+                       assert_false, assert_raises
 import networkx as nx
 
 
@@ -125,13 +126,53 @@ class TestLayout(object):
         vpos = nx.shell_layout(G, center=(1, 1))
         assert_equal(vpos, {})
 
-    def test_kamada_kawai_costfn(self):
+    def test_kamada_kawai_costfn_1d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
 
-        pos1 = numpy.array([4.0, 7.0])
-        invdist1 = 1 / numpy.array([[1.0, 2.0], [2.0, 1.0]])
+        pos = numpy.array([4.0, 7.0])
+        invdist = 1 / numpy.array([[0.1, 2.0], [2.0, 0.3]])
 
-        cost, grad = costfn(pos1, numpy, invdist1, dim=1)
+        cost, grad = costfn(pos, numpy, invdist, meanweight=0, dim=1)
 
-        assert_equal(cost, ((3 / 2.0 - 1) ** 2))
-        assert_equal(tuple(grad), (-0.5, 0.5))
+        assert_almost_equal(cost, ((3 / 2.0 - 1) ** 2))
+        assert_almost_equal(grad[0], -0.5)
+        assert_almost_equal(grad[1], 0.5)
+
+    def test_kamada_kawai_costfn_2d(self):
+        costfn = nx.drawing.layout._kamada_kawai_costfn
+
+        pos = numpy.array([[ 1.3, -3.2 ],
+                           [ 2.7, -0.3 ],
+                           [ 5.1, 2.5 ]])
+        invdist = 1 / numpy.array([[ 0.1, 2.1, 1.7 ],
+                                   [ 2.1, 0.2, 0.6 ],
+                                   [ 1.7, 0.6, 0.3 ]])
+        meanwt = 0.3
+
+        cost, grad = costfn(pos.ravel(), numpy, invdist,
+                            meanweight=meanwt, dim=2)
+
+        expected_cost = 0.5 * meanwt * numpy.sum(numpy.sum(pos, axis=0) ** 2)
+        for i in range(pos.shape[0]):
+            for j in range(i+1, pos.shape[0]):
+                expected_cost += (numpy.linalg.norm(pos[i] - pos[j])
+                                    * invdist[i][j] - 1.0) ** 2
+
+        assert_almost_equal(cost, expected_cost)
+
+        dx = 1e-4
+        for nd in range(pos.shape[0]):
+            for dm in range(pos.shape[1]):
+                idx = nd * pos.shape[1] + dm
+                pos0 = pos.flatten()
+
+                pos0[idx] += dx
+                cplus = costfn(pos0, numpy, invdist,
+                               meanweight=meanwt, dim=pos.shape[1])[0]
+
+                pos0[idx] -= 2 * dx
+                cminus = costfn(pos0, numpy, invdist,
+                                meanweight=meanwt, dim=pos.shape[1])[0]
+
+                assert_almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
+                                    places=5)

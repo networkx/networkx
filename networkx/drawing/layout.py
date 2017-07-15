@@ -1,7 +1,8 @@
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Richard Penney <rwpenney@users.sourceforge.net>
 #    All rights reserved.
 #    BSD license.
 #
@@ -515,14 +516,26 @@ def kamada_kawai_layout(G, dist=None,
     >>> G = nx.path_graph(4)
     >>> pos = nx.kamada_kawai_layout(G)
     """
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        msg = 'Kamada-Kawai layout requires numpy: http://scipy.org'
+        raise ImportError(msg)
 
     G, center = _process_params(G, center, dim)
+    nNodes = len(G)
 
     if dist is None:
         dist = dict(nx.shortest_path_length(G, weight=weight))
-    dist_mtx = np.array([ [ dist[src][dst] for dst in G ]
-                            for src in G ])
+    dist_mtx = 1e6 * np.ones((nNodes, nNodes))
+    for row, nr in enumerate(G):
+        if nr not in dist:
+            continue
+        rdist = dist[nr]
+        for col, nc in enumerate(G):
+            if nc not in rdist:
+                continue
+            dist_mtx[row][col] = rdist[nc]
 
     if pos is None:
         pos = circular_layout(G, dim=dim)
@@ -539,11 +552,24 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
     # using the supplied matrix of preferred inter-node distances,
     # and starting locations.
 
-    print('Kamada-Kawai not implemented yet')
-    return pos_arr
+    import numpy as np
+    try:
+        from scipy.optimize import minimize
+    except ImportError:
+        msg = 'Kamada-Kawai layout requires scipy: http://scipy.org'
+        raise ImportError(msg)
+
+    meanwt = 1e-3
+    costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3),
+                meanwt, dim)
+
+    optresult = minimize(_kamada_kawai_costfn, pos_arr.ravel(),
+                         method='L-BFGS-B', args=costargs, jac=True)
+
+    return optresult.x.reshape((-1, dim))
 
 
-def _kamada_kawai_costfn(pos_vec, np, invdist, dim):
+def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     # Cost-function and gradient for Kamada-Kawai layout algorithm
     nNodes = invdist.shape[0]
     pos_arr = pos_vec.reshape((nNodes, dim))
@@ -556,10 +582,15 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, dim):
 
     offset = nodesep * invdist - 1.0
     offset[np.diag_indices(nNodes)] = 0
-    cost = 0.5 * np.sum(offset ** 2)
 
+    cost = 0.5 * np.sum(offset ** 2)
     grad = (np.einsum('ij,ij,ijk->ik', invdist, offset, direction)
             - np.einsum('ij,ij,ijk->jk', invdist, offset, direction))
+
+    # Additional parabolic term to encourage mean position to be near origin:
+    sumpos = np.sum(pos_arr, axis=0)
+    cost += 0.5 * meanweight * np.sum(sumpos ** 2)
+    grad += meanweight * sumpos
 
     return (cost, grad.ravel())
 
