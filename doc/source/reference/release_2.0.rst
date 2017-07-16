@@ -5,9 +5,9 @@ Version 2.0 release notes and API changes
 This page includes more detailed release information and API changes from
 NetworkX 1.10 to NetworkX 2.0.
 
-There is a [migration guide for people moving from 1.X to 2.0](http://networkx.readthedocs.org/en/latest/reference/migration_guide_from_1.x_to_2.0.html)
+There is a `migration guide for people moving from 1.X to 2.0 <http://networkx.readthedocs.org/en/latest/reference/migration_guide_from_1.x_to_2.0.html>`_.
 
-Please send comments and questions to the networkx-discuss [mailing list](http://groups.google.com/group/networkx-discuss).
+Please send comments and questions to the networkx-discuss `mailing list <http://groups.google.com/group/networkx-discuss>`_.
 
 API changes
 -----------
@@ -137,7 +137,8 @@ API changes
    expanding and pushing each other. The algorithm is completly described in 
    [`https://arxiv.org/pdf/1703.09307.pdf <https://arxiv.org/pdf/1703.09307.pdf>`_]. 
 
- * [``_]
+ * [`#2510 <https://github.com/networkx/networkx/pull/2510>`_ and
+   `#2508 <https://github.com/networkx/networkx/pull/2508>`_]
    single_source_dijkstra, multi_source_dijkstra and functions that use these
    now have new behavior when `target` is specified. Instead of returning
    dicts for distances and paths a 2-tuple of (distance, path) is returned.
