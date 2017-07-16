@@ -13,6 +13,7 @@ from networkx.algorithms.covering import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.cuts import *
 from networkx.algorithms.dag import *
+from networkx.algorithms.disjoint_paths import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.distance_regular import *
 from networkx.algorithms.dominance import *
@@ -55,6 +56,7 @@ import networkx.algorithms.components
 import networkx.algorithms.connectivity
 import networkx.algorithms.community
 import networkx.algorithms.coloring
+import networkx.algorithms.disjoint_paths
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
