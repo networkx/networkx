@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+===============
+Giant Component
+===============
+
 This example illustrates the sudden appearance of a
 giant connected component in a binomial random graph.
 

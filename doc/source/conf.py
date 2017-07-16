@@ -12,26 +12,32 @@
 # serve to show the default value.
 from __future__ import print_function
 
-import sys, os, re
-import contextlib
+import sys
+import os
+import re
+#import contextlib
+from datetime import date
 
-@contextlib.contextmanager
-def cd(newpath):
-    """
-    Change the current working directory to `newpath`, temporarily.
+#from sphinx_gallery.sorting import ExplicitOrder
 
-    If the old current working directory no longer exists, do not return back.
-    """
-    oldpath = os.getcwd()
-    os.chdir(newpath)
-    try:
-        yield
-    finally:
-        try:
-            os.chdir(oldpath)
-        except OSError:
-            # If oldpath no longer exists, stay where we are.
-            pass
+#@contextlib.contextmanager
+#def cd(newpath):
+#    """
+#    Change the current working directory to `newpath`, temporarily.
+#
+#    If the old current working directory no longer exists, do not return back.
+#    """
+#    oldpath = os.getcwd()
+#    os.chdir(newpath)
+#    try:
+#        yield
+#    finally:
+#        try:
+#            os.chdir(oldpath)
+#        except OSError:
+#            # If oldpath no longer exists, stay where we are.
+#            pass
+#
 
 # Check Sphinx version
 import sphinx
@@ -40,22 +46,22 @@ if sphinx.__version__ < "1.3":
 
 # Environment variable to know if the docs are being built on rtd.
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-print
-print("Building on ReadTheDocs: {}".format(on_rtd))
-print
-print("Current working directory: {}".format(os.path.abspath(os.curdir)))
-print("Python: {}".format(sys.executable))
+#print
+#print("Building on ReadTheDocs: {}".format(on_rtd))
+#print
+#print("Current working directory: {}".format(os.path.abspath(os.curdir)))
+#print("Python: {}".format(sys.executable))
 
-if on_rtd:
-    # Build is not via Makefile (yet).
-    # So we manually build the examples and gallery.
-    import subprocess
-    with cd('..'):
-        # The Makefile is run from networkx/doc, so we need to move there
-        # from networkx/doc/source (which holds conf.py).
-        py = sys.executable
-        subprocess.call([py, 'make_gallery.py'])
-        subprocess.call([py, 'make_examples_rst.py', '../examples', 'source'])
+#if on_rtd:
+#    # Build is not via Makefile (yet).
+#    # So we manually build the examples and gallery.
+#    import subprocess
+#    with cd('..'):
+#        # The Makefile is run from networkx/doc, so we need to move there
+#        # from networkx/doc/source (which holds conf.py).
+#        py = sys.executable
+#        subprocess.call([py, 'make_gallery.py'])
+#        subprocess.call([py, 'make_examples_rst.py', '../examples', 'source'])
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py
@@ -75,14 +81,33 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+    'sphinx_gallery.gen_gallery',
 ]
 
+# https://github.com/sphinx-gallery/sphinx-gallery
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs': '../../examples',
+#    'subsection_order': ExplicitOrder(['../../examples/basic',
+#                                       '../../examples/drawing',
+#                                       '../../examples/3d_drawing',
+#                                       '../../examples/pygraphviz',
+#                                       '../../examples/graph',
+#                                       '../../examples/algorithms',
+#                                       '../../examples/advanced',
+#                                       '../../examples/javascript',
+#                                       '../../examples/jit',
+#                                       '../../examples/subclass']),
+    # path where to save gallery generated examples
+    'gallery_dirs': 'auto_examples',
+    'backreferences_dir': 'modules/generated'
+}
 
 # generate autosummary pages
-autosummary_generate=True
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['templates','../rst_templates']
+#templates_path = ['templates', '../rst_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -95,7 +120,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'NetworkX'
-copyright = '2004-2017, NetworkX Developers'
+copyright = '2004-{}, NetworkX Developers'.format(date.today().year)
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -104,7 +129,7 @@ copyright = '2004-2017, NetworkX Developers'
 import networkx
 version = networkx.__version__
 # The full version, including dev info
-release = networkx.__version__.replace('_','')
+release = networkx.__version__.replace('_', '')
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -130,9 +155,9 @@ add_module_names = False
 pygments_style = 'sphinx'
 
 # A list of prefixs that are ignored when creating the module index. (new in Sphinx 0.6)
-modindex_common_prefix=['networkx.']
+modindex_common_prefix = ['networkx.']
 
-doctest_global_setup="import networkx as nx"
+doctest_global_setup = "import networkx as nx"
 
 # treat ``x, y : type`` as vars x and y instead of default ``y(x,) : type``
 napoleon_use_param = False
@@ -145,7 +170,7 @@ if not on_rtd:
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
-#html_theme_options = {
+# html_theme_options = {
 #    "rightsidebar": "true",
 #    "relbarbgcolor: "black"
 #}
@@ -171,7 +196,7 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # Content template for the index page.
 #html_index = 'index.html'
-html_index = 'contents.html'
+#html_index = 'contents.html'
 
 # Custom sidebar templates, maps page names to templates.
 #html_sidebars = {}
@@ -179,7 +204,7 @@ html_index = 'contents.html'
 # Additional templates that should be rendered to pages, maps page names to
 # templates.
 #html_additional_pages = {'index': 'index.html','gallery':'gallery.html'}
-html_additional_pages = {'gallery':'gallery.html'}
+#html_additional_pages = {'gallery': 'gallery.html'}
 
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
@@ -203,18 +228,18 @@ latex_paper_size = 'letter'
 latex_documents = [('tutorial/index', 'networkx_tutorial.tex',
                     'NetworkX Tutorial',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 1),
-                   ('reference/pdf_reference', 'networkx_reference.tex',
+                   ('reference/index', 'networkx_reference.tex',
                     'NetworkX Reference',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]
 
-#latex_appendices = ['installing']#,'legal'],'citing','credits','history']
+# latex_appendices = ['installing']#,'legal'],'citing','credits','history']
 
 #latex_appendices = ['credits']
 
 # Intersphinx mapping
 intersphinx_mapping = {'http://docs.python.org/': None,
                        'http://docs.scipy.org/doc/numpy/': None,
-                      }
+                       }
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

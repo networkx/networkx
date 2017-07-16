@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+=======
+Sampson
+=======
+
 Sampson's monastery data.
 
 Shows how to read data from a zip file and plot multiple frames.

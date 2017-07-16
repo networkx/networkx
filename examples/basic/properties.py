@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+==========
+Properties
+==========
+
 Compute some network properties for the lollipop graph.
 """
 #    Copyright (C) 2004-2016 by

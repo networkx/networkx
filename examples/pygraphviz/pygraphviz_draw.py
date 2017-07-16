@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 """
+===============
+Pygraphviz Draw
+===============
+
 An example showing how to use the interface to the pygraphviz
 AGraph class to draw a graph.
 
 Also see the pygraphviz documentation and examples at
 http://pygraphviz.github.io/
-
-
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 

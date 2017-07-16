@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+========================
+Expected Degree Sequence
+========================
+
 Random graph from given degree sequence.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)

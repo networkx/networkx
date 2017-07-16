@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 """
+=============
+Write Dotfile
+=============
+
+
 Write a dot file from a networkx graph for further processing with graphviz.
 
 You need to have either pygraphviz or pydot for this example.

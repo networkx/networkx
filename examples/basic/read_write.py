@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+======================
+Read and write graphs.
+======================
+
 Read and write graphs.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)

@@ -1,8 +1,17 @@
+"""
+=======
+Mayavi2
+=======
+
+This is
+"""
+
 # needs mayavi2 
 # run with ipython -wthread
 import networkx as nx
 import numpy as np
-from enthought.mayavi import mlab
+from mayavi import mlab
+mlab.options.offscreen = True
 
 # some graphs to try
 #H=nx.krackhardt_kite_graph()

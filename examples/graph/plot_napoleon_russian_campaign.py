@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+=========================
+Napoleon Russian Campaign
+=========================
+
 Minard's data from Napoleon's 1812-1813  Russian Campaign.
 http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
 
@@ -142,4 +146,3 @@ if __name__ == "__main__":
         plt.savefig("napoleon_russian_campaign.png")
     except ImportError:
         pass
-

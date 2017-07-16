@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 """
+===========
+Erdos Renyi
+===========
+
 Create an G{n,m} random graph with n nodes and m edges
 and report some properties.
 

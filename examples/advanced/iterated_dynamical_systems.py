@@ -1,6 +1,9 @@
 """
+==========================
+Iterated Dynamical Systems
+==========================
+
 Digraphs from Integer-valued Iterated Functions
-===============================================
 
 
 Sums of cubes on 3N

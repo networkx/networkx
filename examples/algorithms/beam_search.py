@@ -6,11 +6,15 @@
 #
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
-"""Beam search with dynamic beam width.
+"""
+===========
+Beam Search
+===========
+
+Beam search with dynamic beam width.
 
 The progressive widening beam search repeatedly executes a beam search
 with increasing beam width until the target node is found.
-
 """
 import math
 

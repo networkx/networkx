@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 """
+=============
+Chess Masters
+=============
+
 An example of the MultiDiGraph clas
 
 The function chess_pgn_graph reads a collection of chess

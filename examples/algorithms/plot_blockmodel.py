@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
+==========
+Blockmodel
+==========
+
 Example of creating a block model using the blockmodel function in NX.  Data used is the Hartford, CT drug users network:
 
 @article{,

@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+===========
+Knuth Miles
+===========
+
 An example using networkx.Graph().
 
 miles_graph() returns an undirected graph over the 128 US cities from

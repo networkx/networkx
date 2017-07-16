@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+=============
+Edge Colormap
+=============
+
 Draw a graph with matplotlib, color edges.
 You must have matplotlib>=87.7 for this to work.
 """

@@ -1,4 +1,8 @@
 """
+===========
+Print Graph
+===========
+
 Example subclass of the Graph class.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)

@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+=====
+Atlas
+=====
+
 Atlas of all graphs of 6 nodes or less.
 
 """

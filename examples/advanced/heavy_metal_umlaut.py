@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
+==================
+Heavy Metal Umlaut
+==================
+
 Example using unicode strings as graph labels.
 
 Also shows creative use of the Heavy Metal Umlaut:

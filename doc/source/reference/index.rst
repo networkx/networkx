@@ -6,7 +6,6 @@ Reference
    :Release: |release|
    :Date: |today|
 
-
 .. toctree::
    :maxdepth: 2
 
@@ -26,8 +25,3 @@ Reference
    citing	
    credits
    glossary
-
-.. toctree::
-   :hidden:
-
-   pdf_reference

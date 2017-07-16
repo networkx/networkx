@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+======
+Atlas2
+======
+
 Write first 20 graphs from the graph atlas as graphviz dot files
 Gn.dot where n=0,19.
 Requires pygraphviz and graphviz.

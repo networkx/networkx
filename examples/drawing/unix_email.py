@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+==========
+Unix Email
+==========
+
 Create a directed graph, allowing multiple edges and self loops, from
 a unix mailbox.  The nodes are email addresses with links
 that point from the sender to the recievers.  The edge data

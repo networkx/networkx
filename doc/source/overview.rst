@@ -82,16 +82,3 @@ release was in April 2005.
 
 Many people have contributed to the success of NetworkX. Some of the
 contributors are listed in the :doc:`credits. </reference/credits>`
-
-
-
-What Next
-^^^^^^^^^
-
- - :doc:`A Brief Tour </tutorial/tutorial>`
-
- - :doc:`Installing </install>`
-
- - :doc:`Reference </reference/index>`
-
- - :doc:`Examples </examples/index>`

@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+=====================
+Krackhardt Centrality
+=====================
+
 Centrality measures of Krackhardt social network.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)

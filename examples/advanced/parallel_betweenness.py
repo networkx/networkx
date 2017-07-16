@@ -1,4 +1,8 @@
 """
+====================
+Parallel Betweenness
+====================
+
 Example of parallel implementation of betweenness centrality using the
 multiprocessing module from Python Standard Library.
 

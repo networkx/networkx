@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+========
+Football
+========
+
 Load football network in GML format and compute some network statistcs.
 
 Shows how to download GML graph in a zipped file, unpack it, and load

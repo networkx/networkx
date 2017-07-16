@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+================
+Degree histogram
+================
+
 Draw degree histogram with matplotlib.
 Random graph shown as inset
 """

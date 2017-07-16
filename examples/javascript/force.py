@@ -1,4 +1,9 @@
-"""Example of writing JSON format graph data and using the D3 Javascript library to produce an HTML/Javascript drawing.
+"""
+==========
+Javascript
+==========
+
+Example of writing JSON format graph data and using the D3 Javascript library to produce an HTML/Javascript drawing.
 """
 # Author: Aric Hagberg <aric.hagberg@gmail.com>
 

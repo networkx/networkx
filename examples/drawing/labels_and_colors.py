@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+=================
+Labels And Colors
+=================
+
 Draw a graph with matplotlib, color by degree.
 
 You must have matplotlib for this to work.

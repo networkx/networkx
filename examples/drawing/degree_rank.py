@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+===========
+Degree Rank
+===========
+
 Random graph from given degree sequence.
 Draw degree rank plot and graph with matplotlib.
 """

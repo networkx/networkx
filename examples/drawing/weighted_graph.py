@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+==============
+Weighted Graph
+==============
+
 An example using Graph as a weighted network.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)

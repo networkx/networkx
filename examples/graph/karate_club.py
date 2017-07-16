@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+===========
+Karate Club
+===========
+
 Zachary's Karate Club graph
 
 Data file from:

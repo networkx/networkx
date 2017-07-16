@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+=====
+Roget
+=====
+
 Build a directed graph of 1022 categories and
 5075 cross-references as defined in the 1879 version of Roget's Thesaurus
 contained in the datafile roget_dat.txt. This example is described in

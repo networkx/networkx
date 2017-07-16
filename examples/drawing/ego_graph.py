@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
+=========
+Ego Graph
+=========
+
 Example using the NetworkX ego_graph() function to return the main egonet of 
 the largest hub in a Barabási-Albert network.
 """

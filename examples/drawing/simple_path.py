@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+===========
+Simple Path
+===========
+
 Draw a graph with matplotlib.
 You must have matplotlib for this to work.
 """

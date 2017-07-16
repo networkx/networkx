@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+==========
+Davis Club
+==========
+
 Davis Southern Club Women
 
 Shows how to make unipartite projections of the graph and compute the
