@@ -117,5 +117,6 @@ gh-pages: clean dist
 
 gitwash-update:
 	python gitwash_dumper.py source/developer networkx \
-       --project-url=http://networkx.github.io \
-       --project-ml-url=http://groups.google.com/group/networkx-discuss/
+	--project-url=http://networkx.github.io \
+	--project-ml-url=http://groups.google.com/group/networkx-discuss/ \
+	--gitwash-url git@github.com:matthew-brett/gitwash.git

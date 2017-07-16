@@ -1,3 +1,5 @@
+.. highlight:: bash
+
 .. _git-resources:
 
 =============
@@ -7,21 +9,32 @@ git resources
 Tutorials and summaries
 =======================
 
-`github help`_ is Git's own help and tutorial site. `github more help`_
-lists more resources for learning Git and GitHub, including YouTube
-channels.  The list is constantly updated.  In case you are used to subversion_
-, you can directly consult the `git svn crash course`_.
+* `github help`_ has an excellent series of how-to guides.
+* The `pro git book`_ is a good in-depth book on git.
+* A `git cheat sheet`_ is a page giving summaries of common commands.
+* The `git user manual`_
+* The `git tutorial`_
+* The `git community book`_
+* `git ready`_ |emdash| a nice series of tutorials
+* `git magic`_ |emdash| extended introduction with intermediate detail
+* The `git parable`_ is an easy read explaining the concepts behind git.
+* `git foundation`_ expands on the `git parable`_.
+* Fernando Perez' git page |emdash| `Fernando's git page`_ |emdash| many
+  links and tips
+* A good but technical page on `git concepts`_
+* `git svn crash course`_: git for those of us used to subversion_
 
-To make full use of Git, you need to understand the concept behind Git.
-The following pages might help you:
+Advanced git workflow
+=====================
 
-* `git parable`_ |emdash| an easy read parable
-* `git foundation`_ |emdash| more on the git parable
-* `git magic`_ |emdash| extended introduction with intermediate detail in many languages
-* `git concepts`_ |emdash| a technical page on the concepts
+There are many ways of working with git; here are some posts on the
+rules of thumb that other projects have come up with:
 
-Other than that, many devlopers list their personal tips and tricks.
-Among others there are `Fernando Perez`_, `Nick Quaranto`_ and `Linus Torvalds`_.
+* Linus Torvalds on `git management`_
+* Linus Torvalds on `linux git workflow`_ .  Summary; use the git tools
+  to make the history of your edits as clean as possible; merge from
+  upstream edits as little as possible in branches where you are doing
+  active development.
 
 Manual pages online
 ===================
