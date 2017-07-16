@@ -223,3 +223,48 @@ class TestGeneratorsRandom(object):
         c = 1
         graph = random_kernel_graph(1000, integral, root)
         assert_equal(len(graph), 1000)
+
+    def test_heuristically_optimized_trade_offs_center(self):
+        # For the sake of brevity, rename this function.
+        hot = nx.heuristically_optimized_trade_offs
+        n = 100
+
+        G = hot(n)
+        assert_equal(len(G), n)
+        assert_true(nx.is_tree(G))
+
+        G = hot(n, 1 / math.sqrt(3) - .01)
+        assert_equal(len(G), n)
+        assert_true(nx.is_tree(G))
+        deg = sorted(d for v, d in G.degree())
+        assert_equal(deg, [1 for i in range(99)] + [99])
+
+    def test_heuristically_optimized_trade_offs_average(self):
+        # For the sake of brevity, rename this function.
+        hot = nx.heuristically_optimized_trade_offs
+        n = 100
+
+        G = hot(n, centrality_function='avg')
+        assert_equal(len(G), n)
+        assert_true(nx.is_tree(G))
+
+        G = hot(n, 1 / math.sqrt(3) - .01, centrality_function='avg')
+        assert_equal(len(G), n)
+        assert_true(nx.is_tree(G))
+        deg = sorted(d for v, d in G.degree())
+        assert_equal(deg, [1 for i in range(99)] + [99])
+
+    def test_heuristically_optimized_trade_offs_max(self):
+        # For the sake of brevity, rename this function.
+        hot = nx.heuristically_optimized_trade_offs
+        n = 100
+
+        G = hot(n, centrality_function='max')
+        assert_equal(len(G), n)
+        assert_true(nx.is_tree(G))
+
+        G = hot(n, 1 / math.sqrt(3) - .01, centrality_function='max')
+        assert_equal(len(G), n)
+        assert_true(nx.is_tree(G))
+        deg = sorted(d for v, d in G.degree())
+        assert_equal(deg, [1 for i in range(99)] + [99])
