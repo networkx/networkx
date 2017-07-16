@@ -1,5 +1,5 @@
 """
-OrderedDict variants of the default base classes.
+Consistently ordered variants of the default base classes.
 
 The Ordered (Di/Multi/MultiDi) Graphs give a consistent order for reporting of
 nodes and edges.  The order of node reporting agrees with node adding, but for
@@ -27,7 +27,7 @@ __all__.extend([
 
 
 class OrderedGraph(Graph):
-    """Ordered variant of Graph."""
+    """Consistently ordered variant of :class:`~networkx.Graph`."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -35,7 +35,7 @@ class OrderedGraph(Graph):
 
 
 class OrderedDiGraph(DiGraph):
-    """Ordered variant of DiGraph."""
+    """Consistently ordered variant of :class:`~networkx.DiGraph`."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -43,7 +43,7 @@ class OrderedDiGraph(DiGraph):
 
 
 class OrderedMultiGraph(MultiGraph):
-    """Ordered variant of MultiGraph."""
+    """Consistently ordered variant of :class:`~networkx.MultiGraph`."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -52,7 +52,7 @@ class OrderedMultiGraph(MultiGraph):
 
 
 class OrderedMultiDiGraph(MultiDiGraph):
-    """Ordered variant of MultiDiGraph."""
+    """Consistently ordered variant of :class:`~networkx.MultiDiGraph`."""
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict

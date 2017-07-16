@@ -2,7 +2,7 @@
 
 
 =================================================================
-MultiDiGraph - Directed graphs with self loops and parallel edges
+MultiDiGraph---Directed graphs with self loops and parallel edges
 =================================================================
 
 Overview

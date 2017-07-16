@@ -225,35 +225,6 @@ class Graph(object):
 
     Examples
     --------
-    Create a graph subclass that tracks the order nodes are added.
-    This example is provided as part of NetworkX via nx.OrderedGraph.
-
-    >>> from collections import OrderedDict
-    >>> class OrderedNodeGraph(nx.Graph):
-    ...     node_dict_factory=OrderedDict
-    ...     adjlist_outer_dict_factory=OrderedDict
-    >>> G = OrderedNodeGraph()
-    >>> G.add_nodes_from((2, 1))
-    >>> list(G.nodes())
-    [2, 1]
-    >>> G.add_edges_from(((2, 2), (2, 1), (1, 1)))
-    >>> # Edge addition order is not preserved
-
-    Create a graph object that tracks the order nodes are added
-    and for each node track the order that neighbors are added.
-    This example is provided as part of NetworkX via nx.OrderedGraph.
-
-    >>> class OrderedGraph(nx.Graph):
-    ...    node_dict_factory = OrderedDict
-    ...    adjlist_outer_dict_factory = OrderedDict
-    ...    adjlist_inner_dict_factory = OrderedDict
-    >>> G = OrderedGraph()
-    >>> G.add_nodes_from((2, 1))
-    >>> list(G.nodes())
-    [2, 1]
-    >>> G.add_edges_from(((2, 2), (2, 1), (1, 1)))
-    >>> list(G.edges())
-    [(2, 2), (2, 1), (1, 1)]
 
     Create a low memory graph class that effectively disallows edge
     attributes by using a single attribute dict for all edges.
@@ -272,6 +243,9 @@ class Graph(object):
     >>> G[2][1] is G[2][2]
     True
 
+    Please see :mod:`~networkx.classes.ordered` for more examples of
+    creating graph subclasses by overwriting the base class `dict` with
+    a dictionary-like object.
     """
     node_dict_factory = dict
     adjlist_outer_dict_factory = dict
