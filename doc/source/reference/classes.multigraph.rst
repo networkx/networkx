@@ -1,7 +1,7 @@
 .. _multigraph:
 
 =================================================================
-MultiGraph - Undirected graphs with self loops and parallel edges
+MultiGraph---Undirected graphs with self loops and parallel edges
 =================================================================
 
 Overview

@@ -81,7 +81,7 @@ New functionalities
 
 * [`#1314 <https://github.com/networkx/networkx/pull/1314>`_]
   Allow overwriting of base class dict with dict-like:
-  OrderedGraph, ThinGraph, LogGraph, etc.
+  OrderedGraph, ThinGraph, PrintGraph, etc.
 
 * [`#1321 <https://github.com/networkx/networkx/pull/1321>`_]
   Added ``to_pandas_dataframe`` and ``from_pandas_dataframe``.

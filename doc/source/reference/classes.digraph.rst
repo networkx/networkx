@@ -1,7 +1,7 @@
 .. _digraph:
 
 =========================================
-DiGraph - Directed graphs with self loops
+DiGraph---Directed graphs with self loops
 =========================================
 
 Overview
