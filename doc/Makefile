@@ -113,7 +113,7 @@ doctest: generate
 	      "results in build/doctest/output.txt."
 
 gitwash-update:
-	python gitwash_dumper.py source/developer networkx \
+	python ../tools/gitwash_dumper.py source/developer networkx \
 	--project-url=http://networkx.github.io \
 	--project-ml-url=http://groups.google.com/group/networkx-discuss/ \
 	--gitwash-url git@github.com:matthew-brett/gitwash.git
