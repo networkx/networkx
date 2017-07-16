@@ -421,9 +421,6 @@ Matplotlib as well as an interface to use the open source Graphviz software
 package are included.  These are part of the `networkx.drawing` module and will
 be imported if possible.  See :doc:`/reference/drawing` for details.
 
-Note that the drawing package in NetworkX is not yet compatible with
-Python versions 3.0 and above.
-
 First import Matplotlib's plot interface (pylab works too)
 
 >>> import matplotlib.pyplot as plt
