@@ -9,12 +9,10 @@ Tutorial
 
    tutorial
 
-**What Next**
+**What's Next**
 
-
-Now that you have an idea of what the NetworkX package provides,
-you should investigate the parts of the package most useful for
-you.  
+Now that you have an idea of what the NetworkX package provides, you should
+investigate the parts of the package most useful for you.
 
 :doc:`Reference Section</reference/index>` provides details on NetworkX.
 
