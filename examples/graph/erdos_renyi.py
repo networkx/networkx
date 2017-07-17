@@ -24,19 +24,18 @@ sometimes called the Erdős-Rényi graph.
 from networkx import *
 import sys
 
-n=10 # 10 nodes
-m=20 # 20 edges
+n = 10  # 10 nodes
+m = 20  # 20 edges
 
-G=gnm_random_graph(n,m)
+G = gnm_random_graph(n, m)
 
 # some properties
 print("node degree clustering")
 for v in nodes(G):
-    print('%s %d %f' % (v,degree(G,v),clustering(G,v)))
+    print('%s %d %f' % (v, degree(G, v), clustering(G, v)))
 
-# print the adjacency list to terminal 
+# print the adjacency list to terminal
 try:
-    write_adjlist(G,sys.stdout)
-except TypeError: # Python 3.x
-    write_adjlist(G,sys.stdout.buffer)
-
+    write_adjlist(G, sys.stdout)
+except TypeError:  # Python 3.x
+    write_adjlist(G, sys.stdout.buffer)

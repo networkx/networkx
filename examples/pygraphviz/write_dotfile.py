@@ -44,6 +44,6 @@ except ImportError:
         print()
         raise
 
-G=nx.grid_2d_graph(5,5)  # 5x5 grid
-write_dot(G,"grid.dot")
+G = nx.grid_2d_graph(5, 5)  # 5x5 grid
+write_dot(G, "grid.dot")
 print("Now run: neato -Tps grid.dot >grid.ps")

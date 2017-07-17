@@ -21,20 +21,19 @@ women = G.graph['top']
 clubs = G.graph['bottom']
 
 print("Biadjacency matrix")
-print(bipartite.biadjacency_matrix(G,women,clubs))
+print(bipartite.biadjacency_matrix(G, women, clubs))
 
 # project bipartite graph onto women nodes
 W = bipartite.projected_graph(G, women)
-print('') 
+print('')
 print("#Friends, Member")
 for w in women:
-    print('%d %s' % (W.degree(w),w))
+    print('%d %s' % (W.degree(w), w))
 
 # project bipartite graph onto women nodes keeping number of co-occurence
 # the degree computed is weighted and counts the total number of shared contacts
 W = bipartite.weighted_projected_graph(G, women)
-print('') 
+print('')
 print("#Friend meetings, Member")
 for w in women:
-    print('%d %s' % (W.degree(w,weight='weight'),w))
-
+    print('%d %s' % (W.degree(w, weight='weight'), w))

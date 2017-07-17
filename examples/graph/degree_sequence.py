@@ -19,20 +19,20 @@ Random graph from given degree sequence.
 
 from networkx import *
 
-z=[5,3,3,3,3,2,2,2,1,1,1]
+z = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
 print(is_valid_degree_sequence(z))
 
 print("Configuration model")
-G=configuration_model(z)  # configuration model
-degree_sequence = [d for n,d in G.degree()] # degree sequence
+G = configuration_model(z)  # configuration model
+degree_sequence = [d for n, d in G.degree()]  # degree sequence
 print("Degree sequence %s" % degree_sequence)
 print("Degree histogram")
-hist={}
+hist = {}
 for d in degree_sequence:
     if d in hist:
-        hist[d]+=1
+        hist[d] += 1
     else:
-        hist[d]=1
+        hist[d] = 1
 print("degree #nodes")
 for d in hist:
-    print('%d %d' % (d,hist[d]))
+    print('%d %d' % (d, hist[d]))

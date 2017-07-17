@@ -29,19 +29,20 @@ python unixemail.py /var/spool/mail/username
 #    BSD license.
 
 import email
-from email.utils import getaddresses,parseaddr
+from email.utils import getaddresses, parseaddr
 import mailbox
 import sys
 
 # unix mailbox recipe
 # see http://www.python.org/doc/current/lib/module-mailbox.html
+
+
 def msgfactory(fp):
     try:
         return email.message_from_file(fp)
     except email.Errors.MessageParseError:
         # Don't return None since that will stop the mailbox iterator
         return ''
-
 
 
 if __name__ == '__main__':
@@ -52,18 +53,18 @@ if __name__ == '__main__':
     except:
         pass
 
-    if len(sys.argv)==1:
+    if len(sys.argv) == 1:
         filePath = "unix_email.mbox"
     else:
         filePath = sys.argv[1]
 
-    mbox = mailbox.mbox(filePath, msgfactory) # parse unix mailbox
+    mbox = mailbox.mbox(filePath, msgfactory)  # parse unix mailbox
 
-    G=nx.MultiDiGraph() # create empty graph
+    G = nx.MultiDiGraph()  # create empty graph
 
     # parse each messages and build graph
-    for msg in mbox: # msg is python email.Message.Message object
-        (source_name,source_addr) = parseaddr(msg['From']) # sender
+    for msg in mbox:  # msg is python email.Message.Message object
+        (source_name, source_addr) = parseaddr(msg['From'])  # sender
         # get all recipients
         # see http://www.python.org/doc/current/lib/module-email.Utils.html
         tos = msg.get_all('to', [])
@@ -72,18 +73,17 @@ if __name__ == '__main__':
         resent_ccs = msg.get_all('resent-cc', [])
         all_recipients = getaddresses(tos + ccs + resent_tos + resent_ccs)
         # now add the edges for this mail message
-        for (target_name,target_addr) in all_recipients:
-            G.add_edge(source_addr,target_addr,message=msg)
+        for (target_name, target_addr) in all_recipients:
+            G.add_edge(source_addr, target_addr, message=msg)
 
     # print edges with message subject
-    for (u,v,d) in G.edges(data=True):
-        print("From: %s To: %s Subject: %s"%(u,v,d['message']["Subject"]))
+    for (u, v, d) in G.edges(data=True):
+        print("From: %s To: %s Subject: %s" % (u, v, d['message']["Subject"]))
 
-
-    try: # draw
-        pos=nx.spring_layout(G,iterations=10)
-        nx.draw(G,pos,node_size=0,alpha=0.4,edge_color='r',font_size=16)
+    try:  # draw
+        pos = nx.spring_layout(G, iterations=10)
+        nx.draw(G, pos, node_size=0, alpha=0.4, edge_color='r', font_size=16)
         plt.savefig("unix_email.png")
         plt.show()
-    except: # matplotlib not available
+    except:  # matplotlib not available
         pass

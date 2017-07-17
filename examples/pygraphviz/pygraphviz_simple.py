@@ -30,5 +30,4 @@ X2 = nx.Graph(A)          # fancy way to do conversion
 G1 = nx.Graph(X1)          # now make it a Graph
 
 A.write('k5.dot')     # write to dot file
-X3 = nx.nx_agraph.read_dot('k5.dot') # read from dotfile
-
+X3 = nx.nx_agraph.read_dot('k5.dot')  # read from dotfile
