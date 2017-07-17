@@ -187,6 +187,7 @@ Line Graph
    :toctree: generated/
 
    line_graph
+   inverse_line_graph
 
 
 Ego Graph
