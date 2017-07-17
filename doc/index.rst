@@ -13,11 +13,10 @@ NetworkX documentation
 
    overview
    install
-   tutorial/index
+   tutorial
    reference/index
-   test
    developer/index
-   reference/history
+   news
    bibliography
    auto_examples/index
 

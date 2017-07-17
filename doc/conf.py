@@ -87,17 +87,17 @@ extensions = [
 # https://github.com/sphinx-gallery/sphinx-gallery
 sphinx_gallery_conf = {
     # path to your examples scripts
-    'examples_dirs': '../../examples',
-#    'subsection_order': ExplicitOrder(['../../examples/basic',
-#                                       '../../examples/drawing',
-#                                       '../../examples/3d_drawing',
-#                                       '../../examples/pygraphviz',
-#                                       '../../examples/graph',
-#                                       '../../examples/algorithms',
-#                                       '../../examples/advanced',
-#                                       '../../examples/javascript',
-#                                       '../../examples/jit',
-#                                       '../../examples/subclass']),
+    'examples_dirs': '../examples',
+#    'subsection_order': ExplicitOrder(['../examples/basic',
+#                                       '../examples/drawing',
+#                                       '../examples/3d_drawing',
+#                                       '../examples/pygraphviz',
+#                                       '../examples/graph',
+#                                       '../examples/algorithms',
+#                                       '../examples/advanced',
+#                                       '../examples/javascript',
+#                                       '../examples/jit',
+#                                       '../examples/subclass']),
     # path where to save gallery generated examples
     'gallery_dirs': 'auto_examples',
     'backreferences_dir': 'modules/generated'
@@ -179,12 +179,12 @@ if not on_rtd:
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = 'networkx.css'
+#html_style = 'networkx.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['static']
+#html_static_path = ['static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -225,9 +225,9 @@ latex_paper_size = 'letter'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
-latex_documents = [('tutorial/index', 'networkx_tutorial.tex',
+latex_documents = [('tutorial', 'networkx_tutorial.tex',
                     'NetworkX Tutorial',
-                    'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 1),
+                    'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 0),
                    ('reference/index', 'networkx_reference.tex',
                     'NetworkX Reference',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]

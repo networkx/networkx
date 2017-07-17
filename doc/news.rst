@@ -8,9 +8,13 @@ NetworkX 2.0
 ------------
 Release date: TBD
 
-.. toctree::
 
-   migration_guide_from_1.x_to_2.0
+See :doc:`release/migration_guide_from_1.x_to_2.0`.
+   
+API changes
+~~~~~~~~~~~
+See :doc:`release/release_2.0`.
+
 
 NetworkX 1.10
 --------------
@@ -49,7 +53,7 @@ Highlights
 
 API changes
 ~~~~~~~~~~~
-See :doc:`api_1.10`.
+See :doc:`release/api_1.10`.
 
 NetworkX 1.9.1
 --------------
@@ -80,7 +84,7 @@ Highlights
 
 API changes
 ~~~~~~~~~~~
-See :doc:`api_1.9`.
+See :doc:`release/api_1.9`.
 
 NetworkX 1.8.1
 --------------
@@ -116,7 +120,7 @@ For full details of the issues closed for this release (added features and bug f
 
 API changes
 ~~~~~~~~~~~
-See :doc:`api_1.8`
+See :doc:`release/api_1.8`
 
 
 NetworkX 1.7
@@ -140,7 +144,7 @@ https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=net
 
 API changes
 ~~~~~~~~~~~
-See :doc:`api_1.7`
+See :doc:`release/api_1.7`
 
 
 NetworkX 1.6
@@ -157,7 +161,7 @@ New examples for drawing with D3 Javascript library, and ordering matrices with 
 
 More memory efficient implementation of current-flow betweenness and new approximation algorithms for current-flow betweenness and shortest-path betweenness.
 
-Simplified handling of "weight" attributes for algorithms that use weights/costs/values.  See :doc:`api_1.6`.
+Simplified handling of "weight" attributes for algorithms that use weights/costs/values.  See :doc:`release/api_1.6`.
 
 Updated all code to work with the PyPy Python implementation http://pypy.org which produces faster performance on many algorithms.
 
@@ -166,7 +170,7 @@ https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=net
 
 API changes
 ~~~~~~~~~~~
-See :doc:`api_1.6`
+See :doc:`release/api_1.6`
 
 
 NetworkX 1.5
@@ -208,7 +212,7 @@ New features
 
 API changes
 ~~~~~~~~~~~
-See :doc:`api_1.5`
+See :doc:`release/api_1.5`
 
 
 Bug fixes
@@ -442,7 +446,7 @@ New features
 ~~~~~~~~~~~~
 This release has significant changes to parts of the graph API
 to allow graph, node, and edge attributes.
-See http://networkx.lanl.gov//reference/api_changes.html
+See http://networkx.lanl.gov/reference/api_changes.html
 
  - Update Graph, DiGraph, and MultiGraph classes to allow attributes.
  - Default edge data is now an empty dictionary (was the integer 1)   
@@ -476,7 +480,7 @@ See: https://networkx.lanl.gov/trac/timeline
 New features
 ~~~~~~~~~~~~
 This release has significant changes to parts of the graph API.
-See http://networkx.lanl.gov//reference/api_changes.html
+See http://networkx.lanl.gov/reference/api_changes.html
 
  - Update Graph and DiGraph classes to use weighted graphs as default
    Change in API for performance and code simplicity.

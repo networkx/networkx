@@ -9,7 +9,7 @@ PAPER         =
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
+ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 .PHONY: help clean html dirhtml pickle json htmlhelp qthelp latex changes linkcheck doctest epub
 
@@ -30,7 +30,7 @@ help:
 
 
 clean:
-	-rm -rf build/* source/auto_examples source/modules source/reference/generated
+	-rm -rf build/* auto_examples modules reference/generated
 
 dist: html
 	test -d build/latex || make latex
@@ -38,7 +38,6 @@ dist: html
 	-rm -rf build/dist
 	(cd build/html; cp -r . ../../build/dist)
 	(cd build/dist && tar czf ../dist.tar.gz .)
-
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
@@ -105,7 +104,7 @@ doctest:
 	      "results in build/doctest/output.txt."
 
 gitwash-update:
-	python ../tools/gitwash_dumper.py source/developer networkx \
+	python ../tools/gitwash_dumper.py developer networkx \
 	--project-url=http://networkx.github.io \
 	--project-ml-url=http://groups.google.com/group/networkx-discuss/ \
 	--gitwash-url git@github.com:matthew-brett/gitwash.git
