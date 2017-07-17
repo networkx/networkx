@@ -90,7 +90,6 @@ package_data = {
     'networkx.algorithms.connectivity': ['tests/*.py'],
     'networkx.algorithms.coloring': ['tests/*.py'],
     'networkx.algorithms.flow': ['tests/*.py', 'tests/*.bz2'],
-    'networkx.algorithms.traversal': ['tests/*.py'],
     'networkx.algorithms.isomorphism': ['tests/*.py', 'tests/*.*99'],
     'networkx.algorithms.link_analysis': ['tests/*.py'],
     'networkx.algorithms.approximation': ['tests/*.py'],
