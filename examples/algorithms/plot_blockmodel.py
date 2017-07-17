@@ -5,21 +5,21 @@
 Blockmodel
 ==========
 
-Example of creating a block model using the blockmodel function in NX.  Data used is the Hartford, CT drug users network:
+Example of creating a block model using the blockmodel function in NX.  Data
+used is the Hartford, CT drug users network::
 
-@article{,
-	title = {Social Networks of Drug Users in {High-Risk} Sites: Finding the Connections},
-	volume = {6},
-	shorttitle = {Social Networks of Drug Users in {High-Risk} Sites},
-	url = {http://dx.doi.org/10.1023/A:1015457400897},
-	doi = {10.1023/A:1015457400897},
-	number = {2},
-	journal = {{AIDS} and Behavior},
-	author = {Margaret R. Weeks and Scott Clair and Stephen P. Borgatti and Kim Radda and Jean J. Schensul},
-	month = jun,
-	year = {2002},
-	pages = {193--206}
-}
+    @article{weeks2002social,
+      title={Social networks of drug users in high-risk sites: Finding the connections},
+      url = {http://dx.doi.org/10.1023/A:1015457400897},
+      doi = {10.1023/A:1015457400897},
+      author={Weeks, Margaret R and Clair, Scott and Borgatti, Stephen P and Radda, Kim and Schensul, Jean J},
+      journal={{AIDS and Behavior}},
+      volume={6},
+      number={2},
+      pages={193--206},
+      year={2002},
+      publisher={Springer}
+    }
 
 """
 # Authors:  Drew Conway <drew.conway@nyu.edu>, Aric Hagberg <hagberg@lanl.gov>

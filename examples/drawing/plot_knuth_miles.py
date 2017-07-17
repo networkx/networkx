@@ -4,21 +4,19 @@
 Knuth Miles
 ===========
 
-An example using networkx.Graph().
-
-miles_graph() returns an undirected graph over the 128 US cities from
-the datafile miles_dat.txt. The cities each have location and population
+`miles_graph()` returns an undirected graph over the 128 US cities from
+the datafile `miles_dat.txt`. The cities each have location and population
 data.  The edges are labeled with the distance betwen the two cities.
 
-This example is described in Section 1.1 in Knuth's book [1,2].
+This example is described in Section 1.1 in Knuth's book (see [1]_ and [2]_).
 
 References.
 -----------
 
-[1] Donald E. Knuth,
-    "The Stanford GraphBase: A Platform for Combinatorial Computing",
-    ACM Press, New York, 1993.
-[2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
+.. [1] Donald E. Knuth,
+   "The Stanford GraphBase: A Platform for Combinatorial Computing",
+   ACM Press, New York, 1993.
+.. [2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
 
 
 """
