@@ -114,7 +114,7 @@ install:
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
         pip install pygraphviz;
       fi;
-      pip install pydot scikits.sparse;
+      pip install pydot scikits.sparse lxml;
     fi
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       pip install --upgrade nose coverage coveralls;

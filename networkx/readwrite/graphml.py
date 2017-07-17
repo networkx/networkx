@@ -115,7 +115,7 @@ def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True,
                        infer_numeric_types=False):
     """Write G in GraphML XML format to path
 
-    This function uses the LXML framework and should be faster than 
+    This function uses the LXML framework and should be faster than
     the version using the xml library.
     Parameters
     ----------
@@ -359,10 +359,9 @@ class GraphMLWriter(GraphML):
         self.prettyprint = prettyprint
         self.encoding = encoding
         self.xml = self.myElement("graphml",
-                           {'xmlns': self.NS_GRAPHML,
-                            'xmlns:xsi': self.NS_XSI,
-                            'xsi:schemaLocation': self.SCHEMALOCATION}
-                           )
+                                  {'xmlns': self.NS_GRAPHML,
+                                   'xmlns:xsi': self.NS_XSI,
+                                   'xsi:schemaLocation': self.SCHEMALOCATION})
         self.keys = {}
         self.attributes = defaultdict(list)
         self.attribute_types = defaultdict(set)
@@ -466,7 +465,8 @@ class GraphMLWriter(GraphML):
         if G.is_multigraph():
             for u, v, key, data in G.edges(data=True, keys=True):
                 edge_element = self.myElement("edge", source=make_str(u),
-                                       target=make_str(v), id=make_str(key))
+                                              target=make_str(v),
+                                              id=make_str(key))
                 default = G.graph.get('edge_default', {})
                 self.add_attributes("edge", edge_element, data, default)
                 self.add_attributes("edge", edge_element,
@@ -475,7 +475,7 @@ class GraphMLWriter(GraphML):
         else:
             for u, v, data in G.edges(data=True):
                 edge_element = self.myElement("edge", source=make_str(u),
-                                       target=make_str(v))
+                                              target=make_str(v))
                 default = G.graph.get('edge_default', {})
                 self.add_attributes("edge", edge_element, data, default)
                 graph_element.append(edge_element)
@@ -492,11 +492,11 @@ class GraphMLWriter(GraphML):
         graphid = G.graph.pop('id', None)
         if graphid is None:
             graph_element = self.myElement("graph",
-                                    edgedefault=default_edge_type)
+                                           edgedefault=default_edge_type)
         else:
             graph_element = self.myElement("graph",
-                                    edgedefault=default_edge_type,
-                                    id=graphid)
+                                           edgedefault=default_edge_type,
+                                           id=graphid)
         default = {}
         data = dict((k, v) for k, v in G.graph.items()
                     if k not in ['node_default', 'edge_default'])

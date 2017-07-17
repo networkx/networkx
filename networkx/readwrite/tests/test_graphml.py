@@ -199,7 +199,7 @@ class TestGraph(object):
 
     def write_read_simple_directed_graphml(self, writer):
         G = self.simple_directed_graph
-        G.graph['hi']='there'
+        G.graph['hi'] = 'there'
         fh = io.BytesIO()
         writer(G, fh)
         fh.seek(0)
@@ -415,7 +415,7 @@ class TestGraph(object):
 
     def more_multigraph_keys(self, writer):
         """Writing keys as edge id attributes means keys become strings.
-        The original keys are stored as data, so read them back in 
+        The original keys are stored as data, so read them back in
         if `make_str(key) == edge_id`
         This allows the adjacency to remain the same.
         """
@@ -427,7 +427,6 @@ class TestGraph(object):
         assert_true(H.is_multigraph())
         assert_edges_equal(G.edges(keys=True), H.edges(keys=True))
         assert_equal(G._adj, H._adj)
-        #assert_equal(H.adj['a']['b']['2']['id'], '2')
         os.close(fd)
         os.unlink(fname)
 
@@ -664,8 +663,10 @@ class TestGraph(object):
             sa = unicode(json.dumps(a))
         G = nx.Graph()
         G.graph['test'] = sa
-        writer(G, 'text.graphml')
-        H = nx.read_graphml('text.graphml')
+        fh = io.BytesIO()
+        writer(G, fh)
+        fh.seek(0)
+        H = nx.read_graphml(fh)
         assert_equal(G.graph['test'], H.graph['test'])
 
     def test_unicode_escape(self):
