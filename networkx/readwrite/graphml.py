@@ -389,21 +389,22 @@ class GraphMLWriter(GraphML):
 
             try:
                 chr(12345)     # Fails on Py<3.
-                long = int     # Py3's int is our long type
-                unicode = str
+                local_long = int     # Py3's int is Py2's long type
+                local_unicode = str  # Py3's str is Py2's unicode type
             except ValueError:
                 # Python 2.x
-                pass
+                local_long = long
+                local_unicode = unicode
 
             if len(types) > 1:
                 if str in types:
                     return str
-                elif unicode in types:
-                    return unicode
+                elif local_unicode in types:
+                    return local_unicode
                 elif float in types:
                     return float
-                elif long in types:
-                    return long
+                elif local_long in types:
+                    return local_long
                 else:
                     return int
             else:
