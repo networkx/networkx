@@ -136,8 +136,8 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G.adj[1][2][0]['listdata'] = [20, 200]
         G.adj[1][2][0]['weight'] = 20
         assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'data': 21, 'spam': 'bar',
-                                    'bar': 'foo', 'listdata': [20, 200], 'weight':20})])
+                           [(1, 2, {'data': 21, 'spam': 'bar', 'bar': 'foo',
+                            'listdata': [20, 200], 'weight':20})])
 
 
 class TestMultiGraph(BaseMultiGraphTester, TestGraph):
@@ -160,7 +160,8 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
     def test_data_input(self):
         G = self.Graph(data={1: [2], 2: [1]}, name="test")
         assert_equal(G.name, "test")
-        assert_equal(sorted(G.adj.items()), [(1, {2: {0: {}}}), (2, {1: {0: {}}})])
+        expected = [(1, {2: {0: {}}}), (2, {1: {0: {}}})]
+        assert_equal(sorted(G.adj.items()), expected)
 
     def test_getitem(self):
         G = self.K3
@@ -202,12 +203,19 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
                                      2: {'weight': 2}, 3: {'weight': 3}}},
                              1: {0: {0: {}, 1: {'weight': 3},
                                      2: {'weight': 2}, 3: {'weight': 3}}}})
+        G = self.Graph()
+        edges = [(0, 1, {'weight': 3}), (0, 1, (('weight', 2),)),
+                 (0, 1, 5), (0, 1, 's')]
+        G.add_edges_from(edges)
+        keydict = {0: {'weight': 3}, 1: {'weight': 2}, 5: {}, 's': {}}
+        assert_equal(G._adj, {0: {1: keydict}, 1: {0: keydict}})
 
         # too few in tuple
         assert_raises(nx.NetworkXError, G.add_edges_from, [(0,)])
         # too many in tuple
         assert_raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3, 4)])
-        assert_raises(TypeError, G.add_edges_from, [0])  # not a tuple
+        # not a tuple
+        assert_raises(TypeError, G.add_edges_from, [0])
 
     def test_remove_edge(self):
         G = self.K3
@@ -224,7 +232,8 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
     def test_remove_edges_from(self):
         G = self.K3.copy()
         G.remove_edges_from([(0, 1)])
-        assert_equal(G.adj, {0: {2: {0: {}}}, 1: {2: {0: {}}}, 2: {0: {0: {}}, 1: {0: {}}}})
+        kd = {0: {}}
+        assert_equal(G.adj, {0: {2: kd}, 1: {2: kd}, 2: {0: kd, 1: kd}})
         G.remove_edges_from([(0, 0)])  # silent fail
         self.K3.add_edge(0, 1)
         G = self.K3.copy()
@@ -248,7 +257,8 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
                              1: {0: {0: {}}, 2: {0: {}}},
                              2: {0: {0: {}}, 1: {0: {}}}})
         G.remove_edge(0, 1)
-        assert_equal(G.adj, {0: {2: {0: {}}}, 1: {2: {0: {}}}, 2: {0: {0: {}}, 1: {0: {}}}})
+        kd = {0: {}}
+        assert_equal(G.adj, {0: {2: kd}, 1: {2: kd}, 2: {0: kd, 1: kd}})
         assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
 
 

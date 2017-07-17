@@ -608,7 +608,6 @@ class DiGraph(Graph):
             ne = len(e)
             if ne == 3:
                 u, v, dd = e
-                assert hasattr(dd, "update")
             elif ne == 2:
                 u, v = e
                 dd = {}
