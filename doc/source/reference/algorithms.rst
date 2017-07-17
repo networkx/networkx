@@ -37,6 +37,7 @@ Algorithms
    algorithms.euler
    algorithms.flow
    algorithms.graphical
+   algorithms.heuristic
    algorithms.hierarchy
    algorithms.hybrid
    algorithms.isolates
