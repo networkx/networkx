@@ -1,3 +1,5 @@
+.. highlight:: bash
+
 .. _development-workflow:
 
 ####################
@@ -5,7 +7,7 @@ Development workflow
 ####################
 
 You already have your own forked copy of the `networkx`_ repository, by
-following :ref:`forking`.  You have :ref:`set-up-fork`.  You have configured
+following :ref:`forking`. You have :ref:`set-up-fork`. You have configured
 git by following :ref:`configure-git`.  Now you are ready for some real work.
 
 Workflow summary
@@ -26,14 +28,14 @@ In what follows we'll refer to the upstream networkx ``master`` branch, as
 * If you do find yourself merging from trunk, consider :ref:`rebase-on-trunk`
 * Ask on the `networkx mailing list`_ if you get stuck.
 * Check that your code meets the requirements as outlined in our
-  (wiki)[https://github.com/networkx/networkx/wiki].
+  `wiki <https://github.com/networkx/networkx/wiki>`_.
 * Ask for code review!
 
 This way of working helps to keep work well organized, with readable history.
 This in turn makes it easier for project maintainers (that might be you) to see
 what you've done, and why you did it.
 
-See `ipython git workflow`_ for some explanation.
+See `linux git workflow`_ and `ipython git workflow`_ for some explanation.
 
 Consider deleting your master branch
 ====================================
@@ -118,7 +120,9 @@ In more detail
 
 #. Make some changes
 #. See which files have changed with ``git status`` (see `git status`_).
-   You'll see a listing like this one::
+   You'll see a listing like this one:
+
+   .. code-block:: none
 
      # On branch ny-new-feature
      # Changed but not updated:
@@ -138,10 +142,10 @@ In more detail
    `git add`_).
 #. To commit all modified files into the local copy of your repo,, do
    ``git commit -am 'A commit message'``.  Note the ``-am`` options to
-   ``commit``.  The ``m`` flag just signals that you're going to type a
+   ``commit``. The ``m`` flag just signals that you're going to type a
    message on the command line.  The ``a`` flag |emdash| you can just take on
    faith |emdash| or see `why the -a flag?`_ |emdash| and the helpful use-case
-   description in the `tangled working copy problem`_.  The `git commit`_ manual
+   description in the `tangled working copy problem`_. The `git commit`_ manual
    page might also be useful.
 #. To push the changes up to your forked repo on github, do a ``git
    push`` (see `git push`_).
@@ -152,7 +156,7 @@ Ask for your changes to be reviewed or merged
 When you are ready to ask for someone to review your code and consider a merge:
 
 #. Go to the URL of your forked repo, say
-   ``http://github.com/your-user-name/networkx``.
+   ``https://github.com/your-user-name/networkx``.
 #. Use the 'Switch Branches' dropdown menu near the top left of the page to
    select the branch with your changes:
 
@@ -184,8 +188,8 @@ Delete a branch on github
    # delete branch on github
    git push origin :my-unwanted-branch
 
-(Note the colon ``:`` before ``test-branch``.  See also:
-http://github.com/guides/remove-a-remote-branch
+Note the colon ``:`` before ``my-unwanted-branch``.  See also:
+https://help.github.com/articles/pushing-to-a-remote/#deleting-a-remote-branch-or-tag
 
 Several people sharing a single repository
 ------------------------------------------
@@ -197,7 +201,7 @@ share it via github.
 First fork networkx into your account, as from :ref:`forking`.
 
 Then, go to your forked repository github page, say
-``http://github.com/your-user-name/networkx``
+``https://github.com/your-user-name/networkx``
 
 Click on the 'Admin' button, and add anyone else to the repo as a
 collaborator:
@@ -242,10 +246,12 @@ Rebasing on trunk
 
 Let's say you thought of some work you'd like to do. You
 :ref:`update-mirror-trunk` and :ref:`make-feature-branch` called
-``cool-feature``.  At this stage trunk is at some commit, let's call it E. Now
+``cool-feature``. At this stage trunk is at some commit, let's call it E. Now
 you make some new commits on your ``cool-feature`` branch, let's call them A, B,
 C.  Maybe your changes take a while, or you come back to them after a while.  In
-the meantime, trunk has progressed from commit E to commit (say) G::
+the meantime, trunk has progressed from commit E to commit (say) G:
+
+.. code-block:: none
 
           A---B---C cool-feature
          /
@@ -253,15 +259,17 @@ the meantime, trunk has progressed from commit E to commit (say) G::
 
 At this stage you consider merging trunk into your feature branch, and you
 remember that this here page sternly advises you not to do that, because the
-history will get messy.  Most of the time you can just ask for a review, and not
+history will get messy. Most of the time you can just ask for a review, and not
 worry that trunk has got a little ahead.  But sometimes, the changes in trunk
 might affect your changes, and you need to harmonize them.  In this situation
 you may prefer to do a rebase.
 
 rebase takes your changes (A, B, C) and replays them as if they had been made to
 the current state of ``trunk``.  In other words, in this case, it takes the
-changes represented by A, B, C and replays them on top of G.  After the rebase,
-your history will look like this::
+changes represented by A, B, C and replays them on top of G. After the rebase,
+your history will look like this:
+
+.. code-block:: none
 
                   A'--B'--C' cool-feature
                  /
@@ -294,7 +302,7 @@ If it doesn't look good you may need to have a look at
 
 If you have made changes to files that have also changed in trunk, this may
 generate merge conflicts that you need to resolve - see the `git rebase`_ man
-page for some instructions at the end of the "Description" section.  There is
+page for some instructions at the end of the "Description" section. There is
 some related help on merging in the git user manual - see `resolving a merge`_.
 
 .. _recovering-from-mess-up:
@@ -302,7 +310,7 @@ some related help on merging in the git user manual - see `resolving a merge`_.
 Recovering from mess-ups
 ------------------------
 
-Sometimes, you mess up merges or rebases.  Luckily, in git it is
+Sometimes, you mess up merges or rebases. Luckily, in git it is
 relatively straightforward to recover from such mistakes.
 
 If you mess up during a rebase::
@@ -336,7 +344,7 @@ Rewriting commit history
 
    Do this only for your own feature branches.
 
-There's an embarassing typo in a commit you made? Or perhaps the you
+There's an embarrassing typo in a commit you made? Or perhaps the you
 made several false starts you would like the posterity not to see.
 
 This can be done via *interactive rebasing*.
@@ -352,7 +360,7 @@ Suppose that the commit history looks like this::
     29001ed Add pre-nep for a copule of structured_array_extensions.
     ...
 
-and ``6ad92e5`` is the last commit in the ``cool-feature`` branch.  Suppose we
+and ``6ad92e5`` is the last commit in the ``cool-feature`` branch. Suppose we
 want to make the following changes:
 
 * Rewrite the commit message for ``13d7934`` to something more sensible.
@@ -393,11 +401,11 @@ To achieve what we want, we will make the following changes to it::
     f eadc391 Fix some remaining bugs
 
 This means that (i) we want to edit the commit message for
-``13d7934``, and (ii) collapse the last three commits into one.  Now we
+``13d7934``, and (ii) collapse the last three commits into one. Now we
 save and quit the editor.
 
 Git will then immediately bring up an editor for editing the commit
-message.  After revising it, we get the output::
+message. After revising it, we get the output::
 
     [detached HEAD 721fc64] FOO: First implementation
      2 files changed, 199 insertions(+), 66 deletions(-)

@@ -253,9 +253,7 @@ edges are then lines between those dots.
 >>> nx.draw(G)   # default spring_layout
 >>> nx.draw(G,pos=nx.spectral_layout(G), nodecolor='r',edge_color='b')
 
-See the 
-:doc:`examples</examples/index>`
-for more ideas.
+See the :doc:`examples </auto_examples/index>` for more ideas.
 
 Data Structure
 ==============

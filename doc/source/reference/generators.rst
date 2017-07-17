@@ -55,7 +55,7 @@ Lattice
 -------
 .. automodule:: networkx.generators.lattice
 .. autosummary::
-   :toctree:generated/
+   :toctree: generated/
 
    grid_2d_graph
    grid_graph

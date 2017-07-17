@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+======
+Rgraph
+======
+
 An example showing how to use the JavaScript InfoVis Toolkit (JIT)
 JSON export
 

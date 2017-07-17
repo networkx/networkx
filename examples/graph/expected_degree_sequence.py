@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+========================
+Expected Degree Sequence
+========================
+
 Random graph from given degree sequence.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
@@ -15,15 +19,14 @@ from networkx import *
 from networkx.generators.degree_seq import *
 
 # make a random graph of 500 nodes with expected degrees of 50
-n=500 # n nodes
-p=0.1
-w=[p*n for i in range(n)] # w = p*n for all nodes
-G=expected_degree_graph(w)  # configuration model
+n = 500  # n nodes
+p = 0.1
+w = [p * n for i in range(n)]  # w = p*n for all nodes
+G = expected_degree_graph(w)  # configuration model
 print("Degree histogram")
 print("degree (#nodes) ****")
-dh=degree_histogram(G)
-low=min(degree(G))
-for i in range(low,len(dh)):
-    bar=''.join(dh[i]*['*'])
-    print("%2s (%2s) %s"%(i,dh[i],bar))
-
+dh = degree_histogram(G)
+low = min(degree(G))
+for i in range(low, len(dh)):
+    bar = ''.join(dh[i] * ['*'])
+    print("%2s (%2s) %s" % (i, dh[i], bar))

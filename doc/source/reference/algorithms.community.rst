@@ -59,7 +59,7 @@ Partitions via centrality measures
 
 Validating partitions
 ---------------------
-.. automodule:: networkx.algorithms.community.utils
+.. automodule:: networkx.algorithms.community.community_utils
 .. autosummary::
    :toctree: generated/
 

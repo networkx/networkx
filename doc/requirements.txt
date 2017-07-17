@@ -1,7 +1,9 @@
-ipython[nbconvert]
-numpy >= 1.6
-matplotlib
-pandas
+numpy >= 1.13.1
+matplotlib >= 2.0.2
+pandas >= 0.20.3
 pydot >= 1.2.3
-sphinx
-sphinx_rtd_theme
+pygraphviz >= 1.3.1
+sphinx >= 1.6.2
+sphinx_rtd_theme >= 0.2.4
+sphinx-gallery >= 0.1.11
+pillow >= 4.2.1

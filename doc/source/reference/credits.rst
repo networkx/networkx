@@ -113,6 +113,7 @@ is partially historical, and now, mostly arbitrary.
 - Ryan Nelson, GitHub: `rnelsonchem <https://github.com/rnelsonchem>`_
 - Niels van Adrichem, GitHub: `NvanAdrichem <https://github.com/NvanAdrichem>`_
 - Michael E. Rose, GitHub: `Michael-E-Rose <https://github.com/Michael-E-Rose>`_
+- Jarrod Millman, GitHub: `jarrodmillman <https://github.com/jarrodmillman>`_
 
 Support
 -------
@@ -122,7 +123,6 @@ support throughout the years from a variety of sources.  We list them below.
 If you have provided support to ``networkx`` and a support acknowledgment does
 not appear below, please help us remedy the situation, and similarly, please
 let us know if you'd like something modified or corrected.
-
 
 Research Groups
 ^^^^^^^^^^^^^^^
@@ -141,7 +141,6 @@ Research Groups
 - `Center for Complexity and Collective Computation <http://c4.discovery.wisc.edu>`_,
   Wisconsin Institute for Discovery, University of Wisconsin-Madison,
   PIs: Jessica C. Flack and David C. Krakauer
-
 
 Funding
 ^^^^^^^

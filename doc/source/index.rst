@@ -8,8 +8,6 @@ NetworkX documentation
     :Release: |version|
     :Date: |today|
 
-    
-
 .. toctree::
    :maxdepth: 2
 
@@ -21,12 +19,7 @@ NetworkX documentation
    developer/index
    reference/history
    bibliography
-   examples/index
-
-.. only:: html
-
-   - `Gallery <gallery.html>`_
-
+   auto_examples/index
 
 Indices and tables
 ==================

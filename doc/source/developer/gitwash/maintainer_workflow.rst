@@ -1,3 +1,5 @@
+.. highlight:: bash
+
 .. _maintainer-workflow:
 
 ###################
