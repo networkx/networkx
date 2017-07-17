@@ -38,4 +38,3 @@ plt.ylim(-0.05,1.05)
 plt.axis('off')
 plt.savefig('random_geometric_graph.png')
 plt.show()
-

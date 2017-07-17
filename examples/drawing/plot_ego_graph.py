@@ -5,7 +5,7 @@
 Ego Graph
 =========
 
-Example using the NetworkX ego_graph() function to return the main egonet of 
+Example using the NetworkX ego_graph() function to return the main egonet of
 the largest hub in a Barabási-Albert network.
 """
 # Author:  Drew Conway (drew.conway@nyu.edu)

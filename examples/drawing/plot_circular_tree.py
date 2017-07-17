@@ -26,4 +26,3 @@ nx.draw(G, pos, node_size=20, alpha=0.5, node_color="blue", with_labels=False)
 plt.axis('equal')
 plt.savefig('circular_tree.png')
 plt.show()
-

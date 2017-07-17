@@ -111,6 +111,3 @@ if __name__ == '__main__':
         plt.savefig("knuth_miles.png")
     except:
         pass
-
-
-

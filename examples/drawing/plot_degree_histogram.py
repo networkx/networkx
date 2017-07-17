@@ -37,4 +37,3 @@ nx.draw_networkx_edges(G, pos, alpha=0.4)
 
 plt.savefig("degree_histogram.png")
 plt.show()
-
