@@ -136,7 +136,7 @@ def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True,
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> nx.write_graphml_lxml(G, "testlxml.graphml")
+    >>> nx.write_graphml_lxml(G, "fourpath.graphml") # doctest: +SKIP
 
     Notes
     -----
