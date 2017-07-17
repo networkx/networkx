@@ -67,9 +67,10 @@ for d in ['advanced',
           '3d_drawing',
           'drawing',
           'graph',
-          'multigraph',
+          'javascript',
+          'jit',
           'pygraphviz',
-          'readwrite']:
+          'subclass']:
     dd = os.path.join(docdirbase, 'examples', d)
     pp = os.path.join('examples', d)
     data.append((dd, glob(os.path.join(pp, "*.py"))))
