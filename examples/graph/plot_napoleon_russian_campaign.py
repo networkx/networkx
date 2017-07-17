@@ -144,6 +144,6 @@ if __name__ == "__main__":
         for c in city:
             x, y = city[c]
             plt.text(x, y + 0.1, c)
-        plt.savefig("napoleon_russian_campaign.png")
+        plt.show()
     except ImportError:
         pass

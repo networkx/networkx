@@ -51,5 +51,4 @@ labels[7] = r'$\delta$'
 nx.draw_networkx_labels(G, pos, labels, font_size=16)
 
 plt.axis('off')
-plt.savefig("labels_and_colors.png")  # save as png
-plt.show()  # display
+plt.show()

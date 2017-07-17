@@ -36,7 +36,7 @@ def create_hc(G):
     """Creates hierarchical cluster of graph G from distance matrix"""
     path_length = nx.all_pairs_shortest_path_length(G)
     distances = numpy.zeros((len(G), len(G)))
-    for u, p in path_length.items():
+    for u, p in path_length:
         for v, d in p.items():
             distances[u][v] = d
     # Create hierarchical cluster
@@ -84,4 +84,4 @@ if __name__ == '__main__':
     plt.xlim(0, 1)
     plt.ylim(0, 1)
     plt.axis('off')
-    plt.savefig('hartford_drug_block_model.png')
+    plt.show()

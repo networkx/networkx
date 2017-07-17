@@ -79,5 +79,4 @@ for p in pvals:
                                    alpha=0.3,
                                    width=5.0
                                    )
-plt.savefig("giant_component.png")
-plt.show()  # display
+plt.show()

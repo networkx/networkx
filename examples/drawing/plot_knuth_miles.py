@@ -108,6 +108,6 @@ if __name__ == '__main__':
         plt.xlim(-5000, 500)
         plt.ylim(-2000, 3500)
 
-        plt.savefig("knuth_miles.png")
+        plt.show()
     except:
         pass

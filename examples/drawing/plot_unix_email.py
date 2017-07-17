@@ -83,7 +83,6 @@ if __name__ == '__main__':
     try:  # draw
         pos = nx.spring_layout(G, iterations=10)
         nx.draw(G, pos, node_size=0, alpha=0.4, edge_color='r', font_size=16)
-        plt.savefig("unix_email.png")
         plt.show()
     except:  # matplotlib not available
         pass

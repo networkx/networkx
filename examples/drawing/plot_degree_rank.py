@@ -30,5 +30,4 @@ plt.axis('off')
 nx.draw_networkx_nodes(Gcc, pos, node_size=20)
 nx.draw_networkx_edges(Gcc, pos, alpha=0.4)
 
-plt.savefig("degree_rank.png")
 plt.show()

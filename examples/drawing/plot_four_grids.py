@@ -40,5 +40,4 @@ plt.subplot(224)
 H = G.to_directed()
 nx.draw(H, pos, node_color='b', node_size=20, with_labels=False)
 
-plt.savefig("four_grids.png")
 plt.show()

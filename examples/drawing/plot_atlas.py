@@ -92,4 +92,4 @@ if __name__ == '__main__':
                 vmax=1.0,
                 with_labels=False
                 )
-    plt.savefig("atlas.png", dpi=75)
+    plt.show()

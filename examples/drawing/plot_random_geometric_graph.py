@@ -36,5 +36,4 @@ nx.draw_networkx_nodes(G, pos, nodelist=p.keys(),
 plt.xlim(-0.05, 1.05)
 plt.ylim(-0.05, 1.05)
 plt.axis('off')
-plt.savefig('random_geometric_graph.png')
 plt.show()

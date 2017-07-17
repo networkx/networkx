@@ -82,4 +82,4 @@ if __name__ == '__main__':
     ymax = 1.02 * max(yy for xx, yy in pos.values())
     plt.xlim(0, xmax)
     plt.ylim(0, ymax)
-    plt.savefig("lanl_routes.png")
+    plt.show()

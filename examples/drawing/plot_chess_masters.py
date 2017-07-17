@@ -161,6 +161,4 @@ if __name__ == '__main__':
              transform=plt.gca().transAxes)
 
     plt.axis('off')
-    plt.savefig("chess_masters.png", dpi=75)
-    print("Wrote chess_masters.png")
-    plt.show()  # display
+    plt.show()
