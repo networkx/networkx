@@ -95,7 +95,6 @@ pages = {11--15}
 
 # These are import orderwise
 from networkx.exception import *
-import networkx.external
 import networkx.utils
 
 import networkx.classes
