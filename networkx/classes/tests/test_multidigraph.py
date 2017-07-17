@@ -9,14 +9,16 @@ from test_multigraph import TestEdgeSubgraph as TestMultiGraphEdgeSubgraph
 class BaseMultiDiGraphTester(BaseMultiGraphTester):
     def test_edges(self):
         G = self.K3
-        assert_equal(sorted(G.edges()), [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+        edges = [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
+        assert_equal(sorted(G.edges()), edges)
         assert_equal(sorted(G.edges(0)), [(0, 1), (0, 2)])
         assert_raises((KeyError, nx.NetworkXError), G.edges, -1)
 
     def test_edges_data(self):
         G = self.K3
-        assert_equal(sorted(G.edges(data=True)),
-                     [(0, 1, {}), (0, 2, {}), (1, 0, {}), (1, 2, {}), (2, 0, {}), (2, 1, {})])
+        edges = [(0, 1, {}), (0, 2, {}), (1, 0, {}),
+                 (1, 2, {}), (2, 0, {}), (2, 1, {})]
+        assert_equal(sorted(G.edges(data=True)), edges)
         assert_equal(sorted(G.edges(0, data=True)), [(0, 1, {}), (0, 2, {})])
         assert_raises((KeyError, nx.NetworkXError), G.neighbors, -1)
 
@@ -51,8 +53,12 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert_equal(sorted(G.edges(0, data=True)), [(0, 1, {}), (0, 2, {})])
         G.remove_edge(0, 1)
         G.add_edge(0, 1, data=1)
-        assert_equal(sorted(G.edges(0, data=True)), [(0, 1, {'data': 1}), (0, 2, {})])
-        assert_equal(sorted(G.edges(0, data='data')), [(0, 1, 1), (0, 2, None)])
+        assert_equal(sorted(G.edges(0, data=True)),
+                     [(0, 1, {'data': 1}), (0, 2, {})])
+        assert_equal(sorted(G.edges(0, data='data')),
+                     [(0, 1, 1), (0, 2, None)])
+        assert_equal(sorted(G.edges(0, data='data', default=-1)),
+                     [(0, 1, 1), (0, 2, -1)])
 
     def test_in_edges(self):
         G = self.K3
@@ -75,16 +81,21 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
                      [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
 
         assert_equal(sorted(G.in_edges(data=True, keys=False)),
-                     [(0, 1, {}), (0, 1, {}), (0, 2, {}), (1, 0, {}), (1, 2, {}),
-                      (2, 0, {}), (2, 1, {})])
+                     [(0, 1, {}), (0, 1, {}), (0, 2, {}), (1, 0, {}),
+                      (1, 2, {}), (2, 0, {}), (2, 1, {})])
 
     def test_in_edges_data(self):
         G = self.K3
-        assert_equal(sorted(G.in_edges(0, data=True)), [(1, 0, {}), (2, 0, {})])
+        assert_equal(sorted(G.in_edges(0, data=True)),
+                     [(1, 0, {}), (2, 0, {})])
         G.remove_edge(1, 0)
         G.add_edge(1, 0, data=1)
-        assert_equal(sorted(G.in_edges(0, data=True)), [(1, 0, {'data': 1}), (2, 0, {})])
-        assert_equal(sorted(G.in_edges(0, data='data')), [(1, 0, 1), (2, 0, None)])
+        assert_equal(sorted(G.in_edges(0, data=True)),
+                     [(1, 0, {'data': 1}), (2, 0, {})])
+        assert_equal(sorted(G.in_edges(0, data='data')),
+                     [(1, 0, 1), (2, 0, None)])
+        assert_equal(sorted(G.in_edges(0, data='data', default=-1)),
+                     [(1, 0, 1), (2, 0, -1)])
 
     def is_shallow(self, H, G):
         # graph
@@ -121,8 +132,8 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         self.add_attributes(G)
         H = nx.MultiGraph(G)
         # self.is_shallow(H,G)
-        # the result is traversal order dependent so we can't use the is_shallow()
-        # test here.
+        # the result is traversal order dependent so we
+        # can't use the is_shallow() test here.
         try:
             assert_edges_equal(H.edges(), [(0, 1), (1, 2), (2, 0)])
         except AssertionError:
@@ -135,11 +146,6 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert_equal(G.has_successor(0, 1), True)
         assert_equal(G.has_successor(0, -1), False)
 
-    # def test_successors(self):
-    #     G=self.K3
-    #     assert_equal(sorted(G.successors(0)),[1,2])
-    #     assert_raises((KeyError,nx.NetworkXError), G.successors,-1)
-
     def test_successors(self):
         G = self.K3
         assert_equal(sorted(G.successors(0)), [1, 2])
@@ -149,11 +155,6 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G = self.K3
         assert_equal(G.has_predecessor(0, 1), True)
         assert_equal(G.has_predecessor(0, -1), False)
-
-    # def test_predecessors(self):
-    #     G=self.K3
-    #     assert_equal(sorted(G.predecessors(0)),[1,2])
-    #     assert_raises((KeyError,nx.NetworkXError), G.predecessors,-1)
 
     def test_predecessors(self):
         G = self.K3
@@ -167,8 +168,10 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert_equal(G.degree(0), 4)
         assert_equal(list(G.degree(iter([0]))), [(0, 4)])
         G.add_edge(0, 1, weight=0.3, other=1.2)
-        assert_equal(sorted(G.degree(weight='weight')), [(0, 4.3), (1, 4.3), (2, 4)])
-        assert_equal(sorted(G.degree(weight='other')), [(0, 5.2), (1, 5.2), (2, 4)])
+        assert_equal(sorted(G.degree(weight='weight')),
+                     [(0, 4.3), (1, 4.3), (2, 4)])
+        assert_equal(sorted(G.degree(weight='other')),
+                     [(0, 5.2), (1, 5.2), (2, 4)])
 
     def test_in_degree(self):
         G = self.K3
@@ -270,10 +273,20 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
                                               2: {'weight': 2},
                                               3: {'weight': 3}}}})
 
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(0,)])  # too few in tuple
-        assert_raises(nx.NetworkXError, G.add_edges_from, [
-                      (0, 1, 2, 3, 4)])  # too many in tuple
-        assert_raises(TypeError, G.add_edges_from, [0])  # not a tuple
+        G = self.Graph()
+        edges = [(0, 1, {'weight': 3}), (0, 1, (('weight', 2),)),
+                 (0, 1, 5), (0, 1, 's')]
+        G.add_edges_from(edges)
+        keydict = {0: {'weight': 3}, 1: {'weight': 2}, 5: {}, 's': {}}
+        assert_equal(G._succ, {0: {1: keydict}, 1: {}})
+        assert_equal(G._pred, {1: {0: keydict}, 0: {}})
+
+        # too few in tuple
+        assert_raises(nx.NetworkXError, G.add_edges_from, [(0,)])
+        # too many in tuple
+        assert_raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3, 4)])
+        # not a tuple
+        assert_raises(TypeError, G.add_edges_from, [0])
 
     def test_remove_edge(self):
         G = self.K3

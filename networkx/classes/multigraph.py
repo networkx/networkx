@@ -16,6 +16,7 @@ from networkx.classes.graph import Graph
 from networkx.classes.views import AtlasView3
 from networkx.classes.views import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
+from networkx.utils import iterable
 
 
 class MultiGraph(Graph):
@@ -370,8 +371,9 @@ class MultiGraph(Graph):
             graph. The edges can be:
 
                 - 2-tuples (u, v) or
-                - 3-tuples (u, v, d) for an edge attribute dict d, or
-                - 4-tuples (u, v, k, d) for an edge identified by key k
+                - 3-tuples (u, v, d) for an edge data dict d, or
+                - 3-tuples (u, v, k) for not iterable key k, or
+                - 4-tuples (u, v, k, d) for an edge with data and key k
 
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
@@ -428,7 +430,12 @@ class MultiGraph(Graph):
                 raise NetworkXError(msg.format(e))
             ddd = {}
             ddd.update(attr)
-            ddd.update(dd)
+            try:
+                ddd.update(dd)
+            except:
+                if ne != 3:
+                    raise
+                key = dd
             key = self.add_edge(u, v, key)
             self[u][v][key].update(ddd)
             keylist.append(key)
