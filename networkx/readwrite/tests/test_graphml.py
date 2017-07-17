@@ -140,6 +140,9 @@ class TestGraph(object):
     <edge source="n0" target="n1">
       <data key="d0">1</data>
     </edge>
+    <edge source="n1" target="n0">
+      <data key="d0">k</data>
+    </edge>
     <edge source="n1" target="n1">
       <data key="d0">1.0</data>
     </edge>
@@ -194,17 +197,23 @@ class TestGraph(object):
         assert_equal(sorted(G.edges(data=True)),
                      sorted(I.edges(data=True)))
 
-    def test_write_read_simple_directed_graphml(self):
+    def write_read_simple_directed_graphml(self, writer):
         G = self.simple_directed_graph
+        G.graph['hi']='there'
         fh = io.BytesIO()
-        nx.write_graphml(G, fh)
+        writer(G, fh)
         fh.seek(0)
         H = nx.read_graphml(fh)
         assert_equal(sorted(G.nodes()), sorted(H.nodes()))
         assert_equal(sorted(G.edges()), sorted(H.edges()))
-        assert_equal(sorted(G.edges(data=True)),
-                     sorted(H.edges(data=True)))
+        assert_equal(sorted(G.edges(data=True)), sorted(H.edges(data=True)))
         self.simple_directed_fh.seek(0)
+
+    def test_write_read_simple_directed_graphml(self):
+        self.write_read_simple_directed_graphml(nx.write_graphml_xml)
+
+    def test_write_read_simple_directed_graphml_lxml(self):
+        self.write_read_simple_directed_graphml(nx.write_graphml_lxml)
 
     def test_read_simple_undirected_graphml(self):
         G = self.simple_undirected_graph
@@ -217,12 +226,12 @@ class TestGraph(object):
         assert_nodes_equal(G.nodes(), I.nodes())
         assert_edges_equal(G.edges(), I.edges())
 
-    def test_write_read_attribute_numeric_type_graphml(self):
+    def write_read_attribute_numeric_type_graphml(self, writer):
         from xml.etree.ElementTree import parse
 
         G = self.attribute_numeric_type_graph
         fh = io.BytesIO()
-        nx.write_graphml(G, fh, infer_numeric_types=True)
+        writer(G, fh, infer_numeric_types=True)
         fh.seek(0)
         H = nx.read_graphml(fh)
         fh.seek(0)
@@ -242,6 +251,12 @@ class TestGraph(object):
         assert_equal(len(keys), 2)
         assert_in(('attr.type', 'double'), keys[0])
         assert_in(('attr.type', 'double'), keys[1])
+
+    def test_write_read_attribute_numeric_type_graphml(self):
+        self.write_read_attribute_numeric_type_graphml(nx.write_graphml_xml)
+
+    def test_write_read_attribute_numeric_type_graphml_lxml(self):
+        self.write_read_attribute_numeric_type_graphml(nx.write_graphml_lxml)
 
     def test_read_attribute_graphml(self):
         G = self.attribute_graph
@@ -354,30 +369,90 @@ class TestGraph(object):
         assert_raises(nx.NetworkXError, nx.read_graphml, fh)
         assert_raises(nx.NetworkXError, nx.parse_graphml, s)
 
-    # remove test until we get the "name" issue sorted
-    # https://networkx.lanl.gov/trac/ticket/544
-    def test_default_attribute(self):
-        G = nx.Graph()
+    def default_attribute(self, writer):
+        G = nx.Graph(name="Fred")
         G.add_node(1, label=1, color='green')
         nx.add_path(G, [0, 1, 2, 3])
         G.add_edge(1, 2, weight=3)
         G.graph['node_default'] = {'color': 'yellow'}
         G.graph['edge_default'] = {'weight': 7}
         fh = io.BytesIO()
-        nx.write_graphml(G, fh)
+        writer(G, fh)
         fh.seek(0)
         H = nx.read_graphml(fh, node_type=int)
         assert_nodes_equal(G.nodes(), H.nodes())
         assert_edges_equal(G.edges(), H.edges())
         assert_equal(G.graph, H.graph)
 
+    def test_default_attribute(self):
+        self.default_attribute(nx.write_graphml_xml)
+
+    def test_default_attribute_lxml(self):
+        self.default_attribute(nx.write_graphml_lxml)
+
     def test_multigraph_keys(self):
-        # test that multigraphs use edge id attributes as key
-        pass
+        """Test that reading multigraphs uses edge id attributes as keys """
+        s = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G" edgedefault="directed">
+    <node id="n0"/>
+    <node id="n1"/>
+    <edge id="e0" source="n0" target="n1"/>
+    <edge id="e1" source="n0" target="n1"/>
+  </graph>
+</graphml>
+"""
+        fh = io.BytesIO(s.encode('UTF-8'))
+        G = nx.read_graphml(fh)
+        expected = [("n0", "n1", "e0"), ("n0", "n1", "e1")]
+        assert_equal(sorted(G.edges(keys=True)), expected)
+        fh.seek(0)
+        H = nx.parse_graphml(fh)
+        assert_equal(sorted(H.edges(keys=True)), expected)
+
+    def more_multigraph_keys(self, writer):
+        """Writing keys as edge id attributes means keys become strings.
+        The original keys are stored as data, so read them back in 
+        if `make_str(key) == edge_id`
+        This allows the adjacency to remain the same.
+        """
+        G = nx.MultiGraph()
+        G.add_edges_from([('a', 'b', 2), ('a', 'b', 3)])
+        fd, fname = tempfile.mkstemp()
+        writer(G, fname)
+        H = nx.read_graphml(fname)
+        assert_true(H.is_multigraph())
+        assert_edges_equal(G.edges(keys=True), H.edges(keys=True))
+        assert_equal(G._adj, H._adj)
+        #assert_equal(H.adj['a']['b']['2']['id'], '2')
+        os.close(fd)
+        os.unlink(fname)
+
+    def test_multigraph_keys(self):
+        self.more_multigraph_keys(nx.write_graphml_xml)
+
+    def test_multigraph_keys_lxml(self):
+        self.more_multigraph_keys(nx.write_graphml_lxml)
+
+    def multigraph_to_graph(self, writer):
+        """test converting multigraph to graph if no parallel edges found"""
+        G = nx.MultiGraph()
+        G.add_edges_from([('a', 'b', 2), ('b', 'c', 3)])  # no multiedges
+        fd, fname = tempfile.mkstemp()
+        writer(G, fname)
+        H = nx.read_graphml(fname)
+        assert_false(H.is_multigraph())
+        os.close(fd)
+        os.unlink(fname)
 
     def test_multigraph_to_graph(self):
-        # test converting multigraph to graph if no parallel edges are found
-        pass
+        self.multigraph_to_graph(nx.write_graphml_xml)
+
+    def test_multigraph_to_graph_lxml(self):
+        self.multigraph_to_graph(nx.write_graphml_lxml)
 
     def test_yfiles_extension(self):
         data = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -460,7 +535,7 @@ class TestGraph(object):
         assert_equal(H.node['n0']['label'], '1')
         assert_equal(H.node['n1']['label'], '2')
 
-    def test_unicode(self):
+    def unicode_attributes(self, writer):
         G = nx.Graph()
         try:  # Python 3.x
             name1 = chr(2344) + chr(123) + chr(6543)
@@ -472,11 +547,17 @@ class TestGraph(object):
             node_type = unicode
         G.add_edge(name1, 'Radiohead', foo=name2)
         fd, fname = tempfile.mkstemp()
-        nx.write_graphml(G, fname)
+        writer(G, fname)
         H = nx.read_graphml(fname, node_type=node_type)
-        assert_equal(G.adj, H.adj)
+        assert_equal(G._adj, H._adj)
         os.close(fd)
         os.unlink(fname)
+
+    def test_unicode(self):
+        self.unicode_attributes(nx.write_graphml_xml)
+
+    def test_unicode_lxml(self):
+        self.unicode_attributes(nx.write_graphml_lxml)
 
     def test_bool(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -572,7 +653,7 @@ class TestGraph(object):
         assert_raises(nx.NetworkXError, nx.read_graphml, fh)
         assert_raises(nx.NetworkXError, nx.parse_graphml, ugly)
 
-    def test_unicode_escape(self):
+    def unicode_escape(self, writer):
         """test for handling json escaped stings in python 2 Issue #1880"""
         import json
         a = dict(a='{"a": "123"}')  # an object with many chars to escape
@@ -583,6 +664,19 @@ class TestGraph(object):
             sa = unicode(json.dumps(a))
         G = nx.Graph()
         G.graph['test'] = sa
-        nx.write_graphml(G, 'text.graphml')
+        writer(G, 'text.graphml')
         H = nx.read_graphml('text.graphml')
         assert_equal(G.graph['test'], H.graph['test'])
+
+    def test_unicode_escape(self):
+        self.unicode_escape(nx.write_graphml_xml)
+
+    def test_unicode_escape_lxml(self):
+        self.unicode_escape(nx.write_graphml_lxml)
+
+    def test_interface(self):
+        try:
+            import lxml.etree
+            assert_equal(nx.write_graphml, nx.write_graphml_lxml)
+        except ImportError:
+            assert_equal(nx.write_graphml, nx.write_graphml_xml)
