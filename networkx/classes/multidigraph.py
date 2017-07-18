@@ -52,6 +52,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Graph
     DiGraph
     MultiGraph
+    OrderedMultiDiGraph
 
     Examples
     --------
@@ -73,7 +74,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     >>> G.add_nodes_from([2, 3])
     >>> G.add_nodes_from(range(100, 110))
-    >>> H=nx.path_graph(10)
+    >>> H = nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -226,38 +227,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     Examples
     --------
-    Create a multigraph subclass that tracks the order nodes are added.
 
-    >>> from collections import OrderedDict
-    >>> class OrderedGraph(nx.MultiDiGraph):
-    ...    node_dict_factory = OrderedDict
-    ...    adjlist_outer_dict_factory = OrderedDict
-    >>> G = OrderedGraph()
-    >>> G.add_nodes_from((2, 1))
-    >>> list(G.nodes())
-    [2, 1]
-    >>> keys = G.add_edges_from(((2, 2), (2, 1), (2, 1), (1, 1)))
-    >>> # Edge addition order is not preserved
-
-    Create a multdigraph object that tracks the order nodes are added
-    and for each node track the order that neighbors are added and for
-    each neighbor tracks the order that multiedges are added.
-
-    >>> class OrderedGraph(nx.MultiDiGraph):
-    ...    node_dict_factory = OrderedDict
-    ...    adjlist_outer_dict_factory = OrderedDict
-    ...    adjlist_inner_dict_factory = OrderedDict
-    ...    edge_key_dict_factory = OrderedDict
-    >>> G = OrderedGraph()
-    >>> G.add_nodes_from((2, 1))
-    >>> list(G.nodes())
-    [2, 1]
-    >>> elist = ((2, 2), (2, 1, 2, {'weight': 0.1}),
-    ...          (2, 1, 1, {'weight': 0.2}), (1, 1))
-    >>> keys = G.add_edges_from(elist)
-    >>> list(G.edges(keys=True))
-    [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
-
+    Please see :mod:`~networkx.classes.ordered` for examples of
+    creating graph subclasses by overwriting the base class `dict` with
+    a dictionary-like object.
     """
     # node_dict_factory = dict    # already assigned in Graph
     # adjlist_outer_dict_factory = dict

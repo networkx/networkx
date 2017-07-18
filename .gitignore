@@ -5,19 +5,17 @@ __pycache__
 build/*
 networkx/version.py
 examples/*/*.png
-doc/source/networkx-documentation.zip
-doc/source/networkx_reference.pdf
-doc/source/networkx_tutorial.pdf
-doc/source/templates/gallery.html
-doc/gh-pages
+doc/networkx-documentation.zip
+doc/networkx_reference.pdf
+doc/networkx_tutorial.pdf
 doc/build
 .coverage
 *.class
 
 # Generated while building documentation.
-doc/source/static/examples/*
-doc/source/reference/generated/*
-doc/source/examples/*
+doc/auto_examples
+doc/modules
+doc/reference/generated
 
 # Generated when 'python setup_egg.py'
 networkx.egg-info/
