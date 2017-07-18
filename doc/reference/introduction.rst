@@ -177,7 +177,7 @@ You can add many edges at one time:
 >>> elist=[('a','b',5.0),('b','c',3.0),('a','c',1.0),('c','d',7.3)]
 >>> G.add_weighted_edges_from(elist) 
 
-See the :doc:`/tutorial/index` for more examples.
+See the :doc:`/tutorial` for more examples.
 
 Some basic graph operations such as union and intersection
 are described in the :ref:`Operators module<operators>` documentation.

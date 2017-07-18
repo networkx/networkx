@@ -7,24 +7,24 @@ Roget
 Build a directed graph of 1022 categories and
 5075 cross-references as defined in the 1879 version of Roget's Thesaurus
 contained in the datafile roget_dat.txt. This example is described in
-Section 1.2 in Knuth's book [1,2].
+Section 1.2 in Knuth's book (see [1]_ and [2]_).
 
 Note that one of the 5075 cross references is a self loop yet
 it is included in the graph built here because
-the standard networkx DiGraph class allows self loops.
+the standard networkx `DiGraph` class allows self loops.
 (cf. 400pungency:400 401 403 405).
 
-References.
+References
 ----------
 
-[1] Donald E. Knuth,
-    "The Stanford GraphBase: A Platform for Combinatorial Computing",
-    ACM Press, New York, 1993.
-[2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
-
-
+.. [1] Donald E. Knuth,
+   "The Stanford GraphBase: A Platform for Combinatorial Computing",
+   ACM Press, New York, 1993.
+.. [2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
 """
+
 from __future__ import print_function
+
 # Authors: Brendt Wohlberg, Aric Hagberg (hagberg@lanl.gov)
 # Date: 2005-04-01 07:56:22 -0700 (Fri, 01 Apr 2005)
 

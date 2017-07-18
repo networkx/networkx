@@ -1,1 +1,0 @@
-.. include:: ../../../CONTRIBUTE.rst

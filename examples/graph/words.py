@@ -6,9 +6,9 @@ Words
 Words/Ladder Graph
 ------------------
 Generate  an undirected graph over the 5757 5-letter words in the
-datafile words_dat.txt.gz.  Two words are connected by an edge
+datafile `words_dat.txt.gz`.  Two words are connected by an edge
 if they differ in one letter, resulting in 14,135 edges. This example
-is described in Section 1.1 in Knuth's book [1]_,[2]_.
+is described in Section 1.1 in Knuth's book (see [1]_ and [2]_).
 
 References
 ----------
