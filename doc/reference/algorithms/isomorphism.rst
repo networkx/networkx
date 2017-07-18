@@ -21,6 +21,4 @@ Advanced Interface to VF2 Algorithm
 .. toctree::
    :maxdepth: 2
 
-   algorithms.isomorphism.vf2
-
-
+   isomorphism.vf2

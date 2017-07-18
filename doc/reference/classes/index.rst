@@ -30,11 +30,11 @@ Basic graph types
 .. toctree::
    :maxdepth: 2
 	
-   classes.graph
-   classes.digraph
-   classes.multigraph
-   classes.multidigraph
-   classes.ordered
+   graph
+   digraph
+   multigraph
+   multidigraph
+   ordered
 
 .. note:: NetworkX uses `dicts` to store the nodes and neighbors in a graph.
    So the reporting of nodes and edges for the base graph classes will not
