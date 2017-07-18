@@ -8,8 +8,7 @@ Heavy Metal Umlaut
 Example using unicode strings as graph labels.
 
 Also shows creative use of the Heavy Metal Umlaut:
-http://en.wikipedia.org/wiki/Heavy_metal_umlaut
-
+https://en.wikipedia.org/wiki/Heavy_metal_umlaut
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 

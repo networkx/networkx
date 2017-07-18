@@ -17,7 +17,7 @@ API changes
   refactored the ``connected_components`` and ``weakly_connected_components``
   implementations making them faster, especially for large graphs.
 
-* [`#1547 <https://github.com/networkx/networkx/issues/1547>`_]
+* [`#1547 <https://github.com/networkx/networkx/pull/1547>`_]
   The ``func_iter`` functions in Di/Multi/Graphs classes are slated for
   removal in NetworkX 2.0 release. ``func`` will behave like ``func_iter``
   and return an iterator instead of list. These functions are deprecated in

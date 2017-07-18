@@ -44,7 +44,7 @@ install into your user directory using the ``--user`` flag::
     $ pip install --user networkx
 
 Alternatively, you can manually download ``networkx`` from
-`GitHub <http://github.com/networkx/networkx/releases>`_  or
+`GitHub <https://github.com/networkx/networkx/releases>`_  or
 `PyPI <http://pypi.python.org/pypi/networkx>`_.
 To install one of these versions, unpack it and run the following from the
 top-level source directory using the Terminal::
@@ -54,7 +54,7 @@ top-level source directory using the Terminal::
 Install the development version
 -------------------------------
 
-If you have `Git <https://git.com>`_ installed on your system, it is also
+If you have `Git <https://git-scm.com/>`_ installed on your system, it is also
 possible to install the development version of ``networkx``.
 
 Before installing the development version, you may need to uninstall the

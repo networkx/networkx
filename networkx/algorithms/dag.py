@@ -433,7 +433,7 @@ def antichains(G):
     for the SAGE project. It's included in NetworkX with permission from the
     authors. Original SAGE code at:
 
-    https://sage.informatik.uni-goettingen.de/src/combinat/posets/hasse_diagram.py
+    https://github.com/sagemath/sage/blob/master/src/sage/combinat/posets/hasse_diagram.py
 
     References
     ----------
