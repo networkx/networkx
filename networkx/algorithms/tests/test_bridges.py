@@ -1,6 +1,6 @@
 # test_bridges.py - unit tests for bridge-finding algorithms
 #
-# Copyright 2004-2016 NetworkX developers.
+# Copyright 2004-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -8,6 +8,7 @@
 # information.
 """Unit tests for bridge-finding algorithms."""
 from unittest import TestCase
+from nose.tools import assert_equal, assert_in
 
 import networkx as nx
 
@@ -34,3 +35,39 @@ class TestBridges(TestCase):
         source = 0
         bridges = list(nx.bridges(G, source))
         self.assertEqual(bridges, [(2, 3)])
+
+
+class TestLocalBridges(TestCase):
+    """Unit tests for the local_bridge function."""
+
+    def setUp(self):
+        self.BB = nx.barbell_graph(4, 0)
+        self.square = nx.cycle_graph(4)
+        self.tri = nx.cycle_graph(3)
+
+    def test_nospan(self):
+        expected = {(3, 4), (4, 3)}
+        assert_in(next(nx.local_bridges(self.BB, with_span=False)), expected)
+        assert_equal(set(nx.local_bridges(self.square, with_span=False)), self.square.edges)
+        assert_equal(list(nx.local_bridges(self.tri, with_span=False)), [])
+
+    def test_no_weight(self):
+        inf = float('inf')
+        expected = {(3, 4, inf), (4, 3, inf)}
+        assert_in(next(nx.local_bridges(self.BB)), expected)
+        expected = {(u, v, 3) for u, v, in self.square.edges}
+        assert_equal(set(nx.local_bridges(self.square)), expected)
+        assert_equal(list(nx.local_bridges(self.tri)), [])
+        
+    def test_weight(self):
+        inf = float('inf')
+        G = self.square.copy()
+
+        G.edges[1, 2]['weight'] = 2
+        expected = {(u, v, 5 - wt) for u, v, wt in G.edges(data='weight', default=1)}
+        assert_equal(set(nx.local_bridges(G, weight='weight')), expected)
+
+        expected = {(u, v, 6) for u, v in G.edges}
+        lb = nx.local_bridges(G, weight=lambda u, v, d: 2)
+        assert_equal(set(lb), expected)
+
