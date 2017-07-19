@@ -94,8 +94,8 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
         Which Minkowski distance metric to use.  `p` has to meet the condition
         ``1 <= p <= infinity``.
 
-        If this argument is not specified, the :math:`L^2` metric (the Euclidean
-        distance metric) is used.
+        If this argument is not specified, the :math:`L^2` metric
+        (the Euclidean distance metric) is used.
 
         This should not be confused with the `p` of an Erdős-Rényi random
         graph, which represents probability.
@@ -293,7 +293,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
 
 @nodes_or_number(0)
-def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
+def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
                  metric=None):
     r"""Return a Waxman random graph.
 
@@ -302,7 +302,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
     joined by an edge with probability
 
     .. math::
-            p = \alpha \exp(-d / \beta L).
+            p = \beta \exp(-d / \alpha L).
 
     This function implements both Waxman models, using the `L` keyword
     argument.
@@ -316,9 +316,9 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
     ----------
     n : int or iterable
         Number of nodes or iterable of nodes
-    alpha: float
-        Model parameter
     beta: float
+        Model parameter
+    alpha: float
         Model parameter
     L : float, optional
         Maximum distance between nodes.  If not specified, the actual distance
@@ -363,6 +363,13 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
     .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
     .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
 
+    Notes
+    -----
+    Starting in NetworkX 2.0 the parameters alpha and beta align with their
+    usual roles in the probability distribution. In earlier versions their
+    positions in the expresssion were reversed. Their position in the calling
+    sequence reversed as well to minimize backward incompatibility.
+
     References
     ----------
     .. [1]  B. M. Waxman, *Routing of multipoint connections*.
@@ -392,7 +399,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
 
     # `pair` is the pair of nodes to decide whether to join.
     def should_join(pair):
-        return random.random() < alpha * math.exp(-dist(*pair) / (beta * L))
+        return random.random() < beta * math.exp(-dist(*pair) / (alpha * L))
 
     G.add_edges_from(filter(should_join, combinations(G, 2)))
     return G
