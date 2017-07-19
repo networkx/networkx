@@ -16,6 +16,9 @@ doc/build
 doc/auto_examples
 doc/modules
 doc/reference/generated
+doc/reference/algorithms/generated
+doc/reference/classes/generated
+doc/reference/readwrite/generated
 
 # Generated when 'python setup_egg.py'
 networkx.egg-info/
@@ -23,6 +26,9 @@ networkx.egg-info/
 # Sublime Text project files
 *.sublime-project
 *.sublime-workspace
+
+# Backup files
+*.bak
 
 # IPython Notebook Checkpoints
 .ipynb_checkpoints/
