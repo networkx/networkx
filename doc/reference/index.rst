@@ -10,18 +10,15 @@ Reference
    :maxdepth: 2
 
    introduction
-   classes
-   algorithms
+   classes/index
+   algorithms/index
    functions
    generators
    linalg
    convert
    relabel
-   readwrite
+   readwrite/index
    drawing
    exceptions
    utils
-   legal
-   citing	
-   credits
    glossary

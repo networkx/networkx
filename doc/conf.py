@@ -14,30 +14,9 @@ from __future__ import print_function
 
 import sys
 import os
-import re
-#import contextlib
 from datetime import date
 
 #from sphinx_gallery.sorting import ExplicitOrder
-
-#@contextlib.contextmanager
-#def cd(newpath):
-#    """
-#    Change the current working directory to `newpath`, temporarily.
-#
-#    If the old current working directory no longer exists, do not return back.
-#    """
-#    oldpath = os.getcwd()
-#    os.chdir(newpath)
-#    try:
-#        yield
-#    finally:
-#        try:
-#            os.chdir(oldpath)
-#        except OSError:
-#            # If oldpath no longer exists, stay where we are.
-#            pass
-#
 
 # Check Sphinx version
 import sphinx
@@ -51,17 +30,6 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 #print
 #print("Current working directory: {}".format(os.path.abspath(os.curdir)))
 #print("Python: {}".format(sys.executable))
-
-#if on_rtd:
-#    # Build is not via Makefile (yet).
-#    # So we manually build the examples and gallery.
-#    import subprocess
-#    with cd('..'):
-#        # The Makefile is run from networkx/doc, so we need to move there
-#        # from networkx/doc/source (which holds conf.py).
-#        py = sys.executable
-#        subprocess.call([py, 'make_gallery.py'])
-#        subprocess.call([py, 'make_examples_rst.py', '../examples', 'source'])
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py
@@ -107,7 +75,7 @@ sphinx_gallery_conf = {
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-#templates_path = ['templates', '../rst_templates']
+#templates_path = ['']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -138,14 +106,13 @@ release = networkx.__version__.replace('_', '')
 #today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-# unused_docs = ['reference/pdf_reference']
+# unused_docs = ['']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-
 add_module_names = False
 
 # show_authors = True
@@ -175,11 +142,10 @@ if not on_rtd:
 #    "relbarbgcolor: "black"
 #}
 
-
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-#html_style = 'networkx.css'
+#html_style = ''
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -196,15 +162,13 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # Content template for the index page.
 #html_index = 'index.html'
-#html_index = 'contents.html'
 
 # Custom sidebar templates, maps page names to templates.
 #html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # templates.
-#html_additional_pages = {'index': 'index.html','gallery':'gallery.html'}
-#html_additional_pages = {'gallery': 'gallery.html'}
+#html_additional_pages = {'': ''}
 
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
@@ -231,8 +195,6 @@ latex_documents = [('tutorial', 'networkx_tutorial.tex',
                    ('reference/index', 'networkx_reference.tex',
                     'NetworkX Reference',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]
-
-# latex_appendices = ['installing']#,'legal'],'citing','credits','history']
 
 #latex_appendices = ['credits']
 

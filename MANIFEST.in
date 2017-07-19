@@ -26,4 +26,3 @@ prune doc/build
 prune doc/source/reference/generated
 prune doc/source/examples
 prune doc/source/static/examples
-prune doc/source/templates/gallery.html

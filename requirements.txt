@@ -5,6 +5,7 @@ numpy
 nose
 nose-ignore-docstring
 pandas
+lxml
 gdal
 pyyaml
 pygraphviz

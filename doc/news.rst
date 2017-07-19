@@ -402,17 +402,17 @@ The following now return dictionaries by default (instead of lists)
 
 Adding nodes
 ************
-add_nodes_from now accepts (node,attrdict) two-tuples
+``add_nodes_from`` now accepts ``(node, attrdict)`` two-tuples
 
->>> G=nx.Graph()
->>> G.add_nodes_from([(1,{'color':'red'})])
+>>> G = nx.Graph()
+>>> G.add_nodes_from([(1, {'color': 'red'})])
 
 Examples
 ~~~~~~~~
- - `Mayvi2 drawing <http://networkx.github.io/documentation/latest/examples/3d_drawing/mayavi2_spring.html>`_
- - `Blockmodel <http://networkx.lanl.gov/examples/algorithms/blockmodel.html>`_
- - `Sampson's monastery <http://networkx.lanl.gov/examples/drawing/sampson.html>`_
- - `Ego graph <http://networkx.lanl.gov/examples/drawing/ego_graph.html>`_
+ - `Mayvi2 drawing <http://networkx.readthedocs.io/en/latest/auto_examples/3d_drawing/mayavi2_spring.html>`_
+ - `Blockmodel <http://networkx.readthedocs.io/en/latest/auto_examples/algorithms/plot_blockmodel.html>`_
+ - `Sampson's monastery <http://networkx.readthedocs.io/en/latest/auto_examples/drawing/plot_sampson.html>`_
+ - `Ego graph <http://networkx.readthedocs.io/en/latest/auto_examples/drawing/plot_ego_graph.html>`_
 
 Bug fixes
 ~~~~~~~~~
@@ -811,7 +811,7 @@ Examples
 ~~~~~~~~
   - Formation of giant component in binomial_graph:
   - Chess masters matches:
-  - Gallery https://networkx.lanl.gov/gallery.html
+  - Gallery http://networkx.readthedocs.io/en/latest/auto_examples/index.html
   
 Bug fixes
 ~~~~~~~~~

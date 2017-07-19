@@ -7,7 +7,6 @@ Tutorial
 
 Start here to begin working with NetworkX.
 
-
 Creating a graph
 ----------------
 
@@ -21,13 +20,13 @@ identified pairs of nodes (called edges, links, etc).  In NetworkX, nodes can
 be any hashable object e.g., a text string, an image, an XML object, another
 Graph, a customized node object, etc.
 
-.. note:: Python's `None` object should not be used as a node as it determines
+.. note:: Python's ``None`` object should not be used as a node as it determines
    whether optional function arguments have been assigned in many functions.
 
 Nodes
 -----
 
-The graph `G` can be grown in several ways.  NetworkX includes many graph
+The graph ``G`` can be grown in several ways.  NetworkX includes many graph
 generator functions and facilities to read and write graphs in many formats.
 To get started though we'll look at simple manipulations.  You can add one node
 at a time,
@@ -39,21 +38,21 @@ add a list of nodes,
 >>> G.add_nodes_from([2, 3])
 
 or add any :term:`nbunch` of nodes.  An *nbunch* is any iterable container of
-nodes that is not itself a node in the graph. (e.g. a `list`, `set`, `graph`,
-`file`, etc..)
+nodes that is not itself a node in the graph (e.g., a ``list``, ``set``, ``graph``,
+``file``, etc.).
 
 >>> H = nx.path_graph(10)
 >>> G.add_nodes_from(H)
 
-Note that `G` now contains the nodes of `H` as nodes of `G`.
-In contrast, you could use the graph `H` as a node in `G`.
+Note that ``G`` now contains the nodes of ``H`` as nodes of ``G``.
+In contrast, you could use the graph ``H`` as a node in ``G``.
 
 >>> G.add_node(H)
 
-The graph `G` now contains `H` as a node.  This flexibility is very powerful as
+The graph ``G`` now contains ``H`` as a node.  This flexibility is very powerful as
 it allows graphs of graphs, graphs of files, graphs of functions and much more.
 It is worth thinking about how to structure your application so that the nodes
-are useful entities.  Of course you can always use a unique identifier in `G`
+are useful entities.  Of course you can always use a unique identifier in ``G``
 and have a separate dictionary keyed by identifier to the node information if
 you prefer.
 
@@ -63,7 +62,7 @@ you prefer.
 Edges
 -----
 
-`G` can also be grown by adding one edge at a time,
+``G`` can also be grown by adding one edge at a time,
 
 >>> G.add_edge(1, 2)
 >>> e = (2, 3)
@@ -76,7 +75,7 @@ by adding a list of edges,
 or by adding any :term:`ebunch` of edges.  An *ebunch* is any iterable
 container of edge-tuples.  An edge-tuple can be a 2-tuple of nodes or a 3-tuple
 with 2 nodes followed by an edge attribute dictionary, e.g.,
-`(2, 3, {'weight': 3.1415})`.  Edge attributes are discussed further below
+``(2, 3, {'weight': 3.1415})``.  Edge attributes are discussed further below
 
 >>> G.add_edges_from(H.edges())
 
@@ -103,7 +102,7 @@ already present.
 >>> G.add_node("spam")        # adds node "spam"
 >>> G.add_nodes_from("spam")  # adds 4 nodes: 's', 'p', 'a', 'm'
 
-At this stage the graph `G` consists of 8 nodes and 2 edges, as can be seen by:
+At this stage the graph ``G`` consists of 8 nodes and 2 edges, as can be seen by:
 
 >>> G.number_of_nodes()
 8
@@ -145,11 +144,11 @@ What to use as nodes and edges
 You might notice that nodes and edges are not specified as NetworkX
 objects.  This leaves you free to use meaningful items as nodes and
 edges. The most common choices are numbers or strings, but a node can
-be any hashable object (except `None`), and an edge can be associated
-with any object `x` using `G.add_edge(n1, n2, object=x)`.
+be any hashable object (except ``None``), and an edge can be associated
+with any object ``x`` using ``G.add_edge(n1, n2, object=x)``.
 
-As an example, `n1` and `n2` could be protein objects from the RCSB Protein
-Data Bank, and `x` could refer to an XML record of publications detailing
+As an example, ``n1`` and ``n2`` could be protein objects from the RCSB Protein
+Data Bank, and ``x`` could refer to an XML record of publications detailing
 experimental observations of their interaction.
 
 We have found this power quite useful, but its abuse
@@ -212,9 +211,9 @@ can be attached to graphs, nodes, or edges.
 
 Each graph, node, and edge can hold key/value attribute pairs in an associated
 attribute dictionary (the keys must be hashable).  By default these are empty,
-but attributes can be added or changed using `add_edge`, `add_node` or direct
-manipulation of the attribute dictionaries named `G.graph`, `G.node`, and
-`G.edge` for a graph `G`.
+but attributes can be added or changed using ``add_edge``, ``add_node`` or direct
+manipulation of the attribute dictionaries named ``G.graph``, ``G.node``, and
+``G.edge`` for a graph ``G``.
 
 Graph attributes
 ~~~~~~~~~~~~~~~~
@@ -234,7 +233,7 @@ Or you can modify attributes later
 Node attributes
 ~~~~~~~~~~~~~~~
 
-Add node attributes using `add_node()`, `add_nodes_from()`, or `G.node`
+Add node attributes using ``add_node()``, ``add_nodes_from()``, or ``G.node``
 
 >>> G.add_node(1, time='5pm')
 >>> G.add_nodes_from([3], time='2pm')
@@ -244,15 +243,15 @@ Add node attributes using `add_node()`, `add_nodes_from()`, or `G.node`
 >>> list(G.nodes(data=True))
 [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
 
-Note that adding a node to `G.node` does not add it to the graph, use
-`G.add_node()` to add new nodes.
+Note that adding a node to ``G.node`` does not add it to the graph, use
+``G.add_node()`` to add new nodes.
 
 
 Edge Attributes
 ~~~~~~~~~~~~~~~
 
-Add edge attributes using `add_edge()`, `add_edges_from()`, subscript notation,
-or `G.edge`.
+Add edge attributes using ``add_edge()``, ``add_edges_from()``, subscript notation,
+or ``G.edge``.
 
 >>> G.add_edge(1, 2, weight=4.7 )
 >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
@@ -260,10 +259,10 @@ or `G.edge`.
 >>> G[1][2]['weight'] = 4.7
 >>> G.edge[1][2]['weight'] = 4
 
-The special attribute `weight` should be numeric and holds values used by
+The special attribute ``weight`` should be numeric and holds values used by
 algorithms requiring weighted edges.
 
-.. warning:: Do not assign anything to `G.edge[u]` or `G.edge[u][v]` as it will
+.. warning:: Do not assign anything to ``G.edge[u]`` or ``G.edge[u][v]`` as it will
    corrupt the graph data structure. Change the edge `dict` as shown above.
 
 Directed graphs
@@ -276,8 +275,8 @@ edges, e.g.,
 :meth:`DiGraph.predecessors`,
 :meth:`DiGraph.successors` etc.
 To allow algorithms to work with both classes easily, the directed versions of
-`neighbors()` and `degree()` are equivalent to `successors()` and the sum of
-`in_degree()` and `out_degree()` respectively even though that may feel
+``neighbors()`` and ``degree()`` are equivalent to ``successors()`` and the sum of
+``in_degree()`` and ``out_degree()`` respectively even though that may feel
 inconsistent at times.
 
 >>> DG = nx.DiGraph()
@@ -344,10 +343,9 @@ can also be generated by
     convert_to_undirected(G) - return an undirected representation of G
     convert_to_directed(G)   - return a directed representation of G
 
-
 2. Using a call to one of the classic small graphs, e.g.,
 
->>> peterseni = nx.petersen_graph()
+>>> petersen = nx.petersen_graph()
 >>> tutte = nx.tutte_graph()
 >>> maze = nx.sedgewick_maze_graph()
 >>> tet = nx.tetrahedral_graph()
@@ -372,14 +370,13 @@ can also be generated by
 >>> nx.write_gml(red, "path.to.file")
 >>> mygraph = nx.read_gml("path.to.file")
 
-Details on graph formats: :doc:`/reference/readwrite`
-
-Details on graph generator functions: :doc:`/reference/generators`
+For details on graph formats see :doc:`/reference/readwrite/index`
+and for graph generator functions see :doc:`/reference/generators`
 
 Analyzing graphs
 ----------------
 
-The structure of `G` can be analyzed using various graph-theoretic
+The structure of ``G`` can be analyzed using various graph-theoretic
 functions such as:
 
 >>> G = nx.Graph()
@@ -414,25 +411,26 @@ dictionary.
 >>> sorted(d for n, d in G.degree())
 [0, 1, 1, 2]
 
-Details on graph algorithms supported: :doc:`/reference/algorithms`
+See :doc:`/reference/algorithms/index` for details on graph algorithms
+supported.
 
 Drawing graphs
 --------------
 
 NetworkX is not primarily a graph drawing package but basic drawing with
 Matplotlib as well as an interface to use the open source Graphviz software
-package are included.  These are part of the `networkx.drawing` module and will
-be imported if possible.  See :doc:`/reference/drawing` for details.
+package are included.  These are part of the ``networkx.drawing`` module and will
+be imported if possible.
 
 First import Matplotlib's plot interface (pylab works too)
 
 >>> import matplotlib.pyplot as plt
 
-You may find it useful to interactively test code using "ipython -pylab",
+You may find it useful to interactively test code using ``ipython -pylab``,
 which combines the power of ipython and matplotlib and provides a convenient
 interactive mode.
 
-To test if the import of networkx.drawing was successful draw `G` using one of
+To test if the import of ``networkx.drawing`` was successful draw ``G`` using one of
 
 >>> nx.draw(G)
 >>> nx.draw_random(G)
@@ -444,16 +442,16 @@ Matplotlib
 
 >>> plt.show()
 
-command if you are not using matplotlib in interactive mode: (See
+command if you are not using matplotlib in interactive mode (see
 `Matplotlib FAQ <http://matplotlib.org/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-when-i-use-it>`_
-)
+).
 
 To save drawings to a file, use, for example
 
 >>> nx.draw(G)
 >>> plt.savefig("path.png")
 
-writes to the file "path.png" in the local directory. If Graphviz and
+writes to the file ``path.png`` in the local directory. If Graphviz and
 PyGraphviz or pydot, are available on your system, you can also use
 ``nx_agraph.graphviz_layout(G)`` or ``nx_pydot.graphviz_layout(G)`` to get the
 node positions, or write the graph in dot format for further processing.
@@ -462,4 +460,4 @@ node positions, or write the graph in dot format for further processing.
 >>> nx.draw(G, pos=pos)
 >>> nx.write_dot(G,'file.dot')
 
-Details on drawing graphs: :doc:`/reference/drawing`
+See :doc:`/reference/drawing` for additional details.
