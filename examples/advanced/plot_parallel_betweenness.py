@@ -15,7 +15,9 @@ contribution to the betweenness centrality of the whole network.
 from multiprocessing import Pool
 import time
 import itertools
+
 import networkx as nx
+import matplotlib.pyplot as plt
 
 
 def chunks(l, n):
@@ -76,3 +78,6 @@ if __name__ == "__main__":
         print("\t\tTime: %.4F seconds" % (time.time() - start))
         print("\t\tBetweenness centrality for node 0: %.5f" % (bt[0]))
     print("")
+
+    nx.draw(G_ba)
+    plt.show()

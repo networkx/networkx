@@ -16,12 +16,13 @@ Example subclass of the Graph class.
 #
 __docformat__ = "restructuredtext en"
 
-from networkx import Graph
-
-from networkx.exception import NetworkXException, NetworkXError
-import networkx.convert as convert
 from copy import deepcopy
 
+import networkx as nx
+from networkx import Graph
+from networkx.exception import NetworkXException, NetworkXError
+import networkx.convert as convert
+import matplotlib.pyplot as plt
 
 class PrintGraph(Graph):
     """
@@ -133,3 +134,6 @@ if __name__ == '__main__':
     H2 = G.subgraph(range(4), copy=False)
     print(list(H1.edges()))
     print(list(H2.edges()))
+
+    nx.draw(G)
+    plt.show()

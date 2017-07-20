@@ -17,13 +17,14 @@ Random graph from given degree sequence.
 #    All rights reserved.
 #    BSD license.
 
-from networkx import *
+from networkx import nx
+import matplotlib.pyplot as plt
 
 z = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-print(is_valid_degree_sequence(z))
+print(nx.is_valid_degree_sequence(z))
 
 print("Configuration model")
-G = configuration_model(z)  # configuration model
+G = nx.configuration_model(z)  # configuration model
 degree_sequence = [d for n, d in G.degree()]  # degree sequence
 print("Degree sequence %s" % degree_sequence)
 print("Degree histogram")
@@ -36,3 +37,6 @@ for d in degree_sequence:
 print("degree #nodes")
 for d in hist:
     print('%d %d' % (d, hist[d]))
+
+nx.draw(G)
+plt.show()

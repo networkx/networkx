@@ -35,10 +35,11 @@ from __future__ import print_function
 #    All rights reserved.
 #    BSD license.
 
-from networkx import *
 import re
 import sys
 
+from networkx import nx
+import matplotlib.pyplot as plt
 
 def roget_graph():
     """ Return the thesaurus graph from the roget.dat example in
@@ -48,7 +49,7 @@ def roget_graph():
     import gzip
     fh = gzip.open('roget_dat.txt.gz', 'r')
 
-    G = DiGraph()
+    G = nx.DiGraph()
 
     for line in fh.readlines():
         line = line.decode()
@@ -77,10 +78,12 @@ def roget_graph():
 
 
 if __name__ == '__main__':
-    from networkx import *
     G = roget_graph()
     print("Loaded roget_dat.txt containing 1022 categories.")
     print("digraph has %d nodes with %d edges"
-          % (number_of_nodes(G), number_of_edges(G)))
+          % (nx.number_of_nodes(G), nx.number_of_edges(G)))
     UG = G.to_undirected()
-    print(number_connected_components(UG), "connected components")
+    print(nx.number_connected_components(UG), "connected components")
+
+    nx.draw_circular(UG)
+    plt.show()

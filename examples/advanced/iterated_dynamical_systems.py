@@ -84,9 +84,8 @@ keywords: "3n+1", "3x+1", "Collatz problem", "Thwaite's conjecture"
 
 
 """
-from networkx import *
-from math import *
 
+import networkx as nx
 
 nmax = 10000
 p = 3
@@ -119,7 +118,7 @@ def powersum(n, p, b=10):
 
 def attractor153_graph(n, p, multiple=3, b=10):
     """Return digraph of iterations of powersum(n,3,10)."""
-    G = DiGraph()
+    G = nx.DiGraph()
     for k in range(1, n + 1):
         if k % multiple == 0 and k not in G:
             k1 = k
@@ -133,7 +132,7 @@ def attractor153_graph(n, p, multiple=3, b=10):
 
 def squaring_cycle_graph_old(n, b=10):
     """Return digraph of iterations of powersum(n,2,10)."""
-    G = DiGraph()
+    G = nx.DiGraph()
     for k in range(1, n + 1):
         k1 = k
         G.add_node(k1)  # case k1==knext, at least add node
@@ -165,7 +164,7 @@ def cubing_153_digraph(nmax):
 
 
 def discrete_dynamics_digraph(nmax, f, itermax=50000):
-    G = DiGraph()
+    G = nx.DiGraph()
     for k in range(1, nmax + 1):
         kold = k
         G.add_node(kold)
@@ -205,5 +204,5 @@ if __name__ == "__main__":
     print("Resulting digraph has", len(G), "nodes and",
           G.size(), " edges")
     print("Shortest path from 177 to 153 is:")
-    print(shortest_path(G, 177, 153))
+    print(nx.shortest_path(G, 177, 153))
     print("fixed points are %s" % fixed_points(G))

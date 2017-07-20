@@ -23,6 +23,7 @@ algorithms.
 #    BSD license.
 import networkx as nx
 from networkx.exception import NetworkXError
+import matplotlib.pyplot as plt
 
 __all__ = ['AntiGraph']
 
@@ -64,7 +65,7 @@ class AntiGraph(nx.Graph):
                     set(self.adj) - set(self.adj[n]) - set([n]))
 
     def neighbors(self, n):
-        """Return an iterator over all neighbors of node n in the 
+        """Return an iterator over all neighbors of node n in the
            dense graph.
 
         """
@@ -175,3 +176,6 @@ if __name__ == '__main__':
         # AntiGraph is a ThinGraph, so all the weights are 1
         assert sum(d for n, d in A.degree()) == sum(d for n, d in A.degree(weight='weight'))
         assert sum(d for n, d in G.degree(nodes)) == sum(d for n, d in A.degree(nodes))
+
+    nx.draw(Gnp)
+    plt.show()

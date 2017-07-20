@@ -15,6 +15,7 @@ __author__ = """Ollie Glass (ollieglaskovik@gmail.com)"""
 import json
 import networkx as nx
 from networkx.readwrite.json_graph import jit_data, jit_graph
+import matplotlib.pyplot as plt
 
 # add some nodes to a graph
 G = nx.Graph()
@@ -34,3 +35,6 @@ print(jit_json)
 X = jit_graph(json.loads(jit_json))
 print("Nodes: %s" % list(X.nodes(data=True)))
 print("Edges: %s" % list(X.edges(data=True)))
+
+nx.draw(G, with_labels=True)
+plt.show()

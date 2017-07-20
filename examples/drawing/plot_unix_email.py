@@ -66,7 +66,7 @@ def mbox_graph():
 
 if __name__ == '__main__':
 
-    G = mbox_graph(filePath)
+    G = mbox_graph()
 
     # print edges with message subject
     for (u, v, d) in G.edges(data=True):
