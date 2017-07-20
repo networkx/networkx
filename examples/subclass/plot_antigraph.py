@@ -17,7 +17,7 @@ algorithms.
 """
 # Author: Jordi Torrents <jtorrents@milnou.net>
 
-#    Copyright (C) 2015-2016 by
+#    Copyright (C) 2015-2017 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    All rights reserved.
 #    BSD license.
@@ -112,19 +112,20 @@ class AntiGraph(nx.Graph):
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                                set(self.adj) - set(self.adj[n]) - set([n])})
                           for n in self.nodes())
+        elif nbunch in self:
+            nbrs = set(self.nodes()) - set(self.adj[nbunch]) - {nbunch}
+            return len(nbrs)
         else:
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                                set(self.nodes()) - set(self.adj[n]) - set([n])})
                           for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for n, nbrs in nodes_nbrs:
-                yield (n, len(nbrs) + (n in nbrs))  # return tuple (n,degree)
+            return ((n, len(nbrs)) for n, nbrs in nodes_nbrs)
         else:
             # AntiGraph is a ThinGraph so all edges have weight 1
-            for n, nbrs in nodes_nbrs:
-                yield (n, sum((nbrs[nbr].get(weight, 1) for nbr in nbrs)) +
-                       (n in nbrs and nbrs[n].get(weight, 1)))
+            return ((n, sum((nbrs[nbr].get(weight, 1)) for nbr in nbrs))
+                    for n, nbrs in nodes_nbrs)
 
     def adjacency_iter(self):
         """Return an iterator of (node, adjacency set) tuples for all nodes
