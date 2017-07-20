@@ -13,18 +13,19 @@ Compute some network properties for the lollipop graph.
 #    All rights reserved.
 #    BSD license.
 
-from networkx import *
+from networkx import nx
+import matplotlib.pyplot as plt
 
-G = lollipop_graph(4, 6)
+G = nx.lollipop_graph(4, 6)
 
 pathlengths = []
 
 print("source vertex {target:length, }")
 for v in G.nodes():
-    spl = single_source_shortest_path_length(G, v)
-    print('%s %s' % (v, spl))
-    for p in spl.values():
-        pathlengths.append(p)
+    spl = dict(nx.single_source_shortest_path_length(G, v))
+    print('{} {} '.format(v, spl))
+    for p in spl:
+        pathlengths.append(spl[p])
 
 print('')
 print("average shortest path length %s" % (sum(pathlengths) / len(pathlengths)))
@@ -43,9 +44,12 @@ verts = dist.keys()
 for d in sorted(verts):
     print('%s %d' % (d, dist[d]))
 
-print("radius: %d" % radius(G))
-print("diameter: %d" % diameter(G))
-print("eccentricity: %s" % eccentricity(G))
-print("center: %s" % center(G))
-print("periphery: %s" % periphery(G))
-print("density: %s" % density(G))
+print("radius: %d" % nx.radius(G))
+print("diameter: %d" % nx.diameter(G))
+print("eccentricity: %s" % nx.eccentricity(G))
+print("center: %s" % nx.center(G))
+print("periphery: %s" % nx.periphery(G))
+print("density: %s" % nx.density(G))
+
+nx.draw(G, with_labels=True)
+plt.show()

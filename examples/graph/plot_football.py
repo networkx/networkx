@@ -22,7 +22,8 @@ http://www-personal.umich.edu/~mejn/netdata/football.zip
 #    All rights reserved.
 #    BSD license.
 
-from networkx import *
+import networkx as nx
+import matplotlib.pyplot as plt
 
 url = "http://www-personal.umich.edu/~mejn/netdata/football.zip"
 
@@ -42,9 +43,12 @@ txt = zf.read('football.txt').decode()  # read info file
 gml = zf.read('football.gml').decode()  # read gml data
 # throw away bogus first line with # from mejn files
 gml = gml.split('\n')[1:]
-G = parse_gml(gml)  # parse gml data
+G = nx.parse_gml(gml)  # parse gml data
 
 print(txt)
 # print degree for each team - number of games
 for n, d in G.degree():
     print('%s %d' % (n, d))
+
+nx.draw(G)
+plt.show()

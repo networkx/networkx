@@ -10,13 +10,11 @@ that point from the sender to the recievers.  The edge data
 is a Python email.Message object which contains all of
 the email message data.
 
-This example shows the power of XDiGraph to hold edge data
+This example shows the power of `DiGraph` to hold edge data
 of arbitrary Python objects (in this case a list of email messages).
 
-By default, load the sample unix email mailbox called "unix_email.mbox".
-You can load your own mailbox by naming it on the command line, eg
-
-python unixemail.py /var/spool/mail/username
+The sample unix email mailbox called "unix_email.mbox" may be found here:
+https://raw.githubusercontent.com/networkx/networkx/master/examples/drawing/unix_email.mbox
 
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
@@ -39,15 +37,14 @@ import matplotlib.pyplot as plt
 # unix mailbox recipe
 # see http://www.python.org/doc/current/lib/module-mailbox.html
 
+def mbox_graph():
+    try:
+        fh = open("unix_email.mbox", 'rb')
+    except IOError:
+        print("unix_email.mbox not found")
+        raise
 
-if __name__ == '__main__':
-
-    if len(sys.argv) == 1:
-        filePath = "unix_email.mbox"
-    else:
-        filePath = sys.argv[1]
-
-    mbox = mailbox.mbox(filePath)  # parse unix mailbox
+    mbox = mailbox.UnixMailbox(fh, email.message_from_file)  # parse unix mailbox
 
     G = nx.MultiDiGraph()  # create empty graph
 
@@ -65,10 +62,16 @@ if __name__ == '__main__':
         for (target_name, target_addr) in all_recipients:
             G.add_edge(source_addr, target_addr, message=msg)
 
+    return G
+
+if __name__ == '__main__':
+
+    G = mbox_graph(filePath)
+
     # print edges with message subject
     for (u, v, d) in G.edges(data=True):
         print("From: %s To: %s Subject: %s" % (u, v, d['message']["Subject"]))
 
     pos = nx.spring_layout(G, iterations=10)
-    nx.draw(G, pos, node_size=0, alpha=0.4, edge_color='r', font_size=16)
+    nx.draw(G, pos, node_size=0, alpha=0.4, edge_color='r', font_size=16, with_labels=True)
     plt.show()
