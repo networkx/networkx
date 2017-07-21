@@ -309,12 +309,16 @@ def contracted_nodes(G, u, v, self_loops=True):
     Contracting two nonadjacent nodes of the cycle graph on four nodes `C_4`
     yields the path graph (ignoring parallel edges)::
 
-        >>> import networkx as nx
         >>> G = nx.cycle_graph(4)
         >>> M = nx.contracted_nodes(G, 1, 3)
         >>> P3 = nx.path_graph(3)
         >>> nx.is_isomorphic(M, P3)
         True
+
+        >>> G = nx.MultiGraph(P3)
+        >>> M = nx.contracted_nodes(G, 0, 2)
+        >>> M.edges
+        MultiEdgeView([(0, 1, 0), (0, 1, 1)])
 
     See also
     --------
