@@ -21,7 +21,6 @@ __author__ = """Romain Fontugne (romain@iij.ad.jp)"""
 __all__ = ['random_reference','lattice_reference','sigma', 'omega']
 
 
-@not_implemented_for('directed')
 def random_reference(G, niter=10):
     """Compute a random graph by rewiring edges of the given graph while 
     keeping the same degree distribution.
@@ -96,7 +95,6 @@ def random_reference(G, niter=10):
             n+=1
     return G
 
-@not_implemented_for('directed')
 def lattice_reference(G, niter=10, D=None): 
     """Latticize the given graph by rewiring edges while keeping the same 
     degree distribution.
@@ -197,7 +195,6 @@ def lattice_reference(G, niter=10, D=None):
 
 
 
-@not_implemented_for('directed')
 def sigma(G, niter=100, nrand=10):
     """Return the small-world coefficient (sigma) of the given graph.
 
@@ -263,7 +260,6 @@ def sigma(G, niter=100, nrand=10):
     return sigma
 
 
-@not_implemented_for('directed')
 def omega(G, niter=100, nrand=10):
     """Return the small-world coefficient (omega) of the given graph, which is:
     
