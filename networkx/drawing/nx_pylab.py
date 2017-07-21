@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,8 +22,9 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 import networkx as nx
-from networkx.drawing.layout import shell_layout,\
-    circular_layout, spectral_layout, spring_layout, random_layout
+from networkx.drawing.layout import shell_layout, \
+    circular_layout, kamada_kawai_layout, spectral_layout, \
+    spring_layout, random_layout
 
 __all__ = ['draw',
            'draw_networkx',
@@ -32,6 +33,7 @@ __all__ = ['draw',
            'draw_networkx_labels',
            'draw_networkx_edge_labels',
            'draw_circular',
+           'draw_kamada_kawai',
            'draw_random',
            'draw_spectral',
            'draw_spring',
@@ -895,6 +897,22 @@ def draw_circular(G, **kwargs):
        function.
     """
     draw(G, circular_layout(G), **kwargs)
+
+
+def draw_kamada_kawai(G, **kwargs):
+    """Draw the graph G with a Kamada-Kawai force-directed layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
+    draw(G, kamada_kawai_layout(G), **kwargs)
 
 
 def draw_random(G, **kwargs):
