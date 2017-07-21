@@ -241,13 +241,12 @@ def sigma(G, niter=100, nrand=10):
 
     References
     ----------
-    .. [1] The brainstem reticular formation is a small-world, not scale-free, 
-    network M. D. Humphries, K. Gurney and T. J. Prescott, Proc. Roy. Soc. B 
-    2006 273, 503–511, doi:10.1098/rspb.2005.3354
+    .. [1] The brainstem reticular formation is a small-world, not scale-free,
+    network M. D. Humphries, K. Gurney and T. J. Prescott, Proc. Roy. Soc. B
+    2006 273, 503-511, doi:10.1098/rspb.2005.3354.
     .. [2] Humphries and Gurney (2008). "Network 'Small-World-Ness': A 
     Quantitative Method for Determining Canonical Network Equivalence". PLoS 
     One. 3 (4). PMID 18446219. doi:10.1371/journal.pone.0002051.
-
     """
     import numpy as np
 
@@ -256,10 +255,10 @@ def sigma(G, niter=100, nrand=10):
     randMetrics = {"C":[], "L": []}
     for i in range(nrand):
         Gr = random_reference(G, niter=niter)
-        randMetrics["C"].append(nx.algorithms.average_clustering(Gr))
+        randMetrics["C"].append(nx.algorithms.transitivity(Gr))
         randMetrics["L"].append(nx.algorithms.average_shortest_path_length(Gr))
 
-    C = nx.algorithms.average_clustering(G)
+    C = nx.algorithms.transitivity(G)
     L = nx.algorithms.average_shortest_path_length(G)
     Cr = np.mean(randMetrics["C"])
     Lr = np.mean(randMetrics["L"])
@@ -311,9 +310,10 @@ def omega(G, niter=100, nrand=10):
     References
     ----------
     .. [1] Telesford, Joyce, Hayasaka, Burdette, and Laurienti (2011). "The 
-    Ubiquity of Small-World Networks". Brain Connectivity. 1 (0038): 367–75. 
+    Ubiquity of Small-World Networks". Brain Connectivity. 1 (0038): 367-75.
     PMC 3604768. PMID 22432451. doi:10.1089/brain.2011.0038.
     """
+    import numpy as np
 
     # Compute the mean clustering coefficient and average shortest path length
     # for an equivalent random graph
@@ -321,10 +321,10 @@ def omega(G, niter=100, nrand=10):
     for i in range(nrand):
         Gr = random_reference(G, niter=niter)
         Gl = lattice_reference(G, niter=niter)
-        randMetrics["C"].append(nx.algorithms.average_clustering(Gl))
+        randMetrics["C"].append(nx.algorithms.transitivity(Gl))
         randMetrics["L"].append(nx.algorithms.average_shortest_path_length(Gr))
 
-    C = nx.algorithms.average_clustering(G)
+    C = nx.algorithms.transitivity(G)
     L = nx.algorithms.average_shortest_path_length(G)
     Cl = np.mean(randMetrics["C"])
     Lr = np.mean(randMetrics["L"])
