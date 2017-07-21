@@ -1142,8 +1142,8 @@ class AtlasView(Mapping):
     """An AtlasView is a Read-only Mapping of Mappings.
 
     It is a View into a dict-of-dict data structure.
-    The inner level of dict is read-write. But the 
-    outer level is read-only. 
+    The inner level of dict is read-write. But the
+    outer level is read-only.
 
     See Also
     ========
@@ -1175,8 +1175,8 @@ class AtlasView2(AtlasView):
     """An AtlasView2 is a Read-only Map of Maps of Maps.
 
     It is a View into a dict-of-dict-of-dict data structure.
-    The inner level of dict is read-write. But the 
-    outer levels are read-only. 
+    The inner level of dict is read-write. But the
+    outer levels are read-only.
 
     See Also
     ========
@@ -1193,8 +1193,8 @@ class AtlasView3(AtlasView2):
     """An AtlasView3 is a Read-only Map of Maps of Maps of Maps.
 
     It is a View into a dict-of-dict-of-dict-of-dict data structure.
-    The inner level of dict is read-write. But the 
-    outer levels are read-only. 
+    The inner level of dict is read-write. But the
+    outer levels are read-only.
 
     See Also
     ========

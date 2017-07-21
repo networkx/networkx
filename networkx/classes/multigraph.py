@@ -16,6 +16,7 @@ from networkx.classes.graph import Graph
 from networkx.classes.views import AtlasView3
 from networkx.classes.views import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
+from networkx.utils import iterable
 
 
 class MultiGraph(Graph):
@@ -50,6 +51,7 @@ class MultiGraph(Graph):
     Graph
     DiGraph
     MultiDiGraph
+    OrderedMultiGraph
 
     Examples
     --------
@@ -71,7 +73,7 @@ class MultiGraph(Graph):
 
     >>> G.add_nodes_from([2, 3])
     >>> G.add_nodes_from(range(100, 110))
-    >>> H=nx.path_graph(10)
+    >>> H = nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -224,38 +226,10 @@ class MultiGraph(Graph):
 
     Examples
     --------
-    Create a multigraph subclass that tracks the order nodes are added.
 
-    >>> from collections import OrderedDict
-    >>> class OrderedGraph(nx.MultiGraph):
-    ...    node_dict_factory = OrderedDict
-    ...    adjlist_outer_dict_factory = OrderedDict
-    >>> G = OrderedGraph()
-    >>> G.add_nodes_from((2, 1))
-    >>> list(G.nodes())
-    [2, 1]
-    >>> keys = G.add_edges_from(((2, 2), (2, 1), (2, 1), (1, 1)))
-    >>> # Edge addition order is not preserved
-
-    Create a multgraph object that tracks the order nodes are added
-    and for each node track the order that neighbors are added and for
-    each neighbor tracks the order that multiedges are added.
-
-    >>> class OrderedGraph(nx.MultiGraph):
-    ...    node_dict_factory = OrderedDict
-    ...    adjlist_outer_dict_factory = OrderedDict
-    ...    adjlist_inner_dict_factory = OrderedDict
-    ...    edge_key_dict_factory = OrderedDict
-    >>> G = OrderedGraph()
-    >>> G.add_nodes_from((2, 1))
-    >>> list(G.nodes())
-    [2, 1]
-    >>> elist = ((2, 2), (2, 1, 2, {'weight': 0.1}),
-    ...         (2, 1, 1, {'weight': 0.2}), (1, 1))
-    >>> keys = G.add_edges_from(elist)
-    >>> list(G.edges(keys=True))
-    [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
-
+    Please see :mod:`~networkx.classes.ordered` for examples of
+    creating graph subclasses by overwriting the base class `dict` with
+    a dictionary-like object.
     """
     # node_dict_factory = dict    # already assigned in Graph
     # adjlist_outer_dict_factory = dict
@@ -397,8 +371,9 @@ class MultiGraph(Graph):
             graph. The edges can be:
 
                 - 2-tuples (u, v) or
-                - 3-tuples (u, v, d) for an edge attribute dict d, or
-                - 4-tuples (u, v, k, d) for an edge identified by key k
+                - 3-tuples (u, v, d) for an edge data dict d, or
+                - 3-tuples (u, v, k) for not iterable key k, or
+                - 4-tuples (u, v, k, d) for an edge with data and key k
 
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
@@ -455,7 +430,12 @@ class MultiGraph(Graph):
                 raise NetworkXError(msg.format(e))
             ddd = {}
             ddd.update(attr)
-            ddd.update(dd)
+            try:
+                ddd.update(dd)
+            except:
+                if ne != 3:
+                    raise
+                key = dd
             key = self.add_edge(u, v, key)
             self[u][v][key].update(ddd)
             keylist.append(key)

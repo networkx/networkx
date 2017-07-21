@@ -9,7 +9,7 @@ PAPER         =
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
+ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 .PHONY: help clean html dirhtml pickle json htmlhelp qthelp latex changes linkcheck doctest epub
 
@@ -26,19 +26,13 @@ help:
 	@echo "  changes   to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  doctest   to run all doctests embedded in the documentation (if enabled)"
+	@echo "  gitwash   to update the gitwash documentation"
 
 
 clean:
-	-rm -rf build/* source/reference/generated/* source/examples/* source/static/examples/* doc/source/*.pdf doc/source/*.zip 
-	-rm -rf ../examples/*/*.png
-
-generate: build/generate-stamp
-build/generate-stamp: $(wildcard source/reference/*.rst)
-	mkdir -p build
-	python make_gallery.py 
-	python make_examples_rst.py ../examples source
-	touch build/generate-stamp
-
+	-rm -rf build/*
+	-rm -rf auto_examples modules
+	-rm -rf reference/generated reference/algorithms/generated reference/classes/generated reference/readwrite/generated
 
 dist: html
 	test -d build/latex || make latex
@@ -47,34 +41,33 @@ dist: html
 	(cd build/html; cp -r . ../../build/dist)
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
-
-html: generate
+html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 
-dirhtml: generate
+dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) build/dirhtml
 	@echo
 	@echo "Build finished. The HTML pages are in build/dirhtml."
 
-pickle: generate
+pickle:
 	$(SPHINXBUILD) -b pickle $(ALLSPHINXOPTS) build/pickle
 	@echo
 	@echo "Build finished; now you can process the pickle files."
 
-json: generate
+json:
 	$(SPHINXBUILD) -b json $(ALLSPHINXOPTS) build/json
 	@echo
 	@echo "Build finished; now you can process the JSON files."
 
-htmlhelp: generate
+htmlhelp:
 	$(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) build/htmlhelp
 	@echo
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in build/htmlhelp."
 
-qthelp: generate
+qthelp:
 	$(SPHINXBUILD) -b qthelp $(ALLSPHINXOPTS) build/qthelp
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
@@ -89,7 +82,7 @@ epub:
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
 
-latex: generate
+latex:
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) build/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in build/latex."
@@ -101,21 +94,19 @@ changes:
 	@echo
 	@echo "The overview file is in build/changes."
 
-linkcheck: generate
+linkcheck:
 	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) build/linkcheck
 	@echo
 	@echo "Link check complete; look for any errors in the above output " \
 	      "or in build/linkcheck/output.txt."
 
-doctest: generate
+doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) build/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in build/doctest/output.txt."
 
-gh-pages: clean dist
-	python gh-pages.py $(tag)
-
 gitwash-update:
-	python gitwash_dumper.py source/developer networkx \
-       --project-url=http://networkx.github.io \
-       --project-ml-url=http://groups.google.com/group/networkx-discuss/
+	python ../tools/gitwash_dumper.py developer networkx \
+	--project-url=http://networkx.github.io \
+	--project-ml-url=http://groups.google.com/group/networkx-discuss/ \
+	--gitwash-url git@github.com:matthew-brett/gitwash.git

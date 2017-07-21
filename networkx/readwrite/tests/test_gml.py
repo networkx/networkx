@@ -317,8 +317,8 @@ graph
                 assert_equal(gml, '\n'.join(nx.generate_gml(G)))
 
     def test_data_types(self):
-        data = [10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
-                [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}]]
+        data = [True, False, 10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
+                [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}, (2, "3")]]
         try:
             data.append(unichr(0x14444))  # fails under IronPython
         except ValueError:
