@@ -20,8 +20,7 @@ except ImportError:
     from itertools import izip_longest as zip_longest
 
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import pairwise
+from networkx.utils import pairwise, not_implemented_for
 
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
@@ -366,22 +365,26 @@ def info(G, n=None):
     return info
 
 
-def set_node_attributes(G, name, values):
+def set_node_attributes(G, values, name=None):
     """Sets node attributes from a given value or dictionary of values.
 
     Parameters
     ----------
     G : NetworkX Graph
 
-    name : string
-       Name of the node attribute to set.
+    values : scalar value, dict-like
+        What the node attribute should be set to.  If `values` is
+        not a dictionary, then it is treated as a single attribute value
+        that is then applied to every node in `G`.  This means that if
+        you provide a mutable object, like a list, updates to that object
+        will be reflected in the node attribute for each edge.  The attribute
+        name will be `name`.
 
-    values : dict
-       Dictionary of attribute values keyed by node. If `values` is
-       not a dictionary, then it is treated as a single attribute value
-       that is then applied to every node in `G`. This means that if
-       you provide a mutable object, like a list, updates to that object
-       will be reflected in the node attribute for each node.
+        If `values` is a dict or a dict of dict, the corresponding node's
+        attributes will be updated to `values`.
+
+    name : string (optional, default=None)
+        Name of the node attribute to set if values is a scalar.
 
     Examples
     --------
@@ -390,16 +393,19 @@ def set_node_attributes(G, name, values):
     each node::
 
         >>> G = nx.path_graph(3)
-        >>> bb = nx.betweenness_centrality(G)  # this is a dictionary
-        >>> nx.set_node_attributes(G, 'betweenness', bb)
+        >>> bb = nx.betweenness_centrality(G)
+        >>> type(bb)
+        <class 'dict'>
+        >>> nx.set_node_attributes(G, bb, 'betweenness')
         >>> G.node[1]['betweenness']
         1.0
 
-    If you provide a list as the third argument, updates to the list
+    If you provide a list as the second argument, updates to the list
     will be reflected in the node attribute for each node::
 
+        >>> G = nx.path_graph(3)
         >>> labels = []
-        >>> nx.set_node_attributes(G, 'labels', labels)
+        >>> nx.set_node_attributes(G, labels, 'labels')
         >>> labels.append('foo')
         >>> G.node[0]['labels']
         ['foo']
@@ -408,13 +414,39 @@ def set_node_attributes(G, name, values):
         >>> G.node[2]['labels']
         ['foo']
 
-    """
-    # Treat `value` as the attribute value for each node.
-    if not isinstance(values, dict):
-        values = dict(zip_longest(G, [], fillvalue=values))
+    If you provide a dictionary of dictionaries as the second argument,
+    the entire dictionary will be used to update node attributes::
 
-    for node, value in values.items():
-        G.node[node][name] = value
+        >>> G = nx.path_graph(3)
+        >>> attrs = {0: {'attr1': 20, 'attr2': 'nothing'}, 1: {'attr2': 3}}
+        >>> nx.set_node_attributes(G, attrs)
+        >>> G.node[0]['attr1']
+        20
+        >>> G.node[0]['attr2']
+        'nothing'
+        >>> G.node[1]['attr2']
+        3
+        >>> G.node[2]
+        {}
+
+    """
+    # Set node attributes based on type of `values`
+    if name is not None:  # `values` must not be a dict of dict
+        try:  # `values` is a dict
+            for n, v in values.items():
+                try:
+                    G.node[n][name] = values[n]
+                except KeyError:
+                    pass
+        except AttributeError:  # `values` is a constant
+            for n in G:
+                G.node[n][name] = values
+    else:  # `values` must be dict of dict
+        for n, d in values.items():
+            try:
+                G.node[n].update(d)
+            except KeyError:
+                pass
 
 
 def get_node_attributes(G, name):

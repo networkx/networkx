@@ -368,23 +368,33 @@ class TestCommonNeighbors():
 def test_set_node_attributes():
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     for G in graphs:
-        G = nx.path_graph(3, create_using=G)
-
         # Test single value
-        attr = 'hello'
+        G = nx.path_graph(3, create_using=G)
         vals = 100
-        nx.set_node_attributes(G, attr, vals)
+        attr = 'hello'
+        nx.set_node_attributes(G, vals, attr)
         assert_equal(G.node[0][attr], vals)
         assert_equal(G.node[1][attr], vals)
         assert_equal(G.node[2][attr], vals)
 
-        # Test multiple values
-        attr = 'hi'
+        # Test dictionary
+        G = nx.path_graph(3, create_using=G)
         vals = dict(zip(sorted(G.nodes()), range(len(G))))
-        nx.set_node_attributes(G, attr, vals)
+        attr = 'hi'
+        nx.set_node_attributes(G, vals, attr)
         assert_equal(G.node[0][attr], 0)
         assert_equal(G.node[1][attr], 1)
         assert_equal(G.node[2][attr], 2)
+
+        # Test dictionary of dictionaries
+        G = nx.path_graph(3, create_using=G)
+        d = {'hi': 0, 'hello': 200}
+        vals = dict.fromkeys(G.nodes(), d)
+        vals.pop(0)
+        nx.set_node_attributes(G, vals)
+        assert_equal(G.node[0], {})
+        assert_equal(G.node[1]["hi"], 0)
+        assert_equal(G.node[2]["hello"], 200)
 
 
 def test_set_edge_attributes():
@@ -435,7 +445,7 @@ def test_get_node_attributes():
         G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 100
-        nx.set_node_attributes(G, attr, vals)
+        nx.set_node_attributes(G, vals, attr)
         attrs = nx.get_node_attributes(G, attr)
         assert_equal(attrs[0], vals)
         assert_equal(attrs[1], vals)
