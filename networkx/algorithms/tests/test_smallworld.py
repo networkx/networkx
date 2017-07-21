@@ -35,3 +35,11 @@ def test_omega():
     omegal = omega(Gl)
     omegar = omega(Gr)
     assert_true(omegal<omegas and omegas<omegar)
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")

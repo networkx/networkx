@@ -332,11 +332,3 @@ def omega(G, niter=100, nrand=10):
     omega = (Lr/L) - (C/Cl)
 
     return omega
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
