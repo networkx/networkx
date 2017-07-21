@@ -7,7 +7,7 @@ Example subclass of the Graph class.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -16,12 +16,11 @@ Example subclass of the Graph class.
 #
 __docformat__ = "restructuredtext en"
 
-from networkx import Graph
-
-from networkx.exception import NetworkXException, NetworkXError
-import networkx.convert as convert
 from copy import deepcopy
 
+import matplotlib.pyplot as plt
+import networkx as nx
+from networkx import Graph
 
 class PrintGraph(Graph):
     """
@@ -133,3 +132,6 @@ if __name__ == '__main__':
     H2 = G.subgraph(range(4), copy=False)
     print(list(H1.edges()))
     print(list(H2.edges()))
+
+    nx.draw(G)
+    plt.show()

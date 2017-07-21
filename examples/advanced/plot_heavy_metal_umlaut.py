@@ -12,18 +12,15 @@ https://en.wikipedia.org/wiki/Heavy_metal_umlaut
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2006-2016 by
+#    Copyright (C) 2006-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-import networkx as NX
-try:
-    import pylab as P
-except ImportError:
-    pass
+import matplotlib.pyplot as plt
+import networkx as nx
 
 try:
     hd = 'H' + unichr(252) + 'sker D' + unichr(252)
@@ -42,7 +39,7 @@ except NameError:
     boc = 'Blue ' + chr(214) + 'yster Cult'
     dt = 'Deatht' + chr(246) + 'ngue'
 
-G = NX.Graph()
+G = nx.Graph()
 G.add_edge(hd, mh)
 G.add_edge(mc, st)
 G.add_edge(boc, mc)
@@ -55,11 +52,11 @@ G.add_edge(st, mh)
 # write in UTF-8 encoding
 fh = open('edgelist.utf-8', 'wb')
 fh.write('# -*- coding: utf-8 -*-\n'.encode('utf-8'))  # encoding hint for emacs
-NX.write_multiline_adjlist(G, fh, delimiter='\t', encoding='utf-8')
+nx.write_multiline_adjlist(G, fh, delimiter='\t', encoding='utf-8')
 
 # read and store in UTF-8
 fh = open('edgelist.utf-8', 'rb')
-H = NX.read_multiline_adjlist(fh, delimiter='\t', encoding='utf-8')
+H = nx.read_multiline_adjlist(fh, delimiter='\t', encoding='utf-8')
 
 for n in G.nodes():
     if n not in H:
@@ -67,12 +64,9 @@ for n in G.nodes():
 
 print(list(G.nodes()))
 
-try:
-    pos = NX.spring_layout(G)
-    NX.draw(G, pos, font_size=16, with_labels=False)
-    for p in pos:  # raise text positions
-        pos[p][1] += 0.07
-    NX.draw_networkx_labels(G, pos)
-    P.show()
-except:
-    pass
+pos = nx.spring_layout(G)
+nx.draw(G, pos, font_size=16, with_labels=False)
+for p in pos:  # raise text positions
+    pos[p][1] += 0.07
+nx.draw_networkx_labels(G, pos)
+plt.show()

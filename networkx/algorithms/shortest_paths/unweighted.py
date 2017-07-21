@@ -46,7 +46,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
     >>> length = dict(nx.single_source_shortest_path_length(G, 0))
     >>> length[4]
     4
-    >>> for node in [0, 1, 2, 3, 4]:
+    >>> for node in length:
     ...     print('{}: {}'.format(node, length[node]))
     0: 0
     1: 1

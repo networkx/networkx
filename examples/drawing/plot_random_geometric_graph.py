@@ -6,8 +6,8 @@ Random Geometric Graph
 Example
 """
 
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 
 G = nx.random_geometric_graph(200, 0.125)
 # position is stored as node attribute data for random_geometric_graph

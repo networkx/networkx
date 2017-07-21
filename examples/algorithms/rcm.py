@@ -7,10 +7,9 @@ Cuthill-McKee ordering of matrices
 
 The reverse Cuthill-McKee algorithm gives a sparse matrix ordering that
 reduces the matrix bandwidth.
-Requires NumPy
 """
 
-# Copyright (C) 2011-2016 by
+# Copyright (C) 2011-2017 by
 # Author:    Aric Hagberg <aric.hagberg@gmail.com>
 # BSD License
 import networkx as nx

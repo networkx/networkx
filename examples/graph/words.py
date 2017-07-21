@@ -21,12 +21,15 @@ References
 #          Brendt Wohlberg,
 #          hughdbrown@yahoo.com
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+
+import gzip
+from string import ascii_lowercase as lowercase
 
 import networkx as nx
 
@@ -36,7 +39,6 @@ import networkx as nx
 
 
 def generate_graph(words):
-    from string import ascii_lowercase as lowercase
     G = nx.Graph(name="words")
     lookup = dict((c, lowercase.index(c)) for c in lowercase)
 
@@ -56,7 +58,6 @@ def generate_graph(words):
 
 def words_graph():
     """Return the words example graph from the Stanford GraphBase"""
-    import gzip
     fh = gzip.open('words_dat.txt.gz', 'r')
     words = set()
     for line in fh.readlines():
@@ -69,20 +70,19 @@ def words_graph():
 
 
 if __name__ == '__main__':
-    from networkx import *
     G = words_graph()
     print("Loaded words_dat.txt containing 5757 five-letter English words.")
     print("Two words are connected if they differ in one letter.")
     print("Graph has %d nodes with %d edges"
-          % (number_of_nodes(G), number_of_edges(G)))
-    print("%d connected components" % number_connected_components(G))
+          % (nx.number_of_nodes(G), nx.number_of_edges(G)))
+    print("%d connected components" % nx.number_connected_components(G))
 
     for (source, target) in [('chaos', 'order'),
                              ('nodes', 'graph'),
                              ('pound', 'marks')]:
         print("Shortest path between %s and %s is" % (source, target))
         try:
-            sp = shortest_path(G, source, target)
+            sp = nx.shortest_path(G, source, target)
             for n in sp:
                 print(n)
         except nx.NetworkXNoPath:

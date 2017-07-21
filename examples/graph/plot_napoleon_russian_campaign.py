@@ -10,14 +10,14 @@ http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2006-2016 by
+#    Copyright (C) 2006-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-import string
+import matplotlib.pyplot as plt
 import networkx as nx
 
 
@@ -129,21 +129,17 @@ if __name__ == "__main__":
 
     (g, city) = minard_graph()
 
-    try:
-        import matplotlib.pyplot as plt
-        plt.figure(1, figsize=(11, 5))
-        plt.clf()
-        colors = ['b', 'g', 'r']
-        for G in g:
-            c = colors.pop(0)
-            node_size = [int(G.pop[n] / 300.0) for n in G]
-            nx.draw_networkx_edges(G, G.pos, edge_color=c, width=4, alpha=0.5)
-            nx.draw_networkx_nodes(G, G.pos, node_size=node_size, node_color=c, alpha=0.5)
-            nx.draw_networkx_nodes(G, G.pos, node_size=5, node_color='k')
+    plt.figure(1, figsize=(11, 5))
+    plt.clf()
+    colors = ['b', 'g', 'r']
+    for G in g:
+        c = colors.pop(0)
+        node_size = [int(G.pop[n] / 300.0) for n in G]
+        nx.draw_networkx_edges(G, G.pos, edge_color=c, width=4, alpha=0.5)
+        nx.draw_networkx_nodes(G, G.pos, node_size=node_size, node_color=c, alpha=0.5)
+        nx.draw_networkx_nodes(G, G.pos, node_size=5, node_color='k')
 
-        for c in city:
-            x, y = city[c]
-            plt.text(x, y + 0.1, c)
-        plt.show()
-    except ImportError:
-        pass
+    for c in city:
+        x, y = city[c]
+        plt.text(x, y + 0.1, c)
+    plt.show()

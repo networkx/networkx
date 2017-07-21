@@ -11,7 +11,7 @@ This uses Graphviz for layout so you need PyGraphviz or pydot.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2016
+#    Copyright (C) 2004-2017
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,10 +19,22 @@ This uses Graphviz for layout so you need PyGraphviz or pydot.
 #    BSD license.
 
 
+import matplotlib.pyplot as plt
+import networkx as nx
+try:
+    import pygraphviz
+    from networkx.drawing.nx_agraph import graphviz_layout
+except ImportError:
+    try:
+        import pydot
+        from networkx.drawing.nx_pydot import graphviz_layout
+    except ImportError:
+        raise ImportError("This example needs Graphviz and either "
+                          "PyGraphviz or pydot")
+
 def lanl_graph():
     """ Return the lanl internet view graph from lanl.edges
     """
-    import networkx as nx
     try:
         fh = open('lanl_routes.edgelist', 'r')
     except IOError:
@@ -48,18 +60,6 @@ def lanl_graph():
 
 
 if __name__ == '__main__':
-    import networkx as nx
-    import math
-    try:
-        import pygraphviz
-        from networkx.drawing.nx_agraph import graphviz_layout
-    except ImportError:
-        try:
-            import pydot
-            from networkx.drawing.nx_pydot import graphviz_layout
-        except ImportError:
-            raise ImportError("This example needs Graphviz and either "
-                              "PyGraphviz or pydot")
 
     G = lanl_graph()
 
@@ -67,7 +67,6 @@ if __name__ == '__main__':
           % (nx.number_of_nodes(G), nx.number_of_edges(G)))
     print(nx.number_connected_components(G), "connected components")
 
-    import matplotlib.pyplot as plt
     plt.figure(figsize=(8, 8))
     # use graphviz to find radial layout
     pos = graphviz_layout(G, prog="twopi", root=0)

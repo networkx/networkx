@@ -14,28 +14,33 @@ sometimes called the Erdős-Rényi graph.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-from networkx import *
 import sys
+
+import matplotlib.pyplot as plt
+from networkx import nx
 
 n = 10  # 10 nodes
 m = 20  # 20 edges
 
-G = gnm_random_graph(n, m)
+G = nx.gnm_random_graph(n, m)
 
 # some properties
 print("node degree clustering")
-for v in nodes(G):
-    print('%s %d %f' % (v, degree(G, v), clustering(G, v)))
+for v in nx.nodes(G):
+    print('%s %d %f' % (v, nx.degree(G, v), nx.clustering(G, v)))
 
 # print the adjacency list to terminal
 try:
-    write_adjlist(G, sys.stdout)
+    nx.write_adjlist(G, sys.stdout)
 except TypeError:  # Python 3.x
-    write_adjlist(G, sys.stdout.buffer)
+    nx.write_adjlist(G, sys.stdout.buffer)
+
+nx.draw(G)
+plt.show()

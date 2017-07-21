@@ -8,11 +8,7 @@ Draw a graph with matplotlib.
 You must have matplotlib for this to work.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
-
+import matplotlib.pyplot as plt
 import networkx as nx
 
 G = nx.house_graph()
