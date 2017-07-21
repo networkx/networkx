@@ -16,7 +16,6 @@ see the Wikipedia article on small-world network [1]_.
 """
 import networkx as nx
 from networkx.utils import *
-import numpy as np
 import random 
 __author__ = """Romain Fontugne (romain@iij.ad.jp)"""
 __all__ = ['random_reference','lattice_reference','sigma', 'omega']
@@ -136,6 +135,8 @@ def lattice_reference(G, niter=10, D=None):
     topology of protein networks." Science 296.5569 (2002): 910-913.
 
     """
+    import numpy as np
+
     if G.is_directed():
         raise nx.NetworkXError(\
             "lattice_reference() not defined for directed graphs.")
@@ -248,6 +249,7 @@ def sigma(G, niter=100, nrand=10):
     One. 3 (4). PMID 18446219. doi:10.1371/journal.pone.0002051.
 
     """
+    import numpy as np
 
     # Compute the mean clustering coefficient and average shortest path length
     # for an equivalent random graph
