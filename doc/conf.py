@@ -68,7 +68,8 @@ sphinx_gallery_conf = {
 #                                       '../examples/subclass']),
     # path where to save gallery generated examples
     'gallery_dirs': 'auto_examples',
-    'backreferences_dir': 'modules/generated'
+    'backreferences_dir': 'modules/generated',
+    'expected_failing_examples': ['../examples/advanced/plot_parallel_betweenness.py']
 }
 
 # generate autosummary pages
