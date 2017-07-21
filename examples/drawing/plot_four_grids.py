@@ -9,18 +9,14 @@ You must have matplotlib for this to work.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2016
+#    Copyright (C) 2004-2017
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
-
+import matplotlib.pyplot as plt
 import networkx as nx
 
 G = nx.grid_2d_graph(4, 4)  # 4x4 grid

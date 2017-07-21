@@ -10,15 +10,15 @@ Centrality measures of Krackhardt social network.
 # Date: 2005-05-12 14:33:11 -0600 (Thu, 12 May 2005)
 # Revision: 998
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 
 G = nx.krackhardt_kite_graph()
 

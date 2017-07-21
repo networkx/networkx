@@ -15,8 +15,8 @@ An information flow model for conflict and fission in small groups.
 Journal of Anthropological Research, 33, 452-473.
 """
 
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 
 G = nx.karate_club_graph()
 print("Node Degree")

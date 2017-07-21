@@ -19,7 +19,7 @@ https://raw.githubusercontent.com/networkx/networkx/master/examples/drawing/unix
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2005-2016 by
+#    Copyright (C) 2005-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -31,8 +31,8 @@ from email.utils import getaddresses, parseaddr
 import mailbox
 import sys
 
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 
 # unix mailbox recipe
 # see http://www.python.org/doc/current/lib/module-mailbox.html

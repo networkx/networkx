@@ -7,7 +7,7 @@ Example subclass of the Graph class.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,11 +18,9 @@ __docformat__ = "restructuredtext en"
 
 from copy import deepcopy
 
+import matplotlib.pyplot as plt
 import networkx as nx
 from networkx import Graph
-from networkx.exception import NetworkXException, NetworkXError
-import networkx.convert as convert
-import matplotlib.pyplot as plt
 
 class PrintGraph(Graph):
     """

@@ -28,25 +28,25 @@ from __future__ import print_function
 # Authors: Brendt Wohlberg, Aric Hagberg (hagberg@lanl.gov)
 # Date: 2005-04-01 07:56:22 -0700 (Fri, 01 Apr 2005)
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
+import gzip
 import re
 import sys
 
-from networkx import nx
 import matplotlib.pyplot as plt
+from networkx import nx
 
 def roget_graph():
     """ Return the thesaurus graph from the roget.dat example in
     the Stanford Graph Base.
     """
     # open file roget_dat.txt.gz (or roget_dat.txt)
-    import gzip
     fh = gzip.open('roget_dat.txt.gz', 'r')
 
     G = nx.DiGraph()

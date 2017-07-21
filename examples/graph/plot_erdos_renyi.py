@@ -14,7 +14,7 @@ sometimes called the Erdős-Rényi graph.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -23,8 +23,8 @@ sometimes called the Erdős-Rényi graph.
 
 import sys
 
-from networkx import nx
 import matplotlib.pyplot as plt
+from networkx import nx
 
 n = 10  # 10 nodes
 m = 20  # 20 edges

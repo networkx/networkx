@@ -13,9 +13,10 @@ See the JIT documentation and examples at http://thejit.org
 __author__ = """Ollie Glass (ollieglaskovik@gmail.com)"""
 
 import json
+
+import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.readwrite.json_graph import jit_data, jit_graph
-import matplotlib.pyplot as plt
 
 # add some nodes to a graph
 G = nx.Graph()

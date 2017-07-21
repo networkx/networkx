@@ -4,11 +4,10 @@ Eigenvalues
 ===========
 
 Create an G{n,m} random graph and compute the eigenvalues.
-Requires numpy and matplotlib.
 """
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy.linalg
-import matplotlib.pyplot as plt
 
 n = 1000  # 1000 nodes
 m = 5000  # 5000 edges

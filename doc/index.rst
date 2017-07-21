@@ -22,8 +22,8 @@ formats, generate many types of random and classic networks, analyze network
 structure, build network models, design new network algorithms, draw networks,
 and much more.
 
-Who uses NetworkX?
-------------------
+Audience
+--------
 
 The audience for NetworkX includes mathematicians, physicists, biologists,
 computer scientists, and social scientists. Good reviews of the science of

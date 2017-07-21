@@ -25,11 +25,12 @@ used is the Hartford, CT drug users network::
 # Authors:  Drew Conway <drew.conway@nyu.edu>, Aric Hagberg <hagberg@lanl.gov>
 
 from collections import defaultdict
+
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy
 from scipy.cluster import hierarchy
 from scipy.spatial import distance
-import matplotlib.pyplot as plt
 
 
 def create_hc(G):

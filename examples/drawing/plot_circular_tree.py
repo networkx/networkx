@@ -5,8 +5,8 @@ Circular Tree
 
 This
 """
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 
 try:
     import pygraphviz

@@ -13,6 +13,7 @@ Algorithms
    assortativity
    bipartite
    boundary
+   bridges
    centrality
    chains
    chordal

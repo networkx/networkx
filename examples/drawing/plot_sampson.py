@@ -11,7 +11,7 @@ Shows how to read data from a zip file and plot multiple frames.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2010-2016 by
+#    Copyright (C) 2010-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -20,8 +20,9 @@ Shows how to read data from a zip file and plot multiple frames.
 
 import zipfile
 import cStringIO
-import networkx as nx
+
 import matplotlib.pyplot as plt
+import networkx as nx
 
 zf = zipfile.ZipFile('sampson_data.zip')  # zipfile object
 e1 = cStringIO.StringIO(zf.read('samplike1.txt'))  # read info file
