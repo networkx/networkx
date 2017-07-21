@@ -15,12 +15,15 @@ see the Wikipedia article on small-world network [1]_.
 
 """
 import networkx as nx
+from networkx.utils import *
 import numpy as np
 import random 
 __author__ = """Romain Fontugne (romain@iij.ad.jp)"""
 __all__ = ['random_reference','lattice_reference','sigma', 'omega']
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def random_reference(G, niter=10):
     """Compute a random graph by rewiring edges of the given graph while 
     keeping the same degree distribution.
@@ -95,6 +98,8 @@ def random_reference(G, niter=10):
             n+=1
     return G
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def lattice_reference(G, niter=10, D=None): 
     """Latticize the given graph by rewiring edges while keeping the same 
     degree distribution.
@@ -195,6 +200,8 @@ def lattice_reference(G, niter=10, D=None):
 
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def sigma(G, niter=100, nrand=10):
     """Return the small-world coefficient (sigma) of the given graph.
 
@@ -260,6 +267,8 @@ def sigma(G, niter=100, nrand=10):
     return sigma
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def omega(G, niter=100, nrand=10):
     """Return the small-world coefficient (omega) of the given graph, which is:
     
@@ -321,3 +330,11 @@ def omega(G, niter=100, nrand=10):
     omega = (Lr/L) - (C/Cl)
 
     return omega
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
