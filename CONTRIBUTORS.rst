@@ -114,6 +114,7 @@ is partially historical, and now, mostly arbitrary.
 - Niels van Adrichem, GitHub: `NvanAdrichem <https://github.com/NvanAdrichem>`_
 - Michael E. Rose, GitHub: `Michael-E-Rose <https://github.com/Michael-E-Rose>`_
 - Jarrod Millman, GitHub: `jarrodmillman <https://github.com/jarrodmillman>`_
+- Romain Fontugne
 
 Support
 -------
