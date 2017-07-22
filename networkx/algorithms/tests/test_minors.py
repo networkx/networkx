@@ -182,7 +182,7 @@ class TestQuotient(object):
     def test_blockmodel(self):
         G = nx.path_graph(6)
         partition = [[0, 1], [2, 3], [4, 5]]
-        M = nx.blockmodel(G, partition)
+        M = nx.quotient_graph(G, partition, relabel=True)
         assert_nodes_equal(M.nodes(), [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():
@@ -193,7 +193,8 @@ class TestQuotient(object):
     def test_multigraph_blockmodel(self):
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [[0, 1], [2, 3], [4, 5]]
-        M = nx.blockmodel(G, partition, multigraph=True)
+        M = nx.quotient_graph(G, partition,
+                              create_using=nx.MultiGraph(), relabel=True)
         assert_nodes_equal(M.nodes(), [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():

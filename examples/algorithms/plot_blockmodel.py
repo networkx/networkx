@@ -5,7 +5,7 @@
 Blockmodel
 ==========
 
-Example of creating a block model using the blockmodel function in NX.  Data
+Example of creating a block model using the quotient_graph function in NX.  Data
 used is the Hartford, CT drug users network::
 
     @article{weeks2002social,
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # Create parititions with hierarchical clustering
     partitions = create_hc(H)
     # Build blockmodel graph
-    BM = nx.blockmodel(H, partitions)
+    BM = nx.quotient_graph(H, partitions, relabel=True)
 
     # Draw original graph
     pos = nx.spring_layout(H, iterations=100)
