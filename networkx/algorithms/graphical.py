@@ -23,7 +23,6 @@ __all__ = ['is_graphical',
            'is_digraphical',
            'is_valid_degree_sequence_erdos_gallai',
            'is_valid_degree_sequence_havel_hakimi',
-           'is_valid_degree_sequence', # deprecated
            ]
 
 def is_graphical(sequence, method='eg'):
@@ -50,7 +49,7 @@ def is_graphical(sequence, method='eg'):
     --------
     >>> G = nx.path_graph(4)
     >>> sequence = (d for n, d in G.degree())
-    >>> nx.is_valid_degree_sequence(sequence)
+    >>> nx.is_graphical(sequence)
     True
 
     References
@@ -69,8 +68,6 @@ def is_graphical(sequence, method='eg'):
         msg = "`method` must be 'eg' or 'hh'"
         raise nx.NetworkXException(msg)
     return valid
-
-is_valid_degree_sequence = is_graphical
 
 def _basic_graphical_tests(deg_sequence):
     # Sort and perform some simple tests on the sequence

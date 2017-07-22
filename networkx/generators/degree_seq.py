@@ -174,7 +174,7 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
 
     See Also
     --------
-    is_valid_degree_sequence
+    is_graphical
 
     Notes
     -----
@@ -491,7 +491,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
        Algorithms for Constructing Graphs and Digraphs with Given Valences
        and Factors  Discrete Mathematics, 6(1), pp. 79-88 (1973) 
     """
-    if not nx.is_valid_degree_sequence(deg_sequence):
+    if not nx.is_graphical(deg_sequence):
         raise nx.NetworkXError('Invalid degree sequence')
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed graphs are not supported")
@@ -733,7 +733,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
 
     See Also
     --------
-    is_valid_degree_sequence, configuration_model
+    is_graphical, configuration_model
 
     Notes
     -----
@@ -765,7 +765,7 @@ class DegreeSequenceRandomGraph(object):
     # class to generate random graphs with a given degree sequence
     # use random_degree_sequence_graph()
     def __init__(self, degree, seed=None):
-        if not nx.is_valid_degree_sequence(degree):
+        if not nx.is_graphical(degree):
             raise nx.NetworkXUnfeasible('degree sequence is not graphical')
         if seed is not None:
             random.seed(seed)
