@@ -222,6 +222,15 @@ class TestContraction(object):
         expected.add_edge(0, 0)
         assert_true(nx.is_isomorphic(actual, expected))
 
+    def test_create_multigraph(self):
+        """Tests that using a MultiGraph creates multiple edges."""
+        G = nx.path_graph(3, create_using=nx.MultiGraph())
+        actual = nx.contracted_nodes(G, 0, 2)
+        expected = nx.MultiDiGraph()
+        expected.add_edge(0, 1)
+        expected.add_edge(0, 1)
+        assert_edges_equal(actual.edges, expected.edges)
+
     def test_node_attributes(self):
         """Tests that node contraction preserves node attributes."""
         G = nx.cycle_graph(4)
@@ -234,7 +243,8 @@ class TestContraction(object):
         expected = nx.complete_graph(3)
         expected = nx.relabel_nodes(expected, {1: 2, 2: 3})
         expected.add_edge(0, 0)
-        expected.node[0].update(dict(foo='bar', contraction={1: dict(baz='xyzzy')}))
+        cdict = {1: {'baz': 'xyzzy'}}
+        expected.node[0].update(dict(foo='bar', contraction=cdict))
         assert_true(nx.is_isomorphic(actual, expected))
         assert_equal(actual.node, expected.node)
 
