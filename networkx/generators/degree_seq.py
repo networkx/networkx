@@ -208,15 +208,13 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
     Examples
     --------
     You can create a degree sequence following a particular distribution
-    by using the :func:`~networkx.utils.create_degree_sequence` function
-    along with one of the distribution functions in
+    by using the one of the distribution functions in
     :mod:`~networkx.utils.random_sequence` (or one of your own). For
     example, to create an undirected multigraph on one hundred nodes
     with degree sequence chosen from the power law distribution::
 
-        >>> from networkx.utils import create_degree_sequence
         >>> from networkx.utils import powerlaw_sequence
-        >>> sequence = create_degree_sequence(100, powerlaw_sequence)
+        >>> sequence = powerlaw_sequence(100)
         >>> G = nx.configuration_model(sequence)
         >>> len(G)
         100

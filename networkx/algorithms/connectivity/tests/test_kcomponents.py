@@ -1,4 +1,4 @@
-# Test for Moody and White k-components algorithm
+re for Moody and White k-components algorithm
 from nose.tools import assert_equal, assert_true, raises, assert_greater_equal
 import networkx as nx
 from networkx.algorithms.connectivity.kcomponents import (
@@ -104,7 +104,7 @@ def test_shell():
     _check_connectivity(G)
 
 def test_configuration():
-    deg_seq = nx.utils.create_degree_sequence(100, nx.utils.powerlaw_sequence)
+    deg_seq = nx.utils.powerlaw_sequence(100)
     G = nx.Graph(nx.configuration_model(deg_seq))
     G.remove_edges_from(G.selfloop_edges())
     _check_connectivity(G)

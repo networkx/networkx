@@ -36,7 +36,6 @@ Random Sequence Generators
 .. autosummary::
    :toctree: generated/
 
-   create_degree_sequence
    pareto_sequence
    powerlaw_sequence
    uniform_sequence

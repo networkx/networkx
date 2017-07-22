@@ -152,7 +152,7 @@ def test_shell():
 
 
 def test_configuration():
-    deg_seq = nx.utils.create_degree_sequence(100,nx.utils.powerlaw_sequence)
+    deg_seq = nx.utils.powerlaw_sequence(100)
     G = nx.Graph(nx.configuration_model(deg_seq))
     G.remove_edges_from(G.selfloop_edges())
     _check_separating_sets(G)

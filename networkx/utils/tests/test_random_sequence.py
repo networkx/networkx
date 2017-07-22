@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 from nose.tools import *
 from networkx.utils import uniform_sequence,powerlaw_sequence,\
-    create_degree_sequence,zipf_rv,zipf_sequence,random_weighted_sample,\
+    zipf_rv,zipf_sequence,random_weighted_sample,\
     weighted_choice
 import networkx.utils
 
 def test_degree_sequences():
-    seq=create_degree_sequence(10,uniform_sequence)
+    seq=uniform_sequence(10)
     assert_equal(len(seq), 10)
-    seq=create_degree_sequence(10,powerlaw_sequence)
+    seq=powerlaw_sequence(10)
     assert_equal(len(seq), 10)
 
 def test_zipf_rv():
