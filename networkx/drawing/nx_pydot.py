@@ -238,19 +238,6 @@ def to_pydot(N, strict=True):
     return P
 
 
-def pydot_from_networkx(N):
-    """Create a Pydot graph from a NetworkX graph."""
-    from warnings import warn
-    warn('pydot_from_networkx is replaced by to_pydot', DeprecationWarning)
-    return to_pydot(N)
-
-def networkx_from_pydot(D, create_using=None):
-    """Create a NetworkX graph from a Pydot graph."""
-    from warnings import warn
-    warn('networkx_from_pydot is replaced by from_pydot',
-         DeprecationWarning)
-    return from_pydot(D)
-
 def graphviz_layout(G,prog='neato',root=None, **kwds):
     """Create node positions using Pydot and Graphviz.
 
@@ -311,7 +298,7 @@ def pydot_layout(G, prog='neato', root=None, **kwds):
         print("Graphviz layout with %s failed"%(prog))
         print()
         print("To debug what happened try:")
-        print("P=pydot_from_networkx(G)")
+        print("P = nx.nx_pydot.to_pydot(G)")
         print("P.write_dot(\"file.dot\")")
         print("And then run %s on file.dot"%(prog))
         return
