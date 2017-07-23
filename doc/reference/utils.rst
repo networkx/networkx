@@ -39,7 +39,6 @@ Random Sequence Generators
    powerlaw_sequence
    cumulative_distribution
    discrete_sequence
-   zipf_sequence
    zipf_rv
    random_weighted_sample
    weighted_choice

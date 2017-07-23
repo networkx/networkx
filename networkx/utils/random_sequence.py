@@ -88,16 +88,6 @@ def zipf_rv(alpha, xmin=1, seed=None):
             break
     return x
 
-def zipf_sequence(n, alpha=2.0, xmin=1):
-    """Return a sample sequence of length n from a Zipf distribution with
-    exponent parameter alpha and minimum value xmin.
-
-    See Also
-    --------
-    zipf_rv
-    """
-    return [ zipf_rv(alpha,xmin) for _ in range(n)]
-
 def cumulative_distribution(distribution):
     """Return normalized cumulative distribution from discrete distribution."""
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 from networkx.utils import powerlaw_sequence,\
-    zipf_rv,zipf_sequence,random_weighted_sample,\
+    zipf_rv,random_weighted_sample,\
     weighted_choice
 import networkx.utils
 
@@ -14,10 +14,6 @@ def test_zipf_rv():
     assert_true(type(r),int)
     assert_raises(ValueError,zipf_rv,0.5)
     assert_raises(ValueError,zipf_rv,2,xmin=0)
-
-def test_zipf_sequence():
-    s = zipf_sequence(10)
-    assert_equal(len(s),10)
 
 def test_random_weighted_sample():
     mapping={'a':10,'b':20}
