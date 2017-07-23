@@ -105,13 +105,6 @@ def zipf_sequence(n, alpha=2.0, xmin=1):
     """
     return [ zipf_rv(alpha,xmin) for _ in range(n)]
 
-def uniform_sequence(n):
-    """
-    Return sample sequence of length n from a uniform distribution.
-    """
-    return [ random.uniform(0,n) for i in range(n)]
-
-
 def cumulative_distribution(distribution):
     """Return normalized cumulative distribution from discrete distribution."""
 

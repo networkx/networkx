@@ -38,7 +38,6 @@ Random Sequence Generators
 
    pareto_sequence
    powerlaw_sequence
-   uniform_sequence
    cumulative_distribution
    discrete_sequence
    zipf_sequence
