@@ -20,13 +20,6 @@ __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
 # uses Python's random module
 # http://www.python.org/doc/current/lib/module-random.html
 
-def pareto_sequence(n,exponent=1.0):
-    """
-    Return sample sequence of length n from a Pareto distribution.
-    """
-    return [random.paretovariate(exponent) for i in range(n)]
-
-
 def powerlaw_sequence(n,exponent=2.0):
     """
     Return sample sequence of length n from a power law distribution.

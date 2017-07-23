@@ -36,7 +36,6 @@ Random Sequence Generators
 .. autosummary::
    :toctree: generated/
 
-   pareto_sequence
    powerlaw_sequence
    cumulative_distribution
    discrete_sequence
