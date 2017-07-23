@@ -211,25 +211,24 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
     by using the one of the distribution functions in
     :mod:`~networkx.utils.random_sequence` (or one of your own). For
     example, to create an undirected multigraph on one hundred nodes
-    with degree sequence chosen from the power law distribution::
+    with degree sequence chosen from the power law distribution:
 
-        >>> from networkx.utils import powerlaw_sequence
-        >>> sequence = powerlaw_sequence(100)
-        >>> G = nx.configuration_model(sequence)
-        >>> len(G)
-        100
-        >>> actual_degrees = [d for v, d in G.degree()]
-        >>> actual_degrees == sequence
-        True
+    >>> sequence = nx.random_powerlaw_tree_sequence(100, tries=5000)
+    >>> G = nx.configuration_model(sequence)
+    >>> len(G)
+    100
+    >>> actual_degrees = [d for v, d in G.degree()]
+    >>> actual_degrees == sequence
+    True
 
     The returned graph is a multigraph, which may have parallel
-    edges. To remove any parallel edges from the returned graph::
+    edges. To remove any parallel edges from the returned graph:
 
-        >>> G = nx.Graph(G)
+    >>> G = nx.Graph(G)
 
     Similarly, to remove self-loops:
 
-        >>> G.remove_edges_from(G.selfloop_edges())
+    >>> G.remove_edges_from(G.selfloop_edges())
 
     """
     if sum(deg_sequence) % 2 != 0:

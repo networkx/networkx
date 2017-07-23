@@ -152,7 +152,7 @@ def test_shell():
 
 
 def test_configuration():
-    deg_seq = nx.utils.powerlaw_sequence(100)
+    deg_seq = nx.random_powerlaw_tree_sequence(100, tries=5000)
     G = nx.Graph(nx.configuration_model(deg_seq))
     G.remove_edges_from(G.selfloop_edges())
     _check_separating_sets(G)
