@@ -51,6 +51,43 @@ class TestLayout(object):
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
 
+    def check_scale_and_center(self, pos, scale, center):
+        center = numpy.array(center)
+        low = center - scale
+        hi = center + scale
+        vpos = numpy.array(list(pos.values()))
+        length = vpos.max(0) - vpos.min(0)
+        assert (length <= 2 * scale).all()
+        assert (vpos >= low).all()
+        assert (vpos <= hi).all()
+
+    def test_scale_and_center_arg(self):
+        sc = self.check_scale_and_center
+        c = (4, 5)
+        G = nx.complete_graph(9)
+        G.add_node(9)
+        sc(nx.random_layout(G, center=c), scale=0.5, center=(4.5, 5.5))
+        # rest can have 2*scale length: [-scale, scale]
+        sc(nx.spring_layout(G, scale=2, center=c), scale=2, center=c)
+        sc(nx.spectral_layout(G, scale=2, center=c), scale=2, center=c)
+        sc(nx.circular_layout(G, scale=2, center=c), scale=2, center=c)
+        sc(nx.shell_layout(G, scale=2, center=c), scale=2, center=c)
+        if self.scipy is not None:
+            sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
+
+    def test_default_scale_and_center(self):
+        sc = self.check_scale_and_center
+        c = (0, 0)
+        G = nx.complete_graph(9)
+        G.add_node(9)
+        sc(nx.random_layout(G), scale=0.5, center=(0.5, 0.5))
+        sc(nx.spring_layout(G), scale=1, center=c)
+        sc(nx.spectral_layout(G), scale=1, center=c)
+        sc(nx.circular_layout(G), scale=1, center=c)
+        sc(nx.shell_layout(G), scale=1, center=c)
+        if self.scipy is not None:
+            sc(nx.kamada_kawai_layout(G), scale=1, center=c)
+
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_matrix(self.Gs)
         pos = nx.drawing.layout._fruchterman_reingold(A)

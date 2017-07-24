@@ -108,9 +108,10 @@ def circular_layout(G, scale=1, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
-    scale : float
-        Scale factor for positions
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -164,18 +165,19 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     nlist : list of lists
        List of node lists for each shell.
 
-    scale : float
-        Scale factor for positions
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout, currently only dim=2 is supported
+        Dimension of layout, currently only dim=2 is supported.
 
     Returns
     -------
@@ -232,7 +234,7 @@ def fruchterman_reingold_layout(G, k=None,
                                 fixed=None,
                                 iterations=50,
                                 weight='weight',
-                                scale=1.0,
+                                scale=1,
                                 center=None,
                                 dim=2):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
@@ -240,6 +242,7 @@ def fruchterman_reingold_layout(G, k=None,
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     k : float (default=None)
         Optimal distance between nodes.  If None the distance is set to
@@ -261,15 +264,15 @@ def fruchterman_reingold_layout(G, k=None,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : float (default=1.0)
-        Scale factor for positions. The nodes are positioned
-        in a box of size [0, scale] x [0, scale].
+    scale : number (default: 1)
+        Scale factor for positions. Not used unless `fixed is None`.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
+        Not used unless `fixed is None`.
 
     dim : int
-        Dimension of layout
+        Dimension of layout.
 
     Returns
     -------
@@ -477,7 +480,7 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
 def kamada_kawai_layout(G, dist=None,
                         pos=None,
                         weight='weight',
-                        scale=1.0,
+                        scale=1,
                         center=None,
                         dim=2):
     """Position nodes using Kamada-Kawai path-length cost-function.
@@ -485,6 +488,7 @@ def kamada_kawai_layout(G, dist=None,
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     dist : float (default=None)
         A two-level dictionary of optimal distances between nodes,
@@ -500,11 +504,14 @@ def kamada_kawai_layout(G, dist=None,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
+    scale : number (default: 1)
+        Scale factor for positions.
+
     center : array-like or None
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout
+        Dimension of layout.
 
     Returns
     -------
@@ -601,19 +608,20 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : float
-        Scale factor for positions
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout
+        Dimension of layout.
 
     Returns
     -------
@@ -760,7 +768,7 @@ def rescale_layout(pos, scale=1):
     lim = 0  # max coordinate for all axes
     for i in range(pos.shape[1]):
         pos[:, i] -= pos[:, i].mean()
-        lim = max(pos[:, i].max(), lim)
+        lim = max(abs(pos[:, i]).max(), lim)
     # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
         for i in range(pos.shape[1]):
