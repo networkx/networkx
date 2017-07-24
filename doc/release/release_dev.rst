@@ -1,16 +1,44 @@
-*****************************************
-Version 2.0 release notes and API changes
-*****************************************
+Announcement: networkx 2.0
+==========================
 
-This page includes more detailed release information and API changes from
-NetworkX 1.10 to NetworkX 2.0.
+We're happy to announce the release of networkx 2.0!
 
-There is a `migration guide for people moving from 1.X to 2.0 <http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
+networkx is a Python package for the creation, manipulation, and study of the
+structure, dynamics, and functions of complex networks.
 
-Please send comments and questions to the networkx-discuss `mailing list <http://groups.google.com/group/networkx-discuss>`_.
+For more information, please visit our website
 
-API changes
+http://networkx.github.io/
+
+and our gallery of examples
+
+http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+
+Please send comments and questions to the networkx-discuss `mailing list
+<http://groups.google.com/group/networkx-discuss>`_.
+
+Highlights
+----------
+
+This release is the result of X of work, with over X pull requests by
+X contributors. Highlights include:
+
+- big items ...
+
+There is a `migration guide for people moving from 1.X to 2.0
+<http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
+
+Please send comments and questions to the networkx-discuss `mailing list
+<http://groups.google.com/group/networkx-discuss>`_.
+
+
+Improvements
+------------
+
+
+API Changes
 -----------
+
 * Base Graph Class Changes
   With the release of NetworkX 2.0 we are moving towards a view/iterator reporting API.
   We used to have two methods for the same property of the graph, one that returns a
@@ -143,3 +171,18 @@ API changes
    now have new behavior when `target` is specified. Instead of returning
    dicts for distances and paths a 2-tuple of (distance, path) is returned.
    When `target` is not specified the return value is still 2 dicts. 
+
+Deprecations
+------------
+
+
+Contributors to this release
+----------------------------
+
+<output of contribs.py>
+
+
+Pull requests merged in this release
+------------------------------------
+
+<output of contribs.py>
