@@ -456,8 +456,9 @@ PyGraphviz or pydot, are available on your system, you can also use
 ``nx_agraph.graphviz_layout(G)`` or ``nx_pydot.graphviz_layout(G)`` to get the
 node positions, or write the graph in dot format for further processing.
 
+>>> from networkx.drawing.nx_pydot import write_dot
 >>> pos = nx.nx_agraph.graphviz_layout(G)
 >>> nx.draw(G, pos=pos)
->>> nx.write_dot(G,'file.dot')
+>>> nx.write_dot(G, 'file.dot')
 
 See :doc:`/reference/drawing` for additional details.
