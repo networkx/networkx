@@ -10,8 +10,9 @@ Release date: TBD
 
 See :doc:`release/migration_guide_from_1.x_to_2.0`.
    
-API changes
-~~~~~~~~~~~
+Release notes
+~~~~~~~~~~~~~
+
 See :doc:`release/release_2.0`.
 
 NetworkX 1.11
@@ -843,10 +844,8 @@ Bug fixes
   - Normalize names of some graphs to produce strings that represent
     calling sequence
   
-
 NetworkX 0.27
 -------------
-
 
 Release date: 5 February 2006
 
@@ -876,10 +875,8 @@ Bug fixes
    - XGraph(multiedges=True) returns a copy of the list of edges
      for get_edge() 
 
-
 NetworkX 0.26
 -------------
-
 
 Release date: 6 January 2006
 
@@ -905,13 +902,10 @@ Bug fixes
    - Added missing names to generated graphs
    - Indexes for nodes in graphs start at zero by default (was 1)
 
-
 NetworkX 0.25
 -------------
 
-
 Release date: 5 December 2005
-
 
 New features
 ~~~~~~~~~~~~
@@ -988,6 +982,7 @@ New features
 
 Examples
 ~~~~~~~~
+
 Documentation
 ~~~~~~~~~~~~~
   - Changed to reflect NX-networkx change
@@ -1016,7 +1011,6 @@ New features
      + random_powerlaw_tree
      + dorogovtsev_goltsev_mendes_graph
 
-
 Examples
 ~~~~~~~~
   - Kevin Bacon movie actor graph: Examples/kevin_bacon.py
@@ -1027,8 +1021,6 @@ Documentation
 ~~~~~~~~~~~~~
   - Rewrite of setup scripts to install documentation and
     tests in documentation directory specified 
-
-
 
 Bug fixes
 ~~~~~~~~~
@@ -1041,6 +1033,3 @@ Bug fixes
    - Changed import statement lines to always use "import NX" to
      protect name-spaces   
    - Other minor bug-fixes and testing added
-
-
-
