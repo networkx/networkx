@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-# https://github.com/scikit-image/scikit-image/blob/master/doc/release/contribs.py
+import shlex
 import subprocess
 import sys
-import string
-import shlex
+import requests
 
 if len(sys.argv) != 2:
-    print("Usage: ./contributors.py tag-of-previous-release")
+    print("Usage: ./contribs.py tag-of-previous-release")
     sys.exit(-1)
 
 tag = sys.argv[1]
@@ -15,37 +14,32 @@ def call(cmd):
     return subprocess.check_output(shlex.split(cmd), universal_newlines=True).split('\n')
 
 tag_date = call("git log -n1 --format='%%ci' %s" % tag)[0]
-print("Release %s was on %s\n" % (tag, tag_date))
+tag_commit = call("git rev-list -n 1 %s" % tag)
+print("Release {} was on {}".format(tag, tag_date))
+print("Commit {}\n".format(tag_commit[0]))
 
-merges = call("git log --since='%s' --merges --format='>>>%%B' --reverse" % tag_date)
-merges = [m for m in merges if m.strip()]
-merges = '\n'.join(merges).split('>>>')
-merges = [m.split('\n')[:2] for m in merges]
-merges = [m for m in merges if len(m) == 2 and m[1].strip()]
 
-num_commits = call("git rev-list %s..HEAD --count" % tag)[0]
-print("A total of %s changes have been committed.\n" % num_commits)
+# Was
+# - Cherry pick missing commits (#2535)
 
-print("It contained the following %d merges:\n" % len(merges))
-for (merge, message) in merges:
-    if merge.startswith('Merge pull request #'):
-        PR = ' (%s)' % merge.split()[3]
-    else:
-        PR = ''
+# Now
+# - Cherry pick missing commits (#2535) [jarrodmillman in 6287d8f9] []
+# - Update graphml to care for a number of issues. (#2515) [dschult in 7be0d8f3] [u'Enhancement', u'Maintenance']
 
-    print('- ' + message + PR)
+url = "https://api.github.com/repos/networkx/networkx/issues/events?state=merged&per_page=100&page={}"
+page = 1
+while True:
 
-print("\nMade by the following committers [alphabetical by last name]:\n")
+    r = requests.get(url.format(page))
+    page += 1
 
-authors = call("git log --since='%s' --format=%%aN" % tag_date)
-authors = [a.strip() for a in authors if a.strip()]
-
-def key(author):
-    author = [v for v in author.split() if v[0] in string.ascii_letters]
-    if len(author) > 0:
-        return author[-1]
-
-authors = sorted(set(authors), key=key)
-
-for a in authors:
-    print('- ' + a)
+    for item in r.json():
+        if item['commit_id'] == tag_commit:
+            print(item['commit_id'])
+            break
+        if item['event'] == 'merged':
+            print('- {} (#{}) [{} {}] {}'.format(item['issue']['title'],
+                                                    item['issue']['number'],
+                                                    item['actor']['login'],
+                                                    item['commit_id'][:8],
+                                                    ", ".join([l['name'] for l in item['issue']['labels']])))
