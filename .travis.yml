@@ -21,17 +21,14 @@ matrix:
   include:
     - python: "2.7"
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy-5.3.1"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-    - python: "pypy-5.7.1"
+    - python: "pypy-5.8.0"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
     - python: "pypy3.5-5.8.0"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy-5.3.1"
-    - python: "pypy-5.7.1"
+    - python: "pypy-5.8.0"
     - python: "pypy3.5-5.8.0"
 
 addons:
@@ -59,9 +56,9 @@ before_install:
   # Workaround for travis-ci/travis-ci#2683
   - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
       if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-        wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+        wget http://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
       else
-        wget http://repo.continuum.io/miniconda/Miniconda3-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+        wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
       fi;
       bash miniconda.sh -b -p $HOME/miniconda;
       export PATH="$HOME/miniconda/bin:$PATH";
@@ -69,6 +66,8 @@ before_install:
       conda info -a;
       conda config --set always_yes yes --set changeps1 no;
       conda update -q conda;
+      # Useful for debugging any issues with conda
+      - conda info -a
     fi
 
   - if [[ "${PYTHON_VM}" == ipy ]]; then
