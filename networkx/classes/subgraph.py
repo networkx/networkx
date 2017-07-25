@@ -14,16 +14,12 @@ In some algorithms it is convenient to temporarily morph
 a graph to exclude some nodes or edges. It should be better
 to do that via a view than to remove and then re-add.
 """
-from __future__ import division
 from collections import Mapping
 
-from networkx.classes import AtlasView, EdgeView
 from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
+from networkx.classes.filters import no_filter
 
-__all__ = ['FilterAtlas', 'FilterAdjacency',
-           'FilterMultiInner', 'FilterMultiAdjacency',
-           'SubGraph', 'DiSubGraph',
-           'MultiSubGraph', 'MultiDiSubGraph']
+__all__ = ['SubGraph', 'DiSubGraph', 'MultiSubGraph', 'MultiDiSubGraph']
 
 
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
@@ -82,6 +78,20 @@ class FilterAdjacency(Mapping):   # edgedict
 
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
+    def __len__(self):
+        return sum(1 for n in self)
+
+    def __iter__(self):
+        for n in self._atlas:
+            if self.NODE_OK(n):
+                some_keys_ok = False
+                for key in self._atlas[n]:
+                    if self.EDGE_OK(n, key):
+                        some_keys_ok = True
+                        break
+                if some_keys_ok is True:
+                    yield n
+
     def __getitem__(self, nbr):
         if nbr in self._atlas and self.NODE_OK(nbr):
             def new_node_ok(key):
@@ -109,12 +119,8 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
                 for u, nbrs in self._atlas.items() if self.NODE_OK(u)}
 
 
-def nofilter(*items):
-    return True
-
-
 class SubGraph(Graph):
-    def __init__(self, graph, filter_node=nofilter, filter_edge=nofilter):
+    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
         self._graph = graph
         self._NODE_OK = filter_node
         self._EDGE_OK = filter_edge
@@ -126,24 +132,22 @@ class SubGraph(Graph):
 
 
 class DiSubGraph(DiGraph):
-    def __init__(self, graph, filter_node=nofilter, filter_edge=nofilter):
+    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
         self._graph = graph
         self._NODE_OK = filter_node
         self._EDGE_OK = filter_edge
-
-        def filter_in_edge(u, v):
-            return filter_edge(v, u)
 
         # Set graph interface
         self.graph = graph.graph
         self._node = FilterAtlas(graph._node, filter_node)
         self._adj = FilterAdjacency(graph._adj, filter_node, filter_edge)
-        self._pred = FilterAdjacency(graph._pred, filter_node, filter_in_edge)
+        self._pred = FilterAdjacency(graph._pred, filter_node,
+                                     lambda u, v: filter_edge(v, u))
         self._succ = self._adj
 
 
 class MultiSubGraph(MultiGraph):
-    def __init__(self, graph, filter_node=nofilter, filter_edge=nofilter):
+    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
         self._graph = graph
         self._NODE_OK = filter_node
         self._EDGE_OK = filter_edge
@@ -155,17 +159,16 @@ class MultiSubGraph(MultiGraph):
 
 
 class MultiDiSubGraph(MultiDiGraph):
-    def __init__(self, graph, filter_node=nofilter, filter_edge=nofilter):
+    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
         self._graph = graph
         self._NODE_OK = filter_node
         self._EDGE_OK = filter_edge
 
-        def f_in_edge(u, v, k):
-            return filter_edge(v, u, k)
-
         # Set graph interface
         self.graph = graph.graph
         self._node = FilterAtlas(graph._node, filter_node)
-        self._adj = FilterMultiAdjacency(graph._adj, filter_node, filter_edge)
-        self._pred = FilterMultiAdjacency(graph._pred, filter_node, f_in_edge)
+        FMA = FilterMultiAdjacency
+        self._adj = FMA(graph._adj, filter_node, filter_edge)
+        self._pred = FMA(graph._pred, filter_node,
+                         lambda u, v, k: filter_edge(v, u, k))
         self._succ = self._adj

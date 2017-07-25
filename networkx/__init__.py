@@ -98,9 +98,9 @@ from networkx.exception import *
 import networkx.external
 import networkx.utils
 
+import networkx.classes.filters
 import networkx.classes
 from networkx.classes import *
-
 
 import networkx.convert
 from networkx.convert import *
