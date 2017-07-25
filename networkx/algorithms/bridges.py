@@ -22,7 +22,8 @@ def bridges(G, root=None):
     """Generate all bridges in a graph.
 
     A *bridge* in a graph is an edge whose removal causes the number of
-    connected components of the graph to increase.
+    connected components of the graph to increase.  Equivalently a bridge is an
+    edge that does not belong to any cycle.
 
     Parameters
     ----------
@@ -58,7 +59,13 @@ def bridges(G, root=None):
     n)`, ignoring polylogarithmic factors, where *n* is the number of
     nodes in the graph and *m* is the number of edges.
 
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Bridge_(graph_theory)#Bridge-Finding_with_Chain_Decompositions
     """
+    # This is an implementation of the algorithm described in _[1]. Bridges can
+    # be found using chain decomposition. An edge e in G is a bridge if and
+    # only if e is not contained in any chain.
     chains = nx.chain_decomposition(G, root=root)
     chain_edges = set(chain.from_iterable(chains))
     for u, v in G.edges():
