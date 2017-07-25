@@ -21,14 +21,14 @@ matrix:
   include:
     - python: "2.7"
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy-5.8.0"
+    - python: "pypy-5.7.1"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
     - python: "pypy3.5-5.8.0"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy-5.8.0"
+    - python: "pypy-5.7.1"
     - python: "pypy3.5-5.8.0"
 
 addons:
@@ -66,8 +66,6 @@ before_install:
       conda info -a;
       conda config --set always_yes yes --set changeps1 no;
       conda update -q conda;
-      # Useful for debugging any issues with conda
-      - conda info -a
     fi
 
   - if [[ "${PYTHON_VM}" == ipy ]]; then
