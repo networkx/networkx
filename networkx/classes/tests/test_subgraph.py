@@ -1,5 +1,5 @@
 from nose.tools import assert_equal, assert_not_equal, \
-        assert_true, assert_false, assert_raises
+        assert_is, assert_true, assert_false, assert_raises
 
 import networkx as nx
 
@@ -192,3 +192,147 @@ class test_multidigraphview(test_multigraphview):
     graph = nx.MultiDiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multidiedges)
     show_edges_filter = staticmethod(nx.filters.show_multidiedges)
+
+
+# induced_subgraph
+class test_induced_subgraph(object):
+    def setUp(self):
+        self.K3 = G = nx.complete_graph(3)
+        G.graph['foo'] = []
+        G.node[0]['foo'] = []
+        G.remove_edge(1, 2)
+        ll = []
+        G.add_edge(1, 2, foo=ll)
+        G.add_edge(2, 1, foo=ll)
+
+    def test_full_graph(self):
+        G = self.K3
+        H = nx.induced_subgraph(G, [0, 1, 2, 5])
+        assert_equal(H.name, G.name)
+        self.graphs_equal(H, G)
+        self.same_attrdict(H, G)
+
+    def test_partial_subgraph(self):
+        G = self.K3
+        H = nx.induced_subgraph(G, 0)
+        assert_equal(dict(H.adj), {0: {}})
+        assert_not_equal(dict(G.adj), {0: {}})
+
+        H = nx.induced_subgraph(G, [0, 1])
+        assert_equal(dict(H.adj), {0: {1: {}}, 1: {0: {}}})
+
+    def same_attrdict(self, H, G):
+        old_foo = H[1][2]['foo']
+        H.edges[1, 2]['foo'] = 'baz'
+        assert_equal(G.edge, H.edge)
+        H.edges[1, 2]['foo'] = old_foo
+        assert_equal(G.edge, H.edge)
+        old_foo = H.node[0]['foo']
+        H.node[0]['foo'] = 'baz'
+        assert_equal(G.node, H.node)
+        H.node[0]['foo'] = old_foo
+        assert_equal(G.node, H.node)
+
+    def graphs_equal(self, H, G):
+        assert_equal(G._adj, H._adj)
+        assert_equal(G._node, H._node)
+        assert_equal(G.graph, H.graph)
+        assert_equal(G.name, H.name)
+        if not G.is_directed() and not H.is_directed():
+            assert_true(H._adj[1][2] is H._adj[2][1])
+            assert_true(G._adj[1][2] is G._adj[2][1])
+        else:  # at least one is directed
+            if not G.is_directed():
+                G._pred = G._adj
+                G._succ = G._adj
+            if not H.is_directed():
+                H._pred = H._adj
+                H._succ = H._adj
+            assert_equal(G._pred, H._pred)
+            assert_equal(G._succ, H._succ)
+            assert_true(H._succ[1][2] is H._pred[2][1])
+            assert_true(G._succ[1][2] is G._pred[2][1])
+
+
+# edge_subgraph
+class test_edge_subgraph(object):
+    def setup(self):
+        # Create a path graph on five nodes.
+        self.G = G = nx.path_graph(5)
+        # Add some node, edge, and graph attributes.
+        for i in range(5):
+            G.node[i]['name'] = 'node{}'.format(i)
+        G.edge[0, 1]['name'] = 'edge01'
+        G.edge[3, 4]['name'] = 'edge34'
+        G.graph['name'] = 'graph'
+        # Get the subgraph induced by the first and last edges.
+        self.H = nx.edge_subgraph(G, [(0, 1), (3, 4)])
+
+    def test_correct_nodes(self):
+        """Tests that the subgraph has the correct nodes."""
+        assert_equal([0, 1, 3, 4], sorted(self.H.nodes))
+
+    def test_correct_edges(self):
+        """Tests that the subgraph has the correct edges."""
+        assert_equal([(0, 1, 'edge01'), (3, 4, 'edge34')],
+                     sorted(self.H.edges(data='name')))
+
+    def test_add_node(self):
+        """Tests that adding a node to the original graph does not
+        affect the nodes of the subgraph.
+
+        """
+        self.G.add_node(5)
+        assert_equal([0, 1, 3, 4], sorted(self.H.nodes))
+        self.G.remove_node(5)
+
+    def test_remove_node(self):
+        """Tests that removing a node in the original graph
+        removes the nodes of the subgraph.
+
+        """
+        self.G.remove_node(0)
+        assert_equal([1, 3, 4], sorted(self.H.nodes))
+        self.G.add_edge(0, 1)
+
+    def test_node_attr_dict(self):
+        """Tests that the node attribute dictionary of the two graphs is
+        the same object.
+
+        """
+        for v in self.H:
+            assert_equal(self.G.node[v], self.H.node[v])
+        # Making a change to G should make a change in H and vice versa.
+        self.G.node[0]['name'] = 'foo'
+        assert_equal(self.G.node[0], self.H.node[0])
+        self.H.node[1]['name'] = 'bar'
+        assert_equal(self.G.node[1], self.H.node[1])
+
+    def test_edge_attr_dict(self):
+        """Tests that the edge attribute dictionary of the two graphs is
+        the same object.
+
+        """
+        for u, v in self.H.edges():
+            assert_equal(self.G.edge[u, v], self.H.edge[u, v])
+        # Making a change to G should make a change in H and vice versa.
+        self.G.edge[0, 1]['name'] = 'foo'
+        assert_equal(self.G.edge[0, 1]['name'],
+                     self.H.edge[0, 1]['name'])
+        self.H.edge[3, 4]['name'] = 'bar'
+        assert_equal(self.G.edge[3, 4]['name'],
+                     self.H.edge[3, 4]['name'])
+
+    def test_graph_attr_dict(self):
+        """Tests that the graph attribute dictionary of the two graphs
+        is the same object.
+
+        """
+        assert_is(self.G.graph, self.H.graph)
+
+    def test_readonly(self):
+        """Tests that the subgraph cannot change the graph structure"""
+        assert_raises(nx.NetworkXError, self.H.add_node, 5)
+        assert_raises(nx.NetworkXError, self.H.remove_node, 0)
+        assert_raises(nx.NetworkXError, self.H.add_edge, 5, 6)
+        assert_raises(nx.NetworkXError, self.H.remove_edge, 0, 1)
