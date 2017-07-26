@@ -7,7 +7,7 @@ Giant Component
 This example illustrates the sudden appearance of a
 giant connected component in a binomial random graph.
 """
-#    Copyright (C) 2006-2016
+#    Copyright (C) 2006-2017
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
