@@ -10,4 +10,3 @@ Minors
    contracted_nodes
    identified_nodes
    quotient_graph
-   blockmodel

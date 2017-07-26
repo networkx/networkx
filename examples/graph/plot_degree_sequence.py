@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from networkx import nx
 
 z = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-print(nx.is_valid_degree_sequence(z))
+print(nx.is_graphical(z))
 
 print("Configuration model")
 G = nx.configuration_model(z)  # configuration model

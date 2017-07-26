@@ -36,13 +36,9 @@ Random Sequence Generators
 .. autosummary::
    :toctree: generated/
 
-   create_degree_sequence
-   pareto_sequence
    powerlaw_sequence
-   uniform_sequence
    cumulative_distribution
    discrete_sequence
-   zipf_sequence
    zipf_rv
    random_weighted_sample
    weighted_choice
