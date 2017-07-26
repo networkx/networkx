@@ -28,8 +28,10 @@ class TestQuotient(object):
         G = nx.complete_multipartite_graph(2, 3, 4)
         # Two nodes are equivalent if they are not adjacent but have the same
         # neighbor set.
-        same_neighbors = lambda u, v: (u not in G[v] and v not in G[u]
-                                       and G[u] == G[v])
+
+        def same_neighbors(u, v):
+            return (u not in G[v] and v not in G[u] and G[u] == G[v])
+
         expected = nx.complete_graph(3)
         actual = nx.quotient_graph(G, same_neighbors)
         # It won't take too long to run a graph isomorphism algorithm on such
@@ -44,8 +46,10 @@ class TestQuotient(object):
         G = nx.complete_bipartite_graph(2, 3)
         # Two nodes are equivalent if they are not adjacent but have the same
         # neighbor set.
-        same_neighbors = lambda u, v: (u not in G[v] and v not in G[u]
-                                       and G[u] == G[v])
+
+        def same_neighbors(u, v):
+            return (u not in G[v] and v not in G[u] and G[u] == G[v])
+
         expected = nx.complete_graph(2)
         actual = nx.quotient_graph(G, same_neighbors)
         # It won't take too long to run a graph isomorphism algorithm on such
@@ -58,9 +62,13 @@ class TestQuotient(object):
 
         """
         G = nx.path_graph(5)
-        identity = lambda u, v: u == v
-        same_parity = lambda b, c: (arbitrary_element(b) % 2
-                                    == arbitrary_element(c) % 2)
+
+        def identity(u, v):
+            return u == v
+
+        def same_parity(b, c):
+            return (arbitrary_element(b) % 2 == arbitrary_element(c) % 2)
+
         actual = nx.quotient_graph(G, identity, same_parity)
         expected = nx.Graph()
         expected.add_edges_from([(0, 2), (0, 4), (2, 4)])
@@ -83,7 +91,10 @@ class TestQuotient(object):
         C = nx.condensation(G, scc)
         component_of = C.graph['mapping']
         # Two nodes are equivalent if they are in the same connected component.
-        same_component = lambda u, v: component_of[u] == component_of[v]
+
+        def same_component(u, v):
+            return component_of[u] == component_of[v]
+
         Q = nx.quotient_graph(G, same_component)
         assert_true(nx.is_isomorphic(C, Q))
 

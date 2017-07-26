@@ -1489,7 +1489,7 @@ def single_source_bellman_ford(G, source,
 
     paths = {source: [source]}  # dictionary of paths
     dist = _bellman_ford(G, [source], weight, paths=paths, cutoff=cutoff,
-                          target=target)
+                         target=target)
     if target is None:
         return (dist, paths)
     try:
