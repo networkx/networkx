@@ -502,8 +502,8 @@ class TestCutoff:
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
-        nx.set_edge_attributes(G, 'capacity',
-                               dict(((u, v), 1) for u, v in G.edges()))
+        nx.set_edge_attributes(G, dict(((u, v), 1) for u, v in G.edges()),
+                               'capacity')
         for flow_func in [shortest_augmenting_path, edmonds_karp]:
             for cutoff in [3, 2, 1]:
                 result = nx.maximum_flow_value(G, 0, 4, flow_func=flow_func,

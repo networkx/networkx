@@ -184,7 +184,7 @@ def test_weighted_shortest_simple_path():
         return sum(G.adj[u][v]['weight'] for (u, v) in zip(path, path[1:]))
     G = nx.complete_graph(5)
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
-    nx.set_edge_attributes(G, 'weight', weight)
+    nx.set_edge_attributes(G, weight, 'weight')
     cost = 0
     for path in nx.shortest_simple_paths(G, 0, 3, weight='weight'):
         this_cost = cost_func(path)
@@ -197,7 +197,7 @@ def test_directed_weighted_shortest_simple_path():
     G = nx.complete_graph(5)
     G = G.to_directed()
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
-    nx.set_edge_attributes(G, 'weight', weight)
+    nx.set_edge_attributes(G, weight, 'weight')
     cost = 0
     for path in nx.shortest_simple_paths(G, 0, 3, weight='weight'):
         this_cost = cost_func(path)
@@ -206,8 +206,8 @@ def test_directed_weighted_shortest_simple_path():
 
 def test_weight_name():
     G = nx.cycle_graph(7)
-    nx.set_edge_attributes(G, 'weight', 1)
-    nx.set_edge_attributes(G, 'foo', 1)
+    nx.set_edge_attributes(G, 1, 'weight')
+    nx.set_edge_attributes(G, 1, 'foo')
     G.adj[1][2]['foo'] = 7
     paths = list(nx.shortest_simple_paths(G, 0, 3, weight='foo'))
     solution = [[0, 6, 5, 4, 3], [0, 1, 2, 3]]

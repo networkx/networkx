@@ -153,7 +153,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     # Euclidean space of the specified dimension.
     if pos is None:
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
-    nx.set_node_attributes(G, 'pos', pos)
+    nx.set_node_attributes(G, pos, 'pos')
 
     if _is_scipy_available:
         _fast_construct_edges(G, radius, p)
@@ -276,8 +276,8 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = euclidean
-    nx.set_node_attributes(G, 'weight', weight)
-    nx.set_node_attributes(G, 'pos', pos)
+    nx.set_node_attributes(G, weight, 'weight')
+    nx.set_node_attributes(G, pos, 'pos')
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
@@ -381,7 +381,7 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
     (xmin, ymin, xmax, ymax) = domain
     # Each node gets a uniformly random position in the given rectangle.
     pos = {v: (uniform(xmin, xmax), uniform(ymin, ymax)) for v in G}
-    nx.set_node_attributes(G, 'pos', pos)
+    nx.set_node_attributes(G, pos, 'pos')
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = euclidean

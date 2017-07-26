@@ -33,7 +33,7 @@ class TestGomoryHuTree:
 
     def test_default_flow_function_karate_club_graph(self):
         G = nx.karate_club_graph()
-        nx.set_edge_attributes(G, 'capacity', 1)
+        nx.set_edge_attributes(G, 1, 'capacity')
         T = nx.gomory_hu_tree(G)
         assert_true(nx.is_tree(T))
         for u, v in combinations(G, 2):
@@ -43,7 +43,7 @@ class TestGomoryHuTree:
 
     def test_karate_club_graph(self):
         G = nx.karate_club_graph()
-        nx.set_edge_attributes(G, 'capacity', 1)
+        nx.set_edge_attributes(G, 1, 'capacity')
         for flow_func in flow_funcs:
             T = nx.gomory_hu_tree(G, flow_func=flow_func)
             assert_true(nx.is_tree(T))
@@ -54,7 +54,7 @@ class TestGomoryHuTree:
 
     def test_davis_southern_women_graph(self):
         G = nx.davis_southern_women_graph()
-        nx.set_edge_attributes(G, 'capacity', 1)
+        nx.set_edge_attributes(G, 1, 'capacity')
         for flow_func in flow_funcs:
             T = nx.gomory_hu_tree(G, flow_func=flow_func)
             assert_true(nx.is_tree(T))
@@ -65,7 +65,7 @@ class TestGomoryHuTree:
 
     def test_florentine_families_graph(self):
         G = nx.florentine_families_graph()
-        nx.set_edge_attributes(G, 'capacity', 1)
+        nx.set_edge_attributes(G, 1, 'capacity')
         for flow_func in flow_funcs:
             T = nx.gomory_hu_tree(G, flow_func=flow_func)
             assert_true(nx.is_tree(T))
@@ -76,7 +76,7 @@ class TestGomoryHuTree:
 
     def test_karate_club_graph_cutset(self):
         G = nx.karate_club_graph()
-        nx.set_edge_attributes(G, 'capacity', 1)
+        nx.set_edge_attributes(G, 1, 'capacity')
         T = nx.gomory_hu_tree(G)
         assert_true(nx.is_tree(T))
         u, v = 0, 33

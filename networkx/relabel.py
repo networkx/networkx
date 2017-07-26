@@ -223,6 +223,6 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     H.name = "(" + G.name + ")_with_int_labels"
     # create node attribute with the old label
     if label_attribute is not None:
-        nx.set_node_attributes(H, label_attribute,
-                               dict((v, k) for k, v in mapping.items()))
+        nx.set_node_attributes(H, dict((v, k) for k, v in mapping.items()),
+                               label_attribute)
     return H

@@ -55,7 +55,7 @@ class TestStructuralHoles(object):
 
     def test_constraint_weighted_directed(self):
         D = self.D.copy()
-        nx.set_edge_attributes(D, 'weight', self.D_weights)
+        nx.set_edge_attributes(D, self.D_weights, 'weight')
         constraint = nx.constraint(D, weight='weight')
         assert_almost_equal(round(constraint[0], 3), 0.840)
         assert_almost_equal(round(constraint[1], 3), 1.143)
@@ -63,7 +63,7 @@ class TestStructuralHoles(object):
 
     def test_effective_size_weighted_directed(self):
         D = self.D.copy()
-        nx.set_edge_attributes(D, 'weight', self.D_weights)
+        nx.set_edge_attributes(D, self.D_weights, 'weight')
         effective_size = nx.effective_size(D, weight='weight')
         assert_almost_equal(round(effective_size[0], 3), 1.567)
         assert_almost_equal(round(effective_size[1], 3), 1.083)
@@ -83,7 +83,7 @@ class TestStructuralHoles(object):
 
     def test_effective_size_undirected(self):
         G = self.G.copy()
-        nx.set_edge_attributes(G, 'weight', 1)
+        nx.set_edge_attributes(G, 1, 'weight')
         effective_size = nx.effective_size(G, weight='weight')
         assert_almost_equal(round(effective_size['G'], 2), 4.67)
         assert_almost_equal(round(effective_size['A'], 2), 2.50)
@@ -91,7 +91,7 @@ class TestStructuralHoles(object):
 
     def test_constraint_weighted_undirected(self):
         G = self.G.copy()
-        nx.set_edge_attributes(G, 'weight', self.G_weights)
+        nx.set_edge_attributes(G, self.G_weights, 'weight')
         constraint = nx.constraint(G, weight='weight')
         assert_almost_equal(round(constraint['G'], 3), 0.299)
         assert_almost_equal(round(constraint['A'], 3), 0.795)
@@ -99,7 +99,7 @@ class TestStructuralHoles(object):
 
     def test_effective_size_weighted_undirected(self):
         G = self.G.copy()
-        nx.set_edge_attributes(G, 'weight', self.G_weights)
+        nx.set_edge_attributes(G, self.G_weights, 'weight')
         effective_size = nx.effective_size(G, weight='weight')
         assert_almost_equal(round(effective_size['G'], 2), 5.47)
         assert_almost_equal(round(effective_size['A'], 2), 2.47)
@@ -114,7 +114,7 @@ class TestStructuralHoles(object):
     def test_effective_size_isolated(self):
         G = self.G.copy()
         G.add_node(1)
-        nx.set_edge_attributes(G, 'weight', self.G_weights)
+        nx.set_edge_attributes(G, self.G_weights, 'weight')
         effective_size = nx.effective_size(G, weight='weight')
         assert_true(math.isnan(effective_size[1]))
 

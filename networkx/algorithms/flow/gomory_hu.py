@@ -79,7 +79,7 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> nx.set_edge_attributes(G, 'capacity', 1)
+    >>> nx.set_edge_attributes(G, 1, 'capacity')
     >>> T = nx.gomory_hu_tree(G)
     >>> # The value of the minimum cut between any pair
     ... # of nodes in G is the minimum edge weight in the
