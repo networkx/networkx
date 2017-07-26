@@ -165,12 +165,22 @@ API Changes
    expanding and pushing each other. The algorithm is completly described in 
    [`https://arxiv.org/pdf/1703.09307.pdf <https://arxiv.org/pdf/1703.09307.pdf>`_]. 
 
- * [`#2510 <https://github.com/networkx/networkx/pull/2510>`_ and
+* [`#2510 <https://github.com/networkx/networkx/pull/2510>`_ and
    `#2508 <https://github.com/networkx/networkx/pull/2508>`_]
    single_source_dijkstra, multi_source_dijkstra and functions that use these
    now have new behavior when `target` is specified. Instead of returning
    dicts for distances and paths a 2-tuple of (distance, path) is returned.
-   When `target` is not specified the return value is still 2 dicts. 
+   When `target` is not specified the return value is still 2 dicts.
+
+* [`#2553 <https://github.com/networkx/networkx/issues/2553>`_]
+   set_node_attributes() and set_edge_attributes() now accept dict-of-dict input
+   of shape {node/edge: {name: value}} in addition to previous valid inputs:
+   {node/edge: value} and value. The order of the parameters changed also: 
+   The second parameter "values" is the value argument and the third parameter
+   "name" is the name of the attribute. "name" has default value None in which
+   case "values" must be the newly allowed form containing names. Previously
+   "name" came second witout default, and "values" came third.
+
 
 Deprecations
 ------------
