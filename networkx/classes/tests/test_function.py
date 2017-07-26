@@ -400,43 +400,63 @@ def test_set_node_attributes():
 def test_set_edge_attributes():
     graphs = [nx.Graph(), nx.DiGraph()]
     for G in graphs:
-        G = nx.path_graph(3, create_using=G)
-
         # Test single value
+        G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 3
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][attr], vals)
         assert_equal(G[1][2][attr], vals)
 
         # Test multiple values
+        G = nx.path_graph(3, create_using=G)
         attr = 'hi'
         edges = [(0, 1), (1, 2)]
         vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][attr], 0)
         assert_equal(G[1][2][attr], 1)
+
+        # Test dictionary of dictionaries
+        G = nx.path_graph(3, create_using=G)
+        d = {'hi': 0, 'hello': 200}
+        edges = [(0, 1)]
+        vals = dict.fromkeys(edges, d)
+        nx.set_edge_attributes(G, vals)
+        assert_equal(G[0][1]['hi'], 0)
+        assert_equal(G[0][1]['hello'], 200)
+        assert_equal(G[1][2], {})
 
 
 def test_set_edge_attributes_multi():
     graphs = [nx.MultiGraph(), nx.MultiDiGraph()]
     for G in graphs:
-        G = nx.path_graph(3, create_using=G)
-
         # Test single value
+        G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 3
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][0][attr], vals)
         assert_equal(G[1][2][0][attr], vals)
 
         # Test multiple values
+        G = nx.path_graph(3, create_using=G)
         attr = 'hi'
         edges = [(0, 1, 0), (1, 2, 0)]
         vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][0][attr], 0)
         assert_equal(G[1][2][0][attr], 1)
+
+        # Test dictionary of dictionaries
+        G = nx.path_graph(3, create_using=G)
+        d = {'hi': 0, 'hello': 200}
+        edges = [(0, 1, 0)]
+        vals = dict.fromkeys(edges, d)
+        nx.set_edge_attributes(G, vals)
+        assert_equal(G[0][1][0]['hi'], 0)
+        assert_equal(G[0][1][0]['hello'], 200)
+        assert_equal(G[1][2][0], {})
 
 
 def test_get_node_attributes():
@@ -458,7 +478,7 @@ def test_get_edge_attributes():
         G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 100
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         attrs = nx.get_edge_attributes(G, attr)
 
         assert_equal(len(attrs), 2)
