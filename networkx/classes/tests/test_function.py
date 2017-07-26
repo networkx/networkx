@@ -101,7 +101,8 @@ class TestFunction(object):
         assert_true(sorted(G.edges(nlist, data=True)) in oklists)
 
     def test_subgraph(self):
-        assert_equal(self.G.subgraph([0, 1, 2, 4]).adj, nx.subgraph(self.G, [0, 1, 2, 4]).adj)
+        assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,
+                     nx.subgraph(self.G, [0, 1, 2, 4]).adj)
         assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
                      nx.subgraph(self.DG, [0, 1, 2, 4]).adj)
 
@@ -279,8 +280,9 @@ class TestFunction(object):
         assert_true(nx.is_weighted(G, (3, 4)))
 
         G = nx.DiGraph()
-        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -5),
-                                   ('0', '2', 2), ('1', '2', 4), ('2', '3', 1)])
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5),
+                                   ('1', '0', -5), ('0', '2', 2),
+                                   ('1', '2', 4), ('2', '3', 1)])
         assert_true(nx.is_weighted(G))
         assert_true(nx.is_weighted(G, ('1', '0')))
 
@@ -311,8 +313,9 @@ class TestFunction(object):
         assert_true(nx.is_negatively_weighted(G))
 
         G = nx.DiGraph()
-        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2),
-                                   ('0', '2', 2), ('1', '2', -3), ('2', '3', 1)])
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5),
+                                   ('1', '0', -2), ('0', '2', 2),
+                                   ('1', '2', -3), ('2', '3', 1)])
         assert_true(nx.is_negatively_weighted(G))
         assert_false(nx.is_negatively_weighted(G, ('0', '3')))
         assert_true(nx.is_negatively_weighted(G, ('1', '0')))

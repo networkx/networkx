@@ -394,8 +394,8 @@ def set_node_attributes(G, values, name=None):
 
         >>> G = nx.path_graph(3)
         >>> bb = nx.betweenness_centrality(G)
-        >>> type(bb)
-        <class 'dict'>
+        >>> isinstance(bb, dict)
+        True
         >>> nx.set_node_attributes(G, bb, 'betweenness')
         >>> G.node[1]['betweenness']
         1.0
@@ -506,7 +506,7 @@ def set_edge_attributes(G, values, name=None):
 
         >>> G = nx.path_graph(3)
         >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
-        >>> nx.set_edge_attributes(G, 'betweenness', bb)
+        >>> nx.set_edge_attributes(G, bb, 'betweenness')
         >>> G.edge[1, 2]['betweenness']
         2.0
 
@@ -514,7 +514,7 @@ def set_edge_attributes(G, values, name=None):
     will be reflected in the edge attribute for each edge::
 
         >>> labels = []
-        >>> nx.set_edge_attributes(G, 'labels', labels)
+        >>> nx.set_edge_attributes(G, labels, 'labels')
         >>> labels.append('foo')
         >>> G.edge[0, 1]['labels']
         ['foo']
@@ -525,7 +525,8 @@ def set_edge_attributes(G, values, name=None):
     the entire dictionary will be used to update edge attributes::
 
         >>> G = nx.path_graph(3)
-        >>> attrs = {(0, 1): {'attr1': 20, 'attr2': 'nothing'}, (1, 2): {'attr2': 3}}
+        >>> attrs = {(0, 1): {'attr1': 20, 'attr2': 'nothing'},
+        ...          (1, 2): {'attr2': 3}}
         >>> nx.set_edge_attributes(G, attrs)
         >>> G[0][1]['attr1']
         20
@@ -535,25 +536,29 @@ def set_edge_attributes(G, values, name=None):
         3
 
     """
-    if name is not None:  # `values` must not be a dict of dict
-        try:  # `values` must not be a dict of dict
+    if name is not None:
+        # `values` does not contain attribute names
+        try:
+            # if `values` is a dict using `.items()` => {edge: value}
             if G.is_multigraph():
                 for (u, v, key), value in values.items():
                     try:
                         G[u][v][key][name] = value
                     except KeyError:
                         pass
-            else:  # `values` must be dict of dict
+            else:
                 for (u, v), value in values.items():
                     try:
                         G[u][v][name] = value
                     except KeyError:
                         pass
-        except AttributeError:  # `values` is a constant
+        except AttributeError:
+            # treat `values` as a constant
             for u, v, data in G.edges(data=True):
                 data[name] = values
     else:
-        if G.is_multigraph():  # `values` must be dict of dict
+        # `values` consists of doct-of-dict {edge: {attr: value}} shape
+        if G.is_multigraph():
             for (u, v, key), d in values.items():
                 try:
                     G[u][v][key].update(d)
@@ -599,7 +604,7 @@ def get_edge_attributes(G, name):
 
 
 def all_neighbors(graph, node):
-    """ Returns all of the neighbors of a node in the graph.
+    """Returns all of the neighbors of a node in the graph.
 
     If the graph is directed returns predecessors as well as successors.
 
