@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # chains.py - functions for finding chains in a graph
 #
-# Copyright 2004-2016 NetworkX developers.
+# Copyright 2004-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

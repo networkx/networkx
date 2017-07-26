@@ -1,6 +1,5 @@
-#    Copyright (C) 2016 by
+#    Copyright (C) 2016-2017 by
 #    Minas Gjoka
-#    All rights reserved.
 #    BSD license.
 #
 # Author:  Minas Gjoka (minas.gjoka@gmail.com)

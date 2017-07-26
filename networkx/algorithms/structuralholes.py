@@ -2,7 +2,7 @@
 #
 # structuralholes.py - functions for computing measures of structural holes
 #
-# Copyright 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 NetworkX developers.
+# Copyright 2008-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

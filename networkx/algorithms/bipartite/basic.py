@@ -4,7 +4,7 @@
 Bipartite Graph Algorithms
 ==========================
 """
-#    Copyright (C) 2013-2016 by
+#    Copyright (C) 2013-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

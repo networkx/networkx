@@ -1,6 +1,6 @@
 # depth_first_search.py - depth-first traversals of a graph
 #
-# Copyright 2004-2016 NetworkX developers.
+# Copyright 2004-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

@@ -1,6 +1,6 @@
 # boykovkolmogorov.py - Boykov Kolmogorov algorithm for maximum flow problems.
 #
-# Copyright 2016 NetworkX developers.
+# Copyright 2016-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

@@ -1,7 +1,7 @@
 # duplication.py - functions for generating graphs by duplicating nodes
 #
-# Copyright 2016 NetworkX developers.
-# Copyright (C) 2004-2016 by
+# Copyright 2016-2017 NetworkX developers.
+# Copyright (C) 2004-2017 by
 # Aric Hagberg <hagberg@lanl.gov>
 # Dan Schult <dschult@colgate.edu>
 # Pieter Swart <swart@lanl.gov>
