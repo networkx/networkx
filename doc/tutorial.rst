@@ -172,7 +172,7 @@ using subscript notation.
    graph in an inconsistent state.
 
 >>> G[1]  # Warning: do not change the resulting dict
-{2: {}}
+AtlasView({2: {}})
 >>> G[1][2]
 {}
 
@@ -257,7 +257,6 @@ or ``G.edge``.
 >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
 >>> G.add_edges_from([(1, 2, {'color': 'blue'}), (2, 3, {'weight': 8})])
 >>> G[1][2]['weight'] = 4.7
->>> G.edge[1][2]['weight'] = 4
 
 The special attribute ``weight`` should be numeric and holds values used by
 algorithms requiring weighted edges.
@@ -285,9 +284,9 @@ inconsistent at times.
 0.5
 >>> DG.degree(1, weight='weight')
 1.25
->>> DG.successors(1)
+>>> list(DG.successors(1))
 [2]
->>> DG.neighbors(1)
+>>> list(DG.neighbors(1))
 [2]
 
 Some algorithms work only for directed graphs and others are not well
@@ -383,11 +382,11 @@ functions such as:
 >>> G.add_edges_from([(1, 2), (1, 3)])
 >>> G.add_node("spam")       # adds node "spam"
 >>> list(nx.connected_components(G))
-[{1, 2, 3}, {'spam'}]
+[set([1, 2, 3]), set(['spam'])]
 >>> sorted(d for n, d in G.degree())
 [0, 1, 1, 2]
 >>> nx.clustering(G)
-{1: 0.0, 2: 0.0, 3: 0.0, 'spam': 0.0}
+{1: 0, 2: 0, 3: 0, 'spam': 0}
 
 Functions that return node properties return iterators over node, value
 2-tuples. These are easily stored in a `dict` structure if you desire.
@@ -459,6 +458,6 @@ node positions, or write the graph in dot format for further processing.
 >>> from networkx.drawing.nx_pydot import write_dot
 >>> pos = nx.nx_agraph.graphviz_layout(G)
 >>> nx.draw(G, pos=pos)
->>> nx.write_dot(G, 'file.dot')
+>>> write_dot(G, 'file.dot')
 
 See :doc:`/reference/drawing` for additional details.

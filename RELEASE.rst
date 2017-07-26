@@ -3,19 +3,24 @@ How to make a new release of ``networkx``
 
 - Update the release notes:
 
-  1. Review and cleanup ``doc/release/release_dev.txt``.
+  1. Review and cleanup ``doc/release/release_dev.txt``,
 
-  2. Make a list of merges and contributors by running
+  2. Fix code in documentation by running
+     ``cd doc && make doctest``.
+
+  3. Make a list of merges and contributors by running
      ``doc/release/contribs.py <tag of previous release>``.
 
-  3. Paste this list at the end of the ``release_dev.txt``. Scan the PR titles
+  4. Paste this list at the end of the ``release_dev.txt``. Scan the PR titles
      for highlights, deprecations, and API changes, and mention these in the
      relevant sections of the notes.
 
-  4. Rename to ``doc/release/release_<major>.<minor>.txt``
+  5. Rename to ``doc/release/release_<major>.<minor>.txt``.
 
-  5. Copy ``doc/release/release_template.txt`` to
+  6. Copy ``doc/release/release_template.txt`` to
      ``doc/release/release_dev.txt`` for the next release.
+
+  7. Update ``doc/news.rst``.
 
 - Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
 

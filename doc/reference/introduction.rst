@@ -285,7 +285,7 @@ edges ('A', 'B'), ('B', 'C')
 >>> G.add_edge('A', 'B')
 >>> G.add_edge('B', 'C')
 >>> print(G.adj)
-{'A': {'B': {}}, 'C': {'B': {}}, 'B': {'A': {}, 'C': {}}}
+AtlasView2({'A': {'B': {}}, 'C': {'B': {}}, 'B': {'A': {}, 'C': {}}})
 
 The data structure gets morphed slightly for each base graph class.
 For DiGraph two dict-of-dicts-of-dicts structures are provided, one 
