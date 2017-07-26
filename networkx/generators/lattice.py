@@ -280,7 +280,7 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
             yy = (h * j for i in cols for j in rows)
         pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy)
                if (i, j) in H}
-        set_node_attributes(H, 'pos', pos)
+        set_node_attributes(H, pos, 'pos')
 
     # set the name
     H.name = 'triangular_lattice_graph({}, {})'.format(m, n)
@@ -382,7 +382,7 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
         yy = (h * j for i in cols for j in rows)
     # exclude nodes not in G
     pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
-    set_node_attributes(G, 'pos', pos)
+    set_node_attributes(G, pos, 'pos')
 
     # set the name
     G.name = 'hexagonal_lattice_graph({}, {})'.format(m, n)

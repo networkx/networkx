@@ -85,7 +85,7 @@ class TestMaxflowLargeGraph:
     def test_complete_graph(self):
         N = 50
         G = nx.complete_graph(N)
-        nx.set_edge_attributes(G, 'capacity', 5)
+        nx.set_edge_attributes(G, 5, 'capacity')
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)
 

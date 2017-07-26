@@ -78,7 +78,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> from operator import itemgetter
         >>> G = nx.path_graph(10)
         >>> edges = G.edges()
-        >>> nx.set_edge_attributes(G, 'weight', {(u, v): v for u, v in edges})
+        >>> nx.set_edge_attributes(G, {(u, v): v for u, v in edges}, 'weight')
         >>> def heaviest(G):
         ...     u, v, w = max(G.edges(data='weight'), key=itemgetter(2))
         ...     return (u, v)
