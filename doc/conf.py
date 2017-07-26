@@ -190,14 +190,11 @@ latex_paper_size = 'letter'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
-latex_documents = [('tutorial', 'networkx_tutorial.tex',
-                    'NetworkX Tutorial',
-                    'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 0),
-                   ('reference/index', 'networkx_reference.tex',
+latex_documents = [('reference/index', 'networkx_reference.tex',
                     'NetworkX Reference',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]
 
-#latex_appendices = ['credits']
+latex_appendices = ['tutorial']
 
 # Intersphinx mapping
 intersphinx_mapping = {'http://docs.python.org/': None,
