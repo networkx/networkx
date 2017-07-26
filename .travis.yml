@@ -7,7 +7,6 @@ language: python
 
 python:
   - "2.7"
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
@@ -22,22 +21,15 @@ matrix:
   include:
     - python: "2.7"
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-    - python: "pypy-5.3.1"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
     - python: "pypy-5.7.1"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-      dist: trusty # 5.7.1 is currently published only on trusty
-    - python: "pypy3"
+    - python: "pypy3.5-5.8.0"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-      dist: precise  # temporary fix
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy"
-    - python: "pypy-5.3.1"
     - python: "pypy-5.7.1"
+    - python: "pypy3.5-5.8.0"
 
 addons:
   apt:
@@ -64,9 +56,9 @@ before_install:
   # Workaround for travis-ci/travis-ci#2683
   - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
       if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-        wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+        wget http://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
       else
-        wget http://repo.continuum.io/miniconda/Miniconda3-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+        wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
       fi;
       bash miniconda.sh -b -p $HOME/miniconda;
       export PATH="$HOME/miniconda/bin:$PATH";

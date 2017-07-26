@@ -194,19 +194,6 @@ class NodeView(Mapping, Set):
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, tuple(self))
 
-    # Needed for Python 3.3 which doesn't have Set define the
-    # right-side set operations __rsub__ __xor__ __rand__ __ror__
-    __rand__ = Set.__and__
-    __ror__ = Set.__or__
-    __rxor__ = Set.__xor__
-
-    def __rsub__(self, other):
-        if not isinstance(other, Set):
-            if not isinstance(other, Iterable):
-                return NotImplemented
-            other = self._from_iterable(other)
-        return self._from_iterable(e for e in other if e not in self)
-
 
 class NodeDataView(Set):
     """A DataView class for nodes of a NetworkX Graph
@@ -901,19 +888,6 @@ class OutEdgeView(Set, Mapping):
 
     def __repr__(self):
         return "{0.__class__.__name__}({1!r})".format(self, list(self))
-
-    # Needed for Python 3.3 which doesn't have set define the
-    # right-side set operations __rsub__ __xor__ __rand__ __ror__
-    __rand__ = Set.__and__
-    __ror__ = Set.__or__
-    __rxor__ = Set.__xor__
-
-    def __rsub__(self, other):
-        if not isinstance(other, Set):
-            if not isinstance(other, Iterable):
-                return NotImplemented
-            other = self._from_iterable(other)
-        return self._from_iterable(e for e in other if e not in self)
 
 
 class EdgeView(OutEdgeView):

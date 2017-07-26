@@ -8,6 +8,8 @@ NetworkX 2.0
 ------------
 Release date: TBD
 
+Support for Python 3.6 added, drop support for Python 3.3.
+
 See :doc:`release/migration_guide_from_1.x_to_2.0`.
    
 Release notes
