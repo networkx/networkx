@@ -151,7 +151,7 @@ if not on_rtd:
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['static']
+html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -190,14 +190,11 @@ latex_paper_size = 'letter'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
-latex_documents = [('tutorial', 'networkx_tutorial.tex',
-                    'NetworkX Tutorial',
-                    'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 0),
-                   ('reference/index', 'networkx_reference.tex',
+latex_documents = [('reference/index', 'networkx_reference.tex',
                     'NetworkX Reference',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]
 
-#latex_appendices = ['credits']
+latex_appendices = ['tutorial']
 
 # Intersphinx mapping
 intersphinx_mapping = {'http://docs.python.org/': None,
@@ -209,3 +206,8 @@ intersphinx_mapping = {'http://docs.python.org/': None,
 default_role = 'obj'
 
 numpydoc_show_class_members = False
+
+# Add the 'copybutton' javascript, to hide/show the prompt in code
+# examples
+def setup(app):
+    app.add_javascript('copybutton.js')

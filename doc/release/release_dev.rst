@@ -52,16 +52,16 @@ API Changes
   The old behavior
 
     >>> G = nx.complete_graph(5)
-    >>> G.nodes()
+    >>> G.nodes()  # doctest: +SKIP
     [0, 1, 2, 3, 4]
-    >>> G.nodes_iter()
-    <dictionary-keyiterator at 0x10898f470>
+    >>> G.nodes_iter()  # doctest: +SKIP
+    <dictionary-keyiterator at ...>
 
   has changed to
 
     >>> G = nx.complete_graph(5)
     >>> G.nodes()
-    NodesView([0, 1, 2, 3, 4])
+    NodeView((0, 1, 2, 3, 4))
     >>> list(G.nodes())
     [0, 1, 2, 3, 4]
 
@@ -70,9 +70,9 @@ API Changes
 
     >>> G.add_node(3, color='blue')
     >>> G.nodes[3]
-    'blue'
+    {'color': 'blue'}
     >>> G.nodes & {3, 4, 5}
-    {3, 4}
+    set([3, 4])
 
   The following methods have changed:
     * Graph/MultiGraph

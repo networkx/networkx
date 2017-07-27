@@ -15,12 +15,11 @@ The methods changed are explained with examples below.
 	>>> import networkx as nx
 	>>> G = nx.complete_graph(5) 
 	>>> G.nodes()
-	<dictionary-keyiterator at 0x102ae8730>
-
+        NodeView((0, 1, 2, 3, 4))
 
 People suprised by this output and expecting something like this
 
-	>>> G.nodes()
+	>>> G.nodes()  # doctest: +SKIP
 	[0, 1, 2, 3, 4]
 
 don't panic. Nothing is wrong.
@@ -33,23 +32,14 @@ Now ``G.nodes()`` returns an iterator. If you want a list of nodes send the iter
 In the same way for ``G.edges()``
 
 	>>> G.edges()
-	<generator object edges at 0x102ae9fa0>
+        EdgeView([(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
 	>>> list(G.edges())
-	[(0, 1),
-	 (0, 2),
-	 (0, 3),
-	 (0, 4),
-	 (1, 2),
-	 (1, 3),
-	 (1, 4),
-	 (2, 3),
-	 (2, 4),
-	 (3, 4)]
+        [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
 
 and ``G.neighbors(n)`` where n is a node.
  
 	>>> G.neighbors(2)
-	<dictionary-keyiterator at 0x102ae8aa0>
+	<dictionary-keyiterator object at ...>
 
 	>>> list(G.neighbors(2))
 	[0, 1, 3, 4]
@@ -64,13 +54,13 @@ Note that passing a single node to the degree method still returns the degree of
 	>>> G.degree(2)
 	4
 	>>> G.degree([1,2,3])
-	<generator object d_iter at 0x102ba8780>
+        DegreeView({1: 4, 2: 4, 3: 4})
 	>>> list(G.degree([1,2,3]))
 	[(1, 4), (2, 4), (3, 4)]
 	>>> dict(G.degree([1,2,3]))
 	{1: 4, 2: 4, 3: 4}
 	>>> G.degree()
-	<generator object d_iter at 0x102ba8af0>
+        DegreeView({0: 4, 1: 4, 2: 4, 3: 4, 4: 4})
 	>>> list(G.degree())
 	[(0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
 	>>> dict(G.degree())
@@ -85,11 +75,11 @@ Let's have a look on them.
 	>>> D = nx.DiGraph()
 	>>> D.add_edges_from([(1, 2), (2, 3), (1, 3), (2, 4)])
 	>>> D.nodes()
-	<dictionary-keyiterator at 0x102bd68e8>
+        NodeView((1, 2, 3, 4))
 	>>> list(D.nodes())
 	[1, 2, 3, 4]
 	>>> D.edges()
-	<generator object edges at 0x102ba88c0>
+        OutEdgeView([(1, 2), (1, 3), (2, 3), (2, 4)])
 	>>> list(D.edges())
 	[(1, 2), (1, 3), (2, 3), (2, 4)] 
 	>>> D.in_degree(2)
@@ -97,23 +87,23 @@ Let's have a look on them.
 	>>> D.out_degree(2)
 	2
 	>>> D.in_edges()
-	<generator object in_edges at 0x102ba8cd0>
+        InEdgeView([(1, 2), (1, 3), (2, 3), (2, 4)])
 	>>> list(D.in_edges())
 	[(1, 2), (1, 3), (2, 3), (2, 4)]
 	>>> D.out_edges(2)
-	<generator object edges at 0x102ba8c80>
+        OutEdgeDataView([(2, 3), (2, 4)])
 	>>> list(D.out_edges(2))
-	(2, 3), (2, 4)]
+        [(2, 3), (2, 4)]
 	>>> D.in_degree()
-	<generator object d_iter at 0x102ba8a00>
+        InDegreeView({1: 0, 2: 1, 3: 2, 4: 1})
 	>>> list(D.in_degree())
 	[(1, 0), (2, 1), (3, 2), (4, 1)]
 	>>> D.successors(2)
-	<dictionary-keyiterator at 0x102bdb418>
+        <dictionary-keyiterator object at ...>
 	>>> list(D.successors(2))
 	[3, 4]
 	>>> D.predecessors(2)
-	<dictionary-keyiterator at 0x102bdb730>
+        <dictionary-keyiterator object at ...>
 	>>> list(D.predecessors(2))
 	[1]
 

@@ -383,7 +383,7 @@ keyword which is no longer necessary.  For example,
  
 >>> G=nx.Graph()
 >>> G.add_edge('a','b')
->>> G.degree() # returns dictionary of degree keyed by node
+>>> G.degree()  # doctest: +SKIP
 {'a': 1, 'b': 1}
  
 Asking for the degree of a single node still returns a single number

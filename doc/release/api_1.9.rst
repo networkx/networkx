@@ -62,7 +62,7 @@ Main changes
    have to explicitly import them from the flow package:
 
 >>> from networkx.algorithms.flow import (ford_fulkerson, preflow_push,
-...        edmonds_karp, shortest_augmenting_path)
+...        edmonds_karp, shortest_augmenting_path)  # doctest: +SKIP
 
 
 7. We also added a capacity-scaling minimum cost flow algorithm:
@@ -90,7 +90,7 @@ True
 With NetworkX 1.9:
 
 >>> from networkx.algorithms.flow import (ford_fulkerson, preflow_push,
-...        edmonds_karp, shortest_augmenting_path)
+...        edmonds_karp, shortest_augmenting_path)  # doctest: +SKIP
 >>> flow_value = nx.maximum_flow_value(G, 0, 6)
 >>> cut_value = nx.minimum_cut_value(G, 0, 6)
 >>> flow_value == cut_value
