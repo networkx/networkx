@@ -470,7 +470,7 @@ class TestGraph(BaseAttrGraphTester):
         self.K3._node[2] = {}
 
     def test_data_input(self):
-        G = self.Graph(data={1: [2], 2: [1]}, name="test")
+        G = self.Graph({1: [2], 2: [1]}, name="test")
         assert_equal(G.name, "test")
         assert_equal(sorted(G.adj.items()), [(1, {2: {}}), (2, {1: {}})])
         G = self.Graph({1: [2], 2: [1]}, name="test")

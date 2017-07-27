@@ -53,7 +53,7 @@ def not_implemented_for(*graph_types):
            pass
     """
     @decorator
-    def _not_implemented_for(f, *args, **kwargs):
+    def _not_implemented_for(not_implement_for_func, *args, **kwargs):
         graph = args[0]
         terms = {'directed': graph.is_directed(),
                  'undirected': not graph.is_directed(),
@@ -67,10 +67,10 @@ def not_implemented_for(*graph_types):
             raise KeyError('use one or more of ',
                            'directed, undirected, multigraph, graph')
         if match:
-            raise nx.NetworkXNotImplemented('not implemented for %s type' %
-                                            ' '.join(graph_types))
+            msg = 'not implemented for %s type' % ' '.join(graph_types)
+            raise nx.NetworkXNotImplemented(msg)
         else:
-            return f(*args, **kwargs)
+            return not_implement_for_func(*args, **kwargs)
     return _not_implemented_for
 
 
@@ -160,7 +160,7 @@ def open_file(path_arg, mode='r'):
     # be closed, if it should be, by the decorator.
 
     @decorator
-    def _open_file(func, *args, **kwargs):
+    def _open_file(func_to_be_decorated, *args, **kwargs):
 
         # Note that since we have used @decorator, *args, and **kwargs have
         # already been resolved to match the function signature of func. This
@@ -224,7 +224,7 @@ def open_file(path_arg, mode='r'):
 
         # Finally, we call the original function, making sure to close the fobj
         try:
-            result = func(*new_args, **kwargs)
+            result = func_to_be_decorated(*new_args, **kwargs)
         finally:
             if close_fobj:
                 fobj.close()
@@ -268,7 +268,7 @@ def nodes_or_number(which_args):
            pass
     """
     @decorator
-    def _nodes_or_number(f, *args, **kw):
+    def _nodes_or_number(func_to_be_decorated, *args, **kw):
         # form tuple of arg positions to be converted.
         try:
             iter_wa = iter(which_args)
@@ -287,7 +287,7 @@ def nodes_or_number(which_args):
                     msg = "Negative number of nodes not valid: %i" % n
                     raise nx.NetworkXError(msg)
             new_args[i] = (n, nodes)
-        return f(*new_args, **kw)
+        return func_to_be_decorated(*new_args, **kw)
     return _nodes_or_number
 
 
