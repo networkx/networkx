@@ -115,9 +115,13 @@ class TestMaxflowLargeGraph:
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)
 
-        for flow_func in flow_funcs:
-            validate_flows(G, s, t, 156545, flow_func(G, s, t, **kwargs),
+        # do one flow_func to save time
+        flow_func = flow_funcs[0]
+        validate_flows(G, s, t, 156545, flow_func(G, s, t, **kwargs),
                            flow_func)
+#        for flow_func in flow_funcs:
+#            validate_flows(G, s, t, 156545, flow_func(G, s, t, **kwargs),
+#                           flow_func)
 
     def test_gw1(self):
         G = read_graph('gw1')
@@ -137,9 +141,13 @@ class TestMaxflowLargeGraph:
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)
 
-        for flow_func in flow_funcs:
-            validate_flows(G, s, t, 11875108, flow_func(G, s, t, **kwargs),
+        # do one flow_func to save time
+        flow_func = flow_funcs[0]
+        validate_flows(G, s, t, 11875108, flow_func(G, s, t, **kwargs),
                            flow_func)
+#        for flow_func in flow_funcs:
+#            validate_flows(G, s, t, 11875108, flow_func(G, s, t, **kwargs),
+#                           flow_func)
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')
