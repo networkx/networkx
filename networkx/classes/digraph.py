@@ -13,7 +13,8 @@ from copy import deepcopy
 
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import AtlasView2, OutEdgeView, InEdgeView, \
+from networkx.classes.coreviews import AdjacencyView
+from networkx.classes.views import OutEdgeView, InEdgeView, \
         DiDegreeView, InDegreeView, OutDegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
@@ -294,15 +295,15 @@ class DiGraph(Graph):
 
     @property
     def adj(self):
-        return AtlasView2(self._succ)
+        return AdjacencyView(self._succ)
 
     @property
     def succ(self):
-        return AtlasView2(self._succ)
+        return AdjacencyView(self._succ)
 
     @property
     def pred(self):
-        return AtlasView2(self._pred)
+        return AdjacencyView(self._pred)
 
     def add_node(self, n, **attr):
         """Add a single node n and update node attributes.

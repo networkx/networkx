@@ -16,10 +16,13 @@ to do that via a view than to remove and then re-add.
 """
 from collections import Mapping
 
-import networkx as nx
 from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
+from networkx.classes.coreviews import AtlasView
+from networkx.classes.coreviews import AdjacencyView, MultiAdjacencyView
 from networkx.classes.filters import no_filter, show_nodes, show_edges
 from networkx.exception import NetworkXError
+from networkx.utils import not_implemented_for
+
 
 __all__ = ['SubGraph', 'DiSubGraph', 'MultiSubGraph', 'MultiDiSubGraph',
            'induced_subgraph', 'edge_subgraph']
@@ -120,6 +123,91 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
                         if self.EDGE_OK(u, v, k)}
                     for v, kd in nbrs.items() if self.NODE_OK(v)}
                 for u, nbrs in self._atlas.items() if self.NODE_OK(u)}
+
+
+class SubGraphVeil(object):
+    def __init__(self, graph, filter_node, filter_edge):
+        self._graph = graph
+        self._NODE_OK = filter_node
+        self._EDGE_OK = filter_edge
+
+        # Set graph interface
+        if graph.is_multigraph():
+            FA = FilterMultiAdjacency
+        else:
+            FA = FilterAdjacency
+        self.graph = graph.graph
+        self._node = FilterAtlas(graph._node, filter_node)
+        self._adj = FA(graph._adj, filter_node, filter_edge)
+        if graph.is_directed():
+            self._succ = self._adj
+            self._pred = FA(graph._pred, filter_node,
+                            lambda u, v: filter_edge(v, u))
+
+    def not_allowed(self, *args, **kwds):
+        msg = "SubGraph Views are readonly. Mutations not allowed"
+        raise NetworkXError(msg)
+
+    add_node = not_allowed
+    remove_node = not_allowed
+    add_nodes_from = not_allowed
+    remove_nodes_from = not_allowed
+
+    add_edge = not_allowed
+    remove_edge = not_allowed
+    add_edges_from = not_allowed
+    add_weighted_edges_from = not_allowed
+    remove_edges_from = not_allowed
+
+    clear = not_allowed
+
+
+def subgraph(graph, filter_node=no_filter, filter_edge=no_filter):
+    class SubGraph(SubGraphVeil, graph.__class__):
+        pass
+    return SubGraph(graph, filter_node, filter_edge)
+
+
+def slow_subgraph(graph, filter_node=no_filter, filter_edge=no_filter):
+    cls = graph.__class__
+
+    class SubGraph(cls):
+        def __init__(self, graph, filter_node, filter_edge):
+            self._graph = graph
+            self._NODE_OK = filter_node
+            self._EDGE_OK = filter_edge
+
+            # Set graph interface
+            if graph.is_multigraph():
+                FA = FilterMultiAdjacency
+            else:
+                FA = FilterAdjacency
+            self.graph = graph.graph
+            self._node = FilterAtlas(graph._node, filter_node)
+            self._adj = FA(graph._adj, filter_node, filter_edge)
+            if graph.is_directed():
+                self._succ = self._adj
+                self._pred = FA(graph._pred, filter_node,
+                                lambda u, v: filter_edge(v, u))
+
+        def not_allowed(self, *args, **kwds):
+            msg = "SubGraph Views are readonly. Mutations not allowed"
+            raise NetworkXError(msg)
+
+        add_node = not_allowed
+        remove_node = not_allowed
+        add_nodes_from = not_allowed
+        remove_nodes_from = not_allowed
+
+        add_edge = not_allowed
+        remove_edge = not_allowed
+        add_edges_from = not_allowed
+        add_weighted_edges_from = not_allowed
+        remove_edges_from = not_allowed
+
+        clear = not_allowed
+
+    return SubGraph(graph, filter_node, filter_edge)
 
 
 class SubGraph(Graph):
@@ -272,6 +360,7 @@ def induced_subgraph(G, nbunch):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> H = G.subgraph([0, 1, 2])
     >>> list(H.edges)
@@ -312,6 +401,7 @@ def edge_subgraph(G, edges):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.path_graph(5)
     >>> H = G.edge_subgraph([(0, 1), (3, 4)])
     >>> list(H.nodes)
@@ -332,3 +422,28 @@ def edge_subgraph(G, edges):
     if G.is_directed():
         return DiSubGraph(G, induced_nodes, induced_edges)
     return SubGraph(G, induced_nodes, induced_edges)
+
+
+@not_implemented_for('undirected')
+def reverse_view(digraph):
+    if digraph.is_multigraph():
+        G = MultiDiGraph()
+        adj_view = MultiAdjacencyView
+    else:
+        G = DiGraph()
+        adj_view = AdjacencyView
+    # set graph interface
+    G.graph = digraph.graph
+    G._node = AtlasView(digraph._node)
+    G._adj = adj_view(digraph._pred)
+    G._pred = adj_view(digraph._succ)
+    G._succ = G._adj
+    return G
+
+
+def to_directed(graph):
+    return graph
+
+
+def to_undirected(digraph):
+    return digraph

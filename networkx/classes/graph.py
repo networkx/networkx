@@ -22,7 +22,7 @@ from copy import deepcopy
 from collections import Mapping
 
 import networkx as nx
-from networkx.classes.views import AtlasView, AtlasView2
+from networkx.classes.coreviews import AtlasView, AdjacencyView
 from networkx.classes.views import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
@@ -310,7 +310,7 @@ class Graph(object):
 
     @property
     def adj(self):
-        return AtlasView2(self._adj)
+        return AdjacencyView(self._adj)
 
     @property
     def name(self):

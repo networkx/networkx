@@ -15,7 +15,7 @@ import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
-from networkx.classes.views import AtlasView3
+from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.views import OutMultiEdgeView, InMultiEdgeView, \
         DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
 from networkx.exception import NetworkXError
@@ -106,7 +106,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     >>> keys = G.add_edges_from([(4,5,dict(route=282)), (4,5,dict(route=37))])
     >>> G[4]
-    AtlasView2({5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}})
+    AdjacencyView({5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}})
 
     **Attributes:**
 
@@ -153,7 +153,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     >>> len(G)  # number of nodes in graph
     5
     >>> G[1] # adjacency dict-like view keyed by neighbor to edge attributes
-    AtlasView2({2: {0: {'weight': 4}, 1: {'color': 'blue'}}})
+    AdjacencyView({2: {0: {'weight': 4}, 1: {'color': 'blue'}}})
 
     The fastest way to traverse all edges of a graph is via
     adjacency():
@@ -248,15 +248,15 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @property
     def adj(self):
-        return AtlasView3(self._succ)
+        return MultiAdjacencyView(self._succ)
 
     @property
     def succ(self):
-        return AtlasView3(self._succ)
+        return MultiAdjacencyView(self._succ)
 
     @property
     def pred(self):
-        return AtlasView3(self._pred)
+        return MultiAdjacencyView(self._pred)
 
     def add_edge(self, u, v, key=None, **attr):
         """Add an edge between u and v.
