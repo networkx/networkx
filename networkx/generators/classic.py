@@ -183,7 +183,6 @@ def barbell_graph(m1, m2, create_using=None):
 
     # left barbell
     G = complete_graph(m1, create_using)
-    G.name = "barbell_graph(%d,%d)" % (m1, m2)
 
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
@@ -229,7 +228,6 @@ def complete_graph(n, create_using=None):
     """
     n_name, nodes = n
     G = empty_graph(n_name, create_using)
-    G.name = "complete_graph(%s)" % (n_name,)
     if len(nodes) > 1:
         if G.is_directed():
             edges = itertools.permutations(nodes, 2)
@@ -249,7 +247,6 @@ def circular_ladder_graph(n, create_using=None):
 
     """
     G = ladder_graph(n, create_using)
-    G.name = "circular_ladder_graph(%d)" % n
     G.add_edge(0, n - 1)
     G.add_edge(n, 2 * n - 1)
     return G
@@ -302,8 +299,6 @@ def circulant_graph(n, offsets, create_using=None):
 
     """
     G = empty_graph(n, create_using)
-    template = 'circulant_graph(%d, [%s])'
-    G.name = template % (n, ', '.join(str(j) for j in offsets))
     for i in range(n):
         for j in offsets:
             G.add_edge(i, (i - j) % n)
@@ -333,7 +328,6 @@ def cycle_graph(n, create_using=None):
     """
     n_orig, nodes = n
     G = empty_graph(nodes, create_using)
-    G.name = "cycle_graph(%s)" % (n_orig,)
     G.add_edges_from(pairwise(nodes))
     G.add_edge(nodes[-1], nodes[0])
     return G
@@ -352,7 +346,6 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
         if create_using.is_multigraph():
             raise NetworkXError("Multigraph not supported")
     G = empty_graph(0, create_using)
-    G.name = "Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0, 1)
     if n == 0:
         return G
@@ -426,7 +419,6 @@ def empty_graph(n=0, create_using=None):
         G.clear()
 
     n_name, nodes = n
-    G.name = "empty_graph(%s)" % (n_name,)
     G.add_nodes_from(nodes)
     return G
 
@@ -443,7 +435,6 @@ def ladder_graph(n, create_using=None):
     if create_using is not None and create_using.is_directed():
         raise NetworkXError("Directed Graph not supported")
     G = empty_graph(2 * n, create_using)
-    G.name = "ladder_graph_(%d)" % n
     G.add_edges_from(pairwise(range(n)))
     G.add_edges_from(pairwise(range(n, 2 * n)))
     G.add_edges_from((v, v + n) for v in range(n))
@@ -501,7 +492,6 @@ def lollipop_graph(m, n, create_using=None):
     # connect ball to stick
     if M > 0 and N > 0:
         G.add_edge(m_nodes[-1], n_nodes[0])
-    G.name = "lollipop_graph(%s, %s)" % (m, n)
     return G
 
 
@@ -512,7 +502,6 @@ def null_graph(create_using=None):
 
     """
     G = empty_graph(0, create_using)
-    G.name = "null_graph()"
     return G
 
 
@@ -532,7 +521,6 @@ def path_graph(n, create_using=None):
     """
     n_name, nodes = n
     G = empty_graph(nodes, create_using)
-    G.name = "path_graph(%s)" % (n_name,)
     G.add_edges_from(pairwise(nodes))
     return G
 
@@ -565,7 +553,6 @@ def star_graph(n, create_using=None):
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
     G.add_edges_from((first, v) for v in nodes[1:])
-    G.name = "star_graph(%s)" % (n_name,)
     return G
 
 
@@ -574,7 +561,6 @@ def trivial_graph(create_using=None):
 
     """
     G = empty_graph(1, create_using)
-    G.name = "trivial_graph()"
     return G
 
 
@@ -608,7 +594,6 @@ def turan_graph(n, r):
 
     partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
     G = complete_multipartite_graph(*partitions)
-    G.name = "turan_graph({},{})".format(n, r)
     return G
 
 
@@ -632,10 +617,8 @@ def wheel_graph(n, create_using=None):
     n_name, nodes = n
     if n_name == 0:
         G = empty_graph(0, create_using=create_using)
-        G.name = "wheel_graph(0)"
         return G
     G = star_graph(nodes, create_using)
-    G.name = "wheel_graph(%s)" % (n_name,)
     if len(G) > 2:
         G.add_edges_from(pairwise(nodes[1:]))
         G.add_edge(nodes[-1], nodes[1])
@@ -699,7 +682,6 @@ def complete_multipartite_graph(*subset_sizes):
     """
     # The complete multipartite graph is an undirected simple graph.
     G = Graph()
-    G.name = 'complete_multiparite_graph{}'.format(subset_sizes)
 
     if len(subset_sizes) == 0:
         return G

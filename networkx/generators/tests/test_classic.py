@@ -91,19 +91,16 @@ class TestGeneratorClassic():
         b=barbell_graph(m1,m2)
         assert_true(number_of_nodes(b)==2*m1+m2)
         assert_true(number_of_edges(b)==m1*(m1-1) + m2 + 1)
-        assert_equal(b.name, 'barbell_graph(3,5)')
 
         m1=4; m2=10
         b=barbell_graph(m1,m2)
         assert_true(number_of_nodes(b)==2*m1+m2)
         assert_true(number_of_edges(b)==m1*(m1-1) + m2 + 1)
-        assert_equal(b.name, 'barbell_graph(4,10)')
 
         m1=3; m2=20
         b=barbell_graph(m1,m2)
         assert_true(number_of_nodes(b)==2*m1+m2)
         assert_true(number_of_edges(b)==m1*(m1-1) + m2 + 1)
-        assert_equal(b.name, 'barbell_graph(3,20)')
 
         # Raise NetworkXError if m1<2
         m1=1; m2=20
@@ -229,7 +226,6 @@ class TestGeneratorClassic():
         G=empty_graph(42)
         assert_equal(number_of_nodes(G), 42)
         assert_equal(number_of_edges(G), 0)
-        assert_equal(G.name, 'empty_graph(42)')
 
         G=empty_graph("abc")
         assert_equal(len(G), 3)
@@ -239,14 +235,12 @@ class TestGeneratorClassic():
         G=empty_graph(42,create_using=DiGraph(name="duh"))
         assert_equal(number_of_nodes(G), 42)
         assert_equal(number_of_edges(G), 0)
-        assert_equal(G.name, 'empty_graph(42)')
         assert_true(isinstance(G,DiGraph))
 
         # create empty multigraph
         G=empty_graph(42,create_using=MultiGraph(name="duh"))
         assert_equal(number_of_nodes(G), 42)
         assert_equal(number_of_edges(G), 0)
-        assert_equal(G.name, 'empty_graph(42)')
         assert_true(isinstance(G,MultiGraph))
 
         # create empty graph from another
@@ -254,7 +248,6 @@ class TestGeneratorClassic():
         G=empty_graph(42,create_using=pete)
         assert_equal(number_of_nodes(G), 42)
         assert_equal(number_of_edges(G), 0)
-        assert_equal(G.name, 'empty_graph(42)')
         assert_true(isinstance(G,Graph))
 
     def test_ladder_graph(self):
@@ -276,8 +269,6 @@ class TestGeneratorClassic():
             b=lollipop_graph(m1,m2)
             assert_equal(number_of_nodes(b), m1+m2)
             assert_equal(number_of_edges(b), m1*(m1-1)/2 + m2)
-            assert_equal(b.name,
-                         'lollipop_graph(' + str(m1) + ', ' + str(m2) + ')')
 
         # Raise NetworkXError if m<2
         assert_raises(networkx.exception.NetworkXError,
@@ -308,11 +299,9 @@ class TestGeneratorClassic():
     def test_path_graph(self):
         p=path_graph(0)
         assert_true(is_isomorphic(p, null_graph()))
-        assert_equal(p.name, 'path_graph(0)')
 
         p=path_graph(1)
         assert_true(is_isomorphic( p, empty_graph(1)))
-        assert_equal(p.name, 'path_graph(1)')
 
         p=path_graph(10)
         assert_true(is_connected(p))
@@ -368,8 +357,6 @@ class TestGeneratorClassic():
                      (4, complete_graph(4))]:
             g=wheel_graph(n)
             assert_true(is_isomorphic( g, G))
-
-        assert_equal(g.name, 'wheel_graph(4)')
 
         g=wheel_graph(10)
         assert_equal(sorted(d for n, d in g.degree()),

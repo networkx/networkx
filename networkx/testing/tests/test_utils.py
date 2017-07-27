@@ -97,28 +97,24 @@ class TestGraphsEqual(_GenericTest):
         G = nx.path_graph(4)
         H = nx.Graph()
         nx.add_path(H, range(4))
-        H.name='path_graph(4)'
         self._test_equal(G,H)
 
     def test_digraphs_equal(self):
         G = nx.path_graph(4, create_using=nx.DiGraph())
         H = nx.DiGraph()
         nx.add_path(H, range(4))
-        H.name='path_graph(4)'
         self._test_equal(G,H)
 
     def test_multigraphs_equal(self):
         G = nx.path_graph(4, create_using=nx.MultiGraph())
         H = nx.MultiGraph()
         nx.add_path(H, range(4))
-        H.name='path_graph(4)'
         self._test_equal(G,H)
 
     def test_multigraphs_equal(self):
         G = nx.path_graph(4, create_using=nx.MultiDiGraph())
         H = nx.MultiDiGraph()
         nx.add_path(H, range(4))
-        H.name='path_graph(4)'
         self._test_equal(G,H)
 
     def test_graphs_not_equal(self):
@@ -131,12 +127,11 @@ class TestGraphsEqual(_GenericTest):
         G = nx.path_graph(4)
         H = nx.Graph()
         nx.add_path(H, range(3))
-        H.name='path_graph(4)'
         self._test_not_equal(G,H)
 
     def test_graphs_not_equal3(self):
         G = nx.path_graph(4)
         H = nx.Graph()
         nx.add_path(H, range(4))
-        H.name='path_graph(foo)'
-        self._test_not_equal(G,H)
+        H.name = 'path_graph(4)'
+        self._test_not_equal(G, H)

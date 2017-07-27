@@ -58,7 +58,6 @@ def caveman_graph(l, k):
     """
     # l disjoint cliques of size k
     G = nx.empty_graph(l*k)
-    G.name = "caveman_graph(%s,%s)" % (l*k, k)
     if k > 1:
         for start in range(0, l*k, k):
             edges = itertools.combinations(range(start, start+k), 2)
@@ -103,7 +102,6 @@ def connected_caveman_graph(l, k):
        Amer. J. Soc. 105, 493-527, 1999.
     """
     G = nx.caveman_graph(l, k)
-    G.name = "connected_caveman_graph(%s,%s)" % (l, k)
     for start in range(0, l*k, k):
         G.remove_edge(start, start+1)
         G.add_edge(start, (start-1) % (l*k))
@@ -151,7 +149,6 @@ def relaxed_caveman_graph(l, k, p, seed=None):
         random.seed(seed)
     G = nx.caveman_graph(l, k)
     nodes = list(G)
-    G.name = "relaxed_caveman_graph (%s,%s,%s)" % (l, k, p)
     for (u, v) in G.edges():
         if random.random() < p:  # rewire the edge
             x = random.choice(nodes)

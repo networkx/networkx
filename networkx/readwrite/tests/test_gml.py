@@ -243,6 +243,7 @@ graph
         # https://github.com/networkx/networkx/issues/1061
         # Encoding quotes as HTML entities.
         G = nx.path_graph(1)
+        G.name = "path_graph(1)"
         attr = 'This is "quoted" and this is a copyright: ' + unichr(169)
         G.node[0]['demo'] = attr
         fobj = tempfile.NamedTemporaryFile()
