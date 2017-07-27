@@ -337,6 +337,30 @@ class TestReadGraphML(BaseGraphML):
         H = nx.parse_graphml(s)
         assert_equal(sorted(H.edges(keys=True)), expected)
 
+    def test_preserve_multi_edge_data(self):
+        # Test that data and keys of edges are preserved when we write then read it.
+        G = nx.MultiGraph()
+        G.add_node(1)
+        G.add_node(2)
+        G.add_edges_from([
+            # edges with no data, no keys:
+            (1, 2),
+            # edges with only data:
+            (1, 2, dict(key='data_key1')),
+            (1, 2, dict(id='data_id2')),
+            (1, 2, dict(key='data_key3', id='data_id3')),
+            # edges with both data and keys:
+            (1, 2, 103, dict(key='data_key4')),
+            (1, 2, 104, dict(id='data_id5')),
+            (1, 2, 105, dict(key='data_key6', id='data_id7')),
+        ])
+        fh = io.BytesIO()
+        nx.write_graphml(G, fh)
+        fh.seek(0)
+        H = nx.read_graphml(fh, node_type=int)
+        assert_edges_equal(G.edges(data=True, keys=True), H.edges(data=True, keys=True))
+        assert_equal(G._adj, H._adj)
+
     def test_yfiles_extension(self):
         data = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
