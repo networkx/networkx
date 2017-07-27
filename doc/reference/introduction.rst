@@ -88,7 +88,7 @@ same methods.
 
 
 Graphs
-=======
+------
 
 The first choice to be made when using NetworkX is what type of graph
 object to use.  A graph (network) is a collection of nodes together
@@ -117,7 +117,7 @@ The basic graph classes are named:
 
 
 Nodes and Edges
---------------- 
+^^^^^^^^^^^^^^^
 
 The next choice you have to make when specifying a graph is what kinds
 of nodes and edges to use.  
@@ -148,7 +148,7 @@ an undirected/directed graph with or without multiedges you are ready to build
 your network.
 
 Graph Creation
-==============
+--------------
 
 NetworkX graph objects can be created in one of three ways:
 
@@ -188,7 +188,7 @@ see the :doc:`readwrite/index` subpackage.
 
 
 Graph Reporting
-===============
+---------------
 
 Class methods are used for the basic reporting functions neighbors, edges and degree.
 Reporting of lists is often needed only to iterate through that list so we supply
@@ -214,7 +214,7 @@ documentation under the term :ref:`algorithms<algorithms>`.
 
 
 Algorithms
-==========
+----------
 
 A number of graph algorithms are provided with NetworkX.
 These include shortest path, and breadth first search 
@@ -236,7 +236,7 @@ find the shortest weighted path:
 ['a', 'c', 'd']
 
 Drawing
-=======
+-------
 
 While NetworkX is not designed as a network layout tool, we provide
 a simple interface to drawing packages and some simple layout algorithms. 
@@ -257,7 +257,7 @@ edges are then lines between those dots.
 See the :doc:`examples </auto_examples/index>` for more ideas.
 
 Data Structure
-==============
+--------------
 
 NetworkX uses a "dictionary of dictionaries of dictionaries" as the
 basic network data structure.  This allows fast lookup with reasonable
