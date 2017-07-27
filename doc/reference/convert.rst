@@ -54,5 +54,7 @@ Pandas
 .. autosummary::
    :toctree: generated/
 
-   to_pandas_dataframe
-   from_pandas_dataframe
+   to_pandas_adjacency
+   from_pandas_adjacency
+   to_pandas_edgelist
+   from_pandas_edgelist

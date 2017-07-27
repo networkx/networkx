@@ -134,11 +134,18 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     try:
         import pandas as pd
         if isinstance(data, pd.DataFrame):
-            try:
-                return nx.from_pandas_dataframe(data, edge_attr=True, create_using=create_using)
-            except:
-                msg = "Input is not a correct Pandas DataFrame."
-                raise nx.NetworkXError(msg)
+            if data.shape[0] == data.shape[1]:
+                try:
+                    return nx.from_pandas_adjacency(data, create_using=create_using)
+                except:
+                    msg = "Input is not a correct Pandas DataFrame adjacency matrix."
+                    raise nx.NetworkXError(msg)
+            else:
+                try:
+                    return nx.from_pandas_edgelist(data, edge_attr=True, create_using=create_using)
+                except:
+                    msg = "Input is not a correct Pandas DataFrame edge-list."
+                    raise nx.NetworkXError(msg)
     except ImportError:
         msg = 'pandas not found, skipping conversion test.'
         warnings.warn(msg, ImportWarning)

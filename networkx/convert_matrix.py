@@ -26,7 +26,7 @@ nx_agraph, nx_pydot
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import warnings
+import warnings as _warnings
 import itertools
 import networkx as nx
 from networkx.convert import _prep_create_using
@@ -36,12 +36,23 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
            'from_pandas_dataframe', 'to_pandas_dataframe',
+           'from_pandas_adjacency', 'to_pandas_adjacency',
+           'from_pandas_edgelist', 'to_pandas_edgelist',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix',
            'from_numpy_array', 'to_numpy_array']
 
 
 def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
+                        multigraph_weight=sum, weight='weight', nonedge=0.0):
+    """DEPRECATED: Replaced by ``to_pandas_adjacency``."""
+    msg = "to_pandas_dataframe is deprecated and will be removed" \
+        "in 2.1, use to_pandas_adjacency instead."
+    _warnings.warn(msg, DeprecationWarning)
+    return to_pandas_adjacency(G, nodelist, dtype, order, multigraph_weight, weight, nonedge)
+
+
+def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
                         multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a Pandas DataFrame.
 
@@ -94,7 +105,7 @@ def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
     >>> import pandas as pd
     >>> import numpy as np
     >>> G = nx.Graph([(1,1)])
-    >>> df = nx.to_pandas_dataframe(G, dtype=int)
+    >>> df = nx.to_pandas_adjacency(G, dtype=int)
     >>> df
        1
     1  1
@@ -114,7 +125,7 @@ def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
     0
     >>> G.add_edge(2,2)
     1
-    >>> nx.to_pandas_dataframe(G, nodelist=[0,1,2], dtype=int)
+    >>> nx.to_pandas_adjacency(G, nodelist=[0,1,2], dtype=int)
        0  1  2
     0  0  2  0
     1  1  0  0
@@ -129,7 +140,81 @@ def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
+def from_pandas_adjacency(df, create_using=None):
+    """Return a graph from Pandas DataFrame.
+
+    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
+
+    Parameters
+    ----------
+    df : Pandas DataFrame
+      An adjacency matrix representation of a graph
+
+    create_using : NetworkX graph
+       Use specified graph for result.  The default is Graph()
+
+    Notes
+    -----
+    If the numpy matrix has a single data type for each matrix entry it
+    will be converted to an appropriate Python data type.
+
+    If the numpy matrix has a user-specified compound data type the names
+    of the data fields will be used as attribute keys in the resulting
+    NetworkX graph.
+
+    See Also
+    --------
+    to_pandas_adjacency
+
+    Examples
+    --------
+    Simple integer weights on edges:
+
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> df = pd.DataFrame([[1, 1], [2, 1]])
+    >>> df
+       0  1
+    0  1  1
+    1  2  1
+    >>> G = nx.from_pandas_adjacency(df)
+    >>> print(nx.info(G))
+    Name:
+    Type: Graph
+    Number of nodes: 2
+    Number of edges: 3
+    Average degree:   3.0000
+    """
+
+    A = df.values
+    G = from_numpy_matrix(A, create_using)
+    try:
+        df = df[df.index]
+    except:
+        raise nx.NetworkXError("Columns must match Indices.",
+                "%s not in columns"%list(set(df.index).difference(set(df.columns))))
+
+    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
+    return G
+
+
+def to_pandas_edgelist(G, nodelist=None, dtype=None, order=None,
+                       multigraph_weight=sum, weight='weight', nonedge=0.0):
+    """Placeholder
+    """
+    return NotImplemented
+
+
 def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
+                          create_using=None):
+    """DEPRECATED: Replaced by ``from_pandas_edgelist``."""
+    msg = "from_pandas_dataframe is deprecated and will be removed" \
+        "in 2.1, use from_pandas_edgelist instead."
+    _warnings.warn(msg, DeprecationWarning)
+    return from_pandas_edgelist(df, source, target, edge_attr, create_using)
+
+
+def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
                           create_using=None):
     """Return a graph from Pandas DataFrame containing an edge list.
 
@@ -166,7 +251,7 @@ def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
 
     See Also
     --------
-    to_pandas_dataframe
+    to_pandas_edgelist
 
     Examples
     --------
@@ -186,7 +271,7 @@ def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
     0       4     7  A  D
     1       7     1  B  A
     2      10     9  C  E
-    >>> G=nx.from_pandas_dataframe(df, 0, 'b', ['weight', 'cost'])
+    >>> G=nx.from_pandas_edgelist(df, 0, 'b', ['weight', 'cost'])
     >>> G['E']['C']['weight']
     10
     >>> G['E']['C']['cost']
@@ -195,7 +280,7 @@ def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
     ...                       'target': [2, 2, 3],
     ...                       'weight': [3, 4, 5],
     ...                       'color': ['red', 'blue', 'blue']})
-    >>> G = nx.from_pandas_dataframe(edges, edge_attr=True)
+    >>> G = nx.from_pandas_edgelist(edges, edge_attr=True)
     >>> G[0][2]['color']
     'red'
     """
