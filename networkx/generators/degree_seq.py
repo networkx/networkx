@@ -242,7 +242,6 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
 
     G = _configuration_model(deg_sequence, create_using, seed=seed)
 
-    G.name = "configuration_model %d nodes %d edges" % (G.order(), G.size())
     return G
 
 
@@ -338,7 +337,6 @@ def directed_configuration_model(in_degree_sequence,
                              in_deg_sequence=in_degree_sequence, seed=seed)
 
     name = "directed configuration_model {} nodes {} edges"
-    G.name = name.format(len(G), G.size())
     return G
 
 
@@ -540,7 +538,6 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
             num_degs[stubval].append(stubtarget)
             n += 1
 
-    G.name = "havel_hakimi_graph %d nodes %d edges" % (G.order(), G.size())
     return G
 
 
@@ -655,7 +652,6 @@ def directed_havel_hakimi_graph(in_deg_sequence,
         if freeout < 0:
             heapq.heappush(zeroheap, (freeout, target))
 
-    G.name = "directed_havel_hakimi_graph %d nodes %d edges" % (G.order(), G.size())
     return G
 
 
