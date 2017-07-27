@@ -155,7 +155,7 @@ class UnionAdjacency(Mapping):
     UnionAtlas - View into dict-of-dict
     UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
     """
-    __slots__ = ()   # Still uses AtlasView slots names _atlas
+    __slots__ = ('_succ', '_pred')
 
     def __init__(self, succ, pred):
         # keys must be the same for two input dicts
@@ -193,7 +193,7 @@ class UnionMultiInner(UnionAtlas):
     UnionAdjacency - View into dict-of-dict-of-dict
     UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
     """
-    __slots__ = ()   # Still uses AtlasView slots names _atlas
+    __slots__ = ()   # Still uses UnionAtlas slots names _succ, _pred
 
     def __getitem__(self, node):
         in_succ = node in self._succ
@@ -221,7 +221,7 @@ class UnionMultiAdjacency(UnionAdjacency):
     UnionAtlas - View into dict-of-dict
     UnionMultiInner - View into dict-of-dict-of-dict
     """
-    __slots__ = ()   # Still uses AtlasView slots names _atlas
+    __slots__ = ()   # Still uses UnionAdjacency slots names _succ, _pred
 
     def __getitem__(self, node):
         return UnionMultiInner(self._succ[node], self._pred[node])
