@@ -204,15 +204,15 @@ def is_frozen(G):
         return False
 
 
-def add_star(G, nodes, **attr):
-    """Add a star to Graph G.
+def add_star(G_to_add_to, nodes_for_star, **attr):
+    """Add a star to Graph G_to_add_to.
 
-    The first node in nodes is the middle of the star.
+    The first node in `nodes_for_star` is the middle of the star.
     It is connected to all other nodes.
 
     Parameters
     ----------
-    nodes : iterable container
+    nodes_for_star : iterable container
         A container of nodes.
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to every edge in star.
@@ -227,18 +227,18 @@ def add_star(G, nodes, **attr):
     >>> nx.add_star(G, [0, 1, 2, 3])
     >>> nx.add_star(G, [10, 11, 12], weight=2)
     """
-    nlist = iter(nodes)
+    nlist = iter(nodes_for_star)
     v = next(nlist)
     edges = ((v, n) for n in nlist)
-    G.add_edges_from(edges, **attr)
+    G_to_add_to.add_edges_from(edges, **attr)
 
 
-def add_path(G, nodes, **attr):
-    """Add a path to the Graph G.
+def add_path(G_to_add_to, nodes_for_path, **attr):
+    """Add a path to the Graph G_to_add_to.
 
     Parameters
     ----------
-    nodes : iterable container
+    nodes_for_path : iterable container
         A container of nodes.  A path will be constructed from
         the nodes (in order) and added to the graph.
     attr : keyword arguments, optional (default= no attributes)
@@ -254,15 +254,15 @@ def add_path(G, nodes, **attr):
     >>> nx.add_path(G, [0, 1, 2, 3])
     >>> nx.add_path(G, [10, 11, 12], weight=7)
     """
-    G.add_edges_from(pairwise(nodes), **attr)
+    G_to_add_to.add_edges_from(pairwise(nodes_for_path), **attr)
 
 
-def add_cycle(G, nodes, **attr):
-    """Add a cycle to the Graph G.
+def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
+    """Add a cycle to the Graph G_to_add_to.
 
     Parameters
     ----------
-    nodes: iterable container
+    nodes_for_cycle: iterable container
         A container of nodes.  A cycle will be constructed from
         the nodes (in order) and added to the graph.
     attr : keyword arguments, optional (default= no attributes)
@@ -278,7 +278,7 @@ def add_cycle(G, nodes, **attr):
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [10, 11, 12], weight=7)
     """
-    G.add_edges_from(pairwise(nodes, cyclic=True), **attr)
+    G_to_add_to.add_edges_from(pairwise(nodes_for_cycle, cyclic=True), **attr)
 
 
 def subgraph(G, nbunch):

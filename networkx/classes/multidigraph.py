@@ -238,9 +238,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
     edge_key_dict_factory = dict
     # edge_attr_dict_factory = dict
 
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
-        DiGraph.__init__(self, data, **attr)
+        DiGraph.__init__(self, incoming_graph_data, **attr)
 
     @property
     def edge(self):
@@ -258,7 +258,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def pred(self):
         return AtlasView3(self._pred)
 
-    def add_edge(self, u, v, key=None, **attr):
+    def add_edge(self, u_for_edge, v_for_edge, key_for_edge=None, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -324,6 +324,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         For non-string associations, directly access the edge's attribute
         dictionary.
         """
+        u, v, key = u_for_edge, v_for_edge, key_for_edge
         # add nodes
         if u not in self._succ:
             self._succ[u] = self.adjlist_inner_dict_factory()

@@ -237,9 +237,9 @@ class MultiGraph(Graph):
     edge_key_dict_factory = dict
     # edge_attr_dict_factory = dict
 
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
-        Graph.__init__(self, data, **attr)
+        Graph.__init__(self, incoming_graph_data, **attr)
 
     @property
     def edge(self):
@@ -279,7 +279,7 @@ class MultiGraph(Graph):
             key += 1
         return key
 
-    def add_edge(self, u, v, key=None, **attr):
+    def add_edge(self, u_for_edge, v_for_edge, key_for_edge=None, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -337,6 +337,7 @@ class MultiGraph(Graph):
         >>> G.add_edge(1, 2, key=0, weight=4)   # update data for key=0
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
+        u, v, key = u_for_edge, v_for_edge, key_for_edge
         # add nodes
         if u not in self._adj:
             self._adj[u] = self.adjlist_inner_dict_factory()
@@ -361,12 +362,12 @@ class MultiGraph(Graph):
             self._adj[v][u] = keydict
         return key
 
-    def add_edges_from(self, ebunch, **attr):
-        """Add all the edges in ebunch.
+    def add_edges_from(self, ebunch_to_add, **attr):
+        """Add all the edges in ebunch_to_add.
 
         Parameters
         ----------
-        ebunch : container of edges
+        ebunch_to_add : container of edges
             Each edge given in the container will be added to the
             graph. The edges can be:
 
@@ -413,8 +414,7 @@ class MultiGraph(Graph):
         >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
         """
         keylist = []
-        # process ebunch
-        for e in ebunch:
+        for e in ebunch_to_add:
             ne = len(e)
             if ne == 4:
                 u, v, key, dd = e
