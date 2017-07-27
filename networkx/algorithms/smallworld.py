@@ -23,7 +23,7 @@ __all__ = ['random_reference','lattice_reference','sigma', 'omega']
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def random_reference(G, niter=10):
+def random_reference(G, niter=10, connectivity=True):
     """Compute a random graph by rewiring edges of the given graph while 
     keeping the same degree distribution.
 
@@ -36,6 +36,9 @@ def random_reference(G, niter=10):
     niter : integer (optional, default=1)
        An edge is rewired approximatively niter times.
 
+    connectivity: boolean (optional, default=True)
+        Ensure connectivity for the randomized graph when set to True.
+
     Returns
     -------
     G : graph
@@ -43,8 +46,6 @@ def random_reference(G, niter=10):
 
     Notes
     -----
-    Does not enforce any connectivity constraints.
-
     The implementation is adapted from the algorithm by Maslov and Sneppen 
     (2002) [1]_.
 
@@ -88,18 +89,29 @@ def random_reference(G, niter=10):
                 continue # all vertices should be different
 
             if (d not in G[a]) and (b not in G[c]): # don't create parallel edges
+                
                 G.add_edge(a,d)
                 G.add_edge(c,b)
                 G.remove_edge(a,b)
                 G.remove_edge(c,d)
-                swapcount+=1
-                break
+
+                # Check if the graph is still connected
+                if connectivity and nx.connectivity.local_edge_connectivity(G,a,b)==0:
+                    # Not connected, revert the swap
+                    G.remove_edge(a,d)
+                    G.remove_edge(c,b)
+                    G.add_edge(a,b)
+                    G.add_edge(c,d)
+                else:
+                    swapcount+=1
+                    break
+
             n+=1
     return G
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def lattice_reference(G, niter=10, D=None): 
+def lattice_reference(G, niter=10, D=None, connectivity=True): 
     """Latticize the given graph by rewiring edges while keeping the same 
     degree distribution.
 
@@ -115,15 +127,16 @@ def lattice_reference(G, niter=10, D=None):
     D: numpy.array (optional, default=None)
        Distance to the diagonal matrix. 
 
+    connectivity: boolean (optional, default=True)
+        Ensure connectivity for the latticized graph when set to True.
+
     Returns
     -------
     G : graph
-       The randomized graph.
+       The latticized graph.
 
     Notes
     -----
-    Does not enforce any connectivity constraints.
-
     The implementation is adapted from the algorithm by Sporns et al. which is
     inspired from the original work from Maslov and Sneppen (2002) [2]_.
 
@@ -170,31 +183,41 @@ def lattice_reference(G, niter=10, D=None):
         while n < ntries:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
-            (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf)
-            if ui==xi:
+            (ai,ci)=nx.utils.discrete_sequence(2,cdistribution=cdf)
+            if ai==ci:
                 continue # same source, skip
-            u=keys[ui] # convert index to label
-            x=keys[xi]
+            a=keys[ai] # convert index to label
+            c=keys[ci]
             # choose target uniformly from neighbors
-            v = random.choice(list(G.neighbors(u)))
-            y = random.choice(list(G.neighbors(x)))
-            vi = keys.index(v)
-            yi = keys.index(y)
-            # if random.random() < 0.5: 
-                # ui,u,vi,v = vi,v,ui,u
-            if v==y or v==u or v==x or y==u or y==x:
+            b = random.choice(list(G.neighbors(a)))
+            d = random.choice(list(G.neighbors(c)))
+            bi = keys.index(b)
+            di = keys.index(d)
+
+            if b in [a,c,d] or d in [a,b,c]:
                 continue # all vertices should be different
 
-            if (x not in G[u]) and (y not in G[v]): # don't create parallel edges
-                if D[ui, vi] + D[xi, yi] >= D[ui, xi] + D[vi, yi]: 
+            if (d not in G[a]) and (b not in G[c]): # don't create parallel edges
+                
+                if D[ai, bi] + D[ci, di] >= D[ai, ci] + D[bi, di]: 
                     # only swap if we get
                     # closer to the diagonal
-                    G.add_edge(u,x)
-                    G.add_edge(v,y)
-                    G.remove_edge(u,v)
-                    G.remove_edge(x,y)
-                    swapcount+=1
-                    break
+                    G.add_edge(a,d)
+                    G.add_edge(c,b)
+                    G.remove_edge(a,b)
+                    G.remove_edge(c,d)
+
+                    # Check if the graph is still connected
+                    if connectivity and nx.connectivity.local_edge_connectivity(G,a,b)==0:
+                        # Not connected, revert the swap
+                        G.remove_edge(a,d)
+                        G.remove_edge(c,b)
+                        G.add_edge(a,b)
+                        G.add_edge(c,d)
+
+                    else:
+                        swapcount+=1
+                        break
             n+=1
 
     return G
