@@ -34,7 +34,7 @@ def _generate_no_biconnected(max_attempts=50):
 def test_articulation_points():
     Ggen = _generate_no_biconnected()
     for flow_func in flow_funcs:
-        for i in range(1):
+        for i in range(1):  # change 1 to 3 or more for more realizations.
             G = next(Ggen)
             cut = nx.minimum_node_cut(G, flow_func=flow_func)
             assert_true(len(cut) == 1, msg=msg.format(flow_func.__name__))
