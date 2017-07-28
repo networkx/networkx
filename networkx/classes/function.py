@@ -491,8 +491,8 @@ def set_edge_attributes(G, values, name=None):
 
         If `values` is a dict or a dict of dict, the corresponding edge'
         attributes will be updated to `values`.  For multigraphs, the tuples
-        must be of the form ``(u, v, key)``, where `u` and `v` are nodes
-        and `key` is the key corresponding to the edge.  For non-multigraphs,
+        must be of the form ``(u, v, ekey)``, where `u` and `v` are nodes
+        and `ekey` is the key corresponding to the edge.  For non-multigraphs,
         the keys must be tuples of the form ``(u, v)``.
 
     name : string (optional, default=None)
@@ -541,9 +541,9 @@ def set_edge_attributes(G, values, name=None):
         try:
             # if `values` is a dict using `.items()` => {edge: value}
             if G.is_multigraph():
-                for (u, v, key), value in values.items():
+                for (u, v, ekey), value in values.items():
                     try:
-                        G[u][v][key][name] = value
+                        G[u][v][ekey][name] = value
                     except KeyError:
                         pass
             else:
@@ -559,9 +559,9 @@ def set_edge_attributes(G, values, name=None):
     else:
         # `values` consists of doct-of-dict {edge: {attr: value}} shape
         if G.is_multigraph():
-            for (u, v, key), d in values.items():
+            for (u, v, ekey), d in values.items():
                 try:
-                    G[u][v][key].update(d)
+                    G[u][v][ekey].update(d)
                 except KeyError:
                     pass
         else:
@@ -586,7 +586,7 @@ def get_edge_attributes(G, name):
     -------
     Dictionary of attributes keyed by edge. For (di)graphs, the keys are
     2-tuples of the form: (u, v). For multi(di)graphs, the keys are 3-tuples of
-    the form: (u, v, key).
+    the form: (u, v, ekey).
 
     Examples
     --------

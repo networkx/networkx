@@ -299,12 +299,12 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
                                2: {0: {0: {}}, 1: {0: {}}}})
         assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
         assert_raises((KeyError, nx.NetworkXError), G.remove_edge, 0, 2,
-                      key=1)
+                      ekey=1)
 
     def test_remove_multiedge(self):
         G = self.K3
-        G.add_edge(0, 1, key='parallel edge')
-        G.remove_edge(0, 1, key='parallel edge')
+        G.add_edge(0, 1, ekey='parallel edge')
+        G.remove_edge(0, 1, ekey='parallel edge')
         assert_equal(G._adj, {0: {1: {0: {}}, 2: {0: {}}},
                               1: {0: {0: {}}, 2: {0: {}}},
                               2: {0: {0: {}}, 1: {0: {}}}})

@@ -99,11 +99,11 @@ def test_tensor_product_random():
 
 def test_cartesian_product_multigraph():
     G = nx.MultiGraph()
-    G.add_edge(1, 2, key=0)
-    G.add_edge(1, 2, key=1)
+    G.add_edge(1, 2, ekey=0)
+    G.add_edge(1, 2, ekey=1)
     H = nx.MultiGraph()
-    H.add_edge(3, 4, key=0)
-    H.add_edge(3, 4, key=1)
+    H.add_edge(3, 4, ekey=0)
+    H.add_edge(3, 4, ekey=1)
     GH = cartesian_product(G, H)
     assert_equal(set(GH), {(1, 3), (2, 3), (2, 4), (1, 4)})
     assert_equal({(frozenset([u, v]), k) for u, v, k in GH.edges(keys=True)},

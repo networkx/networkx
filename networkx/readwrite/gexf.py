@@ -871,9 +871,9 @@ class GEXFReader(GEXF):
         if G.has_edge(source, target):
             # seen this edge before - this is a multigraph
             self.simple_graph = False
-        G.add_edge(source, target, key=edge_id, **data)
+        G.add_edge(source, target, ekey=edge_id, **data)
         if edge_direction == 'mutual':
-            G.add_edge(target, source, key=edge_id, **data)
+            G.add_edge(target, source, ekey=edge_id, **data)
 
     def decode_attr_elements(self, gexf_keys, obj_xml):
         # Use the key information to decode the attr XML

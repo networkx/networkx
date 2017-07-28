@@ -46,8 +46,8 @@ class Graph(object):
 
     Parameters
     ----------
-    data : input graph
-        Data to initialize graph. If data=None (default) an empty
+    incoming_graph_data : input graph (optional, default: None)
+        Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
         dict of dicts, dict of lists, NetworkX graph, NumPy matrix
@@ -148,7 +148,7 @@ class Graph(object):
 
     Warning: assigning to `G.edge[u]` or `G.edge[u][v]` will almost certainly
     corrupt the graph data structure. Use 3 sets of brackets as shown above.
-    (4 for multigraphs: `MG.edge[u][v][key][name] = value`)
+    (4 for multigraphs: `MG.edge[u][v][ekey][name] = value`)
 
     **Shortcuts:**
 
@@ -258,7 +258,7 @@ class Graph(object):
         Parameters
         ----------
         incoming_graph_data : input graph
-            Data to initialize graph.  If data=None (default) an empty
+            Data to initialize graph.  If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix

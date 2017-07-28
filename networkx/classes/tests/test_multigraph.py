@@ -105,8 +105,8 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G = self.K3
         G.add_edge(0, 0)
         G.add_edge(0, 0)
-        G.add_edge(0, 0, key='parallel edge')
-        G.remove_edge(0, 0, key='parallel edge')
+        G.add_edge(0, 0, ekey='parallel edge')
+        G.remove_edge(0, 0, ekey='parallel edge')
         assert_equal(G.number_of_edges(0, 0), 2)
         G.remove_edge(0, 0)
         assert_equal(G.number_of_edges(0, 0), 1)
@@ -114,13 +114,13 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_edge_lookup(self):
         G = self.Graph()
         G.add_edge(1, 2, foo='bar')
-        G.add_edge(1, 2, 'key', foo='biz')
+        G.add_edge(1, 2, 'ekey', foo='biz')
         assert_edges_equal(G.edges[1, 2, 0], {'foo': 'bar'})
-        assert_edges_equal(G.edges[1, 2, 'key'], {'foo': 'biz'})
+        assert_edges_equal(G.edges[1, 2, 'ekey'], {'foo': 'biz'})
 
     def test_edge_attr4(self):
         G = self.Graph()
-        G.add_edge(1, 2, key=0, data=7, spam='bar', bar='foo')
+        G.add_edge(1, 2, ekey=0, data=7, spam='bar', bar='foo')
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'data': 7, 'spam': 'bar', 'bar': 'foo'})])
         G[1][2][0]['data'] = 10  # OK to set data like this
@@ -158,7 +158,7 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         self.K3._node[2] = {}
 
     def test_data_input(self):
-        G = self.Graph(data={1: [2], 2: [1]}, name="test")
+        G = self.Graph({1: [2], 2: [1]}, name="test")
         assert_equal(G.name, "test")
         expected = [(1, {2: {0: {}}}), (2, {1: {0: {}}})]
         assert_equal(sorted(G.adj.items()), expected)
@@ -185,7 +185,7 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
 
     def test_add_edge_conflicting_key(self):
         G = self.Graph()
-        G.add_edge(0, 1, key=1)
+        G.add_edge(0, 1, ekey=1)
         G.add_edge(0, 1)
         assert_equal(G.number_of_edges(), 2)
         G = self.Graph()
@@ -227,7 +227,7 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
 
         assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
         assert_raises((KeyError, nx.NetworkXError), G.remove_edge, 0, 2,
-                      key=1)
+                      ekey=1)
 
     def test_remove_edges_from(self):
         G = self.K3.copy()
@@ -251,8 +251,8 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
 
     def test_remove_multiedge(self):
         G = self.K3
-        G.add_edge(0, 1, key='parallel edge')
-        G.remove_edge(0, 1, key='parallel edge')
+        G.add_edge(0, 1, ekey='parallel edge')
+        G.remove_edge(0, 1, ekey='parallel edge')
         assert_equal(G.adj, {0: {1: {0: {}}, 2: {0: {}}},
                              1: {0: {0: {}}, 2: {0: {}}},
                              2: {0: {0: {}}, 1: {0: {}}}})

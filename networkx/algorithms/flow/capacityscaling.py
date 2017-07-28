@@ -86,8 +86,8 @@ def _build_residual_network(G, demand, capacity, weight):
         # Add both (u, v) and (v, u) into the residual network marked with the
         # original key. (key[1] == True) indicates the (u, v) is in the
         # original network.
-        R.add_edge(u, v, key=(k, True), capacity=r, weight=w, flow=0)
-        R.add_edge(v, u, key=(k, False), capacity=0, weight=-w, flow=0)
+        R.add_edge(u, v, ekey=(k, True), capacity=r, weight=w, flow=0)
+        R.add_edge(v, u, ekey=(k, False), capacity=0, weight=-w, flow=0)
 
     # Record the value simulating infinity.
     R.graph['inf'] = inf

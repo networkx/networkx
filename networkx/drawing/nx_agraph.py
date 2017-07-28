@@ -103,7 +103,7 @@ def from_agraph(A, create_using=None):
                 str_attr['key'] = e.name
             N.add_edge(u, v, **str_attr)
         else:
-            N.add_edge(u, v, key=e.name, **str_attr)
+            N.add_edge(u, v, ekey=e.name, **str_attr)
 
     # add default attributes for graph, nodes, and edges
     # hang them on N.graph_attr
