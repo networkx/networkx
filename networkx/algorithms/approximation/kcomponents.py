@@ -5,7 +5,7 @@
 #    All rights reserved.
 #    BSD license.
 import itertools
-import collections
+from collections import defaultdict, Mapping
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -109,7 +109,7 @@ def k_components(G, min_density=0.95):
     """
     # Dictionary with connectivity level (k) as keys and a list of
     # sets of nodes that form a k-component as values
-    k_components = collections.defaultdict(list)
+    k_components = defaultdict(list)
     # make a few functions local for speed
     node_connectivity = local_node_connectivity
     k_core = nx.k_core
@@ -234,7 +234,7 @@ class _AntiGraph(nx.Graph):
         """
         all_edge_dict = self.all_edge_dict
         return dict((node, all_edge_dict) for node in 
-                    set(self.adj) - set(self.adj[n]) - set([n]))
+                    set(self._adj) - set(self._adj[n]) - set([n]))
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the 
@@ -245,6 +245,46 @@ class _AntiGraph(nx.Graph):
             return iter(set(self._adj) - set(self._adj[n]) - set([n]))
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
+
+    class AntiAtlasView(Mapping):
+        """An adjacency inner dict for AntiGraph"""
+        def __init__(self, graph, node):
+            self._graph = graph
+            self._atlas = graph._adj[node]
+            self._node = node
+
+        def __len__(self):
+            return len(self._graph) - len(self._atlas) - 1
+
+        def __iter__(self):
+            return (n for n in self._graph if n not in self._atlas and n != self._node)
+
+        def __getitem__(self, nbr):
+            nbrs = set(self._graph._adj) - set(self._atlas) - set([self._node])
+            if nbr in nbrs:
+                return self._graph.all_edge_dict
+            raise KeyError(nbr)
+
+    class AntiAdjacencyView(AntiAtlasView):
+        """An adjacency outer dict for AntiGraph"""
+        def __init__(self, graph):
+            self._graph = graph
+            self._atlas = graph._adj
+
+        def __len__(self):
+            return len(self._atlas)
+
+        def __iter__(self):
+            return iter(self._graph)
+
+        def __getitem__(self, node):
+            if node not in self._graph:
+                raise KeyError(node)
+            return self._graph.AntiAtlasView(self._graph, node)
+
+    @property
+    def adj(self):
+        return self.AntiAdjacencyView(self)
 
     class AntiDegreeView(nx.DegreeView):
         def __iter__(self):
@@ -311,5 +351,5 @@ class _AntiGraph(nx.Graph):
            the graph.
 
         """
-        for n in self.adj:
-            yield (n, set(self.adj) - set(self.adj[n]) - set([n]))
+        for n in self._adj:
+            yield (n, set(self._adj) - set(self._adj[n]) - set([n]))

@@ -216,6 +216,13 @@ class TestAntiGraph:
             for comp in ac:
                 assert_true(comp in gc)
 
+    def test_adj(self):
+        for G, A in self.GA:
+            for n, nbrs in G.adj.items():
+                a_adj = sorted((n,sorted(ad)) for n, ad in A.adj.items())
+                g_adj = sorted((n,sorted(ad)) for n, ad in G.adj.items())
+                assert_equal(a_adj, g_adj)
+
     def test_adjacency(self):
         for G, A in self.GA:
             a_adj = list(A.adjacency())
