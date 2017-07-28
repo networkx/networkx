@@ -25,8 +25,8 @@ X contributors. Highlights include:
 
 - big items ...
 
-There is a `migration guide for people moving from 1.XX to 2.0
-<http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.xx_to_2.0.html>`_.
+There is a `migration guide for people moving from 1.X to 2.0
+<http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
 
 Please send comments and questions to the networkx-discuss `mailing list
 <http://groups.google.com/group/networkx-discuss>`_.

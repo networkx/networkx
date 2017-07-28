@@ -1,8 +1,8 @@
 ********************************
-Migration guide from 1.XX to 2.0
+Migration guide from 1.X to 2.0
 ********************************
 
-This is a guide for people moving from NetworkX 1.XX to NetworkX 2.0
+This is a guide for people moving from NetworkX 1.X to NetworkX 2.0
 
 Any issues with these can be discussed on the `mailing list <https://groups.google.com/forum/#!forum/networkx-discuss>`_.
 
