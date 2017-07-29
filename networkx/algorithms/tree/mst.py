@@ -11,7 +11,9 @@ Algorithms for calculating min/max spanning trees/forests.
 
 """
 from heapq import heappop, heappush
+from operator import itemgetter
 from itertools import count
+from math import isnan
 
 import networkx as nx
 from networkx.utils import UnionFind, not_implemented_for
@@ -23,7 +25,8 @@ __all__ = [
 
 
 @not_implemented_for('multigraph')
-def boruvka_mst_edges(G, minimum=True, weight='weight', keys=False, data=True):
+def boruvka_mst_edges(G, minimum=True, weight='weight',
+                      keys=False, data=True, ignore_nan=False):
     """Iterate over edges of a Borůvka's algorithm min/max spanning tree.
 
     Parameters
@@ -48,8 +51,11 @@ def boruvka_mst_edges(G, minimum=True, weight='weight', keys=False, data=True):
         If True, yield edges `(u, v, d)`, where `d` is the attribute dict.
         If False, yield edges `(u, v)`.
 
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
+
     """
-    opt = min if minimum else max
     # Initialize a forest, assuming initially that it is the discrete
     # partition of the nodes of the graph.
     forest = UnionFind(G)
@@ -61,16 +67,20 @@ def boruvka_mst_edges(G, minimum=True, weight='weight', keys=False, data=True):
         A return value of ``None`` indicates an empty boundary.
 
         """
-        # TODO In Python 3.4 and later, we can just do
-        #
-        #     boundary = nx.edge_boundary(G, component, data=weight)
-        #     return opt(boundary, key=lambda e: e[-1][weight], default=None)
-        #
-        # which is better because it doesn't require creating a list.
-        boundary = list(nx.edge_boundary(G, component, data=True))
-        if not boundary:
-            return None
-        return opt(boundary, key=lambda e: e[-1][weight])
+        sign = 1 if minimum else -1
+        minwt = float('inf')
+        boundary = None
+        for e in nx.edge_boundary(G, component, data=True):
+            wt = e[-1].get(weight, 1) * sign
+            if isnan(wt):
+                if ignore_nan:
+                    continue
+                msg = "NaN found as an edge weight. Edge %s"
+                raise ValueError(msg % (e,))
+            if wt < minwt:
+                minwt = wt
+                boundary = e
+        return boundary
 
     # Determine the optimum edge in the edge boundary of each component
     # in the forest.
@@ -110,7 +120,8 @@ def boruvka_mst_edges(G, minimum=True, weight='weight', keys=False, data=True):
                 forest.union(u, v)
 
 
-def kruskal_mst_edges(G, minimum, weight='weight', keys=True, data=True):
+def kruskal_mst_edges(G, minimum, weight='weight',
+                      keys=True, data=True, ignore_nan=False):
     """Iterate over edges of a Kruskal's algorithm min/max spanning tree.
 
     Parameters
@@ -133,17 +144,42 @@ def kruskal_mst_edges(G, minimum, weight='weight', keys=True, data=True):
         If True, yield edges `(u, v, d)`, where `d` is the attribute dict.
         If False, yield edges `(u, v)`.
 
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
+
     """
     subtrees = UnionFind()
     if G.is_multigraph():
         edges = G.edges(keys=True, data=True)
+
+        def filter_nan_edges(edges=edges, weight=weight):
+            sign = 1 if minimum else -1
+            for u, v, k, d in edges:
+                wt = d.get(weight, 1) * sign
+                if isnan(wt):
+                    if ignore_nan:
+                        continue
+                    msg = "NaN found as an edge weight. Edge %s"
+                    raise ValueError(msg % ((u, v, f, k, d),))
+                yield wt, u, v, k, d
     else:
         edges = G.edges(data=True)
-    getweight = lambda t: t[-1].get(weight, 1)
-    edges = sorted(edges, key=getweight, reverse=not minimum)
+
+        def filter_nan_edges(edges=edges, weight=weight):
+            sign = 1 if minimum else -1
+            for u, v, d in edges:
+                wt = d.get(weight, 1) * sign
+                if isnan(wt):
+                    if ignore_nan:
+                        continue
+                    msg = "NaN found as an edge weight. Edge %s"
+                    raise ValueError(msg % ((u, v, d),))
+                yield wt, u, v, d
+    edges = sorted(filter_nan_edges(), key=itemgetter(0))
     # Multigraphs need to handle edge keys in addition to edge data.
     if G.is_multigraph():
-        for u, v, k, d in edges:
+        for wt, u, v, k, d in edges:
             if subtrees[u] != subtrees[v]:
                 if keys:
                     if data:
@@ -157,7 +193,7 @@ def kruskal_mst_edges(G, minimum, weight='weight', keys=True, data=True):
                         yield u, v
                 subtrees.union(u, v)
     else:
-        for u, v, d in edges:
+        for wt, u, v, d in edges:
             if subtrees[u] != subtrees[v]:
                 if data:
                     yield (u, v, d)
@@ -166,7 +202,35 @@ def kruskal_mst_edges(G, minimum, weight='weight', keys=True, data=True):
                 subtrees.union(u, v)
 
 
-def prim_mst_edges(G, minimum, weight='weight', keys=True, data=True):
+def prim_mst_edges(G, minimum, weight='weight',
+                   keys=True, data=True, ignore_nan=False):
+    """Iterate over edges of Prim's algorithm min/max spanning tree.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph holding the tree of interest.
+
+    minimum : bool (default: True)
+        Find the minimum (True) or maximum (False) spanning tree.
+
+    weight : string (default: 'weight')
+        The name of the edge attribute holding the edge weights.
+
+    keys : bool (default: True)
+        If `G` is a multigraph, `keys` controls whether edge keys ar yielded.
+        Otherwise `keys` is ignored.
+
+    data : bool (default: True)
+        Flag for whether to yield edge attribute dicts.
+        If True, yield edges `(u, v, d)`, where `d` is the attribute dict.
+        If False, yield edges `(u, v)`.
+
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
+
+    """
     is_multigraph = G.is_multigraph()
     push = heappush
     pop = heappop
@@ -174,9 +238,7 @@ def prim_mst_edges(G, minimum, weight='weight', keys=True, data=True):
     nodes = list(G)
     c = count()
 
-    sign = 1
-    if not minimum:
-        sign = -1
+    sign = 1 if minimum else -1
 
     while nodes:
         u = nodes.pop(0)
@@ -186,10 +248,20 @@ def prim_mst_edges(G, minimum, weight='weight', keys=True, data=True):
             for v, keydict in G.adj[u].items():
                 for k, d in keydict.items():
                     wt = d.get(weight, 1) * sign
+                    if isnan(wt):
+                        if ignore_nan:
+                            continue
+                        msg = "NaN found as an edge weight. Edge %s"
+                        raise ValueError(msg % ((u, v, k, d),))
                     push(frontier, (wt, next(c), u, v, k, d))
         else:
             for v, d in G.adj[u].items():
                 wt = d.get(weight, 1) * sign
+                if isnan(wt):
+                    if ignore_nan:
+                        continue
+                    msg = "NaN found as an edge weight. Edge %s"
+                    raise ValueError(msg % ((u, v, d),))
                 push(frontier, (wt, next(c), u, v, d))
         while frontier:
             if is_multigraph:
@@ -237,7 +309,7 @@ ALGORITHMS = {
 
 @not_implemented_for('directed')
 def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
-                           keys=True, data=True):
+                           keys=True, data=True, ignore_nan=False):
     """Generate edges in a minimum spanning forest of an undirected
     weighted graph.
 
@@ -264,6 +336,10 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
 
     data : bool, optional
        If True yield the edge data along with the edge.
+
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
 
     Returns
     -------
@@ -319,12 +395,13 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
         msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
         raise ValueError(msg)
 
-    return algo(G, minimum=True, weight=weight, keys=keys, data=data)
+    return algo(G, minimum=True, weight=weight, keys=keys, data=data,
+                ignore_nan=ignore_nan)
 
 
 @not_implemented_for('directed')
 def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
-                           keys=True, data=True):
+                           keys=True, data=True, ignore_nan=False):
     """Generate edges in a maximum spanning forest of an undirected
     weighted graph.
 
@@ -351,6 +428,10 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
 
     data : bool, optional
        If True yield the edge data along with the edge.
+
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
 
     Returns
     -------
@@ -382,7 +463,7 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
     Find maximum spanning edges by Prim's algorithm
 
     >>> G = nx.cycle_graph(4)
-    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
+    >>> G.add_edge(0, 3, weight=2) # assign weight 2 to edge 0-3
     >>> mst = tree.maximum_spanning_edges(G, algorithm='prim', data=False)
     >>> edgelist = list(mst)
     >>> sorted(edgelist)
@@ -405,10 +486,12 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
         msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
         raise ValueError(msg)
 
-    return algo(G, minimum=False, weight=weight, keys=keys, data=data)
+    return algo(G, minimum=False, weight=weight, keys=keys, data=data,
+                ignore_nan=ignore_nan)
 
 
-def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
+def minimum_spanning_tree(G, weight='weight', algorithm='kruskal',
+                          ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -424,6 +507,10 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
        The algorithm to use when finding a minimum spanning tree. Valid
        choices are 'kruskal', 'prim', or 'boruvka'. The default is
        'kruskal'.
+
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
 
     Returns
     -------
@@ -451,7 +538,8 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
     See :mod:`networkx.tree.recognition` for more detailed definitions.
 
     """
-    edges = minimum_spanning_edges(G, algorithm, weight, keys=True, data=True)
+    edges = minimum_spanning_edges(G, algorithm, weight, keys=True,
+                                   data=True, ignore_nan=ignore_nan)
     T = G.__class__()  # Same graph class as G
     T.graph.update(G.graph)
     T.add_nodes_from(G.node.items())
@@ -459,7 +547,8 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
     return T
 
 
-def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
+def maximum_spanning_tree(G, weight='weight', algorithm='kruskal',
+                          ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -475,6 +564,10 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
        The algorithm to use when finding a minimum spanning tree. Valid
        choices are 'kruskal', 'prim', or 'boruvka'. The default is
        'kruskal'.
+
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
 
 
     Returns
@@ -504,7 +597,8 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
     See :mod:`networkx.tree.recognition` for more detailed definitions.
 
     """
-    edges = maximum_spanning_edges(G, algorithm, weight, keys=True, data=True)
+    edges = maximum_spanning_edges(G, algorithm, weight, keys=True,
+                                   data=True, ignore_nan=ignore_nan)
     edges = list(edges)
     T = G.__class__()  # Same graph class as G
     T.graph.update(G.graph)
