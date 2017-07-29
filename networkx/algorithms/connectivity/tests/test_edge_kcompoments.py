@@ -113,9 +113,11 @@ def _check_edge_connectivity(G):
 
 def test_zero_k_exception():
     G = nx.Graph()
+    # functions that return generators error immediately
     assert_raises(ValueError, k_edge_components, G, k=0)
     assert_raises(ValueError, k_edge_subgraphs, G, k=0)
 
+    # actual generators only error when you get the first item
     aux_graph = EdgeComponentAuxGraph.construct(G)
     assert_raises(ValueError, list, aux_graph.k_edge_components(k=0))
     assert_raises(ValueError, list, aux_graph.k_edge_subgraphs(k=0))
@@ -144,9 +146,9 @@ def test_random_gnp():
 
 
 def test_configuration():
-    deg_seq = nx.utils.create_degree_sequence(20, nx.utils.powerlaw_sequence)
     seeds = [2718183590, 2470619828, 1694705158, 3001036531, 2401251497]
     for seed in seeds:
+        deg_seq = nx.random_powerlaw_tree_sequence(20, seed=seed, tries=5000)
         G = nx.Graph(nx.configuration_model(deg_seq, seed=seed))
         G.remove_edges_from(G.selfloop_edges())
         _check_edge_connectivity(G)
@@ -291,21 +293,6 @@ def test_four_clique():
     G = nx.Graph(it.chain.from_iterable(pairwise(path) for path in paths))
     _check_edge_connectivity(G)
 
-    if False:
-        aux_graph = EdgeComponentAuxGraph.construct(G)
-        ccs = fset(aux_graph.k_edge_subgraphs(k=3))
-        print('ccs = {!r}'.format(ccs))
-
-        import plottool as pt
-
-        nx.set_node_attributes(G, 'ccid', ut.dzip(G.nodes(), G.nodes()))
-        nx.set_node_attributes(G, 'ccid', ut.dzip(paths[0], [1]))
-        nx.set_node_attributes(G, 'ccid', ut.dzip(paths[0], [2]))
-        nx.set_edge_attributes(aux_graph.A, 'label', ut.map_vals(str, nx.get_edge_attributes(aux_graph.A, 'weight')))
-        _ = pt.show_nx(G, pnum=(1, 2, 1), fnum=1, groupby='ccid', layoutkw={'prog': 'neato'})  # NOQA
-        _ = pt.show_nx(aux_graph.A, pnum=(1, 2, 2), fnum=1)  # NOQA
-        print('ccs = {!r}'.format(ccs))
-
 
 # ----------------
 # Undirected tests
@@ -351,9 +338,9 @@ def test_random_gnp_directed():
 
 
 def test_configuration_directed():
-    deg_seq = nx.utils.create_degree_sequence(20, nx.utils.powerlaw_sequence)
     seeds = [671221681, 2403749451, 124433910, 672335939, 1193127215]
     for seed in seeds:
+        deg_seq = nx.random_powerlaw_tree_sequence(20, seed=seed, tries=5000)
         G = nx.DiGraph(nx.configuration_model(deg_seq, seed=seed))
         G.remove_edges_from(G.selfloop_edges())
         _check_edge_connectivity(G)
@@ -431,3 +418,19 @@ if __name__ == '__main__':
         func = vars()[key]
         ut.cprint('Testing func = {!r}'.format(key), 'blue')
         func()
+
+    if False:
+        # debugging
+        aux_graph = EdgeComponentAuxGraph.construct(G)
+        ccs = fset(aux_graph.k_edge_subgraphs(k=3))
+        print('ccs = {!r}'.format(ccs))
+
+        import plottool as pt
+
+        nx.set_node_attributes(G, 'ccid', ut.dzip(G.nodes(), G.nodes()))
+        nx.set_node_attributes(G, 'ccid', ut.dzip(paths[0], [1]))
+        nx.set_node_attributes(G, 'ccid', ut.dzip(paths[0], [2]))
+        nx.set_edge_attributes(aux_graph.A, 'label', ut.map_vals(str, nx.get_edge_attributes(aux_graph.A, 'weight')))
+        _ = pt.show_nx(G, pnum=(1, 2, 1), fnum=1, groupby='ccid', layoutkw={'prog': 'neato'})  # NOQA
+        _ = pt.show_nx(aux_graph.A, pnum=(1, 2, 2), fnum=1)  # NOQA
+        print('ccs = {!r}'.format(ccs))
