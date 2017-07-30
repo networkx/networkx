@@ -16,7 +16,7 @@ from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
 from networkx.classes.coreviews import MultiAdjacencyView
-from networkx.classes.views import OutMultiEdgeView, InMultiEdgeView, \
+from networkx.classes.reportviews import OutMultiEdgeView, InMultiEdgeView, \
         DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
 from networkx.exception import NetworkXError
 

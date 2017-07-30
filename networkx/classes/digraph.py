@@ -14,7 +14,7 @@ from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.views import OutEdgeView, InEdgeView, \
+from networkx.classes.reportviews import OutEdgeView, InEdgeView, \
         DiDegreeView, InDegreeView, OutDegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
