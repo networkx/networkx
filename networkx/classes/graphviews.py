@@ -155,8 +155,8 @@ class MultiDirectedView(MultiDiGraph):
 def to_directed(graph):
     if graph.is_directed():
         if graph.is_multigraph():
-            return nx.MultiSubGraph(graph, graph)
-        return nx.SubGraph(graph, graph)
+            return nx.induced_subgraph(graph, graph)
+        return nx.induced_subgraph(graph, graph)
     if graph.is_multigraph():
         return MultiDirectedView(graph)
     return DirectedView(graph)
@@ -218,5 +218,5 @@ def to_undirected(digraph):
             return MultiUnDirectedView(digraph)
         return UnDirectedView(digraph)
     if digraph.is_multigraph():
-        return nx.MultiSubGraph(digraph, digraph)
-    return nx.SubGraph(digraph, digraph)
+        return nx.induced_subgraph(digraph, digraph)
+    return nx.induced_subgraph(digraph, digraph)
