@@ -298,6 +298,8 @@ def fruchterman_reingold_layout(G, k=None,
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
         dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
+        if dom_size == 0:
+            dom_size = 1
         shape = (len(G), dim)
         pos_arr = np.random.random(shape) * dom_size + center
         for i, n in enumerate(G):
