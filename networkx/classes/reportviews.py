@@ -95,8 +95,7 @@ EdgeDataView
 from collections import Mapping, Set, Iterable
 import networkx as nx
 
-__all__ = ['AtlasView', 'AtlasView2', 'AtlasView3',
-           'NodeView', 'NodeDataView',
+__all__ = ['NodeView', 'NodeDataView',
            'EdgeView', 'OutEdgeView', 'InEdgeView',
            'EdgeDataView', 'OutEdgeDataView', 'InEdgeDataView',
            'MultiEdgeView', 'OutMultiEdgeView', 'InMultiEdgeView',
@@ -1110,72 +1109,3 @@ class InMultiEdgeView(OutMultiEdgeView):
     def __getitem__(self, e):
         u, v, k = e
         return self._adjdict[v][u][k]
-
-
-class AtlasView(Mapping):
-    """An AtlasView is a Read-only Mapping of Mappings.
-
-    It is a View into a dict-of-dict data structure.
-    The inner level of dict is read-write. But the
-    outer level is read-only.
-
-    See Also
-    ========
-    AtlasView2 - View into dict-of-dict-of-dict
-    AtlasView3 - View into dict-of-dict-of-dict-of-dict
-    """
-    __slots__ = ('_atlas',)
-
-    def __init__(self, d):
-        self._atlas = d
-
-    def __len__(self):
-        return len(self._atlas)
-
-    def __iter__(self):
-        return iter(self._atlas)
-
-    def __getitem__(self, key):
-        return self._atlas[key]
-
-    def copy(self):
-        return self._atlas.copy()
-
-    def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self._atlas)
-
-
-class AtlasView2(AtlasView):
-    """An AtlasView2 is a Read-only Map of Maps of Maps.
-
-    It is a View into a dict-of-dict-of-dict data structure.
-    The inner level of dict is read-write. But the
-    outer levels are read-only.
-
-    See Also
-    ========
-    AtlasView - View into dict-of-dict
-    AtlasView3 - View into dict-of-dict-of-dict-of-dict
-    """
-    __slots__ = ()   # Still uses AtlasView slots names _atlas
-
-    def __getitem__(self, name):
-        return AtlasView(self._atlas[name])
-
-
-class AtlasView3(AtlasView2):
-    """An AtlasView3 is a Read-only Map of Maps of Maps of Maps.
-
-    It is a View into a dict-of-dict-of-dict-of-dict data structure.
-    The inner level of dict is read-write. But the
-    outer levels are read-only.
-
-    See Also
-    ========
-    AtlasView - View into dict-of-dict
-    AtlasView2 - View into dict-of-dict-of-dict
-    """
-    __slots__ = ()   # Still uses AtlasView slots names _atlas
-
-    def __getitem__(self, name):
-        return AtlasView2(self._atlas[name])

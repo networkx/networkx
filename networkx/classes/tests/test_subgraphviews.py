@@ -5,12 +5,13 @@ import networkx as nx
 
 
 class test_graphview(object):
+    gview = nx.graphviews.SubGraph
+    graph = nx.Graph
     hide_edges_filter = staticmethod(nx.filters.hide_edges)
     show_edges_filter = staticmethod(nx.filters.show_edges)
 
     def setUp(self):
-        self.gview = nx.SubGraph
-        self.G = nx.path_graph(9)
+        self.G = nx.path_graph(9, create_using=self.graph())
         self.hide_edges_w_hide_nodes = {(3, 4), (4, 5), (5, 6)}
 
     def test_hidden_nodes(self):
@@ -32,9 +33,9 @@ class test_graphview(object):
         assert_equal(G.size(), 7 if G.is_multigraph() else 5)
 
     def test_hidden_edges(self):
-        self.hide_edges = [(2, 3), (8, 7), (222, 223)]
-        self.edges_gone = self.hide_edges_filter(self.hide_edges)
-        G = self.gview(self.G, filter_edge=self.edges_gone)
+        hide_edges = [(2, 3), (8, 7), (222, 223)]
+        edges_gone = self.hide_edges_filter(hide_edges)
+        G = self.gview(self.G, filter_edge=edges_gone)
         assert_equal(self.G.nodes, G.nodes)
         if G.is_directed():
             assert_equal(self.G.edges - G.edges, {(2, 3)})
@@ -52,8 +53,8 @@ class test_graphview(object):
         assert_equal(G.degree(3), 1)
 
     def test_shown_node(self):
-        self.induced_subgraph = nx.filters.show_nodes([2, 3, 111])
-        G = self.gview(self.G, filter_node=self.induced_subgraph)
+        induced_subgraph = nx.filters.show_nodes([2, 3, 111])
+        G = self.gview(self.G, filter_node=induced_subgraph)
         assert_equal(set(G.nodes), {2, 3})
         if G.is_directed():
             assert_equal(list(G[3]), [])
@@ -89,28 +90,24 @@ class test_graphview(object):
 
 
 class test_digraphview(test_graphview):
+    gview = nx.graphviews.DiSubGraph
+    graph = nx.DiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_diedges)
     show_edges_filter = staticmethod(nx.filters.show_diedges)
-
-    def setUp(self):
-        self.gview = nx.DiSubGraph
-        self.G = nx.path_graph(9, create_using=nx.DiGraph())
-        self.hide_edges_w_hide_nodes = {(3, 4), (4, 5), (5, 6)}
+    hide_edges = [(2, 3), (8, 7), (222, 223)]
+    excluded = {(2, 3), (3, 4), (4, 5), (5, 6)}
 
     def test_inoutedges(self):
-        hide_edges = [(2, 3), (8, 7), (222, 223)]
-        edges_gone = nx.filters.hide_diedges(hide_edges)
+        edges_gone = self.hide_edges_filter(self.hide_edges)
         hide_nodes = [4, 5, 111]
         nodes_gone = nx.filters.hide_nodes(hide_nodes)
         G = self.gview(self.G, nodes_gone, edges_gone)
 
-        excluded = {(2, 3), (3, 4), (4, 5), (5, 6)}
-        assert_equal(self.G.in_edges - G.in_edges, excluded)
-        assert_equal(self.G.out_edges - G.out_edges, excluded)
+        assert_equal(self.G.in_edges - G.in_edges, self.excluded)
+        assert_equal(self.G.out_edges - G.out_edges, self.excluded)
 
     def test_pred(self):
-        hide_edges = [(2, 3), (8, 7), (222, 223)]
-        edges_gone = nx.filters.hide_diedges(hide_edges)
+        edges_gone = self.hide_edges_filter(self.hide_edges)
         hide_nodes = [4, 5, 111]
         nodes_gone = nx.filters.hide_nodes(hide_nodes)
         G = self.gview(self.G, nodes_gone, edges_gone)
@@ -119,8 +116,7 @@ class test_digraphview(test_graphview):
         assert_equal(list(G.pred[6]), [])
 
     def test_inout_degree(self):
-        hide_edges = [(2, 3), (8, 7), (222, 223)]
-        edges_gone = nx.filters.hide_diedges(hide_edges)
+        edges_gone = self.hide_edges_filter(self.hide_edges)
         hide_nodes = [4, 5, 111]
         nodes_gone = nx.filters.hide_nodes(hide_nodes)
         G = self.gview(self.G, nodes_gone, edges_gone)
@@ -133,7 +129,7 @@ class test_digraphview(test_graphview):
 
 # multigraph
 class test_multigraphview(test_graphview):
-    gview = nx.MultiSubGraph
+    gview = nx.graphviews.MultiSubGraph
     graph = nx.MultiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multiedges)
     show_edges_filter = staticmethod(nx.filters.show_multiedges)
@@ -187,11 +183,25 @@ class test_multigraphview(test_graphview):
 
 
 # multidigraph
-class test_multidigraphview(test_multigraphview):
-    gview = nx.MultiDiSubGraph
+class test_multidigraphview(test_multigraphview, test_digraphview):
+    gview = nx.graphviews.MultiDiSubGraph
     graph = nx.MultiDiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multidiedges)
     show_edges_filter = staticmethod(nx.filters.show_multidiedges)
+    hide_edges = [(2, 3, 0), (8, 7, 0), (222, 223, 0)]
+    excluded = {(2, 3, 0), (3, 4, 0), (4, 5, 0), (5, 6, 0)}
+
+
+    def test_inout_degree(self):
+        edges_gone = self.hide_edges_filter(self.hide_edges)
+        hide_nodes = [4, 5, 111]
+        nodes_gone = nx.filters.hide_nodes(hide_nodes)
+        G = self.gview(self.G, nodes_gone, edges_gone)
+
+        assert_equal(G.degree(2), 3)
+        assert_equal(G.out_degree(2), 2)
+        assert_equal(G.in_degree(2), 1)
+        assert_equal(G.size(), 6)
 
 
 # induced_subgraph
