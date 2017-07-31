@@ -112,11 +112,11 @@ The same changes apply to MultiGraphs and MultiDiGraphs.
  
 -------
 
-The order of arguments to `set_edge_attributes` and `set_node_attributes` has
-changed.  The position of `name` and `values` has been swapped, and `name` now
-defaults to `None`.  The previous call signature of `(graph, name, value)` has
-been changed to `(graph, value, name=None)`. The new style allows for `name` to
-be ommitted in favor of passing a dictionary of dictionaries to `values`.
+The order of arguments to ``set_edge_attributes`` and ``set_node_attributes`` has
+changed.  The position of ``name`` and ``values`` has been swapped, and ``name`` now
+defaults to ``None``.  The previous call signature of ``(graph, name, value)`` has
+been changed to ``(graph, value, name=None)``. The new style allows for ``name`` to
+be ommitted in favor of passing a dictionary of dictionaries to ``values``.
 
 A simple method for migrating existing code to the new version is to explicitly
 specify the keyword argument names. This method is backwards compatible and
@@ -126,7 +126,7 @@ ensures the correct arguments are passed, regardless of the order. For example t
     >>> nx.set_node_attributes(G, 'label', {1: 'one', 2: 'two', 3: 'three'})
     >>> nx.set_edge_attributes(G, 'label', {(1, 2): 'path1', (2, 3): 'path2'})
 
-Will cause `TypeError: unhashable type: 'dict'` in the new version. The code
+Will cause ``TypeError: unhashable type: 'dict'`` in the new version. The code
 can be refactored as
 
     >>> G = nx.Graph([(1, 2), (1, 3)])
