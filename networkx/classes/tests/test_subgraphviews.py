@@ -5,7 +5,7 @@ import networkx as nx
 
 
 class test_graphview(object):
-    gview = nx.SubGraph
+    gview = nx.graphviews.SubGraph
     graph = nx.Graph
     hide_edges_filter = staticmethod(nx.filters.hide_edges)
     show_edges_filter = staticmethod(nx.filters.show_edges)
@@ -90,7 +90,7 @@ class test_graphview(object):
 
 
 class test_digraphview(test_graphview):
-    gview = nx.DiSubGraph
+    gview = nx.graphviews.DiSubGraph
     graph = nx.DiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_diedges)
     show_edges_filter = staticmethod(nx.filters.show_diedges)
@@ -129,7 +129,7 @@ class test_digraphview(test_graphview):
 
 # multigraph
 class test_multigraphview(test_graphview):
-    gview = nx.MultiSubGraph
+    gview = nx.graphviews.MultiSubGraph
     graph = nx.MultiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multiedges)
     show_edges_filter = staticmethod(nx.filters.show_multiedges)
@@ -184,7 +184,7 @@ class test_multigraphview(test_graphview):
 
 # multidigraph
 class test_multidigraphview(test_multigraphview, test_digraphview):
-    gview = nx.MultiDiSubGraph
+    gview = nx.graphviews.MultiDiSubGraph
     graph = nx.MultiDiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multidiedges)
     show_edges_filter = staticmethod(nx.filters.show_multidiedges)
