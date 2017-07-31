@@ -23,7 +23,8 @@ def efficiency(G, u, v):
     """Returns the efficiency of a pair of nodes in a graph.
 
     The *efficiency* of a pair of nodes is the multiplicative inverse of the
-    shortest path distance between the nodes [1]_. Returns 0 if no path between nodes.
+    shortest path distance between the nodes [1]_. Returns 0 if no path
+    between nodes.
 
     Parameters
     ----------
