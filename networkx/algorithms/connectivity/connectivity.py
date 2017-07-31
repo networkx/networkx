@@ -732,6 +732,8 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     :meth:`edmonds_karp`
     :meth:`preflow_push`
     :meth:`shortest_augmenting_path`
+    :meth:`k_edge_components`
+    :meth:`k_edge_subgraphs`
 
     References
     ----------

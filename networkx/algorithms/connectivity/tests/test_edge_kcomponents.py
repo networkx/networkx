@@ -5,16 +5,12 @@ from nose.tools import (assert_equal, assert_not_equal, assert_greater_equal,
                         assert_raises, assert_in)
 from networkx.utils import pairwise
 from networkx.algorithms.connectivity import (
-    k_edge_components,
-    k_edge_subgraphs,
-    bridge_compoments,
-    general_k_edge_subgraphs,
+    bridge_components,
     EdgeComponentAuxGraph,
 )
-
-
-import utool as ut
-print, rrr, profile = ut.inject2(__name__)
+from networkx.algorithms.connectivity.edge_kcomponents import (
+    general_k_edge_subgraphs,
+)
 
 
 # ----------------
@@ -26,7 +22,6 @@ def fset(list_of_sets):
     return set(map(frozenset, list_of_sets))
 
 
-@profile
 def _assert_subgraph_edge_connectivity(G, ccs_subgraph, k):
     """
     tests properties of k-edge-connected subgraphs
@@ -53,7 +48,6 @@ def _memo_connectivity(G, u, v, memo):
     return memo[edge]
 
 
-@profile
 def _all_pairs_connectivity(G, cc, k, memo):
     # Brute force check
     for u, v in it.combinations(cc, 2):
@@ -64,7 +58,6 @@ def _all_pairs_connectivity(G, cc, k, memo):
         assert_greater_equal(connectivity, k)
 
 
-@profile
 def _assert_local_cc_edge_connectivity(G, ccs_local, k, memo):
     """
     tests properties of k-edge-connected components
@@ -84,7 +77,6 @@ def _assert_local_cc_edge_connectivity(G, ccs_local, k, memo):
 
 
 # Helper function
-@profile
 def _check_edge_connectivity(G):
     """
     Helper - generates all k-edge-components using the aux graph.  Checks the
@@ -125,7 +117,7 @@ def _check_edge_connectivity(G):
                 assert_equal(alt_ccs, ccs_local, 'k=1 failed alt')
                 assert_equal(alt_ccs, ccs_subgraph, 'k=1 failed alt')
             elif k == 2:
-                alt_bridge_ccs = fset(bridge_compoments(G))
+                alt_bridge_ccs = fset(bridge_components(G))
                 assert_equal(alt_bridge_ccs, ccs_local, 'k=2 failed alt')
                 assert_equal(alt_bridge_ccs, ccs_subgraph, 'k=2 failed alt')
             # if new methods for k == 3 or k == 4 are implemented add them here
@@ -149,8 +141,8 @@ def _check_edge_connectivity(G):
 def test_zero_k_exception():
     G = nx.Graph()
     # functions that return generators error immediately
-    assert_raises(ValueError, k_edge_components, G, k=0)
-    assert_raises(ValueError, k_edge_subgraphs, G, k=0)
+    assert_raises(ValueError, nx.k_edge_components, G, k=0)
+    assert_raises(ValueError, nx.k_edge_subgraphs, G, k=0)
 
     # actual generators only error when you get the first item
     aux_graph = EdgeComponentAuxGraph.construct(G)
@@ -160,12 +152,12 @@ def test_zero_k_exception():
 
 def test_empty_input():
     G = nx.Graph()
-    assert_equal([], list(k_edge_components(G, k=5)))
-    assert_equal([], list(k_edge_subgraphs(G, k=5)))
+    assert_equal([], list(nx.k_edge_components(G, k=5)))
+    assert_equal([], list(nx.k_edge_subgraphs(G, k=5)))
 
     G = nx.DiGraph()
-    assert_equal([], list(k_edge_components(G, k=5)))
-    assert_equal([], list(k_edge_subgraphs(G, k=5)))
+    assert_equal([], list(nx.k_edge_components(G, k=5)))
+    assert_equal([], list(nx.k_edge_subgraphs(G, k=5)))
 
 
 # ----------------
@@ -173,7 +165,8 @@ def test_empty_input():
 # ----------------
 
 def test_random_gnp():
-    seeds = [1550709854, 1309423156, 4208992358, 2785630813, 1915069929]
+    # seeds = [1550709854, 1309423156, 4208992358, 2785630813, 1915069929]
+    seeds = [2785630813, 1915069929]
 
     for seed in seeds:
         G = nx.gnp_random_graph(20, 0.2, seed=seed)
@@ -208,7 +201,7 @@ def test_tarjan_bridge():
     # RE Tarjan - "A note on finding the bridges of a graph"
     # Information Processing Letters, 1974 - Elsevier
     # doi:10.1016/0020-0190(74)90003-9.
-    # define 2-connected compoments and bridges
+    # define 2-connected components and bridges
     ccs = [(1, 2, 4, 3, 1, 4), (5, 6, 7, 5), (8, 9, 10, 8),
              (17, 18, 16, 15, 17), (11, 12, 14, 13, 11, 14)]
     bridges = [(4, 8), (3, 5), (3, 17)]
@@ -217,11 +210,11 @@ def test_tarjan_bridge():
 
 
 def test_bridge_cc():
-    # define 2-connected compoments and bridges
+    # define 2-connected components and bridges
     cc2 = [(1, 2, 4, 3, 1, 4), (8, 9, 10, 8), (11, 12, 13, 11)]
     bridges = [(4, 8), (3, 5), (20, 21), (22, 23, 24)]
     G = nx.Graph(it.chain(*(pairwise(path) for path in cc2 + bridges)))
-    bridge_ccs = fset(bridge_compoments(G))
+    bridge_ccs = fset(bridge_components(G))
     target_ccs = fset([
         {1, 2, 3, 4}, {5}, {8, 9, 10}, {11, 12, 13}, {20},
         {21}, {22}, {23}, {24}
@@ -250,7 +243,7 @@ def test_undirected_aux_graph():
     assert_equal(target_1, components_1)
 
     # Check that the undirected case for k=1 agrees with CCs
-    alt_1 = fset(k_edge_subgraphs(G, k=1))
+    alt_1 = fset(nx.k_edge_subgraphs(G, k=1))
     assert_equal(alt_1, components_1)
 
     components_2 = fset(aux_graph.k_edge_subgraphs(k=2))
@@ -258,7 +251,7 @@ def test_undirected_aux_graph():
     assert_equal(target_2, components_2)
 
     # Check that the undirected case for k=2 agrees with bridge components
-    alt_2 = fset(k_edge_subgraphs(G, k=2))
+    alt_2 = fset(nx.k_edge_subgraphs(G, k=2))
     assert_equal(alt_2, components_2)
 
     components_3 = fset(aux_graph.k_edge_subgraphs(k=3))
@@ -276,7 +269,7 @@ def test_local_subgraph_difference():
     paths = [
         (11, 12, 13, 14, 11, 13, 14, 12),  # first 4-clique
         (21, 22, 23, 24, 21, 23, 24, 22),  # second 4-clique
-        # paths connecting each vertex of the 4 cliques
+        # paths connecting each node of the 4 cliques
         (11, 101, 21),
         (12, 102, 22),
         (13, 103, 23),
@@ -307,21 +300,21 @@ def test_local_subgraph_difference_directed():
     G = nx.DiGraph(it.chain(*[pairwise(path) for path in dipaths]))
 
     assert_equal(
-        fset(k_edge_components(G, k=1)),
-        fset(k_edge_subgraphs(G, k=1))
+        fset(nx.k_edge_components(G, k=1)),
+        fset(nx.k_edge_subgraphs(G, k=1))
     )
 
     # Unlike undirected graphs, when k=2, for directed graphs there is a case
     # where the k-edge-ccs are not the same as the k-edge-subgraphs.
     # (in directed graphs ccs and subgraphs are the same when k=2)
     assert_not_equal(
-        fset(k_edge_components(G, k=2)),
-        fset(k_edge_subgraphs(G, k=2))
+        fset(nx.k_edge_components(G, k=2)),
+        fset(nx.k_edge_subgraphs(G, k=2))
     )
 
     assert_equal(
-        fset(k_edge_components(G, k=3)),
-        fset(k_edge_subgraphs(G, k=3))
+        fset(nx.k_edge_components(G, k=3)),
+        fset(nx.k_edge_subgraphs(G, k=3))
     )
 
     _check_edge_connectivity(G)
@@ -337,18 +330,18 @@ def test_triangles():
 
     # subgraph and ccs are the same in all cases here
     assert_equal(
-        fset(k_edge_components(G, k=1)),
-        fset(k_edge_subgraphs(G, k=1))
+        fset(nx.k_edge_components(G, k=1)),
+        fset(nx.k_edge_subgraphs(G, k=1))
     )
 
     assert_equal(
-        fset(k_edge_components(G, k=2)),
-        fset(k_edge_subgraphs(G, k=2))
+        fset(nx.k_edge_components(G, k=2)),
+        fset(nx.k_edge_subgraphs(G, k=2))
     )
 
     assert_equal(
-        fset(k_edge_components(G, k=3)),
-        fset(k_edge_subgraphs(G, k=3))
+        fset(nx.k_edge_components(G, k=3)),
+        fset(nx.k_edge_subgraphs(G, k=3))
     )
 
     _check_edge_connectivity(G)
@@ -369,8 +362,8 @@ def test_four_clique():
     G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
 
     # The subgraphs and ccs are different for k=3
-    local_ccs = fset(k_edge_components(G, k=3))
-    subgraphs = fset(k_edge_subgraphs(G, k=3))
+    local_ccs = fset(nx.k_edge_components(G, k=3))
+    subgraphs = fset(nx.k_edge_subgraphs(G, k=3))
     assert_not_equal(local_ccs, subgraphs)
 
     # The cliques ares in the same cc
@@ -400,27 +393,27 @@ def test_five_clique():
 
     # For k=3 they are the same
     assert_equal(
-        fset(k_edge_components(G, k=3)),
-        fset(k_edge_subgraphs(G, k=3))
+        fset(nx.k_edge_components(G, k=3)),
+        fset(nx.k_edge_subgraphs(G, k=3))
     )
 
     # For k=4 they are the different
     # the aux nodes are in the same CC as clique 1 but no the same subgraph
     assert_not_equal(
-        fset(k_edge_components(G, k=4)),
-        fset(k_edge_subgraphs(G, k=4))
+        fset(nx.k_edge_components(G, k=4)),
+        fset(nx.k_edge_subgraphs(G, k=4))
     )
 
     # For k=5 they are not the same
     assert_not_equal(
-        fset(k_edge_components(G, k=5)),
-        fset(k_edge_subgraphs(G, k=5))
+        fset(nx.k_edge_components(G, k=5)),
+        fset(nx.k_edge_subgraphs(G, k=5))
     )
 
     # For k=6 they are the same
     assert_equal(
-        fset(k_edge_components(G, k=6)),
-        fset(k_edge_subgraphs(G, k=6))
+        fset(nx.k_edge_components(G, k=6)),
+        fset(nx.k_edge_subgraphs(G, k=6))
     )
     _check_edge_connectivity(G)
 
@@ -493,48 +486,14 @@ def test_karate_directed():
     _check_edge_connectivity(G)
 
 
-def timing():
-    seed = 3894723670
-
-    constructor = [
-        (50, 300, .99),
-        (50, 300, .99),
-        (50, 300, .99),
-        (50, 300, .99),
-    ]
-    G = nx.random_shell_graph(constructor, seed=seed)
-
-    # Check which method is faster
-    import ubelt
-    for timer in ubelt.Timerit(10, 'direct subgraph'):
-        with timer:
-            len(list(k_edge_subgraphs(G, k=4)))
-
-    for timer in ubelt.Timerit(10, 'aux-subgraph'):
-        with timer:
-            aux_graph = EdgeComponentAuxGraph.construct(G)
-            len(list(aux_graph.k_edge_subgraphs(k=4)))
-
-    aux_graph = EdgeComponentAuxGraph.construct(G)
-    for timer in ubelt.Timerit(10, 'pre-aux-subgraph'):
-        with timer:
-            len(list(aux_graph.k_edge_subgraphs(k=4)))
-
-    # Timing complete for: direct subgraph, 10 loops, best of 3
-    #     time per loop : 339.0 ms seconds
-    # Timing complete for: aux-subgraph, 10 loops, best of 3
-    #     time per loop : 2.872 s seconds
-    # Timing complete for: pre-aux-subgraph, 10 loops, best of 3
-    #     time per loop : 60.36 ms seconds
-
-
 if __name__ == '__main__':
     r"""
     CommandLine:
-        python ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_kcompoments.py
+        python ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_kcomponents.py
 
-        nosetests ~/code/networkx/networkx/algorithms/connectivity --with-doctest --verbose
-        nosetests ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_kcompoments.py --with-doctest --verbose
+        nosetests ~/code/networkx/networkx/algorithms/connectivity/ --with-doctest --verbosity=3
+        nosetests ~/code/networkx/networkx/algorithms/connectivity --match=edge_kcomponents --with-doctest --verbosity=3
+        nosetests ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_kcomponents.py --with-doctest --verbosity=3
     """
     # TODO: remove after development is complete
     import utool as ut
