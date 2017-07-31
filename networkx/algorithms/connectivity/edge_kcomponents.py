@@ -27,7 +27,7 @@ __all__ = [
 ]
 
 
-# @not_implemented_for('multi')
+@not_implemented_for('multigraph')
 def k_edge_components(G, k):
     """Generates nodes in each maximal k-edge-connected compoments (k-edge-ccs)
     in G.
@@ -108,7 +108,7 @@ def k_edge_components(G, k):
             return aux_graph.k_edge_components(k)
 
 
-# @not_implemented_for('multi')
+@not_implemented_for('multigraph')
 def k_edge_subgraphs(G, k):
     """Generates nodes in each maximal k-edge-connected subgraph
     (k-edge-subgraph) in G.
@@ -190,7 +190,7 @@ def _k_edge_subgraphs_nodes(G, k):
         yield set(C.nodes())
 
 
-# @not_implemented_for('directed,multi')
+@not_implemented_for('directed', 'multigraph')
 def bridge_compoments(G):
     """Finds all bridge-connected compoments G.
 
