@@ -109,6 +109,8 @@ Let's have a look on them.
 
 The same changes apply to MultiGraphs and MultiDiGraphs.
 
+ 
+-------
 
 The order of arguments to `set_edge_attributes` and `set_node_attributes` has
 changed.  The position of `name` and `values` has been swapped, and `name` now
