@@ -386,14 +386,17 @@ def edge_subgraph(G, edges):
     nodes = set()
     for e in edges:
         nodes.update(e[:2])
-    induced_edges = nx.classes.filters.show_edges(edges)
     induced_nodes = nx.classes.filters.show_nodes(nodes)
     if G.is_multigraph():
         if G.is_directed():
+            induced_edges = nx.classes.filters.show_multidiedges(edges)
             return nx.graphviews.MultiDiSubGraph(G, induced_nodes, induced_edges)
+        induced_edges = nx.classes.filters.show_multiedges(edges)
         return nx.graphviews.MultiSubGraph(G, induced_nodes, induced_edges)
     if G.is_directed():
+        induced_edges = nx.classes.filters.show_diedges(edges)
         return nx.graphviews.DiSubGraph(G, induced_nodes, induced_edges)
+    induced_edges = nx.classes.filters.show_edges(edges)
     return nx.graphviews.SubGraph(G, induced_nodes, induced_edges)
 
 
