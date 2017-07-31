@@ -12,6 +12,7 @@ from __future__ import division
 from itertools import permutations
 
 import networkx as nx
+from networkx.exception import NetworkXNoPath
 from ..utils import not_implemented_for
 
 __all__ = ['efficiency', 'local_efficiency', 'global_efficiency']
@@ -22,7 +23,7 @@ def efficiency(G, u, v):
     """Returns the efficiency of a pair of nodes in a graph.
 
     The *efficiency* of a pair of nodes is the multiplicative inverse of the
-    shortest path distance between the nodes [1]_.
+    shortest path distance between the nodes [1]_. Returns 0 if no path between nodes.
 
     Parameters
     ----------
@@ -53,7 +54,11 @@ def efficiency(G, u, v):
            <http://dx.doi.org/10.1103/PhysRevLett.87.198701>
 
     """
-    return 1 / nx.shortest_path_length(G, u, v)
+    try:
+        eff = 1 / nx.shortest_path_length(G, u, v)
+    except NetworkXNoPath:
+        eff = 0
+    return eff
 
 
 @not_implemented_for('directed')
