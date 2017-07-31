@@ -338,7 +338,10 @@ class TestReadGraphML(BaseGraphML):
         assert_equal(sorted(H.edges(keys=True)), expected)
 
     def test_preserve_multi_edge_data(self):
-        # Test that data and keys of edges are preserved when we write then read it.
+        """
+        Test that data and keys of edges are preserved on consequent
+        write and reads
+        """
         G = nx.MultiGraph()
         G.add_node(1)
         G.add_node(2)
@@ -358,7 +361,9 @@ class TestReadGraphML(BaseGraphML):
         nx.write_graphml(G, fh)
         fh.seek(0)
         H = nx.read_graphml(fh, node_type=int)
-        assert_edges_equal(G.edges(data=True, keys=True), H.edges(data=True, keys=True))
+        assert_edges_equal(
+            G.edges(data=True, keys=True), H.edges(data=True, keys=True)
+        )
         assert_equal(G._adj, H._adj)
 
     def test_yfiles_extension(self):

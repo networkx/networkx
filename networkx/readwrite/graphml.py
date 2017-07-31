@@ -794,15 +794,16 @@ class GraphMLReader(GraphML):
         # attribute is specified
         edge_id = edge_element.get("id")
         if edge_id:
-            self.edge_ids[source,target] = edge_id  # will be set as edge data if graph is non-multigraph
+            # self.edge_ids is used by `make_graph` method for non-multigraphs
+            self.edge_ids[source, target] = edge_id
             try:
                 edge_id = self.edge_key_type(edge_id)
-            except ValueError: # Could not convert.
+            except ValueError:  # Could not convert.
                 pass
         else:
             edge_id = data.get('key')
 
-        if G.has_edge(source,target):
+        if G.has_edge(source, target):
             # mark this as a multigraph
             self.multigraph = True
 
