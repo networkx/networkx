@@ -24,14 +24,14 @@ def helper_funcs(G, orientation):
     if ignore_orientation:
         # When we ignore the orientation, we still need to know how the edge
         # was traversed, so we add an object representing the direction.
-        def out_edges(u, **kwds):
-            for edge in G.out_edges(u, **kwds):
+        def out_edges(u_for_edges, **kwds):
+            for edge in G.out_edges(u_for_edges, **kwds):
                 yield edge + (FORWARD,)
-            for edge in G.in_edges(u, **kwds):
+            for edge in G.in_edges(u_for_edges, **kwds):
                 yield edge + (REVERSE,)
     elif reverse_orientation:
-        def out_edges(u, **kwds):
-            for edge in G.in_edges(u, **kwds):
+        def out_edges(u_for_edges, **kwds):
+            for edge in G.in_edges(u_for_edges, **kwds):
                 yield edge + (REVERSE,)
     else:
         # If "yield from" were an option, we could pass kwds automatically.

@@ -117,7 +117,7 @@ def projected_graph(B, nodes, multigraph=False):
                     links = set(B[u]) & set(B[n])
                 for l in links:
                     if not G.has_edge(u, n, l):
-                        G.add_edge(u, n, key=l)
+                        G.add_edge(u, n, ekey=l)
         else:
             G.add_edges_from((u, n) for n in nbrs2)
     return G

@@ -104,7 +104,7 @@ def cytoscape_graph(data, attrs=None):
         targ = d["data"].pop("target")
         if multigraph:
             key = d["data"].get("key", 0)
-            graph.add_edge(sour, targ, key=key)
+            graph.add_edge(sour, targ, ekey=key)
             graph.edge[sour, targ, key].update(edge_data)
         else:
             graph.add_edge(sour, targ)

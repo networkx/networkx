@@ -46,8 +46,8 @@ class Graph(object):
 
     Parameters
     ----------
-    data : input graph
-        Data to initialize graph. If data=None (default) an empty
+    incoming_graph_data : input graph (optional, default: None)
+        Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
         dict of dicts, dict of lists, NetworkX graph, NumPy matrix
@@ -148,7 +148,7 @@ class Graph(object):
 
     Warning: assigning to `G.edge[u]` or `G.edge[u][v]` will almost certainly
     corrupt the graph data structure. Use 3 sets of brackets as shown above.
-    (4 for multigraphs: `MG.edge[u][v][key][name] = value`)
+    (4 for multigraphs: `MG.edge[u][v][ekey][name] = value`)
 
     **Shortcuts:**
 
@@ -252,13 +252,13 @@ class Graph(object):
     adjlist_inner_dict_factory = dict
     edge_attr_dict_factory = dict
 
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, graph attributes.
 
         Parameters
         ----------
-        data : input graph
-            Data to initialize graph.  If data=None (default) an empty
+        incoming_graph_data : input graph
+            Data to initialize graph.  If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix
@@ -295,8 +295,8 @@ class Graph(object):
         self._node = ndf()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # attempt to load graph with data
-        if data is not None:
-            convert.to_networkx_graph(data, create_using=self)
+        if incoming_graph_data is not None:
+            convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
@@ -413,12 +413,12 @@ class Graph(object):
         """
         return self.adj[n]
 
-    def add_node(self, n, **attr):
-        """Add a single node n and update node attributes.
+    def add_node(self, node_for_adding, **attr):
+        """Add a single node `node_for_adding` and update node attributes.
 
         Parameters
         ----------
-        n : node
+        node_for_adding : node
             A node can be any hashable Python object except None.
         attr : keyword arguments, optional
             Set or change node attributes using key=value.
@@ -452,18 +452,18 @@ class Graph(object):
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        if n not in self._node:
-            self._adj[n] = self.adjlist_inner_dict_factory()
-            self._node[n] = attr
+        if node_for_adding not in self._node:
+            self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
+            self._node[node_for_adding] = attr
         else:  # update attr even if node already exists
-            self._node[n].update(attr)
+            self._node[node_for_adding].update(attr)
 
-    def add_nodes_from(self, nodes, **attr):
+    def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
 
         Parameters
         ----------
-        nodes : iterable container
+        nodes_for_adding : iterable container
             A container of nodes (list, dict, set, etc.).
             OR
             A container of (node, attribute dict) tuples.
@@ -503,7 +503,7 @@ class Graph(object):
         11
 
         """
-        for n in nodes:
+        for n in nodes_for_adding:
             # keep all this inside try/except because
             # CPython throws TypeError on n not in self._node,
             # while pre-2.7.5 ironpython throws on self._adj[n]
@@ -740,7 +740,7 @@ class Graph(object):
         except TypeError:
             return False
 
-    def add_edge(self, u, v, **attr):
+    def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -791,6 +791,7 @@ class Graph(object):
         >>> G.add_edge(1, 2)
         >>> G[1][2].update({0: 5})
         """
+        u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._node:
             self._adj[u] = self.adjlist_inner_dict_factory()
@@ -804,12 +805,12 @@ class Graph(object):
         self._adj[u][v] = datadict
         self._adj[v][u] = datadict
 
-    def add_edges_from(self, ebunch, **attr):
-        """Add all the edges in ebunch.
+    def add_edges_from(self, ebunch_to_add, **attr):
+        """Add all the edges in ebunch_to_add.
 
         Parameters
         ----------
-        ebunch : container of edges
+        ebunch_to_add : container of edges
             Each edge given in the container will be added to the
             graph. The edges must be given as as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
@@ -842,8 +843,7 @@ class Graph(object):
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
         """
-        # process ebunch
-        for e in ebunch:
+        for e in ebunch_to_add:
             ne = len(e)
             if ne == 3:
                 u, v, dd = e
@@ -865,13 +865,13 @@ class Graph(object):
             self._adj[u][v] = datadict
             self._adj[v][u] = datadict
 
-    def add_weighted_edges_from(self, ebunch, weight='weight', **attr):
+    def add_weighted_edges_from(self, ebunch_to_add, weight='weight', **attr):
         """Add all the edges in ebunch as weighted edges with specified
         weights.
 
         Parameters
         ----------
-        ebunch : container of edges
+        ebunch_to_add : container of edges
             Each edge given in the list or container will be added
             to the graph. The edges must be given as 3-tuples (u, v, w)
             where w is a number.
@@ -896,7 +896,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])
         """
-        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch),
+        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add),
                             **attr)
 
     def remove_edge(self, u, v):

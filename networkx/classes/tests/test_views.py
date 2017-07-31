@@ -338,7 +338,7 @@ class test_inedges(test_edgeview):
 class test_multiedges(test_edgeview):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiGraph())
-        self.G.add_edge(1, 2, key=3, foo='bar')
+        self.G.add_edge(1, 2, ekey=3, foo='bar')
         self.eview = nx.MultiEdgeView
 
         def modify_edge(G, e, **kwds):
@@ -477,7 +477,7 @@ class test_multiedges(test_edgeview):
 class test_directed_multiedges(test_multiedges):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
-        self.G.add_edge(1, 2, key=3, foo='bar')
+        self.G.add_edge(1, 2, ekey=3, foo='bar')
         self.eview = nx.OutMultiEdgeView
 
         def modify_edge(G, e, **kwds):
@@ -496,7 +496,7 @@ class test_directed_multiedges(test_multiedges):
 class test_in_multiedges(test_multiedges):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
-        self.G.add_edge(1, 2, key=3, foo='bar')
+        self.G.add_edge(1, 2, ekey=3, foo='bar')
         self.eview = nx.InMultiEdgeView
 
         def modify_edge(G, e, **kwds):

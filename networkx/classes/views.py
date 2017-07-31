@@ -65,7 +65,7 @@ EdgeView
     `V = G.edges` or `V = G.edges()` allows iteration over edges as well as
     `e in V`, set operations and edge data lookup `dd = G.edge[2, 3]`.
     Iteration is over 2-tuples `(u, v)` for Graph/DiGraph. For multigraphs
-    edges 3-tuples `(u, v, key)` are the default but 2-tuples can be obtained
+    edges 3-tuples `(u, v, ekey)` are the default but 2-tuples can be obtained
     via `V = G.edges(keys=False)`.
 
     Set operations for directed graphs treat the edges as a set of 2-tuples.
@@ -897,7 +897,7 @@ class EdgeView(OutEdgeView):
     like a dict and set operations on edges represented by node-tuples.
     In addition, edge data can be controlled by calling this object
     possibly creating an EdgeDataView. Typically edges are iterated over
-    and reported as `(u, v)` node tuples or `(u, v, key)` node/key tuples
+    and reported as `(u, v)` node tuples or `(u, v, ekey)` node/ekey tuples
     for multigraphs. Those edge representations can also be using to
     lookup the data dict for any edge. Set operations also are available
     where those tuples are the elements of the set.
@@ -914,7 +914,7 @@ class EdgeView(OutEdgeView):
     ==========
     graph : NetworkX graph-like class
     nbunch : (default= all nodes in graph) only report edges with these nodes
-    keys : (only for MultiGraph. default=False) report edge key in tuple
+    keys : (only for MultiGraph. default=False) report edge ekey in tuple
     data : bool or string (default=False) see above
     default : object (default=None)
 
@@ -949,7 +949,7 @@ class EdgeView(OutEdgeView):
     True
     >>> (2, 3) in EVmulti   # 2-tuples work even when keys is True
     True
-    >>> key = MG.add_edge(2, 3)
+    >>> ekey = MG.add_edge(2, 3)
     >>> for u, v, k in EVmulti: print((u, v, k))
     (0, 1, 0)
     (1, 2, 0)
@@ -1022,8 +1022,8 @@ class OutMultiEdgeView(OutEdgeView):
     def __iter__(self):
         for n, nbrs in self._nodes_nbrs():
             for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (n, nbr, key)
+                for ekey in kdict:
+                    yield (n, nbr, ekey)
 
     def __contains__(self, e):
         N = len(e)
@@ -1090,8 +1090,8 @@ class InMultiEdgeView(OutMultiEdgeView):
     def __iter__(self):
         for n, nbrs in self._nodes_nbrs():
             for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (nbr, n, key)
+                for ekey in kdict:
+                    yield (nbr, n, ekey)
 
     def __contains__(self, e):
         N = len(e)
@@ -1135,8 +1135,8 @@ class AtlasView(Mapping):
     def __iter__(self):
         return iter(self._atlas)
 
-    def __getitem__(self, key):
-        return self._atlas[key]
+    def __getitem__(self, ekey):
+        return self._atlas[ekey]
 
     def copy(self):
         return self._atlas.copy()

@@ -70,12 +70,12 @@ def test_intersection_all_attributes():
 
 def test_intersection_all_multigraph_attributes():
     g = nx.MultiGraph()
-    g.add_edge(0, 1, key=0)
-    g.add_edge(0, 1, key=1)
-    g.add_edge(0, 1, key=2)
+    g.add_edge(0, 1, ekey=0)
+    g.add_edge(0, 1, ekey=1)
+    g.add_edge(0, 1, ekey=2)
     h = nx.MultiGraph()
-    h.add_edge(0, 1, key=0)
-    h.add_edge(0, 1, key=3)
+    h.add_edge(0, 1, ekey=0)
+    h.add_edge(0, 1, ekey=3)
     gh = nx.intersection_all([g, h])
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
     assert_equal( set(gh.nodes()) , set(h.nodes()) )
@@ -145,11 +145,11 @@ def test_union_all_and_compose_all():
 
 def test_union_all_multigraph():
     G=nx.MultiGraph()
-    G.add_edge(1,2,key=0)
-    G.add_edge(1,2,key=1)
+    G.add_edge(1, 2, ekey=0)
+    G.add_edge(1, 2, ekey=1)
     H=nx.MultiGraph()
-    H.add_edge(3,4,key=0)
-    H.add_edge(3,4,key=1)
+    H.add_edge(3, 4, ekey=0)
+    H.add_edge(3, 4, ekey=1)
     GH=nx.union_all([G,H])
     assert_equal( set(GH) , set(G)|set(H))
     assert_equal( set(GH.edges(keys=True)) ,

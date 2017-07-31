@@ -178,8 +178,8 @@ class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
 
         """
         G = nx.MultiGraph()
-        G.add_edge(0, 1, key='a', weight=2)
-        G.add_edge(0, 1, key='b', weight=1)
+        G.add_edge(0, 1, ekey='a', weight=2)
+        G.add_edge(0, 1, ekey='b', weight=1)
         min_edges = nx.minimum_spanning_edges
         mst_edges = min_edges(G, algorithm=self.algo, data=False)
         assert_edges_equal([(0, 1, 'b')], list(mst_edges))
@@ -190,8 +190,8 @@ class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
 
         """
         G = nx.MultiGraph()
-        G.add_edge(0, 1, key='a', weight=2)
-        G.add_edge(0, 1, key='b', weight=1)
+        G.add_edge(0, 1, ekey='a', weight=2)
+        G.add_edge(0, 1, ekey='b', weight=1)
         max_edges = nx.maximum_spanning_edges
         mst_edges = max_edges(G, algorithm=self.algo, data=False)
         assert_edges_equal([(0, 1, 'a')], list(mst_edges))
@@ -214,14 +214,14 @@ class TestPrim(MultigraphMSTTestBase, TestCase):
 
     def test_multigraph_keys_tree(self):
         G = nx.MultiGraph()
-        G.add_edge(0, 1, key='a', weight=2)
-        G.add_edge(0, 1, key='b', weight=1)
+        G.add_edge(0, 1, ekey='a', weight=2)
+        G.add_edge(0, 1, ekey='b', weight=1)
         T = nx.minimum_spanning_tree(G)
         assert_edges_equal([(0, 1, 1)], list(T.edges(data='weight')))
 
     def test_multigraph_keys_tree_max(self):
         G = nx.MultiGraph()
-        G.add_edge(0, 1, key='a', weight=2)
-        G.add_edge(0, 1, key='b', weight=1)
+        G.add_edge(0, 1, ekey='a', weight=2)
+        G.add_edge(0, 1, ekey='b', weight=1)
         T = nx.maximum_spanning_tree(G)
         assert_edges_equal([(0, 1, 2)], list(T.edges(data='weight')))

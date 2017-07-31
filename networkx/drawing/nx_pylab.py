@@ -283,7 +283,7 @@ def draw_networkx_nodes(G, pos,
                         ax=None,
                         linewidths=None,
                         label=None,
-                        **kwds):
+                        ):
     """Draw the nodes of the graph G.
 
     This draws only the nodes of the graph G.
@@ -411,7 +411,7 @@ def draw_networkx_edges(G, pos,
                         ax=None,
                         arrows=True,
                         label=None,
-                        **kwds):
+                        ):
     """Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
@@ -642,7 +642,9 @@ def draw_networkx_labels(G, pos,
                          alpha=1.0,
                          bbox=None,
                          ax=None,
-                         **kwds):
+                         horizontalalignment='center',
+                         verticalalignment='center',
+                         ):
     """Draw node labels on the graph G.
 
     Parameters
@@ -674,6 +676,13 @@ def draw_networkx_labels(G, pos,
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
+
+    horizontalalignment : string (default: 'center')
+       How to horizontally align text.
+       Can be: 'center', 'top', 'bottom' or 'baseline'.
+
+    verticalalignment : string (default: 'center')
+       How to vertically align text. Can be: 'center', 'right', or 'left'.
 
     Returns
     -------
@@ -711,10 +720,6 @@ def draw_networkx_labels(G, pos,
     if labels is None:
         labels = dict((n, n) for n in G.nodes())
 
-    # set optional alignment
-    horizontalalignment = kwds.get('horizontalalignment', 'center')
-    verticalalignment = kwds.get('verticalalignment', 'center')
-
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
@@ -739,17 +744,20 @@ def draw_networkx_labels(G, pos,
 
 
 def draw_networkx_edge_labels(G, pos,
+                              ax=None,
+                              alpha=1.0,
                               edge_labels=None,
                               label_pos=0.5,
                               font_size=10,
                               font_color='k',
                               font_family='sans-serif',
                               font_weight='normal',
-                              alpha=1.0,
                               bbox=None,
-                              ax=None,
                               rotate=True,
-                              **kwds):
+                              clip_on=True,
+                              horizontalalignment='center',
+                              verticalalignment='center',
+                              ):
     """Draw edge labels.
 
     Parameters
@@ -781,17 +789,27 @@ def draw_networkx_edge_labels(G, pos,
     font_color : string
        Font color string (default='k' black)
 
-    font_weight : string
-       Font weight (default='normal')
-
     font_family : string
        Font family (default='sans-serif')
+
+    font_weight : string
+       Font weight (default='normal')
 
     bbox : Matplotlib bbox
        Specify text box shape and colors.
 
+    rotate : bool
+       Turn on clipping at axis boundaries (default=True)
+
     clip_on : bool
        Turn on clipping at axis boundaries (default=True)
+
+    horizontalalignment : string (default: 'center')
+       How to horizontally align text.
+       Can be: 'center', 'top', 'bottom' or 'baseline'.
+
+    verticalalignment : string (default: 'center')
+       How to vertically align text. Can be: 'center', 'right', or 'left'.
 
     Returns
     -------
@@ -859,10 +877,6 @@ def draw_networkx_edge_labels(G, pos,
         if not cb.is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
 
-        # set optional alignment
-        horizontalalignment = kwds.get('horizontalalignment', 'center')
-        verticalalignment = kwds.get('verticalalignment', 'center')
-
         t = ax.text(x, y,
                     label,
                     size=font_size,
@@ -876,7 +890,7 @@ def draw_networkx_edge_labels(G, pos,
                     transform=ax.transData,
                     bbox=bbox,
                     zorder=1,
-                    clip_on=True,
+                    clip_on=clip_on,
                     )
         text_items[(n1, n2)] = t
 

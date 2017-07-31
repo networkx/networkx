@@ -38,8 +38,8 @@ class TestNodeLink:
 
     def test_multigraph(self):
         G = nx.MultiGraph()
-        G.add_edge(1, 2, key='first')
-        G.add_edge(1, 2, key='second', color='blue')
+        G.add_edge(1, 2, ekey='first')
+        G.add_edge(1, 2, ekey='second', color='blue')
         H = node_link_graph(node_link_data(G))
         nx.is_isomorphic(G, H)
         assert_equal(H[1][2]['second']['color'], 'blue')

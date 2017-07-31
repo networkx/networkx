@@ -165,9 +165,9 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     of edges. We must reliably track edges across graph mutations.
 
     """
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         cls = super(MultiDiGraph_EdgeKey, self)
-        cls.__init__(data=data, **attr)
+        cls.__init__(incoming_graph_data=incoming_graph_data, **attr)
 
         self._cls = cls
         self.edge_index = {}
@@ -188,20 +188,21 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         for n in nbunch:
             self.remove_node(n)
 
-    def add_edge(self, u, v, key, **attr):
+    def add_edge(self, u_for_edge, v_for_edge, key_for_edge, **attr):
         """
         Key is now required.
 
         """
+        u, v, key = u_for_edge, v_for_edge, key_for_edge
         if key in self.edge_index:
             uu, vv, _ = self.edge_index[key]
             if (u != uu) or (v != vv):
                 raise Exception("Key {0!r} is already in use.".format(key))
 
-        self._cls.add_edge(u, v, key=key, **attr)
+        self._cls.add_edge(u, v, key, **attr)
         self.edge_index[key] = (u, v, self.succ[u][v][key])
 
-    def add_edges_from(self, ebunch, **attr):
+    def add_edges_from(self, ebunch_to_add, **attr):
         raise NotImplementedError
 
     def remove_edge_with_key(self, key):
@@ -428,7 +429,7 @@ class Edmonds(object):
                 #print("Edge is acceptable: {0}".format(acceptable))
                 if acceptable:
                     dd = {attr: weight}
-                    B.add_edge(u, v, key=edge[2], **dd)
+                    B.add_edge(u, v, edge[2], **dd)
                     G[u][v][edge[2]]['candidate'] = True
                     uf.union(u, v)
                     if Q_edges is not None:
