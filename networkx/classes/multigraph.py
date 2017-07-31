@@ -13,8 +13,8 @@ from copy import deepcopy
 
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.classes.views import AtlasView3
-from networkx.classes.views import MultiEdgeView, MultiDegreeView
+from networkx.classes.coreviews import MultiAdjacencyView
+from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
 from networkx.utils import iterable
 
@@ -103,9 +103,9 @@ class MultiGraph(Graph):
     edge is created and stored using a key to identify the edge.
     By default the key is the lowest unused integer.
 
-    >>> keys = G.add_edges_from([(4,5,{'route':282}), (4,5,{'route':37})])
+    >>> keys = G.add_edges_from([(4,5,{'route':28}), (4,5,{'route':37})])
     >>> G[4]
-    AtlasView2({3: {0: {}}, 5: {0: {}, 1: {'route': 282}, 2: {'route': 37}}})
+    AdjacencyView({3: {0: {}}, 5: {0: {}, 1: {'route': 28}, 2: {'route': 37}}})
 
     **Attributes:**
 
@@ -152,7 +152,7 @@ class MultiGraph(Graph):
     >>> len(G)  # number of nodes in graph
     5
     >>> G[1] # adjacency dict-like view keyed by neighbor to edge attributes
-    AtlasView2({2: {0: {'weight': 4}, 1: {'color': 'blue'}}})
+    AdjacencyView({2: {0: {'weight': 4}, 1: {'color': 'blue'}}})
 
     The fastest way to traverse all edges of a graph is via
     adjacency():
@@ -247,7 +247,7 @@ class MultiGraph(Graph):
 
     @property
     def adj(self):
-        return AtlasView3(self._adj)
+        return MultiAdjacencyView(self._adj)
 
     def new_edge_key(self, u, v):
         """Return an unused key for edges between nodes `u` and `v`.

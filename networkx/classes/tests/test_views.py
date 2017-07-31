@@ -11,7 +11,7 @@ class test_nodeview(object):
 
     def test_pickle(self):
         import pickle
-        nv = self.G.nodes()  # nx.NodeView(self.G)
+        nv = self.G.nodes()  # NodeView(self.G)
         pnv = pickle.loads(pickle.dumps(nv, -1))
         assert_equal(nv, pnv)
         assert_equal(nv.__slots__, pnv.__slots__)
@@ -121,7 +121,7 @@ class test_edgedataview(object):
     def setup(self):
         self.G = nx.path_graph(9)
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
-        self.eview = nx.EdgeView
+        self.eview = nx.reportviews.EdgeView
 
         def modify_edge(G, e, **kwds):
             G._adj[e[0]][e[1]].update(kwds)
@@ -202,7 +202,7 @@ class test_edgedataview(object):
 class test_edgeview(object):
     def setup(self):
         self.G = nx.path_graph(9)
-        self.eview = nx.EdgeView
+        self.eview = nx.reportviews.EdgeView
 
         def modify_edge(G, e, **kwds):
             G._adj[e[0]][e[1]].update(kwds)
@@ -306,7 +306,7 @@ class test_edgeview(object):
 class test_directed_edges(test_edgeview):
     def setup(self):
         self.G = nx.path_graph(9, nx.DiGraph())
-        self.eview = nx.OutEdgeView
+        self.eview = nx.reportviews.OutEdgeView
 
         def modify_edge(G, e, **kwds):
             G._adj[e[0]][e[1]].update(kwds)
@@ -322,7 +322,7 @@ class test_directed_edges(test_edgeview):
 class test_inedges(test_edgeview):
     def setup(self):
         self.G = nx.path_graph(9, nx.DiGraph())
-        self.eview = nx.InEdgeView
+        self.eview = nx.reportviews.InEdgeView
 
         def modify_edge(G, e, **kwds):
             G._adj[e[0]][e[1]].update(kwds)
@@ -339,7 +339,7 @@ class test_multiedges(test_edgeview):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
-        self.eview = nx.MultiEdgeView
+        self.eview = nx.reportviews.MultiEdgeView
 
         def modify_edge(G, e, **kwds):
             if len(e) == 2:
@@ -478,7 +478,7 @@ class test_directed_multiedges(test_multiedges):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
-        self.eview = nx.OutMultiEdgeView
+        self.eview = nx.reportviews.OutMultiEdgeView
 
         def modify_edge(G, e, **kwds):
             if len(e) == 2:
@@ -497,7 +497,7 @@ class test_in_multiedges(test_multiedges):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
-        self.eview = nx.InMultiEdgeView
+        self.eview = nx.reportviews.InMultiEdgeView
 
         def modify_edge(G, e, **kwds):
             if len(e) == 2:
@@ -515,7 +515,7 @@ class test_in_multiedges(test_multiedges):
 # Degrees
 class test_degreeview(object):
     GRAPH = nx.Graph
-    dview = nx.DegreeView
+    dview = nx.reportviews.DegreeView
 
     def setup(self):
         self.G = nx.path_graph(6, self.GRAPH())
@@ -590,7 +590,7 @@ class test_degreeview(object):
 
 class test_didegreeview(test_degreeview):
     GRAPH = nx.DiGraph
-    dview = nx.DiDegreeView
+    dview = nx.reportviews.DiDegreeView
 
     def test_repr(self):
         dv = self.G.degree()
@@ -600,7 +600,7 @@ class test_didegreeview(test_degreeview):
 
 class test_outdegreeview(test_degreeview):
     GRAPH = nx.DiGraph
-    dview = nx.OutDegreeView
+    dview = nx.reportviews.OutDegreeView
 
     def test_repr(self):
         dv = self.G.out_degree()
@@ -643,7 +643,7 @@ class test_outdegreeview(test_degreeview):
 
 class test_indegreeview(test_degreeview):
     GRAPH = nx.DiGraph
-    dview = nx.InDegreeView
+    dview = nx.reportviews.InDegreeView
 
     def test_repr(self):
         dv = self.G.in_degree()
@@ -686,7 +686,7 @@ class test_indegreeview(test_degreeview):
 
 class test_multidegreeview(test_degreeview):
     GRAPH = nx.MultiGraph
-    dview = nx.MultiDegreeView
+    dview = nx.reportviews.MultiDegreeView
 
     def test_repr(self):
         dv = self.G.degree()
@@ -729,7 +729,7 @@ class test_multidegreeview(test_degreeview):
 
 class test_dimultidegreeview(test_multidegreeview):
     GRAPH = nx.MultiDiGraph
-    dview = nx.DiMultiDegreeView
+    dview = nx.reportviews.DiMultiDegreeView
 
     def test_repr(self):
         dv = self.G.degree()
@@ -739,7 +739,7 @@ class test_dimultidegreeview(test_multidegreeview):
 
 class test_outmultidegreeview(test_degreeview):
     GRAPH = nx.MultiDiGraph
-    dview = nx.OutMultiDegreeView
+    dview = nx.reportviews.OutMultiDegreeView
 
     def test_repr(self):
         dv = self.G.out_degree()
@@ -782,7 +782,7 @@ class test_outmultidegreeview(test_degreeview):
 
 class test_inmultidegreeview(test_degreeview):
     GRAPH = nx.MultiDiGraph
-    dview = nx.InMultiDegreeView
+    dview = nx.reportviews.InMultiDegreeView
 
     def test_repr(self):
         dv = self.G.in_degree()

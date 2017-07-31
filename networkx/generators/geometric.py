@@ -147,7 +147,6 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     #
     n_name, nodes = n
     G = nx.Graph()
-    G.name = 'random_geometric_graph({}, {}, {})'.format(n, radius, dim)
     G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.

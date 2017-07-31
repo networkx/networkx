@@ -19,11 +19,13 @@ def reversed(G):
     """
     directed = G.is_directed()
     if directed:
-        G.reverse(copy=False)
+        G._pred, G._succ = G._succ, G._pred
+        G._adj = G._succ
 
     try:
         yield
     finally:
         if directed:
             # Reverse the reverse.
-            G.reverse(copy=False)
+            G._pred, G._succ = G._succ, G._pred
+            G._adj = G._succ

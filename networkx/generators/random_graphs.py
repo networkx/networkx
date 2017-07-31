@@ -84,7 +84,6 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
        Phys. Rev. E, 71, 036113, 2005.
     """
     G = empty_graph(n)
-    G.name="fast_gnp_random_graph(%s,%s)"%(n,p)
 
     if not seed is None:
         random.seed(seed)
@@ -165,7 +164,6 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     else:
         G=nx.Graph()
     G.add_nodes_from(range(n))
-    G.name="gnp_random_graph(%s,%s)"%(n,p)
     if p<=0:
         return G
     if p>=1:
@@ -227,7 +225,6 @@ def dense_gnm_random_graph(n, m, seed=None):
         G=complete_graph(n)
     else:
         G=empty_graph(n)
-    G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
 
     if n==1 or m>=mmax:
         return G
@@ -280,7 +277,6 @@ def gnm_random_graph(n, m, seed=None, directed=False):
     else:
         G=nx.Graph()
     G.add_nodes_from(range(n))
-    G.name="gnm_random_graph(%s,%s)"%(n,m)
 
     if seed is not None:
         random.seed(seed)
@@ -348,7 +344,6 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     if k>=n:
         raise nx.NetworkXError("k>=n, choose smaller k or larger n")
     G=empty_graph(n)
-    G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nlist = list(G.nodes())
     fromv = nlist
     # connect the k/2 neighbors
@@ -418,7 +413,6 @@ def watts_strogatz_graph(n, k, p, seed=None):
         random.seed(seed)
 
     G = nx.Graph()
-    G.name="watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nodes = list(range(n)) # nodes are labeled 0 to n-1
     # connect each node to k/2 neighbors
     for j in range(1, k // 2+1):
@@ -583,7 +577,6 @@ def random_regular_graph(d, n, seed=None):
         edges = _try_creation()
 
     G = nx.Graph()
-    G.name = "random_regular_graph(%s, %s)" % (d, n)
     G.add_edges_from(edges)
 
     return G
@@ -639,7 +632,6 @@ def barabasi_albert_graph(n, m, seed=None):
 
     # Add m initial nodes (m0 in barabasi-speak)
     G=empty_graph(m)
-    G.name="barabasi_albert_graph(%s,%s)"%(n,m)
     # Target nodes for new edges
     targets=list(range(m))
     # List of existing nodes, with nodes repeated once for each adjacent edge
@@ -718,7 +710,6 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m)
-    G.name = "extended_barabasi_albert_graph(%s, %s, %s, %s)" % (n, m, p, q)
 
     # List of nodes to represent the preferential attachment random selection.
     # At the creation of the graph, all nodes are added to the list
@@ -878,7 +869,6 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
         random.seed(seed)
 
     G=empty_graph(m) # add m initial nodes (m0 in barabasi-speak)
-    G.name="Powerlaw-Cluster Graph"
     repeated_nodes = list(G.nodes()) # list of existing nodes to sample from
                            # with nodes repeated once for each adjacent edge
     source=m               # next node is m
@@ -934,7 +924,6 @@ def random_lobster(n, p1, p2, seed=None):
         random.seed(seed)
     llen=int(2*random.random()*n + 0.5)
     L=path_graph(llen)
-    L.name="random_lobster(%d,%s,%s)"%(n,p1,p2)
     # build caterpillar: add edges to path graph with probability p1
     current_node=llen-1
     for n in range(llen):
@@ -969,7 +958,6 @@ def random_shell_graph(constructor, seed=None):
 
     """
     G=empty_graph(0)
-    G.name="random_shell_graph(constructor)"
 
     if seed is not None:
         random.seed(seed)
@@ -1036,7 +1024,6 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     # This call may raise a NetworkXError if the number of tries is succeeded.
     seq = random_powerlaw_tree_sequence(n, gamma=gamma, seed=seed, tries=tries)
     G = degree_sequence_tree(seq)
-    G.name = "random_powerlaw_tree(%s,%s)" % (n, gamma)
     return G
 
 

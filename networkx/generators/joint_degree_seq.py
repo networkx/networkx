@@ -289,7 +289,4 @@ def joint_degree_graph(joint_degrees, seed=None):
                             k_unsat.discard(v)
                         if h_node_residual[w] == 0:
                             l_unsat.discard(w)
-
-
-    G.name = "joint_degree_graph %d nodes"%(G.order())
     return G

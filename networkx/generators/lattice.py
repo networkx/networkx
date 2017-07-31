@@ -92,11 +92,6 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     # both directions for directed
     if G.is_directed():
         G.add_edges_from((v, u) for u, v in G.edges())
-
-    # set name
-    G.name = "grid_2d_graph(%s, %s)" % (row_name, col_name)
-    if periodic is True:
-        G.name = "periodic_" + G.name
     return G
 
 
@@ -137,7 +132,6 @@ def grid_graph(dim, periodic=False):
     dlabel = "%s" % dim
     if not dim:
         G = empty_graph(0)
-        G.name = "grid_graph(%s)" % dlabel
         return G
 
     func = cycle_graph if periodic else path_graph
@@ -151,7 +145,6 @@ def grid_graph(dim, periodic=False):
         G = cartesian_product(Gnew, Gold)
     # graph G is done but has labels of the form (1, (2, (3, 1))) so relabel
     H = relabel_nodes(G, flatten)
-    H.name = "grid_graph(%s)" % dlabel
     return H
 
 
@@ -178,7 +171,6 @@ def hypercube_graph(n):
     """
     dim = n * [2]
     G = grid_graph(dim)
-    G.name = "hypercube_graph_(%d)" % n
     return G
 
 
@@ -281,11 +273,6 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy)
                if (i, j) in H}
         set_node_attributes(H, pos, 'pos')
-
-    # set the name
-    H.name = 'triangular_lattice_graph({}, {})'.format(m, n)
-    if periodic:
-        H.name = 'periodic_' + H.name
     return H
 
 
@@ -383,9 +370,4 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
     # exclude nodes not in G
     pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
     set_node_attributes(G, pos, 'pos')
-
-    # set the name
-    G.name = 'hexagonal_lattice_graph({}, {})'.format(m, n)
-    if periodic:
-        G.name = 'periodic_' + G.name
     return G

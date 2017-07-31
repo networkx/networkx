@@ -79,7 +79,6 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
         random.seed(seed)
 
     G = empty_graph(1, create_using)
-    G.name = "gn_graph({})".format(n)
 
     if n == 1:
         return G
@@ -143,7 +142,6 @@ def gnr_graph(n, p, create_using=None, seed=None):
         random.seed(seed)
 
     G = empty_graph(1, create_using)
-    G.name = "gnr_graph(%s,%s)" % (n, p)
 
     if n == 1:
         return G
@@ -188,7 +186,6 @@ def gnc_graph(n, create_using=None, seed=None):
         random.seed(seed)
 
     G = empty_graph(1, create_using)
-    G.name = "gnc_graph(%s)" % (n)
 
     if n == 1:
         return G
@@ -277,10 +274,6 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
 
     if alpha + beta + gamma != 1.0:
         raise ValueError('alpha+beta+gamma must equal 1.')
-
-    G.name = ("directed_scale_free_graph(%s,alpha=%s,beta=%s,gamma=%s,"
-              "delta_in=%s,delta_out=%s)" % (n, alpha, beta, gamma, delta_in,
-                                             delta_out))
 
     # seed random number generated (uses None as default)
     random.seed(seed)
@@ -393,7 +386,6 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True,
     nodes = set(G)
     for u in G:
         G.add_edges_from((u, v) for v in sample(u, nodes))
-    G.name = 'random_uniform_k_out_graph({}, {})'.format(n, k)
     return G
 
 
@@ -480,5 +472,4 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
         v = weighted_choice(weights - adjustment)
         G.add_edge(u, v)
         weights[v] += 1
-    G.name = 'random_k_out_graph({0}, {1}, {2})'.format(n, k, alpha)
     return G

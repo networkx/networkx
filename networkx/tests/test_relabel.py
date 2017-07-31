@@ -12,14 +12,13 @@ class TestRelabel():
         # test that empty graph converts fine for all options
         G = empty_graph()
         H = convert_node_labels_to_integers(G, 100)
-        assert_equal(H.name, '(empty_graph(0))_with_int_labels')
+        assert_equal(H.name, '()_with_int_labels')
         assert_equal(list(H.nodes()), [])
         assert_equal(list(H.edges()), [])
 
         for opt in ["default", "sorted", "increasing degree", "decreasing degree"]:
             G = empty_graph()
             H = convert_node_labels_to_integers(G, 100, ordering=opt)
-            assert_equal(H.name, '(empty_graph(0))_with_int_labels')
             assert_equal(list(H.nodes()), [])
             assert_equal(list(H.edges()), [])
 
@@ -27,6 +26,7 @@ class TestRelabel():
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'C'), ('C', 'D')])
         G.name = "paw"
         H = convert_node_labels_to_integers(G)
+        assert_equal(H.name, '(paw)_with_int_labels')
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
@@ -74,7 +74,6 @@ class TestRelabel():
     def test_convert_to_integers2(self):
         G = empty_graph()
         G.add_edges_from([('C', 'D'), ('A', 'B'), ('A', 'C'), ('B', 'C')])
-        G.name = "paw"
         H = convert_node_labels_to_integers(G, ordering="sorted")
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())

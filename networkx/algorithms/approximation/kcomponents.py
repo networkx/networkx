@@ -286,7 +286,8 @@ class _AntiGraph(nx.Graph):
     def adj(self):
         return self.AntiAdjacencyView(self)
 
-    class AntiDegreeView(nx.DegreeView):
+
+    class AntiDegreeView(nx.reportviews.DegreeView):
         def __iter__(self):
             all_nodes = set(self._succ)
             for n in self._nodes:

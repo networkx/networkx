@@ -156,6 +156,7 @@ class TestFunction(object):
 
     def test_info(self):
         G = nx.path_graph(5)
+        G.name = "path_graph(5)"
         info = nx.info(G)
         expected_graph_info = '\n'.join(['Name: path_graph(5)',
                                          'Type: Graph',
