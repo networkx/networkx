@@ -103,7 +103,7 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
 
     >>> import pandas as pd
     >>> import numpy as np
-    >>> G = nx.Graph([(1,1)])
+    >>> G = nx.Graph([(1, 1)])
     >>> df = nx.to_pandas_adjacency(G, dtype=int)
     >>> df
        1
@@ -116,19 +116,20 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
     Examples
     --------
     >>> G = nx.MultiDiGraph()
-    >>> G.add_edge(0,1,weight=2)
+    >>> G.add_edge(0, 1, weight=2)
     0
-    >>> G.add_edge(1,0)
+    >>> G.add_edge(1, 0)
     0
-    >>> G.add_edge(2,2,weight=3)
+    >>> G.add_edge(2, 2, weight=3)
     0
-    >>> G.add_edge(2,2)
+    >>> G.add_edge(2, 2)
     1
-    >>> nx.to_pandas_adjacency(G, nodelist=[0,1,2], dtype=int)
+    >>> nx.to_pandas_adjacency(G, nodelist=[0, 1, 2], dtype=int)
        0  1  2
     0  0  2  0
     1  1  0  0
     2  0  0  4
+
     """
     import pandas as pd
     M = to_numpy_matrix(G, nodelist=nodelist, dtype=dtype, order=order,
@@ -177,11 +178,12 @@ def from_pandas_adjacency(df, create_using=None):
     1  2  1
     >>> G = nx.from_pandas_adjacency(df)
     >>> print(nx.info(G))
-    Name:
+    Name: 
     Type: Graph
     Number of nodes: 2
     Number of edges: 3
     Average degree:   3.0000
+
     """
 
     A = df.values
@@ -230,6 +232,7 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
        cost source target  weight
     0     1      A      B       7
     1     9      C      E      10
+
     """
     import pandas as pd
     if nodelist is None:
@@ -323,6 +326,7 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     >>> G = nx.from_pandas_edgelist(edges, edge_attr=True)
     >>> G[0][2]['color']
     'red'
+
     """
 
     g = _prep_create_using(create_using)
@@ -442,18 +446,19 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     Examples
     --------
     >>> G = nx.MultiDiGraph()
-    >>> G.add_edge(0,1,weight=2)
+    >>> G.add_edge(0, 1, weight=2)
     0
-    >>> G.add_edge(1,0)
+    >>> G.add_edge(1, 0)
     0
-    >>> G.add_edge(2,2,weight=3)
+    >>> G.add_edge(2, 2, weight=3)
     0
-    >>> G.add_edge(2,2)
+    >>> G.add_edge(2, 2)
     1
-    >>> nx.to_numpy_matrix(G, nodelist=[0,1,2])
+    >>> nx.to_numpy_matrix(G, nodelist=[0, 1, 2])
     matrix([[ 0.,  2.,  0.],
             [ 1.,  0.,  0.],
             [ 0.,  0.,  4.]])
+
     """
     import numpy as np
 
@@ -652,14 +657,15 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_edge(1,2,weight=7.0,cost=5)
-    >>> A=nx.to_numpy_recarray(G,dtype=[('weight',float),('cost',int)])
+    >>> G.add_edge(1, 2, weight=7.0, cost=5)
+    >>> A = nx.to_numpy_recarray(G, dtype=[('weight', float), ('cost', int)])
     >>> print(A.weight)
     [[ 0.  7.]
      [ 7.  0.]]
     >>> print(A.cost)
     [[0 5]
      [5 0]]
+
     """
     if dtype is None:
         dtype = [('weight', float)]
@@ -739,26 +745,26 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     resulting Scipy sparse matrix can be modified as follows:
 
     >>> import scipy as sp
-    >>> G = nx.Graph([(1,1)])
+    >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_scipy_sparse_matrix(G)
     >>> print(A.todense())
     [[1]]
-    >>> A.setdiag(A.diagonal()*2)
+    >>> A.setdiag(A.diagonal() * 2)
     >>> print(A.todense())
     [[2]]
 
     Examples
     --------
     >>> G = nx.MultiDiGraph()
-    >>> G.add_edge(0,1,weight=2)
+    >>> G.add_edge(0, 1, weight=2)
     0
-    >>> G.add_edge(1,0)
+    >>> G.add_edge(1, 0)
     0
-    >>> G.add_edge(2,2,weight=3)
+    >>> G.add_edge(2, 2, weight=3)
     0
-    >>> G.add_edge(2,2)
+    >>> G.add_edge(2, 2)
     1
-    >>> S = nx.to_scipy_sparse_matrix(G, nodelist=[0,1,2])
+    >>> S = nx.to_scipy_sparse_matrix(G, nodelist=[0, 1, 2])
     >>> print(S.todense())
     [[0 2 0]
      [1 0 0]
@@ -914,7 +920,7 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
     Examples
     --------
     >>> import scipy as sp
-    >>> A = sp.sparse.eye(2,2,1)
+    >>> A = sp.sparse.eye(2, 2, 1)
     >>> G = nx.from_scipy_sparse_matrix(A)
 
     If `create_using` is a multigraph and the matrix has only integer entries,
@@ -1052,18 +1058,19 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
     Examples
     --------
     >>> G = nx.MultiDiGraph()
-    >>> G.add_edge(0,1,weight=2)
+    >>> G.add_edge(0, 1, weight=2)
     0
-    >>> G.add_edge(1,0)
+    >>> G.add_edge(1, 0)
     0
-    >>> G.add_edge(2,2,weight=3)
+    >>> G.add_edge(2, 2, weight=3)
     0
-    >>> G.add_edge(2,2)
+    >>> G.add_edge(2, 2)
     1
-    >>> nx.to_numpy_array(G, nodelist=[0,1,2])
+    >>> nx.to_numpy_array(G, nodelist=[0, 1, 2])
     array([[ 0.,  2.,  0.],
            [ 1.,  0.,  0.],
            [ 0.,  0.,  4.]])
+
     """
     import numpy as np
     if nodelist is None:
@@ -1226,6 +1233,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     2
     >>> G[0][0]['weight']
     1.0
+
     """
     return from_numpy_matrix(A, parallel_edges=parallel_edges,
                              create_using=create_using)

@@ -25,6 +25,11 @@ class TestConvertNumpy(object):
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
 
+
+    def test_exceptions(self):
+        G = np.array("a")
+        assert_raises(nx.NetworkXError, nx.to_networkx_graph, G)
+
     def create_weighted(self, G):
         g = cycle_graph(4)
         G.add_nodes_from(g)

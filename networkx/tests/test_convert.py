@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-from nose.tools import assert_equal, assert_not_equal, assert_true, assert_false
+from nose.tools import (assert_equal, assert_not_equal,
+                        assert_true, assert_false,
+                        assert_raises)
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal, assert_edges_equal, assert_graphs_equal
@@ -38,6 +40,38 @@ class TestConvert():
             dod = dest(P4, nodelist=[0, 1, 2])
             Gdod = nx.Graph(dod)
             assert_graphs_equal(Gdod, P3)
+
+    def test_exceptions(self):
+        # _prep_create_using
+        G = {"a": "a"}
+        H = nx.to_networkx_graph(G)
+        assert_graphs_equal(H, nx.Graph([('a', 'a')]))
+        assert_raises(TypeError, to_networkx_graph, G, create_using=0.0)
+
+        # NX graph
+        class G(object):
+            adj = None
+
+        assert_raises(nx.NetworkXError, to_networkx_graph, G)
+
+        # pygraphviz  agraph
+        class G(object):
+            is_strict = None
+
+        assert_raises(nx.NetworkXError, to_networkx_graph, G)
+
+        # Dict of [dicts, lists]
+        G = {"a": 0}
+        assert_raises(TypeError, to_networkx_graph, G)
+
+        # list or generator of edges
+        class G(object):
+            next = None
+
+        assert_raises(nx.NetworkXError, to_networkx_graph, G)
+
+        # no match
+        assert_raises(nx.NetworkXError, to_networkx_graph, "a")
 
     def test_digraphs(self):
         for dest, source in [(to_dict_of_dicts, from_dict_of_dicts),
@@ -225,3 +259,8 @@ class TestConvert():
         assert_equal(list(H.nodes), list(G.nodes))
         H = nx.OrderedDiGraph(G)
         assert_equal(list(H.nodes), list(G.nodes))
+
+    def test_to_edgelist(self):
+        G = nx.Graph([(1, 1)])
+        elist = nx.to_edgelist(G, nodelist=list(G))
+        assert_edges_equal(G.edges(data=True), elist)
