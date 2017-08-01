@@ -25,6 +25,28 @@ def _group_items(items):
     return groupid_to_items
 
 
+def is_k_edge_connected(G, k):
+    """
+    Tests to see if a graph is k-edge-connected
+
+    TODO: move to edge_kcomponents or connectivity
+    """
+    # First try to quickly determine if G is not k-edge-connected
+    if G.number_of_nodes() < k + 1:
+        return False
+    elif min(d for n, d in G.degree()) < k:
+        return False
+    else:
+        # Otherwise perform the full check
+        if k == 1:
+            return nx.is_connected(G)
+        elif k == 2:
+            return not nx.has_bridges(G)
+        else:
+            return nx.edge_connectivity(G) >= k
+
+
+@not_implemented_for('directed', 'multigraph')
 def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     r"""
     Finds set of edges to k-edge-connect G.
@@ -62,13 +84,14 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     For k>3, this problem is NP-hard and other approximation algorithms
         are not yet implemented.
     """
-    if avail is not None and len(avail) == 0:
-        return []
     try:
         if G.number_of_nodes() < k + 1:
             raise nx.NetworkXUnfeasible(
                 ('impossible to {} connect in graph with less than {} '
                  'nodes').format(k, k + 1))
+        if avail is not None and len(avail) == 0:
+            if not nx.is_k_edge_connected(G):
+                raise NotImplementedError('no available edges')
         # if is_edge_connected(G, k):
         #     aug_edges = []
         elif k == 1:
@@ -156,6 +179,7 @@ def _weighted_one_edge_augmentation(G, avail, weight=None):
     # return aug_edges
 
 
+@not_implemented_for('multigraph', 'directed')
 def bridge_augmentation(G, avail=None, weight=None):
     """Finds the a set of edges that bridge connects G.
 
