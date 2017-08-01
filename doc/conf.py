@@ -16,7 +16,7 @@ import sys
 import os
 from datetime import date
 
-#from sphinx_gallery.sorting import ExplicitOrder
+from sphinx_gallery.sorting import ExplicitOrder
 
 # Check Sphinx version
 import sphinx
@@ -57,16 +57,16 @@ extensions = [
 sphinx_gallery_conf = {
     # path to your examples scripts
     'examples_dirs': '../examples',
-#    'subsection_order': ExplicitOrder(['../examples/basic',
-#                                       '../examples/drawing',
-#                                       '../examples/3d_drawing',
-#                                       '../examples/pygraphviz',
-#                                       '../examples/graph',
-#                                       '../examples/algorithms',
-#                                       '../examples/advanced',
-#                                       '../examples/javascript',
-#                                       '../examples/jit',
-#                                       '../examples/subclass']),
+    'subsection_order': ExplicitOrder(['../examples/basic',
+                                       '../examples/drawing',
+                                       '../examples/graph',
+                                       '../examples/algorithms',
+                                       '../examples/advanced',
+                                       '../examples/3d_drawing',
+                                       '../examples/pygraphviz',
+                                       '../examples/javascript',
+                                       '../examples/jit',
+                                       '../examples/subclass']),
     # path where to save gallery generated examples
     'gallery_dirs': 'auto_examples',
     'backreferences_dir': 'modules/generated',
