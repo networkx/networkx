@@ -33,6 +33,9 @@ Developer overview
 
       git checkout -b bugfix-for-issue-1480
 
+   * For more information on how to set up a development environment, refer to
+     the :doc:`setup guide <setup>` for developers
+
    * Commit locally as you progress (``git add`` and ``git commit``)
 
 3. To submit your contribution:
