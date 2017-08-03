@@ -110,7 +110,7 @@ install:
       pip install pydot scikits.sparse lxml;
     fi
   - if [[ "${PYTHON_VM}" != ipy ]]; then
-      pip install --upgrade nose coverage coveralls;
+      pip install --upgrade nose coverage codecov;
       pip install nose-ignore-docstring;
     fi
 
@@ -162,13 +162,8 @@ after_success:
   # repository paths. This is what `fixcoverage.py` does.
   #
   # Report coverage for 2.7 and 3.4 miniconda runs only.
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      cp .coverage $TRAVIS_BUILD_DIR;
-      cd $TRAVIS_BUILD_DIR;
-      if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7miniconda|3\.4miniconda ]]; then
-        python fixcoverage.py ".*/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
-        coveralls;
-      fi;
+  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7miniconda|3\.4miniconda ]]; then
+      codecov;
     fi
 
 notifications:
