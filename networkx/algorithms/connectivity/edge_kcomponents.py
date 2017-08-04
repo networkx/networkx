@@ -74,7 +74,7 @@ def k_edge_components(G, k):
     Otherwise, the algorithm from _[2] is used.
 
     Example
-    ----------
+    -------
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
@@ -153,7 +153,7 @@ def k_edge_subgraphs(G, k):
     `k_edge_components`.  Otherwise the algorithm from _[1] is used.
 
     Example
-    ----------
+    -------
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
@@ -230,8 +230,8 @@ def bridge_components(G):
     -----
     Bridge-connected components are also known as 2-edge-connected components.
 
-    Examples
-    --------
+    Example
+    -------
     >>> # The barbell graph with parameter zero has a single bridge
     >>> G = nx.barbell_graph(5, 0)
     >>> sorted(map(sorted, bridge_components(G)))
@@ -294,7 +294,7 @@ class EdgeComponentAuxGraph(object):
     [[0], [1], [2], [3], [4], [5], [6], [7]]
 
     Example
-    ----------
+    -------
     >>> # The auxillary graph is primarilly used for k-edge-ccs but it
     >>> # can also speed up the queries of k-edge-subgraphs by refining the
     >>> # search space.
@@ -538,7 +538,7 @@ def general_k_edge_subgraphs(G, k):
         https://openproceedings.org/2012/conf/edbt/ZhouLYLCL12.pdf
 
     Example
-    ----------
+    -------
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (11, 12, 13, 14, 11, 13, 14, 12),  # a 4-clique
