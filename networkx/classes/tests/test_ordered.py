@@ -28,10 +28,7 @@ class TestOrderedFeatures(object):
         #G_sub = nx.induced_subgraph(G, [1,2,3])
         assert_equals(list(G.nodes), list(G_sub.nodes))
         assert_equals(list(G.edges), list(G_sub.edges))
-        # This is a bug pointed out in #2048   
-        # Will be fixed in coming commit and these tests changed
-        # FIXME take out the sorted. replace with list
-        assert_equals(list(G.pred[3]), sorted(G_sub.pred[3], reverse=True))
-        assert_equals([2, 1], sorted(G_sub.pred[3], reverse=True))
+        assert_equals(list(G.pred[3]), list(G_sub.pred[3]))
+        assert_equals([2, 1], list(G_sub.pred[3]))
         assert_equals([], list(G_sub.succ[3]))
 

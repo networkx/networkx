@@ -31,8 +31,8 @@ def ramsey_R2(G):
     node = arbitrary_element(G)
     nbrs = nx.all_neighbors(G, node)
     nnbrs = nx.non_neighbors(G, node)
-    c_1, i_1 = ramsey_R2(G.subgraph(nbrs))
-    c_2, i_2 = ramsey_R2(G.subgraph(nnbrs))
+    c_1, i_1 = ramsey_R2(G.subgraph(nbrs).copy())
+    c_2, i_2 = ramsey_R2(G.subgraph(nnbrs).copy())
 
     c_1.add(node)
     i_2.add(node)

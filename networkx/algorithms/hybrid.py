@@ -85,8 +85,9 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
             if low_memory:
                 verts=set([u,v])
                 for i in range(k):
-                    [verts.update(G.neighbors(w)) for w in verts.copy()]
-                G2=G.subgraph(list(verts))
+                    for w in verts.copy():
+                        verts.update(G[w])
+                G2=G.subgraph(verts).copy()
             else:
                 G2=copy.deepcopy(G)
             ###

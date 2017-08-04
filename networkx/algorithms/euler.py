@@ -166,9 +166,10 @@ def eulerian_circuit(G, source=None, keys=False):
     """
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
-    G = G.__class__(G)
     if G.is_directed():
-        G.reverse(copy=False)
+        G = G.reverse()
+    else:
+        G = G.copy()
     if source is None:
         source = arbitrary_element(G)
     if G.is_multigraph():

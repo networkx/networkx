@@ -81,7 +81,7 @@ def clique_removal(G):
         Approximating maximum independent sets by excluding subgraphs.
         BIT Numerical Mathematics, 32(2), 180–196. Springer.
     """
-    graph = G.copy(with_data=False)
+    graph = G.copy() #with_data=False)
     c_i, i_i = ramsey.ramsey_R2(graph)
     cliques = [c_i]
     isets = [i_i]

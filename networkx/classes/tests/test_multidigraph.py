@@ -217,9 +217,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G = nx.MultiDiGraph([(0, 1), (0, 1)])
         R = G.reverse(copy=False)
         assert_equal(sorted(R.edges()), [(1, 0), (1, 0)])
-        R.remove_edge(1, 0)
-        assert_equal(sorted(R.edges()), [(1, 0)])
-        assert_equal(sorted(G.edges()), [(1, 0)])
+        assert_raises(nx.NetworkXError, R.remove_edge, 1, 0)
 
 
 class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
