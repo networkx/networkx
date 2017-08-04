@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
+#    Copyright (C) 2004-2017 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: Jon Crall (erotemic@gmail.com)
+import itertools as it
 import networkx as nx
-from networkx.utils import arbitrary_element  # NOQA
 from networkx.utils import not_implemented_for
 from networkx.algorithms.connectivity.edge_kcomponents import bridge_components
-import itertools as it
 from collections import defaultdict
 
-__author__ = '\n'.join(['Jon Crall <erotemic@gmail.com>'])
-
-__all__ = ['k_edge_augmentation']
+__all__ = [
+    'k_edge_augmentation',
+    'is_k_edge_connected',
+]
 
 
 def _ordered(u, v):
@@ -25,12 +33,15 @@ def _group_items(items):
     return groupid_to_items
 
 
+@not_implemented_for('multigraph')
 def is_k_edge_connected(G, k):
     """
     Tests to see if a graph is k-edge-connected
 
     TODO: move to edge_kcomponents or connectivity
     """
+    if k < 1:
+        raise ValueError('k must be positive, not {}'.format(k))
     # First try to quickly determine if G is not k-edge-connected
     if G.number_of_nodes() < k + 1:
         return False
@@ -46,10 +57,10 @@ def is_k_edge_connected(G, k):
             return nx.edge_connectivity(G) >= k
 
 
-@not_implemented_for('directed', 'multigraph')
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
-    r"""
-    Finds set of edges to k-edge-connect G.
+    """Finds set of edges to k-edge-connect G.
 
     Parameters
     ----------
@@ -70,28 +81,31 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         key to use to find weights if avail is a set of 3-tuples where the
         third item in each tuple is a dictionary.
 
-    Returns:
-        aug_edges : a generator of edges. If these edges are added to G, then
-            the G would become k-edge-connected. If partial is False, an error
-            is raised if this is not possible. Otherwise, all available edges
-            are generated.
+    Returns
+    -------
+    aug_edges : a generator of edges. If these edges are added to G, then
+        the G would become k-edge-connected. If partial is False, an error
+        is raised if this is not possible. Otherwise, all available edges
+        are generated.
 
     Notes
     -----
     When k=1 this returns an optimal solution.
     When k=2 and avail is None, this returns an optimal solution.
-    Ohterwise when k=2, this returns a 2-approximation of the optimal solution.
+    Otherwise when k=2, this returns a 2-approximation of the optimal solution.
     For k>3, this problem is NP-hard and other approximation algorithms
         are not yet implemented.
     """
     try:
-        if G.number_of_nodes() < k + 1:
+        if k <= 0:
+            raise ValueError('k must be a positive integer, not {}'.format(k))
+        elif G.number_of_nodes() < k + 1:
             raise nx.NetworkXUnfeasible(
                 ('impossible to {} connect in graph with less than {} '
                  'nodes').format(k, k + 1))
-        if avail is not None and len(avail) == 0:
-            if not nx.is_k_edge_connected(G):
-                raise NotImplementedError('no available edges')
+        elif avail is not None and len(avail) == 0:
+            if not nx.is_k_edge_connected(G, k):
+                raise nx.NetworkXUnfeasible('no available edges')
         # if is_edge_connected(G, k):
         #     aug_edges = []
         elif k == 1:
@@ -99,7 +113,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         elif k == 2:
             aug_edges = bridge_augmentation(G, avail)
         else:
-            raise NotImplementedError('not implemented for k>2')
+            raise NotImplementedError('not implemented for k>2. k={}'.format(k))
     except nx.NetworkXUnfeasible:
         if partial:
             if avail is None:
@@ -112,7 +126,8 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     return aug_edges
 
 
-@not_implemented_for('multigraph', 'directed')
+@not_implemented_for('multigraph')
+@not_implemented_for('directed')
 def one_edge_augmentation(G, avail=None):
     """Finds minimum weight set of edges to connect G.
 
@@ -125,9 +140,7 @@ def one_edge_augmentation(G, avail=None):
 
 
 def _unconstrained_one_edge_augmentation(G):
-    """
-    Unweighted MST problem
-    """
+    """Unweighted MST problem"""
     ccs1 = list(nx.connected_components(G))
     C = collapse(G, ccs1)
     # When we are not constrained, we can just make a meta graph tree.
@@ -142,9 +155,7 @@ def _unconstrained_one_edge_augmentation(G):
 
 
 def _weighted_one_edge_augmentation(G, avail, weight=None):
-    """
-    Weighted MST problem
-    """
+    """Weighted MST problem"""
     if weight is None:
         weight = 'weight'
     ccs1 = list(nx.connected_components(G))
@@ -179,7 +190,8 @@ def _weighted_one_edge_augmentation(G, avail, weight=None):
     # return aug_edges
 
 
-@not_implemented_for('multigraph', 'directed')
+@not_implemented_for('multigraph')
+@not_implemented_for('directed')
 def bridge_augmentation(G, avail=None, weight=None):
     """Finds the a set of edges that bridge connects G.
 
@@ -202,14 +214,15 @@ def bridge_augmentation(G, avail=None, weight=None):
         algorithms for graph augmentation.
         http://www.sciencedirect.com/science/article/pii/S0196677483710102
 
-    Example:
-    --------
-        >>> G = nx.Graph([(2393, 2257), (2393, 2685), (2685, 2257), (1758, 2257)])
-        >>> bridge_edges = list(bridge_augmentation(G))
-        >>> assert not any([G.has_edge(*e) for e in bridge_edges])
+    Example
+    -------
+    >>> G = nx.Graph([(2393, 2257), (2393, 2685), (2685, 2257), (1758, 2257)])
+    >>> bridge_edges = list(bridge_augmentation(G))
+    >>> assert not any([G.has_edge(*e) for e in bridge_edges])
     """
     if G.number_of_nodes() < 3:
-        raise nx.NetworkXUnfeasible('impossible to bridge connect less than 3 nodes')
+        raise nx.NetworkXUnfeasible(
+            'impossible to bridge connect less than 3 nodes')
     if avail is None:
         return _unconstrained_bridge_augmentation(G)
     else:
@@ -327,17 +340,16 @@ def _weighted_bridge_augmentation(G, avail, weight=None):
     }
 
     if len(feasible_mapped_uv) > 0:
-        """
-        Mapping of terms from (Khuller and Thurimella):
-            C         : G^0 = (V, E^0)
-            mapped_uv : E - E^0  # they group both avail and given edges in E
-            T         : \Gamma
-            D         : G^D = (V, E_D)
-
-            The paper uses ancestor because children point to parents,
-            in the networkx context this would be descendant.
-            So, lowest_common_ancestor = most_recent_descendant
-        """
+        # """
+        # Mapping of terms from (Khuller and Thurimella):
+        #     C         : G^0 = (V, E^0)
+        #     mapped_uv : E - E^0  # they group both avail and given edges in E
+        #     T         : \Gamma
+        #     D         : G^D = (V, E_D)
+        #     The paper uses ancestor because children point to parents,
+        #     in the networkx context this would be descendant.
+        #     So, lowest_common_ancestor = most_recent_descendant
+        # """
         # Pick an arbitrary leaf from C as the root
         root = next(n for n in C.nodes() if C.degree(n) == 1)
         # Root C into a tree T by directing all edges towards the root
@@ -442,14 +454,14 @@ def collapse(G, grouped_nodes):
 
     Examples
     --------
-    Collapses a graph using disjoint groups, but not necesarilly connected
+    >>> # Collapses a graph using disjoint groups, but not necesarilly connected
     >>> G = nx.Graph([(1, 0), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (5, 7)])
     >>> G.add_node('A')
     >>> grouped_nodes = [{0, 1, 2, 3}, {5, 6, 7}]
     >>> C = collapse(G, grouped_nodes)
     >>> assert nx.get_node_attributes(C, 'members') == {
-    >>>     0: {0, 1, 2, 3}, 1: {5, 6, 7}, 2: {4}, 3: {'A'}
-    >>> }
+    ...     0: {0, 1, 2, 3}, 1: {5, 6, 7}, 2: {4}, 3: {'A'}
+    ... }
     """
     mapping = {}
     members = {}
