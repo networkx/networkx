@@ -67,9 +67,9 @@ def draw(G, pos=None, ax=None, **kwds):
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
+    >>> G = nx.dodecahedral_graph()
     >>> nx.draw(G)
-    >>> nx.draw(G,pos=nx.spring_layout(G)) # use spring layout
+    >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     See Also
     --------
@@ -237,10 +237,10 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     --------
     >>> G = nx.dodecahedral_graph()
     >>> nx.draw(G)
-    >>> nx.draw(G, pos=nx.spring_layout(G)) # use spring layout
+    >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     >>> import matplotlib.pyplot as plt
-    >>> limits = plt.axis('off') # turn of axis
+    >>> limits = plt.axis('off')  # turn of axis
 
     Also see the NetworkX drawing examples at
     http://networkx.readthedocs.io/en/latest/auto_examples/index.html
@@ -340,8 +340,8 @@ def draw_networkx_nodes(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> nodes=nx.draw_networkx_nodes(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> nodes = nx.draw_networkx_nodes(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
     http://networkx.readthedocs.io/en/latest/auto_examples/index.html
@@ -472,8 +472,8 @@ def draw_networkx_edges(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> edges=nx.draw_networkx_edges(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> edges = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
     http://networkx.readthedocs.io/en/latest/auto_examples/index.html
@@ -520,16 +520,16 @@ def draw_networkx_edges(G, pos,
             and cb.iterable(edge_color) \
             and len(edge_color) == len(edge_pos):
         if np.alltrue([cb.is_string_like(c)
-                          for c in edge_color]):
+                      for c in edge_color]):
             # (should check ALL elements)
             # list of color letters such as ['k','r','k',...]
             edge_colors = tuple([colorConverter.to_rgba(c, alpha)
                                  for c in edge_color])
         elif np.alltrue([not cb.is_string_like(c)
-                            for c in edge_color]):
+                        for c in edge_color]):
             # If color specs are given as (rgb) or (rgba) tuples, we're OK
             if np.alltrue([cb.iterable(c) and len(c) in (3, 4)
-                              for c in edge_color]):
+                          for c in edge_color]):
                 edge_colors = tuple(edge_color)
             else:
                 # numbers (which are going to be mapped with a colormap)
@@ -682,8 +682,8 @@ def draw_networkx_labels(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> labels=nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> labels = nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
     http://networkx.readthedocs.io/en/latest/auto_examples/index.html
@@ -800,8 +800,8 @@ def draw_networkx_edge_labels(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> edge_labels = nx.draw_networkx_edge_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
     http://networkx.readthedocs.io/en/latest/auto_examples/index.html

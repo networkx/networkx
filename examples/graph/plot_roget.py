@@ -85,5 +85,12 @@ if __name__ == '__main__':
     UG = G.to_undirected()
     print(nx.number_connected_components(UG), "connected components")
 
-    nx.draw_circular(UG)
+    options = {
+        'node_color': 'black',
+        'node_size': 1,
+        'line_color': 'grey',
+        'linewidths': 0,
+        'width': 0.1,
+    }
+    nx.draw_circular(UG, **options)
     plt.show()
