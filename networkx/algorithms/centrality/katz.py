@@ -32,13 +32,13 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
 
         x_i = \alpha \sum_{j} A_{ij} x_j + \beta,
 
-    where `A` is the adjacency matrix of graph G with eigenvalues `\lambda`.
+    where `A` is the adjacency matrix of graph G with eigenvalues $\lambda$.
 
-    The parameter `\beta` controls the initial centrality and
+    The parameter $\beta$ controls the initial centrality and
 
     .. math::
 
-        \alpha < \frac{1}{\lambda_{max}}.
+        \alpha < \frac{1}{\lambda_{\max}}.
 
     Katz centrality computes the relative influence of a node within a
     network by measuring the number of the immediate neighbors (first
@@ -46,11 +46,11 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
     to the node under consideration through these immediate neighbors.
 
     Extra weight can be provided to immediate neighbors through the
-    parameter :math:`\beta`.  Connections made with distant neighbors
-    are, however, penalized by an attenuation factor `\alpha` which
+    parameter $\beta$.  Connections made with distant neighbors
+    are, however, penalized by an attenuation factor $\alpha$ which
     should be strictly less than the inverse largest eigenvalue of the
     adjacency matrix in order for the Katz centrality to be computed
-    correctly. More information is provided in [1]_ .
+    correctly. More information is provided in [1]_.
 
     Parameters
     ----------
@@ -100,10 +100,10 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
     --------
     >>> import math
     >>> G = nx.path_graph(4)
-    >>> phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
-    >>> centrality = nx.katz_centrality(G,1/phi-0.01)
+    >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
+    >>> centrality = nx.katz_centrality(G, 1/phi - 0.01)
     >>> for n, c in sorted(centrality.items()):
-    ...    print("%d %0.2f"%(n, c))
+    ...    print("%d %0.2f" % (n, c))
     0 0.37
     1 0.60
     2 0.60
@@ -122,18 +122,20 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
     Katz centrality was introduced by [2]_.
 
     This algorithm it uses the power method to find the eigenvector
-    corresponding to the largest eigenvalue of the adjacency matrix of G.
-    The constant alpha should be strictly less than the inverse of largest
+    corresponding to the largest eigenvalue of the adjacency matrix of ``G``.
+    The parameter ``alpha`` should be strictly less than the inverse of largest
     eigenvalue of the adjacency matrix for the algorithm to converge.
-    The iteration will stop after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
+    You can use ``max(nx.adjacency_spectrum(G))`` to get $\lambda_{\max}$ the largest
+    eigenvalue of the adjacency matrix.
+    The iteration will stop after ``max_iter`` iterations or an error tolerance of
+    ``number_of_nodes(G) * tol`` has been reached.
 
-    When `\alpha = 1/\lambda_{max}` and `\beta=0`, Katz centrality is the same
+    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
     as eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
     to the in-edges in the graph. For out-edges Katz centrality
-    first reverse the graph with G.reverse().
+    first reverse the graph with ``G.reverse()``.
 
     References
     ----------
@@ -206,14 +208,13 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
 
         x_i = \alpha \sum_{j} A_{ij} x_j + \beta,
 
-    where `A` is the adjacency matrix of graph G with eigenvalues `\lambda`.
+    where `A` is the adjacency matrix of graph G with eigenvalues $\lambda$.
 
-    The parameter `\beta` controls the initial centrality and
+    The parameter $\beta$ controls the initial centrality and
 
     .. math::
 
-        \alpha < \frac{1}{\lambda_{max}}.
-
+        \alpha < \frac{1}{\lambda_{\max}}.
 
     Katz centrality computes the relative influence of a node within a
     network by measuring the number of the immediate neighbors (first
@@ -221,11 +222,11 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     to the node under consideration through these immediate neighbors.
 
     Extra weight can be provided to immediate neighbors through the
-    parameter :math:`\beta`.  Connections made with distant neighbors
-    are, however, penalized by an attenuation factor `\alpha` which
+    parameter $\beta$.  Connections made with distant neighbors
+    are, however, penalized by an attenuation factor $\alpha$ which
     should be strictly less than the inverse largest eigenvalue of the
     adjacency matrix in order for the Katz centrality to be computed
-    correctly. More information is provided in [1]_ .
+    correctly. More information is provided in [1]_.
 
     Parameters
     ----------
@@ -261,10 +262,10 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     --------
     >>> import math
     >>> G = nx.path_graph(4)
-    >>> phi = (1 + math.sqrt(5))/2.0  # largest eigenvalue of adj matrix
+    >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
     >>> centrality = nx.katz_centrality_numpy(G, 1/phi)
     >>> for n, c in sorted(centrality.items()):
-    ...    print("%d %0.2f"%(n, c))
+    ...    print("%d %0.2f" % (n, c))
     0 0.37
     1 0.60
     2 0.60
@@ -283,14 +284,17 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     Katz centrality was introduced by [2]_.
 
     This algorithm uses a direct linear solver to solve the above equation.
-    The constant alpha should be strictly less than the inverse of largest
-    eigenvalue of the adjacency matrix for there to be a solution.  When
-    `\alpha = 1/\lambda_{max}` and `\beta=0`, Katz centrality is the same as
-    eigenvector centrality.
+    The parameter ``alpha`` should be strictly less than the inverse of largest
+    eigenvalue of the adjacency matrix for there to be a solution.
+    You can use ``max(nx.adjacency_spectrum(G))`` to get $\lambda_{\max}$ the largest
+    eigenvalue of the adjacency matrix.
+
+    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
+    as eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
     to the in-edges in the graph. For out-edges Katz centrality
-    first reverse the graph with G.reverse().
+    first reverse the graph with ``G.reverse()``.
 
     References
     ----------
