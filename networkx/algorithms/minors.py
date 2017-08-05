@@ -320,6 +320,13 @@ def contracted_nodes(G, u, v, self_loops=True):
         >>> M.edges
         MultiEdgeView([(0, 1, 0), (0, 1, 1)])
 
+        >>> G = nx.Graph([(1,2), (2,2)])
+        >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
+        >>> list(H.nodes())
+        [1]
+        >>> list(H.edges())
+        [(1, 1)]
+
     See also
     --------
     contracted_edge
@@ -331,13 +338,16 @@ def contracted_nodes(G, u, v, self_loops=True):
     """
     H = G.copy()
     if H.is_directed():
-        in_edges = ((w, u, d) for w, x, d in G.in_edges(v, data=True)
+        in_edges = ((u if w == v else w, u, d)
+                    for w, x, d in G.in_edges(v, data=True)
                     if self_loops or w != u)
-        out_edges = ((u, w, d) for x, w, d in G.out_edges(v, data=True)
+        out_edges = ((u, u if w == v else w, d)
+                     for x, w, d in G.out_edges(v, data=True)
                      if self_loops or w != u)
         new_edges = chain(in_edges, out_edges)
     else:
-        new_edges = ((u, w, d) for x, w, d in G.edges(v, data=True)
+        new_edges = ((u, u if w == v else w, d)
+                     for x, w, d in G.edges(v, data=True)
                      if self_loops or w != u)
     v_data = H.node[v]
     H.remove_node(v)
