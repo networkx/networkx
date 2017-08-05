@@ -25,10 +25,8 @@ if sys.version_info[:2] < (2, 7):
     sys.exit(-1)
 
 # Write the version information.
-sys.path.insert(0, 'networkx')
-import release
+import networkx.release as release
 version = release.write_versionfile()
-sys.path.pop(0)
 
 packages = ["networkx",
             "networkx.algorithms",
