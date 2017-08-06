@@ -181,7 +181,7 @@ def generate_graphml(G, encoding='utf-8', prettyprint=True):
 
 
 @open_file(0, mode='rb')
-def read_graphml(path, node_type=str):
+def read_graphml(path, node_type=str, edge_key_type=int):
     """Read graph in GraphML format from path.
 
     Parameters
@@ -192,6 +192,10 @@ def read_graphml(path, node_type=str):
 
     node_type: Python type (default: str)
        Convert node ids to this type
+
+    edge_key_type: Python type (default: int)
+       Convert graphml edge ids to this type as key of multi-edges
+
 
     Returns
     -------
@@ -229,7 +233,7 @@ def read_graphml(path, node_type=str):
     the file to "file.graphml.gz".
 
     """
-    reader = GraphMLReader(node_type=node_type)
+    reader = GraphMLReader(node_type=node_type, edge_key_type=edge_key_type)
     # need to check for multiple graphs
     glist = list(reader(path=path))
     if len(glist) == 0:
@@ -470,8 +474,6 @@ class GraphMLWriter(GraphML):
                                               id=make_str(key))
                 default = G.graph.get('edge_default', {})
                 self.add_attributes("edge", edge_element, data, default)
-                self.add_attributes("edge", edge_element,
-                                    {'key': key}, default)
                 graph_element.append(edge_element)
         else:
             for u, v, data in G.edges(data=True):
@@ -637,9 +639,6 @@ class GraphMLWriterLxml(GraphMLWriter):
         if G.is_multigraph():
             attributes = {}
             for u, v, ekey, d in G.edges(keys=True, data=True):
-                self.attribute_types[("key", "edge")].add(type(ekey))
-                if "key" not in attributes:
-                    attributes["key"] = ekey
                 for k, v in d.items():
                     self.attribute_types[(make_str(k), "edge")].add(type(v))
                     if k not in attributes:
@@ -693,14 +692,16 @@ else:
 
 class GraphMLReader(GraphML):
     """Read a GraphML document.  Produces NetworkX graph objects."""
-    def __init__(self, node_type=str):
+    def __init__(self, node_type=str, edge_key_type=int):
         try:
             import xml.etree.ElementTree
         except ImportError:
             msg = 'GraphML reader requires xml.elementtree.ElementTree'
             raise ImportError(msg)
         self.node_type = node_type
+        self.edge_key_type = edge_key_type
         self.multigraph = False  # assume multigraph and test for multiedges
+        self.edge_ids = {}  # dict mapping (u,v) tuples to id edge attributes
 
     def __call__(self, path=None, string=None):
         if path is not None:
@@ -748,11 +749,12 @@ class GraphMLReader(GraphML):
         # switch to Graph or DiGraph if no parallel edges were found.
         if not self.multigraph:
             if G.is_directed():
-                return nx.DiGraph(G)
+                G = nx.DiGraph(G)
             else:
-                return nx.Graph(G)
-        else:
-            return G
+                G = nx.Graph(G)
+            nx.set_edge_attributes(G, values=self.edge_ids, name='id')
+
+        return G
 
     def add_node(self, G, node_xml, graphml_keys):
         """Add a node to the graph.
@@ -792,17 +794,19 @@ class GraphMLReader(GraphML):
         # attribute is specified
         edge_id = edge_element.get("id")
         if edge_id:
-            if 'key' in data and make_str(data['key']) == edge_id:
-                # If id there equivalent to 'key' attribute, use key
-                edge_id = data.pop('key')
-            else:
-                data["id"] = edge_id
+            # self.edge_ids is used by `make_graph` method for non-multigraphs
+            self.edge_ids[source, target] = edge_id
+            try:
+                edge_id = self.edge_key_type(edge_id)
+            except ValueError:  # Could not convert.
+                pass
+        else:
+            edge_id = data.get('key')
+
         if G.has_edge(source, target):
             # mark this as a multigraph
             self.multigraph = True
-        if edge_id is None:
-            # no id specified, try using 'key' attribute as id
-            edge_id = data.pop('key', None)
+
         # Use add_edges_from to avoid error with add_edge when `'key' in data`
         G.add_edges_from([(source, target, edge_id, data)])
 

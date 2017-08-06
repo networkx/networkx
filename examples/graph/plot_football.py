@@ -49,5 +49,12 @@ print(txt)
 for n, d in G.degree():
     print('%s %d' % (n, d))
 
-nx.draw(G)
+options = {
+    'node_color': 'black',
+    'node_size': 50,
+    'line_color': 'grey',
+    'linewidths': 0,
+    'width': 0.1,
+}
+nx.draw(G, **options)
 plt.show()

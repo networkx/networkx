@@ -28,7 +28,9 @@ NetworkX Basics
 
 After starting Python, import the networkx module with (the recommended way)
 
->>> import networkx as nx
+.. nbplot::
+
+   >>> import networkx as nx
 
 To save repetition, in the documentation we assume that 
 NetworkX has been imported this way.
@@ -58,10 +60,12 @@ The following basic graph types are provided as Python classes:
 
 Empty graph-like objects are created with
 
->>> G = nx.Graph()
->>> G = nx.DiGraph()
->>> G = nx.MultiGraph()
->>> G = nx.MultiDiGraph()
+.. nbplot::
+
+   >>> G = nx.Graph()
+   >>> G = nx.DiGraph()
+   >>> G = nx.MultiGraph()
+   >>> G = nx.MultiDiGraph()
 
 All graph classes allow any :term:`hashable` object as a node.   Hashable
 objects include strings, tuples, integers, and more.
@@ -159,21 +163,27 @@ NetworkX graph objects can be created in one of three ways:
 Explicit addition and removal of nodes/edges is the easiest to describe.
 Each graph object supplies methods to manipulate the graph.  For example,
 
->>> import networkx as nx
->>> G = nx.Graph()
->>> G.add_edge(1, 2)  # default edge data=1
->>> G.add_edge(2, 3, weight=0.9)  # specify edge data
+.. nbplot::
+
+   >>> import networkx as nx
+   >>> G = nx.Graph()
+   >>> G.add_edge(1, 2)  # default edge data=1
+   >>> G.add_edge(2, 3, weight=0.9)  # specify edge data
 
 Edge attributes can be anything:
 
->>> import math
->>> G.add_edge('y', 'x', function=math.cos) 
->>> G.add_node(math.cos)  # any hashable can be a node
+.. nbplot::
+
+   >>> import math
+   >>> G.add_edge('y', 'x', function=math.cos) 
+   >>> G.add_node(math.cos)  # any hashable can be a node
 
 You can add many edges at one time:
 
->>> elist = [('a', 'b', 5.0), ('b', 'c', 3.0), ('a', 'c', 1.0), ('c', 'd', 7.3)]
->>> G.add_weighted_edges_from(elist)
+.. nbplot::
+
+   >>> elist = [('a', 'b', 5.0), ('b', 'c', 3.0), ('a', 'c', 1.0), ('c', 'd', 7.3)]
+   >>> G.add_weighted_edges_from(elist)
 
 See the :doc:`/tutorial` for more examples.
 
@@ -229,11 +239,13 @@ or the Github `Developer Zone <https://github.com/networkx/networkx>`_.
 As an example here is code to use Dijkstra's algorithm to 
 find the shortest weighted path: 
 
->>> G = nx.Graph()
->>> e = [('a', 'b', 0.3), ('b', 'c', 0.9), ('a', 'c', 0.5), ('c', 'd', 1.2)]
->>> G.add_weighted_edges_from(e)
->>> print(nx.dijkstra_path(G, 'a', 'd'))
-['a', 'c', 'd']
+.. nbplot::
+
+   >>> G = nx.Graph()
+   >>> e = [('a', 'b', 0.3), ('b', 'c', 0.9), ('a', 'c', 0.5), ('c', 'd', 1.2)]
+   >>> G.add_weighted_edges_from(e)
+   >>> print(nx.dijkstra_path(G, 'a', 'd'))
+   ['a', 'c', 'd']
 
 Drawing
 -------
@@ -250,9 +262,11 @@ The basic drawing functions essentially place the nodes on a scatterplot
 using the positions in a dictionary or computed with a layout function.  The
 edges are then lines between those dots.  
 
->>> G = nx.cubical_graph()
->>> nx.draw(G)   # default spring_layout
->>> nx.draw(G, pos=nx.spectral_layout(G), nodecolor='r', edge_color='b')
+.. nbplot::
+
+   >>> G = nx.cubical_graph()
+   >>> nx.draw(G)   # default spring_layout
+   >>> nx.draw(G, pos=nx.spectral_layout(G), nodecolor='r', edge_color='b')
 
 See the :doc:`examples </auto_examples/index>` for more ideas.
 
@@ -281,11 +295,13 @@ Advantages of dict-of-dicts-of-dicts data structure:
 As an example, here is a representation of an undirected graph with the 
 edges ('A', 'B'), ('B', 'C')
 
->>> G = nx.Graph()
->>> G.add_edge('A', 'B')
->>> G.add_edge('B', 'C')
->>> print(G.adj)
-AtlasView2({'A': {'B': {}}, 'C': {'B': {}}, 'B': {'A': {}, 'C': {}}})
+.. nbplot::
+
+   >>> G = nx.Graph()
+   >>> G.add_edge('A', 'B')
+   >>> G.add_edge('B', 'C')
+   >>> print(G.adj)
+   AdjacencyView({'A': {'B': {}}, 'C': {'B': {}}, 'B': {'A': {}, 'C': {}}})
 
 The data structure gets morphed slightly for each base graph class.
 For DiGraph two dict-of-dicts-of-dicts structures are provided, one 
@@ -299,10 +315,14 @@ Graphs use a dictionary of attributes for each edge.
 We use a dict-of-dicts-of-dicts data structure with the inner 
 dictionary storing "name-value" relationships for that edge.
 
->>> G = nx.Graph()
->>> G.add_edge(1, 2, color='red', weight=0.84, size=300)
->>> print(G[1][2]['size'])
-300
+.. nbplot::
+
+   >>> G = nx.Graph()
+   >>> G.add_edge(1, 2, color='red', weight=0.84, size=300)
+   >>> print(G[1][2]['size'])
+   300
+
+.. code-links::
 
 .. rubric:: Footnotes
 
