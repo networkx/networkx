@@ -442,15 +442,8 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     [(4, 5), (1, 5)]
     >>> #
     >>> avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 51)]
-
-    >>> G = nx.path_graph((0, 1, 2, 3))
-    >>> G.add_node(4)
-    >>> avail = [(0, 4, 11), (1, 4, 10), (3, 2, 1), (3, 4, 51)]
-    >>> aug_edges = list(weighted_bridge_augmentation(G, avail=avail))
-    >>> G2 = G.copy()
-    >>> G2.add_edges_from(aug_edges)
-    >>> nx.edge_connectivity(G2)
-    2
+    >>> list(weighted_bridge_augmentation(G, avail=avail))
+    [(2, 5), (1, 5), (4, 5)]
     """
 
     if weight is None:
@@ -524,31 +517,42 @@ def weighted_bridge_augmentation(G, avail, weight=None):
             mrd = _most_recent_descendant(T, u, v)
             if mrd == u:
                 # If u is descendant of v, then add edge u->v
-                D.add_edge(mrd, v, weight=w)
+                D.add_edge(mrd, v, weight=w, generator=(u, v))
             elif mrd == v:
                 # If v is descendant of u, then add edge v->u
-                D.add_edge(mrd, u, weight=w)
+                D.add_edge(mrd, u, weight=w, generator=(u, v))
             else:
                 # If neither u nor v is a descendant of the other
                 # let t = mrd(u, v) and add edges t->u and t->v
-                D.add_edge(mrd, u, weight=w)
-                D.add_edge(mrd, v, weight=w)
+                # Need to track the original edge that GENERATED these edges.
+                D.add_edge(mrd, u, weight=w, generator=(u, v))
+                D.add_edge(mrd, v, weight=w, generator=(u, v))
 
         # root the graph by removing all predecessors to `root`.
         D_ = D.copy()
         D_.remove_edges_from([(u, root) for u in D.predecessors(root)])
 
         # Then compute a minimum rooted branching
+        # https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
+        # A branching of G is a subgraph that is spanning (ignoring directions)
+        # and which contains a directed path from r to every other vertex.
         try:
             A = nx.minimum_spanning_arborescence(D_)
         except nx.NetworkXException:
             # If there is no arborescence then augmentation is not possible
             raise nx.NetworkXUnfeasible('no 2-edge-augmentation possible')
 
+        # For each edge e, in the branching that did not belong to the directed
+        # tree T, add the correponding edge that **GENERATED** e (this is not
+        # necesarilly e itself!)
+
         chosen_mapped = []
-        for u, v, d in A.edges(data=True):
-            edge = _ordered(u, v)
-            if edge in feasible_mapped_uvw:
+        for u, v in A.edges():
+            data = D.get_edge_data(u, v)
+            if 'generator' in data:
+                # Add the avail edge that generated the branching edge.
+                edge = _ordered(*data['generator'])
+                assert edge in feasible_mapped_uvw
                 chosen_mapped.append(edge)
 
         for edge in chosen_mapped:
@@ -563,9 +567,14 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         import utool as ut
         nx.set_edge_attributes(
             D, name='label', values=ut.map_vals(str, nx.get_edge_attributes(D, 'weight')))
+        # nx.set_edge_attributes(
+        #     D, name='implicit', values={e: not H.has_edge(*e) for e in D.edges()})
         nx.set_edge_attributes(
-            D, name='implicit', values=ut.map_vals(
-                lambda w: w > 0, nx.get_edge_attributes(D, 'weight')))
+            D, name='implicit', values={e: D.get_edge_data(*e)['weight'] > 0 for e in D.edges()})
+
+        nx.set_edge_attributes(
+            D_, name='implicit', values=ut.map_vals(
+                lambda w: w > 0, nx.get_edge_attributes(D_, 'weight')))
 
         import utool as ut
         nx.set_edge_attributes(
