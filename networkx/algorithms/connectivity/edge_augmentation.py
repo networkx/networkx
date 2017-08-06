@@ -27,20 +27,6 @@ __all__ = [
 ]
 
 
-def _ordered(u, v):
-    return (u, v) if u < v else (v, u)
-
-
-def _group_items(items):
-    """ for each key/val pair, appends val to the list specified by key """
-    # Initialize a dict of lists
-    groupid_to_items = defaultdict(list)
-    # Insert each item into the correct group
-    for groupid, item in items:
-        groupid_to_items[groupid].append(item)
-    return groupid_to_items
-
-
 @not_implemented_for('multigraph')
 def is_k_edge_connected(G, k):
     """
@@ -189,20 +175,6 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     return aug_edges
 
 
-def _unpack_available_edges(avail, weight=None):
-    """Helper to separate avail into edges and corresponding weights """
-    if weight is None:
-        weight = 'weight'
-    avail_uv = [tup[0:2] for tup in avail]
-    def _try_getitem(d):
-        try:
-            return d[weight]
-        except TypeError:
-            return d
-    avail_w = [1 if len(tup) == 2 else _try_getitem(tup[-1]) for tup in avail]
-    return avail_uv, avail_w
-
-
 @not_implemented_for('multigraph')
 @not_implemented_for('directed')
 def one_edge_augmentation(G, avail=None, weight=None, partial=False):
@@ -220,6 +192,61 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
     else:
         return weighted_one_edge_augmentation(G, avail=avail, weight=weight,
                                               partial=partial)
+
+
+@not_implemented_for('multigraph')
+@not_implemented_for('directed')
+def bridge_augmentation(G, avail=None, weight=None):
+    """Finds the a set of edges that bridge connects G.
+
+    Adding these edges to G will make it 2-edge-connected.
+    If no constraints are specified the returned set of edges is minimum an
+    optimal, otherwise the solution is approximated.
+
+    Notes
+    -----
+    If there are no constraints the solution can be computed in linear time
+    using :func:`unconstrained_bridge_augmentation`. Otherwise, the problem
+    becomes NP-hard and is the solution is approximated by
+    :func:`weighted_bridge_augmentation`.
+    """
+    if G.number_of_nodes() < 3:
+        raise nx.NetworkXUnfeasible(
+            'impossible to bridge connect less than 3 nodes')
+    if avail is None:
+        return unconstrained_bridge_augmentation(G)
+    else:
+        return weighted_bridge_augmentation(G, avail, weight=weight)
+
+
+# --- Algorithms and Helpers ---
+
+def _ordered(u, v):
+    return (u, v) if u < v else (v, u)
+
+
+def _group_items(items):
+    """ for each key/val pair, appends val to the list specified by key """
+    # Initialize a dict of lists
+    groupid_to_items = defaultdict(list)
+    # Insert each item into the correct group
+    for groupid, item in items:
+        groupid_to_items[groupid].append(item)
+    return groupid_to_items
+
+
+def _unpack_available_edges(avail, weight=None):
+    """Helper to separate avail into edges and corresponding weights """
+    if weight is None:
+        weight = 'weight'
+    avail_uv = [tup[0:2] for tup in avail]
+    def _try_getitem(d):
+        try:
+            return d[weight]
+        except TypeError:
+            return d
+    avail_w = [1 if len(tup) == 2 else _try_getitem(tup[-1]) for tup in avail]
+    return avail_uv, avail_w
 
 
 def unconstrained_one_edge_augmentation(G):
@@ -313,31 +340,6 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
     # for u, v in avail_uv:
     #     if mst.has_edge(u, v):
     #         yield (u, v)
-
-
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
-def bridge_augmentation(G, avail=None, weight=None):
-    """Finds the a set of edges that bridge connects G.
-
-    Adding these edges to G will make it 2-edge-connected.
-    If no constraints are specified the returned set of edges is minimum an
-    optimal, otherwise the solution is approximated.
-
-    Notes
-    -----
-    If there are no constraints the solution can be computed in linear time
-    using :func:`unconstrained_bridge_augmentation`. Otherwise, the problem
-    becomes NP-hard and is the solution is approximated by
-    :func:`weighted_bridge_augmentation`.
-    """
-    if G.number_of_nodes() < 3:
-        raise nx.NetworkXUnfeasible(
-            'impossible to bridge connect less than 3 nodes')
-    if avail is None:
-        return unconstrained_bridge_augmentation(G)
-    else:
-        return weighted_bridge_augmentation(G, avail, weight=weight)
 
 
 def unconstrained_bridge_augmentation(G):
@@ -528,30 +530,22 @@ def weighted_bridge_augmentation(G, avail, weight=None):
                 D.add_edge(mrd, u, weight=w, generator=(u, v))
                 D.add_edge(mrd, v, weight=w, generator=(u, v))
 
-        # root the graph by removing all predecessors to `root`.
-        D_ = D.copy()
-        D_.remove_edges_from([(u, root) for u in D.predecessors(root)])
-
         # Then compute a minimum rooted branching
-        # https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
-        # A branching of G is a subgraph that is spanning (ignoring directions)
-        # and which contains a directed path from r to every other vertex.
+        # If there is no branching then augmentation is not possible
         try:
-            A = nx.minimum_spanning_arborescence(D_)
+            A = _minimum_rooted_branching(D, root)
         except nx.NetworkXException:
-            # If there is no arborescence then augmentation is not possible
             raise nx.NetworkXUnfeasible('no 2-edge-augmentation possible')
 
         # For each edge e, in the branching that did not belong to the directed
-        # tree T, add the correponding edge that **GENERATED** e (this is not
+        # tree T, add the correponding edge that **GENERATED** it (this is not
         # necesarilly e itself!)
-
         chosen_mapped = []
         for u, v in A.edges():
             data = D.get_edge_data(u, v)
             if 'generator' in data:
                 # Add the avail edge that generated the branching edge.
-                edge = _ordered(*data['generator'])
+                edge = data['generator']
                 assert edge in feasible_mapped_uvw
                 chosen_mapped.append(edge)
 
@@ -559,45 +553,28 @@ def weighted_bridge_augmentation(G, avail, weight=None):
             orig_edge, w = feasible_mapped_uvw[edge]
             yield orig_edge
 
-    if False:
-        import plottool as pt
-        # C2 = C.copy()
-        # C2.add_edges_from(chosen_mapped, implicit=True)
 
-        import utool as ut
-        nx.set_edge_attributes(
-            D, name='label', values=ut.map_vals(str, nx.get_edge_attributes(D, 'weight')))
-        # nx.set_edge_attributes(
-        #     D, name='implicit', values={e: not H.has_edge(*e) for e in D.edges()})
-        nx.set_edge_attributes(
-            D, name='implicit', values={e: D.get_edge_data(*e)['weight'] > 0 for e in D.edges()})
+def _minimum_rooted_branching(D, root):
+    """Computes minimum rooted branching (aka rooted arborescence)
 
-        nx.set_edge_attributes(
-            D_, name='implicit', values=ut.map_vals(
-                lambda w: w > 0, nx.get_edge_attributes(D_, 'weight')))
+    Before the branching can be computed, the directed graph must be rooted by
+    removing the predecessors of root.
 
-        import utool as ut
-        nx.set_edge_attributes(
-            D_, name='label', values=ut.map_vals(str, nx.get_edge_attributes(D_, 'weight')))
+    A branching / arborescence of rooted graph G is a subgraph that contains a
+    directed path from the root to every other vertex. It is the directed
+    analog of the minimum spanning tree problem.
 
-        G2 = G.copy()
-        G2.add_edges_from(aug_edges, implicit=True)
-        C_labels = {k: '{}:\n{}'.format(k, v)
-                    for k, v in nx.get_node_attributes(C, 'members').items()}
-        nx.set_node_attributes(C, name='label', values=C_labels)
-
-        C2 = C.copy()
-        C2.add_edges_from(feasible_mapped_uvw.keys(), implicit=True)
-        print('is_strongly_connected(D) = %r' % nx.is_strongly_connected(D))
-        pnum_ = pt.make_pnum_nextgen(nSubplots=6)
-        _ = pt.show_nx(C2, arrow_width=2, fnum=1, pnum=pnum_(), title='C')
-        _ = pt.show_nx(T, arrow_width=2, fnum=1, pnum=pnum_(), title='T')
-        _ = pt.show_nx(D, arrow_width=2, fnum=1, pnum=pnum_(), title='D')
-        _ = pt.show_nx(D_, arrow_width=2, fnum=1, pnum=pnum_(), title='D_')
-        _ = pt.show_nx(A, arrow_width=2, fnum=1, pnum=pnum_(), title='A')
-        # _ = pt.show_nx(G, arrow_width=2, fnum=1, pnum=pnum_(), title='G')
-        _ = pt.show_nx(G2, arrow_width=2, fnum=1, pnum=pnum_(), title='G2')
-        _ = _  # NOQA
+    References
+    ----------
+    [1] Khuller, Samir (2002) Advanced Algorithms Lecture 24 Notes.
+    https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
+    """
+    rooted = D.copy()
+    # root the graph by removing all predecessors to `root`.
+    rooted.remove_edges_from([(u, root) for u in D.predecessors(root)])
+    # Then compute the branching / arborescence.
+    A = nx.minimum_spanning_arborescence(rooted)
+    return A
 
 
 def _most_recent_descendant(D, u, v):
