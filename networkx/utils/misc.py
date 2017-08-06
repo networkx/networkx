@@ -270,3 +270,45 @@ def to_tuple(x):
     if not isinstance(x, (tuple, list)):
         return x
     return tuple(map(to_tuple, x))
+
+
+def argmin(input, key=None):
+    """Returns index / key of the item with the smallest value.
+
+    Parameters
+    ----------
+    input :  list or dict
+        indexable and orderable sequence
+
+    Returns
+    -------
+    The index such that input[index] == min(input)
+
+    Example
+    -------
+    >>> argmin([1, 0, 2, 3])
+    1
+    >>> argmin([1, 0, 2, -1])
+    3
+    >>> argmin([(1, 2), (0, 3), (2, 1), (-1, 5)])
+    3
+    >>> argmin([(1, 2), (0, 3), (2, 1), (-1, 5)], key=lambda t: t[1])
+    2
+    >>> argmin({'a': (1, 2), 'b': (0, 3), 'c': (2, 1), 'd': (-1, 5)})
+    'd'
+    >>> argmin({'a': (1, 2), 'b': (0, 3), 'c': (2, 1), 'd': (-1, 5)},
+    ...         key=lambda t: t[1])
+    'c'
+    """
+    if isinstance(input, dict):
+        # If the input is a dict, index into keys using argmin of values
+        return list(input.keys())[argmin(list(input.values()), key=key)]
+    else:
+        # Otherwise find the integer index of the smallest item
+        if key is None:
+            def _key(item):
+                return item[1]
+        else:
+            def _key(item):
+                return key(item[1])
+        return min(enumerate(input), key=_key)[0]
