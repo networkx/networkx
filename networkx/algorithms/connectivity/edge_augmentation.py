@@ -18,8 +18,9 @@ k-edge-augmentation exists.
 import random
 import itertools as it
 import networkx as nx
+import collections
 from networkx.utils import not_implemented_for
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 __all__ = [
     'k_edge_augmentation',
@@ -226,7 +227,7 @@ def _ordered(u, v):
 
 
 def _group_items(items):
-    """ for each key/val pair, appends val to the list specified by key """
+    """for each key/val pair, appends val to the list specified by key"""
     # Initialize a dict of lists
     groupid_to_items = defaultdict(list)
     # Insert each item into the correct group
@@ -235,8 +236,8 @@ def _group_items(items):
     return groupid_to_items
 
 
-def _unpack_available_edges(avail, weight=None):
-    """Helper to separate avail into edges and corresponding weights """
+def _unpack_available_edges(avail, weight=None, G=None):
+    """Helper to separate avail into edges and corresponding weights"""
     if weight is None:
         weight = 'weight'
     avail_uv = [tup[0:2] for tup in avail]
@@ -246,7 +247,44 @@ def _unpack_available_edges(avail, weight=None):
         except TypeError:
             return d
     avail_w = [1 if len(tup) == 2 else _try_getitem(tup[-1]) for tup in avail]
+
+    if G is not None:
+        # Edges already in the graph are filtered
+        # flags = [(G.has_node(u) and G.has_node(v) and not G.has_edge(u, v))
+        #          for u, v in avail_uv]
+        flags = [not G.has_edge(u, v) for u, v in avail_uv]
+        avail_uv = list(it.compress(avail_uv, flags))
+        avail_w = list(it.compress(avail_w, flags))
     return avail_uv, avail_w
+
+
+WeightedEdge = namedtuple('WeightedEdge', ('uv', 'w'))
+MetaEdge = namedtuple('MetaEdge', ('meta_uv', 'uv', 'w'))
+
+
+def _lightest_meta_edges(mapping, avail_uv, avail_w):
+    """Maps available edges in the original graph to edges in the metagraph
+
+    Example:
+        >>> mapping = {
+        ...     1: 0, 2: 0, 3: 0,
+        ...     4: 1, 5: 1,
+        ...     6, 2:
+        ... }
+    """
+    def lookup_meta_edge(uvw):
+        (u, v) = uvw.uv
+        return (mapping[u], mapping[v])
+    # Map each meta-edge to the original available edges
+    avail_uvw = list(it.starmap(WeightedEdge, zip(avail_uv, avail_w)))
+    # only need exactly 1 edge at most between each CC, so choose lightest
+    grouped_uvw = it.groupby(avail_uvw, lookup_meta_edge)
+    for (mu, mv), choices_uvw in grouped_uvw:
+        # Dont choose edges within the same meta node
+        if mu != mv:
+            # Choose one original edge with the least weight
+            edge, w = min(choices_uvw, key=lambda uvw: uvw.w)
+            yield MetaEdge((mu, mv), edge, w)
 
 
 def unconstrained_one_edge_augmentation(G):
@@ -275,7 +313,7 @@ def unconstrained_one_edge_augmentation(G):
         yield (inverse[mu][0], inverse[mv][0])
 
 
-def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
+def weighted_one_edge_augmentation(G, avail, weight=None, partial=False, method=0):
     """Finds the minimum weight set of edges to connect G if one exists.
 
     This is a variant of the weighted MST problem.
@@ -293,53 +331,98 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
     >>> avail = [(1, 3), (1, 5, 99), (4, 7, 99), (6, 1, 99), (8, 1), (8, 2)]
     >>> list(weighted_one_edge_augmentation(G, avail))
     [(8, 1), (1, 5), (6, 1), (4, 7)]
+
+    Ignore:
+
+        # seeds = [2057382236, 3331169846, 1840105863, 476020778, 2247498425]
+        seeds = [2057382236]
+        for seed in seeds:
+            constructor = [(12, 70, 0.8), (15, 40, 0.6)]
+            G = nx.random_shell_graph(constructor, seed=seed)
+            _check_edge_connectivity(G)
+
+        G = nx.gnp_random_graph(200, 0.005, seed=0)
+        ccs = list(nx.k_edge_components(G, k=1))
+        len(ccs)
+        max(map(len, ccs))
+
+        avail = list(complement_edges(G))
+
+        import ubelt
+        for timer in ubelt.Timerit(10):
+            with timer:
+                list(weighted_one_edge_augmentation(G, avail, method=0))
+
+        import ubelt
+        for timer in ubelt.Timerit(10):
+            with timer:
+                list(weighted_one_edge_augmentation(G, avail, method=1))
+
+        import ubelt
+        for timer in ubelt.Timerit(10):
+            with timer:
+                list(weighted_one_edge_augmentation(G, avail, method=2))
     """
-    ccs1 = list(nx.connected_components(G))
+    avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
 
-    avail_uv, avail_w = _unpack_available_edges(avail, weight)
-    avail_uvw = list(zip(avail_uv, avail_w))
+    if method == 0:
+        # Collapse CCs in the original graph into nodes in a metagraph
+        # Then find an MST of the metagraph instead of the original graph
+        C = collapse(G, nx.connected_components(G))
+        mapping = C.graph['mapping']
+        # Assign each available edge to an edge in the metagraph
+        candidate_mapping = list(_lightest_meta_edges(mapping, avail_uv, avail_w))
+        # nx.set_edge_attributes(C, name='weight', values=0)
+        C.add_edges_from(
+            (mu, mv, {'weight': w, 'generator': uv})
+            for (mu, mv), uv, w in candidate_mapping
+        )
+        # Find MST of the meta graph
+        meta_mst = nx.minimum_spanning_tree(C)
+        if not partial and not nx.is_connected(meta_mst):
+            raise nx.NetworkXUnfeasible(
+                'Not possible to connect G with available edges')
+        # Yield the edge that generated the meta-edge
+        for mu, mv, d in meta_mst.edges(data=True):
+            if 'generator' in d:
+                edge = d['generator']
+                yield edge
+    if method == 1:
+        # Collapse CCs in the original graph into nodes in a metagraph
+        # Then find an MST of the metagraph instead of the original graph
+        C = collapse(G, nx.connected_components(G))
+        mapping = C.graph['mapping']
+        # Assign each available edge to an edge in the metagraph
+        candidate_mapping = list(_lightest_meta_edges(mapping, avail_uv, avail_w))
+        # sort candidate edges by weight
+        candidates = sorted(candidate_mapping, key=lambda m: m.w)
 
-    # Find an MST of the metagraph instead of the original graph
-    C = collapse(G, ccs1)
-    mapping = C.graph['mapping']
+        # kruskals algorithm on metagraph to find the best connecting edges
+        subtrees = nx.utils.UnionFind()
+        for (mu, mv), (u, v), w in candidates:
+            # Join the meta nodes
+            if subtrees[mu] != subtrees[mv]:
+                yield (u, v)
+            subtrees.union(mu, mv)
+            if not partial:
+                C.add_edge(mu, mv)
 
-    avail_uv, avail_w = _unpack_available_edges(avail, weight)
-    mapped_avail = [(mapping[u], mapping[v]) for u, v in avail_uv]
-
-    # only need exactly 1 edge at most between each CC, so choose lightest
-    avail_uvw = zip(avail_uv, avail_w)
-    grouped_uvw = _group_items(zip(mapped_avail, avail_uvw))
-    candidates = []
-    for meta_edge, choices in grouped_uvw.items():
-        edge, w = min(choices, key=lambda t: t[1])
-        candidates.append((meta_edge, edge, w))
-    candidates = sorted(candidates, key=lambda t: t[2])
-
-    # kruskals algorithm on metagraph to find the best connecting edges
-    subtrees = nx.utils.UnionFind()
-    for (mu, mv), (u, v), w in candidates:
-        if subtrees[mu] != subtrees[mv]:
-            yield (u, v)
-        subtrees.union(mu, mv)
-        if not partial:
-            C.add_edge(mu, mv)
-
-    if not partial and not nx.is_connected(C):
-        raise nx.NetworkXUnfeasible(
-            'Not possible to connect G with available edges')
-    # This commented implementation re-uses the mst algorithm, but the above
-    # algorithm is slightly more efficient.
-    # G2 = G.copy()
-    # nx.set_edge_attributes(G2, name='weight', values=0)
-    # G2.add_edges_from([
-    #     (u, v, {'weight': w}) for (u, v), w in zip(avail_uv, avail_w)])
-    # mst = nx.minimum_spanning_tree(G2)
-    # if not nx.is_connected(mst):
-    #     raise nx.NetworkXUnfeasible(
-    #         'Not possible to connect G with available edges')
-    # for u, v in avail_uv:
-    #     if mst.has_edge(u, v):
-    #         yield (u, v)
+        if not partial and not nx.is_connected(C):
+            raise nx.NetworkXUnfeasible(
+                'Not possible to connect G with available edges')
+    elif method == 2:
+        # naive version of the algorithm
+        G2 = G.copy()
+        nx.set_edge_attributes(G2, name='weight', values=0)
+        G2.add_edges_from([
+            (u, v, {'weight': w}) for (u, v), w in zip(avail_uv, avail_w)])
+        mst = nx.minimum_spanning_tree(G2)
+        if not nx.is_connected(mst):
+            raise nx.NetworkXUnfeasible(
+                'Not possible to connect G with available edges')
+        for u, v in avail_uv:
+            if mst.has_edge(u, v):
+                yield (u, v)
 
 
 def unconstrained_bridge_augmentation(G):
@@ -472,21 +555,15 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     bridge_ccs = nx.connectivity.bridge_components(H)
     C = collapse(H, bridge_ccs)
 
-    avail_uv, avail_w = _unpack_available_edges(avail, weight)
-
-    # Remove any edges previously used in the one-edge-augmentation
-    flags = [(H.has_node(u) and H.has_node(v) and not H.has_edge(u, v))
-             for u, v in avail_uv]
-    avail_uv = list(it.compress(avail_uv, flags))
-    avail_w = list(it.compress(avail_w, flags))
+    avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
     avail_uvw = list(zip(avail_uv, avail_w))
 
     # Use the meta graph to filter out a small feasible subset of avail
     # Choose the minimum weight edge from each group.
     mapping = C.graph['mapping']
-    mapped_avail = [(mapping[u], mapping[v]) for u, v in avail_uv]
 
     # Choose the minimum weight feasible edge in each group
+    mapped_avail = [(mapping[u], mapping[v]) for u, v in avail_uv]
     grouped_uvw = _group_items(zip(mapped_avail, avail_uvw))
     feasible_uvw = [min(group, key=lambda t: t[1])
                     for key, group in grouped_uvw.items()
@@ -714,7 +791,7 @@ def randomized_k_edge_augmentation(G, k, avail=None, partial=False, seed=None):
     else:
         # Get the unique set of unweighted edges
         # avail_uv, avail_w = _unpack_available_edges(avail, weight=None)
-        avail_uv = _unpack_available_edges(avail, weight=None)[0]
+        avail_uv = _unpack_available_edges(avail, weight=None, G=G)[0]
 
     # Randomize edge order
     rng = random.Random(seed)
