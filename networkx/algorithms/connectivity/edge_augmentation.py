@@ -341,7 +341,7 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False, method=
             G = nx.random_shell_graph(constructor, seed=seed)
             _check_edge_connectivity(G)
 
-        G = nx.gnp_random_graph(200, 0.005, seed=0)
+        G = nx.gnp_random_graph(400, 0.005, seed=0)
         ccs = list(nx.k_edge_components(G, k=1))
         len(ccs)
         max(map(len, ccs))
@@ -364,65 +364,27 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False, method=
                 list(weighted_one_edge_augmentation(G, avail, method=2))
     """
     avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
-
-    if method == 0:
-        # Collapse CCs in the original graph into nodes in a metagraph
-        # Then find an MST of the metagraph instead of the original graph
-        C = collapse(G, nx.connected_components(G))
-        mapping = C.graph['mapping']
-        # Assign each available edge to an edge in the metagraph
-        candidate_mapping = list(_lightest_meta_edges(mapping, avail_uv, avail_w))
-        # nx.set_edge_attributes(C, name='weight', values=0)
-        C.add_edges_from(
-            (mu, mv, {'weight': w, 'generator': uv})
-            for (mu, mv), uv, w in candidate_mapping
-        )
-        # Find MST of the meta graph
-        meta_mst = nx.minimum_spanning_tree(C)
-        if not partial and not nx.is_connected(meta_mst):
-            raise nx.NetworkXUnfeasible(
-                'Not possible to connect G with available edges')
-        # Yield the edge that generated the meta-edge
-        for mu, mv, d in meta_mst.edges(data=True):
-            if 'generator' in d:
-                edge = d['generator']
-                yield edge
-    if method == 1:
-        # Collapse CCs in the original graph into nodes in a metagraph
-        # Then find an MST of the metagraph instead of the original graph
-        C = collapse(G, nx.connected_components(G))
-        mapping = C.graph['mapping']
-        # Assign each available edge to an edge in the metagraph
-        candidate_mapping = list(_lightest_meta_edges(mapping, avail_uv, avail_w))
-        # sort candidate edges by weight
-        candidates = sorted(candidate_mapping, key=lambda m: m.w)
-
-        # kruskals algorithm on metagraph to find the best connecting edges
-        subtrees = nx.utils.UnionFind()
-        for (mu, mv), (u, v), w in candidates:
-            # Join the meta nodes
-            if subtrees[mu] != subtrees[mv]:
-                yield (u, v)
-            subtrees.union(mu, mv)
-            if not partial:
-                C.add_edge(mu, mv)
-
-        if not partial and not nx.is_connected(C):
-            raise nx.NetworkXUnfeasible(
-                'Not possible to connect G with available edges')
-    elif method == 2:
-        # naive version of the algorithm
-        G2 = G.copy()
-        nx.set_edge_attributes(G2, name='weight', values=0)
-        G2.add_edges_from([
-            (u, v, {'weight': w}) for (u, v), w in zip(avail_uv, avail_w)])
-        mst = nx.minimum_spanning_tree(G2)
-        if not nx.is_connected(mst):
-            raise nx.NetworkXUnfeasible(
-                'Not possible to connect G with available edges')
-        for u, v in avail_uv:
-            if mst.has_edge(u, v):
-                yield (u, v)
+    # Collapse CCs in the original graph into nodes in a metagraph
+    # Then find an MST of the metagraph instead of the original graph
+    C = collapse(G, nx.connected_components(G))
+    mapping = C.graph['mapping']
+    # Assign each available edge to an edge in the metagraph
+    candidate_mapping = list(_lightest_meta_edges(mapping, avail_uv, avail_w))
+    # nx.set_edge_attributes(C, name='weight', values=0)
+    C.add_edges_from(
+        (mu, mv, {'weight': w, 'generator': uv})
+        for (mu, mv), uv, w in candidate_mapping
+    )
+    # Find MST of the meta graph
+    meta_mst = nx.minimum_spanning_tree(C)
+    if not partial and not nx.is_connected(meta_mst):
+        raise nx.NetworkXUnfeasible(
+            'Not possible to connect G with available edges')
+    # Yield the edge that generated the meta-edge
+    for mu, mv, d in meta_mst.edges(data=True):
+        if 'generator' in d:
+            edge = d['generator']
+            yield edge
 
 
 def unconstrained_bridge_augmentation(G):
