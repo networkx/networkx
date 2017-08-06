@@ -11,8 +11,8 @@ NetworkX
    :target: https://readthedocs.org/projects/networkx/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://coveralls.io/repos/networkx/networkx/badge.svg?branch=master
-   :target: https://coveralls.io/r/networkx/networkx?branch=master
+.. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/networkx/networkx
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
