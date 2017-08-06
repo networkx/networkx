@@ -94,6 +94,12 @@ def test_aug():
     aug_edges = k_edge_augmentation(G, k=1, avail=avail)
 
 
+def test_bridge():
+    G = nx.Graph([(2393, 2257), (2393, 2685), (2685, 2257), (1758, 2257)])
+    bridge_edges = list(bridge_augmentation(G))
+    assert not any([G.has_edge(*e) for e in bridge_edges])
+
+
 if __name__ == '__main__':
     r"""
     CommandLine:

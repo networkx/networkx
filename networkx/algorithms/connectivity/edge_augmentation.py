@@ -19,7 +19,6 @@ import random
 import itertools as it
 import networkx as nx
 from networkx.utils import not_implemented_for
-from networkx.algorithms.connectivity.edge_kcomponents import bridge_components
 from collections import defaultdict
 
 __all__ = [
@@ -120,6 +119,45 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     For k>3, this problem is NP-hard and this uses a randomized algorithm that
         produces a feasible solution, but provides no gaurentees on the
         solution weight.
+
+    Example
+    -------
+    >>> # Unweighted cases
+    >>> G = nx.path_graph((1, 2, 3, 4))
+    >>> G.add_node(5)
+    >>> list(k_edge_augmentation(G, k=1))
+    [(1, 5)]
+    >>> list(k_edge_augmentation(G, k=2))
+    [(4, 5), (1, 5)]
+    >>> list(k_edge_augmentation(G, k=3))
+    [(4, 5), (1, 4), (3, 1), (5, 1), (5, 2)]
+    >>> complement = list(k_edge_augmentation(G, k=5, partial=True))
+    >>> G.add_edges_from(complement)
+    >>> nx.edge_connectivity(G)
+    4
+
+    Example
+    -------
+    >>> # Weighted cases
+    >>> G = nx.path_graph((1, 2, 3, 4))
+    >>> G.add_node(5)
+    >>> avail = [(1, 5, {'weight': 11}), (2, 5, {'weight': 10})]
+    >>> list(k_edge_augmentation(G, k=1, avail=avail, weight='weight'))
+    [(2, 5)]
+    >>> avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 51)]
+    >>> list(k_edge_augmentation(G, k=2, avail=avail, weight='weight'))
+
+    >>> aug = list(k_edge_augmentation(G, k=2, avail=avail, weight='weight'))
+    >>> G2 = G.copy()
+    >>> G2.add_edges_from(aug)
+    >>> nx.edge_connectivity(G2)
+    [(4, 5), (1, 5)]
+    >>> list(k_edge_augmentation(G, k=3))
+    [(4, 5), (1, 4), (3, 1), (5, 1), (5, 2)]
+    >>> complement = list(k_edge_augmentation(G, k=5, partial=True))
+    >>> G.add_edges_from(complement)
+    >>> nx.edge_connectivity(G)
+    4
     """
     try:
         if k <= 0:
@@ -132,13 +170,13 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             if not nx.is_k_edge_connected(G, k):
                 raise nx.NetworkXUnfeasible('no available edges')
         elif k == 1:
-            aug_edges = one_edge_augmentation(G, avail, weight=weight)
+            aug_edges = one_edge_augmentation(G, avail=avail, weight=weight)
         elif k == 2:
-            aug_edges = bridge_augmentation(G, avail, weight=weight)
+            aug_edges = bridge_augmentation(G, avail=avail, weight=weight)
         else:
             aug_edges = randomized_k_edge_augmentation(
-                G, avail, partial=partial, seed=0)
-            raise NotImplementedError('not implemented for k>2. k={}'.format(k))
+                G, k=k, avail=avail, partial=partial, seed=0)
+            # raise NotImplementedError('not implemented for k>2. k={}'.format(k))
     except nx.NetworkXUnfeasible:
         if partial:
             # Return all available edges
@@ -167,19 +205,36 @@ def _unpack_available_edges(avail, weight=None):
 
 @not_implemented_for('multigraph')
 @not_implemented_for('directed')
-def one_edge_augmentation(G, avail=None, weight=None):
+def one_edge_augmentation(G, avail=None, weight=None, partial=False):
     """Finds minimum weight set of edges to connect G.
 
-    Adding these edges to G will make it connected.
+    Notes
+    -----
+    Uses either :func:`unconstrained_one_edge_augmentation` or
+    :func:`weighted_one_edge_augmentation` depending on whether ``avail`` is
+    specified. Both algorithms are based on finding a minimum spanning tree.
+    As such both algorithms find optimal solutions and run in linear time.
     """
     if avail is None:
-        return _unconstrained_one_edge_augmentation(G)
+        return unconstrained_one_edge_augmentation(G)
     else:
-        return _weighted_one_edge_augmentation(G, avail, weight)
+        return weighted_one_edge_augmentation(G, avail=avail, weight=weight,
+                                              partial=partial)
 
 
-def _unconstrained_one_edge_augmentation(G):
-    """Unweighted MST problem"""
+def unconstrained_one_edge_augmentation(G):
+    """Finds the smallest set of edges to connect G.
+
+    This is a variant of the unweighted MST problem.
+    If G is not empty, a feasible solution always exists.
+
+    Example
+    -------
+    >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
+    >>> G.add_nodes_from([6, 7, 8])
+    >>> list(unconstrained_one_edge_augmentation(G))
+    [(1, 4), (4, 6), (6, 7), (7, 8)]
+    """
     ccs1 = list(nx.connected_components(G))
     C = collapse(G, ccs1)
     # When we are not constrained, we can just make a meta graph tree.
@@ -193,21 +248,42 @@ def _unconstrained_one_edge_augmentation(G):
         yield (inverse[mu][0], inverse[mv][0])
 
 
-def _weighted_one_edge_augmentation(G, avail, weight=None):
-    """Weighted MST problem"""
+def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
+    """Finds the minimum weight set of edges to connect G if one exists.
+
+    This is a variant of the weighted MST problem.
+
+    Example
+    -------
+    >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
+    >>> G.add_nodes_from([6, 7, 8])
+    >>> # any edge not in avail has an implicit weight of infinity
+    >>> avail = [(1, 3), (1, 5), (4, 7), (4, 8), (6, 1), (8, 1), (8, 2)]
+    >>> list(weighted_one_edge_augmentation(G, avail))
+    [(1, 5), (6, 1), (4, 7), (4, 8)]
+    >>> # find another solution by giving large weights to edges in the
+    >>> # previous solution
+    >>> avail = [(1, 3), (1, 5, 99), (4, 7, 99), (6, 1, 99), (8, 1), (8, 2)]
+    >>> list(weighted_one_edge_augmentation(G, avail))
+    [(8, 1), (1, 5), (6, 1), (4, 7)]
+    """
     ccs1 = list(nx.connected_components(G))
+
+    avail_uv, avail_w = _unpack_available_edges(avail, weight)
+    avail_uvw = list(zip(avail_uv, avail_w))
+
+    # Find an MST of the metagraph instead of the original graph
     C = collapse(G, ccs1)
     mapping = C.graph['mapping']
 
     avail_uv, avail_w = _unpack_available_edges(avail, weight)
-    meta_avail_uv = [(mapping[u], mapping[v]) for u, v in avail_uv]
+    mapped_avail = [(mapping[u], mapping[v]) for u, v in avail_uv]
 
     # only need exactly 1 edge at most between each CC, so choose lightest
-    avail_ew = zip(avail_uv, avail_w)
-    # grouped_we = ut.group_items(avail_ew, meta_avail_uv)
-    grouped_we = _group_items(zip(meta_avail_uv, avail_ew))
+    avail_uvw = zip(avail_uv, avail_w)
+    grouped_uvw = _group_items(zip(mapped_avail, avail_uvw))
     candidates = []
-    for meta_edge, choices in grouped_we.items():
+    for meta_edge, choices in grouped_uvw.items():
         edge, w = min(choices, key=lambda t: t[1])
         candidates.append((meta_edge, edge, w))
     candidates = sorted(candidates, key=lambda t: t[2])
@@ -218,12 +294,25 @@ def _weighted_one_edge_augmentation(G, avail, weight=None):
         if subtrees[mu] != subtrees[mv]:
             yield (u, v)
         subtrees.union(mu, mv)
+        if not partial:
+            C.add_edge(mu, mv)
+
+    if not partial and not nx.is_connected(C):
+        raise nx.NetworkXUnfeasible(
+            'Not possible to connect G with available edges')
+    # This commented implementation re-uses the mst algorithm, but the above
+    # algorithm is slightly more efficient.
     # G2 = G.copy()
     # nx.set_edge_attributes(G2, name='weight', values=0)
-    # G2.add_edges_from(avail, weight=1)
+    # G2.add_edges_from([
+    #     (u, v, {'weight': w}) for (u, v), w in zip(avail_uv, avail_w)])
     # mst = nx.minimum_spanning_tree(G2)
-    # aug_edges = [(u, v) for u, v in avail if mst.has_edge(u, v)]
-    # return aug_edges
+    # if not nx.is_connected(mst):
+    #     raise nx.NetworkXUnfeasible(
+    #         'Not possible to connect G with available edges')
+    # for u, v in avail_uv:
+    #     if mst.has_edge(u, v):
+    #         yield (u, v)
 
 
 @not_implemented_for('multigraph')
@@ -237,41 +326,44 @@ def bridge_augmentation(G, avail=None, weight=None):
 
     Notes
     -----
-    This is an implementation of the algorithm from _[1].
-    If there are no constraints the solution can be computed in linear time.
-    When the available edges have weights the problem becomes NP-hard.
-    If G is connected the approximation ratio is 2, otherwise it is 3.
-
-    References
-    ----------
-    .. [1] Eswaran, Kapali P., and R. Endre Tarjan. (1975) Augmentation problems.
-        http://epubs.siam.org/doi/abs/10.1137/0205044
-    .. [2] Khuller, Samir, and Ramakrishna Thurimella. Approximation
-        algorithms for graph augmentation.
-        http://www.sciencedirect.com/science/article/pii/S0196677483710102
-
-    Example
-    -------
-    >>> G = nx.Graph([(2393, 2257), (2393, 2685), (2685, 2257), (1758, 2257)])
-    >>> bridge_edges = list(bridge_augmentation(G))
-    >>> assert not any([G.has_edge(*e) for e in bridge_edges])
+    If there are no constraints the solution can be computed in linear time
+    using :func:`unconstrained_bridge_augmentation`. Otherwise, the problem
+    becomes NP-hard and is the solution is approximated by
+    :func:`weighted_bridge_augmentation`.
     """
     if G.number_of_nodes() < 3:
         raise nx.NetworkXUnfeasible(
             'impossible to bridge connect less than 3 nodes')
     if avail is None:
-        return _unconstrained_bridge_augmentation(G)
+        return unconstrained_bridge_augmentation(G)
     else:
-        return _weighted_bridge_augmentation(G, avail, weight=weight)
+        return weighted_bridge_augmentation(G, avail, weight=weight)
 
 
-def _unconstrained_bridge_augmentation(G):
+def unconstrained_bridge_augmentation(G):
+    """Finds an optimal 2-edge-augmentation of G using the fewest edges.
+
+    This is an implementation of the algorithm detailed in [1]_.
+    It chooses a set of edges from avail to add to G that renders it
+    2-edge-connected if such a subset exists. This is done by finding a
+    minimum spanning arborescence of a specially constructed metagraph.
+
+    References
+    ----------
+    .. [1] Eswaran, Kapali P., and R. Endre Tarjan. (1975) Augmentation problems.
+        http://epubs.siam.org/doi/abs/10.1137/0205044
+
+    Example
+    -------
+    >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
+    >>> list(unconstrained_bridge_augmentation(G))
+    [(1, 7)]
+    """
     # find the 2-edge-connected components of G
-    bridge_ccs = bridge_components(G)
+    bridge_ccs = nx.connectivity.bridge_components(G)
     # condense G into an forest C
     C = collapse(G, bridge_ccs)
     # Connect each tree in the forest to construct an arborescence
-    # (I think) these must use nodes with minimum degree
     roots = [min(cc, key=C.degree) for cc in nx.connected_components(C)]
     forest_bridges = list(zip(roots, roots[1:]))
     C.add_edges_from(forest_bridges)
@@ -281,16 +373,9 @@ def _unconstrained_bridge_augmentation(G):
     tree_bridges = list(zip(leafs, leafs[1:]))
     # collect the edges used to augment the original forest
     aug_tree_edges = tree_bridges + forest_bridges
-    # map these edges back to edges in the original graph
-    # inverse = {v: k for k, v in C.graph['mapping'].items()}
-    # bridge_edges = [(inverse[u], inverse[v]) for u, v in aug_tree_edges]
-    # return bridge_edges
 
     # ensure that you choose a pair that does not yet exist
     inverse = _group_items(map(reversed, C.graph['mapping'].items()))
-    # inverse = ddict(list)
-    # for k, v in C.graph['mapping'].items():
-    #     inverse[v].append(k)
     # sort so we choose minimum degree nodes first
     inverse = {augu: sorted(mapped, key=lambda u: (G.degree(u), u))
                for augu, mapped in inverse.items()}
@@ -302,14 +387,13 @@ def _unconstrained_bridge_augmentation(G):
                 break
 
 
-def _weighted_bridge_augmentation(G, avail, weight=None):
-    """
-    Chooses a set of edges from avail to add to G that renders it
-    2-edge-connected if such a subset exists.
+def weighted_bridge_augmentation(G, avail, weight=None):
+    """Finds an approximate min-weight 2-edge-augmentation of G.
 
-    Because we are constrained by edges in avail this problem is NP-hard, and
-    this function is a 2-approximation if the input graph is connected, and a
-    3-approximation if it is not. Runs in O(m + nlog(n)) time
+    This is an implementation of the approximation algorithm detailed in [1]_.
+    It chooses a set of edges from avail to add to G that renders it
+    2-edge-connected if such a subset exists.  This is done by finding a
+    minimum spanning arborescence of a specially constructed metagraph.
 
     Parameters
     ----------
@@ -326,9 +410,16 @@ def _weighted_bridge_augmentation(G, avail, weight=None):
     -------
     aug_edges (set): subset of avail chosen to augment G
 
+    Notes
+    -----
+    Finding a weighted 2-edge-augmentation is NP-hard.
+    Any edge not in ``avail`` is considered to have a weight of infinity.
+    The approximation factor is 2 if ``G`` is connected and 3 if it is not.
+    Runs in :math:`O(m + n log(n))` time
+
     References
     ----------
-    .. [1] Khuller, Samir, and Ramakrishna Thurimella. Approximation
+    .. [1] Khuller, Samir, and Ramakrishna Thurimella. (1993) Approximation
         algorithms for graph augmentation.
         http://www.sciencedirect.com/science/article/pii/S0196677483710102
 
@@ -337,68 +428,77 @@ def _weighted_bridge_augmentation(G, avail, weight=None):
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> # When the weights are equal, (1, 4) is the best
     >>> avail = [(1, 4, 1), (1, 3, 1), (2, 4, 1)]
-    >>> list(_weighted_bridge_augmentation(G, avail))
+    >>> list(weighted_bridge_augmentation(G, avail))
     [(1, 4)]
     >>> # Giving (1, 4) a high weight makes the two edge solution the best.
     >>> avail = [(1, 4, 1000), (1, 3, 1), (2, 4, 1)]
-    >>> list(_weighted_bridge_augmentation(G, avail))
+    >>> list(weighted_bridge_augmentation(G, avail))
     [(1, 3), (2, 4)]
+    >>> #------
+    >>> G = nx.path_graph((1, 2, 3, 4))
+    >>> G.add_node(5)
+    >>> avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 1)]
+    >>> list(weighted_bridge_augmentation(G, avail=avail))
+    [(4, 5), (1, 5)]
+    >>> #
+    >>> avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 51)]
+
+    >>> G = nx.path_graph((0, 1, 2, 3))
+    >>> G.add_node(4)
+    >>> avail = [(0, 4, 11), (1, 4, 10), (3, 2, 1), (3, 4, 51)]
+    >>> aug_edges = list(weighted_bridge_augmentation(G, avail=avail))
+    >>> G2 = G.copy()
+    >>> G2.add_edges_from(aug_edges)
+    >>> nx.edge_connectivity(G2)
+    2
     """
+
     if weight is None:
         weight = 'weight'
 
     # If input G is not connected the approximation factor increases to 3
     if not nx.is_connected(G):
         H = G.copy()
-        connectors = one_edge_augmentation(H, avail=avail, weight=weight)
+        connectors = list(one_edge_augmentation(H, avail=avail, weight=weight))
         H.add_edges_from(connectors)
+
         for u, v in connectors:
             yield (u, v)
     else:
         H = G
 
-    assert nx.is_connected(H), 'should have been one-connected'
+    # assert nx.is_connected(H), 'should have been one-connected'
 
     if len(avail) == 0:
         if list(nx.bridges(H)):
             raise nx.NetworkXUnfeasible('no augmentation possible')
 
-    avail_uv, avail_w = _unpack_available_edges(avail, weight)
-    avail_uvw = list(zip(avail_uv, avail_w))
-
-    # Remove any edges previously used in the one-edge-augmentation
-    used_flags = [(H.has_node(u) and H.has_node(v) and not H.has_edge(u, v))
-                  for u, v in avail_uv]
-    avail_uv = [edge for edge, flag in zip(avail_uv, used_flags) if flag]
-    avail_w = [w for w, flag in zip(avail_w, used_flags) if flag]
-
     # Collapse input into a metagraph. Meta nodes are bridge-ccs
     bridge_ccs = nx.connectivity.bridge_components(H)
     C = collapse(H, bridge_ccs)
 
+    avail_uv, avail_w = _unpack_available_edges(avail, weight)
+
+    # Remove any edges previously used in the one-edge-augmentation
+    flags = [(H.has_node(u) and H.has_node(v) and not H.has_edge(u, v))
+             for u, v in avail_uv]
+    avail_uv = list(it.compress(avail_uv, flags))
+    avail_w = list(it.compress(avail_w, flags))
+    avail_uvw = list(zip(avail_uv, avail_w))
+
     # Use the meta graph to filter out a small feasible subset of avail
-    # Choose the minimum weight edge from each group. TODO WEIGHTS
+    # Choose the minimum weight edge from each group.
     mapping = C.graph['mapping']
     mapped_avail = [(mapping[u], mapping[v]) for u, v in avail_uv]
 
     # Choose the minimum weight feasible edge in each group
     grouped_uvw = _group_items(zip(mapped_avail, avail_uvw))
-    feasible_uvw = [group[nx.utils.argmin(group, key=lambda t: t[1])]
+    feasible_uvw = [min(group, key=lambda t: t[1])
                     for key, group in grouped_uvw.items()
                     if key[0] != key[1]]
     feasible_mapped_uvw = {
         _ordered(mapping[u], mapping[v]): (_ordered(u, v), w)
         for (u, v), w in feasible_uvw}
-
-    # grouped_avail = _group_items(zip(mapped_avail, avail_uv))
-    # feasible_uv = [group[0] for key, group in grouped_avail.items()
-    #                if key[0] != key[1]]
-
-    # Choose the minimum weight feasible edge in each group
-    # feasible_uv = [group[0] for key, group in grouped_uvw.items()
-    #                if key[0] != key[1]]
-    # feasible_mapped_uv = {_ordered(mapping[u], mapping[v]): _ordered(u, v)
-    #                       for u, v in feasible_uv}
 
     if len(feasible_mapped_uvw) > 0:
         # """
@@ -454,6 +554,41 @@ def _weighted_bridge_augmentation(G, avail, weight=None):
         for edge in chosen_mapped:
             orig_edge, w = feasible_mapped_uvw[edge]
             yield orig_edge
+
+    if False:
+        import plottool as pt
+        # C2 = C.copy()
+        # C2.add_edges_from(chosen_mapped, implicit=True)
+
+        import utool as ut
+        nx.set_edge_attributes(
+            D, name='label', values=ut.map_vals(str, nx.get_edge_attributes(D, 'weight')))
+        nx.set_edge_attributes(
+            D, name='implicit', values=ut.map_vals(
+                lambda w: w > 0, nx.get_edge_attributes(D, 'weight')))
+
+        import utool as ut
+        nx.set_edge_attributes(
+            D_, name='label', values=ut.map_vals(str, nx.get_edge_attributes(D_, 'weight')))
+
+        G2 = G.copy()
+        G2.add_edges_from(aug_edges, implicit=True)
+        C_labels = {k: '{}:\n{}'.format(k, v)
+                    for k, v in nx.get_node_attributes(C, 'members').items()}
+        nx.set_node_attributes(C, name='label', values=C_labels)
+
+        C2 = C.copy()
+        C2.add_edges_from(feasible_mapped_uvw.keys(), implicit=True)
+        print('is_strongly_connected(D) = %r' % nx.is_strongly_connected(D))
+        pnum_ = pt.make_pnum_nextgen(nSubplots=6)
+        _ = pt.show_nx(C2, arrow_width=2, fnum=1, pnum=pnum_(), title='C')
+        _ = pt.show_nx(T, arrow_width=2, fnum=1, pnum=pnum_(), title='T')
+        _ = pt.show_nx(D, arrow_width=2, fnum=1, pnum=pnum_(), title='D')
+        _ = pt.show_nx(D_, arrow_width=2, fnum=1, pnum=pnum_(), title='D_')
+        _ = pt.show_nx(A, arrow_width=2, fnum=1, pnum=pnum_(), title='A')
+        # _ = pt.show_nx(G, arrow_width=2, fnum=1, pnum=pnum_(), title='G')
+        _ = pt.show_nx(G2, arrow_width=2, fnum=1, pnum=pnum_(), title='G2')
+        _ = _  # NOQA
 
 
 def _most_recent_descendant(D, u, v):
@@ -570,32 +705,40 @@ def randomized_k_edge_augmentation(G, k, avail=None, partial=False, seed=None):
     graph that are not yet locally k-edge-connected. Then edges are from the
     augmenting set are pruned as long as local-edge-connectivity is not broken.
     Specific edge weights are not taken into consideration.
+
+    Example
+    -------
+    >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
+    >>> list(randomized_k_edge_augmentation(G, k=2, seed=5))
+    [(1, 7)]
+    >>> list(randomized_k_edge_augmentation(G, k=2, seed=4))
+    [(5, 7), (4, 1), (6, 4)]
+    >>> list(randomized_k_edge_augmentation(G, k=1, avail=[]))
+    []
     """
-    # List of edges
+    # Result set
     aug_edges = []
 
     done = is_k_edge_connected(G, k)
     if done:
-        return []
+        raise StopIteration()
     if avail is None:
         # all edges are available
-        avail_ = list(complement_edges(G))
+        avail_uv = list(complement_edges(G))
     else:
-        avail_ = list(avail)
-
-    # Get the unique set of unweighted edges
-    # avail_ = list({_ordered(u, v) for (u, v, *o) in avail})
-    avail_ = list({_ordered(*t[0:2]) for t in avail_})
+        # Get the unique set of unweighted edges
+        # avail_uv, avail_w = _unpack_available_edges(avail, weight=None)
+        avail_uv = _unpack_available_edges(avail, weight=None)[0]
 
     # Randomize edge order
     rng = random.Random(seed)
-    rng.shuffle(avail_)
+    rng.shuffle(avail_uv)
     H = G.copy()
 
     # Randomly add edges in until we are k-connected
-    for edge in avail_:
+    for edge in avail_uv:
         done = False
-        local_k = nx.local_edge_connectivity(H, *edge)
+        local_k = nx.connectivity.local_edge_connectivity(H, *edge)
         if local_k < k:
             # Only add edges in parts that are not yet locally k-edge-connected
             aug_edges.append(edge)
@@ -608,7 +751,7 @@ def randomized_k_edge_augmentation(G, k, avail=None, partial=False, seed=None):
     # Check for feasibility
     if not done:
         if partial:
-            return avail_
+            return avail_uv
         else:
             raise nx.NetworkXUnfeasible(
                 'not able to k-edge-connect with available edges')
