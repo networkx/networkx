@@ -31,4 +31,3 @@ class TestOrderedFeatures(object):
         assert_equals(list(G.pred[3]), list(G_sub.pred[3]))
         assert_equals([2, 1], list(G_sub.pred[3]))
         assert_equals([], list(G_sub.succ[3]))
-

@@ -27,6 +27,18 @@ class TestLayout(object):
         nx.add_path(self.Gs, 'abcdef')
         self.bigG = nx.grid_2d_graph(25, 25) #bigger than 500 nodes for sparse
 
+    def test_spring_init_pos(self):
+        # Tests GH #2448
+        import math
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0), (2, 3)])
+
+        init_pos = {0: (0.0, 0.0)}
+        fixed_pos = [0]
+        pos = nx.fruchterman_reingold_layout(G, pos=init_pos, fixed=fixed_pos)
+        has_nan = any(math.isnan(c) for coords in pos.values() for c in coords)
+        assert_false(has_nan, 'values should not be nan')
+
     def test_smoke_int(self):
         G = self.Gi
         vpos = nx.random_layout(G)
