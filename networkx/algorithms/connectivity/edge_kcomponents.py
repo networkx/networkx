@@ -312,7 +312,7 @@ class EdgeComponentAuxGraph(object):
     [[1, 4], [2], [3]]
     """
 
-    # @not_implemented_for('multi')
+    # @not_implemented_for('multigraph')  # TODO: fix decor for classmethods
     @classmethod
     def construct(EdgeComponentAuxGraph, G):
         """Builds an auxillary graph encoding edge-connectivity between nodes.
@@ -334,6 +334,8 @@ class EdgeComponentAuxGraph(object):
         ----------
         G : NetworkX graph
         """
+        # workaround for classmethod decorator
+        not_implemented_for('multigraph')(lambda G: G)(G)
 
         def _recursive_build(H, A, source, avail):
             # Terminate once the flow has been compute to every node.

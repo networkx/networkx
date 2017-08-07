@@ -160,6 +160,15 @@ def test_empty_input():
     assert_equal([], list(nx.k_edge_subgraphs(G, k=5)))
 
 
+def test_not_implemented():
+    G = nx.MultiGraph()
+    assert_raises(nx.NetworkXNotImplemented, EdgeComponentAuxGraph.construct, G)
+    assert_raises(nx.NetworkXNotImplemented, nx.k_edge_components, G, k=2)
+    assert_raises(nx.NetworkXNotImplemented, nx.k_edge_subgraphs, G, k=2)
+    assert_raises(nx.NetworkXNotImplemented, bridge_components, G)
+    assert_raises(nx.NetworkXNotImplemented, bridge_components, nx.DiGraph())
+
+
 # ----------------
 # Undirected tests
 # ----------------
