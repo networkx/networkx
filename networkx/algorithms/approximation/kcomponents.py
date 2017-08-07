@@ -141,23 +141,21 @@ def k_components(G, min_density=0.95):
             # each biconnected component of the k-core subgraph C.
             if len(nodes) < k:
                 continue
-            SG = G.subgraph(nodes).copy()
-            assert(len(SG) == len(nodes))
+            SG = G.subgraph(nodes)
             # Build auxiliary graph
             H = _AntiGraph()
             H.add_nodes_from(SG.nodes())
             for u,v in combinations(SG, 2):
                 K = node_connectivity(SG, u, v, cutoff=k)
                 if k > K:
-                    H.add_edge(u,v)
+                    H.add_edge(u, v)
             for h_nodes in biconnected_components(H):
                 if len(h_nodes) <= k:
                     continue
-                SH = H.subgraph(h_nodes).copy()
-                assert(len(SH) == len(h_nodes))
+                SH = H.subgraph(h_nodes)
                 for Gc in _cliques_heuristic(SG, SH, k, min_density):
                     for k_nodes in biconnected_components(Gc):
-                        Gk = nx.k_core(SG.subgraph(k_nodes).copy(), k)
+                        Gk = nx.k_core(SG.subgraph(k_nodes), k)
                         if len(Gk) <= k:
                             continue
                         k_components[k].append(set(Gk))
@@ -176,23 +174,21 @@ def _cliques_heuristic(G, H, k, min_density):
                         set(x for x in H[n] if x not in cands)
                         for n in cands])
         if overlap and len(overlap) < k:
-            SH = H.subgraph(cands | overlap).copy()
-            assert(len(SH) == len(cands | overlap))
+            SH = H.subgraph(cands | overlap)
         else:
-            SH = H.subgraph(cands).copy()
-            assert(len(SH) == len(cands))
+            SH = H.subgraph(cands)
         sh_cnumber = nx.core_number(SH)
-        SG = nx.k_core(G.subgraph(SH).copy(), k)
+        SG = nx.k_core(G.subgraph(SH), k)
         while not (_same(sh_cnumber) and nx.density(SH) >= min_density):
+            #!! This subgraph must be writable => .copy()
             SH = H.subgraph(SG).copy()
-            assert(len(SH) == len(SG))
             if len(SH) <= k:
                 break
             sh_cnumber = nx.core_number(SH)
             sh_deg = dict(SH.degree())
             min_deg = min(sh_deg.values())
             SH.remove_nodes_from(n for n, d in sh_deg.items() if d == min_deg)
-            SG = nx.k_core(G.subgraph(SH).copy(), k)
+            SG = nx.k_core(G.subgraph(SH), k)
         else:
             yield SG
 
@@ -290,6 +286,21 @@ class _AntiGraph(nx.Graph):
     @property
     def adj(self):
         return self.AntiAdjacencyView(self)
+
+    def subgraph(self, nodes):
+        """This subgraph method returns a full AntiGraph. Not a View"""
+        nodes = set(nodes)
+        G = _AntiGraph()
+        G.add_nodes_from(nodes)
+        for n in G.node:
+            Gnbrs = G.adjlist_inner_dict_factory()
+            G._adj[n] = Gnbrs
+            for nbr, d in self._adj[n].items():
+                if nbr in G._adj:
+                    Gnbrs[nbr] = d
+                    G._adj[nbr][n] = d
+        G.graph = self.graph
+        return G
 
     class AntiDegreeView(nx.reportviews.DegreeView):
         def __iter__(self):

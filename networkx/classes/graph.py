@@ -1413,7 +1413,7 @@ class Graph(object):
                          for v, d in nbrs.items())
         return G
 
-    def subgraph(self, nbunch, as_view=False):
+    def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
@@ -1454,7 +1454,7 @@ class Graph(object):
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
         return nx.graphviews.SubGraph(self, induced_nodes)
 
-    def edge_subgraph(self, edges, as_view=False):
+    def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.
 
         The induced subgraph contains each edge in `edges` and each
