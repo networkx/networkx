@@ -255,16 +255,6 @@ def _ordered(u, v):
     return (u, v) if u < v else (v, u)
 
 
-# def _group_items(items):
-#     """for each key/val pair, appends val to the list specified by key"""
-#     # Initialize a dict of lists
-#     groupid_to_items = defaultdict(list)
-#     # Insert each item into the correct group
-#     for groupid, item in items:
-#         groupid_to_items[groupid].append(item)
-#     return groupid_to_items
-
-
 def _unpack_available_edges(avail, weight=None, G=None):
     """Helper to separate avail into edges and corresponding weights"""
     if weight is None:
@@ -364,7 +354,6 @@ def unconstrained_one_edge_augmentation(G):
     # build a path in the metagraph
     meta_aug = list(zip(meta_nodes, meta_nodes[1:]))
     # map that path to the original graph
-    # inverse = _group_items(map(reversed, C.graph['mapping'].items()))
     inverse = defaultdict(list)
     for k, v in C.graph['mapping'].items():
         inverse[v].append(k)
@@ -390,22 +379,6 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False, method=
     >>> avail = [(1, 3), (1, 5, 99), (4, 7, 9), (6, 1, 99), (8, 1, 99), (8, 2)]
     >>> sorted(weighted_one_edge_augmentation(G, avail))
     [(1, 5), (4, 7), (6, 1), (8, 2)]
-
-    Ignore:
-
-        # seeds = [2057382236, 3331169846, 1840105863, 476020778, 2247498425]
-        seeds = [2057382236]
-        for seed in seeds:
-            constructor = [(12, 70, 0.8), (15, 40, 0.6)]
-            G = nx.random_shell_graph(constructor, seed=seed)
-            _check_edge_connectivity(G)
-
-        G = nx.gnp_random_graph(400, 0.005, seed=0)
-        ccs = list(nx.k_edge_components(G, k=1))
-        len(ccs)
-        max(map(len, ccs))
-
-        avail = list(complement_edges(G))
     """
     avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
     # Collapse CCs in the original graph into nodes in a metagraph
