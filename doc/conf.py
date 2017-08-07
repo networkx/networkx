@@ -51,7 +51,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx_gallery.gen_gallery',
     'nb2plots',
-    'texext',
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
