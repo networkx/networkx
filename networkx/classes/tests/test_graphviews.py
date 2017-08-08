@@ -28,6 +28,10 @@ class test_reverse_view(object):
         expected = sorted(tuple(reversed(e)) for e in self.G.edges)
         assert_equal(sorted(self.rv.edges), expected)
 
+    def test_exceptions(self):
+        nxg = nx.graphviews
+        assert_raises(nx.NetworkXNotImplemented, nxg.ReverseView, nx.Graph())
+
 
 class test_multi_reverse_view(object):
     def setup(self):
@@ -54,6 +58,11 @@ class test_multi_reverse_view(object):
     def test_iter(self):
         expected = sorted((v, u, k) for u, v, k in self.G.edges)
         assert_equal(sorted(self.rv.edges), expected)
+
+    def test_exceptions(self):
+        nxg = nx.graphviews
+        MG = nx.MultiGraph(self.G)
+        assert_raises(nx.NetworkXNotImplemented, nxg.MultiReverseView, MG)
 
 
 class test_to_directed(object):
@@ -93,6 +102,11 @@ class test_to_directed(object):
         expected = sorted(list(self.G.edges) + revd)
         assert_equal(sorted(self.dv.edges), expected)
 
+    def test_exceptions(self):
+        nxg = nx.graphviews
+        assert_raises(nx.NetworkXError, nxg.DiGraphView, self.MG)
+        assert_raises(nx.NetworkXError, nxg.MultiDiGraphView, self.G)
+
 
 class test_to_undirected(object):
     def setup(self):
@@ -129,6 +143,11 @@ class test_to_undirected(object):
     def test_iter(self):
         expected = sorted(self.DG.edges)
         assert_equal(sorted(self.uv.edges), expected)
+
+    def test_exceptions(self):
+        nxg = nx.graphviews
+        assert_raises(nx.NetworkXError, nxg.GraphView, self.MDG)
+        assert_raises(nx.NetworkXError, nxg.MultiGraphView, self.DG)
 
 
 class Test_combinations(object):
