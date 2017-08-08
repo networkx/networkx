@@ -189,7 +189,7 @@ info()
    now a function
 
    >>> G=nx.Graph(name='test me')
-   >>> nx.info(G)
+   >>> nx.info(G)  # doctest: +SKIP
    Name:                  test me
    Type:                  Graph
    Number of nodes:       0

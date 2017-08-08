@@ -1120,11 +1120,11 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     `\kappa(x,y)=c` where `c` is the mean expected degree.
 
     >>> def integral(u, w, z):
-    ...     return c*(z-w)
+    ...     return c * (z - w)
     >>> def root(u, w, r):
-    ...     return r/c+w
+    ...     return r / c + w
     >>> c = 1
-    >>> graph = random_kernel_graph(1000, integral, root)
+    >>> graph = nx.random_kernel_graph(1000, integral, root)
 
     See Also
     --------
