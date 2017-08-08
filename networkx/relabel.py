@@ -165,7 +165,7 @@ def _relabel_copy(G, mapping):
         H.add_edges_from((mapping.get(n1, n1), mapping.get(n2, n2), d.copy())
                          for (n1, n2, d) in G.edges(data=True))
 
-    H.graph.update(G.graph.copy())
+    H.graph.update(G.graph)
 
     return H
 

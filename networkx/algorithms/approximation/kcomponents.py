@@ -148,7 +148,7 @@ def k_components(G, min_density=0.95):
             for u,v in combinations(SG, 2):
                 K = node_connectivity(SG, u, v, cutoff=k)
                 if k > K:
-                    H.add_edge(u,v)
+                    H.add_edge(u, v)
             for h_nodes in biconnected_components(H):
                 if len(h_nodes) <= k:
                     continue
@@ -180,7 +180,8 @@ def _cliques_heuristic(G, H, k, min_density):
         sh_cnumber = nx.core_number(SH)
         SG = nx.k_core(G.subgraph(SH), k)
         while not (_same(sh_cnumber) and nx.density(SH) >= min_density):
-            SH = H.subgraph(SG)
+            #!! This subgraph must be writable => .copy()
+            SH = H.subgraph(SG).copy()
             if len(SH) <= k:
                 break
             sh_cnumber = nx.core_number(SH)
@@ -286,6 +287,20 @@ class _AntiGraph(nx.Graph):
     def adj(self):
         return self.AntiAdjacencyView(self)
 
+    def subgraph(self, nodes):
+        """This subgraph method returns a full AntiGraph. Not a View"""
+        nodes = set(nodes)
+        G = _AntiGraph()
+        G.add_nodes_from(nodes)
+        for n in G.node:
+            Gnbrs = G.adjlist_inner_dict_factory()
+            G._adj[n] = Gnbrs
+            for nbr, d in self._adj[n].items():
+                if nbr in G._adj:
+                    Gnbrs[nbr] = d
+                    G._adj[nbr][n] = d
+        G.graph = self.graph
+        return G
 
     class AntiDegreeView(nx.reportviews.DegreeView):
         def __iter__(self):
