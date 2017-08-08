@@ -1500,30 +1500,6 @@ class Graph(object):
 
         """
         return nx.edge_subgraph(self, edges)
-        # FIXME remove this older code
-        # Add warning of this to both to_(un)directed and to docstring above
-        H = self.__class__()
-        adj = self._adj
-        # Filter out edges that don't correspond to nodes in the graph.
-        edges = ((u, v) for u, v in edges if u in adj and v in adj[u])
-        for u, v in edges:
-            # Copy the node attributes if they haven't been copied
-            # already.
-            if u not in H._node:
-                H._node[u] = self._node[u]
-            if v not in H._node:
-                H._node[v] = self._node[v]
-            # Create an entry in the adjacency dictionary for the
-            # nodes u and v if they don't exist yet.
-            if u not in H._adj:
-                H._adj[u] = H.adjlist_inner_dict_factory()
-            if v not in H._adj:
-                H._adj[v] = H.adjlist_inner_dict_factory()
-            # Copy the edge attributes.
-            H._adj[u][v] = self._adj[u][v]
-            H._adj[v][u] = self._adj[v][u]
-        H.graph = self.graph
-        return H
 
     def nodes_with_selfloops(self):
         """Returns an iterator over nodes with self loops.
