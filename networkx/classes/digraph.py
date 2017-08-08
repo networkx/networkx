@@ -1061,8 +1061,8 @@ class DiGraph(Graph):
                              for v, d in nbrs.items())
         return G
 
-    def subgraph(self, nbunch, as_view=False):
-        """Return the subgraph induced on nodes in nbunch.
+    def subgraph(self, nbunch):
+        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
         and the edges between those nodes.

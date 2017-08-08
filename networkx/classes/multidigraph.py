@@ -683,60 +683,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
                          for key, datadict in keydict.items())
         return G
 
-    def to_directed(self, as_view=False):
-        """Return a directed copy of the graph.
-
-        Returns
-        -------
-        G : MultiDiGraph
-            A deepcopy of the graph.
-
-        Notes
-        -----
-        If edges in both directions (u, v) and (v, u) exist in the
-        graph, attributes for the new undirected edge will be a combination of
-        the attributes of the directed edges.  The edge data is updated
-        in the (arbitrary) order that the edges are encountered.  For
-        more customized control of the edge attributes use add_edge().
-
-        This returns a "deepcopy" of the edge, node, and
-        graph attributes which attempts to completely copy
-        all of the data and references.
-
-        This is in contrast to the similar G=DiGraph(D) which returns a
-        shallow copy of the data.
-
-        See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or MultiGraph, etc
-        >>> G.add_edge(0, 1)
-        >>> H = G.to_directed()
-        >>> list(H.edges())
-        [(0, 1), (1, 0)]
-
-        If already directed, return a (deep) copy
-
-        >>> G = nx.MultiDiGraph()
-        >>> key = G.add_edge(0, 1)
-        >>> H = G.to_directed()
-        >>> list(H.edges())
-        [(0, 1)]
-        """
-        if as_view is True:
-            return nx.graphviews.MultiDiGraphView(self)
-        # deepcopy when not a view
-        G = nx.MultiDiGraph()
-        G.graph.update(deepcopy(self.graph))
-        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        G.add_edges_from((u, v, key, deepcopy(datadict))
-                         for u, nbrs in self.adj.items()
-                         for v, keydict in nbrs.items()
-                         for key, datadict in keydict.items())
-        return G
-
     def to_undirected(self, reciprocal=False, as_view=False):
         """Return an undirected representation of the digraph.
 
@@ -792,8 +738,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
                              for key, data in keydict.items())
         return G
 
-    def subgraph(self, nbunch, as_view=False):
-        """Return the subgraph induced on nodes in nbunch.
+    def subgraph(self, nbunch):
+        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
         and the edges between those nodes.
