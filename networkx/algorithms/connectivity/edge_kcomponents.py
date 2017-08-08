@@ -176,7 +176,7 @@ def k_edge_subgraphs(G, k):
     if k < 1:
         raise ValueError('k cannot be less than 1')
     if G.is_directed():
-        if k < 1:
+        if k <= 1:
             # For directed graphs ,
             # When k == 1, k-edge-ccs and k-edge-subgraphs are the same
             return k_edge_components(G, k)

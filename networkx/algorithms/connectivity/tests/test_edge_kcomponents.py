@@ -149,6 +149,8 @@ def test_zero_k_exception():
     assert_raises(ValueError, list, aux_graph.k_edge_components(k=0))
     assert_raises(ValueError, list, aux_graph.k_edge_subgraphs(k=0))
 
+    assert_raises(ValueError, list, general_k_edge_subgraphs(G, k=0))
+
 
 def test_empty_input():
     G = nx.Graph()
@@ -167,6 +169,22 @@ def test_not_implemented():
     assert_raises(nx.NetworkXNotImplemented, nx.k_edge_subgraphs, G, k=2)
     assert_raises(nx.NetworkXNotImplemented, bridge_components, G)
     assert_raises(nx.NetworkXNotImplemented, bridge_components, nx.DiGraph())
+
+
+def test_general_k_edge_subgraph_quick_return():
+    #tests quick return optimization
+    G = nx.Graph()
+    G.add_node(0)
+    subgraphs = list(general_k_edge_subgraphs(G, k=1))
+    assert_equal(len(subgraphs), 1)
+    for subgraph in subgraphs:
+        assert_equal(subgraph.number_of_nodes(), 1)
+
+    G.add_node(1)
+    subgraphs = list(general_k_edge_subgraphs(G, k=1))
+    assert_equal(len(subgraphs), 2)
+    for subgraph in subgraphs:
+        assert_equal(subgraph.number_of_nodes(), 1)
 
 
 # ----------------
