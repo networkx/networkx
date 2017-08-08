@@ -149,9 +149,7 @@ class BaseDiGraphTester(BaseGraphTester):
         G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse(copy=False)
         assert_equal(sorted(R.edges()), [(1, 0), (2, 1)])
-        R.remove_edge(1, 0)
-        assert_equal(sorted(R.edges()), [(2, 1)])
-        assert_equal(sorted(G.edges()), [(2, 1)])
+        assert_raises(nx.NetworkXError, R.remove_edge, 1, 0)
 
     def test_reverse_hashable(self):
         class Foo(object):

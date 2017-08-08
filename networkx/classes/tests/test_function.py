@@ -106,6 +106,17 @@ class TestFunction(object):
         assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
                      nx.subgraph(self.DG, [0, 1, 2, 4]).adj)
 
+    def test_edge_subgraph(self):
+        assert_equal(self.G.edge_subgraph([(1, 2), (0, 3)]).adj,
+                     nx.edge_subgraph(self.G, [(1, 2), (0, 3)]).adj)
+        assert_equal(self.DG.edge_subgraph([(1, 2), (0, 3)]).adj,
+                     nx.edge_subgraph(self.DG, [(1, 2), (0, 3)]).adj)
+
+    def test_restricted_view(self):
+        H = nx.restricted_view(self.G, [0, 2, 5], [(1, 2), (3, 4)])
+        assert_equal(set(H.nodes), {1, 3, 4})
+        assert_equal(set(H.edges), {(1, 1)})
+
     def test_create_empty_copy(self):
         G = nx.create_empty_copy(self.G, with_data=False)
         assert_nodes_equal(G, list(self.G))

@@ -43,16 +43,33 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G[1][2][0]['foo'].append(1)
         assert_equal(G[1][2][0]['foo'], H[1][2][0]['foo'])
 
+    def graphs_equal(self, H, G):
+        assert_equal(G._adj, H._adj)
+        assert_equal(G._node, H._node)
+        assert_equal(G.graph, H.graph)
+        assert_equal(G.name, H.name)
+        if not G.is_directed() and not H.is_directed():
+            assert_is(H._adj[1][2][0], H._adj[2][1][0])
+            assert_is(G._adj[1][2][0], G._adj[2][1][0])
+        else:  # at least one is directed
+            if not G.is_directed():
+                G._pred = G._adj
+                G._succ = G._adj
+            if not H.is_directed():
+                H._pred = H._adj
+                H._succ = H._adj
+            assert_equal(G._pred, H._pred)
+            assert_equal(G._succ, H._succ)
+            assert_is(H._succ[1][2][0], H._pred[2][1][0])
+            assert_is(G._succ[1][2][0], G._pred[2][1][0])
+
     def same_attrdict(self, H, G):
         # same attrdict in the edgedata
         old_foo = H[1][2][0]['foo']
-        H.add_edge(1, 2, 0, foo='baz')
+        H.adj[1][2][0]['foo'] = 'baz'
         assert_equal(G._adj, H._adj)
-        H.add_edge(1, 2, 0, foo=old_foo)
+        H.adj[1][2][0]['foo'] = old_foo
         assert_equal(G._adj, H._adj)
-        # but not same edgedata dict
-        H.add_edge(1, 2, foo='baz')
-        assert_not_equal(G._adj, H._adj)
 
         old_foo = H.node[0]['foo']
         H.node[0]['foo'] = 'baz'
@@ -63,14 +80,11 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def different_attrdict(self, H, G):
         # used by graph_equal_but_different
         old_foo = H[1][2][0]['foo']
-        H.add_edge(1, 2, 0, foo='baz')
+        H.adj[1][2][0]['foo'] = 'baz'
         assert_not_equal(G._adj, H._adj)
-        H.add_edge(1, 2, 0, foo=old_foo)
+        H.adj[1][2][0]['foo'] = old_foo
         assert_equal(G._adj, H._adj)
-        HH = H.copy()
-        H.add_edge(1, 2, foo='baz')
-        assert_not_equal(G._adj, H._adj)
-        H = HH
+
         old_foo = H.node[0]['foo']
         H.node[0]['foo'] = 'baz'
         assert_not_equal(G._node, H._node)
@@ -301,12 +315,12 @@ class TestEdgeSubgraph(object):
         assert_equal([0, 1, 3, 4], sorted(self.H.nodes()))
 
     def test_remove_node(self):
-        """Tests that removing a node in the original graph does not
+        """Tests that removing a node in the original graph does
         affect the nodes of the subgraph.
 
         """
         self.G.remove_node(0)
-        assert_equal([0, 1, 3, 4], sorted(self.H.nodes()))
+        assert_equal([1, 3, 4], sorted(self.H.nodes()))
 
     def test_node_attr_dict(self):
         """Tests that the node attribute dictionary of the two graphs is

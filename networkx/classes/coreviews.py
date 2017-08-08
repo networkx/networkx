@@ -347,5 +347,3 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
                         if self.EDGE_OK(u, v, k)}
                     for v, kd in nbrs.items() if self.NODE_OK(v)}
                 for u, nbrs in self._atlas.items() if self.NODE_OK(u)}
-
-
