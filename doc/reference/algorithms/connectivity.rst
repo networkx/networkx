@@ -4,6 +4,13 @@ Connectivity
 
 .. automodule:: networkx.algorithms.connectivity
 
+K-edge-components
+-----------------
+.. automodule:: networkx.algorithms.connectivity.edge_kcomponents
+.. autosummary::
+   :toctree: generated/
+
+   edge_kcomponents
 
 K-node-components
 -----------------

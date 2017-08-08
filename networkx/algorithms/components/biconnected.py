@@ -197,6 +197,13 @@ def biconnected_components(G):
     NetworkXNotImplemented :
         If the input graph is not undirected.
 
+    See Also
+    --------
+    k_components : this function is a special case where k=2
+    bridge_components : similar to this function, but is defined using
+        2-edge-connectivity instead of 2-node-connectivity.
+
+
     Examples
     --------
     >>> G = nx.lollipop_graph(5, 1)
