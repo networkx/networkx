@@ -228,33 +228,76 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             if avail is None:
                 aug_edges = complement_edges(G)
             else:
-                # NOTE/TODO: in this case, there may be a more ellegant
-                # solution than just returning all available edges.
-                # For instance, say we have two sets of nodes, and each set has
-                # n items, where n >> k (say n = k * 2).
-                # Consider the case where k=1.
-                # Let G be the combined set of nodes with no edges.
-                # For each node set add all possible internal edges to avail.
-                # Given this construction its impossible to connect the nodes
-                # in either set; a 1-edge-augmentation is infeasible.
-                # The current implementation would simply return a partial
-                # solution with all 2 * choose(n, 2) edges from avail. However,
-                # a more ellegant solution would be to return the nodes that
-                # locally 1-edge-connects each node set. This would result
-                # in (2 * n - 2) total edges in the partial solution.
-                aug_edges = _unpack_available_edges(avail, weight=weight,
-                                                    G=G)[0]
-                # Idea for implementing above description:
-                # Construct H that augments G with all edges in avail.
-                # Find the k-edge-subgraphs of H.
-                # For each k-edge-subgraph, if the number of nodes is more than
-                # k, then find the k-edge-augmentation of that graph and add it
-                # to the solution. Then add all edges in avail between k-edge
-                # subgraphs to the solution.
+                # If we cant k-edge-connect the entire graph, try to
+                # k-edge-connect as much as possible
+                aug_edges = partial_k_edge_augmentation(G, k=k, avail=avail,
+                                                        weight=weight)
             for edge in aug_edges:
                 yield edge
         else:
             raise
+
+
+def partial_k_edge_augmentation(G, k, avail, weight=None):
+    """Finds augmentation that k-edge-connects as much of the graph as possible
+
+    When a k-edge-augmentation is not possible, we can still try to find a
+    small set of edges that partially k-edge-connects as much of the graph as
+    possible.
+
+    Notes
+    -----
+    Construct H that augments G with all edges in avail.
+    Find the k-edge-subgraphs of H.
+    For each k-edge-subgraph, if the number of nodes is more than k, then find
+    the k-edge-augmentation of that graph and add it to the solution. Then add
+    all edges in avail between k-edge subgraphs to the solution.
+
+    >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
+    >>> G.add_node(8)
+    >>> avail = [(1, 3), (1, 4), (1, 5), (2, 4), (2, 5), (3, 5), (1, 8)]
+    >>> sorted(partial_k_edge_augmentation(G, k=2, avail=avail))
+    [(1, 5), (1, 8)]
+    """
+    def _edges_between_disjoint(H, only1, only2):
+        """ finds edges between disjoint nodes """
+        only1_adj = {u: set(H.adj[u]) for u in only1}
+        for u, neighbs in only1_adj.items():
+            # Find the neighbors of u in only1 that are also in only2
+            neighbs12 = neighbs.intersection(only2)
+            for v in neighbs12:
+                yield (u, v)
+
+    avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
+
+    # Find which parts of the graph can be k-edge-connected
+    H = G.copy()
+    H.add_edges_from(
+        ((u, v, {'weight': w, 'generator': (u, v)})
+         for (u, v), w in zip(avail, avail_w)))
+    k_edge_subgraphs = list(nx.k_edge_subgraphs(H, k=k))
+
+    # Generate edges to k-edge-connect internal components
+    for nodes in k_edge_subgraphs:
+        if len(nodes) > 1:
+            C = H.subgraph(nodes)
+            sub_avail = {
+                d['generator']: d['weight']
+                for (u, v, d) in C.edges(data=True)
+                if 'generator' in d
+            }
+            # Remove potential augmenting edges
+            C.remove_edges_from(sub_avail.keys())
+            for edge in nx.k_edge_augmentation(C, k=k, avail=sub_avail):
+                yield edge
+
+    # Generate all edges between CCs that could not be k-edge-connected
+    for cc1, cc2 in it.combinations(k_edge_subgraphs, 2):
+        for (u, v) in _edges_between_disjoint(H, cc1, cc2):
+            d = H.get_edge_data(u, v)
+            edge = d.get('generator', None)
+            if edge is not None:
+                yield edge
 
 
 @not_implemented_for('multigraph')

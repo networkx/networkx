@@ -196,6 +196,31 @@ def test_karate():
     _check_augmentations(G)
 
 
+def test_star():
+    G = nx.star_graph(3)
+    _check_augmentations(G)
+
+    G = nx.star_graph(5)
+    _check_augmentations(G)
+
+    G = nx.star_graph(10)
+    _check_augmentations(G)
+
+
+def test_barbell():
+    G = nx.barbell_graph(5, 0)
+    _check_augmentations(G)
+
+    G = nx.barbell_graph(5, 2)
+    _check_augmentations(G)
+
+    G = nx.barbell_graph(5, 3)
+    _check_augmentations(G)
+
+    G = nx.barbell_graph(5, 4)
+    _check_augmentations(G)
+
+
 def test_bridge():
     G = nx.Graph([(2393, 2257), (2393, 2685), (2685, 2257), (1758, 2257)])
     _check_augmentations(G)
@@ -290,11 +315,20 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
             if avail_dict is None:
                 assert_equal(set(partial_edges), set(complement_edges(G)), (
                     'unweighted partial solutions should be the complement'))
-            else:
-                # NOTE: this may not always be true if we develop a better
-                # implementation
-                assert_equal(set(partial_edges), set(avail_dict.keys()), (
-                    'weighted partial solutions should be all avail edges'))
+            elif len(avail_dict) > 0:
+                H = G.copy()
+
+                # Find the partial / full augmented connectivity
+                H.add_edges_from(partial_edges)
+                partial_conn = nx.edge_connectivity(H)
+
+                H.add_edges_from(set(avail_dict.keys()))
+                full_conn = nx.edge_connectivity(H)
+
+                # Full connectivity should be no better than our partial
+                # solution.
+                assert_equal(partial_conn, full_conn,
+                             'adding more edges should not increase k-conn')
 
             # Find the new edge-connectivity after adding the augmenting edges
             aug_edges = partial_edges
@@ -438,3 +472,44 @@ def _check_unconstrained_bridge_property(G, info1):
     if p + q > 1:
         num_target = math.ceil(p / 2) + q
         assert_equal(info1['num_edges'], num_target)
+
+
+if __name__ == '__main__':
+    r"""
+    CommandLine:
+        python ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_augmentation.py
+        python ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_augmentation.py
+
+        nosetests ~/code/networkx/networkx/algorithms/connectivity --verbosity=3
+
+        nosetests ~/code/networkx/networkx/algorithms/connectivity --match=edge_augmentation --with-doctest --verbosity=3
+
+        nosetests ~/code/networkx/networkx/algorithms/connectivity --match=kcomponents --verbosity=3
+
+        nosetests ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_augmentation.py --with-doctest --verbosity=3
+
+        nosetests ~/code/networkx/networkx/algorithms/connectivity/tests/test_edge_kcomponents.py --with-doctest --verbosity=3
+    """
+    # TODO: remove after development is complete
+    import utool as ut
+    ut.cprint('--- TEST EDGE AUG ---', 'blue')
+
+    test_names = sorted([k for k in vars().keys() if k.startswith('test_')])
+    # test_names = [
+    #     'test_clique_and_node'
+    # ]
+    #     'test_zero_k_exception',
+    #     # 'test_tarjan_bridge',
+    #     'test_karate',
+    #     'test_random_gnp_directed',
+    # ]
+    times = {}
+    for key in test_names:
+        import ubelt as ub
+        ut.cprint('Testing func = {!r}'.format(key), 'blue')
+        func = vars()[key]
+        with ub.Timer(label=key, verbose=True) as t:
+            func()
+        times[key] = t.ellapsed
+        print(ut.repr4(ut.sort_dict(times, 'vals')))
+
