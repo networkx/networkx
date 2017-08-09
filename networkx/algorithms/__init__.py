@@ -25,6 +25,7 @@ from networkx.algorithms.hierarchy import *
 from networkx.algorithms.hybrid import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.link_prediction import *
+from networkx.algorithms.lowest_common_ancestors import *
 from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
@@ -59,6 +60,7 @@ import networkx.algorithms.coloring
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
+import networkx.algorithms.lowest_common_ancestors
 import networkx.algorithms.operators
 import networkx.algorithms.shortest_paths
 import networkx.algorithms.tournament
