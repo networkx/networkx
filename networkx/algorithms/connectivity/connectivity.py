@@ -646,7 +646,7 @@ def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
     return nx.maximum_flow_value(H, s, t, **kwargs)
 
-def edge_connectivity(G, s=None, t=None, flow_func=None):
+def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     r"""Returns the edge connectivity of the graph or digraph G.
 
     The edge connectivity is equal to the minimum number of edges that
@@ -675,6 +675,13 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
         (:meth:`edmonds_karp`) is used. See below for details. The
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
+
+    cutoff : integer, float
+        If specified, the maximum flow algorithm will terminate when the
+        flow value reaches or exceeds the cutoff. This is only for the
+        algorithms that support the cutoff parameter: :meth:`edmonds_karp`
+        and :meth:`shortest_augmenting_path`. Other algorithms will ignore
+        this parameter. Default value: None.
 
     Returns
     -------
@@ -750,7 +757,8 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             raise nx.NetworkXError('node %s not in graph' % s)
         if t not in G:
             raise nx.NetworkXError('node %s not in graph' % t)
-        return local_edge_connectivity(G, s, t, flow_func=flow_func)
+        return local_edge_connectivity(G, s, t, flow_func=flow_func,
+                                       cutoff=cutoff)
 
     # Global edge connectivity
     # reuse auxiliary digraph and residual network
@@ -767,6 +775,10 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
         L = min(d for n, d in G.degree())
         nodes = list(G)
         n = len(nodes)
+
+        if cutoff is not None:
+            L = min(cutoff, L)
+
         for i in range(n):
             kwargs['cutoff'] = L
             try:
@@ -783,6 +795,10 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
 
         # initial value for \lambda is minimum degree
         L = min(d for n, d in G.degree())
+
+        if cutoff is not None:
+            L = min(cutoff, L)
+
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:

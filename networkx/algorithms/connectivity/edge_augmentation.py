@@ -28,17 +28,26 @@ __all__ = [
 ]
 
 
+@not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def is_k_edge_connected(G, k):
     """
     Tests to see if a graph is k-edge-connected
+
+    See Also
+    --------
+    >>> G = nx.barbell_graph(10, 0)
+    >>> is_k_edge_connected(G, k=1)
+    True
+    >>> is_k_edge_connected(G, k=2)
+    False
     """
     if k < 1:
         raise ValueError('k must be positive, not {}'.format(k))
     # First try to quickly determine if G is not k-edge-connected
     if G.number_of_nodes() < k + 1:
         return False
-    elif min(d for n, d in G.degree()) < k:
+    elif any(d < k for n, d in G.degree()):
         return False
     else:
         # Otherwise perform the full check
@@ -47,7 +56,42 @@ def is_k_edge_connected(G, k):
         elif k == 2:
             return not nx.has_bridges(G)
         else:
-            return nx.edge_connectivity(G) >= k
+            return nx.edge_connectivity(G, cutoff=k) >= k
+
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
+def is_locally_k_edge_connected(G, s, t, k):
+    """
+    Tests to see if an edge in a graph is locally k-edge-connected
+
+    See Also
+    --------
+    is_k_edge_connected
+
+    Example
+    -------
+    >>> G = nx.barbell_graph(10, 0)
+    >>> is_locally_k_edge_connected(G, 5, 15, k=1)
+    True
+    >>> is_locally_k_edge_connected(G, 5, 15, k=2)
+    False
+    >>> is_locally_k_edge_connected(G, 1, 5, k=2)
+    True
+    """
+    if k < 1:
+        raise ValueError('k must be positive, not {}'.format(k))
+
+    # First try to quickly determine s, t is not k-locally-edge-connected in G
+    if G.degree(s) < k or G.degree(t) < k:
+        return False
+    else:
+        # Otherwise perform the full check
+        if k == 1:
+            return nx.has_path(G, s, t)
+        else:
+            localk = nx.connectivity.local_edge_connectivity(G, s, t, cutoff=k)
+            return localk >= k
 
 
 @not_implemented_for('directed')
@@ -96,6 +140,14 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         the G would become k-edge-connected. If partial is False, an error
         is raised if this is not possible. Otherwise, all available edges
         are generated.
+
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If the input graph is directed or a multigraph.
+
+    ValueError:
+        If k is less than 1
 
     Notes
     -----
@@ -164,7 +216,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         else:
             # raise NotImplementedError(
             #    'not implemented for k>2. k={}'.format(k))
-            aug_edges = randomized_k_edge_augmentation(
+            aug_edges = greedy_k_edge_augmentation(
                 G, k=k, avail=avail, weight=weight, seed=0)
         # Do eager evaulation so we can catch any exceptions
         # Before executing partial code.
@@ -836,29 +888,33 @@ def complement_edges(G):
 
 @not_implemented_for('multigraph')
 @not_implemented_for('directed')
-def randomized_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
-    """Randomized algorithm for finding a k-edge-augmentation
+def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
+    """Greedy algorithm for finding a k-edge-augmentation
 
     Notes
     -----
-    The algorithm is simple. Edges are randomly added between parts of the
+    The algorithm is simple. Edges are incrementally added between parts of the
     graph that are not yet locally k-edge-connected. Then edges are from the
     augmenting set are pruned as long as local-edge-connectivity is not broken.
-    Specific edge weights are not taken into consideration.
 
-    This algorithm is not efficient and exists only to provide
-    :func:`k_edge_augmentation` with the ability to generate a feasible
-    solution for arbitrary k.
+    This algorithm is greedy and does not provide optimiality gaurentees. It
+    exists only to provide :func:`k_edge_augmentation` with the ability to
+    generate a feasible solution for arbitrary k.
 
     Example
     -------
     >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
-    >>> sorted(randomized_k_edge_augmentation(G, k=2, seed=8))
+    >>> sorted(greedy_k_edge_augmentation(G, k=2))
     [(1, 7)]
-    >>> sorted(randomized_k_edge_augmentation(G, k=2, seed=4))
-    [(1, 3), (2, 4), (4, 7)]
-    >>> sorted(randomized_k_edge_augmentation(G, k=1, avail=[]))
+    >>> sorted(greedy_k_edge_augmentation(G, k=1, avail=[]))
     []
+    >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
+    >>> avail = {(u, v): 1 for (u, v) in complement_edges(G)}
+    >>> # randomized pruning process can produce different solutions
+    >>> sorted(greedy_k_edge_augmentation(G, k=4, avail=avail, seed=2))
+    [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (2, 4), (2, 6), (3, 7), (5, 7)]
+    >>> sorted(greedy_k_edge_augmentation(G, k=4, avail=avail, seed=3))
+    [(1, 3), (1, 5), (1, 6), (2, 4), (2, 6), (3, 7), (4, 7), (5, 7)]
     """
     # Result set
     aug_edges = []
@@ -871,24 +927,24 @@ def randomized_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
         avail_uv = list(complement_edges(G))
     else:
         # Get the unique set of unweighted edges
-        # avail_uv, avail_w = _unpack_available_edges(avail, weight=None)
-        avail_uv = _unpack_available_edges(avail, weight=weight, G=G)[0]
+        avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
+        # Greedy: order lightest edges. Use degree sum to tie-break
+        tiebreaker = [sum(map(G.degree, uv)) for uv in avail_uv]
+        avail_wduv = sorted(zip(avail_w, tiebreaker, avail_uv))
+        avail_uv = [uv for w, d, uv in avail_wduv]
+        # avail_w = [w for w, uv in avail_wuv]
 
-    # Randomize edge order
-    rng = random.Random(seed)
-    rng.shuffle(avail_uv)
+    # Incrementally add edges in until we are k-connected
     H = G.copy()
-
-    # Randomly add edges in until we are k-connected
-    for edge in avail_uv:
+    for (u, v) in avail_uv:
         done = False
-        local_k = nx.connectivity.local_edge_connectivity(H, *edge)
-        if local_k < k:
+        if not is_locally_k_edge_connected(H, u, v, k=k):
             # Only add edges in parts that are not yet locally k-edge-connected
-            aug_edges.append(edge)
-            H.add_edge(*edge)
+            aug_edges.append((u, v))
+            H.add_edge(u, v)
             # Did adding this edge help?
-            done = is_k_edge_connected(H, k)
+            if H.degree(u) >= k and H.degree(v) >= k:
+                done = is_k_edge_connected(H, k)
         if done:
             break
 
@@ -897,18 +953,19 @@ def randomized_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
         raise nx.NetworkXUnfeasible(
             'not able to k-edge-connect with available edges')
 
-    # Attempt to reduce the size of the solution
+    # Randomized attempt to reduce the size of the solution
+    rng = random.Random(seed)
     rng.shuffle(aug_edges)
-    for edge in list(aug_edges):
-        if min(H.degree(edge), key=lambda t: t[1])[1] <= k:
+    for (u, v) in list(aug_edges):
+        # Dont remove if we know it would break connectivity
+        if H.degree(u) <= k or H.degree(v) <= k:
             continue
-        H.remove_edge(*edge)
-        aug_edges.remove(edge)
-        conn = nx.edge_connectivity(H)
-        if conn < k:
+        H.remove_edge(u, v)
+        aug_edges.remove((u, v))
+        if not is_k_edge_connected(H, k=k):
             # If removing this edge breaks feasibility, undo
-            H.add_edge(*edge)
-            aug_edges.append(edge)
+            H.add_edge(u, v)
+            aug_edges.append((u, v))
 
     # Generate results
     for edge in aug_edges:

@@ -12,6 +12,8 @@ from networkx.algorithms.connectivity import (
 from networkx.algorithms.connectivity.edge_augmentation import (
     collapse,
     complement_edges,
+    is_locally_k_edge_connected,
+    is_k_edge_connected,
     _unpack_available_edges,
 )
 
@@ -48,6 +50,56 @@ def test_weight_key():
     _augment_and_check(G, k=1, avail=avail, weight='cost')
 
     _check_augmentations(G, avail, weight='cost')
+
+
+def test_is_locally_k_edge_connected_exceptions():
+    assert_raises(nx.NetworkXNotImplemented,
+                  is_k_edge_connected,
+                  nx.DiGraph(), k=0)
+    assert_raises(nx.NetworkXNotImplemented,
+                  is_k_edge_connected,
+                  nx.MultiGraph(), k=0)
+    assert_raises(ValueError, is_k_edge_connected,
+                  nx.Graph(), k=0)
+
+
+def test_is_k_edge_connected():
+    G = nx.barbell_graph(10, 0)
+    assert_true(is_k_edge_connected(G, k=1))
+    assert_false(is_k_edge_connected(G, k=2))
+
+    G = nx.Graph()
+    G.add_nodes_from([5, 15])
+    assert_false(is_k_edge_connected(G, k=1))
+    assert_false(is_k_edge_connected(G, k=2))
+
+    G = nx.complete_graph(5)
+    assert_true(is_k_edge_connected(G, k=1))
+    assert_true(is_k_edge_connected(G, k=2))
+    assert_true(is_k_edge_connected(G, k=3))
+    assert_true(is_k_edge_connected(G, k=4))
+
+
+def test_is_k_edge_connected_exceptions():
+    assert_raises(nx.NetworkXNotImplemented,
+                  is_locally_k_edge_connected,
+                  nx.DiGraph(), 1, 2, k=0)
+    assert_raises(nx.NetworkXNotImplemented,
+                  is_locally_k_edge_connected,
+                  nx.MultiGraph(), 1, 2, k=0)
+    assert_raises(ValueError,
+                  is_locally_k_edge_connected,
+                  nx.Graph(), 1, 2, k=0)
+
+
+def test_is_locally_k_edge_connected():
+    G = nx.barbell_graph(10, 0)
+    assert_true(is_locally_k_edge_connected(G, 5, 15, k=1))
+    assert_false(is_locally_k_edge_connected(G, 5, 15, k=2))
+
+    G = nx.Graph()
+    G.add_nodes_from([5, 15])
+    assert_false(is_locally_k_edge_connected(G, 5, 15, k=2))
 
 
 def test_null_graph():
