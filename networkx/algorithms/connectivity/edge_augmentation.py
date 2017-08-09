@@ -285,7 +285,9 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     # Generate edges to k-edge-connect internal components
     for nodes in k_edge_subgraphs:
         if len(nodes) > 1:
+            # Get the k-edge-connected subgraph
             C = H.subgraph(nodes)
+            # Find the internal edges that were available
             sub_avail = {
                 d['generator']: d['weight']
                 for (u, v, d) in C.edges(data=True)
@@ -293,6 +295,8 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
             }
             # Remove potential augmenting edges
             C.remove_edges_from(sub_avail.keys())
+            # Find a subset of these edges that makes the compoment
+            # k-edge-connected and ignore the rest
             for edge in nx.k_edge_augmentation(C, k=k, avail=sub_avail):
                 yield edge
 
