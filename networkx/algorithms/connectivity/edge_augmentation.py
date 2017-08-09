@@ -175,7 +175,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     >>> sorted(k_edge_augmentation(G, k=2))
     [(1, 5), (5, 4)]
     >>> sorted(k_edge_augmentation(G, k=3))
-    [(1, 4), (1, 5), (2, 4), (2, 5), (3, 5)]
+    [(1, 4), (1, 5), (2, 5), (3, 5), (4, 5)]
     >>> complement = list(k_edge_augmentation(G, k=5, partial=True))
     >>> G.add_edges_from(complement)
     >>> nx.edge_connectivity(G)
@@ -973,14 +973,16 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     if avail is None:
         # all edges are available
         avail_uv = list(complement_edges(G))
+        avail_w = [1] * len(avail_uv)
     else:
         # Get the unique set of unweighted edges
         avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
-        # Greedy: order lightest edges. Use degree sum to tie-break
-        tiebreaker = [sum(map(G.degree, uv)) for uv in avail_uv]
-        avail_wduv = sorted(zip(avail_w, tiebreaker, avail_uv))
-        avail_uv = [uv for w, d, uv in avail_wduv]
-        # avail_w = [w for w, uv in avail_wuv]
+
+    # Greedy: order lightest edges. Use degree sum to tie-break
+    tiebreaker = [sum(map(G.degree, uv)) for uv in avail_uv]
+    avail_wduv = sorted(zip(avail_w, tiebreaker, avail_uv))
+    avail_uv = [uv for w, d, uv in avail_wduv]
+    # avail_w = [w for w, uv in avail_wuv]
 
     # Incrementally add edges in until we are k-connected
     H = G.copy()
