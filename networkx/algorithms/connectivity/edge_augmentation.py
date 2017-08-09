@@ -17,6 +17,7 @@ k-edge-augmentation exists.
 """
 import random
 import math
+import sys
 import itertools as it
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -620,7 +621,7 @@ def unconstrained_bridge_augmentation(G):
         v2 = [n for n in nx.dfs_preorder_nodes(T, root) if T.degree(n) == 1]
         # connecting first half of the leafs in pre-order to the second
         # half will bridge connect the tree with the fewest edges.
-        half = math.ceil(len(v2) / 2.0)
+        half = int(math.ceil(len(v2) / 2.0))
         A2 = list(zip(v2[:half], v2[-half:]))
 
     # collect the edges used to augment the original forest
@@ -880,9 +881,14 @@ def collapse(G, grouped_nodes):
     >>> G.add_node('A')
     >>> grouped_nodes = [{0, 1, 2, 3}, {5, 6, 7}]
     >>> C = collapse(G, grouped_nodes)
-    >>> assert nx.get_node_attributes(C, 'members') == {
-    ...     0: {0, 1, 2, 3}, 1: {5, 6, 7}, 2: {4}, 3: {'A'}
-    ... }
+    >>> members = nx.get_node_attributes(C, 'members')
+    >>> sorted(members.keys())
+    [0, 1, 2, 3]
+    >>> member_values = set(map(frozenset, members.values()))
+    >>> assert {0, 1, 2, 3} in member_values
+    >>> assert {4} in member_values
+    >>> assert {5, 6, 7} in member_values
+    >>> assert {'A'} in member_values
     """
     mapping = {}
     members = {}
@@ -937,6 +943,33 @@ def complement_edges(G):
         for u, v in it.combinations(G.nodes(), 2):
             if v not in G.adj[u]:
                 yield (u, v)
+
+
+if sys.version_info[0] == 2:
+    def compat_shuffle(rng, input):
+        """
+        python2 workaround so shuffle works the same as python3
+
+        References
+        ----------
+        https://stackoverflow.com/questions/38943038/diff-shuffle-py2-py3
+        """
+        def _randbelow(n):
+            "Return a random int in the range [0,n). Raises ValueError if n==0."
+            getrandbits = rng.getrandbits
+            k = n.bit_length()  # don't use (n-1) here because n can be 1
+            r = getrandbits(k)  # 0 <= r < 2**k
+            while r >= n:
+                r = getrandbits(k)
+            return r
+
+        for i in range(len(input) - 1, 0, -1):
+            # pick an element in input[:i+1] with which to exchange input[i]
+            j = _randbelow(i + 1)
+            input[i], input[j] = input[j], input[i]
+else:
+    def compat_shuffle(rng, input):
+        rng.shuffle(input)
 
 
 @not_implemented_for('multigraph')
@@ -1010,7 +1043,8 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
 
     # Randomized attempt to reduce the size of the solution
     rng = random.Random(seed)
-    rng.shuffle(aug_edges)
+    # rng.shuffle(aug_edges)
+    compat_shuffle(rng, aug_edges)
     for (u, v) in list(aug_edges):
         # Dont remove if we know it would break connectivity
         if H.degree(u) <= k or H.degree(v) <= k:

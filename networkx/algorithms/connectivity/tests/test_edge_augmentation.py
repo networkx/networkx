@@ -470,5 +470,31 @@ def _check_unconstrained_bridge_property(G, info1):
     p = len([n for n, d in C.degree() if d == 1])  # leafs
     q = len([n for n, d in C.degree() if d == 0])  # isolated
     if p + q > 1:
-        num_target = math.ceil(p / 2) + q
-        assert_equal(info1['num_edges'], num_target)
+        size_target = int(math.ceil(p / 2.0)) + q
+        size_aug = info1['num_edges']
+        assert_equal(size_aug, size_target, (
+            'augmentation size is different from what theory predicts'))
+
+if __name__ == '__main__':
+    # TODO: remove after development is complete
+    import utool as ut
+    ut.cprint('--- TEST EDGE AUG ---', 'blue')
+
+    test_names = sorted([k for k in vars().keys() if k.startswith('test_')])
+    # test_names = [
+    #     'test_clique_and_node'
+    # ]
+    #     'test_zero_k_exception',
+    #     # 'test_tarjan_bridge',
+    #     'test_karate',
+    #     'test_random_gnp_directed',
+    # ]
+    times = {}
+    for key in test_names:
+        import ubelt as ub
+        ut.cprint('Testing func = {!r}'.format(key), 'blue')
+        func = vars()[key]
+        with ub.Timer(label=key, verbose=True) as t:
+            func()
+        times[key] = t.ellapsed
+        print(ut.repr4(ut.sort_dict(times, 'vals')))
