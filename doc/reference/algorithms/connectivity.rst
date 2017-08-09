@@ -4,6 +4,14 @@ Connectivity
 
 .. automodule:: networkx.algorithms.connectivity
 
+Edge-augmentation
+-----------------
+.. automodule:: networkx.algorithms.connectivity.edge_augmentation
+.. autosummary::
+   :toctree: generated/
+
+   edge_augmentation
+
 K-edge-components
 -----------------
 .. automodule:: networkx.algorithms.connectivity.edge_kcomponents

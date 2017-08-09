@@ -189,6 +189,22 @@ API Changes
    G.node and G.edge are removed. Their functionality are replaced by G.nodes
    and G.edges.
 
+* [`#2554 <https://github.com/networkx/networkx/issues/2554>`_]
+  New algorithms for finding k-edge-connected components and k-edge-connected
+  subgraphs in directed and undirected graphs. Efficient implementations are
+  provided for the special case of k=1 and k=2. The new functionality is
+  provided by:
+   - :func:`k_edge_components()`
+   - :func:`k_edge_subgraphs()`
+
+
+* [`#2572 <https://github.com/networkx/networkx/issues/2572>`_]
+  New algorithm finding for finding k-edge-augmentations in undirected graphs.
+  Efficient implementations are provided for the special case of k=1 and k=2.
+  New functionality is provided by:
+   - :func:`k_edge_augmentation()`
+
+
 Deprecations
 ------------
 

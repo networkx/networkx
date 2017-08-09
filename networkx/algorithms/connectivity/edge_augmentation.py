@@ -25,6 +25,7 @@ from collections import defaultdict, namedtuple
 __all__ = [
     'k_edge_augmentation',
     'is_k_edge_connected',
+    'is_locally_k_edge_connected',
 ]
 
 
