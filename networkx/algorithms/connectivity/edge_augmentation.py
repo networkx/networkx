@@ -215,7 +215,8 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
                 raise nx.NetworkXUnfeasible('no available edges')
             aug_edges = []
         elif k == 1:
-            aug_edges = one_edge_augmentation(G, avail=avail, weight=weight)
+            aug_edges = one_edge_augmentation(G, avail=avail, weight=weight,
+                                              partial=partial)
         elif k == 2:
             aug_edges = bridge_augmentation(G, avail=avail, weight=weight)
         else:
@@ -465,7 +466,7 @@ def unconstrained_one_edge_augmentation(G):
         yield (inverse[mu][0], inverse[mv][0])
 
 
-def weighted_one_edge_augmentation(G, avail, weight=None, partial=False, method=0):
+def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
     """Finds the minimum weight set of edges to connect G if one exists.
 
     This is a variant of the weighted MST problem.
