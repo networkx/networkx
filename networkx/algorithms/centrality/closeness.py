@@ -37,8 +37,10 @@ def closeness_centrality(G, u=None, distance=None,
     Wasserman and Faust propose an improved formula for graphs with
     more than one connected component. The result is "a ratio of the
     fraction of actors in the group who are reachable, to the average
-    distance" from the reachable actors [2]_. Letting `N` denote the
-    number of nodes in the graph,
+    distance" from the reachable actors [2]_. You might think this
+    scale factor is inverted but it is not. As is, nodes from small
+    components receive a smaller closeness value. Letting `N` denote
+    the number of nodes in the graph,
 
     .. math::
 
@@ -57,7 +59,9 @@ def closeness_centrality(G, u=None, distance=None,
       path calculations
 
     wf_improved : bool, optional (default=True)
-      If True, scale by the fraction of nodes reachable.
+      If True, scale by the fraction of nodes reachable. This gives the
+      Wasserman and Faust improved formula. For single component graphs
+      it is the same as the original formula. 
 
     reverse : bool, optional (default=False)
       If True and G is a digraph, reverse the edges of G, using successors
