@@ -36,6 +36,10 @@ def is_k_edge_connected(G, k):
 
     See Also
     --------
+    is_locally_k_edge_connected
+
+    Example
+    -------
     >>> G = nx.barbell_graph(10, 0)
     >>> is_k_edge_connected(G, k=1)
     True
