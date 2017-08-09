@@ -304,6 +304,12 @@ def contracted_nodes(G, u, v, self_loops=True):
        will be merged into the node `u`, so only `u` will appear in the
        returned graph.
 
+    Notes
+    -----
+    For multigraphs, the edge keys for the realigned edges may
+    not be the same as the edge keys for the old edges. This is
+    natural because edge keys are unique only within each pair of nodes.
+
     Examples
     --------
     Contracting two nonadjacent nodes of the cycle graph on four nodes `C_4`
@@ -337,21 +343,24 @@ def contracted_nodes(G, u, v, self_loops=True):
     This function is also available as `identified_nodes`.
     """
     H = G.copy()
+    # edge code uses G.edges(v) instead of G.adj[v] to handle multiedges
     if H.is_directed():
-        in_edges = ((u if w == v else w, u, d)
+        in_edges = ((w if w != v else u, u, d)
                     for w, x, d in G.in_edges(v, data=True)
                     if self_loops or w != u)
-        out_edges = ((u, u if w == v else w, d)
+        out_edges = ((u, w if w != v else u, d)
                      for x, w, d in G.out_edges(v, data=True)
                      if self_loops or w != u)
         new_edges = chain(in_edges, out_edges)
     else:
-        new_edges = ((u, u if w == v else w, d)
+        new_edges = ((u, w if w != v else u, d)
                      for x, w, d in G.edges(v, data=True)
                      if self_loops or w != u)
+    new_edges = list(new_edges)
     v_data = H.node[v]
     H.remove_node(v)
     H.add_edges_from(new_edges)
+
     if 'contraction' in H.node[u]:
         H.node[u]['contraction'][v] = v_data
     else:

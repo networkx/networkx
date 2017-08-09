@@ -237,10 +237,31 @@ class TestContraction(object):
     def test_create_multigraph(self):
         """Tests that using a MultiGraph creates multiple edges."""
         G = nx.path_graph(3, create_using=nx.MultiGraph())
+        G.add_edge(0, 1)
+        G.add_edge(0, 0)
+        G.add_edge(0, 2)
         actual = nx.contracted_nodes(G, 0, 2)
-        expected = nx.MultiDiGraph()
+        expected = nx.MultiGraph()
         expected.add_edge(0, 1)
         expected.add_edge(0, 1)
+        expected.add_edge(0, 1)
+        expected.add_edge(0, 0)
+        expected.add_edge(0, 0)
+        assert_edges_equal(actual.edges, expected.edges)
+
+    def test_multigraph_keys(self):
+        """Tests that multiedge keys are reset in new graph."""
+        G = nx.path_graph(3, create_using=nx.MultiGraph())
+        G.add_edge(0, 1, 5)
+        G.add_edge(0, 0, 0)
+        G.add_edge(0, 2, 5)
+        actual = nx.contracted_nodes(G, 0, 2)
+        expected = nx.MultiGraph()
+        expected.add_edge(0, 1, 0)
+        expected.add_edge(0, 1, 5)
+        expected.add_edge(0, 1, 1)
+        expected.add_edge(0, 0, 0)
+        expected.add_edge(0, 0, 1)  # this comes from (0, 2, 5)
         assert_edges_equal(actual.edges, expected.edges)
 
     def test_node_attributes(self):
@@ -266,6 +287,21 @@ class TestContraction(object):
         actual = nx.contracted_nodes(G, 0, 1, self_loops=False)
         expected = nx.complete_graph(3)
         assert_true(nx.is_isomorphic(actual, expected))
+
+    def test_contract_selfloop_graph(self):
+        """Tests for node contraction when nodes have selfloops."""
+        G = nx.cycle_graph(4)
+        G.add_edge(0, 0)
+        actual = nx.contracted_nodes(G, 0, 1)
+        expected = nx.complete_graph([0, 2, 3])
+        expected.add_edge(0, 0)
+        expected.add_edge(0, 0)
+        assert_edges_equal(actual.edges, expected.edges)
+        actual = nx.contracted_nodes(G, 1, 0)
+        expected = nx.complete_graph([1, 2, 3])
+        expected.add_edge(1, 1)
+        expected.add_edge(1, 1)
+        assert_edges_equal(actual.edges, expected.edges)
 
     def test_undirected_edge_contraction(self):
         """Tests for edge contraction in an undirected graph."""
