@@ -382,11 +382,11 @@ def find_cycle(G, source=None, orientation='original'):
     >>> import networkx as nx
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
     >>> try:
-    ...    find_cycle(G, orientation='original')
+    ...    nx.find_cycle(G, orientation='original')
     ... except:
     ...    pass
     ...
-    >>> list(find_cycle(G, orientation='ignore'))
+    >>> list(nx.find_cycle(G, orientation='ignore'))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """
