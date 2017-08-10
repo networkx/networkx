@@ -165,11 +165,13 @@ def test_tarjan():
              (16, 17), (18, 14), (15, 14)]
 
     aug_edges = set(_augment_and_check(G, k=2)[0])
+    print('aug_edges = {!r}'.format(aug_edges))
     assert_equal(len(aug_edges), 3)
     # dont assert exactly equal due to non-determenant edge order
     # assert_equal(aug_edges, {(12, 9), (12, 15), (6, 12)})
 
     aug_edges = set(_augment_and_check(G, avail=avail, k=2)[0])
+    print('aug_edges = {!r}'.format(aug_edges))
     assert_equal(len(aug_edges), 3)
     # dont assert exactly equal due to non-determenant edge order
     # assert_equal(aug_edges, {(6, 13), (11, 18), (2, 10)})
