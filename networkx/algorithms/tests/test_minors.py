@@ -259,7 +259,7 @@ class TestContraction(object):
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, 0)
         expected.add_edge(0, 1, 5)
-        expected.add_edge(0, 1, 1)
+        expected.add_edge(0, 1, 2)  # keyed as 2 b/c 2 edges already in G
         expected.add_edge(0, 0, 0)
         expected.add_edge(0, 0, 1)  # this comes from (0, 2, 5)
         assert_edges_equal(actual.edges, expected.edges)
