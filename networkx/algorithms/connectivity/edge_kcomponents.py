@@ -19,7 +19,7 @@ least k.
 """
 import networkx as nx
 from networkx.utils import arbitrary_element
-from networkx.utils import not_implemented_for  # NOQA
+from networkx.utils import not_implemented_for
 from networkx.algorithms import bridges
 from functools import partial
 import itertools as it
