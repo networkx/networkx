@@ -40,6 +40,14 @@ Label propagation
 
    asyn_lpa_communities
 
+Fluid Communities
+-----------------
+.. automodule:: networkx.algorithms.community.asyn_fluidc
+.. autosummary::
+   :toctree: generated/
+
+   asyn_fluidc
+
 Measuring partitions
 --------------------
 .. automodule:: networkx.algorithms.community.quality
