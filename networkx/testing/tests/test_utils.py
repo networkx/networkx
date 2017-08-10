@@ -82,10 +82,34 @@ class TestEdgesEqual(_GenericTest):
         self._test_equal(G.edges(data=True, keys=True),
                          H.edges(data=True, keys=True))
 
-
     def test_duplicate_edges(self):
         a = [(1,2),(5,4),(1,2)]
         b = [(4,5),(1,2)]
+        self._test_not_equal(a,b)
+
+    def test_duplicate_edges_with_data(self):
+        a = [(1, 2, {'weight': 10}), (5, 4), (1, 2, {'weight': 1})]
+        b = [(4, 5), (1, 2), (1, 2, {'weight': 1})]
+        self._test_not_equal(a,b)
+
+    def test_order_of_edges_with_data(self):
+        a = [(1, 2, {'weight': 10}), (1, 2, {'weight': 1})]
+        b = [(1, 2, {'weight': 1}), (1, 2, {'weight': 10})]
+        self._test_equal(a,b)
+
+    def test_order_of_multiedges(self):
+        wt1 = {'weight': 1}
+        wt2 = {'weight': 2}
+        a = [(1, 2, wt1), (1, 2, wt1), (1, 2, wt2)]
+        b = [(1, 2, wt1), (1, 2, wt2), (1, 2, wt2)]
+        self._test_not_equal(a,b)
+
+    def test_order_of_edges_with_keys(self):
+        a = [(1, 2, 0, {'weight': 10}), (1, 2, 1, {'weight': 1}), (1, 2, 2)]
+        b = [(1, 2, 1, {'weight': 1}), (1, 2, 2), (1, 2, 0, {'weight': 10})]
+        self._test_equal(a,b)
+        a = [(1, 2, 1, {'weight': 10}), (1, 2, 0, {'weight': 1}), (1, 2, 2)]
+        b = [(1, 2, 1, {'weight': 1}), (1, 2, 2), (1, 2, 0, {'weight': 10})]
         self._test_not_equal(a,b)
 
 
