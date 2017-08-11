@@ -83,7 +83,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     if normalized:
         # make R a copy of G, randomize with Q*|E| double edge swaps
         # and use rich_club coefficient of R to normalize
-        R = G.copy(with_data=False)
+        R = G.copy()
         E = R.number_of_edges()
         nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10)
         rcran = _compute_rc(R)

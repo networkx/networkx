@@ -188,6 +188,10 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         for n in nbunch:
             self.remove_node(n)
 
+    def fresh_copy(self):
+        # Neede to make .copy() work
+        return MultiDiGraph_EdgeKey()
+
     def add_edge(self, u, v, key, **attr):
         """
         Key is now required.
@@ -202,7 +206,8 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         self.edge_index[key] = (u, v, self.succ[u][v][key])
 
     def add_edges_from(self, ebunch, **attr):
-        raise NotImplementedError
+        for u, v, k, d in ebunch:
+            self.add_edge(u, v, k, **d)
 
     def remove_edge_with_key(self, key):
         try:

@@ -167,9 +167,11 @@ class BaseAttrGraphTester(BaseGraphTester):
         G.add_node(0)
         G.add_edge(1, 2)
         self.add_attributes(G)
-        # deepcopy
+        # copy edge datadict but any container attr are same
         H = G.copy()
-        self.is_deepcopy(H, G)
+        self.graphs_equal(H, G)
+        self.different_attrdict(H, G)
+        self.shallow_copy_attrdict(H, G)
 
     def test_class_copy(self):
         G = self.Graph()
@@ -182,24 +184,13 @@ class BaseAttrGraphTester(BaseGraphTester):
         self.different_attrdict(H, G)
         self.shallow_copy_attrdict(H, G)
 
-    def test_attr_reference(self):
-        G = self.Graph()
-        G.add_node(0)
-        G.add_edge(1, 2)
-        self.add_attributes(G)
-        # copy datadict by reference (with_data=False)
-        H = G.copy(with_data=False)
-        self.graphs_equal(H, G)
-        self.same_attrdict(H, G)
-        self.shallow_copy_attrdict(H, G)
-
     def test_fresh_copy(self):
         G = self.Graph()
         G.add_node(0)
         G.add_edge(1, 2)
         self.add_attributes(G)
         # copy graph structure but use fresh datadict
-        H = G.__class__()
+        H = G.fresh_copy()
         H.add_nodes_from(G)
         H.add_edges_from(G.edges())
         assert_equal(len(G.node[0]), 1)
@@ -260,10 +251,11 @@ class BaseAttrGraphTester(BaseGraphTester):
 
     def same_attrdict(self, H, G):
         old_foo = H[1][2]['foo']
-        H.add_edge(1, 2, foo='baz')
+        H.adj[1][2]['foo']='baz'
         assert_equal(G.edge, H.edge)
-        H.add_edge(1, 2, foo=old_foo)
+        H.adj[1][2]['foo']=old_foo
         assert_equal(G.edge, H.edge)
+
         old_foo = H.node[0]['foo']
         H.node[0]['foo'] = 'baz'
         assert_equal(G.node, H.node)
@@ -272,10 +264,11 @@ class BaseAttrGraphTester(BaseGraphTester):
 
     def different_attrdict(self, H, G):
         old_foo = H[1][2]['foo']
-        H.add_edge(1, 2, foo='baz')
+        H.adj[1][2]['foo']='baz'
         assert_not_equal(G._adj, H._adj)
-        H.add_edge(1, 2, foo=old_foo)
+        H.adj[1][2]['foo']=old_foo
         assert_equal(G._adj, H._adj)
+
         old_foo = H.node[0]['foo']
         H.node[0]['foo'] = 'baz'
         assert_not_equal(G._node, H._node)
@@ -288,8 +281,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_equal(G.graph, H.graph)
         assert_equal(G.name, H.name)
         if not G.is_directed() and not H.is_directed():
-            assert_true(H._adj[1][2] is H._adj[2][1])
-            assert_true(G._adj[1][2] is G._adj[2][1])
+            assert_is(H._adj[1][2], H._adj[2][1])
+            assert_is(G._adj[1][2], G._adj[2][1])
         else:  # at least one is directed
             if not G.is_directed():
                 G._pred = G._adj
@@ -299,8 +292,8 @@ class BaseAttrGraphTester(BaseGraphTester):
                 H._succ = H._adj
             assert_equal(G._pred, H._pred)
             assert_equal(G._succ, H._succ)
-            assert_true(H._succ[1][2] is H._pred[2][1])
-            assert_true(G._succ[1][2] is G._pred[2][1])
+            assert_is(H._succ[1][2], H._pred[2][1])
+            assert_is(G._succ[1][2], G._pred[2][1])
 
     def test_graph_attr(self):
         G = self.K3
@@ -407,8 +400,6 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.K3
         self.add_attributes(G)
         H = G.subgraph([0, 1, 2, 5])
-#        assert_equal(H.name, 'Subgraph of ('+G.name+')')
-        H.name = G.name
         self.graphs_equal(H, G)
         self.same_attrdict(H, G)
         self.shallow_copy_attrdict(H, G)
@@ -622,12 +613,12 @@ class TestEdgeSubgraph(object):
         assert_equal([0, 1, 3, 4], sorted(self.H.nodes()))
 
     def test_remove_node(self):
-        """Tests that removing a node in the original graph does not
+        """Tests that removing a node in the original graph does
         affect the nodes of the subgraph.
 
         """
         self.G.remove_node(0)
-        assert_equal([0, 1, 3, 4], sorted(self.H.nodes()))
+        assert_equal([1, 3, 4], sorted(self.H.nodes()))
 
     def test_node_attr_dict(self):
         """Tests that the node attribute dictionary of the two graphs is

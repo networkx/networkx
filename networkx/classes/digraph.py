@@ -988,45 +988,22 @@ class DiGraph(Graph):
         """Return True if graph is directed, False otherwise."""
         return True
 
-    def to_directed(self):
-        """Return a directed copy of the graph.
+    def fresh_copy(self):
+        """Return a fresh copy graph with the same data structure."""
+        return nx.DiGraph()
 
-        Returns
-        -------
-        G : DiGraph
-            A deepcopy of the graph.
+    def copy(self, as_view=False):
+        if as_view is True:
+            return nx.graphviews.DiGraphView(self)
+        G = self.fresh_copy()
+        G.graph.update(self.graph)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        G.add_edges_from((u, v, datadict.copy())
+                         for u, nbrs in self.adj.items()
+                         for v, datadict in nbrs.items())
+        return G
 
-        Notes
-        -----
-        This returns a "deepcopy" of the edge, node, and
-        graph attributes which attempts to completely copy
-        all of the data and references.
-
-        This is in contrast to the similar D=DiGraph(G) which returns a
-        shallow copy of the data.
-
-        See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or MultiGraph, etc
-        >>> G.add_edge(0, 1)
-        >>> H = G.to_directed()
-        >>> list(H.edges())
-        [(0, 1), (1, 0)]
-
-        If already directed, return a (deep) copy
-
-        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
-        >>> G.add_edge(0, 1)
-        >>> H = G.to_directed()
-        >>> list(H.edges())
-        [(0, 1)]
-        """
-        return deepcopy(self)
-
-    def to_undirected(self, reciprocal=False):
+    def to_undirected(self, reciprocal=False, as_view=False):
         """Return an undirected representation of the digraph.
 
         Parameters
@@ -1067,50 +1044,24 @@ class DiGraph(Graph):
         in the data structure, those changes do not transfer to the
         Graph created by this method.
         """
-        H = Graph()
-        H.name = self.name
-        H.add_nodes_from(self)
+        if as_view is True:
+            return nx.graphviews.GraphView(self)
+        # deepcopy when not a view
+        G = Graph()
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
-            H.add_edges_from((u, v, deepcopy(d))
-                             for u, nbrs in self.adjacency()
+            G.add_edges_from((u, v, deepcopy(d))
+                             for u, nbrs in self.adj.items()
                              for v, d in nbrs.items()
                              if v in self._pred[u])
         else:
-            H.add_edges_from((u, v, deepcopy(d))
-                             for u, nbrs in self.adjacency()
+            G.add_edges_from((u, v, deepcopy(d))
+                             for u, nbrs in self.adj.items()
                              for v, d in nbrs.items())
-        H.graph = deepcopy(self.graph)
-        H._node = deepcopy(self._node)
-        return H
+        return G
 
-    def reverse(self, copy=True):
-        """Return the reverse of the graph.
-
-        The reverse is a graph with the same nodes and edges
-        but with the directions of the edges reversed.
-
-        Parameters
-        ----------
-        copy : bool optional (default=True)
-            If True, return a new DiGraph holding the reversed edges.
-            If False, reverse the reverse graph is created using
-            the original graph (this changes the original graph).
-        """
-        if copy:
-            H = self.__class__(name="Reverse of (%s)" % self.name)
-            H.add_nodes_from(self)
-            H.add_edges_from((v, u, deepcopy(d)) for u, v, d
-                             in self.edges(data=True))
-            H.graph = deepcopy(self.graph)
-            for n in self._node:
-                H._node[n] = deepcopy(self._node[n])
-        else:
-            self._pred, self._succ = self._succ, self._pred
-            self._adj = self._succ
-            H = self
-        return H
-
-    def subgraph(self, nbunch):
+    def subgraph(self, nbunch, as_view=False):
         """Return the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
@@ -1148,96 +1099,27 @@ class DiGraph(Graph):
         >>> list(H.edges())
         [(0, 1), (1, 2)]
         """
-        bunch = self.nbunch_iter(nbunch)
-        # create new graph and copy subgraph into it
-        H = self.__class__()
-        # copy node and attribute dictionaries
-        for n in bunch:
-            H._node[n] = self._node[n]
-        # namespace shortcuts for speed
-        H_succ = H._succ
-        H_pred = H._pred
-        self_succ = self._succ
-        # add nodes
-        for n in H:
-            H_succ[n] = H.adjlist_inner_dict_factory()
-            H_pred[n] = H.adjlist_inner_dict_factory()
-        # add edges
-        for u in H_succ:
-            Hnbrs = H_succ[u]
-            for v, datadict in self_succ[u].items():
-                if v in H_succ:
-                    # add both representations of edge: u-v and v-u
-                    Hnbrs[v] = datadict
-                    H_pred[v][u] = datadict
-        H.graph = self.graph
-        return H
+        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
+        return nx.graphviews.SubDiGraph(self, induced_nodes)
 
-    def edge_subgraph(self, edges):
-        """Returns the subgraph induced by the specified edges.
+    def reverse(self, copy=True):
+        """Return the reverse of the graph.
 
-        The induced subgraph contains each edge in `edges` and each
-        node incident to any one of those edges.
+        The reverse is a graph with the same nodes and edges
+        but with the directions of the edges reversed.
 
         Parameters
         ----------
-        edges : iterable
-            An iterable of edges in this graph.
-
-        Returns
-        -------
-        G : Graph
-            An edge-induced subgraph of this graph with the same edge
-            attributes.
-
-        Notes
-        -----
-        The graph, edge, and node attributes in the returned subgraph
-        are references to the corresponding attributes in the original
-        graph. Thus changes to the node or edge structure of the
-        returned graph will not be reflected in the original graph, but
-        changes to the attributes will.
-
-        To create a subgraph with its own copy of the edge or node
-        attributes, use::
-
-            >>> nx.DiGraph(G.edge_subgraph(edges))  # doctest: +SKIP
-
-        If edge attributes are containers, a deep copy of the attributes
-        can be obtained using::
-
-            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
-
-        Examples
-        --------
-        >>> G = nx.DiGraph(nx.path_graph(5))
-        >>> H = G.edge_subgraph([(0, 1), (3, 4)])
-        >>> list(H.nodes())
-        [0, 1, 3, 4]
-        >>> list(H.edges())
-        [(0, 1), (3, 4)]
-
+        copy : bool optional (default=True)
+            If True, return a new DiGraph holding the reversed edges.
+            If False, reverse the reverse graph is created using
+            the original graph (this changes the original graph).
         """
-        H = self.__class__()
-        succ = self._succ
-        # Filter out edges that don't correspond to nodes in the graph.
-        edges = ((u, v) for u, v in edges if u in succ and v in succ[u])
-        for u, v in edges:
-            # Copy the node attributes if they haven't been copied
-            # already.
-            #
-            # Also, create an entry in the successors and predecessors
-            # dictionary for the nodes u and v.
-            if u not in H.node:
-                H._node[u] = self._node[u]
-                H._pred[u] = H.adjlist_inner_dict_factory()
-                H._succ[u] = H.adjlist_inner_dict_factory()
-            if v not in H.node:
-                H._node[v] = self._node[v]
-                H._pred[v] = H.adjlist_inner_dict_factory()
-                H._succ[v] = H.adjlist_inner_dict_factory()
-            # Copy the edge attributes.
-            H._succ[u][v] = self._succ[u][v]
-            H._pred[v][u] = self._pred[v][u]
-        H.graph = self.graph
-        return H
+        if copy:
+            H = self.__class__(name="Reverse of (%s)" % self.name)
+            H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+            H.add_edges_from((v, u, deepcopy(d)) for u, v, d
+                             in self.edges(data=True))
+            H.graph.update(deepcopy(self.graph))
+            return H
+        return nx.graphviews.ReverseView(self)

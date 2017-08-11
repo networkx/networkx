@@ -8,13 +8,11 @@
 # Author:  Aric Hagberg (hagberg@lanl.gov),
 #          Pieter Swart (swart@lanl.gov),
 #          Dan Schult(dschult@colgate.edu)
-"""View of Graph with restricted nodes and edges.
+"""View of Graphs as SubGraph, Reverse, Directed, Undirected.
 
 In some algorithms it is convenient to temporarily morph
 a graph to exclude some nodes or edges. It should be better
 to do that via a view than to remove and then re-add.
-"""
-"""Views of Graph for reverse, to_directed, to_undirected.
 
 In some algorithms it is convenient to temporarily morph
 a graph to reverse directed edges, or treat a directed graph
@@ -32,10 +30,10 @@ from networkx.exception import NetworkXError, NetworkXNotImplemented
 from networkx.utils import not_implemented_for
 
 
-__all__ = ['SubGraph', 'DiSubGraph', 'MultiSubGraph', 'MultiDiSubGraph',
+__all__ = ['SubGraph', 'SubDiGraph', 'SubMultiGraph', 'SubMultiDiGraph',
            'ReverseView', 'MultiReverseView',
-           'DirectedView', 'MultiDirectedView',
-           'UnDirectedView', 'MultiUnDirectedView',
+           'DiGraphView', 'MultiDiGraphView',
+           'GraphView', 'MultiGraphView',
            ]
 
 
@@ -51,7 +49,7 @@ class SubGraph(ReadOnlyGraph, Graph):
         self._adj = FilterAdjacency(graph._adj, filter_node, filter_edge)
 
 
-class DiSubGraph(ReadOnlyGraph, DiGraph):
+class SubDiGraph(ReadOnlyGraph, DiGraph):
     def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
         self._graph = graph
         self._NODE_OK = filter_node
@@ -66,7 +64,7 @@ class DiSubGraph(ReadOnlyGraph, DiGraph):
         self._succ = self._adj
 
 
-class MultiSubGraph(ReadOnlyGraph, MultiGraph):
+class SubMultiGraph(ReadOnlyGraph, MultiGraph):
     def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
         self._graph = graph
         self._NODE_OK = filter_node
@@ -78,7 +76,7 @@ class MultiSubGraph(ReadOnlyGraph, MultiGraph):
         self._adj = FilterMultiAdjacency(graph._adj, filter_node, filter_edge)
 
 
-class MultiDiSubGraph(ReadOnlyGraph, MultiDiGraph):
+class SubMultiDiGraph(ReadOnlyGraph, MultiDiGraph):
     def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
         self._graph = graph
         self._NODE_OK = filter_node
@@ -124,39 +122,67 @@ class MultiReverseView(ReadOnlyGraph, MultiDiGraph):
         self._succ = self._adj
 
 
-class DirectedView(ReadOnlyGraph, DiGraph):
+class DiGraphView(ReadOnlyGraph, DiGraph):
     def __init__(self, graph):
+        if graph.is_multigraph():
+            msg = 'Wrong View class. Use MultiDiGraphView.'
+            raise NetworkXError(msg)
         self._graph = graph
         self.graph = graph.graph
         self._node = graph._node
-        self._pred = graph._adj
-        self._succ = graph._adj
+        if graph.is_directed():
+            self._pred = graph._pred
+            self._succ = graph._succ
+        else:
+            self._pred = graph._adj
+            self._succ = graph._adj
         self._adj = self._succ
 
 
-class MultiDirectedView(ReadOnlyGraph, MultiDiGraph):
+class MultiDiGraphView(ReadOnlyGraph, MultiDiGraph):
     def __init__(self, graph):
+        if not graph.is_multigraph():
+            msg = 'Wrong View class. Use DiGraphView.'
+            raise NetworkXError(msg)
         self._graph = graph
         self.graph = graph.graph
         self._node = graph._node
-        self._pred = graph._adj
-        self._succ = graph._adj
+        if graph.is_directed():
+            self._pred = graph._pred
+            self._succ = graph._succ
+        else:
+            self._pred = graph._adj
+            self._succ = graph._adj
         self._adj = self._succ
 
 
-class UnDirectedView(ReadOnlyGraph, Graph):
+class GraphView(ReadOnlyGraph, Graph):
     UnionAdj = UnionAdjacency
-    def __init__(self, digraph):
-        self._graph = digraph
-        self.graph = digraph.graph
-        self._node = digraph._node
-        self._adj = self.UnionAdj(digraph._succ, digraph._pred)
+
+    def __init__(self, graph):
+        if graph.is_multigraph():
+            msg = 'Wrong View class. Use MultiGraphView.'
+            raise NetworkXError(msg)
+        self._graph = graph
+        self.graph = graph.graph
+        self._node = graph._node
+        if graph.is_directed():
+            self._adj = self.UnionAdj(graph._succ, graph._pred)
+        else:
+            self._adj = graph._adj
 
 
-class MultiUnDirectedView(ReadOnlyGraph, MultiGraph):
+class MultiGraphView(ReadOnlyGraph, MultiGraph):
     UnionAdj = UnionMultiAdjacency
-    def __init__(self, digraph):
-        self._graph = digraph
-        self.graph = digraph.graph
-        self._node = digraph._node
-        self._adj = self.UnionAdj(digraph._succ, digraph._pred)
+
+    def __init__(self, graph):
+        if not graph.is_multigraph():
+            msg = 'Wrong View class. Use GraphView.'
+            raise NetworkXError(msg)
+        self._graph = graph
+        self.graph = graph.graph
+        self._node = graph._node
+        if graph.is_directed():
+            self._adj = self.UnionAdj(graph._succ, graph._pred)
+        else:
+            self._adj = graph._adj

@@ -64,7 +64,7 @@ def strategy_smallest_last(G, colors):
     maximal independent set.
 
     """
-    H = G.copy(with_data=False)
+    H = G.copy() #with_data=False)
     result = deque()
 
     # Build initial degree list (i.e. the bucket queue data structure)
