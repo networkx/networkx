@@ -672,6 +672,65 @@ class MultiDiGraph(MultiGraph, DiGraph):
         return nx.MultiDiGraph()
 
     def copy(self, as_view=False):
+        """Return a copy of the graph.
+
+        All copies reproduce the graph structure, but data attributes
+        may be handled in different ways. There are four types of copies
+        of a graph that people might want.
+
+        Deepcopy -- The default behavior is a "deepcopy" where the graph
+        structure as well as all data attributes and any objects they might
+        contain are copied. The entire graph object is new so that changes
+        in the copy do not affect the original object.
+
+        Data Reference (Shallow) -- For a shallow copy (with_data=False)
+        the graph structure is copied but the edge, node and graph attribute
+        dicts are references to those in the original graph. This saves
+        time and memory but could cause confusion if you change an attribute
+        in one graph and it changes the attribute in the other.
+
+        Independent Shallow -- This copy creates new independent attribute
+        dicts and then does a shallow copy of the attributes. That is, any
+        attributes that are containers are shared between the new graph
+        and the original. This type of copy is not enabled. Instead use:
+
+            >>> G = nx.path_graph(5)
+            >>> H = G.__class__(G)
+
+        Fresh Data-- For fresh data, the graph structure is copied while
+        new empty data attribute dicts are created. The resulting graph
+        is independent of the original and it has no edge, node or graph
+        attributes. Fresh copies are not enabled. Instead use:
+
+            >>> H = G.__class__()
+            >>> H.add_nodes_from(G)
+            >>> H.add_edges_from(G.edges())
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+
+        Parameters
+        ----------
+        with_data : bool, optional (default=True)
+            If True, the returned graph will have a deep copy of the
+            graph, node, and edge attributes of this object. Otherwise,
+            the returned graph will be a shallow copy.
+
+        Returns
+        -------
+        G : Graph
+            A copy of the graph.
+
+        See Also
+        --------
+        to_directed: return a directed copy of the graph.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> H = G.copy()
+
+        """
         if as_view is True:
             return nx.graphviews.MultiDiGraphView(self)
         G = self.fresh_copy()
