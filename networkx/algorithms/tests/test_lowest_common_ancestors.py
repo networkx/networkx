@@ -129,6 +129,21 @@ class TestTreeLCA(object):
         G = nx.DiGraph([(3, 4), (5, 4)])
         assert_raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
 
+    def test_not_implemented_for(self):
+        NNI = nx.NetworkXNotImplemented
+        G = nx.Graph([(0, 1)])
+        assert_raises(NNI, tree_all_pairs_lca, G)
+        assert_raises(NNI, all_pairs_lca, G)
+        assert_raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
+        G = nx.MultiGraph([(0, 1)])
+        assert_raises(NNI, tree_all_pairs_lca, G)
+        assert_raises(NNI, all_pairs_lca, G)
+        assert_raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
+        G = nx.MultiDiGraph([(0, 1)])
+        assert_raises(NNI, tree_all_pairs_lca, G)
+        assert_raises(NNI, all_pairs_lca, G)
+        assert_raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
+
     def test_tree_all_pairs_lowest_common_ancestor13(self):
         """Test that it works on non-empty trees with no LCAs."""
         G = nx.DiGraph()

@@ -22,7 +22,8 @@ __all__ = ["all_pairs_lowest_common_ancestor",
            "lowest_common_ancestor"]
 
 
-@not_implemented_for("multigraph", "undirected")
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     """Yield the lowest common ancestor for sets of pairs in a tree.
 
@@ -119,7 +120,8 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
             ancestors[uf[parent]] = parent
 
 
-@not_implemented_for("multigraph", "undirected")
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
 def lowest_common_ancestor(G, node1, node2, default=None):
     """Compute the lowest common ancestor of the given pair of nodes.
 
@@ -157,7 +159,8 @@ def lowest_common_ancestor(G, node1, node2, default=None):
         return default
 
 
-@not_implemented_for("multigraph", "undirected")
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
 def all_pairs_lowest_common_ancestor(G, pairs=None):
     """Compute the lowest common ancestor for pairs of nodes.
 
