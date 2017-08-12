@@ -77,9 +77,9 @@ def core_number(G):
        Vladimir Batagelj and Matjaz Zaversnik, 2003.
        http://arxiv.org/abs/cs.DS/0310049
     """
-    if G.number_of_selfloops() > 0:
+    if nx.number_of_selfloops(G) > 0:
         msg = ('Input graph has self loops which is not permitted; '
-               'Consider using G.remove_edges_from(G.selfloop_edges()).')
+               'Consider using G.remove_edges_from(nx.selfloop_edges(G)).')
         raise NetworkXError(msg)
     degrees = dict(G.degree())
     # Sort nodes by degree.

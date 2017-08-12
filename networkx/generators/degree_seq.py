@@ -228,7 +228,7 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
 
     Similarly, to remove self-loops:
 
-    >>> G.remove_edges_from(G.selfloop_edges())
+    >>> G.remove_edges_from(nx.selfloop_edges(G))
 
     """
     if sum(deg_sequence) % 2 != 0:
@@ -323,7 +323,7 @@ def directed_configuration_model(in_degree_sequence,
 
     Similarly, to remove self-loops::
 
-        >>> D.remove_edges_from(D.selfloop_edges())
+        >>> D.remove_edges_from(nx.selfloop_edges(D))
 
     """
     if sum(in_degree_sequence) != sum(out_degree_sequence):

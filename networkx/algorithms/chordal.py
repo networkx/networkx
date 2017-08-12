@@ -244,7 +244,7 @@ def chordal_graph_treewidth(G):
 
 def _is_complete_graph(G):
     """Returns True if G is a complete graph."""
-    if G.number_of_selfloops()>0:
+    if nx.number_of_selfloops(G)>0:
         raise nx.NetworkXError("Self loop found in _is_complete_graph()")
     n = G.number_of_nodes()
     if n < 2:

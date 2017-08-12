@@ -117,9 +117,9 @@ class BaseGraphTester(object):
     def test_selfloops(self):
         G = self.K3.copy()
         G.add_edge(0, 0)
-        assert_nodes_equal(G.nodes_with_selfloops(), [0])
-        assert_edges_equal(G.selfloop_edges(), [(0, 0)])
-        assert_equal(G.number_of_selfloops(), 1)
+        assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
+        assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
+        assert_equal(nx.number_of_selfloops(G), 1)
         G.remove_edge(0, 0)
         G.add_edge(0, 0)
         G.remove_edges_from([(0, 0)])
@@ -422,9 +422,9 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.K3.copy()
         G.add_edge(0, 0)
         G.add_edge(1, 1, weight=2)
-        assert_edges_equal(G.selfloop_edges(data=True),
+        assert_edges_equal(nx.selfloop_edges(G, data=True),
                            [(0, 0, {}), (1, 1, {'weight': 2})])
-        assert_edges_equal(G.selfloop_edges(data='weight'),
+        assert_edges_equal(nx.selfloop_edges(G, data='weight'),
                            [(0, 0, None), (1, 1, 2)])
 
 

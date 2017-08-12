@@ -93,7 +93,7 @@ def is_tournament(G):
     """
     # In a tournament, there is exactly one directed edge joining each pair.
     return (all((v in G[u]) ^ (u in G[v]) for u, v in combinations(G, 2)) and
-            G.number_of_selfloops() == 0)
+            nx.number_of_selfloops(G) == 0)
 
 
 @not_implemented_for('undirected')

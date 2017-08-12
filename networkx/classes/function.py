@@ -32,7 +32,9 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'get_node_attributes', 'set_edge_attributes',
            'get_edge_attributes', 'all_neighbors', 'non_neighbors',
            'non_edges', 'common_neighbors', 'is_weighted',
-           'is_negatively_weighted', 'is_empty']
+           'is_negatively_weighted', 'is_empty',
+           'selfloop_edges', 'nodes_with_selfloops', 'number_of_selfloops',
+           ]
 
 
 def nodes(G):
@@ -1006,4 +1008,135 @@ def is_empty(G):
     number of nodes in the graph.
 
     """
-    return not any(G._adj.values())
+    return not any(G.adj.values())
+
+
+def nodes_with_selfloops(G):
+    """Returns an iterator over nodes with self loops.
+
+    A node with a self loop has an edge with both ends adjacent
+    to that node.
+
+    Returns
+    -------
+    nodelist : iterator
+        A iterator over nodes with self loops.
+
+    See Also
+    --------
+    selfloop_edges, number_of_selfloops
+
+    Examples
+    --------
+    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G.add_edge(1, 1)
+    >>> G.add_edge(1, 2)
+    >>> list(nx.nodes_with_selfloops(G))
+    [1]
+
+    """
+    return (n for n, nbrs in G.adj.items() if n in nbrs)
+
+
+def selfloop_edges(G, data=False, keys=False, default=None):
+    """Returns an iterator over selfloop edges.
+
+    A selfloop edge has the same node at both ends.
+
+    Parameters
+    ----------
+    data : string or bool, optional (default=False)
+        Return selfloop edges as two tuples (u, v) (data=False)
+        or three-tuples (u, v, datadict) (data=True)
+        or three-tuples (u, v, datavalue) (data='attrname')
+    keys : bool, optional (default=False)
+        If True, return edge keys with each edge.
+    default : value, optional (default=None)
+        Value used for edges that dont have the requested attribute.
+        Only relevant if data is not True or False.
+
+    Returns
+    -------
+    edgeiter : iterator over edge tuples
+        An iterator over all selfloop edges.
+
+    See Also
+    --------
+    nodes_with_selfloops, number_of_selfloops
+
+    Examples
+    --------
+    >>> G = nx.MultiGraph()   # or Graph, DiGraph, MultiDiGraph, etc
+    >>> ekey = G.add_edge(1, 1)
+    >>> ekey = G.add_edge(1, 2)
+    >>> list(nx.selfloop_edges(G))
+    [(1, 1)]
+    >>> list(nx.selfloop_edges(G, data=True))
+    [(1, 1, {})]
+    >>> list(nx.selfloop_edges(G, keys=True))
+    [(1, 1, 0)]
+    >>> list(nx.selfloop_edges(G, keys=True, data=True))
+    [(1, 1, 0, {})]
+    """
+    if data is True:
+        if G.is_multigraph():
+            if keys is True:
+                return ((n, n, k, d)
+                        for n, nbrs in G.adj.items()
+                        if n in nbrs for k, d in nbrs[n].items())
+            else:
+                return ((n, n, d)
+                        for n, nbrs in G.adj.items()
+                        if n in nbrs for d in nbrs[n].values())
+        else:
+            return ((n, n, nbrs[n]) for n, nbrs in G.adj.items() if n in nbrs)
+    elif data is not False:
+        if G.is_multigraph():
+            if keys is True:
+                return ((n, n, k, d.get(data, default))
+                        for n, nbrs in G.adj.items()
+                        if n in nbrs for k, d in nbrs[n].items())
+            else:
+                return ((n, n, d.get(data, default))
+                        for n, nbrs in G.adj.items()
+                        if n in nbrs for d in nbrs[n].values())
+        else:
+            return ((n, n, nbrs[n].get(data, default))
+                    for n, nbrs in G.adj.items() if n in nbrs)
+    else:
+        if G.is_multigraph():
+            if keys is True:
+                return ((n, n, k)
+                        for n, nbrs in G.adj.items()
+                        if n in nbrs for k in nbrs[n])
+            else:
+                return ((n, n)
+                        for n, nbrs in G.adj.items()
+                        if n in nbrs for d in nbrs[n].values())
+        else:
+            return ((n, n) for n, nbrs in G.adj.items() if n in nbrs)
+
+
+def number_of_selfloops(G):
+    """Return the number of selfloop edges.
+
+    A selfloop edge has the same node at both ends.
+
+    Returns
+    -------
+    nloops : int
+        The number of selfloops.
+
+    See Also
+    --------
+    nodes_with_selfloops, selfloop_edges
+
+    Examples
+    --------
+    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G.add_edge(1, 1)
+    >>> G.add_edge(1, 2)
+    >>> nx.number_of_selfloops(G)
+    1
+    """
+    return sum(1 for _ in nx.selfloop_edges(G))

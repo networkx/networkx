@@ -58,7 +58,7 @@ def _build_residual_network(G, demand, capacity, weight):
 
     inf = float('inf')
     # Detect selfloops with infinite capacities and negative weights.
-    for u, v, e in G.selfloop_edges(data=True):
+    for u, v, e in nx.selfloop_edges(G, data=True):
         if e.get(weight, 0) < 0 and e.get(capacity, inf) == inf:
             raise nx.NetworkXUnbounded(
                 'Negative cost cycle of infinite capacity found. '
@@ -265,7 +265,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
     flow_cost = sum(
         0 if e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0
         else e[capacity] * e[weight]
-        for u, v, e in G.selfloop_edges(data=True))
+        for u, v, e in nx.selfloop_edges(G,data=True))
 
     # Determine the maxmimum edge capacity.
     wmax = max(chain([-inf],

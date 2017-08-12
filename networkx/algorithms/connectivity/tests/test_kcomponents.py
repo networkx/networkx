@@ -114,7 +114,7 @@ def test_shell():
 def test_configuration():
     deg_seq = nx.random_powerlaw_tree_sequence(100, tries=5000)
     G = nx.Graph(nx.configuration_model(deg_seq))
-    G.remove_edges_from(G.selfloop_edges())
+    G.remove_edges_from(nx.selfloop_edges(G))
     _check_connectivity(G)
 
 

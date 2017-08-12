@@ -1092,7 +1092,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     if source not in G:
         raise nx.NodeNotFound("Node %s is not found in the graph" % source)
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
+    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     dist = {source: 0}
@@ -1661,7 +1661,7 @@ def goldberg_radzik(G, source, weight='weight'):
     if source not in G:
         raise nx.NodeNotFound("Node %s is not found in the graph" % source)
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
+    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     if len(G) == 1:

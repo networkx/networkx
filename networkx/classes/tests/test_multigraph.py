@@ -107,15 +107,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         H = G.to_directed()
         self.is_deepcopy(H, G)
 
-    def test_selfloops(self):
-        G = self.K3
-        G.add_edge(0, 0)
-        assert_nodes_equal(G.nodes_with_selfloops(), [0])
-        assert_edges_equal(G.selfloop_edges(), [(0, 0)])
-        assert_edges_equal(G.selfloop_edges(data=True), [(0, 0, {})])
-        assert_equal(G.number_of_selfloops(), 1)
-
-    def test_selfloops2(self):
+    def test_number_of_edges_selfloops(self):
         G = self.K3
         G.add_edge(0, 0)
         G.add_edge(0, 0)

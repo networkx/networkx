@@ -149,7 +149,7 @@ def girvan_newman(G, most_valuable_edge=None):
     g = G.copy().to_undirected()
     # Self-loops must be removed because their removal has no effect on
     # the connected components of the graph.
-    g.remove_edges_from(g.selfloop_edges())
+    g.remove_edges_from(nx.selfloop_edges(g))
     while g.number_of_edges() > 0:
         yield _without_most_central_edges(g, most_valuable_edge)
 

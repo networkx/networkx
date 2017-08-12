@@ -521,3 +521,19 @@ def test_is_empty():
         assert_true(nx.is_empty(G))
         G.add_edges_from([(1, 2), (3, 4)])
         assert_false(nx.is_empty(G))
+
+def test_selfloops():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for graph in graphs:
+        G = nx.complete_graph(3, create_using=graph)
+        G.add_edge(0, 0)
+        assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
+        assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
+        assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
+        assert_equal(nx.number_of_selfloops(G), 1)
+        # test selfloop attr
+        G.add_edge(1, 1, weight=2)
+        assert_edges_equal(nx.selfloop_edges(G, data=True),
+                           [(0, 0, {}), (1, 1, {'weight': 2})])
+        assert_edges_equal(nx.selfloop_edges(G, data='weight'),
+                           [(0, 0, None), (1, 1, 2)])
