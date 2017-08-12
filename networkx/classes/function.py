@@ -677,7 +677,7 @@ def set_edge_attributes(G, values, name=None):
         >>> G = nx.path_graph(3)
         >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
         >>> nx.set_edge_attributes(G, bb, 'betweenness')
-        >>> G.edge[1, 2]['betweenness']
+        >>> G.edges[1, 2]['betweenness']
         2.0
 
     If you provide a list as the second argument, updates to the list
@@ -686,9 +686,9 @@ def set_edge_attributes(G, values, name=None):
         >>> labels = []
         >>> nx.set_edge_attributes(G, labels, 'labels')
         >>> labels.append('foo')
-        >>> G.edge[0, 1]['labels']
+        >>> G.edges[0, 1]['labels']
         ['foo']
-        >>> G.edge[1, 2]['labels']
+        >>> G.edges[1, 2]['labels']
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,

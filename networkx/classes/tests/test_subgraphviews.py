@@ -233,9 +233,9 @@ class test_induced_subgraph(object):
     def same_attrdict(self, H, G):
         old_foo = H[1][2]['foo']
         H.edges[1, 2]['foo'] = 'baz'
-        assert_equal(G.edge, H.edge)
+        assert_equal(G.edges, H.edges)
         H.edges[1, 2]['foo'] = old_foo
-        assert_equal(G.edge, H.edge)
+        assert_equal(G.edges, H.edges)
         old_foo = H.nodes[0]['foo']
         H.nodes[0]['foo'] = 'baz'
         assert_equal(G.nodes, H.nodes)
@@ -271,8 +271,8 @@ class test_edge_subgraph(object):
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.nodes[i]['name'] = 'node{}'.format(i)
-        G.edge[0, 1]['name'] = 'edge01'
-        G.edge[3, 4]['name'] = 'edge34'
+        G.edges[0, 1]['name'] = 'edge01'
+        G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by the first and last edges.
         self.H = nx.edge_subgraph(G, [(0, 1), (3, 4)])
@@ -323,14 +323,14 @@ class test_edge_subgraph(object):
 
         """
         for u, v in self.H.edges():
-            assert_equal(self.G.edge[u, v], self.H.edge[u, v])
+            assert_equal(self.G.edges[u, v], self.H.edges[u, v])
         # Making a change to G should make a change in H and vice versa.
-        self.G.edge[0, 1]['name'] = 'foo'
-        assert_equal(self.G.edge[0, 1]['name'],
-                     self.H.edge[0, 1]['name'])
-        self.H.edge[3, 4]['name'] = 'bar'
-        assert_equal(self.G.edge[3, 4]['name'],
-                     self.H.edge[3, 4]['name'])
+        self.G.edges[0, 1]['name'] = 'foo'
+        assert_equal(self.G.edges[0, 1]['name'],
+                     self.H.edges[0, 1]['name'])
+        self.H.edges[3, 4]['name'] = 'bar'
+        assert_equal(self.G.edges[3, 4]['name'],
+                     self.H.edges[3, 4]['name'])
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs

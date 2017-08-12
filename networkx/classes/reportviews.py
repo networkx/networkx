@@ -63,7 +63,7 @@ EdgeView
 ========
 
     `V = G.edges` or `V = G.edges()` allows iteration over edges as well as
-    `e in V`, set operations and edge data lookup `dd = G.edge[2, 3]`.
+    `e in V`, set operations and edge data lookup `dd = G.edges[2, 3]`.
     Iteration is over 2-tuples `(u, v)` for Graph/DiGraph. For multigraphs
     edges 3-tuples `(u, v, key)` are the default but 2-tuples can be obtained
     via `V = G.edges(keys=False)`.

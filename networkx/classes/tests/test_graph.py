@@ -260,9 +260,9 @@ class BaseAttrGraphTester(BaseGraphTester):
     def same_attrdict(self, H, G):
         old_foo = H[1][2]['foo']
         H.adj[1][2]['foo'] = 'baz'
-        assert_equal(G.edge, H.edge)
+        assert_equal(G.edges, H.edges)
         H.adj[1][2]['foo'] = old_foo
-        assert_equal(G.edge, H.edge)
+        assert_equal(G.edges, H.edges)
 
         old_foo = H.nodes[0]['foo']
         H.nodes[0]['foo'] = 'baz'
@@ -377,7 +377,7 @@ class BaseAttrGraphTester(BaseGraphTester):
         G.adj[1][2]['data'] = 20
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'data': 20, 'spam': 'bar', 'bar': 'foo'})])
-        G.edge[1, 2]['data'] = 21  # another spelling, "edge"
+        G.edges[1, 2]['data'] = 21  # another spelling, "edge"
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'data': 21, 'spam': 'bar', 'bar': 'foo'})])
         G.adj[1][2]['listdata'] = [20, 200]
@@ -596,8 +596,8 @@ class TestEdgeSubgraph(object):
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.nodes[i]['name'] = 'node{}'.format(i)
-        G.edge[0, 1]['name'] = 'edge01'
-        G.edge[3, 4]['name'] = 'edge34'
+        G.edges[0, 1]['name'] = 'edge01'
+        G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by the first and last edges.
         self.G = G
@@ -647,14 +647,14 @@ class TestEdgeSubgraph(object):
 
         """
         for u, v in self.H.edges():
-            assert_equal(self.G.edge[u, v], self.H.edge[u, v])
+            assert_equal(self.G.edges[u, v], self.H.edges[u, v])
         # Making a change to G should make a change in H and vice versa.
-        self.G.edge[0, 1]['name'] = 'foo'
-        assert_equal(self.G.edge[0, 1]['name'],
-                     self.H.edge[0, 1]['name'])
-        self.H.edge[3, 4]['name'] = 'bar'
-        assert_equal(self.G.edge[3, 4]['name'],
-                     self.H.edge[3, 4]['name'])
+        self.G.edges[0, 1]['name'] = 'foo'
+        assert_equal(self.G.edges[0, 1]['name'],
+                     self.H.edges[0, 1]['name'])
+        self.H.edges[3, 4]['name'] = 'bar'
+        assert_equal(self.G.edges[3, 4]['name'],
+                     self.H.edges[3, 4]['name'])
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs

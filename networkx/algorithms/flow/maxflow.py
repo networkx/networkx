@@ -430,7 +430,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     ...     cutset.update((u, v) for v in nbrs if v in non_reachable)
     >>> print(sorted(cutset))
     [('c', 'y'), ('x', 'b')]
-    >>> cut_value == sum(G.edge[u, v]['capacity'] for (u, v) in cutset)
+    >>> cut_value == sum(G.edges[u, v]['capacity'] for (u, v) in cutset)
     True
 
     You can also use alternative algorithms for computing the

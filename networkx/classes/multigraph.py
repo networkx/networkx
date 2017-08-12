@@ -131,13 +131,13 @@ class MultiGraph(Graph):
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Add edge attributes using add_edge(), add_edges_from(), subscript
-    notation, or G.edge.
+    notation, or G.edges.
 
     >>> key = G.add_edge(1, 2, weight=4.7 )
     >>> keys = G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
-    >>> G.edge[1, 2, 0]['weight'] = 4
+    >>> G.edges[1, 2, 0]['weight'] = 4
 
     **Shortcuts:**
 

@@ -248,8 +248,8 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.nodes[i]['name'] = 'node{}'.format(i)
-        G.edge[0, 1]['name'] = 'edge01'
-        G.edge[3, 4]['name'] = 'edge34'
+        G.edges[0, 1]['name'] = 'edge01'
+        G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by the first and last edges.
         self.G = G

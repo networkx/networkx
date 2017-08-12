@@ -136,7 +136,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G.adj[1][2][0]['data'] = 20
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'data': 20, 'spam': 'bar', 'bar': 'foo'})])
-        G.edge[1, 2, 0]['data'] = 21  # another spelling, "edge"
+        G.edges[1, 2, 0]['data'] = 21  # another spelling, "edge"
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'data': 21, 'spam': 'bar', 'bar': 'foo'})])
         G.adj[1][2][0]['listdata'] = [20, 200]
