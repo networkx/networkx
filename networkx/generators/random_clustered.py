@@ -89,7 +89,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
 	
     To remove self loops:
 
-    >>> G.remove_edges_from(G.selfloop_edges())
+    >>> G.remove_edges_from(nx.selfloop_edges(G))
 
     """
     if create_using is None:

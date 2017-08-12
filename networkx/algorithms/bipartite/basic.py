@@ -50,9 +50,9 @@ def color(G):
     You can use this to set a node attribute indicating the biparite set:
 
     >>> nx.set_node_attributes(G, c, 'bipartite')
-    >>> print(G.node[0]['bipartite'])
+    >>> print(G.nodes[0]['bipartite'])
     1
-    >>> print(G.node[1]['bipartite'])
+    >>> print(G.nodes[1]['bipartite'])
     0
     """
     if G.is_directed():

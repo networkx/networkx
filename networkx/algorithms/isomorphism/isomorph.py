@@ -133,7 +133,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
 
         The function will be called like
 
-           node_match(G1.node[n1], G2.node[n2]).
+           node_match(G1.nodes[n1], G2.nodes[n2]).
 
         That is, the function will receive the node attribute dictionaries
         for n1 and n2 as inputs.

@@ -17,7 +17,7 @@ __all__ = ['edmonds_karp']
 def edmonds_karp_core(R, s, t, cutoff):
     """Implementation of the Edmonds-Karp algorithm.
     """
-    R_node = R.node
+    R_nodes = R.nodes
     R_pred = R.pred
     R_succ = R.succ
 

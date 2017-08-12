@@ -119,27 +119,25 @@ class MultiGraph(Graph):
     >>> G.graph
     {'day': 'Friday'}
 
-    Add node attributes using add_node(), add_nodes_from() or G.node
+    Add node attributes using add_node(), add_nodes_from() or G.nodes
 
     >>> G.add_node(1, time='5pm')
     >>> G.add_nodes_from([3], time='2pm')
-    >>> G.node[1]
+    >>> G.nodes[1]
     {'time': '5pm'}
-    >>> G.node[1]['room'] = 714
-    >>> del G.node[1]['room'] # remove attribute
+    >>> G.nodes[1]['room'] = 714
+    >>> del G.nodes[1]['room'] # remove attribute
     >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
-    Warning: adding a node to G.node does not add it to the graph.
-
     Add edge attributes using add_edge(), add_edges_from(), subscript
-    notation, or G.edge.
+    notation, or G.edges.
 
     >>> key = G.add_edge(1, 2, weight=4.7 )
     >>> keys = G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> keys = G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
     >>> G[1][2][0]['weight'] = 4.7
-    >>> G.edge[1, 2, 0]['weight'] = 4
+    >>> G.edges[1, 2, 0]['weight'] = 4
 
     **Shortcuts:**
 
@@ -957,76 +955,6 @@ class MultiGraph(Graph):
         """
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
         return nx.graphviews.SubMultiGraph(self, induced_nodes)
-
-    def selfloop_edges(self, data=False, keys=False, default=None):
-        """Return a list of selfloop edges.
-
-        A selfloop edge has the same node at both ends.
-
-        Parameters
-        ----------
-        data : bool, optional (default=False)
-            Return selfloop edges as two tuples (u, v) (data=False)
-            or three-tuples (u, v, datadict) (data=True)
-            or three-tuples (u, v, datavalue) (data='attrname')
-        default : value, optional (default=None)
-            Value used for edges that dont have the requested attribute.
-            Only relevant if data is not True or False.
-        keys : bool, optional (default=False)
-            If True, return edge keys with each edge.
-
-        Returns
-        -------
-        edgelist : list of edge tuples
-            A list of all selfloop edges.
-
-        See Also
-        --------
-        nodes_with_selfloops, number_of_selfloops
-
-        Examples
-        --------
-        >>> G = nx.MultiGraph()   # or MultiDiGraph
-        >>> G.add_edge(1, 1)
-        0
-        >>> G.add_edge(1, 2)
-        0
-        >>> list(G.selfloop_edges())
-        [(1, 1)]
-        >>> list(G.selfloop_edges(data=True))
-        [(1, 1, {})]
-        >>> list(G.selfloop_edges(keys=True))
-        [(1, 1, 0)]
-        >>> list(G.selfloop_edges(keys=True, data=True))
-        [(1, 1, 0, {})]
-        """
-        if data is True:
-            if keys:
-                return ((n, n, k, d)
-                        for n, nbrs in self._adj.items()
-                        if n in nbrs for k, d in nbrs[n].items())
-            else:
-                return ((n, n, d)
-                        for n, nbrs in self._adj.items()
-                        if n in nbrs for d in nbrs[n].values())
-        elif data is not False:
-            if keys:
-                return ((n, n, k, d.get(data, default))
-                        for n, nbrs in self._adj.items()
-                        if n in nbrs for k, d in nbrs[n].items())
-            else:
-                return ((n, n, d.get(data, default))
-                        for n, nbrs in self._adj.items()
-                        if n in nbrs for d in nbrs[n].values())
-        else:
-            if keys:
-                return ((n, n, k)
-                        for n, nbrs in self._adj.items()
-                        if n in nbrs for k in nbrs[n])
-            else:
-                return ((n, n)
-                        for n, nbrs in self._adj.items()
-                        if n in nbrs for d in nbrs[n].values())
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.

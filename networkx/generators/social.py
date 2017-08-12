@@ -23,9 +23,9 @@ def karate_club_graph():
 
         >>> import networkx as nx
         >>> G = nx.karate_club_graph()
-        >>> G.node[5]['club']
+        >>> G.nodes[5]['club']
         'Mr. Hi'
-        >>> G.node[9]['club']
+        >>> G.nodes[9]['club']
         'Officer'
 
     References
@@ -90,7 +90,7 @@ def karate_club_graph():
 
     # Add the name of each member's club as a node attribute.
     for v in G:
-        G.node[v]['club'] = 'Mr. Hi' if v in club1 else 'Officer'
+        G.nodes[v]['club'] = 'Mr. Hi' if v in club1 else 'Officer'
     return G
 
 

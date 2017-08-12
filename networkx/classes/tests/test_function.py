@@ -388,18 +388,18 @@ def test_set_node_attributes():
         vals = 100
         attr = 'hello'
         nx.set_node_attributes(G, vals, attr)
-        assert_equal(G.node[0][attr], vals)
-        assert_equal(G.node[1][attr], vals)
-        assert_equal(G.node[2][attr], vals)
+        assert_equal(G.nodes[0][attr], vals)
+        assert_equal(G.nodes[1][attr], vals)
+        assert_equal(G.nodes[2][attr], vals)
 
         # Test dictionary
         G = nx.path_graph(3, create_using=G)
         vals = dict(zip(sorted(G.nodes()), range(len(G))))
         attr = 'hi'
         nx.set_node_attributes(G, vals, attr)
-        assert_equal(G.node[0][attr], 0)
-        assert_equal(G.node[1][attr], 1)
-        assert_equal(G.node[2][attr], 2)
+        assert_equal(G.nodes[0][attr], 0)
+        assert_equal(G.nodes[1][attr], 1)
+        assert_equal(G.nodes[2][attr], 2)
 
         # Test dictionary of dictionaries
         G = nx.path_graph(3, create_using=G)
@@ -407,9 +407,9 @@ def test_set_node_attributes():
         vals = dict.fromkeys(G.nodes(), d)
         vals.pop(0)
         nx.set_node_attributes(G, vals)
-        assert_equal(G.node[0], {})
-        assert_equal(G.node[1]["hi"], 0)
-        assert_equal(G.node[2]["hello"], 200)
+        assert_equal(G.nodes[0], {})
+        assert_equal(G.nodes[1]["hi"], 0)
+        assert_equal(G.nodes[2]["hello"], 200)
 
 
 def test_set_edge_attributes():
@@ -521,3 +521,19 @@ def test_is_empty():
         assert_true(nx.is_empty(G))
         G.add_edges_from([(1, 2), (3, 4)])
         assert_false(nx.is_empty(G))
+
+def test_selfloops():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for graph in graphs:
+        G = nx.complete_graph(3, create_using=graph)
+        G.add_edge(0, 0)
+        assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
+        assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
+        assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
+        assert_equal(nx.number_of_selfloops(G), 1)
+        # test selfloop attr
+        G.add_edge(1, 1, weight=2)
+        assert_edges_equal(nx.selfloop_edges(G, data=True),
+                           [(0, 0, {}), (1, 1, {'weight': 2})])
+        assert_edges_equal(nx.selfloop_edges(G, data='weight'),
+                           [(0, 0, None), (1, 1, 2)])

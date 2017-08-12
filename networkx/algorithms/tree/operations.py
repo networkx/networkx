@@ -89,7 +89,7 @@ def join(rooted_trees, label_attribute=None):
     # Remove the old node labels.
     for tree in trees:
         for v in tree:
-            tree.node[v].pop('_old')
+            tree.nodes[v].pop('_old')
 
     # Add all sets of nodes and edges, with data.
     nodes = (tree.nodes(data=True) for tree in trees)

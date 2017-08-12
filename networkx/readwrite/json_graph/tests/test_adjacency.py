@@ -19,14 +19,14 @@ class TestAdjacency:
 
         H = adjacency_graph(adjacency_data(G))
         assert_equal(H.graph['foo'],'bar')
-        assert_equal(H.node[1]['color'],'red')
+        assert_equal(H.nodes[1]['color'],'red')
         assert_equal(H[1][2]['width'],7)
 
         d = json.dumps(adjacency_data(G))
         H = adjacency_graph(json.loads(d))
         assert_equal(H.graph['foo'],'bar')
         assert_equal(H.graph[1],'one')
-        assert_equal(H.node[1]['color'],'red')
+        assert_equal(H.nodes[1]['color'],'red')
         assert_equal(H[1][2]['width'],7)
 
     def test_digraph(self):

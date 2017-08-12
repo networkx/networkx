@@ -108,7 +108,7 @@ def _relabel_inplace(G, mapping):
         # labels sets overlap
         # can we topological sort and still do the relabeling?
         D = nx.DiGraph(list(mapping.items()))
-        D.remove_edges_from(D.selfloop_edges())
+        D.remove_edges_from(nx.selfloop_edges(D))
         try:
             nodes = reversed(list(nx.topological_sort(D)))
         except nx.NetworkXUnfeasible:
@@ -130,7 +130,7 @@ def _relabel_inplace(G, mapping):
         if new == old:
             continue
         try:
-            G.add_node(new, **G.node[old])
+            G.add_node(new, **G.nodes[old])
         except KeyError:
             raise KeyError("Node %s is not in the graph" % old)
         if multigraph:
@@ -155,7 +155,7 @@ def _relabel_inplace(G, mapping):
 def _relabel_copy(G, mapping):
     H = G.__class__()
     H.add_nodes_from(mapping.get(n, n) for n in G)
-    H._node.update(dict((mapping.get(n, n), d.copy()) for n, d in G.node.items()))
+    H._node.update(dict((mapping.get(n, n), d.copy()) for n, d in G.nodes.items()))
     if G.name:
         H.name = "(%s)" % G.name
     if G.is_multigraph():

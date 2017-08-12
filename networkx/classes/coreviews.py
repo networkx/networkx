@@ -37,6 +37,12 @@ class AtlasView(Mapping):
     """
     __slots__ = ('_atlas',)
 
+    def __getstate__(self):
+        return {'_atlas': self._atlas}
+
+    def __setstate__(self, state):
+        self._atlas = state['_atlas']
+
     def __init__(self, d):
         self._atlas = d
 
@@ -113,6 +119,13 @@ class UnionAtlas(Mapping):
     """
     __slots__ = ('_succ', '_pred')
 
+    def __getstate__(self):
+        return {'_succ': self._succ, '_pred': self._pred}
+
+    def __setstate__(self, state):
+        self._succ = state['_succ']
+        self._pred = state['_pred']
+
     def __init__(self, succ, pred):
         self._succ = succ
         self._pred = pred
@@ -160,6 +173,13 @@ class UnionAdjacency(Mapping):
     UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
     """
     __slots__ = ('_succ', '_pred')
+
+    def __getstate__(self):
+        return {'_succ': self._succ, '_pred': self._pred}
+
+    def __setstate__(self, state):
+        self._succ = state['_succ']
+        self._pred = state['_pred']
 
     def __init__(self, succ, pred):
         # keys must be the same for two input dicts

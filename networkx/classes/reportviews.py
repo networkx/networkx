@@ -63,7 +63,7 @@ EdgeView
 ========
 
     `V = G.edges` or `V = G.edges()` allows iteration over edges as well as
-    `e in V`, set operations and edge data lookup `dd = G.edge[2, 3]`.
+    `e in V`, set operations and edge data lookup `dd = G.edges[2, 3]`.
     Iteration is over 2-tuples `(u, v)` for Graph/DiGraph. For multigraphs
     edges 3-tuples `(u, v, key)` are the default but 2-tuples can be obtained
     via `V = G.edges(keys=False)`.
@@ -158,6 +158,12 @@ class NodeView(Mapping, Set):
     """
     __slots__ = '_nodes',
 
+    def __getstate__(self):
+        return {'_nodes': self._nodes}
+
+    def __setstate__(self, state):
+        self._nodes = state['_nodes']
+
     def __init__(self, graph):
         self._nodes = graph._node
 
@@ -212,6 +218,16 @@ class NodeDataView(Set):
     default : object (default=None)
     """
     __slots__ = ('_nodes', '_data', '_default')
+
+    def __getstate__(self):
+        return {'_nodes': self._nodes,
+                '_data': self._data,
+                '_default': self._default}
+
+    def __setstate__(self, state):
+        self._nodes = state['_nodes']
+        self._data = state['_data']
+        self._default = state['_default']
 
     def __init__(self, nodedict, data=False, default=None):
         self._nodes = nodedict
@@ -598,6 +614,18 @@ class OutEdgeDataView(object):
     """EdgeDataView for outward edges of DiGraph; See EdgeDataView"""
     __slots__ = ('_adjdict', 'nbunch_iter', '_nodes_nbrs', '_report')
 
+    def __getstate__(self):
+        return {'_adjdict': self._adjdict,
+                'nbunch_iter': self.nbunch_iter,
+                '_nodes_nbrs': self._nodes_nbrs,
+                '_report': self._report}
+
+    def __setstate__(self, state):
+        self._adjdict = state['_nodes']
+        self.nbunch_iter = state['_nbunch_iter']
+        self._nodes_nbrs = state['_nodes_nbrs']
+        self._report = state['_report']
+
     def __init__(self, viewer, nbunch=None, data=False, default=None):
         self.nbunch_iter = viewer.nbunch_iter
         self._adjdict = viewer._adjdict
@@ -836,6 +864,16 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 class OutEdgeView(Set, Mapping):
     """A EdgeView class for outward edges of a DiGraph"""
     __slots__ = ('_adjdict', 'nbunch_iter', '_nodes_nbrs')
+
+    def __getstate__(self):
+        return {'_adjdict': self._adjdict,
+                'nbunch_iter': self.nbunch_iter,
+                '_nodes_nbrs': self._nodes_nbrs}
+
+    def __setstate__(self, state):
+        self._adjdict = state['_adjdict']
+        self.nbunch_iter = state['nbunch_iter']
+        self._nodes_nbrs = state['_nodes_nbrs']
 
     @classmethod
     def _from_iterable(self, it):

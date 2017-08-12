@@ -55,7 +55,7 @@ def generate_pajek(G):
     # make dictionary mapping nodes to integers
     nodenumber = dict(zip(nodes, range(1, len(nodes) + 1)))
     for n in nodes:
-        na = G.node.get(n, {})
+        na = G.nodes.get(n, {})
         x = na.get('x', 0.0)
         y = na.get('y', 0.0)
         id = int(na.get('id', nodenumber[n]))
@@ -193,16 +193,16 @@ def parse_pajek(lines):
                 labels.append(label)
                 G.add_node(label)
                 nodelabels[id] = label
-                G.node[label]['id'] = id
+                G.nodes[label]['id'] = id
                 try:
                     x, y, shape = splitline[2:5]
-                    G.node[label].update({'x': float(x),
+                    G.nodes[label].update({'x': float(x),
                                           'y': float(y),
                                           'shape': shape})
                 except:
                     pass
                 extra_attr = zip(splitline[5::2], splitline[6::2])
-                G.node[label].update(extra_attr)
+                G.nodes[label].update(extra_attr)
         elif l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
             if l.lower().startswith("*edge"):
                # switch from multidigraph to multigraph

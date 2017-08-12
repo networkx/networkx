@@ -66,10 +66,10 @@ class TestRelabel():
         assert_equal(degree(H, 3), 3)
 
         # check mapping
-        assert_equal(H.node[3]['label'], 'C')
-        assert_equal(H.node[0]['label'], 'D')
-        assert_true(H.node[1]['label'] == 'A' or H.node[2]['label'] == 'A')
-        assert_true(H.node[1]['label'] == 'B' or H.node[2]['label'] == 'B')
+        assert_equal(H.nodes[3]['label'], 'C')
+        assert_equal(H.nodes[0]['label'], 'D')
+        assert_true(H.nodes[1]['label'] == 'A' or H.nodes[2]['label'] == 'A')
+        assert_true(H.nodes[1]['label'] == 'B' or H.nodes[2]['label'] == 'B')
 
     def test_convert_to_integers2(self):
         G = empty_graph()
@@ -81,10 +81,10 @@ class TestRelabel():
 
         H = convert_node_labels_to_integers(G, ordering="sorted",
                                             label_attribute='label')
-        assert_equal(H.node[0]['label'], 'A')
-        assert_equal(H.node[1]['label'], 'B')
-        assert_equal(H.node[2]['label'], 'C')
-        assert_equal(H.node[3]['label'], 'D')
+        assert_equal(H.nodes[0]['label'], 'A')
+        assert_equal(H.nodes[1]['label'], 'B')
+        assert_equal(H.nodes[2]['label'], 'C')
+        assert_equal(H.nodes[3]['label'], 'D')
 
     @raises(nx.NetworkXError)
     def test_convert_to_integers_raise(self):

@@ -106,7 +106,7 @@ def projected_graph(B, nodes, multigraph=False):
         else:
             G = nx.Graph()
     G.graph.update(B.graph)
-    G.add_nodes_from((n, B.node[n]) for n in nodes)
+    G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         nbrs2 = set(v for nbr in B[u] for v in B[nbr] if v != u)
         if multigraph:
@@ -196,7 +196,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
         pred = B.adj
         G = nx.Graph()
     G.graph.update(B.graph)
-    G.add_nodes_from((n, B.node[n]) for n in nodes)
+    G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     n_top = float(len(B) - len(nodes))
     for u in nodes:
         unbrs = set(B[u])
@@ -293,7 +293,7 @@ def collaboration_weighted_projected_graph(B, nodes):
         pred = B.adj
         G = nx.Graph()
     G.graph.update(B.graph)
-    G.add_nodes_from((n, B.node[n]) for n in nodes)
+    G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         unbrs = set(B[u])
         nbrs2 = set(n for nbr in unbrs for n in B[nbr] if n != u)
@@ -390,7 +390,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
         pred = B.adj
         G = nx.Graph()
     G.graph.update(B.graph)
-    G.add_nodes_from((n, B.node[n]) for n in nodes)
+    G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         unbrs = set(B[u])
         nbrs2 = set((n for nbr in unbrs for n in B[nbr])) - set([u])
@@ -453,7 +453,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     >>> B = nx.complete_bipartite_graph(2, 2)
     >>> # Add some arbitrary weight to the edges
     >>> for i,(u,v) in enumerate(B.edges()):
-    ...     B.edge[u, v]['weight'] = i + 1
+    ...     B.edges[u, v]['weight'] = i + 1
     ... 
     >>> for edge in B.edges(data=True):
     ...     print(edge)
@@ -504,7 +504,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
             # Notice that we use set(pred[v]) for handling the directed case.
             return len(set(G[u]) & set(pred[v]))
     G.graph.update(B.graph)
-    G.add_nodes_from((n, B.node[n]) for n in nodes)
+    G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         nbrs2 = set((n for nbr in set(B[u]) for n in B[nbr])) - set([u])
         for v in nbrs2:

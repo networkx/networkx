@@ -222,6 +222,6 @@ class TestConvert():
         G = nx.OrderedGraph()
         G.add_nodes_from("abc")
         H = to_networkx_graph(G, create_using=nx.OrderedGraph())
-        assert_equal(list(H.node), list(G.node))
+        assert_equal(list(H.nodes), list(G.nodes))
         H = nx.OrderedDiGraph(G)
-        assert_equal(list(H.node), list(G.node))
+        assert_equal(list(H.nodes), list(G.nodes))

@@ -76,7 +76,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
        "Uniform generation of random graphs with arbitrary degree
        sequences", 2006. http://arxiv.org/abs/cond-mat/0312028
     """
-    if G.number_of_selfloops() > 0:
+    if nx.number_of_selfloops(G) > 0:
         raise Exception('rich_club_coefficient is not implemented for '
                         'graphs with self loops.')
     rc = _compute_rc(G)

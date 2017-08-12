@@ -203,7 +203,7 @@ def to_pydot(N, strict=True):
         graph_type = 'digraph'
     else:
         graph_type = 'graph'
-    strict = N.number_of_selfloops() == 0 and not N.is_multigraph()
+    strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
 
     name = N.name
     graph_defaults = N.graph.get('graph', {})

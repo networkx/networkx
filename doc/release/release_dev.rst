@@ -181,6 +181,13 @@ API Changes
    case "values" must be the newly allowed form containing names. Previously
    "name" came second witout default, and "values" came third.
 
+* [`#2604 <https://github.com/networkx/networkx/pull/2604>`_]
+   Move selfloop methods out of base classes to networkx functions.
+   G.number_of_selfloops(), G.selfloop_edges(), G.nodes_with_selfloops() are now
+   nx.number_of_selfloops(G), nx.selfloop_edges(G), nx.nodes_with_selfloops(G).
+
+   G.node and G.edge are removed. Their functionality are replaced by G.nodes
+   and G.edges.
 
 Deprecations
 ------------

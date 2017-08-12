@@ -245,7 +245,7 @@ graph
         G = nx.path_graph(1)
         G.name = "path_graph(1)"
         attr = 'This is "quoted" and this is a copyright: ' + unichr(169)
-        G.node[0]['demo'] = attr
+        G.nodes[0]['demo'] = attr
         fobj = tempfile.NamedTemporaryFile()
         nx.write_gml(G, fobj)
         fobj.seek(0)

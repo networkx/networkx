@@ -31,7 +31,7 @@ class test_nodeview(object):
 
     def test_contains_data(self):
         nvd = self.G.nodes(data=True)
-        self.G.node[3]['foo'] = 'bar'
+        self.G.nodes[3]['foo'] = 'bar'
         assert_true((7, {}) in nvd)
         assert_true((3, {'foo': 'bar'}) in nvd)
         nvdf = self.G.nodes(data='foo', default='biz')
@@ -42,7 +42,7 @@ class test_nodeview(object):
     def test_getitem(self):
         nv = self.G.nodes
         nvd = self.G.nodes(data=True)
-        self.G.node[3]['foo'] = 'bar'
+        self.G.nodes[3]['foo'] = 'bar'
         assert_equal(nv[7], {})
         assert_equal(nv[3], {'foo': 'bar'})
         assert_equal(nvd[3], {'foo': 'bar'})
@@ -73,7 +73,7 @@ class test_nodeview(object):
             assert_equal(d, {})
         inv = iter(nv)
         assert_equal(next(inv), (0, {}))
-        self.G.node[3]['foo'] = 'bar'
+        self.G.nodes[3]['foo'] = 'bar'
         for n, d in nv:
             if n == 3:
                 assert_equal(d, {'foo': 'bar'})

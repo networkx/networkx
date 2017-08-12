@@ -29,7 +29,7 @@ def _dict_product(d1, d2):
 # Generators for producting graph products
 def _node_product(G, H):
     for u, v in product(G, H):
-        yield ((u, v), _dict_product(G.node[u], H.node[v]))
+        yield ((u, v), _dict_product(G.nodes[u], H.nodes[v]))
 
 
 def _directed_edges_cross_edges(G, H):

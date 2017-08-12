@@ -124,31 +124,29 @@ class Graph(object):
     >>> G.graph
     {'day': 'Friday'}
 
-    Add node attributes using add_node(), add_nodes_from() or G.node
+    Add node attributes using add_node(), add_nodes_from() or G.nodes
 
     >>> G.add_node(1, time='5pm')
     >>> G.add_nodes_from([3], time='2pm')
-    >>> G.node[1]
+    >>> G.nodes[1]
     {'time': '5pm'}
-    >>> G.node[1]['room'] = 714
-    >>> del G.node[1]['room'] # remove attribute
+    >>> G.nodes[1]['room'] = 714
+    >>> del G.nodes[1]['room'] # remove attribute
     >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
-    Warning: adding a node to G.node does not add it to the graph.
-
     Add edge attributes using add_edge(), add_edges_from(), subscript
-    notation, or G.edge.
+    notation, or G.edges.
 
     >>> G.add_edge(1, 2, weight=4.7 )
     >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> G.add_edges_from([(1, 2, {'color': 'blue'}), (2, 3, {'weight': 8})])
     >>> G[1][2]['weight'] = 4.7
-    >>> G.edge[1, 2]['weight'] = 4
+    >>> G.edges[1, 2]['weight'] = 4
 
-    Warning: assigning to `G.edge[u]` or `G.edge[u][v]` will almost certainly
+    Warning: assigning to `G.edges[u]` or `G.edges[u][v]` will almost certainly
     corrupt the graph data structure. Use 3 sets of brackets as shown above.
-    (4 for multigraphs: `MG.edge[u][v][key][name] = value`)
+    (4 for multigraphs: `MG.edges[u][v][key][name] = value`)
 
     **Shortcuts:**
 
@@ -300,10 +298,6 @@ class Graph(object):
             convert.to_networkx_graph(data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-
-    @property
-    def node(self):
-        return AtlasView(self._node)
 
     @property
     def edge(self):
@@ -496,11 +490,11 @@ class Graph(object):
         nodes.
 
         >>> G.add_nodes_from([(1, dict(size=11)), (2, {'color':'blue'})])
-        >>> G.node[1]['size']
+        >>> G.nodes[1]['size']
         11
         >>> H = nx.Graph()
         >>> H.add_nodes_from(G.nodes(data=True))
-        >>> H.node[1]['size']
+        >>> H.nodes[1]['size']
         11
 
         """
@@ -1501,100 +1495,6 @@ class Graph(object):
 
         """
         return nx.edge_subgraph(self, edges)
-
-    def nodes_with_selfloops(self):
-        """Returns an iterator over nodes with self loops.
-
-        A node with a self loop has an edge with both ends adjacent
-        to that node.
-
-        Returns
-        -------
-        nodelist : iterator
-            A iterator over nodes with self loops.
-
-        See Also
-        --------
-        selfloop_edges, number_of_selfloops
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edge(1, 1)
-        >>> G.add_edge(1, 2)
-        >>> list(G.nodes_with_selfloops())
-        [1]
-
-        """
-        return (n for n, nbrs in self._adj.items() if n in nbrs)
-
-    def selfloop_edges(self, data=False, default=None):
-        """Returns an iterator over selfloop edges.
-
-        A selfloop edge has the same node at both ends.
-
-        Parameters
-        ----------
-        data : string or bool, optional (default=False)
-            Return selfloop edges as two tuples (u, v) (data=False)
-            or three-tuples (u, v, datadict) (data=True)
-            or three-tuples (u, v, datavalue) (data='attrname')
-        default : value, optional (default=None)
-            Value used for edges that dont have the requested attribute.
-            Only relevant if data is not True or False.
-
-        Returns
-        -------
-        edgeiter : iterator over edge tuples
-            An iterator over all selfloop edges.
-
-        See Also
-        --------
-        nodes_with_selfloops, number_of_selfloops
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edge(1, 1)
-        >>> G.add_edge(1, 2)
-        >>> list(G.selfloop_edges())
-        [(1, 1)]
-        >>> list(G.selfloop_edges(data=True))
-        [(1, 1, {})]
-        """
-        if data is True:
-            return ((n, n, nbrs[n])
-                    for n, nbrs in self._adj.items() if n in nbrs)
-        elif data is not False:
-            return ((n, n, nbrs[n].get(data, default))
-                    for n, nbrs in self._adj.items() if n in nbrs)
-        else:
-            return ((n, n)
-                    for n, nbrs in self._adj.items() if n in nbrs)
-
-    def number_of_selfloops(self):
-        """Return the number of selfloop edges.
-
-        A selfloop edge has the same node at both ends.
-
-        Returns
-        -------
-        nloops : int
-            The number of selfloops.
-
-        See Also
-        --------
-        nodes_with_selfloops, selfloop_edges
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edge(1, 1)
-        >>> G.add_edge(1, 2)
-        >>> G.number_of_selfloops()
-        1
-        """
-        return sum(1 for _ in self.selfloop_edges())
 
     def size(self, weight=None):
         """Return the number of edges or total of all edge weights.

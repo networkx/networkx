@@ -107,7 +107,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -145,8 +145,8 @@ def dijkstra_path(G, source, target, weight='weight'):
     The weight function can be used to include node weights.
 
     >>> def func(u, v, d):
-    ...     node_u_wt = G.node[u].get('node_weight', 1)
-    ...     node_v_wt = G.node[v].get('node_weight', 1)
+    ...     node_u_wt = G.nodes[u].get('node_weight', 1)
+    ...     node_v_wt = G.nodes[v].get('node_weight', 1)
     ...     edge_wt = d.get('weight', 1)
     ...     return node_u_wt/2 + node_v_wt/2 + edge_wt
 
@@ -181,7 +181,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -251,7 +251,7 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -311,7 +311,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -384,7 +384,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -475,7 +475,7 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -547,7 +547,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -629,7 +629,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -841,7 +841,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -902,7 +902,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -959,7 +959,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1028,7 +1028,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1092,7 +1092,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     if source not in G:
         raise nx.NodeNotFound("Node %s is not found in the graph" % source)
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
+    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     dist = {source: 0}
@@ -1606,7 +1606,7 @@ def goldberg_radzik(G, source, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1661,7 +1661,7 @@ def goldberg_radzik(G, source, weight='weight'):
     if source not in G:
         raise nx.NodeNotFound("Node %s is not found in the graph" % source)
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in G.selfloop_edges(data=True)):
+    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     if len(G) == 1:
@@ -1774,7 +1774,7 @@ def negative_edge_cycle(G, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1837,7 +1837,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 
@@ -1983,7 +1983,7 @@ def johnson(G, weight='weight'):
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edge[u][v][weight]``). If no
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
        such edge attribute exists, the weight of the edge is assumed to
        be one.
 

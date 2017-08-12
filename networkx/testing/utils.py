@@ -53,5 +53,5 @@ def assert_edges_equal(edges1, edges2):
 
 def assert_graphs_equal(graph1, graph2):
     assert_equal(graph1.adj, graph2.adj)
-    assert_equal(graph1.node, graph2.node)
+    assert_equal(graph1.nodes, graph2.nodes)
     assert_equal(graph1.graph, graph2.graph)
