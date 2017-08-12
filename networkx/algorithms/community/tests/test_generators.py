@@ -29,7 +29,7 @@ def test_generator():
     G = LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
                             min_community=20, seed=10)
     assert_equal(len(G), 250)
-    C = {frozenset(G.node[v]['community']) for v in G}
+    C = {frozenset(G.nodes[v]['community']) for v in G}
     assert_true(is_partition(G.nodes(), C))
     # assert_equal([len(c) for c in C], [53, 12, 10, 15, 10])
     # assert_equal(len(G.edges()), 157)

@@ -356,14 +356,14 @@ def contracted_nodes(G, u, v, self_loops=True):
         new_edges = ((u, w if w != v else u, d)
                      for x, w, d in G.edges(v, data=True)
                      if self_loops or w != u)
-    v_data = H.node[v]
+    v_data = H.nodes[v]
     H.remove_node(v)
     H.add_edges_from(new_edges)
 
-    if 'contraction' in H.node[u]:
-        H.node[u]['contraction'][v] = v_data
+    if 'contraction' in H.nodes[u]:
+        H.nodes[u]['contraction'][v] = v_data
     else:
-        H.node[u]['contraction'] = {v: v_data}
+        H.nodes[u]['contraction'] = {v: v_data}
     return H
 
 identified_nodes = contracted_nodes

@@ -292,7 +292,7 @@ class _AntiGraph(nx.Graph):
         nodes = set(nodes)
         G = _AntiGraph()
         G.add_nodes_from(nodes)
-        for n in G.node:
+        for n in G:
             Gnbrs = G.adjlist_inner_dict_factory()
             G._adj[n] = Gnbrs
             for nbr, d in self._adj[n].items():

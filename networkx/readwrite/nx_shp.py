@@ -245,7 +245,7 @@ def write_shp(G, outdir):
         pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
     for n in G:
-        data = G.node[n]
+        data = G.nodes[n]
         g = netgeometry(n, data)
         create_feature(g, nodes)
     try:

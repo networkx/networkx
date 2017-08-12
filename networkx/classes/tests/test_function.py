@@ -388,18 +388,18 @@ def test_set_node_attributes():
         vals = 100
         attr = 'hello'
         nx.set_node_attributes(G, vals, attr)
-        assert_equal(G.node[0][attr], vals)
-        assert_equal(G.node[1][attr], vals)
-        assert_equal(G.node[2][attr], vals)
+        assert_equal(G.nodes[0][attr], vals)
+        assert_equal(G.nodes[1][attr], vals)
+        assert_equal(G.nodes[2][attr], vals)
 
         # Test dictionary
         G = nx.path_graph(3, create_using=G)
         vals = dict(zip(sorted(G.nodes()), range(len(G))))
         attr = 'hi'
         nx.set_node_attributes(G, vals, attr)
-        assert_equal(G.node[0][attr], 0)
-        assert_equal(G.node[1][attr], 1)
-        assert_equal(G.node[2][attr], 2)
+        assert_equal(G.nodes[0][attr], 0)
+        assert_equal(G.nodes[1][attr], 1)
+        assert_equal(G.nodes[2][attr], 2)
 
         # Test dictionary of dictionaries
         G = nx.path_graph(3, create_using=G)
@@ -407,9 +407,9 @@ def test_set_node_attributes():
         vals = dict.fromkeys(G.nodes(), d)
         vals.pop(0)
         nx.set_node_attributes(G, vals)
-        assert_equal(G.node[0], {})
-        assert_equal(G.node[1]["hi"], 0)
-        assert_equal(G.node[2]["hello"], 200)
+        assert_equal(G.nodes[0], {})
+        assert_equal(G.nodes[1]["hi"], 0)
+        assert_equal(G.nodes[2]["hello"], 200)
 
 
 def test_set_edge_attributes():

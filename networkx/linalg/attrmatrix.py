@@ -7,10 +7,10 @@ __all__ = ['attr_matrix', 'attr_sparse_matrix']
 import networkx as nx
 
 def _node_value(G, node_attr):
-    """Returns a function that returns a value from G.node[u].
+    """Returns a function that returns a value from G.nodes[u].
     
     We return a function expecting a node as its sole argument. Then, in the
-    simplest scenario, the returned function will return G.node[u][node_attr].
+    simplest scenario, the returned function will return G.nodes[u][node_attr].
     However, we also handle the case when `node_attr` is None or when it is a 
     function itself.
 
@@ -27,19 +27,19 @@ def _node_value(G, node_attr):
     -------
     value : function
         A function expecting a node as its sole argument. The function will
-        returns a value from G.node[u] that depends on `edge_attr`.
+        returns a value from G.nodes[u] that depends on `edge_attr`.
 
     """
     if node_attr is None:
         value = lambda u: u
     elif not hasattr(node_attr, '__call__'):
         # assume it is a key for the node attribute dictionary
-        value = lambda u: G.node[u][node_attr]
+        value = lambda u: G.nodes[u][node_attr]
     else:
         # Advanced:  Allow users to specify something else.
         #
         # For example,
-        #     node_attr = lambda u: G.node[u].get('size', .5) * 3
+        #     node_attr = lambda u: G.nodes[u].get('size', .5) * 3
         #
         value = node_attr
 
@@ -208,9 +208,9 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
             
         Pr(v has color Y | u has color X)
     
-    >>> G.node[0]['color'] = 'red'
-    >>> G.node[1]['color'] = 'red'
-    >>> G.node[2]['color'] = 'blue'
+    >>> G.nodes[0]['color'] = 'red'
+    >>> G.nodes[1]['color'] = 'red'
+    >>> G.nodes[2]['color'] = 'blue'
     >>> rc = ['red', 'blue']
     >>> nx.attr_matrix(G, node_attr='color', normalized=True, rc_order=rc)
     matrix([[ 0.33333333,  0.66666667],
@@ -366,9 +366,9 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
             
         Pr(v has color Y | u has color X)
     
-    >>> G.node[0]['color'] = 'red'
-    >>> G.node[1]['color'] = 'red'
-    >>> G.node[2]['color'] = 'blue'
+    >>> G.nodes[0]['color'] = 'red'
+    >>> G.nodes[1]['color'] = 'red'
+    >>> G.nodes[2]['color'] = 'blue'
     >>> rc = ['red', 'blue']
     >>> M = nx.attr_sparse_matrix(G, node_attr='color', \
                                   normalized=True, rc_order=rc)

@@ -48,11 +48,11 @@ class ThinGraphTester(TestGraph):
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
-        self.K3.adj = self.K3.edge = self.k3adj
-        self.K3.node = {}
-        self.K3.node[0] = {}
-        self.K3.node[1] = {}
-        self.K3.node[2] = {}
+        self.K3._adj = self.k3adj
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
 
 class SpecialDiGraphTester(TestDiGraph):
@@ -89,10 +89,10 @@ class ThinDiGraphTester(TestDiGraph):
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
         self.K3.adj = self.K3.edge = self.k3adj
-        self.K3.node = {}
-        self.K3.node[0] = {}
-        self.K3.node[1] = {}
-        self.K3.node[2] = {}
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
 
 class SpecialMultiGraphTester(TestMultiGraph):

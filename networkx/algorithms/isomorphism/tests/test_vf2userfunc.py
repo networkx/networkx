@@ -100,7 +100,7 @@ class TestNodeMatch_Graph(object):
         assert_false(  nx.is_isomorphic(self.g1, self.g2, node_match=self.nm) )
 
     def test_color2(self):
-        self.g1.node['A']['color'] = 'blue'
+        self.g1.nodes['A']['color'] = 'blue'
         assert_true(  nx.is_isomorphic(self.g1, self.g2, node_match=self.nm) )
 
     def test_weight1(self):
@@ -116,7 +116,7 @@ class TestNodeMatch_Graph(object):
         assert_false(iso)
 
     def test_colorsandweights2(self):
-        self.g1.node['A']['color'] = 'blue'
+        self.g1.nodes['A']['color'] = 'blue'
         iso = nx.is_isomorphic(self.g1, self.g2,
                                node_match=self.nm, edge_match=self.em)
         assert_true(iso)

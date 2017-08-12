@@ -132,7 +132,7 @@ class TestStronglyConnected:
         assert_true(all(0 == cN for n, cN in mapping.items() if n in C[0]))
         assert_true(all(1 == cN for n, cN in mapping.items() if n in C[1]))
         for n, d in cG.nodes(data=True):
-            assert_equal(set(C[n]), cG.node[n]['members'])
+            assert_equal(set(C[n]), cG.nodes[n]['members'])
 
     def test_connected_raise(self):
         G=nx.Graph()

@@ -22,11 +22,11 @@ class TestBipartiteProject:
         P=bipartite.projected_graph(G,[1,3])
         assert_nodes_equal(list(P),[1,3])
         assert_edges_equal(list(P.edges()),[(1,3)])
-        assert_equal(P.node[1]['name'],G.node[1]['name'])
+        assert_equal(P.nodes[1]['name'],G.nodes[1]['name'])
         P=bipartite.projected_graph(G,[0,2])
         assert_nodes_equal(list(P),[0,2])
         assert_edges_equal(list(P.edges()),[(0,2)])
-        assert_equal(P.node[2]['name'],G.node[2]['name'])
+        assert_equal(P.nodes[2]['name'],G.nodes[2]['name'])
 
     def test_path_collaboration_projected_graph(self):
         G=nx.path_graph(4)

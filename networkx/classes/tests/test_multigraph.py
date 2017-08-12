@@ -71,10 +71,10 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         H.adj[1][2][0]['foo'] = old_foo
         assert_equal(G._adj, H._adj)
 
-        old_foo = H.node[0]['foo']
-        H.node[0]['foo'] = 'baz'
+        old_foo = H.nodes[0]['foo']
+        H.nodes[0]['foo'] = 'baz'
         assert_equal(G._node, H._node)
-        H.node[0]['foo'] = old_foo
+        H.nodes[0]['foo'] = old_foo
         assert_equal(G._node, H._node)
 
     def different_attrdict(self, H, G):
@@ -85,10 +85,10 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         H.adj[1][2][0]['foo'] = old_foo
         assert_equal(G._adj, H._adj)
 
-        old_foo = H.node[0]['foo']
-        H.node[0]['foo'] = 'baz'
+        old_foo = H.nodes[0]['foo']
+        H.nodes[0]['foo'] = 'baz'
         assert_not_equal(G._node, H._node)
-        H.node[0]['foo'] = old_foo
+        H.nodes[0]['foo'] = old_foo
         assert_equal(G._node, H._node)
 
     def test_to_undirected(self):
@@ -278,7 +278,7 @@ class TestEdgeSubgraph(object):
         nx.add_path(G, range(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.node[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = 'node{}'.format(i)
         G.adj[0][1][0]['name'] = 'edge010'
         G.adj[0][1][1]['name'] = 'edge011'
         G.adj[3][4][0]['name'] = 'edge340'
@@ -320,12 +320,12 @@ class TestEdgeSubgraph(object):
 
         """
         for v in self.H:
-            assert_equal(self.G.node[v], self.H.node[v])
+            assert_equal(self.G.nodes[v], self.H.nodes[v])
         # Making a change to G should make a change in H and vice versa.
-        self.G.node[0]['name'] = 'foo'
-        assert_equal(self.G.node[0], self.H.node[0])
-        self.H.node[1]['name'] = 'bar'
-        assert_equal(self.G.node[1], self.H.node[1])
+        self.G.nodes[0]['name'] = 'foo'
+        assert_equal(self.G.nodes[0], self.H.nodes[0])
+        self.H.nodes[1]['name'] = 'bar'
+        assert_equal(self.G.nodes[1], self.H.nodes[1])
 
     def test_edge_attr_dict(self):
         """Tests that the edge attribute dictionary of the two graphs is

@@ -208,7 +208,7 @@ class test_induced_subgraph(object):
     def setUp(self):
         self.K3 = G = nx.complete_graph(3)
         G.graph['foo'] = []
-        G.node[0]['foo'] = []
+        G.nodes[0]['foo'] = []
         G.remove_edge(1, 2)
         ll = []
         G.add_edge(1, 2, foo=ll)
@@ -236,11 +236,11 @@ class test_induced_subgraph(object):
         assert_equal(G.edge, H.edge)
         H.edges[1, 2]['foo'] = old_foo
         assert_equal(G.edge, H.edge)
-        old_foo = H.node[0]['foo']
-        H.node[0]['foo'] = 'baz'
-        assert_equal(G.node, H.node)
-        H.node[0]['foo'] = old_foo
-        assert_equal(G.node, H.node)
+        old_foo = H.nodes[0]['foo']
+        H.nodes[0]['foo'] = 'baz'
+        assert_equal(G.nodes, H.nodes)
+        H.nodes[0]['foo'] = old_foo
+        assert_equal(G.nodes, H.nodes)
 
     def graphs_equal(self, H, G):
         assert_equal(G._adj, H._adj)
@@ -270,7 +270,7 @@ class test_edge_subgraph(object):
         self.G = G = nx.path_graph(5)
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.node[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = 'node{}'.format(i)
         G.edge[0, 1]['name'] = 'edge01'
         G.edge[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
@@ -310,12 +310,12 @@ class test_edge_subgraph(object):
 
         """
         for v in self.H:
-            assert_equal(self.G.node[v], self.H.node[v])
+            assert_equal(self.G.nodes[v], self.H.nodes[v])
         # Making a change to G should make a change in H and vice versa.
-        self.G.node[0]['name'] = 'foo'
-        assert_equal(self.G.node[0], self.H.node[0])
-        self.H.node[1]['name'] = 'bar'
-        assert_equal(self.G.node[1], self.H.node[1])
+        self.G.nodes[0]['name'] = 'foo'
+        assert_equal(self.G.nodes[0], self.H.nodes[0])
+        self.H.nodes[1]['name'] = 'bar'
+        assert_equal(self.G.nodes[1], self.H.nodes[1])
 
     def test_edge_attr_dict(self):
         """Tests that the edge attribute dictionary of the two graphs is

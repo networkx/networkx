@@ -404,9 +404,9 @@ class TestGeneratorClassic():
         for block in blocks:
             for u, v in itertools.combinations_with_replacement(block, 2):
                 assert_true(v not in G[u])
-                assert_equal(G.node[u], G.node[v])
+                assert_equal(G.nodes[u], G.nodes[v])
         # Across blocks, all vertices should be adjacent.
         for (block1, block2) in itertools.combinations(blocks, 2):
             for u, v in itertools.product(block1, block2):
                 assert_true(v in G[u])
-                assert_not_equal(G.node[u], G.node[v])
+                assert_not_equal(G.nodes[u], G.nodes[v])

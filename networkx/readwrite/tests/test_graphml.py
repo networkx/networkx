@@ -438,14 +438,14 @@ class TestReadGraphML(BaseGraphML):
         G = nx.read_graphml(fh)
         assert_equal(list(G.edges()), [('n0', 'n1')])
         assert_equal(G['n0']['n1']['id'], 'e0')
-        assert_equal(G.node['n0']['label'], '1')
-        assert_equal(G.node['n1']['label'], '2')
+        assert_equal(G.nodes['n0']['label'], '1')
+        assert_equal(G.nodes['n1']['label'], '2')
 
         H = nx.parse_graphml(data)
         assert_equal(list(H.edges()), [('n0', 'n1')])
         assert_equal(H['n0']['n1']['id'], 'e0')
-        assert_equal(H.node['n0']['label'], '1')
-        assert_equal(H.node['n1']['label'], '2')
+        assert_equal(H.nodes['n0']['label'], '1')
+        assert_equal(H.nodes['n1']['label'], '2')
 
     def test_bool(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -483,12 +483,12 @@ class TestReadGraphML(BaseGraphML):
         G = nx.read_graphml(fh)
         H = nx.parse_graphml(s)
         for graph in [G, H]:
-            assert_equal(graph.node['n0']['test'], True)
-            assert_equal(graph.node['n2']['test'], False)
-            assert_equal(graph.node['n3']['test'], False)
-            assert_equal(graph.node['n4']['test'], True)
-            assert_equal(graph.node['n5']['test'], False)
-            assert_equal(graph.node['n6']['test'], True)
+            assert_equal(graph.nodes['n0']['test'], True)
+            assert_equal(graph.nodes['n2']['test'], False)
+            assert_equal(graph.nodes['n3']['test'], False)
+            assert_equal(graph.nodes['n4']['test'], True)
+            assert_equal(graph.nodes['n5']['test'], False)
+            assert_equal(graph.nodes['n6']['test'], True)
 
     def test_graphml_header_line(self):
         good = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -535,7 +535,7 @@ class TestReadGraphML(BaseGraphML):
             G = nx.read_graphml(fh)
             H = nx.parse_graphml(s)
             for graph in [G, H]:
-                assert_equal(graph.node['n0']['test'], True)
+                assert_equal(graph.nodes['n0']['test'], True)
 
         fh = io.BytesIO(ugly.encode('UTF-8'))
         assert_raises(nx.NetworkXError, nx.read_graphml, fh)

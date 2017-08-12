@@ -84,7 +84,7 @@ def jit_data(G, indent=None):
             "name": node
         }
         # node data
-        json_node["data"] = G.node[node]
+        json_node["data"] = G.nodes[node]
         # adjacencies
         if G[node]:
             json_node["adjacencies"] = []

@@ -247,7 +247,7 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
         G = nx.DiGraph(nx.path_graph(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.node[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = 'node{}'.format(i)
         G.edge[0, 1]['name'] = 'edge01'
         G.edge[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'

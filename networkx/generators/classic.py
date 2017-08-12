@@ -651,7 +651,7 @@ def complete_multipartite_graph(*subset_sizes):
 
         >>> import networkx as nx
         >>> G = nx.complete_multipartite_graph(1, 2, 3)
-        >>> [G.node[u]['subset'] for u in G]
+        >>> [G.nodes[u]['subset'] for u in G]
         [0, 1, 1, 2, 2, 2]
         >>> list(G.edges(0))
         [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
@@ -661,7 +661,7 @@ def complete_multipartite_graph(*subset_sizes):
         [(4, 0), (4, 1), (4, 2)]
 
         >>> G = nx.complete_multipartite_graph('a', 'bc', 'def')
-        >>> [G.node[u]['subset'] for u in sorted(G)]
+        >>> [G.nodes[u]['subset'] for u in sorted(G)]
         [0, 1, 1, 2, 2, 2]
 
     Notes

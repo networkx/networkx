@@ -542,7 +542,7 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal',
                                    data=True, ignore_nan=ignore_nan)
     T = G.__class__()  # Same graph class as G
     T.graph.update(G.graph)
-    T.add_nodes_from(G.node.items())
+    T.add_nodes_from(G.nodes.items())
     T.add_edges_from(edges)
     return T
 
@@ -602,6 +602,6 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal',
     edges = list(edges)
     T = G.__class__()  # Same graph class as G
     T.graph.update(G.graph)
-    T.add_nodes_from(G.node.items())
+    T.add_nodes_from(G.nodes.items())
     T.add_edges_from(edges)
     return T

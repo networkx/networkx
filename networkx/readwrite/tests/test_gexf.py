@@ -278,16 +278,16 @@ class TestGEXF(object):
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
         assert_equal(list(H), [7])
-        assert_equal(H.node[7]['label'], '77')
+        assert_equal(H.nodes[7]['label'], '77')
 
     def test_write_with_node_attributes(self):
         # Addresses #673.
         G = nx.OrderedGraph()
         G.add_edges_from([(0, 1), (1, 2), (2, 3)])
         for i in range(4):
-            G.node[i]['id'] = i
-            G.node[i]['label'] = i
-            G.node[i]['pid'] = i
+            G.nodes[i]['id'] = i
+            G.nodes[i]['label'] = i
+            G.nodes[i]['pid'] = i
 
         expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
   <graph defaultedgetype="undirected" mode="static" name="">
@@ -318,4 +318,4 @@ class TestGEXF(object):
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
-        assert_equal(H.node[1]['testattr'], True)
+        assert_equal(H.nodes[1]['testattr'], True)

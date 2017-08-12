@@ -42,7 +42,7 @@ def cytoscape_data(G, attrs=None):
     nodes = jsondata["elements"]["nodes"]
     edges = jsondata["elements"]["edges"]
 
-    for i, j in G.node.items():
+    for i, j in G.nodes.items():
         n = {"data" : j.copy()}
         n["data"]["id"] = j.get(ident) or str(i)
         n["data"]["value"] = i
@@ -96,7 +96,7 @@ def cytoscape_graph(data, attrs=None):
             node_data[ident] = d["data"].get(ident)
 
         graph.add_node(node)
-        graph.node[node].update(node_data)
+        graph.nodes[node].update(node_data)
         
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()

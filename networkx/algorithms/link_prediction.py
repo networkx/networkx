@@ -299,9 +299,9 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     --------
     >>> import networkx as nx
     >>> G = nx.path_graph(3)
-    >>> G.node[0]['community'] = 0
-    >>> G.node[1]['community'] = 0
-    >>> G.node[2]['community'] = 0
+    >>> G.nodes[0]['community'] = 0
+    >>> G.nodes[1]['community'] = 0
+    >>> G.nodes[2]['community'] = 0
     >>> preds = nx.cn_soundarajan_hopcroft(G, [(0, 2)])
     >>> for u, v, p in preds:
     ...     '(%d, %d) -> %d' % (u, v, p)
@@ -373,10 +373,10 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
-    >>> G.node[0]['community'] = 0
-    >>> G.node[1]['community'] = 0
-    >>> G.node[2]['community'] = 1
-    >>> G.node[3]['community'] = 0
+    >>> G.nodes[0]['community'] = 0
+    >>> G.nodes[1]['community'] = 0
+    >>> G.nodes[2]['community'] = 1
+    >>> G.nodes[3]['community'] = 0
     >>> preds = nx.ra_index_soundarajan_hopcroft(G, [(0, 3)])
     >>> for u, v, p in preds:
     ...     '(%d, %d) -> %.8f' % (u, v, p)
@@ -449,11 +449,11 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 4), (2, 4), (3, 4)])
-    >>> G.node[0]['community'] = 0
-    >>> G.node[1]['community'] = 1
-    >>> G.node[2]['community'] = 0
-    >>> G.node[3]['community'] = 0
-    >>> G.node[4]['community'] = 0
+    >>> G.nodes[0]['community'] = 0
+    >>> G.nodes[1]['community'] = 1
+    >>> G.nodes[2]['community'] = 0
+    >>> G.nodes[3]['community'] = 0
+    >>> G.nodes[4]['community'] = 0
     >>> preds = nx.within_inter_cluster(G, [(0, 4)])
     >>> for u, v, p in preds:
     ...     '(%d, %d) -> %.8f' % (u, v, p)
@@ -492,7 +492,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
 
 def _community(G, u, community):
     """Get the community of the given node."""
-    node_u = G.node[u]
+    node_u = G.nodes[u]
     try:
         return node_u[community]
     except KeyError:

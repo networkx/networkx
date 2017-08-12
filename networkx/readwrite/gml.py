@@ -720,7 +720,7 @@ def generate_gml(G, stringizer=None):
     # Output node data
     node_id = dict(zip(G, range(len(G))))
     ignored_keys = {'id', 'label'}
-    for node, attrs in G.node.items():
+    for node, attrs in G.nodes.items():
         yield '  node ['
         yield '    id ' + str(node_id[node])
         for line in stringize('label', node, (), '    '):

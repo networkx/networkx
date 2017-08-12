@@ -567,7 +567,7 @@ def set_node_attributes(G, values, name=None):
         >>> isinstance(bb, dict)
         True
         >>> nx.set_node_attributes(G, bb, 'betweenness')
-        >>> G.node[1]['betweenness']
+        >>> G.nodes[1]['betweenness']
         1.0
 
     If you provide a list as the second argument, updates to the list
@@ -577,11 +577,11 @@ def set_node_attributes(G, values, name=None):
         >>> labels = []
         >>> nx.set_node_attributes(G, labels, 'labels')
         >>> labels.append('foo')
-        >>> G.node[0]['labels']
+        >>> G.nodes[0]['labels']
         ['foo']
-        >>> G.node[1]['labels']
+        >>> G.nodes[1]['labels']
         ['foo']
-        >>> G.node[2]['labels']
+        >>> G.nodes[2]['labels']
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,
@@ -590,13 +590,13 @@ def set_node_attributes(G, values, name=None):
         >>> G = nx.path_graph(3)
         >>> attrs = {0: {'attr1': 20, 'attr2': 'nothing'}, 1: {'attr2': 3}}
         >>> nx.set_node_attributes(G, attrs)
-        >>> G.node[0]['attr1']
+        >>> G.nodes[0]['attr1']
         20
-        >>> G.node[0]['attr2']
+        >>> G.nodes[0]['attr2']
         'nothing'
-        >>> G.node[1]['attr2']
+        >>> G.nodes[1]['attr2']
         3
-        >>> G.node[2]
+        >>> G.nodes[2]
         {}
 
     """
@@ -605,16 +605,16 @@ def set_node_attributes(G, values, name=None):
         try:  # `values` is a dict
             for n, v in values.items():
                 try:
-                    G.node[n][name] = values[n]
+                    G.nodes[n][name] = values[n]
                 except KeyError:
                     pass
         except AttributeError:  # `values` is a constant
             for n in G:
-                G.node[n][name] = values
+                G.nodes[n][name] = values
     else:  # `values` must be dict of dict
         for n, d in values.items():
             try:
-                G.node[n].update(d)
+                G.nodes[n].update(d)
             except KeyError:
                 pass
 
@@ -641,7 +641,7 @@ def get_node_attributes(G, name):
     >>> color[1]
     'red'
     """
-    return {n: d[name] for n, d in G.node.items() if name in d}
+    return {n: d[name] for n, d in G.nodes.items() if name in d}
 
 
 def set_edge_attributes(G, values, name=None):

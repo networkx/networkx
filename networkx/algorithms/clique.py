@@ -325,7 +325,7 @@ def make_max_clique_graph(G, create_using=None):
 
         import networkx as nx
         G = nx.make_clique_bipartite(G)
-        cliques = [v for v in G.nodes() if G.node[v]['bipartite'] == 0]
+        cliques = [v for v in G.nodes() if G.nodes[v]['bipartite'] == 0]
         G = nx.bipartite.project(G, cliques)
         G = nx.relabel_nodes(G, {-v: v - 1 for v in G})
 

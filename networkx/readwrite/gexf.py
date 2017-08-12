@@ -64,9 +64,9 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.2draft'):
     >>> nx.write_gexf(G, "test.gexf")
 
     # visualization data
-    >>> G.node[0]['viz'] = {'size': 54}
-    >>> G.node[0]['viz']['position'] = {'x' : 0, 'y' : 1}
-    >>> G.node[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
+    >>> G.nodes[0]['viz'] = {'size': 54}
+    >>> G.nodes[0]['viz']['position'] = {'x' : 0, 'y' : 1}
+    >>> G.nodes[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
 
 
     Notes
@@ -384,8 +384,8 @@ class GEXFWriter(GEXF):
                 self.alter_graph_mode_timeformat(end)
             except KeyError:
                 pass
-            source_id = make_str(G.node[u].get('id', u))
-            target_id = make_str(G.node[v].get('id', v))
+            source_id = make_str(G.nodes[u].get('id', u))
+            target_id = make_str(G.nodes[v].get('id', v))
             edge_element = Element('edge',
                                    source=source_id, target=target_id, **kw)
             default = G.graph.get('edge_default', {})
@@ -956,7 +956,7 @@ def relabel_gexf_graph(G):
     """
     # build mapping of node labels, do some error checking
     try:
-        mapping = [(u, G.node[u]['label']) for u in G]
+        mapping = [(u, G.nodes[u]['label']) for u in G]
     except KeyError:
         raise nx.NetworkXError('Failed to relabel nodes: '
                                'missing node labels found. '
@@ -971,12 +971,12 @@ def relabel_gexf_graph(G):
     # relabel attributes
     for n in G:
         m = mapping[n]
-        H.node[m]['id'] = n
-        H.node[m].pop('label')
-        if 'pid' in H.node[m]:
-            H.node[m]['pid'] = mapping[G.node[n]['pid']]
-        if 'parents' in H.node[m]:
-            H.node[m]['parents'] = [mapping[p] for p in G.node[n]['parents']]
+        H.nodes[m]['id'] = n
+        H.nodes[m].pop('label')
+        if 'pid' in H.nodes[m]:
+            H.nodes[m]['pid'] = mapping[G.nodes[n]['pid']]
+        if 'parents' in H.nodes[m]:
+            H.nodes[m]['parents'] = [mapping[p] for p in G.nodes[n]['parents']]
     return H
 
 

@@ -145,8 +145,8 @@ def dijkstra_path(G, source, target, weight='weight'):
     The weight function can be used to include node weights.
 
     >>> def func(u, v, d):
-    ...     node_u_wt = G.node[u].get('node_weight', 1)
-    ...     node_v_wt = G.node[v].get('node_weight', 1)
+    ...     node_u_wt = G.nodes[u].get('node_weight', 1)
+    ...     node_v_wt = G.nodes[v].get('node_weight', 1)
     ...     edge_wt = d.get('weight', 1)
     ...     return node_u_wt/2 + node_v_wt/2 + edge_wt
 

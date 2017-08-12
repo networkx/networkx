@@ -84,7 +84,7 @@ def min_weighted_dominating_set(G, weight=None):
 
         """
         v, neighborhood = node_and_neighborhood
-        return G.node[v].get(weight, 1) / len(neighborhood - dom_set)
+        return G.nodes[v].get(weight, 1) / len(neighborhood - dom_set)
 
     # This is a set of all vertices not already covered by the
     # dominating set.

@@ -115,18 +115,16 @@ class DiGraph(Graph):
     >>> G.graph
     {'day': 'Friday'}
 
-    Add node attributes using add_node(), add_nodes_from() or G.node
+    Add node attributes using add_node(), add_nodes_from() or G.nodes
 
     >>> G.add_node(1, time='5pm')
     >>> G.add_nodes_from([3], time='2pm')
-    >>> G.node[1]
+    >>> G.nodes[1]
     {'time': '5pm'}
-    >>> G.node[1]['room'] = 714
-    >>> del G.node[1]['room'] # remove attribute
+    >>> G.nodes[1]['room'] = 714
+    >>> del G.nodes[1]['room'] # remove attribute
     >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
-
-    Warning: adding a node to G.node does not add it to the graph.
 
     Add edge attributes using add_edge(), add_edges_from(), subscript
     notation, or G.edge.
@@ -389,11 +387,11 @@ class DiGraph(Graph):
         nodes.
 
         >>> G.add_nodes_from([(1, dict(size=11)), (2, {'color':'blue'})])
-        >>> G.node[1]['size']
+        >>> G.nodes[1]['size']
         11
         >>> H = nx.Graph()
         >>> H.add_nodes_from(G.nodes(data=True))
-        >>> H.node[1]['size']
+        >>> H.nodes[1]['size']
         11
 
         """
