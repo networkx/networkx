@@ -14,20 +14,15 @@ Methods that used to return containers now return views (inspired from
 [dictionary views](https://docs.python.org/3/library/stdtypes.html#dict-views)
 in Python) and methods that returned iterators have been removed.
 For example, ``G.nodes`` (or ``G.nodes()``)  now returns a NodeView and
-``G.nodes_iter()`` has been removed.
+``G.nodes_iter()`` has been removed. The Graph attributes G.node and G.edge
+have also been removed in favor of using G.nodes[n] and G.edges[u, v].
 
     >>> import networkx as nx
     >>> G = nx.complete_graph(5)
     >>> G.nodes  # for backward compatibility G.nodes() works as well
     NodeView((0, 1, 2, 3, 4))
 
-If you want a list of nodes use the Python list function
-
-    >>> list(G.nodes)
-    [0, 1, 2, 3, 4]
-
-
-You can also iterate through ``G.nodes`` (or ``G.nodes()``)
+You can iterate through ``G.nodes`` (or ``G.nodes()``)
 
     >>> for node in G.nodes:
     ...     print(node)
@@ -36,6 +31,17 @@ You can also iterate through ``G.nodes`` (or ``G.nodes()``)
     2
     3
     4
+
+If you want a list of nodes you can use the Python list function
+
+    >>> list(G.nodes)
+    [0, 1, 2, 3, 4]
+
+G.nodes is set-like allowing set operations. It is also dict-like in that you
+can look up node data with G.nodes[n]['weight']. You can still use the calling
+interface G.nodes(data='weight') to iterate over node/data pairs. In addition
+to the dict-like views keys/values/items, G.nodes has a data-view 
+G.nodes.data('weight').  The new EdgeView G.edges has similar features for edges.
 
 By adding views NetworkX supports some new features like set operations on
 views.
@@ -144,3 +150,10 @@ can be refactored as
     >>> G = nx.Graph([(1, 2), (1, 3)])
     >>> nx.set_node_attributes(G, name='label', values={1: 'one', 2: 'two', 3: 'three'})
     >>> nx.set_edge_attributes(G, name='label', values={(1, 2): 'path1', (2, 3): 'path2'})
+ 
+-------
+
+Some methods have been removed from the base graph class and placed into the main 
+networkx namespace. These are:  G.add_path, G.add_star, G.add_cycle, G.number_of_selfloops,
+G.nodes_with_selfloops, and G.selfloop_edges.   These are replaced by nx.path_graph(G, ...)
+nx.add_star(G, ...), nx.selfloop_edges(G), etc.
