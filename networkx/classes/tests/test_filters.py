@@ -1,6 +1,7 @@
 from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 import networkx as nx
 
+
 class TestFilterFactory(object):
     def test_no_filter(self):
         nf = nx.filters.no_filter

@@ -291,6 +291,7 @@ class Graph(object):
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
+        self.root_graph = self
         self.graph = {}   # dictionary for graph attributes
         self._node = ndf()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
@@ -1232,7 +1233,19 @@ class Graph(object):
         self._node.clear()
         self.graph.clear()
 
-    def copy(self, with_data=True):
+    def is_multigraph(self):
+        """Return True if graph is a multigraph, False otherwise."""
+        return False
+
+    def is_directed(self):
+        """Return True if graph is directed, False otherwise."""
+        return False
+
+    def fresh_copy(self):
+        """Return a fresh copy graph with the same data structure."""
+        return nx.Graph()
+
+    def copy(self, as_view=False):
         """Return a copy of the graph.
 
         All copies reproduce the graph structure, but data attributes
@@ -1292,19 +1305,17 @@ class Graph(object):
         >>> H = G.copy()
 
         """
-        if with_data:
-            return deepcopy(self)
-        return self.subgraph(self)
+        if as_view is True:
+            return nx.graphviews.GraphView(self)
+        G = self.fresh_copy()
+        G.graph.update(self.graph)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        G.add_edges_from((u, v, datadict.copy())
+                         for u, nbrs in self.adj.items()
+                         for v, datadict in nbrs.items())
+        return G
 
-    def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
-        return False
-
-    def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
-        return False
-
-    def to_directed(self):
+    def to_directed(self, as_view=False):
         """Return a directed representation of the graph.
 
         Returns
@@ -1346,18 +1357,19 @@ class Graph(object):
         >>> list(H.edges())
         [(0, 1)]
         """
+        if as_view is True:
+            return nx.graphviews.DiGraphView(self)
+        # deepcopy when not a view
         from networkx import DiGraph
         G = DiGraph()
-        G.name = self.name
-        G.add_nodes_from(self)
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         G.add_edges_from((u, v, deepcopy(data))
-                         for u, nbrs in self.adjacency()
+                         for u, nbrs in self.adj.items()
                          for v, data in nbrs.items())
-        G.graph = deepcopy(self.graph)
-        G._node = deepcopy(self._node)
         return G
 
-    def to_undirected(self):
+    def to_undirected(self, as_view=False):
         """Return an undirected copy of the graph.
 
         Returns
@@ -1391,10 +1403,19 @@ class Graph(object):
         >>> list(G2.edges())
         [(0, 1)]
         """
-        return deepcopy(self)
+        if as_view is True:
+            return nx.graphviews.GraphView(self)
+        # deepcopy when not a view
+        G = Graph()
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+        G.add_edges_from((u, v, deepcopy(d))
+                         for u, nbrs in self.adj.items()
+                         for v, d in nbrs.items())
+        return G
 
     def subgraph(self, nbunch):
-        """Return the subgraph induced on nodes in nbunch.
+        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
         and the edges between those nodes.
@@ -1431,27 +1452,8 @@ class Graph(object):
         >>> list(H.edges())
         [(0, 1), (1, 2)]
         """
-        bunch = self.nbunch_iter(nbunch)
-        # create new graph and copy subgraph into it
-        H = self.__class__()
-        # copy node and attribute dictionaries
-        for n in bunch:
-            H._node[n] = self._node[n]
-        # namespace shortcuts for speed
-        H_adj = H._adj
-        self_adj = self._adj
-        # add nodes and edges (undirected method)
-        # Note that changing this may affect the deep-ness of self.copy()
-        for n in H._node:
-            Hnbrs = H.adjlist_inner_dict_factory()
-            H_adj[n] = Hnbrs
-            for nbr, d in self_adj[n].items():
-                if nbr in H_adj:
-                    # add both representations of edge: n-nbr and nbr-n
-                    Hnbrs[nbr] = d
-                    H_adj[nbr][n] = d
-        H.graph = self.graph
-        return H
+        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
+        return nx.graphviews.SubGraph(self, induced_nodes)
 
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.
@@ -1498,28 +1500,7 @@ class Graph(object):
         [(0, 1), (3, 4)]
 
         """
-        H = self.__class__()
-        adj = self._adj
-        # Filter out edges that don't correspond to nodes in the graph.
-        edges = ((u, v) for u, v in edges if u in adj and v in adj[u])
-        for u, v in edges:
-            # Copy the node attributes if they haven't been copied
-            # already.
-            if u not in H._node:
-                H._node[u] = self._node[u]
-            if v not in H._node:
-                H._node[v] = self._node[v]
-            # Create an entry in the adjacency dictionary for the
-            # nodes u and v if they don't exist yet.
-            if u not in H._adj:
-                H._adj[u] = H.adjlist_inner_dict_factory()
-            if v not in H._adj:
-                H._adj[v] = H.adjlist_inner_dict_factory()
-            # Copy the edge attributes.
-            H._adj[u][v] = self._adj[u][v]
-            H._adj[v][u] = self._adj[v][u]
-        H.graph = self.graph
-        return H
+        return nx.edge_subgraph(self, edges)
 
     def nodes_with_selfloops(self):
         """Returns an iterator over nodes with self loops.

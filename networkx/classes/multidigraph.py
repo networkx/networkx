@@ -667,51 +667,82 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """Return True if graph is directed, False otherwise."""
         return True
 
-    def to_directed(self):
-        """Return a directed copy of the graph.
+    def fresh_copy(self):
+        """Return a fresh copy graph with the same data structure."""
+        return nx.MultiDiGraph()
 
-        Returns
-        -------
-        G : MultiDiGraph
-            A deepcopy of the graph.
+    def copy(self, as_view=False):
+        """Return a copy of the graph.
 
-        Notes
-        -----
-        If edges in both directions (u, v) and (v, u) exist in the
-        graph, attributes for the new undirected edge will be a combination of
-        the attributes of the directed edges.  The edge data is updated
-        in the (arbitrary) order that the edges are encountered.  For
-        more customized control of the edge attributes use add_edge().
+        All copies reproduce the graph structure, but data attributes
+        may be handled in different ways. There are four types of copies
+        of a graph that people might want.
 
-        This returns a "deepcopy" of the edge, node, and
-        graph attributes which attempts to completely copy
-        all of the data and references.
+        Deepcopy -- The default behavior is a "deepcopy" where the graph
+        structure as well as all data attributes and any objects they might
+        contain are copied. The entire graph object is new so that changes
+        in the copy do not affect the original object.
 
-        This is in contrast to the similar G=DiGraph(D) which returns a
-        shallow copy of the data.
+        Data Reference (Shallow) -- For a shallow copy (with_data=False)
+        the graph structure is copied but the edge, node and graph attribute
+        dicts are references to those in the original graph. This saves
+        time and memory but could cause confusion if you change an attribute
+        in one graph and it changes the attribute in the other.
+
+        Independent Shallow -- This copy creates new independent attribute
+        dicts and then does a shallow copy of the attributes. That is, any
+        attributes that are containers are shared between the new graph
+        and the original. This type of copy is not enabled. Instead use:
+
+            >>> G = nx.path_graph(5)
+            >>> H = G.__class__(G)
+
+        Fresh Data-- For fresh data, the graph structure is copied while
+        new empty data attribute dicts are created. The resulting graph
+        is independent of the original and it has no edge, node or graph
+        attributes. Fresh copies are not enabled. Instead use:
+
+            >>> H = G.__class__()
+            >>> H.add_nodes_from(G)
+            >>> H.add_edges_from(G.edges())
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
 
+        Parameters
+        ----------
+        with_data : bool, optional (default=True)
+            If True, the returned graph will have a deep copy of the
+            graph, node, and edge attributes of this object. Otherwise,
+            the returned graph will be a shallow copy.
+
+        Returns
+        -------
+        G : Graph
+            A copy of the graph.
+
+        See Also
+        --------
+        to_directed: return a directed copy of the graph.
+
         Examples
         --------
-        >>> G = nx.Graph()   # or MultiGraph, etc
-        >>> G.add_edge(0, 1)
-        >>> H = G.to_directed()
-        >>> list(H.edges())
-        [(0, 1), (1, 0)]
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> H = G.copy()
 
-        If already directed, return a (deep) copy
-
-        >>> G = nx.MultiDiGraph()
-        >>> key = G.add_edge(0, 1)
-        >>> H = G.to_directed()
-        >>> list(H.edges())
-        [(0, 1)]
         """
-        return deepcopy(self)
+        if as_view is True:
+            return nx.graphviews.MultiDiGraphView(self)
+        G = self.fresh_copy()
+        G.graph.update(self.graph)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        G.add_edges_from((u, v, key, datadict.copy())
+                         for u, nbrs in self.adj.items()
+                         for v, keydict in nbrs.items()
+                         for key, datadict in keydict.items())
+        return G
 
-    def to_undirected(self, reciprocal=False):
+    def to_undirected(self, reciprocal=False, as_view=False):
         """Return an undirected representation of the digraph.
 
         Parameters
@@ -747,26 +778,27 @@ class MultiDiGraph(MultiGraph, DiGraph):
         MultiDiGraph created by this method.
 
         """
-        H = MultiGraph()
-        H.name = self.name
-        H.add_nodes_from(self)
+        if as_view is True:
+            return nx.graphviews.MultiGraphView(self)
+        # deepcopy when not a view
+        G = MultiGraph()
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
-            H.add_edges_from((u, v, key, deepcopy(data))
-                             for u, nbrs in self.adjacency()
+            G.add_edges_from((u, v, key, deepcopy(data))
+                             for u, nbrs in self.adj.items()
                              for v, keydict in nbrs.items()
                              for key, data in keydict.items()
-                             if self.has_edge(v, u, key))
+                             if v in self.pred[u] and key in self.pred[u][v])
         else:
-            H.add_edges_from((u, v, key, deepcopy(data))
-                             for u, nbrs in self.adjacency()
+            G.add_edges_from((u, v, key, deepcopy(data))
+                             for u, nbrs in self.adj.items()
                              for v, keydict in nbrs.items()
                              for key, data in keydict.items())
-        H.graph = deepcopy(self.graph)
-        H._node = deepcopy(self._node)
-        return H
+        return G
 
     def subgraph(self, nbunch):
-        """Return the subgraph induced on nodes in nbunch.
+        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch
         and the edges between those nodes.
@@ -803,120 +835,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> list(H.edges())
         [(0, 1), (1, 2)]
         """
-        bunch = self.nbunch_iter(nbunch)
-        # create new graph and copy subgraph into it
-        H = self.__class__()
-        # copy node and attribute dictionaries
-        for n in bunch:
-            H._node[n] = self._node[n]
-        # namespace shortcuts for speed
-        H_succ = H._succ
-        H_pred = H._pred
-        self_succ = self._succ
-        self_pred = self._pred
-        # add nodes
-        for n in H:
-            H_succ[n] = H.adjlist_inner_dict_factory()
-            H_pred[n] = H.adjlist_inner_dict_factory()
-        # add edges
-        for u in H_succ:
-            Hnbrs = H_succ[u]
-            for v, edgedict in self_succ[u].items():
-                if v in H_succ:
-                    # add both representations of edge: u-v and v-u
-                    # they share the same edgedict
-                    ed = edgedict.copy()
-                    Hnbrs[v] = ed
-                    H_pred[v][u] = ed
-        H.graph = self.graph
-        return H
-
-    def edge_subgraph(self, edges):
-        """Returns the subgraph induced by the specified edges.
-
-        The induced subgraph contains each edge in `edges` and each
-        node incident to any one of those edges.
-
-        Parameters
-        ----------
-        edges : iterable
-            An iterable of edges in this graph.
-
-        Returns
-        -------
-        G : Graph
-            An edge-induced subgraph of this graph with the same edge
-            attributes.
-
-        Notes
-        -----
-        The graph, edge, and node attributes in the returned subgraph
-        are references to the corresponding attributes in the original
-        graph. Thus changes to the node or edge structure of the
-        returned graph will not be reflected in the original graph, but
-        changes to the attributes will.
-
-        To create a subgraph with its own copy of the edge or node
-        attributes, use::
-
-            >>> nx.MultiDiGraph(G.edge_subgraph(edges))  # doctest: +SKIP
-
-        If edge attributes are containers, a deep copy of the attributes
-        can be obtained using::
-
-            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
-
-        Examples
-        --------
-        Get a subgraph induced by only those edges that have a certain
-        attribute::
-
-            >>> # Create a graph in which some edges are "good" and some "bad".
-            >>> G = nx.MultiDiGraph()
-            >>> key = G.add_edge(0, 1, key=0, good=True)
-            >>> key = G.add_edge(0, 1, key=1, good=False)
-            >>> key = G.add_edge(1, 2, key=0, good=False)
-            >>> key = G.add_edge(1, 2, key=1, good=True)
-            >>> # Keep only those edges that are marked as "good".
-            >>> edges = G.edges(keys=True, data='good')
-            >>> edges = ((u, v, k) for (u, v, k, good) in edges if good)
-            >>> H = G.edge_subgraph(edges)
-            >>> list(H.edges(keys=True, data=True))
-            [(0, 1, 0, {'good': True}), (1, 2, 1, {'good': True})]
-
-        """
-        H = self.__class__()
-        succ = self._succ
-
-        # Filter out edges that don't correspond to nodes in the graph.
-        def is_in_graph(u, v, k):
-            return u in succ and v in succ[u] and k in succ[u][v]
-
-        edges = (e for e in edges if is_in_graph(*e))
-        for u, v, k in edges:
-            # Copy the node attributes if they haven't been copied
-            # already.
-            if u not in H.node:
-                H._node[u] = self._node[u]
-            if v not in H.node:
-                H._node[v] = self._node[v]
-            # Create an entry in the successors and predecessors
-            # dictionary for the nodes u and v if they don't exist yet.
-            if u not in H._succ:
-                H._succ[u] = H.adjlist_inner_dict_factory()
-            if v not in H._pred:
-                H._pred[v] = H.adjlist_inner_dict_factory()
-            # Create an entry in the edge dictionary for the edges (u,
-            # v) and (v, u) if the don't exist yet.
-            if v not in H._succ[u]:
-                H._succ[u][v] = H.edge_key_dict_factory()
-            if u not in H._pred[v]:
-                H._pred[v][u] = H.edge_key_dict_factory()
-            # Copy the edge attributes.
-            H._succ[u][v][k] = self._succ[u][v][k]
-            H._pred[v][u][k] = self._pred[v][u][k]
-        H.graph = self.graph
-        return H
+        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
+        return nx.graphviews.SubMultiDiGraph(self, induced_nodes)
 
     def reverse(self, copy=True):
         """Return the reverse of the graph.
@@ -933,13 +853,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         if copy:
             H = self.__class__(name="Reverse of (%s)" % self.name)
-            H.add_nodes_from(self)
+            H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
             H.add_edges_from((v, u, k, deepcopy(d)) for u, v, k, d
                              in self.edges(keys=True, data=True))
-            H.graph = deepcopy(self.graph)
-            H._node = deepcopy(self._node)
-        else:
-            self._pred, self._succ = self._succ, self._pred
-            self._adj = self._succ
-            H = self
-        return H
+            H.graph.update(deepcopy(self.graph))
+            return H
+        return nx.graphviews.MultiReverseView(self)

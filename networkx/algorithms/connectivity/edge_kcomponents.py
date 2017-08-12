@@ -565,11 +565,11 @@ def general_k_edge_subgraphs(G, k):
     # Quick return optimization
     if G.number_of_nodes() < k:
         for node in G.nodes():
-            yield G.subgraph([node])
+            yield G.subgraph([node]).copy()
         raise StopIteration()
 
     # Intermediate results
-    R0 = {G.subgraph(cc) for cc in find_ccs(G)}
+    R0 = {G.subgraph(cc).copy() for cc in find_ccs(G)}
     # Subdivide CCs in the intermediate results until they are k-conn
     while R0:
         G1 = R0.pop()
@@ -583,7 +583,7 @@ def general_k_edge_subgraphs(G, k):
                 # G1 is not k-edge-connected, so subdivide it
                 G1.remove_edges_from(cut_edges)
                 for cc in find_ccs(G1):
-                    R0.add(G1.subgraph(cc))
+                    R0.add(G1.subgraph(cc).copy())
             else:
                 # Otherwise we found a k-edge-connected subgraph
                 yield G1

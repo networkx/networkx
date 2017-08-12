@@ -90,7 +90,7 @@ class test_graphview(object):
 
 
 class test_digraphview(test_graphview):
-    gview = nx.graphviews.DiSubGraph
+    gview = nx.graphviews.SubDiGraph
     graph = nx.DiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_diedges)
     show_edges_filter = staticmethod(nx.filters.show_diedges)
@@ -129,7 +129,7 @@ class test_digraphview(test_graphview):
 
 # multigraph
 class test_multigraphview(test_graphview):
-    gview = nx.graphviews.MultiSubGraph
+    gview = nx.graphviews.SubMultiGraph
     graph = nx.MultiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multiedges)
     show_edges_filter = staticmethod(nx.filters.show_multiedges)
@@ -184,13 +184,12 @@ class test_multigraphview(test_graphview):
 
 # multidigraph
 class test_multidigraphview(test_multigraphview, test_digraphview):
-    gview = nx.graphviews.MultiDiSubGraph
+    gview = nx.graphviews.SubMultiDiGraph
     graph = nx.MultiDiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multidiedges)
     show_edges_filter = staticmethod(nx.filters.show_multidiedges)
     hide_edges = [(2, 3, 0), (8, 7, 0), (222, 223, 0)]
     excluded = {(2, 3, 0), (3, 4, 0), (4, 5, 0), (5, 6, 0)}
-
 
     def test_inout_degree(self):
         edges_gone = self.hide_edges_filter(self.hide_edges)
