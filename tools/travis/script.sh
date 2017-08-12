@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-set -ex
 
 section "Script section"
+set -ex
 
 export NX_INSTALL=`pip show networkx | grep Location | awk '{print $2"/networkx"}'`;
 
@@ -23,4 +23,5 @@ printenv PWD;
 # Run nosetests.
 nosetests --verbosity=2 --with-ignore-docstrings --with-coverage --cover-package=networkx;
 
+set +ex
 section_end "Script section"
