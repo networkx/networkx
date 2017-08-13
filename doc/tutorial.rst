@@ -281,9 +281,9 @@ Add node attributes using ``add_node()``, ``add_nodes_from()``, or ``G.node``
 
     >>> G.add_node(1, time='5pm')
     >>> G.add_nodes_from([3], time='2pm')
-    >>> G.node[1]
+    >>> G.nodes[1]
     {'time': '5pm'}
-    >>> G.node[1]['room'] = 714
+    >>> G.nodes[1]['room'] = 714
     >>> list(G.nodes(data=True))
     [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
 
@@ -305,7 +305,7 @@ Add edge attributes using ``add_edge()``, ``add_edges_from()``, or subscript not
 The special attribute ``weight`` should be numeric and holds values used by
 algorithms requiring weighted edges.
 
-.. warning:: Do not assign anything to ``G.edge[u]`` or ``G.edge[u][v]`` as it will
+.. warning:: Do not assign anything to ``G.edges[u]`` or ``G.edges[u][v]`` as it will
    corrupt the graph data structure. Change the edge `dict` as shown above.
 
 Directed graphs

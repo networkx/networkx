@@ -21,7 +21,7 @@ Glossary
    edge attribute
       Edges can have arbitrary Python objects assigned as attributes
       by using keyword/value pairs when adding an edge
-      assigning to the ``G.edge[u][v]`` attribute dictionary for the
+      assigning to the ``G.edges[u][v]`` attribute dictionary for the
       specified edge *u*-*v*.
 
    hashable
@@ -53,5 +53,5 @@ Glossary
    node attribute
      Nodes can have arbitrary Python objects assigned as attributes
      by using keyword/value pairs when adding a node or
-     assigning to the ``G.node[n]`` attribute dictionary for the
+     assigning to the ``G.nodes[n]`` attribute dictionary for the
      specified node ``n``.

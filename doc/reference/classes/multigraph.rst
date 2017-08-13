@@ -63,9 +63,6 @@ Information about graph structure
    MultiGraph.degree
    MultiGraph.size
    MultiGraph.number_of_edges
-   MultiGraph.nodes_with_selfloops
-   MultiGraph.selfloop_edges
-   MultiGraph.number_of_selfloops
 
 
 Making copies and subgraphs

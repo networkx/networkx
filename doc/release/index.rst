@@ -5,7 +5,7 @@ API changes
 .. toctree::
    :maxdepth: 2
 
-   release_2.0
+   release_dev
    api_1.11
    api_1.10
    api_1.9

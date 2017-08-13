@@ -67,9 +67,6 @@ Information about graph structure
    DiGraph.out_degree
    DiGraph.size
    DiGraph.number_of_edges
-   DiGraph.nodes_with_selfloops
-   DiGraph.selfloop_edges
-   DiGraph.number_of_selfloops
 
 
 Making copies and subgraphs

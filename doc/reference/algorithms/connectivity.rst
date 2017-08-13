@@ -10,7 +10,10 @@ K-edge-components
 .. autosummary::
    :toctree: generated/
 
-   edge_kcomponents
+   k_edge_components
+   k_edge_subgraphs
+   bridge_components
+   EdgeComponentAuxGraph
 
 K-node-components
 -----------------

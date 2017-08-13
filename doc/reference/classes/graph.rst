@@ -62,9 +62,6 @@ Information about graph structure
    Graph.degree
    Graph.size
    Graph.number_of_edges
-   Graph.nodes_with_selfloops
-   Graph.selfloop_edges
-   Graph.number_of_selfloops
 
 
 Making copies and subgraphs
