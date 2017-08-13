@@ -15,7 +15,7 @@ See :doc:`release/migration_guide_from_1.x_to_2.0`.
 Release notes
 ~~~~~~~~~~~~~
 
-See :doc:`release/release_2.0`.
+See :doc:`release/release_dev`.
 
 NetworkX 1.11
 -------------

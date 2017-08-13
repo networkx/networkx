@@ -42,6 +42,14 @@ Edges
    number_of_edges
    non_edges
 
+Self loops
+----------
+.. autosummary::
+   :toctree: generated/
+
+   selfloop_edges
+   number_of_selfloops
+   nodes_with_selfloops
 
 Attributes
 ----------
