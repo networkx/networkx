@@ -87,20 +87,21 @@ Optional packages
 
 The following optional packages provide additional functionality.
 
-- `NumPy <http://www.numpy.org/>`_ (>= 1.6) provides matrix representation of
+- `NumPy <http://www.numpy.org/>`_ (>= 1.12.0) provides matrix representation of
   graphs and is used in some graph algorithms for high-performance matrix
   computations.
-- `SciPy <http://scipy.org/>`_ (>= 0.10) provides sparse matrix representation
+- `SciPy <http://scipy.org/>`_ (>= 0.19.0) provides sparse matrix representation
   of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ (>= 0.8) provides a DataFrame, which
+- `pandas <http://pandas.pydata.org/>`_ (>= 0.20.0) provides a DataFrame, which
   is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 1.1) provides flexible drawing of
+- `Matplotlib <http://matplotlib.org/>`_ (>= 2.0.2) provides flexible drawing of
   graphs.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.3) provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
 - `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
 - `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
+- `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
 To install ``networkx`` and all optional packages, do::
 
