@@ -108,9 +108,9 @@ package_data = {
     'networkx.utils': ['tests/*.py']
 }
 
-install_requires = ['decorator>=3.4.0']
+install_requires = ['decorator>=4.1.0']
 extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
-                          'pygraphviz', 'pydot', 'pyyaml', 'gdal']}
+                          'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml']}
 
 if __name__ == "__main__":
 
