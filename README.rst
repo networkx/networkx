@@ -8,7 +8,7 @@ NetworkX
    :target: https://ci.appveyor.com/project/dschult/networkx-pqott
 
 .. image:: https://readthedocs.org/projects/networkx/badge/?version=latest
-   :target: https://readthedocs.org/projects/networkx/?badge=latest
+   :target: https://networkx.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
 .. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
