@@ -288,7 +288,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     for nodes in k_edge_subgraphs:
         if len(nodes) > 1:
             # Get the k-edge-connected subgraph
-            C = H.subgraph(nodes)
+            C = H.subgraph(nodes).copy()
             # Find the internal edges that were available
             sub_avail = {
                 d['generator']: d['weight']
@@ -734,8 +734,10 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     # Use the meta graph to shrink avail to a small feasible subset
     mapping = C.graph['mapping']
     # Choose the minimum weight feasible edge in each group
-    candidate_mapping = _lightest_meta_edges(mapping, avail_uv, avail_w)
-    candidate_mapping = list(candidate_mapping)
+    meta_to_wuv = {
+        (mu, mv): (w, uv)
+        for (mu, mv), uv, w in _lightest_meta_edges(mapping, avail_uv, avail_w)
+    }
 
     """
     Mapping of terms from (Khuller and Thurimella):
@@ -745,39 +747,50 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         (mu, mv)  : E - E^0  # they group both avail and given edges in E
         T         : \Gamma
         D         : G^D = (V, E_D)
-        The paper uses ancestor because children point to parents,
-        in the networkx context this would be descendant.
-        So, lowest_common_ancestor = most_recent_descendant
+
+        The paper uses ancestor because children point to parents, which is
+        contrary to networkx standards.  So, we actually need to run
+        nx.least_common_ancestor on the reversed Tree.
     """
     # Pick an arbitrary leaf from C as the root
     root = next(n for n in C.nodes() if C.degree(n) == 1)
-    # Root C into a tree T by directing all edges towards the root
-    T = nx.reverse(nx.dfs_tree(C, root))
+    # Root C into a tree TR by directing all edges away from the root
+    # Note in their paper T directs edges towards the root
+    TR = nx.dfs_tree(C, root)
+
     # Add to D the directed edges of T and set their weight to zero
     # This indicates that it costs nothing to use edges that were given.
-    D = T.copy()
+    D = nx.reverse(TR).copy()
+
     nx.set_edge_attributes(D, name='weight', values=0)
-    # Add in feasible edges with respective weights
-    for (mu, mv), uv, w in candidate_mapping:
-        mrd = _most_recent_descendant(T, mu, mv)
-        if mrd == mu:
-            # If u is descendant of v, then add edge u->v
-            D.add_edge(mrd, mv, weight=w, generator=uv)
-        elif mrd == mv:
-            # If v is descendant of u, then add edge v->u
-            D.add_edge(mrd, mu, weight=w, generator=uv)
+
+    # The LCA of mu and mv in T is the shared ancestor of mu and mv that is
+    # located farthest from the root.
+    lca_gen = nx.tree_all_pairs_lowest_common_ancestor(
+        TR, root=root, pairs=meta_to_wuv.keys())
+
+    for (mu, mv), lca in lca_gen:
+        w, uv = meta_to_wuv[(mu, mv)]
+        if lca == mu:
+            # If u is an ancestor of v in TR, then add edge u->v to D
+            D.add_edge(lca, mv, weight=w, generator=uv)
+        elif lca == mv:
+            # If v is an ancestor of u in TR, then add edge v->u to D
+            D.add_edge(lca, mu, weight=w, generator=uv)
         else:
-            # If neither u nor v is a descendant of the other
-            # let t = mrd(u, v) and add edges t->u and t->v
-            # Need to track the original edge that GENERATED these edges.
-            D.add_edge(mrd, mu, weight=w, generator=uv)
-            D.add_edge(mrd, mv, weight=w, generator=uv)
+            # If neither u nor v is a ancestor of the other in TR
+            # let t = lca(TR, u, v) and add edges t->u and t->v
+            # Track the original edge that GENERATED these edges.
+            D.add_edge(lca, mu, weight=w, generator=uv)
+            D.add_edge(lca, mv, weight=w, generator=uv)
 
     # Then compute a minimum rooted branching
-    # If there is no branching then augmentation is not possible
     try:
+        # Note the original edges must be directed towards to root for the
+        # branching to give us a bridge-augmentation.
         A = _minimum_rooted_branching(D, root)
     except nx.NetworkXException:
+        # If there is no branching then augmentation is not possible
         raise nx.NetworkXUnfeasible('no 2-edge-augmentation possible')
 
     # For each edge e, in the branching that did not belong to the directed
@@ -818,34 +831,6 @@ def _minimum_rooted_branching(D, root):
     # Then compute the branching / arborescence.
     A = nx.minimum_spanning_arborescence(rooted)
     return A
-
-
-def _most_recent_descendant(D, u, v):
-    # Find a closest common descendant
-    assert nx.is_directed_acyclic_graph(D), 'Must be DAG'
-    v_branch = nx.descendants(D, v).union({v})
-    u_branch = nx.descendants(D, u).union({u})
-    common = v_branch & u_branch
-    node_depth = (
-        ((c, (nx.shortest_path_length(D, u, c) +
-              nx.shortest_path_length(D, v, c)))
-         for c in common))
-    mrd = min(node_depth, key=lambda t: t[1])[0]
-    return mrd
-
-
-def _lowest_common_anscestor(D, u, v):
-    # Find a common ancestor furthest away
-    assert nx.is_directed_acyclic_graph(D), 'Must be DAG'
-    v_branch = nx.anscestors(D, v).union({v})
-    u_branch = nx.anscestors(D, u).union({u})
-    common = v_branch & u_branch
-    node_depth = (
-        ((c, (nx.shortest_path_length(D, c, u) +
-              nx.shortest_path_length(D, c, v)))
-         for c in common))
-    mrd = max(node_depth, key=lambda t: t[1])[0]
-    return mrd
 
 
 def collapse(G, grouped_nodes):

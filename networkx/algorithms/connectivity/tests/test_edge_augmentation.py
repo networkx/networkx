@@ -161,20 +161,19 @@ def test_unfeasible():
 def test_tarjan():
     G = tarjan_bridge_graph()
 
-    avail = [(9, 7), (8, 5), (2, 10), (6, 13), (11, 18), (1, 17), (2, 3),
-             (16, 17), (18, 14), (15, 14)]
-
     aug_edges = set(_augment_and_check(G, k=2)[0])
     print('aug_edges = {!r}'.format(aug_edges))
+    # cant assert edge exactly equality due to non-determenant edge order
+    # but we do know the size of the solution must be 3
     assert_equal(len(aug_edges), 3)
-    # dont assert exactly equal due to non-determenant edge order
-    # assert_equal(aug_edges, {(12, 9), (12, 15), (6, 12)})
 
+    avail = [(9, 7), (8, 5), (2, 10), (6, 13), (11, 18), (1, 17), (2, 3),
+             (16, 17), (18, 14), (15, 14)]
     aug_edges = set(_augment_and_check(G, avail=avail, k=2)[0])
-    print('aug_edges = {!r}'.format(aug_edges))
-    assert_equal(len(aug_edges), 3)
-    # dont assert exactly equal due to non-determenant edge order
-    # assert_equal(aug_edges, {(6, 13), (11, 18), (2, 10)})
+
+    # Can't assert exact length since approximation depnds on the order of a
+    # dict traversal.
+    assert_less_equal(len(aug_edges), 3 * 2)
 
     _check_augmentations(G, avail)
 
@@ -184,7 +183,7 @@ def test_configuration():
     for seed in seeds:
         deg_seq = nx.random_powerlaw_tree_sequence(20, seed=seed, tries=5000)
         G = nx.Graph(nx.configuration_model(deg_seq, seed=seed))
-        G.remove_edges_from(G.selfloop_edges())
+        G.remove_edges_from(nx.selfloop_edges(G))
         _check_augmentations(G)
 
 
@@ -480,27 +479,3 @@ def _check_unconstrained_bridge_property(G, info1):
         size_aug = info1['num_edges']
         assert_equal(size_aug, size_target, (
             'augmentation size is different from what theory predicts'))
-
-if __name__ == '__main__':
-    # TODO: remove after development is complete
-    import utool as ut
-    ut.cprint('--- TEST EDGE AUG ---', 'blue')
-
-    test_names = sorted([k for k in vars().keys() if k.startswith('test_')])
-    # test_names = [
-    #     'test_clique_and_node'
-    # ]
-    #     'test_zero_k_exception',
-    #     # 'test_tarjan_bridge',
-    #     'test_karate',
-    #     'test_random_gnp_directed',
-    # ]
-    times = {}
-    for key in test_names:
-        import ubelt as ub
-        ut.cprint('Testing func = {!r}'.format(key), 'blue')
-        func = vars()[key]
-        with ub.Timer(label=key, verbose=True) as t:
-            func()
-        times[key] = t.ellapsed
-        print(ut.repr4(ut.sort_dict(times, 'vals')))
