@@ -70,12 +70,12 @@ if __name__ == '__main__':
     nx.draw(H, pos, with_labels=False, node_size=10)
 
     # Draw block model with weighted edges and nodes sized by number of internal nodes
-    node_size = [BM.node[x]['nnodes'] * 10 for x in BM.nodes()]
+    node_size = [BM.nodes[x]['nnodes'] * 10 for x in BM.nodes()]
     edge_width = [(2 * d['weight']) for (u, v, d) in BM.edges(data=True)]
     # Set positions to mean of positions of internal nodes from original graph
     posBM = {}
     for n in BM:
-        xy = numpy.array([pos[u] for u in BM.node[n]['graph']])
+        xy = numpy.array([pos[u] for u in BM.nodes[n]['graph']])
         posBM[n] = xy.mean(axis=0)
     plt.subplot(212)
     nx.draw(BM, posBM, node_size=node_size, width=edge_width, with_labels=False)
