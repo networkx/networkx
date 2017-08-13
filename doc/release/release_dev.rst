@@ -192,6 +192,14 @@ API Changes
 Deprecations
 ------------
 
+The following deprecated functions will be removed in 2.1.
+
+- The function ``bellman_ford`` has been deprecated in favor of
+  ``bellman_ford_predecessor_and_distance``.
+
+- The functions ``to_pandas_dataframe`` and ``from_pandas_dataframe`` have been
+  deprecated in favor of ``to_pandas_adjacency``, ``from_pandas_adjacency``,
+  ``to_pandas_edgelist``, and ``from_pandas_edgelist``.
 
 Contributors to this release
 ----------------------------

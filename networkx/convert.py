@@ -55,12 +55,12 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     The preferred way to call this is automatically
     from the class constructor
 
-    >>> d={0: {1: {'weight':1}}} # dict-of-dicts single edge (0,1)
-    >>> G=nx.Graph(d)
+    >>> d = {0: {1: {'weight':1}}} # dict-of-dicts single edge (0,1)
+    >>> G = nx.Graph(d)
 
     instead of the equivalent
 
-    >>> G=nx.from_dict_of_dicts(d)
+    >>> G = nx.from_dict_of_dicts(d)
 
     Parameters
     ----------
@@ -120,11 +120,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 raise TypeError("Input is not known type.")
 
     # list or generator of edges
-    if (isinstance(data, list) or
-        isinstance(data, tuple) or
-        hasattr(data, '_adjdict') or
-        hasattr(data, 'next') or
-        hasattr(data, '__next__')):
+
+    if (isinstance(data, (list, tuple)) or
+            any(hasattr(data, attr) for attr in ['_adjdict', 'next', '__next__'])):
         try:
             return from_edgelist(data, create_using=create_using)
         except:
@@ -134,11 +132,18 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     try:
         import pandas as pd
         if isinstance(data, pd.DataFrame):
-            try:
-                return nx.from_pandas_dataframe(data, edge_attr=True, create_using=create_using)
-            except:
-                msg = "Input is not a correct Pandas DataFrame."
-                raise nx.NetworkXError(msg)
+            if data.shape[0] == data.shape[1]:
+                try:
+                    return nx.from_pandas_adjacency(data, create_using=create_using)
+                except:
+                    msg = "Input is not a correct Pandas DataFrame adjacency matrix."
+                    raise nx.NetworkXError(msg)
+            else:
+                try:
+                    return nx.from_pandas_edgelist(data, edge_attr=True, create_using=create_using)
+                except:
+                    msg = "Input is not a correct Pandas DataFrame edge-list."
+                    raise nx.NetworkXError(msg)
     except ImportError:
         msg = 'pandas not found, skipping conversion test.'
         warnings.warn(msg, ImportWarning)
@@ -146,7 +151,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     # numpy matrix or ndarray
     try:
         import numpy
-        if isinstance(data, numpy.matrix) or isinstance(data, numpy.ndarray):
+        if isinstance(data, (numpy.matrix, numpy.ndarray)):
             try:
                 return nx.from_numpy_matrix(data, create_using=create_using)
             except:
@@ -171,8 +176,6 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     raise nx.NetworkXError(
         "Input is not a known data type for conversion.")
-
-    return
 
 
 def to_dict_of_lists(G, nodelist=None):
@@ -213,11 +216,12 @@ def from_dict_of_lists(d, create_using=None):
 
     Examples
     --------
-    >>> dol= {0:[1]} # single edge (0,1)
-    >>> G=nx.from_dict_of_lists(dol)
+    >>> dol = {0: [1]} # single edge (0,1)
+    >>> G = nx.from_dict_of_lists(dol)
 
     or
-    >>> G=nx.Graph(dol) # use Graph constructor
+
+    >>> G = nx.Graph(dol) # use Graph constructor
 
     """
     G = _prep_create_using(create_using)
@@ -296,11 +300,12 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
 
     Examples
     --------
-    >>> dod= {0: {1:{'weight':1}}} # single edge (0,1)
-    >>> G=nx.from_dict_of_dicts(dod)
+    >>> dod = {0: {1: {'weight': 1}}} # single edge (0,1)
+    >>> G = nx.from_dict_of_dicts(dod)
 
     or
-    >>> G=nx.Graph(dod) # use Graph constructor
+
+    >>> G = nx.Graph(dod) # use Graph constructor
 
     """
     G = _prep_create_using(create_using)
@@ -314,13 +319,13 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                                  for u, nbrs in d.items()
                                  for v, datadict in nbrs.items()
                                  for key, data in datadict.items()
-                                 )
+                                )
             else:
                 G.add_edges_from((u, v, data)
                                  for u, nbrs in d.items()
                                  for v, datadict in nbrs.items()
                                  for key, data in datadict.items()
-                                 )
+                                )
         else:  # Undirected
             if G.is_multigraph():
                 seen = set()   # don't add both directions of undirected graph
@@ -329,7 +334,7 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                         if (u, v) not in seen:
                             G.add_edges_from((u, v, key, data)
                                              for key, data in datadict.items()
-                                             )
+                                            )
                             seen.add((v, u))
             else:
                 seen = set()   # don't add both directions of undirected graph
@@ -373,8 +378,7 @@ def to_edgelist(G, nodelist=None):
     """
     if nodelist is None:
         return G.edges(data=True)
-    else:
-        return G.edges(nodelist, data=True)
+    return G.edges(nodelist, data=True)
 
 
 def from_edgelist(edgelist, create_using=None):
@@ -390,11 +394,12 @@ def from_edgelist(edgelist, create_using=None):
 
     Examples
     --------
-    >>> edgelist= [(0,1)] # single edge (0,1)
-    >>> G=nx.from_edgelist(edgelist)
+    >>> edgelist = [(0, 1)] # single edge (0,1)
+    >>> G = nx.from_edgelist(edgelist)
 
     or
-    >>> G=nx.Graph(edgelist) # use Graph constructor
+
+    >>> G = nx.Graph(edgelist) # use Graph constructor
 
     """
     G = _prep_create_using(create_using)
