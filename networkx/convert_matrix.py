@@ -191,8 +191,8 @@ def from_pandas_adjacency(df, create_using=None):
     try:
         df = df[df.index]
     except:
-        raise nx.NetworkXError("Columns must match Indices.",
-                "%s not in columns"%list(set(df.index).difference(set(df.columns))))
+        raise nx.NetworkXError("Columns must match Indices.", "%s not in columns" %
+                               list(set(df.index).difference(set(df.columns))))
 
     nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
     return G
@@ -258,7 +258,7 @@ def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
 
 
 def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
-                          create_using=None):
+                         create_using=None):
     """Return a graph from Pandas DataFrame containing an edge list.
 
     The Pandas DataFrame should contain at least two columns of node names and

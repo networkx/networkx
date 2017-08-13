@@ -2,19 +2,20 @@ from nose import SkipTest
 from nose.tools import assert_raises, assert_true, assert_equal
 
 import networkx as nx
-from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
+from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 from networkx.testing.utils import assert_graphs_equal
 
 
 class TestConvertNumpy(object):
-    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
+
     @classmethod
     def setupClass(cls):
         global np
         global np_assert_equal
         try:
             import numpy as np
-            np_assert_equal=np.testing.assert_equal
+            np_assert_equal = np.testing.assert_equal
         except ImportError:
             raise SkipTest('NumPy not available.')
 
@@ -25,7 +26,6 @@ class TestConvertNumpy(object):
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
 
-
     def test_exceptions(self):
         G = np.array("a")
         assert_raises(nx.NetworkXError, nx.to_networkx_graph, G)
@@ -33,12 +33,12 @@ class TestConvertNumpy(object):
     def create_weighted(self, G):
         g = cycle_graph(4)
         G.add_nodes_from(g)
-        G.add_weighted_edges_from( (u,v,10+u) for u,v in g.edges())
+        G.add_weighted_edges_from((u, v, 10 + u) for u, v in g.edges())
         return G
 
     def assert_equal(self, G1, G2):
-        assert_true( sorted(G1.nodes())==sorted(G2.nodes()) )
-        assert_true( sorted(G1.edges())==sorted(G2.edges()) )
+        assert_true(sorted(G1.nodes()) == sorted(G2.nodes()))
+        assert_true(sorted(G1.edges()) == sorted(G2.edges()))
 
     def identity_conversion(self, G, A, create_using):
         assert(A.sum() > 0)
@@ -51,7 +51,7 @@ class TestConvertNumpy(object):
 
     def test_shape(self):
         "Conversion from non-square array."
-        A=np.array([[1,2,3],[4,5,6]])
+        A = np.array([[1, 2, 3], [4, 5, 6]])
         assert_raises(nx.NetworkXError, nx.from_numpy_matrix, A)
 
     def test_identity_graph_matrix(self):
@@ -113,66 +113,66 @@ class TestConvertNumpy(object):
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3)) for n in range(3) )
+        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_matrix(P4)
-        np_assert_equal(A, nx.to_numpy_matrix(WP4,weight=None))
-        np_assert_equal(0.5*A, nx.to_numpy_matrix(WP4))
-        np_assert_equal(0.3*A, nx.to_numpy_matrix(WP4,weight='other'))
+        np_assert_equal(A, nx.to_numpy_matrix(WP4, weight=None))
+        np_assert_equal(0.5 * A, nx.to_numpy_matrix(WP4))
+        np_assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight='other'))
 
     def test_from_numpy_matrix_type(self):
-        A=np.matrix([[1]])
-        G=nx.from_numpy_matrix(A)
-        assert_equal(type(G[0][0]['weight']),int)
+        A = np.matrix([[1]])
+        G = nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']), int)
 
-        A=np.matrix([[1]]).astype(np.float)
-        G=nx.from_numpy_matrix(A)
-        assert_equal(type(G[0][0]['weight']),float)
+        A = np.matrix([[1]]).astype(np.float)
+        G = nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']), float)
 
-        A=np.matrix([[1]]).astype(np.str)
-        G=nx.from_numpy_matrix(A)
-        assert_equal(type(G[0][0]['weight']),str)
+        A = np.matrix([[1]]).astype(np.str)
+        G = nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']), str)
 
-        A=np.matrix([[1]]).astype(np.bool)
-        G=nx.from_numpy_matrix(A)
-        assert_equal(type(G[0][0]['weight']),bool)
+        A = np.matrix([[1]]).astype(np.bool)
+        G = nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']), bool)
 
-        A=np.matrix([[1]]).astype(np.complex)
-        G=nx.from_numpy_matrix(A)
-        assert_equal(type(G[0][0]['weight']),complex)
+        A = np.matrix([[1]]).astype(np.complex)
+        G = nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']), complex)
 
-        A=np.matrix([[1]]).astype(np.object)
-        assert_raises(TypeError,nx.from_numpy_matrix,A)
+        A = np.matrix([[1]]).astype(np.object)
+        assert_raises(TypeError, nx.from_numpy_matrix, A)
 
     def test_from_numpy_matrix_dtype(self):
-        dt=[('weight',float),('cost',int)]
-        A=np.matrix([[(1.0,2)]],dtype=dt)
-        G=nx.from_numpy_matrix(A)
-        assert_equal(type(G[0][0]['weight']),float)
-        assert_equal(type(G[0][0]['cost']),int)
-        assert_equal(G[0][0]['cost'],2)
-        assert_equal(G[0][0]['weight'],1.0)
+        dt = [('weight', float), ('cost', int)]
+        A = np.matrix([[(1.0, 2)]], dtype=dt)
+        G = nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']), float)
+        assert_equal(type(G[0][0]['cost']), int)
+        assert_equal(G[0][0]['cost'], 2)
+        assert_equal(G[0][0]['weight'], 1.0)
 
     def test_to_numpy_recarray(self):
-        G=nx.Graph()
-        G.add_edge(1,2,weight=7.0,cost=5)
-        A=nx.to_numpy_recarray(G,dtype=[('weight',float),('cost',int)])
-        assert_equal(sorted(A.dtype.names),['cost','weight'])
-        assert_equal(A.weight[0,1],7.0)
-        assert_equal(A.weight[0,0],0.0)
-        assert_equal(A.cost[0,1],5)
-        assert_equal(A.cost[0,0],0)
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=7.0, cost=5)
+        A = nx.to_numpy_recarray(G, dtype=[('weight', float), ('cost', int)])
+        assert_equal(sorted(A.dtype.names), ['cost', 'weight'])
+        assert_equal(A.weight[0, 1], 7.0)
+        assert_equal(A.weight[0, 0], 0.0)
+        assert_equal(A.cost[0, 1], 5)
+        assert_equal(A.cost[0, 0], 0)
 
     def test_numpy_multigraph(self):
-        G=nx.MultiGraph()
-        G.add_edge(1,2,weight=7)
-        G.add_edge(1,2,weight=70)
-        A=nx.to_numpy_matrix(G)
-        assert_equal(A[1,0],77)
-        A=nx.to_numpy_matrix(G,multigraph_weight=min)
-        assert_equal(A[1,0],7)
-        A=nx.to_numpy_matrix(G,multigraph_weight=max)
-        assert_equal(A[1,0],70)
+        G = nx.MultiGraph()
+        G.add_edge(1, 2, weight=7)
+        G.add_edge(1, 2, weight=70)
+        A = nx.to_numpy_matrix(G)
+        assert_equal(A[1, 0], 77)
+        A = nx.to_numpy_matrix(G, multigraph_weight=min)
+        assert_equal(A[1, 0], 7)
+        A = nx.to_numpy_matrix(G, multigraph_weight=max)
+        assert_equal(A[1, 0], 70)
 
     def test_from_numpy_matrix_parallel_edges(self):
         """Tests that the :func:`networkx.from_numpy_matrix` function
@@ -243,14 +243,15 @@ class TestConvertNumpy(object):
 
 
 class TestConvertNumpyArray(object):
-    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
+
     @classmethod
     def setupClass(cls):
         global np
         global np_assert_equal
         try:
             import numpy as np
-            np_assert_equal=np.testing.assert_equal
+            np_assert_equal = np.testing.assert_equal
         except ImportError:
             raise SkipTest('NumPy not available.')
 
@@ -264,12 +265,12 @@ class TestConvertNumpyArray(object):
     def create_weighted(self, G):
         g = cycle_graph(4)
         G.add_nodes_from(g)
-        G.add_weighted_edges_from( (u,v,10+u) for u,v in g.edges())
+        G.add_weighted_edges_from((u, v, 10 + u) for u, v in g.edges())
         return G
 
     def assert_equal(self, G1, G2):
-        assert_true( sorted(G1.nodes())==sorted(G2.nodes()) )
-        assert_true( sorted(G1.edges())==sorted(G2.edges()) )
+        assert_true(sorted(G1.nodes()) == sorted(G2.nodes()))
+        assert_true(sorted(G1.edges()) == sorted(G2.edges()))
 
     def identity_conversion(self, G, A, create_using):
         assert(A.sum() > 0)
@@ -282,7 +283,7 @@ class TestConvertNumpyArray(object):
 
     def test_shape(self):
         "Conversion from non-square array."
-        A=np.array([[1,2,3],[4,5,6]])
+        A = np.array([[1, 2, 3], [4, 5, 6]])
         assert_raises(nx.NetworkXError, nx.from_numpy_array, A)
 
     def test_identity_graph_array(self):
@@ -320,66 +321,66 @@ class TestConvertNumpyArray(object):
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3)) for n in range(3) )
+        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_array(P4)
-        np_assert_equal(A, nx.to_numpy_array(WP4,weight=None))
-        np_assert_equal(0.5*A, nx.to_numpy_array(WP4))
-        np_assert_equal(0.3*A, nx.to_numpy_array(WP4,weight='other'))
+        np_assert_equal(A, nx.to_numpy_array(WP4, weight=None))
+        np_assert_equal(0.5 * A, nx.to_numpy_array(WP4))
+        np_assert_equal(0.3 * A, nx.to_numpy_array(WP4, weight='other'))
 
     def test_from_numpy_array_type(self):
-        A=np.array([[1]])
-        G=nx.from_numpy_array(A)
-        assert_equal(type(G[0][0]['weight']),int)
+        A = np.array([[1]])
+        G = nx.from_numpy_array(A)
+        assert_equal(type(G[0][0]['weight']), int)
 
-        A=np.array([[1]]).astype(np.float)
-        G=nx.from_numpy_array(A)
-        assert_equal(type(G[0][0]['weight']),float)
+        A = np.array([[1]]).astype(np.float)
+        G = nx.from_numpy_array(A)
+        assert_equal(type(G[0][0]['weight']), float)
 
-        A=np.array([[1]]).astype(np.str)
-        G=nx.from_numpy_array(A)
-        assert_equal(type(G[0][0]['weight']),str)
+        A = np.array([[1]]).astype(np.str)
+        G = nx.from_numpy_array(A)
+        assert_equal(type(G[0][0]['weight']), str)
 
-        A=np.array([[1]]).astype(np.bool)
-        G=nx.from_numpy_array(A)
-        assert_equal(type(G[0][0]['weight']),bool)
+        A = np.array([[1]]).astype(np.bool)
+        G = nx.from_numpy_array(A)
+        assert_equal(type(G[0][0]['weight']), bool)
 
-        A=np.array([[1]]).astype(np.complex)
-        G=nx.from_numpy_array(A)
-        assert_equal(type(G[0][0]['weight']),complex)
+        A = np.array([[1]]).astype(np.complex)
+        G = nx.from_numpy_array(A)
+        assert_equal(type(G[0][0]['weight']), complex)
 
-        A=np.array([[1]]).astype(np.object)
-        assert_raises(TypeError,nx.from_numpy_array,A)
+        A = np.array([[1]]).astype(np.object)
+        assert_raises(TypeError, nx.from_numpy_array, A)
 
     def test_from_numpy_array_dtype(self):
-        dt=[('weight',float),('cost',int)]
-        A=np.array([[(1.0,2)]],dtype=dt)
-        G=nx.from_numpy_array(A)
-        assert_equal(type(G[0][0]['weight']),float)
-        assert_equal(type(G[0][0]['cost']),int)
-        assert_equal(G[0][0]['cost'],2)
-        assert_equal(G[0][0]['weight'],1.0)
+        dt = [('weight', float), ('cost', int)]
+        A = np.array([[(1.0, 2)]], dtype=dt)
+        G = nx.from_numpy_array(A)
+        assert_equal(type(G[0][0]['weight']), float)
+        assert_equal(type(G[0][0]['cost']), int)
+        assert_equal(G[0][0]['cost'], 2)
+        assert_equal(G[0][0]['weight'], 1.0)
 
     def test_to_numpy_recarray(self):
-        G=nx.Graph()
-        G.add_edge(1,2,weight=7.0,cost=5)
-        A=nx.to_numpy_recarray(G,dtype=[('weight',float),('cost',int)])
-        assert_equal(sorted(A.dtype.names),['cost','weight'])
-        assert_equal(A.weight[0,1],7.0)
-        assert_equal(A.weight[0,0],0.0)
-        assert_equal(A.cost[0,1],5)
-        assert_equal(A.cost[0,0],0)
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=7.0, cost=5)
+        A = nx.to_numpy_recarray(G, dtype=[('weight', float), ('cost', int)])
+        assert_equal(sorted(A.dtype.names), ['cost', 'weight'])
+        assert_equal(A.weight[0, 1], 7.0)
+        assert_equal(A.weight[0, 0], 0.0)
+        assert_equal(A.cost[0, 1], 5)
+        assert_equal(A.cost[0, 0], 0)
 
     def test_numpy_multigraph(self):
-        G=nx.MultiGraph()
-        G.add_edge(1,2,weight=7)
-        G.add_edge(1,2,weight=70)
-        A=nx.to_numpy_array(G)
-        assert_equal(A[1,0],77)
-        A=nx.to_numpy_array(G,multigraph_weight=min)
-        assert_equal(A[1,0],7)
-        A=nx.to_numpy_array(G,multigraph_weight=max)
-        assert_equal(A[1,0],70)
+        G = nx.MultiGraph()
+        G.add_edge(1, 2, weight=7)
+        G.add_edge(1, 2, weight=70)
+        A = nx.to_numpy_array(G)
+        assert_equal(A[1, 0], 77)
+        A = nx.to_numpy_array(G, multigraph_weight=min)
+        assert_equal(A[1, 0], 7)
+        A = nx.to_numpy_array(G, multigraph_weight=max)
+        assert_equal(A[1, 0], 70)
 
     def test_from_numpy_array_parallel_edges(self):
         """Tests that the :func:`networkx.from_numpy_array` function
@@ -395,10 +396,10 @@ class TestConvertNumpyArray(object):
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
         actual = nx.from_numpy_array(A, parallel_edges=True,
-                                      create_using=nx.DiGraph())
+                                     create_using=nx.DiGraph())
         assert_graphs_equal(actual, expected)
         actual = nx.from_numpy_array(A, parallel_edges=False,
-                                      create_using=nx.DiGraph())
+                                     create_using=nx.DiGraph())
         assert_graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
@@ -407,14 +408,14 @@ class TestConvertNumpyArray(object):
         expected = nx.MultiDiGraph()
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         actual = nx.from_numpy_array(A, parallel_edges=True,
-                                      create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph())
         assert_graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
         expected[1][1][0]['weight'] = 2
         actual = nx.from_numpy_array(A, parallel_edges=False,
-                                      create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph())
         assert_graphs_equal(actual, expected)
 
     def test_symmetric(self):
