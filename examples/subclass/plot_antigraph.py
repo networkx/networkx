@@ -101,10 +101,10 @@ class AntiGraph(nx.Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4) # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> list(G.degree(0)) # node 0 with degree 1
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> list(G.degree(0))  # node 0 with degree 1
         [(0, 1)]
-        >>> list(G.degree([0,1]))
+        >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 
         """
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     # Build several pairs of graphs, a regular graph
     # and the AntiGraph of it's complement, which behaves
     # as if it were the original graph.
-    Gnp = nx.gnp_random_graph(20, 0.8)
+    Gnp = nx.gnp_random_graph(20, 0.8, seed=42)
     Anp = AntiGraph(nx.complement(Gnp))
     Gd = nx.davis_southern_women_graph()
     Ad = AntiGraph(nx.complement(Gd))
