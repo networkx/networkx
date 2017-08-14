@@ -26,12 +26,12 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False,
 
        c_B(v) =\sum_{s\in S, t \in T} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
-    where `S` is the set of sources, `T` is the set of targets,
-    :math:`\sigma(s, t)` is the number of shortest `(s, t)`-paths,
-    and :math:`\sigma(s, t|v)` is the number of those paths
-    passing through some  node `v` other than `s, t`.
-    If `s = t`, :math:`\sigma(s, t) = 1`,
-    and if :math:`v \in {s, t}`, :math:`\sigma(s, t|v) = 0` [2]_.
+    where $S$ is the set of sources, $T$ is the set of targets,
+    $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
+    and $\sigma(s, t|v)$ is the number of those paths
+    passing through some  node $v$ other than $s, t$.
+    If $s = t$, $\sigma(s, t) = 1$,
+    and if $v \in {s, t}$, $\sigma(s, t|v) = 0$ [2]_.
 
 
     Parameters
@@ -46,8 +46,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False,
       Nodes to use as targets for shortest paths in betweenness
 
     normalized : bool, optional
-      If True the betweenness values are normalized by `2/((n-1)(n-2))`
-      for graphs, and `1/((n-1)(n-2))` for directed graphs where `n`
+      If True the betweenness values are normalized by $2/((n-1)(n-2))$
+      for graphs, and $1/((n-1)(n-2))$ for directed graphs where $n$
       is the number of nodes in G.
 
     weight : None or string, optional (default=None)
@@ -108,10 +108,10 @@ def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
 
        c_B(v) =\sum_{s\in S,t \in T} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
-    where `S` is the set of sources, `T` is the set of targets,
-    :math:`\sigma(s, t)` is the number of shortest `(s, t)`-paths,
-    and :math:`\sigma(s, t|e)` is the number of those paths
-    passing through edge `e` [2]_.
+    where $S$ is the set of sources, $T$ is the set of targets,
+    $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
+    and $\sigma(s, t|e)$ is the number of those paths
+    passing through edge $e$ [2]_.
 
     Parameters
     ----------

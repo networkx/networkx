@@ -35,8 +35,8 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     Notes
     -----
     This implementation follows Lars Backstrom and Jon Kleinberg [1]_. Typical
-    usage would be to run dispersion on the ego network :math:`G_u` if `u` were
-    specified.  Running :func:`dispersion` with neither `u` nor `v` specified
+    usage would be to run dispersion on the ego network $G_u$ if $u$ were
+    specified.  Running :func:`dispersion` with neither $u$ nor $v$ specified
     can take some time to complete.
 
     References

@@ -22,18 +22,18 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
                            endpoints=False, seed=None):
     r"""Compute the shortest-path betweenness centrality for nodes.
 
-    Betweenness centrality of a node `v` is the sum of the
-    fraction of all-pairs shortest paths that pass through `v`
+    Betweenness centrality of a node $v$ is the sum of the
+    fraction of all-pairs shortest paths that pass through $v$
 
     .. math::
 
        c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
-    where `V` is the set of nodes, :math:`\sigma(s, t)` is the number of
-    shortest `(s, t)`-paths,  and :math:`\sigma(s, t|v)` is the number of
-    those paths  passing through some  node `v` other than `s, t`.
-    If :math:`s = t`, :math:`\sigma(s, t) = 1`, and if :math:`v \in {s, t}`,
-    :math:`\sigma(s, t|v) = 0` [2]_.
+    where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
+    shortest $(s, t)$-paths,  and $\sigma(s, t|v)$ is the number of
+    those paths  passing through some  node $v$ other than $s, t$.
+    If $s = t$, $\sigma(s, t) = 1$, and if $v \in {s, t}$,
+    $\sigma(s, t|v) = 0$ [2]_.
 
     Parameters
     ----------
@@ -128,16 +128,16 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
                                 seed=None):
     r"""Compute betweenness centrality for edges.
 
-    Betweenness centrality of an edge `e` is the sum of the
-    fraction of all-pairs shortest paths that pass through `e`
+    Betweenness centrality of an edge $e$ is the sum of the
+    fraction of all-pairs shortest paths that pass through $e$
 
     .. math::
 
        c_B(e) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
-    where `V` is the set of nodes, :math:`\sigma(s, t)` is the number of
-    shortest `(s, t)`-paths, and :math:`\sigma(s, t|e)` is the number of
-    those paths passing through edge `e` [2]_.
+    where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
+    shortest $(s, t)$-paths, and $\sigma(s, t|e)$ is the number of
+    those paths passing through edge $e$ [2]_.
 
     Parameters
     ----------
@@ -150,8 +150,8 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
       Higher values give better approximation.
 
     normalized : bool, optional
-      If True the betweenness values are normalized by `2/(n(n-1))`
-      for graphs, and `1/(n(n-1))` for directed graphs where `n`
+      If True the betweenness values are normalized by $2/(n(n-1))$
+      for graphs, and $1/(n(n-1))$ for directed graphs where $n$
       is the number of nodes in G.
 
     weight : None or string, optional (default=None)

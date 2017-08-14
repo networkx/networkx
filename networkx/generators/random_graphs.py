@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-Generators for random graphs.
-
-"""
 #    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+"""
+Generators for random graphs.
+
+"""
 
 from __future__ import division
 import itertools
@@ -19,9 +19,6 @@ import networkx as nx
 from .classic import empty_graph, path_graph, complete_graph
 from .degree_seq import degree_sequence_tree
 from collections import defaultdict
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)'])
 
 __all__ = ['fast_gnp_random_graph',
            'gnp_random_graph',
@@ -49,7 +46,7 @@ __all__ = ['fast_gnp_random_graph',
 
 
 def fast_gnp_random_graph(n, p, seed=None, directed=False):
-    """Returns a `G_{n,p}` random graph, also known as an Erdős-Rényi graph or
+    """Returns a $G_{n,p}$ random graph, also known as an Erdős-Rényi graph or
     a binomial graph.
 
     Parameters
@@ -65,12 +62,12 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
 
     Notes
     -----
-    The `G_{n,p}` graph algorithm chooses each of the `[n (n - 1)] / 2`
-    (undirected) or `n (n - 1)` (directed) possible edges with probability `p`.
+    The $G_{n,p}$ graph algorithm chooses each of the $[n (n - 1)] / 2$
+    (undirected) or $n (n - 1)$ (directed) possible edges with probability $p$.
 
-    This algorithm runs in `O(n + m)` time, where `m` is the expected number of
-    edges, which equals `p n (n - 1) / 2`. This should be faster than
-    :func:`gnp_random_graph` when `p` is small and the expected number of edges
+    This algorithm [1]_ runs in $O(n + m)$ time, where `m` is the expected number of
+    edges, which equals $p n (n - 1) / 2$. This should be faster than
+    :func:`gnp_random_graph` when $p$ is small and the expected number of edges
     is small (that is, the graph is sparse).
 
     See Also
@@ -125,11 +122,10 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
 
 
 def gnp_random_graph(n, p, seed=None, directed=False):
-    """Returns a `G_{n,p}` random graph, also known as an Erdős-Rényi graph or
-    a binomial graph.
+    """Returns a $G_{n,p}$ random graph, also known as an Erdős-Rényi graph
+    or a binomial graph.
 
-    The :math:`G_{n,p}` model chooses each of the possible edges with probability
-    :math:`p`.
+    The $G_{n,p}$ model chooses each of the possible edges with probability $p$.
 
     The functions :func:`binomial_graph` and :func:`erdos_renyi_graph` are
     aliases of this function.
@@ -151,8 +147,8 @@ def gnp_random_graph(n, p, seed=None, directed=False):
 
     Notes
     -----
-    This algorithm runs in `O(n^2)` time.  For sparse graphs (that is, for
-    small values of `p`), :func:`fast_gnp_random_graph` is a faster algorithm.
+    This algorithm [2]_ runs in $O(n^2)$ time.  For sparse graphs (that is, for
+    small values of $p$), :func:`fast_gnp_random_graph` is a faster algorithm.
 
     References
     ----------
@@ -188,10 +184,10 @@ binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
 
 def dense_gnm_random_graph(n, m, seed=None):
-    """Returns a `G_{n,m}` random graph.
+    """Returns a $G_{n,m}$ random graph.
 
-    In the `G_{n,m}` model, a graph is chosen uniformly at random from the set
-    of all graphs with `n` nodes and `m` edges.
+    In the $G_{n,m}$ model, a graph is chosen uniformly at random from the set
+    of all graphs with $n$ nodes and $m$ edges.
 
     This algorithm should be faster than :func:`gnm_random_graph` for dense
     graphs.
@@ -248,10 +244,10 @@ def dense_gnm_random_graph(n, m, seed=None):
             v=u+1
 
 def gnm_random_graph(n, m, seed=None, directed=False):
-    """Returns a `G_{n,m}` random graph.
+    """Returns a $G_{n,m}$ random graph.
 
-    In the `G_{n,m}` model, a graph is chosen uniformly at random from the set
-    of all graphs with `n` nodes and `m` edges.
+    In the $G_{n,m}$ model, a graph is chosen uniformly at random from the set
+    of all graphs with $n$ nodes and $m$ edges.
 
     This algorithm should be faster than :func:`dense_gnm_random_graph` for
     sparse graphs.
@@ -320,12 +316,12 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
     Notes
     -----
-    First create a ring over `n` nodes.  Then each node in the ring is
-    connected with its `k` nearest neighbors (or `k - 1` neighbors if `k`
+    First create a ring over $n$ nodes [1]_.  Then each node in the ring is
+    connected with its $k$ nearest neighbors (or $k - 1$ neighbors if $k$
     is odd).  Then shortcuts are created by adding new edges as follows: for
-    each edge `(u, v)` in the underlying "`n`-ring with `k` nearest
-    neighbors" with probability :math:`p` add a new edge `(u, w)` with
-    randomly-chosen existing node `w`.  In contrast with
+    each edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest
+    neighbors" with probability $p$ add a new edge $(u, w)$ with
+    randomly-chosen existing node $w$.  In contrast with
     :func:`watts_strogatz_graph`, no edges are removed.
 
     See Also
@@ -390,12 +386,12 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     Notes
     -----
-    First create a ring over `n` nodes.  Then each node in the ring is joined
-    to its `k` nearest neighbors (or `k - 1` neighbors if `k` is odd).
+    First create a ring over $n$ nodes [1]_.  Then each node in the ring is joined
+    to its $k$ nearest neighbors (or $k - 1$ neighbors if $k$ is odd).
     Then shortcuts are created by replacing some edges as follows: for each
-    edge `(u, v)` in the underlying "`n`-ring with `k` nearest neighbors"
-    with probability :math:`p` replace it with a new edge `(u, w)` with uniformly
-    random choice of existing node `w`.
+    edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest neighbors"
+    with probability $p$ replace it with a new edge $(u, w)$ with uniformly
+    random choice of existing node $w$.
 
     In contrast with :func:`newman_watts_strogatz_graph`, the random rewiring
     does not increase the number of edges. The rewired graph is not guaranteed
@@ -472,7 +468,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
 
 def random_regular_graph(d, n, seed=None):
-    """Returns a random `d`-regular graph on `n` nodes.
+    r"""Returns a random $d$-regular graph on $n$ nodes.
 
     The resulting graph has no self-loops or parallel edges.
 
@@ -481,23 +477,23 @@ def random_regular_graph(d, n, seed=None):
     d : int
       The degree of each node.
     n : integer
-      The number of nodes. The value of :math:`n * d` must be even.
+      The number of nodes. The value of $n \times d$ must be even.
     seed : hashable object
         The seed for random number generator.
 
     Notes
     -----
-    The nodes are numbered from `0` to `n - 1`.
+    The nodes are numbered from $0$ to $n - 1$.
 
     Kim and Vu's paper [2]_ shows that this algorithm samples in an
     asymptotically uniform way from the space of random graphs when
-    `d = O(n^{1 / 3 - \epsilon})`.
+    $d = O(n^{1 / 3 - \epsilon})$.
 
     Raises
     ------
 
     NetworkXError
-        If :math:`n * d` is odd or `d` is greater than or equal to `n`.
+        If $n \times d$ is odd or $d$ is greater than or equal to $n$.
 
     References
     ----------
@@ -597,7 +593,7 @@ def barabasi_albert_graph(n, m, seed=None):
     """Returns a random graph according to the Barabási–Albert preferential
     attachment model.
 
-    A graph of `n` nodes is grown by attaching new nodes each with `m`
+    A graph of $n$ nodes is grown by attaching new nodes each with $m$
     edges that are preferentially attached to existing nodes with high degree.
 
     Parameters
@@ -657,19 +653,19 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
 
     An extended Barabási–Albert model graph is a random graph constructed
     using preferential attachment. The extended model allows new egdes,
-    rewired edges or new nodes. Based on the probabilities `p` and `q`
-    with `p + q < 1`, the growing behavior of the graph is determined as:
+    rewired edges or new nodes. Based on the probabilities $p$ and $q$
+    with $p + q < 1$, the growing behavior of the graph is determined as:
 
-    1) With `p` probability, `m` new edges are added to the graph,
+    1) With $p$ probability, $m$ new edges are added to the graph,
     starting from randomly chosen existing nodes and attached preferentially at the other end.
 
-    2) With `q` probability, `m` existing edges are rewired
+    2) With $q$ probability, $m$ existing edges are rewired
     by randomly chosing an edge and rewiring one end to a preferentially chosen node.
 
-    3) With `(1 - p - q)` probability, `m` new nodes are added to the graph
+    3) With $(1 - p - q)$ probability, $m$ new nodes are added to the graph
     with edges attached preferentially.
 
-    When `p = q = 0`, the model behaves just like the Barabási–Alber mo
+    When $p = q = 0$, the model behaves just like the Barabási–Alber mo
 
     Parameters
     ----------
@@ -906,7 +902,7 @@ def random_lobster(n, p1, p2, seed=None):
 
      A lobster is a tree that reduces to a caterpillar when pruning all
      leaf nodes. A caterpillar is a tree that reduces to a path graph
-     when pruning all leaf nodes; setting `p2` to zero produces a caterillar.
+     when pruning all leaf nodes; setting `p2` to zero produces a caterpillar.
 
      Parameters
      ----------
@@ -1084,11 +1080,11 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
 
 
 def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
-    """Return an random graph based on the specified kernel.
+    r"""Return an random graph based on the specified kernel.
 
-    The algorithm chooses each of the `[n(n-1)]/2` possible edges with
-    probability specified by a kernel `\kappa(x,y)` [1]_.  The kernel
-    `\kappa(x,y)` must be a symmetric (in `x,y`), non-negative,
+    The algorithm chooses each of the $[n(n-1)]/2$ possible edges with
+    probability specified by a kernel $\kappa(x,y)$ [1]_.  The kernel
+    $\kappa(x,y)$ must be a symmetric (in $x,y$), non-negative,
     bounded function.
 
     Parameters
@@ -1096,10 +1092,10 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     n : int
         The number of nodes
     kernal_integral : function
-        Function that returns the definite integral of the kernel `\kappa(x,y)`,
-        `F(y,a,b) := \int_a^b \kappa(x,y)dx`
+        Function that returns the definite integral of the kernel $\kappa(x,y)$,
+        $F(y,a,b) := \int_a^b \kappa(x,y)dx$
     kernel_root: function (optional)
-        Function that returns the root `b` of the equation `F(y,a,b) = r`.
+        Function that returns the root $b$ of the equation $F(y,a,b) = r$.
         If None, the root is found using :func:`scipy.optimize.brentq`
         (this requires SciPy).
     seed : int, optional
@@ -1109,15 +1105,15 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     -----
     The kernel is specified through its definite integral which must be
     provided as one of the arguments. If the integral and root of the
-    kernel integral can be found in `O(1)` time then this algorithm runs in
-    time `O(n+m)` where m is the expected number of edges [2]_.
+    kernel integral can be found in $O(1)$ time then this algorithm runs in
+    time $O(n+m)$ where m is the expected number of edges [2]_.
 
-    The nodes are set to integers from 0 to n-1.
+    The nodes are set to integers from $0$ to $n-1$.
 
     Examples
     --------
-    Generate an Erdős–Rényi random graph `G(n,c/n)`, with kernel
-    `\kappa(x,y)=c` where `c` is the mean expected degree.
+    Generate an Erdős–Rényi random graph $G(n,c/n)$, with kernel
+    $\kappa(x,y)=c$ where $c$ is the mean expected degree.
 
     >>> def integral(u, w, z):
     ...     return c * (z - w)

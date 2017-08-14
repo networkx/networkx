@@ -132,13 +132,13 @@ def LCF_graph(n,shift_list,repeats,create_using=None):
     with shift cycling through shiftlist repeats times connect
     v1 with v1+shift mod n
 
-    The utility graph K_{3,3}
+    The utility graph $K_{3,3}$
 
-    >>> G=nx.LCF_graph(6,[3,-3],3)
+    >>> G = nx.LCF_graph(6, [3, -3], 3)
 
     The Heawood graph
 
-    >>> G=nx.LCF_graph(14,[5,-5],7)
+    >>> G = nx.LCF_graph(14, [5, -5], 7)
 
     See http://mathworld.wolfram.com/LCFNotation.html for a description
     and references.

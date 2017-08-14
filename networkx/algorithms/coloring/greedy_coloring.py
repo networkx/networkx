@@ -54,9 +54,9 @@ def strategy_smallest_last(G, colors):
 
     ``G`` is a NetworkX graph. ``colors`` is ignored.
 
-    This implementation of the strategy runs in :math:`O(n + m)` time 
-    (ignoring polylogarithmic factors), where *n* is the number of nodes
-    and *m* is the number of edges.
+    This implementation of the strategy runs in $O(n + m)$ time
+    (ignoring polylogarithmic factors), where $n$ is the number of nodes
+    and $m$ is the number of edges.
 
     This strategy is related to :func:`strategy_independent_set`: if we
     interpret each node removed as an independent set of size one, then

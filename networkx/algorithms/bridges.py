@@ -46,11 +46,11 @@ def bridges(G, root=None):
 
     Examples
     --------
-    The barbell graph with parameter zero has a single bridge::
+    The barbell graph with parameter zero has a single bridge:
 
-        >>> G = nx.barbell_graph(10, 0)
-        >>> list(nx.bridges(G))
-        [(9, 10)]
+    >>> G = nx.barbell_graph(10, 0)
+    >>> list(nx.bridges(G))
+    [(9, 10)]
 
     Notes
     -----
@@ -60,7 +60,7 @@ def bridges(G, root=None):
 
     Ignoring polylogarithmic factors, the worst-case time complexity is the
     same as the :func:`networkx.chain_decomposition` function,
-    :math:`O(m + n)`, where *n* is the number of nodes in the graph and *m* is
+    $O(m + n)$, where $n$ is the number of nodes in the graph and $m$ is
     the number of edges.
 
     References
@@ -118,9 +118,9 @@ def has_bridges(G, root=None):
     Notes
     -----
     This implementation uses the :func:`networkx.bridges` function, so
-    it shares its worst-case time complexity, :math:`O(m + n)`, ignoring
-    polylogarithmic factors, where *n* is the number of nodes in the
-    graph and *m* is the number of edges.
+    it shares its worst-case time complexity, $O(m + n)$, ignoring
+    polylogarithmic factors, where $n$ is the number of nodes in the
+    graph and $m$ is the number of edges.
 
     """
     try:

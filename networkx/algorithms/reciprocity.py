@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2015 by 
-#    Haochen Wu <wuhaochen42@gmail.com>
+#    Copyright (C) 2015-2017 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Haochen Wu (wuhaochen42@gmail.com)
 """Algorithms to calculate reciprocity in a directed graph."""
 from networkx import NetworkXError
 from ..utils import not_implemented_for
-
-__author__ = """\n""".join(['Haochen Wu <wuhaochen42@gmail.com>'])
 
 __all__= ['reciprocity','overall_reciprocity']
 
@@ -19,7 +20,7 @@ def reciprocity(G, nodes=None):
     The reciprocity of a directed graph is defined as the ratio
     of the number of edges pointing in both directions to the total
     number of edges in the graph.
-    Formally, :math:`r = |{(u,v) \in G|(v,u) \in G}| / |{(u,v) \in G}|`.
+    Formally, $r = |{(u,v) \in G|(v,u) \in G}| / |{(u,v) \in G}|$.
 
     The reciprocity of a single node u is defined similarly,
     it is the ratio of the number of edges in both directions to
