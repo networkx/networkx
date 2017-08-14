@@ -191,7 +191,7 @@ class NodeView(Mapping, Set):
             return self
         return NodeDataView(self._nodes, data, default)
 
-    def data(self, data=False, default=None):
+    def data(self, data=True, default=None):
         if data is False:
             return self
         return NodeDataView(self._nodes, data, default)
@@ -235,8 +235,14 @@ class NodeDataView(Set):
         self._default = default
 
     @classmethod
-    def _from_iterable(self, it):
-        return set(it)
+    def _from_iterable(cls, it):
+        try:
+            return set(it)
+        except TypeError as err:
+            if "unhashable" in str(err):
+                msg = " : Could be b/c data=True or your values are unhashable"
+                raise TypeError(str(err) + msg)
+            raise
 
     def __len__(self):
         return len(self._nodes)
@@ -270,11 +276,6 @@ class NodeDataView(Set):
         if data is False or data is True:
             return ddict
         return ddict[data] if data in ddict else self._default
-
-    def __call__(self, data=False, default=None):
-        if data == self._data and default == self._default:
-            return self
-        return NodeDataView(self._nodes, data, default)
 
     def __repr__(self):
         if self._data is False:
@@ -879,7 +880,7 @@ class OutEdgeView(Set, Mapping):
     def _from_iterable(self, it):
         return set(it)
 
-    view = OutEdgeDataView
+    dataview = OutEdgeDataView
 
     def __init__(self, G):
         succ = G._succ if hasattr(G, "succ") else G._adj
@@ -912,12 +913,12 @@ class OutEdgeView(Set, Mapping):
     def __call__(self, nbunch=None, data=False, default=None):
         if nbunch is None and data is False:
             return self
-        return self.view(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default)
 
-    def data(self, nbunch=None, data=False, default=None):
+    def data(self, data=True, default=None, nbunch=None):
         if nbunch is None and data is False:
             return self
-        return self.view(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default)
 
     # String Methods
     def __str__(self):
@@ -995,7 +996,7 @@ class EdgeView(OutEdgeView):
     """
     __slots__ = ()
 
-    view = EdgeDataView
+    dataview = EdgeDataView
 
     def __len__(self):
         return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
@@ -1021,7 +1022,7 @@ class InEdgeView(OutEdgeView):
     """A EdgeView class for inward edges of a DiGraph"""
     __slots__ = ()
 
-    view = InEdgeDataView
+    dataview = InEdgeDataView
 
     def __init__(self, G):
         pred = G._pred if hasattr(G, "pred") else G._adj
@@ -1050,7 +1051,7 @@ class OutMultiEdgeView(OutEdgeView):
     """A EdgeView class for outward edges of a MultiDiGraph"""
     __slots__ = ()
 
-    view = OutMultiEdgeDataView
+    dataview = OutMultiEdgeDataView
 
     def __len__(self):
         return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
@@ -1083,19 +1084,19 @@ class OutMultiEdgeView(OutEdgeView):
     def __call__(self, nbunch=None, data=False, keys=False, default=None):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.view(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, keys, default)
 
-    def data(self, nbunch=None, data=False, keys=False, default=None):
+    def data(self, data=True, keys=False, default=None, nbunch=None):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.view(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, keys, default)
 
 
 class MultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for edges of a MultiGraph"""
     __slots__ = ()
 
-    view = MultiEdgeDataView
+    dataview = MultiEdgeDataView
 
     def __len__(self):
         return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
@@ -1116,7 +1117,7 @@ class InMultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for inward edges of a MultiDiGraph"""
     __slots__ = ()
 
-    view = InMultiEdgeDataView
+    dataview = InMultiEdgeDataView
 
     def __init__(self, G):
         pred = G._pred if hasattr(G, "pred") else G._adj
