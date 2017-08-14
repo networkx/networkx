@@ -10,8 +10,7 @@
 #          Dan Schult(dschult@colgate.edu)
 """
 """
-from itertools import chain
-from collections import Mapping, Set, Iterable
+from collections import Mapping
 import networkx as nx
 
 __all__ = ['AtlasView', 'AdjacencyView', 'MultiAdjacencyView',

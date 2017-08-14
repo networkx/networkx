@@ -4,7 +4,7 @@ from nose.tools import assert_equal, assert_not_equal, \
 import networkx as nx
 
 
-class test_graphview(object):
+class TestSubGraphView(object):
     gview = nx.graphviews.SubGraph
     graph = nx.Graph
     hide_edges_filter = staticmethod(nx.filters.hide_edges)
@@ -89,7 +89,7 @@ class test_graphview(object):
         assert_equal(G.degree(3), 1)
 
 
-class test_digraphview(test_graphview):
+class TestSubDiGraphView(TestSubGraphView):
     gview = nx.graphviews.SubDiGraph
     graph = nx.DiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_diedges)
@@ -128,7 +128,7 @@ class test_digraphview(test_graphview):
 
 
 # multigraph
-class test_multigraphview(test_graphview):
+class TestMultiGraphView(TestSubGraphView):
     gview = nx.graphviews.SubMultiGraph
     graph = nx.MultiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multiedges)
@@ -183,7 +183,7 @@ class test_multigraphview(test_graphview):
 
 
 # multidigraph
-class test_multidigraphview(test_multigraphview, test_digraphview):
+class TestMultiDiGraphView(TestMultiGraphView, TestSubDiGraphView):
     gview = nx.graphviews.SubMultiDiGraph
     graph = nx.MultiDiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multidiedges)
@@ -204,7 +204,7 @@ class test_multidigraphview(test_multigraphview, test_digraphview):
 
 
 # induced_subgraph
-class test_induced_subgraph(object):
+class TestInducedSubGraph(object):
     def setUp(self):
         self.K3 = G = nx.complete_graph(3)
         G.graph['foo'] = []
@@ -264,7 +264,7 @@ class test_induced_subgraph(object):
 
 
 # edge_subgraph
-class test_edge_subgraph(object):
+class TestEdgeSubGraph(object):
     def setup(self):
         # Create a path graph on five nodes.
         self.G = G = nx.path_graph(5)

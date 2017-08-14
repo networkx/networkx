@@ -4,8 +4,9 @@ from nose.tools import assert_raises, assert_true, assert_false
 import networkx as nx
 from networkx.testing import assert_edges_equal
 
+# Note: SubGraph views are not tested here. They have their own testing file
 
-class test_reverse_view(object):
+class TestReverseView(object):
     def setup(self):
         self.G = nx.path_graph(9, create_using=nx.DiGraph())
         self.rv = nx.reverse_view(self.G)
@@ -33,7 +34,7 @@ class test_reverse_view(object):
         assert_raises(nx.NetworkXNotImplemented, nxg.ReverseView, nx.Graph())
 
 
-class test_multi_reverse_view(object):
+class TestMultiReverseView(object):
     def setup(self):
         self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
         self.G.add_edge(4, 5)
@@ -65,7 +66,7 @@ class test_multi_reverse_view(object):
         assert_raises(nx.NetworkXNotImplemented, nxg.MultiReverseView, MG)
 
 
-class test_to_directed(object):
+class TestToDirected(object):
     def setup(self):
         self.G = nx.path_graph(9)
         self.dv = nx.to_directed(self.G)
@@ -108,7 +109,7 @@ class test_to_directed(object):
         assert_raises(nx.NetworkXError, nxg.MultiDiGraphView, self.G)
 
 
-class test_to_undirected(object):
+class TestToUndirected(object):
     def setup(self):
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.uv = nx.to_undirected(self.DG)
@@ -150,7 +151,7 @@ class test_to_undirected(object):
         assert_raises(nx.NetworkXError, nxg.MultiGraphView, self.DG)
 
 
-class Test_combinations(object):
+class TestChainsOfViews(object):
     def setUp(self):
         self.G = nx.path_graph(9)
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())

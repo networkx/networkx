@@ -1,27 +1,28 @@
 from nose.tools import assert_equal, assert_not_equal, \
-    assert_true, assert_false, assert_raises
+    assert_true, assert_false, assert_raises, \
+    assert_is, assert_is_not
 
 import networkx as nx
 
 
 # Nodes
-class test_nodeview(object):
+class TestNodeView(object):
     def setup(self):
         self.G = nx.path_graph(9)
+        self.nv = self.G.nodes   # NodeView(G)
 
     def test_pickle(self):
         import pickle
-        nv = self.G.nodes()  # NodeView(self.G)
+        nv = self.nv
         pnv = pickle.loads(pickle.dumps(nv, -1))
         assert_equal(nv, pnv)
         assert_equal(nv.__slots__, pnv.__slots__)
 
     def test_repr(self):
-        nv = self.G.nodes()
-        assert_equal(str(nv), "NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8))")
+        assert_equal(str(self.nv), "NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8))")
 
     def test_contains(self):
-        nv = self.G.nodes()
+        nv = self.nv
         assert_true(7 in nv)
         assert_false(9 in nv)
         self.G.remove_node(7)
@@ -29,29 +30,14 @@ class test_nodeview(object):
         assert_false(7 in nv)
         assert_true(9 in nv)
 
-    def test_contains_data(self):
-        nvd = self.G.nodes(data=True)
-        self.G.nodes[3]['foo'] = 'bar'
-        assert_true((7, {}) in nvd)
-        assert_true((3, {'foo': 'bar'}) in nvd)
-        nvdf = self.G.nodes(data='foo', default='biz')
-        assert_true((7, 'biz') in nvdf)
-        assert_true((3, 'bar') in nvdf)
-        assert_true((3, nvdf[3]) in nvdf)
-
     def test_getitem(self):
-        nv = self.G.nodes
-        nvd = self.G.nodes(data=True)
+        nv = self.nv
         self.G.nodes[3]['foo'] = 'bar'
         assert_equal(nv[7], {})
         assert_equal(nv[3], {'foo': 'bar'})
-        assert_equal(nvd[3], {'foo': 'bar'})
-        nvdf = self.G.nodes(data='foo', default='biz')
-        assert_true(nvdf[7], 'biz')
-        assert_equal(nvdf[3], 'bar')
 
     def test_iter(self):
-        nv = self.G.nodes()
+        nv = self.nv
         for i, n in enumerate(nv):
             assert_equal(i, n)
         inv = iter(nv)
@@ -66,21 +52,123 @@ class test_nodeview(object):
         for i, n in enumerate(nnv):
             assert_equal(i, n)
 
-    def test_iter_data(self):
-        nv = self.G.nodes(data=True)
+    def test_call(self):
+        nodes = self.nv
+        assert_is(nodes, nodes())
+        assert_is_not(nodes, nodes(data=True))
+        assert_is_not(nodes, nodes(data='weight'))
+
+
+class TestNodeDataView(object):
+    def setup(self):
+        self.G = nx.path_graph(9)
+        self.nv = self.G.nodes.data()   # NodeDataView(G)
+        self.ndv = self.G.nodes.data(True)
+        self.nwv = self.G.nodes.data('foo')
+
+    def test_viewtype(self):
+        nv = self.G.nodes
+        ndvfalse = nv.data(False)
+        assert_is(nv, ndvfalse)
+        assert_is_not(nv, self.ndv)
+
+    def test_pickle(self):
+        import pickle
+        nv = self.nv
+        pnv = pickle.loads(pickle.dumps(nv, -1))
+        assert_equal(nv, pnv)
+        assert_equal(nv.__slots__, pnv.__slots__)
+
+    def test_repr(self):
+        msg = "NodeDataView({0: {}, 1: {}, 2: {}, 3: {}, " + \
+              "4: {}, 5: {}, 6: {}, 7: {}, 8: {}})"
+        assert_equal(str(self.ndv), msg)
+
+    def test_contains(self):
+        self.G.nodes[3]['foo'] = 'bar'
+        assert_true((7, {}) in self.nv)
+        assert_true((3, {'foo': 'bar'}) in self.nv)
+        assert_true((3, 'bar') in self.nwv)
+        assert_true((7, None) in self.nwv)
+        # default
+        nwv_def = self.G.nodes(data='foo', default='biz')
+        assert_true((7, 'biz') in nwv_def)
+        assert_true((3, 'bar') in nwv_def)
+
+    def test_getitem(self):
+        self.G.nodes[3]['foo'] = 'bar'
+        assert_equal(self.nv[3], {'foo': 'bar'})
+        # default
+        nwv_def = self.G.nodes(data='foo', default='biz')
+        assert_true(nwv_def[7], 'biz')
+        assert_equal(nwv_def[3], 'bar')
+
+    def test_iter(self):
+        nv = self.nv
         for i, (n, d) in enumerate(nv):
             assert_equal(i, n)
             assert_equal(d, {})
         inv = iter(nv)
         assert_equal(next(inv), (0, {}))
         self.G.nodes[3]['foo'] = 'bar'
+        # default
         for n, d in nv:
             if n == 3:
                 assert_equal(d, {'foo': 'bar'})
-                break
+            else:
+                assert_equal(d, {})
+        # data=True
+        for n, d in self.ndv:
+            if n == 3:
+                assert_equal(d, {'foo': 'bar'})
+            else:
+                assert_equal(d, {})
+        # data='foo'
+        for n, d in self.nwv:
+            if n == 3:
+                assert_equal(d, 'bar')
+            else:
+                assert_equal(d, None)
+        # data='foo', default=1
+        for n, d in self.G.nodes.data('foo', default=1):
+            if n == 3:
+                assert_equal(d, 'bar')
+            else:
+                assert_equal(d, 1)
+
+
+def test_nodedataview_unhashable():
+    G = nx.path_graph(9)
+    G.nodes[3]['foo'] = 'bar'
+    nvs = [G.nodes.data()]
+    nvs.append(G.nodes.data(True))
+    H = G.copy()
+    H.nodes[4]['foo'] = {1, 2, 3}
+    nvs.append(H.nodes.data(True))
+    # raise unhashable
+    for nv in nvs:
+        assert_raises(TypeError, set, nv)
+        assert_raises(TypeError, eval, 'nv | nv', locals())
+    # no raise... hashable
+    Gn = G.nodes.data(False)
+    set(Gn)
+    Gn | Gn
+    Gn = G.nodes.data('foo')
+    set(Gn)
+    Gn | Gn
+
+
+class TestNodeViewSetOps(object):
+    def setUp(self):
+        self.G = nx.path_graph(9)
+        self.G.nodes[3]['foo'] = 'bar'
+        self.nv = self.G.nodes
+
+    def n_its(self, nodes):
+        return {node for node in nodes}
 
     def test_len(self):
-        nv = self.G.nodes()
+        nv = self.nv
         assert_equal(len(nv), 9)
         self.G.remove_node(7)
         assert_equal(len(nv), 8)
@@ -89,72 +177,102 @@ class test_nodeview(object):
 
     def test_and(self):
         # print("G & H nodes:", gnv & hnv)
-        nv = self.G.nodes()
-        some_nodes = {n for n in range(5, 12)}
-        assert_equal(nv & some_nodes, {n for n in range(5, 9)})
-        assert_equal(some_nodes & nv, {n for n in range(5, 9)})
+        nv = self.nv
+        some_nodes = self.n_its(range(5, 12))
+        assert_equal(nv & some_nodes, self.n_its(range(5, 9)))
+        assert_equal(some_nodes & nv, self.n_its(range(5, 9)))
 
     def test_or(self):
         # print("G | H nodes:", gnv | hnv)
-        nv = self.G.nodes()
-        some_nodes = {n for n in range(5, 12)}
-        assert_equal(nv | some_nodes, {n for n in range(12)})
-        assert_equal(some_nodes | nv, {n for n in range(12)})
+        nv = self.nv
+        some_nodes = self.n_its(range(5, 12))
+        assert_equal(nv | some_nodes, self.n_its(range(12)))
+        assert_equal(some_nodes | nv, self.n_its(range(12)))
 
     def test_xor(self):
         # print("G ^ H nodes:", gnv ^ hnv)
-        nv = self.G.nodes()
-        some_nodes = {n for n in range(5, 12)}
-        assert_equal(nv ^ some_nodes, {0, 1, 2, 3, 4, 9, 10, 11})
-        assert_equal(some_nodes ^ nv, {0, 1, 2, 3, 4, 9, 10, 11})
+        nv = self.nv
+        some_nodes = self.n_its(range(5, 12))
+        nodes = {0, 1, 2, 3, 4, 9, 10, 11}
+        assert_equal(nv ^ some_nodes, self.n_its(nodes))
+        assert_equal(some_nodes ^ nv, self.n_its(nodes))
 
     def test_sub(self):
         # print("G - H nodes:", gnv - hnv)
-        nv = self.G.nodes()
-        some_nodes = {n for n in range(5, 12)}
-        assert_equal(nv - some_nodes, {n for n in range(5)})
-        assert_equal(some_nodes - nv, {n for n in range(9, 12)})
+        nv = self.nv
+        some_nodes = self.n_its(range(5, 12))
+        assert_equal(nv - some_nodes, self.n_its(range(5)))
+        assert_equal(some_nodes - nv, self.n_its(range(9, 12)))
+
+
+class TestNodeDataViewSetOps(TestNodeViewSetOps):
+    def setUp(self):
+        self.G = nx.path_graph(9)
+        self.G.nodes[3]['foo'] = 'bar'
+        self.nv = self.G.nodes.data('foo')
+
+    def n_its(self, nodes):
+        return {(node, 'bar' if node == 3 else None) for node in nodes}
+
+
+class TestNodeDataViewDefaultSetOps(TestNodeDataViewSetOps):
+    def setUp(self):
+        self.G = nx.path_graph(9)
+        self.G.nodes[3]['foo'] = 'bar'
+        self.nv = self.G.nodes.data('foo', default=1)
+
+    def n_its(self, nodes):
+        return {(node, 'bar' if node == 3 else 1) for node in nodes}
 
 
 # Edges Data View
-class test_edgedataview(object):
-    def setup(self):
+class TestEdgeDataView(object):
+    def setUp(self):
         self.G = nx.path_graph(9)
-        self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.eview = nx.reportviews.EdgeView
 
-        def modify_edge(G, e, **kwds):
-            G._adj[e[0]][e[1]].update(kwds)
-        self.modify_edge = modify_edge
+    def modify_edge(self, G, e, **kwds):
+        self.G._adj[e[0]][e[1]].update(kwds)
+
+    def test_repr(self):
+        ev = self.eview(self.G)(data=True)
+        rep = "EdgeDataView([(0, 1, {}), (1, 2, {}), " + \
+              "(2, 3, {}), (3, 4, {}), " + \
+              "(4, 5, {}), (5, 6, {}), " + \
+              "(6, 7, {}), (7, 8, {})])"
+        assert_equal(repr(ev), rep)
 
     def test_iterdata(self):
-        G = self.G.copy()
+        G = self.G
         evr = self.eview(G)
         ev = evr(data=True)
+        ev_def = evr(data='foo', default=1)
+
         for u, v, d in ev:
             pass
         assert_equal(d, {})
-        ev = evr(data='foo', default=1)
-        for u, v, wt in ev:
+
+        for u, v, wt in ev_def:
             pass
         assert_equal(wt, 1)
 
         self.modify_edge(G, (2, 3), foo='bar')
-        ev = evr(data=True)
         for e in ev:
+            assert_equal(len(e), 3)
             if set(e[:2]) == {2, 3}:
                 assert_equal(e[2], {'foo': 'bar'})
-                assert_equal(len(e), 3)
                 checked = True
-                break
+            else:
+                assert_equal(e[2], {})
         assert_true(checked)
-        ev = evr(data='foo', default=1)
-        for e in ev:
+
+        for e in ev_def:
+            assert_equal(len(e), 3)
             if set(e[:2]) == {2, 3}:
                 assert_equal(e[2], 'bar')
-                assert_equal(len(e), 3)
                 checked_wt = True
-                break
+            else:
+                assert_equal(e[2], 1)
         assert_true(checked_wt)
 
     def test_iter(self):
@@ -185,28 +303,106 @@ class test_edgedataview(object):
         assert_equal(len(evr(1)), 2)
         assert_equal(len(evr([1, 2, 3])), 4)
 
-        evr = self.eview(self.DG)
-        assert_equal(len(evr(1)), 1)
-        assert_equal(len(evr([1, 2, 3])), 3)
-
         assert_equal(len(self.G.edges(1)), 2)
         assert_equal(len(self.G.edges()), 8)
         assert_equal(len(self.G.edges), 8)
 
-        assert_equal(len(self.DG.edges(1)), 1)
-        assert_equal(len(self.DG.edges()), 8)
-        assert_equal(len(self.DG.edges), 8)
+
+class TestOutEdgeDataView(TestEdgeDataView):
+    def setUp(self):
+        self.G = nx.path_graph(9, create_using=nx.DiGraph())
+        self.eview = nx.reportviews.OutEdgeView
+
+    def test_repr(self):
+        ev = self.eview(self.G)(data=True)
+        rep = "OutEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
+              "(2, 3, {}), (3, 4, {}), " + \
+              "(4, 5, {}), (5, 6, {}), " + \
+              "(6, 7, {}), (7, 8, {})])"
+        assert_equal(repr(ev), rep)
+
+    def test_len(self):
+        evr = self.eview(self.G)
+        ev = evr(data='foo')
+        assert_equal(len(ev), 8)
+        assert_equal(len(evr(1)), 1)
+        assert_equal(len(evr([1, 2, 3])), 3)
+
+        assert_equal(len(self.G.edges(1)), 1)
+        assert_equal(len(self.G.edges()), 8)
+        assert_equal(len(self.G.edges), 8)
 
 
-# Edges
-class test_edgeview(object):
+class TestInEdgeDataView(TestOutEdgeDataView):
+    def setUp(self):
+        self.G = nx.path_graph(9, create_using=nx.DiGraph())
+        self.eview = nx.reportviews.InEdgeView
+
+    def test_repr(self):
+        ev = self.eview(self.G)(data=True)
+        rep = "InEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
+              "(2, 3, {}), (3, 4, {}), " + \
+              "(4, 5, {}), (5, 6, {}), " + \
+              "(6, 7, {}), (7, 8, {})])"
+        assert_equal(repr(ev), rep)
+
+
+class TestMultiEdgeDataView(TestEdgeDataView):
+    def setUp(self):
+        self.G = nx.path_graph(9, create_using=nx.MultiGraph())
+        self.eview = nx.reportviews.MultiEdgeView
+
+    def modify_edge(self, G, e, **kwds):
+        self.G._adj[e[0]][e[1]][0].update(kwds)
+
+    def test_repr(self):
+        ev = self.eview(self.G)(data=True)
+        rep = "MultiEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
+              "(2, 3, {}), (3, 4, {}), " + \
+              "(4, 5, {}), (5, 6, {}), " + \
+              "(6, 7, {}), (7, 8, {})])"
+        assert_equal(repr(ev), rep)
+
+
+class TestOutMultiEdgeDataView(TestOutEdgeDataView):
+    def setUp(self):
+        self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
+        self.eview = nx.reportviews.OutMultiEdgeView
+
+    def modify_edge(self, G, e, **kwds):
+        self.G._adj[e[0]][e[1]][0].update(kwds)
+
+    def test_repr(self):
+        ev = self.eview(self.G)(data=True)
+        rep = "OutMultiEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
+              "(2, 3, {}), (3, 4, {}), " + \
+              "(4, 5, {}), (5, 6, {}), " + \
+              "(6, 7, {}), (7, 8, {})])"
+        assert_equal(repr(ev), rep)
+
+
+class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
+    def setUp(self):
+        self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
+        self.eview = nx.reportviews.InMultiEdgeView
+
+    def test_repr(self):
+        ev = self.eview(self.G)(data=True)
+        rep = "InMultiEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
+              "(2, 3, {}), (3, 4, {}), " + \
+              "(4, 5, {}), (5, 6, {}), " + \
+              "(6, 7, {}), (7, 8, {})])"
+        assert_equal(repr(ev), rep)
+
+
+# Edge Views
+class TestEdgeView(object):
     def setup(self):
         self.G = nx.path_graph(9)
         self.eview = nx.reportviews.EdgeView
 
-        def modify_edge(G, e, **kwds):
-            G._adj[e[0]][e[1]].update(kwds)
-        self.modify_edge = modify_edge
+    def modify_edge(self, G, e, **kwds):
+        self.G._adj[e[0]][e[1]].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -217,12 +413,14 @@ class test_edgeview(object):
     def test_call(self):
         ev = self.eview(self.G)
         assert_equal(id(ev), id(ev()))
+        assert_equal(id(ev), id(ev(data=False)))
         assert_not_equal(id(ev), id(ev(data=True)))
         assert_not_equal(id(ev), id(ev(nbunch=1)))
 
     def test_data(self):
         ev = self.eview(self.G)
-        assert_equal(id(ev), id(ev.data()))
+        assert_not_equal(id(ev), id(ev.data()))
+        assert_equal(id(ev), id(ev.data(data=False)))
         assert_not_equal(id(ev), id(ev.data(data=True)))
         assert_not_equal(id(ev), id(ev.data(nbunch=1)))
 
@@ -303,14 +501,10 @@ class test_edgeview(object):
         assert_true(ev - some_edges, result)
 
 
-class test_directed_edges(test_edgeview):
+class TestOutEdgeView(TestEdgeView):
     def setup(self):
         self.G = nx.path_graph(9, nx.DiGraph())
         self.eview = nx.reportviews.OutEdgeView
-
-        def modify_edge(G, e, **kwds):
-            G._adj[e[0]][e[1]].update(kwds)
-        self.modify_edge = modify_edge
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -319,14 +513,10 @@ class test_directed_edges(test_edgeview):
         assert_equal(repr(ev), rep)
 
 
-class test_inedges(test_edgeview):
+class TestInEdgeView(TestEdgeView):
     def setup(self):
         self.G = nx.path_graph(9, nx.DiGraph())
         self.eview = nx.reportviews.InEdgeView
-
-        def modify_edge(G, e, **kwds):
-            G._adj[e[0]][e[1]].update(kwds)
-        self.modify_edge = modify_edge
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -335,17 +525,16 @@ class test_inedges(test_edgeview):
         assert_equal(repr(ev), rep)
 
 
-class test_multiedges(test_edgeview):
+class TestMultiEdgeView(TestEdgeView):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
         self.eview = nx.reportviews.MultiEdgeView
 
-        def modify_edge(G, e, **kwds):
-            if len(e) == 2:
-                e = e + (0,)
-            G._adj[e[0]][e[1]][e[2]].update(kwds)
-        self.modify_edge = modify_edge
+    def modify_edge(self, G, e, **kwds):
+        if len(e) == 2:
+            e = e + (0,)
+        self.G._adj[e[0]][e[1]][e[2]].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -356,12 +545,16 @@ class test_multiedges(test_edgeview):
     def test_call(self):
         ev = self.eview(self.G)
         assert_equal(id(ev), id(ev(keys=True)))
+        assert_equal(id(ev), id(ev(data=False, keys=True)))
+        assert_not_equal(id(ev), id(ev(keys=False)))
         assert_not_equal(id(ev), id(ev(data=True)))
         assert_not_equal(id(ev), id(ev(nbunch=1)))
 
     def test_data(self):
         ev = self.eview(self.G)
-        assert_equal(id(ev), id(ev.data(keys=True)))
+        assert_not_equal(id(ev), id(ev.data()))
+        assert_equal(id(ev), id(ev.data(data=False, keys=True)))
+        assert_not_equal(id(ev), id(ev.data(keys=False)))
         assert_not_equal(id(ev), id(ev.data(data=True)))
         assert_not_equal(id(ev), id(ev.data(nbunch=1)))
 
@@ -375,7 +568,7 @@ class test_multiedges(test_edgeview):
         assert_equal(iter(iev), iev)
 
     def test_iterkeys(self):
-        G = self.G.copy()
+        G = self.G
         evr = self.eview(G)
         ev = evr(keys=True)
         for u, v, k in ev:
@@ -389,13 +582,22 @@ class test_multiedges(test_edgeview):
         self.modify_edge(G, (2, 3, 0), foo='bar')
         ev = evr(keys=True, data=True)
         for e in ev:
+            assert_equal(len(e), 4)
+            print('edge:',e)
             if set(e[:2]) == {2, 3}:
+                print(self.G._adj[2][3])
                 assert_equal(e[2], 0)
                 assert_equal(e[3], {'foo': 'bar'})
-                assert_equal(len(e), 4)
                 checked = True
-                break
+            elif set(e[:3]) == {1, 2, 3}:
+                assert_equal(e[2], 3)
+                assert_equal(e[3], {'foo': 'bar'})
+                checked_multi = True
+            else:
+                assert_equal(e[2], 0)
+                assert_equal(e[3], {})
         assert_true(checked)
+        assert_true(checked_multi)
         ev = evr(keys=True, data='foo', default=1)
         for e in ev:
             if set(e[:2]) == {1, 2} and e[2] == 3:
@@ -474,17 +676,16 @@ class test_multiedges(test_edgeview):
             assert_equal(some_edges & ev, {(0, 1, 0), (1, 0, 0)})
 
 
-class test_directed_multiedges(test_multiedges):
+class TestOutMultiEdgeView(TestMultiEdgeView):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
         self.eview = nx.reportviews.OutMultiEdgeView
 
-        def modify_edge(G, e, **kwds):
-            if len(e) == 2:
-                e = e + (0,)
-            G._adj[e[0]][e[1]][e[2]].update(kwds)
-        self.modify_edge = modify_edge
+    def modify_edge(self, G, e, **kwds):
+        if len(e) == 2:
+            e = e + (0,)
+        self.G._adj[e[0]][e[1]][e[2]].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -493,17 +694,16 @@ class test_directed_multiedges(test_multiedges):
         assert_equal(repr(ev), rep)
 
 
-class test_in_multiedges(test_multiedges):
+class TestInMultiEdgeView(TestMultiEdgeView):
     def setup(self):
         self.G = nx.path_graph(9, nx.MultiDiGraph())
         self.G.add_edge(1, 2, key=3, foo='bar')
         self.eview = nx.reportviews.InMultiEdgeView
 
-        def modify_edge(G, e, **kwds):
-            if len(e) == 2:
-                e = e + (0,)
-            G._adj[e[0]][e[1]][e[2]].update(kwds)
-        self.modify_edge = modify_edge
+    def modify_edge(self, G, e, **kwds):
+        if len(e) == 2:
+            e = e + (0,)
+        self.G._adj[e[0]][e[1]][e[2]].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -513,7 +713,7 @@ class test_in_multiedges(test_multiedges):
 
 
 # Degrees
-class test_degreeview(object):
+class TestDegreeView(object):
     GRAPH = nx.Graph
     dview = nx.reportviews.DegreeView
 
@@ -522,12 +722,8 @@ class test_degreeview(object):
         self.G.add_edge(1, 3, foo=2)
         self.G.add_edge(1, 3, foo=3)
 
-        def modify_edge(G, e, **kwds):
-            G._adj[e[0]][e[1]].update(kwds)
-        self.modify_edge = modify_edge
-
     def test_repr(self):
-        dv = self.G.degree()
+        dv = self.dview(self.G)
         rep = "DegreeView({0: 1, 1: 3, 2: 2, 3: 3, 4: 2, 5: 1})"
         assert_equal(repr(dv), rep)
 
@@ -588,7 +784,7 @@ class test_degreeview(object):
         assert_equal(len(dv), 6)
 
 
-class test_didegreeview(test_degreeview):
+class TestDiDegreeView(TestDegreeView):
     GRAPH = nx.DiGraph
     dview = nx.reportviews.DiDegreeView
 
@@ -598,7 +794,7 @@ class test_didegreeview(test_degreeview):
         assert_equal(repr(dv), rep)
 
 
-class test_outdegreeview(test_degreeview):
+class TestOutDegreeView(TestDegreeView):
     GRAPH = nx.DiGraph
     dview = nx.reportviews.OutDegreeView
 
@@ -641,7 +837,7 @@ class test_outdegreeview(test_degreeview):
         assert_equal(dvd[3], 1)
 
 
-class test_indegreeview(test_degreeview):
+class TestInDegreeView(TestDegreeView):
     GRAPH = nx.DiGraph
     dview = nx.reportviews.InDegreeView
 
@@ -684,7 +880,7 @@ class test_indegreeview(test_degreeview):
         assert_equal(dvd[3], 4)
 
 
-class test_multidegreeview(test_degreeview):
+class TestMultiDegreeView(TestDegreeView):
     GRAPH = nx.MultiGraph
     dview = nx.reportviews.MultiDegreeView
 
@@ -727,7 +923,7 @@ class test_multidegreeview(test_degreeview):
         assert_equal(dvd[3], 7)
 
 
-class test_dimultidegreeview(test_multidegreeview):
+class TestDiMultiDegreeView(TestMultiDegreeView):
     GRAPH = nx.MultiDiGraph
     dview = nx.reportviews.DiMultiDegreeView
 
@@ -737,7 +933,7 @@ class test_dimultidegreeview(test_multidegreeview):
         assert_equal(repr(dv), rep)
 
 
-class test_outmultidegreeview(test_degreeview):
+class TestOutMultiDegreeView(TestDegreeView):
     GRAPH = nx.MultiDiGraph
     dview = nx.reportviews.OutMultiDegreeView
 
@@ -780,7 +976,7 @@ class test_outmultidegreeview(test_degreeview):
         assert_equal(dvd[3], 1)
 
 
-class test_inmultidegreeview(test_degreeview):
+class TestInMultiDegreeView(TestDegreeView):
     GRAPH = nx.MultiDiGraph
     dview = nx.reportviews.InMultiDegreeView
 

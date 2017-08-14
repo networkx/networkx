@@ -54,12 +54,6 @@ class TestGpickle(object):
         for G in [self.G, self.DG, self.MG, self.MDG,
                   self.fG, self.fDG, self.fMG, self.fMDG]:
             with tempfile.TemporaryFile() as f:
-#                print('G is',G)
-#                for objname in dir(G):
-#                    print('checking G.',objname)
-#                    obj = getattr(G, objname)
-#                    if hasattr(obj, '__slots__'):
-#                        print('slots in',obj)
                 nx.write_gpickle(G, f, 0)
                 f.seek(0)
                 Gin = nx.read_gpickle(f)
