@@ -99,11 +99,15 @@ def global_efficiency(G):
     """
     n = len(G)
     denom = n * (n - 1)
+    if denom != 0:
+        g_eff = sum(efficiency(G, u, v) for u, v in permutations(G, 2)) / denom
+    else:
+        g_eff = 0
     # TODO This can be made more efficient by computing all pairs shortest
     # path lengths in parallel.
     #
     # TODO This summation can be trivially parallelized.
-    return sum(efficiency(G, u, v) for u, v in permutations(G, 2)) / denom
+    return g_eff
 
 
 @not_implemented_for('directed')
