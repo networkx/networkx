@@ -196,6 +196,9 @@ class NodeView(Mapping, Set):
             return self
         return NodeDataView(self._nodes, data, default)
 
+    def __str__(self):
+        return str(list(self))
+
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, tuple(self))
 
@@ -276,6 +279,9 @@ class NodeDataView(Set):
         if data is False or data is True:
             return ddict
         return ddict[data] if data in ddict else self._default
+
+    def __str__(self):
+        return str(list(self))
 
     def __repr__(self):
         if self._data is False:
@@ -374,7 +380,7 @@ class DiDegreeView(object):
         return len(self._nodes)
 
     def __str__(self):
-        return 'DegreeView(%r)' % dict(self)
+        return str(list(self))
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, dict(self))
@@ -660,7 +666,7 @@ class OutEdgeDataView(object):
         return e == self._report(u, v, ddict)
 
     def __str__(self):
-        return 'EdgeView(%r)' % list(self)
+        return str(list(self))
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, list(self))
@@ -922,7 +928,7 @@ class OutEdgeView(Set, Mapping):
 
     # String Methods
     def __str__(self):
-        return 'EdgeView(%r)' % list(self)
+        return str(list(self))
 
     def __repr__(self):
         return "{0.__class__.__name__}({1!r})".format(self, list(self))

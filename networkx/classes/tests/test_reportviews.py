@@ -19,7 +19,7 @@ class TestNodeView(object):
         assert_equal(nv.__slots__, pnv.__slots__)
 
     def test_repr(self):
-        assert_equal(str(self.nv), "NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8))")
+        assert_equal(repr(self.nv), "NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8))")
 
     def test_contains(self):
         nv = self.nv
@@ -82,7 +82,7 @@ class TestNodeDataView(object):
     def test_repr(self):
         msg = "NodeDataView({0: {}, 1: {}, 2: {}, 3: {}, " + \
               "4: {}, 5: {}, 6: {}, 7: {}, 8: {}})"
-        assert_equal(str(self.ndv), msg)
+        assert_equal(repr(self.ndv), msg)
 
     def test_contains(self):
         self.G.nodes[3]['foo'] = 'bar'

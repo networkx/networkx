@@ -49,9 +49,13 @@ class TestAtlasView(object):
     def test_items(self):
         assert_equal(sorted(self.av.items()), sorted(self.d.items()))
 
+    def test_str(self):
+        out = str(self.d)
+        assert_equal(str(self.av), out)
+
     def test_repr(self):
         out = "AtlasView(" + str(self.d) + ")"
-        assert_equal(str(self.av), out)
+        assert_equal(repr(self.av), out)
 
 
 class TestAdjacencyView(object):
@@ -97,9 +101,13 @@ class TestAdjacencyView(object):
         view_items = sorted((n, dict(d)) for n, d in self.adjview.items())
         assert_equal(view_items, sorted(self.adj.items()))
 
+    def test_str(self):
+        out = str(dict(self.adj))
+        assert_equal(str(self.adjview), out)
+
     def test_repr(self):
         out = self.adjview.__class__.__name__ + "(" + str(self.adj) + ")"
-        assert_equal(str(self.adjview), out)
+        assert_equal(repr(self.adjview), out)
 
 
 class TestMultiAdjacencyView(TestAdjacencyView):
@@ -180,7 +188,7 @@ class TestUnionAtlas(object):
 
     def test_repr(self):
         out = "{}({}, {})".format(self.av.__class__.__name__, self.s, self.p)
-        assert_equal(str(self.av), out)
+        assert_equal(repr(self.av), out)
 
 
 class TestUnionAdjacency(object):
@@ -226,7 +234,7 @@ class TestUnionAdjacency(object):
     def test_repr(self):
         clsname = self.adjview.__class__.__name__
         out = "{}({}, {})".format(clsname, self.s, self.p)
-        assert_equal(str(self.adjview), out)
+        assert_equal(repr(self.adjview), out)
 
 
 class TestUnionMultiInner(TestUnionAdjacency):
