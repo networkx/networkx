@@ -177,6 +177,7 @@ def local_bridges(G, with_span=True, weight=None):
         for u, v in G.edges:
             if not (set(G[u]) & set(G[v])):
                 enodes = {u, v}
+
                 def hide_edge(n, nbr, d):
                     if n not in enodes or nbr not in enodes:
                         return wt(n, nbr, d)

@@ -81,7 +81,7 @@ def effective_size(G, nodes=None, weight=None):
     assumed to be one if the graph is unweighted).
 
     For the case of unweighted and undirected graphs, Borgatti proposed
-    a simplified formula to compute effective size [2]_ 
+    a simplified formula to compute effective size [2]_
 
     .. math::
 
@@ -158,7 +158,7 @@ def effective_size(G, nodes=None, weight=None):
             if len(G[v]) == 0:
                 effective_size[v] = float('nan')
                 continue
-            effective_size[v] = sum(redundancy(G, v, u, weight) 
+            effective_size[v] = sum(redundancy(G, v, u, weight)
                                     for u in set(nx.all_neighbors(G, v)))
     return effective_size
 

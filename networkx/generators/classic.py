@@ -593,7 +593,7 @@ def turan_graph(n, r):
     if not 1 <= r <= n:
         raise NetworkXError("Must satisfy 1 <= r <= n")
 
-    partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
+    partitions = [n // r] * (r - (n % r)) + [n // r + 1] * (n % r)
     G = complete_multipartite_graph(*partitions)
     return G
 
@@ -624,6 +624,7 @@ def wheel_graph(n, create_using=None):
         G.add_edges_from(pairwise(nodes[1:]))
         G.add_edge(nodes[-1], nodes[1])
     return G
+
 
 def complete_multipartite_graph(*subset_sizes):
     """Returns the complete multipartite graph with the specified subset sizes.

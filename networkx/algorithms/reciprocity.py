@@ -11,9 +11,10 @@
 from networkx import NetworkXError
 from ..utils import not_implemented_for
 
-__all__= ['reciprocity','overall_reciprocity']
+__all__ = ['reciprocity', 'overall_reciprocity']
 
-@not_implemented_for('undirected','multigraph')
+
+@not_implemented_for('undirected', 'multigraph')
 def reciprocity(G, nodes=None):
     """Compute the reciprocity in a directed graph.
 
@@ -42,7 +43,7 @@ def reciprocity(G, nodes=None):
     -----
     The reciprocity is not defined for isolated nodes.
     In such cases this function will return None.
-    
+
     """
     # If `nodes` is not specified, calculate the reciprocity of the graph.
     if nodes is None:
@@ -51,7 +52,7 @@ def reciprocity(G, nodes=None):
     # If `nodes` represents a single node in the graph, return only its
     # reciprocity.
     if nodes in G:
-        reciprocity = next(_reciprocity_iter(G,nodes))[1]
+        reciprocity = next(_reciprocity_iter(G, nodes))[1]
         if reciprocity is None:
             raise NetworkXError('Not defined for isolated nodes.')
         else:
@@ -59,11 +60,11 @@ def reciprocity(G, nodes=None):
 
     # Otherwise, `nodes` represents an iterable of nodes, so return a
     # dictionary mapping node to its reciprocity.
-    return dict(_reciprocity_iter(G,nodes))
+    return dict(_reciprocity_iter(G, nodes))
 
-def _reciprocity_iter(G,nodes):
-    """ Return an iterator of (node, reciprocity).  
 
+def _reciprocity_iter(G, nodes):
+    """ Return an iterator of (node, reciprocity).
     """
     n = G.nbunch_iter(nodes)
     for node in n:
@@ -75,12 +76,13 @@ def _reciprocity_iter(G,nodes):
         # Reciprocity is not defined for isolated nodes.
         # Return None.
         if n_total == 0:
-            yield (node,None)
+            yield (node, None)
         else:
-            reciprocity = 2.0*float(len(overlap))/float(n_total)
-            yield (node,reciprocity)
-        
-@not_implemented_for('undirected','multigraph')
+            reciprocity = 2.0 * float(len(overlap)) / float(n_total)
+            yield (node, reciprocity)
+
+
+@not_implemented_for('undirected', 'multigraph')
 def overall_reciprocity(G):
     """Compute the reciprocity for the whole graph.
 
@@ -90,12 +92,12 @@ def overall_reciprocity(G):
     ----------
     G : graph
        A networkx graph
-    
+
     """
     n_all_edge = G.number_of_edges()
-    n_overlap_edge = (n_all_edge - G.to_undirected().number_of_edges()) *2
+    n_overlap_edge = (n_all_edge - G.to_undirected().number_of_edges()) * 2
 
     if n_all_edge == 0:
         raise NetworkXError("Not defined for empty graphs")
 
-    return float(n_overlap_edge)/float(n_all_edge)
+    return float(n_overlap_edge) / float(n_all_edge)
