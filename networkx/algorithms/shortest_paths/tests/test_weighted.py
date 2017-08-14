@@ -298,6 +298,13 @@ class TestMultiSourceDijkstra(object):
         assert_equal(distances, expected_distances)
         assert_equal(paths, expected_paths)
 
+    def test_simple_paths(self):
+        G = nx.path_graph(4)
+        lengths = nx.multi_source_dijkstra_path_length(G, [0])
+        assert_equal(lengths, {n: n for n in G})
+        paths = nx.multi_source_dijkstra_path(G, [0])
+        assert_equal(paths, {n: list(range(n+1)) for n in G})
+
 
 class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
@@ -305,7 +312,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G = nx.DiGraph()
         G.add_node(0)
         assert_equal(nx.single_source_bellman_ford_path(G, 0), {0: [0]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)), {0: 0})
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0), {0: 0})
         assert_equal(nx.single_source_bellman_ford(G, 0), ({0: 0}, {0: [0]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0), ({0: [None]}, {0: 0}))
         assert_equal(nx.goldberg_radzik(G, 0), ({0: None}, {0: 0}))
@@ -340,7 +347,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(1, 2, weight=-3)
         assert_equal(nx.single_source_bellman_ford_path(G, 0),
                      {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3, 4]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0),
                      {0: 0, 1: 1, 2: -2, 3: -1, 4: 0})
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: -2, 3: -1, 4: 0},
@@ -358,7 +365,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(10, 12)
         assert_equal(nx.single_source_bellman_ford_path(G, 0),
                      {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0),
                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1})
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
@@ -378,7 +385,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                           ('C', 'A', {'load': 2})])
         assert_equal(nx.single_source_bellman_ford_path(G, 0, weight='load'),
                      {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0, weight='load')),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0, weight='load'),
                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1})
         assert_equal(nx.single_source_bellman_ford(G, 0, weight='load'),
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
@@ -394,7 +401,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.bellman_ford_path(self.MXG, 's', 'v'), ['s', 'x', 'u', 'v'])
         assert_equal(nx.bellman_ford_path_length(self.MXG, 's', 'v'), 9)
         assert_equal(nx.single_source_bellman_ford_path(self.MXG, 's')['v'], ['s', 'x', 'u', 'v'])
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(self.MXG, 's'))['v'], 9)
+        assert_equal(nx.single_source_bellman_ford_path_length(self.MXG, 's')['v'], 9)
         D, P = nx.single_source_bellman_ford(self.MXG, 's', target='v')
         assert_equal(D, 9)
         assert_equal(P, ['s', 'x', 'u', 'v'])
@@ -407,7 +414,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.bellman_ford_path(self.MXG4, 0, 2), [0, 1, 2])
         assert_equal(nx.bellman_ford_path_length(self.MXG4, 0, 2), 4)
         assert_equal(nx.single_source_bellman_ford_path(self.MXG4, 0)[2], [0, 1, 2])
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(self.MXG4, 0))[2], 4)
+        assert_equal(nx.single_source_bellman_ford_path_length(self.MXG4, 0)[2], 4)
         D, P = nx.single_source_bellman_ford(self.MXG4, 0, target=2)
         assert_equal(D, 4)
         assert_equal(P, [0, 1, 2])
@@ -422,7 +429,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.bellman_ford_path(self.XG, 's', 'v'), ['s', 'x', 'u', 'v'])
         assert_equal(nx.bellman_ford_path_length(self.XG, 's', 'v'), 9)
         assert_equal(nx.single_source_bellman_ford_path(self.XG, 's')['v'], ['s', 'x', 'u', 'v'])
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(self.XG, 's'))['v'], 9)
+        assert_equal(nx.single_source_bellman_ford_path_length(self.XG, 's')['v'], 9)
         D, P = nx.single_source_bellman_ford(self.XG, 's', target='v')
         assert_equal(D, 9)
         assert_equal(P, ['s', 'x', 'u', 'v'])
@@ -437,7 +444,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G = nx.path_graph(4)
         assert_equal(nx.single_source_bellman_ford_path(G, 0),
                      {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0),
                      {0: 0, 1: 1, 2: 2, 3: 3})
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: 2, 3: 3}, {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3]}))
@@ -447,7 +454,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
         assert_equal(nx.single_source_bellman_ford_path(G, 3),
                      {0: [3, 2, 1, 0], 1: [3, 2, 1], 2: [3, 2], 3: [3]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 3)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 3),
                      {0: 3, 1: 2, 2: 1, 3: 0})
         assert_equal(nx.single_source_bellman_ford(G, 3),
                      ({0: 3, 1: 2, 2: 1, 3: 0}, {0: [3, 2, 1, 0], 1: [3, 2, 1], 2: [3, 2], 3: [3]}))

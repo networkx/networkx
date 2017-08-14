@@ -323,13 +323,13 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     Returns
     -------
-    length : iterator
-        (target, shortest path length) iterator
+    length : dict
+        Dict keyed by node to shortest path length from source.
 
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = dict(nx.single_source_dijkstra_path_length(G, 0))
+    >>> length = nx.single_source_dijkstra_path_length(G, 0)
     >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
@@ -559,13 +559,13 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
 
     Returns
     -------
-    length : iterator
-        (target, shortest path length) iterator
+    length : dict
+        Dict keyed by node to shortest path length to nearest source.
 
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = dict(nx.multi_source_dijkstra_path_length(G, {0, 4}))
+    >>> length = nx.multi_source_dijkstra_path_length(G, {0, 4})
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print('{}: {}'.format(node, length[node]))
     0: 0
@@ -596,9 +596,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     if not sources:
         raise ValueError('sources must not be empty')
     weight = _weight_function(G, weight)
-    dist = _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
-    # TODO In Python 3.3+, this should be `yield from dist.items()`.
-    return iter(dist.items())
+    return _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
 
 
 def multi_source_dijkstra(G, sources, target=None, cutoff=None,
@@ -943,7 +941,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     """
     length = single_source_dijkstra_path_length
     for n in G:
-        yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
+        yield (n, length(G, n, cutoff=cutoff, weight=weight))
 
 
 def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
@@ -976,8 +974,8 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> path=nx.all_pairs_dijkstra_path(G)
+    >>> G = nx.path_graph(5)
+    >>> path = dict(nx.all_pairs_dijkstra_path(G))
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
@@ -993,7 +991,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     """
     path = single_source_dijkstra_path
     # TODO This can be trivially parallelized.
-    return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
+    return ((n, path(G, n, cutoff=cutoff, weight=weight)) for n in G)
 
 
 def bellman_ford(G, source, weight='weight'):
@@ -1416,8 +1414,7 @@ def single_source_bellman_ford_path_length(G, source,
 
     """
     weight = _weight_function(G, weight)
-
-    return iter(_bellman_ford(G, [source], weight, cutoff=cutoff).items())
+    return _bellman_ford(G, [source], weight, cutoff=cutoff)
 
 
 def single_source_bellman_ford(G, source,
