@@ -202,7 +202,7 @@ class TestUnionAdjacency(object):
         assert_equal(len(self.adjview), len(self.s))
 
     def test_iter(self):
-        assert_equal(list(self.adjview), list(self.s))
+        assert_equal(sorted(self.adjview), sorted(self.s))
 
     def test_getitem(self):
         assert_is_not(self.adjview[1], self.s[1])
