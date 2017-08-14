@@ -6,7 +6,7 @@ import pickle
 import networkx as nx
 
 
-class test_atlasview(object):
+class TestAtlasView(object):
     # node->data
     def setup(self):
         self.d = {0: {'color': 'blue', 'weight': 1.2}, 1: {}, 2: {'color': 1}}
@@ -54,7 +54,7 @@ class test_atlasview(object):
         assert_equal(str(self.av), out)
 
 
-class test_adjacencyview(object):
+class TestAdjacencyView(object):
     # node->nbr->data
     def setup(self):
         dd = {'color': 'blue', 'weight': 1.2}
@@ -102,7 +102,7 @@ class test_adjacencyview(object):
         assert_equal(str(self.adjview), out)
 
 
-class test_multiadjacencyview(test_adjacencyview):
+class TestMultiAdjacencyView(TestAdjacencyView):
     # node->nbr->key->data
     def setup(self):
         dd = {'color': 'blue', 'weight': 1.2}
@@ -131,7 +131,7 @@ class test_multiadjacencyview(test_adjacencyview):
         assert_false(hasattr(self.adjview, '__setitem__'))
 
 
-class test_unionatlas(object):
+class TestUnionAtlas(object):
     # node->data
     def setup(self):
         self.s = {0: {'color': 'blue', 'weight': 1.2}, 1: {}, 2: {'color': 1}}
@@ -183,7 +183,7 @@ class test_unionatlas(object):
         assert_equal(str(self.av), out)
 
 
-class test_unionadjacency(object):
+class TestUnionAdjacency(object):
     # node->nbr->data
     def setup(self):
         dd = {'color': 'blue', 'weight': 1.2}
@@ -229,7 +229,7 @@ class test_unionadjacency(object):
         assert_equal(str(self.adjview), out)
 
 
-class test_unionmultiinner(test_unionadjacency):
+class TestUnionMultiInner(TestUnionAdjacency):
     # nbr->key->data
     def setup(self):
         dd = {'color': 'blue', 'weight': 1.2}
@@ -264,7 +264,7 @@ class test_unionmultiinner(test_unionadjacency):
         assert_true(hasattr(avcopy, '__setitem__'))
 
 
-class test_unionmultiadjacency(test_unionadjacency):
+class TestUnionMultiAdjacency(TestUnionAdjacency):
     # node->nbr->key->data
     def setup(self):
         dd = {'color': 'blue', 'weight': 1.2}
