@@ -43,7 +43,7 @@ def nodes(G):
 
 
 def edges(G, nbunch=None):
-    """Return iterator over edges incident to nodes in nbunch.
+    """Return an edge view of edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
@@ -53,7 +53,7 @@ def edges(G, nbunch=None):
 
 
 def degree(G, nbunch=None, weight=None):
-    """Return degree of single node or of nbunch of nodes.
+    """Return a degree view of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
     return G.degree(nbunch, weight)
@@ -457,18 +457,30 @@ def restricted_view(G, nodes, edges):
 
 @not_implemented_for('undirected')
 def reverse_view(digraph):
+    """Provide a reverse view of the digraph with edges reversed. 
+
+    Identical to digraph.reverse(copy=False)
+    """
     if digraph.is_multigraph():
         return nx.graphviews.MultiReverseView(digraph)
     return nx.graphviews.ReverseView(digraph)
 
 
 def to_directed(graph):
+    """Return a directed view of the graph `graph`.
+
+    Identical to graph.to_directed(as_view=True)
+    """
     if graph.is_multigraph():
         return nx.graphviews.MultiDiGraphView(graph)
     return nx.graphviews.DiGraphView(graph)
 
 
 def to_undirected(graph):
+    """Return an undirected view of the graph `graph`.
+
+    Identical to graph.to_undirected(as_view=True)
+    """
     if graph.is_multigraph():
         return nx.graphviews.MultiGraphView(graph)
     return nx.graphviews.GraphView(graph)
