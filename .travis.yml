@@ -30,10 +30,10 @@ matrix:
   include:
     - os: osx
       language: generic
+      env: TRAVIS_PYTHON_VERSION=3.6.0 OPTIONAL_DEPS=pip
+    - os: osx
+      language: generic
       env: TRAVIS_PYTHON_VERSION=3.6
-#    - os: osx
-#      language: generic
-#      env: TRAVIS_PYTHON_VERSION=3.6.0 OPTIONAL_DEPS=pip
 
 before_install:
   # prepare the system to install prerequisites or dependencies
