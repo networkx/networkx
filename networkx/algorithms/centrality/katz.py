@@ -26,13 +26,13 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
 
     Katz centrality computes the centrality for a node based on the centrality
     of its neighbors. It is a generalization of the eigenvector centrality. The
-    Katz centrality for node `i` is
+    Katz centrality for node $i$ is
 
     .. math::
 
         x_i = \alpha \sum_{j} A_{ij} x_j + \beta,
 
-    where `A` is the adjacency matrix of graph G with eigenvalues $\lambda$.
+    where $A$ is the adjacency matrix of graph G with eigenvalues $\lambda$.
 
     The parameter $\beta$ controls the initial centrality and
 
@@ -202,13 +202,13 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
 
     Katz centrality computes the centrality for a node based on the centrality
     of its neighbors. It is a generalization of the eigenvector centrality. The
-    Katz centrality for node `i` is
+    Katz centrality for node $i$ is
 
     .. math::
 
         x_i = \alpha \sum_{j} A_{ij} x_j + \beta,
 
-    where `A` is the adjacency matrix of graph G with eigenvalues $\lambda$.
+    where $A$ is the adjacency matrix of graph G with eigenvalues $\lambda$.
 
     The parameter $\beta$ controls the initial centrality and
 

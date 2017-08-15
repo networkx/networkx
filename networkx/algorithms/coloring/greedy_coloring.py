@@ -48,15 +48,15 @@ def strategy_random_sequential(G, colors):
 def strategy_smallest_last(G, colors):
     """Returns a deque of the nodes of ``G``, "smallest" last.
 
-    Specifically, the degrees of each node are tracked in a bucket queue. 
+    Specifically, the degrees of each node are tracked in a bucket queue.
     From this, the node of minimum degree is repeatedly popped from the
-    graph, updating its neighbors' degrees. 
+    graph, updating its neighbors' degrees.
 
     ``G`` is a NetworkX graph. ``colors`` is ignored.
 
-    This implementation of the strategy runs in :math:`O(n + m)` time 
-    (ignoring polylogarithmic factors), where *n* is the number of nodes
-    and *m* is the number of edges.
+    This implementation of the strategy runs in $O(n + m)$ time
+    (ignoring polylogarithmic factors), where $n$ is the number of nodes
+    and $m$ is the number of edges.
 
     This strategy is related to :func:`strategy_independent_set`: if we
     interpret each node removed as an independent set of size one, then
@@ -318,8 +318,8 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     .. [1] Adrian Kosowski, and Krzysztof Manuszewski,
        Classical Coloring of Graphs, Graph Colorings, 2-19, 2004.
        ISBN 0-8218-3458-4.
-    .. [2] David W. Matula, and Leland L. Beck, "Smallest-last 
-       ordering and clustering and graph coloring algorithms." *J. ACM* 30, 
+    .. [2] David W. Matula, and Leland L. Beck, "Smallest-last
+       ordering and clustering and graph coloring algorithms." *J. ACM* 30,
        3 (July 1983), 417–427. <http://dx.doi.org/10.1145/2402.322385>
     .. [3] Maciej M. Sysło, Marsingh Deo, Janusz S. Kowalik,
        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.

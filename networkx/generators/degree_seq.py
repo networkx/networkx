@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Generate graphs with a given degree sequence or expected degree sequence.
-"""
 #    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Aric Hagberg (aric.hagberg@gmail.com)
+#          Pieter Swart (swart@lanl.gov)
+#          Dan Schult (dschult@colgate.edu)
+#          Joel Miller (joel.c.miller.research@gmail.com)
+#          Nathan Lemons (nlemons@gmail.com)
+#          Brian Cloteaux (brian.cloteaux@nist.gov)
+"""Generate graphs with a given degree sequence or expected degree sequence.
+"""
 from __future__ import division
 
 import heapq
@@ -23,13 +30,6 @@ import random
 
 import networkx as nx
 from networkx.utils import random_weighted_sample
-
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart <swart@lanl.gov>',
-                        'Dan Schult <dschult@colgate.edu>'
-                        'Joel Miller <joel.c.miller.research@gmail.com>',
-                        'Nathan Lemons <nlemons@gmail.com>'
-                        'Brian Cloteaux <brian.cloteaux@nist.gov>'])
 
 __all__ = ['configuration_model',
            'directed_configuration_model',
@@ -55,19 +55,20 @@ def _to_stublist(degree_sequence):
     node numbers are assumed to be the numbers zero through
     ``len(degree_sequence) - 1``.
 
-    For example::
+    Examples
+    --------
 
-        >>> degree_sequence = [1, 2, 3]
-        >>> _to_stublist(degree_sequence)
-        [0, 1, 1, 2, 2, 2]
+    >>> degree_sequence = [1, 2, 3]
+    >>> _to_stublist(degree_sequence)
+    [0, 1, 1, 2, 2, 2]
 
     If a zero appears in the sequence, that means the node exists but
     has degree zero, so that number will be skipped in the returned
     list::
 
-        >>> degree_sequence = [2, 0, 1]
-        >>> _to_stublist(degree_sequence)
-        [0, 0, 2]
+    >>> degree_sequence = [2, 0, 1]
+    >>> _to_stublist(degree_sequence)
+    [0, 0, 2]
 
     """
     return list(chaini([n] * d for n, d in enumerate(degree_sequence)))
@@ -306,24 +307,24 @@ def directed_configuration_model(in_degree_sequence,
     --------
     One can modify the in- and out-degree sequences from an existing
     directed graph in order to create a new directed graph. For example,
-    here we modify the directed path graph::
+    here we modify the directed path graph:
 
-        >>> D = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
-        >>> din = list(d for n, d in D.in_degree())
-        >>> dout = list(d for n, d in D.out_degree())
-        >>> din.append(1)
-        >>> dout[0] = 2
-        >>> # We now expect an edge from node 0 to a new node, node 3.
-        ... D = nx.directed_configuration_model(din, dout)
+    >>> D = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
+    >>> din = list(d for n, d in D.in_degree())
+    >>> dout = list(d for n, d in D.out_degree())
+    >>> din.append(1)
+    >>> dout[0] = 2
+    >>> # We now expect an edge from node 0 to a new node, node 3.
+    ... D = nx.directed_configuration_model(din, dout)
 
     The returned graph is a directed multigraph, which may have parallel
-    edges. To remove any parallel edges from the returned graph::
+    edges. To remove any parallel edges from the returned graph:
 
-        >>> D = nx.DiGraph(D)
+    >>> D = nx.DiGraph(D)
 
-    Similarly, to remove self-loops::
+    Similarly, to remove self-loops:
 
-        >>> D.remove_edges_from(nx.selfloop_edges(D))
+    >>> D.remove_edges_from(nx.selfloop_edges(D))
 
     """
     if sum(in_degree_sequence) != sum(out_degree_sequence):
@@ -343,9 +344,9 @@ def directed_configuration_model(in_degree_sequence,
 def expected_degree_graph(w, seed=None, selfloops=True):
     r"""Return a random graph with given expected degrees.
 
-    Given a sequence of expected degrees `W=(w_0,w_1,\ldots,w_{n-1}`)
-    of length `n` this algorithm assigns an edge between node `u` and
-    node `v` with probability
+    Given a sequence of expected degrees $W=(w_0,w_1,\ldots,w_{n-1})$
+    of length $n$ this algorithm assigns an edge between node $u$ and
+    node $v$ with probability
 
     .. math::
 
@@ -374,8 +375,8 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     The nodes have integer labels corresponding to index of expected degrees
     input sequence.
 
-    The complexity of this algorithm is `\mathcal{O}(n+m)` where `n` is the
-    number of nodes and `m` is the expected number of edges.
+    The complexity of this algorithm is $\mathcal{O}(n+m)$ where $n$ is the
+    number of nodes and $m$ is the expected number of edges.
 
     The model in [1]_ includes the possibility of self-loop edges.
     Set selfloops=False to produce a graph without self loops.
@@ -700,9 +701,9 @@ def degree_sequence_tree(deg_sequence, create_using=None):
 def random_degree_sequence_graph(sequence, seed=None, tries=10):
     r"""Return a simple random graph with the given degree sequence.
 
-    If the maximum degree `d_m` in the sequence is `O(m^{1/4})` then the
-    algorithm produces almost uniform random graphs in `O(m d_m)` time
-    where `m` is the number of edges.
+    If the maximum degree $d_m$ in the sequence is $O(m^{1/4})$ then the
+    algorithm produces almost uniform random graphs in $O(m d_m)$ time
+    where $m$ is the number of edges.
 
     Parameters
     ----------
