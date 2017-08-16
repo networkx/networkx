@@ -186,6 +186,10 @@ class TestUnionAtlas(object):
         expected.update(self.s)
         assert_equal(sorted(self.av.items()), sorted(expected.items()))
 
+    def test_str(self):
+        out = str(dict(self.av))
+        assert_equal(str(self.av), out)
+
     def test_repr(self):
         out = "{}({}, {})".format(self.av.__class__.__name__, self.s, self.p)
         assert_equal(repr(self.av), out)
@@ -230,6 +234,10 @@ class TestUnionAdjacency(object):
         del self.adjview[2][3]['ht']
 
         assert_false(hasattr(self.adjview, '__setitem__'))
+
+    def test_str(self):
+        out = str(dict(self.adjview))
+        assert_equal(str(self.adjview), out)
 
     def test_repr(self):
         clsname = self.adjview.__class__.__name__
