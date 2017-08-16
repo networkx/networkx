@@ -57,6 +57,9 @@ class AtlasView(Mapping):
     def copy(self):
         return {n: self[n].copy() for n in self._atlas}
 
+    def __str__(self):
+        return str(self._atlas) #{nbr: self[nbr] for nbr in self})
+
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self._atlas)
 
@@ -150,6 +153,9 @@ class UnionAtlas(Mapping):
                 result[nbr] = dd.copy()
         return result
 
+    def __str__(self):
+        return str({nbr: self[nbr] for nbr in self})
+
     def __repr__(self):
         return '%s(%r, %r)' % (self.__class__.__name__, self._succ, self._pred)
 
@@ -197,6 +203,9 @@ class UnionAdjacency(Mapping):
 
     def copy(self):
         return {n: self[n].copy() for n in self._succ}
+
+    def __str__(self):
+        return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
         return '%s(%r, %r)' % (self.__class__.__name__, self._succ, self._pred)
@@ -291,6 +300,9 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         return {u: d for u, d in self._atlas.items()
                 if self.NODE_OK(u)}
 
+    def __str__(self):
+        return str({nbr: self[nbr] for nbr in self})
+
     def __repr__(self):
         return '%s(%r, %r)' % (self.__class__.__name__, self._atlas,
                                self.NODE_OK)
@@ -320,6 +332,9 @@ class FilterAdjacency(Mapping):   # edgedict
                     if self.EDGE_OK(u, v)}
                 for u, nbrs in self._atlas.items()
                 if self.NODE_OK(u)}
+
+    def __str__(self):
+        return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
         return '%s(%r, %r, %r)' % (self.__class__.__name__, self._atlas,

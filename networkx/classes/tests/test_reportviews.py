@@ -18,8 +18,11 @@ class TestNodeView(object):
         assert_equal(nv, pnv)
         assert_equal(nv.__slots__, pnv.__slots__)
 
+    def test_str(self):
+        assert_equal(str(self.nv), "[0, 1, 2, 3, 4, 5, 6, 7, 8]")
+
     def test_repr(self):
-        assert_equal(str(self.nv), "NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8))")
+        assert_equal(repr(self.nv), "NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8))")
 
     def test_contains(self):
         nv = self.nv
@@ -79,10 +82,14 @@ class TestNodeDataView(object):
         assert_equal(nv, pnv)
         assert_equal(nv.__slots__, pnv.__slots__)
 
+    def test_str(self):
+        msg = str([(n, {}) for n in range(9)])
+        assert_equal(str(self.ndv), msg)
+
     def test_repr(self):
         msg = "NodeDataView({0: {}, 1: {}, 2: {}, 3: {}, " + \
               "4: {}, 5: {}, 6: {}, 7: {}, 8: {}})"
-        assert_equal(str(self.ndv), msg)
+        assert_equal(repr(self.ndv), msg)
 
     def test_contains(self):
         self.G.nodes[3]['foo'] = 'bar'
@@ -233,6 +240,11 @@ class TestEdgeDataView(object):
 
     def modify_edge(self, G, e, **kwds):
         self.G._adj[e[0]][e[1]].update(kwds)
+
+    def test_str(self):
+        ev = self.eview(self.G)(data=True)
+        rep = str([(n, n+1, {}) for n in range(8)])
+        assert_equal(str(ev), rep)
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
@@ -404,6 +416,11 @@ class TestEdgeView(object):
     def modify_edge(self, G, e, **kwds):
         self.G._adj[e[0]][e[1]].update(kwds)
 
+    def test_str(self):
+        ev = self.eview(self.G)
+        rep = str([(n, n+1) for n in range(8)])
+        assert_equal(str(ev), rep)
+
     def test_repr(self):
         ev = self.eview(self.G)
         rep = "EdgeView([(0, 1), (1, 2), (2, 3), (3, 4), " + \
@@ -535,6 +552,13 @@ class TestMultiEdgeView(TestEdgeView):
         if len(e) == 2:
             e = e + (0,)
         self.G._adj[e[0]][e[1]][e[2]].update(kwds)
+
+    def test_str(self):
+        ev = self.eview(self.G)
+        replist = [(n, n+1, 0) for n in range(8)]
+        replist.insert(2, (1, 2, 3))
+        rep = str(replist)
+        assert_equal(str(ev), rep)
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -722,6 +746,13 @@ class TestDegreeView(object):
         self.G.add_edge(1, 3, foo=2)
         self.G.add_edge(1, 3, foo=3)
 
+    def test_str(self):
+        dv = self.dview(self.G)
+        rep = str([(0, 1), (1, 3), (2, 2), (3, 3), (4, 2), (5, 1)])
+        assert_equal(str(dv), rep)
+        dv = self.G.degree()
+        assert_equal(str(dv), rep)
+
     def test_repr(self):
         dv = self.dview(self.G)
         rep = "DegreeView({0: 1, 1: 3, 2: 2, 3: 3, 4: 2, 5: 1})"
@@ -798,6 +829,13 @@ class TestOutDegreeView(TestDegreeView):
     GRAPH = nx.DiGraph
     dview = nx.reportviews.OutDegreeView
 
+    def test_str(self):
+        dv = self.dview(self.G)
+        rep = str([(0, 1), (1, 2), (2, 1), (3, 1), (4, 1), (5, 0)])
+        assert_equal(str(dv), rep)
+        dv = self.G.out_degree()
+        assert_equal(str(dv), rep)
+
     def test_repr(self):
         dv = self.G.out_degree()
         rep = "OutDegreeView({0: 1, 1: 2, 2: 1, 3: 1, 4: 1, 5: 0})"
@@ -841,6 +879,13 @@ class TestInDegreeView(TestDegreeView):
     GRAPH = nx.DiGraph
     dview = nx.reportviews.InDegreeView
 
+    def test_str(self):
+        dv = self.dview(self.G)
+        rep = str([(0, 0), (1, 1), (2, 1), (3, 2), (4, 1), (5, 1)])
+        assert_equal(str(dv), rep)
+        dv = self.G.in_degree()
+        assert_equal(str(dv), rep)
+
     def test_repr(self):
         dv = self.G.in_degree()
         rep = "InDegreeView({0: 0, 1: 1, 2: 1, 3: 2, 4: 1, 5: 1})"
@@ -883,6 +928,13 @@ class TestInDegreeView(TestDegreeView):
 class TestMultiDegreeView(TestDegreeView):
     GRAPH = nx.MultiGraph
     dview = nx.reportviews.MultiDegreeView
+
+    def test_str(self):
+        dv = self.dview(self.G)
+        rep = str([(0, 1), (1, 4), (2, 2), (3, 4), (4, 2), (5, 1)])
+        assert_equal(str(dv), rep)
+        dv = self.G.degree()
+        assert_equal(str(dv), rep)
 
     def test_repr(self):
         dv = self.G.degree()
@@ -937,6 +989,13 @@ class TestOutMultiDegreeView(TestDegreeView):
     GRAPH = nx.MultiDiGraph
     dview = nx.reportviews.OutMultiDegreeView
 
+    def test_str(self):
+        dv = self.dview(self.G)
+        rep = str([(0, 1), (1, 3), (2, 1), (3, 1), (4, 1), (5, 0)])
+        assert_equal(str(dv), rep)
+        dv = self.G.out_degree()
+        assert_equal(str(dv), rep)
+
     def test_repr(self):
         dv = self.G.out_degree()
         rep = "OutMultiDegreeView({0: 1, 1: 3, 2: 1, 3: 1, 4: 1, 5: 0})"
@@ -979,6 +1038,13 @@ class TestOutMultiDegreeView(TestDegreeView):
 class TestInMultiDegreeView(TestDegreeView):
     GRAPH = nx.MultiDiGraph
     dview = nx.reportviews.InMultiDegreeView
+
+    def test_str(self):
+        dv = self.dview(self.G)
+        rep = str([(0, 0), (1, 1), (2, 1), (3, 3), (4, 1), (5, 1)])
+        assert_equal(str(dv), rep)
+        dv = self.G.in_degree()
+        assert_equal(str(dv), rep)
 
     def test_repr(self):
         dv = self.G.in_degree()
