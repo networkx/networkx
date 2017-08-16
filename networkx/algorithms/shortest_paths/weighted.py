@@ -232,7 +232,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
             "Node %s not reachable from %s" % (target, source))
 
 
-def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
+def single_source_dijkstra_path(G, source, cutoff=None, reverse=False, weight='weight'):
     """Find shortest weighted paths in G from a source node.
 
     Compute shortest path between source and all other reachable
@@ -247,6 +247,10 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
+       
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, compute shortest path to source instead
+      from source.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -288,11 +292,11 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
 
     """
     return multi_source_dijkstra_path(G, {source}, cutoff=cutoff,
-                                      weight=weight)
+                                      reverse=reverse, weight=weight)
 
 
 def single_source_dijkstra_path_length(G, source, cutoff=None,
-                                       weight='weight'):
+                                       reverse=False, weight='weight'):
     """Find shortest weighted path lengths in G from a source node.
 
     Compute the shortest path length between source and all other
@@ -307,6 +311,10 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
+       
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, compute shortest path lengths to source
+      instead from source.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -355,11 +363,11 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     """
     return multi_source_dijkstra_path_length(G, {source}, cutoff=cutoff,
-                                             weight=weight)
+                                             reverse=reverse, weight=weight)
 
 
 def single_source_dijkstra(G, source, target=None, cutoff=None,
-                           weight='weight'):
+                           reverse=False, weight='weight'):
     """Find shortest weighted paths and lengths from a source node.
 
     Compute the shortest path length between source and all other
@@ -380,6 +388,10 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
+       
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, compute shortest path lengths to source
+      instead from source.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -449,10 +461,11 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     single_source_bellman_ford()
     """
     return multi_source_dijkstra(G, {source}, cutoff=cutoff, target=target,
-                                 weight=weight)
+                                 reverse=reverse, weight=weight)
 
 
-def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
+def multi_source_dijkstra_path(G, sources, cutoff=None, reverse=False,
+                               weight='weight'):
     """Find shortest weighted paths in G from a given set of source
     nodes.
 
@@ -471,6 +484,10 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
+       
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, compute shortest weighted paths to
+      a given set of source nodes instead from source.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -519,12 +536,12 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
 
     """
     length, path = multi_source_dijkstra(G, sources, cutoff=cutoff,
-                                         weight=weight)
+                                         reverse=reverse, weight=weight)
     return path
 
 
 def multi_source_dijkstra_path_length(G, sources, cutoff=None,
-                                      weight='weight'):
+                                      reverse=False, weight='weight'):
     """Find shortest weighted path lengths in G from a given set of
     source nodes.
 
@@ -543,6 +560,10 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
+       
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, compute shortest weighted path lengths
+      to a given set of source nodes instead from source.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -596,13 +617,14 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     if not sources:
         raise ValueError('sources must not be empty')
     weight = _weight_function(G, weight)
-    dist = _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
+    dist = _dijkstra_multisource(G, sources, weight, cutoff=cutoff, 
+                                 reverse=reverse)
     # TODO In Python 3.3+, this should be `yield from dist.items()`.
     return iter(dist.items())
 
 
 def multi_source_dijkstra(G, sources, target=None, cutoff=None,
-                          weight='weight'):
+                          reverse=False, weight='weight'):
     """Find shortest weighted paths and lengths from a given set of
     source nodes.
 
@@ -625,6 +647,10 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
+       
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, find shortest weighted paths and lengths
+      to a given set of source nodes instead from source.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -705,7 +731,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     weight = _weight_function(G, weight)
     paths = {source: [source] for source in sources}  # dictionary of paths
     dist = _dijkstra_multisource(G, sources, weight, paths=paths,
-                                 cutoff=cutoff, target=target)
+                                 cutoff=cutoff, reverse=reverse, 
+                                 target=target)
     if target is None:
         return (dist, paths)
     try:
@@ -715,7 +742,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
 
 
 def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
-              target=None):
+              reverse=False, target=None):
     """Uses Dijkstra's algorithm to find shortest weighted paths from a
     single source.
 
@@ -725,11 +752,12 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
 
     """
     return _dijkstra_multisource(G, [source], weight, pred=pred, paths=paths,
-                                 cutoff=cutoff, target=target)
+                                 cutoff=cutoff, reverse=reverse, 
+                                 target=target)
 
 
 def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
-                          cutoff=None, target=None):
+                          cutoff=None, reverse=False, target=None):
     """Uses Dijkstra's algorithm to find shortest weighted paths
 
     Parameters
@@ -759,6 +787,10 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
 
     cutoff : integer or float, optional
         Depth to stop the search. Only return paths with length <= cutoff.
+        
+    reverse : bool, optional (default=False)
+      If True and G is a digraph, find shortest weighted paths to a 
+      given set of source nodes instead from source.
 
     Returns
     -------
@@ -773,7 +805,13 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     as arguments. No need to explicitly return pred or paths.
 
     """
-    G_succ = G._succ if G.is_directed() else G._adj
+    if G.is_directed():
+        if reverse:
+            G_succ = G._pred
+        else:
+            G_succ = G._succ
+    else:
+        G_succ = G._adj
 
     push = heappush
     pop = heappop
