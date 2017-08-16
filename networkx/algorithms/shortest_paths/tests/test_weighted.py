@@ -239,6 +239,35 @@ class TestWeightedPath(WeightedTestBase):
         assert_equal(distance, 1 / 10)
         assert_equal(path, [0, 2])
 
+    def test_all_pairs_dijkstra_path(self):
+        cycle=nx.cycle_graph(7)
+        p=dict(nx.all_pairs_dijkstra_path(cycle))
+        assert_equal(p[0][3], [0, 1, 2, 3])
+
+        cycle[1][2]['weight'] = 10
+        p=dict(nx.all_pairs_dijkstra_path(cycle))
+        assert_equal(p[0][3], [0, 6, 5, 4, 3])
+
+    def test_all_pairs_dijkstra_path_length(self):
+        cycle=nx.cycle_graph(7)
+        pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
+        assert_equal(pl[0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
+
+        cycle[1][2]['weight'] = 10
+        pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
+        assert_equal(pl[0], {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1})
+
+    def test_all_pairs_dijkstra(self):
+        cycle=nx.cycle_graph(7)
+        out = dict(nx.all_pairs_dijkstra(cycle))
+        assert_equal(out[0][0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
+        assert_equal(out[0][1][3], [0, 1, 2, 3])
+
+        cycle[1][2]['weight'] = 10
+        out = dict(nx.all_pairs_dijkstra(cycle))
+        assert_equal(out[0][0], {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1})
+        assert_equal(out[0][1][3], [0, 6, 5, 4, 3])
+
 
 class TestDijkstraPathLength(object):
     """Unit tests for the :func:`networkx.dijkstra_path_length`

@@ -912,17 +912,14 @@ def all_pairs_dijkstra(G, cutoff=None, weight='weight'):
        dictionary of edge attributes for that edge. The function must
        return a number.
 
-    Returns
-    -------
-    distance, path : iterator
-       {'distance': distance, 'path': path} iterator, keyed by source nodes.
-       Associated to each source node is a dictionary containing two dicts,
-       'distance' and 'path'. Both dictionaries are keyed by target nodes.
-       (See single_source_dijkstra for the source node / target_node
-       terminology.) The first dictionary, keyed 'distance', stores distances
-       to each target node. The second, keyed 'path', stores the path to each
-       target node.
-
+    Yields
+    ------
+    (node, (distance, path)) : (node obj, (dict, dict))
+        Each source node has two associated dicts. The first holds distance
+        keyed by target and the second holds paths keyed by target.
+        (See single_source_dijkstra for the source/target node terminology.)
+        If desired you can apply `dict()` to this function to create a dict
+        keyed by source node to the two dicts.
 
     Examples
     --------
@@ -952,12 +949,11 @@ def all_pairs_dijkstra(G, cutoff=None, weight='weight'):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
-    The dictionary returned only has keys for reachable node pairs.
+    The yielded dicts only have keys for reachable nodes.
     """
     for n in G:
-        distance, path = single_source_dijkstra(
-            G, n, cutoff=cutoff, weight=weight)
-        yield {'distance': distance, 'path': path}
+        dist, path = single_source_dijkstra(G, n, cutoff=cutoff, weight=weight)
+        yield (n, (dist, path))
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
@@ -1064,7 +1060,8 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     """
     path = single_source_dijkstra_path
     # TODO This can be trivially parallelized.
-    return ((n, path(G, n, cutoff=cutoff, weight=weight)) for n in G)
+    for n in G:
+        yield (n, path(G, n, cutoff=cutoff, weight=weight))
 
 
 def bellman_ford(G, source, weight='weight'):
@@ -1653,7 +1650,8 @@ def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
     """
     path = single_source_bellman_ford_path
     # TODO This can be trivially parallelized.
-    return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
+    for n in G:
+        yield (n, path(G, n, cutoff=cutoff, weight=weight))
 
 
 def goldberg_radzik(G, source, weight='weight'):
