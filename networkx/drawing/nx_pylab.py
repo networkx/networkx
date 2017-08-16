@@ -982,11 +982,6 @@ def draw_shell(G, **kwargs):
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
 
 
-def draw_nx(G, pos, **kwds):
-    """For backward compatibility; use draw or draw_networkx."""
-    draw(G, pos, **kwds)
-
-
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     """Apply an alpha (or list of alphas) to the colors provided.
 

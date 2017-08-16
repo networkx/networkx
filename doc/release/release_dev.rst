@@ -189,6 +189,9 @@ API Changes
    G.node and G.edge are removed. Their functionality are replaced by G.nodes
    and G.edges.
 
+* [`#2620 <https://github.com/networkx/networkx/pull/2620>`_]
+   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
+
 Deprecations
 ------------
 
