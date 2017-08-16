@@ -223,7 +223,7 @@ def eccentricity(G, v=None, sp=None):
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = dict(networkx.single_source_shortest_path_length(G, n))
+            length = networkx.single_source_shortest_path_length(G, n)
             L = len(length)
         else:
             try:

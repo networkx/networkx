@@ -69,7 +69,7 @@ class TestGeneratorThreshold():
         for j,pl in enumerate(spl):
             n=cs1[j][0]
             spld[n]=pl
-        assert_equal(spld, dict(nx.single_source_shortest_path_length(G, 3)))
+        assert_equal(spld, nx.single_source_shortest_path_length(G, 3))
 
     def test_weights_thresholds(self):
         wseq=[3,4,3,3,5,6,5,4,5,6]

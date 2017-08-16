@@ -96,14 +96,14 @@ class TestGenericPath:
 
     def test_all_pairs_shortest_path(self):
         p=nx.shortest_path(self.cycle)
-        assert_equal(p[0][3],[0,1,2,3])
-        assert_equal(p,nx.all_pairs_shortest_path(self.cycle))
+        assert_equal(p[0][3], [0, 1, 2, 3])
+        assert_equal(p, dict(nx.all_pairs_shortest_path(self.cycle)))
         p=nx.shortest_path(self.grid)
         validate_grid_path(4, 4, 1, 12, p[1][12])
         # now with weights
         p=nx.shortest_path(self.cycle,weight='weight')
-        assert_equal(p[0][3],[0,1,2,3])
-        assert_equal(p,nx.all_pairs_dijkstra_path(self.cycle))
+        assert_equal(p[0][3],[0, 1, 2, 3])
+        assert_equal(p, dict(nx.all_pairs_dijkstra_path(self.cycle)))
         p=nx.shortest_path(self.grid,weight='weight')
         validate_grid_path(4, 4, 1, 12, p[1][12])
 
