@@ -924,20 +924,20 @@ def all_pairs_dijkstra(G, cutoff=None, weight='weight'):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> len_path = list(nx.all_pairs_dijkstra(G))
-    >>> print(len_path[3]['distance'][1])
+    >>> len_path = dict(nx.all_pairs_dijkstra(G))
+    >>> print(len_path[3][0][1])
     2
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('3 - {}: {}'.format(node, len_path[3]['distance'][node]))
+    ...     print('3 - {}: {}'.format(node, len_path[3][0][node]))
     3 - 0: 3
     3 - 1: 2
     3 - 2: 1
     3 - 3: 0
     3 - 4: 1
-    >>> len_path[3]['path'][1]
+    >>> len_path[3][1][1]
     [3, 2, 1]
-    >>> for pair in nx.all_pairs_dijkstra(G):
-    ...     print(pair['path'][1])
+    >>> for n, (dist, path) in nx.all_pairs_dijkstra(G):
+    ...     print(path[1])
     [0, 1]
     [1]
     [2, 1]
@@ -1633,8 +1633,8 @@ def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> path=nx.all_pairs_bellman_ford_path(G)
+    >>> G = nx.path_graph(5)
+    >>> path = dict(nx.all_pairs_bellman_ford_path(G))
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
