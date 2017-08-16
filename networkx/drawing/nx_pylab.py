@@ -1030,17 +1030,17 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         raise ImportError("Matplotlib required for draw()")
 
     # If we have been provided with a list of numbers as long as elem_list, apply the color mapping.
-    if len(colors) == len(elem_list) and isinstance(colors[0], numbers.Number):
+    if len(color) == len(elem_list) and isinstance(color[0], numbers.Number):
         mapper = cm.ScalarMappable(cmap=cmap)
         mapper.set_clim(vmin, vmax)
-        rgba_colors = mapper.to_rgba(colors)
-    # Otherwise, convert colors to matplotlib's RGB using the colorConverter object.
+        rgba_colors = mapper.to_rgba(color)
+    # Otherwise, convert color to matplotlib's RGB using the colorConverter object.
     # These are converted to numpy ndarrays to be consistent with the to_rgba method of ScalarMappable.
     else:
         try:
-            rgba_colors = np.array([colorConverter.to_rgba(colors)])
+            rgba_colors = np.array([colorConverter.to_rgba(color)])
         except ValueError:
-            rgba_colors = np.array([colorConverter.to_rgba(color) for color in colors])
+            rgba_colors = np.array([colorConverter.to_rgba(c) for c in color])
     # Set the final column of the rgba_colors to have the relevant alpha values.
     try:
         # If alpha is longer than the number of colors, resize to the number of elements.
