@@ -318,8 +318,11 @@ def draw_networkx_nodes(G, pos,
        The shape of the node.  Specification is as matplotlib.scatter
        marker, one of 'so^>v<dph8' (default='o').
 
-    alpha : float
-       The node transparency (default=1.0)
+    alpha : float or array of floats
+       The node transparency.  This can be a single alpha value (default=1.0),
+       in which case it will be applied to all the nodes of color. Otherwise,
+       if it is an array, the elements of alpha will be applied to the colors
+       in order (cycling through alpha multiple times if necessary).
 
     cmap : Matplotlib colormap
        Colormap for mapping intensities of nodes (default=None)
@@ -988,7 +991,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     Parameters
     ----------
 
-    color : color string, or array of floats
+    colors : color string, or array of floats
        Color of element. Can be a single color format string (default='r'),
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to

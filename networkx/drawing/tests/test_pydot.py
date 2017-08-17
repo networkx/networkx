@@ -1,4 +1,11 @@
 """Unit tests for pydot drawing functions."""
+try:
+    try:
+        from cStringIO import StringIO
+    except ImportError:
+        from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import sys
 import tempfile
 from nose.tools import assert_equal, assert_is_instance, assert_true
@@ -28,7 +35,7 @@ class TestPydot(object):
         G.graph['name'] = 'G'
 
         # Add arbitrary nodes and edges to the passed empty graph.
-        G.add_edges_from([('A','B'),('A','C'),('B','C'),('A','D')])
+        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'C'), ('A', 'D')])
         G.add_node('E')
 
         # Validate layout of this graph with the passed GraphViz command.
@@ -84,8 +91,18 @@ class TestPydot(object):
         # Validate the original and resulting graphs to be the same.
         assert_graphs_equal(G, Hin)
 
-    def testUndirected(self):
+    def test_undirected(self):
         self.pydot_checks(nx.Graph(), prog='neato')
 
-    def testDirected(self):
+    def test_directed(self):
         self.pydot_checks(nx.DiGraph(), prog='dot')
+
+    def test_read_write(self):
+        G = nx.MultiGraph()
+        G.graph['name'] = 'G'
+        G.add_edge('1', '2', key='0')  # read assumes strings
+        fh = StringIO()
+        nx.nx_pydot.write_dot(G, fh)
+        fh.seek(0)
+        H = nx.nx_pydot.read_dot(fh)
+        assert_graphs_equal(G, H)

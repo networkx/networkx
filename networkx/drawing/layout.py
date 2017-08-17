@@ -548,7 +548,7 @@ def kamada_kawai_layout(G, dist=None,
 
     if pos is None:
         pos = circular_layout(G, dim=dim)
-    pos_arr = np.array([ pos[n] for n in G ])
+    pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
 
@@ -593,8 +593,8 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     offset[np.diag_indices(nNodes)] = 0
 
     cost = 0.5 * np.sum(offset ** 2)
-    grad = (np.einsum('ij,ij,ijk->ik', invdist, offset, direction)
-            - np.einsum('ij,ij,ijk->jk', invdist, offset, direction))
+    grad = (np.einsum('ij,ij,ijk->ik', invdist, offset, direction) -
+            np.einsum('ij,ij,ijk->jk', invdist, offset, direction))
 
     # Additional parabolic term to encourage mean position to be near origin:
     sumpos = np.sum(pos_arr, axis=0)
@@ -712,14 +712,10 @@ def _sparse_spectral(A, dim=2):
     try:
         import numpy as np
         from scipy.sparse import spdiags
+        from scipy.sparse.linalg.eigen import eigsh
     except ImportError:
         msg = "_sparse_spectral() requires scipy & numpy: http://scipy.org/ "
         raise ImportError(msg)
-    try:
-        from scipy.sparse.linalg.eigen import eigsh
-    except ImportError:
-        # scipy <0.9.0 names eigsh differently
-        from scipy.sparse.linalg import eigen_symmetric as eigsh
     try:
         nnodes, _ = A.shape
     except AttributeError:

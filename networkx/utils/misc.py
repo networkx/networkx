@@ -126,6 +126,7 @@ def default_opener(filename):
     from subprocess import call
 
     cmds = {'darwin': ['open'],
+            'linux': ['xdg-open'],
             'linux2': ['xdg-open'],
             'win32': ['cmd.exe', '/C', 'start', '']}
     cmd = cmds[sys.platform] + [filename]
