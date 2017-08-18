@@ -24,9 +24,11 @@ How to make a new release of ``networkx``
 
 - Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
 
+- Commit changes.
+
 - Add the version number as a tag in git::
 
-   git tag -s [-u <key-id>] v<major>.<minor>.0
+   git tag -s [-u <key-id>] networkx-<major>.<minor>
 
   (If you do not have a gpg key, use -m instead; it is important for
   Debian packaging that the tags are annotated)
@@ -40,9 +42,9 @@ How to make a new release of ``networkx``
 
 - Publish on PyPi::
 
-   python setup.py register
-   python setup.py sdist upload
-   python setup.py bdist_wheel upload
+   git clean -fxd
+   python setup.py sdist --formats=zip
+   twine upload -s dist/networkx*.zip
 
 - Increase the version number
 
