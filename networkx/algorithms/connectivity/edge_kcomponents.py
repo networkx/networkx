@@ -235,7 +235,7 @@ def bridge_components(G):
     -------
     >>> # The barbell graph with parameter zero has a single bridge
     >>> G = nx.barbell_graph(5, 0)
-    >>> from nx.connectivity.edge_kcomponents import bridge_components
+    >>> from networkx.algorithms.connectivity.edge_kcomponents import bridge_components
     >>> sorted(map(sorted, bridge_components(G)))
     [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
     """
