@@ -14,7 +14,7 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of over two years of work with over 600 pull
+This release is the result of over two years of work with over 300 pull
 requests by 85 contributors. Highlights include:
 
 - We have made major changes to the methods in the Multi/Di/Graph classes.
