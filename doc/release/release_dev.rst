@@ -35,7 +35,7 @@ API Changes
   provides basic access like iteration, membership and set operations where appropriate.
   For example, ``G.nodes()`` used to return a list and ``G.nodes_iter()`` an iterator.
   Now ``G.nodes()`` returns a view and ``G.nodes_iter()`` is removed. ``G.degree()``
-  returns a view with (node, degree) iteration, so that dict(G.degree())
+  returns a view with ``(node, degree)`` iteration, so that ``dict(G.degree())``
   returns a dict keyed by node with degree as value.
   The old behavior
 
@@ -63,6 +63,7 @@ API Changes
     set([3, 4])
 
   The following methods have changed:
+
     * Graph/MultiGraph
 
       * ``G.nodes()``
@@ -181,6 +182,12 @@ API Changes
 
   ``G.node`` and ``G.edge`` are removed. Their functionality are replaced by
   ``G.nodes`` and ``G.edges``.
+
+* [`#2558 <https://github.com/networkx/networkx/pull/2558>`_]
+  Previously, the function ``from_pandas_dataframe`` assumed that the dataframe
+  has edge-list like structures, but ``to_pandas_dataframe`` generates an
+  adjacency matrix.  We now provide four functions ``from_pandas_edgelist``,
+  ``to_pandas_edgelist``, ``from_pandas_adjacency``, and ``to_pandas_adjacency``.
 
 * [`#2620 <https://github.com/networkx/networkx/pull/2620>`_]
   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
