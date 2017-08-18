@@ -75,6 +75,7 @@ def k_edge_components(G, k):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
@@ -84,7 +85,7 @@ def k_edge_components(G, k):
     >>> G.add_nodes_from(it.chain(*paths))
     >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # note this returns {1, 4} unlike k_edge_subgraphs
-    >>> sorted(map(sorted, k_edge_components(G, k=3)))
+    >>> sorted(map(sorted, nx.k_edge_components(G, k=3)))
     [[1, 4], [2], [3], [5, 6, 7, 8]]
 
     References
@@ -234,6 +235,7 @@ def bridge_components(G):
     -------
     >>> # The barbell graph with parameter zero has a single bridge
     >>> G = nx.barbell_graph(5, 0)
+    >>> from nx.connectivity.edge_kcomponents import bridge_components
     >>> sorted(map(sorted, bridge_components(G)))
     [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
     """
@@ -244,7 +246,7 @@ def bridge_components(G):
 
 
 class EdgeComponentAuxGraph(object):
-    """A simple algorithm to find all k-edge-connected components in a graph.
+    r"""A simple algorithm to find all k-edge-connected components in a graph.
 
     Constructing the AuxillaryGraph (which may take some time) allows for the
     k-edge-ccs to be found in linear time for arbitrary k.
@@ -253,8 +255,8 @@ class EdgeComponentAuxGraph(object):
     -----
     This implementation is based on [1]_. The idea is to construct an auxillary
     graph from which the k-edge-ccs can be extracted in linear time. The
-    auxillary graph is constructed in O(|V|F) operations, where F is the
-    complexity of max flow. Querying the components takes an additional O(|V|)
+    auxillary graph is constructed in $O(|V|\cdot F)$ operations, where F is the
+    complexity of max flow. Querying the components takes an additional $O(|V|)$
     operations. This algorithm can be slow for large graphs, but it handles an
     arbitrary k and works for both directed and undirected inputs.
 
@@ -430,7 +432,7 @@ class EdgeComponentAuxGraph(object):
         Notes
         -----
         Refines the k-edge-ccs into k-edge-subgraphs. The running time is more
-        than O(|V|).
+        than $O(|V|)$.
 
         For single values of k it is faster to use `nx.k_edge_subgraphs`.
         But for multiple values of k, it can be faster to build AuxGraph and

@@ -18,7 +18,7 @@ a maximum independent set of a graph.
 
 Independent set algorithm is based on the following paper:
 
-`O(|V|/(log|V|)^2)` apx of maximum clique/independent set.
+$O(|V|/(log|V|)^2)$ apx of maximum clique/independent set.
 
 Boppana, R., & Halldórsson, M. M. (1992).
 Approximating maximum independent sets by excluding subgraphs.
@@ -50,7 +50,7 @@ def maximum_independent_set(G):
 
     Notes
     -----
-    Finds the `O(|V|/(log|V|)^2)` apx of independent set in the worst case.
+    Finds the $O(|V|/(log|V|)^2)$ apx of independent set in the worst case.
 
 
     References

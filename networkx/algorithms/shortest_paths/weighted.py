@@ -1080,8 +1080,8 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
-    The algorithm has a running time of O(mn) where n is the number of
-    nodes and m is the number of edges.  It is slower than Dijkstra but
+    The algorithm has a running time of $O(mn)$ where $n$ is the number of
+    nodes and $m$ is the number of edges.  It is slower than Dijkstra but
     can handle negative edge weights.
 
     Parameters
@@ -1658,8 +1658,8 @@ def goldberg_radzik(G, source, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
-    The algorithm has a running time of O(mn) where n is the number of
-    nodes and m is the number of edges.  It is slower than Dijkstra but
+    The algorithm has a running time of $O(mn)$ where $n$ is the number of
+    nodes and $m$ is the number of edges.  It is slower than Dijkstra but
     can handle negative edge weights.
 
     Parameters
@@ -2088,8 +2088,8 @@ def johnson(G, weight='weight'):
     the input graph that removes all negative weights, allowing Dijkstra's
     algorithm to be used on the transformed graph.
 
-    The time complexity of this algorithm is `O(n^2 \log n + n m)`,
-    where `n` is the number of nodes and `m` the number of edges in the
+    The time complexity of this algorithm is $O(n^2 \log n + n m)$,
+    where $n$ is the number of nodes and $m$ the number of edges in the
     graph. For dense graphs, this may be faster than the Floyd–Warshall
     algorithm.
 

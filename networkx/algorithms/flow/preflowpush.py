@@ -147,7 +147,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
         while True:
             v, attr = curr_edge.get()
             if (height == R_nodes[v]['height'] + 1 and
-                attr['flow'] < attr['capacity']):
+                    attr['flow'] < attr['capacity']):
                 flow = min(R_nodes[u]['excess'],
                            attr['capacity'] - attr['flow'])
                 push(u, v, flow)
@@ -303,8 +303,8 @@ def preflow_push(G, s, t, capacity='capacity', residual=None,
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
-    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
-    `m` edges.
+    This algorithm has a running time of $O(n^2 \sqrt{m})$ for $n$ nodes and
+    $m$ edges.
 
 
     Parameters

@@ -117,6 +117,7 @@ def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True,
 
     This function uses the LXML framework and should be faster than
     the version using the xml library.
+
     Parameters
     ----------
     G : graph
@@ -135,8 +136,8 @@ def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True,
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_graphml_lxml(G, "fourpath.graphml") # doctest: +SKIP
+    >>> G = nx.path_graph(4)
+    >>> nx.write_graphml_lxml(G, "fourpath.graphml")  # doctest: +SKIP
 
     Notes
     -----

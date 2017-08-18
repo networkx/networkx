@@ -151,9 +151,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     Notes
     -----
     This algorithm uses a modified depth-first search to generate the
-    paths [1]_.  A single path can be found in `O(V+E)` time but the
-    number of simple paths in a graph can be very large, e.g. `O(n!)` in
-    the complete graph of order n.
+    paths [1]_.  A single path can be found in $O(V+E)$ time but the
+    number of simple paths in a graph can be very large, e.g. $O(n!)$ in
+    the complete graph of order $n$.
 
     References
     ----------
@@ -288,7 +288,7 @@ def shortest_simple_paths(G, source, target, weight=None):
     Notes
     -----
     This procedure is based on algorithm by Jin Y. Yen [1]_.  Finding
-    the first K paths requires O(KN^3) operations.
+    the first $K$ paths requires $O(KN^3)$ operations.
 
     See Also
     --------

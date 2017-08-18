@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-"""Generate graphs with given degree and triangle sequence.
-"""
 #    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Joel Miller (joel.c.miller.research@gmail.com)
+"""Generate graphs with given degree and triangle sequence.
+"""
 import random
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Joel Miller (joel.c.miller.research@gmail.com)'])
 
 __all__ = ['random_clustered_graph']
 
 
 def random_clustered_graph(joint_degree_sequence, create_using=None,
                            seed=None):
-    """Generate a random graph with the given joint independent edge degree and
+    r"""Generate a random graph with the given joint independent edge degree and
     triangle degree sequence.
 
     This uses a configuration model-like approach to generate a random graph
@@ -26,7 +26,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
 
     The joint degree sequence is a list of pairs of integers of the form
     $[(d_{1,i}, d_{1,t}), \dotsc, (d_{n,i}, d_{n,t})]$. According to this list,
-    vertex $u$ is a member of $d_{u,t}$ triangles and has $d_{u, i}4 other
+    vertex $u$ is a member of $d_{u,t}$ triangles and has $d_{u, i}$ other
     edges. The number $d_{u,t}$ is the *triangle degree* of $u$ and the number
     $d_{u,i}$ is the *independent edge degree*.
 

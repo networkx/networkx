@@ -19,6 +19,7 @@ from networkx.utils import pairwise
 
 __all__ = ['dinitz']
 
+
 def dinitz(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff=None):
     """Find a maximum single-commodity flow using Dinitz' algorithm.
 
@@ -26,8 +27,8 @@ def dinitz(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
-    This algorithm has a running time of `O(n^2 m)` for `n` nodes and `m`
-    edges _[1].
+    This algorithm has a running time of $O(n^2 m)$ for $n$ nodes and $m$
+    edges [1]_.
 
 
     Parameters
@@ -175,7 +176,6 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
     R_succ = R.succ
     R_pred = R.pred
 
-
     def breath_first_search():
         parents = {}
         queue = deque([s])
@@ -189,7 +189,6 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
                     parents[v] = u
                     queue.append(v)
         return parents
-
 
     def depth_first_search(parents):
         """Build a path using DFS starting from the sink"""
@@ -209,7 +208,6 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
                 R_pred[v][u]['flow'] -= flow
         return flow
 
-
     flow_value = 0
     while flow_value < cutoff:
         parents = breath_first_search()
@@ -218,9 +216,8 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
         this_flow = depth_first_search(parents)
         if this_flow * 2 > INF:
             raise nx.NetworkXUnbounded(
-                    'Infinite capacity path, flow unbounded above.')
+                'Infinite capacity path, flow unbounded above.')
         flow_value += this_flow
-
 
     R.graph['flow_value'] = flow_value
     return R

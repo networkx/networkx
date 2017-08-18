@@ -96,7 +96,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
     The validation proceeds using the Havel-Hakimi theorem.
-    Worst-case run time is: O(s) where s is the sum of the sequence.
+    Worst-case run time is $O(s)$ where $s$ is the sum of the sequence.
 
     Parameters
     ----------
@@ -183,7 +183,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     -----
 
     This implementation uses an equivalent form of the Erdős-Gallai criterion.
-    Worst-case run time is: O(n) where n is the length of the sequence.
+    Worst-case run time is $O(n)$ where $n$ is the length of the sequence.
 
     Specifically, a sequence d is graphical if and only if the
     sum of the sequence is even and for all strong indices k in the sequence,
@@ -257,7 +257,7 @@ def is_multigraphical(sequence):
 
     Notes
     -----
-    The worst-case run time is O(n) where n is the length of the sequence.
+    The worst-case run time is $O(n)$ where $n$ is the length of the sequence.
 
     References
     ----------
@@ -296,7 +296,7 @@ def is_pseudographical(sequence):
 
     Notes
     -----
-    The worst-case run time is O(n) where n is the length of the sequence.
+    The worst-case run time is $O(n)$ where n is the length of the sequence.
 
     References
     ----------
@@ -330,8 +330,8 @@ def is_digraphical(in_sequence, out_sequence):
     Notes
     -----
     This algorithm is from Kleitman and Wang [1]_.
-    The worst case runtime is O(s * log n) where s and n are the sum and length
-    of the sequences respectively.
+    The worst case runtime is $O(s \times \log n)$ where $s$ and $n$ are the
+    sum and length of the sequences respectively.
 
     References
     ----------

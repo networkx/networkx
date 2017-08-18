@@ -118,8 +118,8 @@ def hamiltonian_path(G):
     Notes
     -----
     This is a recursive implementation with an asymptotic running time
-    of `O(n^2)`, ignoring multiplicative polylogarithmic factors, where
-    `n` is the number of nodes in the graph.
+    of $O(n^2)$, ignoring multiplicative polylogarithmic factors, where
+    $n$ is the number of nodes in the graph.
 
     """
     if len(G) == 0:

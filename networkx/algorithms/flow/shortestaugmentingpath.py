@@ -72,6 +72,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
         counts[R_nodes[u]['height']] += 1
 
     inf = R.graph['inf']
+
     def augment(path):
         """Augment flow along a path from s to t.
         """
@@ -121,7 +122,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
         while True:
             v, attr = curr_edge.get()
             if (height == R_nodes[v]['height'] + 1 and
-                attr['flow'] < attr['capacity']):
+                    attr['flow'] < attr['capacity']):
                 # Advance to the next node following an admissible edge.
                 path.append(v)
                 u = v
@@ -181,7 +182,7 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
-    This algorithm has a running time of `O(n^2 m)` for `n` nodes and `m`
+    This algorithm has a running time of $O(n^2 m)$ for $n$ nodes and $m$
     edges.
 
 
@@ -214,8 +215,8 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
 
     two_phase : bool
         If True, a two-phase variant is used. The two-phase variant improves
-        the running time on unit-capacity networks from `O(nm)` to
-        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
+        the running time on unit-capacity networks from $O(nm)$ to
+        $O(\min(n^{2/3}, m^{1/2}) m)$. Default value: False.
 
     cutoff : integer, float
         If specified, the algorithm will terminate when the flow value reaches

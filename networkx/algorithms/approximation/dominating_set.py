@@ -58,7 +58,7 @@ def min_weighted_dominating_set(G, weight=None):
     node in the graph and `w(V^*)` denotes the sum of the weights of
     each node in the minimum weight dominating set for the graph.
 
-    This implementation of the algorithm runs in `O(m)` time, where `m`
+    This implementation of the algorithm runs in $O(m)$ time, where $m$
     is the number of edges in the graph.
 
     References
@@ -125,7 +125,7 @@ def min_edge_dominating_set(G):
     -----
     The algorithm computes an approximate solution to the edge dominating set
     problem. The result is no more than 2 * OPT in terms of size of the set.
-    Runtime of the algorithm is `O(|E|)`.
+    Runtime of the algorithm is $O(|E|)$.
     """
     if not G:
         raise ValueError("Expected non-empty NetworkX graph!")

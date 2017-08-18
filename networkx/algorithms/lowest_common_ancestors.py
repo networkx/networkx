@@ -25,7 +25,7 @@ __all__ = ["all_pairs_lowest_common_ancestor",
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
-    """Yield the lowest common ancestor for sets of pairs in a tree.
+    r"""Yield the lowest common ancestor for sets of pairs in a tree.
 
     Parameters
     ----------
@@ -48,9 +48,9 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     -----
     Only defined on non-null trees represented with directed edges from
     parents to children. Uses Tarjan's off-line lowest-common-ancestors
-    algorithm. Runs in time O(4 * (V + E + P)) time, where 4 is the largest
+    algorithm. Runs in time $O(4 \times (V + E + P))$ time, where 4 is the largest
     value of the inverse Ackermann function likely to ever come up in actual
-    use, and P is the number of pairs requested (or V^2 if all are needed).
+    use, and $P$ is the number of pairs requested (or $V^2$ if all are needed).
 
     Tarjan, R. E. (1979), "Applications of path compression on balanced trees",
     Journal of the ACM 26 (4): 690-715, doi:10.1145/322154.322161.
@@ -183,7 +183,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     -----
     Only defined on non-null directed acyclic graphs.
 
-    Uses the O(n^3) ancestor-list algorithm from:
+    Uses the $O(n^3)$ ancestor-list algorithm from:
     M. A. Bender, M. Farach-Colton, G. Pemmasani, S. Skiena, P. Sumazin.
     "Lowest common ancestors in trees and directed acyclic graphs."
     Journal of Algorithms, 57(2): 75-94, 2005.

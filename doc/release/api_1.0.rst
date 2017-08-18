@@ -56,9 +56,9 @@ Add node attributes using add_node(), add_nodes_from() or G.node
 
 >>> G.add_node(1, time='5pm')
 >>> G.add_nodes_from([3], time='2pm')
->>> G.node[1]
+>>> G.node[1]  # doctest: +SKIP
 {'time': '5pm'}
->>> G.node[1]['room'] = 714
+>>> G.node[1]['room'] = 714  # doctest: +SKIP
 >>> G.nodes(data=True)  # doctest: +SKIP
 [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
 

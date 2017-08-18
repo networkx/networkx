@@ -33,9 +33,9 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     ============== =============================================
     Type of heap   Running time
     ============== =============================================
-    Binary heap    `O(n (m + n) \log n)`
-    Fibonacci heap `O(nm + n^2 \log n)`
-    Pairing heap   `O(2^{2 \sqrt{\log \log n}} nm + n^2 \log n)`
+    Binary heap    $O(n (m + n) \log n)$
+    Fibonacci heap $O(nm + n^2 \log n)$
+    Pairing heap   $O(2^{2 \sqrt{\log \log n}} nm + n^2 \log n)$
     ============== =============================================
 
     Parameters
@@ -80,14 +80,14 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_edge('x','a', weight=3)
-    >>> G.add_edge('x','b', weight=1)
-    >>> G.add_edge('a','c', weight=3)
-    >>> G.add_edge('b','c', weight=5)
-    >>> G.add_edge('b','d', weight=4)
-    >>> G.add_edge('d','e', weight=2)
-    >>> G.add_edge('c','y', weight=2)
-    >>> G.add_edge('e','y', weight=3)
+    >>> G.add_edge('x', 'a', weight=3)
+    >>> G.add_edge('x', 'b', weight=1)
+    >>> G.add_edge('a', 'c', weight=3)
+    >>> G.add_edge('b', 'c', weight=5)
+    >>> G.add_edge('b', 'd', weight=4)
+    >>> G.add_edge('d', 'e', weight=2)
+    >>> G.add_edge('c', 'y', weight=2)
+    >>> G.add_edge('e', 'y', weight=3)
     >>> cut_value, partition = nx.stoer_wagner(G)
     >>> cut_value
     4
