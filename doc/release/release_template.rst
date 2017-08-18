@@ -1,26 +1,20 @@
-Announcement: networkx 2.X
+Announcement: NetworkX 2.X
 ==========================
 
-We're happy to announce the release of networkx 2.X!
-
-networkx is a Python package for the creation, manipulation, and study of the
+We're happy to announce the release of NetworkX 2.X!
+NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
-For more information, please visit our website
-
-http://networkx.github.io/
-
-and our gallery of examples
-
-http://networkx.readthedocs.io/en/latest/auto_examples/index.html
-
-Please send comments and questions to the networkx-discuss `mailing list
+For more information, please visit our `website <http://networkx.github.io/>`_
+and our `gallery of examples
+<http://networkx.readthedocs.io/en/latest/auto_examples/index.html>`_.
+Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
 Highlights
 ----------
 
-This release is the result of X of work, with over X pull requests by
+This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
 
