@@ -58,7 +58,7 @@ class AtlasView(Mapping):
         return {n: self[n].copy() for n in self._atlas}
 
     def __str__(self):
-        return str(self._atlas) #{nbr: self[nbr] for nbr in self})
+        return str(self._atlas)  # {nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self._atlas)

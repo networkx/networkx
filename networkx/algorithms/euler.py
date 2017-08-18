@@ -50,8 +50,8 @@ def is_eulerian(G):
     if G.is_directed():
         # Every node must have equal in degree and out degree and the
         # graph must be strongly connected
-        return (all(G.in_degree(n) == G.out_degree(n) for n in G)
-                and nx.is_strongly_connected(G))
+        return (all(G.in_degree(n) == G.out_degree(n) for n in G) and
+                nx.is_strongly_connected(G))
     # An undirected Eulerian graph has no vertices of odd degree and
     # must be connected.
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)

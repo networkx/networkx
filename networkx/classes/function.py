@@ -457,7 +457,7 @@ def restricted_view(G, nodes, edges):
 
 @not_implemented_for('undirected')
 def reverse_view(digraph):
-    """Provide a reverse view of the digraph with edges reversed. 
+    """Provide a reverse view of the digraph with edges reversed.
 
     Identical to digraph.reverse(copy=False)
     """

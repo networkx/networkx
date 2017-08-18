@@ -281,7 +281,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
-        This object is a read-only dict-like structure with node keys 
+        This object is a read-only dict-like structure with node keys
         and neighbor-dict values.  The neighbor-dict is keyed by neighbor
         to the edge-data-dict.  So `G.adj[3][2]['color'] = 'blue'` sets
         the color of the edge `(3, 2)` to `"blue"`.
@@ -302,7 +302,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def succ(self):
         """Graph adjacency object holding the successors of each node.
 
-        This object is a read-only dict-like structure with node keys 
+        This object is a read-only dict-like structure with node keys
         and neighbor-dict values.  The neighbor-dict is keyed by neighbor
         to the edge-data-dict.  So `G.adj[3][2]['color'] = 'blue'` sets
         the color of the edge `(3, 2)` to `"blue"`.
@@ -323,7 +323,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def pred(self):
         """Graph adjacency object holding the predecessors of each node.
 
-        This object is a read-only dict-like structure with node keys 
+        This object is a read-only dict-like structure with node keys
         and neighbor-dict values.  The neighbor-dict is keyed by neighbor
         to the edge-data-dict.  So `G.adj[3][2]['color'] = 'blue'` sets
         the color of the edge `(3, 2)` to `"blue"`.
@@ -513,7 +513,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes. 
+            The view will only report edges incident to these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -576,7 +576,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes. 
+            The view will only report edges incident to these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -604,7 +604,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """A DegreeView for the Graph as G.degree or G.degree().
 
         The node degree is the number of edges adjacent to the node.
-        The weighted node degree is the sum of the edge weights for 
+        The weighted node degree is the sum of the edge weights for
         edges incident to that node.
 
         This object provides an iterator for (node, degree) as well as
@@ -613,7 +613,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes. 
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
            The name of an edge attribute that holds the numerical value used
@@ -652,7 +652,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """A DegreeView for (node, in_degree) or in_degree for single node.
 
         The node in-degree is the number of edges pointing in to the node.
-        The weighted node degree is the sum of the edge weights for 
+        The weighted node degree is the sum of the edge weights for
         edges incident to that node.
 
         This object provides an iterator for (node, degree) as well as
@@ -661,7 +661,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes. 
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
            The edge attribute that holds the numerical value used
@@ -708,7 +708,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes. 
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
            The edge attribute that holds the numerical value used
@@ -752,7 +752,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     def fresh_copy(self):
         """Return a fresh copy graph with the same data structure.
-        
+
         A fresh copy has no nodes, edges or graph attributes. It is
         the same data structure as the current graph. This method is
         typically used to create an empty version of the graph.
@@ -773,7 +773,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         copy.deepcopy)
 
         Data Reference (Shallow) -- For a shallow copy the graph structure
-        is copied but the edge, node and graph attribute dicts are 
+        is copied but the edge, node and graph attribute dicts are
         references to those in the original graph. This saves
         time and memory but could cause confusion if you change an attribute
         in one graph and it changes the attribute in the other.
@@ -923,11 +923,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
         -----
         The graph, edge, and node attributes in the returned subgraph
         view are references to the corresponding attributes in the original
-        graph. The view is read-only. 
+        graph. The view is read-only.
 
         To create a full graph version of the subgraph with its own copy
         of the edge or node attributes, use::
- 
+
             >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
 
         For an inplace reduction of a graph to a subgraph you can remove nodes:

@@ -2,6 +2,7 @@ from nose.tools import assert_equal
 
 import networkx as nx
 
+
 class TestClosenessVitality(object):
 
     def test_unweighted(self):
@@ -31,7 +32,7 @@ class TestClosenessVitality(object):
         G = nx.MultiDiGraph()
         nx.add_cycle(G, [0, 1, 2], weight=2)
         nx.add_cycle(G, [2, 1, 0], weight=2)
-        vitality = nx.closeness_vitality(G,weight='weight')
+        vitality = nx.closeness_vitality(G, weight='weight')
         assert_equal(vitality, {0: 8, 1: 8, 2: 8})
 
     def test_disconnecting_graph(self):

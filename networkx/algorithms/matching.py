@@ -932,4 +932,3 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
         verifyOptimum()
 
     return mate
-

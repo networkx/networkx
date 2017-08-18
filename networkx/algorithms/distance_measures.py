@@ -133,7 +133,7 @@ def extrema_bounding(G, compute="diameter"):
 
         elif compute == 'center':
             ruled_out = {i for i in candidates if ecc_lower[i] > minupper and
-                     (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)}
+                         (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)}
 
         elif compute == 'eccentricities':
             ruled_out = {}

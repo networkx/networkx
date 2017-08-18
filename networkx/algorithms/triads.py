@@ -102,9 +102,9 @@ def triadic_census(G):
                 census['012'] += n - len(neighbors) - 2
             # Count connected triads.
             for w in neighbors:
-                if m[u] < m[w] or (m[v] < m[w] < m[u]
-                                   and v not in G.pred[w]
-                                   and v not in G.succ[w]):
+                if m[u] < m[w] or (m[v] < m[w] < m[u] and
+                                   v not in G.pred[w] and
+                                   v not in G.succ[w]):
                     code = _tricode(G, v, u, w)
                     census[TRICODE_TO_NAME[code]] += 1
 

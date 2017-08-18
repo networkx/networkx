@@ -58,7 +58,7 @@ class TestLocalBridges(TestCase):
         expected = {(u, v, 3) for u, v, in self.square.edges}
         assert_equal(set(nx.local_bridges(self.square)), expected)
         assert_equal(list(nx.local_bridges(self.tri)), [])
-        
+
     def test_weight(self):
         inf = float('inf')
         G = self.square.copy()
@@ -70,4 +70,3 @@ class TestLocalBridges(TestCase):
         expected = {(u, v, 6) for u, v in G.edges}
         lb = nx.local_bridges(G, weight=lambda u, v, d: 2)
         assert_equal(set(lb), expected)
-

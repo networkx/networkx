@@ -40,36 +40,36 @@ class TestGeneratorsRandom(object):
 
     def smoke_test_random_graph(self):
         seed = 42
-        G=gnp_random_graph(100,0.25,seed)
-        G=binomial_graph(100,0.25,seed)
-        G=erdos_renyi_graph(100,0.25,seed)
-        G=fast_gnp_random_graph(100,0.25,seed)
-        G=gnm_random_graph(100,20,seed)
-        G=dense_gnm_random_graph(100,20,seed)
+        G = gnp_random_graph(100, 0.25, seed)
+        G = binomial_graph(100, 0.25, seed)
+        G = erdos_renyi_graph(100, 0.25, seed)
+        G = fast_gnp_random_graph(100, 0.25, seed)
+        G = gnm_random_graph(100, 20, seed)
+        G = dense_gnm_random_graph(100, 20, seed)
 
-        G=watts_strogatz_graph(10,2,0.25,seed)
+        G = watts_strogatz_graph(10, 2, 0.25, seed)
         assert_equal(len(G), 10)
         assert_equal(G.number_of_edges(), 10)
 
-        G=connected_watts_strogatz_graph(10,2,0.1,seed)
+        G = connected_watts_strogatz_graph(10, 2, 0.1, seed)
         assert_equal(len(G), 10)
         assert_equal(G.number_of_edges(), 10)
 
-        G=watts_strogatz_graph(10,4,0.25,seed)
+        G = watts_strogatz_graph(10, 4, 0.25, seed)
         assert_equal(len(G), 10)
         assert_equal(G.number_of_edges(), 20)
 
-        G=newman_watts_strogatz_graph(10,2,0.0,seed)
+        G = newman_watts_strogatz_graph(10, 2, 0.0, seed)
         assert_equal(len(G), 10)
         assert_equal(G.number_of_edges(), 10)
 
-        G=newman_watts_strogatz_graph(10,4,0.25,seed)
+        G = newman_watts_strogatz_graph(10, 4, 0.25, seed)
         assert_equal(len(G), 10)
         assert_true(G.number_of_edges() >= 20)
 
-        G=barabasi_albert_graph(100,1,seed)
-        G=barabasi_albert_graph(100,3,seed)
-        assert_equal(G.number_of_edges(),(97*3))
+        G = barabasi_albert_graph(100, 1, seed)
+        G = barabasi_albert_graph(100, 3, seed)
+        assert_equal(G.number_of_edges(), (97 * 3))
 
         G = extended_barabasi_albert_graph(100, 1, 0, 0, seed)
         assert_equal(G.number_of_edges(), 99)
@@ -81,22 +81,22 @@ class TestGeneratorsRandom(object):
         assert_greater(G.number_of_edges(), 100 * 3)
         assert_less(G.number_of_edges(), 100 * 4)
 
-        G=extended_barabasi_albert_graph(100, 2, 0.3, 0.3, seed)
+        G = extended_barabasi_albert_graph(100, 2, 0.3, 0.3, seed)
         assert_greater(G.number_of_edges(), 100 * 2)
         assert_less(G.number_of_edges(), 100 * 4)
 
-        G=powerlaw_cluster_graph(100,1,1.0,seed)
-        G=powerlaw_cluster_graph(100,3,0.0,seed)
-        assert_equal(G.number_of_edges(),(97*3))
+        G = powerlaw_cluster_graph(100, 1, 1.0, seed)
+        G = powerlaw_cluster_graph(100, 3, 0.0, seed)
+        assert_equal(G.number_of_edges(), (97 * 3))
 
-        G=random_regular_graph(10,20,seed)
+        G = random_regular_graph(10, 20, seed)
 
         assert_raises(NetworkXError, random_regular_graph, 3, 21)
 
-        constructor=[(10,20,0.8),(20,40,0.8)]
-        G=random_shell_graph(constructor,seed)
+        constructor = [(10, 20, 0.8), (20, 40, 0.8)]
+        G = random_shell_graph(constructor, seed)
 
-        G=random_lobster(10,0.1,0.5,seed)
+        G = random_lobster(10, 0.1, 0.5, seed)
 
     def test_extended_barabasi_albert(self, m=2):
         """
@@ -121,7 +121,7 @@ class TestGeneratorsRandom(object):
 
             # More than twice more edges should have been added
             G1 = extended_barabasi_albert_graph(100, m, 0.8, 0, seed)
-            assert_greater(G1.size(), BA_model_edges*2)
+            assert_greater(G1.size(), BA_model_edges * 2)
 
             # Only edge rewiring, so the number of edges less than original
             G2 = extended_barabasi_albert_graph(100, m, 0, 0.8, seed)
@@ -184,28 +184,28 @@ class TestGeneratorsRandom(object):
             runs = 100
             for i in range(runs):
                 edges += sum(1 for _ in generator(10, 0.99999, directed=True).edges())
-            assert_almost_equal(edges/float(runs), 90, delta=runs*2.0/100)
+            assert_almost_equal(edges / float(runs), 90, delta=runs * 2.0 / 100)
 
     def test_gnm(self):
-        G=gnm_random_graph(10,3)
-        assert_equal(len(G),10)
+        G = gnm_random_graph(10, 3)
+        assert_equal(len(G), 10)
         assert_equal(sum(1 for _ in G.edges()), 3)
 
-        G=gnm_random_graph(10,3,seed=42)
-        assert_equal(len(G),10)
+        G = gnm_random_graph(10, 3, seed=42)
+        assert_equal(len(G), 10)
         assert_equal(sum(1 for _ in G.edges()), 3)
 
-        G=gnm_random_graph(10,100)
-        assert_equal(len(G),10)
+        G = gnm_random_graph(10, 100)
+        assert_equal(len(G), 10)
         assert_equal(sum(1 for _ in G.edges()), 45)
 
-        G=gnm_random_graph(10,100,directed=True)
-        assert_equal(len(G),10)
-        assert_equal(sum(1 for _ in G.edges()),90)
+        G = gnm_random_graph(10, 100, directed=True)
+        assert_equal(len(G), 10)
+        assert_equal(sum(1 for _ in G.edges()), 90)
 
-        G=gnm_random_graph(10,-1.1)
-        assert_equal(len(G),10)
-        assert_equal(sum(1 for _ in G.edges()),0)
+        G = gnm_random_graph(10, -1.1)
+        assert_equal(len(G), 10)
+        assert_equal(sum(1 for _ in G.edges()), 0)
 
     def test_watts_strogatz_big_k(self):
         assert_raises(NetworkXError, watts_strogatz_graph, 10, 10, 0.25)
@@ -217,9 +217,10 @@ class TestGeneratorsRandom(object):
 
     def test_random_kernel_graph(self):
         def integral(u, w, z):
-            return c*(z-w)
+            return c * (z - w)
+
         def root(u, w, r):
-            return r/c+w
+            return r / c + w
         c = 1
         graph = random_kernel_graph(1000, integral, root)
         assert_equal(len(graph), 1000)

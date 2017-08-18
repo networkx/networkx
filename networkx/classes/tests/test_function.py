@@ -522,6 +522,7 @@ def test_is_empty():
         G.add_edges_from([(1, 2), (3, 4)])
         assert_false(nx.is_empty(G))
 
+
 def test_selfloops():
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     for graph in graphs:

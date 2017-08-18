@@ -109,6 +109,7 @@ def line_graph(G, create_using=None):
         L = _lg_undirected(G, selfloops=False, create_using=create_using)
     return L
 
+
 def _node_func(G):
     """Returns a function which returns a sorted node for line graphs.
 
@@ -124,6 +125,7 @@ def _node_func(G):
             return (u, v) if u <= v else (v, u)
     return sorted_node
 
+
 def _edge_func(G):
     """Returns the edges from G, handling keys for multigraphs as necessary.
 
@@ -135,6 +137,7 @@ def _edge_func(G):
         def get_edges(nbunch=None):
             return G.edges(nbunch)
     return get_edges
+
 
 def _sorted_edge(u, v):
     """Returns a sorted edge.
@@ -148,6 +151,7 @@ def _sorted_edge(u, v):
 
     """
     return (u, v) if u <= v else (v, u)
+
 
 def _lg_directed(G, create_using=None):
     """Return the line graph L of the (multi)digraph G.
@@ -179,6 +183,7 @@ def _lg_directed(G, create_using=None):
             L.add_edge(from_node, to_node)
 
     return L
+
 
 def _lg_undirected(G, selfloops=False, create_using=None):
     """Return the line graph L of the (multi)graph G.
@@ -219,7 +224,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     edges = set([])
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
-        nodes = [ sorted_node(*x) for x in get_edges(u) ]
+        nodes = [sorted_node(*x) for x in get_edges(u)]
 
         if len(nodes) == 1:
             # Then the edge will be an isolated node in L.
@@ -229,7 +234,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
         # especially important for multigraphs, we store the edges in
         # canonical form in a set.
         for i, a in enumerate(nodes):
-            edges.update([ _sorted_edge(a,b) for b in nodes[i+shift:] ])
+            edges.update([_sorted_edge(a, b) for b in nodes[i + shift:]])
 
     L.add_edges_from(edges)
     return L
