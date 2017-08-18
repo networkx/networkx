@@ -1,36 +1,27 @@
-Announcement: networkx 2.0
+Announcement: NetworkX 2.0
 ==========================
 
-We're happy to announce the release of networkx 2.0!
-
-networkx is a Python package for the creation, manipulation, and study of the
+We're happy to announce the release of NetworkX 2.0!
+NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
-For more information, please visit our website
-
-http://networkx.github.io/
-
-and our gallery of examples
-
-http://networkx.readthedocs.io/en/latest/auto_examples/index.html
-
-Please send comments and questions to the networkx-discuss `mailing list
+For more information, please visit our `website <http://networkx.github.io/>`_
+and our `gallery of examples
+<http://networkx.readthedocs.io/en/latest/auto_examples/index.html>`_.
+Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
 Highlights
 ----------
 
-This release is the result of over two years of work, with over 600 pull
+This release is the result of over two years of work with over 600 pull
 requests by 85 contributors. Highlights include:
 
-- There are major changes to the methods in the Multi/Di/Graph classes.
+- We have made major changes to the methods in the Multi/Di/Graph classes.
   There is a `migration guide for people moving from 1.X to 2.0
   <http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
 
-- The documentation system has been updated.
-
-Please send comments and questions to the networkx-discuss `mailing list
-<http://groups.google.com/group/networkx-discuss>`_.
+- We updated the documentation system.
 
 
 API Changes
@@ -44,7 +35,7 @@ API Changes
   provides basic access like iteration, membership and set operations where appropriate.
   For example, ``G.nodes()`` used to return a list and ``G.nodes_iter()`` an iterator.
   Now ``G.nodes()`` returns a view and ``G.nodes_iter()`` is removed. ``G.degree()``
-  returns a view with (node, degree) iteration, so that dict(G.degree())
+  returns a view with ``(node, degree)`` iteration, so that ``dict(G.degree())``
   returns a dict keyed by node with degree as value.
   The old behavior
 
@@ -72,6 +63,7 @@ API Changes
     set([3, 4])
 
   The following methods have changed:
+
     * Graph/MultiGraph
 
       * ``G.nodes()``
@@ -137,57 +129,68 @@ API Changes
        >>> tree.minimum_spanning_edges(G, algorithm='prim', weight='mass')
 
 * [`#1445 <https://github.com/networkx/networkx/pull/1445>`_]
-   Most of the shortest_path algorithms now raise a NodeNotFound exception
-   when a source or a target are not present in the graph.
+  Most of the ``shortest_path`` algorithms now raise a ``NodeNotFound`` exception
+  when a source or a target are not present in the graph.
 
 * [`#2326 <https://github.com/networkx/networkx/pull/2326>`_]
-   Centrality algorithms were harmonized with respect to the default behavior of
-   the weight parameter. The default value of the ``weight`` keyword argument has
-   been changed from ``weight`` to ``'None'``.  This affects the
-   following centrality functions:
-   - :func:`approximate_current_flow_betweenness_centrality()`
-   - :func:`current_flow_betweenness_centrality()`
-   - :func:`current_flow_betweenness_centrality_subset()`
-   - :func:`current_flow_closeness_centrality()`
-   - :func:`edge_current_flow_betweenness_centrality()`
-   - :func:`edge_current_flow_betweenness_centrality_subset()`
-   - :func:`eigenvector_centrality()`
-   - :func:`eigenvector_centrality_numpy()`
-   - :func:`katz_centrality()`
-   - :func:`katz_centrality_numpy()`
+  Centrality algorithms were harmonized with respect to the default behavior of
+  the weight parameter. The default value of the ``weight`` keyword argument has
+  been changed from ``weight`` to ``None``.  This affects the
+  following centrality functions:
+
+  - :func:`approximate_current_flow_betweenness_centrality()`
+  - :func:`current_flow_betweenness_centrality()`
+  - :func:`current_flow_betweenness_centrality_subset()`
+  - :func:`current_flow_closeness_centrality()`
+  - :func:`edge_current_flow_betweenness_centrality()`
+  - :func:`edge_current_flow_betweenness_centrality_subset()`
+  - :func:`eigenvector_centrality()`
+  - :func:`eigenvector_centrality_numpy()`
+  - :func:`katz_centrality()`
+  - :func:`katz_centrality_numpy()`
 
 * [`#2420 <https://github.com/networkx/networkx/pull/2420>`_]
-   New community detection algorithm provided. Fluid Communities is an asynchronous
-   algorithm based on the simple idea of fluids interacting in an environment, 
-   expanding and pushing each other. The algorithm is completly described in 
-   [`https://arxiv.org/pdf/1703.09307.pdf <https://arxiv.org/pdf/1703.09307.pdf>`_]. 
+  New community detection algorithm provided. Fluid Communities is an
+  asynchronous algorithm based on the simple idea of fluids interacting in an
+  environment, expanding and pushing each other. The algorithm is completely
+  described in `"Fluid Communities: A Competitive and Highly Scalable Community
+  Detection Algorithm" <https://arxiv.org/pdf/1703.09307.pdf>`_. 
 
 * [`#2510 <https://github.com/networkx/networkx/pull/2510>`_ and
-   `#2508 <https://github.com/networkx/networkx/pull/2508>`_]
-   single_source_dijkstra, multi_source_dijkstra and functions that use these
-   now have new behavior when `target` is specified. Instead of returning
-   dicts for distances and paths a 2-tuple of (distance, path) is returned.
-   When `target` is not specified the return value is still 2 dicts.
+  `#2508 <https://github.com/networkx/networkx/pull/2508>`_]
+  ``single_source_dijkstra``, ``multi_source_dijkstra`` and functions that use
+  these now have new behavior when ``target`` is specified. Instead of
+  returning dicts for distances and paths a 2-tuple of ``(distance, path)`` is
+  returned.  When ``target`` is not specified the return value is still 2
+  dicts.
 
 * [`#2553 <https://github.com/networkx/networkx/issues/2553>`_]
-   set_node_attributes() and set_edge_attributes() now accept dict-of-dict input
-   of shape {node/edge: {name: value}} in addition to previous valid inputs:
-   {node/edge: value} and value. The order of the parameters changed also: 
-   The second parameter "values" is the value argument and the third parameter
-   "name" is the name of the attribute. "name" has default value None in which
-   case "values" must be the newly allowed form containing names. Previously
-   "name" came second witout default, and "values" came third.
+  ``set_node_attributes()`` and ``set_edge_attributes()`` now accept
+  dict-of-dict input of shape ``{node/edge: {name: value}}`` in addition to
+  previous valid inputs: ``{node/edge: value}`` and ``value``. The order of the
+  parameters changed also: The second parameter "values" is the value argument
+  and the third parameter "name" is the name of the attribute. "name" has
+  default value ``None`` in which case "values" must be the newly allowed form
+  containing names. Previously "name" came second without default, and "values"
+  came third.
 
-* [`#2604 <https://github.com/networkx/networkx/pull/2604>`_]
-   Move selfloop methods out of base classes to networkx functions.
-   G.number_of_selfloops(), G.selfloop_edges(), G.nodes_with_selfloops() are now
-   nx.number_of_selfloops(G), nx.selfloop_edges(G), nx.nodes_with_selfloops(G).
+* [`#2604 <https://github.com/networkx/networkx/pull/2604>`_] Move selfloop
+  methods out of base classes to networkx functions.
+  ``G.number_of_selfloops()``, ``G.selfloop_edges()``,
+  ``G.nodes_with_selfloops()`` are now ``nx.number_of_selfloops(G)``,
+  ``nx.selfloop_edges(G)``, ``nx.nodes_with_selfloops(G)``.
 
-   G.node and G.edge are removed. Their functionality are replaced by G.nodes
-   and G.edges.
+  ``G.node`` and ``G.edge`` are removed. Their functionality are replaced by
+  ``G.nodes`` and ``G.edges``.
+
+* [`#2558 <https://github.com/networkx/networkx/pull/2558>`_]
+  Previously, the function ``from_pandas_dataframe`` assumed that the dataframe
+  has edge-list like structures, but ``to_pandas_dataframe`` generates an
+  adjacency matrix.  We now provide four functions ``from_pandas_edgelist``,
+  ``to_pandas_edgelist``, ``from_pandas_adjacency``, and ``to_pandas_adjacency``.
 
 * [`#2620 <https://github.com/networkx/networkx/pull/2620>`_]
-   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
+  Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
 
 Deprecations
 ------------
