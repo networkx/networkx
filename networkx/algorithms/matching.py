@@ -39,7 +39,7 @@ def maximal_matching(G):
     Notes
     -----
     The algorithm greedily selects a maximal matching M of the graph G
-    (i.e. no superset of M exists). It runs in `O(|E|)` time.
+    (i.e. no superset of M exists). It runs in $O(|E|)$ time.
     """
     matching = set()
     nodes = set()

@@ -38,7 +38,7 @@ def flow_hierarchy(G, weight=None):
     exponentiation of the adjacency matrix.  This function implements an
     alternative approach that finds strongly connected components.
     An edge is in a cycle if and only if it is in a strongly connected
-    component, which can be found in `O(m)` time using Tarjan's algorithm.
+    component, which can be found in $O(m)$ time using Tarjan's algorithm.
 
     References
     ----------

@@ -73,14 +73,14 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
-    time [1]_, where `I(n-1)` is the time needed to compute the
-    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
-    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Current-flow betweenness can be computed in $O(I(n-1)+mn \log n)$
+    time [1]_, where $I(n-1)$ is the time needed to compute the
+    inverse Laplacian.  For a full matrix this is $O(n^3)$ but using
+    sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw) where `w` is the width of the sparse
-    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
+    The space required is $O(nw)$ where $w$ is the width of the sparse
+    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -138,7 +138,7 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
                                                     normalized=True,
                                                     weight=None,
                                                     dtype=float, solver='lu'):
-    """Compute current-flow betweenness centrality for edges using subsets
+    r"""Compute current-flow betweenness centrality for edges using subsets
     of nodes.
 
     Current-flow betweenness centrality uses an electrical current
@@ -189,14 +189,14 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
-    time [1]_, where `I(n-1)` is the time needed to compute the
-    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
-    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Current-flow betweenness can be computed in $O(I(n-1)+mn \log n)$
+    time [1]_, where $I(n-1)$ is the time needed to compute the
+    inverse Laplacian.  For a full matrix this is $O(n^3)$ but using
+    sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw) where `w` is the width of the sparse
-    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
+    The space required is $O(nw)$ where $w$ is the width of the sparse
+    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.

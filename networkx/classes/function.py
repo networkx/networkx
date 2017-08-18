@@ -1016,7 +1016,7 @@ def is_empty(G):
     Notes
     -----
     An empty graph can have nodes but not edges. The empty graph with zero
-    nodes is known as the null graph. This is an O(n) operation where n is the
+    nodes is known as the null graph. This is an $O(n)$ operation where n is the
     number of nodes in the graph.
 
     """

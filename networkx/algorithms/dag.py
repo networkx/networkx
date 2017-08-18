@@ -289,8 +289,8 @@ def is_aperiodic(G):
 
     Notes
     -----
-    This uses the method outlined in [1]_, which runs in O(m) time
-    given m edges in `G`. Note that a graph is not aperiodic if it is
+    This uses the method outlined in [1]_, which runs in $O(m)$ time
+    given $m$ edges in `G`. Note that a graph is not aperiodic if it is
     acyclic as every integer trivial divides length 0 cycles.
 
     References

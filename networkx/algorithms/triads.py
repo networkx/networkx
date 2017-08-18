@@ -69,7 +69,7 @@ def triadic_census(G):
 
     Notes
     -----
-    This algorithm has complexity `O(m)` where `m` is the number of edges in
+    This algorithm has complexity $O(m)$ where $m$ is the number of edges in
     the graph.
 
     See also

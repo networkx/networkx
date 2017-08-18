@@ -20,20 +20,17 @@ Please send comments and questions to the networkx-discuss `mailing list
 Highlights
 ----------
 
-This release is the result of X of work, with over X pull requests by
-X contributors. Highlights include:
+This release is the result of over two years of work, with over 600 pull
+requests by 85 contributors. Highlights include:
 
-- big items ...
+- There are major changes to the methods in the Multi/Di/Graph classes.
+  There is a `migration guide for people moving from 1.X to 2.0
+  <http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
 
-There is a `migration guide for people moving from 1.X to 2.0
-<http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
+- The documentation system has been updated.
 
 Please send comments and questions to the networkx-discuss `mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
-
-
-Improvements
-------------
 
 
 API Changes

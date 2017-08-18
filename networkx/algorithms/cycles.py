@@ -145,7 +145,7 @@ def simple_cycles(G):
     -----
     The implementation follows pp. 79-80 in [1]_.
 
-    The time complexity is `O((n+e)(c+1))` for `n` nodes, `e` edges and `c`
+    The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$
     elementary circuits.
 
     References
@@ -258,7 +258,7 @@ def recursive_simple_cycles(G):
     -----
     The implementation follows pp. 79-80 in [1]_.
 
-    The time complexity is `O((n+e)(c+1))` for `n` nodes, `e` edges and `c`
+    The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$
     elementary circuits.
 
     References
