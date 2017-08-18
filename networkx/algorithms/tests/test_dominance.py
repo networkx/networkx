@@ -134,7 +134,6 @@ class TestDominanceFrontiers(object):
                      {1: set([2]), 2: set([1]), 3: set([2]),
                       4: set([1]), 5: set()})
 
-
     def test_irreducible2(self):
         # Graph taken from Figure 4 of
         # K. D. Cooper, T. J. Harvey, and K. Kennedy.
@@ -144,8 +143,7 @@ class TestDominanceFrontiers(object):
                  (6, 4), (6, 5)]
         G = nx.DiGraph(edges)
         assert_equal(nx.dominance_frontiers(G, 6),
-                     {1: set([2]), 2: set([1, 3]), 3: set([2]), 4: set([2, 3])
-                      , 5: set([1]), 6: set([])})
+                     {1: set([2]), 2: set([1, 3]), 3: set([2]), 4: set([2, 3]), 5: set([1]), 6: set([])})
 
     def test_domrel_png(self):
         # Graph taken from https://commons.wikipedia.org/wiki/File:Domrel.png
@@ -153,7 +151,7 @@ class TestDominanceFrontiers(object):
         G = nx.DiGraph(edges)
         assert_equal(nx.dominance_frontiers(G, 1),
                      {1: set([]), 2: set([2]), 3: set([5]), 4: set([5]),
-                                         5: set([2]), 6: set()})
+                      5: set([2]), 6: set()})
         # Test postdominance.
         with nx.utils.reversed(G):
             assert_equal(nx.dominance_frontiers(G, 6),
@@ -168,23 +166,22 @@ class TestDominanceFrontiers(object):
         G = nx.DiGraph(edges)
         assert_equal(nx.dominance_frontiers(G, 0),
                      {0: set(), 1: set(), 2: set([7]), 3: set([7]),
-                      4: set([4,7]), 5: set([7]), 6: set([4]), 7: set()})
+                      4: set([4, 7]), 5: set([7]), 6: set([4]), 7: set()})
         # Test postdominance.
         with nx.utils.reversed(G):
             assert_equal(nx.dominance_frontiers(G, 7),
                          {0: set(), 1: set(), 2: set([1]), 3: set([1]),
-                          4: set([1,4]), 5: set([1]), 6: set([4]), 7: set()})
-
+                          4: set([1, 4]), 5: set([1]), 6: set([4]), 7: set()})
 
     def test_discard_issue(self):
         # https://github.com/networkx/networkx/issues/2071
         g = nx.DiGraph()
         g.add_edges_from([
-            ('b0','b1'),
+            ('b0', 'b1'),
             ('b1', 'b2'),
             ('b2', 'b3'),
-            ('b3','b1'),
-            ('b1','b5'),
+            ('b3', 'b1'),
+            ('b1', 'b5'),
             ('b5', 'b6'),
             ('b5', 'b8'),
             ('b6', 'b7'),
@@ -201,7 +198,7 @@ class TestDominanceFrontiers(object):
 
     def test_loop(self):
         g = nx.DiGraph()
-        g.add_edges_from([('a','b'),('b','c'),('b','a')])
+        g.add_edges_from([('a', 'b'), ('b', 'c'), ('b', 'a')])
         df = nx.dominance_frontiers(g, 'a')
         assert_equal(df, {'a': set(), 'b': set(), 'c': set()})
 
@@ -229,7 +226,7 @@ class TestDominanceFrontiers(object):
         g.add_edges_from(edges)
         # formerly raised KeyError on entry_2 when parsing b3
         # because entry_2 does not have immediate doms (no path)
-        nx.dominance_frontiers(g,'entry_1')
+        nx.dominance_frontiers(g, 'entry_1')
 
     def test_loops_larger(self):
         # from
@@ -250,14 +247,14 @@ class TestDominanceFrontiers(object):
         ]
 
         g.add_edges_from(edges)
-        df = nx.dominance_frontiers(g,'entry')
+        df = nx.dominance_frontiers(g, 'entry')
         answer = {'entry': set(),
                   '1': set(['exit']),
                   '2': set(['exit', '2']),
                   '3': set(['exit', '3', '2']),
-                  '4': set(['exit', '4','3', '2']),
+                  '4': set(['exit', '4', '3', '2']),
                   '5': set(['exit', '3', '2']),
                   '6': set(['exit', '2']),
                   'exit': set()}
         for n in df:
-            assert_equal(set(df[n]),set(answer[n]))
+            assert_equal(set(df[n]), set(answer[n]))

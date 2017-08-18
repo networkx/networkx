@@ -1,7 +1,7 @@
 """
 Ego graph.
 """
-#    Copyright (C) 2010 by 
+#    Copyright (C) 2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -13,28 +13,29 @@ __all__ = ['ego_graph']
 
 import networkx as nx
 
-def ego_graph(G,n,radius=1,center=True,undirected=False,distance=None):
+
+def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
     """Returns induced subgraph of neighbors centered at node n within
     a given radius.
-    
+
     Parameters
     ----------
     G : graph
       A NetworkX Graph or DiGraph
 
-    n : node 
-      A single node 
+    n : node
+      A single node
 
     radius : number, optional
       Include all neighbors of distance<=radius from n.
-      
-    center : bool, optional
-      If False, do not include center node in graph 
 
-    undirected : bool, optional      
+    center : bool, optional
+      If False, do not include center node in graph
+
+    undirected : bool, optional
       If True use both in- and out-neighbors of directed graphs.
 
-    distance : key, optional      
+    distance : key, optional
       Use specified edge data key as distance.  For example, setting
       distance='weight' will use the edge weight to measure the
       distance from the node n.
@@ -50,21 +51,21 @@ def ego_graph(G,n,radius=1,center=True,undirected=False,distance=None):
     """
     if undirected:
         if distance is not None:
-            sp,_=nx.single_source_dijkstra(G.to_undirected(),
-                                           n,cutoff=radius,
-                                           weight=distance)
+            sp, _ = nx.single_source_dijkstra(G.to_undirected(),
+                                              n, cutoff=radius,
+                                              weight=distance)
         else:
             sp = dict(nx.single_source_shortest_path_length(G.to_undirected(),
-                                                     n,cutoff=radius))
+                                                            n, cutoff=radius))
     else:
         if distance is not None:
-            sp,_=nx.single_source_dijkstra(G,
-                                           n,cutoff=radius,
-                                           weight=distance)
+            sp, _ = nx.single_source_dijkstra(G,
+                                              n, cutoff=radius,
+                                              weight=distance)
         else:
-            sp = dict(nx.single_source_shortest_path_length(G,n,cutoff=radius))
+            sp = dict(nx.single_source_shortest_path_length(G, n, cutoff=radius))
 
-    H=G.subgraph(sp).copy()
+    H = G.subgraph(sp).copy()
     if not center:
         H.remove_node(n)
-    return  H
+    return H

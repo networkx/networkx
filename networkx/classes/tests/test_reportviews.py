@@ -607,7 +607,7 @@ class TestMultiEdgeView(TestEdgeView):
         ev = evr(keys=True, data=True)
         for e in ev:
             assert_equal(len(e), 4)
-            print('edge:',e)
+            print('edge:', e)
             if set(e[:2]) == {2, 3}:
                 print(self.G._adj[2][3])
                 assert_equal(e[2], 0)

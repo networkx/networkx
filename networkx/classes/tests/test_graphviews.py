@@ -6,6 +6,7 @@ from networkx.testing import assert_edges_equal
 
 # Note: SubGraph views are not tested here. They have their own testing file
 
+
 class TestReverseView(object):
     def setup(self):
         self.G = nx.path_graph(9, create_using=nx.DiGraph())

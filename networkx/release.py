@@ -101,14 +101,14 @@ vcs_info = %(vcs_info)r
             # This is *good*, and the most likely place users will be when
             # running setup.py. We do not want to overwrite version.py.
             # Grab the version so that setup can use it.
-            #sys.path.insert(0, basedir)
+            # sys.path.insert(0, basedir)
             from version import version
-            #del sys.path[0]
+            # del sys.path[0]
         else:
             # This is *bad*.  It means the user might have a tarball that
             # does not include version.py.  Let this error raise so we can
             # fix the tarball.
-            ##raise Exception('version.py not found!')
+            # raise Exception('version.py not found!')
 
             # We no longer require that prepared tarballs include a version.py
             # So we use the possibly trunctated value from get_info()
@@ -152,7 +152,7 @@ def get_info(dynamic=True):
         # This is where most final releases of NetworkX will be.
         # All info should come from version.py. If it does not exist, then
         # no vcs information will be provided.
-        #sys.path.insert(0, basedir)
+        # sys.path.insert(0, basedir)
         try:
             from version import date, date_info, version, version_info, vcs_info
         except ImportError:
@@ -196,8 +196,7 @@ study of the structure, dynamics, and functions of complex networks.
 license = 'BSD'
 authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
            'Schult': ('Dan Schult', 'dschult@colgate.edu'),
-           'Swart': ('Pieter Swart', 'swart@lanl.gov')
-          }
+           'Swart': ('Pieter Swart', 'swart@lanl.gov')}
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
 url = 'http://networkx.github.io/'

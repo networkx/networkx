@@ -18,7 +18,7 @@ class TestStructuralHoles(object):
 
     The expected values for these functions were originally computed using the
     proprietary software `UCINET`_ and the free software `IGraph`_ , and then
-    computed by hand to make sure that the results are correct. 
+    computed by hand to make sure that the results are correct.
 
     .. _UCINET: https://sites.google.com/site/ucinetsoftware/home
     .. _IGraph: http://igraph.org/

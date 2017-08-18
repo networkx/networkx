@@ -72,7 +72,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     H = copy.deepcopy(G)    # subgraph we construct by removing from G
 
     graphOK = True
-    deleted_some = True # hack to start off the while loop
+    deleted_some = True  # hack to start off the while loop
     while deleted_some:
         deleted_some = False
         # We use `for edge in list(H.edges()):` instead of
@@ -81,7 +81,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
         # `RuntimeError: dictionary changed size during iteration`
         for edge in list(H.edges()):
             (u, v) = edge
-            ### Get copy of graph needed for this search
+            # Get copy of graph needed for this search
             if low_memory:
                 verts = set([u, v])
                 for i in range(k):
@@ -95,7 +95,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
             cnt = 0
             accept = 0
             while path:
-                cnt += 1 # Found a path
+                cnt += 1  # Found a path
                 if cnt >= l:
                     accept = 1
                     break
@@ -107,14 +107,15 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
                         prev = w
 #                path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
                 try:
-                    path = nx.shortest_path(G2, u, v) # ??? should "Cutoff" be k+1?
+                    path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
                 except nx.NetworkXNoPath:
                     path = False
             # No Other Paths
             if accept == 0:
                 H.remove_edge(u, v)
                 deleted_some = True
-                if graphOK: graphOK = False
+                if graphOK:
+                    graphOK = False
     # We looked through all edges and removed none of them.
     # So, H is the maximal (k,l)-connected subgraph of G
     if same_as_graph:
@@ -162,10 +163,10 @@ def is_kl_connected(G, k, l, low_memory=False):
             2004. 89--104.
 
     """
-    graphOK=True
+    graphOK = True
     for edge in G.edges():
         (u, v) = edge
-        ### Get copy of graph needed for this search
+        # Get copy of graph needed for this search
         if low_memory:
             verts = set([u, v])
             for i in range(k):
@@ -178,7 +179,7 @@ def is_kl_connected(G, k, l, low_memory=False):
         cnt = 0
         accept = 0
         while path:
-            cnt += 1 # Found a path
+            cnt += 1  # Found a path
             if cnt >= l:
                 accept = 1
                 break
@@ -190,7 +191,7 @@ def is_kl_connected(G, k, l, low_memory=False):
                     prev = w
 #            path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
             try:
-                path = nx.shortest_path(G2, u, v) # ??? should "Cutoff" be k+1?
+                path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
             except nx.NetworkXNoPath:
                 path = False
         # No Other Paths
