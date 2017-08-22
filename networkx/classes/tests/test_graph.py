@@ -9,6 +9,12 @@ import networkx as nx
 from networkx.testing.utils import *
 
 
+def test_deprecated():
+    # for backwards compatibility with 1.x, will be removed for 3.x
+    G = nx.complete_graph(3)
+    assert_equal(G.node, {0: {}, 1: {}, 2: {}})
+
+
 class BaseGraphTester(object):
     """ Tests for data-structure independent graph class features."""
 

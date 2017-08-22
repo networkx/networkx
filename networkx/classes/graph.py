@@ -711,6 +711,9 @@ class Graph(object):
         self.__dict__['nodes'] = nodes
         return nodes
 
+    # for backwards compatibility with 1.x, will be removed for 3.x
+    node = nodes
+
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
 
