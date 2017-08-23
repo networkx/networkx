@@ -97,7 +97,8 @@ def effective_size(G, nodes=None, weight=None):
         undirected graphs when computing neighbors of ``v``.
 
     nodes : container, optional
-        Container of nodes in the graph ``G``.
+        Container of nodes in the graph ``G`` to compute the effective size.
+        If None, the effective size of every node is computed.
 
     weight : None or string, optional
       If None, all edge weights are considered equal.
@@ -186,7 +187,8 @@ def constraint(G, nodes=None, weight=None):
         The graph containing ``v``. This can be either directed or undirected.
 
     nodes : container, optional
-        Container of nodes in the graph ``G``.
+        Container of nodes in the graph ``G`` to compute the constraint. If
+        None, the constraint of every node is computed.
 
     weight : None or string, optional
       If None, all edge weights are considered equal.
