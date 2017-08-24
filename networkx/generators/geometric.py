@@ -272,7 +272,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     # Euclidean space of the specified dimension.
     if pos is None:
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
-    nx.set_node_attributes(G, 'pos', pos)
+    nx.set_node_attributes(G, pos, 'pos')
 
     #if p_dist function not supplied the default function is an exponential
     #distribution with rate parameter :math:`\lambda=1`.
@@ -406,8 +406,9 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
     if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX 
     versions, a custom function needs to be defined and passed as the ``p_dist``
     parameter. For example, if the parameter ``alpha`` = 2 was used in NetworkX 2.0,
-    the custom function def custom_dist(r): r**2 can be passed in versions >=2.1
-    as the parameter p_dist = custom_dist to produce an equivalent network.
+    the custom function def custom_dist(r): r**-2 can be passed in versions >=2.1
+    as the parameter p_dist = custom_dist to produce an equivalent network. Note the
+    change in sign from +2 to -2 in this parameter change.
 
     References
     ----------
@@ -746,8 +747,8 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
     # If no distance metric is provided, use Euclidean distance.
 
-    nx.set_node_attributes(G, 'weight', weight)
-    nx.set_node_attributes(G, 'pos', pos)
+    nx.set_node_attributes(G, weight, 'weight')
+    nx.set_node_attributes(G, pos, 'pos')
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold

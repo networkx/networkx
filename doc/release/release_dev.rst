@@ -198,8 +198,9 @@ API Changes
   if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX 
   versions, a custom function needs to be defined and passed as the ``p_dist``
   parameter. For example, if the parameter ``alpha`` = 2 was used in NetworkX 2.0,
-  the custom function def custom_dist(r): r**2 can be passed in versions >=2.1
-  as the parameter p_dist = custom_dist to produce an equivalent network.
+  the custom function def custom_dist(r): r**-2 can be passed in versions >=2.1
+  as the parameter p_dist = custom_dist to produce an equivalent network. Note the
+  change in sign from +2 to -2 in this parameter change. 
 
 Deprecations
 ------------

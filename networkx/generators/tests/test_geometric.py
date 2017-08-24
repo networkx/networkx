@@ -100,7 +100,7 @@ class TestSoftRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
 
 
     def test_p(self):
@@ -114,7 +114,7 @@ class TestSoftRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
 
     def test_node_names(self):
         """Tests using values other than sequential numbers as node IDs.
@@ -129,7 +129,7 @@ class TestSoftRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
 
     def test_p_dist_default(self):
         """Tests default p_dict = 0.5 returns graph with edge count <= RGG with
@@ -169,7 +169,7 @@ def join(G, u, v, theta, alpha, metric):
     du, dv = G.nodes[u], G.nodes[v]
     u_pos, v_pos = du['pos'], dv['pos']
     u_weight, v_weight = du['weight'], dv['weight']
-    return theta * metric(u_pos, v_pos) ** alpha <= u_weight + v_weight
+    return (u_weight + v_weight)*metric(u_pos, v_pos) ** alpha >= theta 
 
 
 class TestGeographicalThresholdGraph(object):
@@ -192,14 +192,14 @@ class TestGeographicalThresholdGraph(object):
         # Use the Euclidean metric and alpha = -2
         # the default according to the documentation.
         dist = euclidean
-        G = nx.geographical_threshold_graph(50, 100)
+        G = nx.geographical_threshold_graph(50, 10)
         for u, v in combinations(G, 2):
-            # Adjacent vertices must not exceed the threshold.
+            # Adjacent vertices must exceed the threshold.
             if v in G[u]:
-                assert_true(join(G, u, v, 100, -2, dist))
-            # Nonadjacent vertices must exceed the threshold.
+                assert_true(join(G, u, v, 10, -2, dist))
+            # Nonadjacent vertices must not exceed the threshold.
             else:
-                assert_false(join(G, u, v, 100, -2, dist))
+                assert_false(join(G, u, v, 10, -2, dist))
 
     def test_metric(self):
         """Tests for providing an alternate distance metric to the
@@ -208,14 +208,14 @@ class TestGeographicalThresholdGraph(object):
         """
         # Use the L1 metric.
         dist = l1dist
-        G = nx.geographical_threshold_graph(50, 100, metric=dist)
+        G = nx.geographical_threshold_graph(50, 10, metric=dist)
         for u, v in combinations(G, 2):
-            # Adjacent vertices must not exceed the threshold.
+            # Adjacent vertices must exceed the threshold.
             if v in G[u]:
-                assert_true(join(G, u, v, 100, -2, dist))
-            # Nonadjacent vertices must exceed the threshold.
+                assert_true(join(G, u, v, 10, -2, dist))
+            # Nonadjacent vertices must not exceed the threshold.
             else:
-                assert_false(join(G, u, v, 100, -2, dist))
+                assert_false(join(G, u, v, 10, -2, dist))
 
     def test_p_dist_zero(self):
         """Tests if p_dict = 0 returns disconencted graph with 0 edges
@@ -293,7 +293,7 @@ class TestThresholdedRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
 
 
     def test_p(self):
@@ -307,7 +307,7 @@ class TestThresholdedRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
 
     def test_node_names(self):
         """Tests using values other than sequential numbers as node IDs.
@@ -322,7 +322,7 @@ class TestThresholdedRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.node[u]['pos'], G.node[v]['pos']) <= 0.25)
+                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
 
     def test_theta(self):
         """Tests that pairs of vertices adjacent if and only if their sum
@@ -333,4 +333,4 @@ class TestThresholdedRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true((G.node[u]['weight'] + G.node[v]['weight']) >= 0.1)
+                assert_true((G.nodes[u]['weight'] + G.nodes[v]['weight']) >= 0.1)
