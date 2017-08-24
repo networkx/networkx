@@ -192,10 +192,19 @@ API Changes
 * [`#2620 <https://github.com/networkx/networkx/pull/2620>`_]
   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
 
+* [`#2498 <https://github.com/networkx/networkx/pull/2498>`_]
+  Starting in NetworkX 2.1 the parameter ``alpha`` is deprecated and replaced
+  with the customizable ``p_dist`` function parameter, which defaults to r^-2
+  if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX 
+  versions, a custom function needs to be defined and passed as the ``p_dist``
+  parameter. For example, if the parameter ``alpha`` = 2 was used in NetworkX 2.0,
+  the custom function def custom_dist(r): r**2 can be passed in versions >=2.1
+  as the parameter p_dist = custom_dist to produce an equivalent network.
+
 Deprecations
 ------------
 
-The following deprecated functions will be removed in 2.1.
+The following deprecated functions will be removed in 21.
 
 - The function ``bellman_ford`` has been deprecated in favor of
   ``bellman_ford_predecessor_and_distance``.

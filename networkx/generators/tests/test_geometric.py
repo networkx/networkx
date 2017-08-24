@@ -189,17 +189,17 @@ class TestGeographicalThresholdGraph(object):
         distances meet the given threshold.
 
         """
-        # Use the Euclidean metric, the default according to the
-        # documentation.
+        # Use the Euclidean metric and alpha = -2
+        # the default according to the documentation.
         dist = euclidean
         G = nx.geographical_threshold_graph(50, 100)
         for u, v in combinations(G, 2):
             # Adjacent vertices must not exceed the threshold.
             if v in G[u]:
-                assert_true(join(G, u, v, 100, 2, dist))
+                assert_true(join(G, u, v, 100, -2, dist))
             # Nonadjacent vertices must exceed the threshold.
             else:
-                assert_false(join(G, u, v, 100, 2, dist))
+                assert_false(join(G, u, v, 100, -2, dist))
 
     def test_metric(self):
         """Tests for providing an alternate distance metric to the
@@ -212,10 +212,10 @@ class TestGeographicalThresholdGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must not exceed the threshold.
             if v in G[u]:
-                assert_true(join(G, u, v, 100, 2, dist))
+                assert_true(join(G, u, v, 100, -2, dist))
             # Nonadjacent vertices must exceed the threshold.
             else:
-                assert_false(join(G, u, v, 100, 2, dist))
+                assert_false(join(G, u, v, 100, -2, dist))
 
     def test_p_dist_zero(self):
         """Tests if p_dict = 0 returns disconencted graph with 0 edges
@@ -224,7 +224,7 @@ class TestGeographicalThresholdGraph(object):
         def p_dist(dist):
             return 0
 
-        G = nx.geographical_threshold_graph(50, 1,p_dist=p_dist) 
+        G = nx.geographical_threshold_graph(50, 1, p_dist=p_dist) 
         assert_true(len(G.edges) == 0)
 
 
