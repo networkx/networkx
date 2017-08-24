@@ -409,7 +409,6 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
     the custom function def custom_dist(r): r**2 can be passed in versions >=2.1
     as the parameter p_dist = custom_dist to produce an equivalent network.
 
-
     References
     ----------
     .. [1] Masuda, N., Miwa, H., Konno, N.:
