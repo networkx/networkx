@@ -305,8 +305,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
 @nodes_or_number(0)
 def geographical_threshold_graph(n, theta, dim=2, pos=None,
                                  weight=None, metric=None, p_dist=None):
-    r"""Returns 
-    a geographical threshold graph.
+    r"""Returns a geographical threshold graph.
 
     The geographical threshold graph model places $n$ nodes uniformly at
     random in a rectangular domain.  Each node $u$ is assigned a weight
@@ -317,8 +316,8 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
        (w_u + w_v)h(r) \ge \theta 
 
     where `r` is the distance between `u` and `v`, h(r) is a probability of
-    connection as a function of `r`, and :math:`\theta`,
-    :math:`\alpha` are parameters. h(r) corresponds to the p_dist parameter.
+    connection as a function of `r`, and :math:`\theta` as the threshold
+    parameter. h(r) corresponds to the p_dist parameter.
 
     Parameters
     ----------

@@ -205,7 +205,7 @@ API Changes
 Deprecations
 ------------
 
-The following deprecated functions will be removed in 21.
+The following deprecated functions will be removed in 2.1.
 
 - The function ``bellman_ford`` has been deprecated in favor of
   ``bellman_ford_predecessor_and_distance``.
