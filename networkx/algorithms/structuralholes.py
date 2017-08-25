@@ -97,7 +97,8 @@ def effective_size(G, nodes=None, weight=None):
         undirected graphs when computing neighbors of ``v``.
 
     nodes : container, optional
-        Container of nodes in the graph ``G``.
+        Container of nodes in the graph ``G`` to compute the effective size.
+        If None, the effective size of every node is computed.
 
     weight : None or string, optional
       If None, all edge weights are considered equal.
@@ -145,7 +146,7 @@ def effective_size(G, nodes=None, weight=None):
         nodes = G
     # Use Borgatti's simplified formula for unweighted and undirected graphs
     if not G.is_directed() and weight is None:
-        for v in G:
+        for v in nodes:
             # Effective size is not defined for isolated nodes
             if len(G[v]) == 0:
                 effective_size[v] = float('nan')
@@ -153,7 +154,7 @@ def effective_size(G, nodes=None, weight=None):
             E = nx.ego_graph(G, v, center=False, undirected=True)
             effective_size[v] = len(E) - (2 * E.size()) / len(E)
     else:
-        for v in G:
+        for v in nodes:
             # Effective size is not defined for isolated nodes
             if len(G[v]) == 0:
                 effective_size[v] = float('nan')
@@ -186,7 +187,8 @@ def constraint(G, nodes=None, weight=None):
         The graph containing ``v``. This can be either directed or undirected.
 
     nodes : container, optional
-        Container of nodes in the graph ``G``.
+        Container of nodes in the graph ``G`` to compute the constraint. If
+        None, the constraint of every node is computed.
 
     weight : None or string, optional
       If None, all edge weights are considered equal.
