@@ -1,4 +1,4 @@
-from nose.tools import assert_in, assert_not_in, assert_equal
+from nose.tools import assert_in, assert_not_in, assert_equal, assert_is
 from nose.tools import assert_raises, assert_true, assert_false
 
 import networkx as nx
@@ -157,14 +157,18 @@ class TestChainsOfViews(object):
         self.G = nx.path_graph(9)
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.Gv = nx.to_undirected(self.DG)
+        self.MG = nx.path_graph(9, create_using=nx.MultiGraph())
         self.DMG = nx.path_graph(9, create_using=nx.MultiDiGraph())
         self.MGv = nx.to_undirected(self.DMG)
 
     def test_subgraph_of_subgraph(self):
-        SG = nx.induced_subgraph(self.G, [4, 5, 6])
-        assert_equal(list(SG), [4, 5, 6])
-        SSG = SG.subgraph([6, 7])
-        assert_equal(list(SSG), [6])
+        for G in [self.G, self.DG, self.DMG, self.MG]:
+            SG = nx.induced_subgraph(G, [4, 5, 6])
+            assert_equal(list(SG), [4, 5, 6])
+            SSG = SG.subgraph([6, 7])
+            assert_equal(list(SSG), [6])
+            # subgraph-subgraph chain is short-cut in base class method
+            assert_is(SSG._graph, G)
 
     def test_subgraph_todirected(self):
         SG = nx.induced_subgraph(self.G, [4, 5, 6])
