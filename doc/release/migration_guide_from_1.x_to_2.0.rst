@@ -8,7 +8,7 @@ Any issues with these can be discussed on the `mailing list
 <https://groups.google.com/forum/#!forum/networkx-discuss>`_.
 
 At the bottom of this document we discuss how to create code that will
-work for others with both NetworkX v1.x and v2.0.
+work with both NetworkX v1.x and v2.0.
 
 We have made some major changes to the methods in the Multi/Di/Graph classes.
 The methods changed are explained with examples below.
@@ -198,7 +198,7 @@ Methods ``set_node_attributes``/``get_node_attributes``/``set_edge_attributes``/
 have changed the order of their keyword arguments ``name`` and ``value``. So, to make it
 work with both versions you should use the keywords in your call.
 
-    >>> nx.set_node_attributes(G, name='weight', value=1.0)
+    >>> nx.set_node_attributes(G, value=1.0, name='weight')
 
 Graph attribute ``edge`` has been removed. It should be replaced with ``G.adj`` which is
 bascially the same as v1's ``G.edge`` in both v1 and v2.
@@ -213,9 +213,3 @@ and add code to the v1 namespace in an ad hoc manner:
 
     >>> if nx.__version__[0] == '1':
     ...     nx.add_path = lambda G, nodes: G.add_path(nodes)
-
-# FIXME
-The Graph attribute ``G.node`` should be replaced by ``G.nodes`` to work with v2.
-But that can make code not able to work with v1. We are considering restoring 
-``G.node`` to the v2 code because of this. Then code written for ``G.node`` can 
-work with either version.
