@@ -1486,14 +1486,16 @@ class Graph(object):
 
         Returns
         -------
-        G : Graph
-            A subgraph of the graph with the same edge attributes.
+        G : SubGraph View
+            A subgraph view of the graph. The graph structure cannot be
+            changed but node/edge attributes can and are shared with the
+            original graph.
 
         Notes
         -----
-        The graph, edge or node attributes just point to the original graph.
-        So changes to the node or edge structure will not be reflected in
-        the original graph while changes to the attributes will.
+        The graph, edge and node attributes are shared with the original graph.
+        Changes to the graph structure is ruled out by the view, but changes
+        to attributes are reflected in the original graph.
 
         To create a subgraph with its own copy of the edge/node attributes use:
         G.subgraph(nbunch).copy()
@@ -1509,7 +1511,11 @@ class Graph(object):
         [(0, 1), (1, 2)]
         """
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
-        return nx.graphviews.SubGraph(self, induced_nodes)
+        SubGraph = nx.graphviews.SubGraph
+        # if already a subgraph, don't make a chain
+        if hasattr(self, '_NODE_OK'):
+            return SubGraph(self._graph, induced_nodes, self._EDGE_OK)
+        return SubGraph(self, induced_nodes)
 
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.

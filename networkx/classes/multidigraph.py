@@ -916,19 +916,19 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        G : Graph
-            A subgraph of the graph with the same edge attributes.
+        G : SubGraph View
+            A subgraph view of the graph. The graph structure cannot be
+            changed but node/edge attributes can and are shared with the
+            original graph.
 
         Notes
         -----
-        The graph, edge, and node attributes in the returned subgraph
-        view are references to the corresponding attributes in the original
-        graph. The view is read-only.
+        The graph, edge and node attributes are shared with the original graph.
+        Changes to the graph structure is ruled out by the view, but changes
+        to attributes are reflected in the original graph.
 
-        To create a full graph version of the subgraph with its own copy
-        of the edge or node attributes, use::
-
-            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
+        To create a subgraph with its own copy of the edge/node attributes use:
+        G.subgraph(nbunch).copy()
 
         For an inplace reduction of a graph to a subgraph you can remove nodes:
         G.remove_nodes_from([n for n in G if n not in set(nbunch)])
@@ -941,7 +941,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
         [(0, 1), (1, 2)]
         """
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
-        return nx.graphviews.SubMultiDiGraph(self, induced_nodes)
+        SubGraph = nx.graphviews.SubMultiDiGraph
+        # if already a subgraph, don't make a chain
+        if hasattr(self, '_NODE_OK'):
+            return SubGraph(self._graph, induced_nodes, self._EDGE_OK)
+        return SubGraph(self, induced_nodes)
 
     def reverse(self, copy=True):
         """Return the reverse of the graph.
