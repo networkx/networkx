@@ -1,4 +1,5 @@
-from nose.tools import assert_in, assert_not_in, assert_equal, assert_is
+from nose.tools import assert_in, assert_not_in, assert_equal
+from nose.tools import assert_is, assert_is_not
 from nose.tools import assert_raises, assert_true, assert_false
 
 import networkx as nx
@@ -169,6 +170,35 @@ class TestChainsOfViews(object):
             assert_equal(list(SSG), [6])
             # subgraph-subgraph chain is short-cut in base class method
             assert_is(SSG._graph, G)
+
+    def test_restricted_induced_subgraph_chains(self):
+        """ Test subgraph chains that both restrict and show nodes/edges.
+
+        A restricted_view subgraph should allow induced subgraphs using
+        G.subgraph that automagically without a chain (meaning the result
+        is a subgraph view of the original graph not a subgraph-of-subgraph.
+        """
+        hide_nodes = [3, 4, 5]
+        hide_edges = [(6, 7)]
+        RG = nx.restricted_view(self.G, hide_nodes, hide_edges)
+        nodes = [4, 5, 6, 7, 8]
+        SG = nx.induced_subgraph(RG, nodes)
+        SSG = RG.subgraph(nodes)
+        assert_is(SSG.root_graph, SSG._graph)
+        assert_is_not(SG.root_graph, SG._graph)
+        assert_edges_equal(SG.edges, SSG.edges)
+        # should be same as morphing the graph
+        CG = self.G.copy()
+        CG.remove_nodes_from(hide_nodes)
+        CG.remove_edges_from(hide_edges)
+        assert_edges_equal(CG.edges(nodes), SSG.edges)
+        CG.remove_nodes_from([0, 1, 2, 3])
+        assert_edges_equal(CG.edges, SSG.edges)
+        # switch order: subgraph first, then restricted view
+        SSSG = self.G.subgraph(nodes)
+        RSG = nx.restricted_view(SSSG, hide_nodes, hide_edges)
+        assert_is_not(RSG.root_graph, RSG._graph)
+        assert_edges_equal(RSG.edges, CG.edges)
 
     def test_subgraph_todirected(self):
         SG = nx.induced_subgraph(self.G, [4, 5, 6])
