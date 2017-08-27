@@ -7,6 +7,9 @@ This is a guide for people moving from NetworkX 1.X to NetworkX 2.0
 Any issues with these can be discussed on the `mailing list
 <https://groups.google.com/forum/#!forum/networkx-discuss>`_.
 
+At the bottom of this document we discuss how to create code that will
+work with both NetworkX v1.x and v2.0.
+
 We have made some major changes to the methods in the Multi/Di/Graph classes.
 The methods changed are explained with examples below.
 
@@ -185,3 +188,82 @@ networkx namespace. These are:  ``G.add_path``, ``G.add_star``, ``G.add_cycle``,
 ``G.number_of_selfloops``, ``G.nodes_with_selfloops``, and ``G.selfloop_edges``.
 These are replaced by ``nx.path_graph(G, ...)`` ``nx.add_star(G, ...)``,
 ``nx.selfloop_edges(G)``, etc.
+
+-------
+
+With the new GraphViews (SubGraph, ReversedGraph, etc) you can't assume that
+``G.__class__()`` will create a new instance of the same graph type as ``G``.
+In fact, the call signature for ``__class__`` differs depending on whether ``G``
+is a view or a base class. For v2.x you should use ``G.fresh_copy()`` to
+create a null graph of the correct type -- ready to fill with nodes and edges.
+
+Graph views can also be views-of-views-of-views-of-graphs. If you want to find the
+original graph at the end of this chain use ``G.root_graph``. Be careful though
+because it may be a different graph type (directed/undirected) than the view.
+
+-------
+
+Writing code that works for both versions
+=========================================
+
+Methods ``set_node_attributes``/``get_node_attributes``/``set_edge_attributes``/``get_edge_attributes``
+have changed the order of their keyword arguments ``name`` and ``value``. So, to make it
+work with both versions you should use the keywords in your call.
+
+    >>> nx.set_node_attributes(G, value=1.0, name='weight')
+
+-------
+
+Change any method with ``_iter`` in its name to the version without ``_iter``.
+In v1 this replaces an iterator by a list, but the code will still work.
+In v2 this creates a view (which acts like an iterator).
+
+-------
+
+Replace any use of ``G.edge`` with ``G.adj``. The Graph attribute ``edge``
+has been removed. The attribute ``G.adj`` is ``G.edge`` in v1 and will work
+with both versions.
+
+-------
+
+If you use ``G.node.items()`` or similar in v1.x, you can replace it with
+``G.nodes(data=True)`` which works for v2.x and v1.x.  Iterating over ``G.node```
+as in ``for n in G.node:`` can be replaced with ``G``, as in: ``for n in G:``.
+
+-------
+
+The Graph attribute ``node`` has moved its functionality to ``G.nodes``, so code
+expected to work with v2.x should use ``G.nodes``.
+In fact most uses of ``G.node`` can be replaced by an idiom that works for both
+versions. The functionality that can't easily is: ``G.node[n]``.
+In v2.x that becomes ``G.nodes[n]`` which doesn't work in v1.x.
+
+Luckily you can still use ``G.node[n]`` in v2.x when you want it to be able to work
+with v1.x too. We have left ``G.node`` in v2.x as a transition pointer to ``G.nodes``.
+We envision removing ``G.node`` in v3.x (sometime in the future).
+
+-------
+
+Copying node attribute dicts directly from one graph to another can corrupt
+the node data structure if not done correctly. Code such as the following:
+
+    >>> G.node[n] = H.node[n]    # dangerous in v1.x, not allowed in v2.x
+
+used to work, even though it could cause errors if ``n`` was not a node in ``G``.
+That code will cause an error in v2.x.  Replace it with one of the more safe versions:
+
+    >>> G.node[n].update(H.node[n])  # works in both v1.x and v2.x
+    >>> G.nodes[n].update(H.nodes[n])  # works in v2.x
+
+-------
+
+The methods removed from the graph classes and put into the main package namespace
+are hard to get to work with both versions. One hack is to write your code for v2.x
+and add code to the v1 namespace in an ad hoc manner:
+
+    >>> if nx.__version__[0] == '1':
+    ...     nx.add_path = lambda G, nodes: G.add_path(nodes)
+
+Similarly, v2.x code that uses ``G.fresh_copy()`` or ``G.root_graph`` is hard to make
+work for v1.x. It may be best in this case to determine the graph type you want
+explicitly and call Graph/DiGraph/MultiGraph/MultiDiGraph directly.
