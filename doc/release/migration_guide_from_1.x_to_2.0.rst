@@ -183,11 +183,12 @@ can be refactored as
 
 -------
 
-Some methods have been removed from the base graph class and placed into the main
-networkx namespace. These are:  ``G.add_path``, ``G.add_star``, ``G.add_cycle``,
-``G.number_of_selfloops``, ``G.nodes_with_selfloops``, and ``G.selfloop_edges``.
-These are replaced by ``nx.path_graph(G, ...)`` ``nx.add_star(G, ...)``,
+Some methods have been moved from the base graph class into the main namespace.
+These are:  ``G.add_path``, ``G.add_star``, ``G.add_cycle``, ``G.number_of_selfloops``,
+``G.nodes_with_selfloops``, and ``G.selfloop_edges``.
+They are replaced by ``nx.path_graph(G, ...)`` ``nx.add_star(G, ...)``,
 ``nx.selfloop_edges(G)``, etc.
+For backward compatibility, we are leaving them as deprecated methods.
 
 -------
 
@@ -258,8 +259,9 @@ That code will cause an error in v2.x.  Replace it with one of the more safe ver
 -------
 
 The methods removed from the graph classes and put into the main package namespace
-are hard to get to work with both versions. One hack is to write your code for v2.x
-and add code to the v1 namespace in an ad hoc manner:
+can be used via the associated deprecated methods. If you want to update your code
+to the new functions, one hack to make that work with both versions is to write
+your code for v2.x and add code to the v1 namespace in an ad hoc manner:
 
     >>> if nx.__version__[0] == '1':
     ...     nx.add_path = lambda G, nodes: G.add_path(nodes)
