@@ -14,6 +14,23 @@ def test_deprecated():
     G = nx.complete_graph(3)
     assert_equal(G.node, {0: {}, 1: {}, 2: {}})
 
+    G = nx.DiGraph()
+    G.add_path([3, 4])
+    assert_equal(G.adj, {3: {4: {}}, 4: {}})
+
+    G = nx.DiGraph()
+    G.add_cycle([3, 4, 5])
+    assert_equal(G.adj, {3: {4: {}}, 4: {5: {}}, 5: {3: {}}})
+
+    G = nx.DiGraph()
+    G.add_star([3, 4, 5])
+    assert_equal(G.adj, {3: {4: {}, 5: {}}, 4: {}, 5: {}})
+
+    G = nx.DiGraph([(0, 0), (0, 1), (1, 2)])
+    assert_equal(G.number_of_selfloops(), 1)
+    assert_equal(list(G.nodes_with_selfloops()), [0])
+    assert_equal(list(G.selfloop_edges()), [(0, 0)])
+
 
 class BaseGraphTester(object):
     """ Tests for data-structure independent graph class features."""
