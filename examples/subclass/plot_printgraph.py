@@ -75,40 +75,6 @@ class PrintGraph(Graph):
         Graph.clear(self)
         self.fh.write("Clear graph\n")
 
-    def subgraph(self, nbunch, copy=True):
-        # subgraph is needed here since it can destroy edges in the
-        # graph (copy=False) and we want to keep track of all changes.
-        #
-        # Also for copy=True Graph() uses dictionary assignment for speed
-        # Here we use H.add_edge()
-        bunch = set(self.nbunch_iter(nbunch))
-
-        if not copy:
-            # remove all nodes (and attached edges) not in nbunch
-            self.remove_nodes_from([n for n in self if n not in bunch])
-            self.name = "Subgraph of (%s)" % (self.name)
-            return self
-        else:
-            # create new graph and copy subgraph into it
-            H = self.__class__()
-            H.name = "Subgraph of (%s)" % (self.name)
-            # add nodes
-            H.add_nodes_from(bunch)
-            # add edges
-            seen = set()
-            for u, nbrs in self.adjacency_iter():
-                if u in bunch:
-                    for v, datadict in nbrs.items():
-                        if v in bunch and v not in seen:
-                            dd = deepcopy(datadict)
-                            H.add_edge(u, v, dd)
-                    seen.add(u)
-            # copy node and graph attr dicts
-            H.node = dict((n, deepcopy(d))
-                          for (n, d) in self.node.items() if n in H)
-            H.graph = deepcopy(self.graph)
-            return H
-
 
 if __name__ == '__main__':
     G = PrintGraph()
@@ -116,22 +82,17 @@ if __name__ == '__main__':
     G.add_nodes_from('bar', weight=8)
     G.remove_node('b')
     G.remove_nodes_from('ar')
-    print(G.nodes(data=True))
+    print("Nodes in G: ", G.nodes(data=True))
     G.add_edge(0, 1, weight=10)
-    print(list(G.edges(data=True)))
+    print("Edges in G: ", G.edges(data=True))
     G.remove_edge(0, 1)
-    G.add_edges_from(list(zip(list(range(0o3)), list(range(1, 4)))), weight=10)
-    print(list(G.edges(data=True)))
-    G.remove_edges_from(list(zip(list(range(0o3)), list(range(1, 4)))))
-    print(list(G.edges(data=True)))
+    G.add_edges_from(zip(range(0, 3), range(1, 4)), weight=10)
+    print("Edges in G: ", G.edges(data=True))
+    G.remove_edges_from(zip(range(0, 3), range(1, 4)))
+    print("Edges in G: ", G.edges(data=True))
 
     G = PrintGraph()
     nx.add_path(G, range(10))
-    print("subgraph")
-    H1 = G.subgraph(range(4), copy=False)
-    H2 = G.subgraph(range(4), copy=False)
-    print(list(H1.edges()))
-    print(list(H2.edges()))
-
+    nx.add_star(G, range(9, 13))
     nx.draw(G)
     plt.show()
