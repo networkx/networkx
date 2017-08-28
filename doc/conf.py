@@ -199,8 +199,8 @@ latex_documents = [('reference/index', 'networkx_reference.tex',
 latex_appendices = ['tutorial']
 
 # Intersphinx mapping
-intersphinx_mapping = {'http://docs.python.org/': None,
-                       'http://docs.scipy.org/doc/numpy/': None,
+intersphinx_mapping = {'https://docs.python.org/': None,
+                       'https://docs.scipy.org/doc/numpy/': None,
                        }
 
 # The reST default role (used for this markup: `text`) to use for all
