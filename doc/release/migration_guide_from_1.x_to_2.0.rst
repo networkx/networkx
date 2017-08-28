@@ -1,3 +1,5 @@
+:orphan:
+
 *******************************
 Migration guide from 1.X to 2.0
 *******************************
@@ -114,10 +116,11 @@ for directed graphs.
 
 If ``n`` is a node in ``G``, then ``G.neighbors(n)`` returns an iterator.
 
-    >>> G.neighbors(2)
+    >>> n = 1
+    >>> G.neighbors(n)
     <dictionary-keyiterator object at ...>
-    >>> list(G.neighbors(2))
-    [0, 1, 3, 4]
+    >>> list(G.neighbors(n))
+    [0, 2, 3, 4]
 
 DiGraphViews behave similar to GraphViews, but have a few more methods.
 
@@ -196,7 +199,7 @@ With the new GraphViews (SubGraph, ReversedGraph, etc) you can't assume that
 ``G.__class__()`` will create a new instance of the same graph type as ``G``.
 In fact, the call signature for ``__class__`` differs depending on whether ``G``
 is a view or a base class. For v2.x you should use ``G.fresh_copy()`` to
-create a null graph of the correct type -- ready to fill with nodes and edges.
+create a null graph of the correct type---ready to fill with nodes and edges.
 
 Graph views can also be views-of-views-of-views-of-graphs. If you want to find the
 original graph at the end of this chain use ``G.root_graph``. Be careful though
@@ -208,10 +211,10 @@ Writing code that works for both versions
 =========================================
 
 Methods ``set_node_attributes``/``get_node_attributes``/``set_edge_attributes``/``get_edge_attributes``
-have changed the order of their keyword arguments ``name`` and ``value``. So, to make it
+have changed the order of their keyword arguments ``name`` and ``values``. So, to make it
 work with both versions you should use the keywords in your call.
 
-    >>> nx.set_node_attributes(G, value=1.0, name='weight')
+    >>> nx.set_node_attributes(G, values=1.0, name='weight')
 
 -------
 
@@ -248,7 +251,8 @@ We envision removing ``G.node`` in v3.x (sometime in the future).
 Copying node attribute dicts directly from one graph to another can corrupt
 the node data structure if not done correctly. Code such as the following:
 
-    >>> G.node[n] = H.node[n]    # dangerous in v1.x, not allowed in v2.x
+    >>> # dangerous in v1.x, not allowed in v2.x
+    >>> G.node[n] = H.node[n]  # doctest: +SKIP
 
 used to work, even though it could cause errors if ``n`` was not a node in ``G``.
 That code will cause an error in v2.x.  Replace it with one of the more safe versions:
