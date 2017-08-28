@@ -155,6 +155,7 @@ def k_edge_subgraphs(G, k):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
@@ -164,7 +165,7 @@ def k_edge_subgraphs(G, k):
     >>> G.add_nodes_from(it.chain(*paths))
     >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # note this does not return {1, 4} unlike k_edge_components
-    >>> sorted(map(sorted, k_edge_subgraphs(G, k=3)))
+    >>> sorted(map(sorted, nx.k_edge_subgraphs(G, k=3)))
     [[1], [2], [3], [4], [5, 6, 7, 8]]
 
     References
@@ -272,7 +273,9 @@ class EdgeComponentAuxGraph(object):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
+    >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> # Build an interesting graph with multiple levels of k-edge-ccs
     >>> paths = [
     ...     (1, 2, 3, 4, 1, 3, 4, 2),  # a 3-edge-cc (a 4 clique)
@@ -300,7 +303,9 @@ class EdgeComponentAuxGraph(object):
     >>> # The auxillary graph is primarilly used for k-edge-ccs but it
     >>> # can also speed up the queries of k-edge-subgraphs by refining the
     >>> # search space.
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
+    >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
     ... ]
