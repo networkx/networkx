@@ -155,13 +155,13 @@ class Graph(object):
 
     >>> 1 in G     # check if node in graph
     True
-    >>> [n for n in G if n < 3]   # iterate through nodes
+    >>> [n for n in G if n < 3]  # iterate through nodes
     [1, 2]
     >>> len(G)  # number of nodes in graph
     5
 
     Often the best way to traverse all edges of a graph is via the neighbors.
-    The neighbors are stored as an adjacency-dict `G.adj` or as `G.adjacency()`
+    The neighbors are reported as an adjacency-dict `G.adj` or as `G.adjacency()`
 
     >>> for n, nbrsdict in G.adjacency():
     ...     for nbr, eattr in nbrsdict.items():
@@ -312,9 +312,7 @@ class Graph(object):
         the color of the edge `(3, 2)` to `"blue"`.
 
         Iterating over G.adj behaves like a dict. Useful idioms include
-        `for nbr, datadict in G.adj[n].items():`.  A data-view not provided
-        by dicts also exists: `for nbr, foovalue in G.adj[node].data('foo'):`
-        and a default can be set via a `default` argument to the `data` method.
+        `for nbr, datadict in G.adj[n].items():`.
 
         The neighbor information is also provided by subscripting the graph.
         So `for nbr, foovalue in G[node].data('foo', default=1):` works.
@@ -506,8 +504,7 @@ class Graph(object):
         >>> G.add_nodes_from([1, 2], size=10)
         >>> G.add_nodes_from([3, 4], weight=0.4)
 
-        Use (node, attrdict) tuples to update attributes for specific
-        nodes.
+        Use (node, attrdict) tuples to update attributes for specific nodes.
 
         >>> G.add_nodes_from([(1, dict(size=11)), (2, {'color':'blue'})])
         >>> G.nodes[1]['size']
@@ -854,11 +851,11 @@ class Graph(object):
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
 
-        For non-string associations, directly access the edge's attribute
-        dictionary.
+        For non-string attribute keys, use subscript notation.
 
         >>> G.add_edge(1, 2)
         >>> G[1][2].update({0: 5})
+        >>> G.edges[1, 2].update({0: 5})
         """
         # add nodes
         if u not in self._node:
@@ -1471,6 +1468,11 @@ class Graph(object):
     def to_undirected(self, as_view=False):
         """Return an undirected copy of the graph.
 
+        Parameters
+        ----------
+        as_view : bool (optional, default=False)
+          If True return a view of the original undirected graph.
+
         Returns
         -------
         G : Graph/MultiGraph
@@ -1478,7 +1480,7 @@ class Graph(object):
 
         See Also
         --------
-        copy, add_edge, add_edges_from
+        Graph, copy, add_edge, add_edges_from
 
         Notes
         -----
@@ -1517,15 +1519,15 @@ class Graph(object):
                          for v, d in nbrs.items())
         return G
 
-    def subgraph(self, nbunch):
-        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
+    def subgraph(self, nodes):
+        """Return a SubGraph view of the subgraph induced on `nodes`.
 
-        The induced subgraph of the graph contains the nodes in nbunch
+        The induced subgraph of the graph contains the nodes in `nodes`
         and the edges between those nodes.
 
         Parameters
         ----------
-        nbunch : list, iterable
+        nodes : list, iterable
             A container of nodes which will be iterated through once.
 
         Returns
@@ -1542,10 +1544,10 @@ class Graph(object):
         to attributes are reflected in the original graph.
 
         To create a subgraph with its own copy of the edge/node attributes use:
-        G.subgraph(nbunch).copy()
+        G.subgraph(nodes).copy()
 
         For an inplace reduction of a graph to a subgraph you can remove nodes:
-        G.remove_nodes_from([n for n in G if n not in set(nbunch)])
+        G.remove_nodes_from([n for n in G if n not in set(nodes)])
 
         Examples
         --------
@@ -1554,7 +1556,7 @@ class Graph(object):
         >>> list(H.edges)
         [(0, 1), (1, 2)]
         """
-        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
+        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
         SubGraph = nx.graphviews.SubGraph
         # if already a subgraph, don't make a chain
         if hasattr(self, '_NODE_OK'):

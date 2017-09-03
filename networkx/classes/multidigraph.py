@@ -180,8 +180,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Simple graph information is obtained using methods and object-attributes.
     Reporting usually provides views instead of containers to reduce memory
     usage. The views update as the graph is updated similarly to dict-views.
-    Reporting exists for `nodes`, `edges`, `neighbors()`/`adj` and `degree`
-    as well as the number of nodes and edges.
+    The objects `nodes, `edges` and `adj` provide access to data attributes
+    via lookup (e.g. `nodes[n], `edges[u, v]`, `adj[u][v]`) and iteration
+    (e.g. `nodes.items()`, `nodes.data('color')`,
+    `nodes.data('color', default='blue')` and similarly for `edges`)
+    Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.
 
     For details on these and other miscellaneous methods, see below.
 
@@ -283,13 +286,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         This object is a read-only dict-like structure with node keys
         and neighbor-dict values.  The neighbor-dict is keyed by neighbor
-        to the edge-data-dict.  So `G.adj[3][2]['color'] = 'blue'` sets
-        the color of the edge `(3, 2)` to `"blue"`.
+        to the edgekey-dict.  So `G.adj[3][2][0]['color'] = 'blue'` sets
+        the color of the edge `(3, 2, 0)` to `"blue"`.
 
         Iterating over G.adj behaves like a dict. Useful idioms include
-        `for nbr, datadict in G.adj[n].items():`.  A data-view not provided
-        by dicts also exists: `for nbr, foovalue in G.adj[node].data('foo'):`
-        and a default can be set via a `default` argument to the `data` method.
+        `for nbr, datadict in G.adj[n].items():`.
 
         The neighbor information is also provided by subscripting the graph.
         So `for nbr, foovalue in G[node].data('foo', default=1):` works.
@@ -304,13 +305,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         This object is a read-only dict-like structure with node keys
         and neighbor-dict values.  The neighbor-dict is keyed by neighbor
-        to the edge-data-dict.  So `G.adj[3][2]['color'] = 'blue'` sets
-        the color of the edge `(3, 2)` to `"blue"`.
+        to the edgekey-dict.  So `G.adj[3][2][0]['color'] = 'blue'` sets
+        the color of the edge `(3, 2, 0)` to `"blue"`.
 
         Iterating over G.adj behaves like a dict. Useful idioms include
-        `for nbr, datadict in G.adj[n].items():`.  A data-view not provided
-        by dicts also exists: `for nbr, foovalue in G.adj[node].data('foo'):`
-        and a default can be set via a `default` argument to the `data` method.
+        `for nbr, datadict in G.adj[n].items():`.
 
         The neighbor information is also provided by subscripting the graph.
         So `for nbr, foovalue in G[node].data('foo', default=1):` works.
@@ -325,13 +324,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         This object is a read-only dict-like structure with node keys
         and neighbor-dict values.  The neighbor-dict is keyed by neighbor
-        to the edge-data-dict.  So `G.adj[3][2]['color'] = 'blue'` sets
-        the color of the edge `(3, 2)` to `"blue"`.
+        to the edgekey-dict.  So `G.adj[3][2][0]['color'] = 'blue'` sets
+        the color of the edge `(3, 2, 0)` to `"blue"`.
 
         Iterating over G.adj behaves like a dict. Useful idioms include
-        `for nbr, datadict in G.adj[n].items():`.  A data-view not provided
-        by dicts also exists: `for nbr, foovalue in G.adj[node].data('foo'):`
-        A default can be set via a `default` argument to the `data` method.
+        `for nbr, datadict in G.adj[n].items():`.
         """
         return MultiAdjacencyView(self._pred)
 
@@ -398,8 +395,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> key = G.add_edge(1, 2, key=0, weight=4)  # update data for key=0
         >>> key = G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
 
-        For non-string associations, directly access the edge's attribute
-        dictionary.
+        For non-string attribute keys, use subscript notation.
+
+        >>> ekey = G.add_edge(1, 2)
+        >>> G[1][2][0].update({0: 5})
+        >>> G.edges[1, 2, 0].update({0: 5})
         """
         # add nodes
         if u not in self._succ:
@@ -494,18 +494,19 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @property
     def edges(self):
-        """Return an iterator over the edges.
+        """An OutMultiEdgeView of the Graph as G.edges or G.edges().
 
         edges(self, nbunch=None, data=False, keys=False, default=None)
 
-        The EdgeView provides set-like operations on the edge-tuples
+        The OutMultiEdgeView provides set-like operations on the edge-tuples
         as well as edge attribute lookup. When called, it also provides
         an EdgeDataView object which allows control of access to edge
         attributes (but does not provide set-like operations).
         Hence, `G.edges[u, v]['color']` provides the value of the color
         attribute for edge `(u, v)` while
         `for (u, v, c) in G.edges(data='color', default='red'):`
-        iterates through all the edges yielding the color attribute.
+        iterates through all the edges yielding the color attribute
+        with default `'red'` if no color attribute exists.
 
         Edges are returned as tuples with optional data and keys
         in the order (node, neighbor, key, data).
@@ -526,8 +527,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        edge : iterator
-            An iterator over (u, v), (u, v, d) or (u, v, key, d) edge tuples.
+        edges : EdgeView
+            A view of edge attributes, usually it iterates over (u, v)
+            (u, v, k) or (u, v, k, d) tuples of edges, but can also be
+            used for attribute lookup as `edges[u, v, k]['foo']`.
 
         Notes
         -----
@@ -547,7 +550,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges(keys=True)) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
-        >>> list(G.edges(data=True, keys=True)) # default keys are integers
+        >>> list(G.edges(data=True, keys=True))
         [(0, 1, 0, {}), (1, 2, 0, {}), (2, 3, 0, {'weight': 5})]
         >>> list(G.edges(data='weight', default=1, keys=True))
         [(0, 1, 0, 1), (1, 2, 0, 1), (2, 3, 0, 5)]
@@ -569,7 +572,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @property
     def in_edges(self):
-        """Return an iterator over the incoming edges.
+        """An InMultiEdgeView of the Graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, keys=False, default=None)
 
@@ -589,12 +592,14 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        in_edge : iterator
-            An iterator over (u, v), (u, v, d) or (u, v, key, d) edge tuples.
+        in_edges : InMultiEdgeView
+            A view of edge attributes, usually it iterates over (u, v)
+            or (u, v, k) or (u, v, k, d) tuples of edges, but can also be
+            used for attribute lookup as `edges[u, v, k]['foo']`.
 
         See Also
         --------
-        edges : return an iterator over edges
+        edges
         """
         self.__dict__['in_edges'] = in_edges = InMultiEdgeView(self)
         return in_edges
@@ -640,8 +645,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0) # node 0 with degree 1
         1
-        >>> list(G.degree([0, 1]))
-        [(0, 1), (1, 2)]
+        >>> list(G.degree([0, 1, 2]))
+        [(0, 1), (1, 2), (2, 2)]
 
         """
         self.__dict__['degree'] = degree = DiMultiDegreeView(self)
@@ -688,8 +693,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0) # node 0 with degree 0
         0
-        >>> list(G.in_degree([0, 1]))
-        [(0, 0), (1, 1)]
+        >>> list(G.in_degree([0, 1, 2]))
+        [(0, 0), (1, 1), (2, 1)]
 
         """
         self.__dict__['in_degree'] = in_degree = InMultiDegreeView(self)
@@ -735,8 +740,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0) # node 0 with degree 1
         1
-        >>> list(G.out_degree([0, 1]))
-        [(0, 1), (1, 1)]
+        >>> list(G.out_degree([0, 1, 2]))
+        [(0, 1), (1, 1), (2, 1)]
 
         """
         self.__dict__['out_degree'] = out_degree = OutMultiDegreeView(self)
@@ -756,12 +761,26 @@ class MultiDiGraph(MultiGraph, DiGraph):
         A fresh copy has no nodes, edges or graph attributes. It is
         the same data structure as the current graph. This method is
         typically used to create an empty version of the graph.
+
+        Notes
+        =====
+        If you subclass the base class you should overwrite this method
+        to return your class of graph.
         """
         return nx.MultiDiGraph()
 
     def copy(self, as_view=False):
         """Return a copy of the graph.
 
+        The copy method by default returns a shallow copy of the graph
+        and attributes. That is, if an attribute is a container, that
+        container is shared by the original an the copy.
+        Use Python's `copy.deepcopy` for new containers.
+
+        If `as_view` is True then a view is returned instead of a copy.
+
+        Notes
+        =====
         All copies reproduce the graph structure, but data attributes
         may be handled in different ways. There are four types of copies
         of a graph that people might want.
@@ -789,14 +808,14 @@ class MultiDiGraph(MultiGraph, DiGraph):
             >>> H = G.copy()
             >>> H = G.copy(as_view=False)
             >>> H = nx.Graph(G)
-            >>> H = G.root_graph.__class__(G)
+            >>> H = G.fresh_copy().__class__(G)
 
         Fresh Data -- For fresh data, the graph structure is copied while
         new empty data attribute dicts are created. The resulting graph
         is independent of the original and it has no edge, node or graph
         attributes. Fresh copies are not enabled. Instead use:
 
-            >>> H = G.__class__()
+            >>> H = G.fresh_copy()
             >>> H.add_nodes_from(G)
             >>> H.add_edges_from(G.edges)
 
@@ -847,6 +866,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
         reciprocal : bool (optional)
           If True only keep edges that appear in both directions
           in the original digraph.
+        as_view : bool (optional, default=False)
+          If True return an undirected view of the original directed graph.
 
         Returns
         -------
@@ -857,6 +878,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
             their edge data is different, only one edge is created
             with an arbitrary choice of which edge data to use.
             You must check and correct for this manually if desired.
+
+        See Also
+        --------
+        MultiGraph, copy, add_edge, add_edges_from
 
         Notes
         -----
@@ -903,15 +928,15 @@ class MultiDiGraph(MultiGraph, DiGraph):
                              for key, data in keydict.items())
         return G
 
-    def subgraph(self, nbunch):
-        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
+    def subgraph(self, nodes):
+        """Return a SubGraph view of the subgraph induced on nodes in `nodes`.
 
-        The induced subgraph of the graph contains the nodes in nbunch
+        The induced subgraph of the graph contains the nodes in `nodes`
         and the edges between those nodes.
 
         Parameters
         ----------
-        nbunch : list, iterable
+        nodes : list, iterable
             A container of nodes which will be iterated through once.
 
         Returns
@@ -928,10 +953,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
         to attributes are reflected in the original graph.
 
         To create a subgraph with its own copy of the edge/node attributes use:
-        G.subgraph(nbunch).copy()
+        G.subgraph(nodes).copy()
 
         For an inplace reduction of a graph to a subgraph you can remove nodes:
-        G.remove_nodes_from([n for n in G if n not in set(nbunch)])
+        G.remove_nodes_from([n for n in G if n not in set(nodes)])
 
         Examples
         --------
@@ -940,7 +965,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> list(H.edges)
         [(0, 1), (1, 2)]
         """
-        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
+        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
         SubGraph = nx.graphviews.SubMultiDiGraph
         # if already a subgraph, don't make a chain
         if hasattr(self, '_NODE_OK'):
