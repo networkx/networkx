@@ -678,7 +678,7 @@ class EdgeDataView(OutEdgeDataView):
     This view is primarily used to iterate over the edges reporting
     edges as node-tuples with edge data optionally reported. The
     argument `nbunch` allows restriction to edges incident to nodes
-    in that container/singleton. The default when `nbunch is None`
+    in that container/singleton. The default (nbunch=None)
     reports all edges. The arguments `data` and `default` control
     what edge data is reported. The default `data is False` reports
     only node-tuples for each edge. If `data is True` the entire edge

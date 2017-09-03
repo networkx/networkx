@@ -507,15 +507,14 @@ class DiGraph(Graph):
             del self._succ[u][n]   # remove all edges n-u in digraph
         del self._pred[n]          # remove node from pred
 
-    def remove_nodes_from(self, nbunch):
+    def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
 
         Parameters
         ----------
         nodes : iterable container
             A container of nodes (list, dict, set, etc.).  If a node
-            in the container is not in the graph it is silently
-            ignored.
+            in the container is not in the graph it is silently ignored.
 
         See Also
         --------
@@ -532,7 +531,7 @@ class DiGraph(Graph):
         []
 
         """
-        for n in nbunch:
+        for n in nodes:
             try:
                 succs = self._succ[n]
                 del self._node[n]
@@ -1198,15 +1197,15 @@ class DiGraph(Graph):
                              for v, d in nbrs.items())
         return G
 
-    def subgraph(self, nbunch):
-        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
+    def subgraph(self, nodes):
+        """Return a SubGraph view of the subgraph induced on `nodes`.
 
-        The induced subgraph of the graph contains the nodes in nbunch
+        The induced subgraph of the graph contains the nodes in `nodes`
         and the edges between those nodes.
 
         Parameters
         ----------
-        nbunch : list, iterable
+        nodes : list, iterable
             A container of nodes which will be iterated through once.
 
         Returns
@@ -1223,10 +1222,10 @@ class DiGraph(Graph):
         to attributes are reflected in the original graph.
 
         To create a subgraph with its own copy of the edge/node attributes use:
-        G.subgraph(nbunch).copy()
+        G.subgraph(nodes).copy()
 
         For an inplace reduction of a graph to a subgraph you can remove nodes:
-        G.remove_nodes_from([n for n in G if n not in set(nbunch)])
+        G.remove_nodes_from([n for n in G if n not in set(nodes)])
 
         Examples
         --------
@@ -1235,7 +1234,7 @@ class DiGraph(Graph):
         >>> list(H.edges)
         [(0, 1), (1, 2)]
         """
-        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
+        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
         SubGraph = nx.graphviews.SubDiGraph
         # if already a subgraph, don't make a chain
         if hasattr(self, '_NODE_OK'):
