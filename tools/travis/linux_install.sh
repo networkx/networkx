@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ex
+set -e
 
 # create new empty venv
 virtualenv -p python ~/venv
@@ -29,4 +29,4 @@ EOF
 
 fi
 
-set +ex
+set +e

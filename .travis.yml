@@ -26,11 +26,15 @@ matrix:
       python: 2.7
       env:
       - OPTIONAL_DEPS=1
+      - BUILD_DOCS=1
       addons:
         apt:
           packages:
           - libgdal-dev
           - graphviz
+          - texlive
+          - texlive-latex-extra
+          - latexmk
     - os: linux
       python: 3.6
       env: OPTIONAL_DEPS=1
@@ -89,6 +93,9 @@ install:
   - pip list
 
 script:
+  - if [[ "${BUILD_DOCS}" == 1 ]]; then
+      source tools/travis/build_docs.sh;
+    fi
   - source tools/travis/script.sh
 
 after_success:

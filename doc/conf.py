@@ -199,7 +199,7 @@ latex_documents = [('reference/index', 'networkx_reference.tex',
 latex_appendices = ['tutorial']
 
 # Intersphinx mapping
-intersphinx_mapping = {'https://docs.python.org/': None,
+intersphinx_mapping = {'https://docs.python.org/2/': None,
                        'https://docs.scipy.org/doc/numpy/': None,
                        }
 
