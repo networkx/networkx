@@ -169,7 +169,7 @@ def _lg_directed(G, create_using=None):
 
     """
     if create_using is None:
-        L = G.__class__()
+        L = G.fresh_copy()
     else:
         L = create_using
 
@@ -210,7 +210,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
 
     """
     if create_using is None:
-        L = G.__class__()
+        L = G.fresh_copy()
     else:
         L = create_using
 

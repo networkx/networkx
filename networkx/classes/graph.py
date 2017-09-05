@@ -1326,7 +1326,7 @@ class Graph(object):
         the same data structure as the current graph. This method is
         typically used to create an empty version of the graph.
         """
-        return nx.Graph()
+        return Graph()
 
     def copy(self, as_view=False):
         """Return a copy of the graph.

@@ -1049,7 +1049,7 @@ class DiGraph(Graph):
         the same data structure as the current graph. This method is
         typically used to create an empty version of the graph.
         """
-        return nx.DiGraph()
+        return DiGraph()
 
     def copy(self, as_view=False):
         """Return a copy of the graph.
@@ -1256,10 +1256,12 @@ class DiGraph(Graph):
             the original graph.
         """
         if copy:
-            H = self.__class__(name="Reverse of (%s)" % self.name)
-            H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+            H = self.fresh_copy()
+            H.graph.update(deepcopy(self.graph))
+            if 'name' in H.graph:
+                H.name = "Reverse of (%s)" % H.name
+            H.add_nodes_from((n, deepcopy(d)) for n, d in self.node.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
-            H.graph.update(deepcopy(self.graph))
             return H
         return nx.graphviews.ReverseView(self)

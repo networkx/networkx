@@ -757,7 +757,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         the same data structure as the current graph. This method is
         typically used to create an empty version of the graph.
         """
-        return nx.MultiDiGraph()
+        return MultiDiGraph()
 
     def copy(self, as_view=False):
         """Return a copy of the graph.
@@ -961,10 +961,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
             the original graph.
         """
         if copy:
-            H = self.__class__(name="Reverse of (%s)" % self.name)
+            H = self.fresh_copy()
+            H.graph.update(deepcopy(self.graph))
+            if 'name' in H.graph:
+                H.name = "Reverse of (%s)" % H.name
             H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
             H.add_edges_from((v, u, k, deepcopy(d)) for u, v, k, d
                              in self.edges(keys=True, data=True))
-            H.graph.update(deepcopy(self.graph))
             return H
         return nx.graphviews.MultiReverseView(self)
