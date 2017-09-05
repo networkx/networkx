@@ -27,6 +27,7 @@ matrix:
       env:
       - OPTIONAL_DEPS=1
       - BUILD_DOCS=1
+      - DEPLOY_DOCS=1
       addons:
         apt:
           packages:
@@ -101,6 +102,9 @@ script:
 after_success:
   - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
       codecov;
+    fi
+  - if [[ "${BUILD_DOCS}" == 1 && "${DEPLOY_DOCS}" == 1 ]]; then
+      source tools/travis/deploy_docs.sh;
     fi
 
 notifications:
