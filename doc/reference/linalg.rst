@@ -13,7 +13,7 @@ Graph Matrix
    :toctree: generated/
 
    adjacency_matrix
-   incidence_matrix 
+   incidence_matrix
 
 Laplacian Matrix
 ----------------
