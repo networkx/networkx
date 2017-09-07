@@ -1321,7 +1321,7 @@ class Graph(object):
         If you subclass the base class you should overwrite this method
         to return your class of graph.
         """
-        return nx.Graph()
+        return Graph()
 
     def copy(self, as_view=False):
         """Return a copy of the graph.

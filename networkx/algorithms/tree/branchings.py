@@ -512,7 +512,7 @@ class Edmonds(object):
 
         # (I3) Branch construction.
         #print(self.level)
-        H = self.G_original.__class__()
+        H = self.G_original.fresh_copy()
 
         def is_root(G, u, edgekeys):
             """

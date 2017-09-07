@@ -159,11 +159,11 @@ class TestChainsOfViews(object):
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.Gv = nx.to_undirected(self.DG)
         self.MG = nx.path_graph(9, create_using=nx.MultiGraph())
-        self.DMG = nx.path_graph(9, create_using=nx.MultiDiGraph())
-        self.MGv = nx.to_undirected(self.DMG)
+        self.MDG = nx.path_graph(9, create_using=nx.MultiDiGraph())
+        self.MGv = nx.to_undirected(self.MDG)
 
     def test_subgraph_of_subgraph(self):
-        for G in [self.G, self.DG, self.DMG, self.MG]:
+        for G in [self.G, self.DG, self.MDG, self.MG]:
             SG = nx.induced_subgraph(G, [4, 5, 6])
             assert_equal(list(SG), [4, 5, 6])
             SSG = SG.subgraph([6, 7])
@@ -213,11 +213,21 @@ class TestChainsOfViews(object):
         assert_equal(sorted(SSG.edges), [(4, 5), (5, 6)])
 
     def test_reverse_subgraph_toundirected(self):
-        G = self.DG.reverse()
+        G = self.DG.reverse(copy=False)
         SG = G.subgraph([4, 5, 6])
         SSG = SG.to_undirected()
         assert_equal(list(SSG), [4, 5, 6])
         assert_equal(sorted(SSG.edges), [(4, 5), (5, 6)])
+
+    def test_reverse_reverse_copy(self):
+        G = self.DG.reverse(copy=False)
+        H = G.reverse(copy=True)
+        assert_equal(H.nodes, self.DG.nodes)
+        assert_equal(H.edges, self.DG.edges)
+        G = self.MDG.reverse(copy=False)
+        H = G.reverse(copy=True)
+        assert_equal(H.nodes, self.MDG.nodes)
+        assert_equal(H.edges, self.MDG.edges)
 
     def test_subgraph_edgesubgraph_toundirected(self):
         G = self.G.copy()
@@ -244,7 +254,7 @@ class TestChainsOfViews(object):
         assert_equal(DCSG.__class__.__name__, 'DiGraph')
 
     def test_copy_multidisubgraph(self):
-        G = self.DMG.copy()
+        G = self.MDG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
