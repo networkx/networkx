@@ -34,33 +34,36 @@ Adding and Removing Nodes and Edges
 
 
 
-Iterating over nodes and edges
-------------------------------
+Reporting nodes edges and neighbors
+-----------------------------------
 .. autosummary::
    :toctree: generated/
 
    MultiDiGraph.nodes
    MultiDiGraph.__iter__
+   MultiDiGraph.has_node
+   MultiDiGraph.__contains__
    MultiDiGraph.edges
    MultiDiGraph.out_edges
    MultiDiGraph.in_edges
+   MultiDiGraph.has_edge
    MultiDiGraph.get_edge_data
    MultiDiGraph.neighbors
+   MultiDiGraph.adj
    MultiDiGraph.__getitem__
    MultiDiGraph.successors
+   MultiDiGraph.succ
    MultiDiGraph.predecessors
+   MultiDiGraph.succ
    MultiDiGraph.adjacency
    MultiDiGraph.nbunch_iter
 
 
-Information about graph structure
----------------------------------
+Counting nodes edges and neighbors
+----------------------------------
 .. autosummary::
    :toctree: generated/
 
-   MultiDiGraph.has_node
-   MultiDiGraph.__contains__
-   MultiDiGraph.has_edge
    MultiDiGraph.order
    MultiDiGraph.number_of_nodes
    MultiDiGraph.__len__
@@ -78,6 +81,7 @@ Making copies and subgraphs
    MultiDiGraph.copy
    MultiDiGraph.to_undirected
    MultiDiGraph.to_directed
-   MultiDiGraph.edge_subgraph
    MultiDiGraph.subgraph
+   MultiDiGraph.edge_subgraph
    MultiDiGraph.reverse
+   MultiDiGraph.fresh_copy

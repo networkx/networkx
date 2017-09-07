@@ -71,8 +71,9 @@ API Changes
       * ``G.neighbors()``
       * ``G.adjacency_list()`` and ``G.adjacency_iter()`` to ``G.adjacency()``
       * ``G.degree()``
-      * ``G.nodes_with_selfloops()``
-      * ``G.selfloop_edges()``
+      * ``G.subgraph()``
+      * ``G.copy()``
+      * ``G.__class__()`` should be replaced with ``G.fresh_copy()``
 
     * DiGraph/MultiDiGraph
 
@@ -83,6 +84,13 @@ API Changes
       * ``G.degree()``
       * ``G.in_degree()``
       * ``G.out_degree()``
+      * ``G.reverse()``
+
+  The following deprecated methods will be removed in a future release (3.0?).
+      * ``G.node``, ``G.edge`` (replaced by G.nodes, G.edges)
+      * ``G.add_path``, ``G.add_cycle``, ``G.add_star`` (Now ``nx.add_path(G,...``)
+      * ``G.selfloop_edges``, ``G.nodes_with_selfloops``, ``G.number_of_selfloops``
+        (Now ``nx.selfloop_edges(G)``, etc)
 
   Many subclasses have been changed accordingly such as:
     * AntiGraph
@@ -93,9 +101,9 @@ API Changes
   The Graph class methods ``add_edge`` and ``add_edges_from`` no longer
   allow the use of the ``attr_dict`` parameter.  Instead use keyword arguments.
   Thus ``G.add_edge(1, 2, {'color': 'red'})`` becomes
-  ``G.add_edge(1, 2, color='red')``.  
+  ``G.add_edge(1, 2, color='red')``.
   Note that this only works if the attribute name is a string. For non-string
-  attributes you will need to add the edge and then update manually using 
+  attributes you will need to add the edge and then update manually using
   e.g. ``G.edges[1, 2].update({0: "zero"})``
 
 * [`#1577 <https://github.com/networkx/networkx/pull/1577>`_]
@@ -154,7 +162,7 @@ API Changes
   asynchronous algorithm based on the simple idea of fluids interacting in an
   environment, expanding and pushing each other. The algorithm is completely
   described in `"Fluid Communities: A Competitive and Highly Scalable Community
-  Detection Algorithm" <https://arxiv.org/pdf/1703.09307.pdf>`_. 
+  Detection Algorithm" <https://arxiv.org/pdf/1703.09307.pdf>`_.
 
 * [`#2510 <https://github.com/networkx/networkx/pull/2510>`_ and
   `#2508 <https://github.com/networkx/networkx/pull/2508>`_]

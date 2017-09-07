@@ -5,6 +5,9 @@
 Overview
 ========
 
+NetworkX is a Python package for the creation, manipulation, and study
+of the structure, dynamics, and functions of complex networks.
+
 NetworkX provides
 
 -  tools for the study of the structure and
@@ -13,9 +16,9 @@ NetworkX provides
    for many applications;
 -  a rapid development environment for collaborative, multidisciplinary
    projects;
--  an interface to existing numerical algorithms and code written in C, 
+-  an interface to existing numerical algorithms and code written in C,
    C++, and FORTRAN; and
--  the ability to painlessly work with large nonstandard data sets. 
+-  the ability to painlessly work with large nonstandard data sets.
 
 With NetworkX you can load and store networks in standard and nonstandard data
 formats, generate many types of random and classic networks, analyze network
@@ -33,7 +36,7 @@ complex networks are presented in Albert and Barabási [BA02]_, Newman
 terminology. For basic graph algorithms, we recommend the texts of Sedgewick
 (e.g., [Sedgewick01]_ and [Sedgewick02]_) and the survey of Brandes and
 Erlebach [BE05]_.
-  
+
 Python
 ------
 
