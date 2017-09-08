@@ -7,7 +7,7 @@ structure, dynamics, and functions of complex networks.
 
 For more information, please visit our `website <http://networkx.github.io/>`_
 and our `gallery of examples
-<http://networkx.readthedocs.io/en/latest/auto_examples/index.html>`_.
+<https://networkx.github.io/dev-docs/auto_examples/index.html>`_.
 Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
@@ -19,7 +19,7 @@ requests by 85 contributors. Highlights include:
 
 - We have made major changes to the methods in the Multi/Di/Graph classes.
   There is a `migration guide for people moving from 1.X to 2.0
-  <http://networkx.readthedocs.org/en/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
+  <https://networkx.github.io/dev-docs/release/migration_guide_from_1.x_to_2.0.html>`_.
 
 - We updated the documentation system.
 

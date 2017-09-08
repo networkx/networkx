@@ -19,8 +19,7 @@ Creating a comprehensive list of contributors can be difficult, and the list
 within this file is almost certainly incomplete.  Contributors include
 testers, bug reporters, contributors who wish to remain anonymous, funding
 sources, academic advisors, end users, and even build/integration systems (such
-as `TravisCI <https://travis-ci.org>`_, `coveralls <https://coveralls.io>`_,
-and `readthedocs <https://readthedocs.org>`_).
+as `TravisCI <https://travis-ci.org>`_).
 
 Do you want to make your contribution known? If you have commit access, edit
 this file and add your name. If you do not have commit access, feel free to

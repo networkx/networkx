@@ -9,7 +9,7 @@ Write a dot file from a networkx graph for further processing with graphviz.
 
 You need to have either pygraphviz or pydot for this example.
 
-See http://networkx.readthedocs.io/en/latest/reference/drawing.html
+See https://networkx.github.io/dev-docs/reference/drawing.html
 for more info.
 
 """
@@ -39,8 +39,7 @@ except ImportError:
     except ImportError:
         print()
         print("Both pygraphviz and pydot were not found ")
-        print("see  http://networkx.readthedocs.io/en"
-              "/latest/reference/drawing.html for info")
+        print("see  https://networkx.github.io/dev-docs/reference/drawing.html")
         print()
         raise
 
