@@ -238,6 +238,13 @@ class TestEdgeDataView(object):
         self.G = nx.path_graph(9)
         self.eview = nx.reportviews.EdgeView
 
+    def test_pickle(self):
+        import pickle
+        ev = self.eview(self.G)(data=True)
+        pev = pickle.loads(pickle.dumps(ev, -1))
+        assert_equal(list(ev), list(pev))
+        assert_equal(ev.__slots__, pev.__slots__)
+
     def modify_edge(self, G, e, **kwds):
         self.G._adj[e[0]][e[1]].update(kwds)
 
@@ -412,6 +419,13 @@ class TestEdgeView(object):
     def setup(self):
         self.G = nx.path_graph(9)
         self.eview = nx.reportviews.EdgeView
+
+    def test_pickle(self):
+        import pickle
+        ev = self.eview(self.G)
+        pev = pickle.loads(pickle.dumps(ev, -1))
+        assert_equal(ev, pev)
+        assert_equal(ev.__slots__, pev.__slots__)
 
     def modify_edge(self, G, e, **kwds):
         self.G._adj[e[0]][e[1]].update(kwds)
@@ -745,6 +759,12 @@ class TestDegreeView(object):
         self.G = nx.path_graph(6, self.GRAPH())
         self.G.add_edge(1, 3, foo=2)
         self.G.add_edge(1, 3, foo=3)
+
+    def test_pickle(self):
+        import pickle
+        deg = self.G.degree
+        pdeg = pickle.loads(pickle.dumps(deg, -1))
+        assert_equal(dict(deg), dict(pdeg))
 
     def test_str(self):
         dv = self.dview(self.G)

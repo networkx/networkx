@@ -3,7 +3,7 @@ from nose.tools import assert_is, assert_is_not
 from nose.tools import assert_raises, assert_true, assert_false
 
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 # Note: SubGraph views are not tested here. They have their own testing file
 
@@ -157,13 +157,33 @@ class TestChainsOfViews(object):
     def setUp(self):
         self.G = nx.path_graph(9)
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
-        self.Gv = nx.to_undirected(self.DG)
         self.MG = nx.path_graph(9, create_using=nx.MultiGraph())
         self.MDG = nx.path_graph(9, create_using=nx.MultiDiGraph())
+        self.Gv = nx.to_undirected(self.DG)
+        self.DGv = nx.to_directed(self.G)
         self.MGv = nx.to_undirected(self.MDG)
+        self.MDGv = nx.to_directed(self.MG)
+        self.Rv = self.DG.reverse()
+        self.MRv = self.MDG.reverse()
+        self.graphs = [self.G, self.DG, self.MG, self.MDG,
+                       self.Gv, self.DGv, self.MGv, self.MDGv,
+                       self.Rv, self.MRv]
+        for G in self.graphs:
+            G.edges, G.nodes, G.degree
+
+    def test_pickle(self):
+        import pickle
+        for G in self.graphs:
+            H = pickle.loads(pickle.dumps(G, -1))
+            assert_edges_equal(H.edges, G.edges)
+            assert_nodes_equal(H.nodes, G.nodes)
 
     def test_subgraph_of_subgraph(self):
-        for G in [self.G, self.DG, self.MDG, self.MG]:
+        SGv = nx.subgraph(self.G, range(3, 7))
+        SDGv = nx.subgraph(self.DG, range(3, 7))
+        SMGv = nx.subgraph(self.MG, range(3, 7))
+        SMDGv = nx.subgraph(self.MDG, range(3, 7))
+        for G in self.graphs + [SGv, SDGv, SMGv, SMDGv]:
             SG = nx.induced_subgraph(G, [4, 5, 6])
             assert_equal(list(SG), [4, 5, 6])
             SSG = SG.subgraph([6, 7])
