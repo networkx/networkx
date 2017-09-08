@@ -254,6 +254,17 @@ class Graph(object):
     adjlist_inner_dict_factory = dict
     edge_attr_dict_factory = dict
 
+    def __getstate__(self):
+        attr = self.__dict__.copy()
+        # remove lazy property attributes
+        if 'nodes' in attr:
+            del attr['nodes']
+        if 'edges' in attr:
+            del attr['edges']
+        if 'degree' in attr:
+            del attr['degree']
+        return attr
+
     def __init__(self, data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 

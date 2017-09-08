@@ -240,6 +240,25 @@ class DiGraph(Graph):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
+    def __getstate__(self):
+        attr = self.__dict__.copy()
+        # remove lazy property attributes
+        if 'nodes' in attr:
+            del attr['nodes']
+        if 'edges' in attr:
+            del attr['edges']
+        if 'out_edges' in attr:
+            del attr['out_edges']
+        if 'in_edges' in attr:
+            del attr['in_edges']
+        if 'degree' in attr:
+            del attr['degree']
+        if 'in_degree' in attr:
+            del attr['in_degree']
+        if 'out_degree' in attr:
+            del attr['out_degree']
+        return attr
+
     def __init__(self, data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
