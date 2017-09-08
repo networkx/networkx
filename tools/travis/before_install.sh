@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ex
+set -e
 
 section () {
     echo -en "travis_fold:start:$1\r"
@@ -12,4 +12,11 @@ section_end () {
 export -f section
 export -f section_end
 
-set +ex
+if [[ "${MINIMUM_REQUIREMENTS}" == 1 ]]; then
+    sed -i 's/>=/==/g' requirements/default.txt
+    sed -i 's/>=/==/g' requirements/extras.txt
+    sed -i 's/>=/==/g' requirements/test.txt
+    sed -i 's/>=/==/g' requirements/doc.txt
+fi
+
+set +e

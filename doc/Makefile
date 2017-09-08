@@ -105,6 +105,11 @@ doctest:
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in build/doctest/output.txt."
 
+latexpdf: latex
+	@echo "Running LaTeX files through latexmk..."
+	$(MAKE) -C build/latex all-pdf
+	@echo "latexmk finished; the PDF files are in build/latex."
+
 gitwash-update:
 	python ../tools/gitwash_dumper.py developer networkx \
 	--project-url=http://networkx.github.io \
