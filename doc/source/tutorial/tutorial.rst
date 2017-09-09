@@ -201,7 +201,7 @@ Note that for undirected graphs this actually looks at each edge twice.
 Convenient access to all edges is achieved with the edges method.
 
 >>> for (u,v,d) in FG.edges(data='weight'):
-...     if d<0.5: print('(%d, %d, %.3f)'%(n,nbr,d))
+...     if d<0.5: print('(%d, %d, %.3f)'%(u,v,d))
 (1, 2, 0.125)
 (3, 4, 0.375)
 
