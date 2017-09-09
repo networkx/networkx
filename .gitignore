@@ -10,7 +10,7 @@ doc/networkx-documentation.zip
 doc/networkx_reference.pdf
 doc/networkx_tutorial.pdf
 doc/build
-doc/doc_build
+doc/ghpages_build
 .coverage
 *.class
 
