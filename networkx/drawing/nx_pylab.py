@@ -97,7 +97,7 @@ def draw(G, pos=None, ax=None, **kwds):
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    https://networkx.github.io/dev-docs/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -243,7 +243,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> limits = plt.axis('off')  # turn of axis
 
     Also see the NetworkX drawing examples at
-    https://networkx.github.io/dev-docs/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -347,7 +347,7 @@ def draw_networkx_nodes(G, pos,
     >>> nodes = nx.draw_networkx_nodes(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    https://networkx.github.io/dev-docs/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -479,7 +479,7 @@ def draw_networkx_edges(G, pos,
     >>> edges = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    https://networkx.github.io/dev-docs/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -689,7 +689,7 @@ def draw_networkx_labels(G, pos,
     >>> labels = nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    https://networkx.github.io/dev-docs/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -807,7 +807,7 @@ def draw_networkx_edge_labels(G, pos,
     >>> edge_labels = nx.draw_networkx_edge_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    https://networkx.github.io/dev-docs/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------

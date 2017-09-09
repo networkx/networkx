@@ -29,24 +29,23 @@ then
     eval `ssh-agent -s`
     ssh-add deploy-key
 
-    # Push the docs to the gh-pages branch of the networkx/dev-docs repo
-    GH_REF=git@github.com:networkx/dev-docs.git
+    # Push the latest docs to the networkx/documentation repo (gh-pages branch)
+    GH_REF=git@github.com:networkx/documentation.git
     echo "-- pushing docs --"
     (
     git config --global user.email "travis@travis-ci.com"
     git config --global user.name "NetworkX Travis Bot"
 
     cd doc
-    git clone --quiet --branch=gh-pages ${GH_REF} doc_build
-    cd doc_build
+    git clone --quiet --branch=gh-pages --depth=1 ${GH_REF} ghpages_build
+    cd ghpages_build
 
     # Overwrite previous commit
-    git rm -rf .
-    cp -a ../build/html/* .
-    cp -a ../build/latex/networkx_reference.pdf _downloads/.
-    touch .nojekyll
-    git add -A
-    git commit --amend --no-edit
+    git rm -r latest
+    cp -a ../build/html latest
+    cp -a ../build/latex/networkx_reference.pdf latest/_downloads/.
+    git add latest
+    git commit -m "Deploy GitHub Pages"
 
     git push --force --quiet "${GH_REF}" gh-pages > /dev/null 2>&1
     cd ../..
