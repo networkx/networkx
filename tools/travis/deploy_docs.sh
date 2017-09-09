@@ -41,12 +41,11 @@ then
     cd ghpages_build
 
     # Overwrite previous commit
-    git rm -rf .
-    cp -a ../build/html/* .
-    cp -a ../build/latex/networkx_reference.pdf _downloads/.
-    touch .nojekyll
-    git add -A
-    git commit --amend --no-edit
+    git rm -r latest
+    cp -a ../build/html latest
+    cp -a ../build/latex/networkx_reference.pdf latest/_downloads/.
+    git add latest
+    git commit -m "Deploy GitHub Pages"
 
     git push --force --quiet "${GH_REF}" gh-pages > /dev/null 2>&1
     cd ../..
