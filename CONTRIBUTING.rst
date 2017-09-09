@@ -50,7 +50,7 @@ Developer overview
 
 For a more detailed discussion, read these :doc:`detailed documents
 <gitwash/index>` on how to use Git with ``networkx``
-(`<https://networkx.github.io/dev-docs/developer/gitwash/index.html>`_).
+(`<https://networkx.github.io/documentation/latest/developer/gitwash/index.html>`_).
 
 4. Review process:
 
