@@ -15,6 +15,20 @@ matrix:
       python: 2.7
       env:
       - OPTIONAL_DEPS=1
+      - BUILD_DOCS=1
+      - DEPLOY_DOCS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+          - texlive
+          - texlive-latex-extra
+          - latexmk
+    - os: linux
+      python: 2.7
+      env:
+      - OPTIONAL_DEPS=1
       - MINIMUM_REQUIREMENTS=1
       - REPORT_COVERAGE=1
       addons:
@@ -26,16 +40,12 @@ matrix:
       python: 2.7
       env:
       - OPTIONAL_DEPS=1
-      - BUILD_DOCS=1
-      - DEPLOY_DOCS=1
+      - PIP_FLAGS="--pre"
       addons:
         apt:
           packages:
           - libgdal-dev
           - graphviz
-          - texlive
-          - texlive-latex-extra
-          - latexmk
     - os: linux
       python: 3.6
       env: OPTIONAL_DEPS=1
@@ -82,9 +92,9 @@ before_install:
 install:
   # install required packages
   - pip install --upgrade pip
-  - pip install --retries 3 -r requirements.txt
+  - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
   - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
-      pip install --retries 3 -r requirements/extras.txt;
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
     fi
   # install networkx
   - printenv PWD
