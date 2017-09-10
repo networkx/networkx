@@ -205,10 +205,10 @@ def parse_pajek(lines):
                 G.nodes[label].update(extra_attr)
         elif l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
             if l.lower().startswith("*edge"):
-               # switch from multidigraph to multigraph
+                # switch from multidigraph to multigraph
                 G = nx.MultiGraph(G)
             if l.lower().startswith("*arcs"):
-               # switch to directed with multiple arcs for each existing edge
+                # switch to directed with multiple arcs for each existing edge
                 G = G.to_directed()
             for l in lines:
                 try:

@@ -22,6 +22,7 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 import networkx as nx
+from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout
@@ -38,13 +39,6 @@ __all__ = ['draw',
            'draw_spectral',
            'draw_spring',
            'draw_shell']
-
-# 2.x/3.x compatibility
-try:
-    basestring
-except NameError:
-    basestring = str
-    unicode = str
 
 
 def draw(G, pos=None, ax=None, **kwds):
@@ -526,15 +520,15 @@ def draw_networkx_edges(G, pos,
     else:
         lw = width
 
-    if not isinstance(edge_color, basestring) \
+    if not is_string_like(edge_color) \
             and cb.iterable(edge_color) \
             and len(edge_color) == len(edge_pos):
-        if np.alltrue([isinstance(c, basestring) for c in edge_color]):
+        if np.alltrue([is_string_like(c) for c in edge_color]):
             # (should check ALL elements)
             # list of color letters such as ['k','r','k',...]
             edge_colors = tuple([colorConverter.to_rgba(c, alpha)
                                  for c in edge_color])
-        elif np.alltrue([not isinstance(c, basestring) for c in edge_color]):
+        elif np.alltrue([not is_string_like(c) for c in edge_color]):
             # If color specs are given as (rgb) or (rgba) tuples, we're OK
             if np.alltrue([cb.iterable(c) and len(c) in (3, 4)
                           for c in edge_color]):
@@ -545,7 +539,7 @@ def draw_networkx_edges(G, pos,
         else:
             raise ValueError('edge_color must consist of either color names or numbers')
     else:
-        if isinstance(edge_color, basestring) or len(edge_color) == 1:
+        if is_string_like(edge_color) or len(edge_color) == 1:
             edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
         else:
             raise ValueError(
@@ -726,7 +720,7 @@ def draw_networkx_labels(G, pos,
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
-        if not isinstance(label, basestring):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
         t = ax.text(x, y,
                     label,
@@ -864,7 +858,7 @@ def draw_networkx_edge_labels(G, pos,
                         ec=(1.0, 1.0, 1.0),
                         fc=(1.0, 1.0, 1.0),
                         )
-        if not isinstance(label, basestring):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
 
         # set optional alignment

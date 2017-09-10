@@ -1,5 +1,5 @@
 """
-This module provides the following: read and write of p2g format 
+This module provides the following: read and write of p2g format
 used in metabolic pathway studies.
 
 See https://web.archive.org/web/20080626113807/http://www.cs.purdue.edu/homes/koyuturk/pathway/ for a description.
@@ -66,7 +66,7 @@ def write_p2g(G, path, encoding='utf-8'):
 
 @open_file(0, mode='r')
 def read_p2g(path, encoding='utf-8'):
-    """Read graph in p2g format from path. 
+    """Read graph in p2g format from path.
 
     Returns
     -------
@@ -83,7 +83,7 @@ def read_p2g(path, encoding='utf-8'):
 
 
 def parse_p2g(lines):
-    """Parse p2g format graph from string or iterable. 
+    """Parse p2g format graph from string or iterable.
 
     Returns
     -------
