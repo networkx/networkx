@@ -13,6 +13,7 @@ __all__ = [
     'nodes_or_number',
 ]
 
+
 def not_implemented_for(*graph_types):
     """Decorator to mark algorithms as not implemented
 
@@ -49,12 +50,12 @@ def not_implemented_for(*graph_types):
            pass
     """
     @decorator
-    def _not_implemented_for(f,*args,**kwargs):
+    def _not_implemented_for(f, *args, **kwargs):
         graph = args[0]
-        terms= {'directed':graph.is_directed(),
-                'undirected':not graph.is_directed(),
-                'multigraph':graph.is_multigraph(),
-                'graph':not graph.is_multigraph()}
+        terms = {'directed': graph.is_directed(),
+                 'undirected': not graph.is_directed(),
+                 'multigraph': graph.is_multigraph(),
+                 'graph': not graph.is_multigraph()}
         match = True
         try:
             for t in graph_types:
@@ -63,24 +64,26 @@ def not_implemented_for(*graph_types):
             raise KeyError('use one or more of ',
                            'directed, undirected, multigraph, graph')
         if match:
-            raise nx.NetworkXNotImplemented('not implemented for %s type'%
+            raise nx.NetworkXNotImplemented('not implemented for %s type' %
                                             ' '.join(graph_types))
         else:
-            return f(*args,**kwargs)
+            return f(*args, **kwargs)
     return _not_implemented_for
 
 
 def _open_gz(path, mode):
     import gzip
-    return gzip.open(path,mode=mode)
+    return gzip.open(path, mode=mode)
+
 
 def _open_bz2(path, mode):
     import bz2
-    return bz2.BZ2File(path,mode=mode)
+    return bz2.BZ2File(path, mode=mode)
+
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
-_dispatch_dict = defaultdict(lambda : open)
+_dispatch_dict = defaultdict(lambda: open)
 _dispatch_dict['.gz'] = _open_gz
 _dispatch_dict['.bz2'] = _open_bz2
 _dispatch_dict['.gzip'] = _open_gz
