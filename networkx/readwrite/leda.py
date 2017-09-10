@@ -32,7 +32,7 @@ def read_leda(path, encoding='UTF-8'):
     Parameters
     ----------
     path : file or string
-       File or filename to read.  Filenames ending in .gz or .bz2  will be 
+       File or filename to read.  Filenames ending in .gz or .bz2  will be
        uncompressed.
 
     Returns

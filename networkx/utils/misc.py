@@ -47,6 +47,13 @@ except ImportError:
             total = func(total, element)
             yield total
 
+# 2.x/3.x compatibility
+try:
+    basestring
+except NameError:
+    basestring = str
+    unicode = str
+
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
@@ -54,11 +61,7 @@ except ImportError:
 
 def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
-    try:
-        obj + ''
-    except (TypeError, ValueError):
-        return False
-    return True
+    return isinstance(obj, basestring)
 
 
 def iterable(obj):
