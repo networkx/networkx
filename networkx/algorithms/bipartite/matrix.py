@@ -76,9 +76,9 @@ def biadjacency_matrix(G, row_order, column_order=None,
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
+    .. [1] https://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
     .. [2] Scipy Dev. References, "Sparse Matrices",
-       http://docs.scipy.org/doc/scipy/reference/sparse.html
+       https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     from scipy import sparse
     nlen = len(row_order)
@@ -145,7 +145,7 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
 
     References
     ----------
-    [1] http://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
+    [1] https://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
     """
     G = _prep_create_using(create_using)
     n, m = A.shape

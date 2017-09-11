@@ -43,7 +43,7 @@ class MinimumSpanningTreeTestBase(object):
         # This stores the class attribute `algorithm` in an instance attribute.
         self.algo = self.algorithm
         # This example graph comes from Wikipedia:
-        # http://en.wikipedia.org/wiki/Kruskal's_algorithm
+        # https://en.wikipedia.org/wiki/Kruskal's_algorithm
         edges = [(0, 1, 7), (0, 3, 5), (1, 2, 8), (1, 3, 9), (1, 4, 7),
                  (2, 4, 5), (3, 4, 15), (3, 5, 6), (4, 5, 8), (4, 6, 9),
                  (5, 6, 11)]

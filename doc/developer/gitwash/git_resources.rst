@@ -14,7 +14,6 @@ Tutorials and summaries
 * A `git cheat sheet`_ is a page giving summaries of common commands.
 * The `git user manual`_
 * The `git tutorial`_
-* The `git community book`_
 * `git ready`_ |emdash| a nice series of tutorials
 * `git magic`_ |emdash| extended introduction with intermediate detail
 * The `git parable`_ is an easy read explaining the concepts behind git.

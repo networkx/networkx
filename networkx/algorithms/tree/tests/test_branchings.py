@@ -261,7 +261,7 @@ def test_edmonds3_minbranch2():
 
 def test_mst():
     # Make sure we get the same results for undirected graphs.
-    # Example from: http://en.wikipedia.org/wiki/Kruskal's_algorithm
+    # Example from: https://en.wikipedia.org/wiki/Kruskal's_algorithm
     G = nx.Graph()
     edgelist = [(0, 3, [('weight', 5)]),
                 (0, 1, [('weight', 7)]),

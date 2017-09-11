@@ -40,7 +40,7 @@ def max_clique(G):
     vertices in a maximum clique in G. The intersection number of
     G is the smallest number of cliques that together cover all edges of G.
 
-    http://en.wikipedia.org/wiki/Maximum_clique
+    https://en.wikipedia.org/wiki/Maximum_clique
 
     References
     ----------

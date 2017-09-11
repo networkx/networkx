@@ -4,7 +4,7 @@ Algorithms for chordal graphs.
 
 A graph is chordal if every cycle of length at least 4 has a chord
 (an edge joining two nodes not adjacent in the cycle).
-http://en.wikipedia.org/wiki/Chordal_graph
+https://en.wikipedia.org/wiki/Chordal_graph
 """
 import networkx as nx
 import random
@@ -235,7 +235,7 @@ def chordal_graph_treewidth(G):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
+    .. [1] https://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
     """
     if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")

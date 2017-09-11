@@ -12,7 +12,7 @@ import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
 class TestWikipediaExample(object):
-    # Source: http://en.wikipedia.org/wiki/Graph_isomorphism
+    # Source: https://en.wikipedia.org/wiki/Graph_isomorphism
 
     # Nodes 'a', 'b', 'c' and 'd' form a column.
     # Nodes 'g', 'h', 'i' and 'j' form a column.

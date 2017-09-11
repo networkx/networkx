@@ -192,7 +192,7 @@ class TestLoadCentrality:
         # Graph A and B are from Tao Zhou, Jian-Guo Liu, Bing-Hong
         # Wang: Comment on "Scientific collaboration
         # networks. II. Shortest paths, weighted networks, and
-        # centrality". http://arxiv.org/pdf/physics/0511084
+        # centrality". https://arxiv.org/pdf/physics/0511084
 
         # Notice that unlike here, their calculation adds to 1 to the
         # betweennes of every node i for every path from i to every

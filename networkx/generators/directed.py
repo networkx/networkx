@@ -453,7 +453,7 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
          "Distance between two random `k`-out digraphs, with and without
          preferential attachment."
          arXiv preprint arXiv:1311.5961 (2013).
-         <http://arxiv.org/abs/1311.5961>
+         <https://arxiv.org/abs/1311.5961>
 
     """
     if alpha < 0:

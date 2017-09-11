@@ -912,7 +912,7 @@ class MultiGraph(Graph):
         structure without requiring any memory for copying the information.
 
         See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
+        and deep copies, https://docs.python.org/2/library/copy.html.
 
         Parameters
         ----------
@@ -966,7 +966,7 @@ class MultiGraph(Graph):
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
+        and deep copies, https://docs.python.org/2/library/copy.html.
 
         Warning: If you have subclassed MultiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the
@@ -1023,7 +1023,7 @@ class MultiGraph(Graph):
         which returns a shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
+        and deep copies, https://docs.python.org/2/library/copy.html.
 
         Warning: If you have subclassed MultiiGraph to use dict-like
         objects in the data structure, those changes do not transfer

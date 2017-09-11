@@ -63,7 +63,7 @@ def subgraph_centrality_exp(G):
     .. [1] Ernesto Estrada, Juan A. Rodriguez-Velazquez,
        "Subgraph centrality in complex networks",
        Physical Review E 71, 056103 (2005).
-       http://arxiv.org/abs/cond-mat/0504730
+       https://arxiv.org/abs/cond-mat/0504730
 
     Examples
     --------
@@ -141,7 +141,7 @@ def subgraph_centrality(G):
     .. [1] Ernesto Estrada, Juan A. Rodriguez-Velazquez,
        "Subgraph centrality in complex networks",
        Physical Review E 71, 056103 (2005).
-       http://arxiv.org/abs/cond-mat/0504730
+       https://arxiv.org/abs/cond-mat/0504730
 
     """
     import numpy
@@ -216,7 +216,7 @@ def communicability_betweenness_centrality(G, normalized=True):
     .. [1] Ernesto Estrada, Desmond J. Higham, Naomichi Hatano,
        "Communicability Betweenness in Complex Networks"
        Physica A 388 (2009) 764-774.
-       http://arxiv.org/abs/0905.4102
+       https://arxiv.org/abs/0905.4102
 
     Examples
     --------

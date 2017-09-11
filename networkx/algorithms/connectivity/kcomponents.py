@@ -100,7 +100,7 @@ def k_components(G, flow_func=None):
 
     .. [3]  Torrents, J. and F. Ferraro (2015). Structural Cohesion:
             Visualization and Heuristics for Fast Computation.
-            http://arxiv.org/pdf/1503.04476v1
+            https://arxiv.org/pdf/1503.04476v1
 
     """
     # Dictionary with connectivity level (k) as keys and a list of

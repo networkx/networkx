@@ -95,7 +95,7 @@ def k_components(G, min_density=0.95):
     ----------
     .. [1]  Torrents, J. and F. Ferraro (2015) Structural Cohesion: 
             Visualization and Heuristics for Fast Computation.
-            http://arxiv.org/pdf/1503.04476v1
+            https://arxiv.org/pdf/1503.04476v1
 
     .. [2]  White, Douglas R., and Mark Newman (2001) A Fast Algorithm for 
             Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035

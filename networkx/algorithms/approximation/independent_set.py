@@ -14,7 +14,7 @@ the maximum independent set problem and is an NP-hard optimization problem.
 As such, it is unlikely that there exists an efficient algorithm for finding
 a maximum independent set of a graph.
 
-`Wikipedia: Independent set <http://en.wikipedia.org/wiki/Independent_set_(graph_theory)>`_
+`Wikipedia: Independent set <https://en.wikipedia.org/wiki/Independent_set_(graph_theory)>`_
 
 Independent set algorithm is based on the following paper:
 

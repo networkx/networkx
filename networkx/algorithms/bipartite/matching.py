@@ -445,7 +445,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 
     This function is implemented using the procedure guaranteed by `Konig's
     theorem
-    <http://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29>`_,
+    <https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29>`_,
     which proves an equivalence between a maximum matching and a minimum vertex
     cover in bipartite graphs.
 

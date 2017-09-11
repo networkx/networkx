@@ -172,7 +172,7 @@ API Changes
   returned.  When ``target`` is not specified the return value is still 2
   dicts.
 
-* [`#2553 <https://github.com/networkx/networkx/issues/2553>`_]
+* [`#2553 <https://github.com/networkx/networkx/pull/2553>`_]
   ``set_node_attributes()`` and ``set_edge_attributes()`` now accept
   dict-of-dict input of shape ``{node/edge: {name: value}}`` in addition to
   previous valid inputs: ``{node/edge: value}`` and ``value``. The order of the

@@ -143,7 +143,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     ----------
     .. [1] Santo Fortunato, Community Detection in Graphs,
        Physics Reports Volume 486, Issues 3-5, February 2010, Pages 75-174.
-       http://arxiv.org/abs/0906.0612
+       https://arxiv.org/abs/0906.0612
     """
     if seed is not None:
         random.seed(seed)
@@ -209,9 +209,8 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     References
     ----------
     .. [1] Santo Fortunato 'Community Detection in Graphs' Physical Reports
-       Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
-       http://arxiv.org/abs/0906.0612
-       """
+       Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
+    """
     # Use geometric method for O(n+m) complexity algorithm
     # partition = nx.community_sets(nx.get_node_attributes(G, 'affiliation'))
     if seed is not None:
@@ -329,7 +328,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
         Random Struct. Algor. 18 (2001) 116-140.
 
     .. [2] Santo Fortunato 'Community Detection in Graphs' Physical Reports
-       Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
+       Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
     """
     return random_partition_graph([k] * l, p_in, p_out, seed, directed)
 

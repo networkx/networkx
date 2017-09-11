@@ -63,7 +63,7 @@ def current_flow_closeness_centrality(G, weight=None,
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] Karen Stephenson and Marvin Zelen:
        Rethinking centrality: Methods and examples.

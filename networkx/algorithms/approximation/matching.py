@@ -7,7 +7,7 @@ Graph Matching
 Given a graph G = (V,E), a matching M in G is a set of pairwise non-adjacent
 edges; that is, no two edges share a common vertex.
 
-`Wikipedia: Matching <http://en.wikipedia.org/wiki/Matching_(graph_theory)>`_
+`Wikipedia: Matching <https://en.wikipedia.org/wiki/Matching_(graph_theory)>`_
 """
 #   Copyright (C) 2011-2012 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>

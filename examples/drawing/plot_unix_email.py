@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 # unix mailbox recipe
-# see http://www.python.org/doc/current/lib/module-mailbox.html
+# see https://docs.python.org/2/library/mailbox.html
 
 def mbox_graph():
     try:
@@ -52,7 +52,7 @@ def mbox_graph():
     for msg in mbox:  # msg is python email.Message.Message object
         (source_name, source_addr) = parseaddr(msg['From'])  # sender
         # get all recipients
-        # see http://www.python.org/doc/current/lib/module-email.Utils.html
+        # see https://docs.python.org/2/library/email.html
         tos = msg.get_all('to', [])
         ccs = msg.get_all('cc', [])
         resent_tos = msg.get_all('resent-to', [])

@@ -9,7 +9,7 @@ Generates a networkx.DiGraph from point and line shapefiles.
 data format for geographic information systems software. It is developed
 and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
-See http://en.wikipedia.org/wiki/Shapefile for additional information.
+See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
 #    Copyright (C) 2004-2017 by
 #    Ben Reilly <benwreilly@gmail.com>
@@ -64,7 +64,7 @@ def read_shp(path, simplify=True, geom_attrs=True):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Shapefile
+    .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
     try:
         from osgeo import ogr
@@ -188,7 +188,7 @@ def write_shp(G, outdir):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Shapefile
+    .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
     try:
         from osgeo import ogr

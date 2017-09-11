@@ -37,7 +37,7 @@ def test_is_dominating_set():
 
 
 def test_wikipedia_is_dominating_set():
-    """Example from http://en.wikipedia.org/wiki/Dominating_set
+    """Example from https://en.wikipedia.org/wiki/Dominating_set
     """
     G = nx.cycle_graph(4)
     G.add_edges_from([(0, 4), (1, 4), (2, 5)])

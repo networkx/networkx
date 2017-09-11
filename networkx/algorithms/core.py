@@ -17,11 +17,11 @@ See the following references for details:
 
 An O(m) Algorithm for Cores Decomposition of Networks
 Vladimir Batagelj and Matjaz Zaversnik, 2003.
-http://arxiv.org/abs/cs.DS/0310049
+https://arxiv.org/abs/cs.DS/0310049
 
 Generalized Cores
 Vladimir Batagelj and Matjaz Zaversnik, 2002.
-http://arxiv.org/pdf/cs/0202039
+https://arxiv.org/pdf/cs/0202039
 
 For directed graphs a more general notion is that of D-cores which
 looks at (k, l) restrictions on (in, out) degree. The (k, k) D-core
@@ -75,7 +75,7 @@ def core_number(G):
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
        Vladimir Batagelj and Matjaz Zaversnik, 2003.
-       http://arxiv.org/abs/cs.DS/0310049
+       https://arxiv.org/abs/cs.DS/0310049
     """
     if nx.number_of_selfloops(G) > 0:
         msg = ('Input graph has self loops which is not permitted; '
@@ -181,7 +181,7 @@ def k_core(G, k=None, core_number=None):
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
        Vladimir Batagelj and Matjaz Zaversnik,  2003.
-       http://arxiv.org/abs/cs.DS/0310049
+       https://arxiv.org/abs/cs.DS/0310049
     """
     def k_filter(v, k, c):
         return c[v] >= k
