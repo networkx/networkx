@@ -15,7 +15,7 @@ import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import OutEdgeView, InEdgeView, \
-        DiDegreeView, InDegreeView, OutDegreeView
+    DiDegreeView, InDegreeView, OutDegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
@@ -240,6 +240,7 @@ class DiGraph(Graph):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
+
     def __getstate__(self):
         attr = self.__dict__.copy()
         # remove lazy property attributes
@@ -1129,7 +1130,7 @@ class DiGraph(Graph):
         structure without requiring any memory for copying the information.
 
         See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
+        and deep copies, https://docs.python.org/2/library/copy.html.
 
         Parameters
         ----------
@@ -1203,7 +1204,7 @@ class DiGraph(Graph):
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
+        and deep copies, https://docs.python.org/2/library/copy.html.
 
         Warning: If you have subclassed DiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the

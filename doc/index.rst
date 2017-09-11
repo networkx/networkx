@@ -46,8 +46,8 @@ algorithms.  Python has a vibrant and growing ecosystem of packages that
 NetworkX uses to provide more features such as numerical linear algebra and
 drawing.  In order to make the most out of NetworkX you will want to know how
 to write basic programs in Python.  Among the many guides to Python, we
-recommend the `Python documentation <http://www.python.org>`_ and the text by
-Alex Martelli [Martelli03]_.
+recommend the `Python documentation <https://docs.python.org/3/>`_ and the text
+by Alex Martelli [Martelli03]_.
 
 Free software
 -------------

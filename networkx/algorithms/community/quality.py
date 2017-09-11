@@ -181,7 +181,7 @@ def performance(G, partition):
     .. [1] Santo Fortunato.
            "Community Detection in Graphs".
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <http://arxiv.org/abs/0906.0612>
+           <https://arxiv.org/abs/0906.0612>
 
     """
     # Compute the number of intra-community edges and inter-community
@@ -236,7 +236,7 @@ def coverage(G, partition):
     .. [1] Santo Fortunato.
            "Community Detection in Graphs".
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <http://arxiv.org/abs/0906.0612>
+           <https://arxiv.org/abs/0906.0612>
 
     """
     intra_edges = intra_community_edges(G, partition)

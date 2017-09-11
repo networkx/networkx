@@ -27,7 +27,7 @@ def s_metric(G, normalized=True):
     .. [1] Lun Li, David Alderson, John C. Doyle, and Walter Willinger,
            Towards a Theory of Scale-Free Graphs:
            Definition, Properties, and  Implications (Extended Version), 2005.
-           http://arxiv.org/abs/cond-mat/0501169
+           https://arxiv.org/abs/cond-mat/0501169
     """
     if normalized:
         raise nx.NetworkXError("Normalization not implemented")

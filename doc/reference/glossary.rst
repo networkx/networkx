@@ -8,7 +8,7 @@ Glossary
    dictionary
       A Python dictionary maps keys to values. Also known as "hashes",
       or "associative arrays" in other programming languages.
-      See http://docs.python.org/tutorial/datastructures.html#dictionaries
+      See https://docs.python.org/2/tutorial/datastructures.html#dictionaries
 
    edge
       Edges are either two-tuples of nodes `(u, v)` or three tuples of nodes
@@ -40,7 +40,7 @@ Glossary
       default; they all compare unequal, and their hash value is their
       :func:`id`.
 
-      Definition from http://docs.python.org/glossary.html
+      Definition from https://docs.python.org/2/glossary.html
 
    nbunch
       An nbunch is a single node, container of nodes or None (representing

@@ -80,7 +80,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
     """
     try:
         import numpy as np
@@ -201,7 +201,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -312,7 +312,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).

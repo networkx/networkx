@@ -9,7 +9,7 @@ Generates a networkx.DiGraph from point and line shapefiles.
 data format for geographic information systems software. It is developed
 and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
-See http://en.wikipedia.org/wiki/Shapefile for additional information.
+See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
 #    Copyright (C) 2004-2017 by
 #    Ben Reilly <benwreilly@gmail.com>
@@ -64,7 +64,7 @@ def read_shp(path, simplify=True, geom_attrs=True):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Shapefile
+    .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
     try:
         from osgeo import ogr
@@ -188,7 +188,7 @@ def write_shp(G, outdir):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Shapefile
+    .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
     try:
         from osgeo import ogr
@@ -229,7 +229,7 @@ def write_shp(G, outdir):
     def create_feature(geometry, lyr, attributes=None):
         feature = ogr.Feature(lyr.GetLayerDefn())
         feature.SetGeometry(g)
-        if attributes != None:
+        if attributes is not None:
             # Loop through attributes, assigning data to each field
             for field, data in attributes.items():
                 feature.SetField(field, data)
@@ -269,23 +269,23 @@ def write_shp(G, outdir):
         for key, data in e[2].items():
             # Reject spatial data not required for attribute table
             if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
-                and key != 'ShpName'):
-                  # For all edges check/add field and data type to fields dict
-                    if key not in fields:
-                  # Field not in previous edges so add to dict
-                        if type(data) in OGRTypes:
-                            fields[key] = OGRTypes[type(data)]
-                        else:
-                            # Data type not supported, default to string (char 80)
-                            fields[key] = ogr.OFTString
-                        # Create the new field
-                        newfield = ogr.FieldDefn(key, fields[key])
-                        edges.CreateField(newfield)
-                        # Store the data from new field to dict for CreateLayer()
-                        attributes[key] = data
+                    and key != 'ShpName'):
+                # For all edges check/add field and data type to fields dict
+                if key not in fields:
+                    # Field not in previous edges so add to dict
+                    if type(data) in OGRTypes:
+                        fields[key] = OGRTypes[type(data)]
                     else:
-                     # Field already exists, add data to dict for CreateLayer()
-                        attributes[key] = data
+                        # Data type not supported, default to string (char 80)
+                        fields[key] = ogr.OFTString
+                    # Create the new field
+                    newfield = ogr.FieldDefn(key, fields[key])
+                    edges.CreateField(newfield)
+                    # Store the data from new field to dict for CreateLayer()
+                    attributes[key] = data
+                else:
+                    # Field already exists, add data to dict for CreateLayer()
+                    attributes[key] = data
         # Create the feature with, passing new attribute data
         create_feature(g, edges, attributes)
 

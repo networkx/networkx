@@ -5,7 +5,7 @@ Bibliography
 
 .. [BA02] R. Albert and A.-L. Barabási, "Statistical mechanics of complex
    networks", Reviews of Modern Physics, 74, pp. 47-97, 2002. 
-   http://arxiv.org/abs/cond-mat/0106096
+   https://arxiv.org/abs/cond-mat/0106096
 
 .. [Bollobas01] B. Bollobás, "Random Graphs", Second Edition,
    Cambridge University Press, 2001.
@@ -61,5 +61,5 @@ Bibliography
     2nd ed., 2001.
 
 .. [vanRossum98] Guido van Rossum. Python Patterns - Implementing Graphs, 1998.
-   http://www.python.org/doc/essays/graphs
+   https://www.python.org/doc/essays/graphs
 

@@ -423,7 +423,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
       Container with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
       will be raised.
- 
+
     Returns
     -------
 
@@ -445,7 +445,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 
     This function is implemented using the procedure guaranteed by `Konig's
     theorem
-    <http://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29>`_,
+    <https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29>`_,
     which proves an equivalence between a maximum matching and a minimum vertex
     cover in bipartite graphs.
 
@@ -477,6 +477,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
     # At this point, every edge either has a right endpoint in Z or a left
     # endpoint not in Z. This gives us the vertex cover.
     return (L - Z) | (R & Z)
+
 
 #: Returns the maximum cardinality matching in the given bipartite graph.
 #:

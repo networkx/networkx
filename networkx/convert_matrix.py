@@ -774,7 +774,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     References
     ----------
     .. [1] Scipy Dev. References, "Sparse Matrices",
-       http://docs.scipy.org/doc/scipy/reference/sparse.html
+       https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     from scipy import sparse
     if nodelist is None:

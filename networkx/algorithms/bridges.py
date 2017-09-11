@@ -65,7 +65,7 @@ def bridges(G, root=None):
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Bridge_(graph_theory)#Bridge-Finding_with_Chain_Decompositions
+    .. [1] https://en.wikipedia.org/wiki/Bridge_%28graph_theory%29#Bridge-Finding_with_Chain_Decompositions
     """
     chains = nx.chain_decomposition(G, root=root)
     chain_edges = set(chain.from_iterable(chains))

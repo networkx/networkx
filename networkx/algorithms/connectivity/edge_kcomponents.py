@@ -90,7 +90,7 @@ def k_edge_components(G, k):
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Bridge_(graph_theory)
+    .. [1] https://en.wikipedia.org/wiki/Bridge_%28graph_theory%29
     .. [2] Wang, Tianhao, et al. (2015) A simple algorithm for finding all
         k-edge-connected components.
         http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264

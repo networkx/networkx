@@ -44,7 +44,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     .. [1] Romantic Partnerships and the Dispersion of Social Ties:
         A Network Analysis of Relationship Status on Facebook.
         Lars Backstrom, Jon Kleinberg.
-        http://arxiv.org/pdf/1310.6753v1.pdf
+        https://arxiv.org/pdf/1310.6753v1.pdf
 
     """
 

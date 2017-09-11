@@ -85,7 +85,7 @@ def resource_allocation_index(G, ebunch=None):
     .. [1] T. Zhou, L. Lu, Y.-C. Zhang.
        Predicting missing links via local information.
        Eur. Phys. J. B 71 (2009) 623.
-       http://arxiv.org/pdf/0901.0553.pdf
+       https://arxiv.org/pdf/0901.0553.pdf
     """
     def predict(u, v):
         return sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
