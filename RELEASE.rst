@@ -51,13 +51,38 @@ How to make a new release of ``networkx``
   - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
 
+- Build the documentation::
+
+    cd doc
+    make docs
+
+  The built documentation is in ``build/html``.
+
+- Push documentation to the web:
+  The documentation is kept in a separate repo: networkx/documentation
+
+  - Sync your branch with the remote repo: ``git pull``.
+  - Copy the documentation that you built in the previous step.
+    Assuming your ``networkx`` and your ``documentation`` repos are in the
+    same parent directory::
+
+      cp -a ../networkx/doc/build/html networkx-<major>.<minor> 
+      git add networkx-<major>.<minor>
+      git commit -m "Add <major>.<minor> docs"
+      git push
+
+  - Update the symlink to ``stable``.
+  - Push upstream
+
 - Update the web frontpage:
-  The webpage is kept in a separate repo: networkx-website
+  The webpage is kept in a separate repo: networkx/website
 
   - Sync your branch with the remote repo: ``git pull``.
     If you try to ``make github`` when your branch is out of sync, it
     creates headaches.
   - Update ``_templates/sidebar_versions.html``.
+  - Edit ``_static/docversions.js`` and commit
+  - Push your changes to the repo.
   - Deploy using ``make github``.
 
 - Update ``https://readthedocs.org/projects/networkx/versions/``
