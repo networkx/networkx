@@ -155,12 +155,13 @@ def effective_size(G, nodes=None, weight=None):
             effective_size[v] = len(E) - (2 * E.size()) / len(E)
     else:
         for v in nodes:
+            neighbors = set(nx.all_neighbors(G, v))
             # Effective size is not defined for isolated nodes
-            if len(G[v]) == 0:
+            if len(neighbors) == 0:
                 effective_size[v] = float('nan')
                 continue
             effective_size[v] = sum(redundancy(G, v, u, weight)
-                                    for u in set(nx.all_neighbors(G, v)))
+                                    for u in neighbors)
     return effective_size
 
 
