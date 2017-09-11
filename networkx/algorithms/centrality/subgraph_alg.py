@@ -18,6 +18,7 @@ __all__ = ['subgraph_centrality_exp',
            'estrada_index'
            ]
 
+
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def subgraph_centrality_exp(G):
@@ -75,14 +76,15 @@ def subgraph_centrality_exp(G):
     """
     # alternative implementation that calculates the matrix exponential
     import scipy.linalg
-    nodelist = list(G) # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = list(G)  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
+    A[A != 0.0] = 1
     expA = scipy.linalg.expm(A.A)
     # convert diagonal to dictionary keyed by node
-    sc = dict(zip(nodelist,map(float,expA.diagonal())))
+    sc = dict(zip(nodelist, map(float, expA.diagonal())))
     return sc
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
@@ -146,17 +148,18 @@ def subgraph_centrality(G):
     """
     import numpy
     import numpy.linalg
-    nodelist = list(G) # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = list(G)  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
-    w,v = numpy.linalg.eigh(A.A)
+    A[A != 0.0] = 1
+    w, v = numpy.linalg.eigh(A.A)
     vsquare = numpy.array(v)**2
     expw = numpy.exp(w)
-    xg = numpy.dot(vsquare,expw)
+    xg = numpy.dot(vsquare, expw)
     # convert vector dictionary keyed by node
-    sc = dict(zip(nodelist,map(float,xg)))
+    sc = dict(zip(nodelist, map(float, xg)))
     return sc
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
@@ -225,46 +228,48 @@ def communicability_betweenness_centrality(G, normalized=True):
     """
     import scipy
     import scipy.linalg
-    nodelist = list(G) # ordering of nodes in matrix
+    nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
-    A = nx.to_numpy_matrix(G,nodelist)
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
+    A[A != 0.0] = 1
     expA = scipy.linalg.expm(A.A)
-    mapping = dict(zip(nodelist,range(n)))
+    mapping = dict(zip(nodelist, range(n)))
     cbc = {}
     for v in G:
         # remove row and col of node v
         i = mapping[v]
-        row = A[i,:].copy()
-        col = A[:,i].copy()
-        A[i,:] = 0
-        A[:,i] = 0
+        row = A[i, :].copy()
+        col = A[:, i].copy()
+        A[i, :] = 0
+        A[:, i] = 0
         B = (expA - scipy.linalg.expm(A.A)) / expA
         # sum with row/col of node v and diag set to zero
-        B[i,:] = 0
-        B[:,i] = 0
+        B[i, :] = 0
+        B[:, i] = 0
         B -= scipy.diag(scipy.diag(B))
         cbc[v] = float(B.sum())
         # put row and col back
-        A[i,:] = row
-        A[:,i] = col
+        A[i, :] = row
+        A[:, i] = col
     # rescaling
-    cbc = _rescale(cbc,normalized=normalized)
+    cbc = _rescale(cbc, normalized=normalized)
     return cbc
 
-def _rescale(cbc,normalized):
+
+def _rescale(cbc, normalized):
     # helper to rescale betweenness centrality
     if normalized is True:
-        order=len(cbc)
-        if order <=2:
-            scale=None
+        order = len(cbc)
+        if order <= 2:
+            scale = None
         else:
-            scale=1.0/((order-1.0)**2-(order-1.0))
+            scale = 1.0 / ((order - 1.0)**2 - (order - 1.0))
     if scale is not None:
         for v in cbc:
             cbc[v] *= scale
     return cbc
+
 
 def estrada_index(G):
     r"""Return the Estrada index of a the graph G.
@@ -312,6 +317,8 @@ def estrada_index(G):
     return sum(subgraph_centrality(G).values())
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

@@ -37,6 +37,7 @@ import networkx as nx
 # unix mailbox recipe
 # see https://docs.python.org/2/library/mailbox.html
 
+
 def mbox_graph():
     try:
         fh = open("unix_email.mbox", 'rb')
@@ -63,6 +64,7 @@ def mbox_graph():
             G.add_edge(source_addr, target_addr, message=msg)
 
     return G
+
 
 if __name__ == '__main__':
 

@@ -73,7 +73,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
         raise nx.NetworkXError("Directed Graph required in create_using")
 
     if kernel is None:
-        kernel = lambda x: x
+        def kernel(x): return x
 
     if seed is not None:
         random.seed(seed)
@@ -289,7 +289,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
             v = len(G)
             # choose w according to in-degree and delta_in
             w = _choose_node(G, G.in_degree(), delta_in, psum_in)
-        elif r < alpha+beta:
+        elif r < alpha + beta:
             # beta
             # choose v according to out-degree and delta_out
             v = _choose_node(G, G.out_degree(), delta_out, psum_out)

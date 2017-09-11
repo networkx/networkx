@@ -186,14 +186,14 @@ class GEXF(object):
          'NS_VIZ': "http://www.gexf.net/1.1draft/viz",
          'NS_XSI': "http://www.w3.org/2001/XMLSchema-instance",
          'SCHEMALOCATION': ' '.join(['http://www.gexf.net/1.1draft',
-            'http://www.gexf.net/1.1draft/gexf.xsd']),
+                                     'http://www.gexf.net/1.1draft/gexf.xsd']),
          'VERSION': '1.1'}
     versions['1.1draft'] = d
     d = {'NS_GEXF': "http://www.gexf.net/1.2draft",
          'NS_VIZ': "http://www.gexf.net/1.2draft/viz",
          'NS_XSI': "http://www.w3.org/2001/XMLSchema-instance",
          'SCHEMALOCATION': ' '.join(['http://www.gexf.net/1.2draft',
-            'http://www.gexf.net/1.2draft/gexf.xsd']),
+                                     'http://www.gexf.net/1.2draft/gexf.xsd']),
          'VERSION': '1.2'}
     versions['1.2draft'] = d
 
@@ -207,19 +207,19 @@ class GEXF(object):
     try:  # Python 3.x
         blurb = chr(1245)  # just to trigger the exception
         types.extend([
-           (int, "long"),
-           (str, "liststring"),
-           (str, "anyURI"),
-           (str, "string")])
+            (int, "long"),
+            (str, "liststring"),
+            (str, "anyURI"),
+            (str, "string")])
     except ValueError:  # Python 2.6+
         types.extend([
-           (long, "long"),
-           (str, "liststring"),
-           (str, "anyURI"),
-           (str, "string"),
-           (unicode, "liststring"),
-           (unicode, "anyURI"),
-           (unicode, "string")])
+            (long, "long"),
+            (str, "liststring"),
+            (str, "anyURI"),
+            (str, "string"),
+            (unicode, "liststring"),
+            (unicode, "anyURI"),
+            (unicode, "string")])
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
@@ -571,8 +571,8 @@ class GEXFWriter(GEXF):
                 elif isinstance(start_or_end, int):
                     timeformat = 'long'
                 else:
-                    raise nx.NetworkXError(\
-                          'timeformat should be of the type int, float or str')
+                    raise nx.NetworkXError(
+                        'timeformat should be of the type int, float or str')
                 self.graph_element.set('timeformat', timeformat)
                 self.graph_element.set('mode', 'dynamic')
 
@@ -585,14 +585,14 @@ class GEXFWriter(GEXF):
 
     def indent(self, elem, level=0):
         # in-place prettyprint formatter
-        i = "\n" + "  "*level
+        i = "\n" + "  " * level
         if len(elem):
             if not elem.text or not elem.text.strip():
                 elem.text = i + "  "
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for elem in elem:
-                self.indent(elem, level+1)
+                self.indent(elem, level + 1)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         else:

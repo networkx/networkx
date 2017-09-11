@@ -90,11 +90,12 @@ def current_flow_closeness_centrality(G, weight=None,
     for v in H:
         col = C2.get_row(v)
         for w in H:
-            betweenness[v] += col[v]-2*col[w]
+            betweenness[v] += col[v] - 2 * col[w]
             betweenness[w] += col[v]
     for v in H:
         betweenness[v] = 1.0 / (betweenness[v])
     return dict((ordering[k], float(v)) for k, v in betweenness.items())
+
 
 information_centrality = current_flow_closeness_centrality
 
