@@ -345,7 +345,7 @@ class GEXFWriter(GEXF):
         def edge_key_data(G):
             # helper function to unify multigraph and graph edge iterator
             if G.is_multigraph():
-                for u, v, data, key in G.edges(data=True, keys=True):
+                for u, v, key, data in G.edges(data=True, keys=True):
                     edge_data = data.copy()
                     edge_data.update(key=key)
                     edge_id = edge_data.pop('id', None)
