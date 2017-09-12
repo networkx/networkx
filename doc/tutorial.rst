@@ -199,13 +199,13 @@ experimental observations of their interaction.
 
 We have found this power quite useful, but its abuse
 can lead to unexpected surprises unless one is familiar with Python.
-If in doubt, consider using :func:`convert_node_labels_to_integers` to obtain
+If in doubt, consider using :func:`~relabel.convert_node_labels_to_integers` to obtain
 a more traditional graph with integer labels.
 
 Accessing edges and neighbors
 -----------------------------
 
-In addition to the views ``Graph.edges``, and ``Graph.adj``,
+In addition to the views :meth:`Graph.edges`, and :meth:`Graph.adj`,
 access to edges and neighbors is possible using subscript notation.
 
 .. nbplot::
@@ -527,9 +527,9 @@ command if you are not using matplotlib in interactive mode (see
     <matplotlib.axes._subplots.AxesSubplot object at ...>
     >>> nx.draw_shell(G, nlist=[range(5,10), range(5)], **options)
 
-You can find additional options via :func:`draw_networkx` and layouts
-via :func:`layout`.
-You can use multiple shells with :func:`draw_shell`.
+You can find additional options via :func:`~drawing.nx_pylab.draw_networkx` and
+layouts via :mod:`layout <networkx.drawing.layout>`.
+You can use multiple shells with :func:`~drawing.nx_pylab.draw_shell`.
 
 .. nbplot::
 
