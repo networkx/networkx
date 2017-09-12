@@ -18,8 +18,8 @@ but we have put a lot of effort into making the documentation sufficient and fri
 If you have suggestions or questions please contact us by joining the
 `NetworkX Google group <http://groups.google.com/group/networkx-discuss>`_.
 
-Classes are named using CamelCase (capital letters at the start of each word).
-functions, methods and variable names are lower_case_underscore (lowercase with
+Classes are named using ``CamelCase`` (capital letters at the start of each word).
+functions, methods and variable names are ``lower_case_underscore`` (lowercase with
 an underscore representing a space between words).
 
 
@@ -36,7 +36,7 @@ To save repetition, in the documentation we assume that
 NetworkX has been imported this way.
 
 If importing networkx fails, it means that Python cannot find the installed
-module. Check your installation and your PYTHONPATH.
+module. Check your installation and your ``PYTHONPATH``.
 
 The following basic graph types are provided as Python classes:
 
@@ -67,8 +67,8 @@ Empty graph-like objects are created with
    >>> G = nx.MultiGraph()
    >>> G = nx.MultiDiGraph()
 
-All graph classes allow any :term:`hashable` object as a node.   Hashable
-objects include strings, tuples, integers, and more.
+All graph classes allow any :term:`hashable` object as a node.
+Hashable objects include strings, tuples, integers, and more.
 Arbitrary edge attributes such as weights and labels
 can be associated with an edge.
 
@@ -101,7 +101,7 @@ often associated with nodes and/or edges.  NetworkX graph objects come in
 different flavors depending on two main properties of the network:
 
  - Directed: Are the edges **directed**?  Does the order of the edge
-   pairs `(u, v)` matter?  A directed graph is specified by the "Di"
+   pairs $(u, v)$ matter?  A directed graph is specified by the "Di"
    prefix in the class name, e.g. `DiGraph()`.  We make this distinction
    because many classical graph properties are defined differently for
    directed graphs.
@@ -190,13 +190,14 @@ You can add many edges at one time:
 See the :doc:`/tutorial` for more examples.
 
 Some basic graph operations such as union and intersection
-are described in the :ref:`Operators module<operators>` documentation.
+are described in the :ref:`operators module <operators>` documentation.
 
-Graph generators such as `binomial_graph` and `powerlaw_graph` are provided in the
-:doc:`generators` subpackage.
+Graph generators such as :func:`~generators.random_graphs.binomial_graph`
+and :func:`~generators.random_graphs.erdos_renyi_graph` are
+provided in the :ref:`graph generators <generators>` subpackage.
 
 For importing network data from formats such as GML, GraphML, edge list text files
-see the :doc:`readwrite/index` subpackage.
+see the :ref:`reading and writing graphs <readwrite/index>` subpackage.
 
 
 Graph Reporting
@@ -207,27 +208,27 @@ These views provide iteration over the properties as well as membership
 queries and data attribute lookup. The views refer to the graph data structure
 so changes to the graph are reflected in the views. This is analogous to
 dictionary views in Python 3. If you want to change the graph while iterating
-you will need to use e.g. `for e in list(G.edges):`. The views provide
+you will need to use e.g. ``for e in list(G.edges):``. The views provide
 set-like operations, e.g. union and intersection, as well as dict-like
-lookup and iteration of the data attributes using `G.edges[u, v]['color']`
-and `for e, datadict in G.edges.items():`. Methods `G.edges.items()` and
-`G.edges.values()` are familiar from python dicts. In addition `G.edges.data()`
-provides specific attribute iteration e.g. `for e, e_color in G.edges.data('color'):`.
+lookup and iteration of the data attributes using ``G.edges[u, v]['color']``
+and ``for e, datadict in G.edges.items():``. Methods ``G.edges.items()`` and
+``G.edges.values()`` are familiar from python dicts. In addition ``G.edges.data()``
+provides specific attribute iteration e.g. ``for e, e_color in G.edges.data('color'):``.
 
 The basic graph relationship of an edge can be obtained in two ways.
 One can look for neighbors of a node or one can look for edges.
 We jokingly refer to people who focus on nodes/neighbors as node-centric
 and people who focus on edges as edge-centric.  The designers of NetworkX
 tend to be node-centric and view edges as a relationship between nodes.
-You can see this by our choice of lookup notation like `G[u]` providing neighbors
-(adjacency) while edge lookup is `G.edges[u, v]`.
+You can see this by our choice of lookup notation like ``G[u]`` providing neighbors
+(adjacency) while edge lookup is ``G.edges[u, v]``.
 Most data structures for sparse graphs are essentially adjacency lists and so
 fit this perspective. In the end, of course, it doesn't really matter which way
-you examine the graph. `G.edges` removes duplicate representations of undirected
+you examine the graph. ``G.edges`` removes duplicate representations of undirected
 edges while neighbor reporting across all nodes will naturally report both directions.
 
 Any properties that are more complicated than edges, neighbors and degree are
-provided by functions.  For example `nx.triangles(G, n)` gives the number of triangles
+provided by functions.  For example ``nx.triangles(G, n)`` gives the number of triangles
 which include node n as a vertex.  These functions are grouped in the code and
 documentation under the term :ref:`algorithms<algorithms>`.
 
@@ -265,7 +266,7 @@ We interface to the excellent Graphviz layout tools like dot and neato
 with the (suggested) pygraphviz package or the pydot interface.
 Drawing can be done using external programs or the Matplotlib Python
 package.  Interactive GUI interfaces are possible, though not provided.
-The drawing tools are provided in the module :ref:`drawing<drawing>`.
+The drawing tools are provided in the module :ref:`drawing <drawing>`.
 
 The basic drawing functions essentially place the nodes on a scatterplot
 using the positions you provide via a dictionary or the positions are
@@ -273,9 +274,14 @@ computed with a layout function. The edges are lines between those dots.
 
 .. nbplot::
 
+   >>> import matplotlib.pyplot as plt
    >>> G = nx.cubical_graph()
+   >>> plt.subplot(121)
+   <matplotlib.axes._subplots.AxesSubplot object at ...>
    >>> nx.draw(G)   # default spring_layout
-   >>> nx.draw(G, pos=nx.spectral_layout(G), nodecolor='r', edge_color='b')
+   >>> plt.subplot(122)
+   <matplotlib.axes._subplots.AxesSubplot object at ...>
+   >>> nx.draw(G, pos=nx.circular_layout(G), nodecolor='r', edge_color='b')
 
 See the :doc:`examples </auto_examples/index>` for more ideas.
 
@@ -284,11 +290,11 @@ Data Structure
 
 NetworkX uses a "dictionary of dictionaries of dictionaries" as the
 basic network data structure.  This allows fast lookup with reasonable
-storage for large sparse networks.  The keys are nodes so `G[u]` returns
+storage for large sparse networks.  The keys are nodes so ``G[u]`` returns
 an adjacency dictionary keyed by neighbor to the edge attribute
 dictionary. A view of the adjacency data structure is provided
-by the dict-like object `G.adj` as e.g. `for node, nbrsdict in G.adj.items():`.
-The expression `G[u][v]` returns the edge attribute dictionary itself.
+by the dict-like object ``G.adj`` as e.g. ``for node, nbrsdict in G.adj.items():``.
+The expression ``G[u][v]`` returns the edge attribute dictionary itself.
 A dictionary of lists would have also been possible, but not allow
 fast edge detection nor convenient storage of edge data.
 
@@ -297,13 +303,13 @@ Advantages of dict-of-dicts-of-dicts data structure:
  - Find edges and remove edges with two dictionary look-ups.
  - Prefer to "lists" because of fast lookup with sparse storage.
  - Prefer to "sets" since data can be attached to edge.
- - G[u][v] returns the edge attribute dictionary.
- - ``n in G`` tests if node ``n`` is in graph G.
+ - ``G[u][v]`` returns the edge attribute dictionary.
+ - ``n in G`` tests if node ``n`` is in graph ``G``.
  - ``for n in G:`` iterates through the graph.
  - ``for nbr in G[n]:`` iterates through neighbors.
 
 As an example, here is a representation of an undirected graph with the
-edges ('A', 'B'), ('B', 'C')
+edges $(A, B)$ and $(B, C)$.
 
 .. nbplot::
 
@@ -315,14 +321,14 @@ edges ('A', 'B'), ('B', 'C')
 
 The data structure gets morphed slightly for each base graph class.
 For DiGraph two dict-of-dicts-of-dicts structures are provided, one
-for successors (`G.succ`) and one for predecessors (`G.pred`).
+for successors (``G.succ``) and one for predecessors (``G.pred``).
 For MultiGraph/MultiDiGraph we use a dict-of-dicts-of-dicts-of-dicts [#turtles]_
 where the third dictionary is keyed by an edge key identifier to the fourth
 dictionary which contains the edge attributes for that edge between
 the two nodes.
 
 Graphs provide two interfaces to the edge data attributes: adjacency
-and edges. So `G[u][v]['width']` is the same as `G.edges[u, v]['width']`.
+and edges. So ``G[u][v]['width']`` is the same as ``G.edges[u, v]['width']``.
 
 .. nbplot::
 
