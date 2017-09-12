@@ -40,6 +40,10 @@ How to make a new release of ``networkx``
   (where ``upstream`` is the name of the
    ``github.com:networkx/networkx`` repository.)
 
+- Review the github release page::
+
+  https://github.com/networkx/networkx/releases
+
 - Publish on PyPi::
 
    git clean -fxd
@@ -84,8 +88,6 @@ How to make a new release of ``networkx``
   - Edit ``_static/docversions.js`` and commit
   - Push your changes to the repo.
   - Deploy using ``make github``.
-
-- Update ``https://readthedocs.org/projects/networkx/versions/``
 
 - Post release notes on mailing list.
 
