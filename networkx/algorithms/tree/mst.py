@@ -537,6 +537,8 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal',
     There may be more than one tree with the same minimum or maximum weight.
     See :mod:`networkx.tree.recognition` for more detailed definitions.
 
+    Isolated nodes with self-loops are in the tree as edgeless isolated nodes.
+
     """
     edges = minimum_spanning_edges(G, algorithm, weight, keys=True,
                                    data=True, ignore_nan=ignore_nan)
@@ -595,6 +597,8 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal',
 
     There may be more than one tree with the same minimum or maximum weight.
     See :mod:`networkx.tree.recognition` for more detailed definitions.
+
+    Isolated nodes with self-loops are in the tree as edgeless isolated nodes.
 
     """
     edges = maximum_spanning_edges(G, algorithm, weight, keys=True,
