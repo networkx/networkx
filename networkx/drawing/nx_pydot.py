@@ -179,7 +179,7 @@ def from_pydot(P):
     return N
 
 
-def to_pydot(N, strict=True):
+def to_pydot(N):
     """Return a pydot graph from a NetworkX graph N.
 
     Parameters
