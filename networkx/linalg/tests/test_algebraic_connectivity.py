@@ -136,6 +136,18 @@ class TestAlgebraicConnectivity(object):
             check_eigenvector(A, sigma, x)
 
     @preserve_random_state
+    def test_problematic_graph_issue_2381(self):
+        G = nx.path_graph(4)
+        G.add_edges_from([(4, 2), (5, 1)])
+        A = nx.laplacian_matrix(G)
+        sigma = 0.438447187191
+        for method in self._methods:
+            assert_almost_equal(nx.algebraic_connectivity(
+                G, tol=1e-12, method=method), sigma)
+            x = nx.fiedler_vector(G, tol=1e-12, method=method)
+            check_eigenvector(A, sigma, x)
+
+    @preserve_random_state
     def test_cycle(self):
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)

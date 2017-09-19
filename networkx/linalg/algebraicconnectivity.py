@@ -267,6 +267,8 @@ def _get_fiedler_func(method):
     match = _tracemin_method.match(method)
     if match:
         method = match.group(1)
+        if method is None:
+            method = 'pcg'
 
         def find_fiedler(L, x, normalized, tol):
             q = 2 if method == 'pcg' else min(4, L.shape[0] - 1)
