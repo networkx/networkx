@@ -161,7 +161,7 @@ def kruskal_mst_edges(G, minimum, weight='weight',
                     if ignore_nan:
                         continue
                     msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, f, k, d),))
+                    raise ValueError(msg % ((u, v, k, d),))
                 yield wt, u, v, k, d
     else:
         edges = G.edges(data=True)
