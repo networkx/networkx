@@ -4,6 +4,16 @@
 Release Log
 ===========
 
+NetworkX 2.1
+------------
+Release date: TBD
+
+Release notes
+~~~~~~~~~~~~~
+
+See :doc:`release/release_dev`.
+
+
 NetworkX 2.0
 ------------
 Release date: 20 September 2017
