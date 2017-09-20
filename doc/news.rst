@@ -6,7 +6,7 @@ Release Log
 
 NetworkX 2.0
 ------------
-Release date: TBD
+Release date: 20 September 2017
 
 Support for Python 3.6 added, drop support for Python 3.3.
 
@@ -15,7 +15,7 @@ See :doc:`release/migration_guide_from_1.x_to_2.0`.
 Release notes
 ~~~~~~~~~~~~~
 
-See :doc:`release/release_dev`.
+See :doc:`release/release_2.0`.
 
 NetworkX 1.11
 -------------
