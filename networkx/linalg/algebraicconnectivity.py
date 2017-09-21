@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-Algebraic connectivity and Fiedler vectors of undirected graphs.
-"""
-
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
 # All rights reserved.
 # BSD license.
+#
+# Author: ysitu <ysitu@users.noreply.github.com>
+"""
+Algebraic connectivity and Fiedler vectors of undirected graphs.
+"""
 
 from functools import partial
 import networkx as nx
@@ -236,6 +236,9 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Depending on the linear solver to be used, two mathematically
         # equivalent formulations are used.
         if method == 'pcg':
+            if abs(W[:, 1]).sum() < 1e-10:
+                msg = "No Convergence. Try a different method"
+                raise nx.NetworkXError(msg)
             # Compute X = X - (P * L * P) \ (P * L * X) where
             # P = I - [e X] * [e X]' is a projection onto the orthogonal
             # complement of [e X].

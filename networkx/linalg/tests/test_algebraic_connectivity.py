@@ -130,8 +130,8 @@ class TestAlgebraicConnectivity(object):
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
         for method in self._methods:
-            assert_almost_equal(nx.algebraic_connectivity(
-                G, tol=1e-12, method=method), sigma)
+            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+            assert_almost_equal(ac, sigma)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
@@ -142,8 +142,8 @@ class TestAlgebraicConnectivity(object):
         A = nx.laplacian_matrix(G)
         sigma = 0.438447187191
         for method in self._methods:
-            assert_almost_equal(nx.algebraic_connectivity(
-                G, tol=1e-12, method=method), sigma)
+            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+            assert_almost_equal(ac, sigma)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
@@ -153,8 +153,8 @@ class TestAlgebraicConnectivity(object):
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
         for method in self._methods:
-            assert_almost_equal(nx.algebraic_connectivity(
-                G, tol=1e-12, method=method), sigma)
+            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+            assert_almost_equal(ac, sigma)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
