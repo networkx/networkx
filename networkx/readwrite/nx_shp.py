@@ -85,7 +85,7 @@ def read_shp(path, simplify=True, geom_attrs=True):
             attributes["ShpName"] = lyr.GetName()
             # Note:  Using layer level geometry type
             if g.GetGeometryType() == ogr.wkbPoint:
-                net.add_node((g.GetPoint_2D(0)), attributes)
+                net.add_node((g.GetPoint_2D(0)), **attributes)
             elif g.GetGeometryType() in (ogr.wkbLineString,
                                          ogr.wkbMultiLineString):
                 for edge in edges_from_line(g, attributes, simplify,
