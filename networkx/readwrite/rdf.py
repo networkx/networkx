@@ -36,19 +36,15 @@ All serialization formats supported by `rdflib` are supported, currently::
 * Trix (https://www.hpl.hp.com/techreports/2004/HPL-2004-56)
 
 '''
-
-__author__ = '''Pedro Silva (psilva+git@pedrosilva.pt)'''
 #    Copyright (C) 2013 by
 #    Pedro Silva <psilva+git@pedrosilva.pt>
 #    All rights reserved.
 #    BSD license.
-
-__all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'to_rdfgraph',
-           'read_rgml', 'from_rgmlgraph', 'write_rgml', 'to_rgmlgraph']
-
 import networkx as nx
 from networkx.exception import NetworkXError
-
+__author__ = '''Pedro Silva (psilva+git@pedrosilva.pt)'''
+__all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'to_rdfgraph',
+           'read_rgml', 'from_rgmlgraph', 'write_rgml', 'to_rgmlgraph']
 
 def _rdflib():
     '''Try to import and return rdflib. Wrap ImportError with
@@ -118,7 +114,7 @@ def _make_elements(G, kind, **kwargs):
 def _parse_attrs(attrs, rgml, rdflib):
     '''Identify and return RGML-specific properties and their values.
     '''
-    for k, v in attrs.iteritems():
+    for k, v in attrs.items():
         if k == 'weight':
             k = rgml.weight
             v = rdflib.term.Literal(float(v))
@@ -320,14 +316,14 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
 
     # add nodes with attributes
     for node, attrs in _make_elements(G, rgml.Node, rdf=rdflib.RDF,
-                                      rgml=rgml).iteritems():
+                                      rgml=rgml).items():
         N.add_node(node, attrs)
 
     # add edges with attributes source and target come as predicates
     # from the _make_elements call, so we need to pop them out of the
     # dict before creating the edge proper.
     for edge, attrs in _make_elements(G, rgml.Edge, rdf=rdflib.RDF,
-                                      rgml=rgml).iteritems():
+                                      rgml=rgml).items():
         source = attrs.pop(rgml.source)
         target = attrs.pop(rgml.target)
         attrs['label'] = getattr(attrs, 'label', edge)
@@ -409,7 +405,6 @@ def read_rgml(path, fmt='xml', relabel=True):
     >>> N = nx.read_rgml("test.rdf")
 
     See from_rgmlgraph() for details.
-
     '''
     rdflib = _rdflib()
     plugins = _get_rdflib_plugins(rdflib.parser.Parser)
@@ -636,3 +631,13 @@ def write_rdf(N, path, fmt='xml'):
         raise NetworkXError('Format not available', fmt, plugins)
     G = to_rdfgraph(N)
     G.serialize(path, format=fmt)
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import rdflib
+        if int(rdflib.__version__.split('.')[0]) < 4:
+            SkipTest("rdflib version 4 or later not available")
+    except:
+        raise SkipTest("rdflib not available")
