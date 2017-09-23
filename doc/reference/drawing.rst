@@ -35,6 +35,7 @@ Matplotlib
    draw_networkx_labels
    draw_networkx_edge_labels
    draw_circular
+   draw_kamada_kawai
    draw_random
    draw_spectral
    draw_spring
@@ -77,6 +78,7 @@ Graph Layout
    :toctree: generated/
 
    circular_layout
+   kamada_kawai_layout
    random_layout
    rescale_layout
    shell_layout
