@@ -4,7 +4,7 @@
 Bipartite Graph Algorithms
 ==========================
 """
-#    Copyright (C) 2013-2016 by
+#    Copyright (C) 2013-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -49,10 +49,10 @@ def color(G):
 
     You can use this to set a node attribute indicating the biparite set:
 
-    >>> nx.set_node_attributes(G, 'bipartite', c)
-    >>> print(G.node[0]['bipartite'])
+    >>> nx.set_node_attributes(G, c, 'bipartite')
+    >>> print(G.nodes[0]['bipartite'])
     1
-    >>> print(G.node[1]['bipartite'])
+    >>> print(G.nodes[1]['bipartite'])
     0
     """
     if G.is_directed():

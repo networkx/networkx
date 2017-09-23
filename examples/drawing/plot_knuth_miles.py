@@ -22,13 +22,17 @@ References.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
+import re
+import sys
+
+import matplotlib.pyplot as plt
 import networkx as nx
 
 
@@ -72,9 +76,6 @@ def miles_graph():
 
 
 if __name__ == '__main__':
-    import networkx as nx
-    import re
-    import sys
 
     G = miles_graph()
 
@@ -91,21 +92,16 @@ if __name__ == '__main__':
             H.add_edge(u, v)
 
     # draw with matplotlib/pylab
+    plt.figure(figsize=(8, 8))
+    # with nodes colored by degree sized by population
+    node_color = [float(H.degree(v)) for v in H]
+    nx.draw(H, G.position,
+            node_size=[G.population[v] for v in H],
+            node_color=node_color,
+            with_labels=False)
 
-    try:
-        import matplotlib.pyplot as plt
-        plt.figure(figsize=(8, 8))
-        # with nodes colored by degree sized by population
-        node_color = [float(H.degree(v)) for v in H]
-        nx.draw(H, G.position,
-                node_size=[G.population[v] for v in H],
-                node_color=node_color,
-                with_labels=False)
+    # scale the axes equally
+    plt.xlim(-5000, 500)
+    plt.ylim(-2000, 3500)
 
-        # scale the axes equally
-        plt.xlim(-5000, 500)
-        plt.ylim(-2000, 3500)
-
-        plt.show()
-    except:
-        pass
+    plt.show()

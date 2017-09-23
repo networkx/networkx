@@ -108,9 +108,10 @@ def circular_layout(G, scale=1, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
-    scale : float
-        Scale factor for positions
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -164,18 +165,19 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     nlist : list of lists
        List of node lists for each shell.
 
-    scale : float
-        Scale factor for positions
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout, currently only dim=2 is supported
+        Dimension of layout, currently only dim=2 is supported.
 
     Returns
     -------
@@ -232,7 +234,7 @@ def fruchterman_reingold_layout(G, k=None,
                                 fixed=None,
                                 iterations=50,
                                 weight='weight',
-                                scale=1.0,
+                                scale=1,
                                 center=None,
                                 dim=2):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
@@ -240,6 +242,7 @@ def fruchterman_reingold_layout(G, k=None,
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     k : float (default=None)
         Optimal distance between nodes.  If None the distance is set to
@@ -261,15 +264,15 @@ def fruchterman_reingold_layout(G, k=None,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : float (default=1.0)
-        Scale factor for positions. The nodes are positioned
-        in a box of size [0, scale] x [0, scale].
+    scale : number (default: 1)
+        Scale factor for positions. Not used unless `fixed is None`.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
+        Not used unless `fixed is None`.
 
     dim : int
-        Dimension of layout
+        Dimension of layout.
 
     Returns
     -------
@@ -295,6 +298,8 @@ def fruchterman_reingold_layout(G, k=None,
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
         dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
+        if dom_size == 0:
+            dom_size = 1
         shape = (len(G), dim)
         pos_arr = np.random.random(shape) * dom_size + center
         for i, n in enumerate(G):
@@ -477,7 +482,7 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
 def kamada_kawai_layout(G, dist=None,
                         pos=None,
                         weight='weight',
-                        scale=1.0,
+                        scale=1,
                         center=None,
                         dim=2):
     """Position nodes using Kamada-Kawai path-length cost-function.
@@ -485,6 +490,7 @@ def kamada_kawai_layout(G, dist=None,
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     dist : float (default=None)
         A two-level dictionary of optimal distances between nodes,
@@ -500,11 +506,14 @@ def kamada_kawai_layout(G, dist=None,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
+    scale : number (default: 1)
+        Scale factor for positions.
+
     center : array-like or None
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout
+        Dimension of layout.
 
     Returns
     -------
@@ -539,7 +548,7 @@ def kamada_kawai_layout(G, dist=None,
 
     if pos is None:
         pos = circular_layout(G, dim=dim)
-    pos_arr = np.array([ pos[n] for n in G ])
+    pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
 
@@ -584,8 +593,8 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     offset[np.diag_indices(nNodes)] = 0
 
     cost = 0.5 * np.sum(offset ** 2)
-    grad = (np.einsum('ij,ij,ijk->ik', invdist, offset, direction)
-            - np.einsum('ij,ij,ijk->jk', invdist, offset, direction))
+    grad = (np.einsum('ij,ij,ijk->ik', invdist, offset, direction) -
+            np.einsum('ij,ij,ijk->jk', invdist, offset, direction))
 
     # Additional parabolic term to encourage mean position to be near origin:
     sumpos = np.sum(pos_arr, axis=0)
@@ -601,19 +610,20 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : float
-        Scale factor for positions
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout
+        Dimension of layout.
 
     Returns
     -------
@@ -702,14 +712,10 @@ def _sparse_spectral(A, dim=2):
     try:
         import numpy as np
         from scipy.sparse import spdiags
+        from scipy.sparse.linalg.eigen import eigsh
     except ImportError:
         msg = "_sparse_spectral() requires scipy & numpy: http://scipy.org/ "
         raise ImportError(msg)
-    try:
-        from scipy.sparse.linalg.eigen import eigsh
-    except ImportError:
-        # scipy <0.9.0 names eigsh differently
-        from scipy.sparse.linalg import eigen_symmetric as eigsh
     try:
         nnodes, _ = A.shape
     except AttributeError:
@@ -760,7 +766,7 @@ def rescale_layout(pos, scale=1):
     lim = 0  # max coordinate for all axes
     for i in range(pos.shape[1]):
         pos[:, i] -= pos[:, i].mean()
-        lim = max(pos[:, i].max(), lim)
+        lim = max(abs(pos[:, i]).max(), lim)
     # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
         for i in range(pos.shape[1]):

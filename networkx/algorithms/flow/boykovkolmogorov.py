@@ -1,6 +1,6 @@
 # boykovkolmogorov.py - Boykov Kolmogorov algorithm for maximum flow problems.
 #
-# Copyright 2016 NetworkX developers.
+# Copyright 2016-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -19,6 +19,7 @@ from networkx.algorithms.flow.utils import build_residual_network
 
 __all__ = ['boykov_kolmogorov']
 
+
 def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
                       value_only=False, cutoff=None):
     r"""Find a maximum single-commodity flow using Boykov-Kolmogorov algorithm.
@@ -27,8 +28,8 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
-    This algorithm has worse case complexity `O(n^2 m |C|)` for `n` nodes, `m`
-    edges, and `|C|` the cost of the minimum cut [1]_. This implementation
+    This algorithm has worse case complexity $O(n^2 m |C|)$ for $n$ nodes, $m$
+    edges, and $|C|$ the cost of the minimum cut [1]_. This implementation
     uses the marking heuristic defined in [2]_ which improves its running
     time in many practical problems.
 
@@ -182,11 +183,10 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
 
     # Initialize/reset the residual network.
     # This is way too slow
-    #nx.set_edge_attributes(R, 'flow', 0)
+    #nx.set_edge_attributes(R, 0, 'flow')
     for u in R:
         for e in R[u].values():
             e['flow'] = 0
-
 
     # Use an arbitrary high value as infinite. It is computed
     # when building the residual network.
@@ -197,7 +197,6 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
 
     R_succ = R.succ
     R_pred = R.pred
-
 
     def grow():
         """Bidirectional breadth-first search for the growth stage.
@@ -233,7 +232,6 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
                         timestamp[v] = timestamp[u]
             _ = active.popleft()
         return None, None
-
 
     def augment(u, v):
         """Augmentation stage.
@@ -283,7 +281,6 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         orphans.extend(sorted(these_orphans, key=dist.get))
         return flow
 
-
     def adopt():
         """Adoption stage.
 
@@ -325,7 +322,6 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
                     active.remove(u)
                 del tree[u]
 
-
     def _has_valid_root(n, tree):
         path = []
         v = n
@@ -346,10 +342,8 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             timestamp[u] = time
         return True
 
-
     def _is_closer(u, v):
         return timestamp[v] <= timestamp[u] and dist[v] > dist[u] + 1
-
 
     source_tree = {s: None}
     target_tree = {t: None}
@@ -370,7 +364,6 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         flow_value += augment(u, v)
         # Adoption stage
         adopt()
-
 
     if flow_value * 2 > INF:
         raise nx.NetworkXUnbounded('Infinite capacity path, flow unbounded above.')

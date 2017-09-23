@@ -154,10 +154,10 @@ def balanced_tree(r, h, create_using=None):
 def barbell_graph(m1, m2, create_using=None):
     """Return the Barbell Graph: two complete graphs connected by a path.
 
-    For `m1 > 1` and `m2 >= 0`.
+    For $m1 > 1$ and $m2 >= 0$.
 
-    Two identical complete graphs `K_{m1}` form the left and right bells,
-    and are connected by a path `P_{m2}`.
+    Two identical complete graphs $K_{m1}$ form the left and right bells,
+    and are connected by a path $P_{m2}$.
 
     The `2*m1+m2`  nodes are numbered
         `0, ..., m1-1` for the left barbell,
@@ -183,7 +183,6 @@ def barbell_graph(m1, m2, create_using=None):
 
     # left barbell
     G = complete_graph(m1, create_using)
-    G.name = "barbell_graph(%d,%d)" % (m1, m2)
 
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
@@ -204,7 +203,7 @@ def complete_graph(n, create_using=None):
     """ Return the complete graph `K_n` with n nodes.
 
     Parameters
-    ==========
+    ----------
     n : int or iterable container of nodes
         If n is an integer, nodes are from range(n).
         If n is a container of nodes, those nodes appear in the graph.
@@ -213,7 +212,7 @@ def complete_graph(n, create_using=None):
         with the new graph. Usually used to set the type of the graph.
 
     Examples
-    ========
+    --------
     >>> G = nx.complete_graph(9)
     >>> len(G)
     9
@@ -229,7 +228,6 @@ def complete_graph(n, create_using=None):
     """
     n_name, nodes = n
     G = empty_graph(n_name, create_using)
-    G.name = "complete_graph(%s)" % (n_name,)
     if len(nodes) > 1:
         if G.is_directed():
             edges = itertools.permutations(nodes, 2)
@@ -240,36 +238,35 @@ def complete_graph(n, create_using=None):
 
 
 def circular_ladder_graph(n, create_using=None):
-    """Return the circular ladder graph `CL_n` of length n.
+    """Return the circular ladder graph $CL_n$ of length n.
 
-    `CL_n` consists of two concentric n-cycles in which
+    $CL_n$ consists of two concentric n-cycles in which
     each of the n pairs of concentric nodes are joined by an edge.
 
     Node labels are the integers 0 to n-1
 
     """
     G = ladder_graph(n, create_using)
-    G.name = "circular_ladder_graph(%d)" % n
     G.add_edge(0, n - 1)
     G.add_edge(n, 2 * n - 1)
     return G
 
 
 def circulant_graph(n, offsets, create_using=None):
-    """Generates the circulant graph Ci_n(x_1, x_2, ..., x_m) with n vertices.
+    """Generates the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ vertices.
 
     Returns
     -------
-    The graph Ci_n(x_1, ..., x_m) consisting of n vertices 0, ..., n-1 such
-    that the vertex with label i is connected to the vertices labelled (i + x)
-    and (i - x), for all x in x_1 up to x_m, with the indices taken modulo n.
+    The graph $Ci_n(x_1, ..., x_m)$ consisting of $n$ vertices $0, ..., n-1$ such
+    that the vertex with label $i$ is connected to the vertices labelled $(i + x)$
+    and $(i - x)$, for all $x$ in $x_1$ up to $x_m$, with the indices taken modulo $n$.
 
     Parameters
     ----------
     n : integer
         The number of vertices the generated graph is to contain.
     offsets : list of integers
-        A list of vertex offsets, x_1 up to x_m, as described above.
+        A list of vertex offsets, $x_1$ up to $x_m$, as described above.
     create_using : Graph, optional (default None)
         If provided this graph is cleared of nodes and edges and filled
         with the new graph. Usually used to set the type of the graph.
@@ -302,8 +299,6 @@ def circulant_graph(n, offsets, create_using=None):
 
     """
     G = empty_graph(n, create_using)
-    template = 'circulant_graph(%d, [%s])'
-    G.name = template % (n, ', '.join(str(j) for j in offsets))
     for i in range(n):
         for j in offsets:
             G.add_edge(i, (i - j) % n)
@@ -313,12 +308,12 @@ def circulant_graph(n, offsets, create_using=None):
 
 @nodes_or_number(0)
 def cycle_graph(n, create_using=None):
-    """Return the cycle graph `C_n` of cyclicly connected nodes.
+    """Return the cycle graph $C_n$ of cyclically connected nodes.
 
-    `C_n` is a path with its two end-nodes connected.
+    $C_n$ is a path with its two end-nodes connected.
 
     Parameters
-    ==========
+    ----------
     n : int or iterable container of nodes
         If n is an integer, nodes are from `range(n)`.
         If n is a container of nodes, those nodes appear in the graph.
@@ -327,13 +322,12 @@ def cycle_graph(n, create_using=None):
         with the new graph. Usually used to set the type of the graph.
 
     Notes
-    =====
+    -----
     If create_using is directed, the direction is in increasing order.
 
     """
     n_orig, nodes = n
     G = empty_graph(nodes, create_using)
-    G.name = "cycle_graph(%s)" % (n_orig,)
     G.add_edges_from(pairwise(nodes))
     G.add_edge(nodes[-1], nodes[0])
     return G
@@ -352,7 +346,6 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
         if create_using.is_multigraph():
             raise NetworkXError("Multigraph not supported")
     G = empty_graph(0, create_using)
-    G.name = "Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0, 1)
     if n == 0:
         return G
@@ -372,7 +365,7 @@ def empty_graph(n=0, create_using=None):
     """Return the empty graph with n nodes and zero edges.
 
     Parameters
-    ==========
+    ----------
     n : int or iterable container of nodes (default = 0)
         If n is an integer, nodes are from `range(n)`.
         If n is a container of nodes, those nodes appear in the graph.
@@ -380,7 +373,8 @@ def empty_graph(n=0, create_using=None):
         If provided this graph is cleared of nodes and edges and filled
         with the new graph. Usually used to set the type of the graph.
 
-    For example:
+    Examples
+    --------
     >>> G = nx.empty_graph(10)
     >>> G.number_of_nodes()
     10
@@ -393,7 +387,7 @@ def empty_graph(n=0, create_using=None):
     ['A', 'B', 'C']
 
     Notes
-    =====
+    -----
     The variable create_using should point to a "graph"-like object that
     will be cleared (nodes and edges will be removed) and refitted as
     an empty "graph" with nodes specified in n. This capability
@@ -426,7 +420,6 @@ def empty_graph(n=0, create_using=None):
         G.clear()
 
     n_name, nodes = n
-    G.name = "empty_graph(%s)" % (n_name,)
     G.add_nodes_from(nodes)
     return G
 
@@ -443,7 +436,6 @@ def ladder_graph(n, create_using=None):
     if create_using is not None and create_using.is_directed():
         raise NetworkXError("Directed Graph not supported")
     G = empty_graph(2 * n, create_using)
-    G.name = "ladder_graph_(%d)" % n
     G.add_edges_from(pairwise(range(n)))
     G.add_edges_from(pairwise(range(n, 2 * n)))
     G.add_edges_from((v, v + n) for v in range(n))
@@ -457,19 +449,19 @@ def lollipop_graph(m, n, create_using=None):
     This is the Barbell Graph without the right barbell.
 
     Parameters
-    ==========
+    ----------
     m, n : int or iterable container of nodes (default = 0)
         If an integer, nodes are from `range(m)` and `range(m,m+n)`.
         If a container, the entries are the coordinate of the node.
 
-        The nodes for m appear in the complete graph `K_m` and the nodes
-        for n appear in the path `P_n`
+        The nodes for m appear in the complete graph $K_m$ and the nodes
+        for n appear in the path $P_n$
     create_using : Graph, optional (default Graph())
         If provided this graph is cleared of nodes and edges and filled
         with the new graph. Usually used to set the type of the graph.
 
     Notes
-    =====
+    -----
     The 2 subgraphs are joined via an edge (m-1, m).
     If n=0, this is merely a complete graph.
 
@@ -501,7 +493,6 @@ def lollipop_graph(m, n, create_using=None):
     # connect ball to stick
     if M > 0 and N > 0:
         G.add_edge(m_nodes[-1], n_nodes[0])
-    G.name = "lollipop_graph(%s, %s)" % (m, n)
     return G
 
 
@@ -512,7 +503,6 @@ def null_graph(create_using=None):
 
     """
     G = empty_graph(0, create_using)
-    G.name = "null_graph()"
     return G
 
 
@@ -521,7 +511,7 @@ def path_graph(n, create_using=None):
     """Return the Path graph `P_n` of linearly connected nodes.
 
     Parameters
-    ==========
+    ----------
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
@@ -532,7 +522,6 @@ def path_graph(n, create_using=None):
     """
     n_name, nodes = n
     G = empty_graph(nodes, create_using)
-    G.name = "path_graph(%s)" % (n_name,)
     G.add_edges_from(pairwise(nodes))
     return G
 
@@ -544,7 +533,7 @@ def star_graph(n, create_using=None):
     The star graph consists of one center node connected to n outer nodes.
 
     Parameters
-    ==========
+    ----------
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
@@ -553,7 +542,7 @@ def star_graph(n, create_using=None):
         with the new graph. Usually used to set the type of the graph.
 
     Notes
-    =====
+    -----
     The graph has n+1 nodes for integer n.
     So star_graph(3) is the same as star_graph(range(4)).
     """
@@ -565,7 +554,6 @@ def star_graph(n, create_using=None):
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
     G.add_edges_from((first, v) for v in nodes[1:])
-    G.name = "star_graph(%s)" % (n_name,)
     return G
 
 
@@ -574,23 +562,22 @@ def trivial_graph(create_using=None):
 
     """
     G = empty_graph(1, create_using)
-    G.name = "trivial_graph()"
     return G
 
 
 def turan_graph(n, r):
     r""" Return the Turan Graph
 
-    The Turan Graph is a complete multipartite graph on `n` vertices
-    with `r` disjoint subsets. It is the graph with the edges for any graph with
-    `n` vertices and `r` disjoint subsets.
+    The Turan Graph is a complete multipartite graph on $n$ vertices
+    with $r$ disjoint subsets. It is the graph with the edges for any graph with
+    $n$ vertices and $r$ disjoint subsets.
 
-    Given `n` and `r`, we generate a complete multipartite graph with
-    :math:`r-(n \mod r)` partitions of size :math:`n/r`, rounded down, and
-    :math:`n \mod r` partitions of size :math:`n/r+1`, rounded down.
+    Given $n$ and $r$, we generate a complete multipartite graph with
+    $r-(n \mod r)$ partitions of size $n/r$, rounded down, and
+    $n \mod r$ partitions of size $n/r+1$, rounded down.
 
     Parameters
-    ==========
+    ----------
     n : int
         The number of vertices.
     r : int
@@ -598,17 +585,16 @@ def turan_graph(n, r):
         Must be less than or equal to n.
 
     Notes
-    =====
-    Must satisfy :math:`1 <= r <= n`.
-    The graph has :math:`(r-1)(n^2)/(2r)` edges, rounded down.
+    -----
+    Must satisfy $1 <= r <= n$.
+    The graph has $(r-1)(n^2)/(2r)$ edges, rounded down.
     """
 
     if not 1 <= r <= n:
         raise NetworkXError("Must satisfy 1 <= r <= n")
 
-    partitions = [n//r]*(r-(n%r))+[n//r+1]*(n%r)
+    partitions = [n // r] * (r - (n % r)) + [n // r + 1] * (n % r)
     G = complete_multipartite_graph(*partitions)
-    G.name = "turan_graph({},{})".format(n, r)
     return G
 
 
@@ -619,7 +605,7 @@ def wheel_graph(n, create_using=None):
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
 
     Parameters
-    ==========
+    ----------
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
@@ -632,14 +618,13 @@ def wheel_graph(n, create_using=None):
     n_name, nodes = n
     if n_name == 0:
         G = empty_graph(0, create_using=create_using)
-        G.name = "wheel_graph(0)"
         return G
     G = star_graph(nodes, create_using)
-    G.name = "wheel_graph(%s)" % (n_name,)
     if len(G) > 2:
         G.add_edges_from(pairwise(nodes[1:]))
         G.add_edge(nodes[-1], nodes[1])
     return G
+
 
 def complete_multipartite_graph(*subset_sizes):
     """Returns the complete multipartite graph with the specified subset sizes.
@@ -668,7 +653,7 @@ def complete_multipartite_graph(*subset_sizes):
 
         >>> import networkx as nx
         >>> G = nx.complete_multipartite_graph(1, 2, 3)
-        >>> [G.node[u]['subset'] for u in G]
+        >>> [G.nodes[u]['subset'] for u in G]
         [0, 1, 1, 2, 2, 2]
         >>> list(G.edges(0))
         [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
@@ -678,7 +663,7 @@ def complete_multipartite_graph(*subset_sizes):
         [(4, 0), (4, 1), (4, 2)]
 
         >>> G = nx.complete_multipartite_graph('a', 'bc', 'def')
-        >>> [G.node[u]['subset'] for u in sorted(G)]
+        >>> [G.nodes[u]['subset'] for u in sorted(G)]
         [0, 1, 1, 2, 2, 2]
 
     Notes
@@ -699,7 +684,6 @@ def complete_multipartite_graph(*subset_sizes):
     """
     # The complete multipartite graph is an undirected simple graph.
     G = Graph()
-    G.name = 'complete_multiparite_graph{}'.format(subset_sizes)
 
     if len(subset_sizes) == 0:
         return G

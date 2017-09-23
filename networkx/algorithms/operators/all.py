@@ -11,10 +11,9 @@ try:
 except ImportError:  # Python3 has zip_longest
     from itertools import zip_longest
 import networkx as nx
-# from networkx.utils import is_string_like
 
-__author__ = """\n""".join([ 'Robert King <kingrobertking@gmail.com>',
-                             'Aric Hagberg <aric.hagberg@gmail.com>'])
+__author__ = """\n""".join(['Robert King <kingrobertking@gmail.com>',
+                            'Aric Hagberg <aric.hagberg@gmail.com>'])
 
 __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
            'intersection_all']

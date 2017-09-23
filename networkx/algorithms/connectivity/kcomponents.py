@@ -20,7 +20,7 @@ __all__ = ['k_components']
 @not_implemented_for('directed')
 def k_components(G, flow_func=None):
     r"""Returns the k-component structure of a graph G.
-    
+
     A `k`-component is a maximal subgraph of a graph G that has, at least,
     node connectivity `k`: we need to remove at least `k` nodes to break it
     into more components. `k`-components have an inherent hierarchical
@@ -56,7 +56,7 @@ def k_components(G, flow_func=None):
     >>> # nodes are in a single component on all three connectivity levels
     >>> G = nx.petersen_graph()
     >>> k_components = nx.k_components(G)
-   
+
     Notes
     -----
     Moody and White [1]_ (appendix A) provide an algorithm for identifying
@@ -76,13 +76,16 @@ def k_components(G, flow_func=None):
         4. If the graph is neither complete nor trivial, return to 1;
            else end.
 
-    This implementation also uses some heuristics (see [3]_ for details) 
+    This implementation also uses some heuristics (see [3]_ for details)
     to speed up the computation.
 
     See also
     --------
     node_connectivity
     all_node_cuts
+    biconnected_components : special case of this function when k=2
+    k_edge_components : similar to this function, but uses edge-connectivity
+        instead of node-connectivity
 
     References
     ----------
@@ -97,18 +100,18 @@ def k_components(G, flow_func=None):
 
     .. [3]  Torrents, J. and F. Ferraro (2015). Structural Cohesion:
             Visualization and Heuristics for Fast Computation.
-            http://arxiv.org/pdf/1503.04476v1
+            https://arxiv.org/pdf/1503.04476v1
 
     """
     # Dictionary with connectivity level (k) as keys and a list of
-    # sets of nodes that form a k-component as values. Note that 
+    # sets of nodes that form a k-component as values. Note that
     # k-compoents can overlap (but only k - 1 nodes).
     k_components = defaultdict(list)
     # Define default flow function
     if flow_func is None:
         flow_func = default_flow_func
     # Bicomponents as a base to check for higher order k-components
-    for component in  nx.connected_components(G):
+    for component in nx.connected_components(G):
         # isolated nodes have connectivity 0
         comp = set(component)
         if len(comp) > 1:
@@ -191,21 +194,21 @@ def _generate_partition(G, cuts, k):
                     component.add(node)
         if len(component) < G.order():
             components.append(component)
-    for component in _consolidate(components, k+1):
+    for component in _consolidate(components, k + 1):
         yield component
 
 
 def _reconstruct_k_components(k_comps):
     result = dict()
     max_k = max(k_comps)
-    for k in reversed(range(1, max_k+1)):
+    for k in reversed(range(1, max_k + 1)):
         if k == max_k:
             result[k] = list(_consolidate(k_comps[k], k))
         elif k not in k_comps:
-            result[k] = list(_consolidate(result[k+1], k))
+            result[k] = list(_consolidate(result[k + 1], k))
         else:
             nodes_at_k = set.union(*k_comps[k])
-            to_add = [c for c in result[k+1] if any(n not in nodes_at_k for n in c)]
+            to_add = [c for c in result[k + 1] if any(n not in nodes_at_k for n in c)]
             if to_add:
                 result[k] = list(_consolidate(k_comps[k] + to_add, k))
             else:

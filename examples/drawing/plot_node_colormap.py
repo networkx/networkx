@@ -9,12 +9,8 @@ You must have matplotlib for this to work.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
+import matplotlib.pyplot as plt
 import networkx as nx
-
 
 G = nx.cycle_graph(24)
 pos = nx.spring_layout(G, iterations=200)

@@ -47,7 +47,6 @@ keyword arguments.
 >>> G.graph
 {'color': 'green', 'region': 'Africa'}
 
-
 Node attributes
 ---------------
 Each node has a corresponding dictionary of attributes.
@@ -57,12 +56,11 @@ Add node attributes using add_node(), add_nodes_from() or G.node
 
 >>> G.add_node(1, time='5pm')
 >>> G.add_nodes_from([3], time='2pm')
->>> G.node[1]
+>>> G.node[1]  # doctest: +SKIP
 {'time': '5pm'}
->>> G.node[1]['room'] = 714
->>> G.nodes(data=True)
+>>> G.node[1]['room'] = 714  # doctest: +SKIP
+>>> G.nodes(data=True)  # doctest: +SKIP
 [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
-
 
 Edge attributes
 ---------------
@@ -81,9 +79,7 @@ notation, or G.edge.
 >>> G.add_edges_from([(3,4),(4,5)], color='red')
 >>> G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
 >>> G[1][2]['weight'] = 4.7
->>> G.edge[1][2]['weight'] = 4
-
-
+>>> G.edge[1][2]['weight'] = 4  # doctest: +SKIP
 
 Methods changed
 ---------------
@@ -129,7 +125,7 @@ nodes() and nodes_iter()
    two-tuples (n,dict) (True) with node attribution dictionary
 
    >>> G=nx.Graph([(1,2),(3,4)])
-   >>> G.nodes(data=True)
+   >>> G.nodes(data=True)  # doctest: +SKIP
    [(1, {}), (2, {}), (3, {}), (4, {})]
 
 copy()
@@ -148,9 +144,9 @@ to_directed(), to_undirected()
    data and attributes for nodes and edges).  Use the class
    initializer to make a shallow copy:
 
-   >>> G=nx.Graph()
-   >>> D_shallow=nx.DiGraph(G) # shallow copy
-   >>> D_deep=G.to_directed() # deep copy
+   >>> G = nx.Graph()
+   >>> D_shallow = nx.DiGraph(G) # shallow copy
+   >>> D_deep = G.to_directed() # deep copy
 
 subgraph()
 ^^^^^^^^^^
@@ -158,22 +154,17 @@ subgraph()
    With copy=True now returns a deep copy of the graph 
    (copies all underlying data and attributes for nodes and edges).
 
-   >>> G=nx.Graph()
+   >>> G = nx.Graph()
    >>> # note: copy keyword deprecated in networkx>1.0
-   >>> # H=G.subgraph([],copy=True) # deep copy of all data
-   
-
-
-
+   >>> # H = G.subgraph([],copy=True)  # deep copy of all data
 
 add_cycle(), add_path(), add_star()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    Now take optional keyword=value attributes or a dictionary of 
    attributes which are applied to all edges affected by the method.
 
-   >>> G=nx.Graph()
-   >>> G.add_path([0,1,2,3],width=3.2)
-
+   >>> G = nx.Graph()
+   >>> G.add_path([0, 1, 2, 3], width=3.2)  # doctest: +SKIP
 
 Methods removed
 ---------------
@@ -182,18 +173,15 @@ delete_node()
 ^^^^^^^^^^^^^
    The preferred name is now remove_node().        
 
-
 delete_nodes_from()
 ^^^^^^^^^^^^^^^^^^^
    No longer raises an exception on an attempt to delete a node not in
    the graph.  The preferred name is now remove_nodes_from().
 
-
 delete_edge()
 ^^^^^^^^^^^^^
    Now raises an exception on an attempt to delete an edge not in the graph.
    The preferred name is now remove_edge().
-
 
 delete_edges_from()
 ^^^^^^^^^^^^^^^^^^^

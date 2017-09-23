@@ -7,11 +7,7 @@ Weighted Graph
 An example using Graph as a weighted network.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
-
+import matplotlib.pyplot as plt
 import networkx as nx
 
 G = nx.Graph()

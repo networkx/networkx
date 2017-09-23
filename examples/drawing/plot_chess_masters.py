@@ -26,13 +26,14 @@ The key statement in `chess_pgn_graph` below is::
 
 where `game_info` is a `dict` describing each game.
 """
-#    Copyright (C) 2006-2016 by
+#    Copyright (C) 2006-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
+import matplotlib.pyplot as plt
 import networkx as nx
 
 # tag names specifying what game info should be
@@ -103,13 +104,6 @@ if __name__ == '__main__':
                 print("   ", k, ": ", v)
             print("\n")
 
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
-        import sys
-        print("Matplotlib needed for drawing. Skipping")
-        sys.exit(0)
-
     # make new undirected graph H without multi-edges
     H = nx.Graph(G)
 
@@ -156,7 +150,7 @@ if __name__ == '__main__':
     plt.text(0.5, 0.97, "edge width = # games played",
              horizontalalignment='center',
              transform=plt.gca().transAxes)
-    plt.text(0.5, 0.94,  "node size = # games won",
+    plt.text(0.5, 0.94, "node size = # games won",
              horizontalalignment='center',
              transform=plt.gca().transAxes)
 

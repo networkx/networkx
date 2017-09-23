@@ -84,14 +84,14 @@ def tree_data(G, root, attrs=_attrs):
             return []
         children_ = []
         for child in nbrs:
-            d = dict(chain(G.node[child].items(), [(id_, child)]))
+            d = dict(chain(G.nodes[child].items(), [(id_, child)]))
             c = add_children(child, G)
             if c:
                 d[children] = c
             children_.append(d)
         return children_
 
-    data = dict(chain(G.node[root].items(), [(id_, root)]))
+    data = dict(chain(G.nodes[root].items(), [(id_, root)]))
     data[children] = add_children(root, G)
     return data
 

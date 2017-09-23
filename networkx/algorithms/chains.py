@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # chains.py - functions for finding chains in a graph
 #
-# Copyright 2004-2016 NetworkX developers.
+# Copyright 2004-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -140,7 +140,7 @@ def chain_decomposition(G, root=None):
         while v not in visited:
             yield u, v
             visited.add(v)
-            u, v = v, G.node[v]['parent']
+            u, v = v, G.nodes[v]['parent']
         yield u, v
 
     # Create a directed version of H that has the DFS edges directed

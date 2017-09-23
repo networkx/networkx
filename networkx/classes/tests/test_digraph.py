@@ -149,9 +149,7 @@ class BaseDiGraphTester(BaseGraphTester):
         G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse(copy=False)
         assert_equal(sorted(R.edges()), [(1, 0), (2, 1)])
-        R.remove_edge(1, 0)
-        assert_equal(sorted(R.edges()), [(2, 1)])
-        assert_equal(sorted(G.edges()), [(2, 1)])
+        assert_raises(nx.NetworkXError, R.remove_edge, 1, 0)
 
     def test_reverse_hashable(self):
         class Foo(object):
@@ -249,9 +247,9 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
         G = nx.DiGraph(nx.path_graph(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.node[i]['name'] = 'node{}'.format(i)
-        G.edge[0, 1]['name'] = 'edge01'
-        G.edge[3, 4]['name'] = 'edge34'
+            G.nodes[i]['name'] = 'node{}'.format(i)
+        G.edges[0, 1]['name'] = 'edge01'
+        G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by the first and last edges.
         self.G = G

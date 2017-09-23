@@ -1,5 +1,5 @@
 """Unary operations on graphs"""
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -36,7 +36,7 @@ def complement(G, name=None):
     """
     if name is None:
         name = "complement(%s)" % (G.name)
-    R = G.__class__()
+    R = G.fresh_copy()
     R.name = name
     R.add_nodes_from(G)
     R.add_edges_from(((n, n2)

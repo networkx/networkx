@@ -2,7 +2,9 @@
 import os
 import tempfile
 from nose import SkipTest
-from nose.tools import assert_true, assert_equal
+from nose.tools import assert_true, assert_equal, assert_raises
+from networkx.testing import assert_edges_equal, assert_nodes_equal
+
 import networkx as nx
 
 
@@ -23,8 +25,8 @@ class TestAGraph(object):
         return G
 
     def assert_equal(self, G1, G2):
-        assert_equal(sorted(G1.nodes()), sorted(G2.nodes()))
-        assert_equal(sorted(G1.edges()), sorted(G2.edges()))
+        assert_nodes_equal(G1.nodes(), G2.nodes())
+        assert_edges_equal(G1.edges(), G2.edges())
         assert_equal(G1.graph['metal'], G2.graph['metal'])
 
     def agraph_checks(self, G):
@@ -54,14 +56,26 @@ class TestAGraph(object):
         H = nx.nx_agraph.from_agraph(A)
         assert_equal(G.name, 'test')
 
-    def testUndirected(self):
+    def test_undirected(self):
         self.agraph_checks(nx.Graph())
 
-    def testDirected(self):
+    def test_directed(self):
         self.agraph_checks(nx.DiGraph())
 
-    def testMultiUndirected(self):
+    def test_multi_undirected(self):
         self.agraph_checks(nx.MultiGraph())
 
-    def testMultiDirected(self):
+    def test_multi_directed(self):
         self.agraph_checks(nx.MultiDiGraph())
+
+    def test_view_pygraphviz(self):
+        G = nx.Graph()  # "An empty graph cannot be drawn."
+        assert_raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
+        G = nx.barbell_graph(4, 6)
+        nx.nx_agraph.view_pygraphviz(G)
+
+    def test_view_pygraphviz_edgelable(self):
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=7)
+        G.add_edge(2, 3, weight=8)
+        nx.nx_agraph.view_pygraphviz(G, edgelabel='weight')

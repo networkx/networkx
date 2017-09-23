@@ -30,7 +30,10 @@ help:
 
 
 clean:
-	-rm -rf build/* auto_examples modules reference/generated
+	-rm -rf build/*
+	-rm -rf ghpages_build
+	-rm -rf auto_examples modules
+	-rm -rf reference/generated reference/algorithms/generated reference/classes/generated reference/readwrite/generated
 
 dist: html
 	test -d build/latex || make latex
@@ -103,6 +106,14 @@ doctest:
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in build/doctest/output.txt."
 
+latexpdf: latex
+	@echo "Running LaTeX files through latexmk..."
+	$(MAKE) -C build/latex all-pdf
+	@echo "latexmk finished; the PDF files are in build/latex."
+
+docs: clean html latexpdf
+	cp build/latex/networkx_reference.pdf build/html/_downloads/.
+	
 gitwash-update:
 	python ../tools/gitwash_dumper.py developer networkx \
 	--project-url=http://networkx.github.io \

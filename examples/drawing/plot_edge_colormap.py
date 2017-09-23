@@ -8,11 +8,8 @@ Draw a graph with matplotlib, color edges.
 You must have matplotlib>=87.7 for this to work.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
 
+import matplotlib.pyplot as plt
 import networkx as nx
 
 G = nx.star_graph(20)

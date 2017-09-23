@@ -1,6 +1,6 @@
 # quality.py - functions for measuring partitions of a graph
 #
-# Copyright 2015-2016 NetworkX developers.
+# Copyright 2015-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -181,7 +181,7 @@ def performance(G, partition):
     .. [1] Santo Fortunato.
            "Community Detection in Graphs".
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <http://arxiv.org/abs/0906.0612>
+           <https://arxiv.org/abs/0906.0612>
 
     """
     # Compute the number of intra-community edges and inter-community
@@ -236,7 +236,7 @@ def coverage(G, partition):
     .. [1] Santo Fortunato.
            "Community Detection in Graphs".
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
-           <http://arxiv.org/abs/0906.0612>
+           <https://arxiv.org/abs/0906.0612>
 
     """
     intra_edges = intra_community_edges(G, partition)
@@ -254,9 +254,9 @@ def modularity(G, communities, weight='weight'):
         Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \frac{k_ik_j}{2m}\right)
             \delta(c_i,c_j)
 
-    where *m* is the number of edges, *A* is the adjacency matrix of
-    `G`, :math:`k_i` is the degree of *i* and :math:`\delta(c_i, c_j)`
-    is 1 if *i* and *j* are in the same community and 0 otherwise.
+    where $m$ is the number of edges, $A$ is the adjacency matrix of
+    `G`, $k_i$ is the degree of $i$ and $\delta(c_i, c_j)$
+    is 1 if $i$ and $j$ are in the same community and 0 otherwise.
 
     Parameters
     ----------

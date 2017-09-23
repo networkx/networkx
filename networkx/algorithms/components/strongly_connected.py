@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -440,7 +440,7 @@ def condensation(G, scc=None):
     C.add_edges_from((mapping[u], mapping[v]) for u, v in G.edges()
                      if mapping[u] != mapping[v])
     # Add a list of members (ie original nodes) to each node (ie scc) in C.
-    nx.set_node_attributes(C, 'members', members)
+    nx.set_node_attributes(C, members, 'members')
     # Add mapping dict as graph attribute
     C.graph['mapping'] = mapping
     return C

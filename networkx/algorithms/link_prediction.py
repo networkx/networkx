@@ -49,7 +49,7 @@ def resource_allocation_index(G, ebunch=None):
 
         \sum_{w \in \Gamma(u) \cap \Gamma(v)} \frac{1}{|\Gamma(w)|}
 
-    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
+    where $\Gamma(u)$ denotes the set of neighbors of $u$.
 
     Parameters
     ----------
@@ -85,7 +85,7 @@ def resource_allocation_index(G, ebunch=None):
     .. [1] T. Zhou, L. Lu, Y.-C. Zhang.
        Predicting missing links via local information.
        Eur. Phys. J. B 71 (2009) 623.
-       http://arxiv.org/pdf/0901.0553.pdf
+       https://arxiv.org/pdf/0901.0553.pdf
     """
     def predict(u, v):
         return sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
@@ -103,7 +103,7 @@ def jaccard_coefficient(G, ebunch=None):
 
         \frac{|\Gamma(u) \cap \Gamma(v)|}{|\Gamma(u) \cup \Gamma(v)|}
 
-    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
+    where $\Gamma(u)$ denotes the set of neighbors of $u$.
 
     Parameters
     ----------
@@ -159,7 +159,7 @@ def adamic_adar_index(G, ebunch=None):
 
         \sum_{w \in \Gamma(u) \cap \Gamma(v)} \frac{1}{\log |\Gamma(w)|}
 
-    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
+    where $\Gamma(u)$ denotes the set of neighbors of $u$.
 
     Parameters
     ----------
@@ -212,7 +212,7 @@ def preferential_attachment(G, ebunch=None):
 
         |\Gamma(u)| |\Gamma(v)|
 
-    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
+    where $\Gamma(u)$ denotes the set of neighbors of $u$.
 
     Parameters
     ----------
@@ -260,17 +260,17 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
 
-    For two nodes `u` and `v`, this function computes the number of
+    For two nodes $u$ and $v$, this function computes the number of
     common neighbors and bonus one for each common neighbor belonging to
-    the same community as `u` and `v`. Mathematically,
+    the same community as $u$ and $v$. Mathematically,
 
     .. math::
 
         |\Gamma(u) \cap \Gamma(v)| + \sum_{w \in \Gamma(u) \cap \Gamma(v)} f(w)
 
-    where `f(w)` equals 1 if `w` belongs to the same community as `u`
-    and `v` or 0 otherwise and :math:`\Gamma(u)` denotes the set of
-    neighbors of `u`.
+    where $f(w)$ equals 1 if $w$ belongs to the same community as $u$
+    and $v$ or 0 otherwise and $\Gamma(u)$ denotes the set of
+    neighbors of $u$.
 
     Parameters
     ----------
@@ -299,13 +299,12 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     --------
     >>> import networkx as nx
     >>> G = nx.path_graph(3)
-    >>> G.node[0]['community'] = 0
-    >>> G.node[1]['community'] = 0
-    >>> G.node[2]['community'] = 0
+    >>> G.nodes[0]['community'] = 0
+    >>> G.nodes[1]['community'] = 0
+    >>> G.nodes[2]['community'] = 0
     >>> preds = nx.cn_soundarajan_hopcroft(G, [(0, 2)])
     >>> for u, v, p in preds:
     ...     '(%d, %d) -> %d' % (u, v, p)
-    ...
     '(0, 2) -> 2'
 
     References
@@ -333,17 +332,17 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
 
-    For two nodes `u` and `v`, this function computes the resource
+    For two nodes $u$ and $v$, this function computes the resource
     allocation index considering only common neighbors belonging to the
-    same community as `u` and `v`. Mathematically,
+    same community as $u$ and $v$. Mathematically,
 
     .. math::
 
         \sum_{w \in \Gamma(u) \cap \Gamma(v)} \frac{f(w)}{|\Gamma(w)|}
 
-    where `f(w)` equals 1 if `w` belongs to the same community as `u`
-    and `v` or 0 otherwise and :math:`\Gamma(u)` denotes the set of
-    neighbors of `u`.
+    where $f(w)$ equals 1 if $w$ belongs to the same community as $u$
+    and $v$ or 0 otherwise and $\Gamma(u)$ denotes the set of
+    neighbors of $u$.
 
     Parameters
     ----------
@@ -373,14 +372,13 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
-    >>> G.node[0]['community'] = 0
-    >>> G.node[1]['community'] = 0
-    >>> G.node[2]['community'] = 1
-    >>> G.node[3]['community'] = 0
+    >>> G.nodes[0]['community'] = 0
+    >>> G.nodes[1]['community'] = 0
+    >>> G.nodes[2]['community'] = 1
+    >>> G.nodes[3]['community'] = 0
     >>> preds = nx.ra_index_soundarajan_hopcroft(G, [(0, 3)])
     >>> for u, v, p in preds:
     ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
     '(0, 3) -> 0.50000000'
 
     References
@@ -449,11 +447,11 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 4), (2, 4), (3, 4)])
-    >>> G.node[0]['community'] = 0
-    >>> G.node[1]['community'] = 1
-    >>> G.node[2]['community'] = 0
-    >>> G.node[3]['community'] = 0
-    >>> G.node[4]['community'] = 0
+    >>> G.nodes[0]['community'] = 0
+    >>> G.nodes[1]['community'] = 1
+    >>> G.nodes[2]['community'] = 0
+    >>> G.nodes[3]['community'] = 0
+    >>> G.nodes[4]['community'] = 0
     >>> preds = nx.within_inter_cluster(G, [(0, 4)])
     >>> for u, v, p in preds:
     ...     '(%d, %d) -> %.8f' % (u, v, p)
@@ -492,7 +490,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
 
 def _community(G, u, community):
     """Get the community of the given node."""
-    node_u = G.node[u]
+    node_u = G.nodes[u]
     try:
         return node_u[community]
     except KeyError:

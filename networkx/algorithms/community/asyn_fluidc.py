@@ -20,7 +20,7 @@ def asyn_fluidc(G, k, max_iter=100):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
     The asynchronous fluid communities algorithm is described in
-    [1]. The algorithm is based on the simple idea of fluids interacting
+    [1]_. The algorithm is based on the simple idea of fluids interacting
     in an environment, expanding and pushing each other. It's initialization is
     random, so found communities may vary on different executions.
 
@@ -36,7 +36,7 @@ def asyn_fluidc(G, k, max_iter=100):
     no vertex changes the community it belongs to, the algorithm has converged
     and returns.
 
-    This is the original version of the algorithm described in [1].
+    This is the original version of the algorithm described in [1]_.
     Unfortunately, it does not support weighted graphs yet.
 
     Parameters
@@ -55,19 +55,19 @@ def asyn_fluidc(G, k, max_iter=100):
         Iterable of communities given as sets of nodes.
 
     Notes
-    ------
+    -----
     k variable is not an optional argument.
 
     References
     ----------
     .. [1] Parés F., Garcia-Gasulla D. et al. "Fluid Communities: A
-    Competitive and Highly Scalable Community Detection Algorithm".
-    [https://arxiv.org/pdf/1703.09307.pdf].
+       Competitive and Highly Scalable Community Detection Algorithm".
+       [https://arxiv.org/pdf/1703.09307.pdf].
     """
     # Initial checks
     if not isinstance(k, int):
         raise NetworkXError("k muts be an integer.")
-    if not k>0:
+    if not k > 0:
         raise NetworkXError("k muts be greater than 0.")
     if not is_connected(G):
         raise NetworkXError("Fluid Communities can only be run on connected\
@@ -98,15 +98,15 @@ def asyn_fluidc(G, k, max_iter=100):
             com_counter = Counter()
             # Take into account self vertex community
             try:
-                com_counter.update({communities[vertex]: \
-                density[communities[vertex]]})
+                com_counter.update({communities[vertex]:
+                                    density[communities[vertex]]})
             except KeyError:
                 pass
             # Gather neighbour vertex communities
             for v in G[vertex]:
                 try:
-                    com_counter.update({communities[v]: \
-                    density[communities[v]]})
+                    com_counter.update({communities[v]:
+                                        density[communities[v]]})
                 except KeyError:
                     continue
             # Check which is the community with highest density
@@ -114,14 +114,14 @@ def asyn_fluidc(G, k, max_iter=100):
             if len(com_counter.keys()) > 0:
                 max_freq = max(com_counter.values())
                 best_communities = [com for com, freq in com_counter.items()
-                               if (max_freq - freq) < 0.0001]
+                                    if (max_freq - freq) < 0.0001]
                 # If actual vertex com in best communities, it is preserved
                 try:
                     if communities[vertex] in best_communities:
                         new_com = communities[vertex]
                 except KeyError:
                     pass
-                # If vertex community changes... 
+                # If vertex community changes...
                 if new_com == -1:
                     # Set flag of non-convergence
                     cont = True
@@ -131,14 +131,14 @@ def asyn_fluidc(G, k, max_iter=100):
                     try:
                         com_to_numvertices[communities[vertex]] -= 1
                         density[communities[vertex]] = max_density / \
-                        com_to_numvertices[communities[vertex]]
+                            com_to_numvertices[communities[vertex]]
                     except KeyError:
                         pass
                     # Update new community status
                     communities[vertex] = new_com
                     com_to_numvertices[communities[vertex]] += 1
                     density[communities[vertex]] = max_density / \
-                    com_to_numvertices[communities[vertex]]
+                        com_to_numvertices[communities[vertex]]
         # If maximum iterations reached --> output actual results
         if iter_count > max_iter:
             break

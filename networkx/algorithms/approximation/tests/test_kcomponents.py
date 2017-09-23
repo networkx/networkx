@@ -1,5 +1,5 @@
 # Test for approximation to k-components algorithm
-from nose.tools import assert_equal, assert_true, assert_false
+from nose.tools import assert_equal, assert_true, assert_false, assert_in
 from nose.tools import assert_raises, raises, assert_greater_equal
 import networkx as nx
 from networkx.algorithms.approximation import k_components
@@ -142,10 +142,13 @@ def test_karate_1():
                     10: 3, 11: 1, 12: 2, 13: 4, 14: 2, 15: 2, 16: 2, 17: 2, 18: 2,
                     19: 3, 20: 2, 21: 2, 22: 2, 23: 3, 24: 3, 25: 3, 26: 2, 27: 3,
                     28: 3, 29: 3, 30: 4, 31: 3, 32: 4, 33: 4}
+    approx_karate_k_num = karate_k_num.copy()
+    approx_karate_k_num[24] = 2
+    approx_karate_k_num[25] = 2
     G = nx.karate_club_graph()
     k_comps = k_components(G)
     k_num = build_k_number_dict(k_comps)
-    assert_equal(karate_k_num, k_num)
+    assert_in(k_num, (karate_k_num, approx_karate_k_num))
 
 def test_example_1_detail_3_and_4():
     G = graph_example_1()
@@ -215,6 +218,13 @@ class TestAntiGraph:
             ac = [set(c) for c in nx.connected_components(A)]
             for comp in ac:
                 assert_true(comp in gc)
+
+    def test_adj(self):
+        for G, A in self.GA:
+            for n, nbrs in G.adj.items():
+                a_adj = sorted((n,sorted(ad)) for n, ad in A.adj.items())
+                g_adj = sorted((n,sorted(ad)) for n, ad in G.adj.items())
+                assert_equal(a_adj, g_adj)
 
     def test_adjacency(self):
         for G, A in self.GA:

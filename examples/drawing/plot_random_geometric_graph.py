@@ -6,8 +6,8 @@ Random Geometric Graph
 Example
 """
 
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 
 G = nx.random_geometric_graph(200, 0.125)
 # position is stored as node attribute data for random_geometric_graph
@@ -28,9 +28,9 @@ p = dict(nx.single_source_shortest_path_length(G, ncenter))
 
 plt.figure(figsize=(8, 8))
 nx.draw_networkx_edges(G, pos, nodelist=[ncenter], alpha=0.4)
-nx.draw_networkx_nodes(G, pos, nodelist=p.keys(),
+nx.draw_networkx_nodes(G, pos, nodelist=list(p.keys()),
                        node_size=80,
-                       node_color=p.values(),
+                       node_color=list(p.values()),
                        cmap=plt.cm.Reds_r)
 
 plt.xlim(-0.05, 1.05)

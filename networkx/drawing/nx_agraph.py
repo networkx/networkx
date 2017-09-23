@@ -139,7 +139,7 @@ def to_agraph(N):
         raise ImportError('requires pygraphviz ',
                           'http://pygraphviz.github.io/')
     directed = N.is_directed()
-    strict = N.number_of_selfloops() == 0 and not N.is_multigraph()
+    strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
 
     # default graph attributes

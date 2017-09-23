@@ -4,26 +4,54 @@
 Release Log
 ===========
 
-NetworkX 2.0
+NetworkX 2.1
 ------------
 Release date: TBD
 
+Release notes
+~~~~~~~~~~~~~
+
+See :doc:`release/release_dev`.
+
+
+NetworkX 2.0
+------------
+Release date: 20 September 2017
+
+Support for Python 3.6 added, drop support for Python 3.3.
 
 See :doc:`release/migration_guide_from_1.x_to_2.0`.
    
-API changes
-~~~~~~~~~~~
+Release notes
+~~~~~~~~~~~~~
+
 See :doc:`release/release_2.0`.
 
+NetworkX 1.11
+-------------
+Release date: 30 January 2016
+
+Support for Python 3.5 added, drop support for Python 3.2.
+
+Highlights
+~~~~~~~~~~
+
+Pydot features now use pydotplus.
+Fixes installation on some machines and test with appveyor.
+Restores default center and scale of layout routines.
+Fixes various docs including no symbolic links in examples.
+Docs can now build using autosummary on readthedocs.org.
 
 NetworkX 1.10
 --------------
+
 Release date: 2 August 2015
 
 Support for Python 2.6 is dropped in this release.
 
 Highlights
 ~~~~~~~~~~
+
 - Connected components now return generators
 - new functions including
 
@@ -60,8 +88,6 @@ NetworkX 1.9.1
 Release date: 13 September 2014
 
 Bugfix release for minor installation and documentation issues.
-
-https://github.com/networkx/networkx/milestones/networkx-1.9.1
 
 NetworkX 1.9
 ------------
@@ -367,7 +393,7 @@ keyword which is no longer necessary.  For example,
  
 >>> G=nx.Graph()
 >>> G.add_edge('a','b')
->>> G.degree() # returns dictionary of degree keyed by node
+>>> G.degree()  # doctest: +SKIP
 {'a': 1, 'b': 1}
  
 Asking for the degree of a single node still returns a single number
@@ -402,17 +428,17 @@ The following now return dictionaries by default (instead of lists)
 
 Adding nodes
 ************
-add_nodes_from now accepts (node,attrdict) two-tuples
+``add_nodes_from`` now accepts ``(node, attrdict)`` two-tuples
 
->>> G=nx.Graph()
->>> G.add_nodes_from([(1,{'color':'red'})])
+>>> G = nx.Graph()
+>>> G.add_nodes_from([(1, {'color': 'red'})])
 
 Examples
 ~~~~~~~~
- - `Mayvi2 drawing <http://networkx.github.io/documentation/latest/examples/3d_drawing/mayavi2_spring.html>`_
- - `Blockmodel <http://networkx.lanl.gov/examples/algorithms/blockmodel.html>`_
- - `Sampson's monastery <http://networkx.lanl.gov/examples/drawing/sampson.html>`_
- - `Ego graph <http://networkx.lanl.gov/examples/drawing/ego_graph.html>`_
+ - `Mayvi2 drawing <https://networkx.github.io/documentation/latest/auto_examples/3d_drawing/mayavi2_spring.html>`_
+ - `Blockmodel <https://networkx.github.io/documentation/latest/auto_examples/algorithms/plot_blockmodel.html>`_
+ - `Sampson's monastery <https://networkx.github.io/documentation/latest/auto_examples/drawing/plot_sampson.html>`_
+ - `Ego graph <https://networkx.github.io/documentation/latest/auto_examples/drawing/plot_ego_graph.html>`_
 
 Bug fixes
 ~~~~~~~~~
@@ -811,7 +837,7 @@ Examples
 ~~~~~~~~
   - Formation of giant component in binomial_graph:
   - Chess masters matches:
-  - Gallery https://networkx.lanl.gov/gallery.html
+  - Gallery https://networkx.github.io/documentation/latest/auto_examples/index.html
   
 Bug fixes
 ~~~~~~~~~
@@ -830,10 +856,8 @@ Bug fixes
   - Normalize names of some graphs to produce strings that represent
     calling sequence
   
-
 NetworkX 0.27
 -------------
-
 
 Release date: 5 February 2006
 
@@ -863,10 +887,8 @@ Bug fixes
    - XGraph(multiedges=True) returns a copy of the list of edges
      for get_edge() 
 
-
 NetworkX 0.26
 -------------
-
 
 Release date: 6 January 2006
 
@@ -892,13 +914,10 @@ Bug fixes
    - Added missing names to generated graphs
    - Indexes for nodes in graphs start at zero by default (was 1)
 
-
 NetworkX 0.25
 -------------
 
-
 Release date: 5 December 2005
-
 
 New features
 ~~~~~~~~~~~~
@@ -975,6 +994,7 @@ New features
 
 Examples
 ~~~~~~~~
+
 Documentation
 ~~~~~~~~~~~~~
   - Changed to reflect NX-networkx change
@@ -1003,7 +1023,6 @@ New features
      + random_powerlaw_tree
      + dorogovtsev_goltsev_mendes_graph
 
-
 Examples
 ~~~~~~~~
   - Kevin Bacon movie actor graph: Examples/kevin_bacon.py
@@ -1014,8 +1033,6 @@ Documentation
 ~~~~~~~~~~~~~
   - Rewrite of setup scripts to install documentation and
     tests in documentation directory specified 
-
-
 
 Bug fixes
 ~~~~~~~~~
@@ -1028,6 +1045,3 @@ Bug fixes
    - Changed import statement lines to always use "import NX" to
      protect name-spaces   
    - Other minor bug-fixes and testing added
-
-
-

@@ -12,18 +12,18 @@ def test_union_all_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     j = g.copy()
     j.graph['name'] = 'j'
     j.graph['attr'] = 'attr'
-    j.node[0]['x'] = 7
+    j.nodes[0]['x'] = 7
 
     ghj = nx.union_all([g, h, j], rename=('g', 'h', 'j'))
     assert_equal( set(ghj.nodes()) , set(['h0', 'h1', 'g0', 'g1', 'j0', 'j1']) )
     for n in ghj:
         graph, node = n
-        assert_equal( ghj.node[n], eval(graph).node[int(node)] )
+        assert_equal( ghj.nodes[n], eval(graph).nodes[int(node)] )
 
     assert_equal(ghj.graph['attr'],'attr')
     assert_equal(ghj.graph['name'],'j') # j graph attributes take precendent
@@ -58,7 +58,7 @@ def test_intersection_all_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.intersection_all([g, h])
     assert_equal( set(gh.nodes()) , set(g.nodes()) )

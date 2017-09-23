@@ -6,24 +6,18 @@ Giant Component
 
 This example illustrates the sudden appearance of a
 giant connected component in a binomial random graph.
-
-Requires pygraphviz and matplotlib to draw.
-
 """
-#    Copyright (C) 2006-2016
+#    Copyright (C) 2006-2017
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
-
-import networkx as nx
 import math
+
+import matplotlib.pyplot as plt
+import networkx as nx
 
 try:
     import pygraphviz
@@ -61,7 +55,7 @@ for p in pvals:
     nx.draw(G, pos,
             with_labels=False,
             node_size=10
-            )
+           )
     # identify largest connected component
     Gcc = sorted(nx.connected_component_subgraphs(G), key=len, reverse=True)
     G0 = Gcc[0]
@@ -69,7 +63,7 @@ for p in pvals:
                            with_labels=False,
                            edge_color='r',
                            width=6.0
-                           )
+                          )
     # show other connected components
     for Gi in Gcc[1:]:
         if len(Gi) > 1:
@@ -78,5 +72,5 @@ for p in pvals:
                                    edge_color='r',
                                    alpha=0.3,
                                    width=5.0
-                                   )
+                                  )
 plt.show()

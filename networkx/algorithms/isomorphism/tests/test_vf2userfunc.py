@@ -7,10 +7,12 @@ from operator import eq
 
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
+
+
 def test_simple():
     # 16 simple tests
     w = 'weight'
-    edges = [(0,0,1),(0,0,1.5),(0,1,2),(1,0,3)]
+    edges = [(0, 0, 1), (0, 0, 1.5), (0, 1, 2), (1, 0, 3)]
     for g1 in [nx.Graph(),
                nx.DiGraph(),
                nx.MultiGraph(),
@@ -23,23 +25,23 @@ def test_simple():
             em = iso.numerical_multiedge_match('weight', 1)
         else:
             em = iso.numerical_edge_match('weight', 1)
-        assert_true( nx.is_isomorphic(g1,g2,edge_match=em) )
+        assert_true( nx.is_isomorphic(g1, g2, edge_match=em) )
 
         for mod1, mod2 in [(False, True), (True, False), (True, True)]:
             # mod1 tests a regular edge
             # mod2 tests a selfloop
             if g2.is_multigraph():
                 if mod1:
-                    data1 = {0:{'weight':10}}
+                    data1 = {0: {'weight': 10}}
                 if mod2:
-                    data2 = {0:{'weight':1},1:{'weight':2.5}}
+                    data2 = {0: {'weight': 1}, 1: {'weight': 2.5}}
             else:
                 if mod1:
-                    data1 = {'weight':10}
+                    data1 = {'weight': 10}
                 if mod2:
-                    data2 = {'weight':2.5}
+                    data2 = {'weight': 2.5}
 
-            g2 = g1.subgraph(g1.nodes())
+            g2 = g1.subgraph(g1.nodes()).copy()
             if mod1:
                 if not g1.is_directed():
                     g2._adj[1][0] = data1
@@ -54,7 +56,8 @@ def test_simple():
                     g2._succ[0][0] = data2
                     g2._pred[0][0] = data2
 
-            assert_false(nx.is_isomorphic(g1,g2,edge_match=em))
+            assert_false(nx.is_isomorphic(g1, g2, edge_match=em))
+
 
 def test_weightkey():
     g1 = nx.DiGraph()
@@ -97,7 +100,7 @@ class TestNodeMatch_Graph(object):
         assert_false(  nx.is_isomorphic(self.g1, self.g2, node_match=self.nm) )
 
     def test_color2(self):
-        self.g1.node['A']['color'] = 'blue'
+        self.g1.nodes['A']['color'] = 'blue'
         assert_true(  nx.is_isomorphic(self.g1, self.g2, node_match=self.nm) )
 
     def test_weight1(self):
@@ -113,7 +116,7 @@ class TestNodeMatch_Graph(object):
         assert_false(iso)
 
     def test_colorsandweights2(self):
-        self.g1.node['A']['color'] = 'blue'
+        self.g1.nodes['A']['color'] = 'blue'
         iso = nx.is_isomorphic(self.g1, self.g2,
                                node_match=self.nm, edge_match=self.em)
         assert_true(iso)

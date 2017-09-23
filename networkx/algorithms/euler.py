@@ -50,8 +50,8 @@ def is_eulerian(G):
     if G.is_directed():
         # Every node must have equal in degree and out degree and the
         # graph must be strongly connected
-        return (all(G.in_degree(n) == G.out_degree(n) for n in G)
-                and nx.is_strongly_connected(G))
+        return (all(G.in_degree(n) == G.out_degree(n) for n in G) and
+                nx.is_strongly_connected(G))
     # An undirected Eulerian graph has no vertices of odd degree and
     # must be connected.
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
@@ -146,7 +146,7 @@ def eulerian_circuit(G, source=None, keys=False):
     .. [1] J. Edmonds, E. L. Johnson.
        Matching, Euler tours and the Chinese postman.
        Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
-    .. [2] http://en.wikipedia.org/wiki/Eulerian_path
+    .. [2] https://en.wikipedia.org/wiki/Eulerian_path
 
     Examples
     --------
@@ -166,9 +166,10 @@ def eulerian_circuit(G, source=None, keys=False):
     """
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
-    G = G.__class__(G)
     if G.is_directed():
-        G.reverse(copy=False)
+        G = G.reverse()
+    else:
+        G = G.copy()
     if source is None:
         source = arbitrary_element(G)
     if G.is_multigraph():

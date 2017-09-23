@@ -145,7 +145,7 @@ def simple_cycles(G):
     -----
     The implementation follows pp. 79-80 in [1]_.
 
-    The time complexity is `O((n+e)(c+1))` for `n` nodes, `e` edges and `c`
+    The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$
     elementary circuits.
 
     References
@@ -258,7 +258,7 @@ def recursive_simple_cycles(G):
     -----
     The implementation follows pp. 79-80 in [1]_.
 
-    The time complexity is `O((n+e)(c+1))` for `n` nodes, `e` edges and `c`
+    The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$
     elementary circuits.
 
     References
@@ -382,11 +382,11 @@ def find_cycle(G, source=None, orientation='original'):
     >>> import networkx as nx
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
     >>> try:
-    ...    find_cycle(G, orientation='original')
+    ...    nx.find_cycle(G, orientation='original')
     ... except:
     ...    pass
     ...
-    >>> list(find_cycle(G, orientation='ignore'))
+    >>> list(nx.find_cycle(G, orientation='ignore'))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2011-2016 by
+#    Copyright (C) 2011-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -196,6 +196,13 @@ def biconnected_components(G):
     ------
     NetworkXNotImplemented :
         If the input graph is not undirected.
+
+    See Also
+    --------
+    k_components : this function is a special case where k=2
+    bridge_components : similar to this function, but is defined using
+        2-edge-connectivity instead of 2-node-connectivity.
+
 
     Examples
     --------

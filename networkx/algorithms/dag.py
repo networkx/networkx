@@ -5,7 +5,7 @@ Note that most of these functions are only guaranteed to work for DAGs.
 In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
-#    Copyright (C) 2006-2016 by
+#    Copyright (C) 2006-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -51,7 +51,8 @@ def descendants(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    des = set(n for n, d in nx.shortest_path_length(G, source=source)) - set([source])
+    spl = nx.shortest_path_length(G, source=source)
+    des = set(spl) - set([source])
     return des
 
 
@@ -71,7 +72,8 @@ def ancestors(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    anc = set(n for n, d in nx.shortest_path_length(G, target=source)) - set([source])
+    spl = nx.shortest_path_length(G, target=source)
+    anc = set(spl) - set([source])
     return anc
 
 
@@ -287,8 +289,8 @@ def is_aperiodic(G):
 
     Notes
     -----
-    This uses the method outlined in [1]_, which runs in O(m) time
-    given m edges in `G`. Note that a graph is not aperiodic if it is
+    This uses the method outlined in [1]_, which runs in $O(m)$ time
+    given $m$ edges in `G`. Note that a graph is not aperiodic if it is
     acyclic as every integer trivial divides length 0 cycles.
 
     References
@@ -433,7 +435,7 @@ def antichains(G):
     for the SAGE project. It's included in NetworkX with permission from the
     authors. Original SAGE code at:
 
-    https://sage.informatik.uni-goettingen.de/src/combinat/posets/hasse_diagram.py
+    https://github.com/sagemath/sage/blob/master/src/sage/combinat/posets/hasse_diagram.py
 
     References
     ----------

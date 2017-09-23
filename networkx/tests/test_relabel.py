@@ -12,14 +12,13 @@ class TestRelabel():
         # test that empty graph converts fine for all options
         G = empty_graph()
         H = convert_node_labels_to_integers(G, 100)
-        assert_equal(H.name, '(empty_graph(0))_with_int_labels')
+        assert_equal(H.name, '()_with_int_labels')
         assert_equal(list(H.nodes()), [])
         assert_equal(list(H.edges()), [])
 
         for opt in ["default", "sorted", "increasing degree", "decreasing degree"]:
             G = empty_graph()
             H = convert_node_labels_to_integers(G, 100, ordering=opt)
-            assert_equal(H.name, '(empty_graph(0))_with_int_labels')
             assert_equal(list(H.nodes()), [])
             assert_equal(list(H.edges()), [])
 
@@ -27,6 +26,7 @@ class TestRelabel():
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'C'), ('C', 'D')])
         G.name = "paw"
         H = convert_node_labels_to_integers(G)
+        assert_equal(H.name, '(paw)_with_int_labels')
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
         assert_equal(sorted(degH), sorted(degG))
@@ -66,15 +66,14 @@ class TestRelabel():
         assert_equal(degree(H, 3), 3)
 
         # check mapping
-        assert_equal(H.node[3]['label'], 'C')
-        assert_equal(H.node[0]['label'], 'D')
-        assert_true(H.node[1]['label'] == 'A' or H.node[2]['label'] == 'A')
-        assert_true(H.node[1]['label'] == 'B' or H.node[2]['label'] == 'B')
+        assert_equal(H.nodes[3]['label'], 'C')
+        assert_equal(H.nodes[0]['label'], 'D')
+        assert_true(H.nodes[1]['label'] == 'A' or H.nodes[2]['label'] == 'A')
+        assert_true(H.nodes[1]['label'] == 'B' or H.nodes[2]['label'] == 'B')
 
     def test_convert_to_integers2(self):
         G = empty_graph()
         G.add_edges_from([('C', 'D'), ('A', 'B'), ('A', 'C'), ('B', 'C')])
-        G.name = "paw"
         H = convert_node_labels_to_integers(G, ordering="sorted")
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
@@ -82,10 +81,10 @@ class TestRelabel():
 
         H = convert_node_labels_to_integers(G, ordering="sorted",
                                             label_attribute='label')
-        assert_equal(H.node[0]['label'], 'A')
-        assert_equal(H.node[1]['label'], 'B')
-        assert_equal(H.node[2]['label'], 'C')
-        assert_equal(H.node[3]['label'], 'D')
+        assert_equal(H.nodes[0]['label'], 'A')
+        assert_equal(H.nodes[1]['label'], 'B')
+        assert_equal(H.nodes[2]['label'], 'C')
+        assert_equal(H.nodes[3]['label'], 'D')
 
     @raises(nx.NetworkXError)
     def test_convert_to_integers_raise(self):

@@ -11,9 +11,9 @@ the largest hub in a Barabási-Albert network.
 # Author:  Drew Conway (drew.conway@nyu.edu)
 
 from operator import itemgetter
-import networkx as nx
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+import networkx as nx
 
 if __name__ == '__main__':
     # Create a BA model graph

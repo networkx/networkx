@@ -21,14 +21,14 @@ class TestNodeLink:
 
         H = node_link_graph(node_link_data(G))
         assert_equal(H.graph['foo'], 'bar')
-        assert_equal(H.node[1]['color'], 'red')
+        assert_equal(H.nodes[1]['color'], 'red')
         assert_equal(H[1][2]['width'], 7)
 
         d = json.dumps(node_link_data(G))
         H = node_link_graph(json.loads(d))
         assert_equal(H.graph['foo'], 'bar')
         assert_equal(H.graph['1'], 'one')
-        assert_equal(H.node[1]['color'], 'red')
+        assert_equal(H.nodes[1]['color'], 'red')
         assert_equal(H[1][2]['width'], 7)
 
     def test_digraph(self):
@@ -51,7 +51,7 @@ class TestNodeLink:
         dumped_d = json.dumps(d)
         dd = json.loads(dumped_d)
         H = node_link_graph(dd)
-        assert_equal(H.node[(0, 0)], G.node[(0, 0)])
+        assert_equal(H.nodes[(0, 0)], G.nodes[(0, 0)])
         assert_equal(H[(0, 0)][(1, 0)]['color'], [255, 255, 0])
 
     def test_unicode_keys(self):
@@ -65,7 +65,7 @@ class TestNodeLink:
         output = json.dumps(s, ensure_ascii=False)
         data = json.loads(output)
         H = node_link_graph(data)
-        assert_equal(H.node[1][q], q)
+        assert_equal(H.nodes[1][q], q)
 
     @raises(nx.NetworkXError)
     def test_exception(self):
@@ -101,6 +101,6 @@ class TestNodeLink:
         H = node_link_graph(node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs)
         assert_true(nx.is_isomorphic(G, H))
         assert_equal(H.graph['foo'], 'bar')
-        assert_equal(H.node[1]['color'], 'red')
+        assert_equal(H.nodes[1]['color'], 'red')
         assert_equal(H[1][2]['width'], 7)
 

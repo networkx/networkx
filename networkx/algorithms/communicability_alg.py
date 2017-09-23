@@ -17,6 +17,7 @@ __all__ = ['communicability',
            'communicability_exp',
            ]
 
+
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability(G):
@@ -68,7 +69,7 @@ def communicability(G):
     .. [1] Ernesto Estrada, Naomichi Hatano,
        "Communicability in complex networks",
        Phys. Rev. E 77, 036111 (2008).
-       http://arxiv.org/abs/0707.0756
+       https://arxiv.org/abs/0707.0756
 
     Examples
     --------
@@ -77,25 +78,26 @@ def communicability(G):
     """
     import numpy
     import scipy.linalg
-    nodelist = list(G) # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = list(G)  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
-    w,vec = numpy.linalg.eigh(A)
+    A[A != 0.0] = 1
+    w, vec = numpy.linalg.eigh(A)
     expw = numpy.exp(w)
-    mapping = dict(zip(nodelist,range(len(nodelist))))
-    c={}
+    mapping = dict(zip(nodelist, range(len(nodelist))))
+    c = {}
     # computing communicabilities
     for u in G:
-        c[u]={}
+        c[u] = {}
         for v in G:
             s = 0
             p = mapping[u]
             q = mapping[v]
             for j in range(len(nodelist)):
-                s += vec[:,j][p,0]*vec[:,j][q,0]*expw[j]
+                s += vec[:, j][p, 0] * vec[:, j][q, 0] * expw[j]
             c[u][v] = float(s)
     return c
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
@@ -145,7 +147,7 @@ def communicability_exp(G):
     .. [1] Ernesto Estrada, Naomichi Hatano,
        "Communicability in complex networks",
        Phys. Rev. E 77, 036111 (2008).
-       http://arxiv.org/abs/0707.0756
+       https://arxiv.org/abs/0707.0756
 
     Examples
     --------
@@ -153,21 +155,23 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy.linalg
-    nodelist = list(G) # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = list(G)  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
+    A[A != 0.0] = 1
     # communicability matrix
     expA = scipy.linalg.expm(A.A)
-    mapping = dict(zip(nodelist,range(len(nodelist))))
+    mapping = dict(zip(nodelist, range(len(nodelist))))
     c = {}
     for u in G:
-        c[u]={}
+        c[u] = {}
         for v in G:
-            c[u][v] = float(expA[mapping[u],mapping[v]])
+            c[u][v] = float(expA[mapping[u], mapping[v]])
     return c
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

@@ -1,5 +1,6 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.boundary import *
+from networkx.algorithms.bridges import *
 from networkx.algorithms.chains import *
 from networkx.algorithms.centrality import *
 from networkx.algorithms.chordal import *
@@ -24,6 +25,7 @@ from networkx.algorithms.hierarchy import *
 from networkx.algorithms.hybrid import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.link_prediction import *
+from networkx.algorithms.lowest_common_ancestors import *
 from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
@@ -58,6 +60,7 @@ import networkx.algorithms.coloring
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
+import networkx.algorithms.lowest_common_ancestors
 import networkx.algorithms.operators
 import networkx.algorithms.shortest_paths
 import networkx.algorithms.tournament
@@ -75,6 +78,8 @@ from networkx.algorithms.connectivity import all_node_cuts
 from networkx.algorithms.connectivity import average_node_connectivity
 from networkx.algorithms.connectivity import edge_connectivity
 from networkx.algorithms.connectivity import k_components
+from networkx.algorithms.connectivity import k_edge_components
+from networkx.algorithms.connectivity import k_edge_subgraphs
 from networkx.algorithms.connectivity import minimum_edge_cut
 from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity

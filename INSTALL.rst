@@ -1,7 +1,7 @@
 Install
 =======
 
-NetworkX requires Python 2.7, 3.3, 3.4, 3.5, or 3.6.  If you do not already
+NetworkX requires Python 2.7, 3.4, 3.5, or 3.6.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
@@ -9,8 +9,8 @@ instructions for installing the full `scientific Python stack
 .. note::
    If you are on Windows and want to install optional packages (e.g., `scipy`),
    then you will need to install a Python distribution such as
-   `Anaconda <https://www.continuum.io/downloads>`_,
-   `Enthought Canopy <https://www.enthought.com/products/canopy/>`_,
+   `Anaconda <https://www.anaconda.com/download/>`_,
+   `Enthought Canopy <https://www.enthought.com/product/canopy>`_,
    `Python(x,y) <http://python-xy.github.io/>`_,
    `WinPython <https://winpython.github.io/>`_, or
    `Pyzo <http://www.pyzo.org/>`_.
@@ -18,34 +18,34 @@ instructions for installing the full `scientific Python stack
    documentation.
 
 Below we assume you have the default Python environment already configured on
-your computer and you intend to install `networkx` inside of it.  If you want
+your computer and you intend to install ``networkx`` inside of it.  If you want
 to create and work with Python virtual environments, please follow instructions
 on `venv <https://docs.python.org/3/library/venv.html>`_ and `virtual
 environments <http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_.
 
-First, make sure you have the latest version of `pip` (the Python package manager)
+First, make sure you have the latest version of ``pip`` (the Python package manager)
 installed. If you do not, refer to the `Pip documentation
-<https://pip.pypa.io/en/stable/installing/>`_ and install `pip` first.
+<https://pip.pypa.io/en/stable/installing/>`_ and install ``pip`` first.
 
 Install the released version
 ----------------------------
 
-Install the current release of `networkx` with `pip`::
+Install the current release of ``networkx`` with ``pip``::
 
     $ pip install networkx
 
-To upgrade to a newer release use the `--upgrade` flag::
+To upgrade to a newer release use the ``--upgrade`` flag::
 
     $ pip install --upgrade networkx
 
 If you do not have permission to install software systemwide, you can
-install into your user directory using the `--user` flag::
+install into your user directory using the ``--user`` flag::
 
     $ pip install --user networkx
 
-Alternatively, you can manually download `networkx` from
-`GitHub <http://github.com/networkx/networkx/releases>`_  or
-`PyPI <http://pypi.python.org/pypi/networkx>`_.
+Alternatively, you can manually download ``networkx`` from
+`GitHub <https://github.com/networkx/networkx/releases>`_  or
+`PyPI <https://pypi.python.org/pypi/networkx>`_.
 To install one of these versions, unpack it and run the following from the
 top-level source directory using the Terminal::
 
@@ -54,11 +54,11 @@ top-level source directory using the Terminal::
 Install the development version
 -------------------------------
 
-If you have `Git <https://git.com>`_ installed on your system, it is also
-possible to install the development version of `networkx`.
+If you have `Git <https://git-scm.com/>`_ installed on your system, it is also
+possible to install the development version of ``networkx``.
 
 Before installing the development version, you may need to uninstall the
-standard version of `networkx` using `pip`::
+standard version of ``networkx`` using ``pip``::
 
     $ pip uninstall networkx
 
@@ -68,11 +68,11 @@ Then do::
     $ cd networkx
     $ pip install -e .
 
-The `pip install -e .` command allows you to follow the development branch as
+The ``pip install -e .`` command allows you to follow the development branch as
 it changes by creating links in the right places and installing the command
 line scripts to the appropriate locations.
 
-Then, if you want to update `networkx` at any time, in the same directory do::
+Then, if you want to update ``networkx`` at any time, in the same directory do::
 
     $ git pull
 
@@ -87,22 +87,23 @@ Optional packages
 
 The following optional packages provide additional functionality.
 
-- `NumPy <http://www.numpy.org/>`_ (>= 1.6) provides matrix representation of
+- `NumPy <http://www.numpy.org/>`_ (>= 1.12.0) provides matrix representation of
   graphs and is used in some graph algorithms for high-performance matrix
   computations.
-- `SciPy <http://scipy.org/>`_ (>= 0.10) provides sparse matrix representation
+- `SciPy <http://scipy.org/>`_ (>= 0.19.0) provides sparse matrix representation
   of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ (>= 0.8) provides a DataFrame, which
+- `pandas <http://pandas.pydata.org/>`_ (>= 0.20.0) provides a DataFrame, which
   is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 1.1) provides flexible drawing of
+- `Matplotlib <http://matplotlib.org/>`_ (>= 2.0.2) provides flexible drawing of
   graphs.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.3) provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
 - `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
 - `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
+- `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
-To install `networkx` and all optional packages, do::
+To install ``networkx`` and all optional packages, do::
 
     $ pip install networkx[all]
 
@@ -110,14 +111,14 @@ To explicitly install all optional packages, do::
 
     $ pip install numpy scipy pandas matplotlib pygraphviz pydot pyyaml gdal
 
-Or, install any optional package (e.g., `numpy`) individually::
+Or, install any optional package (e.g., ``numpy``) individually::
 
     $ pip install numpy
 
 Testing
 -------
 
-NetworkX uses the Python `nose` testing package.  If you don't already have
+NetworkX uses the Python ``nose`` testing package.  If you don't already have
 that package installed, follow the directions on the `nose homepage
 <https://nose.readthedocs.org/>`_.
 
@@ -144,9 +145,9 @@ or::
 Testing for developers
 ^^^^^^^^^^^^^^^^^^^^^^
 
-You can test any or all of NetworkX by using the `nosetests` test runner.
+You can test any or all of NetworkX by using the ``nosetests`` test runner.
 
-First make sure the NetworkX version you want to test is in your `PYTHONPATH`
+First make sure the NetworkX version you want to test is in your ``PYTHONPATH``
 (either installed or pointing to your unpacked source directory).
 
 Then you can run individual test files with::
@@ -162,7 +163,7 @@ Python modules but you can turn that on with::
 
     nosetests --with-doctest
 
-For doctests in stand-alone files NetworkX uses the extension `txt` so
+For doctests in stand-alone files NetworkX uses the extension ``txt`` so
 you can add::
 
     nosetests --with-doctest --doctest-extension=txt
@@ -170,5 +171,5 @@ you can add::
 to also execute those tests.
 
 These options are on by default if you run nosetests from the root of the
-NetworkX distribution since they are specified in the `setup.cfg` file found
+NetworkX distribution since they are specified in the ``setup.cfg`` file found
 there.

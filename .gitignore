@@ -3,12 +3,14 @@ __pycache__
 *~
 .DS_Store
 build/*
+dist/*
 networkx/version.py
 examples/*/*.png
 doc/networkx-documentation.zip
 doc/networkx_reference.pdf
 doc/networkx_tutorial.pdf
 doc/build
+doc/ghpages_build
 .coverage
 *.class
 
@@ -16,6 +18,13 @@ doc/build
 doc/auto_examples
 doc/modules
 doc/reference/generated
+doc/reference/algorithms/generated
+doc/reference/classes/generated
+doc/reference/readwrite/generated
+doc/path.to.file
+
+examples/advanced/edgelist.utf-8
+examples/basic/grid.edgelist
 
 # Generated when 'python setup_egg.py'
 networkx.egg-info/
@@ -23,6 +32,9 @@ networkx.egg-info/
 # Sublime Text project files
 *.sublime-project
 *.sublime-workspace
+
+# Backup files
+*.bak
 
 # IPython Notebook Checkpoints
 .ipynb_checkpoints/
@@ -32,3 +44,6 @@ networkx.egg-info/
 
 #Spyder project file
 .spyderproject
+
+# PyCharm project file
+.idea

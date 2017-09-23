@@ -1,13 +1,2 @@
-decorator>=3.4.0
-matplotlib
-scipy
-numpy
-nose
-nose-ignore-docstring
-pandas
-gdal
-pyyaml
-pygraphviz
-sphinx
-sphinx_rtd_theme
-pydot >= 1.2.3
+-r requirements/default.txt
+-r requirements/test.txt

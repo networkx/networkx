@@ -62,7 +62,7 @@ Main changes
    have to explicitly import them from the flow package:
 
 >>> from networkx.algorithms.flow import (ford_fulkerson, preflow_push,
-...        edmonds_karp, shortest_augmenting_path)
+...        edmonds_karp, shortest_augmenting_path)  # doctest: +SKIP
 
 
 7. We also added a capacity-scaling minimum cost flow algorithm:
@@ -81,30 +81,30 @@ NetworkX 1.8.1 using the new interface to flow algorithms introduced in 1.9:
 
 With NetworkX 1.8:
 
->>> flow_value = nx.max_flow(G, 0, 6)
->>> cut_value = nx.min_cut(G, 0, 6)
->>> flow_value == cut_value
+>>> flow_value = nx.max_flow(G, 0, 6)  # doctest: +SKIP
+>>> cut_value = nx.min_cut(G, 0, 6)  # doctest: +SKIP
+>>> flow_value == cut_value  # doctest: +SKIP
 True
->>> flow_value, flow_dict = nx.ford_fulkerson(G, 0, 6)
+>>> flow_value, flow_dict = nx.ford_fulkerson(G, 0, 6)  # doctest: +SKIP
 
 With NetworkX 1.9:
 
 >>> from networkx.algorithms.flow import (ford_fulkerson, preflow_push,
-...        edmonds_karp, shortest_augmenting_path)
->>> flow_value = nx.maximum_flow_value(G, 0, 6)
->>> cut_value = nx.minimum_cut_value(G, 0, 6)
->>> flow_value == cut_value
+...        edmonds_karp, shortest_augmenting_path)  # doctest: +SKIP
+>>> flow_value = nx.maximum_flow_value(G, 0, 6)  # doctest: +SKIP
+>>> cut_value = nx.minimum_cut_value(G, 0, 6)  # doctest: +SKIP
+>>> flow_value == cut_value  # doctest: +SKIP
 True
 >>> # Legacy: this returns the exact same output than ford_fulkerson in 1.8.1
->>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=ford_fulkerson)
+>>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=ford_fulkerson)  # doctest: +SKIP
 >>> # We strongly recommend to use the new algorithms:
->>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6)
+>>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6)  # doctest: +SKIP
 >>> # If no flow_func is passed as argument, the default flow_func
 >>> # (preflow-push) is used. Therefore this is the same than:
->>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=preflow_push)
+>>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=preflow_push)  # doctest: +SKIP
 >>> # You can also use alternative maximum flow algorithms:
->>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=shortest_augmenting_path)
->>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=edmonds_karp)
+>>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=shortest_augmenting_path)  # doctest: +SKIP
+>>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=edmonds_karp)  # doctest: +SKIP
 
 Connectivity package
 --------------------

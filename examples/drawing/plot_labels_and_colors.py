@@ -10,7 +10,6 @@ You must have matplotlib for this to work.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 import matplotlib.pyplot as plt
-
 import networkx as nx
 
 G = nx.cubical_graph()

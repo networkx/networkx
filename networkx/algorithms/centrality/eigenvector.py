@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -27,17 +27,17 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     r"""Compute the eigenvector centrality for the graph `G`.
 
     Eigenvector centrality computes the centrality for a node based on the
-    centrality of its neighbors. The eigenvector centrality for node `i` is
+    centrality of its neighbors. The eigenvector centrality for node $i$ is
 
     .. math::
 
-        \mathbf{Ax} = \lambda \mathbf{x}
+        Ax = \lambda x
 
-    where *A* is the adjacency matrix of the graph `G` with eigenvalue
-    :math:`\lambda`. By virtue of the Perron–Frobenius theorem, there is
-    a unique and positive solution if :math:`\lambda` is the largest
+    where $A$ is the adjacency matrix of the graph `G` with eigenvalue
+    $\lambda$. By virtue of the Perron–Frobenius theorem, there is
+    a unique and positive solution if $\lambda$ is the largest
     eigenvalue associated with the eigenvector of the adjacency matrix
-    *A* ([2]_).
+    $A$ ([2]_).
 
     Parameters
     ----------
@@ -93,11 +93,11 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     The measure was introduced by [1]_ and is discussed in [2]_.
 
     The power iteration method is used to compute the eigenvector and
-    convergence is **not** guaranteed. Our method stops after `max_iter`
+    convergence is **not** guaranteed. Our method stops after ``max_iter``
     iterations or when the change in the computed vector between two
     iterations is smaller than an error tolerance of
-    ``G.number_of_nodes() * tol``. This implementation uses (*A* + *I*)
-    rather than the adjacency matrix *A* because it shifts the spectrum
+    ``G.number_of_nodes() * tol``. This implementation uses ($A + I$)
+    rather than the adjacency matrix $A$ because it shifts the spectrum
     to enable discerning the correct eigenvector even for networks with
     multiple dominant eigenvalues.
 
@@ -152,16 +152,16 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     r"""Compute the eigenvector centrality for the graph G.
 
     Eigenvector centrality computes the centrality for a node based on the
-    centrality of its neighbors. The eigenvector centrality for node `i` is
+    centrality of its neighbors. The eigenvector centrality for node $i$ is
 
     .. math::
 
-        \mathbf{Ax} = \lambda \mathbf{x}
+        Ax = \lambda x
 
-    where `A` is the adjacency matrix of the graph G with eigenvalue `\lambda`.
+    where $A$ is the adjacency matrix of the graph G with eigenvalue $\lambda$.
     By virtue of the Perron–Frobenius theorem, there is a unique and positive
-    solution if `\lambda` is the largest eigenvalue associated with the
-    eigenvector of the adjacency matrix `A` ([2]_).
+    solution if $\lambda$ is the largest eigenvalue associated with the
+    eigenvector of the adjacency matrix $A$ ([2]_).
 
     Parameters
     ----------
@@ -188,7 +188,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     --------
     >>> G = nx.path_graph(4)
     >>> centrality = nx.eigenvector_centrality_numpy(G)
-    >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
+    >>> print(['{} {:0.2f}'.format(node, centrality[node]) for node in centrality])
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
     See Also
@@ -206,7 +206,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
 
     For directed graphs this is "left" eigenvector centrality which corresponds
     to the in-edges in the graph. For out-edges eigenvector centrality
-    first reverse the graph with G.reverse().
+    first reverse the graph with ``G.reverse()``.
 
     Raises
     ------

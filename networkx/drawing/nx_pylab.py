@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,6 +22,7 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 import networkx as nx
+from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout
@@ -67,9 +68,9 @@ def draw(G, pos=None, ax=None, **kwds):
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
+    >>> G = nx.dodecahedral_graph()
     >>> nx.draw(G)
-    >>> nx.draw(G,pos=nx.spring_layout(G)) # use spring layout
+    >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     See Also
     --------
@@ -92,12 +93,12 @@ def draw(G, pos=None, ax=None, **kwds):
 
     >>> import matplotlib.pyplot as plt
     >>> import networkx as nx
-    >>> G=nx.dodecahedral_graph()
+    >>> G = nx.dodecahedral_graph()
     >>> nx.draw(G)  # networkx draw()
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/gallery.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -235,15 +236,15 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
+    >>> G = nx.dodecahedral_graph()
     >>> nx.draw(G)
-    >>> nx.draw(G,pos=nx.spring_layout(G)) # use spring layout
+    >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     >>> import matplotlib.pyplot as plt
-    >>> limits=plt.axis('off') # turn of axis
+    >>> limits = plt.axis('off')  # turn of axis
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/gallery.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -318,8 +319,11 @@ def draw_networkx_nodes(G, pos,
        The shape of the node.  Specification is as matplotlib.scatter
        marker, one of 'so^>v<dph8' (default='o').
 
-    alpha : float
-       The node transparency (default=1.0)
+    alpha : float or array of floats
+       The node transparency.  This can be a single alpha value (default=1.0),
+       in which case it will be applied to all the nodes of color. Otherwise,
+       if it is an array, the elements of alpha will be applied to the colors
+       in order (cycling through alpha multiple times if necessary).
 
     cmap : Matplotlib colormap
        Colormap for mapping intensities of nodes (default=None)
@@ -340,11 +344,11 @@ def draw_networkx_nodes(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> nodes=nx.draw_networkx_nodes(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> nodes = nx.draw_networkx_nodes(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/gallery.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -357,7 +361,7 @@ def draw_networkx_nodes(G, pos,
     import collections
     try:
         import matplotlib.pyplot as plt
-        import numpy
+        import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -374,9 +378,9 @@ def draw_networkx_nodes(G, pos,
         return None
 
     try:
-        xy = numpy.asarray([pos[v] for v in nodelist])
+        xy = np.asarray([pos[v] for v in nodelist])
     except KeyError as e:
-        raise nx.NetworkXError('Node %s has no position.'%e)
+        raise nx.NetworkXError('Node %s has no position.' % e)
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
 
@@ -472,11 +476,11 @@ def draw_networkx_edges(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> edges=nx.draw_networkx_edges(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> edges = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/gallery.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -492,7 +496,7 @@ def draw_networkx_edges(G, pos,
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter, Colormap
         from matplotlib.collections import LineCollection
-        import numpy
+        import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -509,27 +513,25 @@ def draw_networkx_edges(G, pos,
         return None
 
     # set edge positions
-    edge_pos = numpy.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
+    edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
 
     if not cb.iterable(width):
         lw = (width,)
     else:
         lw = width
 
-    if not cb.is_string_like(edge_color) \
-           and cb.iterable(edge_color) \
-           and len(edge_color) == len(edge_pos):
-        if numpy.alltrue([cb.is_string_like(c)
-                         for c in edge_color]):
+    if not is_string_like(edge_color) \
+            and cb.iterable(edge_color) \
+            and len(edge_color) == len(edge_pos):
+        if np.alltrue([is_string_like(c) for c in edge_color]):
             # (should check ALL elements)
             # list of color letters such as ['k','r','k',...]
             edge_colors = tuple([colorConverter.to_rgba(c, alpha)
                                  for c in edge_color])
-        elif numpy.alltrue([not cb.is_string_like(c)
-                           for c in edge_color]):
+        elif np.alltrue([not is_string_like(c) for c in edge_color]):
             # If color specs are given as (rgb) or (rgba) tuples, we're OK
-            if numpy.alltrue([cb.iterable(c) and len(c) in (3, 4)
-                             for c in edge_color]):
+            if np.alltrue([cb.iterable(c) and len(c) in (3, 4)
+                          for c in edge_color]):
                 edge_colors = tuple(edge_color)
             else:
                 # numbers (which are going to be mapped with a colormap)
@@ -537,17 +539,18 @@ def draw_networkx_edges(G, pos,
         else:
             raise ValueError('edge_color must consist of either color names or numbers')
     else:
-        if cb.is_string_like(edge_color) or len(edge_color) == 1:
+        if is_string_like(edge_color) or len(edge_color) == 1:
             edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
         else:
-            raise ValueError('edge_color must be a single color or list of exactly m colors where m is the number or edges')
+            raise ValueError(
+                'edge_color must be a single color or list of exactly m colors where m is the number or edges')
 
     edge_collection = LineCollection(edge_pos,
                                      colors=edge_colors,
                                      linewidths=lw,
                                      antialiaseds=(1,),
                                      linestyle=style,
-                                     transOffset = ax.transData,
+                                     transOffset=ax.transData,
                                      )
 
     edge_collection.set_zorder(1)  # edges go behind nodes
@@ -565,7 +568,7 @@ def draw_networkx_edges(G, pos,
     if edge_colors is None:
         if edge_cmap is not None:
             assert(isinstance(edge_cmap, Colormap))
-        edge_collection.set_array(numpy.asarray(edge_color))
+        edge_collection.set_array(np.asarray(edge_color))
         edge_collection.set_cmap(edge_cmap)
         if edge_vmin is not None or edge_vmax is not None:
             edge_collection.set_clim(edge_vmin, edge_vmax)
@@ -581,49 +584,49 @@ def draw_networkx_edges(G, pos,
         # waiting for someone else to implement arrows that will work
         arrow_colors = edge_colors
         a_pos = []
-        p = 1.0-0.25  # make head segment 25 percent of edge length
+        p = 1.0 - 0.25  # make head segment 25 percent of edge length
         for src, dst in edge_pos:
             x1, y1 = src
             x2, y2 = dst
-            dx = x2-x1   # x offset
-            dy = y2-y1   # y offset
-            d = numpy.sqrt(float(dx**2 + dy**2))  # length of edge
+            dx = x2 - x1   # x offset
+            dy = y2 - y1   # y offset
+            d = np.sqrt(float(dx**2 + dy**2))  # length of edge
             if d == 0:   # source and target at same position
                 continue
             if dx == 0:  # vertical edge
                 xa = x2
-                ya = dy*p+y1
+                ya = dy * p + y1
             if dy == 0:  # horizontal edge
                 ya = y2
-                xa = dx*p+x1
+                xa = dx * p + x1
             else:
-                theta = numpy.arctan2(dy, dx)
-                xa = p*d*numpy.cos(theta)+x1
-                ya = p*d*numpy.sin(theta)+y1
+                theta = np.arctan2(dy, dx)
+                xa = p * d * np.cos(theta) + x1
+                ya = p * d * np.sin(theta) + y1
 
             a_pos.append(((xa, ya), (x2, y2)))
 
         arrow_collection = LineCollection(a_pos,
-                                colors=arrow_colors,
-                                linewidths=[4*ww for ww in lw],
-                                antialiaseds=(1,),
-                                transOffset = ax.transData,
-                                )
+                                          colors=arrow_colors,
+                                          linewidths=[4 * ww for ww in lw],
+                                          antialiaseds=(1,),
+                                          transOffset=ax.transData,
+                                          )
 
         arrow_collection.set_zorder(1)  # edges go behind nodes
         arrow_collection.set_label(label)
         ax.add_collection(arrow_collection)
 
     # update view
-    minx = numpy.amin(numpy.ravel(edge_pos[:, :, 0]))
-    maxx = numpy.amax(numpy.ravel(edge_pos[:, :, 0]))
-    miny = numpy.amin(numpy.ravel(edge_pos[:, :, 1]))
-    maxy = numpy.amax(numpy.ravel(edge_pos[:, :, 1]))
+    minx = np.amin(np.ravel(edge_pos[:, :, 0]))
+    maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
+    miny = np.amin(np.ravel(edge_pos[:, :, 1]))
+    maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
 
-    w = maxx-minx
-    h = maxy-miny
-    padx,  pady = 0.05*w, 0.05*h
-    corners = (minx-padx, miny-pady), (maxx+padx, maxy+pady)
+    w = maxx - minx
+    h = maxy - miny
+    padx,  pady = 0.05 * w, 0.05 * h
+    corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
 
@@ -681,12 +684,11 @@ def draw_networkx_labels(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> labels=nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> labels = nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/gallery.html
-
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -718,21 +720,21 @@ def draw_networkx_labels(G, pos,
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
-        if not cb.is_string_like(label):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
         t = ax.text(x, y,
-                  label,
-                  size=font_size,
-                  color=font_color,
-                  family=font_family,
-                  weight=font_weight,
-                  alpha=alpha,
-                  horizontalalignment=horizontalalignment,
-                  verticalalignment=verticalalignment,
-                  transform=ax.transData,
-                  bbox=bbox,
-                  clip_on=True,
-                  )
+                    label,
+                    size=font_size,
+                    color=font_color,
+                    family=font_family,
+                    weight=font_weight,
+                    alpha=alpha,
+                    horizontalalignment=horizontalalignment,
+                    verticalalignment=verticalalignment,
+                    transform=ax.transData,
+                    bbox=bbox,
+                    clip_on=True,
+                    )
         text_items[n] = t
 
     return text_items
@@ -800,11 +802,11 @@ def draw_networkx_edge_labels(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
+    >>> G = nx.dodecahedral_graph()
+    >>> edge_labels = nx.draw_networkx_edge_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/gallery.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -817,7 +819,7 @@ def draw_networkx_edge_labels(G, pos,
     try:
         import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
-        import numpy
+        import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -838,15 +840,15 @@ def draw_networkx_edge_labels(G, pos,
                   y1 * label_pos + y2 * (1.0 - label_pos))
 
         if rotate:
-            angle = numpy.arctan2(y2-y1, x2-x1)/(2.0*numpy.pi)*360  # degrees
+            angle = np.arctan2(y2 - y1, x2 - x1) / (2.0 * np.pi) * 360  # degrees
             # make label orientation "right-side-up"
             if angle > 90:
                 angle -= 180
             if angle < - 90:
                 angle += 180
             # transform data coordinate angle to screen coordinate angle
-            xy = numpy.array((x, y))
-            trans_angle = ax.transData.transform_angles(numpy.array((angle,)),
+            xy = np.array((x, y))
+            trans_angle = ax.transData.transform_angles(np.array((angle,)),
                                                         xy.reshape((1, 2)))[0]
         else:
             trans_angle = 0.0
@@ -856,7 +858,7 @@ def draw_networkx_edge_labels(G, pos,
                         ec=(1.0, 1.0, 1.0),
                         fc=(1.0, 1.0, 1.0),
                         )
-        if not cb.is_string_like(label):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
 
         # set optional alignment
@@ -982,18 +984,13 @@ def draw_shell(G, **kwargs):
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
 
 
-def draw_nx(G, pos, **kwds):
-    """For backward compatibility; use draw or draw_networkx."""
-    draw(G, pos, **kwds)
-
-
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     """Apply an alpha (or list of alphas) to the colors provided.
 
     Parameters
     ----------
 
-    color : color string, or array of floats
+    colors : color string, or array of floats
        Color of element. Can be a single color format string (default='r'),
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
@@ -1028,7 +1025,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     import itertools
 
     try:
-        import numpy
+        import numpy as np
         from matplotlib.colors import colorConverter
         import matplotlib.cm as cm
     except ImportError:
@@ -1043,9 +1040,9 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     # These are converted to numpy ndarrays to be consistent with the to_rgba method of ScalarMappable.
     else:
         try:
-            rgba_colors = numpy.array([colorConverter.to_rgba(colors)])
+            rgba_colors = np.array([colorConverter.to_rgba(colors)])
         except ValueError:
-            rgba_colors = numpy.array([colorConverter.to_rgba(color) for color in colors])
+            rgba_colors = np.array([colorConverter.to_rgba(color) for color in colors])
     # Set the final column of the rgba_colors to have the relevant alpha values.
     try:
         # If alpha is longer than the number of colors, resize to the number of elements.
@@ -1062,6 +1059,8 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     return rgba_colors
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

@@ -1,5 +1,5 @@
 # encoding: utf-8
-#    Copyright (C) 2008-2016 by
+#    Copyright (C) 2008-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -720,7 +720,7 @@ def generate_gml(G, stringizer=None):
     # Output node data
     node_id = dict(zip(G, range(len(G))))
     ignored_keys = {'id', 'label'}
-    for node, attrs in G.node.items():
+    for node, attrs in G.nodes.items():
         yield '  node ['
         yield '    id ' + str(node_id[node])
         for line in stringize('label', node, (), '    '):

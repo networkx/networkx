@@ -5,177 +5,116 @@ sudo: false
 
 language: python
 
-python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-
 cache:
   directories:
     - $HOME/.cache/pip
 
 matrix:
-  fast_finish: true
-
   include:
-    - python: "2.7"
-      env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-    - python: "pypy-5.3.1"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-    - python: "pypy-5.7.1"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-      dist: trusty # 5.7.1 is currently published only on trusty
-    - python: "pypy3"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-
-  allow_failures:
-    - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - python: "pypy"
-    - python: "pypy-5.3.1"
-    - python: "pypy-5.7.1"
-
-addons:
-  apt:
-    packages:
-    - libatlas-dev
-    - libatlas-base-dev
-    - liblapack-dev
-    - gfortran
-    - libsuitesparse-dev
-    - libgdal-dev
-    - graphviz
-    - mono-devel
-
-env:
-  matrix:
-    - OPTIONAL_DEPS=miniconda
-    - OPTIONAL_DEPS=no
+    - os: linux
+      python: 2.7
+      env:
+      - OPTIONAL_DEPS=1
+      - BUILD_DOCS=1
+      - DEPLOY_DOCS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+          - texlive
+          - texlive-latex-extra
+          - latexmk
+    - os: linux
+      python: 2.7
+      env:
+      - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      - REPORT_COVERAGE=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 2.7
+      env:
+      - OPTIONAL_DEPS=1
+      - PIP_FLAGS="--pre"
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 3.6
+      env: OPTIONAL_DEPS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 3.6
+      env:
+      - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: osx
+      language: generic
+      env:
+      - TRAVIS_PYTHON_VERSION=3.6.0
+      - OPTIONAL_DEPS=1
+      - OSX_PKG_ENV=miniconda
+    - os: osx
+      language: generic
+      env: TRAVIS_PYTHON_VERSION=3.6
+    - python: 2.7
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
 
 before_install:
-  ### Prepare the system to install prerequisites or dependencies
-  - pip install --upgrade pip
+  # prepare the system to install prerequisites or dependencies
+  - source tools/travis/before_install.sh
   - uname -a
   - printenv
-  # Workaround for travis-ci/travis-ci#2683
-  - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
-      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-        wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh;
-      else
-        wget http://repo.continuum.io/miniconda/Miniconda3-3.7.0-Linux-x86_64.sh -O miniconda.sh;
-      fi;
-      bash miniconda.sh -b -p $HOME/miniconda;
-      export PATH="$HOME/miniconda/bin:$PATH";
-      hash -r;
-      conda info -a;
-      conda config --set always_yes yes --set changeps1 no;
-      conda update -q conda;
-    fi
-
-  - if [[ "${PYTHON_VM}" == ipy ]]; then
-      pushd ..;
-
-      curl -L -o ipy-2.7-maint.zip https://github.com/IronLanguages/main/archive/ipy-2.7-maint.zip;
-      unzip -q ipy-2.7-maint.zip;
-      pushd main-ipy-2.7-maint;
-      sed -i '708 s/pGroup/pGroup = null/' 'Languages/IronPython/IronPython.SQLite/c#sqlite/pcache1_c.cs';
-      xbuild /p:Configuration=Release Solutions/IronPython.sln;
-      export IPY="${PWD}/bin/Release/ipy.exe";
-      export IRONPYTHONPATH="${PWD}/External.LCA_RESTRICTED/Languages/IronPython/27/Lib";
-      popd;
-
-      curl -L -o decorator-3.4.0.tar.gz https://pypi.python.org/packages/source/d/decorator/decorator-3.4.0.tar.gz;
-      tar xf decorator-3.4.0.tar.gz;
-      cp decorator-3.4.0/src/decorator.py "${IRONPYTHONPATH}";
-
-      curl -L -o enum34-1.0.tar.gz https://pypi.python.org/packages/source/e/enum34/enum34-1.0.tar.gz;
-      tar xf enum34-1.0.tar.gz;
-      cp enum34-1.0/enum/enum.py "${IRONPYTHONPATH}";
-
-      curl -L -o nose-1.3.4.tar.gz https://pypi.python.org/packages/source/n/nose/nose-1.3.4.tar.gz;
-      tar xf nose-1.3.4.tar.gz;
-      cp -R nose-1.3.4/nose "${IRONPYTHONPATH}";
-
-      popd;
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      source tools/travis/osx_install.sh;
+    else
+      source tools/travis/linux_install.sh;
     fi
 
 install:
-  ### Install any prerequisites or dependencies necessary to run the build.
-  - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
-      DEPS="pyyaml numpy scipy matplotlib Cython pandas pip";
-      conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS ;
-      source activate test-environment;
-      conda install gdal;
-      echo "Testing that gdal installed ok by if osgeo imports";
-      python -c "from osgeo import ogr;print('importing ogr worked')";
-      if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
-        pip install pygraphviz;
-      fi;
-      pip install pydot scikits.sparse;
+  # install required packages
+  - pip install --upgrade pip
+  - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
+  - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
     fi
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      pip install --upgrade nose coverage coveralls;
-      pip install nose-ignore-docstring;
-    fi
+  # install networkx
+  - printenv PWD
+  - pip install .
+  # show what's installed
+  - python --version
+  - pip list
 
 script:
-  - printenv PWD
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      pip install .;
-      export NX_INSTALL=`pip show networkx | grep Location | awk '{print $2"/networkx"}'`;
+  - if [[ "${BUILD_DOCS}" == 1 ]]; then
+      source tools/travis/build_docs.sh;
     fi
-
-  # nose 1.3.0 does not tell coverage to only cover the requested
-  # package (except during the report).  So to restrict coverage, we must
-  # inform coverage through the .coveragerc file.
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      cp .coveragerc $NX_INSTALL;
-      cp setup.cfg $NX_INSTALL;
-    fi
-
-  # Move to new directory so that networkx is not imported from repository.
-  # Why? Because we want the tests to make sure that NetworkX was installed
-  # correctly. Example: setup.py might not have included some submodules.
-  # Testing from the git repository cannot catch a mistake like that.
-  #
-  # Export current directory for logs.
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      cd $NX_INSTALL;
-      printenv PWD;
-    fi
-
-      # Run nosetests.
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      if [[ "${PYTHON_VM}" == pypy ]]; then
-          nosetests --verbosity=2 --with-ignore-docstrings;
-      else
-          nosetests --verbosity=2 --with-ignore-docstrings --with-coverage --cover-package=networkx;
-      fi;
-    else
-      mono "${IPY}" -X:ExceptionDetail -X:FullFrames -c 'from nose import main; main()' \--verbosity=2;
-    fi
+  - source tools/travis/script.sh
 
 after_success:
-  # `coveralls` needs to be run from the git repository, and it requires
-  # the .coverage file that was generated during the testing phase. The
-  # .coverage file stores absolute paths to the modules, and since we ran
-  # tests from the installed directory, the paths do not point to files in
-  # the git repository. Although this does not affect reported statistics,
-  # it does prevent coveralls from providing more detailed information on
-  # each file. So the paths in .coverage must be modified to match the
-  # repository paths. This is what `fixcoverage.py` does.
-  #
-  # Report coverage for 2.7 and 3.4 miniconda runs only.
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
-      cp .coverage $TRAVIS_BUILD_DIR;
-      cd $TRAVIS_BUILD_DIR;
-      if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7miniconda|3\.4miniconda ]]; then
-        python fixcoverage.py ".*/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
-        coveralls;
-      fi;
+  - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
+      codecov;
+    fi
+  - if [[ "${BUILD_DOCS}" == 1 && "${DEPLOY_DOCS}" == 1 ]]; then
+      source tools/travis/deploy_docs.sh;
     fi
 
 notifications:

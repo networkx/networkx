@@ -43,7 +43,7 @@ class TestPajek(object):
         data = """*Vertices 3\n1 "one"\n2 "two"\n3 "three"\n*Matrix\n1 1 0\n0 1 0\n0 1 0\n"""
         G=parse_pajek(data)
         assert_equal(set(G.nodes()), {'one', 'two', 'three'})
-        assert_equal(G.node['two'], {'id': '2'})
+        assert_equal(G.nodes['two'], {'id': '2'})
         assert_edges_equal(set(G.edges()), {('one', 'one'), ('two', 'one'), ('two', 'two'), ('two', 'three')})
 
     def test_read_pajek(self):
@@ -52,8 +52,8 @@ class TestPajek(object):
         assert_equal(sorted(G.nodes()), sorted(Gin.nodes()))
         assert_edges_equal(G.edges(), Gin.edges())
         assert_equal(self.G.graph,Gin.graph)
-        for n in G.node:
-            assert_equal(G.node[n],Gin.node[n])
+        for n in G:
+            assert_equal(G.nodes[n],Gin.nodes[n])
 
     def test_noname(self):
         # Make sure we can parse a line such as:  *network

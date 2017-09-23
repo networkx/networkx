@@ -97,9 +97,9 @@ pages = {11--15}
 from networkx.exception import *
 import networkx.utils
 
+import networkx.classes.filters
 import networkx.classes
 from networkx.classes import *
-
 
 import networkx.convert
 from networkx.convert import *

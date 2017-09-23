@@ -7,12 +7,8 @@ NetworkX
 .. image:: https://ci.appveyor.com/api/projects/status/github/dschult/networkx?branch=master&svg=true
    :target: https://ci.appveyor.com/project/dschult/networkx-pqott
 
-.. image:: https://readthedocs.org/projects/networkx/badge/?version=latest
-   :target: https://readthedocs.org/projects/networkx/?badge=latest
-   :alt: Documentation Status
-
-.. image:: https://coveralls.io/repos/networkx/networkx/badge.svg?branch=master
-   :target: https://coveralls.io/r/networkx/networkx?branch=master
+.. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/networkx/networkx
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
@@ -57,7 +53,7 @@ Please report any bugs that you find `here <https://github.com/networkx/networkx
 Or, even better, fork the repository on `GitHub <https://github.com/networkx/networkx>`_
 and create a pull request (PR). We welcome all changes, big or small, and we
 will help you make the PR if you are new to `git` (just ask on the issue and/or
-see `CONTRIBUTE.rst`).
+see `CONTRIBUTING.rst`).
 
 License
 -------

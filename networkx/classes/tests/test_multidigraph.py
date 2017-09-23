@@ -103,9 +103,9 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G.graph['foo'].append(1)
         assert_equal(G.graph['foo'], H.graph['foo'])
         # node
-        assert_equal(G.node[0]['foo'], H.node[0]['foo'])
-        G.node[0]['foo'].append(1)
-        assert_equal(G.node[0]['foo'], H.node[0]['foo'])
+        assert_equal(G.nodes[0]['foo'], H.nodes[0]['foo'])
+        G.nodes[0]['foo'].append(1)
+        assert_equal(G.nodes[0]['foo'], H.nodes[0]['foo'])
         # edge
         assert_equal(G[1][2][0]['foo'], H[1][2][0]['foo'])
         G[1][2][0]['foo'].append(1)
@@ -117,9 +117,9 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G.graph['foo'].append(1)
         assert_not_equal(G.graph['foo'], H.graph['foo'])
         # node
-        assert_equal(G.node[0]['foo'], H.node[0]['foo'])
-        G.node[0]['foo'].append(1)
-        assert_not_equal(G.node[0]['foo'], H.node[0]['foo'])
+        assert_equal(G.nodes[0]['foo'], H.nodes[0]['foo'])
+        G.nodes[0]['foo'].append(1)
+        assert_not_equal(G.nodes[0]['foo'], H.nodes[0]['foo'])
         # edge
         assert_equal(G[1][2][0]['foo'], H[1][2][0]['foo'])
         G[1][2][0]['foo'].append(1)
@@ -217,9 +217,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G = nx.MultiDiGraph([(0, 1), (0, 1)])
         R = G.reverse(copy=False)
         assert_equal(sorted(R.edges()), [(1, 0), (1, 0)])
-        R.remove_edge(1, 0)
-        assert_equal(sorted(R.edges()), [(1, 0)])
-        assert_equal(sorted(G.edges()), [(1, 0)])
+        assert_raises(nx.NetworkXError, R.remove_edge, 1, 0)
 
 
 class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
@@ -349,7 +347,7 @@ class TestEdgeSubgraph(TestMultiGraphEdgeSubgraph):
         nx.add_path(G, reversed(range(5)))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.node[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = 'node{}'.format(i)
         G.adj[0][1][0]['name'] = 'edge010'
         G.adj[0][1][1]['name'] = 'edge011'
         G.adj[3][4][0]['name'] = 'edge340'

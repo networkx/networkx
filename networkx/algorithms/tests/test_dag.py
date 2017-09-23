@@ -55,7 +55,7 @@ class TestDagLongestPath(object):
         class Unorderable(object):
             def __lt__(self, other):
                 error_msg = "< not supported between instances of " \
-                  "{} and {}".format(type(self).__name__, type(other).__name__)
+                    "{} and {}".format(type(self).__name__, type(other).__name__)
                 raise TypeError(error_msg)
 
         # Create the directed path graph on four nodes in a diamond shape,
@@ -101,7 +101,6 @@ class TestDagLongestPathLength(object):
         G = nx.DiGraph()
         G.add_weighted_edges_from(edges)
         assert_equal(nx.dag_longest_path_length(G), 5)
-
 
 
 class TestDAG:
@@ -250,7 +249,7 @@ class TestDAG:
         G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)])
         transitive_reduction = nx.algorithms.dag.transitive_reduction
         solution = [(1, 2), (2, 3), (2, 4)]
-        assert_edges_equal(transitive_reduction(G).edges(), solution)        
+        assert_edges_equal(transitive_reduction(G).edges(), solution)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         assert_raises(nx.NetworkXNotImplemented, transitive_reduction, G)
 
@@ -281,22 +280,23 @@ class TestDAG:
         G.add_nodes_from([0, 1, 2])
         solution = [[], [0], [1], [1, 0], [2], [2, 0], [2, 1], [2, 1, 0]]
         self._check_antichains(list(antichains(G)), solution)
-        f = lambda x: list(antichains(x))
+
+        def f(x): return list(antichains(x))
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         assert_raises(nx.NetworkXNotImplemented, f, G)
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         assert_raises(nx.NetworkXUnfeasible, f, G)
 
     def test_lexicographical_topological_sort(self):
-        G = nx.DiGraph([(1,2), (2,3), (1,4), (1,5), (2,6)])
+        G = nx.DiGraph([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
         assert_equal(list(nx.lexicographical_topological_sort(G)),
                      [1, 2, 3, 4, 5, 6])
         assert_equal(list(nx.lexicographical_topological_sort(
             G, key=lambda x: x)),
-                     [1, 2, 3, 4, 5, 6])
+            [1, 2, 3, 4, 5, 6])
         assert_equal(list(nx.lexicographical_topological_sort(
             G, key=lambda x: -x)),
-                     [1, 5, 4, 2, 6, 3])
+            [1, 5, 4, 2, 6, 3])
 
 
 def test_is_aperiodic_cycle():

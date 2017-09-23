@@ -101,9 +101,29 @@ class TestFunction(object):
         assert_true(sorted(G.edges(nlist, data=True)) in oklists)
 
     def test_subgraph(self):
-        assert_equal(self.G.subgraph([0, 1, 2, 4]).adj, nx.subgraph(self.G, [0, 1, 2, 4]).adj)
+        assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,
+                     nx.subgraph(self.G, [0, 1, 2, 4]).adj)
         assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
                      nx.subgraph(self.DG, [0, 1, 2, 4]).adj)
+        assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,
+                     nx.induced_subgraph(self.G, [0, 1, 2, 4]).adj)
+        assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
+                     nx.induced_subgraph(self.DG, [0, 1, 2, 4]).adj)
+        # subgraph-subgraph chain is allowed in function interface
+        H = nx.induced_subgraph(self.G.subgraph([0, 1, 2, 4]), [0, 1, 4])
+        assert_is_not(H._graph, self.G)
+        assert_equal(H.adj, self.G.subgraph([0, 1, 4]).adj)
+
+    def test_edge_subgraph(self):
+        assert_equal(self.G.edge_subgraph([(1, 2), (0, 3)]).adj,
+                     nx.edge_subgraph(self.G, [(1, 2), (0, 3)]).adj)
+        assert_equal(self.DG.edge_subgraph([(1, 2), (0, 3)]).adj,
+                     nx.edge_subgraph(self.DG, [(1, 2), (0, 3)]).adj)
+
+    def test_restricted_view(self):
+        H = nx.restricted_view(self.G, [0, 2, 5], [(1, 2), (3, 4)])
+        assert_equal(set(H.nodes), {1, 3, 4})
+        assert_equal(set(H.edges), {(1, 1)})
 
     def test_create_empty_copy(self):
         G = nx.create_empty_copy(self.G, with_data=False)
@@ -155,6 +175,7 @@ class TestFunction(object):
 
     def test_info(self):
         G = nx.path_graph(5)
+        G.name = "path_graph(5)"
         info = nx.info(G)
         expected_graph_info = '\n'.join(['Name: path_graph(5)',
                                          'Type: Graph',
@@ -279,8 +300,9 @@ class TestFunction(object):
         assert_true(nx.is_weighted(G, (3, 4)))
 
         G = nx.DiGraph()
-        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -5),
-                                   ('0', '2', 2), ('1', '2', 4), ('2', '3', 1)])
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5),
+                                   ('1', '0', -5), ('0', '2', 2),
+                                   ('1', '2', 4), ('2', '3', 1)])
         assert_true(nx.is_weighted(G))
         assert_true(nx.is_weighted(G, ('1', '0')))
 
@@ -311,8 +333,9 @@ class TestFunction(object):
         assert_true(nx.is_negatively_weighted(G))
 
         G = nx.DiGraph()
-        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2),
-                                   ('0', '2', 2), ('1', '2', -3), ('2', '3', 1)])
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5),
+                                   ('1', '0', -2), ('0', '2', 2),
+                                   ('1', '2', -3), ('2', '3', 1)])
         assert_true(nx.is_negatively_weighted(G))
         assert_false(nx.is_negatively_weighted(G, ('0', '3')))
         assert_true(nx.is_negatively_weighted(G, ('1', '0')))
@@ -368,65 +391,95 @@ class TestCommonNeighbors():
 def test_set_node_attributes():
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     for G in graphs:
-        G = nx.path_graph(3, create_using=G)
-
         # Test single value
-        attr = 'hello'
+        G = nx.path_graph(3, create_using=G)
         vals = 100
-        nx.set_node_attributes(G, attr, vals)
-        assert_equal(G.node[0][attr], vals)
-        assert_equal(G.node[1][attr], vals)
-        assert_equal(G.node[2][attr], vals)
+        attr = 'hello'
+        nx.set_node_attributes(G, vals, attr)
+        assert_equal(G.nodes[0][attr], vals)
+        assert_equal(G.nodes[1][attr], vals)
+        assert_equal(G.nodes[2][attr], vals)
 
-        # Test multiple values
-        attr = 'hi'
+        # Test dictionary
+        G = nx.path_graph(3, create_using=G)
         vals = dict(zip(sorted(G.nodes()), range(len(G))))
-        nx.set_node_attributes(G, attr, vals)
-        assert_equal(G.node[0][attr], 0)
-        assert_equal(G.node[1][attr], 1)
-        assert_equal(G.node[2][attr], 2)
+        attr = 'hi'
+        nx.set_node_attributes(G, vals, attr)
+        assert_equal(G.nodes[0][attr], 0)
+        assert_equal(G.nodes[1][attr], 1)
+        assert_equal(G.nodes[2][attr], 2)
+
+        # Test dictionary of dictionaries
+        G = nx.path_graph(3, create_using=G)
+        d = {'hi': 0, 'hello': 200}
+        vals = dict.fromkeys(G.nodes(), d)
+        vals.pop(0)
+        nx.set_node_attributes(G, vals)
+        assert_equal(G.nodes[0], {})
+        assert_equal(G.nodes[1]["hi"], 0)
+        assert_equal(G.nodes[2]["hello"], 200)
 
 
 def test_set_edge_attributes():
     graphs = [nx.Graph(), nx.DiGraph()]
     for G in graphs:
-        G = nx.path_graph(3, create_using=G)
-
         # Test single value
+        G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 3
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][attr], vals)
         assert_equal(G[1][2][attr], vals)
 
         # Test multiple values
+        G = nx.path_graph(3, create_using=G)
         attr = 'hi'
         edges = [(0, 1), (1, 2)]
         vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][attr], 0)
         assert_equal(G[1][2][attr], 1)
+
+        # Test dictionary of dictionaries
+        G = nx.path_graph(3, create_using=G)
+        d = {'hi': 0, 'hello': 200}
+        edges = [(0, 1)]
+        vals = dict.fromkeys(edges, d)
+        nx.set_edge_attributes(G, vals)
+        assert_equal(G[0][1]['hi'], 0)
+        assert_equal(G[0][1]['hello'], 200)
+        assert_equal(G[1][2], {})
 
 
 def test_set_edge_attributes_multi():
     graphs = [nx.MultiGraph(), nx.MultiDiGraph()]
     for G in graphs:
-        G = nx.path_graph(3, create_using=G)
-
         # Test single value
+        G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 3
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][0][attr], vals)
         assert_equal(G[1][2][0][attr], vals)
 
         # Test multiple values
+        G = nx.path_graph(3, create_using=G)
         attr = 'hi'
         edges = [(0, 1, 0), (1, 2, 0)]
         vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         assert_equal(G[0][1][0][attr], 0)
         assert_equal(G[1][2][0][attr], 1)
+
+        # Test dictionary of dictionaries
+        G = nx.path_graph(3, create_using=G)
+        d = {'hi': 0, 'hello': 200}
+        edges = [(0, 1, 0)]
+        vals = dict.fromkeys(edges, d)
+        nx.set_edge_attributes(G, vals)
+        assert_equal(G[0][1][0]['hi'], 0)
+        assert_equal(G[0][1][0]['hello'], 200)
+        assert_equal(G[1][2][0], {})
 
 
 def test_get_node_attributes():
@@ -435,7 +488,7 @@ def test_get_node_attributes():
         G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 100
-        nx.set_node_attributes(G, attr, vals)
+        nx.set_node_attributes(G, vals, attr)
         attrs = nx.get_node_attributes(G, attr)
         assert_equal(attrs[0], vals)
         assert_equal(attrs[1], vals)
@@ -448,7 +501,7 @@ def test_get_edge_attributes():
         G = nx.path_graph(3, create_using=G)
         attr = 'hello'
         vals = 100
-        nx.set_edge_attributes(G, attr, vals)
+        nx.set_edge_attributes(G, vals, attr)
         attrs = nx.get_edge_attributes(G, attr)
 
         assert_equal(len(attrs), 2)
@@ -476,3 +529,20 @@ def test_is_empty():
         assert_true(nx.is_empty(G))
         G.add_edges_from([(1, 2), (3, 4)])
         assert_false(nx.is_empty(G))
+
+
+def test_selfloops():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for graph in graphs:
+        G = nx.complete_graph(3, create_using=graph)
+        G.add_edge(0, 0)
+        assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
+        assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
+        assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
+        assert_equal(nx.number_of_selfloops(G), 1)
+        # test selfloop attr
+        G.add_edge(1, 1, weight=2)
+        assert_edges_equal(nx.selfloop_edges(G, data=True),
+                           [(0, 0, {}), (1, 1, {'weight': 2})])
+        assert_edges_equal(nx.selfloop_edges(G, data='weight'),
+                           [(0, 0, None), (1, 1, 2)])

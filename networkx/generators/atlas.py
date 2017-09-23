@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -122,13 +122,12 @@ def graph_atlas(i):
     -----
     The time required by this function increases linearly with the
     argument `i`, since it reads a large file sequentially in order to
-    generate the graph.
+    generate the graph [1]_.
 
     References
     ----------
-    .. [graph_atlas] Ronald C. Read and Robin J. Wilson,
-                     *An Atlas of Graphs*.
-                     Oxford University Press, 1998.
+    .. [1] Ronald C. Read and Robin J. Wilson, *An Atlas of Graphs*.
+           Oxford University Press, 1998.
 
     """
     if not (0 <= i < NUM_GRAPHS):

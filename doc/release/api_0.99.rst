@@ -171,7 +171,7 @@ __getitem__()
    To get a list of neighbors you can either use the keys of that
    dictionary or use
 
-   >>> G.neighbors(0)
+   >>> G.neighbors(0)  # doctest: +SKIP
    [1]
    
    This change allows algorithms to use the underlying dict-of-dict
@@ -189,7 +189,7 @@ info()
    now a function
 
    >>> G=nx.Graph(name='test me')
-   >>> nx.info(G)
+   >>> nx.info(G)  # doctest: +SKIP
    Name:                  test me
    Type:                  Graph
    Number of nodes:       0
@@ -220,9 +220,9 @@ G.in_edges()
 ^^^^^^^^^^^^ 
    use
 
-   >>> G=nx.DiGraph()
-   >>> R=G.reverse()
-   >>> R.edges()
+   >>> G = nx.DiGraph()
+   >>> R = G.reverse()
+   >>> R.edges()  # doctest: +SKIP
    []
 
    or
