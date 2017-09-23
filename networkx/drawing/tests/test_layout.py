@@ -224,8 +224,9 @@ class TestLayout(object):
 
         expected_cost = 0.5 * meanwt * numpy.sum(numpy.sum(pos, axis=0) ** 2)
         for i in range(pos.shape[0]):
-            for j in range(i + 1, pos.shape[0]):
-                expected_cost += (numpy.linalg.norm(pos[i] - pos[j]) * invdist[i][j] - 1.0) ** 2
+            for j in range(i+1, pos.shape[0]):
+                expected_cost += (numpy.linalg.norm(pos[i] - pos[j])
+                                    * invdist[i][j] - 1.0) ** 2
 
         assert_almost_equal(cost, expected_cost)
 
