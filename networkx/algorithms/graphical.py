@@ -7,7 +7,6 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from collections import defaultdict
 import heapq
 import networkx as nx
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',

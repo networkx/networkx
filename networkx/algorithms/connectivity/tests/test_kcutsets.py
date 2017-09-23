@@ -1,6 +1,5 @@
 # Jordi Torrents
 # Test for k-cutsets
-from operator import itemgetter
 from nose.tools import assert_equal, assert_false, assert_true, assert_raises
 
 import networkx as nx

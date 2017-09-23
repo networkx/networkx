@@ -24,7 +24,6 @@ See Also
 Pygraphviz: http://pygraphviz.github.io/
 """
 import os
-import sys
 import tempfile
 import networkx as nx
 

@@ -1,5 +1,4 @@
 """Unit tests for the :mod:`networkx.generators.lattice` module."""
-import itertools
 
 from nose.tools import assert_equal
 from nose.tools import assert_true

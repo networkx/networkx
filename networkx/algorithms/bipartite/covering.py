@@ -6,8 +6,7 @@
 
 """ Functions related to graph covers."""
 
-import networkx as nx
-from networkx.utils import not_implemented_for, arbitrary_element
+from networkx.utils import not_implemented_for
 from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
 from networkx.algorithms.covering import min_edge_cover as _min_edge_cover
 

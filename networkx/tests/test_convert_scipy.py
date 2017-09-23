@@ -1,10 +1,9 @@
 from nose import SkipTest
-from nose.tools import assert_raises, assert_true, assert_equal, raises
+from nose.tools import assert_raises, assert_true, raises
 
 import networkx as nx
 from networkx.testing import assert_graphs_equal
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
-from networkx.testing.utils import assert_graphs_equal
 
 
 class TestConvertNumpy(object):

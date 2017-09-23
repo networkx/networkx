@@ -4,7 +4,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from itertools import chain, count
+from itertools import chain
 import networkx as nx
 from networkx.utils import make_str
 __author__ = """Aric Hagberg (hagberg@lanl.gov))"""

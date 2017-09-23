@@ -8,7 +8,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Functions for finding chains in a graph."""
-from itertools import islice
 
 import networkx as nx
 from networkx.utils import not_implemented_for
