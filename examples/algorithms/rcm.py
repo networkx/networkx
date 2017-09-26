@@ -14,10 +14,7 @@ reduces the matrix bandwidth.
 # BSD License
 import networkx as nx
 from networkx.utils import reverse_cuthill_mckee_ordering
-try:
-    import numpy as np
-except ImportError:
-    raise ImportError('rcm requires NumPy ', 'http://scipy.org/')
+import numpy as np
 
 # build low-bandwidth numpy matrix
 G = nx.grid_2d_graph(3, 3)
