@@ -104,9 +104,38 @@ def modularity_spectrum(G):
     else:
         return eigvals(nx.modularity_matrix(G))
 
+
+def spectral_clustering(G, k):
+    """Return spectral clustering of G.
+
+    Parameters
+    ----------
+    G : Graph
+       A NetworkX Graph or DiGraph
+
+    Returns
+    -------
+    clustering : NumPy array
+      The spectral clustering
+
+
+    References
+    ----------
+    .. [1] Ulrike Von Luxburg, "A Tutorial on Spectral Clustering", 2007.
+    """
+
+    try:
+        from sklearn.clustering import SpectralClustering
+    except ImportError:
+        raise ImportError('spectral clustering requires Scikit-learn ',
+                          'http://scikit-learn.org/')
+
+    sc = SpectralClustering(k, affinity='precomputed', n_init=100,
+                            assign_labels='discretize')
+    return sc.fit_transform(G)
+
+
 # fixture for nose tests
-
-
 def setup_module(module):
     from nose import SkipTest
     try:
