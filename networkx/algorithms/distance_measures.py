@@ -133,7 +133,7 @@ def extrema_bounding(G, compute="diameter"):
 
         elif compute == 'center':
             ruled_out = {i for i in candidates if ecc_lower[i] > minupper and
-                     (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)}
+                         (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)}
 
         elif compute == 'eccentricities':
             ruled_out = {}
@@ -223,7 +223,7 @@ def eccentricity(G, v=None, sp=None):
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = dict(networkx.single_source_shortest_path_length(G, n))
+            length = networkx.single_source_shortest_path_length(G, n)
             L = len(length)
         else:
             try:

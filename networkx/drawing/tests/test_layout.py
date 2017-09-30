@@ -1,14 +1,14 @@
 """Unit tests for layout functions."""
-import sys
 from nose import SkipTest
 from nose.tools import assert_almost_equal, assert_equal, \
-                       assert_false, assert_raises
+    assert_false, assert_raises
 import networkx as nx
 
 
 class TestLayout(object):
-    numpy = 1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
     scipy = None
+
     @classmethod
     def setupClass(cls):
         global numpy, scipy
@@ -25,7 +25,7 @@ class TestLayout(object):
         self.Gi = nx.grid_2d_graph(5, 5)
         self.Gs = nx.Graph()
         nx.add_path(self.Gs, 'abcdef')
-        self.bigG = nx.grid_2d_graph(25, 25) #bigger than 500 nodes for sparse
+        self.bigG = nx.grid_2d_graph(25, 25)  # bigger than 500 nodes for sparse
 
     def test_spring_init_pos(self):
         # Tests GH #2448
@@ -39,6 +39,17 @@ class TestLayout(object):
         has_nan = any(math.isnan(c) for coords in pos.values() for c in coords)
         assert_false(has_nan, 'values should not be nan')
 
+    def test_smoke_empty_graph(self):
+        G = []
+        vpos = nx.random_layout(G)
+        vpos = nx.circular_layout(G)
+        vpos = nx.spring_layout(G)
+        vpos = nx.fruchterman_reingold_layout(G)
+        vpos = nx.spectral_layout(G)
+        vpos = nx.shell_layout(G)
+        if self.scipy is not None:
+            vpos = nx.kamada_kawai_layout(G)
+
     def test_smoke_int(self):
         G = self.Gi
         vpos = nx.random_layout(G)
@@ -47,7 +58,9 @@ class TestLayout(object):
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.fruchterman_reingold_layout(self.bigG)
         vpos = nx.spectral_layout(G)
+        vpos = nx.spectral_layout(G.to_directed())
         vpos = nx.spectral_layout(self.bigG)
+        vpos = nx.spectral_layout(self.bigG.to_directed())
         vpos = nx.shell_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
@@ -141,10 +154,10 @@ class TestLayout(object):
         pos = nx.circular_layout(self.bigG)
         npos = nx.fruchterman_reingold_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         for axis in range(2):
-            assert_almost_equal(pos[(0,0)][axis], npos[(0,0)][axis])
+            assert_almost_equal(pos[(0, 0)][axis], npos[(0, 0)][axis])
 
     def test_center_parameter(self):
-        G =  nx.path_graph(1)
+        G = nx.path_graph(1)
         vpos = nx.random_layout(G, center=(1, 1))
         vpos = nx.circular_layout(G, center=(1, 1))
         assert_equal(tuple(vpos[0]), (1, 1))
@@ -158,7 +171,7 @@ class TestLayout(object):
         assert_equal(tuple(vpos[0]), (1, 1))
 
     def test_center_wrong_dimensions(self):
-        G =  nx.path_graph(1)
+        G = nx.path_graph(1)
         assert_raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
@@ -169,7 +182,7 @@ class TestLayout(object):
         assert_raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
 
     def test_empty_graph(self):
-        G =  nx.empty_graph()
+        G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))
         assert_equal(vpos, {})
         vpos = nx.circular_layout(G, center=(1, 1))
@@ -198,12 +211,12 @@ class TestLayout(object):
     def test_kamada_kawai_costfn_2d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
 
-        pos = numpy.array([[ 1.3, -3.2 ],
-                           [ 2.7, -0.3 ],
-                           [ 5.1, 2.5 ]])
-        invdist = 1 / numpy.array([[ 0.1, 2.1, 1.7 ],
-                                   [ 2.1, 0.2, 0.6 ],
-                                   [ 1.7, 0.6, 0.3 ]])
+        pos = numpy.array([[1.3, -3.2],
+                           [2.7, -0.3],
+                           [5.1, 2.5]])
+        invdist = 1 / numpy.array([[0.1, 2.1, 1.7],
+                                   [2.1, 0.2, 0.6],
+                                   [1.7, 0.6, 0.3]])
         meanwt = 0.3
 
         cost, grad = costfn(pos.ravel(), numpy, invdist,
@@ -211,9 +224,8 @@ class TestLayout(object):
 
         expected_cost = 0.5 * meanwt * numpy.sum(numpy.sum(pos, axis=0) ** 2)
         for i in range(pos.shape[0]):
-            for j in range(i+1, pos.shape[0]):
-                expected_cost += (numpy.linalg.norm(pos[i] - pos[j])
-                                    * invdist[i][j] - 1.0) ** 2
+            for j in range(i + 1, pos.shape[0]):
+                expected_cost += (numpy.linalg.norm(pos[i] - pos[j]) * invdist[i][j] - 1.0) ** 2
 
         assert_almost_equal(cost, expected_cost)
 

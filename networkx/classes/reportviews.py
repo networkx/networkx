@@ -191,10 +191,13 @@ class NodeView(Mapping, Set):
             return self
         return NodeDataView(self._nodes, data, default)
 
-    def data(self, data=False, default=None):
+    def data(self, data=True, default=None):
         if data is False:
             return self
         return NodeDataView(self._nodes, data, default)
+
+    def __str__(self):
+        return str(list(self))
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, tuple(self))
@@ -235,8 +238,14 @@ class NodeDataView(Set):
         self._default = default
 
     @classmethod
-    def _from_iterable(self, it):
-        return set(it)
+    def _from_iterable(cls, it):
+        try:
+            return set(it)
+        except TypeError as err:
+            if "unhashable" in str(err):
+                msg = " : Could be b/c data=True or your values are unhashable"
+                raise TypeError(str(err) + msg)
+            raise
 
     def __len__(self):
         return len(self._nodes)
@@ -271,10 +280,8 @@ class NodeDataView(Set):
             return ddict
         return ddict[data] if data in ddict else self._default
 
-    def __call__(self, data=False, default=None):
-        if data == self._data and default == self._default:
-            return self
-        return NodeDataView(self._nodes, data, default)
+    def __str__(self):
+        return str(list(self))
 
     def __repr__(self):
         if self._data is False:
@@ -324,26 +331,26 @@ class DiDegreeView(object):
     >>> assert(len(list(DVnbunch)) == 2)  # iteration over nbunch only
     """
     def __init__(self, G, nbunch=None, weight=None):
-        self.nbunch_iter = G.nbunch_iter
+        self._graph = G
         self._succ = G._succ if hasattr(G, "_succ") else G._adj
         self._pred = G._pred if hasattr(G, "_pred") else G._adj
         self._nodes = self._succ if nbunch is None \
-            else list(self.nbunch_iter(nbunch))
+            else list(G.nbunch_iter(nbunch))
         self._weight = weight
 
     def __call__(self, nbunch=None, weight=None):
         if nbunch is None:
             if weight == self._weight:
                 return self
-            return self.__class__(self, None, weight)
+            return self.__class__(self._graph, None, weight)
         try:
             if nbunch in self._nodes:
                 if weight == self._weight:
                     return self[nbunch]
-                return self.__class__(self, None, weight)[nbunch]
+                return self.__class__(self._graph, None, weight)[nbunch]
         except TypeError:
             pass
-        return self.__class__(self, nbunch, weight)
+        return self.__class__(self._graph, nbunch, weight)
 
     def __getitem__(self, n):
         weight = self._weight
@@ -373,7 +380,7 @@ class DiDegreeView(object):
         return len(self._nodes)
 
     def __str__(self):
-        return 'DegreeView(%r)' % dict(self)
+        return str(list(self))
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, dict(self))
@@ -612,28 +619,29 @@ class OutMultiDegreeView(DiDegreeView):
 # EdgeDataViews
 class OutEdgeDataView(object):
     """EdgeDataView for outward edges of DiGraph; See EdgeDataView"""
-    __slots__ = ('_adjdict', 'nbunch_iter', '_nodes_nbrs', '_report')
+    __slots__ = ('_viewer', '_nbunch', '_data', '_default',
+                 '_adjdict', '_nodes_nbrs', '_report')
 
     def __getstate__(self):
-        return {'_adjdict': self._adjdict,
-                'nbunch_iter': self.nbunch_iter,
-                '_nodes_nbrs': self._nodes_nbrs,
-                '_report': self._report}
+        return {'viewer': self._viewer,
+                'nbunch': self._nbunch,
+                'data': self._data,
+                'default': self._default}
 
     def __setstate__(self, state):
-        self._adjdict = state['_nodes']
-        self.nbunch_iter = state['_nbunch_iter']
-        self._nodes_nbrs = state['_nodes_nbrs']
-        self._report = state['_report']
+        self.__init__(**state)
 
     def __init__(self, viewer, nbunch=None, data=False, default=None):
-        self.nbunch_iter = viewer.nbunch_iter
+        self._viewer = viewer
         self._adjdict = viewer._adjdict
         if nbunch is None:
             self._nodes_nbrs = self._adjdict.items
         else:
-            nbunch = list(viewer.nbunch_iter(nbunch))
+            nbunch = list(viewer._graph.nbunch_iter(nbunch))
             self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
+        self._nbunch = nbunch
+        self._data = data
+        self._default = default
         # Set _report based on data and default
         if data is True:
             self._report = lambda n, nbr, dd: (n, nbr, dd)
@@ -659,7 +667,7 @@ class OutEdgeDataView(object):
         return e == self._report(u, v, ddict)
 
     def __str__(self):
-        return 'EdgeView(%r)' % list(self)
+        return str(list(self))
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, list(self))
@@ -671,7 +679,7 @@ class EdgeDataView(OutEdgeDataView):
     This view is primarily used to iterate over the edges reporting
     edges as node-tuples with edge data optionally reported. The
     argument `nbunch` allows restriction to edges incident to nodes
-    in that container/singleton. The default when `nbunch is None`
+    in that container/singleton. The default (nbunch=None)
     reports all edges. The arguments `data` and `default` control
     what edge data is reported. The default `data is False` reports
     only node-tuples for each edge. If `data is True` the entire edge
@@ -740,16 +748,29 @@ class OutMultiEdgeDataView(OutEdgeDataView):
     """An EdgeDataView for outward edges of MultiDiGraph; See EdgeDataView"""
     __slots__ = ('keys',)
 
+    def __getstate__(self):
+        return {'viewer': self._viewer,
+                'nbunch': self._nbunch,
+                'keys': self.keys,
+                'data': self._data,
+                'default': self._default}
+
+    def __setstate__(self, state):
+        self.__init__(**state)
+
     def __init__(self, viewer, nbunch=None,
                  data=False, keys=False, default=None):
-        self.nbunch_iter = viewer.nbunch_iter
+        self._viewer = viewer
         self._adjdict = viewer._adjdict
         self.keys = keys
         if nbunch is None:
             self._nodes_nbrs = self._adjdict.items
         else:
-            nbunch = list(viewer.nbunch_iter(nbunch))
+            nbunch = list(viewer._graph.nbunch_iter(nbunch))
             self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
+        self._nbunch = nbunch
+        self._data = data
+        self._default = default
         # Set _report based on data and default
         if data is True:
             if keys is True:
@@ -863,29 +884,26 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 # EdgeViews    have set operations and no data reported
 class OutEdgeView(Set, Mapping):
     """A EdgeView class for outward edges of a DiGraph"""
-    __slots__ = ('_adjdict', 'nbunch_iter', '_nodes_nbrs')
+    __slots__ = ('_adjdict', '_graph', '_nodes_nbrs')
 
     def __getstate__(self):
-        return {'_adjdict': self._adjdict,
-                'nbunch_iter': self.nbunch_iter,
-                '_nodes_nbrs': self._nodes_nbrs}
+        return {'_graph': self._graph}
 
     def __setstate__(self, state):
-        self._adjdict = state['_adjdict']
-        self.nbunch_iter = state['nbunch_iter']
-        self._nodes_nbrs = state['_nodes_nbrs']
+        self._graph = G = state['_graph']
+        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
+        self._nodes_nbrs = self._adjdict.items
 
     @classmethod
     def _from_iterable(self, it):
         return set(it)
 
-    view = OutEdgeDataView
+    dataview = OutEdgeDataView
 
     def __init__(self, G):
-        succ = G._succ if hasattr(G, "succ") else G._adj
-        self.nbunch_iter = G.nbunch_iter
-        self._adjdict = succ
-        self._nodes_nbrs = succ.items
+        self._graph = G
+        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
+        self._nodes_nbrs = self._adjdict.items
 
     # Set methods
     def __len__(self):
@@ -912,16 +930,16 @@ class OutEdgeView(Set, Mapping):
     def __call__(self, nbunch=None, data=False, default=None):
         if nbunch is None and data is False:
             return self
-        return self.view(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default)
 
-    def data(self, nbunch=None, data=False, default=None):
+    def data(self, data=True, default=None, nbunch=None):
         if nbunch is None and data is False:
             return self
-        return self.view(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default)
 
     # String Methods
     def __str__(self):
-        return 'EdgeView(%r)' % list(self)
+        return str(list(self))
 
     def __repr__(self):
         return "{0.__class__.__name__}({1!r})".format(self, list(self))
@@ -995,7 +1013,7 @@ class EdgeView(OutEdgeView):
     """
     __slots__ = ()
 
-    view = EdgeDataView
+    dataview = EdgeDataView
 
     def __len__(self):
         return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
@@ -1021,13 +1039,17 @@ class InEdgeView(OutEdgeView):
     """A EdgeView class for inward edges of a DiGraph"""
     __slots__ = ()
 
-    view = InEdgeDataView
+    def __setstate__(self, state):
+        self._graph = G = state['_graph']
+        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
+        self._nodes_nbrs = self._adjdict.items
+
+    dataview = InEdgeDataView
 
     def __init__(self, G):
-        pred = G._pred if hasattr(G, "pred") else G._adj
-        self.nbunch_iter = G.nbunch_iter
-        self._adjdict = pred
-        self._nodes_nbrs = pred.items
+        self._graph = G
+        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
+        self._nodes_nbrs = self._adjdict.items
 
     def __iter__(self):
         for n, nbrs in self._nodes_nbrs():
@@ -1050,7 +1072,7 @@ class OutMultiEdgeView(OutEdgeView):
     """A EdgeView class for outward edges of a MultiDiGraph"""
     __slots__ = ()
 
-    view = OutMultiEdgeDataView
+    dataview = OutMultiEdgeDataView
 
     def __len__(self):
         return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
@@ -1083,19 +1105,19 @@ class OutMultiEdgeView(OutEdgeView):
     def __call__(self, nbunch=None, data=False, keys=False, default=None):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.view(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, keys, default)
 
-    def data(self, nbunch=None, data=False, keys=False, default=None):
+    def data(self, data=True, keys=False, default=None, nbunch=None):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.view(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, keys, default)
 
 
 class MultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for edges of a MultiGraph"""
     __slots__ = ()
 
-    view = MultiEdgeDataView
+    dataview = MultiEdgeDataView
 
     def __len__(self):
         return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
@@ -1116,13 +1138,17 @@ class InMultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for inward edges of a MultiDiGraph"""
     __slots__ = ()
 
-    view = InMultiEdgeDataView
+    def __setstate__(self, state):
+        self._graph = G = state['_graph']
+        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
+        self._nodes_nbrs = self._adjdict.items
+
+    dataview = InMultiEdgeDataView
 
     def __init__(self, G):
-        pred = G._pred if hasattr(G, "pred") else G._adj
-        self.nbunch_iter = G.nbunch_iter
-        self._adjdict = pred
-        self._nodes_nbrs = pred.items
+        self._graph = G
+        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
+        self._nodes_nbrs = self._adjdict.items
 
     def __iter__(self):
         for n, nbrs in self._nodes_nbrs():

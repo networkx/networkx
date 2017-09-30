@@ -123,7 +123,8 @@ class TestEdgeBoundary(object):
 
     def test_complete_graph(self):
         K10 = cnlti(nx.complete_graph(10), first_label=1)
-        ilen = lambda iterable: sum(1 for i in iterable)
+
+        def ilen(iterable): return sum(1 for i in iterable)
         assert_equal(list(nx.edge_boundary(K10, [])), [])
         assert_equal(list(nx.edge_boundary(K10, [], [])), [])
         assert_equal(ilen(nx.edge_boundary(K10, [1, 2, 3])), 21)
@@ -131,10 +132,10 @@ class TestEdgeBoundary(object):
         assert_equal(ilen(nx.edge_boundary(K10, [3, 4, 5, 6, 7])), 25)
         assert_equal(ilen(nx.edge_boundary(K10, [8, 9, 10])), 21)
         assert_edges_equal(nx.edge_boundary(K10, [4, 5, 6], [9, 10]),
-                     [(4, 9), (4, 10), (5, 9), (5, 10), (6, 9), (6, 10)])
+                           [(4, 9), (4, 10), (5, 9), (5, 10), (6, 9), (6, 10)])
         assert_edges_equal(nx.edge_boundary(K10, [1, 2, 3], [3, 4, 5]),
-                     [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4),
-                      (2, 5), (3, 4), (3, 5)])
+                           [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4),
+                            (2, 5), (3, 4), (3, 5)])
 
     def test_directed(self):
         """Tests the edge boundary of a directed graph."""

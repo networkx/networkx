@@ -39,7 +39,7 @@ def dominating_set(G, start_with=None):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Dominating_set
+    .. [1] https://en.wikipedia.org/wiki/Dominating_set
 
     .. [2] Abdol-Hossein Esfahanian. Connectivity Algorithms.
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
@@ -86,7 +86,7 @@ def is_dominating_set(G, nbunch):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Dominating_set
+    .. [1] https://en.wikipedia.org/wiki/Dominating_set
 
     """
     testset = set(n for n in nbunch if n in G)

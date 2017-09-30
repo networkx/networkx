@@ -258,7 +258,7 @@ def to_prufer_sequence(T):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    :math:`O(n \log n)`.
+    $O(n \log n)$.
 
     See also
     --------
@@ -276,16 +276,16 @@ def to_prufer_sequence(T):
     --------
     There is a bijection between Prüfer sequences and labeled trees, so
     this function is the inverse of the :func:`from_prufer_sequence`
-    function::
+    function:
 
-        >>> edges = [(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)]
-        >>> tree = nx.Graph(edges)
-        >>> sequence = nx.to_prufer_sequence(tree)
-        >>> sequence
-        [3, 3, 3, 4]
-        >>> tree2 = nx.from_prufer_sequence(sequence)
-        >>> list(tree2.edges()) == edges
-        True
+    >>> edges = [(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)]
+    >>> tree = nx.Graph(edges)
+    >>> sequence = nx.to_prufer_sequence(tree)
+    >>> sequence
+    [3, 3, 3, 4]
+    >>> tree2 = nx.from_prufer_sequence(sequence)
+    >>> list(tree2.edges()) == edges
+    True
 
     """
     # Perform some sanity checks on the input.
@@ -347,7 +347,7 @@ def from_prufer_sequence(sequence):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    :math:`O(n \log n)`.
+    $O(n \log n)$.
 
     References
     ----------
@@ -365,16 +365,16 @@ def from_prufer_sequence(sequence):
     --------
     There is a bijection between Prüfer sequences and labeled trees, so
     this function is the inverse of the :func:`to_prufer_sequence`
-    function::
+    function:
 
-        >>> edges = [(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)]
-        >>> tree = nx.Graph(edges)
-        >>> sequence = nx.to_prufer_sequence(tree)
-        >>> sequence
-        [3, 3, 3, 4]
-        >>> tree2 = nx.from_prufer_sequence(sequence)
-        >>> list(tree2.edges()) == edges
-        True
+    >>> edges = [(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)]
+    >>> tree = nx.Graph(edges)
+    >>> sequence = nx.to_prufer_sequence(tree)
+    >>> sequence
+    [3, 3, 3, 4]
+    >>> tree2 = nx.from_prufer_sequence(sequence)
+    >>> list(tree2.edges()) == edges
+    True
 
     """
     n = len(sequence) + 2

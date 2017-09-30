@@ -1,5 +1,5 @@
 """
-This module provides the following: read and write of p2g format 
+This module provides the following: read and write of p2g format
 used in metabolic pathway studies.
 
 See https://web.archive.org/web/20080626113807/http://www.cs.purdue.edu/homes/koyuturk/pathway/ for a description.
@@ -31,19 +31,20 @@ edges. Observe that node labeled "c" has an outgoing edge to
 itself. Indeed, self-loops are allowed. Node index starts from 0.
 
 """
-#    Copyright (C) 2008-2012 by 
+#    Copyright (C) 2008-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import networkx
-from networkx.utils import is_string_like,open_file
+from networkx.utils import is_string_like, open_file
 __author__ = '\n'.join(['Willem Ligtenberg (w.p.a.ligtenberg@tue.nl)',
-                      'Aric Hagberg (aric.hagberg@gmail.com)'])
+                        'Aric Hagberg (aric.hagberg@gmail.com)'])
 
-@open_file(1,mode='w')
-def write_p2g(G, path, encoding = 'utf-8'):
+
+@open_file(1, mode='w')
+def write_p2g(G, path, encoding='utf-8'):
     """Write NetworkX graph in p2g format.
 
     Notes
@@ -51,20 +52,21 @@ def write_p2g(G, path, encoding = 'utf-8'):
     This format is meant to be used with directed graphs with
     possible self loops.
     """
-    path.write(("%s\n"%G.name).encode(encoding))
-    path.write(("%s %s\n"%(G.order(),G.size())).encode(encoding))
+    path.write(("%s\n" % G.name).encode(encoding))
+    path.write(("%s %s\n" % (G.order(), G.size())).encode(encoding))
     nodes = list(G)
     # make dictionary mapping nodes to integers
-    nodenumber=dict(zip(nodes,range(len(nodes)))) 
+    nodenumber = dict(zip(nodes, range(len(nodes))))
     for n in nodes:
-        path.write(("%s\n"%n).encode(encoding))
+        path.write(("%s\n" % n).encode(encoding))
         for nbr in G.neighbors(n):
-            path.write(("%s "%nodenumber[nbr]).encode(encoding))
+            path.write(("%s " % nodenumber[nbr]).encode(encoding))
         path.write("\n".encode(encoding))
 
-@open_file(0,mode='r')
+
+@open_file(0, mode='r')
 def read_p2g(path, encoding='utf-8'):
-    """Read graph in p2g format from path. 
+    """Read graph in p2g format from path.
 
     Returns
     -------
@@ -76,11 +78,12 @@ def read_p2g(path, encoding='utf-8'):
     use D=networkx.DiGraph(read_p2g(path))
     """
     lines = (line.decode(encoding) for line in path)
-    G=parse_p2g(lines)
+    G = parse_p2g(lines)
     return G
 
+
 def parse_p2g(lines):
-    """Parse p2g format graph from string or iterable. 
+    """Parse p2g format graph from string or iterable.
 
     Returns
     -------
@@ -88,20 +91,20 @@ def parse_p2g(lines):
     """
     description = next(lines).strip()
     # are multiedges (parallel edges) allowed?
-    G=networkx.MultiDiGraph(name=description,selfloops=True)
-    nnodes,nedges=map(int,next(lines).split())
-    nodelabel={}
-    nbrs={}
+    G = networkx.MultiDiGraph(name=description, selfloops=True)
+    nnodes, nedges = map(int, next(lines).split())
+    nodelabel = {}
+    nbrs = {}
     # loop over the nodes keeping track of node labels and out neighbors
     # defer adding edges until all node labels are known
     for i in range(nnodes):
-        n=next(lines).strip()
-        nodelabel[i]=n
+        n = next(lines).strip()
+        nodelabel[i] = n
         G.add_node(n)
-        nbrs[n]=map(int,next(lines).split())
+        nbrs[n] = map(int, next(lines).split())
     # now we know all of the node labels so we can add the edges
-    # with the correct labels        
+    # with the correct labels
     for n in G:
         for nbr in nbrs[n]:
-            G.add_edge(n,nodelabel[nbr])
+            G.add_edge(n, nodelabel[nbr])
     return G

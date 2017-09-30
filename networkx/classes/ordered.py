@@ -33,6 +33,15 @@ class OrderedGraph(Graph):
     adjlist_inner_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
 
+    def fresh_copy(self):
+        """Return a fresh copy graph with the same data structure.
+
+        A fresh copy has no nodes, edges or graph attributes. It is
+        the same data structure as the current graph. This method is
+        typically used to create an empty version of the graph.
+        """
+        return OrderedGraph()
+
 
 class OrderedDiGraph(DiGraph):
     """Consistently ordered variant of :class:`~networkx.DiGraph`."""
@@ -40,6 +49,15 @@ class OrderedDiGraph(DiGraph):
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
+
+    def fresh_copy(self):
+        """Return a fresh copy graph with the same data structure.
+
+        A fresh copy has no nodes, edges or graph attributes. It is
+        the same data structure as the current graph. This method is
+        typically used to create an empty version of the graph.
+        """
+        return OrderedDiGraph()
 
 
 class OrderedMultiGraph(MultiGraph):
@@ -50,6 +68,15 @@ class OrderedMultiGraph(MultiGraph):
     edge_key_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
 
+    def fresh_copy(self):
+        """Return a fresh copy graph with the same data structure.
+
+        A fresh copy has no nodes, edges or graph attributes. It is
+        the same data structure as the current graph. This method is
+        typically used to create an empty version of the graph.
+        """
+        return OrderedMultiGraph()
+
 
 class OrderedMultiDiGraph(MultiDiGraph):
     """Consistently ordered variant of :class:`~networkx.MultiDiGraph`."""
@@ -58,3 +85,12 @@ class OrderedMultiDiGraph(MultiDiGraph):
     adjlist_inner_dict_factory = OrderedDict
     edge_key_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
+
+    def fresh_copy(self):
+        """Return a fresh copy graph with the same data structure.
+
+        A fresh copy has no nodes, edges or graph attributes. It is
+        the same data structure as the current graph. This method is
+        typically used to create an empty version of the graph.
+        """
+        return OrderedMultiDiGraph()

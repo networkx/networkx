@@ -8,12 +8,12 @@ Glossary
    dictionary
       A Python dictionary maps keys to values. Also known as "hashes",
       or "associative arrays" in other programming languages.
-      See http://docs.python.org/tutorial/datastructures.html#dictionaries
+      See https://docs.python.org/2/tutorial/datastructures.html#dictionaries
 
    edge
-      Edges are either two-tuples of nodes ``(u, v)`` or three tuples of nodes
-      with an edge attribute dictionary ``(u, v, dict)``.
-     
+      Edges are either two-tuples of nodes `(u, v)` or three tuples of nodes
+      with an edge attribute dictionary `(u, v, dict)`.
+
    ebunch
       An iteratable container of edge tuples like a list, iterator,
       or file.
@@ -21,7 +21,7 @@ Glossary
    edge attribute
       Edges can have arbitrary Python objects assigned as attributes
       by using keyword/value pairs when adding an edge
-      assigning to the ``G.edges[u][v]`` attribute dictionary for the
+      assigning to the `G.edges[u][v]` attribute dictionary for the
       specified edge *u*-*v*.
 
    hashable
@@ -39,19 +39,19 @@ Glossary
       which are instances of user-defined classes are hashable by
       default; they all compare unequal, and their hash value is their
       :func:`id`.
-    
-      Definition from http://docs.python.org/glossary.html
+
+      Definition from https://docs.python.org/2/glossary.html
 
    nbunch
-      An nbunch is any iterable container of nodes that is not itself
-      a node in the graph. It can be an iterable or an iterator,
-      e.g. a list, set, graph, file, etc..
-      
+      An nbunch is a single node, container of nodes or None (representing
+      all nodes). It can be a list, set, graph, etc.. To filter an nbunch
+      so that only nodes actually in `G` appear, use `G.nbunch_iter(nbunch)`.
+
    node
       A node can be any hashable Python object except None.
 
    node attribute
      Nodes can have arbitrary Python objects assigned as attributes
      by using keyword/value pairs when adding a node or
-     assigning to the ``G.nodes[n]`` attribute dictionary for the
-     specified node ``n``.
+     assigning to the `G.nodes[n]` attribute dictionary for the
+     specified node `n`.

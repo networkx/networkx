@@ -21,8 +21,8 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Pieter Swart (swart@lanl.gov)',
                             'Jordi Torrents <jtorrents@milnou.net>'])
 
-__all__= ['triangles', 'average_clustering', 'clustering', 'transitivity',
-          'square_clustering', 'generalized_degree']
+__all__ = ['triangles', 'average_clustering', 'clustering', 'transitivity',
+           'square_clustering', 'generalized_degree']
 
 
 @not_implemented_for('directed')
@@ -62,7 +62,7 @@ def triangles(G, nodes=None):
     # If `nodes` represents a single node in the graph, return only its number
     # of triangles.
     if nodes in G:
-        return next(_triangles_and_degree_iter(G,nodes))[2] // 2
+        return next(_triangles_and_degree_iter(G, nodes))[2] // 2
     # Otherwise, `nodes` represents an iterable of nodes, so return a
     # dictionary mapping node to number of triangles.
     return {v: t // 2 for v, d, t, _ in _triangles_and_degree_iter(G, nodes)}
@@ -85,7 +85,7 @@ def _triangles_and_degree_iter(G, nodes=None):
     for v, v_nbrs in nodes_nbrs:
         vs = set(v_nbrs) - {v}
         gen_degree = Counter([len(vs & (set(G[w]) - {w})) for w in vs])
-        ntriangles = sum([k*val for k, val in gen_degree.items()])
+        ntriangles = sum([k * val for k, val in gen_degree.items()])
         yield (v, len(vs), ntriangles, gen_degree)
 
 
@@ -99,7 +99,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     if weight is None or G.number_of_edges() == 0:
         max_weight = 1
     else:
-        max_weight= max(d.get(weight, 1) for u, v, d in G.edges(data=True))
+        max_weight = max(d.get(weight, 1) for u, v, d in G.edges(data=True))
     if nodes is None:
         nodes_nbrs = G.adj.items()
     else:
@@ -175,7 +175,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
        http://jponnela.com/web_documents/a9.pdf
     .. [2] Marcus Kaiser,  Mean clustering coefficients: the role of isolated
        nodes and leafs on clustering measures for small-world networks.
-       http://arxiv.org/abs/0802.2512
+       https://arxiv.org/abs/0802.2512
     """
     c = clustering(G, nodes, weight=weight).values()
     if not count_zeros:
@@ -247,12 +247,12 @@ def clustering(G, nodes=None, weight=None):
     """
     if weight is not None:
         td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
-        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for\
-         v,d,t in td_iter}
+        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
+                    v, d, t in td_iter}
     else:
         td_iter = _triangles_and_degree_iter(G, nodes)
-        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for\
-         v,d,t, _ in td_iter}
+        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
+                    v, d, t, _ in td_iter}
     if nodes in G:
         # Return the value of the sole entry in the dictionary.
         return clusterc[nodes]
@@ -290,6 +290,7 @@ def transitivity(G):
     triangles = sum(t for v, d, t, _ in _triangles_and_degree_iter(G))
     contri = sum(d * (d - 1) for v, d, t, _ in _triangles_and_degree_iter(G))
     return 0 if triangles == 0 else triangles / contri
+
 
 def square_clustering(G, nodes=None):
     r""" Compute the squares clustering coefficient for nodes.
@@ -344,7 +345,7 @@ def square_clustering(G, nodes=None):
     if nodes is None:
         node_iter = G
     else:
-        node_iter =  G.nbunch_iter(nodes)
+        node_iter = G.nbunch_iter(nodes)
     clustering = {}
     for v in node_iter:
         clustering[v] = 0
@@ -362,6 +363,7 @@ def square_clustering(G, nodes=None):
         # Return the value of the sole entry in the dictionary.
         return clustering[nodes]
     return clustering
+
 
 @not_implemented_for('directed')
 def generalized_degree(G, nodes=None):
@@ -422,5 +424,5 @@ def generalized_degree(G, nodes=None):
         https://iopscience.iop.org/article/10.1209/0295-5075/97/28005
     """
     if nodes in G:
-        return next(_triangles_and_degree_iter(G,nodes))[3]
-    return {v:gd for v,d,t,gd in _triangles_and_degree_iter(G,nodes)}
+        return next(_triangles_and_degree_iter(G, nodes))[3]
+    return {v: gd for v, d, t, gd in _triangles_and_degree_iter(G, nodes)}

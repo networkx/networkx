@@ -16,12 +16,11 @@
 .. _git-osx-installer: https://git-scm.com/download/mac
 .. _subversion: http://subversion.tigris.org/
 .. _git cheat sheet: https://help.github.com/git-cheat-sheets/
-.. _pro git book: https://progit.org/
+.. _pro git book: https://git-scm.com/book/en/v2
 .. _git svn crash course: https://git-scm.com/course/svn.html
 .. _network graph visualizer: https://github.com/blog/39-say-hello-to-the-network-graph-visualizer
 .. _git user manual: https://schacon.github.io/git/user-manual.html
 .. _git tutorial: https://schacon.github.io/git/gittutorial.html
-.. _git community book: https://git-scm.com/book/en/v2
 .. _git ready: http://gitready.com/
 .. _Fernando's git page: http://www.fperez.org/py4science/git.html
 .. _git magic: http://www-cs-students.stanford.edu/~blynn/gitmagic/index.html
@@ -41,7 +40,7 @@
 .. _git config: https://schacon.github.io/git/git-config.html
 .. _why the -a flag?: http://gitready.com/beginner/2009/01/18/the-staging-area.html
 .. _git staging area: http://gitready.com/beginner/2009/01/18/the-staging-area.html
-.. _tangled working copy problem: http://2ndscale.com/rtomayko/2008/the-thing-about-git
+.. _tangled working copy problem: https://2ndscale.com/rtomayko/2008/the-thing-about-git
 .. _git management: https://web.archive.org/web/20090224195437/http://kerneltrap.org/Linux/Git_Management
 .. _linux git workflow: https://www.mail-archive.com/dri-devel@lists.sourceforge.net/msg39091.html
 .. _git parable: http://tom.preston-werner.com/2009/05/19/the-git-parable.html

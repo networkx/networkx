@@ -12,9 +12,11 @@ from nose.tools import raises
 
 from networkx import triad_graph
 
+
 def test_triad_graph():
     G = triad_graph('030T')
     assert_equal([tuple(e) for e in ('ab', 'ac', 'cb')], sorted(G.edges()))
+
 
 @raises(ValueError)
 def test_invalid_name():

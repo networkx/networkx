@@ -54,7 +54,7 @@ class TestGEXF(object):
     <nodes>
       <node id="0" label="Gephi">
         <attvalues>
-          <attvalue for="0" value="http://gephi.org"/>
+          <attvalue for="0" value="https://gephi.org"/>
           <attvalue for="1" value="1"/>
           <attvalue for="2" value="false"/>
         </attvalues>
@@ -95,7 +95,7 @@ class TestGEXF(object):
         self.attribute_graph.graph['node_default'] = {'frog': True}
         self.attribute_graph.add_node('0',
                                       label='Gephi',
-                                      url='http://gephi.org',
+                                      url='https://gephi.org',
                                       indegree=1, frog=False)
         self.attribute_graph.add_node('1',
                                       label='Webatlas',

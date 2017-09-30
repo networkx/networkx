@@ -105,6 +105,14 @@ class TestFunction(object):
                      nx.subgraph(self.G, [0, 1, 2, 4]).adj)
         assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
                      nx.subgraph(self.DG, [0, 1, 2, 4]).adj)
+        assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,
+                     nx.induced_subgraph(self.G, [0, 1, 2, 4]).adj)
+        assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
+                     nx.induced_subgraph(self.DG, [0, 1, 2, 4]).adj)
+        # subgraph-subgraph chain is allowed in function interface
+        H = nx.induced_subgraph(self.G.subgraph([0, 1, 2, 4]), [0, 1, 4])
+        assert_is_not(H._graph, self.G)
+        assert_equal(H.adj, self.G.subgraph([0, 1, 4]).adj)
 
     def test_edge_subgraph(self):
         assert_equal(self.G.edge_subgraph([(1, 2), (0, 3)]).adj,
@@ -521,6 +529,7 @@ def test_is_empty():
         assert_true(nx.is_empty(G))
         G.add_edges_from([(1, 2), (3, 4)])
         assert_false(nx.is_empty(G))
+
 
 def test_selfloops():
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]

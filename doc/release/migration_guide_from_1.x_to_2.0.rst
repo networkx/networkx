@@ -1,21 +1,53 @@
+:orphan:
+
 *******************************
 Migration guide from 1.X to 2.0
 *******************************
 
 This is a guide for people moving from NetworkX 1.X to NetworkX 2.0
 
-Any issues with these can be discussed on the `mailing list <https://groups.google.com/forum/#!forum/networkx-discuss>`_.
+Any issues with these can be discussed on the `mailing list
+<https://groups.google.com/forum/#!forum/networkx-discuss>`_.
+
+At the bottom of this document we discuss how to create code that will
+work with both NetworkX v1.x and v2.0.
 
 We have made some major changes to the methods in the Multi/Di/Graph classes.
 The methods changed are explained with examples below.
 
 With the release of NetworkX 2.0 we are moving to a view/iterator reporting API.
+We have moved many methods from reporting lists or dicts to iterating over
+the information. Most of the changes in this regard are in the base classes.
 Methods that used to return containers now return views (inspired from
-[dictionary views](https://docs.python.org/3/library/stdtypes.html#dict-views)
+`dictionary views <https://docs.python.org/3/library/stdtypes.html#dict-views>`_
 in Python) and methods that returned iterators have been removed.
-For example, ``G.nodes`` (or ``G.nodes()``)  now returns a NodeView and
-``G.nodes_iter()`` has been removed. The Graph attributes G.node and G.edge
-have also been removed in favor of using G.nodes[n] and G.edges[u, v].
+The methods which create new graphs have changed in the depth of data copying.
+``G.subgraph``/``edge_subgraph``/``reverse``/``to_directed``/``to_undirected``
+are affected.  Many now have options for view creation instead of copying data.
+The depth of the data copying may have also changed.
+
+One View example is ``G.nodes`` (or ``G.nodes()``) which now returns a
+dict-like NodeView while ``G.nodes_iter()`` has been removed. Similarly
+for views with ``G.edges`` and removing ``G.edges_iter``.
+The Graph attributes ``G.node`` and ``G.edge`` have been removed in favor of
+using ``G.nodes[n]`` and ``G.edges[u, v]``.
+Finally, the ``selfloop`` methods and ``add_path``/``star``/``cycle`` have
+been moved from graph methods to networkx functions.
+
+We expect that these changes will break some code. We have tried to make
+them break the code in ways that raise exceptions, so it will be obvious
+that code is broken.
+
+There are also a number of improvements to the codebase outside of the base
+graph classes. These are too numerous to catalog here, but a couple obvious
+ones include:
+
+- centering of nodes in ``drawing/nx_pylab``,
+- iterator vs dict output from a few ``shortest_path`` routines
+
+-------
+
+Some demonstrations:
 
     >>> import networkx as nx
     >>> G = nx.complete_graph(5)
@@ -37,11 +69,11 @@ If you want a list of nodes you can use the Python list function
     >>> list(G.nodes)
     [0, 1, 2, 3, 4]
 
-G.nodes is set-like allowing set operations. It is also dict-like in that you
-can look up node data with G.nodes[n]['weight']. You can still use the calling
-interface G.nodes(data='weight') to iterate over node/data pairs. In addition
-to the dict-like views keys/values/items, G.nodes has a data-view 
-G.nodes.data('weight').  The new EdgeView G.edges has similar features for edges.
+``G.nodes`` is set-like allowing set operations. It is also dict-like in that you
+can look up node data with ``G.nodes[n]['weight']``. You can still use the calling
+interface ``G.nodes(data='weight')`` to iterate over node/data pairs. In addition
+to the dict-like views ``keys``/``values``/``items``, ``G.nodes`` has a data-view
+G.nodes.data('weight').  The new EdgeView ``G.edges`` has similar features for edges.
 
 By adding views NetworkX supports some new features like set operations on
 views.
@@ -84,12 +116,13 @@ for directed graphs.
 
 If ``n`` is a node in ``G``, then ``G.neighbors(n)`` returns an iterator.
 
-    >>> G.neighbors(2)
+    >>> n = 1
+    >>> G.neighbors(n)
     <dictionary-keyiterator object at ...>
-    >>> list(G.neighbors(2))
-    [0, 1, 3, 4]
+    >>> list(G.neighbors(n))
+    [0, 2, 3, 4]
 
-DiGraphs behave similar to Graphs, but have a few more methods.
+DiGraphViews behave similar to GraphViews, but have a few more methods.
 
     >>> D = nx.DiGraph()
     >>> D.add_edges_from([(1, 2), (2, 3), (1, 3), (2, 4)])
@@ -127,7 +160,7 @@ DiGraphs behave similar to Graphs, but have a few more methods.
     [1]
 
 The same changes apply to MultiGraphs and MultiDiGraphs.
- 
+
 -------
 
 The order of arguments to ``set_edge_attributes`` and ``set_node_attributes`` has
@@ -150,10 +183,93 @@ can be refactored as
     >>> G = nx.Graph([(1, 2), (1, 3)])
     >>> nx.set_node_attributes(G, name='label', values={1: 'one', 2: 'two', 3: 'three'})
     >>> nx.set_edge_attributes(G, name='label', values={(1, 2): 'path1', (2, 3): 'path2'})
- 
+
 -------
 
-Some methods have been removed from the base graph class and placed into the main 
-networkx namespace. These are:  G.add_path, G.add_star, G.add_cycle, G.number_of_selfloops,
-G.nodes_with_selfloops, and G.selfloop_edges.   These are replaced by nx.path_graph(G, ...)
-nx.add_star(G, ...), nx.selfloop_edges(G), etc.
+Some methods have been moved from the base graph class into the main namespace.
+These are:  ``G.add_path``, ``G.add_star``, ``G.add_cycle``, ``G.number_of_selfloops``,
+``G.nodes_with_selfloops``, and ``G.selfloop_edges``.
+They are replaced by ``nx.path_graph(G, ...)`` ``nx.add_star(G, ...)``,
+``nx.selfloop_edges(G)``, etc.
+For backward compatibility, we are leaving them as deprecated methods.
+
+-------
+
+With the new GraphViews (SubGraph, ReversedGraph, etc) you can't assume that
+``G.__class__()`` will create a new instance of the same graph type as ``G``.
+In fact, the call signature for ``__class__`` differs depending on whether ``G``
+is a view or a base class. For v2.x you should use ``G.fresh_copy()`` to
+create a null graph of the correct type---ready to fill with nodes and edges.
+
+Graph views can also be views-of-views-of-views-of-graphs. If you want to find the
+original graph at the end of this chain use ``G.root_graph``. Be careful though
+because it may be a different graph type (directed/undirected) than the view.
+
+-------
+
+Writing code that works for both versions
+=========================================
+
+Methods ``set_node_attributes``/``get_node_attributes``/``set_edge_attributes``/``get_edge_attributes``
+have changed the order of their keyword arguments ``name`` and ``values``. So, to make it
+work with both versions you should use the keywords in your call.
+
+    >>> nx.set_node_attributes(G, values=1.0, name='weight')
+
+-------
+
+Change any method with ``_iter`` in its name to the version without ``_iter``.
+In v1 this replaces an iterator by a list, but the code will still work.
+In v2 this creates a view (which acts like an iterator).
+
+-------
+
+Replace any use of ``G.edge`` with ``G.adj``. The Graph attribute ``edge``
+has been removed. The attribute ``G.adj`` is ``G.edge`` in v1 and will work
+with both versions.
+
+-------
+
+If you use ``G.node.items()`` or similar in v1.x, you can replace it with
+``G.nodes(data=True)`` which works for v2.x and v1.x.  Iterating over ``G.node```
+as in ``for n in G.node:`` can be replaced with ``G``, as in: ``for n in G:``.
+
+-------
+
+The Graph attribute ``node`` has moved its functionality to ``G.nodes``, so code
+expected to work with v2.x should use ``G.nodes``.
+In fact most uses of ``G.node`` can be replaced by an idiom that works for both
+versions. The functionality that can't easily is: ``G.node[n]``.
+In v2.x that becomes ``G.nodes[n]`` which doesn't work in v1.x.
+
+Luckily you can still use ``G.node[n]`` in v2.x when you want it to be able to work
+with v1.x too. We have left ``G.node`` in v2.x as a transition pointer to ``G.nodes``.
+We envision removing ``G.node`` in v3.x (sometime in the future).
+
+-------
+
+Copying node attribute dicts directly from one graph to another can corrupt
+the node data structure if not done correctly. Code such as the following:
+
+    >>> # dangerous in v1.x, not allowed in v2.x
+    >>> G.node[n] = H.node[n]  # doctest: +SKIP
+
+used to work, even though it could cause errors if ``n`` was not a node in ``G``.
+That code will cause an error in v2.x.  Replace it with one of the more safe versions:
+
+    >>> G.node[n].update(H.node[n])  # works in both v1.x and v2.x
+    >>> G.nodes[n].update(H.nodes[n])  # works in v2.x
+
+-------
+
+The methods removed from the graph classes and put into the main package namespace
+can be used via the associated deprecated methods. If you want to update your code
+to the new functions, one hack to make that work with both versions is to write
+your code for v2.x and add code to the v1 namespace in an ad hoc manner:
+
+    >>> if nx.__version__[0] == '1':
+    ...     nx.add_path = lambda G, nodes: G.add_path(nodes)
+
+Similarly, v2.x code that uses ``G.fresh_copy()`` or ``G.root_graph`` is hard to make
+work for v1.x. It may be best in this case to determine the graph type you want
+explicitly and call Graph/DiGraph/MultiGraph/MultiDiGraph directly.

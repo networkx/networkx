@@ -73,14 +73,14 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
-    time [1]_, where `I(n-1)` is the time needed to compute the
-    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
-    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Current-flow betweenness can be computed in $O(I(n-1)+mn \log n)$
+    time [1]_, where $I(n-1)$ is the time needed to compute the
+    inverse Laplacian.  For a full matrix this is $O(n^3)$ but using
+    sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw) where `w` is the width of the sparse
-    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
+    The space required is $O(nw)$ where $w$ is the width of the sparse
+    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -91,7 +91,7 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -122,14 +122,14 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
             i = mapping[ss]
             for tt in targets:
                 j = mapping[tt]
-                betweenness[s] += 0.5*np.abs(row[i]-row[j])
-                betweenness[t] += 0.5*np.abs(row[i]-row[j])
+                betweenness[s] += 0.5 * np.abs(row[i] - row[j])
+                betweenness[t] += 0.5 * np.abs(row[i] - row[j])
     if normalized:
-        nb = (n-1.0)*(n-2.0)  # normalization factor
+        nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
         nb = 2.0
     for v in H:
-        betweenness[v] = betweenness[v]/nb + 1.0/(2-n)
+        betweenness[v] = betweenness[v] / nb + 1.0 / (2 - n)
     return dict((ordering[k], v) for k, v in betweenness.items())
 
 
@@ -138,7 +138,7 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
                                                     normalized=True,
                                                     weight=None,
                                                     dtype=float, solver='lu'):
-    """Compute current-flow betweenness centrality for edges using subsets
+    r"""Compute current-flow betweenness centrality for edges using subsets
     of nodes.
 
     Current-flow betweenness centrality uses an electrical current
@@ -189,14 +189,14 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
-    time [1]_, where `I(n-1)` is the time needed to compute the
-    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
-    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Current-flow betweenness can be computed in $O(I(n-1)+mn \log n)$
+    time [1]_, where $I(n-1)$ is the time needed to compute the
+    inverse Laplacian.  For a full matrix this is $O(n^3)$ but using
+    sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw) where `w` is the width of the sparse
-    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
+    The space required is $O(nw)$ where $w$ is the width of the sparse
+    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -207,7 +207,7 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -233,7 +233,7 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
     edges = (tuple(sorted((u, v))) for u, v in H.edges())
     betweenness = dict.fromkeys(edges, 0.0)
     if normalized:
-        nb = (n-1.0)*(n-2.0)  # normalization factor
+        nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
         nb = 2.0
     for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype,
@@ -242,7 +242,7 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
             i = mapping[ss]
             for tt in targets:
                 j = mapping[tt]
-                betweenness[e] += 0.5*np.abs(row[i]-row[j])
+                betweenness[e] += 0.5 * np.abs(row[i] - row[j])
         betweenness[e] /= nb
     return dict(((ordering[s], ordering[t]), v)
                 for (s, t), v in betweenness.items())

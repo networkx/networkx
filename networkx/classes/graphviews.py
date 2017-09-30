@@ -19,19 +19,31 @@ a graph to reverse directed edges, or treat a directed graph
 as undirected, etc. This module provides those graph views.
 
 The resulting views are essentially read-only graphs that
-report data from the orginal graph object. We provide three 
+report data from the orginal graph object. We provide three
 attributes related to the underlying graph object.
 
     G._graph : the parent graph used for looking up graph data.
     G.root_graph : the root graph of the potential chain of views.
-        For example, if you have a subgraph of a reversed view of 
+        For example, if you have a subgraph of a reversed view of
         an edge_subgraph of a graph, this points to original graph.
     G.fresh_copy() : a method to return a null copy of the graph
-        represented by the view. This is useful if you want to 
+        represented by the view. This is useful if you want to
         create a graph with the same data structure (directed/multi)
         as the current view. This is similar to G.root_graph.__class__()
         but reflects the fact that (Un)DirectedView could make the
         type of data structure different from the root_graph.
+
+Note: Since graphviews look like graphs, one can end up with
+view-of-view-of-view chains. Be careful with chains because
+they become very slow with about 15 nested views.
+For the common simple case of node induced subgraphs created
+from the graph class, we short-cut the chain by returning a
+subgraph of the original graph directly rather than a subgraph
+of a subgraph. We are careful not to disrupt any edge filter in
+the middle subgraph. In general, determining how to short-cut
+the chain is tricky and much harder with restricted_views than
+with induced subgraphs.
+Often it is easiest to use `.copy()` to avoid chains.
 """
 from collections import Mapping
 

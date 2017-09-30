@@ -16,8 +16,8 @@ undirected edges together).
 
 Format
 ------
-GEXF is an XML format.  See http://gephi.org/gexf/format/schema.html for the
-specification and http://gephi.org/gexf/format/basic.html for examples.
+GEXF is an XML format.  See https://gephi.org/gexf/format/schema.html for the
+specification and https://gephi.org/gexf/format/basic.html for examples.
 """
 import itertools
 import time
@@ -80,8 +80,8 @@ def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.2draft'):
 
     References
     ----------
-    .. [1] GEXF File Format, http://gephi.org/gexf/format/
-    .. [2] GEXF viz schema 1.1, http://gephi.org/gexf/1.1draft/viz
+    .. [1] GEXF File Format, https://gephi.org/gexf/format/
+    .. [2] GEXF viz schema 1.1, https://gephi.org/gexf/1.1draft/viz
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint,
                         version=version)
@@ -104,7 +104,7 @@ def generate_gexf(G, encoding='utf-8', prettyprint=True, version='1.2draft'):
     prettyprint : bool (optional, default: True)
        If True use line breaks and indenting in output XML.
     version : string (default: 1.2draft)
-       Version of GEFX File Format (see http://gephi.org/gexf/format/schema.html).
+       Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html).
        Supported values: "1.1draft", "1.2draft"
 
 
@@ -127,7 +127,7 @@ def generate_gexf(G, encoding='utf-8', prettyprint=True, version='1.2draft'):
 
     References
     ----------
-    .. [1] GEXF File Format, http://gephi.org/gexf/format/
+    .. [1] GEXF File Format, https://gephi.org/gexf/format/
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint,
                         version=version)
@@ -154,7 +154,7 @@ def read_gexf(path, node_type=None, relabel=False, version='1.2draft'):
        If True relabel the nodes to use the GEXF node "label" attribute
        instead of the node "id" attribute as the NetworkX node label.
     version : string (default: 1.2draft)
-       Version of GEFX File Format (see http://gephi.org/gexf/format/schema.html).
+       Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html).
        Supported values: "1.1draft", "1.2draft"
 
     Returns
@@ -170,7 +170,7 @@ def read_gexf(path, node_type=None, relabel=False, version='1.2draft'):
 
     References
     ----------
-    .. [1] GEXF File Format, http://gephi.org/gexf/format/
+    .. [1] GEXF File Format, https://gephi.org/gexf/format/
     """
     reader = GEXFReader(node_type=node_type, version=version)
     if relabel:
@@ -186,14 +186,14 @@ class GEXF(object):
          'NS_VIZ': "http://www.gexf.net/1.1draft/viz",
          'NS_XSI': "http://www.w3.org/2001/XMLSchema-instance",
          'SCHEMALOCATION': ' '.join(['http://www.gexf.net/1.1draft',
-            'http://www.gexf.net/1.1draft/gexf.xsd']),
+                                     'http://www.gexf.net/1.1draft/gexf.xsd']),
          'VERSION': '1.1'}
     versions['1.1draft'] = d
     d = {'NS_GEXF': "http://www.gexf.net/1.2draft",
          'NS_VIZ': "http://www.gexf.net/1.2draft/viz",
          'NS_XSI': "http://www.w3.org/2001/XMLSchema-instance",
          'SCHEMALOCATION': ' '.join(['http://www.gexf.net/1.2draft',
-            'http://www.gexf.net/1.2draft/gexf.xsd']),
+                                     'http://www.gexf.net/1.2draft/gexf.xsd']),
          'VERSION': '1.2'}
     versions['1.2draft'] = d
 
@@ -207,19 +207,19 @@ class GEXF(object):
     try:  # Python 3.x
         blurb = chr(1245)  # just to trigger the exception
         types.extend([
-           (int, "long"),
-           (str, "liststring"),
-           (str, "anyURI"),
-           (str, "string")])
+            (int, "long"),
+            (str, "liststring"),
+            (str, "anyURI"),
+            (str, "string")])
     except ValueError:  # Python 2.6+
         types.extend([
-           (long, "long"),
-           (str, "liststring"),
-           (str, "anyURI"),
-           (str, "string"),
-           (unicode, "liststring"),
-           (unicode, "anyURI"),
-           (unicode, "string")])
+            (long, "long"),
+            (str, "liststring"),
+            (str, "anyURI"),
+            (str, "string"),
+            (unicode, "liststring"),
+            (unicode, "anyURI"),
+            (unicode, "string")])
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
@@ -345,7 +345,7 @@ class GEXFWriter(GEXF):
         def edge_key_data(G):
             # helper function to unify multigraph and graph edge iterator
             if G.is_multigraph():
-                for u, v, data, key in G.edges(data=True, keys=True):
+                for u, v, key, data in G.edges(data=True, keys=True):
                     edge_data = data.copy()
                     edge_data.update(key=key)
                     edge_id = edge_data.pop('id', None)
@@ -571,8 +571,8 @@ class GEXFWriter(GEXF):
                 elif isinstance(start_or_end, int):
                     timeformat = 'long'
                 else:
-                    raise nx.NetworkXError(\
-                          'timeformat should be of the type int, float or str')
+                    raise nx.NetworkXError(
+                        'timeformat should be of the type int, float or str')
                 self.graph_element.set('timeformat', timeformat)
                 self.graph_element.set('mode', 'dynamic')
 
@@ -585,14 +585,14 @@ class GEXFWriter(GEXF):
 
     def indent(self, elem, level=0):
         # in-place prettyprint formatter
-        i = "\n" + "  "*level
+        i = "\n" + "  " * level
         if len(elem):
             if not elem.text or not elem.text.strip():
                 elem.text = i + "  "
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for elem in elem:
-                self.indent(elem, level+1)
+                self.indent(elem, level + 1)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         else:

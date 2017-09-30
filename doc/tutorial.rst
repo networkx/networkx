@@ -5,7 +5,7 @@ Tutorial
 
 .. currentmodule:: networkx
 
-Start here to begin working with NetworkX.
+This guide can help you start working with NetworkX.
 
 Creating a graph
 ----------------
@@ -43,9 +43,9 @@ add a list of nodes,
 
     >>> G.add_nodes_from([2, 3])
 
-or add any :term:`nbunch` of nodes.  An *nbunch* is any iterable container of
-nodes that is not itself a node in the graph (e.g., a ``list``, ``set``, ``graph``,
-``file``, etc.).
+or add any iterable container of nodes. You can also add nodes along with node
+attributes if your container yields 2-tuples (node, node_attribute_dict).
+Node attributes are discussed furether below.
 
 .. nbplot::
 
@@ -93,18 +93,7 @@ with 2 nodes followed by an edge attribute dictionary, e.g.,
 
 .. nbplot::
 
-    >>> G.add_edges_from(H.edges())
-
-One can demolish the graph in a similar fashion; using
-:meth:`Graph.remove_node`,
-:meth:`Graph.remove_nodes_from`,
-:meth:`Graph.remove_edge`
-and
-:meth:`Graph.remove_edges_from`, e.g.
-
-.. nbplot::
-
-    >>> G.remove_node(H)
+    >>> G.add_edges_from(H.edges)
 
 There are no complaints when adding existing nodes or edges. For example,
 after removing all nodes and edges,
@@ -123,6 +112,7 @@ already present.
     >>> G.add_edge(1, 2)
     >>> G.add_node("spam")        # adds node "spam"
     >>> G.add_nodes_from("spam")  # adds 4 nodes: 's', 'p', 'a', 'm'
+    >>> G.add_edge(3, 'm')
 
 At this stage the graph ``G`` consists of 8 nodes and 2 edges, as can be seen by:
 
@@ -131,30 +121,55 @@ At this stage the graph ``G`` consists of 8 nodes and 2 edges, as can be seen by
     >>> G.number_of_nodes()
     8
     >>> G.number_of_edges()
+    3
+
+We can examine the nodes and edges. Four basic graph properties facilitate
+reporting: ``G.nodes``, ``G.edges``, ``G.adj`` and ``G.degree``.  These
+are set-like views of the nodes, edges, neighbors (adjacencies), and degrees
+of nodes in a graph. They offer a continually updated read-only view into
+the graph structure. They are also dict-like in that you can look up node
+and edge data attributes via the views and iterate with data attributes
+using methods ``.items()``, ``.data('span')``.
+If you want a specific container type instead of a view, you can specify one.
+Here we use lists, though sets, dicts, tuples and other containers may be
+better in other contexts.
+
+.. nbplot::
+
+    >>> list(G.nodes)
+    ['a', 1, 2, 3, 'spam', 'm', 'p', 's']
+    >>> list(G.edges)
+    [(1, 2), (1, 3), (3, 'm')]
+    >>> list(G.adj[1])  # or list(G.neighbors(1))
+    [2, 3]
+    >>> G.degree[1]  # the number of edges incident to 1
     2
 
-We can examine the nodes and edges. The methods return iterators of nodes, 
-edges, neighbors, etc. This is typically more memory efficient, but it does
-mean we need to specify what type of container to put the objects in. Here
-we use lists, though sets, dicts, tuples and other containers may be better
-in other contexts.
+One can specify to report the edges and degree from a subset of all nodes
+using an *nbunch*. An *nbunch* is any of: None (meaning all nodes), a node,
+or an iterable container of nodes that is not itself a node in the graph.
 
 .. nbplot::
 
-    >>> list(G.nodes())
-    ['a', 1, 2, 3, 'spam', 'm', 'p', 's']
-    >>> list(G.edges())
-    [(1, 2), (1, 3)]
-    >>> list(G.neighbors(1))
-    [2, 3]
+    >>> G.edges([2, 'm'])
+    EdgeDataView([(2, 1), ('m', 3)])
+    >>> G.degree([2, 3])
+    DegreeView({2: 1, 3: 2})
 
-Removing nodes or edges has similar syntax to adding:
+One can remove nodes and edges from the graph in a similar fashion to adding.
+Use methods
+:meth:`Graph.remove_node`,
+:meth:`Graph.remove_nodes_from`,
+:meth:`Graph.remove_edge`
+and
+:meth:`Graph.remove_edges_from`, e.g.
 
 .. nbplot::
 
+    >>> G.remove_node(2)
     >>> G.remove_nodes_from("spam")
-    >>> list(G.nodes())
-    [1, 2, 3, 'spam']
+    >>> list(G.nodes)
+    [1, 3, 'spam']
     >>> G.remove_edge(1, 3)
 
 When creating a graph structure by instantiating one of the graph
@@ -162,6 +177,7 @@ classes you can specify data in several formats.
 
 .. nbplot::
 
+    >>> G.add_edge(1, 2)
     >>> H = nx.DiGraph(G)   # create a DiGraph using the connections from G
     >>> list(H.edges())
     [(1, 2), (2, 1)]
@@ -183,61 +199,56 @@ experimental observations of their interaction.
 
 We have found this power quite useful, but its abuse
 can lead to unexpected surprises unless one is familiar with Python.
-If in doubt, consider using :func:`convert_node_labels_to_integers` to obtain
+If in doubt, consider using :func:`~relabel.convert_node_labels_to_integers` to obtain
 a more traditional graph with integer labels.
 
-Accessing edges
----------------
+Accessing edges and neighbors
+-----------------------------
 
-In addition to the methods
-:meth:`Graph.nodes`,
-:meth:`Graph.edges`, and
-:meth:`Graph.neighbors`,
-fast direct access to the graph data structure is also possible
-using subscript notation.
-
-.. Warning::
-   Do not change the returned `dict`---it is part of
-   the graph data structure and direct manipulation may leave the
-   graph in an inconsistent state.
+In addition to the views :meth:`Graph.edges`, and :meth:`Graph.adj`,
+access to edges and neighbors is possible using subscript notation.
 
 .. nbplot::
 
-    >>> G[1]  # Warning: do not change the resulting dict
+    >>> G[1]  # same as G.adj[1]
     AtlasView({2: {}})
     >>> G[1][2]
     {}
+    >>> G.edges[1, 2]
+    {}
 
-You can safely set the attributes of an edge using subscript notation
+You can get/set the attributes of an edge using subscript notation
 if the edge already exists.
 
 .. nbplot::
 
     >>> G.add_edge(1, 3)
     >>> G[1][3]['color'] = "blue"
+    >>> G.edges[1, 2]['color'] = "red"
 
-Fast examination of all edges is achieved using adjacency iterators.
-Note that for undirected graphs this actually looks at each edge twice.
+Fast examination of all (node, adjacency) pairs is achieved using
+``G.adjacency()``, or ``G.adj.items()``.
+Note that for undirected graphs, adjacency iteration sees each edge twice.
 
 .. nbplot::
 
     >>> FG = nx.Graph()
     >>> FG.add_weighted_edges_from([(1, 2, 0.125), (1, 3, 0.75), (2, 4, 1.2), (3, 4, 0.375)])
-    >>> for n, nbrs in FG.adjacency():
+    >>> for n, nbrs in FG.adj.items():
     ...    for nbr, eattr in nbrs.items():
-    ...        data = eattr['weight']
-    ...        if data < 0.5: print('(%d, %d, %.3f)' % (n, nbr, data))
+    ...        wt = eattr['weight']
+    ...        if wt < 0.5: print('(%d, %d, %.3f)' % (n, nbr, wt))
     (1, 2, 0.125)
     (2, 1, 0.125)
     (3, 4, 0.375)
     (4, 3, 0.375)
 
-Convenient access to all edges is achieved with the edges method.
+Convenient access to all edges is achieved with the edges property.
 
 .. nbplot::
 
-    >>> for (u, v, d) in FG.edges(data='weight'):
-    ...     if d < 0.5: print('(%d, %d, %.3f)' % (u, v, d))
+    >>> for (u, v, wt) in FG.edges.data('weight'):
+    ...     if wt < 0.5: print('(%d, %d, %.3f)' % (u, v, wt))
     (1, 2, 0.125)
     (3, 4, 0.375)
 
@@ -250,8 +261,8 @@ can be attached to graphs, nodes, or edges.
 Each graph, node, and edge can hold key/value attribute pairs in an associated
 attribute dictionary (the keys must be hashable).  By default these are empty,
 but attributes can be added or changed using ``add_edge``, ``add_node`` or direct
-manipulation of the attribute dictionaries named ``G.graph``, ``G.node``, and
-``G.edge`` for a graph ``G``.
+manipulation of the attribute dictionaries named ``G.graph``, ``G.nodes``, and
+``G.edges`` for a graph ``G``.
 
 Graph attributes
 ~~~~~~~~~~~~~~~~
@@ -275,7 +286,7 @@ Or you can modify attributes later
 Node attributes
 ~~~~~~~~~~~~~~~
 
-Add node attributes using ``add_node()``, ``add_nodes_from()``, or ``G.node``
+Add node attributes using ``add_node()``, ``add_nodes_from()``, or ``G.nodes``
 
 .. nbplot::
 
@@ -284,16 +295,17 @@ Add node attributes using ``add_node()``, ``add_nodes_from()``, or ``G.node``
     >>> G.nodes[1]
     {'time': '5pm'}
     >>> G.nodes[1]['room'] = 714
-    >>> list(G.nodes(data=True))
-    [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
+    >>> G.nodes.data()
+    NodeDataView({1: {'room': 714, 'time': '5pm'}, 3: {'time': '2pm'}})
 
-Note that adding a node to ``G.node`` does not add it to the graph, use
-``G.add_node()`` to add new nodes.
+Note that adding a node to ``G.nodes`` does not add it to the graph, use
+``G.add_node()`` to add new nodes. Similarly for edges.
 
 Edge Attributes
 ~~~~~~~~~~~~~~~
 
-Add edge attributes using ``add_edge()``, ``add_edges_from()``, or subscript notation.
+Add/change edge attributes using ``add_edge()``, ``add_edges_from()``,
+or subscript notation.
 
 .. nbplot::
 
@@ -301,25 +313,21 @@ Add edge attributes using ``add_edge()``, ``add_edges_from()``, or subscript not
     >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
     >>> G.add_edges_from([(1, 2, {'color': 'blue'}), (2, 3, {'weight': 8})])
     >>> G[1][2]['weight'] = 4.7
+    >>> G.edges[3, 4]['weight'] = 4.2
 
-The special attribute ``weight`` should be numeric and holds values used by
+The special attribute ``weight`` should be numeric as it is used by
 algorithms requiring weighted edges.
-
-.. warning:: Do not assign anything to ``G.edges[u]`` or ``G.edges[u][v]`` as it will
-   corrupt the graph data structure. Change the edge `dict` as shown above.
 
 Directed graphs
 ---------------
 
-The :class:`DiGraph` class provides additional methods specific to directed
-edges, e.g.,
-:meth:`DiGraph.out_edges`,
-:meth:`DiGraph.in_degree`,
-:meth:`DiGraph.predecessors`,
-:meth:`DiGraph.successors` etc.
+The :class:`DiGraph` class provides additional properties specific to
+directed edges, e.g.,
+:meth:`DiGraph.out_edges`, :meth:`DiGraph.in_degree`,
+:meth:`DiGraph.predecessors`, :meth:`DiGraph.successors` etc.
 To allow algorithms to work with both classes easily, the directed versions of
-``neighbors()`` and ``degree()`` are equivalent to ``successors()`` and the sum of
-``in_degree()`` and ``out_degree()`` respectively even though that may feel
+``neighbors()`` is equivalent to ``successors()`` while ``degree`` reports
+the sum of ``in_degree`` and ``out_degree`` even though that may feel
 inconsistent at times.
 
 .. nbplot::
@@ -382,7 +390,7 @@ can also be generated by
 
 1. Applying classic graph operations, such as::
 
-    subgraph(G, nbunch)      - induce subgraph of G on nodes in nbunch
+    subgraph(G, nbunch)      - induced subgraph view of G on nodes in nbunch
     union(G1,G2)             - graph union
     disjoint_union(G1,G2)    - graph union assuming all nodes are different
     cartesian_product(G1,G2) - return Cartesian product graph
@@ -448,31 +456,14 @@ functions such as:
     >>> nx.clustering(G)
     {1: 0, 2: 0, 3: 0, 'spam': 0}
 
-Functions that return node properties return iterators over node, value
-2-tuples. These are easily stored in a `dict` structure if you desire.
+Some functions with large output iterate over (node, value) 2-tuples.
+These are easily stored in a `dict` structure if you desire.
 
 .. nbplot::
 
-    >>> dict(nx.degree(G))
-    {1: 2, 2: 1, 3: 1, 'spam': 0}
-
-For values of specific nodes, you can provide a single node or an nbunch of
-nodes as argument.  If a single node is specified, then a single value is
-returned.  If an nbunch is specified, then the function will return a
-dictionary.
-
-.. nbplot::
-
-    >>> nx.degree(G, 1)
-    2
-    >>> G.degree(1)
-    2
-    >>> dict(G.degree([1, 2]))
-    {1: 2, 2: 1}
-    >>> sorted(d for n, d in G.degree([1, 2]))
-    [1, 2]
-    >>> sorted(d for n, d in G.degree())
-    [0, 1, 1, 2]
+    >>> sp = dict(nx.all_pairs_shortest_path(G))
+    >>> sp[3]
+    {1: [3, 1], 2: [3, 1, 2], 3: [3]}
 
 See :doc:`/reference/algorithms/index` for details on graph algorithms
 supported.
@@ -536,9 +527,9 @@ command if you are not using matplotlib in interactive mode (see
     <matplotlib.axes._subplots.AxesSubplot object at ...>
     >>> nx.draw_shell(G, nlist=[range(5,10), range(5)], **options)
 
-You can find additional options via :func:`draw_networkx` and layouts
-via :func:`layout`.
-You can use multiple shells with :func:`draw_shell`.
+You can find additional options via :func:`~drawing.nx_pylab.draw_networkx` and
+layouts via :mod:`layout <networkx.drawing.layout>`.
+You can use multiple shells with :func:`~drawing.nx_pylab.draw_shell`.
 
 .. nbplot::
 

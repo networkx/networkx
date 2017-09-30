@@ -12,7 +12,7 @@ from networkx.algorithms.connectivity.kcomponents import (
 
 
 def torrents_and_ferraro_graph():
-    # Graph from http://arxiv.org/pdf/1503.04476v1 p.26
+    # Graph from https://arxiv.org/pdf/1503.04476v1 p.26
     G = nx.convert_node_labels_to_integers(
         nx.grid_graph([5, 5]),
         label_attribute='labels',

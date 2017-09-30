@@ -18,7 +18,7 @@ from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
 from .utils import (build_auxiliary_node_connectivity,
-    build_auxiliary_edge_connectivity)
+                    build_auxiliary_edge_connectivity)
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -278,8 +278,8 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     Notes
     -----
     This is a flow based implementation of node connectivity. The
-    algorithm works by solving `O((n-\delta-1+\delta(\delta-1)/2))`
-    maximum flow problems on an auxiliary digraph. Where `\delta`
+    algorithm works by solving $O((n-\delta-1+\delta(\delta-1)/2))$
+    maximum flow problems on an auxiliary digraph. Where $\delta$
     is the minimum degree of G. For details about the auxiliary
     digraph and the computation of local node connectivity see
     :meth:`local_node_connectivity`. This implementation is based
@@ -318,6 +318,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         iter_func = itertools.permutations
         # It is necessary to consider both predecessors
         # and successors for directed graphs
+
         def neighbors(v):
             return itertools.chain.from_iterable([G.predecessors(v),
                                                   G.successors(v)])
@@ -412,7 +413,7 @@ def average_node_connectivity(G, flow_func=None):
         num += local_node_connectivity(G, u, v, **kwargs)
         den += 1
 
-    if den == 0: # Null Graph
+    if den == 0:  # Null Graph
         return 0
     return num / den
 
@@ -646,6 +647,7 @@ def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
     return nx.maximum_flow_value(H, s, t, **kwargs)
 
+
 def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     r"""Returns the edge connectivity of the graph or digraph G.
 
@@ -782,13 +784,13 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
         for i in range(n):
             kwargs['cutoff'] = L
             try:
-                L = min(L, local_edge_connectivity(G, nodes[i], nodes[i+1],
+                L = min(L, local_edge_connectivity(G, nodes[i], nodes[i + 1],
                                                    **kwargs))
-            except IndexError: # last node!
+            except IndexError:  # last node!
                 L = min(L, local_edge_connectivity(G, nodes[i], nodes[0],
                                                    **kwargs))
         return L
-    else: # undirected
+    else:  # undirected
         # Algorithm 6 in [1]
         if not nx.is_connected(G):
             return 0

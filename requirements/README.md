@@ -5,7 +5,7 @@
 - [default.txt](default.txt)
   Default requirements
 - [extras.txt](extras.txt)
-  Optinal requirements
+  Optional requirements
 - [test.txt](test.txt)
   Requirements for running test suite
 

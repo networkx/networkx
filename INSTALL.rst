@@ -9,8 +9,8 @@ instructions for installing the full `scientific Python stack
 .. note::
    If you are on Windows and want to install optional packages (e.g., `scipy`),
    then you will need to install a Python distribution such as
-   `Anaconda <https://www.continuum.io/downloads>`_,
-   `Enthought Canopy <https://www.enthought.com/products/canopy/>`_,
+   `Anaconda <https://www.anaconda.com/download/>`_,
+   `Enthought Canopy <https://www.enthought.com/product/canopy>`_,
    `Python(x,y) <http://python-xy.github.io/>`_,
    `WinPython <https://winpython.github.io/>`_, or
    `Pyzo <http://www.pyzo.org/>`_.
@@ -45,7 +45,7 @@ install into your user directory using the ``--user`` flag::
 
 Alternatively, you can manually download ``networkx`` from
 `GitHub <https://github.com/networkx/networkx/releases>`_  or
-`PyPI <http://pypi.python.org/pypi/networkx>`_.
+`PyPI <https://pypi.python.org/pypi/networkx>`_.
 To install one of these versions, unpack it and run the following from the
 top-level source directory using the Terminal::
 

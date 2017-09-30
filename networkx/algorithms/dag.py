@@ -51,7 +51,8 @@ def descendants(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    des = set(n for n, d in nx.shortest_path_length(G, source=source)) - set([source])
+    spl = nx.shortest_path_length(G, source=source)
+    des = set(spl) - set([source])
     return des
 
 
@@ -71,7 +72,8 @@ def ancestors(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    anc = set(n for n, d in nx.shortest_path_length(G, target=source)) - set([source])
+    spl = nx.shortest_path_length(G, target=source)
+    anc = set(spl) - set([source])
     return anc
 
 
@@ -287,8 +289,8 @@ def is_aperiodic(G):
 
     Notes
     -----
-    This uses the method outlined in [1]_, which runs in O(m) time
-    given m edges in `G`. Note that a graph is not aperiodic if it is
+    This uses the method outlined in [1]_, which runs in $O(m)$ time
+    given $m$ edges in `G`. Note that a graph is not aperiodic if it is
     acyclic as every integer trivial divides length 0 cycles.
 
     References

@@ -68,8 +68,8 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
 
     Notes
     -----
-    The running time is `O((1/\epsilon^2)m{\sqrt k} \log n)`
-    and the space required is `O(m)` for n nodes and m edges.
+    The running time is $O((1/\epsilon^2)m{\sqrt k} \log n)$
+    and the space required is $O(m)$ for $n$ nodes and $m$ edges.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -80,7 +80,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
     """
     try:
         import numpy as np
@@ -107,14 +107,14 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
                                 dtype=dtype, format='csc')
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     betweenness = dict.fromkeys(H, 0.0)
-    nb = (n-1.0)*(n-2.0)  # normalization factor
-    cstar = n*(n-1)/nb
+    nb = (n - 1.0) * (n - 2.0)  # normalization factor
+    cstar = n * (n - 1) / nb
     l = 1  # parameter in approximation, adjustable
-    k = l*int(np.ceil((cstar/epsilon)**2*np.log(n)))
+    k = l * int(np.ceil((cstar / epsilon)**2 * np.log(n)))
     if k > kmax:
         raise nx.NetworkXError('Number random pairs k>kmax (%d>%d) ' % (k, kmax),
                                'Increase kmax or epsilon')
-    cstar2k = cstar/(2*k)
+    cstar2k = cstar / (2 * k)
     for i in range(k):
         s, t = random.sample(range(n), 2)
         b = np.zeros(n, dtype=dtype)
@@ -126,13 +126,13 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
                 continue
             for nbr in H[v]:
                 w = H[v][nbr].get(weight, 1.0)
-                betweenness[v] += w*np.abs(p[v]-p[nbr])*cstar2k
+                betweenness[v] += w * np.abs(p[v] - p[nbr]) * cstar2k
     if normalized:
         factor = 1.0
     else:
-        factor = nb/2.0
+        factor = nb / 2.0
     # remap to original node names and "unnormalize" if required
-    return dict((ordering[k], float(v*factor)) for k, v in betweenness.items())
+    return dict((ordering[k], float(v * factor)) for k, v in betweenness.items())
 
 
 @not_implemented_for('directed')
@@ -183,14 +183,14 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
-    time [1]_, where `I(n-1)` is the time needed to compute the
-    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
-    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Current-flow betweenness can be computed in  $O(I(n-1)+mn \log n)$
+    time [1]_, where $I(n-1)$ is the time needed to compute the
+    inverse Laplacian.  For a full matrix this is $O(n^3)$ but using
+    sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw)` where `w` is the width of the sparse
-    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
+    The space required is $O(nw)$ where $w$ is the width of the sparse
+    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -201,7 +201,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -228,14 +228,14 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
                                        solver=solver):
         pos = dict(zip(row.argsort()[::-1], range(n)))
         for i in range(n):
-            betweenness[s] += (i-pos[i])*row[i]
-            betweenness[t] += (n-i-1-pos[i])*row[i]
+            betweenness[s] += (i - pos[i]) * row[i]
+            betweenness[t] += (n - i - 1 - pos[i]) * row[i]
     if normalized:
-        nb = (n-1.0)*(n-2.0)  # normalization factor
+        nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
         nb = 2.0
     for v in H:
-        betweenness[v] = float((betweenness[v]-v)*2.0/nb)
+        betweenness[v] = float((betweenness[v] - v) * 2.0 / nb)
     return dict((ordering[k], v) for k, v in betweenness.items())
 
 
@@ -294,14 +294,14 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
-    time [1]_, where `I(n-1)` is the time needed to compute the
-    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
-    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Current-flow betweenness can be computed in $O(I(n-1)+mn \log n)$
+    time [1]_, where $I(n-1)$ is the time needed to compute the
+    inverse Laplacian.  For a full matrix this is $O(n^3)$ but using
+    sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw) where `w` is the width of the sparse
-    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
+    The space required is $O(nw)$ where $w$ is the width of the sparse
+    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -312,7 +312,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -334,19 +334,19 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G, dict(zip(ordering,range(n))))
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     edges = (tuple(sorted((u, v))) for u, v in H.edges())
-    betweenness= dict.fromkeys(edges, 0.0)
+    betweenness = dict.fromkeys(edges, 0.0)
     if normalized:
-        nb = (n-1.0)*(n-2.0)  # normalization factor
+        nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
         nb = 2.0
     for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype,
                                     solver=solver):
-        pos = dict(zip(row.argsort()[::-1], range(1, n+1)))
+        pos = dict(zip(row.argsort()[::-1], range(1, n + 1)))
         for i in range(n):
-            betweenness[e] += (i+1-pos[i])*row[i]
-            betweenness[e] += (n-i-pos[i])*row[i]
+            betweenness[e] += (i + 1 - pos[i]) * row[i]
+            betweenness[e] += (n - i - pos[i]) * row[i]
         betweenness[e] /= nb
     return dict(((ordering[s], ordering[t]), float(v))
                 for (s, t), v in betweenness.items())

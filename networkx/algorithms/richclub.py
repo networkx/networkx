@@ -71,10 +71,10 @@ def rich_club_coefficient(G, normalized=True, Q=100):
        and Tibério S. Caetano,
        "The rich-club phenomenon across complex network hierarchies",
        Applied Physics Letters Vol 91 Issue 8, August 2007.
-       http://arxiv.org/abs/physics/0701290
+       https://arxiv.org/abs/physics/0701290
     .. [2] R. Milo, N. Kashtan, S. Itzkovitz, M. E. J. Newman, U. Alon,
        "Uniform generation of random graphs with arbitrary degree
-       sequences", 2006. http://arxiv.org/abs/cond-mat/0312028
+       sequences", 2006. https://arxiv.org/abs/cond-mat/0312028
     """
     if nx.number_of_selfloops(G) > 0:
         raise Exception('rich_club_coefficient is not implemented for '

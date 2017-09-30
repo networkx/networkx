@@ -15,7 +15,7 @@ class TestGeneratorNonIsomorphicTrees():
 
     def test_tree_structure(self):
         # test for tree structure for nx.nonisomorphic_trees()
-        f = lambda x: list(nx.nonisomorphic_trees(x))
+        def f(x): return list(nx.nonisomorphic_trees(x))
         for i in f(6):
             assert_true(nx.is_tree(i))
         for i in f(8):
@@ -23,7 +23,7 @@ class TestGeneratorNonIsomorphicTrees():
 
     def test_nonisomorphism(self):
         # test for nonisomorphism of trees for nx.nonisomorphic_trees()
-        f = lambda x: list(nx.nonisomorphic_trees(x))
+        def f(x): return list(nx.nonisomorphic_trees(x))
         trees = f(6)
         for i in range(len(trees)):
             for j in range(i + 1, len(trees)):
@@ -44,7 +44,7 @@ class TestGeneratorNonIsomorphicTrees():
         assert_equal(nx.number_of_nonisomorphic_trees(8), 23)
 
     def test_nonisomorphic_trees(self):
-        f = lambda x: list(nx.nonisomorphic_trees(x))
+        def f(x): return list(nx.nonisomorphic_trees(x))
         assert_edges_equal(f(3)[0].edges(), [(0, 1), (0, 2)])
         assert_edges_equal(f(4)[0].edges(), [(0, 1), (0, 3), (1, 2)])
         assert_edges_equal(f(4)[1].edges(), [(0, 1), (0, 2), (0, 3)])

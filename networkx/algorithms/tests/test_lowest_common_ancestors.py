@@ -162,7 +162,7 @@ class TestDAGLCA:
         self.DG.add_edge(6, 2)
         self.DG.add_edge(7, 2)
 
-        self.root_distance = dict(nx.shortest_path_length(self.DG, source=0))
+        self.root_distance = nx.shortest_path_length(self.DG, source=0)
 
         self.gold = {(1, 1): 1,
                      (1, 2): 1,
@@ -212,7 +212,7 @@ class TestDAGLCA:
         else:
             roots = [n for n, deg in G.in_degree if deg == 0]
             assert(len(roots) == 1)
-            root_distance = dict(nx.shortest_path_length(G, source=roots[0]))
+            root_distance = nx.shortest_path_length(G, source=roots[0])
 
         for a, b in ((min(pair), max(pair)) for pair in chain(d1, d2)):
             assert_equal(root_distance[get_pair(d1, a, b)],

@@ -15,7 +15,7 @@ import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import OutEdgeView, InEdgeView, \
-        DiDegreeView, InDegreeView, OutDegreeView
+    DiDegreeView, InDegreeView, OutDegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
@@ -30,7 +30,7 @@ class DiGraph(Graph):
     (parallel) edges are not.
 
     Nodes can be arbitrary (hashable) Python objects with optional
-    key/value attributes.
+    key/value attributes. By convention `None` is not used as a node.
 
     Edges are represented as links between nodes with optional
     key/value attributes.
@@ -97,7 +97,7 @@ class DiGraph(Graph):
 
     or a collection of edges,
 
-    >>> G.add_edges_from(H.edges())
+    >>> G.add_edges_from(H.edges)
 
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  There are no errors when adding
@@ -135,19 +135,23 @@ class DiGraph(Graph):
     >>> G[1][2]['weight'] = 4.7
     >>> G.edges[1, 2]['weight'] = 4
 
+    Warning: we protect the graph data structure by making `G.edges[1, 2]` a
+    read-only dict-like structure. Use 2 sets of brackets to add/change
+    data attributes. (For multigraphs: `MG.edges[u, v, key][name] = value`).
+
     **Shortcuts:**
 
     Many common graph features allow python syntax to speed reporting.
 
     >>> 1 in G     # check if node in graph
     True
-    >>> [n for n in G if n<3]   # iterate through nodes
+    >>> [n for n in G if n < 3]  # iterate through nodes
     [1, 2]
     >>> len(G)  # number of nodes in graph
     5
 
-    The fastest way to traverse all edges of a graph is via
-    adjacency(), but the edges() method is often more convenient.
+    Often the best way to traverse all edges of a graph is via the neighbors.
+    The neighbors are reported as an adjacency-dict `G.adj` or as `G.adjacency()`
 
     >>> for n, nbrsdict in G.adjacency():
     ...     for nbr, eattr in nbrsdict.items():
@@ -155,7 +159,7 @@ class DiGraph(Graph):
     ...            # Do something useful with the edges
     ...            pass
 
-    But the edges() method is often more convenient:
+    But the edges reporting object is often more convenient:
 
     >>> for u, v, weight in G.edges(data='weight'):
     ...     if weight is not None:
@@ -164,11 +168,14 @@ class DiGraph(Graph):
 
     **Reporting:**
 
-    Simple graph information is obtained using methods.
-    Reporting methods usually return iterators instead of containers
-    to reduce memory usage.
-    Methods exist for reporting nodes(), edges(), neighbors() and degree()
-    as well as the number of nodes and edges.
+    Simple graph information is obtained using object-attributes and methods.
+    Reporting usually provides views instead of containers to reduce memory
+    usage. The views update as the graph is updated similarly to dict-views.
+    The objects `nodes, `edges` and `adj` provide access to data attributes
+    via lookup (e.g. `nodes[n], `edges[u, v]`, `adj[u][v]`) and iteration
+    (e.g. `nodes.items()`, `nodes.data('color')`,
+    `nodes.data('color', default='blue')` and similarly for `edges`)
+    Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.
 
     For details on these and other miscellaneous methods, see below.
 
@@ -233,8 +240,28 @@ class DiGraph(Graph):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
+
+    def __getstate__(self):
+        attr = self.__dict__.copy()
+        # remove lazy property attributes
+        if 'nodes' in attr:
+            del attr['nodes']
+        if 'edges' in attr:
+            del attr['edges']
+        if 'out_edges' in attr:
+            del attr['out_edges']
+        if 'in_edges' in attr:
+            del attr['in_edges']
+        if 'degree' in attr:
+            del attr['degree']
+        if 'in_degree' in attr:
+            del attr['in_degree']
+        if 'out_degree' in attr:
+            del attr['out_degree']
+        return attr
+
     def __init__(self, data=None, **attr):
-        """Initialize a graph with edges, name, graph attributes.
+        """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
         ----------
@@ -244,8 +271,7 @@ class DiGraph(Graph):
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix
             or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
-        name : string, optional (default='')
-            An optional name for the graph.
+
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
 
@@ -289,19 +315,59 @@ class DiGraph(Graph):
         self.graph.update(attr)
 
     @property
-    def edge(self):
-        return OutEdgeView(self)
-
-    @property
     def adj(self):
+        """Graph adjacency object holding the neighbors of each node.
+
+        This object is a read-only dict-like structure with node keys
+        and neighbor-dict values.  The neighbor-dict is keyed by neighbor
+        to the edge-data-dict.  So `G.adj[3][2]['color'] = 'blue'` sets
+        the color of the edge `(3, 2)` to `"blue"`.
+
+        Iterating over G.adj behaves like a dict. Useful idioms include
+        `for nbr, datadict in G.adj[n].items():`.
+
+        The neighbor information is also provided by subscripting the graph.
+        So `for nbr, foovalue in G[node].data('foo', default=1):` works.
+
+        For directed graphs, `G.adj` holds outgoing (successor) info.
+        """
         return AdjacencyView(self._succ)
 
     @property
     def succ(self):
+        """Graph adjacency object holding the successors of each node.
+
+        This object is a read-only dict-like structure with node keys
+        and neighbor-dict values.  The neighbor-dict is keyed by neighbor
+        to the edge-data-dict.  So `G.succ[3][2]['color'] = 'blue'` sets
+        the color of the edge `(3, 2)` to `"blue"`.
+
+        Iterating over G.succ behaves like a dict. Useful idioms include
+        `for nbr, datadict in G.succ[n].items():`.  A data-view not provided
+        by dicts also exists: `for nbr, foovalue in G.succ[node].data('foo'):`
+        and a default can be set via a `default` argument to the `data` method.
+
+        The neighbor information is also provided by subscripting the graph.
+        So `for nbr, foovalue in G[node].data('foo', default=1):` works.
+
+        For directed graphs, `G.adj` is identical to `G.succ`.
+        """
         return AdjacencyView(self._succ)
 
     @property
     def pred(self):
+        """Graph adjacency object holding the predecessors of each node.
+
+        This object is a read-only dict-like structure with node keys
+        and neighbor-dict values.  The neighbor-dict is keyed by neighbor
+        to the edge-data-dict.  So `G.pred[2][3]['color'] = 'blue'` sets
+        the color of the edge `(3, 2)` to `"blue"`.
+
+        Iterating over G.pred behaves like a dict. Useful idioms include
+        `for nbr, datadict in G.pred[n].items():`.  A data-view not provided
+        by dicts also exists: `for nbr, foovalue in G.pred[node].data('foo'):`
+        A default can be set via a `default` argument to the `data` method.
+        """
         return AdjacencyView(self._pred)
 
     def add_node(self, n, **attr):
@@ -383,8 +449,7 @@ class DiGraph(Graph):
         >>> G.add_nodes_from([1, 2], size=10)
         >>> G.add_nodes_from([3, 4], weight=0.4)
 
-        Use (node, attrdict) tuples to update attributes for specific
-        nodes.
+        Use (node, attrdict) tuples to update attributes for specific nodes.
 
         >>> G.add_nodes_from([(1, dict(size=11)), (2, {'color':'blue'})])
         >>> G.nodes[1]['size']
@@ -442,10 +507,10 @@ class DiGraph(Graph):
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> list(G.edges())
+        >>> list(G.edges)
         [(0, 1), (1, 2)]
         >>> G.remove_node(1)
-        >>> list(G.edges())
+        >>> list(G.edges)
         []
 
         """
@@ -461,15 +526,14 @@ class DiGraph(Graph):
             del self._succ[u][n]   # remove all edges n-u in digraph
         del self._pred[n]          # remove node from pred
 
-    def remove_nodes_from(self, nbunch):
+    def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
 
         Parameters
         ----------
         nodes : iterable container
             A container of nodes (list, dict, set, etc.).  If a node
-            in the container is not in the graph it is silently
-            ignored.
+            in the container is not in the graph it is silently ignored.
 
         See Also
         --------
@@ -478,15 +542,15 @@ class DiGraph(Graph):
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> e = list(G.nodes())
+        >>> e = list(G.nodes)
         >>> e
         [0, 1, 2]
         >>> G.remove_nodes_from(e)
-        >>> list(G.nodes())
+        >>> list(G.nodes)
         []
 
         """
-        for n in nbunch:
+        for n in nodes:
             try:
                 succs = self._succ[n]
                 del self._node[n]
@@ -525,9 +589,8 @@ class DiGraph(Graph):
         -----
         Adding an edge that already exists updates the edge data.
 
-        Many NetworkX algorithms designed for weighted graphs use as
-        the edge weight a numerical value assigned to a keyword
-        which by default is 'weight'.
+        Many NetworkX algorithms designed for weighted graphs use
+        an edge attribute (by default `weight`) to hold a numerical value.
 
         Examples
         --------
@@ -544,11 +607,11 @@ class DiGraph(Graph):
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
 
-        For non-string associations, directly access the edge's attribute
-        dictionary.
+        For non-string attribute keys, use subscript notation.
 
         >>> G.add_edge(1, 2)
         >>> G[1][2].update({0: 5})
+        >>> G.edges[1, 2].update({0: 5})
         """
         # add nodes
         if u not in self._succ:
@@ -729,17 +792,24 @@ class DiGraph(Graph):
 
     @property
     def edges(self):
-        """Return an iterator over the edges.
+        """An OutEdgeView of the DiGraph as G.edges or G.edges().
 
-        Edges are returned as tuples with optional data
-        in the order (node, neighbor, data).
         edges(self, nbunch=None, data=False, default=None)
+
+        The OutEdgeView provides set-like operations on the edge-tuples
+        as well as edge attribute lookup. When called, it also provides
+        an EdgeDataView object which allows control of access to edge
+        attributes (but does not provide set-like operations).
+        Hence, `G.edges[u, v]['color']` provides the value of the color
+        attribute for edge `(u, v)` while
+        `for (u, v, c) in G.edges.data('color', default='red'):`
+        iterates through all the edges yielding the color attribute
+        with default `'red'` if no color attribute exists.
 
         Parameters
         ----------
-        nbunch : iterable container, optional (default= all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
+        nbunch : single node, container, or all nodes (default= all nodes)
+            The view will only report edges incident to these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -750,8 +820,10 @@ class DiGraph(Graph):
 
         Returns
         -------
-        edge : iterator
-            An iterator over (u, v) or (u, v, d) tuples of edges.
+        edges : OutEdgeView
+            A view of edge attributes, usually it iterates over (u, v)
+            or (u, v, d) tuples of edges, but can also be used for
+            attribute lookup as `edges[u, v]['foo']`.
 
         See Also
         --------
@@ -767,16 +839,16 @@ class DiGraph(Graph):
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> nx.add_path(G, [0, 1, 2])
         >>> G.add_edge(2, 3, weight=5)
-        >>> [e for e in G.edges()]
+        >>> [e for e in G.edges]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges(data=True)) # default data is {} (empty dict)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges(data='weight', default=1))
-        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
-        >>> list(G.edges([0, 2]))
-        [(0, 1), (2, 3)]
-        >>> list(G.edges(0))
-        [(0, 1)]
+        >>> G.edges.data()  # default data is {} (empty dict)
+        OutEdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})])
+        >>> G.edges.data('weight', default=1)
+        OutEdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])
+        >>> G.edges([0, 2])  # only edges incident to these nodes
+        OutEdgeDataView([(0, 1), (2, 3)])
+        >>> G.edges(0)  # only edges incident to a single node (use G.adj[0]?)
+        OutEdgeDataView([(0, 1)])
 
         """
         self.__dict__['edges'] = edges = OutEdgeView(self)
@@ -788,15 +860,14 @@ class DiGraph(Graph):
 
     @property
     def in_edges(self):
-        """Return an iterator over the incoming edges.
+        """An InEdgeView of the Graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, default=None):
 
         Parameters
         ----------
-        nbunch : iterable container, optional (default= all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
+        nbunch : single node, container, or all nodes (default= all nodes)
+            The view will only report edges incident to these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -807,33 +878,36 @@ class DiGraph(Graph):
 
         Returns
         -------
-        in_edge : iterator
-            An iterator over (u, v) or (u, v, d) tuples of incoming edges.
+        in_edges : InEdgeView
+            A view of edge attributes, usually it iterates over (u, v)
+            or (u, v, d) tuples of edges, but can also be used for
+            attribute lookup as `edges[u, v]['foo']`.
 
         See Also
         --------
-        edges : return an iterator over edges
+        edges
         """
         self.__dict__['in_edges'] = in_edges = InEdgeView(self)
         return in_edges
 
     @property
     def degree(self):
-        """Return an iterator for (node, degree) or degree for single node.
-        degree(self, nbunch=None, weight=None)
+        """A DegreeView for the Graph as G.degree or G.degree().
 
         The node degree is the number of edges adjacent to the node.
-        This function returns the degree for a single node or an iterator
-        for a bunch of nodes or if nothing is passed as argument.
+        The weighted node degree is the sum of the edge weights for
+        edges incident to that node.
+
+        This object provides an iterator for (node, degree) as well as
+        lookup for the degree for a single node.
 
         Parameters
         ----------
-        nbunch : iterable container, optional (default=all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
+        nbunch : single node, container, or all nodes (default= all nodes)
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used
+           The name of an edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -857,8 +931,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0) # node 0 with degree 1
         1
-        >>> list(G.degree([0, 1]))
-        [(0, 1), (1, 2)]
+        >>> list(G.degree([0, 1, 2]))
+        [(0, 1), (1, 2), (2, 2)]
 
         """
         self.__dict__['degree'] = degree = DiDegreeView(self)
@@ -866,22 +940,22 @@ class DiGraph(Graph):
 
     @property
     def in_degree(self):
-        """Return an iterator for (node, in-degree) or in-degree for single node.
+        """An InDegreeView for (node, in_degree) or in_degree for single node.
 
-        in_degree(self, nbunch=None, weight=None)
+        The node in_degree is the number of edges pointing to the node.
+        The weighted node degree is the sum of the edge weights for
+        edges incident to that node.
 
-        The node in-degree is the number of edges pointing in to the node.
-        This function returns the in-degree for a single node or an iterator
-        for a bunch of nodes or if nothing is passed as argument.
+        This object provides an iteration over (node, in_degree) as well as
+        lookup for the degree for a single node.
 
         Parameters
         ----------
-        nbunch : iterable container, optional (default=all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
+        nbunch : single node, container, or all nodes (default= all nodes)
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used
+           The name of an edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -905,8 +979,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0) # node 0 with degree 0
         0
-        >>> list(G.in_degree([0, 1]))
-        [(0, 0), (1, 1)]
+        >>> list(G.in_degree([0, 1, 2]))
+        [(0, 0), (1, 1), (2, 1)]
 
         """
         self.__dict__['in_degree'] = in_degree = InDegreeView(self)
@@ -914,22 +988,22 @@ class DiGraph(Graph):
 
     @property
     def out_degree(self):
-        """Return an iterator for (node, out-degree) or out-degree for single node.
+        """An OutDegreeView for (node, out_degree)
 
-        out_degree(self, nbunch=None, weight=None)
+        The node out_degree is the number of edges pointing out of the node.
+        The weighted node degree is the sum of the edge weights for
+        edges incident to that node.
 
-        The node out-degree is the number of edges pointing out of the node.
-        This function returns the out-degree for a single node or an iterator
-        for a bunch of nodes or if nothing is passed as argument.
+        This object provides an iterator over (node, out_degree) as well as
+        lookup for the degree for a single node.
 
         Parameters
         ----------
-        nbunch : iterable container, optional (default=all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
+        nbunch : single node, container, or all nodes (default= all nodes)
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used
+           The name of an edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -953,8 +1027,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0) # node 0 with degree 1
         1
-        >>> list(G.out_degree([0, 1]))
-        [(0, 1), (1, 1)]
+        >>> list(G.out_degree([0, 1, 2]))
+        [(0, 1), (1, 1), (2, 1)]
 
         """
         self.__dict__['out_degree'] = out_degree = OutDegreeView(self)
@@ -969,9 +1043,9 @@ class DiGraph(Graph):
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.clear()
-        >>> list(G.nodes())
+        >>> list(G.nodes)
         []
-        >>> list(G.edges())
+        >>> list(G.edges)
         []
         """
         self._succ.clear()
@@ -988,12 +1062,31 @@ class DiGraph(Graph):
         return True
 
     def fresh_copy(self):
-        """Return a fresh copy graph with the same data structure."""
-        return nx.DiGraph()
+        """Return a fresh copy graph with the same data structure.
+
+        A fresh copy has no nodes, edges or graph attributes. It is
+        the same data structure as the current graph. This method is
+        typically used to create an empty version of the graph.
+
+        Notes
+        =====
+        If you subclass the base class you should overwrite this method
+        to return your class of graph.
+        """
+        return DiGraph()
 
     def copy(self, as_view=False):
         """Return a copy of the graph.
 
+        The copy method by default returns a shallow copy of the graph
+        and attributes. That is, if an attribute is a container, that
+        container is shared by the original an the copy.
+        Use Python's `copy.deepcopy` for new containers.
+
+        If `as_view` is True then a view is returned instead of a copy.
+
+        Notes
+        =====
         All copies reproduce the graph structure, but data attributes
         may be handled in different ways. There are four types of copies
         of a graph that people might want.
@@ -1001,40 +1094,49 @@ class DiGraph(Graph):
         Deepcopy -- The default behavior is a "deepcopy" where the graph
         structure as well as all data attributes and any objects they might
         contain are copied. The entire graph object is new so that changes
-        in the copy do not affect the original object.
+        in the copy do not affect the original object. (see Python's
+        copy.deepcopy)
 
-        Data Reference (Shallow) -- For a shallow copy (with_data=False)
-        the graph structure is copied but the edge, node and graph attribute
-        dicts are references to those in the original graph. This saves
+        Data Reference (Shallow) -- For a shallow copy the graph structure
+        is copied but the edge, node and graph attribute dicts are
+        references to those in the original graph. This saves
         time and memory but could cause confusion if you change an attribute
         in one graph and it changes the attribute in the other.
+        NetworkX does not provide this level of shallow copy.
 
         Independent Shallow -- This copy creates new independent attribute
         dicts and then does a shallow copy of the attributes. That is, any
         attributes that are containers are shared between the new graph
-        and the original. This type of copy is not enabled. Instead use:
+        and the original. This is exactly what `dict.copy()` provides.
+        You can obtain this style copy using:
 
             >>> G = nx.path_graph(5)
-            >>> H = G.__class__(G)
+            >>> H = G.copy()
+            >>> H = G.copy(as_view=False)
+            >>> H = nx.Graph(G)
+            >>> H = G.fresh_copy().__class__(G)
 
-        Fresh Data-- For fresh data, the graph structure is copied while
+        Fresh Data -- For fresh data, the graph structure is copied while
         new empty data attribute dicts are created. The resulting graph
         is independent of the original and it has no edge, node or graph
         attributes. Fresh copies are not enabled. Instead use:
 
-            >>> H = G.__class__()
+            >>> H = G.fresh_copy()
             >>> H.add_nodes_from(G)
-            >>> H.add_edges_from(G.edges())
+            >>> H.add_edges_from(G.edges)
+
+        View -- Inspired by dict-views, graph-views act like read-only
+        versions of the original graph, providing a copy of the original
+        structure without requiring any memory for copying the information.
 
         See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
+        and deep copies, https://docs.python.org/2/library/copy.html.
 
         Parameters
         ----------
-        with_data : bool, optional (default=True)
-            If True, the returned graph will have a deep copy of the
-            graph, node, and edge attributes of this object. Otherwise,
-            the returned graph will be a shallow copy.
+        as_view : bool, optional (default=False)
+            If True, the returned graph-view provides a read-only view
+            of the original graph without actually copying any data.
 
         Returns
         -------
@@ -1069,6 +1171,8 @@ class DiGraph(Graph):
         reciprocal : bool (optional)
           If True only keep edges that appear in both directions
           in the original digraph.
+        as_view : bool (optional, default=False)
+          If True return an undirected view of the original directed graph.
 
         Returns
         -------
@@ -1079,6 +1183,10 @@ class DiGraph(Graph):
             their edge data is different, only one edge is created
             with an arbitrary choice of which edge data to use.
             You must check and correct for this manually if desired.
+
+        See Also
+        --------
+        Graph, copy, add_edge, add_edges_from
 
         Notes
         -----
@@ -1096,11 +1204,21 @@ class DiGraph(Graph):
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
+        and deep copies, https://docs.python.org/2/library/copy.html.
 
         Warning: If you have subclassed DiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the
         Graph created by this method.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(2)   # or MultiGraph, etc
+        >>> H = G.to_directed()
+        >>> list(H.edges)
+        [(0, 1), (1, 0)]
+        >>> G2 = H.to_undirected()
+        >>> list(G2.edges)
+        [(0, 1)]
         """
         if as_view is True:
             return nx.graphviews.GraphView(self)
@@ -1119,46 +1237,49 @@ class DiGraph(Graph):
                              for v, d in nbrs.items())
         return G
 
-    def subgraph(self, nbunch):
-        """Return a SubGraph view of the subgraph induced on nodes in nbunch.
+    def subgraph(self, nodes):
+        """Return a SubGraph view of the subgraph induced on `nodes`.
 
-        The induced subgraph of the graph contains the nodes in nbunch
+        The induced subgraph of the graph contains the nodes in `nodes`
         and the edges between those nodes.
 
         Parameters
         ----------
-        nbunch : list, iterable
+        nodes : list, iterable
             A container of nodes which will be iterated through once.
 
         Returns
         -------
-        G : Graph
-            A subgraph of the graph with the same edge attributes.
+        G : SubGraph View
+            A subgraph view of the graph. The graph structure cannot be
+            changed but node/edge attributes can and are shared with the
+            original graph.
 
         Notes
         -----
-        The graph, edge or node attributes just point to the original graph.
-        So changes to the node or edge structure will not be reflected in
-        the original graph while changes to the attributes will.
+        The graph, edge and node attributes are shared with the original graph.
+        Changes to the graph structure is ruled out by the view, but changes
+        to attributes are reflected in the original graph.
 
         To create a subgraph with its own copy of the edge/node attributes use:
-        nx.Graph(G.subgraph(nbunch))
-
-        If edge attributes are containers, a deep copy can be obtained using:
-        G.subgraph(nbunch).copy()
+        G.subgraph(nodes).copy()
 
         For an inplace reduction of a graph to a subgraph you can remove nodes:
-        G.remove_nodes_from([ n in G if n not in set(nbunch)])
+        G.remove_nodes_from([n for n in G if n not in set(nodes)])
 
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> H = G.subgraph([0, 1, 2])
-        >>> list(H.edges())
+        >>> list(H.edges)
         [(0, 1), (1, 2)]
         """
-        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nbunch))
-        return nx.graphviews.SubDiGraph(self, induced_nodes)
+        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
+        SubGraph = nx.graphviews.SubDiGraph
+        # if already a subgraph, don't make a chain
+        if hasattr(self, '_NODE_OK'):
+            return SubGraph(self._graph, induced_nodes, self._EDGE_OK)
+        return SubGraph(self, induced_nodes)
 
     def reverse(self, copy=True):
         """Return the reverse of the graph.
@@ -1170,14 +1291,16 @@ class DiGraph(Graph):
         ----------
         copy : bool optional (default=True)
             If True, return a new DiGraph holding the reversed edges.
-            If False, reverse the reverse graph is created using
-            the original graph (this changes the original graph).
+            If False, the reverse graph is created using a view of
+            the original graph.
         """
         if copy:
-            H = self.__class__(name="Reverse of (%s)" % self.name)
-            H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+            H = self.fresh_copy()
+            H.graph.update(deepcopy(self.graph))
+            if 'name' in H.graph:
+                H.name = "Reverse of (%s)" % H.name
+            H.add_nodes_from((n, deepcopy(d)) for n, d in self.node.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
-            H.graph.update(deepcopy(self.graph))
             return H
         return nx.graphviews.ReverseView(self)

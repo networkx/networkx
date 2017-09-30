@@ -1,6 +1,6 @@
 from nose.tools import assert_equal, assert_in
 
-__all__ = ['assert_nodes_equal', 'assert_edges_equal','assert_graphs_equal']
+__all__ = ['assert_nodes_equal', 'assert_edges_equal', 'assert_graphs_equal']
 
 
 def assert_nodes_equal(nodes1, nodes2):
@@ -25,16 +25,16 @@ def assert_edges_equal(edges1, edges2):
     d1 = defaultdict(dict)
     d2 = defaultdict(dict)
     c1 = 0
-    for c1,e in enumerate(edges1):
-        u,v = e[0],e[1]
+    for c1, e in enumerate(edges1):
+        u, v = e[0], e[1]
         data = [e[2:]]
         if v in d1[u]:
             data = d1[u][v] + data
         d1[u][v] = data
         d1[v][u] = data
     c2 = 0
-    for c2,e in enumerate(edges2):
-        u,v = e[0],e[1]
+    for c2, e in enumerate(edges2):
+        u, v = e[0], e[1]
         data = [e[2:]]
         if v in d2[u]:
             data = d2[u][v] + data

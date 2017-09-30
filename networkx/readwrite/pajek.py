@@ -165,7 +165,7 @@ def parse_pajek(lines):
         lines = iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
     G = nx.MultiDiGraph()  # are multiedges allowed in Pajek? assume yes
-    labels = [] # in the order of the file, needed for matrix
+    labels = []  # in the order of the file, needed for matrix
     while lines:
         try:
             l = next(lines)
@@ -197,18 +197,18 @@ def parse_pajek(lines):
                 try:
                     x, y, shape = splitline[2:5]
                     G.nodes[label].update({'x': float(x),
-                                          'y': float(y),
-                                          'shape': shape})
+                                           'y': float(y),
+                                           'shape': shape})
                 except:
                     pass
                 extra_attr = zip(splitline[5::2], splitline[6::2])
                 G.nodes[label].update(extra_attr)
         elif l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
             if l.lower().startswith("*edge"):
-               # switch from multidigraph to multigraph
+                # switch from multidigraph to multigraph
                 G = nx.MultiGraph(G)
             if l.lower().startswith("*arcs"):
-               # switch to directed with multiple arcs for each existing edge
+                # switch to directed with multiple arcs for each existing edge
                 G = G.to_directed()
             for l in lines:
                 try:

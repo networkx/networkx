@@ -75,6 +75,7 @@ def k_edge_components(G, k):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
@@ -84,12 +85,12 @@ def k_edge_components(G, k):
     >>> G.add_nodes_from(it.chain(*paths))
     >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # note this returns {1, 4} unlike k_edge_subgraphs
-    >>> sorted(map(sorted, k_edge_components(G, k=3)))
+    >>> sorted(map(sorted, nx.k_edge_components(G, k=3)))
     [[1, 4], [2], [3], [5, 6, 7, 8]]
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Bridge_(graph_theory)
+    .. [1] https://en.wikipedia.org/wiki/Bridge_%28graph_theory%29
     .. [2] Wang, Tianhao, et al. (2015) A simple algorithm for finding all
         k-edge-connected components.
         http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264
@@ -154,6 +155,7 @@ def k_edge_subgraphs(G, k):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
@@ -163,7 +165,7 @@ def k_edge_subgraphs(G, k):
     >>> G.add_nodes_from(it.chain(*paths))
     >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # note this does not return {1, 4} unlike k_edge_components
-    >>> sorted(map(sorted, k_edge_subgraphs(G, k=3)))
+    >>> sorted(map(sorted, nx.k_edge_subgraphs(G, k=3)))
     [[1], [2], [3], [4], [5, 6, 7, 8]]
 
     References
@@ -234,6 +236,7 @@ def bridge_components(G):
     -------
     >>> # The barbell graph with parameter zero has a single bridge
     >>> G = nx.barbell_graph(5, 0)
+    >>> from networkx.algorithms.connectivity.edge_kcomponents import bridge_components
     >>> sorted(map(sorted, bridge_components(G)))
     [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
     """
@@ -244,7 +247,7 @@ def bridge_components(G):
 
 
 class EdgeComponentAuxGraph(object):
-    """A simple algorithm to find all k-edge-connected components in a graph.
+    r"""A simple algorithm to find all k-edge-connected components in a graph.
 
     Constructing the AuxillaryGraph (which may take some time) allows for the
     k-edge-ccs to be found in linear time for arbitrary k.
@@ -253,8 +256,8 @@ class EdgeComponentAuxGraph(object):
     -----
     This implementation is based on [1]_. The idea is to construct an auxillary
     graph from which the k-edge-ccs can be extracted in linear time. The
-    auxillary graph is constructed in O(|V|F) operations, where F is the
-    complexity of max flow. Querying the components takes an additional O(|V|)
+    auxillary graph is constructed in $O(|V|\cdot F)$ operations, where F is the
+    complexity of max flow. Querying the components takes an additional $O(|V|)$
     operations. This algorithm can be slow for large graphs, but it handles an
     arbitrary k and works for both directed and undirected inputs.
 
@@ -270,7 +273,9 @@ class EdgeComponentAuxGraph(object):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
+    >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> # Build an interesting graph with multiple levels of k-edge-ccs
     >>> paths = [
     ...     (1, 2, 3, 4, 1, 3, 4, 2),  # a 3-edge-cc (a 4 clique)
@@ -298,7 +303,9 @@ class EdgeComponentAuxGraph(object):
     >>> # The auxillary graph is primarilly used for k-edge-ccs but it
     >>> # can also speed up the queries of k-edge-subgraphs by refining the
     >>> # search space.
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
+    >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
     ... ]
@@ -357,7 +364,7 @@ class EdgeComponentAuxGraph(object):
             _recursive_build(H, A, sink, avail.intersection(T))
 
         # Copy input to ensure all edges have unit capacity
-        H = G.__class__()
+        H = G.fresh_copy()
         H.add_nodes_from(G.nodes())
         H.add_edges_from(G.edges(), capacity=1)
 
@@ -430,7 +437,7 @@ class EdgeComponentAuxGraph(object):
         Notes
         -----
         Refines the k-edge-ccs into k-edge-subgraphs. The running time is more
-        than O(|V|).
+        than $O(|V|)$.
 
         For single values of k it is faster to use `nx.k_edge_subgraphs`.
         But for multiple values of k, it can be faster to build AuxGraph and

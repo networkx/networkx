@@ -43,7 +43,7 @@ def nodes(G):
 
 
 def edges(G, nbunch=None):
-    """Return iterator over edges incident to nodes in nbunch.
+    """Return an edge view of edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
@@ -53,7 +53,7 @@ def edges(G, nbunch=None):
 
 
 def degree(G, nbunch=None, weight=None):
-    """Return degree of single node or of nbunch of nodes.
+    """Return a degree view of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
     return G.degree(nbunch, weight)
@@ -333,6 +333,14 @@ def induced_subgraph(G, nbunch):
     For an inplace reduction of a graph to a subgraph you can remove nodes:
     `G.remove_nodes_from(n in G if n not in set(nbunch))`
 
+    If you are going to compute subgraphs of your subgraphs you could
+    end up with a chain of views that can be very slow once the chain
+    has about 15 views in it. If they are all induced subgraphs, you
+    can short-cut the chain by making them all subgraphs of the original
+    graph. The graph class method `G.subgraph` does this when `G` is
+    a subgraph. In contrast, this function allows you to choose to build
+    chains or not, as you wish. The returned subgraph is a view on `G`.
+
     Examples
     --------
     >>> import networkx as nx
@@ -373,6 +381,14 @@ def edge_subgraph(G, edges):
     -----
     To create a mutable subgraph with its own copies of nodes
     edges and attributes use `subgraph.copy()` or `Graph(subgraph)`
+
+    If you create a subgraph of a subgraph recursively you can end up
+    with a chain of subgraphs that becomes very slow with about 15
+    nested subgraph views. Luckily the edge_subgraph filter nests
+    nicely so you can use the original graph (`subgraph.root_graph`)
+    as G in this function to avoid chains. We do not rule out chains
+    programmatically so that odd cases like an `edge_subgraph` of a
+    `restricted_view` can be created.
 
     Examples
     --------
@@ -429,6 +445,13 @@ def restricted_view(G, nodes, edges):
     To create a mutable subgraph with its own copies of nodes
     edges and attributes use `subgraph.copy()` or `Graph(subgraph)`
 
+    If you create a subgraph of a subgraph recursively you may end up
+    with a chain of subgraph views. Such chains can get quite slow
+    for lengths near 15. To avoid long chains, try to make your subgraph
+    based on the original graph (`subgraph.root_graph`). We do not
+    rule out chains programatically so that odd cases like an
+    `edge_subgraph` of a `restricted_view` can be created.
+
     Examples
     --------
     >>> import networkx as nx
@@ -457,18 +480,30 @@ def restricted_view(G, nodes, edges):
 
 @not_implemented_for('undirected')
 def reverse_view(digraph):
+    """Provide a reverse view of the digraph with edges reversed.
+
+    Identical to digraph.reverse(copy=False)
+    """
     if digraph.is_multigraph():
         return nx.graphviews.MultiReverseView(digraph)
     return nx.graphviews.ReverseView(digraph)
 
 
 def to_directed(graph):
+    """Return a directed view of the graph `graph`.
+
+    Identical to graph.to_directed(as_view=True)
+    """
     if graph.is_multigraph():
         return nx.graphviews.MultiDiGraphView(graph)
     return nx.graphviews.DiGraphView(graph)
 
 
 def to_undirected(graph):
+    """Return an undirected view of the graph `graph`.
+
+    Identical to graph.to_undirected(as_view=True)
+    """
     if graph.is_multigraph():
         return nx.graphviews.MultiGraphView(graph)
     return nx.graphviews.GraphView(graph)
@@ -490,7 +525,7 @@ def create_empty_copy(G, with_data=True):
     empty_graph
 
     """
-    H = G.__class__()
+    H = G.fresh_copy()
     H.add_nodes_from(G.nodes(data=with_data))
     if with_data:
         H.graph.update(G.graph)
@@ -517,9 +552,9 @@ def info(G, n=None):
         nnodes = G.number_of_nodes()
         if len(G) > 0:
             if G.is_directed():
-                deg = sum(d for n, d in G.in_degree())/float(nnodes)
+                deg = sum(d for n, d in G.in_degree()) / float(nnodes)
                 info += "Average in degree: %8.4f\n" % deg
-                deg = sum(d for n, d in G.out_degree())/float(nnodes)
+                deg = sum(d for n, d in G.out_degree()) / float(nnodes)
                 info += "Average out degree: %8.4f" % deg
             else:
                 s = sum(dict(G.degree()).values())
@@ -1004,8 +1039,8 @@ def is_empty(G):
     Notes
     -----
     An empty graph can have nodes but not edges. The empty graph with zero
-    nodes is known as the null graph. This is an O(n) operation where n is the
-    number of nodes in the graph.
+    nodes is known as the null graph. This is an $O(n)$ operation where n
+    is the number of nodes in the graph.
 
     """
     return not any(G.adj.values())

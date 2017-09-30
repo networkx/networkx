@@ -1,13 +1,11 @@
 # -*- encoding: utf-8 -*-
 #
-# structuralholes.py - functions for computing measures of structural holes
-#
 # Copyright 2008-2017 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 """Functions for computing measures of structural holes."""
 from __future__ import division
 
@@ -67,23 +65,23 @@ def effective_size(G, nodes=None, weight=None):
     that her contacts are connected to each other as well. The
     nonredundant part of a person's relationships it's the effective
     size of her ego network [1]_.  Formally, the effective size of a
-    node `u`, denoted `e(u)`, is defined by
+    node $u$, denoted $e(u)$, is defined by
 
     .. math::
 
        e(u) = \sum_{v \in N(u) \setminus \{u\}}
        \left(1 - \sum_{w \in N(v)} p_{uw} m_{vw}\right)
 
-    where `N(u)` is the set of neighbors of `u` and :math:`p_{uw}` is the
+    where $N(u)$ is the set of neighbors of $u$ and $p_{uw}$ is the
     normalized mutual weight of the (directed or undirected) edges
-    joining `u` and `v`, for each vertex `u` and `v` [1]_. And :math:`m_{vw}`
-    is the mutual weight of `v` and `w` divided by `v` highest mutual
-    weight with any of its neighbors. The *mutual weight* of `u` and `v`
+    joining $u$ and $v$, for each vertex $u$ and $v$ [1]_. And $m_{vw}$
+    is the mutual weight of $v$ and $w$ divided by $v$ highest mutual
+    weight with any of its neighbors. The *mutual weight* of $u$ and $v$
     is the sum of the weights of edges joining them (edge weights are
     assumed to be one if the graph is unweighted).
 
     For the case of unweighted and undirected graphs, Borgatti proposed
-    a simplified formula to compute effective size [2]_ 
+    a simplified formula to compute effective size [2]_
 
     .. math::
 
@@ -99,7 +97,8 @@ def effective_size(G, nodes=None, weight=None):
         undirected graphs when computing neighbors of ``v``.
 
     nodes : container, optional
-        Container of nodes in the graph ``G``.
+        Container of nodes in the graph ``G`` to compute the effective size.
+        If None, the effective size of every node is computed.
 
     weight : None or string, optional
       If None, all edge weights are considered equal.
@@ -147,7 +146,7 @@ def effective_size(G, nodes=None, weight=None):
         nodes = G
     # Use Borgatti's simplified formula for unweighted and undirected graphs
     if not G.is_directed() and weight is None:
-        for v in G:
+        for v in nodes:
             # Effective size is not defined for isolated nodes
             if len(G[v]) == 0:
                 effective_size[v] = float('nan')
@@ -155,12 +154,12 @@ def effective_size(G, nodes=None, weight=None):
             E = nx.ego_graph(G, v, center=False, undirected=True)
             effective_size[v] = len(E) - (2 * E.size()) / len(E)
     else:
-        for v in G:
+        for v in nodes:
             # Effective size is not defined for isolated nodes
             if len(G[v]) == 0:
                 effective_size[v] = float('nan')
                 continue
-            effective_size[v] = sum(redundancy(G, v, u, weight) 
+            effective_size[v] = sum(redundancy(G, v, u, weight)
                                     for u in set(nx.all_neighbors(G, v)))
     return effective_size
 
@@ -188,7 +187,8 @@ def constraint(G, nodes=None, weight=None):
         The graph containing ``v``. This can be either directed or undirected.
 
     nodes : container, optional
-        Container of nodes in the graph ``G``.
+        Container of nodes in the graph ``G`` to compute the constraint. If
+        None, the constraint of every node is computed.
 
     weight : None or string, optional
       If None, all edge weights are considered equal.
@@ -228,16 +228,16 @@ def local_constraint(G, u, v, weight=None):
     the node ``v`` in the graph ``G``.
 
     Formally, the *local constraint on u with respect to v*, denoted
-    `\ell(v)`, is defined by
+    $\ell(v)$, is defined by
 
     .. math::
 
-       ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p{wv}\right)^2,
+       \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p{wv}\right)^2,
 
-    where `N(v)` is the set of neighbors of `v` and :math:`p_{uv}` is the
+    where $N(v)$ is the set of neighbors of $v$ and $p_{uv}$ is the
     normalized mutual weight of the (directed or undirected) edges
-    joining `u` and `v`, for each vertex `u` and `v` [1]_. The *mutual
-    weight* of `u` and `v` is the sum of the weights of edges joining
+    joining $u$ and $v$, for each vertex $u$ and $v$ [1]_. The *mutual
+    weight* of $u$ and $v$ is the sum of the weights of edges joining
     them (edge weights are assumed to be one if the graph is
     unweighted).
 

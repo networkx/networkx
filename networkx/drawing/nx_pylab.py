@@ -22,6 +22,7 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 import networkx as nx
+from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout
@@ -97,7 +98,7 @@ def draw(G, pos=None, ax=None, **kwds):
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -243,7 +244,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> limits = plt.axis('off')  # turn of axis
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -318,8 +319,11 @@ def draw_networkx_nodes(G, pos,
        The shape of the node.  Specification is as matplotlib.scatter
        marker, one of 'so^>v<dph8' (default='o').
 
-    alpha : float
-       The node transparency (default=1.0)
+    alpha : float or array of floats
+       The node transparency.  This can be a single alpha value (default=1.0),
+       in which case it will be applied to all the nodes of color. Otherwise,
+       if it is an array, the elements of alpha will be applied to the colors
+       in order (cycling through alpha multiple times if necessary).
 
     cmap : Matplotlib colormap
        Colormap for mapping intensities of nodes (default=None)
@@ -344,7 +348,7 @@ def draw_networkx_nodes(G, pos,
     >>> nodes = nx.draw_networkx_nodes(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -476,7 +480,7 @@ def draw_networkx_edges(G, pos,
     >>> edges = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -516,17 +520,15 @@ def draw_networkx_edges(G, pos,
     else:
         lw = width
 
-    if not cb.is_string_like(edge_color) \
+    if not is_string_like(edge_color) \
             and cb.iterable(edge_color) \
             and len(edge_color) == len(edge_pos):
-        if np.alltrue([cb.is_string_like(c)
-                      for c in edge_color]):
+        if np.alltrue([is_string_like(c) for c in edge_color]):
             # (should check ALL elements)
             # list of color letters such as ['k','r','k',...]
             edge_colors = tuple([colorConverter.to_rgba(c, alpha)
                                  for c in edge_color])
-        elif np.alltrue([not cb.is_string_like(c)
-                        for c in edge_color]):
+        elif np.alltrue([not is_string_like(c) for c in edge_color]):
             # If color specs are given as (rgb) or (rgba) tuples, we're OK
             if np.alltrue([cb.iterable(c) and len(c) in (3, 4)
                           for c in edge_color]):
@@ -537,7 +539,7 @@ def draw_networkx_edges(G, pos,
         else:
             raise ValueError('edge_color must consist of either color names or numbers')
     else:
-        if cb.is_string_like(edge_color) or len(edge_color) == 1:
+        if is_string_like(edge_color) or len(edge_color) == 1:
             edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
         else:
             raise ValueError(
@@ -686,7 +688,7 @@ def draw_networkx_labels(G, pos,
     >>> labels = nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -718,7 +720,7 @@ def draw_networkx_labels(G, pos,
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
-        if not cb.is_string_like(label):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
         t = ax.text(x, y,
                     label,
@@ -804,7 +806,7 @@ def draw_networkx_edge_labels(G, pos,
     >>> edge_labels = nx.draw_networkx_edge_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -856,7 +858,7 @@ def draw_networkx_edge_labels(G, pos,
                         ec=(1.0, 1.0, 1.0),
                         fc=(1.0, 1.0, 1.0),
                         )
-        if not cb.is_string_like(label):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
 
         # set optional alignment
@@ -982,18 +984,13 @@ def draw_shell(G, **kwargs):
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
 
 
-def draw_nx(G, pos, **kwds):
-    """For backward compatibility; use draw or draw_networkx."""
-    draw(G, pos, **kwds)
-
-
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     """Apply an alpha (or list of alphas) to the colors provided.
 
     Parameters
     ----------
 
-    color : color string, or array of floats
+    colors : color string, or array of floats
        Color of element. Can be a single color format string (default='r'),
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to

@@ -1,24 +1,26 @@
-"""
-Utilities for generating random numbers, random sequences, and
-random selections.
-"""
 #    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Dan Schult (dschult@colgate.edu)
+#          Ben Edwards (bedwards@cs.unm.edu)
+"""
+Utilities for generating random numbers, random sequences, and
+random selections.
+"""
+
 import random
 import sys
 import networkx as nx
-__author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Ben Edwards(bedwards@cs.unm.edu)'])
 
 
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
-# http://www.python.org/doc/current/lib/module-random.html
+# https://docs.python.org/2/library/random.html
 
 def powerlaw_sequence(n, exponent=2.0):
     """
@@ -31,11 +33,12 @@ def zipf_rv(alpha, xmin=1, seed=None):
     r"""Return a random value chosen from the Zipf distribution.
 
     The return value is an integer drawn from the probability distribution
-    ::math::
 
-        p(x)=\frac{x^{-\alpha}}{\zeta(\alpha,x_{min})},
+    .. math::
 
-    where `\zeta(\alpha,x_{min})` is the Hurwitz zeta function.
+        p(x)=\frac{x^{-\alpha}}{\zeta(\alpha, x_{\min})},
+
+    where $\zeta(\alpha, x_{\min})$ is the Hurwitz zeta function.
 
     Parameters
     ----------
@@ -61,15 +64,15 @@ def zipf_rv(alpha, xmin=1, seed=None):
     -----
     The rejection algorithm generates random values for a the power-law
     distribution in uniformly bounded expected time dependent on
-    parameters.  See [1] for details on its operation.
+    parameters.  See [1]_ for details on its operation.
 
     Examples
     --------
-    >>> nx.zipf_rv(alpha=2, xmin=3, seed=42) # doctest: +SKIP
+    >>> nx.zipf_rv(alpha=2, xmin=3, seed=42)  # doctest: +SKIP
 
     References
     ----------
-    ..[1] Luc Devroye, Non-Uniform Random Variate Generation,
+    .. [1] Luc Devroye, Non-Uniform Random Variate Generation,
        Springer-Verlag, New York, 1986.
     """
     if xmin < 1:

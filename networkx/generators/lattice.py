@@ -120,14 +120,15 @@ def grid_graph(dim, periodic=False):
 
     Examples
     --------
-    To produce a 2 by 3 by 4 grid graph, a graph on 24 nodes::
+    To produce a 2 by 3 by 4 grid graph, a graph on 24 nodes:
 
-        >>> G = grid_graph(dim=[2, 3, 4])
-        >>> len(G)
-        24
-        >>> G = grid_graph(dim=[range(7, 9), range(3, 6)])
-        >>> len(G)
-        6
+    >>> from networkx import grid_graph
+    >>> G = grid_graph(dim=[2, 3, 4])
+    >>> len(G)
+    24
+    >>> G = grid_graph(dim=[range(7, 9), range(3, 6)])
+    >>> len(G)
+    6
     """
     dlabel = "%s" % dim
     if not dim:
@@ -154,7 +155,7 @@ def hypercube_graph(n):
     The nodes are the integers between 0 and ``2 ** n - 1``, inclusive.
 
     For more information on the hypercube graph, see the Wikipedia
-    article *`Hypercube graph`_*.
+    article `Hypercube graph`_.
 
     .. _Hypercube graph: https://en.wikipedia.org/wiki/Hypercube_graph
 
@@ -176,12 +177,12 @@ def hypercube_graph(n):
 
 def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
                              create_using=None):
-    """Returns the *m* by *n* triangular lattice graph.
+    """Returns the $m$ by $n$ triangular lattice graph.
 
-    The *`triangular lattice graph`_* is a two-dimensional `grid graph`_ in
+    The `triangular lattice graph`_ is a two-dimensional `grid graph`_ in
     which each square unit has a diagonal edge (each grid unit has a chord).
 
-    The returned graph has `m` rows and `n` columns of triangles. Rows and
+    The returned graph has $m$ rows and $n$ columns of triangles. Rows and
     columns include both triangles pointing up and down. Rows form a strip
     of constant height. Columns form a series of diamond shapes, staggered
     with the columns on either side. Another way to state the size is that
@@ -193,8 +194,8 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
     Positions of nodes are computed by default or `with_positions is True`.
     The position of each node (embedded in a euclidean plane) is stored in
     the graph using equilateral triangles with sidelength 1.
-    The height between rows of nodes is thus :math:`\sqrt(3)/2`.
-    Nodes lie in the first quadrant with the node `(0, 0)` at the origin.
+    The height between rows of nodes is thus $\sqrt(3)/2$.
+    Nodes lie in the first quadrant with the node $(0, 0)$ at the origin.
 
     .. _triangular lattice graph: http://mathworld.wolfram.com/TriangularGrid.html
     .. _grid graph: http://www-cs-students.stanford.edu/~amitp/game-programming/grids/

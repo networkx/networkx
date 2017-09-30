@@ -9,12 +9,13 @@ Cliques.
 import networkx as nx
 from networkx.algorithms.approximation import ramsey
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
-__all__ = ["clique_removal","max_clique"]
+__all__ = ["clique_removal", "max_clique"]
+
 
 def max_clique(G):
     r"""Find the Maximum Clique
 
-    Finds the `O(|V|/(log|V|)^2)` apx of maximum clique/independent set
+    Finds the $O(|V|/(log|V|)^2)$ apx of maximum clique/independent set
     in the worst case.
 
     Parameters
@@ -40,7 +41,7 @@ def max_clique(G):
     vertices in a maximum clique in G. The intersection number of
     G is the smallest number of cliques that together cover all edges of G.
 
-    http://en.wikipedia.org/wiki/Maximum_clique
+    https://en.wikipedia.org/wiki/Maximum_clique
 
     References
     ----------
@@ -58,11 +59,12 @@ def max_clique(G):
     iset, _ = clique_removal(cgraph)
     return iset
 
+
 def clique_removal(G):
     """ Repeatedly remove cliques from the graph.
 
-    Results in a `O(|V|/(\log |V|)^2)` approximation of maximum clique
-    & independent set. Returns the largest independent set found, along
+    Results in a $O(|V|/(\log |V|)^2)$ approximation of maximum clique
+    and independent set. Returns the largest independent set found, along
     with found maximal cliques.
 
     Parameters

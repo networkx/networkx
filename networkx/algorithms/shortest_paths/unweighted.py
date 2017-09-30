@@ -37,13 +37,13 @@ def single_source_shortest_path_length(G, source, cutoff=None):
 
     Returns
     -------
-    lengths : iterator
-        (target, shortest path length) iterator
+    lengths : dict
+        Dict keyed by node to shortest path length to source.
 
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = dict(nx.single_source_shortest_path_length(G, 0))
+    >>> length = nx.single_source_shortest_path_length(G, 0)
     >>> length[4]
     4
     >>> for node in length:
@@ -63,7 +63,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
     if cutoff is None:
         cutoff = float('inf')
     nextlevel = {source: 1}
-    return _single_shortest_path_length(G.adj, nextlevel, cutoff)
+    return dict(_single_shortest_path_length(G.adj, nextlevel, cutoff))
 
 
 def _single_shortest_path_length(adj, firstlevel, cutoff):
@@ -183,7 +183,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     length = single_source_shortest_path_length
     # TODO This can be trivially parallelized.
     for n in G:
-        yield (n, dict(length(G, n, cutoff=cutoff)))
+        yield (n, length(G, n, cutoff=cutoff))
 
 
 def bidirectional_shortest_path(G, source, target):
@@ -340,7 +340,7 @@ def single_source_shortest_path(G, source, cutoff=None):
         cutoff = float('inf')
     nextlevel = {source: 1}     # list of nodes to check at next level
     paths = {source: [source]}  # paths dictionary  (paths to key from source)
-    return _single_shortest_path(G.adj, nextlevel, paths, cutoff, join)
+    return dict(_single_shortest_path(G.adj, nextlevel, paths, cutoff, join))
 
 
 def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
@@ -423,7 +423,7 @@ def single_target_shortest_path(G, target, cutoff=None):
         cutoff = float('inf')
     nextlevel = {target: 1}     # list of nodes to check at next level
     paths = {target: [target]}  # paths dictionary  (paths to key from source)
-    return _single_shortest_path(adj, nextlevel, paths, cutoff, join)
+    return dict(_single_shortest_path(adj, nextlevel, paths, cutoff, join))
 
 
 def all_pairs_shortest_path(G, cutoff=None):
@@ -445,7 +445,7 @@ def all_pairs_shortest_path(G, cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> path = nx.all_pairs_shortest_path(G)
+    >>> path = dict(nx.all_pairs_shortest_path(G))
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
@@ -455,7 +455,8 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     """
     # TODO This can be trivially parallelized.
-    return {n: single_source_shortest_path(G, n, cutoff=cutoff) for n in G}
+    for n in G:
+        yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
 
 
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):

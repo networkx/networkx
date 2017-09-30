@@ -177,8 +177,9 @@ def from_pandas_adjacency(df, create_using=None):
     0  1  1
     1  2  1
     >>> G = nx.from_pandas_adjacency(df)
+    >>> G.name = 'Graph from pandas adjacency matrix'
     >>> print(nx.info(G))
-    Name: 
+    Name: Graph from pandas adjacency matrix
     Type: Graph
     Number of nodes: 2
     Number of edges: 3
@@ -773,7 +774,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     References
     ----------
     .. [1] Scipy Dev. References, "Sparse Matrices",
-       http://docs.scipy.org/doc/scipy/reference/sparse.html
+       https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     from scipy import sparse
     if nodelist is None:
