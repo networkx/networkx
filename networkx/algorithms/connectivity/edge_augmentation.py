@@ -944,19 +944,18 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         for (mu, mv), uv, w in _lightest_meta_edges(mapping, avail_uv, avail_w)
     }
 
-    """
-    Mapping of terms from (Khuller and Thurimella):
-        C         : G_0 = (V, E^0)
-           This is the metagraph where each node is a 2-edge-cc in G.
-           The edges in C represent bridges in the original graph.
-        (mu, mv)  : E - E^0  # they group both avail and given edges in E
-        T         : \Gamma
-        D         : G^D = (V, E_D)
+    # Mapping of terms from (Khuller and Thurimella):
+    #     C         : G_0 = (V, E^0)
+    #        This is the metagraph where each node is a 2-edge-cc in G.
+    #        The edges in C represent bridges in the original graph.
+    #     (mu, mv)  : E - E^0  # they group both avail and given edges in E
+    #     T         : \Gamma
+    #     D         : G^D = (V, E_D)
 
-        The paper uses ancestor because children point to parents, which is
-        contrary to networkx standards.  So, we actually need to run
-        nx.least_common_ancestor on the reversed Tree.
-    """
+    #     The paper uses ancestor because children point to parents, which is
+    #     contrary to networkx standards.  So, we actually need to run
+    #     nx.least_common_ancestor on the reversed Tree.
+
     # Pick an arbitrary leaf from C as the root
     root = next(n for n in C.nodes() if C.degree(n) == 1)
     # Root C into a tree TR by directing all edges away from the root
