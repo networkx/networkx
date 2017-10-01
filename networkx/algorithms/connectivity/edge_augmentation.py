@@ -251,7 +251,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     >>> avail = {(1, 5): 11, (2, 5): 10, (4, 3): 1, (4, 5): 51}
     >>> sorted(k_edge_augmentation(G, k=2, avail=avail))
     [(1, 5), (2, 5), (4, 5)]
-    >>> # If augmentation is infeasible, then all edges in avail are returned
+    >>> # If augmentation is infeasible, then a partial solution can be found
     >>> avail = {(1, 5): 11}
     >>> sorted(k_edge_augmentation(G, k=2, avail=avail, partial=True))
     [(1, 5)]
