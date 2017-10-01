@@ -11,9 +11,15 @@
 Algorithms for finding k-edge-augmentations
 
 A k-edge-augmentation is a set of edges, that once added to a graph, ensures
-that the graph is k-edge-connected. Typically, the goal is to find the
-augmentation with minimum weight. In general, it is not gaurenteed that a
+that the graph is k-edge-connected; i.e. the graph cannot be disconnected
+unless k or more edges are removed.  Typically, the goal is to find the
+augmentation with minimum weight.  In general, it is not gaurenteed that a
 k-edge-augmentation exists.
+
+See Also
+--------
+:mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
+:mod:`connectivity` : algorithms for determening edge connectivity.
 """
 import random
 import math
@@ -33,12 +39,27 @@ __all__ = [
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def is_k_edge_connected(G, k):
-    """
-    Tests to see if a graph is k-edge-connected
+    """Tests to see if a graph is k-edge-connected.
+
+    Is it impossible to disconnect the graph by removing fewer than k edges?
+    If so, then G is k-edge-connected.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    k : integer
+        edge connectivity to test for
+
+    Returns
+    -------
+    boolean
+        True if G is k-edge-connected.
 
     See Also
     --------
-    is_locally_k_edge_connected
+    :func:`is_locally_k_edge_connected`
 
     Example
     -------
@@ -68,12 +89,33 @@ def is_k_edge_connected(G, k):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def is_locally_k_edge_connected(G, s, t, k):
-    """
-    Tests to see if an edge in a graph is locally k-edge-connected
+    """Tests to see if an edge in a graph is locally k-edge-connected.
+
+    Is it impossible to disconnect s and t by removing fewer than k edges?
+    If so, then s and t are locally k-edge-connected in G.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    s : node
+        Source node
+
+    t : node
+        Target node
+
+    k : integer
+        local edge connectivity for nodes s and t
+
+    Returns
+    -------
+    boolean
+        True if s and t are locally k-edge-connected in G.
 
     See Also
     --------
-    is_k_edge_connected
+    :func:`is_k_edge_connected`
 
     Example
     -------
@@ -105,21 +147,23 @@ def is_locally_k_edge_connected(G, s, t, k):
 def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     """Finds set of edges to k-edge-connect G.
 
-    This function uses the most efficient function available (depending on the
-    value of k and if the problem is weighted or unweighted) to search for a
-    minimum weight subset of available edges that k-edge-connects G.
-    In general, finding a k-edge-augmentation is NP-hard, so solutions are not
-    garuenteed to be minimal.
-
+    Adding edges from the augmentation to G make it impossible to disconnect G
+    unless k or more edges are removed. This function uses the most efficient
+    function available (depending on the value of k and if the problem is
+    weighted or unweighted) to search for a minimum weight subset of available
+    edges that k-edge-connects G. In general, finding a k-edge-augmentation is
+    NP-hard, so solutions are not garuenteed to be minimal. Furthermore, a
+    k-edge-augmentation may not exist.
 
     Parameters
     ----------
     G : NetworkX graph
+       An undirected graph.
 
-    k : Integer
+    k : integer
         Desired edge connectivity
 
-    avail : dict or a set 2 or 3 tuples
+    avail : dict or a set of 2 or 3 tuples
         The available edges that can be used in the augmentation.
 
         If unspecified, then all edges in the complement of G are available.
@@ -133,22 +177,30 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         correspondings to the weight.
 
     weight : string
-        key to use to find weights if avail is a set of 3-tuples where the
+        key to use to find weights if ``avail`` is a set of 3-tuples where the
         third item in each tuple is a dictionary.
 
-    partial : Boolean
+    partial : boolean
         If partial is True and no feasible k-edge-augmentation exists, then all
-        available edges are returned.
+        a partial k-edge-augmentation is generated. Adding the edges in a
+        partial augmentation to G, minimizes the number of k-edge-connected
+        components and maximizes the edge connectivity between those
+        components. For details, see :func:`partial_k_edge_augmentation`.
 
-    Returns
-    -------
-    aug_edges : a generator of edges. If these edges are added to G, then
-        the G would become k-edge-connected. If partial is False, an error
-        is raised if this is not possible. Otherwise, all available edges
-        are generated.
+    Yields
+    ------
+    edge : tuple
+        Edges that, once added to G, would cause G to become k-edge-connected.
+        If partial is False, an error is raised if this is not possible.
+        Otherwise, generated edges form a partial augmentation, which
+        k-edge-connects any part of G where it is possible, and maximally
+        connects the remaining parts.
 
     Raises
     ------
+    NetworkXUnfeasible:
+        If partial is False and no k-edge-augmentation exists.
+
     NetworkXNotImplemented:
         If the input graph is directed or a multigraph.
 
@@ -159,7 +211,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     -----
     When k=1 this returns an optimal solution.
 
-    When k=2 and avail is None, this returns an optimal solution.
+    When k=2 and ``avail`` is None, this returns an optimal solution.
     Otherwise when k=2, this returns a 2-approximation of the optimal solution.
 
     For k>3, this problem is NP-hard and this uses a randomized algorithm that
@@ -245,11 +297,36 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
 
 
 def partial_k_edge_augmentation(G, k, avail, weight=None):
-    """Finds augmentation that k-edge-connects as much of the graph as possible
+    """Finds augmentation that k-edge-connects as much of the graph as possible.
 
     When a k-edge-augmentation is not possible, we can still try to find a
     small set of edges that partially k-edge-connects as much of the graph as
-    possible.
+    possible. All possible edges are generated between remaining parts.
+    This minimizes the number of k-edge-connected subgraphs in the resulting
+    graph and maxmizes the edge connectivity between those subgraphs.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    k : integer
+        Desired edge connectivity
+
+    avail : dict or a set of 2 or 3 tuples
+        For more details, see :func:`k_edge_augmentation`.
+
+    weight : string
+        key to use to find weights if ``avail`` is a set of 3-tuples.
+        For more details, see :func:`k_edge_augmentation`.
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the partial augmentation of G. These edges k-edge-connect any
+        part of G where it is possible, and maximally connects the remaining
+        parts. In other words, all edges from avail are generated except for
+        those within subgraphs that have already become k-edge-connected.
 
     Notes
     -----
@@ -259,6 +336,12 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     the k-edge-augmentation of that graph and add it to the solution. Then add
     all edges in avail between k-edge subgraphs to the solution.
 
+    See Also
+    --------
+    :func:`k_edge_augmentation`
+
+    Example
+    -------
     >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
     >>> G.add_node(8)
     >>> avail = [(1, 3), (1, 4), (1, 5), (2, 4), (2, 5), (3, 5), (1, 8)]
@@ -283,7 +366,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
          for (u, v), w in zip(avail, avail_w)))
     k_edge_subgraphs = list(nx.k_edge_subgraphs(H, k=k))
 
-    # Generate edges to k-edge-connect internal components
+    # Generate edges to k-edge-connect internal subgraphs
     for nodes in k_edge_subgraphs:
         if len(nodes) > 1:
             # Get the k-edge-connected subgraph
@@ -315,12 +398,46 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
 def one_edge_augmentation(G, avail=None, weight=None, partial=False):
     """Finds minimum weight set of edges to connect G.
 
+    Equivalent to :func:`k_edge_augmentation` when k=1. Adding the resulting
+    edges to G will make it 1-edge-connected. The solution is optimal for both
+    weighted and non-weighted variants.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    avail : dict or a set of 2 or 3 tuples
+        For more details, see :func:`k_edge_augmentation`.
+
+    weight : string
+        key to use to find weights if ``avail`` is a set of 3-tuples.
+        For more details, see :func:`k_edge_augmentation`.
+
+    partial : boolean
+        If partial is True and no feasible k-edge-augmentation exists, then the
+        augmenting edges minimize the number of connected components.
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the one-augmentation of G
+
+    Raises
+    ------
+    NetworkXUnfeasible:
+        If partial is False and no one-edge-augmentation exists.
+
     Notes
     -----
     Uses either :func:`unconstrained_one_edge_augmentation` or
     :func:`weighted_one_edge_augmentation` depending on whether ``avail`` is
     specified. Both algorithms are based on finding a minimum spanning tree.
     As such both algorithms find optimal solutions and run in linear time.
+
+    See Also
+    --------
+    :func:`k_edge_augmentation`
     """
     if avail is None:
         return unconstrained_one_edge_augmentation(G)
@@ -334,9 +451,32 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
 def bridge_augmentation(G, avail=None, weight=None):
     """Finds the a set of edges that bridge connects G.
 
-    Adding these edges to G will make it 2-edge-connected.
-    If no constraints are specified the returned set of edges is minimum an
-    optimal, otherwise the solution is approximated.
+    Equivalent to :func:`k_edge_augmentation` when k=2, and partial=False.
+    Adding the resulting edges to G will make it 2-edge-connected.  If no
+    constraints are specified the returned set of edges is minimum an optimal,
+    otherwise the solution is approximated.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    avail : dict or a set of 2 or 3 tuples
+        For more details, see :func:`k_edge_augmentation`.
+
+    weight : string
+        key to use to find weights if ``avail`` is a set of 3-tuples.
+        For more details, see :func:`k_edge_augmentation`.
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the bridge-augmentation of G
+
+    Raises
+    ------
+    NetworkXUnfeasible:
+        If no bridge-augmentation exists.
 
     Notes
     -----
@@ -344,6 +484,10 @@ def bridge_augmentation(G, avail=None, weight=None):
     using :func:`unconstrained_bridge_augmentation`. Otherwise, the problem
     becomes NP-hard and is the solution is approximated by
     :func:`weighted_bridge_augmentation`.
+
+    See Also
+    --------
+    :func:`k_edge_augmentation`
     """
     if G.number_of_nodes() < 3:
         raise nx.NetworkXUnfeasible(
@@ -357,6 +501,7 @@ def bridge_augmentation(G, avail=None, weight=None):
 # --- Algorithms and Helpers ---
 
 def _ordered(u, v):
+    """Returns the nodes in an undirected edge in lower-triangular order"""
     return (u, v) if u < v else (v, u)
 
 
@@ -391,7 +536,7 @@ MetaEdge = namedtuple('MetaEdge', ('meta_uv', 'uv', 'w'))
 
 
 def _lightest_meta_edges(mapping, avail_uv, avail_w):
-    """Maps available edges in the original graph to edges in the metagraph
+    """Maps available edges in the original graph to edges in the metagraph.
 
     Parameters
     ----------
@@ -407,11 +552,11 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
 
     Notes
     -----
-    Each node in the metagraph is a k-edge-cc in the original graph.  We dont
-    care about any edge within the same k-edge-cc, so we ignore self edges.  We
-    also are only intereseted in the minimum weight edge bridging each
-    k-edge-cc so, we group the edges by meta-edge and take the lightest in each
-    group.
+    Each node in the metagraph is a k-edge-connected component in the original
+    graph.  We dont care about any edge within the same k-edge-connected
+    component, so we ignore self edges.  We also are only intereseted in the
+    minimum weight edge bridging each k-edge-connected component so, we group
+    the edges by meta-edge and take the lightest in each group.
 
     Example
     -------
@@ -445,6 +590,21 @@ def unconstrained_one_edge_augmentation(G):
     This is a variant of the unweighted MST problem.
     If G is not empty, a feasible solution always exists.
 
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the one-edge-augmentation of G
+
+    See Also
+    --------
+    :func:`one_edge_augmentation`
+    :func:`k_edge_augmentation`
+
     Example
     -------
     >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
@@ -470,6 +630,32 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
     """Finds the minimum weight set of edges to connect G if one exists.
 
     This is a variant of the weighted MST problem.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    avail : dict or a set of 2 or 3 tuples
+        For more details, see :func:`k_edge_augmentation`.
+
+    weight : string
+        key to use to find weights if ``avail`` is a set of 3-tuples.
+        For more details, see :func:`k_edge_augmentation`.
+
+    partial : boolean
+        If partial is True and no feasible k-edge-augmentation exists, then the
+        augmenting edges minimize the number of connected components.
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the subset of avail chosen to connect G.
+
+    See Also
+    --------
+    :func:`one_edge_augmentation`
+    :func:`k_edge_augmentation`
 
     Example
     -------
@@ -517,6 +703,16 @@ def unconstrained_bridge_augmentation(G):
     nodes of the trees to connect the entire graph, and finally connect the
     leafs of the tree in dfs-preorder to bridge connect the entire graph.
 
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the bridge augmentation of G
+
     Notes
     -----
     Input: a graph G.
@@ -557,6 +753,11 @@ def unconstrained_bridge_augmentation(G):
     .. [1] Eswaran, Kapali P., and R. Endre Tarjan. (1975) Augmentation problems.
         http://epubs.siam.org/doi/abs/10.1137/0205044
 
+    See Also
+    --------
+    :func:`bridge_augmentation`
+    :func:`k_edge_augmentation`
+
     Example
     -------
     >>> G = nx.path_graph((1, 2, 3, 4, 5, 6, 7))
@@ -571,17 +772,15 @@ def unconstrained_bridge_augmentation(G):
     [(1, 4), (4, 0)]
     """
     # -----
-    """
-    Mapping of terms from (Eswaran and Tarjan):
-        G = G_0 - the input graph
-        C = G_0' - the bridge condensation of G. (This is a forest of trees)
-        A1 = A_1 - the edges to connect the forest into a tree
-        leaf = pendant - a node with degree of 1
+    # Mapping of terms from (Eswaran and Tarjan):
+    #     G = G_0 - the input graph
+    #     C = G_0' - the bridge condensation of G. (This is a forest of trees)
+    #     A1 = A_1 - the edges to connect the forest into a tree
+    #         leaf = pendant - a node with degree of 1
 
-        alpha(v) = maps the node v in G to its meta-node in C
-        beta(x) = maps the meta-node x in C to any node in the bridge component
-            of G corresponding to x.
-    """
+    #     alpha(v) = maps the node v in G to its meta-node in C
+    #     beta(x) = maps the meta-node x in C to any node in the bridge
+    #         component of G corresponding to x.
 
     # find the 2-edge-connected components of G
     bridge_ccs = list(nx.connectivity.bridge_components(G))
@@ -656,6 +855,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     Parameters
     ----------
     G : NetworkX graph
+       An undirected graph.
 
     avail : set of 2 or 3 tuples.
         candidate edges (with optional weights) to choose from
@@ -664,9 +864,10 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         key to use to find weights if avail is a set of 3-tuples where the
         third item in each tuple is a dictionary.
 
-    Returns
-    -------
-    aug_edges (set): subset of avail chosen to augment G
+    Yields
+    ------
+    edge : tuple
+        Edges in the subset of avail chosen to bridge augment G.
 
     Notes
     -----
@@ -680,6 +881,11 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     .. [1] Khuller, Samir, and Ramakrishna Thurimella. (1993) Approximation
         algorithms for graph augmentation.
         http://www.sciencedirect.com/science/article/pii/S0196677483710102
+
+    See Also
+    --------
+    :func:`bridge_augmentation`
+    :func:`k_edge_augmentation`
 
     Example
     -------
@@ -810,7 +1016,8 @@ def weighted_bridge_augmentation(G, avail, weight=None):
 
 
 def _minimum_rooted_branching(D, root):
-    """Computes minimum rooted branching (aka rooted arborescence)
+    """Helper function to compute a minimum rooted branching (aka rooted
+    arborescence)
 
     Before the branching can be computed, the directed graph must be rooted by
     removing the predecessors of root.
@@ -840,23 +1047,22 @@ def collapse(G, grouped_nodes):
     Parameters
     ----------
     G : NetworkX Graph
-       A directed graph.
 
     grouped_nodes:  list or generator
        Grouping of nodes to collapse. The grouping must be disjoint.
        If grouped_nodes are strongly_connected_components then this is
-       equivalent to condensation.
+       equivalent to :func:`condensation`.
 
     Returns
     -------
     C : NetworkX Graph
        The collapsed graph C of G with respect to the node grouping.  The node
        labels are integers corresponding to the index of the component in the
-       list of strongly connected components of G.  C has a graph attribute
-       named 'mapping' with a dictionary mapping the original nodes to the
-       nodes in C to which they belong.  Each node in C also has a node
-       attribute 'members' with the set of original nodes in G that form the
-       group that the node in C represents.
+       list of grouped_nodes.  C has a graph attribute named 'mapping' with a
+       dictionary mapping the original nodes to the nodes in C to which they
+       belong.  Each node in C also has a node attribute 'members' with the set
+       of original nodes in G that form the group that the node in C
+       represents.
 
     Examples
     --------
@@ -905,6 +1111,15 @@ def collapse(G, grouped_nodes):
 def complement_edges(G):
     """Returns only the edges in the complement of G
 
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the complement of G
+
     Example
     -------
     >>> G = nx.path_graph((1, 2, 3, 4))
@@ -930,7 +1145,7 @@ def complement_edges(G):
 
 
 if sys.version_info[0] == 2:
-    def compat_shuffle(rng, input):
+    def _compat_shuffle(rng, input):
         """
         python2 workaround so shuffle works the same as python3
 
@@ -952,7 +1167,8 @@ if sys.version_info[0] == 2:
             j = _randbelow(i + 1)
             input[i], input[j] = input[j], input[i]
 else:
-    def compat_shuffle(rng, input):
+    def _compat_shuffle(rng, input):
+        """wraper around rng.shuffle for python 2 compatibility reasons"""
         rng.shuffle(input)
 
 
@@ -960,6 +1176,29 @@ else:
 @not_implemented_for('directed')
 def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     """Greedy algorithm for finding a k-edge-augmentation
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph.
+
+    k : integer
+        Desired edge connectivity
+
+    avail : dict or a set of 2 or 3 tuples
+        For more details, see :func:`k_edge_augmentation`.
+
+    weight : string
+        key to use to find weights if ``avail`` is a set of 3-tuples.
+        For more details, see :func:`k_edge_augmentation`.
+
+    seed : integer or None
+        seed for the random number generator used in this algorithm
+
+    Yields
+    ------
+    edge : tuple
+        Edges in the greedy augmentation of G
 
     Notes
     -----
@@ -970,6 +1209,10 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     This algorithm is greedy and does not provide optimiality gaurentees. It
     exists only to provide :func:`k_edge_augmentation` with the ability to
     generate a feasible solution for arbitrary k.
+
+    See Also
+    --------
+    :func:`k_edge_augmentation`
 
     Example
     -------
@@ -1028,7 +1271,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     # Randomized attempt to reduce the size of the solution
     rng = random.Random(seed)
     # rng.shuffle(aug_edges)
-    compat_shuffle(rng, aug_edges)
+    _compat_shuffle(rng, aug_edges)
     for (u, v) in list(aug_edges):
         # Dont remove if we know it would break connectivity
         if H.degree(u) <= k or H.degree(v) <= k:
