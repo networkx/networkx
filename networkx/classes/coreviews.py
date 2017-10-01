@@ -286,9 +286,13 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         self.NODE_OK = NODE_OK
 
     def __len__(self):
+        if hasattr(self.NODE_OK, 'nodes'):
+            return len(self.NODE_OK.nodes & set(self._atlas.keys()))
         return sum(1 for n in self._atlas if self.NODE_OK(n))
 
     def __iter__(self):
+        if hasattr(self.NODE_OK, 'nodes'):
+            return iter(self.NODE_OK.nodes & set(self._atlas.keys()))
         return (n for n in self._atlas if self.NODE_OK(n))
 
     def __getitem__(self, key):
