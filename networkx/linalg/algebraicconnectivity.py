@@ -15,8 +15,8 @@ from networkx.utils import reverse_cuthill_mckee_ordering
 from re import compile
 
 try:
-    from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, ones,
-                       reshape, sqrt, zeros)
+    from numpy import (array, asmatrix, asarray, dot, ndarray, ones,
+                       sqrt, zeros)
     from numpy.linalg import norm, qr
     from numpy.random import normal
     from scipy.linalg import eigh, inv

@@ -1,6 +1,6 @@
 import networkx as nx
 from networkx import tensor_product, cartesian_product, lexicographic_product, strong_product
-from nose.tools import assert_raises, assert_true, assert_equal, raises
+from nose.tools import assert_true, assert_equal, raises
 from networkx.testing import assert_edges_equal
 
 @raises(nx.NetworkXError)

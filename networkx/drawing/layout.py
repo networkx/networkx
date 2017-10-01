@@ -26,7 +26,6 @@ Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
 from __future__ import division
-import collections
 import networkx as nx
 
 __all__ = ['circular_layout',

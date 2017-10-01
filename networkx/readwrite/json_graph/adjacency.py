@@ -4,7 +4,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from itertools import chain, count
+from itertools import chain
 import networkx as nx
 __author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['adjacency_data', 'adjacency_graph']

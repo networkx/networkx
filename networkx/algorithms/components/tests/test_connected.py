@@ -2,7 +2,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx import NetworkXError,NetworkXNotImplemented
+from networkx import NetworkXNotImplemented
 
 class TestConnected:
 

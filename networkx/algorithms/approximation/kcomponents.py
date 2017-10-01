@@ -14,8 +14,6 @@ from networkx.utils import not_implemented_for
 from networkx.algorithms.approximation import local_node_connectivity
 from networkx.algorithms.connectivity import \
     local_node_connectivity as exact_local_node_connectivity
-from networkx.algorithms.connectivity import build_auxiliary_node_connectivity
-from networkx.algorithms.flow import build_residual_network
 
 
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])

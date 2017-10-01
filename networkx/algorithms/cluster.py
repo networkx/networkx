@@ -13,7 +13,6 @@ from itertools import combinations
 from collections import Counter
 
 import networkx as nx
-from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',

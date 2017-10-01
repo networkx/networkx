@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_in
+from nose.tools import assert_equal
 from networkx import Graph
 from networkx.algorithms.community.asyn_fluidc import *
 import random

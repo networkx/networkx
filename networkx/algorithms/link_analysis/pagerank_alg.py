@@ -7,7 +7,6 @@
 #    BSD license.
 #    NetworkX:http://networkx.github.io/
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 __author__ = """\n""".join(["Aric Hagberg <aric.hagberg@gmail.com>",
                             "Brandon Liu <brandon.k.liu@gmail.com"])

@@ -1,6 +1,5 @@
 #    BSD license.
-from itertools import chain, count
-import json
+
 import networkx as nx
 
 __all__ = ['cytoscape_data', 'cytoscape_graph']
