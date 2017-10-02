@@ -80,6 +80,8 @@ from networkx.algorithms.connectivity import edge_connectivity
 from networkx.algorithms.connectivity import k_components
 from networkx.algorithms.connectivity import k_edge_components
 from networkx.algorithms.connectivity import k_edge_subgraphs
+from networkx.algorithms.connectivity import k_edge_augmentation
+from networkx.algorithms.connectivity import is_k_edge_connected
 from networkx.algorithms.connectivity import minimum_edge_cut
 from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity
