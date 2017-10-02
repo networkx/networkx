@@ -524,8 +524,6 @@ def _unpack_available_edges(avail, weight=None, G=None):
 
     if G is not None:
         # Edges already in the graph are filtered
-        # flags = [(G.has_node(u) and G.has_node(v) and not G.has_edge(u, v))
-        #          for u, v in avail_uv]
         flags = [not G.has_edge(u, v) for u, v in avail_uv]
         avail_uv = list(it.compress(avail_uv, flags))
         avail_w = list(it.compress(avail_w, flags))
@@ -924,8 +922,6 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         connectors = []
         H = G
 
-    # assert nx.is_connected(H), 'should have been one-connected'
-
     if len(avail) == 0:
         if nx.has_bridges(H):
             raise nx.NetworkXUnfeasible('no augmentation possible')
@@ -1246,7 +1242,6 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     tiebreaker = [sum(map(G.degree, uv)) for uv in avail_uv]
     avail_wduv = sorted(zip(avail_w, tiebreaker, avail_uv))
     avail_uv = [uv for w, d, uv in avail_wduv]
-    # avail_w = [w for w, uv in avail_wuv]
 
     # Incrementally add edges in until we are k-connected
     H = G.copy()
@@ -1269,7 +1264,6 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
 
     # Randomized attempt to reduce the size of the solution
     rng = random.Random(seed)
-    # rng.shuffle(aug_edges)
     _compat_shuffle(rng, aug_edges)
     for (u, v) in list(aug_edges):
         # Dont remove if we know it would break connectivity
