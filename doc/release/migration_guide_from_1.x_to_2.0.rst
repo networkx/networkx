@@ -93,7 +93,11 @@ also supports set operations.
     >>> list(G.edges)
     [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
 
-``G.degree`` now returns a ``dict``-like DegreeView
+``G.degree`` now returns a DegreeView. This is less dict-like than the other views
+in the sense that it iterates over (node, degree) pairs, does not provide 
+keys/values/items/get methods. It does provide lookup ``G.degree[n]`` and
+``(node, degree)`` iteration. A dict keyed by nodes to degree values can be
+easily created if needed as ``dict(G.degree)``.
 
     >>> G.degree  # for backward compatibility G.degree() works as well
     DegreeView({0: 4, 1: 4, 2: 4, 3: 4, 4: 4})
@@ -112,7 +116,24 @@ also supports set operations.
 
 The degree of an individual node can be calculated by ``G.degree[node]``.
 Similar changes have been made to ``in_degree`` and ``out_degree``
-for directed graphs.
+for directed graphs. If you want just the degree values, here are some options.
+They are shown for ``in_degree`` of a ``DiGraph``, but similar ideas work 
+for ``out_degree`` and ``degree``
+
+    >>> deg = G.in_degree   # sets up the view
+    >>> [d for n, d in deg]   # gets all nodes' degree values
+    >>> (d for n, d in deg)    # iterator over degree values
+    >>> [deg[n] for n in [0, 1]]   # using lookup for only some nodes
+
+    >>> dict(G.in_degree([0, 1])).values()    # works for nx-1 and nx-2
+    >>> # G.in_degree(nlist) creates a restricted view for only nodes in nlist.
+    >>> # but see the fourth option above for using lookup instead.
+    >>> list(d for n, d in G.in_degree([0, 1]))
+
+    >>> [len(nbrs) for n, nbrs in G.pred.items()] # probably slightly fastest for all nodes
+    >>> [len(G.pred[n]) for n in [0,1]]           # probably slightly faster for only some nodes
+
+-------
 
 If ``n`` is a node in ``G``, then ``G.neighbors(n)`` returns an iterator.
 
@@ -273,3 +294,20 @@ your code for v2.x and add code to the v1 namespace in an ad hoc manner:
 Similarly, v2.x code that uses ``G.fresh_copy()`` or ``G.root_graph`` is hard to make
 work for v1.x. It may be best in this case to determine the graph type you want
 explicitly and call Graph/DiGraph/MultiGraph/MultiDiGraph directly.
+
+Using Pickle with v1 and v2
+===========================
+
+The Pickle protocol does not store class methods, only the data. So if you write a
+pickle file with v1 you should not expect to read it into a v2 Graph. If this happens
+to you, read it in with v1 installed and write a file with the node and edge
+information. You can read that into a config with v2 installed and then add those nodes
+and edges to a fresh graph. Try something similar to this:
+
+    >>> # in v1.x
+    >>> pickle.dump([G.nodes(data=True), G.edges(data=True)], file)
+    >>> # then in v2.x
+    >>> nodes, edges = pickle.load(file)
+    >>> G=nx.Graph()
+    >>> G.add_nodes_from(nodes)
+    >>> G.add_edges_from(edges)
