@@ -2,11 +2,11 @@
 
 ## Index
 
-- [default.txt](default.txt)
+- [`default.txt`](default.txt)
   Default requirements
-- [extras.txt](extras.txt)
+- [`extras.txt`](extras.txt)
   Optional requirements
-- [test.txt](test.txt)
+- [`test.txt`](test.txt)
   Requirements for running test suite
 
 ## Examples
