@@ -120,18 +120,27 @@ for directed graphs. If you want just the degree values, here are some options.
 They are shown for ``in_degree`` of a ``DiGraph``, but similar ideas work 
 for ``out_degree`` and ``degree``
 
-    >>> deg = G.in_degree   # sets up the view
+    >>> DG = nx.DiGraph()
+    >>> DG.add_weighted_edges_from([(1, 2, 0.5), (3, 1, 0.75)])
+    >>> deg = DG.in_degree   # sets up the view
     >>> [d for n, d in deg]   # gets all nodes' degree values
+    [1, 1, 0]
     >>> (d for n, d in deg)    # iterator over degree values
-    >>> [deg[n] for n in [0, 1]]   # using lookup for only some nodes
+    <generator object <genexpr> ...>
+    >>> [deg[n] for n in [1, 3]]   # using lookup for only some nodes
+    [1, 0]
 
-    >>> dict(G.in_degree([0, 1])).values()    # works for nx-1 and nx-2
-    >>> # G.in_degree(nlist) creates a restricted view for only nodes in nlist.
+    >>> dict(DG.in_degree([1, 3])).values()    # works for nx-1 and nx-2
+    [1, 0]
+    >>> # DG.in_degree(nlist) creates a restricted view for only nodes in nlist.
     >>> # but see the fourth option above for using lookup instead.
-    >>> list(d for n, d in G.in_degree([0, 1]))
+    >>> list(d for n, d in DG.in_degree([1, 3]))
+    [1, 0]
 
-    >>> [len(nbrs) for n, nbrs in G.pred.items()] # probably slightly fastest for all nodes
-    >>> [len(G.pred[n]) for n in [0,1]]           # probably slightly faster for only some nodes
+    >>> [len(nbrs) for n, nbrs in DG.pred.items()]  # probably slightly fastest for all nodes
+    [1, 1, 0]
+    >>> [len(DG.pred[n]) for n in [1, 3]]           # probably slightly faster for only some nodes
+    [1, 0]
 
 -------
 
@@ -305,9 +314,9 @@ information. You can read that into a config with v2 installed and then add thos
 and edges to a fresh graph. Try something similar to this:
 
     >>> # in v1.x
-    >>> pickle.dump([G.nodes(data=True), G.edges(data=True)], file)
+    >>> pickle.dump([G.nodes(data=True), G.edges(data=True)], file)  # doctest: +SKIP
     >>> # then in v2.x
-    >>> nodes, edges = pickle.load(file)
-    >>> G=nx.Graph()
-    >>> G.add_nodes_from(nodes)
-    >>> G.add_edges_from(edges)
+    >>> nodes, edges = pickle.load(file)  # doctest: +SKIP
+    >>> G = nx.Graph()  # doctest: +SKIP
+    >>> G.add_nodes_from(nodes)  # doctest: +SKIP
+    >>> G.add_edges_from(edges)  # doctest: +SKIP
