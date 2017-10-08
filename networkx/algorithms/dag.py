@@ -489,6 +489,8 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     --------
     dag_longest_path_length
     """
+    if not G:
+        return []
     dist = {}  # stores {v : (length, u)}
     for v in nx.topological_sort(G):
         us = [(dist[u][0] + data.get(weight, default_weight), u)
