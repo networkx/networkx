@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 """Generators of  x-y pairs of node data."""
 import networkx as nx
-from networkx.utils import dict_to_numpy_array
 __author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['node_attribute_xy',
            'node_degree_xy']
@@ -44,19 +43,19 @@ def node_attribute_xy(G, attribute, nodes=None):
         nodes = set(G)
     else:
         nodes = set(nodes)
-    node = G.node 
+    Gnodes = G.nodes
     for u,nbrsdict in G.adjacency():
         if u not in nodes:
             continue
-        uattr = node[u].get(attribute,None)
+        uattr = Gnodes[u].get(attribute,None)
         if G.is_multigraph():
             for v,keys in nbrsdict.items():
-                vattr = node[v].get(attribute,None)                
+                vattr = Gnodes[v].get(attribute,None)
                 for k,d in keys.items():
                     yield (uattr,vattr)
         else:
             for v,eattr in nbrsdict.items():
-                vattr = node[v].get(attribute,None)
+                vattr = Gnodes[v].get(attribute,None)
                 yield (uattr,vattr)
 
 

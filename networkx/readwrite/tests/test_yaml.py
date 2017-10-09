@@ -44,11 +44,11 @@ class TestYaml(object):
         os.unlink(fname)
    
     def testUndirected(self):
-        self.assert_equal(self.G, False)
+        self.assert_equal(self.G, data=False)
 
     def testDirected(self):
-        self.assert_equal(self.DG, False)
+        self.assert_equal(self.DG, data=False)
 
     def testMultiGraph(self):
-        self.assert_equal(self.MG, True)
+        self.assert_equal(self.MG, data=True)
 

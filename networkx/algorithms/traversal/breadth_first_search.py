@@ -1,6 +1,6 @@
 # breadth_first_search.py - breadth-first traversal of a graph
 #
-# Copyright (C) 2004-2016 NetworkX Developers
+# Copyright (C) 2004-2017 NetworkX Developers
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
@@ -21,7 +21,7 @@ __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
 
 def generic_bfs_edges(G, source, neighbors=None):
-    """Iterates over edges in a breadth-first search.
+    """Iterate over edges in a breadth-first search.
 
     The breadth-first search begins at `source` and enqueues the
     neighbors of newly visited nodes specified by the `neighbors`
@@ -78,7 +78,7 @@ def generic_bfs_edges(G, source, neighbors=None):
 
 
 def bfs_edges(G, source, reverse=False):
-    """Produce edges in a breadth-first-search starting at source.
+    """Iterate over edges in a breadth-first-search starting at source.
 
     Parameters
     ----------
@@ -98,9 +98,20 @@ def bfs_edges(G, source, reverse=False):
 
     Examples
     --------
-    >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_edges(G,0)))
-    [(0, 1), (1, 2)]
+    To get the edges in a breadth-first search::
+
+        >>> G = nx.path_graph(3)
+        >>> list(nx.bfs_edges(G, 0))
+        [(0, 1), (1, 2)]
+
+    To get the nodes in a breadth-first search order::
+
+        >>> G = nx.path_graph(3)
+        >>> root = 2
+        >>> edges = nx.bfs_edges(G, root)
+        >>> nodes = [root] + [v for u, v in edges]
+        >>> nodes
+        [2, 1, 0]
 
     Notes
     -----

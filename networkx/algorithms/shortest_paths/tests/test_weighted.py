@@ -1,6 +1,7 @@
 from __future__ import division
 
 from nose.tools import assert_equal
+from nose.tools import assert_true
 from nose.tools import assert_false
 from nose.tools import assert_raises
 from nose.tools import raises
@@ -107,7 +108,7 @@ class TestWeightedPath(WeightedTestBase):
         assert_equal(nx.dijkstra_path_length(self.XG4, 0, 2), 4)
         validate_path(self.MXG4, 0, 2, 4, nx.dijkstra_path(self.MXG4, 0, 2))
         validate_path(
-            self.G, 's', 'v', 2, nx.single_source_dijkstra(self.G, 's', 'v')[1]['v'])
+            self.G, 's', 'v', 2, nx.single_source_dijkstra(self.G, 's', 'v')[1])
         validate_path(
             self.G, 's', 'v', 2, nx.single_source_dijkstra(self.G, 's')[1]['v'])
 
@@ -122,8 +123,7 @@ class TestWeightedPath(WeightedTestBase):
         validate_path(self.cycle, 0, 3, 3, nx.dijkstra_path(self.cycle, 0, 3))
         validate_path(self.cycle, 0, 4, 3, nx.dijkstra_path(self.cycle, 0, 4))
 
-        assert_equal(
-            nx.single_source_dijkstra(self.cycle, 0, 0), ({0: 0}, {0: [0]}))
+        assert_equal(nx.single_source_dijkstra(self.cycle, 0, 0), (0, [0]))
 
     def test_bidirectional_dijkstra(self):
         validate_length_path(
@@ -151,18 +151,21 @@ class TestWeightedPath(WeightedTestBase):
         nx.add_path(G, [4, 5, 6])
         path = nx.bidirectional_dijkstra(G, 1, 6)
 
-    def test_dijkstra_predecessor(self):
+    def test_dijkstra_predecessor1(self):
         G = nx.path_graph(4)
         assert_equal(nx.dijkstra_predecessor_and_distance(G, 0),
                      ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
-        G = nx.grid_2d_graph(2, 2)
-        pred, dist = nx.dijkstra_predecessor_and_distance(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), []), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
+    def test_dijkstra_predecessor2(self):
+        # 4-cycle
+        G = nx.Graph([(0,1),(1,2),(2,3),(3,0)])
+        pred, dist = nx.dijkstra_predecessor_and_distance(G, (0))
+        assert_equal(pred[0],[])
+        assert_equal(pred[1],[0])
+        assert_true(pred[2] in [[1,3],[3,1]])
+        assert_equal(pred[3],[0])
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
 
+    def test_dijkstra_predecessor3(self):
         XG = nx.DiGraph()
         XG.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
                                     ('u', 'v', 1), ('u', 'x', 2),
@@ -218,23 +221,52 @@ class TestWeightedPath(WeightedTestBase):
         # Create a triangle in which the edge from node 0 to node 2 has
         # a large weight and the other two edges have a small weight.
         G = nx.complete_graph(3)
-        G.edge[0][2]['weight'] = 10
-        G.edge[0][1]['weight'] = 1
-        G.edge[1][2]['weight'] = 1
+        G.adj[0][2]['weight'] = 10
+        G.adj[0][1]['weight'] = 1
+        G.adj[1][2]['weight'] = 1
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
         weight = lambda u, v, d: 1 / d['weight']
         # The shortest path from 0 to 2 using the actual weights on the
         # edges should be [0, 1, 2].
-        distances, paths = nx.single_source_dijkstra(G, 0, 2)
-        assert_equal(distances[2], 2)
-        assert_equal(paths[2], [0, 1, 2])
+        distance, path = nx.single_source_dijkstra(G, 0, 2)
+        assert_equal(distance, 2)
+        assert_equal(path, [0, 1, 2])
         # However, with the above weight function, the shortest path
         # should be [0, 2], since that has a very small weight.
-        distances, paths = nx.single_source_dijkstra(G, 0, 2, weight=weight)
-        assert_equal(distances[2], 1 / 10)
-        assert_equal(paths[2], [0, 2])
+        distance, path = nx.single_source_dijkstra(G, 0, 2, weight=weight)
+        assert_equal(distance, 1 / 10)
+        assert_equal(path, [0, 2])
+
+    def test_all_pairs_dijkstra_path(self):
+        cycle=nx.cycle_graph(7)
+        p=dict(nx.all_pairs_dijkstra_path(cycle))
+        assert_equal(p[0][3], [0, 1, 2, 3])
+
+        cycle[1][2]['weight'] = 10
+        p=dict(nx.all_pairs_dijkstra_path(cycle))
+        assert_equal(p[0][3], [0, 6, 5, 4, 3])
+
+    def test_all_pairs_dijkstra_path_length(self):
+        cycle=nx.cycle_graph(7)
+        pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
+        assert_equal(pl[0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
+
+        cycle[1][2]['weight'] = 10
+        pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
+        assert_equal(pl[0], {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1})
+
+    def test_all_pairs_dijkstra(self):
+        cycle=nx.cycle_graph(7)
+        out = dict(nx.all_pairs_dijkstra(cycle))
+        assert_equal(out[0][0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
+        assert_equal(out[0][1][3], [0, 1, 2, 3])
+
+        cycle[1][2]['weight'] = 10
+        out = dict(nx.all_pairs_dijkstra(cycle))
+        assert_equal(out[0][0], {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1})
+        assert_equal(out[0][1][3], [0, 6, 5, 4, 3])
 
 
 class TestDijkstraPathLength(object):
@@ -251,9 +283,9 @@ class TestDijkstraPathLength(object):
         # Create a triangle in which the edge from node 0 to node 2 has
         # a large weight and the other two edges have a small weight.
         G = nx.complete_graph(3)
-        G.edge[0][2]['weight'] = 10
-        G.edge[0][1]['weight'] = 1
-        G.edge[1][2]['weight'] = 1
+        G.adj[0][2]['weight'] = 10
+        G.adj[0][1]['weight'] = 1
+        G.adj[1][2]['weight'] = 1
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
@@ -295,6 +327,13 @@ class TestMultiSourceDijkstra(object):
         assert_equal(distances, expected_distances)
         assert_equal(paths, expected_paths)
 
+    def test_simple_paths(self):
+        G = nx.path_graph(4)
+        lengths = nx.multi_source_dijkstra_path_length(G, [0])
+        assert_equal(lengths, {n: n for n in G})
+        paths = nx.multi_source_dijkstra_path(G, [0])
+        assert_equal(paths, {n: list(range(n+1)) for n in G})
+
 
 class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
@@ -302,7 +341,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G = nx.DiGraph()
         G.add_node(0)
         assert_equal(nx.single_source_bellman_ford_path(G, 0), {0: [0]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)), {0: 0})
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0), {0: 0})
         assert_equal(nx.single_source_bellman_ford(G, 0), ({0: 0}, {0: [0]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0), ({0: [None]}, {0: 0}))
         assert_equal(nx.goldberg_radzik(G, 0), ({0: None}, {0: 0}))
@@ -337,7 +376,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(1, 2, weight=-3)
         assert_equal(nx.single_source_bellman_ford_path(G, 0),
                      {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3, 4]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0),
                      {0: 0, 1: 1, 2: -2, 3: -1, 4: 0})
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: -2, 3: -1, 4: 0},
@@ -355,7 +394,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(10, 12)
         assert_equal(nx.single_source_bellman_ford_path(G, 0),
                      {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0),
                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1})
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
@@ -375,7 +414,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                           ('C', 'A', {'load': 2})])
         assert_equal(nx.single_source_bellman_ford_path(G, 0, weight='load'),
                      {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0, weight='load')),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0, weight='load'),
                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1})
         assert_equal(nx.single_source_bellman_ford(G, 0, weight='load'),
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
@@ -391,23 +430,23 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.bellman_ford_path(self.MXG, 's', 'v'), ['s', 'x', 'u', 'v'])
         assert_equal(nx.bellman_ford_path_length(self.MXG, 's', 'v'), 9)
         assert_equal(nx.single_source_bellman_ford_path(self.MXG, 's')['v'], ['s', 'x', 'u', 'v'])
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(self.MXG, 's'))['v'], 9)
+        assert_equal(nx.single_source_bellman_ford_path_length(self.MXG, 's')['v'], 9)
         D, P = nx.single_source_bellman_ford(self.MXG, 's', target='v')
-        assert_equal(D['v'], 9)
-        assert_equal(P['v'], ['s', 'x', 'u', 'v'])
+        assert_equal(D, 9)
+        assert_equal(P, ['s', 'x', 'u', 'v'])
         P, D = nx.bellman_ford_predecessor_and_distance(self.MXG, 's')
         assert_equal(P['v'], ['u'])
         assert_equal(D['v'], 9)
         P, D = nx.goldberg_radzik(self.MXG, 's')
         assert_equal(P['v'], 'u')
-        assert_equal(D['v'], 9)        
+        assert_equal(D['v'], 9)
         assert_equal(nx.bellman_ford_path(self.MXG4, 0, 2), [0, 1, 2])
         assert_equal(nx.bellman_ford_path_length(self.MXG4, 0, 2), 4)
         assert_equal(nx.single_source_bellman_ford_path(self.MXG4, 0)[2], [0, 1, 2])
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(self.MXG4, 0))[2], 4)
+        assert_equal(nx.single_source_bellman_ford_path_length(self.MXG4, 0)[2], 4)
         D, P = nx.single_source_bellman_ford(self.MXG4, 0, target=2)
-        assert_equal(D[2], 4)
-        assert_equal(P[2], [0, 1, 2])
+        assert_equal(D, 4)
+        assert_equal(P, [0, 1, 2])
         P, D = nx.bellman_ford_predecessor_and_distance(self.MXG4, 0)
         assert_equal(P[2], [1])
         assert_equal(D[2], 4)
@@ -419,10 +458,10 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.bellman_ford_path(self.XG, 's', 'v'), ['s', 'x', 'u', 'v'])
         assert_equal(nx.bellman_ford_path_length(self.XG, 's', 'v'), 9)
         assert_equal(nx.single_source_bellman_ford_path(self.XG, 's')['v'], ['s', 'x', 'u', 'v'])
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(self.XG, 's'))['v'], 9)
+        assert_equal(nx.single_source_bellman_ford_path_length(self.XG, 's')['v'], 9)
         D, P = nx.single_source_bellman_ford(self.XG, 's', target='v')
-        assert_equal(D['v'], 9)
-        assert_equal(P['v'], ['s', 'x', 'u', 'v'])
+        assert_equal(D, 9)
+        assert_equal(P, ['s', 'x', 'u', 'v'])
         (P, D) = nx.bellman_ford_predecessor_and_distance(self.XG, 's')
         assert_equal(P['v'], ['u'])
         assert_equal(D['v'], 9)
@@ -430,10 +469,11 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(P['v'], 'u')
         assert_equal(D['v'], 9)
 
+    def test_path_graph(self):
         G = nx.path_graph(4)
         assert_equal(nx.single_source_bellman_ford_path(G, 0),
                      {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 0)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 0),
                      {0: 0, 1: 1, 2: 2, 3: 3})
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: 2, 3: 3}, {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3]}))
@@ -443,7 +483,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
         assert_equal(nx.single_source_bellman_ford_path(G, 3),
                      {0: [3, 2, 1, 0], 1: [3, 2, 1], 2: [3, 2], 3: [3]})
-        assert_equal(dict(nx.single_source_bellman_ford_path_length(G, 3)),
+        assert_equal(nx.single_source_bellman_ford_path_length(G, 3),
                      {0: 3, 1: 2, 2: 1, 3: 0})
         assert_equal(nx.single_source_bellman_ford(G, 3),
                      ({0: 3, 1: 2, 2: 1, 3: 0}, {0: [3, 2, 1, 0], 1: [3, 2, 1], 2: [3, 2], 3: [3]}))
@@ -452,25 +492,30 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.goldberg_radzik(G, 3),
                      ({0: 1, 1: 2, 2: 3, 3: None}, {0: 3, 1: 2, 2: 1, 3: 0}))
 
-        G = nx.grid_2d_graph(2, 2)
-        dist, path = nx.single_source_bellman_ford(G, (0, 0))
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
-        assert_equal(sorted(path.items()),
-                     [((0, 0), [(0, 0)]), ((0, 1), [(0, 0), (0, 1)]),
-                      ((1, 0), [(0, 0), (1, 0)]),  ((1, 1), [(0, 0), (0, 1), (1, 1)])])
-        pred, dist = nx.bellman_ford_predecessor_and_distance(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), [None]), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
-        pred, dist = nx.goldberg_radzik(G, (0, 0))
-        assert_equal(sorted(pred.items()),
-                     [((0, 0), None), ((0, 1), (0, 0)),
-                      ((1, 0), (0, 0)), ((1, 1), (0, 1))])
-        assert_equal(sorted(dist.items()),
-                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
+    def test_4_cycle(self):
+        # 4-cycle
+        G = nx.Graph([(0,1),(1,2),(2,3),(3,0)])
+        dist, path = nx.single_source_bellman_ford(G, 0)
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
+        assert_equal(path[0],[0])
+        assert_equal(path[1],[0,1])
+        assert_true(path[2] in [[0,1,2],[0,3,2]])
+        assert_equal(path[3],[0,3])
+
+        pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
+        assert_equal(pred[0],[None])
+        assert_equal(pred[1],[0])
+        assert_true(pred[2] in [[1,3],[3,1]])
+        assert_equal(pred[3],[0])
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
+
+        pred, dist = nx.goldberg_radzik(G, 0)
+        assert_equal(pred[0],None)
+        assert_equal(pred[1],0)
+        assert_true(pred[2] in [1,3])
+        assert_equal(pred[3],0)
+        assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
+
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):

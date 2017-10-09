@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2011-2016 by
+#    Copyright (C) 2011-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -197,6 +197,13 @@ def biconnected_components(G):
     NetworkXNotImplemented :
         If the input graph is not undirected.
 
+    See Also
+    --------
+    k_components : this function is a special case where k=2
+    bridge_components : similar to this function, but is defined using
+        2-edge-connectivity instead of 2-node-connectivity.
+
+
     Examples
     --------
     >>> G = nx.lollipop_graph(5, 1)
@@ -351,7 +358,7 @@ def biconnected_component_subgraphs(G, copy=True):
 
 @not_implemented_for('directed')
 def articulation_points(G):
-    """Return a generator of articulation points, or cut vertices, of a graph.
+    """Yield the articulation points, or cut vertices, of a graph.
 
     An articulation point or cut vertex is any node whose removal (along with
     all its incident edges) increases the number of connected components of
@@ -366,10 +373,10 @@ def articulation_points(G):
     G : NetworkX Graph
         An undirected graph.
 
-    Returns
-    -------
-    articulation points : generator
-        generator of nodes
+    Yields
+    ------
+    node
+        An articulation point in the graph.
 
     Raises
     ------
@@ -417,7 +424,11 @@ def articulation_points(G):
            Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    return _biconnected_dfs(G, components=False)
+    seen = set()
+    for articulation in _biconnected_dfs(G, components=False):
+        if articulation not in seen:
+            seen.add(articulation)
+            yield articulation
 
 
 @not_implemented_for('directed')

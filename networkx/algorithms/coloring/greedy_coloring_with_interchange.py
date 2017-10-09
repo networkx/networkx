@@ -1,4 +1,3 @@
-import networkx as nx
 import itertools
 
 __all__ = ['greedy_coloring_with_interchange']

@@ -72,9 +72,10 @@ def asyn_lpa_communities(G, weight=None):
             # Get label frequencies. Depending on the order they are processed
             # in some nodes with be in t and others in t-1, making the
             # algorithm asynchronous.
-            label_freq = Counter({labels[v]: G.edge[v][node][weight]
-                                  if weight else 1 for v in G[node]})
-
+            label_freq = Counter()
+            for v in G[node]:
+                label_freq.update({labels[v]: G.edges[v, node][weight]
+                                    if weight else 1})
             # Choose the label with the highest frecuency. If more than 1 label
             # has the highest frecuency choose one randomly.
             max_freq = max(label_freq.values())

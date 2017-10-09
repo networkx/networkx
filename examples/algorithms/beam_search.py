@@ -1,16 +1,15 @@
 # beam_search.py - progressive widening beam search
 #
-# Copyright 2016 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-"""Beam search with dynamic beam width.
+# Copyright 2016-2017 NetworkX developers.
+"""
+===========
+Beam Search
+===========
+
+Beam search with dynamic beam width.
 
 The progressive widening beam search repeatedly executes a beam search
 with increasing beam width until the target node is found.
-
 """
 import math
 

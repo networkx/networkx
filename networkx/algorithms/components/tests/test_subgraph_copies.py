@@ -21,12 +21,12 @@ class TestSubgraphAttributesDicts:
         self.D = nx.DiGraph()
         self.D.add_edge(1, 2, eattr='red')
         self.D.add_edge(2, 1, eattr='red')
-        self.D.node[1]['nattr'] = 'blue'
+        self.D.nodes[1]['nattr'] = 'blue'
         self.D.graph['gattr'] = 'green'
 
         self.G = nx.Graph()
         self.G.add_edge(1, 2, eattr='red')
-        self.G.node[1]['nattr'] = 'blue'
+        self.G.nodes[1]['nattr'] = 'blue'
         self.G.graph['gattr'] = 'green'
 
     def test_subgraphs_default_copy_behavior(self):
@@ -36,14 +36,14 @@ class TestSubgraphAttributesDicts:
             G = deepcopy(self.G if subgraph_func in self.undirected else self.D)
             SG = list(subgraph_func(G))[0]
             assert_equal(SG[1][2]['eattr'], 'red')
-            assert_equal(SG.node[1]['nattr'], 'blue')
+            assert_equal(SG.nodes[1]['nattr'], 'blue')
             assert_equal(SG.graph['gattr'], 'green')
             SG[1][2]['eattr'] = 'foo'
             assert_equal(G[1][2]['eattr'], 'red')
             assert_equal(SG[1][2]['eattr'], 'foo')
-            SG.node[1]['nattr'] = 'bar'
-            assert_equal(G.node[1]['nattr'], 'blue')
-            assert_equal(SG.node[1]['nattr'], 'bar')
+            SG.nodes[1]['nattr'] = 'bar'
+            assert_equal(G.nodes[1]['nattr'], 'blue')
+            assert_equal(SG.nodes[1]['nattr'], 'bar')
             SG.graph['gattr'] = 'baz'
             assert_equal(G.graph['gattr'], 'green')
             assert_equal(SG.graph['gattr'], 'baz')
@@ -54,14 +54,14 @@ class TestSubgraphAttributesDicts:
             G = deepcopy(test_graph)
             SG = list(subgraph_func(G, copy=True))[0]
             assert_equal(SG[1][2]['eattr'], 'red')
-            assert_equal(SG.node[1]['nattr'], 'blue')
+            assert_equal(SG.nodes[1]['nattr'], 'blue')
             assert_equal(SG.graph['gattr'], 'green')
             SG[1][2]['eattr'] = 'foo'
             assert_equal(G[1][2]['eattr'], 'red')
             assert_equal(SG[1][2]['eattr'], 'foo')
-            SG.node[1]['nattr'] = 'bar'
-            assert_equal(G.node[1]['nattr'], 'blue')
-            assert_equal(SG.node[1]['nattr'], 'bar')
+            SG.nodes[1]['nattr'] = 'bar'
+            assert_equal(G.nodes[1]['nattr'], 'blue')
+            assert_equal(SG.nodes[1]['nattr'], 'bar')
             SG.graph['gattr'] = 'baz'
             assert_equal(G.graph['gattr'], 'green')
             assert_equal(SG.graph['gattr'], 'baz')
@@ -71,14 +71,14 @@ class TestSubgraphAttributesDicts:
             G = deepcopy(self.G if subgraph_func in self.undirected else self.D)
             SG = list(subgraph_func(G, copy=False))[0]
             assert_equal(SG[1][2]['eattr'], 'red')
-            assert_equal(SG.node[1]['nattr'], 'blue')
+            assert_equal(SG.nodes[1]['nattr'], 'blue')
             assert_equal(SG.graph['gattr'], 'green')
             SG[1][2]['eattr'] = 'foo'
             assert_equal(G[1][2]['eattr'], 'foo')
             assert_equal(SG[1][2]['eattr'], 'foo')
-            SG.node[1]['nattr'] = 'bar'
-            assert_equal(G.node[1]['nattr'], 'bar')
-            assert_equal(SG.node[1]['nattr'], 'bar')
+            SG.nodes[1]['nattr'] = 'bar'
+            assert_equal(G.nodes[1]['nattr'], 'bar')
+            assert_equal(SG.nodes[1]['nattr'], 'bar')
             SG.graph['gattr'] = 'baz'
             assert_equal(G.graph['gattr'], 'baz')
             assert_equal(SG.graph['gattr'], 'baz')

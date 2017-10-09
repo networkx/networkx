@@ -270,9 +270,9 @@ class TestMinCostFlow:
                           (5, 3, {'capacity': 2, 'weight': 1}),
                           (5, 4, {'capacity': 0, 'weight': 1}),
                           (3, 4, {'capacity': 2, 'weight': 1})])
-        G.node[1]['demand'] = -1
-        G.node[2]['demand'] = -1
-        G.node[4]['demand'] = 2
+        G.nodes[1]['demand'] = -1
+        G.nodes[2]['demand'] = -1
+        G.nodes[4]['demand'] = 2
 
         flowCost, H = nx.network_simplex(G)
         soln = {1: {2: 0, 5: 1},
@@ -428,7 +428,7 @@ class TestMinCostFlow:
         G.add_node(0, demand=float('inf'))
         assert_raises(nx.NetworkXError, nx.network_simplex, G)
         assert_raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
-        G.node[0]['demand'] = 0
+        G.nodes[0]['demand'] = 0
         G.add_node(1, demand=0)
         G.add_edge(0, 1, weight=-float('inf'))
         assert_raises(nx.NetworkXError, nx.network_simplex, G)

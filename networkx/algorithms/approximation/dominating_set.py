@@ -5,14 +5,14 @@
 #   BSD license.
 """Functions for finding node and edge dominating sets.
 
-A *`dominating set`_[1] for an undirected graph *G* with vertex set *V*
+A `dominating set`_ for an undirected graph *G* with vertex set *V*
 and edge set *E* is a subset *D* of *V* such that every vertex not in
-*D* is adjacent to at least one member of *D*. An *`edge dominating
-set`_[2] is a subset *F* of *E* such that every edge not in *F* is
+*D* is adjacent to at least one member of *D*. An `edge dominating set`_
+is a subset *F* of *E* such that every edge not in *F* is
 incident to an endpoint of at least one edge in *F*.
 
-.. [1] dominating set: https://en.wikipedia.org/wiki/Dominating_set
-.. [2] edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
+.. _dominating set: https://en.wikipedia.org/wiki/Dominating_set
+.. _edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
 
 """
 from __future__ import division
@@ -58,7 +58,7 @@ def min_weighted_dominating_set(G, weight=None):
     node in the graph and `w(V^*)` denotes the sum of the weights of
     each node in the minimum weight dominating set for the graph.
 
-    This implementation of the algorithm runs in `O(m)` time, where `m`
+    This implementation of the algorithm runs in $O(m)$ time, where $m$
     is the number of edges in the graph.
 
     References
@@ -84,7 +84,7 @@ def min_weighted_dominating_set(G, weight=None):
 
         """
         v, neighborhood = node_and_neighborhood
-        return G.node[v].get(weight, 1) / len(neighborhood - dom_set)
+        return G.nodes[v].get(weight, 1) / len(neighborhood - dom_set)
 
     # This is a set of all vertices not already covered by the
     # dominating set.
@@ -125,7 +125,7 @@ def min_edge_dominating_set(G):
     -----
     The algorithm computes an approximate solution to the edge dominating set
     problem. The result is no more than 2 * OPT in terms of size of the set.
-    Runtime of the algorithm is `O(|E|)`.
+    Runtime of the algorithm is $O(|E|)$.
     """
     if not G:
         raise ValueError("Expected non-empty NetworkX graph!")

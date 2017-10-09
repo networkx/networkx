@@ -162,7 +162,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                         cutset.update((u, w) for w in H[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    node_cut = {H.node[n]['id'] for edge in cutset for n in edge}
+                    node_cut = {H.nodes[n]['id'] for edge in cutset for n in edge}
 
                     if len(node_cut) == k:
                         if node_cut not in seen:
@@ -192,8 +192,7 @@ def _is_separating_set(G, cut):
     if len(cut) == len(G) - 1:
         return True
 
-    H = G.copy(with_data=False)
-    H.remove_nodes_from(cut)
+    H = nx.restricted_view(G, cut, [])
     if nx.is_connected(H):
         return False
     return True

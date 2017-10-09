@@ -4,7 +4,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from itertools import chain, count
+from itertools import chain
 import networkx as nx
 __author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['adjacency_data', 'adjacency_graph']
@@ -75,7 +75,7 @@ def adjacency_data(G, attrs=_attrs):
     data['nodes'] = []
     data['adjacency'] = []
     for n, nbrdict in G.adjacency():
-        data['nodes'].append(dict(chain(G.node[n].items(), [(id_, n)])))
+        data['nodes'].append(dict(chain(G.nodes[n].items(), [(id_, n)])))
         adj = []
         if multigraph:
             for nbr, keys in nbrdict.items():
@@ -146,7 +146,7 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
         node = node_data.pop(id_)
         mapping.append(node)
         graph.add_node(node)
-        graph.node[node].update(node_data)
+        graph.nodes[node].update(node_data)
     for i, d in enumerate(data['adjacency']):
         source = mapping[i]
         for tdata in d:

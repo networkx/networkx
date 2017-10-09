@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -9,16 +9,13 @@
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Pieter Swart (swart@lanl.gov)
 #          Sasha Gutfraind (ag362@cornell.edu)
-"""
-Load centrality.
-
-"""
+"""Load centrality."""
 from __future__ import division
 from operator import itemgetter
+
 import networkx as nx
 
-__all__ = ['load_centrality',
-           'edge_load_centrality']
+__all__ = ['load_centrality', 'edge_load_centrality']
 
 
 def newman_betweenness_centrality(G, v=None, cutoff=None,
@@ -31,17 +28,17 @@ def newman_betweenness_centrality(G, v=None, cutoff=None,
     Parameters
     ----------
     G : graph
-      A networkx graph
+      A networkx graph.
 
-    normalized : bool, optional
+    normalized : bool, optional (default=True)
       If True the betweenness values are normalized by b=b/(n-1)(n-2) where
       n is the number of nodes in G.
 
-    weight : None or string, optional
+    weight : None or string, optional (default=None)
       If None, edge weights are ignored.
       Otherwise holds the name of the edge attribute used as weight.
 
-    cutoff : bool, optional
+    cutoff : bool, optional (default=None)
       If specified, only consider paths of length <= cutoff.
 
     Returns
@@ -97,7 +94,8 @@ def newman_betweenness_centrality(G, v=None, cutoff=None,
         return betweenness  # all nodes
 
 
-def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
+def _node_betweenness(G, source, cutoff=False, normalized=True,
+                      weight=None):
     """Node betweenness_centrality helper:
 
     See betweenness_centrality for what you probably want.
@@ -112,7 +110,6 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
 
     If weight is not None then use Dijkstra for finding shortest paths.
     """
-
     # get the predecessor and path length data
     if weight is None:
         (pred, length) = nx.predecessor(G, source, cutoff=cutoff,
@@ -168,7 +165,7 @@ def edge_load_centrality(G, cutoff=False):
     G : graph
         A networkx graph
 
-    cutoff : bool, optional
+    cutoff : bool, optional (default=False)
         If specified, only consider paths of length <= cutoff.
 
     Returns
@@ -190,9 +187,7 @@ def edge_load_centrality(G, cutoff=False):
 
 
 def _edge_betweenness(G, source, nodes=None, cutoff=False):
-    """
-    Edge betweenness helper.
-    """
+    """Edge betweenness helper."""
     # get the predecessor data
     (pred, length) = nx.predecessor(G, source, cutoff=cutoff, return_seen=True)
     # order the nodes by path length

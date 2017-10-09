@@ -138,7 +138,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
     2 3
     """
     try:
-        part0 = [n for n,d in G.node.items() if d['bipartite'] == 0]
+        part0 = [n for n,d in G.nodes.items() if d['bipartite'] == 0]
     except:
         raise AttributeError("Missing node attribute `bipartite`") 
     if data is True or data is False:

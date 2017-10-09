@@ -13,13 +13,13 @@ def test_union_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.union(g, h, rename=('g', 'h'))
     assert_equal( set(gh.nodes()) , set(['h0', 'h1', 'g0', 'g1']) )
     for n in gh:
         graph, node = n
-        assert_equal( gh.node[n], eval(graph).node[int(node)] )
+        assert_equal( gh.nodes[n], eval(graph).nodes[int(node)] )
 
     assert_equal(gh.graph['attr'],'attr')
     assert_equal(gh.graph['name'],'h') # h graph attributes take precendent
@@ -48,7 +48,7 @@ def test_intersection_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.intersection(g, h)
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
@@ -125,7 +125,7 @@ def test_difference_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.difference(g, h)
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
@@ -231,7 +231,7 @@ def test_union_and_compose():
     G.add_nodes_from([(1, {'a1': 1})])
     H.add_nodes_from([(1, {'b1': 1})])
     R = compose(G, H)
-    assert_equal(R.node, {1: {'a1': 1, 'b1': 1}})
+    assert_equal(R.nodes, {1: {'a1': 1, 'b1': 1}})
 
 
 def test_union_multigraph():

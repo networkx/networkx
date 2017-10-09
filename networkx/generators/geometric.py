@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -9,6 +9,7 @@
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Dan Schult (dschult@colgate.edu)
 #          Ben Edwards (BJEdwards@gmail.com)
+#          Arya McCarthy (admccarthy@smu.edu)
 """Generators for geometric graphs.
 """
 from __future__ import division
@@ -20,6 +21,12 @@ from math import sqrt
 import math
 import random
 from random import uniform
+try:
+    from scipy.spatial import cKDTree as KDTree
+except ImportError:
+    _is_scipy_available = False
+else:
+    _is_scipy_available = True
 
 import networkx as nx
 from networkx.utils import nodes_or_number
@@ -38,13 +45,40 @@ def euclidean(x, y):
     return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
 
 
+def _fast_construct_edges(G, radius, p):
+    """Construct edges for random geometric graph.
+
+    Requires scipy to be installed.
+    """
+    pos = nx.get_node_attributes(G, 'pos')
+    nodes, coords = list(zip(*pos.items()))
+    kdtree = KDTree(coords)  # Cannot provide generator.
+    edge_indexes = kdtree.query_pairs(radius, p)
+    edges = ((nodes[u], nodes[v]) for u, v in edge_indexes)
+    G.add_edges_from(edges)
+
+
+def _slow_construct_edges(G, radius, p):
+    """Construct edges for random geometric graph.
+
+    Works without scipy, but in `O(n^2)` time.
+    """
+    # TODO This can be parallelized.
+    for (u, pu), (v, pv) in combinations(G.nodes(data='pos'), 2):
+        if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius ** p:
+            G.add_edge(u, v)
+
+
 @nodes_or_number(0)
-def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
+def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
     """Returns a random geometric graph in the unit cube.
 
     The random geometric graph model places `n` nodes uniformly at
     random in the unit cube. Two nodes are joined by an edge if the
     distance between the nodes is at most `radius`.
+
+    Edges are determined using a KDTree when SciPy is available.
+    This reduces the time complexity from $O(n^2)$ to $O(n)$.
 
     Parameters
     ----------
@@ -56,23 +90,15 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
         Dimension of graph
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
-    metric : function
-        A metric on vectors of numbers (represented as lists or
-        tuples). This must be a function that accepts two lists (or
-        tuples) as input and yields a number as output. The function
-        must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+    p : float
+        Which Minkowski distance metric to use.  `p` has to meet the condition
+        ``1 <= p <= infinity``.
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
+        If this argument is not specified, the $L^2$ metric
+        (the Euclidean distance metric) is used.
 
-        If this argument is not specified, the Euclidean distance metric is
-        used.
-
-        .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
+        This should not be confused with the `p` of an Erdős-Rényi random
+        graph, which represents probability.
 
     Returns
     -------
@@ -90,20 +116,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
 
     >>> G = nx.random_geometric_graph(20, 0.1)
 
-    Specify an alternate distance metric using the ``metric`` keyword
-    argument. For example, to use the "`taxicab metric`_" instead of the
-    default `Euclidean metric`_::
-
-        >>> dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
-        >>> G = nx.random_geometric_graph(10, 0.1, metric=dist)
-
-    .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
-    .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
-
     Notes
     -----
-    This uses an `O(n^2)` algorithm to build the graph.  A faster algorithm
-    is possible using k-d trees.
+    This uses a *k*-d tree to build the graph.
 
     The `pos` keyword argument can be used to specify node positions so you
     can create an arbitrary distribution and domain for positions.
@@ -132,30 +147,18 @@ def random_geometric_graph(n, radius, dim=2, pos=None, metric=None):
     #
     n_name, nodes = n
     G = nx.Graph()
-    G.name = 'random_geometric_graph({}, {}, {})'.format(n, radius, dim)
     G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
-    nx.set_node_attributes(G, 'pos', pos)
-    # If no distance metric is provided, use Euclidean distance.
-    if metric is None:
-        metric = euclidean
+    nx.set_node_attributes(G, pos, 'pos')
 
-    def should_join(pair):
-        u, v = pair
-        u_pos, v_pos = pos[u], pos[v]
-        return metric(u_pos, v_pos) <= radius
+    if _is_scipy_available:
+        _fast_construct_edges(G, radius, p)
+    else:
+        _slow_construct_edges(G, radius, p)
 
-    # Join each pair of nodes whose distance is at most `radius`. (We
-    # know each node has a data attribute ``'pos'`` because we created
-    # such an attribute for each node above.)
-    #
-    # TODO This is an O(n^2) algorithm, a k-d tree could be used
-    # instead.
-    nodes = G.nodes(data='pos')
-    G.add_edges_from(filter(should_join, combinations(G, 2)))
     return G
 
 
@@ -164,16 +167,16 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
                                  weight=None, metric=None):
     r"""Returns a geographical threshold graph.
 
-    The geographical threshold graph model places `n` nodes uniformly at
-    random in a rectangular domain.  Each node `u` is assigned a weight
-    :math:`w_u`. Two nodes `u` and `v` are joined by an edge if
+    The geographical threshold graph model places $n$ nodes uniformly at
+    random in a rectangular domain.  Each node $u$ is assigned a weight
+    $w_u$. Two nodes $u$ and $v$ are joined by an edge if
 
     .. math::
 
        w_u + w_v \ge \theta r^{\alpha}
 
-    where `r` is the distance between `u` and `v`, and :math:`\theta`,
-    :math:`\alpha` are parameters.
+    where $r$ is the distance between $u$ and $v$, and $\theta$,
+    $\alpha$ are parameters.
 
     Parameters
     ----------
@@ -194,13 +197,13 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
         tuples). This must be a function that accepts two lists (or
         tuples) as input and yields a number as output. The function
         must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+        Specifically, if $d$ is the function and $x$, $y$,
+        and $z$ are vectors in the graph, then $d$ must satisfy
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
+        1. $d(x, y) \ge 0$,
+        2. $d(x, y) = 0$ if and only if $x = y$,
+        3. $d(x, y) = d(y, x)$,
+        4. $d(x, z) \le d(x, y) + d(y, z)$.
 
         If this argument is not specified, the Euclidean distance metric is
         used.
@@ -213,17 +216,17 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
         A random geographic threshold graph, undirected and without
         self-loops.
 
-        Each node has a node attribute ``'pos'`` that stores the
+        Each node has a node attribute ``pos`` that stores the
         position of that node in Euclidean space as provided by the
         ``pos`` keyword argument or, if ``pos`` was not provided, as
         generated by this function. Similarly, each node has a node
-        attribute ``'weight'`` that stores the weight of that node as
+        attribute ``weight`` that stores the weight of that node as
         provided or as generated.
 
     Examples
     --------
     Specify an alternate distance metric using the ``metric`` keyword
-    argument. For example, to use the "`taxicab metric`_" instead of the
+    argument. For example, to use the `taxicab metric`_ instead of the
     default `Euclidean metric`_::
 
         >>> dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
@@ -235,7 +238,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
     Notes
     -----
     If weights are not specified they are assigned to nodes by drawing randomly
-    from the exponential distribution with rate parameter :math:`\lambda=1`.
+    from the exponential distribution with rate parameter $\lambda=1$.
     To specify weights from a different distribution, use the `weight` keyword
     argument::
 
@@ -272,8 +275,8 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = euclidean
-    nx.set_node_attributes(G, 'weight', weight)
-    nx.set_node_attributes(G, 'pos', pos)
+    nx.set_node_attributes(G, weight, 'weight')
+    nx.set_node_attributes(G, pos, 'pos')
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
@@ -289,7 +292,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2, pos=None,
 
 
 @nodes_or_number(0)
-def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
+def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
                  metric=None):
     r"""Return a Waxman random graph.
 
@@ -298,7 +301,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
     joined by an edge with probability
 
     .. math::
-            p = \alpha \exp(-d / \beta L).
+            p = \beta \exp(-d / \alpha L).
 
     This function implements both Waxman models, using the `L` keyword
     argument.
@@ -312,9 +315,9 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
     ----------
     n : int or iterable
         Number of nodes or iterable of nodes
-    alpha: float
-        Model parameter
     beta: float
+        Model parameter
+    alpha: float
         Model parameter
     L : float, optional
         Maximum distance between nodes.  If not specified, the actual distance
@@ -327,13 +330,13 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
         tuples). This must be a function that accepts two lists (or
         tuples) as input and yields a number as output. The function
         must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+        Specifically, if $d$ is the function and $x$, $y$,
+        and $z$ are vectors in the graph, then $d$ must satisfy
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
+        1. $d(x, y) \ge 0$,
+        2. $d(x, y) = 0$ if and only if $x = y$,
+        3. $d(x, y) = d(y, x)$,
+        4. $d(x, z) \le d(x, y) + d(y, z)$.
 
         If this argument is not specified, the Euclidean distance metric is
         used.
@@ -359,6 +362,13 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
     .. _taxicab metric: https://en.wikipedia.org/wiki/Taxicab_geometry
     .. _Euclidean metric: https://en.wikipedia.org/wiki/Euclidean_distance
 
+    Notes
+    -----
+    Starting in NetworkX 2.0 the parameters alpha and beta align with their
+    usual roles in the probability distribution. In earlier versions their
+    positions in the expresssion were reversed. Their position in the calling
+    sequence reversed as well to minimize backward incompatibility.
+
     References
     ----------
     .. [1]  B. M. Waxman, *Routing of multipoint connections*.
@@ -370,7 +380,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
     (xmin, ymin, xmax, ymax) = domain
     # Each node gets a uniformly random position in the given rectangle.
     pos = {v: (uniform(xmin, xmax), uniform(ymin, ymax)) for v in G}
-    nx.set_node_attributes(G, 'pos', pos)
+    nx.set_node_attributes(G, pos, 'pos')
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = euclidean
@@ -388,7 +398,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1),
 
     # `pair` is the pair of nodes to decide whether to join.
     def should_join(pair):
-        return random.random() < alpha * math.exp(-dist(*pair) / (beta * L))
+        return random.random() < beta * math.exp(-dist(*pair) / (alpha * L))
 
     G.add_edges_from(filter(should_join, combinations(G, 2)))
     return G
@@ -401,25 +411,26 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     connections that are chosen randomly.
 
       [...] we begin with a set of nodes [...] that are identified with the set
-      of lattice points in an :math:`n \times n` square,
-      :math:`\{(i, j): i \in \{1, 2, \ldots, n\}, j \in \{1, 2, \ldots, n\}\}`,
-      and we define the *lattice distance* between two nodes `(i, j)` and
-      `(k, l)` to be the number of "lattice steps" separating them:
-      `d((i, j), (k, l)) = |k - i| + |l - j|`.
+      of lattice points in an $n \times n$ square,
+      $\{(i, j): i \in \{1, 2, \ldots, n\}, j \in \{1, 2, \ldots, n\}\}$,
+      and we define the *lattice distance* between two nodes $(i, j)$ and
+      $(k, l)$ to be the number of "lattice steps" separating them:
+      $d((i, j), (k, l)) = |k - i| + |l - j|$.
 
-      For a universal constant `p >= 1`, the node `u` has a directed edge to
-      every other node within lattice distance `p` --- these are its *local
-      contacts*. For universal constants `q >= 0` and `r >= 0` we also
-      construct directed edges from `u` to `q` other nodes (the *long-range
-      contacts*) using independent random trials; the `i`th directed edge from
-      `u` has endpoint `v` with probability proportional to `[d(u,v)]^{-r}`.
+      For a universal constant $p >= 1$, the node $u$ has a directed edge to
+      every other node within lattice distance $p$---these are its *local
+      contacts*. For universal constants $q >= 0$ and $r >= 0$ we also
+      construct directed edges from $u$ to $q$ other nodes (the *long-range
+      contacts*) using independent random trials; the $i$th directed edge from
+      $u$ has endpoint $v$ with probability proportional to $[d(u,v)]^{-r}$.
 
       -- [1]_
 
     Parameters
     ----------
     n : int
-        The number of nodes.
+        The length of one side of the lattice; the number of nodes in
+        the graph is therefore $n^2$.
     p : int
         The diameter of short range connections. Each node is joined with every
         other node within this lattice distance.
@@ -427,7 +438,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
         The number of long-range connections for each node.
     r : float
         Exponent for decaying probability of connections.  The probability of
-        connecting to a node at lattice distance `d` is `1/d^r`.
+        connecting to a node at lattice distance $d$ is $1/d^r$.
     dim : int
         Dimension of grid
     seed : int, optional

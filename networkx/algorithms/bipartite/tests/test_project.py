@@ -22,11 +22,11 @@ class TestBipartiteProject:
         P=bipartite.projected_graph(G,[1,3])
         assert_nodes_equal(list(P),[1,3])
         assert_edges_equal(list(P.edges()),[(1,3)])
-        assert_equal(P.node[1]['name'],G.node[1]['name'])
+        assert_equal(P.nodes[1]['name'],G.nodes[1]['name'])
         P=bipartite.projected_graph(G,[0,2])
         assert_nodes_equal(list(P),[0,2])
         assert_edges_equal(list(P.edges()),[(0,2)])
-        assert_equal(P.node[2]['name'],G.node[2]['name'])
+        assert_equal(P.nodes[2]['name'],G.nodes[2]['name'])
 
     def test_path_collaboration_projected_graph(self):
         G=nx.path_graph(4)
@@ -348,11 +348,11 @@ class TestBipartiteWeightedProjection:
         def my_weight(G, u, v, weight='weight'):
             w = 0
             for nbr in set(G[u]) & set(G[v]):
-                w += G.edge[u][nbr].get(weight, 1) + G.edge[v][nbr].get(weight, 1)
+                w += G.edges[u, nbr].get(weight, 1) + G.edges[v, nbr].get(weight, 1)
             return w
         B = nx.bipartite.complete_bipartite_graph(2, 2)
         for i,(u,v) in enumerate(B.edges()):
-            B.edge[u][v]['weight'] = i + 1
+            B.edges[u, v]['weight'] = i + 1
         G = bipartite.generic_weighted_projected_graph(B, [0, 1],
                                                         weight_function=jaccard)
         assert_edges_equal(list(G.edges(data=True)), [(0, 1, {'weight': 1.0})])

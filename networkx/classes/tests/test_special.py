@@ -18,104 +18,116 @@ except ImportError:  # python 2.6
 class SpecialGraphTester(TestGraph):
     def setUp(self):
         TestGraph.setUp(self)
-        self.Graph=nx.Graph
+        self.Graph = nx.Graph
+
 
 class OrderedGraphTester(TestGraph):
     def setUp(self):
         TestGraph.setUp(self)
+
         class MyGraph(nx.Graph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
-        self.Graph=MyGraph
+        self.Graph = MyGraph
+
 
 class ThinGraphTester(TestGraph):
     def setUp(self):
-        all_edge_dict = {'weight' : 1}
+        all_edge_dict = {'weight': 1}
+
         class MyGraph(nx.Graph):
-            edge_attr_dict_factory = lambda : all_edge_dict
-        self.Graph=MyGraph
+            def edge_attr_dict_factory(): return all_edge_dict
+        self.Graph = MyGraph
         # build dict-of-dict-of-dict K3
-        ed1,ed2,ed3 = (all_edge_dict,all_edge_dict,all_edge_dict)
-        self.k3adj={0: {1: ed1, 2: ed2},
-                    1: {0: ed1, 2: ed3},
-                    2: {0: ed2, 1: ed3}}
-        self.k3edges=[(0, 1), (0, 2), (1, 2)]
-        self.k3nodes=[0, 1, 2]
-        self.K3=self.Graph()
-        self.K3.adj=self.K3.edge=self.k3adj
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
-
-
+        ed1, ed2, ed3 = (all_edge_dict, all_edge_dict, all_edge_dict)
+        self.k3adj = {0: {1: ed1, 2: ed2},
+                      1: {0: ed1, 2: ed3},
+                      2: {0: ed2, 1: ed3}}
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = self.k3adj
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
 
 class SpecialDiGraphTester(TestDiGraph):
     def setUp(self):
         TestDiGraph.setUp(self)
-        self.Graph=nx.DiGraph
+        self.Graph = nx.DiGraph
+
 
 class OrderedDiGraphTester(TestDiGraph):
     def setUp(self):
         TestGraph.setUp(self)
+
         class MyGraph(nx.DiGraph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
-        self.Graph=MyGraph
+        self.Graph = MyGraph
+
 
 class ThinDiGraphTester(TestDiGraph):
     def setUp(self):
-        all_edge_dict = {'weight' : 1}
-        class MyGraph(nx.DiGraph):
-            edge_attr_dict_factory = lambda : all_edge_dict
-        self.Graph=MyGraph
-        # build dict-of-dict-of-dict K3
-        ed1,ed2,ed3 = (all_edge_dict,all_edge_dict,all_edge_dict)
-        self.k3adj={0: {1: ed1, 2: ed2},
-                    1: {0: ed1, 2: ed3},
-                    2: {0: ed2, 1: ed3}}
-        self.k3edges=[(0, 1), (0, 2), (1, 2)]
-        self.k3nodes=[0, 1, 2]
-        self.K3=self.Graph()
-        self.K3.adj=self.K3.edge=self.k3adj
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
+        all_edge_dict = {'weight': 1}
 
+        class MyGraph(nx.DiGraph):
+            def edge_attr_dict_factory(): return all_edge_dict
+        self.Graph = MyGraph
+        # build dict-of-dict-of-dict K3
+        ed1, ed2, ed3 = (all_edge_dict, all_edge_dict, all_edge_dict)
+        self.k3adj = {0: {1: ed1, 2: ed2},
+                      1: {0: ed1, 2: ed3},
+                      2: {0: ed2, 1: ed3}}
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3.adj = self.k3adj
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
 
 class SpecialMultiGraphTester(TestMultiGraph):
     def setUp(self):
         TestMultiGraph.setUp(self)
-        self.Graph=nx.MultiGraph
+        self.Graph = nx.MultiGraph
+
 
 class OrderedMultiGraphTester(TestMultiGraph):
     def setUp(self):
         TestMultiGraph.setUp(self)
+
         class MyGraph(nx.MultiGraph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
-        self.Graph=MyGraph
+        self.Graph = MyGraph
 
 
 class SpecialMultiDiGraphTester(TestMultiDiGraph):
     def setUp(self):
         TestMultiDiGraph.setUp(self)
-        self.Graph=nx.MultiDiGraph
+        self.Graph = nx.MultiDiGraph
+
 
 class OrderedMultiDiGraphTester(TestMultiDiGraph):
     def setUp(self):
         TestMultiDiGraph.setUp(self)
+
         class MyGraph(nx.MultiDiGraph):
             node_dict_factory = OrderedDict
-            adjlist_dict_factory = OrderedDict
+            adjlist_outer_dict_factory = OrderedDict
+            adjlist_inner_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
-        self.Graph=MyGraph
-
+        self.Graph = MyGraph

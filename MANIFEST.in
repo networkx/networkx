@@ -1,29 +1,30 @@
 include MANIFEST.in
 include setup.py
-include INSTALL.txt
+include CONTRIBUTING.rst
+include CONTRIBUTORS.rst
+include INSTALL.rst
 include LICENSE.txt
 include README.rst
+include RELEASE.rst
 
 recursive-include examples *.py *.edgelist *.mbox *.gz *.bz2 *.zip
 recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc
 
-include scripts/*
-include networkx/tests/*.txt
 include networkx/tests/*.py
 include networkx/*/tests/*.txt
 include networkx/*/tests/*.py
-include networkx/*/*/tests/*.txt
 include networkx/*/*/tests/*.py
 include networkx/*/*/tests/*.A99
 include networkx/*/*/tests/*.B99
 include networkx/*/*/tests/*.bz2
-
 global-exclude *~
 global-exclude *.pyc
 global-exclude .svn
 
 prune doc/build
-prune doc/source/reference/generated
-prune doc/source/examples
-prune doc/source/static/examples
-prune doc/source/templates/gallery.html
+prune doc/auto_examples
+prune doc/modules
+prune doc/reference/generated
+prune doc/reference/algorithms/generated
+prune doc/reference/classes/generated
+prune doc/reference/readwrite/generated

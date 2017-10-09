@@ -15,8 +15,8 @@ from networkx.utils import reverse_cuthill_mckee_ordering
 from re import compile
 
 try:
-    from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, ones,
-                       reshape, sqrt, zeros)
+    from numpy import (array, asmatrix, asarray, dot, ndarray, ones,
+                       sqrt, zeros)
     from numpy.linalg import norm, qr
     from numpy.random import normal
     from scipy.linalg import eigh, inv
@@ -190,7 +190,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             for j in range(X.shape[1]):
                 X[:, j] -= dot(X[:, j], e) * e
 
-
     if method is None:
         method = 'pcg'
     if method == 'pcg':
@@ -268,6 +267,7 @@ def _get_fiedler_func(method):
     match = _tracemin_method.match(method)
     if match:
         method = match.group(1)
+
         def find_fiedler(L, x, normalized, tol):
             q = 2 if method == 'pcg' else min(4, L.shape[0] - 1)
             X = asmatrix(normal(size=(q, L.shape[0]))).T

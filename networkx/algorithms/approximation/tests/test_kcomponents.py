@@ -1,5 +1,6 @@
 # Test for approximation to k-components algorithm
-from nose.tools import assert_equal, assert_true, assert_false, assert_raises, raises
+from nose.tools import assert_equal, assert_true, assert_false, assert_in
+from nose.tools import assert_raises, raises, assert_greater_equal
 import networkx as nx
 from networkx.algorithms.approximation import k_components
 from networkx.algorithms.approximation.kcomponents import _AntiGraph, _same
@@ -122,7 +123,7 @@ def _check_connectivity(G):
         for component in components:
             C = G.subgraph(component)
             K = nx.node_connectivity(C)
-            assert_true(K >= k)
+            assert_greater_equal(K, k)
 
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
@@ -141,39 +142,33 @@ def test_karate_1():
                     10: 3, 11: 1, 12: 2, 13: 4, 14: 2, 15: 2, 16: 2, 17: 2, 18: 2,
                     19: 3, 20: 2, 21: 2, 22: 2, 23: 3, 24: 3, 25: 3, 26: 2, 27: 3,
                     28: 3, 29: 3, 30: 4, 31: 3, 32: 4, 33: 4}
+    approx_karate_k_num = karate_k_num.copy()
+    approx_karate_k_num[24] = 2
+    approx_karate_k_num[25] = 2
     G = nx.karate_club_graph()
     k_comps = k_components(G)
     k_num = build_k_number_dict(k_comps)
-    assert_equal(karate_k_num, k_num)
+    assert_in(k_num, (karate_k_num, approx_karate_k_num))
 
 def test_example_1_detail_3_and_4():
-    solution = {
-        3: [set([40, 41, 42, 43, 39]),
-            set([32, 33, 34, 35, 36, 37, 38, 42, 25, 26, 27, 28, 29, 30, 31]),
-            set([58, 59, 60, 61, 62]),
-            set([44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 61]),
-            set([80, 81, 77, 78, 79]),
-            set([64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 80, 63]),
-            set([97, 98, 99, 100, 101]),
-            set([96, 100, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 94, 95])
-        ],
-        4: [set([40, 41, 42, 43, 39]),
-            set([42, 35, 36, 37, 38]),
-            set([58, 59, 60, 61, 62]),
-            set([56, 57, 61, 54, 55]),
-            set([80, 81, 77, 78, 79]),
-            set([80, 73, 74, 75, 76]),
-            set([97, 98, 99, 100, 101]),
-            set([96, 100, 92, 94, 95])
-        ],
-    }
     G = graph_example_1()
     result = k_components(G)
+    # In this example graph there are 8 3-components, 4 with 15 nodes
+    # and 4 with 5 nodes.
+    assert_equal(len(result[3]), 8)
+    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
+    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
+    # There are also 8 4-components all with 5 nodes.
+    assert_equal(len(result[4]), 8)
+    assert_true(all(len(c) == 5 for c in result[4]))
+    # Finally check that the k-components detected have actually node
+    # connectivity >= k.
     for k, components in result.items():
         if k < 3:
             continue
         for component in components:
-            assert_true(component in solution[k])
+            K = nx.node_connectivity(G.subgraph(component))
+            assert_greater_equal(K, k)
 
 @raises(nx.NetworkXNotImplemented)
 def test_directed():
@@ -223,6 +218,13 @@ class TestAntiGraph:
             ac = [set(c) for c in nx.connected_components(A)]
             for comp in ac:
                 assert_true(comp in gc)
+
+    def test_adj(self):
+        for G, A in self.GA:
+            for n, nbrs in G.adj.items():
+                a_adj = sorted((n,sorted(ad)) for n, ad in A.adj.items())
+                g_adj = sorted((n,sorted(ad)) for n, ad in G.adj.items())
+                assert_equal(a_adj, g_adj)
 
     def test_adjacency(self):
         for G, A in self.GA:

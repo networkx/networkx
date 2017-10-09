@@ -8,11 +8,15 @@
 #    BSD license.
 #    NetworkX:http://networkx.github.io/
 import networkx as nx
-from networkx.exception import NetworkXError
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__all__ = ['hits','hits_numpy','hits_scipy','authority_matrix','hub_matrix']
+__all__ = ['hits', 'hits_numpy', 'hits_scipy', 'authority_matrix', 'hub_matrix']
 
+<<<<<<< HEAD
 def hits(G,weight='weight',max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
+=======
+
+def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
+>>>>>>> 9f6c9cd6a561d41192bc29f14fd9bc16bcaad919
     """Return HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
@@ -79,61 +83,74 @@ def hits(G,weight='weight',max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("hits() not defined for graphs with multiedges.")
     if len(G) == 0:
-        return {},{}
+        return {}, {}
     # choose fixed starting vector if not given
     if nstart is None:
-        h=dict.fromkeys(G,1.0/G.number_of_nodes())
+        h = dict.fromkeys(G, 1.0 / G.number_of_nodes())
     else:
-        h=nstart
+        h = nstart
         # normalize starting vector
-        s=1.0/sum(h.values())
+        s = 1.0 / sum(h.values())
         for k in h:
-            h[k]*=s
+            h[k] *= s
     for _ in range(max_iter):  # power iteration: make up to max_iter iterations
-        hlast=h
-        h=dict.fromkeys(hlast.keys(),0)
-        a=dict.fromkeys(hlast.keys(),0)
+        hlast = h
+        h = dict.fromkeys(hlast.keys(), 0)
+        a = dict.fromkeys(hlast.keys(), 0)
         # this "matrix multiply" looks odd because it is
         # doing a left multiply a^T=hlast^T*G
         for n in h:
             for nbr in G[n]:
+<<<<<<< HEAD
                 a[nbr]+=hlast[n]*G[n][nbr].get(weight,1)
         # now multiply h=Ga
         for n in h:
             for nbr in G[n]:
                 h[n]+=a[nbr]*G[n][nbr].get(weight,1)
+=======
+                a[nbr] += hlast[n] * G[n][nbr].get('weight', 1)
+        # now multiply h=Ga
+        for n in h:
+            for nbr in G[n]:
+                h[n] += a[nbr] * G[n][nbr].get('weight', 1)
+>>>>>>> 9f6c9cd6a561d41192bc29f14fd9bc16bcaad919
         # normalize vector
-        s=1.0/max(h.values())
-        for n in h: h[n]*=s
+        s = 1.0 / max(h.values())
+        for n in h:
+            h[n] *= s
         # normalize vector
-        s=1.0/max(a.values())
-        for n in a: a[n]*=s
+        s = 1.0 / max(a.values())
+        for n in a:
+            a[n] *= s
         # check convergence, l1 norm
-        err=sum([abs(h[n]-hlast[n]) for n in h])
+        err = sum([abs(h[n] - hlast[n]) for n in h])
         if err < tol:
             break
     else:
         raise nx.PowerIterationFailedConvergence(max_iter)
     if normalized:
-        s = 1.0/sum(a.values())
+        s = 1.0 / sum(a.values())
         for n in a:
             a[n] *= s
-        s = 1.0/sum(h.values())
+        s = 1.0 / sum(h.values())
         for n in h:
             h[n] *= s
-    return h,a
+    return h, a
 
-def authority_matrix(G,nodelist=None):
+
+def authority_matrix(G, nodelist=None):
     """Return the HITS authority matrix."""
-    M=nx.to_numpy_matrix(G,nodelist=nodelist)
-    return M.T*M
+    M = nx.to_numpy_matrix(G, nodelist=nodelist)
+    return M.T * M
 
-def hub_matrix(G,nodelist=None):
+
+def hub_matrix(G, nodelist=None):
     """Return the HITS hub matrix."""
-    M=nx.to_numpy_matrix(G,nodelist=nodelist)
-    return M*M.T
+    M = nx.to_numpy_matrix(G, nodelist=nodelist)
+    return M * M.T
 
-def hits_numpy(G,normalized=True):
+
+def hits_numpy(G, normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
@@ -181,29 +198,30 @@ def hits_numpy(G,normalized=True):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(\
+        raise ImportError(
             "hits_numpy() requires NumPy: http://scipy.org/")
     if len(G) == 0:
-        return {},{}
+        return {}, {}
     H = nx.hub_matrix(G, list(G))
-    e,ev=np.linalg.eig(H)
-    m=e.argsort()[-1] # index of maximum eigenvalue
-    h=np.array(ev[:,m]).flatten()
-    A=nx.authority_matrix(G, list(G))
-    e,ev=np.linalg.eig(A)
-    m=e.argsort()[-1] # index of maximum eigenvalue
-    a=np.array(ev[:,m]).flatten()
+    e, ev = np.linalg.eig(H)
+    m = e.argsort()[-1]  # index of maximum eigenvalue
+    h = np.array(ev[:, m]).flatten()
+    A = nx.authority_matrix(G, list(G))
+    e, ev = np.linalg.eig(A)
+    m = e.argsort()[-1]  # index of maximum eigenvalue
+    a = np.array(ev[:, m]).flatten()
     if normalized:
-        h = h/h.sum()
-        a = a/a.sum()
+        h = h / h.sum()
+        a = a / a.sum()
     else:
-        h = h/h.max()
-        a = a/a.max()
+        h = h / h.max()
+        a = a / a.max()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
-    return hubs,authorities
+    return hubs, authorities
 
-def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
+
+def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
@@ -273,39 +291,41 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
         import scipy.sparse
         import numpy as np
     except ImportError:
-        raise ImportError(\
+        raise ImportError(
             "hits_scipy() requires SciPy: http://scipy.org/")
     if len(G) == 0:
-        return {},{}
+        return {}, {}
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
-    (n,m)=M.shape # should be square
-    A=M.T*M # authority matrix
-    x=scipy.ones((n,1))/n  # initial guess
+    (n, m) = M.shape  # should be square
+    A = M.T * M  # authority matrix
+    x = scipy.ones((n, 1)) / n  # initial guess
     # power iteration on authority matrix
-    i=0
+    i = 0
     while True:
-        xlast=x
-        x=A*x
-        x=x/x.max()
+        xlast = x
+        x = A * x
+        x = x / x.max()
         # check convergence, l1 norm
-        err=scipy.absolute(x-xlast).sum()
+        err = scipy.absolute(x - xlast).sum()
         if err < tol:
             break
-        if i>max_iter:
+        if i > max_iter:
             raise nx.PowerIterationFailedConvergence(max_iter)
-        i+=1
+        i += 1
 
-    a=np.asarray(x).flatten()
+    a = np.asarray(x).flatten()
     # h=M*a
-    h=np.asarray(M*a).flatten()
+    h = np.asarray(M * a).flatten()
     if normalized:
-        h = h/h.sum()
-        a = a/a.sum()
+        h = h / h.sum()
+        a = a / a.sum()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
-    return hubs,authorities
+    return hubs, authorities
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

@@ -188,6 +188,10 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         for n in nbunch:
             self.remove_node(n)
 
+    def fresh_copy(self):
+        # Needed to make .copy() work
+        return MultiDiGraph_EdgeKey()
+
     def add_edge(self, u, v, key, **attr):
         """
         Key is now required.
@@ -202,7 +206,8 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         self.edge_index[key] = (u, v, self.succ[u][v][key])
 
     def add_edges_from(self, ebunch, **attr):
-        raise NotImplementedError
+        for u, v, k, d in ebunch:
+            self.add_edge(u, v, k, **d)
 
     def remove_edge_with_key(self, key):
         try:
@@ -507,7 +512,7 @@ class Edmonds(object):
 
         # (I3) Branch construction.
         #print(self.level)
-        H = self.G_original.__class__()
+        H = self.G_original.fresh_copy()
 
         def is_root(G, u, edgekeys):
             """
@@ -615,7 +620,7 @@ def minimum_spanning_arborescence(G, attr='weight', default=1):
     ed = Edmonds(G)
     B = ed.find_optimum(attr, default, kind='min', style='arborescence')
     if not is_arborescence(B):
-        msg = 'No maximum spanning arborescence in G.'
+        msg = 'No minimum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
 

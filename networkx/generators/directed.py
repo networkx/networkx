@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2016 by
+# Copyright (C) 2006-2017 by
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
@@ -73,13 +73,12 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
         raise nx.NetworkXError("Directed Graph required in create_using")
 
     if kernel is None:
-        kernel = lambda x: x
+        def kernel(x): return x
 
     if seed is not None:
         random.seed(seed)
 
     G = empty_graph(1, create_using)
-    G.name = "gn_graph({})".format(n)
 
     if n == 1:
         return G
@@ -143,7 +142,6 @@ def gnr_graph(n, p, create_using=None, seed=None):
         random.seed(seed)
 
     G = empty_graph(1, create_using)
-    G.name = "gnr_graph(%s,%s)" % (n, p)
 
     if n == 1:
         return G
@@ -188,7 +186,6 @@ def gnc_graph(n, create_using=None, seed=None):
         random.seed(seed)
 
     G = empty_graph(1, create_using)
-    G.name = "gnc_graph(%s)" % (n)
 
     if n == 1:
         return G
@@ -219,7 +216,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         distribution and the other chosen randomly according to the out-degree
         distribution.
     gamma : float
-        Probability for adding a new node conecgted to an existing node
+        Probability for adding a new node connected to an existing node
         chosen randomly according to the out-degree distribution.
     delta_in : float
         Bias for choosing ndoes from in-degree distribution.
@@ -278,10 +275,6 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     if alpha + beta + gamma != 1.0:
         raise ValueError('alpha+beta+gamma must equal 1.')
 
-    G.name = ("directed_scale_free_graph(%s,alpha=%s,beta=%s,gamma=%s,"
-              "delta_in=%s,delta_out=%s)" % (n, alpha, beta, gamma, delta_in,
-                                             delta_out))
-
     # seed random number generated (uses None as default)
     random.seed(seed)
     number_of_edges = G.number_of_edges()
@@ -296,7 +289,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
             v = len(G)
             # choose w according to in-degree and delta_in
             w = _choose_node(G, G.in_degree(), delta_in, psum_in)
-        elif r < alpha+beta:
+        elif r < alpha + beta:
             # beta
             # choose v according to out-degree and delta_out
             v = _choose_node(G, G.out_degree(), delta_out, psum_out)
@@ -393,7 +386,6 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True,
     nodes = set(G)
     for u in G:
         G.add_edges_from((u, v) for v in sample(u, nodes))
-    G.name = 'random_uniform_k_out_graph({}, {})'.format(n, k)
     return G
 
 
@@ -461,7 +453,7 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
          "Distance between two random `k`-out digraphs, with and without
          preferential attachment."
          arXiv preprint arXiv:1311.5961 (2013).
-         <http://arxiv.org/abs/1311.5961>
+         <https://arxiv.org/abs/1311.5961>
 
     """
     if alpha < 0:
@@ -480,5 +472,4 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
         v = weighted_choice(weights - adjustment)
         G.add_edge(u, v)
         weights[v] += 1
-    G.name = 'random_k_out_graph({0}, {1}, {2})'.format(n, k, alpha)
     return G

@@ -16,7 +16,7 @@ __author__ = """\n""".join(['Ben Edwards (bedwards@cs.unm.edu)',
 __all__ = ['caveman_graph', 'connected_caveman_graph',
            'relaxed_caveman_graph', 'random_partition_graph',
            'planted_partition_graph', 'gaussian_random_partition_graph',
-           'ring_of_cliques']
+           'ring_of_cliques', 'windmill_graph']
 
 
 def caveman_graph(l, k):
@@ -57,11 +57,10 @@ def caveman_graph(l, k):
        Amer. J. Soc. 105, 493-527, 1999.
     """
     # l disjoint cliques of size k
-    G = nx.empty_graph(l*k)
-    G.name = "caveman_graph(%s,%s)" % (l*k, k)
+    G = nx.empty_graph(l * k)
     if k > 1:
-        for start in range(0, l*k, k):
-            edges = itertools.combinations(range(start, start+k), 2)
+        for start in range(0, l * k, k):
+            edges = itertools.combinations(range(start, start + k), 2)
             G.add_edges_from(edges)
     return G
 
@@ -103,10 +102,9 @@ def connected_caveman_graph(l, k):
        Amer. J. Soc. 105, 493-527, 1999.
     """
     G = nx.caveman_graph(l, k)
-    G.name = "connected_caveman_graph(%s,%s)" % (l, k)
-    for start in range(0, l*k, k):
-        G.remove_edge(start, start+1)
-        G.add_edge(start, (start-1) % (l*k))
+    for start in range(0, l * k, k):
+        G.remove_edge(start, start + 1)
+        G.add_edge(start, (start - 1) % (l * k))
     return G
 
 
@@ -145,13 +143,12 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     ----------
     .. [1] Santo Fortunato, Community Detection in Graphs,
        Physics Reports Volume 486, Issues 3-5, February 2010, Pages 75-174.
-       http://arxiv.org/abs/0906.0612
+       https://arxiv.org/abs/0906.0612
     """
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
     G = nx.caveman_graph(l, k)
     nodes = list(G)
-    G.name = "relaxed_caveman_graph (%s,%s,%s)" % (l, k, p)
     for (u, v) in G.edges():
         if random.random() < p:  # rewire the edge
             x = random.choice(nodes)
@@ -212,12 +209,11 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     References
     ----------
     .. [1] Santo Fortunato 'Community Detection in Graphs' Physical Reports
-       Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
-       http://arxiv.org/abs/0906.0612
-       """
+       Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
+    """
     # Use geometric method for O(n+m) complexity algorithm
-    # partition=nx.community_sets(nx.get_node_attributes(G,'affiliation'))
-    if not seed is None:
+    # partition = nx.community_sets(nx.get_node_attributes(G, 'affiliation'))
+    if seed is not None:
         random.seed(seed)
     if not 0.0 <= p_in <= 1.0:
         raise nx.NetworkXError("p_in must be in [0,1]")
@@ -238,12 +234,12 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     start = 0
     group = 0
     for n in sizes:
-        edges = ((u+start, v+start)
+        edges = ((u + start, v + start)
                  for u, v in
                  nx.fast_gnp_random_graph(n, p_in, directed=directed).edges())
         G.add_edges_from(edges)
-        next_group.update(dict.fromkeys(range(start, start+n), start+n))
-        G.graph['partition'].append(set(range(start, start+n)))
+        next_group.update(dict.fromkeys(range(start, start + n), start + n))
+        G.graph['partition'].append(set(range(start, start + n)))
         group += 1
         start += n
     # handle edge cases
@@ -252,9 +248,9 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     if p_out == 1:
         for n in next_group:
             targets = range(next_group[n], len(G))
-            G.add_edges_from(zip([n]*len(targets), targets))
+            G.add_edges_from(zip([n] * len(targets), targets))
             if directed:
-                G.add_edges_from(zip(targets, [n]*len(targets)))
+                G.add_edges_from(zip(targets, [n] * len(targets)))
         return G
     # connect each node in group randomly with the nodes not in group
     # use geometric method like fast_gnp_random_graph()
@@ -265,7 +261,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
             v = 0
             while v < n:
                 lr = math.log(1.0 - random.random())
-                v += int(lr/lp)
+                v += int(lr / lp)
                 # skip over nodes in the same group as v, including self loops
                 if next_group.get(v, n) == next_group[u]:
                     v = next_group[u]
@@ -273,11 +269,11 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
                     G.add_edge(u, v)
                     v += 1
     else:
-        for u in range(n-1):
+        for u in range(n - 1):
             v = next_group[u]  # start with next node not in this group
             while v < n:
                 lr = math.log(1.0 - random.random())
-                v += int(lr/lp)
+                v += int(lr / lp)
                 if v < n:
                     G.add_edge(u, v)
                     v += 1
@@ -332,9 +328,9 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
         Random Struct. Algor. 18 (2001) 116-140.
 
     .. [2] Santo Fortunato 'Community Detection in Graphs' Physical Reports
-       Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
+       Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
     """
-    return random_partition_graph([k]*l, p_in, p_out, seed, directed)
+    return random_partition_graph([k] * l, p_in, p_out, seed, directed)
 
 
 def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
@@ -405,7 +401,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
-            sizes.append(n-assigned)
+            sizes.append(n - assigned)
             break
         assigned += size
         sizes.append(size)
@@ -458,9 +454,59 @@ def ring_of_cliques(num_cliques, clique_size):
 
     G = nx.Graph()
     for i in range(num_cliques):
-        edges = itertools.combinations(range(i*clique_size, i*clique_size +
+        edges = itertools.combinations(range(i * clique_size, i * clique_size +
                                              clique_size), 2)
         G.add_edges_from(edges)
-        G.add_edge(i*clique_size+1, (i+1)*clique_size %
-                   (num_cliques*clique_size))
+        G.add_edge(i * clique_size + 1, (i + 1) * clique_size %
+                   (num_cliques * clique_size))
+    return G
+
+
+def windmill_graph(n, k):
+    """Generate a windmill graph.
+    A windmill graph is a graph of `n` cliques each of size `k` that are all
+    joined at one node.
+    It can be thought of as taking a disjoint union of `n` cliques of size `k`,
+    selecting one point from each, and contracting all of the selected points.
+    Alternatively, one could generate `n` cliques of size `k-1` and one node
+    that is connected to all other nodes in the graph.
+
+    Parameters
+    ----------
+    n : int
+      Number of cliques
+    k : int
+      Size of cliques
+
+    Returns
+    -------
+    G : NetworkX Graph
+      windmill graph with n cliques of size k
+
+    Raises
+    ------
+    NetworkXError
+        If the number of cliques is less than two
+        If the size of the cliques are less than two
+
+    Examples
+    --------
+    >>> G = nx.windmill_graph(4, 5)
+
+    Notes
+    -----
+    The node labeled `0` will be the node connected to all other nodes.
+    Note that windmill graphs are usually denoted `Wd(k,n)`, so the parameters
+    are in the opposite order as the parameters of this method.
+    """
+    if n < 2:
+        msg = 'A windmill graph must have at least two cliques'
+        raise nx.NetworkXError(msg)
+    if k < 2:
+        raise nx.NetworkXError('The cliques must have at least two nodes')
+
+    G = nx.disjoint_union_all(itertools.chain([nx.complete_graph(k)],
+                                              (nx.complete_graph(k - 1)
+                                               for _ in range(n - 1))))
+    G.add_edges_from((0, i) for i in range(k, G.number_of_nodes()))
     return G

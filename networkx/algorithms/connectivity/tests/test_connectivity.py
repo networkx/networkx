@@ -1,5 +1,5 @@
 import itertools
-from nose.tools import assert_equal, assert_true, assert_false, assert_raises
+from nose.tools import assert_equal, assert_true, assert_raises
 
 import networkx as nx
 from networkx.algorithms import flow
@@ -7,6 +7,7 @@ from networkx.algorithms.connectivity import local_edge_connectivity
 from networkx.algorithms.connectivity import local_node_connectivity
 
 flow_funcs = [
+    flow.boykov_kolmogorov,
     flow.dinitz,
     flow.edmonds_karp,
     flow.preflow_push,

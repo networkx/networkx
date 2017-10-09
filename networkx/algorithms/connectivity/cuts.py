@@ -7,7 +7,7 @@ import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # cut algorithms.
-from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
@@ -292,7 +292,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     edge_cut = minimum_st_edge_cut(H, '%sB' % mapping[s], '%sA' % mapping[t],
                                    **kwargs)
     # Each node in the original graph maps to two nodes of the auxiliary graph
-    node_cut = set(H.node[node]['id'] for edge in edge_cut for node in edge)
+    node_cut = set(H.nodes[node]['id'] for edge in edge_cut for node in edge)
     return node_cut - set([s, t])
 
 

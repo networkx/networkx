@@ -45,19 +45,39 @@ class TestUnweightedPath:
 
 
     def test_single_source_shortest_path(self):
-        p=nx.single_source_shortest_path(self.cycle,0)
-        assert_equal(p[3],[0,1,2,3])
-        p=nx.single_source_shortest_path(self.cycle,0, cutoff=0)
+        p = nx.single_source_shortest_path(self.directed_cycle, 3)
+        assert_equal(p[0], [3, 4, 5, 6, 0])
+        p = nx.single_source_shortest_path(self.cycle, 0)
+        assert_equal(p[3], [0, 1, 2, 3])
+        p = nx.single_source_shortest_path(self.cycle, 0, cutoff=0)
         assert_equal(p,{0 : [0]})
 
     def test_single_source_shortest_path_length(self):
-        assert_equal(dict(nx.single_source_shortest_path_length(self.cycle,0)),
-                     {0:0,1:1,2:2,3:3,4:3,5:2,6:1})
+        pl = nx.single_source_shortest_path_length
+        lengths = {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
+        assert_equal(dict(pl(self.cycle,0)), lengths)
+        lengths = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6}
+        assert_equal(dict(pl(self.directed_cycle,0)), lengths)
+
+    def test_single_target_shortest_path(self):
+        p = nx.single_target_shortest_path(self.directed_cycle, 0)
+        assert_equal(p[3], [3, 4, 5, 6, 0])
+        p = nx.single_target_shortest_path(self.cycle, 0)
+        assert_equal(p[3], [3, 2, 1, 0])
+        p = nx.single_target_shortest_path(self.cycle, 0, cutoff=0)
+        assert_equal(p,{0 : [0]})
+
+    def test_single_target_shortest_path_length(self):
+        pl = nx.single_target_shortest_path_length
+        lengths = {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
+        assert_equal(dict(pl(self.cycle, 0)), lengths)
+        lengths = {0: 0, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}
+        assert_equal(dict(pl(self.directed_cycle, 0)), lengths)
 
     def test_all_pairs_shortest_path(self):
-        p=nx.all_pairs_shortest_path(self.cycle)
+        p=dict(nx.all_pairs_shortest_path(self.cycle))
         assert_equal(p[0][3],[0,1,2,3])
-        p=nx.all_pairs_shortest_path(self.grid)
+        p=dict(nx.all_pairs_shortest_path(self.grid))
         validate_grid_path(4, 4, 1, 12, p[1][12])
 
     def test_all_pairs_shortest_path_length(self):
@@ -66,14 +86,18 @@ class TestUnweightedPath:
         l = dict(nx.all_pairs_shortest_path_length(self.grid))
         assert_equal(l[1][16],6)
 
-    def test_predecessor(self):
-        G=nx.path_graph(4)
+    def test_predecessor_path(self):
+        G = nx.path_graph(4)
         assert_equal(nx.predecessor(G,0),{0: [], 1: [0], 2: [1], 3: [2]})
         assert_equal(nx.predecessor(G,0,3),[2])
-        G=nx.grid_2d_graph(2,2)
-        assert_equal(sorted(nx.predecessor(G,(0,0)).items()),
-                     [((0, 0), []), ((0, 1), [(0, 0)]),
-                      ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
+
+    def test_predecessor_cycle(self):
+        G = nx.cycle_graph(4)
+        pred = nx.predecessor(G,0)
+        assert_equal(pred[0],[])
+        assert_equal(pred[1],[0])
+        assert_true(pred[2] in [[1,3],[3,1]])
+        assert_equal(pred[3],[0])
 
     def test_predecessor_cutoff(self):
         G=nx.path_graph(4)

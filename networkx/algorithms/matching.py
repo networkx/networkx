@@ -1,5 +1,5 @@
 # Copyright 2016 NetworkX developers.
-# Copyright (C) 2004-2016 by
+# Copyright (C) 2004-2017 by
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
@@ -39,7 +39,7 @@ def maximal_matching(G):
     Notes
     -----
     The algorithm greedily selects a maximal matching M of the graph G
-    (i.e. no superset of M exists). It runs in `O(|E|)` time.
+    (i.e. no superset of M exists). It runs in $O(|E|)$ time.
     """
     matching = set()
     nodes = set()
@@ -932,4 +932,3 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
         verifyOptimum()
 
     return mate
-

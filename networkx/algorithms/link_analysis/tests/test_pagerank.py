@@ -4,7 +4,6 @@ import random
 import networkx
 from nose.tools import *
 from nose import SkipTest
-from nose.plugins.attrib import attr
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -31,13 +30,13 @@ class TestPageRank(object):
                  (6, 4)]
         G.add_edges_from(edges)
         self.G = G
-        self.G.pagerank = dict(zip(G,
+        self.G.pagerank = dict(zip(sorted(G),
                                    [0.03721197, 0.05395735, 0.04150565,
                                     0.37508082, 0.20599833, 0.28624589]))
         self.dangling_node_index = 1
         self.dangling_edges = {1: 2, 2: 3,
                                3: 0, 4: 0, 5: 0, 6: 0}
-        self.G.dangling_pagerank = dict(zip(G,
+        self.G.dangling_pagerank = dict(zip(sorted(G),
                                             [0.10844518, 0.18618601, 0.0710892,
                                              0.2683668, 0.15919783, 0.20671497]))
 
@@ -66,18 +65,12 @@ class TestPageRank(object):
 
     def test_google_matrix(self):
         G = self.G
-        M = networkx.google_matrix(G, alpha=0.9)
+        M = networkx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
         e, ev = numpy.linalg.eig(M.T)
         p = numpy.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
         for (a, b) in zip(p, self.G.pagerank.values()):
             assert_almost_equal(a, b)
-
-        personalize = dict((n, random.random()) for n in G)
-        M = networkx.google_matrix(G, alpha=0.9, personalization=personalize)
-        personalize.pop(1)
-        assert_raises(networkx.NetworkXError, networkx.google_matrix, G,
-                      personalization=personalize)
-
+        
     def test_personalization(self):
         G = networkx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
@@ -85,9 +78,6 @@ class TestPageRank(object):
         p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
             assert_almost_equal(p[n], answer[n], places=4)
-        personalize.pop(0)
-        assert_raises(networkx.NetworkXError, networkx.pagerank, G,
-                      personalization=personalize)
 
     def test_zero_personalization_vector(self):
         G = networkx.complete_graph(4)
@@ -102,7 +92,15 @@ class TestPageRank(object):
         p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
             assert_almost_equal(p[n], answer[n], places=4)
-
+            
+    def test_incomplete_personalization(self):
+        G = networkx.complete_graph(4)
+        personalize = {3: 1}
+        answer = {0: 0.22077931820379187, 1: 0.22077931820379187, 2: 0.22077931820379187, 3: 0.3376620453886241}
+        p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
+        for n in G:
+            assert_almost_equal(p[n], answer[n], places=4)
+       
     def test_dangling_matrix(self):
         """
         Tests that the google_matrix doesn't change except for the dangling

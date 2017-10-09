@@ -6,7 +6,7 @@ from nose.tools import assert_false
 from nose.tools import assert_raises
 from nose.tools import assert_true
 
-import networkx
+import networkx as nx
 from networkx.classes import Graph
 from networkx.classes import MultiDiGraph
 from networkx.generators.directed import gn_graph
@@ -25,22 +25,22 @@ class TestGeneratorsDirected(object):
         scale_free_graph(100)
 
     def test_create_using_keyword_arguments(self):
-        assert_raises(networkx.exception.NetworkXError,
+        assert_raises(nx.NetworkXError,
                       gn_graph, 100, create_using=Graph())
-        assert_raises(networkx.exception.NetworkXError,
+        assert_raises(nx.NetworkXError,
                       gnr_graph, 100, 0.5, create_using=Graph())
-        assert_raises(networkx.exception.NetworkXError,
+        assert_raises(nx.NetworkXError,
                       gnc_graph, 100, create_using=Graph())
-        assert_raises(networkx.exception.NetworkXError,
+        assert_raises(nx.NetworkXError,
                       scale_free_graph, 100, create_using=Graph())
-        G=gn_graph(100,seed=1)
-        MG=gn_graph(100,create_using=MultiDiGraph(),seed=1)
+        G = gn_graph(100, seed=1)
+        MG = gn_graph(100, create_using=MultiDiGraph(), seed=1)
         assert_equal(sorted(G.edges()), sorted(MG.edges()))
-        G=gnr_graph(100,0.5,seed=1)
-        MG=gnr_graph(100,0.5,create_using=MultiDiGraph(),seed=1)
+        G = gnr_graph(100, 0.5, seed=1)
+        MG = gnr_graph(100, 0.5, create_using=MultiDiGraph(), seed=1)
         assert_equal(sorted(G.edges()), sorted(MG.edges()))
-        G=gnc_graph(100,seed=1)
-        MG=gnc_graph(100,create_using=MultiDiGraph(),seed=1)
+        G = gnc_graph(100, seed=1)
+        MG = gnc_graph(100, create_using=MultiDiGraph(), seed=1)
         assert_equal(sorted(G.edges()), sorted(MG.edges()))
 
 
@@ -64,7 +64,7 @@ class TestRandomKOutGraph(object):
         k = 3
         alpha = 1
         G = random_k_out_graph(n, k, alpha, self_loops=False)
-        assert_equal(G.number_of_selfloops(), 0)
+        assert_equal(nx.number_of_selfloops(G), 0)
 
 
 class TestUniformRandomKOutGraph(object):
@@ -86,7 +86,7 @@ class TestUniformRandomKOutGraph(object):
         n = 10
         k = 3
         G = random_uniform_k_out_graph(n, k, self_loops=False)
-        assert_equal(G.number_of_selfloops(), 0)
+        assert_equal(nx.number_of_selfloops(G), 0)
         assert_true(all(d == k for v, d in G.out_degree()))
 
     def test_with_replacement(self):

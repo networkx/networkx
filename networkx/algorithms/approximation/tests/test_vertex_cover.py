@@ -52,6 +52,6 @@ class TestMWVC(object):
         wg.add_edge(4, 1)
 
         cover = min_weighted_vertex_cover(wg, weight="weight")
-        csum = sum(wg.node[node]["weight"] for node in cover)
+        csum = sum(wg.nodes[node]["weight"] for node in cover)
         assert_equals(4, csum)
         ok_(is_cover(wg, cover))
