@@ -1,13 +1,14 @@
-# coding: utf-8
-
-"""A Python module for extracting rich-core of a network,
-    as defined by Ma A and Mondragón RJ (2015) in Rich-cores in networks. PLoS One 10(3):e0119678."""
-
-
+# -*- coding: utf-8 -*-
 #    Copyright (C) 2017 by
 #    Iacopo Iacopini <i.iacopini@qmul.ac.uk>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Iacopo Iacopini (i.iacopini@qmul.ac.uk)
+
+"""A Python module for extracting rich-core of a network,
+    as defined by Ma A and Mondragón RJ (2015) in Rich-cores in networks. PLoS One 10(3):e0119678."""
+
 
 import networkx as nx
 from networkx.utils import accumulate
