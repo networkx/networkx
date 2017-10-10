@@ -1,4 +1,5 @@
 import networkx as nx
+from nose.tools import *
 
 def test_richcore():
     G=nx.Graph()
