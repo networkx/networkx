@@ -3,6 +3,8 @@
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Richard Penney <rwpenney@users.sourceforge.net>
+#    Edouard Klein <rdklein.fr>
+#    Kevin Dezaphi
 #    All rights reserved.
 #    BSD license.
 #
@@ -35,7 +37,9 @@ __all__ = ['circular_layout',
            'shell_layout',
            'spring_layout',
            'spectral_layout',
-           'fruchterman_reingold_layout']
+           'fruchterman_reingold_layout',
+           'force_atlas_2_layout',
+           'force_sim_until_no_displacement']
 
 
 def _process_params(G, center, dim):
@@ -231,11 +235,13 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 def fruchterman_reingold_layout(G, k=None,
                                 pos=None,
                                 fixed=None,
-                                iterations=50,
+                                iterations=0,
                                 weight='weight',
                                 scale=1,
                                 center=None,
-                                dim=2):
+                                dim=2,
+                                displacement_min=1,
+                                distance=None):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
 
     Parameters
@@ -256,22 +262,40 @@ def fruchterman_reingold_layout(G, k=None,
     fixed : list or None  optional (default=None)
         Nodes to keep fixed at initial position.
 
-    iterations : int  optional (default=50)
-        Number of iterations of spring-force relaxation
+    iterations : int  optional (default=0)
+        Number of maximum iterations. The algorithm stops when the
+        maximum displacement is under displacement_min or when the
+        number of iterations is reached. If it is 0, then there is no
+        limit on the number of iterations. The algorithm is guaranteed
+        to converge if displacement_min>0.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
     scale : number (default: 1)
-        Scale factor for positions. Not used unless `fixed is None`.
+        Scale factor for positions. The nodes are positioned
+        in a box of size [0, scale] x [0, scale].
+        Not used unless `fixed is None`.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
         Not used unless `fixed is None`.
 
-    dim : int
-        Dimension of layout.
+    dim : int  optional (default=2)
+        Dimension of layout
+
+    displacement_min : float  optional (default=1)
+        The algorithm stops if an iteration would make the node that moves the
+        most move less than displacement_min.
+        The default of one pixel makes a lot of sense. Values < 1 will lead to
+        much slower convergence.
+
+    distance : function  optional (default=None)
+        Function that take an n x n x dim array of deltas between
+        coordinates and return the n x n array of the scalar distances
+        corresponding to those deltas.
+        Defaults to lambda x: np.linalg.norm(x, axis=-1) if None.
 
     Returns
     -------
@@ -285,53 +309,68 @@ def fruchterman_reingold_layout(G, k=None,
 
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
+
+    See also
+    --------
+    force_atlas_2_layout
+    force_sim_until_no_displacement
     """
     import numpy as np
 
     G, center = _process_params(G, center, dim)
-
-    if fixed is not None:
-        nfixed = dict(zip(G, range(len(G))))
-        fixed = np.asarray([nfixed[v] for v in fixed])
-
-    if pos is not None:
-        # Determine size of existing domain to adjust initial positions
-        dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
-        if dom_size == 0:
-            dom_size = 1
-        shape = (len(G), dim)
-        pos_arr = np.random.random(shape) * dom_size + center
-        for i, n in enumerate(G):
-            if n in pos:
-                pos_arr[i] = np.asarray(pos[n])
-    else:
-        pos_arr = None
 
     if len(G) == 0:
         return {}
     if len(G) == 1:
         return {nx.utils.arbitrary_element(G.nodes()): center}
 
-    try:
-        # Sparse matrix
-        if len(G) < 500:  # sparse solver for large graphs
-            raise ValueError
-        A = nx.to_scipy_sparse_matrix(G, weight=weight, dtype='f')
-        if k is None and fixed is not None:
+    W = np.asarray(nx.to_numpy_matrix(G, weight=weight))
+    A = np.where(W, 1, 0)
+    nnodes, _ = A.shape
+
+    if k is None:
+        if fixed is not None:
+            dom_size = max(coord for pos_tup in pos.values()
+                           for coord in pos_tup)
+            dom_size = .1 if dom_size < .1 else dom_size
             # We must adjust k by domain size for layouts not near 1x1
-            nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
-        pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
-                                           iterations, dim)
-    except:
-        A = nx.to_numpy_matrix(G, weight=weight)
-        if k is None and fixed is not None:
-            # We must adjust k by domain size for layouts not near 1x1
-            nnodes, _ = A.shape
-            k = dom_size / np.sqrt(nnodes)
-        pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations, dim)
-    if fixed is None:
-        pos = rescale_layout(pos, scale=scale) + center
+        else:
+            k = np.sqrt(1.0/nnodes)
+
+    def fruchterman_reingold(Dis, Delta_unit, Pos, _):
+        """Return the n x dim displacement vector for Fruchterman Reingold.
+
+        The forces are computed according to the paper
+
+        Thomas M. J. Fruchterman AND Edward M. Reingold (1991)
+        Graph Drawing by Force-directed Placement
+
+        Parameters
+        ----------
+        Dis : n x n array-like
+            Dis[i, j] is the scalar distance between i and j
+
+        Delta_unit : n x n x dim array-like
+            Delta_unit[i, j] is the unit vector pointing from i to j
+
+        Pos : n x dim array-like
+            Pos[i] is the position of node i
+
+        _ : Some algos (e.g. Force Atlas 2) need to know the distance
+            function, we dont.
+        """
+        f_rep = (k * k / Dis**2).reshape((nnodes, nnodes, 1)) * Delta_unit
+
+        f_att = (W * Dis / k).reshape((nnodes, nnodes, 1)) * Delta_unit
+
+        return np.sum(f_att - f_rep, axis=1)
+
+    pos = nx.force_sim_until_no_displacement(G, fruchterman_reingold, pos,
+                                             fixed,
+                                             iterations, scale, center, dim,
+                                             displacement_min, distance)
+
     pos = dict(zip(G, pos))
     return pos
 
@@ -339,143 +378,358 @@ def fruchterman_reingold_layout(G, k=None,
 spring_layout = fruchterman_reingold_layout
 
 
-def _fruchterman_reingold(A, k=None, pos=None, fixed=None,
-                          iterations=50, dim=2):
-    # Position nodes in adjacency matrix A using Fruchterman-Reingold
-    # Entry point for NetworkX graph is fruchterman_reingold_layout()
-    try:
-        import numpy as np
-    except ImportError:
-        msg = "_fruchterman_reingold() requires numpy: http://scipy.org/ "
-        raise ImportError(msg)
+def force_atlas_2_layout(G, k=None,
+                         pos=None,
+                         fixed=None,
+                         iterations=0,
+                         weight='weight',
+                         scale=1.0,
+                         center=None,
+                         dim=2,
+                         g=0,
+                         edge_weight_influence=1,
+                         log_attraction=False,
+                         dissuade_hubs=False,
+                         displacement_min=1,
+                         distance=None):
+    """Position nodes using the Force Atlas 2 force-directed algorithm.
 
-    try:
-        nnodes, _ = A.shape
-    except AttributeError:
-        msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg)
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
 
-    # make sure we have an array instead of a matrix
-    A = np.asarray(A)
+    k : float  optional (default=None)
+        Scalar to adjust repulsion force. If None it is set to 10 under
+        100 nodes else 2. The higher it is, the stronger the repulsion is.
 
-    if pos is None:
-        # random initial positions
-        pos = np.asarray(np.random.random((nnodes, dim)), dtype=A.dtype)
-    else:
-        # make sure positions are of same type as matrix
-        pos = pos.astype(A.dtype)
+    pos : dict or None  optional (default=None)
+        Initial positions for nodes as a dictionary with node as keys
+        and values as a coordinate list or tuple.  If None, then use
+        random initial positions.
 
-    # optimal distance between nodes
-    if k is None:
-        k = np.sqrt(1.0/nnodes)
-    # the initial "temperature"  is about .1 of domain area (=1x1)
-    # this is the largest step allowed in the dynamics.
-    # We need to calculate this in case our fixed positions force our domain
-    # to be much bigger than 1x1
-    t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1]))*0.1
-    # simple cooling scheme.
-    # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t/float(iterations+1)
-    delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
-    # the inscrutable (but fast) version
-    # this is still O(V^2)
-    # could use multilevel methods to speed this up significantly
-    for iteration in range(iterations):
-        # matrix of difference between points
-        delta = pos[:, np.newaxis, :] - pos[np.newaxis, :, :]
-        # distance between points
-        distance = np.linalg.norm(delta, axis=-1)
-        # enforce minimum distance of 0.01
-        np.clip(distance, 0.01, None, out=distance)
-        # displacement "force"
-        displacement = np.einsum('ijk,ij->ik',
-                                 delta,
-                                 (k * k / distance**2 - A * distance / k))
-        # update positions
-        length = np.linalg.norm(displacement, axis=-1)
-        length = np.where(length < 0.01, 0.1, length)
-        delta_pos = np.einsum('ij,i->ij', displacement, t / length)
-        if fixed is not None:
-            # don't change positions of fixed nodes
-            delta_pos[fixed] = 0.0
-        pos += delta_pos
-        # cool temperature
-        t -= dt
+    fixed : list or None  optional (default=None)
+        Nodes to keep fixed at initial position.
+
+    iterations : int  optional (default=0)
+        Number of maximum iterations. The algorithm stops when the
+        maximum displacement is under displacement_min or when the
+        number of iterations is reached. If it is 0, then there is no
+        limit on the number of iterations. The algorithm is guaranteed
+        to converge if displacement_min>0.
+
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If None, then all edge weights are 1.
+
+    scale : float  optional (default=1.0)
+        Scale factor for positions. The nodes are positioned
+        in a box of size [0, scale] x [0, scale], unless some nodes are fixed.
+
+    center : array-like or None  optional
+        Coordinate pair around which to center the layout.
+
+    dim : int  optional (default=2)
+        Dimension of layout
+
+    g : float  optional (default=0)
+        Scalar to adjust "gravity" force. The higher it is, the more nodes
+        are attracted to the center. "Gravity" is a linear function of
+        distance power by g.
+
+    edge_weight_influence : float  optional (default=1)
+        If the edges are weighted (edges must have a 'weight' attribute),
+        attraction is a linear function of distance multiplied by the weight
+        to the power of edge_weight_influence (unless log_attraction is True).
+
+    log_attraction : boolean  optional (default=False)
+        Use logarithm attraction force instead of proportionnal.
+
+    dissuade_hubs : boolean  optional (default=False)
+        Divide the attraction by the number of outgoing links plus one.
+
+    displacement_min : float  optional (default=1)
+        The algorithm stops if an iteration would make the node that moves the
+        most move less than displacement_min.
+        The default of one pixel makes a lot of sense. Values < 1 will lead to
+        much slower convergence.
+
+    distance : function  optional (default=None)
+        Function that take an _ x dim array of deltas between
+        coordinates and return the _ array of the scalar distances
+        corresponding to those deltas.
+        Defaults to lambda x: np.linalg.norm(x, axis=-1) if None.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.force_atlas_2_layout(G)
+
+    See also
+    --------
+    fruchterman_reingold_layout
+    force_sim_until_no_displacement  # FIXME: Changer les noms des fonctions
+    """
+    import numpy as np
+
+    G, center = _process_params(G, center, dim)
+
+    W = np.asarray(nx.to_numpy_matrix(G, weight=weight))**edge_weight_influence
+    A = np.where(W, 1, 0)
+    nnodes, _ = A.shape
+
+    if nnodes == 0:
+        return {}
+
+    if not k:
+        # Default values inspired from Force Atlas 2 Java implementation
+        k = 2 if nnodes > 100 else 10
+
+    if len(G) > 5000:
+        raise NotImplementedError("Sparse matrix Force Atlas 2 is not "
+                                  "implemented yet")
+
+    ones = np.ones((nnodes, 1))
+
+    # ∀ x, Hub[i, x] is 1 + the number of outgoing edges from node i
+    Hub = np.matmul((1 + np.sum(A, axis=1)).reshape((nnodes, 1)), ones.T)
+    # Hub times 1 + the number of incoming edges is used as the degree in
+    # Force Atlas 2. It has the nice property of never being 0.
+    Deg = Hub * np.matmul(ones, (1 + np.sum(A, axis=0)).reshape((1, nnodes)))
+
+    def force_atlas_2(Dis, Delta_unit, Pos, distance=None):
+        """Return the n x dim displacement vector for Force Atlas 2.
+
+        The forces are computed according to the paper
+
+        Jacomy, M., Venturini, T., Heymann, S., & Bastian, M. (2014).
+        ForceAtlas2, a continuous graph layout algorithm for handy network
+        visualization designed for the Gephi software.
+
+        Parameters
+        ----------
+        Dis : n x n array-like
+            Dis[i, j] is the scalar distance between i and j
+
+        Delta_unit : n x n x dim array-like
+            Delta_unit[i, j] is the unit vector pointing from i to j
+
+        Pos : n x dim array-like
+            Pos[i] is the position of node i
+
+        distance : function  optional (default=None)
+            Function that take an _ x dim array of deltas between
+            coordinates and return the _ array of the scalar distances
+            corresponding to those deltas.
+            Defaults to lambda x: np.linalg.norm(x, axis=-1) if None.
+        """
+        if distance is None:
+            Dis_center = np.linalg.norm(Pos, axis=-1)
+        else:
+            Dis_center = distance(Pos)
+        Dis_center = np.where(Dis_center < 0.01, 0.01, Dis_center)
+        f_gra = Hub[0] * Dis_center**g
+        f_gra = f_gra.reshape(nnodes, 1) * Pos / Dis_center.reshape(nnodes, 1)
+
+        f_rep = k * Deg / Dis
+        f_rep = f_rep.reshape(nnodes, nnodes, 1) * Delta_unit
+
+        if log_attraction:
+            f_att = np.log(Dis) * W
+        else:
+            f_att = Dis * W
+        if dissuade_hubs:
+            f_att /= Hub
+        f_att = f_att.reshape((nnodes, nnodes, 1)) * Delta_unit
+
+        return np.sum(f_att - f_rep, axis=1) - f_gra
+
+    Pos = nx.force_sim_until_no_displacement(G, force_atlas_2, pos, fixed,
+                                             iterations, scale,
+                                             center, dim, displacement_min)
+    pos = dict(zip(G, Pos))
     return pos
 
 
-def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
-                                 iterations=50, dim=2):
-    # Position nodes in adjacency matrix A using Fruchterman-Reingold
-    # Entry point for NetworkX graph is fruchterman_reingold_layout()
-    # Sparse version
+def force_sim_until_no_displacement(G, get_displacement,
+                                    pos=None,
+                                    fixed=None,
+                                    iterations=0,
+                                    scale=1.0,
+                                    center=None,
+                                    dim=2,
+                                    displacement_min=1,
+                                    distance=None):
+    """Run a force-directed algorithm on G, using the given set of forces.
+
+    G : NetworkX graph or list of nodes
+
+    get_displacement : function of Dis, Delta_unit, Pos, distance, where:
+        - Dis is a n x n array-like, Dis[i, j] is the scalar distance
+          between node i and node j,
+        - Delta_unit: n x n x dim array-like, Delta_unit[i, j] is the unit vector
+          pointing from i to j,
+        - Pos: n x dim array-like, Pos[i] is the position of i,
+        - distance: function  that take an _ x dim array of deltas between
+            coordinates and return the _ array of the scalar distances
+            corresponding to those deltas.
+
+        get_displacement computes the displacement for one iteration from
+        its arguments by computing and summing the forces. See for example
+        :py:func:`networkx.layout.force_atlas_2_layout.force_atlas2` or
+        :py:func:`networkx.layout.fruchterman_reingold_layout.fruchterman_reingold`.
+
+    pos : dict or None  optional (default=None)
+        Initial positions for nodes as a dictionary with node as keys
+        and values as a coordinate list or tuple.  If None, then use
+        random initial positions.
+
+    fixed : list or None  optional (default=None)
+        Nodes to keep fixed at initial position.
+
+    iterations : int  optional (default=0)
+        Number of maximum iterations. The algorithm stops when the
+        maximum displacement is under displacement_min or when the
+        number of iterations is reached. If it is 0, then there is no
+        limit on the number of iterations. The algorithm is guaranteed
+        to converge if displacement_min>0.
+
+    scale : float  optional (default=1.0)
+        Scale factor for positions. The nodes are positioned
+        in a box of size [0, scale] x [0, scale].
+
+    center : array-like or None  optional
+        Coordinate pair around which to center the layout.
+
+    dim : int  optional (default=2)
+        Dimension of layout
+
+    displacement_min : float  optional (default=1)
+        The algorithm stops if an iteration would make the node that moves the
+        most move less than displacement_min.
+        The default of one pixel makes a lot of sense. Values < 1 will lead to
+        much slower convergence.
+
+    distance : function  optional (default=None)
+        Function that take an n x n x dim array of deltas between
+        coordinates and return the n x n array of the scalar distances
+        corresponding to those deltas.
+        Defaults to lambda x: np.linalg.norm(x, axis=-1) if None.
+
+    Returns
+    -------
+    pos : n x dim array-like
+        An array of positions of nodes.
+
+    See also
+    --------
+    force_atlas_2_layout
+    fruchterman_reingold_layout
+    """
     try:
         import numpy as np
     except ImportError:
-        m = "_sparse_fruchterman_reingold() requires numpy: http://scipy.org/"
-        raise ImportError(m)
-    try:
-        nnodes, _ = A.shape
-    except AttributeError:
-        msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg)
-    try:
-        from scipy.sparse import spdiags, coo_matrix
-    except ImportError:
-        msg = "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
+        msg = """force_sim_until_no_displacement() requires numpy"""
         raise ImportError(msg)
-    # make sure we have a LIst of Lists representation
-    try:
-        A = A.tolil()
-    except:
-        A = (coo_matrix(A)).tolil()
 
-    if pos is None:
-        # random initial positions
-        pos = np.asarray(np.random.random((nnodes, dim)), dtype=A.dtype)
+    G, center = _process_params(G, center, dim)
+
+    if iterations == 0:
+        iterations = np.inf
+
+    nnodes = len(G)
+
+    shape = (nnodes, dim)
+    if pos:
+        # Determine size of existing domain to adjust initial positions
+        dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
+        Pos = np.random.random(shape) * dom_size + center
+        for i, n in enumerate(G):
+            if n in pos:
+                Pos[i] = np.asarray(pos[n])
     else:
-        # make sure positions are of same type as matrix
-        pos = pos.astype(A.dtype)
+        Pos = np.random.random(shape) + center
 
-    # no fixed nodes
+    if nnodes == 0:
+        return None
+    if nnodes == 1:
+        return [center]
+
+    if distance is None:
+        def distance(x):
+            '''Take an n x n x dim array of deltas between
+            coordinates and return the n x n array of the scalar distances
+            corresponding to those deltas.'''
+            return np.linalg.norm(x, axis=-1)
+
+    def deltas(Pos):
+        '''Return the n x n array Delta of dim-dimensional vectors between nodes.
+
+        Delta[i, j, k] is the delta along dimension k between nodes i and j,
+        therefore:
+        - Delta[i, j k] == - Delta[j, i, k],
+        - Pos[i] + Delta[i, j] == Pos[j]
+        - and distance bewteen i and j is distance(Delta[i, j,:])
+
+        Parameters
+        -----------
+        Pos: n x dim array-like
+            The nodes' positions
+
+        Returns
+        --------
+        The n x n x dim delta array.
+        '''
+        p1_pn_in_lines = np.tensordot(ones, Pos.reshape(1, nnodes, dim), 1)
+        assert p1_pn_in_lines.shape == (nnodes, nnodes, dim),\
+            """p1_pn_in_lines is supposed to be the matrix whose lines are
+            Pos, transposed a way that leaves its dim-dimensional elements
+            (the nodes positions) untouched"""
+        # By substracting its transpose to it, we compute the deltas
+        return p1_pn_in_lines - p1_pn_in_lines.transpose(1, 0, 2)
+
+    ones = np.ones((nnodes, 1))
+
+    M = np.array([[1] if not fixed or node not in fixed else [0]
+                  for node in G])
+
+    Pos_changed = True  # We only recompute deltaa nd Q if the positions changed
+    Q = np.inf
+    alpha = 1
+    i = 0
+    while i < iterations:
+        i += 1
+        if Pos_changed:
+            Delta = deltas(Pos)
+            Dis = distance(Delta)
+            Dis = np.where(Dis < 0.01, 0.01, Dis)
+            Delta_unit = Delta / Dis.reshape((nnodes, nnodes, 1))
+            delta = get_displacement(Dis, Delta_unit, Pos, distance) * M
+            Pos_changed = False
+        Pos_2 = Pos + delta * alpha
+        Delta_2 = deltas(Pos_2)
+        Dis_2 = distance(Delta_2)
+        Dis_2 = np.where(Dis_2 < 0.01, 0.01, Dis_2)
+        Delta_unit_2 = Delta_2 / Dis_2.reshape((nnodes, nnodes, 1))
+        delta_2 = get_displacement(Dis_2, Delta_unit_2, Pos_2, distance) * M
+        Q_2 = np.linalg.norm(delta_2)
+        if Q != np.inf:
+            alpha = alpha * Q / Q_2
+        if Q_2 < Q:
+            Q = Q_2
+            Pos = Pos_2
+            Pos_changed = True
+        else:
+            alpha /= 2
+        if max(map(np.max, map(np.abs, delta * alpha))) <= displacement_min:
+            break
     if fixed is None:
-        fixed = []
-
-    # optimal distance between nodes
-    if k is None:
-        k = np.sqrt(1.0/nnodes)
-    # the initial "temperature"  is about .1 of domain area (=1x1)
-    # this is the largest step allowed in the dynamics.
-    t = 0.1
-    # simple cooling scheme.
-    # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations+1)
-
-    displacement = np.zeros((dim, nnodes))
-    for iteration in range(iterations):
-        displacement *= 0
-        # loop over rows
-        for i in range(A.shape[0]):
-            if i in fixed:
-                continue
-            # difference between this row's node position and all others
-            delta = (pos[i] - pos).T
-            # distance between points
-            distance = np.sqrt((delta**2).sum(axis=0))
-            # enforce minimum distance of 0.01
-            distance = np.where(distance < 0.01, 0.01, distance)
-            # the adjacency matrix row
-            Ai = np.asarray(A.getrowview(i).toarray())
-            # displacement "force"
-            displacement[:, i] +=\
-                (delta * (k * k / distance**2 - Ai * distance / k)).sum(axis=1)
-        # update positions
-        length = np.sqrt((displacement**2).sum(axis=0))
-        length = np.where(length < 0.01, 0.1, length)
-        pos += (displacement * t / length).T
-        # cool temperature
-        t -= dt
-    return pos
+        Pos = nx.rescale_layout(Pos, scale=scale) + center
+    return Pos
 
 
 def kamada_kawai_layout(G, dist=None,
@@ -609,20 +863,19 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
     Parameters
     ----------
     G : NetworkX graph or list of nodes
-        A position will be assigned to every node in G.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : float
+        Scale factor for positions
 
     center : array-like or None
         Coordinate pair around which to center the layout.
 
     dim : int
-        Dimension of layout.
+        Dimension of layout
 
     Returns
     -------
