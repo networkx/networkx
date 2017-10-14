@@ -333,7 +333,6 @@ def shortest_simple_paths(G, source, target, weight=None):
                 for path in listA:
                     if path[:i] == root:
                         ignore_edges.add((path[i - 1], path[i]))
-                ignore_nodes.update(root[:-1])
                 try:
                     length, spur = shortest_path_func(G, root[-1], target,
                                                       ignore_nodes=ignore_nodes,
@@ -343,6 +342,7 @@ def shortest_simple_paths(G, source, target, weight=None):
                     listB.push(root_length + length, path)
                 except nx.NetworkXNoPath:
                     pass
+                ignore_nodes.add(root[-1])
 
         if listB:
             path = listB.pop()
