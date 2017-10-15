@@ -337,6 +337,38 @@ def test_bidirectional_shortest_path_restricted_directed_cycle():
     )
 
 
+def test_bidirectional_shortest_path_ignore():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2])
+    nx.add_path(G, [1, 3])
+    nx.add_path(G, [1, 4])
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_shortest_path,
+        G,
+        1, 2,
+        ignore_nodes=[1],
+    )
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_shortest_path,
+        G,
+        1, 2,
+        ignore_nodes=[2],
+    )
+    G = nx.Graph()
+    nx.add_path(G, [1, 3])
+    nx.add_path(G, [1, 4])
+    nx.add_path(G, [3, 2])
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_shortest_path,
+        G,
+        1, 2,
+        ignore_nodes=[1, 2],
+    )
+
+
 def validate_path(G, s, t, soln_len, path):
     assert_equal(path[0], s)
     assert_equal(path[-1], t)
@@ -396,3 +428,30 @@ def test_bidirectional_dijkstra_no_path():
     nx.add_path(G, [1, 2, 3])
     nx.add_path(G, [4, 5, 6])
     path = _bidirectional_dijkstra(G, 1, 6)
+
+
+def test_bidirectional_dijkstra_ignore():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 10])
+    nx.add_path(G, [1, 3, 10])
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        G,
+        1, 2,
+        ignore_nodes=[1],
+    )
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        G,
+        1, 2,
+        ignore_nodes=[2],
+    )
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        G,
+        1, 2,
+        ignore_nodes=[1, 2],
+    )

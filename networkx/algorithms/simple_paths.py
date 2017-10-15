@@ -447,6 +447,8 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
        succ is a dictionary of successors from w to the target.
     """
     # does BFS from both source and target and meets in the middle
+    if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
+        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
     if target == source:
         return ({target: None}, {source: None}, source)
 
@@ -605,6 +607,8 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     shortest_path
     shortest_path_length
     """
+    if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
+        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
     if source == target:
         return (0, [source])
 
