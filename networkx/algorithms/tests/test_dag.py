@@ -18,6 +18,10 @@ class TestDagLongestPath(object):
 
     """
 
+    def test_empty(self):
+        G = nx.DiGraph()
+        assert_equal(nx.dag_longest_path(G), [])
+
     def test_unweighted1(self):
         edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (3, 7)]
         G = nx.DiGraph(edges)
