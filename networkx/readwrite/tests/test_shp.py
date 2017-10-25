@@ -213,6 +213,10 @@ class TestShp(object):
 
 @raises(RuntimeError)
 def test_read_shp_nofile():
+    try:
+        from osgeo import ogr
+    except ImportError:
+        raise SkipTest('ogr not available.')
     G = nx.read_shp("hopefully_this_file_will_not_be_available")
 
 
