@@ -280,13 +280,13 @@ def write_shp(G, outdir):
 
     # New edge attribute write support merged into edge loop
     fields = {}      # storage for field names and their data types
-    attributes = {}  # storage for attribute data (indexed by field names)
 
     # Conversion dict between python and ogr types
     OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
 
     # Edge loop
     for e in G.edges(data=True):
+        attributes = {}  # storage for attribute data (indexed by field names)
         data = G.get_edge_data(*e)
         g = netgeometry(e, data)
         # Loop through attribute data in edges

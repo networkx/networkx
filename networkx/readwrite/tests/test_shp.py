@@ -253,3 +253,45 @@ class TestMissingGeometry(object):
     @raises(nx.NetworkXError)
     def test_missing_geometry(self):
         G = nx.read_shp(self.path)
+
+
+class TestMissingAttrWrite(object):
+    @classmethod
+    def setup_class(cls):
+        global ogr
+        try:
+            from osgeo import ogr
+        except ImportError:
+            raise SkipTest('ogr not available.')
+
+    def setUp(self):
+        self.setup_path()
+        self.delete_shapedir()
+
+    def tearDown(self):
+        self.delete_shapedir()
+
+    def setup_path(self):
+        self.path = os.path.join(tempfile.gettempdir(), 'missing_attributes')
+
+    def delete_shapedir(self):
+        drv = ogr.GetDriverByName("ESRI Shapefile")
+        if os.path.exists(self.path):
+            drv.DeleteDataSource(self.path)
+
+    def test_missing_attributes(self):
+        G = nx.DiGraph()
+        A = (0, 0)
+        B = (1, 1)
+        C = (2, 2)
+        G.add_edge(A, B, foo=100)
+        G.add_edge(A, C)
+
+        nx.write_shp(G, self.path)
+        H = nx.read_shp(self.path)
+
+        for u, v, d in H.edges(data=True):
+                if u == A and v == B:
+                        assert_equal(d['foo'], 100)
+                if u == A and v == C:
+                        assert_equal(d['foo'], None)
