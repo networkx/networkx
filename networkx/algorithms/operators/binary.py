@@ -26,9 +26,6 @@ def union(G, H, rename=(None, None), name=None):
     G,H : graph
        A NetworkX graph
 
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise
-
     rename : bool , default=(None, None)
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
