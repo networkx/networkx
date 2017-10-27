@@ -4,13 +4,15 @@ import os
 from nose.tools import *
 
 import networkx as nx
-from networkx.utils.decorators import open_file,require,not_implemented_for
+from networkx.utils.decorators import open_file, not_implemented_for
+
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
     def test1(G):
         pass
     test1(nx.Graph())
+
 
 @raises(KeyError)
 def test_not_implemented_decorator_key():
@@ -19,6 +21,7 @@ def test_not_implemented_decorator_key():
         pass
     test1(nx.Graph())
 
+
 @raises(nx.NetworkXNotImplemented)
 def test_not_implemented_decorator_raise():
     @not_implemented_for('graph')
@@ -26,19 +29,6 @@ def test_not_implemented_decorator_raise():
         pass
     test1(nx.Graph())
 
-
-def test_require_decorator1():
-    @require('os','sys')
-    def test1():
-        import os
-        import sys
-    test1()
-
-def test_require_decorator2():
-    @require('blahhh')
-    def test2():
-        import blahhh
-    assert_raises(nx.NetworkXError, test2)
 
 class TestOpenFileDecorator(object):
     def setUp(self):
@@ -66,48 +56,27 @@ class TestOpenFileDecorator(object):
     @open_file(2, 'wb')
     def writer_arg2default(self, x, path=None):
         if path is None:
-            fh = tempfile.NamedTemporaryFile('wb+', delete=False)
-            close_fh = True
+            with tempfile.NamedTemporaryFile('wb+') as fh:
+                self.write(fh)
         else:
-            fh = path
-            close_fh = False
-
-        try:
-            self.write(fh)
-        finally:
-            if close_fh:
-                fh.close()
+            self.write(path)
 
     @open_file(4, 'wb')
     def writer_arg4default(self, x, y, other='hello', path=None, **kwargs):
         if path is None:
-            fh = tempfile.NamedTemporaryFile('wb+', delete=False)
-            close_fh = True
+            with tempfile.NamedTemporaryFile('wb+') as fh:
+                self.write(fh)
         else:
-            fh = path
-            close_fh = False
-
-        try:
-            self.write(fh)
-        finally:
-            if close_fh:
-                fh.close()
+            self.write(path)
 
     @open_file('path', 'wb')
     def writer_kwarg(self, **kwargs):
         path = kwargs.get('path', None)
         if path is None:
-            fh = tempfile.NamedTemporaryFile('wb+', delete=False)
-            close_fh = True
+            with tempfile.NamedTemporaryFile('wb+') as fh:
+                self.write(fh)
         else:
-            fh = path
-            close_fh = False
-
-        try:
-            self.write(fh)
-        finally:
-            if close_fh:
-                fh.close()
+            self.write(path)
 
     def test_writer_arg0_str(self):
         self.writer_arg0(self.name)
@@ -117,24 +86,24 @@ class TestOpenFileDecorator(object):
 
     def test_writer_arg1_str(self):
         self.writer_arg1(self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg1_fobj(self):
         self.writer_arg1(self.fobj)
         assert_false(self.fobj.closed)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_str(self):
         self.writer_arg2default(0, path=None)
         self.writer_arg2default(0, path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_fobj(self):
         self.writer_arg2default(0, path=self.fobj)
         assert_false(self.fobj.closed)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_fobj(self):
         self.writer_arg2default(0, path=None)
@@ -142,20 +111,20 @@ class TestOpenFileDecorator(object):
     def test_writer_arg4default_fobj(self):
         self.writer_arg4default(0, 1, dog='dog', other='other2')
         self.writer_arg4default(0, 1, dog='dog', other='other2', path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_str(self):
         self.writer_kwarg(path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_fobj(self):
         self.writer_kwarg(path=self.fobj)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_fobj(self):
         self.writer_kwarg(path=None)
 
     def tearDown(self):
-        os.remove(self.name)
-
+        self.fobj.close()
+        os.unlink(self.name)

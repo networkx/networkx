@@ -94,7 +94,7 @@ If G'=(N',E') is a node-induced subgraph, then:
     N' is a subset of N
     E' is the subset of edges in E relating nodes in N'
 
-If G'=(N',E') is an edge-induced subgrpah, then:
+If G'=(N',E') is an edge-induced subgraph, then:
     N' is the subset of nodes in N related by edges in E'
     E' is a subset of E
 
@@ -118,13 +118,25 @@ syntactic_feasibliity(), semantic_feasibility()
 
 Notes
 -----
-Modified to handle undirected graphs.
-Modified to handle multiple edges.
 
+The implementation handles both directed and undirected graphs as well
+as multigraphs. However, it does require that nodes in the graph are
+orderable (in addition to the general NetworkX requirement that nodes
+are hashable). If the nodes in your graph are not orderable, you can
+convert them to an orderable type (`int`, for example) by using the
+:func:`networkx.relabel` function. You can store the dictionary of
+old-to-new node labels to retrieve the original node labels after
+running the isomorphism algorithm::
 
-In general, this problem is NP-Complete.
+    >>> G = nx.Graph()
+    >>> node1, node2 = object(), object()
+    >>> G.add_nodes_from([node1, node2])
+    >>> mapping = {k: v for v, k in enumerate(G)}
+    >>> G = nx.relabel_nodes(G, mapping)
 
-
+In general, the subgraph isomorphism problem is NP-complete whereas the
+graph isomorphism problem is most likely not NP-complete (although no
+polynomial-time algorithm is known to exist).
 
 """
 
@@ -269,8 +281,8 @@ class GraphMatcher(object):
         if self.G1.order() != self.G2.order(): return False
 
         # Check local properties
-        d1=sorted(self.G1.degree().values())
-        d2=sorted(self.G2.degree().values())
+        d1 = sorted(d for n,d in self.G1.degree())
+        d2 = sorted(d for n,d in self.G2.degree())
         if d1 != d2: return False
 
         try:

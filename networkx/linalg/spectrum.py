@@ -1,18 +1,19 @@
 """
 Eigenvalue spectrum of graphs.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
+                        'Dan Schult(dschult@colgate.edu)',
+                        'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
-__all__ = ['laplacian_spectrum', 'adjacency_spectrum']
+__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum']
 
 
 def laplacian_spectrum(G, weight='weight'):
@@ -21,7 +22,7 @@ def laplacian_spectrum(G, weight='weight'):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
@@ -41,12 +42,9 @@ def laplacian_spectrum(G, weight='weight'):
     --------
     laplacian_matrix
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "laplacian_spectrum() requires NumPy: http://scipy.org/ ")
-    return np.linalg.eigvals(nx.laplacian_matrix(G,weight=weight))
+    from scipy.linalg import eigvalsh
+    return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
+
 
 def adjacency_spectrum(G, weight='weight'):
     """Return eigenvalues of the adjacency matrix of G.
@@ -54,7 +52,7 @@ def adjacency_spectrum(G, weight='weight'):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
@@ -74,17 +72,44 @@ def adjacency_spectrum(G, weight='weight'):
     --------
     adjacency_matrix
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "adjacency_spectrum() requires NumPy: http://scipy.org/ ")
-    return np.linalg.eigvals(nx.adjacency_matrix(G,weight=weight))
+    from scipy.linalg import eigvals
+    return eigvals(nx.adjacency_matrix(G, weight=weight).todense())
+
+
+def modularity_spectrum(G):
+    """Return eigenvalues of the modularity matrix of G.
+
+    Parameters
+    ----------
+    G : Graph
+       A NetworkX Graph or DiGraph
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    See Also
+    --------
+    modularity_matrix
+
+    References
+    ----------
+    .. [1] M. E. J. Newman, "Modularity and community structure in networks",
+       Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
+    """
+    from scipy.linalg import eigvals
+    if G.is_directed():
+        return eigvals(nx.directed_modularity_matrix(G))
+    else:
+        return eigvals(nx.modularity_matrix(G))
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:
-        import numpy
+        import scipy.linalg
     except:
-        raise SkipTest("NumPy not available")
+        raise SkipTest("scipy.linalg not available")

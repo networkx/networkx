@@ -1,52 +1,52 @@
-"""
-Current-flow closeness centrality measures.
-
-"""
-#    Copyright (C) 2010 by 
+#    Copyright (C) 2010-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
-
-__all__ = ['current_flow_closeness_centrality','information_centrality']
-
+#
+# Author: Aric Hagberg (hagberg@lanl.gov)
+"""Current-flow closeness centrality measures."""
 import networkx as nx
-from networkx.algorithms.centrality.flow_matrix import *
-    
 
-def current_flow_closeness_centrality(G, normalized=True, weight='weight', 
+from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
+from networkx.algorithms.centrality.flow_matrix import *
+
+__all__ = ['current_flow_closeness_centrality', 'information_centrality']
+
+
+@not_implemented_for('directed')
+def current_flow_closeness_centrality(G, weight=None,
                                       dtype=float, solver='lu'):
     """Compute current-flow closeness centrality for nodes.
 
-    A variant of closeness centrality based on effective
-    resistance between nodes in a network.  This metric
-    is also known as information centrality.
+    Current-flow closeness centrality is variant of closeness
+    centrality based on effective resistance between nodes in
+    a network. This metric is also known as information centrality.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph.
 
-    normalized : bool, optional
-      If True the values are normalized by 1/(n-1) where n is the 
-      number of nodes in G.
+    weight : None or string, optional (default=None)
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
 
-    dtype: data type (float)
+    dtype: data type (default=float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
     solver: string (default='lu')
        Type of linear solver to use for computing the flow matrix.
-       Options are "full" (uses most memory), "lu" (recommended), and 
+       Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
 
     Returns
     -------
     nodes : dictionary
        Dictionary of nodes with current flow closeness centrality as the value.
-        
+
     See Also
     --------
     closeness_centrality
@@ -60,63 +60,45 @@ def current_flow_closeness_centrality(G, normalized=True, weight='weight',
     References
     ----------
     .. [1] Ulrik Brandes and Daniel Fleischer,
-       Centrality Measures Based on Current Flow. 
-       Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05). 
-       LNCS 3404, pp. 533-544. Springer-Verlag, 2005. 
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       Centrality Measures Based on Current Flow.
+       Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
+       LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
-    .. [2] Stephenson, K. and Zelen, M.
+    .. [2] Karen Stephenson and Marvin Zelen:
        Rethinking centrality: Methods and examples.
-       Social Networks. Volume 11, Issue 1, March 1989, pp. 1-37
+       Social Networks 11(1):1-37, 1989.
        http://dx.doi.org/10.1016/0378-8733(89)90016-6
     """
-    from networkx.utils import reverse_cuthill_mckee_ordering 
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_closeness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        import scipy 
-    except ImportError:
-        raise ImportError('current_flow_closeness_centrality requires SciPy ',
-                          'http://scipy.org/')
-    if G.is_directed():
-        raise nx.NetworkXError('current_flow_closeness_centrality ',
-                               'not defined for digraphs.')
-    if G.is_directed():
-        raise nx.NetworkXError(\
-            "current_flow_closeness_centrality() not defined for digraphs.")
+    import numpy as np
+    import scipy
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    solvername={"full" :FullInverseLaplacian,
-                "lu": SuperLUInverseLaplacian,
-                "cg": CGInverseLaplacian}
+    solvername = {"full": FullInverseLaplacian,
+                  "lu": SuperLUInverseLaplacian,
+                  "cg": CGInverseLaplacian}
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G,dict(zip(ordering,range(n))))
-    betweenness = dict.fromkeys(H,0.0) # b[v]=0 for v in H
-    n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(H, nodelist=range(n), weight=weight, 
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
+    betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
+    n = H.number_of_nodes()
+    L = laplacian_sparse_matrix(H, nodelist=range(n), weight=weight,
                                 dtype=dtype, format='csc')
-    C2 = solvername[solver](L, width=1, dtype=dtype) # initialize solver
+    C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
     for v in H:
-        col=C2.get_row(v)
+        col = C2.get_row(v)
         for w in H:
-            betweenness[v]+=col[v]-2*col[w]
-            betweenness[w]+=col[v]
-
-    if normalized:
-        nb=len(betweenness)-1.0
-    else:
-        nb=1.0
+            betweenness[v] += col[v] - 2 * col[w]
+            betweenness[w] += col[v]
     for v in H:
-        betweenness[v]=nb/(betweenness[v])
-    return dict((ordering[k],float(v)) for k,v in betweenness.items())
+        betweenness[v] = 1.0 / (betweenness[v])
+    return dict((ordering[k], float(v)) for k, v in betweenness.items())
 
-information_centrality=current_flow_closeness_centrality
+
+information_centrality = current_flow_closeness_centrality
+
 
 # fixture for nose tests
 def setup_module(module):

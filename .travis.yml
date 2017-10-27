@@ -1,0 +1,121 @@
+# After changing this file, check it on:
+#   http://lint.travis-ci.org/
+#
+sudo: false
+
+language: python
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+matrix:
+  include:
+    - os: linux
+      python: 2.7
+      env:
+      - OPTIONAL_DEPS=1
+      - BUILD_DOCS=1
+      - DEPLOY_DOCS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+          - texlive
+          - texlive-latex-extra
+          - latexmk
+    - os: linux
+      python: 2.7
+      env:
+      - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      - REPORT_COVERAGE=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 2.7
+      env:
+      - OPTIONAL_DEPS=1
+      - PIP_FLAGS="--pre"
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 3.6
+      env: OPTIONAL_DEPS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 3.6
+      env:
+      - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: osx
+      language: generic
+      env:
+      - TRAVIS_PYTHON_VERSION=3.6.0
+      - OPTIONAL_DEPS=1
+      - OSX_PKG_ENV=miniconda
+    - os: osx
+      language: generic
+      env: TRAVIS_PYTHON_VERSION=3.6
+    - python: 2.7
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
+
+before_install:
+  # prepare the system to install prerequisites or dependencies
+  - source tools/travis/before_install.sh
+  - uname -a
+  - printenv
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      source tools/travis/osx_install.sh;
+    else
+      source tools/travis/linux_install.sh;
+    fi
+
+install:
+  # install required packages
+  - pip install --upgrade pip
+  - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
+  - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
+    fi
+  # install networkx
+  - printenv PWD
+  - pip install .
+  # show what's installed
+  - python --version
+  - pip list
+
+script:
+  - if [[ "${BUILD_DOCS}" == 1 ]]; then
+      source tools/travis/build_docs.sh;
+    fi
+  - source tools/travis/script.sh
+
+after_success:
+  - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
+      codecov;
+    fi
+  - if [[ "${BUILD_DOCS}" == 1 && "${DEPLOY_DOCS}" == 1 ]]; then
+      source tools/travis/deploy_docs.sh;
+    fi
+
+notifications:
+  email: false

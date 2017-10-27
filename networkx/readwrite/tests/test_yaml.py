@@ -7,6 +7,7 @@ from nose import SkipTest
 from nose.tools import assert_equal
 
 import networkx as nx
+from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 class TestYaml(object):
     @classmethod
@@ -24,7 +25,7 @@ class TestYaml(object):
         self.G = nx.Graph(name="test")
         e = [('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
         self.G.add_edges_from(e)
-        self.G.add_node('g')    
+        self.G.add_node('g')
 
         self.DG = nx.DiGraph(self.G)
 
@@ -34,20 +35,20 @@ class TestYaml(object):
     def assert_equal(self, G, data=False):
         (fd, fname) = tempfile.mkstemp()
         nx.write_yaml(G, fname)
-        Gin = nx.read_yaml(fname);
+        Gin = nx.read_yaml(fname)
 
-        assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
-        assert_equal(G.edges(data=data),Gin.edges(data=data))
+        assert_nodes_equal(list(G), list(Gin))
+        assert_edges_equal(G.edges(data=data), Gin.edges(data=data))
 
         os.close(fd)
         os.unlink(fname)
    
     def testUndirected(self):
-        self.assert_equal(self.G, False)
+        self.assert_equal(self.G, data=False)
 
     def testDirected(self):
-        self.assert_equal(self.DG, False)
+        self.assert_equal(self.DG, data=False)
 
     def testMultiGraph(self):
-        self.assert_equal(self.MG, True)
+        self.assert_equal(self.MG, data=True)
 

@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 """Generators of  x-y pairs of node data."""
 import networkx as nx
-from networkx.utils import dict_to_numpy_array
 __author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['node_attribute_xy',
            'node_degree_xy']
@@ -44,19 +43,19 @@ def node_attribute_xy(G, attribute, nodes=None):
         nodes = set(G)
     else:
         nodes = set(nodes)
-    node = G.node 
-    for u,nbrsdict in G.adjacency_iter():
+    Gnodes = G.nodes
+    for u,nbrsdict in G.adjacency():
         if u not in nodes:
             continue
-        uattr = node[u].get(attribute,None)
+        uattr = Gnodes[u].get(attribute,None)
         if G.is_multigraph():
             for v,keys in nbrsdict.items():
-                vattr = node[v].get(attribute,None)                
+                vattr = Gnodes[v].get(attribute,None)
                 for k,d in keys.items():
                     yield (uattr,vattr)
         else:
             for v,eattr in nbrsdict.items():
-                vattr = node[v].get(attribute,None)
+                vattr = Gnodes[v].get(attribute,None)
                 yield (uattr,vattr)
 
 
@@ -107,16 +106,16 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
         nodes = set(G)
     else:
         nodes = set(nodes)
-    xdeg = G.degree_iter
-    ydeg = G.degree_iter
+    xdeg = G.degree
+    ydeg = G.degree
     if G.is_directed():
-        direction = {'out':G.out_degree_iter,
-                     'in':G.in_degree_iter}
+        direction = {'out':G.out_degree,
+                     'in':G.in_degree}
         xdeg = direction[x]
         ydeg = direction[y]
 
     for u,degu in xdeg(nodes, weight=weight):
-        neighbors = (nbr for _,nbr in G.edges_iter(u) if nbr in nodes)
+        neighbors = (nbr for _,nbr in G.edges(u) if nbr in nodes)
         for v,degv in ydeg(neighbors, weight=weight):
             yield degu,degv
  

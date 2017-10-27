@@ -4,8 +4,15 @@ from collections import defaultdict
 from os.path import splitext
 
 import networkx as nx
-from networkx.external.decorator import decorator
+from decorator import decorator
 from networkx.utils import is_string_like
+
+__all__ = [
+    'not_implemented_for',
+    'open_file',
+    'nodes_or_number',
+]
+
 
 def not_implemented_for(*graph_types):
     """Decorator to mark algorithms as not implemented
@@ -22,7 +29,7 @@ def not_implemented_for(*graph_types):
 
     Raises
     ------
-    NetworkXNotImplemnted
+    NetworkXNotImplemented
     If any of the packages cannot be imported
 
     Notes
@@ -35,20 +42,20 @@ def not_implemented_for(*graph_types):
     Decorate functions like this::
 
        @not_implemnted_for('directed')
-       def sp_function():
+       def sp_function(G):
            pass
 
        @not_implemnted_for('directed','multigraph')
-       def sp_np_function():
+       def sp_np_function(G):
            pass
     """
     @decorator
-    def _not_implemented_for(f,*args,**kwargs):
+    def _not_implemented_for(f, *args, **kwargs):
         graph = args[0]
-        terms= {'directed':graph.is_directed(),
-                'undirected':not graph.is_directed(),
-                'multigraph':graph.is_multigraph(),
-                'graph':not graph.is_multigraph()}
+        terms = {'directed': graph.is_directed(),
+                 'undirected': not graph.is_directed(),
+                 'multigraph': graph.is_multigraph(),
+                 'graph': not graph.is_multigraph()}
         match = True
         try:
             for t in graph_types:
@@ -57,72 +64,26 @@ def not_implemented_for(*graph_types):
             raise KeyError('use one or more of ',
                            'directed, undirected, multigraph, graph')
         if match:
-            raise nx.NetworkXNotImplemented('not implemented for %s type'%
+            raise nx.NetworkXNotImplemented('not implemented for %s type' %
                                             ' '.join(graph_types))
         else:
-            return f(*args,**kwargs)
+            return f(*args, **kwargs)
     return _not_implemented_for
-
-
-def require(*packages):
-    """Decorator to check whether specific packages can be imported.
-
-    If a package cannot be imported, then NetworkXError is raised.
-    If all packages can be imported, then the original function is called.
-
-    Parameters
-    ----------
-    packages : container of strings
-        Container of module names that will be imported.
-
-    Returns
-    -------
-    _require : function
-        The decorated function.
-
-    Raises
-    ------
-    NetworkXError
-    If any of the packages cannot be imported
-
-    Examples
-    --------
-    Decorate functions like this::
-
-       @require('scipy')
-       def sp_function():
-           import scipy
-           pass
-
-       @require('numpy','scipy')
-       def sp_np_function():
-           import numpy
-           import scipy
-           pass
-    """
-    @decorator
-    def _require(f,*args,**kwargs):
-        for package in reversed(packages):
-            try:
-                __import__(package)
-            except:
-                msg = "{0} requires {1}"
-                raise nx.NetworkXError( msg.format(f.__name__, package) )
-        return f(*args,**kwargs)
-    return _require
 
 
 def _open_gz(path, mode):
     import gzip
-    return gzip.open(path,mode=mode)
+    return gzip.open(path, mode=mode)
+
 
 def _open_bz2(path, mode):
     import bz2
-    return bz2.BZ2File(path,mode=mode)
+    return bz2.BZ2File(path, mode=mode)
+
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
-_dispatch_dict = defaultdict(lambda : open)
+_dispatch_dict = defaultdict(lambda: open)
 _dispatch_dict['.gz'] = _open_gz
 _dispatch_dict['.bz2'] = _open_bz2
 _dispatch_dict['.gzip'] = _open_gz
@@ -268,3 +229,60 @@ def open_file(path_arg, mode='r'):
         return result
 
     return _open_file
+
+
+def nodes_or_number(which_args):
+    """Decorator to allow number of nodes or container of nodes.
+
+    Parameters
+    ----------
+    which_args : int or sequence of ints
+        Location of the node arguments in args. Even if the argument is a
+        named positional argument (with a default value), you must specify its
+        index as a positional argument.
+        If more than one node argument is allowed, can be a list of locations.
+
+    Returns
+    -------
+    _nodes_or_numbers : function
+        Function which replaces int args with ranges.
+
+    Examples
+    --------
+    Decorate functions like this::
+
+       @nodes_or_number(0)
+       def empty_graph(nodes):
+           pass
+
+       @nodes_or_number([0,1])
+       def grid_2d_graph(m1, m2, periodic=False):
+           pass
+
+       @nodes_or_number(1)
+       def full_rary_tree(r, n)
+           # r is a number. n can be a number of a list of nodes
+           pass
+    """
+    @decorator
+    def _nodes_or_number(f, *args, **kw):
+        # form tuple of arg positions to be converted.
+        try:
+            iter_wa = iter(which_args)
+        except TypeError:
+            iter_wa = (which_args,)
+        # change each argument in turn
+        new_args = list(args)
+        for i in iter_wa:
+            n = args[i]
+            try:
+                nodes = list(range(n))
+            except TypeError:
+                nodes = tuple(n)
+            else:
+                if n < 0:
+                    msg = "Negative number of nodes not valid: %i" % n
+                    raise nx.NetworkXError(msg)
+            new_args[i] = (n, nodes)
+        return f(*new_args, **kw)
+    return _nodes_or_number

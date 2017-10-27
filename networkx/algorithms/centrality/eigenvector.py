@@ -1,38 +1,61 @@
-"""
-Eigenvector centrality.
-"""
-#    Copyright (C) 2004-2011 by 
+# -*- coding: utf-8 -*-
+#    Copyright (C) 2004-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors:
+#     Aric Hagberg <aric.hagberg@gmail.com>
+#     Pieter Swart <swart@lanl.gov>
+#     Sasha Gutfraind <ag362@cornell.edu>
+"""Functions for computing eigenvector centrality."""
+from __future__ import division
+
+from math import sqrt
+
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)'])
-__all__ = ['eigenvector_centrality',
-           'eigenvector_centrality_numpy']
+from networkx.utils import not_implemented_for
 
-def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
-    """Compute the eigenvector centrality for the graph G.
+__all__ = ['eigenvector_centrality', 'eigenvector_centrality_numpy']
 
-    Uses the power method to find the eigenvector for the 
-    largest eigenvalue of the adjacency matrix of G.
+
+@not_implemented_for('multigraph')
+def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
+                           weight=None):
+    r"""Compute the eigenvector centrality for the graph `G`.
+
+    Eigenvector centrality computes the centrality for a node based on the
+    centrality of its neighbors. The eigenvector centrality for node $i$ is
+
+    .. math::
+
+        Ax = \lambda x
+
+    where $A$ is the adjacency matrix of the graph `G` with eigenvalue
+    $\lambda$. By virtue of the Perron–Frobenius theorem, there is
+    a unique and positive solution if $\lambda$ is the largest
+    eigenvalue associated with the eigenvector of the adjacency matrix
+    $A$ ([2]_).
 
     Parameters
     ----------
     G : graph
-      A networkx graph 
+      A networkx graph
 
-    max_iter : interger, optional
+    max_iter : integer, optional (default=100)
       Maximum number of iterations in power method.
 
-    tol : float, optional
+    tol : float, optional (default=1.0e-6)
       Error tolerance used to check convergence in power method iteration.
 
-    nstart : dictionary, optional
-      Starting value of eigenvector iteration for each node. 
+    nstart : dictionary, optional (default=None)
+      Starting value of eigenvector iteration for each node.
+
+    weight : None or string, optional (default=None)
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
 
     Returns
     -------
@@ -41,75 +64,120 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> centrality=nx.eigenvector_centrality(G)
-    >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
-    ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
+    >>> G = nx.path_graph(4)
+    >>> centrality = nx.eigenvector_centrality(G)
+    >>> sorted((v, '{:0.2f}'.format(c)) for v, c in centrality.items())
+    [(0, '0.37'), (1, '0.60'), (2, '0.60'), (3, '0.37')]
 
-    Notes
+    Raises
     ------
-    The eigenvector calculation is done by the power iteration method
-    and has no guarantee of convergence.  The iteration will stop
-    after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
+    NetworkXPointlessConcept
+        If the graph `G` is the null graph.
 
-    For directed graphs this is "right" eigevector centrality.  For
-    "left" eigenvector centrality, first reverse the graph with
-    G.reverse().
+    NetworkXError
+        If each value in `nstart` is zero.
+
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
 
     See Also
     --------
     eigenvector_centrality_numpy
     pagerank
     hits
+
+    Notes
+    -----
+    The measure was introduced by [1]_ and is discussed in [2]_.
+
+    The power iteration method is used to compute the eigenvector and
+    convergence is **not** guaranteed. Our method stops after ``max_iter``
+    iterations or when the change in the computed vector between two
+    iterations is smaller than an error tolerance of
+    ``G.number_of_nodes() * tol``. This implementation uses ($A + I$)
+    rather than the adjacency matrix $A$ because it shifts the spectrum
+    to enable discerning the correct eigenvector even for networks with
+    multiple dominant eigenvalues.
+
+    For directed graphs this is "left" eigenvector centrality which corresponds
+    to the in-edges in the graph. For out-edges eigenvector centrality
+    first reverse the graph with ``G.reverse()``.
+
+    References
+    ----------
+    .. [1] Phillip Bonacich.
+       "Power and Centrality: A Family of Measures."
+       *American Journal of Sociology* 92(5):1170–1182, 1986
+       <http://www.leonidzhukov.net/hse/2014/socialnetworks/papers/Bonacich-Centrality.pdf>
+    .. [2] Mark E. J. Newman.
+       *Networks: An Introduction.*
+       Oxford University Press, USA, 2010, pp. 169.
+
     """
-    from math import sqrt
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
-        raise nx.NetworkXException("Not defined for multigraphs.")
-
-    if len(G)==0:
-        raise nx.NetworkXException("Empty graph.")
-
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept('cannot compute centrality for the'
+                                          ' null graph')
+    # If no initial vector is provided, start with the all-ones vector.
     if nstart is None:
-        # choose starting vector with entries of 1/len(G) 
-        x=dict([(n,1.0/len(G)) for n in G])
-    else:
-        x=nstart
-    # normalize starting vector
-    s=1.0/sum(x.values())
-    for k in x: x[k]*=s
-    nnodes=G.number_of_nodes()
-    # make up to max_iter iterations        
+        nstart = {v: 1 for v in G}
+    if all(v == 0 for v in nstart.values()):
+        raise nx.NetworkXError('initial vector cannot have all zero values')
+    # Normalize the initial vector so that each entry is in [0, 1]. This is
+    # guaranteed to never have a divide-by-zero error by the previous line.
+    x = {k: v / sum(nstart.values()) for k, v in nstart.items()}
+    nnodes = G.number_of_nodes()
+    # make up to max_iter iterations
     for i in range(max_iter):
-        xlast=x
-        x=dict.fromkeys(xlast, 0)
-        # do the multiplication y=Ax
+        xlast = x
+        x = xlast.copy()  # Start with xlast times I to iterate with (A+I)
+        # do the multiplication y^T = x^T A (left eigenvector)
         for n in x:
             for nbr in G[n]:
-                x[n]+=xlast[nbr]*G[n][nbr].get('weight',1)
-        # normalize vector
-        try:
-            s=1.0/sqrt(sum(v**2 for v in x.values()))
-        # this should never be zero?
-        except ZeroDivisionError:
-            s=1.0
-        for n in x: x[n]*=s
-        # check convergence            
-        err=sum([abs(x[n]-xlast[n]) for n in x])
-        if err < nnodes*tol:
+                x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
+        # Normalize the vector. The normalization denominator `norm`
+        # should never be zero by the Perron--Frobenius
+        # theorem. However, in case it is due to numerical error, we
+        # assume the norm to be one instead.
+        norm = sqrt(sum(z ** 2 for z in x.values())) or 1
+        x = {k: v / norm for k, v in x.items()}
+        # Check for convergence (in the L_1 norm).
+        if sum(abs(x[n] - xlast[n]) for n in x) < nnodes * tol:
             return x
-
-    raise nx.NetworkXError("""eigenvector_centrality(): 
-power iteration failed to converge in %d iterations."%(i+1))""")
+    raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-def eigenvector_centrality_numpy(G):
-    """Compute the eigenvector centrality for the graph G.
+def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
+    r"""Compute the eigenvector centrality for the graph G.
+
+    Eigenvector centrality computes the centrality for a node based on the
+    centrality of its neighbors. The eigenvector centrality for node $i$ is
+
+    .. math::
+
+        Ax = \lambda x
+
+    where $A$ is the adjacency matrix of the graph G with eigenvalue $\lambda$.
+    By virtue of the Perron–Frobenius theorem, there is a unique and positive
+    solution if $\lambda$ is the largest eigenvalue associated with the
+    eigenvector of the adjacency matrix $A$ ([2]_).
 
     Parameters
     ----------
     G : graph
-      A networkx graph 
+      A networkx graph
+
+    weight : None or string, optional (default=None)
+      The name of the edge attribute used as weight.
+      If None, all edge weights are considered equal.
+
+    max_iter : integer, optional (default=100)
+      Maximum number of iterations in power method.
+
+    tol : float, optional (default=1.0e-6)
+       Relative accuracy for eigenvalues (stopping criterion).
+       The default value of 0 implies machine precision.
 
     Returns
     -------
@@ -118,52 +186,61 @@ def eigenvector_centrality_numpy(G):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> centrality=nx.eigenvector_centrality_numpy(G)
-    >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
+    >>> G = nx.path_graph(4)
+    >>> centrality = nx.eigenvector_centrality_numpy(G)
+    >>> print(['{} {:0.2f}'.format(node, centrality[node]) for node in centrality])
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
-
-    Notes
-    ------
-    This algorithm uses the NumPy eigenvalue solver.
-
-    For directed graphs this is "right" eigevector centrality.  For
-    "left" eigenvector centrality, first reverse the graph with
-    G.reverse().
 
     See Also
     --------
     eigenvector_centrality
     pagerank
     hits
+
+    Notes
+    -----
+    The measure was introduced by [1]_.
+
+    This algorithm uses the SciPy sparse eigenvalue solver (ARPACK) to
+    find the largest eigenvalue/eigenvector pair.
+
+    For directed graphs this is "left" eigenvector centrality which corresponds
+    to the in-edges in the graph. For out-edges eigenvector centrality
+    first reverse the graph with ``G.reverse()``.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If the graph ``G`` is the null graph.
+
+    References
+    ----------
+    .. [1] Phillip Bonacich:
+       Power and Centrality: A Family of Measures.
+       American Journal of Sociology 92(5):1170–1182, 1986
+       http://www.leonidzhukov.net/hse/2014/socialnetworks/papers/Bonacich-Centrality.pdf
+    .. [2] Mark E. J. Newman:
+       Networks: An Introduction.
+       Oxford University Press, USA, 2010, pp. 169.
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
-
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
-        raise nx.NetworkXException('Not defined for multigraphs.')
-
-    if len(G)==0:
-        raise nx.NetworkXException('Empty graph.')
-
-    A=nx.adj_matrix(G,nodelist=G.nodes())
-    eigenvalues,eigenvectors=np.linalg.eig(A)
-    # eigenvalue indices in reverse sorted order
-    ind=eigenvalues.argsort()[::-1]
-    # eigenvector of largest eigenvalue at ind[0], normalized
-    largest=np.array(eigenvectors[:,ind[0]]).flatten().real
-    norm=np.sign(largest.sum())*np.linalg.norm(largest)
-    centrality=dict(zip(G,map(float,largest/norm)))
-    return centrality
+    import scipy as sp
+    from scipy.sparse import linalg
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept('cannot compute centrality for the'
+                                          ' null graph')
+    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight,
+                                  dtype=float)
+    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR',
+                                          maxiter=max_iter, tol=tol)
+    largest = eigenvector.flatten().real
+    norm = sp.sign(largest.sum()) * sp.linalg.norm(largest)
+    return dict(zip(G, largest / norm))
 
 
 # fixture for nose tests
 def setup_module(module):
     from nose import SkipTest
     try:
-        import numpy
-        import numpy.linalg
+        import scipy
     except:
-        raise SkipTest("numpy not available")
+        raise SkipTest("SciPy not available")

@@ -1,19 +1,39 @@
-#!/usr/bin/env python
-from nose.tools import *
+from nose.tools import assert_equals
+from nose.tools import ok_
 import networkx as nx
-from  networkx.algorithms import approximation as a
+from networkx.algorithms.approximation import min_weighted_vertex_cover
 
-class TestMWVC:
 
-    def test_min_vertex_cover(self):
+def is_cover(G, node_cover):
+    return all({u, v} & node_cover for u, v in G.edges())
+
+
+class TestMWVC(object):
+    """Unit tests for the approximate minimum weighted vertex cover
+    function,
+    :func:`~networkx.algorithms.approximation.vertex_cover.min_weighted_vertex_cover`.
+
+    """
+
+    def test_unweighted_directed(self):
+        # Create a star graph in which half the nodes are directed in
+        # and half are directed out.
+        G = nx.DiGraph()
+        G.add_edges_from((0, v) for v in range(1, 26))
+        G.add_edges_from((v, 0) for v in range(26, 51))
+        cover = min_weighted_vertex_cover(G)
+        assert_equals(2, len(cover))
+        ok_(is_cover(G, cover))
+
+    def test_unweighted_undirected(self):
         # create a simple star graph
         size = 50
         sg = nx.star_graph(size)
-        cover = a.min_weighted_vertex_cover(sg)
+        cover = min_weighted_vertex_cover(sg)
         assert_equals(2, len(cover))
-        for u, v in sg.edges_iter():
-            ok_((u in cover or v in cover), "Node node covered!")
+        ok_(is_cover(sg, cover))
 
+    def test_weighted(self):
         wg = nx.Graph()
         wg.add_node(0, weight=10)
         wg.add_node(1, weight=1)
@@ -26,14 +46,12 @@ class TestMWVC:
         wg.add_edge(0, 3)
         wg.add_edge(0, 4)
 
-        wg.add_edge(1,2)
-        wg.add_edge(2,3)
-        wg.add_edge(3,4)
-        wg.add_edge(4,1)
+        wg.add_edge(1, 2)
+        wg.add_edge(2, 3)
+        wg.add_edge(3, 4)
+        wg.add_edge(4, 1)
 
-        cover = a.min_weighted_vertex_cover(wg, weight="weight")
-        csum = sum(wg.node[node]["weight"] for node in cover)
+        cover = min_weighted_vertex_cover(wg, weight="weight")
+        csum = sum(wg.nodes[node]["weight"] for node in cover)
         assert_equals(4, csum)
-
-        for u, v in wg.edges_iter():
-            ok_((u in cover or v in cover), "Node node covered!")
+        ok_(is_cover(wg, cover))

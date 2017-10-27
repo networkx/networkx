@@ -3,7 +3,7 @@ from nose.tools import *
 import networkx as nx
 
 def weighted_G():
-    G=nx.Graph();
+    G=nx.Graph()
     G.add_edge(0,1,weight=3)
     G.add_edge(0,2,weight=2)
     G.add_edge(0,3,weight=6)
@@ -148,8 +148,8 @@ class TestBetweennessCentrality(object):
     def test_disconnected_path(self):
         """Betweenness centrality: disconnected path"""
         G=nx.Graph()
-        G.add_path([0,1,2])
-        G.add_path([3,4,5,6])
+        nx.add_path(G, [0, 1, 2])
+        nx.add_path(G, [3, 4, 5, 6])
         b_answer={0:0,1:1,2:0,3:0,4:2,5:2,6:0}
         b=nx.betweenness_centrality(G,
                                           weight=None,
@@ -160,8 +160,8 @@ class TestBetweennessCentrality(object):
     def test_disconnected_path_endpoints(self):
         """Betweenness centrality: disconnected path endpoints"""
         G=nx.Graph()
-        G.add_path([0,1,2])
-        G.add_path([3,4,5,6])
+        nx.add_path(G, [0, 1, 2])
+        nx.add_path(G, [3, 4, 5, 6])
         b_answer={0:2,1:3,2:2,3:3,4:5,5:5,6:3}
         b=nx.betweenness_centrality(G,
                                           weight=None,
@@ -174,7 +174,7 @@ class TestBetweennessCentrality(object):
     def test_directed_path(self):
         """Betweenness centrality: directed path"""
         G=nx.DiGraph()
-        G.add_path([0,1,2])
+        nx.add_path(G, [0, 1, 2])
         b=nx.betweenness_centrality(G,
                                           weight=None,
                                           normalized=False)
@@ -185,7 +185,7 @@ class TestBetweennessCentrality(object):
     def test_directed_path_normalized(self):
         """Betweenness centrality: directed path normalized"""
         G=nx.DiGraph()
-        G.add_path([0,1,2])
+        nx.add_path(G, [0, 1, 2])
         b=nx.betweenness_centrality(G,
                                           weight=None,
                                           normalized=True)

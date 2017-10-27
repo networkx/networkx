@@ -115,7 +115,7 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
     --------
     >>> G=nx.path_graph(4)
     >>> r=nx.degree_pearson_correlation_coefficient(G) 
-    >>> r 
+    >>> print("%3.1f"%r)
     -0.5
 
     Notes
@@ -190,13 +190,15 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Assortativity measures the similarity of connections
     in the graph with respect to the given numeric attribute.
-    
+    The numeric attribute must be an integer.
+
     Parameters
     ----------
     G : NetworkX graph
 
     attribute : string 
-        Node attribute key
+        Node attribute key.  The corresponding attribute value must be an
+        integer.
 
     nodes: list or iterable (optional)
         Compute numeric assortativity only for attributes of nodes in 

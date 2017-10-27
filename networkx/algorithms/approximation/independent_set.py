@@ -14,11 +14,11 @@ the maximum independent set problem and is an NP-hard optimization problem.
 As such, it is unlikely that there exists an efficient algorithm for finding
 a maximum independent set of a graph.
 
-http://en.wikipedia.org/wiki/Independent_set_(graph_theory)
+`Wikipedia: Independent set <https://en.wikipedia.org/wiki/Independent_set_(graph_theory)>`_
 
 Independent set algorithm is based on the following paper:
 
-`O(|V|/(log|V|)^2)` apx of maximum clique/independent set.
+$O(|V|/(log|V|)^2)$ apx of maximum clique/independent set.
 
 Boppana, R., & Halldórsson, M. M. (1992).
 Approximating maximum independent sets by excluding subgraphs.
@@ -35,12 +35,12 @@ __all__ = ["maximum_independent_set"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
-def maximum_independent_set(graph):
+def maximum_independent_set(G):
     """Return an approximate maximum independent set.
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
         Undirected graph
 
     Returns
@@ -50,7 +50,7 @@ def maximum_independent_set(graph):
 
     Notes
     -----
-    Finds the `O(|V|/(log|V|)^2)` apx of independent set in the worst case.
+    Finds the $O(|V|/(log|V|)^2)$ apx of independent set in the worst case.
 
 
     References
@@ -59,5 +59,5 @@ def maximum_independent_set(graph):
        Approximating maximum independent sets by excluding subgraphs.
        BIT Numerical Mathematics, 32(2), 180–196. Springer.
     """
-    iset, _ = clique_removal(graph)
+    iset, _ = clique_removal(G)
     return iset

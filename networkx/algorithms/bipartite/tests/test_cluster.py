@@ -10,7 +10,9 @@ def test_pairwise_bipartite_cc_functions():
     G1 = nx.Graph([(0,2),(0,3),(0,4),(0,5),(0,6),(1,5),(1,6),(1,7)])
     G2 = nx.Graph([(0,2),(0,3),(0,4),(1,3),(1,4),(1,5)])
     G3 = nx.Graph([(0,2),(0,3),(0,4),(0,5),(0,6),(1,5),(1,6),(1,7),(1,8),(1,9)])
-    result = {0:[1/3.0, 2/3.0, 2/5.0], 1:[1/2.0, 2/3.0, 2/3.0], 2:[2/8.0, 2/5.0, 2/5.0]}
+    result = {0:[1/3.0, 2/3.0, 2/5.0], 
+              1:[1/2.0, 2/3.0, 2/3.0], 
+              2:[2/8.0, 2/5.0, 2/5.0]}
     for i, G in enumerate([G1, G2, G3]):
         assert(bipartite.is_bipartite(G))
         assert(cc_dot(set(G[0]), set(G[1])) == result[i][0])
@@ -41,13 +43,28 @@ def test_path_graph():
     answer={0:1,1:1,2:1,3:1}
     assert_equal(bipartite.clustering(G,mode='min'),answer)
 
-
 def test_average_path_graph():
     G=nx.path_graph(4)
     assert_equal(bipartite.average_clustering(G,mode='dot'),0.5)
     assert_equal(bipartite.average_clustering(G,mode='max'),0.5)
     assert_equal(bipartite.average_clustering(G,mode='min'),1)
 
+def test_ra_clustering_davis():
+    G = nx.davis_southern_women_graph()
+    cc4 = round(bipartite.robins_alexander_clustering(G), 3)
+    assert_equal(cc4, 0.468)
 
+def test_ra_clustering_square():
+    G = nx.path_graph(4)
+    G.add_edge(0, 3)
+    assert_equal(bipartite.robins_alexander_clustering(G), 1.0)
 
-
+def test_ra_clustering_zero():
+    G = nx.Graph()
+    assert_equal(bipartite.robins_alexander_clustering(G), 0)
+    G.add_nodes_from(range(4))
+    assert_equal(bipartite.robins_alexander_clustering(G), 0)
+    G.add_edges_from([(0,1),(2,3),(3,4)])
+    assert_equal(bipartite.robins_alexander_clustering(G), 0)
+    G.add_edge(1,2)
+    assert_equal(bipartite.robins_alexander_clustering(G), 0)

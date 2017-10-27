@@ -12,21 +12,23 @@ def test_union_all_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     j = g.copy()
     j.graph['name'] = 'j'
     j.graph['attr'] = 'attr'
-    j.node[0]['x'] = 7
+    j.nodes[0]['x'] = 7
 
     ghj = nx.union_all([g, h, j], rename=('g', 'h', 'j'))
     assert_equal( set(ghj.nodes()) , set(['h0', 'h1', 'g0', 'g1', 'j0', 'j1']) )
     for n in ghj:
         graph, node = n
-        assert_equal( ghj.node[n], eval(graph).node[int(node)] )
+        assert_equal( ghj.nodes[n], eval(graph).nodes[int(node)] )
 
     assert_equal(ghj.graph['attr'],'attr')
     assert_equal(ghj.graph['name'],'j') # j graph attributes take precendent
+
+
 
 def test_intersection_all():
     G=nx.Graph()
@@ -56,7 +58,7 @@ def test_intersection_all_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.intersection_all([g, h])
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
@@ -117,7 +119,7 @@ def test_union_all_and_compose_all():
     assert_equal(sorted(G2.nodes()),
         ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
 
-    assert_equal(G2.neighbors('copy4'),[])
+    assert_equal(sorted(G2.neighbors('copy4')),[])
     assert_equal(sorted(G2.neighbors('copy1')),['copy2', 'copy3', 'copy4'])
     assert_equal(len(G),8)
     assert_equal(nx.number_of_edges(G),6)
@@ -152,3 +154,43 @@ def test_union_all_multigraph():
     assert_equal( set(GH) , set(G)|set(H))
     assert_equal( set(GH.edges(keys=True)) ,
         set(G.edges(keys=True))|set(H.edges(keys=True)))
+
+
+def test_input_output():
+    l = [nx.Graph([(1,2)]),nx.Graph([(3,4)])]
+    U = nx.disjoint_union_all(l)
+    assert_equal(len(l),2)
+    C = nx.compose_all(l)
+    assert_equal(len(l),2)
+    l = [nx.Graph([(1,2)]),nx.Graph([(1,2)])]
+    R = nx.intersection_all(l)
+    assert_equal(len(l),2)
+
+
+@raises(nx.NetworkXError)
+def test_mixed_type_union():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    I = nx.Graph()
+    U = nx.union_all([G,H,I])
+
+@raises(nx.NetworkXError)
+def test_mixed_type_disjoint_union():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    I = nx.Graph()
+    U = nx.disjoint_union_all([G,H,I])
+
+@raises(nx.NetworkXError)
+def test_mixed_type_intersection():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    I = nx.Graph()
+    U = nx.intersection_all([G,H,I])
+
+@raises(nx.NetworkXError)
+def test_mixed_type_compose():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    I = nx.Graph()
+    U = nx.compose_all([G,H,I])

@@ -32,7 +32,6 @@
 """
 
 import networkx as nx
-
 from . import isomorphvf2 as vf2
 
 __all__ = ['GraphMatcher',
@@ -47,7 +46,7 @@ def _semantic_feasibility(self, G1_node, G2_node):
     """
     # Make sure the nodes match
     if self.node_match is not None:
-        nm = self.node_match(self.G1.node[G1_node], self.G2.node[G2_node])
+        nm = self.node_match(self.G1.nodes[G1_node], self.G2.nodes[G2_node])
         if not nm:
             return False
 
@@ -91,7 +90,7 @@ class GraphMatcher(vf2.GraphMatcher):
             should be considered equal during the isomorphism test. The
             function will be called like::
 
-               node_match(G1.node[n1], G2.node[n2])
+               node_match(G1.nodes[n1], G2.nodes[n2])
 
             That is, the function will receive the node attribute dictionaries
             of the nodes under consideration. If None, then no attributes are
@@ -138,7 +137,7 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
             should be considered equal during the isomorphism test. The
             function will be called like::
 
-               node_match(G1.node[n1], G2.node[n2])
+               node_match(G1.nodes[n1], G2.nodes[n2])
 
             That is, the function will receive the node attribute dictionaries
             of the nodes under consideration. If None, then no attributes are

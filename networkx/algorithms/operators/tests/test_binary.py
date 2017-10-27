@@ -13,13 +13,13 @@ def test_union_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.union(g, h, rename=('g', 'h'))
     assert_equal( set(gh.nodes()) , set(['h0', 'h1', 'g0', 'g1']) )
     for n in gh:
         graph, node = n
-        assert_equal( gh.node[n], eval(graph).node[int(node)] )
+        assert_equal( gh.nodes[n], eval(graph).nodes[int(node)] )
 
     assert_equal(gh.graph['attr'],'attr')
     assert_equal(gh.graph['name'],'h') # h graph attributes take precendent
@@ -48,7 +48,7 @@ def test_intersection_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.intersection(g, h)
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
@@ -125,7 +125,7 @@ def test_difference_attributes():
     h = g.copy()
     h.graph['name'] = 'h'
     h.graph['attr'] = 'attr'
-    h.node[0]['x'] = 7
+    h.nodes[0]['x'] = 7
 
     gh = nx.difference(g, h)
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
@@ -214,7 +214,7 @@ def test_union_and_compose():
     assert_equal(sorted(G2.nodes()),
                  ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
 
-    assert_equal(G2.neighbors('copy4'),[])
+    assert_equal(sorted(G2.neighbors('copy4')),[])
     assert_equal(sorted(G2.neighbors('copy1')),['copy2', 'copy3', 'copy4'])
     assert_equal(len(G),8)
     assert_equal(number_of_edges(G),6)
@@ -225,6 +225,13 @@ def test_union_and_compose():
 
     E=disjoint_union(G1,G2)
     assert_equal(sorted(E.nodes()),[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+
+    G = nx.Graph()
+    H = nx.Graph()
+    G.add_nodes_from([(1, {'a1': 1})])
+    H.add_nodes_from([(1, {'b1': 1})])
+    R = compose(G, H)
+    assert_equal(R.nodes, {1: {'a1': 1, 'b1': 1}})
 
 
 def test_union_multigraph():
@@ -268,3 +275,41 @@ def test_compose_multigraph():
     assert_equal( set(GH) , set(G)|set(H))
     assert_equal( set(GH.edges(keys=True)) , 
                   set(G.edges(keys=True))|set(H.edges(keys=True)))    
+
+
+@raises(nx.NetworkXError)
+def test_mixed_type_union():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.union(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_disjoint_union():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.disjoint_union(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_intersection():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.intersection(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_difference():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.difference(G,H)
+
+
+@raises(nx.NetworkXError)
+def test_mixed_type_symmetric_difference():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.symmetric_difference(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_compose():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.compose(G,H)

@@ -1,20 +1,6 @@
 # graph drawing and interface to graphviz
-import sys
-from networkx.drawing.layout import *
-from networkx.drawing.nx_pylab import *
 
-# graphviz interface
-# prefer pygraphviz/agraph (it's faster)
-from networkx.drawing.nx_agraph import *
-try:
-    import pydot
-    import networkx.drawing.nx_pydot
-    from networkx.drawing.nx_pydot import *
-except ImportError:
-    pass
-try:
-    import pygraphviz
-    from networkx.drawing.nx_agraph import *
-except ImportError:    
-    pass 
-
+from .layout import *
+from .nx_pylab import *
+from . import nx_agraph
+from . import nx_pydot
