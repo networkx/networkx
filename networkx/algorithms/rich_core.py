@@ -10,8 +10,8 @@ as defined by Ma A and Mondragón RJ (2015) in Rich-cores in networks. PLoS One 
 
 
 import networkx as nx
-from networkx.utils import accumulate
 from networkx.utils import not_implemented_for
+from __future__ import division
 
 __all__ = ['extract_rich_core']
 
@@ -19,64 +19,71 @@ __all__ = ['extract_rich_core']
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def extract_rich_core(G, weight='weight'):
-    """Returns the core/periphery structure of a weighted undirected network (see [1]).
-        
-        Args
-        ----
-        G: NetworkX weighted undirected graph.
-        
-        weight: string (default='weight')
+    r"""Returns the core/periphery structure of a the weighted undirected
+    graph `G` as in [1]_.
+    
+    The *rich-core* of a network comes from the theoretical coupling the
+    underlying principle of a *rich-club* with the escape time of a
+    random walker. A $\sigma_i$ is associated to each node $i$ of the
+    network, representing the strength of the node after rescaling the
+    weights in units of the minimal weight:
+    
+    .. math::
+    
+        \sigma_i = \sum_j \frac{w_ij}{w_{min}}
+    
+    The *core boundary* node, separating the core from the periphery,
+    is ranked as $r_{∗}$, such that $\sigma^{+}_{r_{∗}}>\sigma^{+}_{r}
+    for $r>r_{∗}$, where $\sigma^{+}_i$ is the portion of $\sigma_i$ that
+    connects node $i$, ranked $r$, to nodes of a higher rank.
+    
+    Parameters
+    ----------
+    G : NetworkX graph
+        Weighted undirected graph.    
+    weight : string (default='weight')
         Key for edge data used as the edge weight w_ij.
         
-        Returns
-        -------
-        sigmas: list
-        List of σ_i values associated to each node i of the network, representing the strength of the node i
-        after rescaling the weights in units of the minimal weight. σ_i = ∑j⌈w_ij/w_min⌉
+    Returns
+    -------
+    sigmas: dictionary
+        Dictionary of nodes with the $\sigma$ as the value,
+        representing the strength of the node after rescaling
+        the weights in units of the minimal weight.
         
-        ranked_nodes: list
-        List of nodes ranked by normalised strength σ_i.
-        
-        r_star: int
-        r_star (r∗) is the index of the core boundary node, such that σ^{+}_r∗>σ^{+}_r for r > r*, where
-        σ^{+}_i is the portion of σ_i that connects node i, ranked r, to nodes of a higher rank.
-        
-        
-        References
-        ----------
-        .. [1] Ma A and Mondragón RJ (2015).
-        "Rich-cores in networks".
-        PLoS One 10(3):e0119678.
-        
-        """
-    
-    
-    G = G.to_undirected()
-    
+    node_max_sigma: node
+        The core boundary node.
+      
+    References
+    ----------
+    .. [1] Ma A and Mondragón RJ (2015),
+       "Rich-cores in networks".
+       PLoS One 10(3):e0119678.
+    """
+    if nx.is_directed(G):
+        raise Exception('rich_core is not implemented for directed graphs.')    
+   
     #Looking for the minimal weight
-    weights = [e[2][weight] for e in G.edges_iter(data=True)]
-    minw = min(weights)
+    minw = min(wt for u, v, wt in G.edges.data(weight))
     
-    #Normalising by the minimal weight
-    for e in G.edges_iter(data=True):
-        i = e[0]
-        j = e[1]
-        wij = e[2][weight]
-        G[i][j][weight]=1.*wij/minw
+    #Normalising by the minimal weight (adding a new attribute)
+    for u, v, wt in G.edges.data(weight):
+        G[u][v][norm_weight]=wt/minw
     
     #Ranking the nodes in units of the minimal weight (by normalised strength)
-    strength = G.degree(weight=weight)
-    ranked_nodes = sorted(strength, key=strength.get, reverse=True)
+    norm_strength = G.degree(weight=norm_weight)
+    ranked_nodes = sorted(norm_strength, key=norm_strength.get, reverse=True)
     
-    sigmas=[]
+    sigmas={}
     for i in ranked_nodes:
         sigma_i=0
         for j in G.neighbors(i):
-            if strength[j]>strength[i]:
-                sigma_i += strength[j]
+            if norm_strength[j]>norm_strength[i]:
+                sigma_i += norm_strength[j]
             else: continue
-        sigmas.append(sigma_i)
+        sigmas[i]=sigma_i
     
-    r_star = sigmas.index(max(sigmas))
+    max_sigma = max(sigmas.values())
+    node_max_sigma = [k for k, v in sigmas.items() if v == max_sigma]
     
-    return sigmas, ranked_nodes, r_star
+    return sigmas, node_max_sigma
