@@ -32,6 +32,7 @@ from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.reciprocity import *
+from networkx.algorithms.rich_core import *
 from networkx.algorithms.richclub import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.simple_paths import *
