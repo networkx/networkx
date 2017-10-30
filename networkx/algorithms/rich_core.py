@@ -10,6 +10,7 @@ as defined by Ma A and Mondragón RJ (2015) in Rich-cores in networks. PLoS One 
 
 
 import networkx as nx
+from collections import OrderedDict
 from networkx.utils import not_implemented_for
 from __future__ import division
 
@@ -47,12 +48,18 @@ def extract_rich_core(G, weight='weight'):
     Returns
     -------
     sigmas: dictionary
-        Dictionary of nodes with the $\sigma$ as the value,
-        representing the strength of the node after rescaling
-        the weights in units of the minimal weight.
+        Ordered dictionary (collection.OrderedDict) of nodes with the
+        $\sigma$ as the value, representing the strength of the node after
+        rescaling the weights in units of the minimal weight.
         
     node_max_sigma: node
         The core boundary node.
+        
+    Note
+    ----
+    Since the sigmas dictionary is ordered, the values can be directly
+    plotted as plt.plot(sigmas.values()) to obtain the plot of Figure 3
+    of [1]_.
       
     References
     ----------
@@ -68,13 +75,13 @@ def extract_rich_core(G, weight='weight'):
     
     #Normalising by the minimal weight (adding a new attribute)
     for u, v, wt in G.edges.data(weight):
-        G[u][v][norm_weight]=wt/minw
+        G[u][v]['norm_weight']=wt/minw
     
     #Ranking the nodes in units of the minimal weight (by normalised strength)
-    norm_strength = G.degree(weight=norm_weight)
-    ranked_nodes = sorted(norm_strength, key=norm_strength.get, reverse=True)
+    norm_strength = G.degree(weight='norm_weight')
+    ranked_nodes = [n[0] for n in sorted(norm_strength, key=lambda x: x[1], reverse=True)]
     
-    sigmas={}
+    sigmas=OrderedDict()
     for i in ranked_nodes:
         sigma_i=0
         for j in G.neighbors(i):
