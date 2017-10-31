@@ -60,134 +60,151 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
     import numpy as np
     from scipy.optimize import linear_sum_assignment
 
-    if len(G1.nodes) < len(G2.nodes):
-        (G1, G2) = (G2, G1)
+    def edit_cost(x, y, cache, cost_f):
+        if (x is None) and (y is None):
+            return 0
+        elif (x is None) != (y is None):
+            return 1
+        else:
+            if (x, y) in cache:
+                c = cache[(x, y)]
+            else:
+                c = 1 - int(cost_f(x, y)) if cost_f else 0
+                cache[(x, y)] = c
+            return c
 
-    def edge(g):
-        return tuple(sorted(g))
+    if node_match:
+        _node_cost_f = lambda u, v: node_match(G1.nodes[u], G2.nodes[v])
+    else:
+        _node_cost_f = None
+    def node_edit_cost(u, v, cache = dict()):
+        return edit_cost(u, v, cache, _node_cost_f)
 
-    # cost of vertex mappings
-    cv = dict()
-    for u, uattr in G1.nodes(data=True):
-        for v, vattr in G2.nodes(data=True):
-            cv[(u, v)] = 1 - int(node_match(uattr, vattr)) if node_match else 0
-        cv[(u, None)] = 1
-    for v in G2.nodes:
-        cv[(v, None)] = 1
+    if edge_match:
+        _edge_cost_f = lambda g, h: edge_match(G1.edges[g], G2.edges[h])
+    else:
+        _edge_cost_f = None
+    def edge_edit_cost(g, h, cache = dict()):
+        return edit_cost(g, h, cache, _edge_cost_f)
 
-    # cost of edge mappings
-    ce = dict()
-    for u, v, uvattr in G1.edges(data=True):
-        for p, q, pqattr in G2.edges(data=True):
-            ce[(edge((u, v)), edge((p, q)))] = 1 - int(edge_match(uvattr, pqattr)) if edge_match else 0
-        ce[(edge((u, v)), None)] = 1
-    for p, q in G2.edges:
-        ce[(edge((p, q)), None)] = 1
-
-    # initial upper-bound estimate
-    # NOTE: should work for empty graph
-    maxcost = len(G1.nodes) + len(G2.nodes) + len(G1.edges) + len(G2.edges)
-
-    def update(startpath, startcost, u, v):
+    def get_g(startpath, u, v):
         """
-        Parameters:
-            startpath: partial edit path
-                list of tuples (p, q) of vertex mappings p<->q,
-                p=None or q=None means insertion/deletion
-            startcost: cost value of startpath
-
-        Returns:
-            tuple (path, cost)
-                path: updated edit path
-                cost: cost value of path
+        Cost of adding mapping u<->v to partial edit path startpath.
         """
-        pass
-
-    def getcost(startpath, u, v):
-        c = 0
+        c = node_edit_cost(u, v)
         for p, q in startpath:
             if not p is None and u in G1[p]:
-                g = edge((u, p))
+                g = (u, p)
             else:
                 g = None
             if not q is None and v in G2[q]:
-                h = edge((v, q))
+                h = (v, q)
             else:
                 h = None
-            if not g is None:
-                c += ce[(g, h)]
-            elif not h is None:
-                c += ce[(h, g)]
-        return c + cv[(u, v)]
+            c += edge_edit_cost(g, h)
+        return c
 
-    def lb(startpath):
-        ignore_u = set(p for p, q in startpath)
-        ignore_v = set(q for p, q in startpath)
-        pending_u = [u for u in G1.nodes if u not in ignore_u]
-        pending_v = [v for v in G2.nodes if v not in ignore_v]
-        m = len(pending_u)
-        n = len(pending_v)
-
-        Cv = np.zeros((m + n, m + n))
-        Cv[0:m, 0:n] = np.array([cv[(u, v)] + abs(len(G1.edges(u)) - len(G2.edges(v)))
-                                 for u in pending_u for v in pending_v]).reshape(m, n)
-        Cv[0:m, n:n+m] = np.array([1 + len(G1.edges(pending_u[i])) if i == j else maxcost + 1
-                                   for i in range(m) for j in range(m)]).reshape(m, m)
-        Cv[m:m+n, 0:n] = np.array([1 + len(G2.edges(pending_v[j])) if i == j else maxcost + 1
-                                   for i in range(n) for j in range(n)]).reshape(n, n)
-
+    def get_lb(Cv):
+        """
+        Lower-bound estimate of additional cost to complete
+        partial edit path startpath.
+        """
         row_ind, col_ind = linear_sum_assignment(Cv)
         return Cv[row_ind, col_ind].sum()
 
-    def candidate_mappings(startpath):
-        """
-        Parameters:
-            startpath: partial edit path
-                list of tuples (p, q) of vertex mappings p<->q,
-                p=None or q=None means insertion/deletion
+    def get_edit_nodes(startpath, pending_v, Cv, startcost, maxcost, u, i, m, n):
+        if not u is None:
+            vs = list(pending_v) + [None]
+            js = list(range(len(vs))) + [None]
+        else:
+            vs = pending_v
+            js = range(len(vs))
+        for v, j in zip(vs, js):
+            g = get_g(startpath, u, v)
+            if startcost + g > maxcost:
+                continue
+            row_ind = [k for k in range(m + n) if k != i and k - m != j]
+            col_ind = [l for l in range(m + n) if l != j and l - n != i]
+            Cvj = Cv[row_ind,:][:,col_ind]
+            lb = get_lb(Cvj)
+            if startcost + g + lb > maxcost:
+                continue
+            yield v, j, Cvj, g, lb
 
-        Returns:
-            sequence of (u, v, cost) sorted by cost *estimate*
-                u, v: vertices, u=None or v=None means insertion/deletion
-                cost: cost value of u<->v mapping
-        """
-        ignore_u = set(p for p, q in startpath)
-        ignore_v = set(q for p, q in startpath)
-        pending_u = [u for u in G1.nodes if u not in ignore_u]
-        pending_v = [v for v in G2.nodes if v not in ignore_v]
-        u = pending_u[0]
-        for v in sorted(pending_v + [None], key = lambda v: getcost(startpath, u, v) + lb(startpath + [(u, v)])):
-            yield u, v, getcost(startpath, u, v)
-
-    def process(startpath, startcost, maxcost):
+    def get_edit_paths(startpath, pending_u, pending_v, Cv, startcost, maxcost):
         """
         Parameters:
             startpath: partial edit path
                 list of tuples (u, v) of vertex mappings u<->v,
-                u=None or v=None means insertion/deletion
-            startcost: cost value of startpath
+                u=None or v=None for insertion/deletion
+            pending_u, pending_v: lists of vertices not yet mapped
+            Cv: vertex mapping cost matrix (lower-bound estimate)
+            startcost: cost of startpath
             maxcost: max cost of complete edit path to return
 
         Returns:
             sequence of (path, cost)
                 path: complete edit path
                     list of tuples (u, v) of vertex mappings u<->v,
-                    u=None or v=None means insertion/deletion
-                cost: cost value of path
+                    u=None or v=None for insertion/deletion
+                cost: total cost of path
+            NOTE: path costs are non-increasing
         """
         if startcost > maxcost:
             # prune
             return
 
-        if len(startpath) < len(G1):
-            for u, v, c in candidate_mappings(startpath):
-                for path, cost in process(startpath + [(u, v)], startcost + c, maxcost):
+        m = len(pending_u)
+        n = len(pending_v)
+        if max(m, n):
+            if m:
+                i = m - 1
+                u = pending_u.pop()
+            else:
+                i = None
+                u = None
+            edit_nodes = get_edit_nodes(startpath, pending_v, Cv, startcost, maxcost, u, i, m, n)
+            for v, j, Cvj, g, lb in sorted(edit_nodes, key = lambda v: v[3] + v[4]):
+                if not v is None:
+                    pending_v.pop(j)
+                startpath.append((u, v))
+                for path, cost in get_edit_paths(startpath, pending_u, pending_v, Cvj, startcost + g, maxcost):
                     if cost < maxcost:
                         # update immediately
                         maxcost = cost
                     if cost <= maxcost:
                         yield path, cost
+                startpath.pop()
+                if not v is None:
+                    pending_v.insert(j, v)
+            if not u is None:
+                pending_u.insert(i, u)
         else:
             yield startpath, startcost
 
-    return min(cost for path, cost in process([], 0, maxcost))
+    # initial upper-bound estimate
+    # NOTE: should work for empty graph
+    maxcost = len(G1.nodes) + len(G2.nodes) + len(G1.edges) + len(G2.edges)
+
+    pending_u = list(G1.nodes)
+    pending_v = list(G2.nodes)
+
+    # cost matrix of u<->v mappings (lower-bound estimate)
+    m = len(pending_u)
+    n = len(pending_v)
+    Cv = np.zeros((m + n, m + n))
+    Cv[0:m, 0:n] = np.array([node_edit_cost(u, v) + abs(len(G1.edges(u)) - len(G2.edges(v)))
+                             for u in pending_u for v in pending_v]).reshape(m, n)
+    Cv[0:m, n:n+m] = np.array([node_edit_cost(pending_u[i], None) +
+                               sum(edge_edit_cost(g, None) for g in G1.edges(pending_u[i]))
+                               if i == j else maxcost + 1
+                               for i in range(m) for j in range(m)]).reshape(m, m)
+    Cv[m:m+n, 0:n] = np.array([node_edit_cost(pending_v[i], None) +
+                               sum(edge_edit_cost(h, None) for h in G2.edges(pending_v[i]))
+                               if i == j else maxcost + 1
+                               for i in range(n) for j in range(n)]).reshape(n, n)
+
+    for path, cost in get_edit_paths([], pending_u, pending_v, Cv, 0, maxcost):
+        #print(path, cost)
+        bestcost = cost
+    return bestcost
