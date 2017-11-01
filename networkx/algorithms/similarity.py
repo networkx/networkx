@@ -45,9 +45,16 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
         That is, the function will receive the edge attribute dictionaries
         of the edges under consideration.
 
-    TODO:
     Examples
+    --------
+    >>> G1 = cycle_graph(6)
+    >>> G2 = wheel_graph(7)
+    >>> graph_edit_distance(G1, G2)
+    7
+
     See Also
+    --------
+    is_isomorphic (test for graph edit distance of 0)
 
     References
     ----------
@@ -58,7 +65,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
        Lisbon, Portugal. 2015,
        <10.5220/0005209202710278>. <hal-01168816>
        https://hal.archives-ouvertes.fr/hal-01168816
-"""
+    """
     # TODO: support DiGraph
 
     import numpy as np
@@ -116,8 +123,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
         return edit_cost(g, h, _edge_cost_f, cache)
 
     def get_g(startpath, u, v):
-        """
-        Cost of adding mapping u<->v to partial edit path startpath.
+        """Cost of adding mapping u<->v to partial edit path startpath.
         """
         c = node_edit_cost(u, v)
         u_edges = G1[u] if u is not None else ()
