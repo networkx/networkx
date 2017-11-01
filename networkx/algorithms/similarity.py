@@ -157,12 +157,12 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
         for i, j in candidates:
             g = get_g(startpath, pending_u[i] if i < m else None,
                       pending_v[j] if j < n else None)
-            if startcost + g - cost_lb.Cv[i, j] + cost_lb.ls > maxcost.value:
+            if startcost + g - cost_lb.Cv[i, j] + cost_lb.ls >= maxcost.value:
                 # prune
                 continue
             c = make_cost_lb(reduce_Cv(cost_lb.Cv, i, j, m + j, n + i))
             #assert cost_lb.ls - cost_lb.Cv[i, j] <= c.ls
-            if startcost + g + c.ls > maxcost.value:
+            if startcost + g + c.ls >= maxcost.value:
                 # prune
                 continue
             yield i, j, g, c
@@ -179,7 +179,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
                        if k < m or l < n),
                       key = lambda klg: klg[2] - cost_lb.Cv[klg[0], klg[1]])
         #assert cost_lb.Cv[i, j] <= g
-        if startcost + g + cost_lb.ls - cost_lb.Cv[i, j] <= maxcost.value:
+        if startcost + g + cost_lb.ls - cost_lb.Cv[i, j] < maxcost.value:
             # update cost matrix efficiently
             c = CostMatrix(reduce_Cv(cost_lb.Cv, i, j, m + j, n + i),
                            reduce_ind(cost_lb.lsa_row_ind, i, m + j),
@@ -220,6 +220,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
 
         if not max(len(pending_u), len(pending_v)):
             # path completed!
+            #assert startcost < maxcost.value
             maxcost.value = min(maxcost.value, startcost)
             yield startpath, startcost
 
