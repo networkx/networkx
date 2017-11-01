@@ -42,6 +42,8 @@ class TestSimilarity:
         assert_equal(graph_edit_distance(G1, G2, edge_match = lambda e1, e2: e1['color'] == e2['color']), 2)
 
     def test_graph_edit_distance_bigger(self):
-        G1 = circular_ladder_graph(12)
-        G2 = circular_ladder_graph(8)
-        assert_equal(graph_edit_distance(G2, G1), 30)
+        G1 = circular_ladder_graph(2)
+        G2 = circular_ladder_graph(6)
+        #G1 = circular_ladder_graph(12)
+        #G2 = circular_ladder_graph(16)
+        assert_equal(graph_edit_distance(G2, G1), 22)
