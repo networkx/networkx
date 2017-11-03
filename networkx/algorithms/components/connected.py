@@ -40,7 +40,7 @@ def connected_components(G):
     Raises
     ------
     NetworkXNotImplemented:
-        If G is undirected.
+        If G is directed.
 
     Examples
     --------
@@ -94,7 +94,7 @@ def connected_component_subgraphs(G, copy=True):
     Raises
     ------
     NetworkXNotImplemented:
-        If G is undirected.
+        If G is directed.
 
     Examples
     --------
@@ -170,7 +170,7 @@ def is_connected(G):
     Raises
     ------
     NetworkXNotImplemented:
-        If G is undirected.
+        If G is directed.
 
     Examples
     --------
