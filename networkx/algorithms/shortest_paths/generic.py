@@ -384,7 +384,7 @@ def all_shortest_paths(G, source, target, weight=None):
         raise nx.NodeNotFound('Source {} is not in G'.format(source))
 
     if target not in pred:
-        raise nx.NetworkXNoPath()
+        raise nx.NetworkXNoPath('Target {} cannot be reached from Source {}'.format(target, source))
 
     stack = [[target, 0]]
     top = 0
