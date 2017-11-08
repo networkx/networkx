@@ -121,6 +121,13 @@ else:
         return str(x)
 
 
+def make_id(x):
+    """returns ID string of x"""
+    if type(x) in (str, unicode):
+        return x
+    return str(id(x))
+
+
 def generate_unique_node():
     """ Generate a unique node label."""
     return str(uuid.uuid1())

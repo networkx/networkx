@@ -23,7 +23,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    All rights reserved.
 #    BSD license.
 from locale import getpreferredencoding
-from networkx.utils import open_file, make_str
+from networkx.utils import open_file, make_str, make_id
 from pkg_resources import parse_version
 import networkx as nx
 
@@ -224,20 +224,19 @@ def to_pydot(N):
 
     for n, nodedata in N.nodes(data=True):
         str_nodedata = dict((k, make_str(v)) for k, v in nodedata.items())
-        p = pydot.Node(make_str(n), **str_nodedata)
+        p = pydot.Node(make_id(n), label=make_str(n), **str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
             str_edgedata = dict((k, make_str(v)) for k, v in edgedata.items() if k != 'key')
-            edge = pydot.Edge(make_str(u), make_str(v),
+            edge = pydot.Edge(make_id(u), make_id(v),
                               key=make_str(key), **str_edgedata)
             P.add_edge(edge)
-
     else:
         for u, v, edgedata in N.edges(data=True):
             str_edgedata = dict((k, make_str(v)) for k, v in edgedata.items())
-            edge = pydot.Edge(make_str(u), make_str(v), **str_edgedata)
+            edge = pydot.Edge(make_id(u), make_id(v), **str_edgedata)
             P.add_edge(edge)
     return P
 
@@ -316,7 +315,7 @@ def pydot_layout(G, prog='neato', root=None, **kwds):
 
     node_pos = {}
     for n in G.nodes():
-        pydot_node = pydot.Node(make_str(n)).get_name()
+        pydot_node = pydot.Node(make_id(n), label=make_str(n)).get_name()
         node = Q.get_node(pydot_node)
 
         if isinstance(node, list):
