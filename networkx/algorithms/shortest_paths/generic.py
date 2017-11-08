@@ -63,12 +63,6 @@ def shortest_path(G, source=None, target=None, weight=None):
         If a string, use this edge attribute as the edge weight.
         Any edge attribute not present defaults to 1.
 
-    ignore_nodes : None or list of node labels, optional (default = None)
-       If specified, paths cannot contain nodes from this list.
-
-    ignore_edges : None or list of edges, optional (default = None)
-       If specified, paths cannot contain edges from this list.
-
     Returns
     -------
     path: list or dictionary
