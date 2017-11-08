@@ -162,7 +162,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     See Also
     --------
-    shortest_simple_paths, all_shortest_paths, shortest_path
+    all_shortest_paths, shortest_path
     """
     if source not in G:
         raise nx.NodeNotFound('source node %s not in graph' % source)

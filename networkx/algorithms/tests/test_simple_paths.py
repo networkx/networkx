@@ -107,6 +107,7 @@ def test_all_simple_paths_multigraph_with_cutoff():
     paths = nx.all_simple_paths(G, 1, 2, cutoff=1)
     assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 2)})
 
+
 def test_all_simple_paths_directed():
     G = nx.DiGraph()
     nx.add_path(G, [1, 2, 3])
