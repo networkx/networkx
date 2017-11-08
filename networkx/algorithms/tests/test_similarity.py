@@ -6,6 +6,19 @@ from networkx.generators.classic import *
 
 class TestSimilarity:
 
+    @classmethod
+    def setupClass(cls):
+        global numpy
+        global scipy
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+        try:
+            import scipy
+        except ImportError:
+            raise SkipTest('SciPy not available.')
+
     def test_graph_edit_distance(self):
         G1 = path_graph(6)
         G2 = cycle_graph(6)
