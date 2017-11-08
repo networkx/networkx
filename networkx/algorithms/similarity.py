@@ -393,3 +393,15 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
 
     #assert bestcost == maxcost.value
     return bestcost
+
+def setup_module(module):
+    """Fixture for nose tests."""
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
