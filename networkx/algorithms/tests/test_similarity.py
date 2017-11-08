@@ -46,4 +46,4 @@ class TestSimilarity:
         G2 = circular_ladder_graph(6)
         #G1 = circular_ladder_graph(12)
         #G2 = circular_ladder_graph(16)
-        assert_equal(graph_edit_distance(G2, G1), 22)
+        assert_equal(graph_edit_distance(G1, G2), 22)

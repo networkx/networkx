@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
-import itertools
 import networkx as nx
+from operator import *
 
 __author__ = 'Andrey Paramonov <paramon@acdlabs.ru>'
 
@@ -72,21 +72,37 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
     from scipy.optimize import linear_sum_assignment
 
     class CostMatrix:
-        def __init__(self, Cv, lsa_row_ind, lsa_col_ind, ls):
-            #assert Cv.shape[0] == len(lsa_row_ind)
-            #assert Cv.shape[1] == len(lsa_col_ind)
+        def __init__(self, C, lsa_row_ind, lsa_col_ind, ls):
+            #assert C.shape[0] == len(lsa_row_ind)
+            #assert C.shape[1] == len(lsa_col_ind)
             #assert len(lsa_row_ind) == len(lsa_col_ind)
             #assert set(lsa_row_ind) == set(range(len(lsa_row_ind)))
             #assert set(lsa_col_ind) == set(range(len(lsa_col_ind)))
-            #assert ls == Cv[lsa_row_ind, lsa_col_ind].sum()
-            self.Cv = Cv
+            #assert ls == C[lsa_row_ind, lsa_col_ind].sum()
+            self.C = C
             self.lsa_row_ind = lsa_row_ind
             self.lsa_col_ind = lsa_col_ind
             self.ls = ls
 
-    def make_cost_lb(Cv):
-        lsa_row_ind, lsa_col_ind = linear_sum_assignment(Cv)
-        return CostMatrix(Cv, lsa_row_ind, lsa_col_ind, Cv[lsa_row_ind, lsa_col_ind].sum())
+    def make_CostMatrix(C):
+        lsa_row_ind, lsa_col_ind = linear_sum_assignment(C)
+        return CostMatrix(C, lsa_row_ind, lsa_col_ind, C[lsa_row_ind, lsa_col_ind].sum())
+
+    def extract_C(C, i, j):
+        row_ind = [k in i for k in range(C.shape[0])]
+        col_ind = [k in j for k in range(C.shape[1])]
+        return C[row_ind,:][:,col_ind]
+
+    def reduce_C(C, i, j):
+        row_ind = [k not in i for k in range(C.shape[0])]
+        col_ind = [k not in j for k in range(C.shape[1])]
+        return C[row_ind,:][:,col_ind]
+
+    def reduce_ind(ind, i):
+        rind = ind[[k not in i for k in ind]]
+        for k in set(i):
+            rind[rind >= k] -= 1
+        return rind
 
     class MaxCost:
         def __init__(self):
@@ -94,195 +110,288 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
             # NOTE: should work for empty graph
             self.value = len(G1.nodes) + len(G2.nodes) + len(G1.edges) + len(G2.edges)
     maxcost = MaxCost()
+    inf = maxcost.value + 1
 
-    def edit_cost(x, y, cost_f, cache):
-        if (x is None) and (y is None):
-            return 0
-        elif (x is None) != (y is None):
-            return 1
-        else:
-            if (x, y) in cache:
-                c = cache[(x, y)]
-            else:
-                c = 1 - int(cost_f(x, y)) if cost_f else 0
-                cache[(x, y)] = c
-            return c
-
-    if node_match:
-        _node_cost_f = lambda u, v: node_match(G1.nodes[u], G2.nodes[v])
-    else:
-        _node_cost_f = None
-    def node_edit_cost(u, v, cache = dict()):
-        return edit_cost(u, v, _node_cost_f, cache)
-
-    if edge_match:
-        _edge_cost_f = lambda g, h: edge_match(G1.edges[g], G2.edges[h])
-    else:
-        _edge_cost_f = None
-    def edge_edit_cost(g, h, cache = dict()):
-        return edit_cost(g, h, _edge_cost_f, cache)
-
-    def get_g(startpath, u, v):
-        """Cost of adding mapping u<->v to partial edit path startpath.
-        """
-        c = node_edit_cost(u, v)
-        u_edges = G1[u] if u is not None else ()
-        v_edges = G2[v] if v is not None else ()
-        for p, q in startpath:
-            if p in u_edges:
-                g = (u, p)
-            else:
-                g = None
-            if q in v_edges:
-                h = (v, q)
-            else:
-                h = None
-            c += edge_edit_cost(g, h)
-        return c
-
-    def reduce_Cv(Cv, i, j, k, l):
-        row_ind = [t for t in range(Cv.shape[0]) if t != i and t != k]
-        col_ind = [t for t in range(Cv.shape[1]) if t != j and t != l]
-        return Cv[row_ind,:][:,col_ind]
-
-    def reduce_ind(ind, i, k):
-        rind = ind[[t != i and t != k for t in ind]]
-        rind[rind >= i] -= 1
-        if i != k:
-            rind[rind >= k] -= 1
-        return rind
-
-    def get_other_edit_nodes(startpath, startcost, pending_u, pending_v,
-                             cost_lb, k, l, m, n):
-        if n <= m:
-            candidates = ((k, t) for t in range(m + n)
-                          if k < m and t != l and (t < n or t == n + k))
-        else:
-            candidates = ((t, l) for t in range(m + n)
-                          if l < n and t != k and (t < m or t == m + l))
-        for i, j in candidates:
-            g = get_g(startpath, pending_u[i] if i < m else None,
-                      pending_v[j] if j < n else None)
-            if startcost + g - cost_lb.Cv[i, j] + cost_lb.ls >= maxcost.value:
-                # prune
-                continue
-            c = make_cost_lb(reduce_Cv(cost_lb.Cv, i, j, m + j, n + i))
-            #assert cost_lb.ls - cost_lb.Cv[i, j] <= c.ls
-            if startcost + g + c.ls >= maxcost.value:
-                # prune
-                continue
-            yield i, j, g, c
-
-    def get_edit_nodes(startpath, startcost, pending_u, pending_v, cost_lb):
-        m = len(pending_u)
-        n = len(pending_v)
-
-        # get most promising mapping (minimum under-estimation of
-        # actual mapping cost) quickly
-        i, j, g = min(((k, l, get_g(startpath, pending_u[k] if k < m else None,
-                                    pending_v[l] if l < n else None))
-                       for k, l in zip(cost_lb.lsa_row_ind, cost_lb.lsa_col_ind)
-                       if k < m or l < n),
-                      key = lambda klg: klg[2] - cost_lb.Cv[klg[0], klg[1]])
-        #assert cost_lb.Cv[i, j] <= g
-        if startcost + g + cost_lb.ls - cost_lb.Cv[i, j] < maxcost.value:
-            # update cost matrix efficiently
-            c = CostMatrix(reduce_Cv(cost_lb.Cv, i, j, m + j, n + i),
-                           reduce_ind(cost_lb.lsa_row_ind, i, m + j),
-                           reduce_ind(cost_lb.lsa_col_ind, j, n + i),
-                           cost_lb.ls - cost_lb.Cv[i, j])
-            yield i, j, g, c
-
-        # other candidate mappings, sorted by lower-bound cost estimate
-        other = get_other_edit_nodes(startpath, startcost, pending_u, pending_v,
-                                     cost_lb, i, j, m, n)
-        for i, j, g, c in sorted(other, key = lambda ijgc: ijgc[2] + ijgc[3].ls):
-            yield i, j, g, c
-
-    def get_edit_paths(startpath, startcost, pending_u, pending_v, cost_lb):
+    def match_edges(pending_g, pending_h, Ce, matched_uv, u, v):
         """
         Parameters:
-            startpath: partial edit path
-                list of tuples (u, v) of vertex mappings u<->v,
+            pending_g, pending_h: lists of edges not yet mapped
+            Ce: CostMatrix of pending edge mappings
+            matched_uv: partial vertex edit path
+                list of tuples (u, v) of previously matched vertex
+                mappings u<->v, u=None or v=None for insertion/deletion
+            u, v: vertex edit operation,
                 u=None or v=None for insertion/deletion
-            startcost: cost of startpath
-            pending_u, pending_v: lists of vertices not yet mapped
-            cost_lb: CostMatrix of pending vertex mappings
-                (lower-bound estimate)
 
         Returns:
-            sequence of (path, cost)
-                path: complete edit path
+            list of (i, j): indices of edge mappings g<->h
+            localCe: local CostMatrix of edge mappings
+                (basically Ce with elements from rows i, cols j)
+        """
+        m = len(pending_g)
+        n = len(pending_h)
+        #assert Ce.C.shape == (m + n, m + n)
+
+        g_ind = list(i for i in range(m)
+                     if any(pending_g[i] in ((p, u), (u, p), (u, u))
+                            for p, q in matched_uv))
+        h_ind = list(j for j in range(n)
+                     if any(pending_h[j] in ((q, v), (v, q), (v, v))
+                            for p, q in matched_uv))
+
+        s = set(g_ind) | set(m + j for j in h_ind)
+        t = set(h_ind) | set(n + i for i in g_ind)
+        C = extract_C(Ce.C, s, t)
+
+        # forbid structurally invalid matches
+        for k, i in zip(range(len(g_ind)), g_ind):
+            g = pending_g[i]
+            for l, j in zip(range(len(h_ind)), h_ind):
+                h = pending_h[j]
+                if not any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
+                           or g == (u, u) and h == (v, v)
+                           for p, q in matched_uv):
+                    C[k, l] = inf
+
+        localCe = make_CostMatrix(C)
+        ij = list((g_ind[k] if k < len(g_ind) else m + h_ind[l],
+                   h_ind[l] if l < len(h_ind) else n + g_ind[k])
+                  for k, l in zip(localCe.lsa_row_ind, localCe.lsa_col_ind)
+                  if k < len(g_ind) or l < len(h_ind))
+
+        return ij, localCe
+
+    def get_other_edit_ops(matched_uv, pending_u, pending_v, Cv,
+                           pending_g, pending_h, Ce, matched_cost,
+                           fixed_i, fixed_j, m, n):
+        "Helper for get_edit_ops"
+
+        if m <= n:
+            candidates = ((t, fixed_j) for t in range(m + n) if t != fixed_i)
+        else:
+            candidates = ((fixed_i, t) for t in range(m + n) if t != fixed_j)
+        for i, j in candidates:
+            if Cv.C[i, j] >= inf:
+                continue
+            if matched_cost + Cv.C[i, j] + Ce.ls >= maxcost.value:
+                # prune
+                continue
+            Cv_ij = make_CostMatrix(reduce_C(Cv.C, (i, m + j), (j, n + i)))
+            #assert Cv.ls <= Cv.C[i, j] + Cv_ij.ls
+            if matched_cost + Cv.C[i, j] + Cv_ij.ls + Ce.ls >= maxcost.value:
+                # prune
+                continue
+            xy, localCe = match_edges(pending_g, pending_h, Ce, matched_uv,
+                                      pending_u[i] if i < m else None, pending_v[j] if j < n else None)
+            if matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls >= maxcost.value:
+                # prune
+                continue
+            s = set(k for k, l in xy) | set(len(pending_g) + l for k, l in xy)
+            t = set(l for k, l in xy) | set(len(pending_h) + k for k, l in xy)
+            Ce_xy = make_CostMatrix(reduce_C(Ce.C, s, t))
+            #assert Ce.ls <= localCe.ls + Ce_xy.ls
+            if matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls + Ce_xy.ls >= maxcost.value:
+                # prune
+                continue
+            yield (i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls
+
+    def get_edit_ops(matched_uv, pending_u, pending_v, Cv,
+                     pending_g, pending_h, Ce, matched_cost):
+        """
+        Parameters:
+            matched_uv: partial vertex edit path
+                list of tuples (u, v) of vertex mappings u<->v,
+                u=None or v=None for insertion/deletion
+            pending_u, pending_v: lists of vertices not yet mapped
+            Cv: CostMatrix of pending vertex mappings
+            pending_g, pending_h: lists of edges not yet mapped
+            Ce: CostMatrix of pending edge mappings
+            matched_cost: cost of partial edit path
+
+        Returns:
+            sequence of
+                (i, j): indices of vertex mapping u<->v
+                Cv_ij: reduced CostMatrix of pending vertex mappings
+                    (basically Cv with row i, col j removed)
+                list of (x, y): indices of edge mappings g<->h
+                Ce_xy: reduced CostMatrix of pending edge mappings
+                    (basically Ce with rows x, cols y removed)
+                cost: total cost of edit operation
+            NOTE: most promising ops first
+        """
+        m = len(pending_u)
+        n = len(pending_v)
+        #assert Cv.C.shape == (m + n, m + n)
+        #assert matched_cost + Cv.ls + Ce.ls <= maxcost.value
+
+        # a vertex mapping from optimal linear sum assignment
+        i, j = min((k, l) for k, l in zip(Cv.lsa_row_ind, Cv.lsa_col_ind)
+                   if k < m or l < n)
+        xy, localCe = match_edges(pending_g, pending_h, Ce, matched_uv,
+                                  pending_u[i] if i < m else None, pending_v[j] if j < n else None)
+        s = set(k for k, l in xy) | set(len(pending_g) + l for k, l in xy)
+        t = set(l for k, l in xy) | set(len(pending_h) + k for k, l in xy)
+        Ce_xy = make_CostMatrix(reduce_C(Ce.C, s, t))
+        #assert Ce.ls <= localCe.ls + Ce_xy.ls
+        if matched_cost + Cv.ls + localCe.ls + Ce_xy.ls < maxcost.value:
+            # update vertex cost matrix efficiently
+            Cv_ij = CostMatrix(reduce_C(Cv.C, (i, m + j), (j, n + i)),
+                               reduce_ind(Cv.lsa_row_ind, (i, m + j)),
+                               reduce_ind(Cv.lsa_col_ind, (j, n + i)),
+                               Cv.ls - Cv.C[i, j])
+            yield (i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls
+
+        # get other candidates, sorted by lower-bound cost estimate
+        other = get_other_edit_ops(matched_uv, pending_u, pending_v, Cv,
+                                   pending_g, pending_h, Ce, matched_cost, i, j, m, n)
+        # yield from
+        for t in sorted(other, key = lambda t: t[4] + t[1].ls + t[3].ls):
+            yield t
+
+    def get_edit_paths(matched_uv, pending_u, pending_v, Cv,
+                       matched_gh, pending_g, pending_h, Ce, matched_cost):
+        """
+        Parameters:
+            matched_uv: partial vertex edit path
+                list of tuples (u, v) of vertex mappings u<->v,
+                u=None or v=None for insertion/deletion
+            pending_u, pending_v: lists of vertices not yet mapped
+            Cv: CostMatrix of pending vertex mappings
+            matched_gh: partial edge edit path
+                list of tuples (g, h) of edge mappings g<->h,
+                g=None or h=None for insertion/deletion
+            pending_g, pending_h: lists of edges not yet mapped
+            Ce: CostMatrix of pending edge mappings
+            matched_cost: cost of partial edit path
+
+        Returns:
+            sequence of (path_uv, path_gh, cost)
+                path_uv: complete vertex edit path
                     list of tuples (u, v) of vertex mappings u<->v,
                     u=None or v=None for insertion/deletion
-                cost: total cost of path
+                path_gh: complete edge edit path
+                    list of tuples (g, h) of edge mappings g<->h,
+                    g=None or h=None for insertion/deletion
+                cost: total cost of edit path
             NOTE: path costs are non-increasing
         """
-        #debug_print(startpath, ':', startcost)
+        #debug_print('matched-uv:', matched_uv)
+        #debug_print('matched-gh:', matched_gh)
+        #debug_print('matched-cost:', matched_cost)
         #debug_print('pending-u:', pending_u)
         #debug_print('pending-v:', pending_v)
-        #assert set(G1.nodes) == (set(u for u, v in startpath) | set(pending_u)) - set([None])
-        #assert set(G2.nodes) == (set(v for u, v in startpath) | set(pending_v)) - set([None])
+        #debug_print(Cv.C)
+        #assert set(G1.nodes) == (set(u for u, v in matched_uv) | set(pending_u)) - set([None])
+        #assert len(G1.nodes) == len(list(u for u, v in matched_uv if u is not None)) + len(pending_u)
+        #assert set(G2.nodes) == (set(v for u, v in matched_uv) | set(pending_v)) - set([None])
+        #assert len(G2.nodes) == len(list(v for u, v in matched_uv if v is not None)) + len(pending_v)
+        #debug_print('pending-g:', pending_g)
+        #debug_print('pending-h:', pending_h)
+        #debug_print(Ce.C)
+        #assert set(G1.edges) == (set(g for g, h in matched_gh) | set(pending_g)) - set([None])
+        #assert len(G1.edges) == len(list(g for g, h in matched_gh if g is not None)) + len(pending_g)
+        #assert set(G2.edges) == (set(h for g, h in matched_gh) | set(pending_h)) - set([None])
+        #assert len(G2.edges) == len(list(h for g, h in matched_gh if h is not None)) + len(pending_h)
+        #debug_print()
 
         if not max(len(pending_u), len(pending_v)):
+            #assert not len(pending_g)
+            #assert not len(pending_h)
             # path completed!
-            #assert startcost < maxcost.value
-            maxcost.value = min(maxcost.value, startcost)
-            yield startpath, startcost
+            #assert matched_cost < maxcost.value
+            maxcost.value = min(maxcost.value, matched_cost)
+            yield matched_uv, matched_gh, matched_cost
 
         else:
-            edit_nodes = get_edit_nodes(startpath, startcost,
-                                        pending_u, pending_v, cost_lb)
-            for i, j, g, cost_lb_ij in edit_nodes:
-                #assert cost_lb.Cv[i, j] <= g
-                #assert startcost + g + cost_lb_ij.ls <= maxcost.value
+            edit_ops = get_edit_ops(matched_uv, pending_u, pending_v, Cv,
+                                    pending_g, pending_h, Ce, matched_cost)
+            for ij, Cv_ij, xy, Ce_xy, edit_cost in edit_ops:
+                i, j = ij
+                #assert Cv.C[i, j] + sum(Ce.C[t] for t in xy) == edit_cost
+                if matched_cost + edit_cost + Cv_ij.ls + Ce_xy.ls >= maxcost.value:
+                    # prune
+                    continue
 
-                # go deeper
-                if i < len(pending_u):
-                    u = pending_u.pop(i)
-                else:
-                    u = None
-                if j < len(pending_v):
-                    v = pending_v.pop(j)
-                else:
-                    v = None
-                startpath.append((u, v))
+                # dive deeper
+                u = pending_u.pop(i) if i < len(pending_u) else None
+                v = pending_v.pop(j) if j < len(pending_v) else None
+                matched_uv.append((u, v))
+                for x, y in xy:
+                    matched_gh.append((pending_g[x] if x < len(pending_g) else None,
+                                       pending_h[y] if y < len(pending_h) else None))
+                G = list(reversed(list(pending_g.pop(x) if x < len(pending_g) else None
+                                       for x in sorted((x for x, y in xy), reverse = True))))
+                H = list(reversed(list(pending_h.pop(y) if y < len(pending_h) else None
+                                       for y in sorted((y for x, y in xy), reverse = True))))
 
-                #debug_print(u, '<->', v, ':', g)
-                for path, cost in get_edit_paths(startpath, startcost + g,
-                                                 pending_u, pending_v, cost_lb_ij):
-                    yield path, cost
+                # yield from
+                for t in get_edit_paths(matched_uv, pending_u, pending_v, Cv_ij,
+                                        matched_gh, pending_g, pending_h, Ce_xy,
+                                        matched_cost + edit_cost):
+                    yield t
 
                 # backtrack
                 if not u is None:
                     pending_u.insert(i, u)
                 if not v is None:
                     pending_v.insert(j, v)
-                startpath.pop()
+                matched_uv.pop()
+                for x, g in zip(sorted(x for x, y in xy), G):
+                    if g is not None:
+                        pending_g.insert(x, g)
+                for y, h in zip(sorted(y for x, y in xy), H):
+                    if h is not None:
+                        pending_h.insert(y, h)
+                for t in xy:
+                    matched_gh.pop()
+
+
+    # Initialization
 
     pending_u = list(G1.nodes)
     pending_v = list(G2.nodes)
 
-    # cost matrix of u<->v mappings (lower-bound estimate)
+    # cost matrix of vertex mappings
     m = len(pending_u)
     n = len(pending_v)
-    Cv = np.zeros((m + n, m + n))
-    Cv[0:m, 0:n] = np.array([node_edit_cost(u, v)
-                             for u in pending_u for v in pending_v]).reshape(m, n)
-    Cv[0:m, n:n+m] = np.array([node_edit_cost(pending_u[i], None)
-                               if i == j else maxcost.value + 1
-                               for i in range(m) for j in range(m)]).reshape(m, m)
-    Cv[m:m+n, 0:n] = np.array([node_edit_cost(pending_v[i], None)
-                               if i == j else maxcost.value + 1
-                               for i in range(n) for j in range(n)]).reshape(n, n)
-    #debug_print(m, 'x', n)
-    #debug_print(Cv)
+    C = np.zeros((m + n, m + n))
+    C[0:m, 0:n] = np.array([1 - int(node_match(G1.nodes[u], G2.nodes[v])) if node_match else 0
+                            for u in pending_u for v in pending_v]).reshape(m, n)
+    C[0:m, n:n+m] = np.array([1 if i == j else inf
+                              for i in range(m) for j in range(m)]).reshape(m, m)
+    C[m:m+n, 0:n] = np.array([1 if i == j else inf
+                              for i in range(n) for j in range(n)]).reshape(n, n)
+    Cv = make_CostMatrix(C)
+    #debug_print('Cv: {} x {}'.format(m, n))
+    #debug_print(Cv.C)
+
+    pending_g = list(G1.edges)
+    pending_h = list(G2.edges)
+
+    # cost matrix of edge mappings
+    m = len(pending_g)
+    n = len(pending_h)
+    C = np.zeros((m + n, m + n))
+    C[0:m, 0:n] = np.array([1 - int(edge_match(G1.edges[g], G2.edges[h])) if edge_match else 0
+                            for g in pending_g for h in pending_h]).reshape(m, n)
+    C[0:m, n:n+m] = np.array([1 if i == j else inf
+                              for i in range(m) for j in range(m)]).reshape(m, m)
+    C[m:m+n, 0:n] = np.array([1 if i == j else inf
+                              for i in range(n) for j in range(n)]).reshape(n, n)
+    Ce = make_CostMatrix(C)
+    #debug_print('Ce: {} x {}'.format(m, n))
+    #debug_print(Ce.C)
+    #debug_print()
+
+
+    # Now go!
 
     # for #asserts
     bestcost = maxcost.value
 
-    for path, cost in get_edit_paths([], 0, pending_u, pending_v, make_cost_lb(Cv)):
-        #print(path, cost)
+    for path_uv, path_gh, cost in get_edit_paths([], pending_u, pending_v, Cv,
+                                                 [], pending_g, pending_h, Ce, 0):
+        #print(path_uv, path_gh, cost)
         #assert cost <= bestcost
         #assert cost == maxcost.value
         bestcost = cost
