@@ -114,7 +114,7 @@ already present.
     >>> G.add_nodes_from("spam")  # adds 4 nodes: 's', 'p', 'a', 'm'
     >>> G.add_edge(3, 'm')
 
-At this stage the graph ``G`` consists of 8 nodes and 2 edges, as can be seen by:
+At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by:
 
 .. nbplot::
 
