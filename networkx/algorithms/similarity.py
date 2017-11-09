@@ -51,7 +51,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
     >>> G1 = nx.cycle_graph(6)
     >>> G2 = nx.wheel_graph(7)
     >>> nx.graph_edit_distance(G1, G2)
-    7
+    7.0
 
     See Also
     --------
