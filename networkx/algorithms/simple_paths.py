@@ -171,7 +171,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     if cutoff is None:
         cutoff = len(G) - 1
     if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, target, cutoff=cutoff)
+        return [_all_simple_paths_multigraph(G, source, target, cutoff=cutoff)]
     else:
         return _all_simple_paths_graph(G, source, target, cutoff=cutoff)
 
@@ -204,25 +204,29 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
     if cutoff < 1:
         return
     visited = [source]
-    stack = [(v for u, v in G.edges(source))]
+    visited_edges = [0] # An auxiliar value to pop when no path is found
+    stack = [((v, w) for u, v, w in G.edges(source, data=True))]
     while stack:
         children = stack[-1]
-        child = next(children, None)
+        child, child_data = next(children, (None, None))
         if child is None:
             stack.pop()
             visited.pop()
+            visited_edges.pop()
         elif len(visited) < cutoff:
             if child == target:
-                yield visited + [target]
+                yield visited + [target], visited_edges[1:] + [child_data]
             elif child not in visited:
                 visited.append(child)
-                stack.append((v for u, v in G.edges(child)))
+                visited_edges.append(child_data)
+                stack.append(((v, w) for u, v, w in G.edges(child, data=True)))
         else:  # len(visited) == cutoff:
             count = ([child] + list(children)).count(target)
             for i in range(count):
-                yield visited + [target]
+                yield visited + [target], visited_edges[1:] + [child_data]
             stack.pop()
             visited.pop()
+            visited_edges.pop()
 
 
 @not_implemented_for('multigraph')
