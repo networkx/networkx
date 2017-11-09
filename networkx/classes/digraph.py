@@ -1159,7 +1159,7 @@ class DiGraph(Graph):
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
         G.add_edges_from((u, v, datadict.copy())
-                         for u, nbrs in self.adj.items()
+                         for u, nbrs in self._adj.items()
                          for v, datadict in nbrs.items())
         return G
 
@@ -1228,12 +1228,12 @@ class DiGraph(Graph):
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
             G.add_edges_from((u, v, deepcopy(d))
-                             for u, nbrs in self.adj.items()
+                             for u, nbrs in self._adj.items()
                              for v, d in nbrs.items()
                              if v in self._pred[u])
         else:
             G.add_edges_from((u, v, deepcopy(d))
-                             for u, nbrs in self.adj.items()
+                             for u, nbrs in self._adj.items()
                              for v, d in nbrs.items())
         return G
 
