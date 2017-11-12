@@ -3,6 +3,7 @@ from __future__ import print_function
 import math
 import networkx as nx
 from operator import *
+import sys
 
 __author__ = 'Andrey Paramonov <paramon@acdlabs.ru>'
 
@@ -85,8 +86,22 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
             self.lsa_col_ind = lsa_col_ind
             self.ls = ls
 
-    def make_CostMatrix(C):
+    def make_CostMatrix(C, m, n):
+        assert(C.shape == (m + n, m + n))
         lsa_row_ind, lsa_col_ind = linear_sum_assignment(C)
+
+        # Fixup dummy assignments:
+        # each substitution i<->j should have corresponding dummy assignment m+j<->n+i
+        # NOTE: a lot of code relies on it
+        assert len(lsa_row_ind) == len(lsa_col_ind)
+        subst_ind = list(k for k, i, j in zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
+                         if i < m and j < n)
+        dummy_ind = list(k for k, i, j in zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
+                         if i >= m and j >= n)
+        assert len(subst_ind) == len(dummy_ind)
+        lsa_row_ind[dummy_ind] = lsa_col_ind[subst_ind] + m
+        lsa_col_ind[dummy_ind] = lsa_row_ind[subst_ind] + n
+
         return CostMatrix(C, lsa_row_ind, lsa_col_ind, C[lsa_row_ind, lsa_col_ind].sum())
 
     def extract_C(C, i, j, m, n):
@@ -102,6 +117,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
         return C[row_ind,:][:,col_ind]
 
     def reduce_ind(ind, i):
+        assert set(ind) == set(range(len(ind)))
         rind = ind[[k not in i for k in ind]]
         for k in set(i):
             rind[rind >= k] -= 1
@@ -132,35 +148,53 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
             localCe: local CostMatrix of edge mappings
                 (basically submatrix of Ce at cross of rows i, cols j)
         """
-        m = len(pending_g)
-        n = len(pending_h)
-        assert Ce.C.shape == (m + n, m + n)
+        M = len(pending_g)
+        N = len(pending_h)
+        assert Ce.C.shape == (M + N, M + N)
 
-        g_ind = list(i for i in range(m)
+        g_ind = list(i for i in range(M)
                      if any(pending_g[i] in ((p, u), (u, p), (u, u))
                             for p, q in matched_uv))
-        h_ind = list(j for j in range(n)
+        h_ind = list(j for j in range(N)
                      if any(pending_h[j] in ((q, v), (v, q), (v, v))
                             for p, q in matched_uv))
-        C = extract_C(Ce.C, g_ind, h_ind, m, n)
+        m = len(g_ind)
+        n = len(h_ind)
 
-        # forbid structurally invalid matches
-        for k, i in zip(range(len(g_ind)), g_ind):
-            g = pending_g[i]
-            for l, j in zip(range(len(h_ind)), h_ind):
-                h = pending_h[j]
-                if not any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
-                           or g == (u, u) and h == (v, v)
-                           for p, q in matched_uv):
-                    C[k, l] = inf
+        if m or n:
+            C = extract_C(Ce.C, g_ind, h_ind, M, N)
+            assert C.shape == (m + n, m + n)
 
-        localCe = make_CostMatrix(C)
-        ij = list((g_ind[k] if k < len(g_ind) else m + h_ind[l],
-                   h_ind[l] if l < len(h_ind) else n + g_ind[k])
-                  for k, l in zip(localCe.lsa_row_ind, localCe.lsa_col_ind)
-                  if k < len(g_ind) or l < len(h_ind))
+            # forbid structurally invalid matches
+            for k, i in zip(range(m), g_ind):
+                g = pending_g[i]
+                for l, j in zip(range(n), h_ind):
+                    h = pending_h[j]
+                    if not any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
+                               or g == (u, u) and h == (v, v)
+                               for p, q in matched_uv):
+                        C[k, l] = inf
+
+            localCe = make_CostMatrix(C, m, n)
+            ij = list((g_ind[k] if k < m else M + h_ind[l],
+                       h_ind[l] if l < n else N + g_ind[k])
+                      for k, l in zip(localCe.lsa_row_ind, localCe.lsa_col_ind)
+                      if k < m or l < n)
+
+        else:
+            ij = []
+            localCe = CostMatrix(np.empty((0, 0)), [], [], 0)
 
         return ij, localCe
+
+    def reduce_Ce(Ce, ij, m, n):
+        if len(ij):
+            i, j = zip(*ij)
+            m_i = m - sum(1 for t in i if t < m)
+            n_j = n - sum(1 for t in j if t < n)
+            return make_CostMatrix(reduce_C(Ce.C, i, j, m, n), m_i, n_j)
+        else:
+            return Ce
 
     def get_edit_ops(matched_uv, pending_u, pending_v, Cv,
                      pending_g, pending_h, Ce, matched_cost):
@@ -196,11 +230,13 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
                    if k < m or l < n)
         xy, localCe = match_edges(pending_u[i] if i < m else None, pending_v[j] if j < n else None,
                                   pending_g, pending_h, Ce, matched_uv)
-        Ce_xy = make_CostMatrix(reduce_C(Ce.C, [k for k, l in xy], [l for k, l in xy],
-                                         len(pending_g), len(pending_h)))
+        Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
         assert Ce.ls <= localCe.ls + Ce_xy.ls
-        if matched_cost + Cv.ls + localCe.ls + Ce_xy.ls < maxcost.value:
-            # get reduced Cv efficiently
+        if matched_cost + Cv.ls + localCe.ls + Ce_xy.ls >= maxcost.value:
+            # prune
+            pass
+        else:
+            # # get reduced Cv efficiently
             Cv_ij = CostMatrix(reduce_C(Cv.C, (i,), (j,), m, n),
                                reduce_ind(Cv.lsa_row_ind, (i, m + j)),
                                reduce_ind(Cv.lsa_col_ind, (j, n + i)),
@@ -220,7 +256,9 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
             if matched_cost + Cv.C[i, j] + Ce.ls >= maxcost.value:
                 # prune
                 continue
-            Cv_ij = make_CostMatrix(reduce_C(Cv.C, (i,), (j,), m, n))
+            Cv_ij = make_CostMatrix(reduce_C(Cv.C, (i,), (j,), m, n),
+                                    m - 1 if i < m else m,
+                                    n - 1 if j < n else n)
             assert Cv.ls <= Cv.C[i, j] + Cv_ij.ls
             if matched_cost + Cv.C[i, j] + Cv_ij.ls + Ce.ls >= maxcost.value:
                 # prune
@@ -230,8 +268,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
             if matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls >= maxcost.value:
                 # prune
                 continue
-            Ce_xy = make_CostMatrix(reduce_C(Ce.C, [k for k, l in xy], [l for k, l in xy],
-                                             len(pending_g), len(pending_h)))
+            Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
             assert Ce.ls <= localCe.ls + Ce_xy.ls
             if matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls + Ce_xy.ls >= maxcost.value:
                 # prune
@@ -259,11 +296,11 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
             matched_cost: cost of partial edit path
 
         Returns:
-            sequence of (path_uv, path_gh, cost)
-                path_uv: complete vertex edit path
+            sequence of (vertex_path, edge_path, cost)
+                vertex_path: complete vertex edit path
                     list of tuples (u, v) of vertex mappings u<->v,
                     u=None or v=None for deletion/insertion
-                path_gh: complete edge edit path
+                edge_path: complete edge edit path
                     list of tuples (g, h) of edge mappings g<->h,
                     g=None or h=None for deletion/insertion
                 cost: total cost of edit path
@@ -275,24 +312,20 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
         #debug_print('pending-u:', pending_u)
         #debug_print('pending-v:', pending_v)
         #debug_print(Cv.C)
-        assert set(G1.nodes) == (set(u for u, v in matched_uv) | set(pending_u)) - set([None])
-        assert len(G1.nodes) == len(list(u for u, v in matched_uv if u is not None)) + len(pending_u)
-        assert set(G2.nodes) == (set(v for u, v in matched_uv) | set(pending_v)) - set([None])
-        assert len(G2.nodes) == len(list(v for u, v in matched_uv if v is not None)) + len(pending_v)
+        assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))
+        assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))
         #debug_print('pending-g:', pending_g)
         #debug_print('pending-h:', pending_h)
         #debug_print(Ce.C)
-        assert set(G1.edges) == (set(g for g, h in matched_gh) | set(pending_g)) - set([None])
-        assert len(G1.edges) == len(list(g for g, h in matched_gh if g is not None)) + len(pending_g)
-        assert set(G2.edges) == (set(h for g, h in matched_gh) | set(pending_h)) - set([None])
-        assert len(G2.edges) == len(list(h for g, h in matched_gh if h is not None)) + len(pending_h)
+        assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))
+        assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))
         #debug_print()
 
         if not max(len(pending_u), len(pending_v)):
             assert not len(pending_g)
             assert not len(pending_h)
             # path completed!
-            assert matched_cost < maxcost.value
+            assert matched_cost <= maxcost.value
             maxcost.value = min(maxcost.value, matched_cost)
             yield matched_uv, matched_gh, matched_cost
 
@@ -357,7 +390,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
                               for i in range(m) for j in range(m)]).reshape(m, m)
     C[m:m+n, 0:n] = np.array([1 if i == j else inf
                               for i in range(n) for j in range(n)]).reshape(n, n)
-    Cv = make_CostMatrix(C)
+    Cv = make_CostMatrix(C, m, n)
     #debug_print('Cv: {} x {}'.format(m, n))
     #debug_print(Cv.C)
 
@@ -374,7 +407,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
                               for i in range(m) for j in range(m)]).reshape(m, m)
     C[m:m+n, 0:n] = np.array([1 if i == j else inf
                               for i in range(n) for j in range(n)]).reshape(n, n)
-    Ce = make_CostMatrix(C)
+    Ce = make_CostMatrix(C, m, n)
     #debug_print('Ce: {} x {}'.format(m, n))
     #debug_print(Ce.C)
     #debug_print()
@@ -382,17 +415,22 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None):
 
     # Now go!
 
-    # for #asserts
+    # for asserts
     bestcost = maxcost.value
 
-    for path_uv, path_gh, cost in get_edit_paths([], pending_u, pending_v, Cv,
-                                                 [], pending_g, pending_h, Ce, 0):
-        #print(path_uv, path_gh, cost)
-        #assert cost <= bestcost
-        #assert cost == maxcost.value
+    for vertex_path, edge_path, cost in \
+        get_edit_paths([], pending_u, pending_v, Cv,
+                       [], pending_g, pending_h, Ce, 0):
+        assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in vertex_path if u is not None)))
+        assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in vertex_path if v is not None)))
+        assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in edge_path if g is not None)))
+        assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in edge_path if h is not None)))
+        #print(vertex_path, edge_path, cost, file = sys.stderr)
+        assert cost <= bestcost
+        assert cost == maxcost.value
         bestcost = cost
 
-    #assert bestcost == maxcost.value
+    assert bestcost == maxcost.value
     return bestcost
 
 def setup_module(module):
