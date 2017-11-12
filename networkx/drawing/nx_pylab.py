@@ -397,7 +397,8 @@ def draw_networkx_nodes(G, pos,
                                  vmax=vmax,
                                  alpha=alpha,
                                  linewidths=linewidths,
-                                 label=label)
+                                 label=label,
+                                 **kwds)
 
     node_collection.set_zorder(2)
     return node_collection
