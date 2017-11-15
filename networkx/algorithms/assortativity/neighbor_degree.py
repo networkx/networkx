@@ -29,7 +29,7 @@ def average_neighbor_degree(G, source='out', target='out',
                             nodes=None, weight=None):
     r"""Returns the average degree of the neighborhood of each node.
 
-    The average degree of a node `i` is
+    The average neighborhood degree of a node `i` is
 
     .. math::
 
