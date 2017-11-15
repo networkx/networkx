@@ -383,7 +383,7 @@ def optimize_graph_edit_distance(G1, G2, node_match=None, edge_match=None,
     >>> G1 = nx.cycle_graph(6)
     >>> G2 = nx.wheel_graph(7)
     >>> for v in nx.optimize_graph_edit_distance(G1, G2):
-    >>>     minv = v
+    ...     minv = v
     >>> minv
     7.0
 
