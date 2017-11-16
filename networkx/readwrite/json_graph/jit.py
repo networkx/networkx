@@ -39,7 +39,7 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['jit_graph', 'jit_data']
 
-def jit_graph(data):
+def jit_graph(data, directed=False):
     """Read a graph from JIT JSON.
 
     Parameters
@@ -50,8 +50,9 @@ def jit_graph(data):
     -------
     G : NetworkX Graph
     """
-    G = nx.Graph()
-    for node in data:
+    G = nx.Graph() if not directed else nx.DiGraph()
+
+	for node in data:
         G.add_node(node['id'], **node['data'])
         if node.get('adjacencies') is not None:
             for adj in node['adjacencies']:
