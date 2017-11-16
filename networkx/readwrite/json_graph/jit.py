@@ -52,7 +52,7 @@ def jit_graph(data, directed=False):
     """
     G = nx.Graph() if not directed else nx.DiGraph()
 
-	for node in data:
+    for node in data:
         G.add_node(node['id'], **node['data'])
         if node.get('adjacencies') is not None:
             for adj in node['adjacencies']:
