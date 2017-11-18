@@ -416,7 +416,7 @@ def draw_networkx_edges(G, pos,
                         arrows=True,
                         label=None,
                         **kwds):
-    """Draw the edges of the graph G.
+    """Draw the edges of the graph G. DRAFT____1
 
     This draws only the edges of the graph G.
 
@@ -495,7 +495,7 @@ def draw_networkx_edges(G, pos,
         import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter, Colormap
-        from matplotlib.collections import LineCollection
+        from matplotlib.collections import LineCollection, PatchCollection
         import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -583,13 +583,13 @@ def draw_networkx_edges(G, pos,
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work
         arrow_colors = edge_colors
-        a_pos = []
-        p = 1.0 - 0.25  # make head segment 25 percent of edge length
+        arrow_collection = []
+        p = 1.0 - 0.10  # make head segment 10 percent of edge length
         for src, dst in edge_pos:
             x1, y1 = src
             x2, y2 = dst
-            dx = x2 - x1   # x offset
-            dy = y2 - y1   # y offset
+            dx = x1 - x2   # x offset
+            dy = y1 - y2   # y offset
             d = np.sqrt(float(dx**2 + dy**2))  # length of edge
             if d == 0:   # source and target at same position
                 continue
@@ -601,20 +601,19 @@ def draw_networkx_edges(G, pos,
                 xa = dx * p + x1
             else:
                 theta = np.arctan2(dy, dx)
+                theta = min(theta, np.pi - theta)
                 xa = p * d * np.cos(theta) + x1
                 ya = p * d * np.sin(theta) + y1
+                print(theta)
+            epsilon = .000001
 
-            a_pos.append(((xa, ya), (x2, y2)))
+            marker_pairs = [(0, 0), (x1,y1),(x1+epsilon,y1+epsilon),(0,0)]
 
-        arrow_collection = LineCollection(a_pos,
-                                          colors=arrow_colors,
-                                          linewidths=[4 * ww for ww in lw],
-                                          antialiaseds=(1,),
-                                          transOffset=ax.transData,
-                                          )
+            arrow_collection.append(ax.scatter([x2],[y2],
+                                                zorder=2,
+                                                marker=(3,0,theta),
+                                                s=1000))
 
-        arrow_collection.set_zorder(1)  # edges go behind nodes
-        ax.add_collection(arrow_collection)
 
     # update view
     minx = np.amin(np.ravel(edge_pos[:, :, 0]))
