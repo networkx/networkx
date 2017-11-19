@@ -258,7 +258,13 @@ def add_path(G, nodes, **attr):
     >>> nx.add_path(G, [0, 1, 2, 3])
     >>> nx.add_path(G, [10, 11, 12], weight=7)
     """
-    G.add_edges_from(pairwise(nodes), **attr)
+    nlist = iter(nodes)
+    try:
+        first_node = next(nlist)
+    except StopIteration:
+        return
+    G.add_node(first_node)
+    G.add_edges_from(pairwise(chain((first_node,), nlist)), **attr)
 
 
 def add_cycle(G, nodes, **attr):
