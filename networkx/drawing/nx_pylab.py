@@ -587,9 +587,12 @@ def draw_networkx_edges(G, pos,
         else:
             edge_collection.autoscale()
 
+    arrow_collection = None
+
     if G.is_directed() and arrows:
 
         # Draw arrows with `matplotlib.patches.FancyarrowPatch`
+        arrow_collection = []
         arrow_colors = edge_colors
         mutation_scale = 10  # scale factor of arrow head
         shrink_source = 20  # leave space for arrow in opposite direction
@@ -607,7 +610,7 @@ def draw_networkx_edges(G, pos,
                                         mutation_scale=mutation_scale,
                                         color=arrow_colors[i],
                                         linewidth=lw[i],
-                                        zorder=1)
+                                        zorder=1)  # arrows go behind nodes
             elif len(arrow_colors) > 1:  # only individual colors
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
                                         arrowstyle=arrowstyle,
@@ -636,22 +639,9 @@ def draw_networkx_edges(G, pos,
                                         linewidth=lw[0],
                                         zorder=1)
 
+            arrow_collection.append(arrow)
             ax.add_patch(arrow)
 
-        #arrow_collection = PatchCollection(a_pos,
-                                         # color=arrow_colors,
-                                         # linewidths=[4 * ww for ww in lw],
-                                         # antialiaseds=(1,),
-                                         # transOffset=ax.transData,
-                                          #)
-
-
-        #arrow_collection.set_zorder(1)  # edges go behind nodes
-        #arrow_collection.set_label(label)
-        #ax.add_collection(arrow_collection)
-
-
-            
     # update view
     minx = np.amin(np.ravel(edge_pos[:, :, 0]))
     maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
@@ -664,8 +654,6 @@ def draw_networkx_edges(G, pos,
     corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
-
-#    if arrow_collection:
 
     return edge_collection
 
