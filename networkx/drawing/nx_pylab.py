@@ -583,7 +583,7 @@ def draw_networkx_edges(G, pos,
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work
         arrow_colors = edge_colors
-        arrow_collection = []
+        a_pos = []
         p = 1.0 - 0.10  # make head segment 10 percent of edge length
         for src, dst in edge_pos:
             x1, y1 = src
@@ -604,24 +604,25 @@ def draw_networkx_edges(G, pos,
                 xa = p * d * np.cos(theta) + x1
                 ya = p * d * np.sin(theta) + y1
 
-                if theta > np.pi / 2:
-                    marker_pairs = [
-                                    (0, 0),
-                                    (-np.cos(theta), np.sin(theta)),
-                                    (1, 0)]
-                else:
-                    marker_pairs = [
-                                    (0, 0),
-                                    (-np.cos(theta), -np.sin(theta)),
-                                    (1, 0)]
-            #marker_paris = [(0,0), (xa, ya)]
+            arrow = matplotlib.patches.FancyArrowPatch((x1,y1),(x2,y2),
+                    arrowstyle='-|>', shrinkA=5, shrinkB=5, mutation_scale=20,
+                    fc='w', zorder=2)
+            ax.add_patch(arrow)
 
-            arrow_collection.append(ax.scatter([x2],[y2],
-                                                zorder=2,
-                                                marker=marker_pairs,
-                                                s=4000))
+        #arrow_collection = PatchCollection(a_pos,
+                                         # color=arrow_colors,
+                                         # linewidths=[4 * ww for ww in lw],
+                                         # antialiaseds=(1,),
+                                         # transOffset=ax.transData,
+                                          #)
 
 
+        #arrow_collection.set_zorder(1)  # edges go behind nodes
+        #arrow_collection.set_label(label)
+        #ax.add_collection(arrow_collection)
+
+
+            
     # update view
     minx = np.amin(np.ravel(edge_pos[:, :, 0]))
     maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
