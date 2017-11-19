@@ -588,8 +588,8 @@ def draw_networkx_edges(G, pos,
         for src, dst in edge_pos:
             x1, y1 = src
             x2, y2 = dst
-            dx = x1 - x2   # x offset
-            dy = y1 - y2   # y offset
+            dx = x2 - x1   # x offset
+            dy = y2 - y1   # y offset
             d = np.sqrt(float(dx**2 + dy**2))  # length of edge
             if d == 0:   # source and target at same position
                 continue
@@ -601,18 +601,25 @@ def draw_networkx_edges(G, pos,
                 xa = dx * p + x1
             else:
                 theta = np.arctan2(dy, dx)
-                theta = min(theta, np.pi - theta)
                 xa = p * d * np.cos(theta) + x1
                 ya = p * d * np.sin(theta) + y1
-                print(theta)
-            epsilon = .000001
 
-            marker_pairs = [(0, 0), (x1,y1),(x1+epsilon,y1+epsilon),(0,0)]
+                if theta > np.pi / 2:
+                    marker_pairs = [
+                                    (0, 0),
+                                    (-np.cos(theta), np.sin(theta)),
+                                    (1, 0)]
+                else:
+                    marker_pairs = [
+                                    (0, 0),
+                                    (-np.cos(theta), -np.sin(theta)),
+                                    (1, 0)]
+            #marker_paris = [(0,0), (xa, ya)]
 
             arrow_collection.append(ax.scatter([x2],[y2],
                                                 zorder=2,
-                                                marker=(3,0,theta),
-                                                s=1000))
+                                                marker=marker_pairs,
+                                                s=4000))
 
 
     # update view
