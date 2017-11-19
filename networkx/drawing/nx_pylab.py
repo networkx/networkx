@@ -152,6 +152,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     arrows : bool, optional (default=True)
        For directed graphs, if True draw arrowheads.
 
+    arrowstyle : str, optional (default='-|>')
+        For directed graphs, chose the style of the arrowsheads.
+        See :py:class: `matplotlib.patches.ArrowStyle` for more
+        options.
+
     with_labels :  bool, optional (default=True)
        Set to True to draw labels on the nodes.
 
@@ -409,6 +414,7 @@ def draw_networkx_edges(G, pos,
                         edge_color='k',
                         style='solid',
                         alpha=1.0,
+                        arrowstyle='-|>',
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None,
@@ -458,6 +464,11 @@ def draw_networkx_edges(G, pos,
 
     arrows : bool, optional (default=True)
        For directed graphs, if True draw arrowheads.
+
+    arrowstyle : str, optional (default='-|>')
+       For directed graphs, chose the style of the arrow heads.
+       See :py:class: `matplotlib.patches.ArrowStyle` for more
+       options.
 
     label : [None| string]
        Label for legend
@@ -576,8 +587,6 @@ def draw_networkx_edges(G, pos,
         else:
             edge_collection.autoscale()
 
-    arrow_collection = None
-
     if G.is_directed() and arrows:
 
         # a directed graph hack
@@ -589,7 +598,7 @@ def draw_networkx_edges(G, pos,
             x2, y2 = dst
             if len(arrow_colors) > 1 and len(lw) > 1:
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle='-|>',
+                                        arrowstyle=arrowstyle,
                                         shrinkA=20,
                                         shrinkB=6,
                                         mutation_scale=20,
@@ -599,7 +608,7 @@ def draw_networkx_edges(G, pos,
                                         zorder=1)
             elif len(arrow_colors) > 1:
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle='-|>',
+                                        arrowstyle=arrowstyle,
                                         shrinkA=20,
                                         shrinkB=6,
                                         mutation_scale=20,
@@ -609,7 +618,7 @@ def draw_networkx_edges(G, pos,
                                         zorder=1)
             elif len(lw) > 1:
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle='-|>',
+                                        arrowstyle=arrowstyle,
                                         shrinkA=20,
                                         shrinkB=6,
                                         mutation_scale=20,
@@ -619,7 +628,7 @@ def draw_networkx_edges(G, pos,
                                         zorder=1)
             else:
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle='-|>',
+                                        arrowstyle=arrowstyle,
                                         shrinkA=20,
                                         shrinkB=6,
                                         mutation_scale=20,
@@ -844,7 +853,6 @@ def draw_networkx_edge_labels(G, pos,
     """
     try:
         import matplotlib.pyplot as plt
-        import matplotlib.cbook as cb
         import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
