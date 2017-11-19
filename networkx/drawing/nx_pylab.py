@@ -495,7 +495,8 @@ def draw_networkx_edges(G, pos,
         import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter, Colormap
-        from matplotlib.collections import LineCollection, PatchCollection
+        from matplotlib.collections import LineCollection
+        from matplotlib.patches import FancyArrowPatch
         import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -583,30 +584,49 @@ def draw_networkx_edges(G, pos,
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work
         arrow_colors = edge_colors
-        a_pos = []
-        p = 1.0 - 0.10  # make head segment 10 percent of edge length
-        for src, dst in edge_pos:
+        for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
             x2, y2 = dst
-            dx = x2 - x1   # x offset
-            dy = y2 - y1   # y offset
-            d = np.sqrt(float(dx**2 + dy**2))  # length of edge
-            if d == 0:   # source and target at same position
-                continue
-            if dx == 0:  # vertical edge
-                xa = x2
-                ya = dy * p + y1
-            if dy == 0:  # horizontal edge
-                ya = y2
-                xa = dx * p + x1
+            if len(arrow_colors) > 1 and len(lw) > 1:
+                arrow = FancyArrowPatch((x1, y1), (x2, y2),
+                                        arrowstyle='-|>',
+                                        shrinkA=20,
+                                        shrinkB=6,
+                                        mutation_scale=20,
+                                        fc='w',
+                                        edgecolor=arrow_colors[i],
+                                        linewidth=lw[i],
+                                        zorder=1)
+            elif len(arrow_colors) > 1:
+                arrow = FancyArrowPatch((x1, y1), (x2, y2),
+                                        arrowstyle='-|>',
+                                        shrinkA=20,
+                                        shrinkB=6,
+                                        mutation_scale=20,
+                                        fc='w',
+                                        edgecolor=arrow_colors[i],
+                                        linewidth=lw[0],
+                                        zorder=1)
+            elif len(lw) > 1:
+                arrow = FancyArrowPatch((x1, y1), (x2, y2),
+                                        arrowstyle='-|>',
+                                        shrinkA=20,
+                                        shrinkB=6,
+                                        mutation_scale=20,
+                                        fc='w',
+                                        edgecolor=arrow_colors[0],
+                                        linewidth=lw[i],
+                                        zorder=1)
             else:
-                theta = np.arctan2(dy, dx)
-                xa = p * d * np.cos(theta) + x1
-                ya = p * d * np.sin(theta) + y1
-
-            arrow = matplotlib.patches.FancyArrowPatch((x1,y1),(x2,y2),
-                    arrowstyle='-|>', shrinkA=5, shrinkB=5, mutation_scale=20,
-                    fc='w', zorder=2)
+                arrow = FancyArrowPatch((x1, y1), (x2, y2),
+                                        arrowstyle='-|>',
+                                        shrinkA=20,
+                                        shrinkB=6,
+                                        mutation_scale=20,
+                                        fc='w',
+                                        edgecolor=arrow_colors[0],
+                                        linewidth=lw[0],
+                                        zorder=1)
             ax.add_patch(arrow)
 
         #arrow_collection = PatchCollection(a_pos,
