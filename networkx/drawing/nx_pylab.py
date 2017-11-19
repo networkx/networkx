@@ -589,53 +589,53 @@ def draw_networkx_edges(G, pos,
 
     if G.is_directed() and arrows:
 
-        # a directed graph hack
-        # draw thick line segments at head end of edge
-        # waiting for someone else to implement arrows that will work
+        # Draw arrows with `matplotlib.patches.FancyarrowPatch`
         arrow_colors = edge_colors
+        mutation_scale = 10  # scale factor of arrow head
+        shrink_source = 20  # leave space for arrow in opposite direction
+        shrink_target = 8  # arrow head next to node
+
         for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
             x2, y2 = dst
+            # indivual colors and linewidths
             if len(arrow_colors) > 1 and len(lw) > 1:
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
                                         arrowstyle=arrowstyle,
-                                        shrinkA=20,
-                                        shrinkB=6,
-                                        mutation_scale=20,
-                                        fc='w',
-                                        edgecolor=arrow_colors[i],
+                                        shrinkA=shrink_source,
+                                        shrinkB=shrink_target,
+                                        mutation_scale=mutation_scale,
+                                        color=arrow_colors[i],
                                         linewidth=lw[i],
                                         zorder=1)
-            elif len(arrow_colors) > 1:
+            elif len(arrow_colors) > 1:  # only individual colors
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
                                         arrowstyle=arrowstyle,
-                                        shrinkA=20,
-                                        shrinkB=6,
-                                        mutation_scale=20,
-                                        fc='w',
-                                        edgecolor=arrow_colors[i],
+                                        shrinkA=shrink_source,
+                                        shrinkB=shrink_target,
+                                        mutation_scale=mutation_scale,
+                                        color=arrow_colors[i],
                                         linewidth=lw[0],
                                         zorder=1)
-            elif len(lw) > 1:
+            elif len(lw) > 1:  # only individual linewidths
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
                                         arrowstyle=arrowstyle,
-                                        shrinkA=20,
-                                        shrinkB=6,
-                                        mutation_scale=20,
-                                        fc='w',
-                                        edgecolor=arrow_colors[0],
+                                        shrinkA=shrink_source,
+                                        shrinkB=shrink_target,
+                                        mutation_scale=mutation_scale,
+                                        color=arrow_colors[0],
                                         linewidth=lw[i],
                                         zorder=1)
             else:
                 arrow = FancyArrowPatch((x1, y1), (x2, y2),
                                         arrowstyle=arrowstyle,
-                                        shrinkA=20,
-                                        shrinkB=6,
-                                        mutation_scale=20,
-                                        fc='w',
-                                        edgecolor=arrow_colors[0],
+                                        shrinkA=shrink_source,
+                                        shrinkB=shrink_target,
+                                        mutation_scale=mutation_scale,
+                                        color=arrow_colors[0],
                                         linewidth=lw[0],
                                         zorder=1)
+
             ax.add_patch(arrow)
 
         #arrow_collection = PatchCollection(a_pos,
