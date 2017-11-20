@@ -421,6 +421,7 @@ def draw_networkx_edges(G, pos,
                         ax=None,
                         arrows=True,
                         label=None,
+                        node_size=300,
                         **kwds):
     """Draw the edges of the graph G. DRAFT____1
 
@@ -595,8 +596,10 @@ def draw_networkx_edges(G, pos,
         arrow_collection = []
         arrow_colors = edge_colors
         mutation_scale = 10  # scale factor of arrow head
-        shrink_source = 20  # leave space for arrow in opposite direction
-        shrink_target = 8  # arrow head next to node
+        # To UPDATE: Case example using a single node size
+        to_marker_edge = np.sqrt(node_size) / 2.  # only valid for circle
+        shrink_source = 0  # leave space for arrow in opposite direction
+        shrink_target = to_marker_edge  # arrow head next to node
 
         for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
