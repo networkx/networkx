@@ -79,7 +79,7 @@ def random_layout(G, center=None, dim=2, seed=None):
         Dimension of layout.
 
     seed : int
-        Set the random state, so that nodes are positioned consistently.
+        Set the random seed to allow reproducible node layouts to be generated.
 
     Returns
     -------
@@ -289,7 +289,7 @@ def fruchterman_reingold_layout(G, k=None,
         Dimension of layout.
 
     seed : int
-        Set the random state, so that nodes are positioned consistently.
+        Set the random seed to allow reproducible node layouts to be generated.
 
     Returns
     -------
