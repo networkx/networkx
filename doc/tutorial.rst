@@ -45,7 +45,7 @@ add a list of nodes,
 
 or add any iterable container of nodes. You can also add nodes along with node
 attributes if your container yields 2-tuples (node, node_attribute_dict).
-Node attributes are discussed furether below.
+Node attributes are discussed further below.
 
 .. nbplot::
 
