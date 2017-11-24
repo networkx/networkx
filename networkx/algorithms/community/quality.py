@@ -114,7 +114,10 @@ def inter_community_edges(G, partition):
     #                                    for block in partition))
     #     return sum(1 for u, v in G.edges() if aff[u] != aff[v])
     #
-    return nx.quotient_graph(G, partition, create_using=nx.MultiGraph()).size()
+    if G.is_directed():
+        return nx.quotient_graph(G, partition, create_using=nx.MultiDiGraph()).size()
+    else:
+        return nx.quotient_graph(G, partition, create_using=nx.MultiGraph()).size()
 
 
 def inter_community_non_edges(G, partition):

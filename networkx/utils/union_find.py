@@ -8,7 +8,6 @@
 """
 Union-find data structure.
 """
-from itertools import groupby
 
 from networkx.utils import groups
 

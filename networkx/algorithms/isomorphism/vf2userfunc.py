@@ -32,7 +32,6 @@
 """
 
 import networkx as nx
-
 from . import isomorphvf2 as vf2
 
 __all__ = ['GraphMatcher',

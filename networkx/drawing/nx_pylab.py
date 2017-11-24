@@ -614,7 +614,6 @@ def draw_networkx_edges(G, pos,
                                           )
 
         arrow_collection.set_zorder(1)  # edges go behind nodes
-        arrow_collection.set_label(label)
         ax.add_collection(arrow_collection)
 
     # update view

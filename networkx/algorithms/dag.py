@@ -354,9 +354,7 @@ def transitive_closure(G):
     .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
 
     """
-    TC = nx.DiGraph()
-    TC.add_nodes_from(G.nodes())
-    TC.add_edges_from(G.edges())
+    TC = G.copy()
     for v in G:
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
@@ -489,6 +487,8 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     --------
     dag_longest_path_length
     """
+    if not G:
+        return []
     dist = {}  # stores {v : (length, u)}
     for v in nx.topological_sort(G):
         us = [(dist[u][0] + data.get(weight, default_weight), u)

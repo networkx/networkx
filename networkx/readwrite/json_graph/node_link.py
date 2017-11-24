@@ -8,10 +8,8 @@
 #    All rights reserved.
 #    BSD license.
 from itertools import chain, count
-import json
 import networkx as nx
 from networkx.utils import make_str, to_tuple
-from tempfile import NamedTemporaryFile
 __all__ = ['node_link_data', 'node_link_graph']
 
 

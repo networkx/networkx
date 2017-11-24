@@ -188,7 +188,7 @@ def from_pandas_adjacency(df, create_using=None):
     """
 
     A = df.values
-    G = from_numpy_matrix(A, create_using)
+    G = from_numpy_matrix(A, create_using=create_using)
     try:
         df = df[df.index]
     except:
