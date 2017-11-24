@@ -1,5 +1,4 @@
 from math import sqrt
-from numpy.random import shuffle
 import networkx as nx
 from nose import SkipTest
 from nose.tools import *
@@ -230,6 +229,8 @@ class TestSpectralOrdering(object):
             ok_(set([2, 3]) in (set(order[:-1]), set(order[1:])))
 
     def test_path(self):
+        # based on setupClass numpy is installed if we get here
+        from numpy.random import shuffle
         path = list(range(10))
         shuffle(path)
         G = nx.Graph()
