@@ -5,6 +5,7 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
+from networkx.utils.decorators import nodes_or_number, preserve_random_state
 
 
 def test_not_implemented_decorator():
@@ -109,8 +110,8 @@ class TestOpenFileDecorator(object):
         self.writer_arg2default(0, path=None)
 
     def test_writer_arg4default_fobj(self):
-        self.writer_arg4default(0, 1, dog='dog', other='other2')
-        self.writer_arg4default(0, 1, dog='dog', other='other2', path=self.name)
+        self.writer_arg4default(0, 1, dog='dog', other='other')
+        self.writer_arg4default(0, 1, dog='dog', other='other', path=self.name)
         assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_str(self):
@@ -128,3 +129,13 @@ class TestOpenFileDecorator(object):
     def tearDown(self):
         self.fobj.close()
         os.unlink(self.name)
+
+
+@preserve_random_state
+def test_random_state():
+    try:
+        import numpy.random
+        r = numpy.random.random()
+    except ImportError:
+        return
+    assert(abs(r - 0.61879477158568) < 1e-16)
