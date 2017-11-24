@@ -125,6 +125,16 @@ class TestAlgebraicConnectivity(object):
             check_eigenvector(A, 6, x)
 
     @preserve_random_state
+    def test_abbreviation_of_method(self):
+        G = nx.path_graph(8)
+        A = nx.laplacian_matrix(G)
+        sigma = 2 - sqrt(2 + sqrt(2))
+        ac = nx.algebraic_connectivity(G, tol=1e-12, method='tracemin')
+        assert_almost_equal(ac, sigma)
+        x = nx.fiedler_vector(G, tol=1e-12, method='tracemin')
+        check_eigenvector(A, sigma, x)
+
+    @preserve_random_state
     def test_path(self):
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
