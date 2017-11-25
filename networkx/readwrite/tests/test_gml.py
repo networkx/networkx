@@ -278,6 +278,23 @@ graph
 ]"""
         assert_equal(data, answer)
 
+    def test_float_label(self):
+        node = 1.0
+        G = nx.Graph()
+        G.add_node(node)
+        fobj = tempfile.NamedTemporaryFile()
+        nx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip().decode('ascii')
+        answer = """graph [
+  node [
+    id 0
+    label "1.0"
+  ]
+]"""
+        assert_equal(data, answer)
+
     def test_name(self):
         G = nx.parse_gml('graph [ name "x" node [ id 0 label "x" ] ]')
         assert_equal('x', G.graph['name'])
