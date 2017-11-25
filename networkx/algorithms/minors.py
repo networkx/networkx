@@ -230,10 +230,6 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
     # is 'No' then we need to prepare suitable subgraph view.
     partition_nodes = set().union(*partition)
     if len(partition_nodes) != len(G):
-        if create_using is None:
-            # This hack is necessary because we will
-            # be passing subgraph instance.
-            create_using = G
         G = G.subgraph(partition_nodes)
     return _quotient_graph(G, partition, edge_relation, node_data,
                            edge_data, relabel, create_using)
@@ -244,7 +240,7 @@ def _quotient_graph(G, partition, edge_relation=None, node_data=None,
     # Each node in the graph must be in exactly one block.
     if any(sum(1 for b in partition if v in b) != 1 for v in G):
         raise NetworkXException('each node must be in exactly one block')
-    H = type(create_using)() if create_using is not None else type(G)()
+    H = G.fresh_copy() if create_using is None else create_using.fresh_copy()
     # By default set some basic information about the subgraph that each block
     # represents on the nodes in the quotient graph.
     if node_data is None:
