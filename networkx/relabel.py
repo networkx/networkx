@@ -89,8 +89,8 @@ def relabel_nodes(G, mapping, copy=True):
     """
     # you can pass a function f(old_label)->new_label
     # but we'll just make a dictionary here regardless
-    if not hasattr(mapping, "__getitem__"):
-        m = dict((n, mapping(n)) for n in G)
+    if not hasattr(mapping,"__getitem__"):
+        m = {n: mapping(n) for n in G}
     else:
         m = mapping
     if copy:
@@ -220,6 +220,6 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     H.name = "(" + G.name + ")_with_int_labels"
     # create node attribute with the old label
     if label_attribute is not None:
-        nx.set_node_attributes(H, dict((v, k) for k, v in mapping.items()),
+        nx.set_node_attributes(H, {v: k for k, v in mapping.items()},
                                label_attribute)
     return H
