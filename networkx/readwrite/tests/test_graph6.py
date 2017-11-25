@@ -82,6 +82,16 @@ class TestGraph6(object):
             assert_equal(g2.order(), g.order())
             assert_edges_equal(g2.edges(), g.edges())
 
+    def test_relabeling(self):
+        G = nx.Graph([(0,1)])
+        assert_equal(nx.generate_graph6(G),">>graph6<<A_")
+        G = nx.Graph([(1,2)])
+        assert_equal(nx.generate_graph6(G),">>graph6<<A_")
+        G = nx.Graph([(1,42)])
+        assert_equal(nx.generate_graph6(G),">>graph6<<A_")
+
+
+
     @raises(nx.NetworkXError)
     def directed_raise(self):
         nx.generate_graph6(nx.DiGraph())

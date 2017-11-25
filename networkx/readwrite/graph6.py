@@ -181,15 +181,15 @@ def generate_graph6(G, nodes = None, header=True):
         G = G.subgraph(nodes)
     H = nx.convert_node_labels_to_integers(G)
     ns = sorted(H.nodes())
-    def bits():
+    def bits(graph):
         for (i,j) in [(i,j) for j in range(1,n) for i in range(j)]:
-            yield G.has_edge(ns[i],ns[j])
+            yield graph.has_edge(ns[i],ns[j])
 
     n = G.order()
     data = n_to_data(n)
     d = 0
     flush = False
-    for i, b in zip(range(n * n), bits()):
+    for i, b in zip(range(n * n), bits(H)):
         d |= b << (5 - (i % 6))
         flush = True
         if i % 6 == 5:
