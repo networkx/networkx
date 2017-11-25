@@ -92,6 +92,8 @@ def test_expected_degree_graph():
     # test that fixed seed delivers the same graph
     deg_seq = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
     G1 = nx.expected_degree_graph(deg_seq, seed=1000)
+    assert_equal(len(G1), 12)
+
     G2 = nx.expected_degree_graph(deg_seq, seed=1000)
     assert_true(nx.is_isomorphic(G1, G2))
 
@@ -105,6 +107,7 @@ def test_expected_degree_graph_selfloops():
     G1 = nx.expected_degree_graph(deg_seq, seed=1000, selfloops=False)
     G2 = nx.expected_degree_graph(deg_seq, seed=1000, selfloops=False)
     assert_true(nx.is_isomorphic(G1, G2))
+    assert_equal(len(G1), 12)
 
 
 def test_expected_degree_graph_skew():
@@ -112,6 +115,7 @@ def test_expected_degree_graph_skew():
     G1 = nx.expected_degree_graph(deg_seq, seed=1000)
     G2 = nx.expected_degree_graph(deg_seq, seed=1000)
     assert_true(nx.is_isomorphic(G1, G2))
+    assert_equal(len(G1), 5)
 
 
 def test_havel_hakimi_construction():
