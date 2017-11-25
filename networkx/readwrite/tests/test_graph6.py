@@ -117,3 +117,12 @@ class TestWriteGraph6(TestCase):
             g6.write_graph6_file(nx.null_graph(), f)
             f.seek(0)
             self.assertEqual(f.read(), b'>>graph6<<?\n')
+
+
+    def test_relabeling(self):
+        G = nx.Graph([(0,1)])
+        assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')
+        G = nx.Graph([(1,2)])
+        assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')
+        G = nx.Graph([(1,42)])
+        assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')

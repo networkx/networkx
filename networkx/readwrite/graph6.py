@@ -189,7 +189,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
         G = G.subgraph(nodes)
     H = nx.convert_node_labels_to_integers(G)
     nodes = sorted(H.nodes())
-    return b''.join(_generate_graph6_bytes(G, nodes, header))
+    return b''.join(_generate_graph6_bytes(H, nodes, header))
 
 
 @open_file(0, mode='rb')
@@ -377,7 +377,7 @@ def write_graph6_file(G, f, nodes=None, header=True):
         G = G.subgraph(nodes)
     H = nx.convert_node_labels_to_integers(G)
     nodes = sorted(H.nodes())
-    for b in _generate_graph6_bytes(G, nodes, header):
+    for b in _generate_graph6_bytes(H, nodes, header):
         f.write(b)
 
 
