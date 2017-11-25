@@ -123,7 +123,7 @@ def draw(G, pos=None, ax=None, **kwds):
         kwds['with_labels'] = 'labels' in kwds
 
     try:
-        draw_networkx(G, pos=pos, ax=ax, **kwds)
+        nodes, edges = draw_networkx(G, pos=pos, ax=ax, **kwds)
         ax.set_axis_off()
         plt.draw_if_interactive()
     except:
@@ -270,6 +270,8 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     if with_labels:
         draw_networkx_labels(G, pos, **kwds)
     plt.draw_if_interactive()
+    
+    return node_collection, edge_collection
 
 
 def draw_networkx_nodes(G, pos,
