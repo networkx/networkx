@@ -2,6 +2,7 @@ import sys
 
 from collections import defaultdict
 from os.path import splitext
+from contextlib import contextmanager
 
 import networkx as nx
 from decorator import decorator
@@ -11,6 +12,7 @@ __all__ = [
     'not_implemented_for',
     'open_file',
     'nodes_or_number',
+    'preserve_random_state',
 ]
 
 
@@ -219,7 +221,7 @@ def open_file(path_arg, mode='r'):
             new_args = list(args)
             new_args[path_arg] = fobj
 
-        # Finally, we call the original function, making sure to close the fobj.
+        # Finally, we call the original function, making sure to close the fobj
         try:
             result = func(*new_args, **kwargs)
         finally:
@@ -286,3 +288,50 @@ def nodes_or_number(which_args):
             new_args[i] = (n, nodes)
         return f(*new_args, **kw)
     return _nodes_or_number
+
+
+def preserve_random_state(func):
+    """ Decorator to preserve the numpy.random state during a function.
+
+    Parameters
+    ----------
+    func : function
+        function around which to preserve the random state.
+
+    Returns
+    -------
+    wrapper : function
+        Function which wraps the input function by saving the state before
+        calling the function and restoring the function afterward.
+
+    Examples
+    --------
+    Decorate functions like this::
+
+        @preserve_random_state
+        def do_random_stuff(x, y):
+            return x + y * numpy.random.random()
+
+    Notes
+    -----
+    If numpy.random is not importable, the state is not saved or restored.
+    """
+    try:
+        from numpy.random import get_state, seed, set_state
+
+        @contextmanager
+        def save_random_state():
+            state = get_state()
+            try:
+                yield
+            finally:
+                set_state(state)
+
+        def wrapper(*args, **kwargs):
+            with save_random_state():
+                seed(1234567890)
+                return func(*args, **kwargs)
+        wrapper.__name__ = func.__name__
+        return wrapper
+    except ImportError:
+        return func
