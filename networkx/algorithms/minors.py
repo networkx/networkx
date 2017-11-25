@@ -220,7 +220,27 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
     # the blocks of the partition on the nodes of G induced by the
     # equivalence relation.
     if callable(partition):
+        # equivalence_classes always return partition of whole G.
         partition = equivalence_classes(G, partition)
+        return _quotient_graph(G, partition, edge_relation, node_data,
+                               edge_data, relabel, create_using)
+
+    # If the user provided partition as a collection of sets. Then we
+    # need to check if partition covers all of G nodes. If the answer
+    # is 'No' then we need to prepare suitable subgraph view.
+    partition_nodes = set().union(*partition)
+    if len(partition_nodes) != len(G):
+        if create_using is None:
+            # This hack is necessary because we will
+            # be passing subgraph instance.
+            create_using = G
+        G = G.subgraph(partition_nodes)
+    return _quotient_graph(G, partition, edge_relation, node_data,
+                           edge_data, relabel, create_using)
+
+
+def _quotient_graph(G, partition, edge_relation=None, node_data=None,
+                    edge_data=None, relabel=False, create_using=None):
     # Each node in the graph must be in exactly one block.
     if any(sum(1 for b in partition if v in b) != 1 for v in G):
         raise NetworkXException('each node must be in exactly one block')
