@@ -88,6 +88,12 @@ def test_all_simple_paths():
     assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3)})
 
 
+def test_all_simple_paths_source_target():
+    G = nx.path_graph(4)
+    paths = nx.all_simple_paths(G, 1, 1)
+    assert_equal(paths, [])
+
+
 def test_all_simple_paths_cutoff():
     G = nx.complete_graph(4)
     paths = nx.all_simple_paths(G, 0, 1, cutoff=1)

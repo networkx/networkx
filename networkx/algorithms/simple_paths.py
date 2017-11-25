@@ -168,6 +168,8 @@ def all_simple_paths(G, source, target, cutoff=None):
         raise nx.NodeNotFound('source node %s not in graph' % source)
     if target not in G:
         raise nx.NodeNotFound('target node %s not in graph' % target)
+    if source == target:
+        return []
     if cutoff is None:
         cutoff = len(G) - 1
     if G.is_multigraph():
