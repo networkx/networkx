@@ -72,9 +72,12 @@ def min_edge_cover(G, matching_algorithm=None):
                                      maxcardinality=True)
     maximum_matching = matching_algorithm(G)
     # ``min_cover`` is superset of ``maximum_matching``
-    min_cover = set(maximum_matching.items())
+    try:
+        min_cover = set(maximum_matching.items()) # bipartite matching case returns dict
+    except AttributeError:
+        min_cover = maximum_matching
     # iterate for uncovered nodes
-    uncovered_nodes = set(G) - {v for u, v in min_cover}
+    uncovered_nodes = set(G) - {v for u, v in min_cover} - {u for u, v in min_cover}
     for v in uncovered_nodes:
         # Since `v` is uncovered, each edge incident to `v` will join it
         # with a covered node (otherwise, if there were an edge joining
