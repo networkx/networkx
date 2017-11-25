@@ -69,7 +69,8 @@ def matching_dict_to_set(matching):
     # appear in `matching.items()`, so we use a set of sets. This way,
     # only the (frozen)set `{u, v}` appears as an element in the
     # returned set.
-    return set(map(frozenset, matching.items()))
+
+    return set((u,v) for (u,v) in set(map(frozenset, matching.items())))
 
 
 def is_matching(G, matching):
@@ -172,11 +173,8 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
 
     Returns
     -------
-    mate : dictionary
-       The matching is returned as a dictionary, mate, such that
-       mate[v] == w if node v is matched to node w.  Unmatched nodes do not
-       occur as a key in mate.
-
+    matching : set
+        A maximal matching of the graph.
 
     Notes
     -----
@@ -249,7 +247,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
     # Get a list of vertices.
     gnodes = list(G)
     if not gnodes:
-        return {}  # don't bother with empty graphs
+        return set( ) # don't bother with empty graphs
 
     # Find the maximum edge weight.
     maxweight = 0
@@ -931,4 +929,4 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
     if allinteger:
         verifyOptimum()
 
-    return mate
+    return matching_dict_to_set(mate)
