@@ -176,9 +176,11 @@ Geometric
    :toctree: generated/
 
    random_geometric_graph
+   soft_random_geometric_graph
    geographical_threshold_graph
    waxman_graph
    navigable_small_world_graph
+   thresholded_random_geometric_graph
 
 Line Graph
 ----------
