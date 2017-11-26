@@ -24,7 +24,7 @@ class TestMinEdgeCover:
         G = nx.Graph()
         G.add_edge(0, 1)
         assert_equal(nx.min_edge_cover(G),
-                     {(0, 1), (1, 0)})
+                     {(0, 1)})
 
     def test_bipartite_explicit(self):
         G = nx.Graph()
@@ -34,6 +34,7 @@ class TestMinEdgeCover:
                           (2, 'c'), (3, 'c'), (4, 'a')])
         min_cover = nx.min_edge_cover(G, nx.algorithms.bipartite.matching.
                                       eppstein_matching)
+        min_cover2 = nx.min_edge_cover(G)
         assert_true(nx.is_edge_cover(G, min_cover))
         assert_equal(len(min_cover), 8)
 
@@ -41,7 +42,7 @@ class TestMinEdgeCover:
         G = nx.complete_graph(10)
         min_cover = nx.min_edge_cover(G)
         assert_true(nx.is_edge_cover(G, min_cover))
-        assert_equal(len(min_cover), 10)
+        assert_equal(len(min_cover), 5)
 
 
 class TestIsEdgeCover:
