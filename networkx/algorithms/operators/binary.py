@@ -10,8 +10,8 @@ Operations on graphs including union, intersection, difference.
 import networkx as nx
 from networkx.utils import is_string_like
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['union', 'compose', 'disjoint_union', 'intersection',
            'difference', 'symmetric_difference']
 
@@ -25,9 +25,6 @@ def union(G, H, rename=(None, None), name=None):
     ----------
     G,H : graph
        A NetworkX graph
-
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise
 
     rename : bool , default=(None, None)
        Node names of G and H can be changed by specifying the tuple
@@ -57,7 +54,9 @@ def union(G, H, rename=(None, None), name=None):
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
     # Union is the same type as G
-    R = G.__class__()
+    R = G.fresh_copy()
+    # construct new name graph attribute
+    # FIXME this is overwritten by .graph.update below
     if name is None:
         name = "union( %s, %s )" % (G.name, H.name)
     R.name = name
@@ -100,10 +99,10 @@ def union(G, H, rename=(None, None), name=None):
         R.nodes[n].update(G.nodes[n])
     for n in H:
         R.nodes[n].update(H.nodes[n])
+
     # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
     R.graph.update(H.graph)
-
     return R
 
 
@@ -328,7 +327,8 @@ def compose(G, H, name=None):
 
     if name is None:
         name = "compose( %s, %s )" % (G.name, H.name)
-    R = G.__class__()
+    R = G.fresh_copy()
+    # FIXME this is overwritten by R.graph.update below
     R.name = name
 
     R.add_nodes_from(G.nodes(data=True))
@@ -342,7 +342,6 @@ def compose(G, H, name=None):
         R.add_edges_from(H.edges(keys=True, data=True))
     else:
         R.add_edges_from(H.edges(data=True))
-
     # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
     R.graph.update(H.graph)

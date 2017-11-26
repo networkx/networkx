@@ -168,6 +168,8 @@ def all_simple_paths(G, source, target, cutoff=None):
         raise nx.NodeNotFound('source node %s not in graph' % source)
     if target not in G:
         raise nx.NodeNotFound('target node %s not in graph' % target)
+    if source == target:
+        return []
     if cutoff is None:
         cutoff = len(G) - 1
     if G.is_multigraph():
@@ -333,7 +335,6 @@ def shortest_simple_paths(G, source, target, weight=None):
                 for path in listA:
                     if path[:i] == root:
                         ignore_edges.add((path[i - 1], path[i]))
-                ignore_nodes.add(root[-1])
                 try:
                     length, spur = shortest_path_func(G, root[-1], target,
                                                       ignore_nodes=ignore_nodes,
@@ -343,6 +344,7 @@ def shortest_simple_paths(G, source, target, weight=None):
                     listB.push(root_length + length, path)
                 except nx.NetworkXNoPath:
                     pass
+                ignore_nodes.add(root[-1])
 
         if listB:
             path = listB.pop()
@@ -447,6 +449,8 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
        succ is a dictionary of successors from w to the target.
     """
     # does BFS from both source and target and meets in the middle
+    if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
+        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
     if target == source:
         return ({target: None}, {source: None}, source)
 
@@ -605,6 +609,8 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     shortest_path
     shortest_path_length
     """
+    if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
+        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
     if source == target:
         return (0, [source])
 

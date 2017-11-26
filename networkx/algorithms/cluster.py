@@ -13,7 +13,6 @@ from itertools import combinations
 from collections import Counter
 
 import networkx as nx
-from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
@@ -84,8 +83,8 @@ def _triangles_and_degree_iter(G, nodes=None):
 
     for v, v_nbrs in nodes_nbrs:
         vs = set(v_nbrs) - {v}
-        gen_degree = Counter([len(vs & (set(G[w]) - {w})) for w in vs])
-        ntriangles = sum([k * val for k, val in gen_degree.items()])
+        gen_degree = Counter(len(vs & (set(G[w]) - {w})) for w in vs)
+        ntriangles = sum(k * val for k, val in gen_degree.items())
         yield (v, len(vs), ntriangles, gen_degree)
 
 
@@ -175,7 +174,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
        http://jponnela.com/web_documents/a9.pdf
     .. [2] Marcus Kaiser,  Mean clustering coefficients: the role of isolated
        nodes and leafs on clustering measures for small-world networks.
-       http://arxiv.org/abs/0802.2512
+       https://arxiv.org/abs/0802.2512
     """
     c = clustering(G, nodes, weight=weight).values()
     if not count_zeros:

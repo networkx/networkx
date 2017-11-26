@@ -34,6 +34,7 @@ from networkx.algorithms.operators import *
 from networkx.algorithms.reciprocity import *
 from networkx.algorithms.richclub import *
 from networkx.algorithms.shortest_paths import *
+from networkx.algorithms.similarity import *
 from networkx.algorithms.simple_paths import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.structuralholes import *
@@ -80,6 +81,8 @@ from networkx.algorithms.connectivity import edge_connectivity
 from networkx.algorithms.connectivity import k_components
 from networkx.algorithms.connectivity import k_edge_components
 from networkx.algorithms.connectivity import k_edge_subgraphs
+from networkx.algorithms.connectivity import k_edge_augmentation
+from networkx.algorithms.connectivity import is_k_edge_connected
 from networkx.algorithms.connectivity import minimum_edge_cut
 from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity

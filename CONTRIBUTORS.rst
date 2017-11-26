@@ -19,8 +19,7 @@ Creating a comprehensive list of contributors can be difficult, and the list
 within this file is almost certainly incomplete.  Contributors include
 testers, bug reporters, contributors who wish to remain anonymous, funding
 sources, academic advisors, end users, and even build/integration systems (such
-as `TravisCI <https://travis-ci.org>`_, `coveralls <https://coveralls.io>`_,
-and `readthedocs <https://readthedocs.org>`_).
+as `TravisCI <https://travis-ci.org>`_).
 
 Do you want to make your contribution known? If you have commit access, edit
 this file and add your name. If you do not have commit access, feel free to
@@ -114,6 +113,7 @@ is partially historical, and now, mostly arbitrary.
 - Niels van Adrichem, GitHub: `NvanAdrichem <https://github.com/NvanAdrichem>`_
 - Michael E. Rose, GitHub: `Michael-E-Rose <https://github.com/Michael-E-Rose>`_
 - Jarrod Millman, GitHub: `jarrodmillman <https://github.com/jarrodmillman>`_
+- Andre Weltsch
 
 Support
 -------

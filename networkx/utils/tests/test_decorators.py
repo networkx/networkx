@@ -4,13 +4,16 @@ import os
 from nose.tools import *
 
 import networkx as nx
-from networkx.utils.decorators import open_file,not_implemented_for
+from networkx.utils.decorators import open_file, not_implemented_for
+from networkx.utils.decorators import nodes_or_number, preserve_random_state
+
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
     def test1(G):
         pass
     test1(nx.Graph())
+
 
 @raises(KeyError)
 def test_not_implemented_decorator_key():
@@ -19,13 +22,13 @@ def test_not_implemented_decorator_key():
         pass
     test1(nx.Graph())
 
+
 @raises(nx.NetworkXNotImplemented)
 def test_not_implemented_decorator_raise():
     @not_implemented_for('graph')
     def test1(G):
         pass
     test1(nx.Graph())
-
 
 
 class TestOpenFileDecorator(object):
@@ -84,41 +87,41 @@ class TestOpenFileDecorator(object):
 
     def test_writer_arg1_str(self):
         self.writer_arg1(self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg1_fobj(self):
         self.writer_arg1(self.fobj)
         assert_false(self.fobj.closed)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_str(self):
         self.writer_arg2default(0, path=None)
         self.writer_arg2default(0, path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_fobj(self):
         self.writer_arg2default(0, path=self.fobj)
         assert_false(self.fobj.closed)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_fobj(self):
         self.writer_arg2default(0, path=None)
 
     def test_writer_arg4default_fobj(self):
-        self.writer_arg4default(0, 1, dog='dog', other='other2')
-        self.writer_arg4default(0, 1, dog='dog', other='other2', path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        self.writer_arg4default(0, 1, dog='dog', other='other')
+        self.writer_arg4default(0, 1, dog='dog', other='other', path=self.name)
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_str(self):
         self.writer_kwarg(path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_fobj(self):
         self.writer_kwarg(path=self.fobj)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_fobj(self):
         self.writer_kwarg(path=None)
@@ -126,3 +129,13 @@ class TestOpenFileDecorator(object):
     def tearDown(self):
         self.fobj.close()
         os.unlink(self.name)
+
+
+@preserve_random_state
+def test_random_state():
+    try:
+        import numpy.random
+        r = numpy.random.random()
+    except ImportError:
+        return
+    assert(abs(r - 0.61879477158568) < 1e-16)

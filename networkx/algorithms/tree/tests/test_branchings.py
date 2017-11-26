@@ -20,15 +20,15 @@ from networkx.testing import *
 #
 G_array = np.array([
     # 0   1   2   3   4   5   6   7   8
-    [ 0,  0, 12,  0, 12,  0,  0,  0,  0], # 0
-    [ 4,  0,  0,  0,  0, 13,  0,  0,  0], # 1
-    [ 0, 17,  0, 21,  0, 12,  0,  0,  0], # 2
-    [ 5,  0,  0,  0, 17,  0, 18,  0,  0], # 3
-    [ 0,  0,  0,  0,  0,  0,  0, 12,  0], # 4
-    [ 0,  0,  0,  0,  0,  0, 14,  0, 12], # 5
-    [ 0,  0, 21,  0,  0,  0,  0,  0, 15], # 6
-    [ 0,  0,  0, 19,  0,  0, 15,  0,  0], # 7
-    [ 0,  0,  0,  0,  0,  0,  0, 18,  0], # 8
+    [0,  0, 12,  0, 12,  0,  0,  0,  0],  # 0
+    [4,  0,  0,  0,  0, 13,  0,  0,  0],  # 1
+    [0, 17,  0, 21,  0, 12,  0,  0,  0],  # 2
+    [5,  0,  0,  0, 17,  0, 18,  0,  0],  # 3
+    [0,  0,  0,  0,  0,  0,  0, 12,  0],  # 4
+    [0,  0,  0,  0,  0,  0, 14,  0, 12],  # 5
+    [0,  0, 21,  0,  0,  0,  0,  0, 15],  # 6
+    [0,  0,  0, 19,  0,  0, 15,  0,  0],  # 7
+    [0,  0,  0,  0,  0,  0,  0, 18,  0],  # 8
 ], dtype=int)
 
 # We convert to MultiDiGraph after using from_numpy_matrix
@@ -41,6 +41,7 @@ def G1():
     G = nx.MultiDiGraph(G)
     return G
 
+
 def G2():
     # Now we shift all the weights by -10.
     # Should not affect optimal arborescence, but does affect optimal branching.
@@ -50,6 +51,7 @@ def G2():
     G = nx.from_numpy_matrix(Garr, create_using=G)
     G = nx.MultiDiGraph(G)
     return G
+
 
 # An optimal branching for G1 that is also a spanning arborescence. So it is
 # also an optimal spanning arborescence.
@@ -93,16 +95,19 @@ greedy_subopt_branching_1b = [
     (2, 3, 21), (1, 5, 13), (3, 0,  5), (3, 4, 17),
 ]
 
+
 def build_branching(edges):
     G = nx.DiGraph()
     for u, v, weight in edges:
         G.add_edge(u, v, weight=weight)
     return G
 
+
 def sorted_edges(G, attr='weight', default=1):
-    edges = [(u,v,data.get(attr, default)) for (u,v,data) in G.edges(data=True)]
-    edges = sorted(edges, key=lambda x: (x[2],x[1],x[0]))
+    edges = [(u, v, data.get(attr, default)) for (u, v, data) in G.edges(data=True)]
+    edges = sorted(edges, key=lambda x: (x[2], x[1], x[0]))
     return edges
+
 
 def assert_equal_branchings(G1, G2, attr='weight', default=1):
     edges1 = list(G1.edges(data=True))
@@ -123,7 +128,6 @@ def assert_equal_branchings(G1, G2, attr='weight', default=1):
         np.testing.assert_almost_equal(a[2], b[2])
 
 
-
 ################
 
 def test_optimal_branching1():
@@ -131,30 +135,36 @@ def test_optimal_branching1():
     assert_true(recognition.is_arborescence(G), True)
     assert_equal(branchings.branching_weight(G),  131)
 
+
 def test_optimal_branching2a():
     G = build_branching(optimal_branching_2a)
     assert_true(recognition.is_arborescence(G), True)
     assert_equal(branchings.branching_weight(G),  53)
+
 
 def test_optimal_branching2b():
     G = build_branching(optimal_branching_2b)
     assert_true(recognition.is_arborescence(G), True)
     assert_equal(branchings.branching_weight(G),  53)
 
+
 def test_optimal_arborescence2():
     G = build_branching(optimal_arborescence_2)
     assert_true(recognition.is_arborescence(G), True)
     assert_equal(branchings.branching_weight(G),  51)
+
 
 def test_greedy_suboptimal_branching1a():
     G = build_branching(greedy_subopt_branching_1a)
     assert_true(recognition.is_arborescence(G), True)
     assert_equal(branchings.branching_weight(G), 128)
 
+
 def test_greedy_suboptimal_branching1b():
     G = build_branching(greedy_subopt_branching_1b)
     assert_true(recognition.is_arborescence(G), True)
     assert_equal(branchings.branching_weight(G), 127)
+
 
 def test_greedy_max1():
     # Standard test.
@@ -165,6 +175,7 @@ def test_greedy_max1():
     # that it should equal the second suboptimal branching: 1b.
     B_ = build_branching(greedy_subopt_branching_1b)
     assert_equal_branchings(B, B_)
+
 
 def test_greedy_max2():
     # Different default weight.
@@ -181,6 +192,7 @@ def test_greedy_max2():
     B_ = build_branching(edges)
     assert_equal_branchings(B, B_)
 
+
 def test_greedy_max3():
     # All equal weights.
     #
@@ -195,6 +207,7 @@ def test_greedy_max3():
     B_ = build_branching(edges)
     assert_equal_branchings(B, B_, default=1)
 
+
 def test_greedy_min():
     G = G1()
     B = branchings.greedy_branching(G, kind='min')
@@ -206,11 +219,13 @@ def test_greedy_min():
     B_ = build_branching(edges)
     assert_equal_branchings(B, B_)
 
+
 def test_edmonds1_maxbranch():
     G = G1()
     x = branchings.maximum_branching(G)
     x_ = build_branching(optimal_arborescence_1)
     assert_equal_branchings(x, x_)
+
 
 def test_edmonds1_maxarbor():
     G = G1()
@@ -218,17 +233,20 @@ def test_edmonds1_maxarbor():
     x_ = build_branching(optimal_arborescence_1)
     assert_equal_branchings(x, x_)
 
+
 def test_edmonds2_maxbranch():
     G = G2()
     x = branchings.maximum_branching(G)
     x_ = build_branching(optimal_branching_2a)
     assert_equal_branchings(x, x_)
 
+
 def test_edmonds2_maxarbor():
     G = G2()
     x = branchings.maximum_spanning_arborescence(G)
     x_ = build_branching(optimal_arborescence_2)
     assert_equal_branchings(x, x_)
+
 
 def test_edmonds2_minarbor():
     G = G1()
@@ -242,12 +260,14 @@ def test_edmonds2_minarbor():
     x_ = build_branching(edges)
     assert_equal_branchings(x, x_)
 
+
 def test_edmonds3_minbranch1():
     G = G1()
     x = branchings.minimum_branching(G)
     edges = []
     x_ = build_branching(edges)
     assert_equal_branchings(x, x_)
+
 
 def test_edmonds3_minbranch2():
     G = G1()
@@ -259,9 +279,10 @@ def test_edmonds3_minbranch2():
 
 # Need more tests
 
+
 def test_mst():
     # Make sure we get the same results for undirected graphs.
-    # Example from: http://en.wikipedia.org/wiki/Kruskal's_algorithm
+    # Example from: https://en.wikipedia.org/wiki/Kruskal's_algorithm
     G = nx.Graph()
     edgelist = [(0, 3, [('weight', 5)]),
                 (0, 1, [('weight', 7)]),
@@ -278,12 +299,13 @@ def test_mst():
     G = G.to_directed()
     x = branchings.minimum_spanning_arborescence(G)
 
-    edges =  [(set([0, 1]), 7), (set([0, 3]), 5), (set([3, 5]), 6),
-              (set([1, 4]), 7), (set([4, 2]), 5), (set([4, 6]), 9)]
+    edges = [(set([0, 1]), 7), (set([0, 3]), 5), (set([3, 5]), 6),
+             (set([1, 4]), 7), (set([4, 2]), 5), (set([4, 6]), 9)]
 
     assert_equal(x.number_of_edges(), len(edges))
     for u, v, d in x.edges(data=True):
-        assert_true( (set([u,v]), d['weight']) in edges )
+        assert_true((set([u, v]), d['weight']) in edges)
+
 
 def test_mixed_nodetypes():
     # Smoke test to make sure no TypeError is raised for mixed node types.
@@ -294,10 +316,11 @@ def test_mixed_nodetypes():
     G = G.to_directed()
     x = branchings.minimum_spanning_arborescence(G)
 
+
 def test_edmonds1_minbranch():
     # Using -G_array and min should give the same as optimal_arborescence_1,
     # but with all edges negative.
-    edges = [ (u, v, -w) for (u, v, w) in optimal_arborescence_1 ]
+    edges = [(u, v, -w) for (u, v, w) in optimal_arborescence_1]
 
     G = nx.DiGraph()
     G = nx.from_numpy_matrix(-G_array, create_using=G)

@@ -677,7 +677,7 @@ def generate_gml(G, stringizer=None):
                 if epos != -1 and text.find('.', 0, epos) == -1:
                     text = text[:epos] + '.' + text[epos:]
                 if key == 'label':
-                    yield indent + key + ' "' + test + '"'
+                    yield indent + key + ' "' + text + '"'
                 else:
                     yield indent + key + ' ' + text
             elif isinstance(value, dict):

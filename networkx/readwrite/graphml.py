@@ -502,8 +502,8 @@ class GraphMLWriter(GraphML):
                                            edgedefault=default_edge_type,
                                            id=graphid)
         default = {}
-        data = dict((k, v) for k, v in G.graph.items()
-                    if k not in ['node_default', 'edge_default'])
+        data = {k: v for (k, v) in G.graph.items()
+                if k not in ['node_default', 'edge_default']}
         self.add_attributes("graph", graph_element, data, default)
         self.add_nodes(G, graph_element)
         self.add_edges(G, graph_element)
@@ -715,13 +715,14 @@ class GraphMLReader(GraphML):
         for g in self.xml.findall("{%s}graph" % self.NS_GRAPHML):
             yield self.make_graph(g, keys, defaults)
 
-    def make_graph(self, graph_xml, graphml_keys, defaults):
+    def make_graph(self, graph_xml, graphml_keys, defaults, G=None):
         # set default graph type
         edgedefault = graph_xml.get("edgedefault", None)
-        if edgedefault == 'directed':
-            G = nx.MultiDiGraph()
-        else:
-            G = nx.MultiGraph()
+        if G is None:
+            if edgedefault == 'directed':
+                G = nx.MultiDiGraph()
+            else:
+                G = nx.MultiGraph()
         # set defaults for graph attributes
         G.graph['node_default'] = {}
         G.graph['edge_default'] = {}
@@ -739,7 +740,7 @@ class GraphMLReader(GraphML):
             raise nx.NetworkXError("GraphML reader doesn't support hyperedges")
         # add nodes
         for node_xml in graph_xml.findall("{%s}node" % self.NS_GRAPHML):
-            self.add_node(G, node_xml, graphml_keys)
+            self.add_node(G, node_xml, graphml_keys, defaults)
         # add edges
         for edge_xml in graph_xml.findall("{%s}edge" % self.NS_GRAPHML):
             self.add_edge(G, edge_xml, graphml_keys)
@@ -757,7 +758,7 @@ class GraphMLReader(GraphML):
 
         return G
 
-    def add_node(self, G, node_xml, graphml_keys):
+    def add_node(self, G, node_xml, graphml_keys, defaults):
         """Add a node to the graph.
         """
         # warn on finding unsupported ports tag
@@ -769,6 +770,10 @@ class GraphMLReader(GraphML):
         # get data/attributes for node
         data = self.decode_data_elements(graphml_keys, node_xml)
         G.add_node(node_id, **data)
+        # get child nodes
+        if node_xml.attrib.get('yfiles.foldertype') == 'group':
+            graph_xml = node_xml.find("{%s}graph" % self.NS_GRAPHML)
+            self.make_graph(graph_xml, graphml_keys, defaults, G)
 
     def add_edge(self, G, edge_element, graphml_keys):
         """Add an edge to the graph.

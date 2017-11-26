@@ -21,7 +21,7 @@ else
     get_macpython_environment $TRAVIS_PYTHON_VERSION venv
 fi
 
-if [[ "${OPTIONAL_DEPS}" == pip ]]; then
+if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
     if [[ "${OSX_PKG_ENV}" == miniconda ]]; then
         conda install graphviz
         export PKG_CONFIG_PATH=/Users/travis/miniconda/envs/testenv/lib/pkgconfig

@@ -18,6 +18,10 @@ class TestDagLongestPath(object):
 
     """
 
+    def test_empty(self):
+        G = nx.DiGraph()
+        assert_equal(nx.dag_longest_path(G), [])
+
     def test_unweighted1(self):
         edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (3, 7)]
         G = nx.DiGraph(edges)
@@ -240,6 +244,18 @@ class TestDAG:
         assert_edges_equal(transitive_closure(G).edges(), solution)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         assert_raises(nx.NetworkXNotImplemented, transitive_closure, G)
+
+        # test if edge data is copied
+        G = nx.DiGraph([(1, 2, {"a": 3}), (2, 3, {"b": 0}), (3, 4)])
+        H = transitive_closure(G)
+        for u, v in G.edges():
+            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+
+        k = 10
+        G = nx.DiGraph((i, i+1, {"foo": "bar", "weight": i}) for i in range(k))
+        H = transitive_closure(G)
+        for u, v in G.edges():
+            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
 
     def test_transitive_reduction(self):
         G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])

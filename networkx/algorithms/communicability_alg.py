@@ -69,7 +69,7 @@ def communicability(G):
     .. [1] Ernesto Estrada, Naomichi Hatano,
        "Communicability in complex networks",
        Phys. Rev. E 77, 036111 (2008).
-       http://arxiv.org/abs/0707.0756
+       https://arxiv.org/abs/0707.0756
 
     Examples
     --------
@@ -147,7 +147,7 @@ def communicability_exp(G):
     .. [1] Ernesto Estrada, Naomichi Hatano,
        "Communicability in complex networks",
        Phys. Rev. E 77, 036111 (2008).
-       http://arxiv.org/abs/0707.0756
+       https://arxiv.org/abs/0707.0756
 
     Examples
     --------

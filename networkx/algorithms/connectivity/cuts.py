@@ -7,7 +7,7 @@ import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # cut algorithms.
-from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 

@@ -88,6 +88,12 @@ def test_all_simple_paths():
     assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3)})
 
 
+def test_all_simple_paths_source_target():
+    G = nx.path_graph(4)
+    paths = nx.all_simple_paths(G, 1, 1)
+    assert_equal(paths, [])
+
+
 def test_all_simple_paths_cutoff():
     G = nx.complete_graph(4)
     paths = nx.all_simple_paths(G, 0, 1, cutoff=1)
@@ -220,6 +226,40 @@ def test_directed_weighted_shortest_simple_path():
         cost = this_cost
 
 
+def test_weighted_shortest_simple_path_issue2427():
+    G = nx.Graph()
+    G.add_edge('IN', 'OUT', weight = 2)
+    G.add_edge('IN', 'A', weight = 1)
+    G.add_edge('IN', 'B', weight = 2)
+    G.add_edge('B', 'OUT', weight = 2)
+    assert_equal(list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight = "weight")),
+                 [['IN', 'OUT'], ['IN', 'B', 'OUT']])
+    G = nx.Graph()
+    G.add_edge('IN', 'OUT', weight = 10)
+    G.add_edge('IN', 'A', weight = 1)
+    G.add_edge('IN', 'B', weight = 1)
+    G.add_edge('B', 'OUT', weight = 1)
+    assert_equal(list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight = "weight")),
+                 [['IN', 'B', 'OUT'], ['IN', 'OUT']])
+
+
+def test_directed_weighted_shortest_simple_path_issue2427():
+    G = nx.DiGraph()
+    G.add_edge('IN', 'OUT', weight = 2)
+    G.add_edge('IN', 'A', weight = 1)
+    G.add_edge('IN', 'B', weight = 2)
+    G.add_edge('B', 'OUT', weight = 2)
+    assert_equal(list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight = "weight")),
+                 [['IN', 'OUT'], ['IN', 'B', 'OUT']])
+    G = nx.DiGraph()
+    G.add_edge('IN', 'OUT', weight = 10)
+    G.add_edge('IN', 'A', weight = 1)
+    G.add_edge('IN', 'B', weight = 1)
+    G.add_edge('B', 'OUT', weight = 1)
+    assert_equal(list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight = "weight")),
+                 [['IN', 'B', 'OUT'], ['IN', 'OUT']])
+
+
 def test_weight_name():
     G = nx.cycle_graph(7)
     nx.set_edge_attributes(G, 1, 'weight')
@@ -303,6 +343,38 @@ def test_bidirectional_shortest_path_restricted_directed_cycle():
     )
 
 
+def test_bidirectional_shortest_path_ignore():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2])
+    nx.add_path(G, [1, 3])
+    nx.add_path(G, [1, 4])
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_shortest_path,
+        G,
+        1, 2,
+        ignore_nodes=[1],
+    )
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_shortest_path,
+        G,
+        1, 2,
+        ignore_nodes=[2],
+    )
+    G = nx.Graph()
+    nx.add_path(G, [1, 3])
+    nx.add_path(G, [1, 4])
+    nx.add_path(G, [3, 2])
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_shortest_path,
+        G,
+        1, 2,
+        ignore_nodes=[1, 2],
+    )
+
+
 def validate_path(G, s, t, soln_len, path):
     assert_equal(path[0], s)
     assert_equal(path[-1], t)
@@ -362,3 +434,30 @@ def test_bidirectional_dijkstra_no_path():
     nx.add_path(G, [1, 2, 3])
     nx.add_path(G, [4, 5, 6])
     path = _bidirectional_dijkstra(G, 1, 6)
+
+
+def test_bidirectional_dijkstra_ignore():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 10])
+    nx.add_path(G, [1, 3, 10])
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        G,
+        1, 2,
+        ignore_nodes=[1],
+    )
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        G,
+        1, 2,
+        ignore_nodes=[2],
+    )
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        G,
+        1, 2,
+        ignore_nodes=[1, 2],
+    )

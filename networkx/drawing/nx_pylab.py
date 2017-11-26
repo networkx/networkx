@@ -22,6 +22,7 @@ pygraphviz:     http://pygraphviz.github.io/
 
 """
 import networkx as nx
+from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout
@@ -97,7 +98,7 @@ def draw(G, pos=None, ax=None, **kwds):
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -243,7 +244,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> limits = plt.axis('off')  # turn of axis
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -347,7 +348,7 @@ def draw_networkx_nodes(G, pos,
     >>> nodes = nx.draw_networkx_nodes(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -479,7 +480,7 @@ def draw_networkx_edges(G, pos,
     >>> edges = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -519,17 +520,15 @@ def draw_networkx_edges(G, pos,
     else:
         lw = width
 
-    if not cb.is_string_like(edge_color) \
+    if not is_string_like(edge_color) \
             and cb.iterable(edge_color) \
             and len(edge_color) == len(edge_pos):
-        if np.alltrue([cb.is_string_like(c)
-                      for c in edge_color]):
+        if np.alltrue([is_string_like(c) for c in edge_color]):
             # (should check ALL elements)
             # list of color letters such as ['k','r','k',...]
             edge_colors = tuple([colorConverter.to_rgba(c, alpha)
                                  for c in edge_color])
-        elif np.alltrue([not cb.is_string_like(c)
-                        for c in edge_color]):
+        elif np.alltrue([not is_string_like(c) for c in edge_color]):
             # If color specs are given as (rgb) or (rgba) tuples, we're OK
             if np.alltrue([cb.iterable(c) and len(c) in (3, 4)
                           for c in edge_color]):
@@ -540,7 +539,7 @@ def draw_networkx_edges(G, pos,
         else:
             raise ValueError('edge_color must consist of either color names or numbers')
     else:
-        if cb.is_string_like(edge_color) or len(edge_color) == 1:
+        if is_string_like(edge_color) or len(edge_color) == 1:
             edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
         else:
             raise ValueError(
@@ -615,7 +614,6 @@ def draw_networkx_edges(G, pos,
                                           )
 
         arrow_collection.set_zorder(1)  # edges go behind nodes
-        arrow_collection.set_label(label)
         ax.add_collection(arrow_collection)
 
     # update view
@@ -689,7 +687,7 @@ def draw_networkx_labels(G, pos,
     >>> labels = nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -721,7 +719,7 @@ def draw_networkx_labels(G, pos,
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
-        if not cb.is_string_like(label):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
         t = ax.text(x, y,
                     label,
@@ -807,7 +805,7 @@ def draw_networkx_edge_labels(G, pos,
     >>> edge_labels = nx.draw_networkx_edge_labels(G, pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.readthedocs.io/en/latest/auto_examples/index.html
+    https://networkx.github.io/documentation/latest/auto_examples/index.html
 
     See Also
     --------
@@ -830,7 +828,7 @@ def draw_networkx_edge_labels(G, pos,
     if ax is None:
         ax = plt.gca()
     if edge_labels is None:
-        labels = dict(((u, v), d) for u, v, d in G.edges(data=True))
+        labels = {(u, v): d for u, v, d in G.edges(data=True)}
     else:
         labels = edge_labels
     text_items = {}
@@ -859,7 +857,7 @@ def draw_networkx_edge_labels(G, pos,
                         ec=(1.0, 1.0, 1.0),
                         fc=(1.0, 1.0, 1.0),
                         )
-        if not cb.is_string_like(label):
+        if not is_string_like(label):
             label = str(label)  # this will cause "1" and 1 to be labeled the same
 
         # set optional alignment

@@ -32,30 +32,31 @@ Adding and removing nodes and edges
 
 
 
-Iterating over nodes and edges
-------------------------------
+Reporting nodes edges and neighbors
+-----------------------------------
 .. autosummary::
    :toctree: generated/
 
    Graph.nodes
    Graph.__iter__
+   Graph.has_node
+   Graph.__contains__
    Graph.edges
+   Graph.has_edge
    Graph.get_edge_data
    Graph.neighbors
+   Graph.adj
    Graph.__getitem__
    Graph.adjacency
    Graph.nbunch_iter
 
 
 
-Information about graph structure
----------------------------------
+Counting nodes edges and neighbors
+----------------------------------
 .. autosummary::
    :toctree: generated/
 
-   Graph.has_node
-   Graph.__contains__
-   Graph.has_edge
    Graph.order
    Graph.number_of_nodes
    Graph.__len__
@@ -74,3 +75,4 @@ Making copies and subgraphs
    Graph.to_directed
    Graph.subgraph
    Graph.edge_subgraph
+   Graph.fresh_copy

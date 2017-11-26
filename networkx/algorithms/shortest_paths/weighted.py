@@ -1741,7 +1741,7 @@ def goldberg_radzik(G, source, weight='weight'):
         G_succ = G.adj
 
     inf = float('inf')
-    d = dict((u, inf) for u in G)
+    d = {u: inf for u in G}
     d[source] = 0
     pred = {source: None}
 
@@ -1828,7 +1828,7 @@ def goldberg_radzik(G, source, weight='weight'):
         to_scan = topo_sort(relabeled)
         relabeled = relax(to_scan)
 
-    d = dict((u, d[u]) for u in pred)
+    d = {u: d[u] for u in pred}
     return pred, d
 
 

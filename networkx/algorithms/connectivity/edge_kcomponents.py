@@ -19,7 +19,7 @@ least k.
 """
 import networkx as nx
 from networkx.utils import arbitrary_element
-from networkx.utils import not_implemented_for  # NOQA
+from networkx.utils import not_implemented_for
 from networkx.algorithms import bridges
 from functools import partial
 import itertools as it
@@ -90,7 +90,7 @@ def k_edge_components(G, k):
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Bridge_(graph_theory)
+    .. [1] https://en.wikipedia.org/wiki/Bridge_%28graph_theory%29
     .. [2] Wang, Tianhao, et al. (2015) A simple algorithm for finding all
         k-edge-connected components.
         http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264
@@ -155,6 +155,7 @@ def k_edge_subgraphs(G, k):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
@@ -164,7 +165,7 @@ def k_edge_subgraphs(G, k):
     >>> G.add_nodes_from(it.chain(*paths))
     >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # note this does not return {1, 4} unlike k_edge_components
-    >>> sorted(map(sorted, k_edge_subgraphs(G, k=3)))
+    >>> sorted(map(sorted, nx.k_edge_subgraphs(G, k=3)))
     [[1], [2], [3], [4], [5, 6, 7, 8]]
 
     References
@@ -272,7 +273,9 @@ class EdgeComponentAuxGraph(object):
 
     Example
     -------
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
+    >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> # Build an interesting graph with multiple levels of k-edge-ccs
     >>> paths = [
     ...     (1, 2, 3, 4, 1, 3, 4, 2),  # a 3-edge-cc (a 4 clique)
@@ -300,7 +303,9 @@ class EdgeComponentAuxGraph(object):
     >>> # The auxillary graph is primarilly used for k-edge-ccs but it
     >>> # can also speed up the queries of k-edge-subgraphs by refining the
     >>> # search space.
+    >>> import itertools as it
     >>> from networkx.utils import pairwise
+    >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
     ... ]
@@ -359,7 +364,7 @@ class EdgeComponentAuxGraph(object):
             _recursive_build(H, A, sink, avail.intersection(T))
 
         # Copy input to ensure all edges have unit capacity
-        H = G.__class__()
+        H = G.fresh_copy()
         H.add_nodes_from(G.nodes())
         H.add_edges_from(G.edges(), capacity=1)
 

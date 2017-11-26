@@ -24,7 +24,6 @@ See Also
 Pygraphviz: http://pygraphviz.github.io/
 """
 import os
-import sys
 import tempfile
 import networkx as nx
 
@@ -151,18 +150,29 @@ def to_agraph(N):
 
     # add nodes
     for n, nodedata in N.nodes(data=True):
-        A.add_node(n, **nodedata)
+        A.add_node(n)
+        if nodedata is not None:
+            a = A.get_node(n)
+            a.attr.update({k: str(v) for k, v in nodedata.items()})
 
     # loop over edges
-
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edata = {k: str(v) for k, v in edgedata.items() if k != 'key'}
-            A.add_edge(u, v, key=str(key), **str_edata)
+            str_edgedata = {k: str(v) for k, v in edgedata.items() if k != 'key'}
+            A.add_edge(u, v, key=str(key))
+            if edgedata is not None:
+                a = A.get_edge(u,v)
+                a.attr.update(str_edgedata)
+
+
     else:
         for u, v, edgedata in N.edges(data=True):
             str_edgedata = {k: str(v) for k, v in edgedata.items()}
-            A.add_edge(u, v, **str_edgedata)
+            A.add_edge(u, v)
+            if edgedata is not None:
+                a = A.get_edge(u,v)
+                a.attr.update(str_edgedata)
+
 
     return A
 

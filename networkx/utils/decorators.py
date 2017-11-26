@@ -2,6 +2,7 @@ import sys
 
 from collections import defaultdict
 from os.path import splitext
+from contextlib import contextmanager
 
 import networkx as nx
 from decorator import decorator
@@ -11,7 +12,9 @@ __all__ = [
     'not_implemented_for',
     'open_file',
     'nodes_or_number',
+    'preserve_random_state',
 ]
+
 
 def not_implemented_for(*graph_types):
     """Decorator to mark algorithms as not implemented
@@ -49,12 +52,12 @@ def not_implemented_for(*graph_types):
            pass
     """
     @decorator
-    def _not_implemented_for(f,*args,**kwargs):
+    def _not_implemented_for(f, *args, **kwargs):
         graph = args[0]
-        terms= {'directed':graph.is_directed(),
-                'undirected':not graph.is_directed(),
-                'multigraph':graph.is_multigraph(),
-                'graph':not graph.is_multigraph()}
+        terms = {'directed': graph.is_directed(),
+                 'undirected': not graph.is_directed(),
+                 'multigraph': graph.is_multigraph(),
+                 'graph': not graph.is_multigraph()}
         match = True
         try:
             for t in graph_types:
@@ -63,24 +66,26 @@ def not_implemented_for(*graph_types):
             raise KeyError('use one or more of ',
                            'directed, undirected, multigraph, graph')
         if match:
-            raise nx.NetworkXNotImplemented('not implemented for %s type'%
+            raise nx.NetworkXNotImplemented('not implemented for %s type' %
                                             ' '.join(graph_types))
         else:
-            return f(*args,**kwargs)
+            return f(*args, **kwargs)
     return _not_implemented_for
 
 
 def _open_gz(path, mode):
     import gzip
-    return gzip.open(path,mode=mode)
+    return gzip.open(path, mode=mode)
+
 
 def _open_bz2(path, mode):
     import bz2
-    return bz2.BZ2File(path,mode=mode)
+    return bz2.BZ2File(path, mode=mode)
+
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
-_dispatch_dict = defaultdict(lambda : open)
+_dispatch_dict = defaultdict(lambda: open)
 _dispatch_dict['.gz'] = _open_gz
 _dispatch_dict['.bz2'] = _open_bz2
 _dispatch_dict['.gzip'] = _open_gz
@@ -216,7 +221,7 @@ def open_file(path_arg, mode='r'):
             new_args = list(args)
             new_args[path_arg] = fobj
 
-        # Finally, we call the original function, making sure to close the fobj.
+        # Finally, we call the original function, making sure to close the fobj
         try:
             result = func(*new_args, **kwargs)
         finally:
@@ -283,3 +288,50 @@ def nodes_or_number(which_args):
             new_args[i] = (n, nodes)
         return f(*new_args, **kw)
     return _nodes_or_number
+
+
+def preserve_random_state(func):
+    """ Decorator to preserve the numpy.random state during a function.
+
+    Parameters
+    ----------
+    func : function
+        function around which to preserve the random state.
+
+    Returns
+    -------
+    wrapper : function
+        Function which wraps the input function by saving the state before
+        calling the function and restoring the function afterward.
+
+    Examples
+    --------
+    Decorate functions like this::
+
+        @preserve_random_state
+        def do_random_stuff(x, y):
+            return x + y * numpy.random.random()
+
+    Notes
+    -----
+    If numpy.random is not importable, the state is not saved or restored.
+    """
+    try:
+        from numpy.random import get_state, seed, set_state
+
+        @contextmanager
+        def save_random_state():
+            state = get_state()
+            try:
+                yield
+            finally:
+                set_state(state)
+
+        def wrapper(*args, **kwargs):
+            with save_random_state():
+                seed(1234567890)
+                return func(*args, **kwargs)
+        wrapper.__name__ = func.__name__
+        return wrapper
+    except ImportError:
+        return func

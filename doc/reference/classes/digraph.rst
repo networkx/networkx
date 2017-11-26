@@ -32,33 +32,36 @@ Adding and removing nodes and edges
 
 
 
-Iterating over nodes and edges
-------------------------------
+Reporting nodes edges and neighbors
+-----------------------------------
 .. autosummary::
    :toctree: generated/
 
    DiGraph.nodes
    DiGraph.__iter__
+   DiGraph.has_node
+   DiGraph.__contains__
    DiGraph.edges
    DiGraph.out_edges
    DiGraph.in_edges
+   DiGraph.has_edge
    DiGraph.get_edge_data
    DiGraph.neighbors
+   DiGraph.adj
    DiGraph.__getitem__
    DiGraph.successors
+   DiGraph.succ
    DiGraph.predecessors
+   DiGraph.pred
    DiGraph.adjacency
    DiGraph.nbunch_iter
 
 
-Information about graph structure
----------------------------------
+Counting nodes edges and neighbors
+----------------------------------
 .. autosummary::
    :toctree: generated/
 
-   DiGraph.has_node
-   DiGraph.__contains__
-   DiGraph.has_edge
    DiGraph.order
    DiGraph.number_of_nodes
    DiGraph.__len__
@@ -80,4 +83,4 @@ Making copies and subgraphs
    DiGraph.subgraph
    DiGraph.edge_subgraph
    DiGraph.reverse
- 
+   DiGraph.fresh_copy

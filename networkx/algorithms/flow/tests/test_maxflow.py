@@ -34,7 +34,7 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     for u in G:
         assert_equal(set(G[u]), set(flowDict[u]),
                      msg=msg.format(flow_func.__name__))
-    excess = dict((u, 0) for u in flowDict)
+    excess = {u: 0 for u in flowDict}
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
@@ -404,7 +404,7 @@ class TestMaxFlowMinCutInterface:
                     result = result[0]
                 assert_equal(fv, result, msg=msgi.format(flow_func.__name__,
                                                     interface_func.__name__))
- 
+
     def test_minimum_cut_no_cutoff(self):
         G = self.G
         for flow_func in flow_funcs:
@@ -502,7 +502,7 @@ class TestCutoff:
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
-        nx.set_edge_attributes(G, dict(((u, v), 1) for u, v in G.edges()),
+        nx.set_edge_attributes(G, {(u, v): 1 for u, v in G.edges()},
                                'capacity')
         for flow_func in [shortest_augmenting_path, edmonds_karp]:
             for cutoff in [3, 2, 1]:

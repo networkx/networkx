@@ -26,7 +26,6 @@ Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
 from __future__ import division
-import collections
 import networkx as nx
 
 __all__ = ['circular_layout',
@@ -233,6 +232,7 @@ def fruchterman_reingold_layout(G, k=None,
                                 pos=None,
                                 fixed=None,
                                 iterations=50,
+                                threshold = 1e-4,
                                 weight='weight',
                                 scale=1,
                                 center=None,
@@ -258,7 +258,11 @@ def fruchterman_reingold_layout(G, k=None,
         Nodes to keep fixed at initial position.
 
     iterations : int  optional (default=50)
-        Number of iterations of spring-force relaxation
+        Maximum number of iterations taken
+
+    threshold: float optional (default = 1e-4)
+        Threshold for relative error in node position changes.
+        The iteration stops if the error is below this threshold.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
@@ -319,18 +323,18 @@ def fruchterman_reingold_layout(G, k=None,
             raise ValueError
         A = nx.to_scipy_sparse_matrix(G, weight=weight, dtype='f')
         if k is None and fixed is not None:
-            # We must adjust k by domain size for layouts not near 1x1
+        # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
-                                           iterations, dim)
+                                               iterations, threshold, dim)
     except:
         A = nx.to_numpy_matrix(G, weight=weight)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
-        pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations, dim)
+        pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations, threshold, dim)
     if fixed is None:
         pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
@@ -341,7 +345,7 @@ spring_layout = fruchterman_reingold_layout
 
 
 def _fruchterman_reingold(A, k=None, pos=None, fixed=None,
-                          iterations=50, dim=2):
+                          iterations=50, threshold = 1e-4, dim=2):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     try:
@@ -402,11 +406,14 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None,
         pos += delta_pos
         # cool temperature
         t -= dt
+        err = np.linalg.norm(delta_pos)/nnodes
+        if err < threshold:
+            break
     return pos
 
 
 def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
-                                 iterations=50, dim=2):
+                                 iterations=50, threshold=1e-4, dim=2):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
@@ -473,9 +480,13 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
         length = np.where(length < 0.01, 0.1, length)
-        pos += (displacement * t / length).T
+        delta_pos = (displacement * t / length).T
+        pos += delta_pos
         # cool temperature
         t -= dt
+        err = np.linalg.norm(delta_pos)/nnodes
+        if err < threshold:
+            break
     return pos
 
 

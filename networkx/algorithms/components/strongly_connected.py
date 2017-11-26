@@ -353,6 +353,9 @@ def number_strongly_connected_components(G):
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
 
+    A directed graph is strongly connected if and only if every vertex in
+    the graph is reachable from every other vertex.
+
     Parameters
     ----------
     G : NetworkX Graph

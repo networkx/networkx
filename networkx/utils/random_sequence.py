@@ -20,7 +20,7 @@ import networkx as nx
 
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
-# http://www.python.org/doc/current/lib/module-random.html
+# https://docs.python.org/2/library/random.html
 
 def powerlaw_sequence(n, exponent=2.0):
     """

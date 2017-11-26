@@ -32,6 +32,18 @@ attributes related to the underlying graph object.
         as the current view. This is similar to G.root_graph.__class__()
         but reflects the fact that (Un)DirectedView could make the
         type of data structure different from the root_graph.
+
+Note: Since graphviews look like graphs, one can end up with
+view-of-view-of-view chains. Be careful with chains because
+they become very slow with about 15 nested views.
+For the common simple case of node induced subgraphs created
+from the graph class, we short-cut the chain by returning a
+subgraph of the original graph directly rather than a subgraph
+of a subgraph. We are careful not to disrupt any edge filter in
+the middle subgraph. In general, determining how to short-cut
+the chain is tricky and much harder with restricted_views than
+with induced subgraphs.
+Often it is easiest to use `.copy()` to avoid chains.
 """
 from collections import Mapping
 

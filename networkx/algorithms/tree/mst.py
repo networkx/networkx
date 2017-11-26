@@ -161,7 +161,7 @@ def kruskal_mst_edges(G, minimum, weight='weight',
                     if ignore_nan:
                         continue
                     msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, f, k, d),))
+                    raise ValueError(msg % ((u, v, k, d),))
                 yield wt, u, v, k, d
     else:
         edges = G.edges(data=True)
@@ -537,10 +537,12 @@ def minimum_spanning_tree(G, weight='weight', algorithm='kruskal',
     There may be more than one tree with the same minimum or maximum weight.
     See :mod:`networkx.tree.recognition` for more detailed definitions.
 
+    Isolated nodes with self-loops are in the tree as edgeless isolated nodes.
+
     """
     edges = minimum_spanning_edges(G, algorithm, weight, keys=True,
                                    data=True, ignore_nan=ignore_nan)
-    T = G.__class__()  # Same graph class as G
+    T = G.fresh_copy()  # Same graph class as G
     T.graph.update(G.graph)
     T.add_nodes_from(G.nodes.items())
     T.add_edges_from(edges)
@@ -596,11 +598,13 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal',
     There may be more than one tree with the same minimum or maximum weight.
     See :mod:`networkx.tree.recognition` for more detailed definitions.
 
+    Isolated nodes with self-loops are in the tree as edgeless isolated nodes.
+
     """
     edges = maximum_spanning_edges(G, algorithm, weight, keys=True,
                                    data=True, ignore_nan=ignore_nan)
     edges = list(edges)
-    T = G.__class__()  # Same graph class as G
+    T = G.fresh_copy()  # Same graph class as G
     T.graph.update(G.graph)
     T.add_nodes_from(G.nodes.items())
     T.add_edges_from(edges)

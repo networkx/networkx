@@ -81,6 +81,42 @@ class TestFunction(object):
                             (13, 14, {'weight': 2.}),
                             (14, 15, {'weight': 2.})])
 
+        G = self.G.copy()
+        nlist = [None]
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = iter([None])
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges([None]), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = [12]
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = iter([12])
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges([12]), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = []
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
+        G = self.G.copy()
+        nlist = iter([])
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
     def test_add_cycle(self):
         G = self.G.copy()
         nlist = [12, 13, 14, 15]
@@ -105,6 +141,14 @@ class TestFunction(object):
                      nx.subgraph(self.G, [0, 1, 2, 4]).adj)
         assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
                      nx.subgraph(self.DG, [0, 1, 2, 4]).adj)
+        assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,
+                     nx.induced_subgraph(self.G, [0, 1, 2, 4]).adj)
+        assert_equal(self.DG.subgraph([0, 1, 2, 4]).adj,
+                     nx.induced_subgraph(self.DG, [0, 1, 2, 4]).adj)
+        # subgraph-subgraph chain is allowed in function interface
+        H = nx.induced_subgraph(self.G.subgraph([0, 1, 2, 4]), [0, 1, 4])
+        assert_is_not(H._graph, self.G)
+        assert_equal(H.adj, self.G.subgraph([0, 1, 4]).adj)
 
     def test_edge_subgraph(self):
         assert_equal(self.G.edge_subgraph([(1, 2), (0, 3)]).adj,

@@ -336,13 +336,13 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
         tuples). This must be a function that accepts two lists (or
         tuples) as input and yields a number as output. The function
         must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+        Specifically, if $d$ is the function and $x$, $y$,
+        and $z$ are vectors in the graph, then $d$ must satisfy
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
+        1. $d(x, y) \ge 0$,
+        2. $d(x, y) = 0$ if and only if $x = y$,
+        3. $d(x, y) = d(y, x)$,
+        4. $d(x, z) \le d(x, y) + d(y, z)$.
 
         If this argument is not specified, the Euclidean distance metric is
         used.
@@ -494,13 +494,13 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
         tuples). This must be a function that accepts two lists (or
         tuples) as input and yields a number as output. The function
         must also satisfy the four requirements of a `metric`_.
-        Specifically, if *d* is the function and *x*, *y*,
-        and *z* are vectors in the graph, then *d* must satisfy
+        Specifically, if $d$ is the function and $x$, $y$,
+        and $z$ are vectors in the graph, then $d$ must satisfy
 
-        1. *d*(*x*, *y*) ≥ 0,
-        2. *d*(*x*, *y*) = 0 if and only if *x* = *y*,
-        3. *d*(*x*, *y*) = *d*(*y*, *x*),
-        4. *d*(*x*, *z*) ≤ *d*(*x*, *y*) + *d*(*y*, *z*).
+        1. $d(x, y) \ge 0$,
+        2. $d(x, y) = 0$ if and only if $x = y$,
+        3. $d(x, y) = d(y, x)$,
+        4. $d(x, z) \le d(x, y) + d(y, z)$.
 
         If this argument is not specified, the Euclidean distance metric is
         used.

@@ -50,9 +50,13 @@ def hide_multiedges(edges):
     return lambda u, v, k: (u, v, k) not in alledges
 
 
-def show_nodes(nodes):
-    nodes = set(nodes)
-    return lambda node: node in nodes
+# write show_nodes as a class to make SubGraph pickleable
+class show_nodes(object):
+    def __init__(self, nodes):
+        self.nodes = set(nodes)
+
+    def __call__(self, node):
+        return node in self.nodes
 
 
 def show_diedges(edges):

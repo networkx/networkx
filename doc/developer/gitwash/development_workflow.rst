@@ -27,8 +27,6 @@ In what follows we'll refer to the upstream networkx ``master`` branch, as
   your feature branch while you are working.  
 * If you do find yourself merging from trunk, consider :ref:`rebase-on-trunk`
 * Ask on the `networkx mailing list`_ if you get stuck.
-* Check that your code meets the requirements as outlined in our
-  `wiki <https://github.com/networkx/networkx/wiki>`_.
 * Ask for code review!
 
 This way of working helps to keep work well organized, with readable history.

@@ -46,7 +46,7 @@ class TestPydot(object):
         P = nx.nx_pydot.to_pydot(G)
 
         # Convert this "pydot.Dot" instance back into a graph of the same type.
-        G2 = G.__class__(nx.nx_pydot.from_pydot(P))
+        G2 = G.fresh_copy().__class__(nx.nx_pydot.from_pydot(P))
 
         # Validate the original and resulting graphs to be the same.
         assert_graphs_equal(G, G2)
@@ -86,7 +86,7 @@ class TestPydot(object):
 
         # Deserialize a new graph of the same type back from this file.
         Hin = nx.nx_pydot.read_dot(fname)
-        Hin = G.__class__(Hin)
+        Hin = G.fresh_copy().__class__(Hin)
 
         # Validate the original and resulting graphs to be the same.
         assert_graphs_equal(G, Hin)

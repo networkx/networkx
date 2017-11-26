@@ -23,11 +23,9 @@ from __future__ import division
 import itertools
 
 import networkx as nx
-from networkx.algorithms.bipartite.generators import complete_bipartite_graph
 from networkx.classes import Graph
 from networkx.exception import NetworkXError
 from networkx.utils import accumulate
-from networkx.utils import flatten
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 

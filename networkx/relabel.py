@@ -89,8 +89,8 @@ def relabel_nodes(G, mapping, copy=True):
     """
     # you can pass a function f(old_label)->new_label
     # but we'll just make a dictionary here regardless
-    if not hasattr(mapping, "__getitem__"):
-        m = dict((n, mapping(n)) for n in G)
+    if not hasattr(mapping,"__getitem__"):
+        m = {n: mapping(n) for n in G}
     else:
         m = mapping
     if copy:
@@ -151,9 +151,10 @@ def _relabel_inplace(G, mapping):
 
 
 def _relabel_copy(G, mapping):
-    H = G.__class__()
+    H = G.fresh_copy()
     H.add_nodes_from(mapping.get(n, n) for n in G)
-    H._node.update(dict((mapping.get(n, n), d.copy()) for n, d in G.nodes.items()))
+    H._node.update((mapping.get(n, n), d.copy()) for n, d in G.nodes.items())
+    # FIXME this is overwritten below when H.graph is updated
     if G.name:
         H.name = "(%s)" % G.name
     if G.is_multigraph():
@@ -162,9 +163,7 @@ def _relabel_copy(G, mapping):
     else:
         H.add_edges_from((mapping.get(n1, n1), mapping.get(n2, n2), d.copy())
                          for (n1, n2, d) in G.edges(data=True))
-
     H.graph.update(G.graph)
-
     return H
 
 
@@ -221,6 +220,6 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     H.name = "(" + G.name + ")_with_int_labels"
     # create node attribute with the old label
     if label_attribute is not None:
-        nx.set_node_attributes(H, dict((v, k) for k, v in mapping.items()),
+        nx.set_node_attributes(H, {v: k for k, v in mapping.items()},
                                label_attribute)
     return H
