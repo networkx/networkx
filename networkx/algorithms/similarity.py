@@ -23,6 +23,11 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None,
                         upper_bound=None):
     """Returns GED (graph edit distance) between graphs G1 and G2.
 
+    Graph edit distance is a graph similarity measure analogous to
+    Levenshtein distance for strings.  It is defined as minimum cost
+    of edit path (sequence of node and edge edit operations)
+    transforming graph G1 to graph isomorphic to G2.
+
     Parameters
     ----------
     G1, G2: graphs
@@ -131,6 +136,7 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None,
        Lisbon, Portugal. 2015,
        <10.5220/0005209202710278>. <hal-01168816>
        https://hal.archives-ouvertes.fr/hal-01168816
+
     """
     bestcost = None
     for vertex_path, edge_path, cost in \
@@ -148,6 +154,10 @@ def optimal_edit_paths(G1, G2, node_match=None, edge_match=None,
                        edge_subst_cost=None, edge_del_cost=None, edge_ins_cost=None,
                        upper_bound=None):
     """Returns all minimum-cost edit paths transforming G1 to G2.
+
+    Graph edit path is a sequence of node and edge edit operations
+    transforming graph G1 to graph isomorphic to G2.  Edit operations
+    include substitutions, deletions, and insertions.
 
     Parameters
     ----------
@@ -266,6 +276,7 @@ def optimal_edit_paths(G1, G2, node_match=None, edge_match=None,
        Lisbon, Portugal. 2015,
        <10.5220/0005209202710278>. <hal-01168816>
        https://hal.archives-ouvertes.fr/hal-01168816
+
     """
     paths = list()
     bestcost = None
@@ -288,6 +299,11 @@ def optimize_graph_edit_distance(G1, G2, node_match=None, edge_match=None,
                                  upper_bound=None):
     """Returns consecutive approximations of GED (graph edit distance)
     between graphs G1 and G2.
+
+    Graph edit distance is a graph similarity measure analogous to
+    Levenshtein distance for strings.  It is defined as minimum cost
+    of edit path (sequence of node and edge edit operations)
+    transforming graph G1 to graph isomorphic to G2.
 
     Parameters
     ----------
@@ -415,6 +431,12 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                         upper_bound=None, strictly_decreasing=True):
     """GED (graph edit distance) calculation: advanced interface.
 
+    Graph edit path is a sequence of node and edge edit operations
+    transforming graph G1 to graph isomorphic to G2.  Edit operations
+    include substitutions, deletions, and insertions.
+
+    Graph edit distance is defined as minimum cost of edit path.
+
     Parameters
     ----------
     G1, G2: graphs
@@ -525,6 +547,7 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
        Lisbon, Portugal. 2015,
        <10.5220/0005209202710278>. <hal-01168816>
        https://hal.archives-ouvertes.fr/hal-01168816
+
     """
     # TODO: support DiGraph
 
