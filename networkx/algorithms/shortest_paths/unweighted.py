@@ -199,6 +199,12 @@ def bidirectional_shortest_path(G, source, target):
     target : node label
        ending node for path
 
+    ignore_nodes : list of nodes
+       nodes to ignore, optional
+
+    ignore_edges : list of edges
+       edges to ignore, optional
+
     Returns
     -------
     path: list
@@ -260,6 +266,50 @@ def _bidirectional_pred_succ(G, source, target):
     else:
         Gpred = G.adj
         Gsucc = G.adj
+
+    # support optional nodes filter
+    if ignore_nodes:
+        def filter_iter(nodes_iter):
+            def iterate(v):
+                for w in nodes_iter(v):
+                    if w not in ignore_nodes:
+                        yield w
+            return iterate
+
+        Gpred=filter_iter(Gpred)
+        Gsucc=filter_iter(Gsucc)
+
+    # support optional edges filter
+    if ignore_edges:
+        if G.is_directed():
+            def filter_pred_iter(pred_iter):
+                def iterate(v):
+                    for w in pred_iter(v):
+                        if (w, v) not in ignore_edges:
+                            yield w
+                return iterate
+
+            def filter_succ_iter(succ_iter):
+                def iterate(v):
+                    for w in succ_iter(v):
+                        if (v, w) not in ignore_edges:
+                            yield w
+                return iterate
+
+            Gpred=filter_pred_iter(Gpred)
+            Gsucc=filter_succ_iter(Gsucc)
+
+        else:
+            def filter_iter(nodes_iter):
+                def iterate(v):
+                    for w in nodes_iter(v):
+                        if (v, w) not in ignore_edges \
+                                and (w, v) not in ignore_edges:
+                            yield w
+                return iterate
+
+            Gpred=filter_iter(Gpred)
+            Gsucc=filter_iter(Gsucc)
 
     # predecesssor and successors in search
     pred = {source: None}
