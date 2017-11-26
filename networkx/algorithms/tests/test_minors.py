@@ -213,6 +213,18 @@ class TestQuotient(object):
             assert_equal(M.nodes[n]['nnodes'], 2)
             assert_equal(M.nodes[n]['density'], 1.0)
 
+    def test_quotient_graph_incomplete_partition(self):
+        G = nx.path_graph(6)
+        partition = []
+        H = nx.quotient_graph(G, partition, relabel=True)
+        assert_nodes_equal(H.nodes(), [])
+        assert_edges_equal(H.edges(), [])
+
+        partition = [[0, 1], [2, 3], [5]]
+        H = nx.quotient_graph(G, partition, relabel=True)
+        assert_nodes_equal(H.nodes(), [0, 1, 2])
+        assert_edges_equal(H.edges(), [(0, 1)])
+
 
 class TestContraction(object):
     """Unit tests for node and edge contraction functions."""

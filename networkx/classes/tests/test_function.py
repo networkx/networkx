@@ -81,6 +81,42 @@ class TestFunction(object):
                             (13, 14, {'weight': 2.}),
                             (14, 15, {'weight': 2.})])
 
+        G = self.G.copy()
+        nlist = [None]
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = iter([None])
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges([None]), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = [12]
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = iter([12])
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges([12]), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = []
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
+        G = self.G.copy()
+        nlist = iter([])
+        nx.add_path(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
     def test_add_cycle(self):
         G = self.G.copy()
         nlist = [12, 13, 14, 15]

@@ -135,7 +135,7 @@ def get_revision():
 
 def get_info(dynamic=True):
     # Date information
-    date_info = datetime.datetime.now()
+    date_info = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_EPOCH', time.time())))
     date = time.asctime(date_info.timetuple())
 
     revision, version, version_info, vcs_info = None, None, None, None

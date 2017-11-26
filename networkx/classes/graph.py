@@ -1418,7 +1418,7 @@ class Graph(object):
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
         G.add_edges_from((u, v, datadict.copy())
-                         for u, nbrs in self.adj.items()
+                         for u, nbrs in self._adj.items()
                          for v, datadict in nbrs.items())
         return G
 
@@ -1472,7 +1472,7 @@ class Graph(object):
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         G.add_edges_from((u, v, deepcopy(data))
-                         for u, nbrs in self.adj.items()
+                         for u, nbrs in self._adj.items()
                          for v, data in nbrs.items())
         return G
 
@@ -1526,7 +1526,7 @@ class Graph(object):
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         G.add_edges_from((u, v, deepcopy(d))
-                         for u, nbrs in self.adj.items()
+                         for u, nbrs in self._adj.items()
                          for v, d in nbrs.items())
         return G
 

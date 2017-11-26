@@ -426,7 +426,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     # weights dictates the order of the (integer) node labels, so we
     # need to remember the permutation applied in the sorting.
     order = sorted(enumerate(w), key=itemgetter(1), reverse=True)
-    mapping = {c: v for c, (u, v) in enumerate(order)}
+    mapping = {c: u for c, (u, v) in enumerate(order)}
     seq = [v for u, v in order]
     last = n
     if not selfloops:

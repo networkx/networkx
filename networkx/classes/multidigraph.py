@@ -853,7 +853,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
         G.add_edges_from((u, v, key, datadict.copy())
-                         for u, nbrs in self.adj.items()
+                         for u, nbrs in self._adj.items()
                          for v, keydict in nbrs.items()
                          for key, datadict in keydict.items())
         return G
@@ -917,13 +917,13 @@ class MultiDiGraph(MultiGraph, DiGraph):
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
             G.add_edges_from((u, v, key, deepcopy(data))
-                             for u, nbrs in self.adj.items()
+                             for u, nbrs in self._adj.items()
                              for v, keydict in nbrs.items()
                              for key, data in keydict.items()
-                             if v in self.pred[u] and key in self.pred[u][v])
+                             if v in self._pred[u] and key in self._pred[u][v])
         else:
             G.add_edges_from((u, v, key, deepcopy(data))
-                             for u, nbrs in self.adj.items()
+                             for u, nbrs in self._adj.items()
                              for v, keydict in nbrs.items()
                              for key, data in keydict.items())
         return G

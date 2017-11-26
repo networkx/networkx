@@ -1,36 +1,18 @@
-from contextlib import contextmanager
 from math import sqrt
 import networkx as nx
 from nose import SkipTest
 from nose.tools import *
 
-methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos', 'lobpcg')
-
 try:
-    from numpy.random import get_state, seed, set_state, shuffle
-
-    @contextmanager
-    def save_random_state():
-        state = get_state()
-        try:
-            yield
-        finally:
-            set_state(state)
-
-    def preserve_random_state(func):
-        def wrapper(*args, **kwargs):
-            with save_random_state():
-                seed(1234567890)
-                return func(*args, **kwargs)
-        wrapper.__name__ = func.__name__
-        return wrapper
+    from scikits.sparse.cholmod import cholesky
+    _cholesky = cholesky
 except ImportError:
-    @contextmanager
-    def save_random_state():
-        yield
+    _cholesky = None
 
-    def preserve_random_state(func):
-        return func
+if _cholesky is None:
+    methods = ('tracemin_pcg', 'tracemin_lu', 'lanczos', 'lobpcg')
+else:
+    methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos', 'lobpcg')
 
 
 def check_eigenvector(A, l, x):
@@ -58,7 +40,6 @@ class TestAlgebraicConnectivity(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    @preserve_random_state
     def test_directed(self):
         G = nx.DiGraph()
         for method in self._methods:
@@ -67,7 +48,6 @@ class TestAlgebraicConnectivity(object):
             assert_raises(nx.NetworkXNotImplemented, nx.fiedler_vector, G,
                           method=method)
 
-    @preserve_random_state
     def test_null_and_singleton(self):
         G = nx.Graph()
         for method in self._methods:
@@ -82,7 +62,6 @@ class TestAlgebraicConnectivity(object):
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
 
-    @preserve_random_state
     def test_disconnected(self):
         G = nx.Graph()
         G.add_nodes_from(range(2))
@@ -96,14 +75,12 @@ class TestAlgebraicConnectivity(object):
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
 
-    @preserve_random_state
     def test_unrecognized_method(self):
         G = nx.path_graph(4)
         assert_raises(nx.NetworkXError, nx.algebraic_connectivity, G,
                       method='unknown')
         assert_raises(nx.NetworkXError, nx.fiedler_vector, G, method='unknown')
 
-    @preserve_random_state
     def test_two_nodes(self):
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
@@ -124,29 +101,46 @@ class TestAlgebraicConnectivity(object):
             x = nx.fiedler_vector(G, weight='spam', tol=1e-12, method=method)
             check_eigenvector(A, 6, x)
 
-    @preserve_random_state
+    def test_abbreviation_of_method(self):
+        G = nx.path_graph(8)
+        A = nx.laplacian_matrix(G)
+        sigma = 2 - sqrt(2 + sqrt(2))
+        ac = nx.algebraic_connectivity(G, tol=1e-12, method='tracemin')
+        assert_almost_equal(ac, sigma)
+        x = nx.fiedler_vector(G, tol=1e-12, method='tracemin')
+        check_eigenvector(A, sigma, x)
+
     def test_path(self):
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
         for method in self._methods:
-            assert_almost_equal(nx.algebraic_connectivity(
-                G, tol=1e-12, method=method), sigma)
+            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+            assert_almost_equal(ac, sigma)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
-    @preserve_random_state
+    def test_problematic_graph_issue_2381(self):
+        G = nx.path_graph(4)
+        G.add_edges_from([(4, 2), (5, 1)])
+        A = nx.laplacian_matrix(G)
+        sigma = 0.438447187191
+        for method in self._methods:
+            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+            assert_almost_equal(ac, sigma)
+            x = nx.fiedler_vector(G, tol=1e-12, method=method)
+            check_eigenvector(A, sigma, x)
+
     def test_cycle(self):
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
         for method in self._methods:
-            assert_almost_equal(nx.algebraic_connectivity(
-                G, tol=1e-12, method=method), sigma)
+            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+            assert_almost_equal(ac, sigma)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
-    @preserve_random_state
     def test_buckminsterfullerene(self):
         G = nx.Graph(
             [(1, 10), (1, 41), (1, 59), (2, 12), (2, 42), (2, 60), (3, 6),
@@ -184,7 +178,7 @@ class TestAlgebraicConnectivity(object):
                                       ('LU solver unavailable.',)):
                         raise
 
-    _methods = ('tracemin', 'lanczos', 'lobpcg')
+    _methods = methods
 
 
 class TestSpectralOrdering(object):
@@ -200,13 +194,11 @@ class TestSpectralOrdering(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    @preserve_random_state
     def test_nullgraph(self):
         for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
             G = graph()
             assert_raises(nx.NetworkXError, nx.spectral_ordering, G)
 
-    @preserve_random_state
     def test_singleton(self):
         for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
             G = graph()
@@ -216,13 +208,11 @@ class TestSpectralOrdering(object):
             G.add_edge('x', 'x', weight=33)
             assert_equal(nx.spectral_ordering(G), ['x'])
 
-    @preserve_random_state
     def test_unrecognized_method(self):
         G = nx.path_graph(4)
         assert_raises(nx.NetworkXError, nx.spectral_ordering, G,
                       method='unknown')
 
-    @preserve_random_state
     def test_three_nodes(self):
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1)],
@@ -238,8 +228,9 @@ class TestSpectralOrdering(object):
             assert_equal(set(order), set(G))
             ok_(set([2, 3]) in (set(order[:-1]), set(order[1:])))
 
-    @preserve_random_state
     def test_path(self):
+        # based on setupClass numpy is installed if we get here
+        from numpy.random import shuffle
         path = list(range(10))
         shuffle(path)
         G = nx.Graph()
@@ -248,7 +239,6 @@ class TestSpectralOrdering(object):
             order = nx.spectral_ordering(G, method=method)
             ok_(order in [path, list(reversed(path))])
 
-    @preserve_random_state
     def test_disconnected(self):
         G = nx.Graph()
         nx.add_path(G, range(0, 10, 2))
@@ -261,7 +251,6 @@ class TestSpectralOrdering(object):
             ok_(order[:5] in seqs)
             ok_(order[5:] in seqs)
 
-    @preserve_random_state
     def test_cycle(self):
         path = list(range(10))
         G = nx.Graph()
@@ -285,4 +274,4 @@ class TestSpectralOrdering(object):
                         ok_(order in [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8],
                                       [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]])
 
-    _methods = ('tracemin', 'lanczos', 'lobpcg')
+    _methods = methods

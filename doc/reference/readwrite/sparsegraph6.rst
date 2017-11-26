@@ -23,9 +23,9 @@ Graph6
 .. autosummary::
    :toctree: generated/
 
-   parse_graph6
+   from_graph6_bytes
    read_graph6
-   generate_graph6
+   to_graph6_bytes
    write_graph6
 
 Sparse6
@@ -34,8 +34,7 @@ Sparse6
 .. autosummary::
    :toctree: generated/
 
-   parse_sparse6
+   from_sparse6_bytes
    read_sparse6
-   generate_sparse6
+   to_sparse6_bytes
    write_sparse6
-
