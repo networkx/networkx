@@ -39,6 +39,15 @@ K-node-cutsets
 
    all_node_cuts
 
+Flow-based disjoint paths
+-------------------------
+.. automodule:: networkx.algorithms.connectivity.disjoint_paths
+.. autosummary::
+   :toctree: generated/
+
+   edge_disjoint_paths
+   node_disjoint_paths
+
 Flow-based Connectivity
 -----------------------
 .. automodule:: networkx.algorithms.connectivity.connectivity
