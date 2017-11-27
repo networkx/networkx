@@ -115,7 +115,7 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
     pair of nodes.
 
     >>> G = nx.icosahedral_graph()
-    >>> len(list(edge_disjoint_paths(G, 0, 6)))
+    >>> len(list(nx.edge_disjoint_paths(G, 0, 6)))
     5
 
 
@@ -308,7 +308,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
     pair of non neighbor nodes.
 
     >>> G = nx.icosahedral_graph()
-    >>> len(list(node_disjoint_paths(G, 0, 6)))
+    >>> len(list(nx.node_disjoint_paths(G, 0, 6)))
     5
 
     If you need to compute node disjoint paths between several pairs of
