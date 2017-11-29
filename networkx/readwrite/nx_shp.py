@@ -268,10 +268,38 @@ def write_shp(G, outdir):
     except:
         pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
+    
+    # Conversion dict between python and ogr types
+    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+    
+    # Storage for node field names and their data types
+    node_fields = {}
+    
     for n in G:
+        attributes = {}
         data = G.nodes[n]
         g = netgeometry(n, data)
-        create_feature(g, nodes)
+        for key, value in data.items():
+            # Reject spatial data not required for attribute table
+            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
+                    and key != 'ShpName'):
+                # For all edges check/add field and data type to fields dict
+                if key not in node_fields:
+                    # Field not in previous edges so add to dict
+                    if type(value) in OGRTypes:
+                        node_fields[key] = OGRTypes[type(value)]
+                    else:
+                        # Data type not supported, default to string (char 80)
+                        node_fields[key] = ogr.OFTString
+                    # Create the new field
+                    newfield = ogr.FieldDefn(key, node_fields[key])
+                    nodes.CreateField(newfield)
+                    # Store the data from new field to dict for CreateLayer()
+                    attributes[key] = value
+                else:
+                    # Field already exists, add data to dict for CreateLayer()
+                    attributes[key] = value
+        create_feature(g, nodes, attributes)
     try:
         shpdir.DeleteLayer("edges")
     except:
@@ -279,10 +307,7 @@ def write_shp(G, outdir):
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
 
     # New edge attribute write support merged into edge loop
-    fields = {}      # storage for field names and their data types
-
-    # Conversion dict between python and ogr types
-    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+    edge_fields = {}      # storage for field names and their data types
 
     # Edge loop
     for e in G.edges(data=True):
@@ -295,15 +320,15 @@ def write_shp(G, outdir):
             if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
                     and key != 'ShpName'):
                 # For all edges check/add field and data type to fields dict
-                if key not in fields:
+                if key not in edge_fields:
                     # Field not in previous edges so add to dict
                     if type(data) in OGRTypes:
-                        fields[key] = OGRTypes[type(data)]
+                        edge_fields[key] = OGRTypes[type(data)]
                     else:
                         # Data type not supported, default to string (char 80)
-                        fields[key] = ogr.OFTString
+                        edge_fields[key] = ogr.OFTString
                     # Create the new field
-                    newfield = ogr.FieldDefn(key, fields[key])
+                    newfield = ogr.FieldDefn(key, edge_fields[key])
                     edges.CreateField(newfield)
                     # Store the data from new field to dict for CreateLayer()
                     attributes[key] = data
