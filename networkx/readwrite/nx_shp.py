@@ -259,6 +259,22 @@ def write_shp(G, outdir):
                 feature.SetField(field, data)
         lyr.CreateFeature(feature)
         feature.Destroy()
+    
+    # Conversion dict between python and ogr types
+    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+    
+    # Check/add fields from attribute data to Shapefile layers
+    def add_fields_to_layer(key, value, fields, layer):
+        # Field not in previous edges so add to dict
+        if type(value) in OGRTypes:
+            fields[key] = OGRTypes[type(value)]
+        else:
+            # Data type not supported, default to string (char 80)
+            fields[key] = ogr.OFTString
+        # Create the new field
+        newfield = ogr.FieldDefn(key, fields[key])
+        layer.CreateField(newfield)
+        
 
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
@@ -268,9 +284,6 @@ def write_shp(G, outdir):
     except:
         pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
-    
-    # Conversion dict between python and ogr types
-    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
     
     # Storage for node field names and their data types
     node_fields = {}
@@ -285,20 +298,9 @@ def write_shp(G, outdir):
                     and key != 'ShpName'):
                 # For all edges check/add field and data type to fields dict
                 if key not in node_fields:
-                    # Field not in previous edges so add to dict
-                    if type(value) in OGRTypes:
-                        node_fields[key] = OGRTypes[type(value)]
-                    else:
-                        # Data type not supported, default to string (char 80)
-                        node_fields[key] = ogr.OFTString
-                    # Create the new field
-                    newfield = ogr.FieldDefn(key, node_fields[key])
-                    nodes.CreateField(newfield)
-                    # Store the data from new field to dict for CreateLayer()
-                    attributes[key] = value
-                else:
-                    # Field already exists, add data to dict for CreateLayer()
-                    attributes[key] = value
+                    add_fields_to_layer(key, value, node_fields, nodes)
+                # Store the data from new field to dict for CreateLayer()
+                attributes[key] = value
         create_feature(g, nodes, attributes)
     try:
         shpdir.DeleteLayer("edges")
@@ -321,20 +323,9 @@ def write_shp(G, outdir):
                     and key != 'ShpName'):
                 # For all edges check/add field and data type to fields dict
                 if key not in edge_fields:
-                    # Field not in previous edges so add to dict
-                    if type(data) in OGRTypes:
-                        edge_fields[key] = OGRTypes[type(data)]
-                    else:
-                        # Data type not supported, default to string (char 80)
-                        edge_fields[key] = ogr.OFTString
-                    # Create the new field
-                    newfield = ogr.FieldDefn(key, edge_fields[key])
-                    edges.CreateField(newfield)
-                    # Store the data from new field to dict for CreateLayer()
-                    attributes[key] = data
-                else:
-                    # Field already exists, add data to dict for CreateLayer()
-                    attributes[key] = data
+                    add_fields_to_layer(key, data, edge_fields, edges)
+                # Store the data from new field to dict for CreateLayer()
+                attributes[key] = data
         # Create the feature with, passing new attribute data
         create_feature(g, edges, attributes)
 
