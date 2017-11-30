@@ -239,11 +239,12 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 
 
 @random_state(9)
-def fruchterman_reingold_layout(G, k=None,
+def fruchterman_reingold_layout(G,
+                                k=None,
                                 pos=None,
                                 fixed=None,
                                 iterations=50,
-                                threshold = 1e-4,
+                                threshold=1e-4,
                                 weight='weight',
                                 scale=1,
                                 center=None,
@@ -347,26 +348,16 @@ def fruchterman_reingold_layout(G, k=None,
         # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
-<<<<<<< HEAD
-        pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed, iterations,
-                                           threshold, dim, random_state)
-=======
         pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
-                                           iterations, dim, random_state)
->>>>>>> Add random_state decorators to random_layout and fruchterman_reingold_layout
+                                           iterations, threshold, dim, random_state)
     except:
         A = nx.to_numpy_matrix(G, weight=weight)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
-<<<<<<< HEAD
         pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations,
                                     threshold, dim, random_state)
-=======
-        pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations, dim,
-                                    random_state)
->>>>>>> Add random_state decorators to random_layout and fruchterman_reingold_layout
     if fixed is None:
         pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
@@ -397,7 +388,7 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
 
     if pos is None:
         # random initial positions
-        pos = np.asarray(rng.rand(nnodes, dim), dtype=A.dtype)
+        pos = np.asarray(random_state.rand(nnodes, dim), dtype=A.dtype)
     else:
         # make sure positions are of same type as matrix
         pos = pos.astype(A.dtype)
@@ -473,7 +464,7 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
 
     if pos is None:
         # random initial positions
-        pos = np.asarray(rng.rand(nnodes, dim), dtype=A.dtype)
+        pos = np.asarray(random_state.rand(nnodes, dim), dtype=A.dtype)
     else:
         # make sure positions are of same type as matrix
         pos = pos.astype(A.dtype)
