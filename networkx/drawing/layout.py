@@ -27,6 +27,7 @@ Warning: Most layout routines have only been tested in 2-dimensions.
 """
 from __future__ import division
 import networkx as nx
+from networkx.utils import random_state
 
 __all__ = ['circular_layout',
            'kamada_kawai_layout',
@@ -59,6 +60,7 @@ def _process_params(G, center, dim):
     return G, center
 
 
+@random_state(3)
 def random_layout(G, center=None, dim=2, random_state=None):
     """Position nodes uniformly at random in the unit square.
 
@@ -99,12 +101,9 @@ def random_layout(G, center=None, dim=2, random_state=None):
     """
     import numpy as np
 
-    # get a numpy.random.RandomState instance
-    rng = nx.utils.check_random_state(random_state)
-
     G, center = _process_params(G, center, dim)
     shape = (len(G), dim)
-    pos = rng.rand(*shape) + center
+    pos = random_state.rand(*shape) + center
     pos = pos.astype(np.float32)
     pos = dict(zip(G, pos))
 
@@ -239,6 +238,7 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     return npos
 
 
+@random_state(9)
 def fruchterman_reingold_layout(G, k=None,
                                 pos=None,
                                 fixed=None,
@@ -313,9 +313,6 @@ def fruchterman_reingold_layout(G, k=None,
     """
     import numpy as np
 
-    # get a numpy.random.RandomState instance
-    rng = nx.utils.check_random_state(random_state)
-
     G, center = _process_params(G, center, dim)
 
     if fixed is not None:
@@ -328,7 +325,7 @@ def fruchterman_reingold_layout(G, k=None,
         if dom_size == 0:
             dom_size = 1
         shape = (len(G), dim)
-        pos_arr = rng.rand(*shape) * dom_size + center
+        pos_arr = random_state.rand(*shape) * dom_size + center
 
         for i, n in enumerate(G):
             if n in pos:
@@ -350,16 +347,26 @@ def fruchterman_reingold_layout(G, k=None,
         # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
+<<<<<<< HEAD
         pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed, iterations,
                                            threshold, dim, random_state)
+=======
+        pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
+                                           iterations, dim, random_state)
+>>>>>>> Add random_state decorators to random_layout and fruchterman_reingold_layout
     except:
         A = nx.to_numpy_matrix(G, weight=weight)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
+<<<<<<< HEAD
         pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations,
                                     threshold, dim, random_state)
+=======
+        pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations, dim,
+                                    random_state)
+>>>>>>> Add random_state decorators to random_layout and fruchterman_reingold_layout
     if fixed is None:
         pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
