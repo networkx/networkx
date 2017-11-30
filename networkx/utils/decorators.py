@@ -13,6 +13,7 @@ __all__ = [
     'open_file',
     'nodes_or_number',
     'preserve_random_state',
+    'random_state',
 ]
 
 
@@ -292,26 +293,21 @@ def nodes_or_number(which_args):
 
 def preserve_random_state(func):
     """ Decorator to preserve the numpy.random state during a function.
-
     Parameters
     ----------
     func : function
         function around which to preserve the random state.
-
     Returns
     -------
     wrapper : function
         Function which wraps the input function by saving the state before
         calling the function and restoring the function afterward.
-
     Examples
     --------
     Decorate functions like this::
-
         @preserve_random_state
         def do_random_stuff(x, y):
             return x + y * numpy.random.random()
-
     Notes
     -----
     If numpy.random is not importable, the state is not saved or restored.
@@ -335,3 +331,46 @@ def preserve_random_state(func):
         return wrapper
     except ImportError:
         return func
+
+
+def random_state(random_state_index):
+    """Decorator to generate a numpy.random.RandomState instance from a
+    random_state keyword argument.
+    Parameters
+    ----------
+    random_state_index : int
+        Location of the random_state argument in args. Even if the argument is
+        a named positional argument (with a default value), you must specify
+        its index as a positional argument.
+    Returns
+    -------
+    _random_state : function
+        Function whose random_state keyword argument is a RandomState instance.
+    Examples
+    --------
+    Decorate functions like this::
+       @random_state(0)
+       def random_float(random_state=None):
+           return random_state.rand()
+       @random_state(1)
+       def random_array(dims, random_state=1):
+           return random_state.rand(*dims)
+    """
+    @decorator
+    def _random_state(func, *args, **kwargs):
+        # Parse the decorator arguments.
+        try:
+            random_state_arg = args[random_state_index]
+        except TypeError:
+            raise nx.NetworkXError("random_state_arg must be an integer")
+        except IndexError:
+            raise nx.NetworkXError("random_state_arg is incorrect")
+
+        # Create a numpy.random.RandomState instance
+        random_state_instance = nx.utils.check_random_state(random_state_arg)
+
+        # args is a tuple, so we must convert to list before modifying it.
+        new_args = list(args)
+        new_args[random_state_index] = random_state_instance
+        return func(*new_args, **kwargs)
+    return _random_state
