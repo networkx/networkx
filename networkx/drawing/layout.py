@@ -78,12 +78,13 @@ def random_layout(G, center=None, dim=2, random_state=None):
     dim : int
         Dimension of layout.
 
-    random_state : int or RandomState instance or None  optional (default=None)
+    random_state : int, RandomState instance or None  optional (default=None)
         Set the random state for deterministic node layouts.
         If int, `random_state` is the seed used by the random number generator,
-        if RandomState instance, `random_state` is the random number generator,
+        if numpy.random.RandomState instance, `random_state` is the random
+        number generator,
         if None, the random number generator is the RandomState instance used
-        by np.random.
+        by numpy.random.
 
     Returns
     -------
@@ -98,12 +99,8 @@ def random_layout(G, center=None, dim=2, random_state=None):
     """
     import numpy as np
 
-    if random_state is None or random_state is np.random:
-        rng = np.random.mtrand._rand
-    elif isinstance(random_state, np.random.RandomState):
-        rng = random_state
-    else:
-        rng = np.random.RandomState(random_state)
+    # get a numpy.random.RandomState instance
+    rng = nx.utils.check_random_state(random_state)
 
     G, center = _process_params(G, center, dim)
     shape = (len(G), dim)
@@ -293,12 +290,13 @@ def fruchterman_reingold_layout(G, k=None,
     dim : int
         Dimension of layout.
 
-    random_state : int or RandomState instance or None  optional (default=None)
+    random_state : int, RandomState instance or None  optional (default=None)
         Set the random state for deterministic node layouts.
         If int, `random_state` is the seed used by the random number generator,
-        if RandomState instance, `random_state` is the random number generator,
+        if numpy.random.RandomState instance, `random_state` is the random
+        number generator,
         if None, the random number generator is the RandomState instance used
-        by np.random.
+        by numpy.random.
 
     Returns
     -------
@@ -315,12 +313,8 @@ def fruchterman_reingold_layout(G, k=None,
     """
     import numpy as np
 
-    if random_state is None or random_state is np.random:
-        rng = np.random.mtrand._rand
-    elif isinstance(random_state, np.random.RandomState):
-        rng = random_state
-    else:
-        rng = np.random.RandomState(random_state)
+    # get a numpy.random.RandomState instance
+    rng = nx.utils.check_random_state(random_state)
 
     G, center = _process_params(G, center, dim)
 
