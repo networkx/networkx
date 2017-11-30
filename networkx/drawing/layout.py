@@ -238,7 +238,7 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     return npos
 
 
-@random_state(9)
+@random_state(10)
 def fruchterman_reingold_layout(G,
                                 k=None,
                                 pos=None,
