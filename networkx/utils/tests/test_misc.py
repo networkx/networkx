@@ -162,3 +162,15 @@ def test_to_tuple():
     actual = to_tuple(a_mix)
     expected = (1, 2, (1, 3))
     assert_equal(actual, expected)
+
+
+def test_check_random_state():
+    import numpy as np
+    rs = np.random.RandomState
+    
+    assert_true(isinstance(check_random_state(1), rs))
+    assert_true(isinstance(check_random_state(None), rs))
+    assert_true(isinstance(check_random_state(np.random), rs))
+    assert_true(isinstance(check_random_state(rs(1)), rs))
+
+    assert_true(np.all((rs(1).rand(10), check_random_state(1).rand(10))))
