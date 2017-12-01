@@ -165,9 +165,13 @@ def test_to_tuple():
 
 
 def test_check_random_state():
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        raise SkipTest('numpy not available.')
+
     rs = np.random.RandomState
-    
+
     assert_true(isinstance(check_random_state(1), rs))
     assert_true(isinstance(check_random_state(None), rs))
     assert_true(isinstance(check_random_state(np.random), rs))
