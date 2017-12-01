@@ -367,6 +367,7 @@ def fruchterman_reingold_layout(G,
 spring_layout = fruchterman_reingold_layout
 
 
+@random_state(7)
 def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
                           threshold=1e-4, dim=2, random_state=None):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
@@ -435,6 +436,7 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
     return pos
 
 
+@random_state(7)
 def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
                                  iterations=50, threshold=1e-4, dim=2,
                                  random_state=None):
