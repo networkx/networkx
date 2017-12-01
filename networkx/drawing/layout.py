@@ -99,7 +99,10 @@ def random_layout(G, center=None, dim=2, random_state=None):
     >>> pos = nx.random_layout(G)
 
     """
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError("random_layout() requires numpy: http://scipy.org/")
 
     G, center = _process_params(G, center, dim)
     shape = (len(G), dim)
@@ -312,7 +315,10 @@ def fruchterman_reingold_layout(G,
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
     """
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError("spring_layout() requires numpy: http://scipy.org/")
 
     G, center = _process_params(G, center, dim)
 

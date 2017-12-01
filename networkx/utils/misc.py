@@ -23,7 +23,6 @@ from collections import deque
 import sys
 import uuid
 from itertools import tee, chain
-import numpy as np
 
 # itertools.accumulate is only available on Python 3.2 or later.
 #
@@ -302,6 +301,11 @@ def check_random_state(random_state):
         if None, the random number generator is the RandomState instance used
         by numpy.random.
     """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            "check_random_state() requires numpy: http://scipy.org/ ")
     if random_state is None or random_state is np.random:
         return np.random.mtrand._rand
     if isinstance(random_state, np.random.RandomState):
