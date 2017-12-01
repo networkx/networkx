@@ -303,7 +303,7 @@ def check_random_state(random_state):
         by numpy.random.
     """
     if random_state is None or random_state is np.random:
-        return np.random
+        return np.random.mtrand._rand
     if isinstance(random_state, np.random.RandomState):
         return random_state
     if isinstance(random_state, int):
