@@ -41,7 +41,7 @@ def min_weighted_vertex_cover(G, weight=None):
     G : NetworkX graph
 
     weight : string, optional (default = None)
-        If None, every edge has weight 1. If a string, use this node
+        If None, every node has weight 1. If a string, use this node
         attribute as the node weight. A node without this attribute is
         assumed to have weight 1.
 
