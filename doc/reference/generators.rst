@@ -267,6 +267,15 @@ Non Isomorphic Trees
    number_of_nonisomorphic_trees
 
 
+Trees
+-----
+.. automodule:: networkx.generators.trees
+.. autosummary::
+   :toctree: generated/
+
+   prefix_tree
+
+
 Triads
 ------
 .. automodule:: networkx.generators.triads

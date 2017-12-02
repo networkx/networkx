@@ -23,4 +23,5 @@ from networkx.generators.small import *
 from networkx.generators.social import *
 from networkx.generators.stochastic import *
 from networkx.generators.tree import *
+from networkx.generators.trees import *
 from networkx.generators.triads import *
