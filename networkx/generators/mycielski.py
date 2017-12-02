@@ -1,4 +1,4 @@
-#    Copyright (C) 2010-2013 by
+#    Copyright (C) 2010-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -24,17 +24,17 @@ def mycielskian(G, iterations=1):
     The Mycielskian of graph preserves a graph's triangle free
     property while increasing the chromatic number by 1.
 
-    The Mycielski Operation on a graph, :math:`G=(V,E)`, constructs a new graph
-    of size :math:`2|V|+1` with :math:`3|E|+|V|` edges.
+    The Mycielski Operation on a graph, :math:`G=(V, E)`, constructs a new
+    graph with :math:`2|V| + 1` nodes and :math:`3|E| + |V|` edges.
 
     The construction is as follows:
 
     Let :math:`V = {0, ..., n-1}`. Construct another vertex set
     :math:`U = {n, ..., 2n}` and a vertex, `w`.
-    Construct a new graph, `M`, with vertices :math:`U ∪ V ∪ w`.
-    For edges, :math:`(u,v) \in E` add edges :math:`(u,v), (u, v+n)`, and
-    :math:`(u+n, v)` to M. Finally, for all vertices :math:`u \in U`, add edge
-    :math:`(u,w)` to M.
+    Construct a new graph, `M`, with vertices :math:`U \bigcup V \bigcup w`.
+    For edges, :math:`(u, v) \in E` add edges :math:`(u, v), (u, v + n)`, and
+    :math:`(u + n, v)` to M. Finally, for all vertices :math:`u \in U`, add
+    edge :math:`(u, w)` to M.
 
     The Mycielski Operation can be done multiple times by repeating the above
     process iteratively.
@@ -100,8 +100,8 @@ def mycielski_graph(n):
     -----
     The first graph in the Mycielski sequence is the singleton graph.
     The Mycielskian of this graph is not the :math:`P_2` graph, but rather the
-    :math:`P_2` graph with an extra, isolated vertex. The second Mycielski graph
-    is the :math:`P_2` graph, so the first two are hard coded.
+    :math:`P_2` graph with an extra, isolated vertex. The second Mycielski
+    graph is the :math:`P_2` graph, so the first two are hard coded.
     The remaining graphs are generated using the Mycielski operation.
 
     """
