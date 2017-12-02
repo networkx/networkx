@@ -79,6 +79,16 @@ Ramsey
    ramsey_R2
 
 
+Steiner Tree
+------------
+.. automodule:: networkx.algorithms.approximation.steinertree
+.. autosummary::
+   :toctree: generated/
+
+   metric_closure
+   steiner_tree
+
+
 Vertex Cover
 ------------
 .. automodule:: networkx.algorithms.approximation.vertex_cover
