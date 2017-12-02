@@ -2,6 +2,7 @@ import tempfile
 import os
 
 from nose.tools import *
+from nose import SkipTest
 
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
