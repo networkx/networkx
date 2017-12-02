@@ -132,7 +132,7 @@ class TestOpenFileDecorator(object):
 
 
 @preserve_random_state
-def test_random_state():
+def test_preserve_random_state():
     try:
         import numpy.random
         r = numpy.random.random()
