@@ -289,8 +289,7 @@ def to_tuple(x):
 
 
 def check_random_state(random_state):
-    """Return a numpy.random.RandomState instance from a `random_state` function
-    argument.
+    """Returns a numpy.random.RandomState instance.
 
     Parameters
     ----------

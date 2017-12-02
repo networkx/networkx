@@ -334,24 +334,29 @@ def preserve_random_state(func):
 
 
 def random_state(random_state_index):
-    """Decorator to generate a numpy.random.RandomState instance from a
-    random_state keyword argument.
+    """Decorator to generate a numpy.random.RandomState instance.
+
     Parameters
     ----------
     random_state_index : int
-        Location of the random_state argument in args. Even if the argument is
+        Location of the random_state argument in args that is to be used to
+        generate the numpy.random.RandomState instance. Even if the argument is
         a named positional argument (with a default value), you must specify
         its index as a positional argument.
+
     Returns
     -------
     _random_state : function
         Function whose random_state keyword argument is a RandomState instance.
+
     Examples
     --------
     Decorate functions like this::
+
        @random_state(0)
        def random_float(random_state=None):
            return random_state.rand()
+
        @random_state(1)
        def random_array(dims, random_state=1):
            return random_state.rand(*dims)
