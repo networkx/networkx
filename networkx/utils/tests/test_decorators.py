@@ -5,7 +5,8 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
-from networkx.utils.decorators import nodes_or_number, preserve_random_state
+from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
+    random_state
 
 
 def test_not_implemented_decorator():
@@ -139,3 +140,37 @@ def test_preserve_random_state():
     except ImportError:
         return
     assert(abs(r - 0.61879477158568) < 1e-16)
+
+
+class TestRandomState(object):
+    @classmethod
+    def setUp(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+
+    @random_state(1)
+    def instantiate_random_state(self, random_state):
+        assert_true(isinstance(random_state, np.random.RandomState))
+        return random_state
+
+    def test_random_state_None(self):
+        self.instantiate_random_state(random_state=None)
+
+    def test_random_state_np_random(self):
+        self.instantiate_random_state(random_state=np.random)
+
+    def test_random_state_int(self):
+        seed = 1
+        random_state = self.instantiate_random_state(random_state=seed)
+        assert_true(np.all((np.random.RandomState(seed).rand(10),
+                            random_state.rand(10))))
+
+    def test_random_state_np_random_RandomState(self):
+        seed = 1
+        rng = np.random.RandomState(seed)
+        random_state = self.instantiate_random_state(random_state=rng)
+        assert_true(np.all((np.random.RandomState(seed).rand(10),
+                            random_state.rand(10))))
