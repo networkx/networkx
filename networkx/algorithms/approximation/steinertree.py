@@ -25,9 +25,12 @@ def metric_closure(G, weight='weight'):
     """
     M = nx.Graph()
 
-    for u, v in combinations(G, 2):
-        distance, path = nx.single_source_dijkstra(G, u, v, weight=weight)
-        M.add_edge(u, v, distance=distance[v], path=path[v])
+    seen = set()
+    Gnodes = set(G)
+    for u, (distance, path) in nx.all_pairs_dijkstra(G, weight=weight):
+        seen.add(u)
+        for v in Gnodes - seen:
+            M.add_edge(u, v, distance=distance[v], path=path[v])
 
     return M
 
