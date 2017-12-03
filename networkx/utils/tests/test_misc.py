@@ -176,5 +176,6 @@ def test_create_random_state():
     assert_true(isinstance(create_random_state(None), rs))
     assert_true(isinstance(create_random_state(np.random), rs))
     assert_true(isinstance(create_random_state(rs(1)), rs))
+    assert_raises(ValueError, create_random_state, 'a')
 
     assert_true(np.all((rs(1).rand(10), create_random_state(1).rand(10))))

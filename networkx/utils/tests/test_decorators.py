@@ -175,3 +175,17 @@ class TestRandomState(object):
         random_state = self.instantiate_random_state(random_state=rng)
         assert_true(np.all((np.random.RandomState(seed).rand(10),
                             random_state.rand(10))))
+
+@raises(nx.NetworkXError)
+def test_string_arg_index():
+    @random_state('a')
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)
+
+@raises(nx.NetworkXError)
+def test_invalid_arg_index():
+    @random_state(2)
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)
