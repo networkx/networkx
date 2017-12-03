@@ -293,21 +293,26 @@ def nodes_or_number(which_args):
 
 def preserve_random_state(func):
     """ Decorator to preserve the numpy.random state during a function.
+
     Parameters
     ----------
     func : function
         function around which to preserve the random state.
+
     Returns
     -------
     wrapper : function
         Function which wraps the input function by saving the state before
         calling the function and restoring the function afterward.
+
     Examples
     --------
     Decorate functions like this::
+
         @preserve_random_state
         def do_random_stuff(x, y):
             return x + y * numpy.random.random()
+
     Notes
     -----
     If numpy.random is not importable, the state is not saved or restored.
@@ -335,6 +340,8 @@ def preserve_random_state(func):
 
 def random_state(random_state_index):
     """Decorator to generate a numpy.random.RandomState instance.
+
+    Argument position `random_state_index` is processed by create_random_state.
 
     Parameters
     ----------
@@ -372,7 +379,7 @@ def random_state(random_state_index):
             raise nx.NetworkXError("random_state_arg is incorrect")
 
         # Create a numpy.random.RandomState instance
-        random_state_instance = nx.utils.check_random_state(random_state_arg)
+        random_state_instance = nx.utils.create_random_state(random_state_arg)
 
         # args is a tuple, so we must convert to list before modifying it.
         new_args = list(args)

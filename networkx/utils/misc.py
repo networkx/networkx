@@ -288,8 +288,8 @@ def to_tuple(x):
     return tuple(map(to_tuple, x))
 
 
-def check_random_state(random_state):
-    """Returns a numpy.random.RandomState instance.
+def create_random_state(random_state=None):
+    """Returns a numpy.random.RandomState instance depending on input.
 
     Parameters
     ----------
@@ -308,5 +308,5 @@ def check_random_state(random_state):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
-    msg = '%r cannot be used to genrate a numpy.random.RandomState instance'
+    msg = '%r cannot be used to generate a numpy.random.RandomState instance'
     raise ValueError(msg % random_state)

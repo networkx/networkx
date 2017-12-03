@@ -164,7 +164,7 @@ def test_to_tuple():
     assert_equal(actual, expected)
 
 
-def test_check_random_state():
+def test_create_random_state():
     try:
         import numpy as np
     except ImportError:
@@ -172,9 +172,9 @@ def test_check_random_state():
 
     rs = np.random.RandomState
 
-    assert_true(isinstance(check_random_state(1), rs))
-    assert_true(isinstance(check_random_state(None), rs))
-    assert_true(isinstance(check_random_state(np.random), rs))
-    assert_true(isinstance(check_random_state(rs(1)), rs))
+    assert_true(isinstance(create_random_state(1), rs))
+    assert_true(isinstance(create_random_state(None), rs))
+    assert_true(isinstance(create_random_state(np.random), rs))
+    assert_true(isinstance(create_random_state(rs(1)), rs))
 
-    assert_true(np.all((rs(1).rand(10), check_random_state(1).rand(10))))
+    assert_true(np.all((rs(1).rand(10), create_random_state(1).rand(10))))

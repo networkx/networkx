@@ -345,11 +345,12 @@ def fruchterman_reingold_layout(G,
             raise ValueError
         A = nx.to_scipy_sparse_matrix(G, weight=weight, dtype='f')
         if k is None and fixed is not None:
-        # We must adjust k by domain size for layouts not near 1x1
+            # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
-                                           iterations, threshold, dim, random_state)
+                                           iterations, threshold,
+                                           dim, random_state)
     except:
         A = nx.to_numpy_matrix(G, weight=weight)
         if k is None and fixed is not None:

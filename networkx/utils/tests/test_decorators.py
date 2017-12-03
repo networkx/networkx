@@ -7,7 +7,7 @@ from nose import SkipTest
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
-    random_state
+                                      random_state
 
 
 def test_not_implemented_decorator():
