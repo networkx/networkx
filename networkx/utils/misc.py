@@ -286,3 +286,27 @@ def to_tuple(x):
     if not isinstance(x, (tuple, list)):
         return x
     return tuple(map(to_tuple, x))
+
+
+def create_random_state(random_state=None):
+    """Returns a numpy.random.RandomState instance depending on input.
+
+    Parameters
+    ----------
+    random_state : int or RandomState instance or None  optional (default=None)
+        If int, `random_state` is the seed used by the random number generator,
+        if numpy.random.RandomState instance, `random_state` is the random
+        number generator,
+        if None, the random number generator is the RandomState instance used
+        by numpy.random.
+    """
+    import numpy as np
+
+    if random_state is None or random_state is np.random:
+        return np.random.mtrand._rand
+    if isinstance(random_state, np.random.RandomState):
+        return random_state
+    if isinstance(random_state, int):
+        return np.random.RandomState(random_state)
+    msg = '%r cannot be used to generate a numpy.random.RandomState instance'
+    raise ValueError(msg % random_state)

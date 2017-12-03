@@ -20,6 +20,7 @@ Helper Functions
    default_opener
    pairwise
    groups
+   create_random_state
 
 
 Data Structures and Algorithms
@@ -50,6 +51,10 @@ Decorators
    :toctree: generated/
 
    open_file
+   not_implemented_for
+   nodes_or_number
+   preserve_random_state
+   random_state
 
 Cuthill-Mckee Ordering
 ----------------------
