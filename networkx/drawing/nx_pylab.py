@@ -151,11 +151,17 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 
     arrows : bool, optional (default=True)
        For directed graphs, if True draw arrowheads.
+       Note: Arrows will be the same color as edges.
 
     arrowstyle : str, optional (default='-|>')
         For directed graphs, chose the style of the arrowsheads.
         See :py:class: `matplotlib.patches.ArrowStyle` for more
         options.
+
+    arrowsize : int, optional (default=10)
+       For directed graphs, chose the size of the arrow head head's length and
+       width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
+       `mutation_scale` for more info.
 
     with_labels :  bool, optional (default=True)
        Set to True to draw labels on the nodes.
@@ -234,10 +240,8 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 
     Notes
     -----
-    For directed graphs, "arrows" (actually just thicker stubs) are drawn
-    at the head end.  Arrows can be turned off with keyword arrows=False.
-    Yes, it is ugly but drawing proper arrows with Matplotlib this
-    way is tricky.
+    For directed graphs, arrows  are drawn at the head end.  Arrows can be
+    turned off with keyword arrows=False.
 
     Examples
     --------
@@ -415,6 +419,7 @@ def draw_networkx_edges(G, pos,
                         style='solid',
                         alpha=1.0,
                         arrowstyle='-|>',
+                        arrowsize=10,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None,
@@ -422,6 +427,8 @@ def draw_networkx_edges(G, pos,
                         arrows=True,
                         label=None,
                         node_size=300,
+                        nodelist=None,
+                        node_shape="o",
                         **kwds):
     """Draw the edges of the graph G. DRAFT____1
 
@@ -465,11 +472,17 @@ def draw_networkx_edges(G, pos,
 
     arrows : bool, optional (default=True)
        For directed graphs, if True draw arrowheads.
+       Note: Arrows will be the same color as edges.
 
     arrowstyle : str, optional (default='-|>')
        For directed graphs, chose the style of the arrow heads.
        See :py:class: `matplotlib.patches.ArrowStyle` for more
        options.
+
+    arrowsize : int, optional (default=10)
+       For directed graphs, chose the size of the arrow head head's length and
+       width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
+       `mutation_scale` for more info.
 
     label : [None| string]
        Label for legend
@@ -481,10 +494,8 @@ def draw_networkx_edges(G, pos,
 
     Notes
     -----
-    For directed graphs, "arrows" (actually just thicker stubs) are drawn
-    at the head end.  Arrows can be turned off with keyword arrows=False.
-    Yes, it is ugly but drawing proper arrows with Matplotlib this
-    way is tricky.
+    For directed graphs, arrows  are drawn at the head end.  Arrows can be
+    turned off with keyword arrows=False.
 
     Examples
     --------
@@ -509,6 +520,7 @@ def draw_networkx_edges(G, pos,
         from matplotlib.colors import colorConverter, Colormap
         from matplotlib.collections import LineCollection
         from matplotlib.patches import FancyArrowPatch
+        from matplotlib.markers import MarkerStyle
         import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -524,6 +536,9 @@ def draw_networkx_edges(G, pos,
 
     if not edgelist or len(edgelist) == 0:  # no edges!
         return None
+
+    if nodelist is None:
+        nodelist = list(G.nodes())
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
@@ -558,89 +573,85 @@ def draw_networkx_edges(G, pos,
             raise ValueError(
                 'edge_color must be a single color or list of exactly m colors where m is the number or edges')
 
-    edge_collection = LineCollection(edge_pos,
-                                     colors=edge_colors,
-                                     linewidths=lw,
-                                     antialiaseds=(1,),
-                                     linestyle=style,
-                                     transOffset=ax.transData,
-                                     )
+    if not (G.is_directed() or arrows):
+        edge_collection = LineCollection(edge_pos,
+                                         colors=edge_colors,
+                                         linewidths=lw,
+                                         antialiaseds=(1,),
+                                         linestyle=style,
+                                         transOffset=ax.transData,
+                                         )
 
-    edge_collection.set_zorder(1)  # edges go behind nodes
-    edge_collection.set_label(label)
-    ax.add_collection(edge_collection)
+        edge_collection.set_zorder(1)  # edges go behind nodes
+        edge_collection.set_label(label)
+        ax.add_collection(edge_collection)
 
-    # Note: there was a bug in mpl regarding the handling of alpha values for
-    # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
-    # r7189 (June 6 2009).  We should then not set the alpha value globally,
-    # since the user can instead provide per-edge alphas now.  Only set it
-    # globally if provided as a scalar.
-    if cb.is_numlike(alpha):
-        edge_collection.set_alpha(alpha)
+        # Note: there was a bug in mpl regarding the handling of alpha values for
+        # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
+        # r7189 (June 6 2009).  We should then not set the alpha value globally,
+        # since the user can instead provide per-edge alphas now.  Only set it
+        # globally if provided as a scalar.
+        if cb.is_numlike(alpha):
+            edge_collection.set_alpha(alpha)
 
-    if edge_colors is None:
-        if edge_cmap is not None:
-            assert(isinstance(edge_cmap, Colormap))
-        edge_collection.set_array(np.asarray(edge_color))
-        edge_collection.set_cmap(edge_cmap)
-        if edge_vmin is not None or edge_vmax is not None:
-            edge_collection.set_clim(edge_vmin, edge_vmax)
-        else:
-            edge_collection.autoscale()
+        if edge_colors is None:
+            if edge_cmap is not None:
+                assert(isinstance(edge_cmap, Colormap))
+            edge_collection.set_array(np.asarray(edge_color))
+            edge_collection.set_cmap(edge_cmap)
+            if edge_vmin is not None or edge_vmax is not None:
+                edge_collection.set_clim(edge_vmin, edge_vmax)
+            else:
+                edge_collection.autoscale()
 
     arrow_collection = None
 
     if G.is_directed() and arrows:
+        # Note: Waiting for someone to implement arrow to edge of marker.
+        # Meanwhile, this works well for polygons with more than 4 sides and
+        # circle.
+
+        def to_marker_edge(marker_size, marker):
+            if marker in "s^>v<d":  # `large` markers need extra space
+                return np.sqrt(2 * marker_size) / 2
+            else:
+                return np.sqrt(marker_size) / 2
 
         # Draw arrows with `matplotlib.patches.FancyarrowPatch`
         arrow_collection = []
         arrow_colors = edge_colors
-        mutation_scale = 10  # scale factor of arrow head
-        # To UPDATE: Case example using a single node size
-        to_marker_edge = np.sqrt(node_size) / 2.  # only valid for circle
-        shrink_source = 0  # leave space for arrow in opposite direction
-        shrink_target = to_marker_edge  # arrow head next to node
+        mutation_scale = arrowsize  # scale factor of arrow head
 
         for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
             x2, y2 = dst
-            # indivual colors and linewidths
-            if len(arrow_colors) > 1 and len(lw) > 1:
-                arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle=arrowstyle,
-                                        shrinkA=shrink_source,
-                                        shrinkB=shrink_target,
-                                        mutation_scale=mutation_scale,
-                                        color=arrow_colors[i],
-                                        linewidth=lw[i],
-                                        zorder=1)  # arrows go behind nodes
-            elif len(arrow_colors) > 1:  # only individual colors
-                arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle=arrowstyle,
-                                        shrinkA=shrink_source,
-                                        shrinkB=shrink_target,
-                                        mutation_scale=mutation_scale,
-                                        color=arrow_colors[i],
-                                        linewidth=lw[0],
-                                        zorder=1)
-            elif len(lw) > 1:  # only individual linewidths
-                arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle=arrowstyle,
-                                        shrinkA=shrink_source,
-                                        shrinkB=shrink_target,
-                                        mutation_scale=mutation_scale,
-                                        color=arrow_colors[0],
-                                        linewidth=lw[i],
-                                        zorder=1)
+            arrow_color = None
+            line_width = None
+            shrink_source = 0  # space from source to tail
+            shrink_target = 0  # space from  head to target
+            if cb.iterable(node_size):  # many node sizes
+                src_node, dst_node = edgelist[i]
+                index_node = nodelist.index(dst_node)
+                marker_size = node_size[index_node]
+                shrink_target = to_marker_edge(marker_size, node_shape)
             else:
-                arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                        arrowstyle=arrowstyle,
-                                        shrinkA=shrink_source,
-                                        shrinkB=shrink_target,
-                                        mutation_scale=mutation_scale,
-                                        color=arrow_colors[0],
-                                        linewidth=lw[0],
-                                        zorder=1)
+                shrink_target = to_marker_edge(node_size, node_shape)
+            if len(arrow_colors) > 1:
+                arrow_color = arrow_colors[i]
+            else:
+                arrow_color = arrow_colors[0]
+            if len(lw) > 1:
+                line_width = lw[i]
+            else:
+                line_width = lw[0]
+            arrow = FancyArrowPatch((x1, y1), (x2, y2),
+                                    arrowstyle=arrowstyle,
+                                    shrinkA=shrink_source,
+                                    shrinkB=shrink_target,
+                                    mutation_scale=mutation_scale,
+                                    color=arrow_color,
+                                    linewidth=line_width,
+                                    zorder=1)  # arrows go behind nodes
 
             arrow_collection.append(arrow)
             ax.add_patch(arrow)
@@ -658,7 +669,7 @@ def draw_networkx_edges(G, pos,
     ax.update_datalim(corners)
     ax.autoscale_view()
 
-    return edge_collection
+    return None
 
 
 def draw_networkx_labels(G, pos,
