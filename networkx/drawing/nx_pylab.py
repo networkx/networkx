@@ -517,10 +517,9 @@ def draw_networkx_edges(G, pos,
         import matplotlib
         import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
-        from matplotlib.colors import colorConverter, Colormap
+        from matplotlib.colors import colorConverter, Colormap, Normalize
         from matplotlib.collections import LineCollection
         from matplotlib.patches import FancyArrowPatch
-        from matplotlib.markers import MarkerStyle
         import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -573,7 +572,7 @@ def draw_networkx_edges(G, pos,
             raise ValueError(
                 'edge_color must be a single color or list of exactly m colors where m is the number or edges')
 
-    if not (G.is_directed() or arrows):
+    if (not G.is_directed() or not arrows):
         edge_collection = LineCollection(edge_pos,
                                          colors=edge_colors,
                                          linewidths=lw,
@@ -607,9 +606,9 @@ def draw_networkx_edges(G, pos,
     arrow_collection = None
 
     if G.is_directed() and arrows:
-        # Note: Waiting for someone to implement arrow to edge of marker.
-        # Meanwhile, this works well for polygons with more than 4 sides and
-        # circle.
+        # Note: Waiting for someone to implement arrow to intersection with
+        # marker.  Meanwhile, this works well for polygons with more than 4
+        # sides and circle.
 
         def to_marker_edge(marker_size, marker):
             if marker in "s^>v<d":  # `large` markers need extra space
@@ -619,8 +618,18 @@ def draw_networkx_edges(G, pos,
 
         # Draw arrows with `matplotlib.patches.FancyarrowPatch`
         arrow_collection = []
-        arrow_colors = edge_colors
         mutation_scale = arrowsize  # scale factor of arrow head
+        arrow_colors = edge_colors
+        if arrow_colors is None:
+            if edge_cmap is not None:
+                assert(isinstance(edge_cmap, Colormap))
+            else:
+                edge_cmap = plt.get_cmap()  # default matplotlib colormap
+            if edge_vmin is None:
+                edge_vmin = min(edge_color)
+            if edge_vmax is None:
+                edge_vmax = max(edge_color)
+            color_normal = Normalize(vmin=edge_vmin, vmax=edge_vmax)
 
         for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
@@ -636,7 +645,9 @@ def draw_networkx_edges(G, pos,
                 shrink_target = to_marker_edge(marker_size, node_shape)
             else:
                 shrink_target = to_marker_edge(node_size, node_shape)
-            if len(arrow_colors) > 1:
+            if arrow_colors is None:
+                arrow_color = edge_cmap(color_normal(edge_color[i]))
+            elif len(arrow_colors) > 1:
                 arrow_color = arrow_colors[i]
             else:
                 arrow_color = arrow_colors[0]
@@ -653,6 +664,9 @@ def draw_networkx_edges(G, pos,
                                     linewidth=line_width,
                                     zorder=1)  # arrows go behind nodes
 
+            # There seems to be a bug in matplotlib to make collections of
+            # FancyArrowPatch instances. Until fixed, the patches are added
+            # individually to the axes instance.
             arrow_collection.append(arrow)
             ax.add_patch(arrow)
 
