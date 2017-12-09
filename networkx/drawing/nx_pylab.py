@@ -283,6 +283,7 @@ def draw_networkx_nodes(G, pos,
                         vmax=None,
                         ax=None,
                         linewidths=None,
+                        edgecolors=None,
                         label=None,
                         **kwds):
     """Draw the nodes of the graph G.
@@ -333,6 +334,9 @@ def draw_networkx_nodes(G, pos,
 
     linewidths : [None | scalar | sequence]
        Line width of symbol border (default =1.0)
+
+    edgecolors : [None | scalar | sequence]
+       Colors of node borders (default = node_color)
 
     label : [None| string]
        Label for legend
@@ -397,6 +401,7 @@ def draw_networkx_nodes(G, pos,
                                  vmax=vmax,
                                  alpha=alpha,
                                  linewidths=linewidths,
+                                 edgecolors=edgecolors,
                                  label=label)
 
     node_collection.set_zorder(2)
