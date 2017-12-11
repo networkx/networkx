@@ -137,7 +137,7 @@ class TestGraphsEqual(_GenericTest):
         nx.add_path(H, range(4))
         self._test_equal(G, H)
 
-    def test_multigraphs_equal(self):
+    def test_multidigraphs_equal(self):
         G = nx.path_graph(4, create_using=nx.MultiDiGraph())
         H = nx.MultiDiGraph()
         nx.add_path(H, range(4))
