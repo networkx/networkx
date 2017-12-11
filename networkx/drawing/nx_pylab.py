@@ -684,7 +684,7 @@ def draw_networkx_edges(G, pos,
     ax.update_datalim(corners)
     ax.autoscale_view()
 
-    return None
+    return arrow_collection
 
 
 def draw_networkx_labels(G, pos,
