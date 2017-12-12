@@ -890,9 +890,18 @@ class OutEdgeView(Set, Mapping):
         return {'_graph': self._graph}
 
     def __setstate__(self, state):
-        self._graph = G = state['_graph']
-        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
-        self._nodes_nbrs = self._adjdict.items
+        self._graph = state['_graph']
+
+    @property
+    def _adjdict(self):
+        G = self._graph
+        if not hasattr(self,'__adjdict'):
+            self.__adjdict = G._succ if hasattr(G, "succ") else G._adj
+        return self.__adjdict
+
+    @property
+    def _nodes_nbrs(self):
+        return self._adjdict.items
 
     @classmethod
     def _from_iterable(self, it):
@@ -902,7 +911,6 @@ class OutEdgeView(Set, Mapping):
 
     def __init__(self, G):
         self._graph = G
-        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
         self._nodes_nbrs = self._adjdict.items
 
     # Set methods
@@ -1040,9 +1048,18 @@ class InEdgeView(OutEdgeView):
     __slots__ = ()
 
     def __setstate__(self, state):
-        self._graph = G = state['_graph']
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
+        self._graph = state['_graph']
+
+    @property
+    def _adjdict(self):
+        G = self._graph
+        if not hasattr(self,'__adjdict'):
+            self.__adjdict = G._succ if hasattr(G, "pred") else G._adj
+        return self.__adjdict
+
+    @property
+    def _nodes_nbrs(self):
+        return self._adjdict.items
 
     dataview = InEdgeDataView
 
@@ -1140,8 +1157,17 @@ class InMultiEdgeView(OutMultiEdgeView):
 
     def __setstate__(self, state):
         self._graph = G = state['_graph']
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
+
+    @property
+    def _adjdict(self):
+        G = self._graph
+        if not hasattr(self,'__adjdict'):
+            self.__adjdict = G._succ if hasattr(G, "pred") else G._adj
+        return self.__adjdict
+
+    @property
+    def _nodes_nbrs(self):
+        return self._adjdict.items
 
     dataview = InMultiEdgeDataView
 
