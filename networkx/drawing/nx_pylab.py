@@ -513,7 +513,7 @@ def draw_networkx_edges(G, pos,
     >>> arcs = nx.draw_networkx_edges(G, pos=nx.spring(layout(G)))
     >>> alphas = [0.3, 0.4, 0.5]
     >>> for i, arc in enumerate(arcs):  # change alpha values of arcs
-            arc.set_alpha(alphas[i])
+    ...     arc.set_alpha(alphas[i])
 
     Also see the NetworkX drawing examples at
     https://networkx.github.io/documentation/latest/auto_examples/index.html
