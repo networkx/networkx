@@ -492,11 +492,16 @@ def draw_networkx_edges(G, pos,
     matplotlib.collection.LineCollection
         `LineCollection` of the edges
 
+    list of matplotlib.patches.FancyArrowPatch
+        `FancyArrowPatch` instances of the directed edges
+
+    Depending whether the drawing includes arrows or not.
+
     Notes
     -----
-    For directed graphs, arrows  are drawn at the head end.  Arrows can be
-    turned off with keyword arrows=False. Be sure to include `node_size' as
-    arrows are drawn considering the size of nodes.
+    For directed graphs, arrows are drawn at the head end.  Arrows can be
+    turned off with keyword arrows=False. Be sure to include `node_size' as a
+    keyword argument; arrows are drawn considering the size of nodes.
 
     Examples
     --------
