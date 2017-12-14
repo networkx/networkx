@@ -430,7 +430,7 @@ def draw_networkx_edges(G, pos,
                         nodelist=None,
                         node_shape="o",
                         **kwds):
-    """Draw the edges of the graph G. DRAFT____1
+    """Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
 
@@ -495,12 +495,20 @@ def draw_networkx_edges(G, pos,
     Notes
     -----
     For directed graphs, arrows  are drawn at the head end.  Arrows can be
-    turned off with keyword arrows=False.
+    turned off with keyword arrows=False. Be sure to include `node_size' as
+    arrows are drawn considering the size of nodes.
 
     Examples
     --------
     >>> G = nx.dodecahedral_graph()
     >>> edges = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))
+
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3)])
+    >>> arcs = nx.draw_networkx_edges(G, pos=nx.spring(layout(G)))
+    >>> alphas = [0.3, 0.4, 0.5]
+    >>> for i, arc in enumerate(arcs):  # change alpha values of arcs
+            arc.set_alpha(alphas[i])
 
     Also see the NetworkX drawing examples at
     https://networkx.github.io/documentation/latest/auto_examples/index.html
