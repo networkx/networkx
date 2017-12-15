@@ -10,6 +10,7 @@ Generators and functions for bipartite graphs.
 #    All rights reserved.
 #    BSD license.
 import math
+import numbers
 import random
 import networkx
 from functools import reduce
@@ -64,7 +65,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
 
     n1, top = n1
     n2, bottom = n2
-    if isinstance(n2, int):
+    if isinstance(n2, numbers.Integral):
         bottom = [n1 + i for i in bottom]
     G.add_nodes_from(top, bipartite=0)
     G.add_nodes_from(bottom, bipartite=1)
