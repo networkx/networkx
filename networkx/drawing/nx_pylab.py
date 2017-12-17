@@ -154,12 +154,12 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        Note: Arrows will be the same color as edges.
 
     arrowstyle : str, optional (default='-|>')
-        For directed graphs, chose the style of the arrowsheads.
+        For directed graphs, choose the style of the arrowsheads.
         See :py:class: `matplotlib.patches.ArrowStyle` for more
         options.
 
     arrowsize : int, optional (default=10)
-       For directed graphs, chose the size of the arrow head head's length and
+       For directed graphs, choose the size of the arrow head head's length and
        width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
 
@@ -475,12 +475,12 @@ def draw_networkx_edges(G, pos,
        Note: Arrows will be the same color as edges.
 
     arrowstyle : str, optional (default='-|>')
-       For directed graphs, chose the style of the arrow heads.
+       For directed graphs, choose the style of the arrow heads.
        See :py:class: `matplotlib.patches.ArrowStyle` for more
        options.
 
     arrowsize : int, optional (default=10)
-       For directed graphs, chose the size of the arrow head head's length and
+       For directed graphs, choose the size of the arrow head head's length and
        width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
 
@@ -510,7 +510,7 @@ def draw_networkx_edges(G, pos,
 
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (1, 3), (2, 3)])
-    >>> arcs = nx.draw_networkx_edges(G, pos=nx.spring(layout(G)))
+    >>> arcs = nx.draw_networkx_edges(G, pos=nx.spring_layout(G))
     >>> alphas = [0.3, 0.4, 0.5]
     >>> for i, arc in enumerate(arcs):  # change alpha values of arcs
     ...     arc.set_alpha(alphas[i])
@@ -577,13 +577,13 @@ def draw_networkx_edges(G, pos,
                 # numbers (which are going to be mapped with a colormap)
                 edge_colors = None
         else:
-            raise ValueError('edge_color must consist of either color names or numbers')
+            raise ValueError('edge_color must contain color names or numbers')
     else:
         if is_string_like(edge_color) or len(edge_color) == 1:
             edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
         else:
-            raise ValueError(
-                'edge_color must be a single color or list of exactly m colors where m is the number or edges')
+            msg = 'edge_color must be a color or list of one color per edge'
+            raise ValueError(msg)
 
     if (not G.is_directed() or not arrows):
         edge_collection = LineCollection(edge_pos,
@@ -598,11 +598,11 @@ def draw_networkx_edges(G, pos,
         edge_collection.set_label(label)
         ax.add_collection(edge_collection)
 
-        # Note: there was a bug in mpl regarding the handling of alpha values for
-        # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
-        # r7189 (June 6 2009).  We should then not set the alpha value globally,
-        # since the user can instead provide per-edge alphas now.  Only set it
-        # globally if provided as a scalar.
+        # Note: there was a bug in mpl regarding the handling of alpha values
+        # for each line in a LineCollection. It was fixed in matplotlib by
+        # r7184 and r7189 (June 6 2009). We should then not set the alpha
+        # value globally, since the user can instead provide per-edge alphas
+        # now.  Only set it globally if provided as a scalar.
         if cb.is_numlike(alpha):
             edge_collection.set_alpha(alpha)
 
@@ -786,7 +786,7 @@ def draw_networkx_labels(G, pos,
     for n, label in labels.items():
         (x, y) = pos[n]
         if not is_string_like(label):
-            label = str(label)  # this will cause "1" and 1 to be labeled the same
+            label = str(label)  # this makes "1" and 1 labeled the same
         t = ax.text(x, y,
                     label,
                     size=font_size,
@@ -904,7 +904,8 @@ def draw_networkx_edge_labels(G, pos,
                   y1 * label_pos + y2 * (1.0 - label_pos))
 
         if rotate:
-            angle = np.arctan2(y2 - y1, x2 - x1) / (2.0 * np.pi) * 360  # degrees
+            # in degrees
+            angle = np.arctan2(y2 - y1, x2 - x1) / (2.0 * np.pi) * 360
             # make label orientation "right-side-up"
             if angle > 90:
                 angle -= 180
@@ -923,7 +924,7 @@ def draw_networkx_edge_labels(G, pos,
                         fc=(1.0, 1.0, 1.0),
                         )
         if not is_string_like(label):
-            label = str(label)  # this will cause "1" and 1 to be labeled the same
+            label = str(label)  # this makes "1" and 1 labeled the same
 
         # set optional alignment
         horizontalalignment = kwds.get('horizontalalignment', 'center')
@@ -1087,7 +1088,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     """
     import numbers
-    import itertools
+    from itertools import islice, cycle
 
     try:
         import numpy as np
@@ -1109,8 +1110,9 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         try:
             rgba_colors = np.array([colorConverter.to_rgba(colors)])
         except ValueError:
-            rgba_colors = np.array([colorConverter.to_rgba(color) for color in colors])
-    # Set the final column of the rgba_colors to have the relevant alpha values.
+            rgba_colors = np.array([colorConverter.to_rgba(color)
+                                    for color in colors])
+    # Set the final column of the rgba_colors to have the relevant alpha values
     try:
         # If alpha is longer than the number of colors, resize to the number of
         # elements.  Also, if rgba_colors.size (the number of elements of
@@ -1121,7 +1123,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
             rgba_colors[1:, 0] = rgba_colors[0, 0]
             rgba_colors[1:, 1] = rgba_colors[0, 1]
             rgba_colors[1:, 2] = rgba_colors[0, 2]
-        rgba_colors[:,  3] = list(itertools.islice(itertools.cycle(alpha), len(rgba_colors)))
+        rgba_colors[:,  3] = list(islice(cycle(alpha), len(rgba_colors)))
     except TypeError:
         rgba_colors[:, -1] = alpha
     return rgba_colors
