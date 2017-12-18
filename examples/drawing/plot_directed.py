@@ -14,7 +14,7 @@ import networkx as nx
 G = nx.generators.directed.random_k_out_graph(10, 3, 0.5)
 pos = nx.layout.spring_layout(G)
 
-node_sizes = range(20, 20 + len(G.nodes))
+node_sizes = [5*i for i in range(len(G.nodes))]
 edge_colors = range(len(G.edges))
 
 nodes = nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color='blue')
