@@ -120,7 +120,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
             betweenness = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
     betweenness = _rescale(betweenness, len(G), normalized=normalized,
-                           directed=G.is_directed(), k=k)
+                           directed=G.is_directed(), k=k, endpoints=endpoints)
     return betweenness
 
 
@@ -320,12 +320,15 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
     return betweenness
 
 
-def _rescale(betweenness, n, normalized, directed=False, k=None):
+def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
     if normalized:
         if n <= 2:
             scale = None  # no normalization b=0 for all nodes
         else:
-            scale = 1.0 / ((n - 1) * (n - 2))
+            if endpoints:
+                scale = 1.0 / ((n) * (n - 1)) # If endpoints are included, change the scale factor to include these nodes
+            else:    
+                scale = 1.0 / ((n - 1) * (n - 2))
     else:  # rescale by 2 for undirected graphs
         if not directed:
             scale = 0.5
