@@ -1048,6 +1048,10 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
     resulting NumPy array can be modified as follows:
 
     >>> import numpy as np
+    >>> try:
+    ...    np.set_printoptions(legacy="1.13")
+    ... except TypeError:
+    ...    pass
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_numpy_array(G)
     >>> A
@@ -1074,6 +1078,7 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
 
     """
     import numpy as np
+
     if nodelist is None:
         nodelist = list(G)
     nodeset = set(nodelist)
