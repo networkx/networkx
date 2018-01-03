@@ -49,6 +49,10 @@ API Changes
   New functionality is provided by:
    - :func:`k_edge_augmentation()`
 
+* [`#2812 <https://github.com/networkx/networkx/pull/2812>`_]
+  Removed ``bellman_ford``, please use
+  ``bellman_ford_predecessor_and_distance``.
+
 
 Deprecations
 ------------
