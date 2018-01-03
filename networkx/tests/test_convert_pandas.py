@@ -45,9 +45,6 @@ class TestConvertPandas(object):
                           ('A', 'D', {'cost': 7, 'weight': 4})])
         G = nx.from_pandas_edgelist(self.df, 0, 'b', True)
         assert_graphs_equal(G, Gtrue)
-        # deprecated
-        G = nx.from_pandas_dataframe(self.df, 0, 'b', True)
-        assert_graphs_equal(G, Gtrue)
         # MultiGraph
         MGtrue = nx.MultiGraph(Gtrue)
         MGtrue.add_edge('A', 'D', cost=16, weight=4)
@@ -129,9 +126,6 @@ class TestConvertPandas(object):
         dftrue = pd.DataFrame([[1, 1], [1, 0]], dtype=int, index=nodelist, columns=nodelist)
         G = nx.Graph([(1, 1), (1, 2)])
         df = nx.to_pandas_adjacency(G, dtype=int)
-        pd.testing.assert_frame_equal(df, dftrue)
-        # deprecated
-        df = nx.to_pandas_dataframe(G, dtype=int)
         pd.testing.assert_frame_equal(df, dftrue)
 
     def test_roundtrip(self):
