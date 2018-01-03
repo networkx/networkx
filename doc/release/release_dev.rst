@@ -56,6 +56,11 @@ API Changes
   Removed ``bellman_ford``, please use
   ``bellman_ford_predecessor_and_distance``.
 
+* [`#2811 <https://github.com/networkx/networkx/pull/2811>`_]
+  Removed ``to_pandas_dataframe`` and ``from_pandas_dataframe``, please use
+  ``to_pandas_adjacency``, ``from_pandas_adjacency``, ``to_pandas_edgelist``,
+  or ``from_pandas_edgelist``.
+
 
 Deprecations
 ------------

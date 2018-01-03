@@ -34,21 +34,11 @@ from networkx.convert import _prep_create_using
 from networkx.utils import not_implemented_for
 
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
-           'from_pandas_dataframe', 'to_pandas_dataframe',
            'from_pandas_adjacency', 'to_pandas_adjacency',
            'from_pandas_edgelist', 'to_pandas_edgelist',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix',
            'from_numpy_array', 'to_numpy_array']
-
-
-def to_pandas_dataframe(G, nodelist=None, dtype=None, order=None,
-                        multigraph_weight=sum, weight='weight', nonedge=0.0):
-    """DEPRECATED: Replaced by ``to_pandas_adjacency``."""
-    msg = "to_pandas_dataframe is deprecated and will be removed" \
-        "in 2.1, use to_pandas_adjacency instead."
-    _warnings.warn(msg, DeprecationWarning)
-    return to_pandas_adjacency(G, nodelist, dtype, order, multigraph_weight, weight, nonedge)
 
 
 def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
@@ -247,15 +237,6 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     edgelistdict = {source: source_nodes, target: target_nodes}
     edgelistdict.update(edge_attr)
     return pd.DataFrame(edgelistdict)
-
-
-def from_pandas_dataframe(df, source='source', target='target', edge_attr=None,
-                          create_using=None):
-    """DEPRECATED: Replaced by ``from_pandas_edgelist``."""
-    msg = "from_pandas_dataframe is deprecated and will be removed" \
-        "in 2.1, use from_pandas_edgelist instead."
-    _warnings.warn(msg, DeprecationWarning)
-    return from_pandas_edgelist(df, source, target, edge_attr, create_using)
 
 
 def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
