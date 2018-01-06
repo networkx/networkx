@@ -250,7 +250,7 @@ Community
 
 Trees
 -----
-.. automodule:: networkx.generators.tree
+.. automodule:: networkx.generators.trees
 .. autosummary::
    :toctree: generated/
 

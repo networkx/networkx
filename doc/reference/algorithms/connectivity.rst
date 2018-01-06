@@ -10,7 +10,9 @@ Edge-augmentation
 .. autosummary::
    :toctree: generated/
 
-   edge_augmentation
+   k_edge_augmentation
+   is_k_edge_connected
+   is_locally_k_edge_connected
 
 K-edge-components
 -----------------

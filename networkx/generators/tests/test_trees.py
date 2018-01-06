@@ -1,4 +1,4 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_true
 
 import networkx as nx
 from networkx.generators.trees import NIL
@@ -65,3 +65,9 @@ class TestPrefixTree(object):
         assert_equal(source_label(ted), 'd')
         assert_equal(source_label(ten), 'n')
         assert_equal(source_label(NIL), NIL)
+
+
+def test_random_tree():
+    """Tests that a random tree is in fact a tree."""
+    T = nx.random_tree(10, seed=1234)
+    assert_true(nx.is_tree(T))
