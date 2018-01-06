@@ -53,7 +53,7 @@ class TestPydot(object):
 
         # Serialize this "pydot.Dot" instance to a temporary file in dot format.
         fname = tempfile.mktemp()
-        assert_true(P.write_raw(fname))
+        P.write_raw(fname)
 
         # Deserialize a list of new "pydot.Dot" instances back from this file.
         Pin_list = pydot.graph_from_dot_file(path=fname, encoding='utf-8')
