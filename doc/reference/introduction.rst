@@ -197,7 +197,7 @@ and :func:`~generators.random_graphs.erdos_renyi_graph` are
 provided in the :ref:`graph generators <generators>` subpackage.
 
 For importing network data from formats such as GML, GraphML, edge list text files
-see the :ref:`reading and writing graphs <readwrite/index>` subpackage.
+see the :ref:`reading and writing graphs <readwrite>` subpackage.
 
 
 Graph Reporting

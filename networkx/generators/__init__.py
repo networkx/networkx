@@ -12,7 +12,6 @@ from networkx.generators.ego import *
 from networkx.generators.expanders import *
 from networkx.generators.geometric import *
 from networkx.generators.intersection import *
-from networkx.generators.inverse_line import *
 from networkx.generators.joint_degree_seq import *
 from networkx.generators.lattice import *
 from networkx.generators.line import *
@@ -23,6 +22,5 @@ from networkx.generators.random_graphs import *
 from networkx.generators.small import *
 from networkx.generators.social import *
 from networkx.generators.stochastic import *
-from networkx.generators.tree import *
 from networkx.generators.trees import *
 from networkx.generators.triads import *
