@@ -326,6 +326,12 @@ class TestEdgeDataView(object):
         assert_equal(len(self.G.edges()), 8)
         assert_equal(len(self.G.edges), 8)
 
+        H = self.G.copy()
+        H.add_edge(1, 1)
+        assert_equal(len(H.edges(1)), 3)
+        assert_equal(len(H.edges()), 9)
+        assert_equal(len(H.edges), 9)
+
 
 class TestOutEdgeDataView(TestEdgeDataView):
     def setUp(self):
@@ -350,6 +356,12 @@ class TestOutEdgeDataView(TestEdgeDataView):
         assert_equal(len(self.G.edges(1)), 1)
         assert_equal(len(self.G.edges()), 8)
         assert_equal(len(self.G.edges), 8)
+
+        H = self.G.copy()
+        H.add_edge(1, 1)
+        assert_equal(len(H.edges(1)), 2)
+        assert_equal(len(H.edges()), 9)
+        assert_equal(len(H.edges), 9)
 
 
 class TestInEdgeDataView(TestOutEdgeDataView):
@@ -485,6 +497,12 @@ class TestEdgeView(object):
         ev = self.eview(self.G)
         num_ed = 9 if self.G.is_multigraph() else 8
         assert_equal(len(ev), num_ed)
+
+        H = self.G.copy()
+        H.add_edge(1, 1)
+        assert_equal(len(H.edges(1)), 3 + H.is_multigraph() - H.is_directed())
+        assert_equal(len(H.edges()), num_ed + 1)
+        assert_equal(len(H.edges), num_ed + 1)
 
     def test_and(self):
         # print("G & H edges:", gnv & hnv)

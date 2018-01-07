@@ -791,8 +791,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
                         if data in dd else (n, nbr, default)
 
     def __len__(self):
-        return sum(len(kd) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kd in nbrs.items())
+        return sum(1 for e in self)
 
     def __iter__(self):
         return (self._report(n, nbr, k, dd) for n, nbrs in self._nodes_nbrs()
@@ -820,10 +819,6 @@ class OutMultiEdgeDataView(OutEdgeDataView):
 class MultiEdgeDataView(OutMultiEdgeDataView):
     """An EdgeDataView class for edges of MultiGraph; See EdgeDataView"""
     __slots__ = ()
-
-    def __len__(self):
-        # nbunch makes it hard to count edges between nodes in nbunch
-        return sum(1 for e in self)
 
     def __iter__(self):
         seen = {}
@@ -1016,7 +1011,7 @@ class EdgeView(OutEdgeView):
     dataview = EdgeDataView
 
     def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs()) // 2
+        return sum(len(nbrs) + (n in nbrs) for n, nbrs in self._nodes_nbrs()) // 2
 
     def __iter__(self):
         seen = {}
@@ -1120,8 +1115,7 @@ class MultiEdgeView(OutMultiEdgeView):
     dataview = MultiEdgeDataView
 
     def __len__(self):
-        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
-                   for nbr, kdict in nbrs.items()) // 2
+        return sum(1 for e in self)
 
     def __iter__(self):
         seen = {}
