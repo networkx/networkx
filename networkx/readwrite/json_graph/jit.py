@@ -39,18 +39,25 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['jit_graph', 'jit_data']
 
-def jit_graph(data, directed=False):
+def jit_graph(data, create_using=None):
     """Read a graph from JIT JSON.
 
     Parameters
     ----------
     data : JSON Graph Object
 
+    create_using : Networkx Graph, optional (default: Graph())
+        Return graph of this type. The provided instance will be cleared.
+
     Returns
     -------
-    G : NetworkX Graph
+    G : NetworkX Graph built from create_using if provided.
     """
-    G = nx.Graph() if not directed else nx.DiGraph()
+    if create_using is None:
+        G = nx.Graph()
+    else:
+        G = create_using
+        G.clear()
 
     for node in data:
         G.add_node(node['id'], **node['data'])
