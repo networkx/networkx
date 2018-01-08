@@ -346,7 +346,7 @@ def number_strongly_connected_components(G):
     -----
     For directed graphs only.
     """
-    return len(list(strongly_connected_components(G)))
+    return sum(1 for scc in strongly_connected_components(G))
 
 
 @not_implemented_for('undirected')
@@ -434,7 +434,10 @@ def condensation(G, scc=None):
     mapping = {}
     members = {}
     C = nx.DiGraph()
-    i = 0  # required if G is empty
+    # Add mapping dict as graph attribute
+    C.graph['mapping'] = mapping
+    if len(G) == 0:
+        return C
     for i, component in enumerate(scc):
         members[i] = component
         mapping.update((n, i) for n in component)
@@ -444,6 +447,4 @@ def condensation(G, scc=None):
                      if mapping[u] != mapping[v])
     # Add a list of members (ie original nodes) to each node (ie scc) in C.
     nx.set_node_attributes(C, members, 'members')
-    # Add mapping dict as graph attribute
-    C.graph['mapping'] = mapping
     return C

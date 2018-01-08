@@ -103,7 +103,7 @@ def number_weakly_connected_components(G):
     For directed graphs only.
 
     """
-    return len(list(weakly_connected_components(G)))
+    return sum(1 for wcc in weakly_connected_components(G))
 
 
 @not_implemented_for('undirected')

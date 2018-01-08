@@ -41,6 +41,10 @@ class TestConnected:
         C = [[0, 1, 2], [3, 4]]
         self.gc.append((G, C))
 
+        G = nx.DiGraph()
+        C = []
+        self.gc.append((G, C))
+
 
     def test_connected_components(self):
         cc = nx.connected_components

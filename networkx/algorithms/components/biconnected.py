@@ -89,9 +89,12 @@ def is_biconnected(G):
 
     """
     bcc = list(biconnected_components(G))
-    if not bcc:  # No bicomponents (it could be an empty graph)
-        return False
-    return len(bcc[0]) == len(G)
+    if len(bcc) == 1:
+        return len(bcc[0]) == len(G)
+    return False  # Multiple bicomponents or No bicomponents (empty graph?)
+#    if len(bcc) == 0:  # No bicomponents (it could be an empty graph)
+#        return False
+#    return len(bcc[0]) == len(G)
 
 
 @not_implemented_for('directed')

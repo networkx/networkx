@@ -169,6 +169,13 @@ def test_biconnected_eppstein():
     bcc = list(nx.biconnected_components(G2))
     assert_components_equal(bcc, answer_G2)
 
+def test_null_graph():
+    G = nx.Graph()
+    assert_false(nx.is_biconnected(G))
+    assert_equal(list(nx.biconnected_components(G)), [])
+    assert_equal(list(nx.biconnected_component_edges(G)), [])
+    assert_equal(list(nx.articulation_points(G)), [])
+
 def test_connected_raise():
     DG = nx.DiGraph()
     assert_raises(NetworkXNotImplemented, nx.biconnected_components, DG)
