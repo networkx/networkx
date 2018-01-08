@@ -6,7 +6,6 @@ pip install --retries 3 -q -r requirements/doc.txt
 export SPHINXCACHE=$HOME/.cache/sphinx
 cd doc
 make html
-make doctest
 make latexpdf
 cd ..
 
