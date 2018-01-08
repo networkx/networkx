@@ -145,9 +145,11 @@ class Graph(object):
     >>> G[1][2]['weight'] = 4.7
     >>> G.edges[1, 2]['weight'] = 4
 
-    Warning: we protect the graph data structure by making `G.edges[1, 2]` a
-    read-only dict-like structure. Use 2 sets of brackets to add/change
-    data attributes. (For multigraphs: `MG.edges[u, v, key][name] = value`).
+    Warning: we protect the graph data structure by making `G.edges` a
+    read-only dict-like structure. However, you can assign to attributes
+    in e.g. `G.edges[1, 2]`. Thus, use 2 sets of brackets to add/change
+    data attributes: `G.edges[1, 2]['weight'] = 4`
+    (For multigraphs: `MG.edges[u, v, key][name] = value`).
 
     **Shortcuts:**
 
