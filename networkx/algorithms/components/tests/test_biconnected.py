@@ -71,6 +71,7 @@ def test_biconnected_components_cycle():
     answer = [{0, 1, 2}, {1, 3, 4}]
     assert_components_equal(list(nx.biconnected_components(G)), answer)
 
+# deprecated
 def test_biconnected_component_subgraphs_cycle():
     G=nx.cycle_graph(3)
     nx.add_cycle(G, [1, 3, 4, 5])
@@ -179,7 +180,8 @@ def test_null_graph():
 def test_connected_raise():
     DG = nx.DiGraph()
     assert_raises(NetworkXNotImplemented, nx.biconnected_components, DG)
-    assert_raises(NetworkXNotImplemented, nx.biconnected_component_subgraphs, DG)
     assert_raises(NetworkXNotImplemented, nx.biconnected_component_edges, DG)
     assert_raises(NetworkXNotImplemented, nx.articulation_points, DG)
     assert_raises(NetworkXNotImplemented, nx.is_biconnected, DG)
+    # deprecated
+    assert_raises(NetworkXNotImplemented, nx.biconnected_component_subgraphs, DG)

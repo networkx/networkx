@@ -10,6 +10,7 @@
 #          Aric Hagberg (hagberg@lanl.gov)
 #          Christopher Ellison
 """Connected components."""
+import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from ...utils import arbitrary_element
@@ -76,49 +77,13 @@ def connected_components(G):
 
 @not_implemented_for('directed')
 def connected_component_subgraphs(G, copy=True):
-    """Generate connected components as subgraphs.
+    """DEPRECATED: Use ``(G.subgraph(c) for c in connected_components(G))``
 
-    Parameters
-    ----------
-    G : NetworkX graph
-       An undirected graph.
-
-    copy: bool (default=True)
-      If True make a copy of the graph attributes
-
-    Returns
-    -------
-    comp : generator
-      A generator of graphs, one for each connected component of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is directed.
-
-    Examples
-    --------
-    >>> G = nx.path_graph(4)
-    >>> G.add_edge(5,6)
-    >>> graphs = list(nx.connected_component_subgraphs(G))
-
-    If you only want the largest connected component, it's more
-    efficient to use max instead of sort:
-
-    >>> Gc = max(nx.connected_component_subgraphs(G), key=len)
-
-    See Also
-    --------
-    connected_components
-    strongly_connected_component_subgraphs
-    weakly_connected_component_subgraphs
-
-    Notes
-    -----
-    For undirected graphs only.
-    Graph, node, and edge attributes are copied to the subgraphs by default.
-
+           Or ``(G.subgraph(c).copy() for c in connected_components(G))``
     """
+    msg = "connected_component_subgraphs is deprecated and will be removed" \
+          "in 2.2. Use (G.subgraph(c).copy() for c in connected_components(G))"
+    _warnings.warn(msg, DeprecationWarning)
     for c in connected_components(G):
         if copy:
             yield G.subgraph(c).copy()

@@ -27,7 +27,6 @@ See Also
 nx_agraph, nx_pydot
 """
 
-import warnings as _warnings
 import itertools
 import networkx as nx
 from networkx.convert import _prep_create_using

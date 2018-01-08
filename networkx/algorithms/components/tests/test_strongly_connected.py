@@ -67,6 +67,7 @@ class TestStronglyConnected:
             else:
                 assert_false(nx.is_strongly_connected(G))
 
+    # deprecated
     def test_strongly_connected_component_subgraphs(self):
         scc = nx.strongly_connected_component_subgraphs
         for G, C in self.gc:
@@ -147,7 +148,8 @@ class TestStronglyConnected:
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.kosaraju_strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components_recursive, G)
-        assert_raises(NetworkXNotImplemented, nx.strongly_connected_component_subgraphs, G)
         assert_raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
         assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
         assert_raises(NetworkXNotImplemented, nx.condensation, G)
+        # deprecated
+        assert_raises(NetworkXNotImplemented, nx.strongly_connected_component_subgraphs, G)
