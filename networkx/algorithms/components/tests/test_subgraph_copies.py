@@ -4,6 +4,9 @@ from copy import deepcopy
 from nose.tools import assert_equal
 import networkx as nx
 
+# deprecated in 2.1 for removal in 2.2
+
+
 class TestSubgraphAttributesDicts:
 
     def setUp(self):

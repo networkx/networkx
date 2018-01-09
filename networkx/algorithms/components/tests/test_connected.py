@@ -41,6 +41,10 @@ class TestConnected:
         C = [[0, 1, 2], [3, 4]]
         self.gc.append((G, C))
 
+        G = nx.DiGraph()
+        C = []
+        self.gc.append((G, C))
+
 
     def test_connected_components(self):
         cc = nx.connected_components
@@ -72,6 +76,7 @@ class TestConnected:
         C = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
         assert_equal(ncc(G, 1), C)
 
+    # deprecated
     def test_connected_component_subgraphs(self):
         wcc = nx.weakly_connected_component_subgraphs
         cc = nx.connected_component_subgraphs
@@ -90,7 +95,8 @@ class TestConnected:
     def test_connected_raise(self):
         assert_raises(NetworkXNotImplemented, nx.connected_components, self.DG)
         assert_raises(NetworkXNotImplemented, nx.number_connected_components, self.DG)
-        assert_raises(NetworkXNotImplemented, nx.connected_component_subgraphs, self.DG)
         assert_raises(NetworkXNotImplemented, nx.node_connected_component, self.DG,1)
         assert_raises(NetworkXNotImplemented, nx.is_connected, self.DG)
         assert_raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())
+        # deprecated
+        assert_raises(NetworkXNotImplemented, nx.connected_component_subgraphs, self.DG)

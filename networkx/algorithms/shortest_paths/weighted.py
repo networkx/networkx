@@ -19,7 +19,6 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
-import warnings as _warnings
 
 
 __all__ = ['dijkstra_path',

@@ -9,6 +9,7 @@
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Christopher Ellison
 """Weakly connected components."""
+import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -103,63 +104,23 @@ def number_weakly_connected_components(G):
     For directed graphs only.
 
     """
-    return len(list(weakly_connected_components(G)))
+    return sum(1 for wcc in weakly_connected_components(G))
 
 
 @not_implemented_for('undirected')
 def weakly_connected_component_subgraphs(G, copy=True):
-    """Generate weakly connected components as subgraphs.
+    """DEPRECATED: Use ``(G.subgraph(c) for c in weakly_connected_components(G))``
 
-    Parameters
-    ----------
-    G : NetworkX graph
-        A directed graph.
-
-    copy: bool (default=True)
-        If True make a copy of the graph attributes
-
-    Returns
-    -------
-    comp : generator
-        A generator of graphs, one for each weakly connected component of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is undirected.
-
-    Examples
-    --------
-    Generate a sorted list of weakly connected components, largest first.
-
-    >>> G = nx.path_graph(4, create_using=nx.DiGraph())
-    >>> nx.add_path(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_component_subgraphs(G),
-    ...                         key=len, reverse=True)]
-    [4, 3]
-
-    If you only want the largest component, it's more efficient to
-    use max instead of sort:
-
-    >>> Gc = max(nx.weakly_connected_component_subgraphs(G), key=len)
-
-    See Also
-    --------
-    weakly_connected_components
-    strongly_connected_component_subgraphs
-    connected_component_subgraphs
-
-    Notes
-    -----
-    For directed graphs only.
-    Graph, node, and edge attributes are copied to the subgraphs by default.
-
+           Or ``(G.subgraph(c).copy() for c in weakly_connected_components(G))``
     """
-    for comp in weakly_connected_components(G):
+    msg = "weakly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
+        "use (G.subgraph(c).copy() for c in weakly_connected_components(G))"
+    _warnings.warn(msg, DeprecationWarning)
+    for c in weakly_connected_components(G):
         if copy:
-            yield G.subgraph(comp).copy()
+            yield G.subgraph(c).copy()
         else:
-            yield G.subgraph(comp)
+            yield G.subgraph(c)
 
 
 @not_implemented_for('undirected')

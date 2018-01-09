@@ -67,6 +67,7 @@ class TestStronglyConnected:
             else:
                 assert_false(nx.is_strongly_connected(G))
 
+    # deprecated
     def test_strongly_connected_component_subgraphs(self):
         scc = nx.strongly_connected_component_subgraphs
         for G, C in self.gc:
@@ -134,12 +135,21 @@ class TestStronglyConnected:
         for n, d in cG.nodes(data=True):
             assert_equal(set(C[n]), cG.nodes[n]['members'])
 
+    def test_null_graph(self):
+        G=nx.DiGraph()
+        assert_equal(list(nx.strongly_connected_components(G)), [])
+        assert_equal(list(nx.kosaraju_strongly_connected_components(G)), [])
+        assert_equal(list(nx.strongly_connected_components_recursive(G)), [])
+        assert_equal(len(nx.condensation(G)), 0)
+        assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
+
     def test_connected_raise(self):
         G=nx.Graph()
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.kosaraju_strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components_recursive, G)
-        assert_raises(NetworkXNotImplemented, nx.strongly_connected_component_subgraphs, G)
         assert_raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
         assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
         assert_raises(NetworkXNotImplemented, nx.condensation, G)
+        # deprecated
+        assert_raises(NetworkXNotImplemented, nx.strongly_connected_component_subgraphs, G)

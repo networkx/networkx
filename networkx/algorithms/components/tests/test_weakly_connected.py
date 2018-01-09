@@ -47,6 +47,7 @@ class TestWeaklyConnected:
             c = nx.number_connected_components(U)
             assert_equal(w, c)
 
+    # deprecated
     def test_weakly_connected_component_subgraphs(self):
         wcc = nx.weakly_connected_component_subgraphs
         cc = nx.connected_component_subgraphs
@@ -61,9 +62,16 @@ class TestWeaklyConnected:
             U = G.to_undirected()
             assert_equal(nx.is_weakly_connected(G), nx.is_connected(U))
 
+    def test_null_graph(self):
+        G=nx.DiGraph()
+        assert_equal(list(nx.weakly_connected_components(G)), [])
+        assert_equal(nx.number_weakly_connected_components(G), 0)
+        assert_raises(nx.NetworkXPointlessConcept, nx.is_weakly_connected, G)
+
     def test_connected_raise(self):
         G=nx.Graph()
         assert_raises(NetworkXNotImplemented,nx.weakly_connected_components, G)
         assert_raises(NetworkXNotImplemented,nx.number_weakly_connected_components, G)
-        assert_raises(NetworkXNotImplemented,nx.weakly_connected_component_subgraphs, G)
         assert_raises(NetworkXNotImplemented,nx.is_weakly_connected, G)
+        # deprecated
+        assert_raises(NetworkXNotImplemented,nx.weakly_connected_component_subgraphs, G)
