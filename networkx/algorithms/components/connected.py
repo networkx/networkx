@@ -198,7 +198,7 @@ def node_connected_component(G, n):
 
 def _plain_bfs(G, source):
     """A fast BFS node generator"""
-    G_adj = G._adj
+    G_adj = G.adj
     seen = set()
     nextlevel = {source}
     while nextlevel:
