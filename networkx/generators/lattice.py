@@ -25,6 +25,8 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 
 """
 from __future__ import division
+import numpy as np
+import itertools
 
 from math import sqrt
 
@@ -41,6 +43,7 @@ from networkx.utils import pairwise
 from networkx.generators.classic import cycle_graph
 from networkx.generators.classic import empty_graph
 from networkx.generators.classic import path_graph
+from networkx.convert_matrix import from_numpy_array
 
 __all__ = ['grid_2d_graph', 'grid_graph', 'hypercube_graph',
            'triangular_lattice_graph', 'hexagonal_lattice_graph']
@@ -92,6 +95,33 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     # both directions for directed
     if G.is_directed():
         G.add_edges_from((v, u) for u, v in G.edges())
+    return G
+
+
+def periodic_moore_grid(m, n):
+    """Returns the two-dimensional grid graph.
+
+    The grid graph has each node connected to its eight nearest neighbors.
+
+    Parameters
+    ----------
+    m, n : int or iterable container of nodes
+        If an integer, nodes are from `range(n)`.
+        If a container, elements become the coordinate of the nodes.
+
+    Returns
+    -------
+    NetworkX graph
+        The periodic grid graph of the specified dimensions.
+
+    """
+    adj = np.zeros((m*n, m*n))
+    arr = np.arange(m*n).reshape(m, n)
+    for rot in itertools.product(range(-1, 2), repeat=2):
+        arr_rot = np.roll(arr, rot, axis=(0, 1))
+        adj[arr, arr_rot] = 1
+    np.fill_diagonal(adj, 0)
+    G = from_numpy_array(adj)
     return G
 
 
