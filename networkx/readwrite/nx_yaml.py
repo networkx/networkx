@@ -27,7 +27,7 @@ import networkx as nx
 from networkx.utils import open_file
 
 @open_file(1,mode='w')
-def write_yaml(G, path, encoding='UTF-8', **kwds):
+def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
     """Write graph G in YAML format to path. 
 
     YAML is a data serialization format designed for human readability 
@@ -40,8 +40,11 @@ def write_yaml(G, path, encoding='UTF-8', **kwds):
     path : file or string
        File or filename to write. 
        Filenames ending in .gz or .bz2 will be compressed.
-    encoding: string, optional
-       Specify which encoding to use when writing file.
+
+    Notes
+    -----
+    To use encoding on the output file include e.g. `encoding='utf-8'`
+    in the keyword arguments.
 
     Examples
     --------
@@ -56,7 +59,7 @@ def write_yaml(G, path, encoding='UTF-8', **kwds):
         import yaml
     except ImportError:
         raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/")
-    yaml.dump(G, path, **kwds)
+    yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)
     
 @open_file(0,mode='r')
 def read_yaml(path):

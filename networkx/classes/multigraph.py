@@ -36,8 +36,8 @@ class MultiGraph(Graph):
 
     Parameters
     ----------
-    data : input graph
-        Data to initialize graph. If data=None (default) an empty
+    incoming_graph_data : input graph (optional, default: None)
+        Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
         dict of dicts, dict of lists, NetworkX graph, NumPy matrix
@@ -244,14 +244,14 @@ class MultiGraph(Graph):
     edge_key_dict_factory = dict
     # edge_attr_dict_factory = dict
 
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
         ----------
-        data : input graph
-            Data to initialize graph.  If data=None (default) an empty
-            graph is created.  The data can be an edge list, or any
+        incoming_graph_data : input graph
+            Data to initialize graph.  If incoming_graph_data=None (default)
+            an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix
             or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
@@ -278,7 +278,7 @@ class MultiGraph(Graph):
 
         """
         self.edge_key_dict_factory = self.edge_key_dict_factory
-        Graph.__init__(self, data, **attr)
+        Graph.__init__(self, incoming_graph_data, **attr)
 
     @property
     def adj(self):
@@ -328,7 +328,7 @@ class MultiGraph(Graph):
             key += 1
         return key
 
-    def add_edge(self, u, v, key=None, **attr):
+    def add_edge(self, u_for_edge, v_for_edge, key=None, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -339,7 +339,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u, v : nodes
+        u_for_edge, v_for_edge : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         key : hashable identifier, optional (default=lowest unused integer)
@@ -394,6 +394,7 @@ class MultiGraph(Graph):
         >>> G[1][2][0].update({0: 5})
         >>> G.edges[1, 2, 0].update({0: 5})
         """
+        u, v = u_for_edge, v_for_edge
         # add nodes
         if u not in self._adj:
             self._adj[u] = self.adjlist_inner_dict_factory()
@@ -418,12 +419,12 @@ class MultiGraph(Graph):
             self._adj[v][u] = keydict
         return key
 
-    def add_edges_from(self, ebunch, **attr):
-        """Add all the edges in ebunch.
+    def add_edges_from(self, ebunch_to_add, **attr):
+        """Add all the edges in ebunch_to_add.
 
         Parameters
         ----------
-        ebunch : container of edges
+        ebunch_to_add : container of edges
             Each edge given in the container will be added to the
             graph. The edges can be:
 
@@ -470,8 +471,7 @@ class MultiGraph(Graph):
         >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
         """
         keylist = []
-        # process ebunch
-        for e in ebunch:
+        for e in ebunch_to_add:
             ne = len(e)
             if ne == 4:
                 u, v, key, dd = e
@@ -855,7 +855,7 @@ class MultiGraph(Graph):
         typically used to create an empty version of the graph.
 
         Notes
-        =====
+        -----
         If you subclass the base class you should overwrite this method
         to return your class of graph.
         """
@@ -872,7 +872,7 @@ class MultiGraph(Graph):
         If `as_view` is True then a view is returned instead of a copy.
 
         Notes
-        =====
+        -----
         All copies reproduce the graph structure, but data attributes
         may be handled in different ways. There are four types of copies
         of a graph that people might want.

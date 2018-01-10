@@ -164,7 +164,7 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         self.K3._node[2] = {}
 
     def test_data_input(self):
-        G = self.Graph(data={1: [2], 2: [1]}, name="test")
+        G = self.Graph({1: [2], 2: [1]}, name="test")
         assert_equal(G.name, "test")
         expected = [(1, {2: {0: {}}}), (2, {1: {0: {}}})]
         assert_equal(sorted(G.adj.items()), expected)

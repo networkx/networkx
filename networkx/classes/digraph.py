@@ -37,8 +37,8 @@ class DiGraph(Graph):
 
     Parameters
     ----------
-    data : input graph
-        Data to initialize graph. If data=None (default) an empty
+    incoming_graph_data : input graph (optional, default: None)
+        Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
         dict of dicts, dict of lists, NetworkX graph, NumPy matrix
@@ -262,13 +262,13 @@ class DiGraph(Graph):
             del attr['out_degree']
         return attr
 
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
         ----------
-        data : input graph
-            Data to initialize graph.  If data=None (default) an empty
+        incoming_graph_data : input graph (optional, default: None)
+            Data to initialize graph.  If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix
@@ -311,8 +311,8 @@ class DiGraph(Graph):
         self._succ = self._adj  # successor
 
         # attempt to load graph with data
-        if data is not None:
-            convert.to_networkx_graph(data, create_using=self)
+        if incoming_graph_data is not None:
+            convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
@@ -372,12 +372,12 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._pred)
 
-    def add_node(self, n, **attr):
-        """Add a single node n and update node attributes.
+    def add_node(self, node_for_adding, **attr):
+        """Add a single node `node_for_adding` and update node attributes.
 
         Parameters
         ----------
-        n : node
+        node_for_adding : node
             A node can be any hashable Python object except None.
         attr : keyword arguments, optional
             Set or change node attributes using key=value.
@@ -411,19 +411,19 @@ class DiGraph(Graph):
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        if n not in self._succ:
-            self._succ[n] = self.adjlist_inner_dict_factory()
-            self._pred[n] = self.adjlist_inner_dict_factory()
-            self._node[n] = attr
+        if node_for_adding not in self._succ:
+            self._succ[node_for_adding] = self.adjlist_inner_dict_factory()
+            self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
+            self._node[node_for_adding] = attr
         else:  # update attr even if node already exists
-            self._node[n].update(attr)
+            self._node[node_for_adding].update(attr)
 
-    def add_nodes_from(self, nodes, **attr):
+    def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
 
         Parameters
         ----------
-        nodes : iterable container
+        nodes_for_adding : iterable container
             A container of nodes (list, dict, set, etc.).
             OR
             A container of (node, attribute dict) tuples.
@@ -462,7 +462,7 @@ class DiGraph(Graph):
         11
 
         """
-        for n in nodes:
+        for n in nodes_for_adding:
             # keep all this inside try/except because
             # CPython throws TypeError on n not in self._succ,
             # while pre-2.7.5 ironpython throws on self._succ[n]
@@ -565,7 +565,7 @@ class DiGraph(Graph):
             except KeyError:
                 pass  # silent failure on remove
 
-    def add_edge(self, u, v, **attr):
+    def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -615,6 +615,7 @@ class DiGraph(Graph):
         >>> G[1][2].update({0: 5})
         >>> G.edges[1, 2].update({0: 5})
         """
+        u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._succ:
             self._succ[u] = self.adjlist_inner_dict_factory()
@@ -630,12 +631,12 @@ class DiGraph(Graph):
         self._succ[u][v] = datadict
         self._pred[v][u] = datadict
 
-    def add_edges_from(self, ebunch, **attr):
-        """Add all the edges in ebunch.
+    def add_edges_from(self, ebunch_to_add, **attr):
+        """Add all the edges in ebunch_to_add.
 
         Parameters
         ----------
-        ebunch : container of edges
+        ebunch_to_add : container of edges
             Each edge given in the container will be added to the
             graph. The edges must be given as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
@@ -668,8 +669,7 @@ class DiGraph(Graph):
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
         """
-        # process ebunch
-        for e in ebunch:
+        for e in ebunch_to_add:
             ne = len(e)
             if ne == 3:
                 u, v, dd = e
@@ -1071,7 +1071,7 @@ class DiGraph(Graph):
         typically used to create an empty version of the graph.
 
         Notes
-        =====
+        -----
         If you subclass the base class you should overwrite this method
         to return your class of graph.
         """
@@ -1088,7 +1088,7 @@ class DiGraph(Graph):
         If `as_view` is True then a view is returned instead of a copy.
 
         Notes
-        =====
+        -----
         All copies reproduce the graph structure, but data attributes
         may be handled in different ways. There are four types of copies
         of a graph that people might want.
