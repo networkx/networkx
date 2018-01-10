@@ -19,8 +19,8 @@ from collections import defaultdict
 from itertools import tee
 
 import networkx as nx
-from networkx.utils import *
-from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
+from networkx.utils import not_implemented_for, pairwise
+from networkx.algorithms.traversal.edgedfs import helper_funcs
 
 __all__ = [
     'cycle_basis', 'simple_cycles',
@@ -411,7 +411,7 @@ def find_cycle(G, source=None, orientation='original'):
         active_nodes = {start_node}
         previous_head = None
 
-        for edge in edge_dfs(G, start_node, orientation):
+        for edge in nx.edge_dfs(G, start_node, orientation):
             # Determine if this edge is a continuation of the active path.
             tail, head = tailhead(edge)
             if head in explored:
@@ -474,15 +474,16 @@ def find_cycle(G, source=None, orientation='original'):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def minimum_cycle_basis(G, weight=None):
-    """
-    Returns a minimum weight cycle basis for G
-    It is defined as a cycle basis for which the total weight (length
-    for unweighted graphs) of all the cycles is minimum.
+    """ Returns a minimum weight cycle basis for G
+
+    Minimum weight means a cycle basis for which the total weight
+    (length for unweighted graphs) of all the cycles is minimum.
 
     Parameters
     ----------
     G : NetworkX Graph
-    weight: edge attribute to use
+    weight: string
+        name of the edge attribute to use for edge weights
 
     Returns
     -------
@@ -508,9 +509,7 @@ def minimum_cycle_basis(G, weight=None):
     See Also
     --------
     simple_cycles, cycle_basis
-
     """
-
     # We first split the graph in commected subgraphs
     return sum((_min_cycle_basis(c, weight) for c in
                 nx.connected_component_subgraphs(G)), [])
@@ -538,7 +537,6 @@ def _min_cycle_basis(comp, weight):
         base = set_orth[k]
         set_orth[k + 1:] = [orth ^ base if len(orth & new_cycle) % 2 else orth
                             for orth in set_orth[k + 1:]]
-
     return cb
 
 
@@ -562,7 +560,6 @@ def _min_cycle(G, orth, weight=None):
         if frozenset((u, v)) in orth:
             T.add_edges_from(
                 [(uidx, nnodes + vidx), (nnodes + uidx, vidx)], weight=edge_w)
-
         else:
             T.add_edges_from(
                 [(uidx, vidx), (nnodes + uidx, nnodes + vidx)], weight=edge_w)
@@ -583,13 +580,6 @@ def _min_cycle(G, orth, weight=None):
     mcycle_pruned = _path_to_cycle(min_path_nodes)
 
     return {frozenset((idx_nodes[u], idx_nodes[v])) for u, v in mcycle_pruned}
-
-
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
 
 
 def _path_to_cycle(path):
