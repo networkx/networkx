@@ -7,7 +7,6 @@
 """
 Label propagation community detection algorithms.
 """
-from __future__ import print_function
 from collections import Counter
 import random
 
@@ -135,7 +134,6 @@ def label_propagation_communities(G):
         for color, nodes in coloring.items():
             for n in nodes:
                 _update_label(n, labeling, G)
-        print()
 
     for label in set(labeling.values()):
         yield set((x for x in labeling if labeling[x] == label))
@@ -153,7 +151,6 @@ def _color_network(G):
             coloring[color].add(node)
         else:
             coloring[color] = set([node])
-
     return coloring
 
 
@@ -198,4 +195,3 @@ def _update_label(node, labeling, G):
         # Prec-Max
         if labeling[node] not in high_labels:
             labeling[node] = max(high_labels)
-    print(node, labeling[node], end='')

@@ -83,14 +83,19 @@ def test_connected_communities():
     test.add_node('z')
 
     # The expected communities are:
-    ground_truth = set([frozenset(['a', 'b', 'c', 'd', 'e']),
-                        frozenset(['1', '2', '3', '4', '5']),
-                        frozenset(['x', 'y']),
-                        frozenset(['z'])])
+    ground_truth1 = set([frozenset(['a', 'b', 'c', 'd', 'e']),
+                         frozenset(['1', '2', '3', '4', '5']),
+                         frozenset(['x', 'y']),
+                         frozenset(['z'])])
+    ground_truth2 = set([frozenset(['a', 'b', 'c', 'd', 'e',
+                         '1', '2', '3', '4', '5']),
+                         frozenset(['x', 'y']),
+                         frozenset(['z'])])
+    ground_truth = (ground_truth1, ground_truth2)
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert_in(result, ground_truth)
 
 
 class TestAsynLpaCommunities(object):
