@@ -378,6 +378,11 @@ def test_graph_power_negative():
     nx.power(nx.Graph(), -1)
 
 
+@raises(nx.NetworkXError)
+def test_rooted_product_raises():
+    nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
+
+
 def test_rooted_product():
     G = nx.cycle_graph(5)
     H = nx.Graph()
