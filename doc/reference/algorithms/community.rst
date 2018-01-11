@@ -34,11 +34,12 @@ K-Clique
 
 Label propagation
 -----------------
-.. automodule:: networkx.algorithms.community.asyn_lpa
+.. automodule:: networkx.algorithms.community.label_propagation
 .. autosummary::
    :toctree: generated/
 
    asyn_lpa_communities
+   label_propagation_communities
 
 Fluid Communities
 -----------------
