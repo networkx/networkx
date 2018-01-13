@@ -48,8 +48,6 @@ def graph_example_1():
         for nbr in nbrs:
             G.add_edge(new_node+17, nbr)
         G.add_edge(new_node+16, new_node+5)
-
-    G.name = 'Example graph for connectivity'
     return G
 
 def torrents_and_ferraro_graph():
@@ -110,8 +108,6 @@ def torrents_and_ferraro_graph():
         G.remove_node(new_node+9)
         for nbr in nbrs2:
             G.add_edge(new_node+18, nbr)
-
-    G.name = 'Example graph for connectivity'
     return G
 
 # Helper function

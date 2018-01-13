@@ -734,7 +734,8 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
 
     n_name, nodes = n
     G = nx.Graph()
-    G.name = 'thresholded_random_geometric_graph({}, {}, {}, {})'.format(n, radius, theta, dim)
+    namestr = 'thresholded_random_geometric_graph({}, {}, {}, {})'
+    G.name = namestr.format(n, radius, theta, dim)
     G.add_nodes_from(nodes)
     # If no weights are provided, choose them from an exponential
     # distribution.

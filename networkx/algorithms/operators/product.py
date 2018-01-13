@@ -180,7 +180,6 @@ def tensor_product(G, H):
     GH.add_edges_from(_directed_edges_cross_edges(G, H))
     if not GH.is_directed():
         GH.add_edges_from(_undirected_edges_cross_edges(G, H))
-    GH.name = "Tensor product(" + G.name + "," + H.name + ")"
     return GH
 
 
@@ -235,7 +234,6 @@ def cartesian_product(G, H):
     GH.add_nodes_from(_node_product(G, H))
     GH.add_edges_from(_edges_cross_nodes(G, H))
     GH.add_edges_from(_nodes_cross_edges(G, H))
-    GH.name = "Cartesian product(" + G.name + "," + H.name + ")"
     return GH
 
 
@@ -288,7 +286,6 @@ def lexicographic_product(G, H):
     GH.add_edges_from(_edges_cross_nodes_and_nodes(G, H))
     # For each x in G, only if there is an edge in H
     GH.add_edges_from(_nodes_cross_edges(G, H))
-    GH.name = "Lexicographic product(" + G.name + "," + H.name + ")"
     return GH
 
 
@@ -344,7 +341,6 @@ def strong_product(G, H):
     GH.add_edges_from(_directed_edges_cross_edges(G, H))
     if not GH.is_directed():
         GH.add_edges_from(_undirected_edges_cross_edges(G, H))
-    GH.name = "Strong product(" + G.name + "," + H.name + ")"
     return GH
 
 

@@ -1299,8 +1299,6 @@ class DiGraph(Graph):
         if copy:
             H = self.fresh_copy()
             H.graph.update(deepcopy(self.graph))
-            if 'name' in H.graph:
-                H.name = "Reverse of (%s)" % H.name
             H.add_nodes_from((n, deepcopy(d)) for n, d in self.node.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
