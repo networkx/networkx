@@ -13,16 +13,13 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 __all__ = ['complement', 'reverse']
 
 
-def complement(G, name=None):
+def complement(G):
     """Return the graph complement of G.
 
     Parameters
     ----------
     G : graph
        A NetworkX graph
-
-    name : string
-       Specify name for new graph
 
     Returns
     -------
@@ -35,10 +32,7 @@ def complement(G, name=None):
 
     Graph, node, and edge data are not propagated to the new graph.
     """
-    if name is None:
-        name = "complement(%s)" % (G.name)
     R = G.fresh_copy()
-    R.name = name
     R.add_nodes_from(G)
     R.add_edges_from(((n, n2)
                       for n, nbrs in G.adjacency()

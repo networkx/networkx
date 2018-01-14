@@ -991,8 +991,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
         if copy:
             H = self.fresh_copy()
             H.graph.update(deepcopy(self.graph))
-            if 'name' in H.graph:
-                H.name = "Reverse of (%s)" % H.name
             H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
             H.add_edges_from((v, u, k, deepcopy(d)) for u, v, k, d
                              in self.edges(keys=True, data=True))

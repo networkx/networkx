@@ -80,7 +80,6 @@ def from_agraph(A, create_using=None):
 
     # assign defaults
     N = nx.empty_graph(0, create_using)
-    N.name = ''
     if A.name is not None:
         N.name = A.name
 

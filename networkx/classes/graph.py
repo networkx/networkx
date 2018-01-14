@@ -1309,7 +1309,6 @@ class Graph(object):
         []
 
         """
-        self.name = ''
         self._adj.clear()
         self._node.clear()
         self.graph.clear()
