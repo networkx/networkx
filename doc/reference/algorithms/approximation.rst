@@ -1,6 +1,6 @@
-*************
-Approximation
-*************
+****************************
+Approximations and Heuristics
+****************************
 
 .. automodule:: networkx.algorithms.approximation
 
@@ -33,6 +33,7 @@ Clique
 
    max_clique
    clique_removal
+   large_clique_size
 
 Clustering
 ----------
