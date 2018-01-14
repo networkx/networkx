@@ -10,11 +10,13 @@
 problems.
 
     .. warning:: The approximation submodule is not imported in the top-level
-    ``networkx``.
+        ``networkx``.
 
     These functions can be imported with
     ``from networkx.algorithms import approximation``.
+
 """
+
 from networkx.algorithms.approximation.clustering_coefficient import *
 from networkx.algorithms.approximation.clique import *
 from networkx.algorithms.approximation.connectivity import *
