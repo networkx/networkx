@@ -106,3 +106,13 @@ class TestPydot(object):
         fh.seek(0)
         H = nx.nx_pydot.read_dot(fh)
         assert_graphs_equal(G, H)
+
+    def test_pydot_read_quoted_attributes(self):
+        """ Test attribute quotes are successfully stripped from dot files """
+        dot_data = StringIO("""
+        digraph G{
+            "A_0" [shape="ellipse" style=filled];
+        }
+        """)
+        G = nx.nx_pydot.read_dot(dot_data)
+        assert G.nodes(data=True)['A_0']['shape'] == 'ellipse'

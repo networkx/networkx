@@ -138,13 +138,14 @@ def from_pydot(P):
         n = p.get_name().strip('"')
         if n in ('node', 'graph', 'edge'):
             continue
-        N.add_node(n, **p.get_attributes())
+        N.add_node(n, **{k: v.strip('"')
+                         for k, v in p.get_attributes().items()})
 
     # add edges
     for e in P.get_edge_list():
         u = e.get_source()
         v = e.get_destination()
-        attr = e.get_attributes()
+        attr = {k: v.strip('"') for k, v in e.get_attributes().items()}
         s = []
         d = []
 
@@ -165,7 +166,7 @@ def from_pydot(P):
                 N.add_edge(source_node, destination_node, **attr)
 
     # add default attributes for graph, nodes, edges
-    pattr = P.get_attributes()
+    pattr = {k: v.strip('"') for k, v in P.get_attributes().items()}
     if pattr:
         N.graph['graph'] = pattr
     try:
