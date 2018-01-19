@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Floyd-Warshall algorithm for shortest paths.
 """
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

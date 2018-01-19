@@ -1,6 +1,6 @@
 # test_voronoi.py - unit tests for the networkx.algorithms.voronoi module
 #
-# Copyright 2016-2017 NetworkX developers.
+# Copyright 2016-2018 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

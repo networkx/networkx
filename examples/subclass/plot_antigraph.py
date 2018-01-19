@@ -17,7 +17,7 @@ algorithms.
 """
 # Author: Jordi Torrents <jtorrents@milnou.net>
 
-#    Copyright (C) 2015-2017 by
+#    Copyright (C) 2015-2018 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    All rights reserved.
 #    BSD license.
