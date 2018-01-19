@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-#    Copyright (C) 2015-2017 by
+#    Copyright (C) 2015-2018 by
 #        Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>
 #        NetworkX developers
 #    All rights reserved.

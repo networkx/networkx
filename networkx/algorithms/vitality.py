@@ -5,7 +5,7 @@
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
-# Copyright (C) 2016-2017 by NetworkX developers.
+# Copyright (C) 2016-2018 by NetworkX developers.
 #
 # All rights reserved.
 # BSD license.
