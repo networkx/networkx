@@ -32,7 +32,7 @@ def harmonic_centrality(G, nbunch=None, distance=None):
     ----------
     G : graph
       A NetworkX graph
-    
+
     nbunch : container
       Container of nodes. If provided harmonic centrality will be computed
       only over the nodes in nbunch.

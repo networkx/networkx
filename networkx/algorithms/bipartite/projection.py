@@ -512,5 +512,6 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
             G.add_edge(u, v, weight=weight)
     return G
 
+
 def project(B, nodes, create_using=None):
     return projected_graph(B, nodes)

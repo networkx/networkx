@@ -4,6 +4,7 @@ import networkx as nx
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 
+
 class TestPrefixTree(object):
     """Unit tests for the prefix tree generator function."""
 
@@ -12,7 +13,8 @@ class TestPrefixTree(object):
         # <https://en.wikipedia.org/wiki/Trie>.
         strings = ['a', 'to', 'tea', 'ted', 'ten', 'i', 'in', 'inn']
         T, root = nx.prefix_tree(strings)
-        source_label = lambda v: T.node[v]['source']
+
+        def source_label(v): return T.node[v]['source']
 
         # First, we check that the tree has the expected
         # structure. Recall that each node that corresponds to one of

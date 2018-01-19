@@ -7,7 +7,7 @@ from nose import SkipTest
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
-                                      random_state
+    random_state
 
 
 def test_not_implemented_decorator():
@@ -176,12 +176,14 @@ class TestRandomState(object):
         assert_true(np.all((np.random.RandomState(seed).rand(10),
                             random_state.rand(10))))
 
+
 @raises(nx.NetworkXError)
 def test_string_arg_index():
     @random_state('a')
     def make_random_state(rs):
         pass
     rstate = make_random_state(1)
+
 
 @raises(nx.NetworkXError)
 def test_invalid_arg_index():

@@ -65,12 +65,12 @@ def mycielskian(G, iterations=1):
 
     for i in range(iterations):
         n = M.number_of_nodes()
-        M.add_nodes_from(range(n, 2*n))
+        M.add_nodes_from(range(n, 2 * n))
         old_edges = list(M.edges())
-        M.add_edges_from((u, v+n) for u, v in old_edges)
-        M.add_edges_from((u+n, v) for u, v in old_edges)
-        M.add_node(2*n)
-        M.add_edges_from((u+n, 2*n) for u in range(n))
+        M.add_edges_from((u, v + n) for u, v in old_edges)
+        M.add_edges_from((u + n, v) for u, v in old_edges)
+        M.add_node(2 * n)
+        M.add_edges_from((u + n, 2 * n) for u in range(n))
 
     return M
 
@@ -113,4 +113,4 @@ def mycielski_graph(n):
         return nx.empty_graph(1)
 
     else:
-        return mycielskian(nx.path_graph(2), n-2)
+        return mycielskian(nx.path_graph(2), n - 2)

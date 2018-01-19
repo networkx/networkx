@@ -397,15 +397,15 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
 
     # optimal distance between nodes
     if k is None:
-        k = np.sqrt(1.0/nnodes)
+        k = np.sqrt(1.0 / nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     # We need to calculate this in case our fixed positions force our domain
     # to be much bigger than 1x1
-    t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1]))*0.1
+    t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t/float(iterations+1)
+    dt = t / float(iterations + 1)
     delta = np.zeros((pos.shape[0], pos.shape[0], pos.shape[1]), dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
@@ -431,7 +431,7 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
         pos += delta_pos
         # cool temperature
         t -= dt
-        err = np.linalg.norm(delta_pos)/nnodes
+        err = np.linalg.norm(delta_pos) / nnodes
         if err < threshold:
             break
     return pos
@@ -478,13 +478,13 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
 
     # optimal distance between nodes
     if k is None:
-        k = np.sqrt(1.0/nnodes)
+        k = np.sqrt(1.0 / nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     t = 0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt = t / float(iterations+1)
+    dt = t / float(iterations + 1)
 
     displacement = np.zeros((dim, nnodes))
     for iteration in range(iterations):
@@ -511,7 +511,7 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
         pos += delta_pos
         # cool temperature
         t -= dt
-        err = np.linalg.norm(delta_pos)/nnodes
+        err = np.linalg.norm(delta_pos) / nnodes
         if err < threshold:
             break
     return pos
@@ -692,7 +692,7 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
         elif len(G) == 1:
             pos = np.array([center])
         else:
-            pos = np.array([np.zeros(dim), np.array(center)*2.0])
+            pos = np.array([np.zeros(dim), np.array(center) * 2.0])
         return dict(zip(G, pos))
     try:
         # Sparse matrix

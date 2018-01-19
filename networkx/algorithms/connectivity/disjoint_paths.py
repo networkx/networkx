@@ -24,7 +24,7 @@ from .utils import build_auxiliary_edge_connectivity
 
 try:
     from itertools import filterfalse as _filterfalse
-except ImportError: # Python 2
+except ImportError:  # Python 2
     def _filterfalse(predicate, iterable):
         # https://docs.python.org/3/library/itertools.html
         # filterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8
@@ -178,7 +178,7 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     if flow_func is None:
         flow_func = default_flow_func
-    
+
     if auxiliary is None:
         H = build_auxiliary_edge_connectivity(G)
     else:
@@ -249,7 +249,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
     Node dijoint paths are paths that only share their first and last
     nodes. The number of node independent paths between two nodes is
     equal to their local node connectivity.
-    
+
     Parameters
     ----------
     G : NetworkX graph

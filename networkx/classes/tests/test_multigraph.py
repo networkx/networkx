@@ -143,7 +143,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G.adj[1][2][0]['weight'] = 20
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'data': 21, 'spam': 'bar', 'bar': 'foo',
-                            'listdata': [20, 200], 'weight':20})])
+                                    'listdata': [20, 200], 'weight':20})])
 
 
 class TestMultiGraph(BaseMultiGraphTester, TestGraph):

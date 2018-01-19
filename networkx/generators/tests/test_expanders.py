@@ -35,7 +35,7 @@ def test_margulis_gabber_galil_graph():
         has_scipy = False
     for n in 2, 3, 5, 6, 10:
         g = margulis_gabber_galil_graph(n)
-        assert_equal(number_of_nodes(g), n*n)
+        assert_equal(number_of_nodes(g), n * n)
         for node in g:
             assert_equal(g.degree(node), 8)
             assert_equal(len(node), 2)
@@ -46,7 +46,7 @@ def test_margulis_gabber_galil_graph():
             # Eigenvalues are already sorted using the scipy eigvalsh,
             # but the implementation in numpy does not guarantee order.
             w = sorted(scipy.linalg.eigvalsh(adjacency_matrix(g).A))
-            assert_less(w[-2], 5*np.sqrt(2))
+            assert_less(w[-2], 5 * np.sqrt(2))
 
 
 def test_chordal_cycle_graph():

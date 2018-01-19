@@ -89,7 +89,7 @@ def relabel_nodes(G, mapping, copy=True):
     """
     # you can pass a function f(old_label)->new_label
     # but we'll just make a dictionary here regardless
-    if not hasattr(mapping,"__getitem__"):
+    if not hasattr(mapping, "__getitem__"):
         m = {n: mapping(n) for n in G}
     else:
         m = mapping

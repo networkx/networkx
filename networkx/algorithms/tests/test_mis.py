@@ -84,7 +84,7 @@ class TestMaximalIndependantSet(object):
         """Generate 50 random graphs of different types and sizes and
         make sure that all sets are independent and maximal."""
         for i in range(0, 50, 10):
-            G = nx.random_graphs.erdos_renyi_graph(i*10+1, random.random())
+            G = nx.random_graphs.erdos_renyi_graph(i * 10 + 1, random.random())
             IS = nx.maximal_independent_set(G)
             assert_false(list(G.subgraph(IS).edges()))
             neighbors_of_MIS = set.union(*(set(G.neighbors(v)) for v in IS))

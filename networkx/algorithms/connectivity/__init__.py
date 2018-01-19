@@ -19,4 +19,4 @@ __all__ = sum([connectivity.__all__,
                kcutsets.__all__,
                stoerwagner.__all__,
                utils.__all__,
-              ], [])
+               ], [])

@@ -60,7 +60,7 @@ class TestNodeLink:
         except NameError:
             q = "qualité"
         G = nx.Graph()
-        G.add_node(1, **{q:q})
+        G.add_node(1, **{q: q})
         s = node_link_data(G)
         output = json.dumps(s, ensure_ascii=False)
         data = json.loads(output)
@@ -103,4 +103,3 @@ class TestNodeLink:
         assert_equal(H.graph['foo'], 'bar')
         assert_equal(H.nodes[1]['color'], 'red')
         assert_equal(H[1][2]['width'], 7)
-

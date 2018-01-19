@@ -15,7 +15,7 @@ from itertools import chain, count
 
 import networkx as nx
 from networkx.utils import arbitrary_element, not_implemented_for, \
-                           UnionFind, generate_unique_node
+    UnionFind, generate_unique_node
 
 __all__ = ["all_pairs_lowest_common_ancestor",
            "tree_all_pairs_lowest_common_ancestor",
@@ -332,7 +332,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
                         else:
                             ans = tree_lca[tree_node2, tree_node1]
                         if not dry_run and (best is None or
-                           root_distance[ans] > best_root_distance):
+                                            root_distance[ans] > best_root_distance):
                             best_root_distance = root_distance[ans]
                             best = ans
 

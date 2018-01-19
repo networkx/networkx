@@ -478,7 +478,7 @@ def _select_starting_cell(G, starting_edge=None):
         if r == 2 and s == 0:
             # in this case either triangle works, so just use T
             starting_cell = T
-        elif r-1 <= s <= r:
+        elif r - 1 <= s <= r:
             # check if odd triangles containing e form complete subgraph
             # there must be exactly s+2 of them
             # and they must all be connected
@@ -486,7 +486,7 @@ def _select_starting_cell(G, starting_edge=None):
             for T in odd_triangles:
                 for x in T:
                     triangle_nodes.add(x)
-            if len(triangle_nodes) == s+2:
+            if len(triangle_nodes) == s + 2:
                 for u in triangle_nodes:
                     for v in triangle_nodes:
                         if u != v and (v not in G.neighbors(u)):

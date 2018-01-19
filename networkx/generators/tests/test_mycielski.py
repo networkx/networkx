@@ -13,6 +13,7 @@ from nose.tools import assert_true, assert_equal, raises
 import networkx as nx
 from networkx import *
 
+
 class TestMycielski(object):
 
     def test_construction(self):

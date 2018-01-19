@@ -253,7 +253,7 @@ def lexicographical_topological_sort(G, key=None):
             "Topological sort not defined on undirected graphs.")
 
     if key is None:
-        key = lambda x: x
+        def key(x): return x
 
     def create_tuple(node):
         return key(node), node

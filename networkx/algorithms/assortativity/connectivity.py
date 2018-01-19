@@ -139,4 +139,5 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
             dc[k] /= norm
     return dc
 
+
 k_nearest_neighbors = average_degree_connectivity

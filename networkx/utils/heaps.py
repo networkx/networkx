@@ -304,6 +304,7 @@ class PairingHeap(MinHeap):
 class BinaryHeap(MinHeap):
     """A binary heap.
     """
+
     def __init__(self):
         """Initialize a binary heap.
         """

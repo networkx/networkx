@@ -19,6 +19,7 @@ class TestRandomGeometricGraph(object):
     function.
 
     """
+
     def test_number_of_nodes(self):
         G = nx.random_geometric_graph(50, 0.25)
         assert_equal(len(G), 50)
@@ -76,6 +77,7 @@ class TestRandomGeometricGraph(object):
             else:
                 assert_false(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
 
+
 class TestSoftRandomGeometricGraph(object):
     """Unit tests for the :func:`~networkx.soft_random_geometric_graph`
     function.
@@ -95,13 +97,12 @@ class TestSoftRandomGeometricGraph(object):
         """
         # Use the Euclidean metric, the default according to the
         # documentation.
-        dist = lambda x, y: sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+        def dist(x, y): return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
         G = nx.soft_random_geometric_graph(50, 0.25)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
                 assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
-
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -109,7 +110,7 @@ class TestSoftRandomGeometricGraph(object):
 
         """
         # Use the L1 metric.
-        dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
+        def dist(x, y): return sum(abs(a - b) for a, b in zip(x, y))
         G = nx.soft_random_geometric_graph(50, 0.25, p=1)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
@@ -125,7 +126,7 @@ class TestSoftRandomGeometricGraph(object):
         G = nx.soft_random_geometric_graph(nodes, 0.25)
         assert_equal(len(G), len(nodes))
 
-        dist = lambda x, y: sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+        def dist(x, y): return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
@@ -139,8 +140,8 @@ class TestSoftRandomGeometricGraph(object):
         nodes = 50
         dim = 2
         pos = {v: [random.random() for i in range(dim)] for v in range(nodes)}
-        RGG = nx.random_geometric_graph(50, 0.25,pos=pos)
-        SRGG = nx.soft_random_geometric_graph(50, 0.25,pos=pos) 
+        RGG = nx.random_geometric_graph(50, 0.25, pos=pos)
+        SRGG = nx.soft_random_geometric_graph(50, 0.25, pos=pos)
         assert_true(len(SRGG.edges()) <= len(RGG.edges()))
 
     def test_p_dist_zero(self):
@@ -150,7 +151,7 @@ class TestSoftRandomGeometricGraph(object):
         def p_dist(dist):
             return 0
 
-        G = nx.soft_random_geometric_graph(50, 0.25, p_dist = p_dist) 
+        G = nx.soft_random_geometric_graph(50, 0.25, p_dist=p_dist)
         assert_true(len(G.edges) == 0)
 
 
@@ -169,7 +170,7 @@ def join(G, u, v, theta, alpha, metric):
     du, dv = G.nodes[u], G.nodes[v]
     u_pos, v_pos = du['pos'], dv['pos']
     u_weight, v_weight = du['weight'], dv['weight']
-    return (u_weight + v_weight)*metric(u_pos, v_pos) ** alpha >= theta 
+    return (u_weight + v_weight) * metric(u_pos, v_pos) ** alpha >= theta
 
 
 class TestGeographicalThresholdGraph(object):
@@ -224,7 +225,7 @@ class TestGeographicalThresholdGraph(object):
         def p_dist(dist):
             return 0
 
-        G = nx.geographical_threshold_graph(50, 1, p_dist=p_dist) 
+        G = nx.geographical_threshold_graph(50, 1, p_dist=p_dist)
         assert_true(len(G.edges) == 0)
 
 
@@ -269,6 +270,7 @@ class TestNavigableSmallWorldGraph(object):
         gg = nx.grid_graph([5]).to_directed()
         assert_true(nx.is_isomorphic(G, gg))
 
+
 class TestThresholdedRandomGeometricGraph(object):
     """Unit tests for the :func:`~networkx.thresholded_random_geometric_graph`
     function.
@@ -288,13 +290,12 @@ class TestThresholdedRandomGeometricGraph(object):
         """
         # Use the Euclidean metric, the default according to the
         # documentation.
-        dist = lambda x, y: sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+        def dist(x, y): return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
         G = nx.thresholded_random_geometric_graph(50, 0.25, 0.1)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
                 assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
-
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -302,7 +303,7 @@ class TestThresholdedRandomGeometricGraph(object):
 
         """
         # Use the L1 metric.
-        dist = lambda x, y: sum(abs(a - b) for a, b in zip(x, y))
+        def dist(x, y): return sum(abs(a - b) for a, b in zip(x, y))
         G = nx.thresholded_random_geometric_graph(50, 0.25, 0.1,  p=1)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
@@ -318,7 +319,7 @@ class TestThresholdedRandomGeometricGraph(object):
         G = nx.thresholded_random_geometric_graph(nodes, 0.25, 0.1)
         assert_equal(len(G), len(nodes))
 
-        dist = lambda x, y: sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+        def dist(x, y): return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:

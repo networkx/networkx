@@ -160,18 +160,16 @@ def to_agraph(N):
             str_edgedata = {k: str(v) for k, v in edgedata.items() if k != 'key'}
             A.add_edge(u, v, key=str(key))
             if edgedata is not None:
-                a = A.get_edge(u,v)
+                a = A.get_edge(u, v)
                 a.attr.update(str_edgedata)
-
 
     else:
         for u, v, edgedata in N.edges(data=True):
             str_edgedata = {k: str(v) for k, v in edgedata.items()}
             A.add_edge(u, v)
             if edgedata is not None:
-                a = A.get_edge(u,v)
+                a = A.get_edge(u, v)
                 a.attr.update(str_edgedata)
-
 
     return A
 

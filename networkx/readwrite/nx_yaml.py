@@ -26,7 +26,8 @@ __all__ = ['read_yaml', 'write_yaml']
 import networkx as nx
 from networkx.utils import open_file
 
-@open_file(1,mode='w')
+
+@open_file(1, mode='w')
 def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
     """Write graph G in YAML format to path. 
 
@@ -60,8 +61,9 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
     except ImportError:
         raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/")
     yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)
-    
-@open_file(0,mode='r')
+
+
+@open_file(0, mode='r')
 def read_yaml(path):
     """Read graph in YAML format from path.
 
@@ -83,7 +85,7 @@ def read_yaml(path):
     >>> G=nx.path_graph(4)
     >>> nx.write_yaml(G,'test.yaml')
     >>> G=nx.read_yaml('test.yaml')
- 
+
     References
     ----------
     .. [1] http://www.yaml.org
@@ -94,7 +96,7 @@ def read_yaml(path):
     except ImportError:
         raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/")
 
-    G=yaml.load(path)
+    G = yaml.load(path)
     return G
 
 
@@ -107,6 +109,8 @@ def setup_module(module):
         raise SkipTest("PyYAML not available")
 
 # fixture for nose tests
+
+
 def teardown_module(module):
     import os
     os.unlink('test.yaml')

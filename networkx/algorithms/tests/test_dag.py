@@ -17,6 +17,7 @@ from networkx.utils import pairwise
 
 class TestDagLongestPath(object):
     """Unit tests computing the longest path in a directed acyclic graph."""
+
     def test_empty(self):
         G = nx.DiGraph()
         assert_equal(nx.dag_longest_path(G), [])
@@ -251,7 +252,7 @@ class TestDAG:
             assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
 
         k = 10
-        G = nx.DiGraph((i, i+1, {"foo": "bar", "weight": i}) for i in range(k))
+        G = nx.DiGraph((i, i + 1, {"foo": "bar", "weight": i}) for i in range(k))
         H = transitive_closure(G)
         for u, v in G.edges():
             assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))

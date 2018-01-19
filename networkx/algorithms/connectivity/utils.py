@@ -43,7 +43,7 @@ def build_auxiliary_node_connectivity(G):
 
     mapping = {}
     H = nx.DiGraph()
-    
+
     for i, node in enumerate(G):
         mapping[node] = i
         H.add_node('%dA' % i, id=node)

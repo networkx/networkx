@@ -70,7 +70,7 @@ def matching_dict_to_set(matching):
     # only the (frozen)set `{u, v}` appears as an element in the
     # returned set.
 
-    return set((u,v) for (u,v) in set(map(frozenset, matching.items())))
+    return set((u, v) for (u, v) in set(map(frozenset, matching.items())))
 
 
 def is_matching(G, matching):
@@ -247,7 +247,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
     # Get a list of vertices.
     gnodes = list(G)
     if not gnodes:
-        return set( ) # don't bother with empty graphs
+        return set()  # don't bother with empty graphs
 
     # Find the maximum edge weight.
     maxweight = 0
@@ -640,7 +640,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
                 bs = inblossom[s]
                 assert label[bs] == 1
                 assert (
-                        labeledge[bs] is None and blossombase[bs] not in mate)\
+                    labeledge[bs] is None and blossombase[bs] not in mate)\
                     or (labeledge[bs][0] == mate[blossombase[bs]])
                 # Augment through the S-blossom from s to base.
                 if isinstance(bs, Blossom):
@@ -802,14 +802,14 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
                         # keep track of the least-slack non-allowable edge to
                         # a different S-blossom.
                         if bestedge.get(bv) is None or \
-                         kslack < slack(*bestedge[bv]):
+                                kslack < slack(*bestedge[bv]):
                             bestedge[bv] = (v, w)
                     elif label.get(w) is None:
                         # w is a free vertex (or an unreached vertex inside
                         # a T-blossom) but we can not reach it yet;
                         # keep track of the least-slack edge that reaches w.
                         if bestedge.get(w) is None or \
-                         kslack < slack(*bestedge[w]):
+                                kslack < slack(*bestedge[w]):
                             bestedge[w] = (v, w)
 
             if augmented:
@@ -831,7 +831,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             # an S-vertex and a free vertex.
             for v in G.nodes():
                 if label.get(inblossom[v]) is None and \
-                 bestedge.get(v) is not None:
+                        bestedge.get(v) is not None:
                     d = slack(*bestedge[v])
                     if deltatype == -1 or d < delta:
                         delta = d

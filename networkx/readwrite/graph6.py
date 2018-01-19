@@ -112,8 +112,8 @@ def from_graph6_bytes(string):
         """Return sequence of individual bits from 6-bit-per-value
         list of data values."""
         for d in data:
-            for i in [5,4,3,2,1,0]:
-                yield (d>>i)&1
+            for i in [5, 4, 3, 2, 1, 0]:
+                yield (d >> i) & 1
 
     if string.startswith(b'>>graph6<<'):
         string = string[10:]
@@ -126,16 +126,16 @@ def from_graph6_bytes(string):
         raise ValueError('each input character must be in range(63, 127)')
 
     n, data = data_to_n(data)
-    nd = (n*(n-1)//2 + 5) // 6
+    nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
-        raise NetworkXError(\
-            'Expected %d bits but got %d in graph6' % (n*(n-1)//2, len(data)*6))
+        raise NetworkXError(
+            'Expected %d bits but got %d in graph6' % (n * (n - 1) // 2, len(data) * 6))
 
-    G=nx.Graph()
+    G = nx.Graph()
     G.add_nodes_from(range(n))
-    for (i,j),b in zip([(i,j) for j in range(1,n) for i in range(j)], bits()):
+    for (i, j), b in zip([(i, j) for j in range(1, n) for i in range(j)], bits()):
         if b:
-            G.add_edge(i,j)
+            G.add_edge(i, j)
 
     return G
 
@@ -389,9 +389,9 @@ def data_to_n(data):
     if data[0] <= 62:
         return data[0], data[1:]
     if data[1] <= 62:
-        return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
-    return ((data[2]<<30) + (data[3]<<24) + (data[4]<<18) +
-            (data[5]<<12) + (data[6]<<6) + data[7], data[8:])
+        return (data[1] << 12) + (data[2] << 6) + data[3], data[4:]
+    return ((data[2] << 30) + (data[3] << 24) + (data[4] << 18) +
+            (data[5] << 12) + (data[6] << 6) + data[7], data[8:])
 
 
 def n_to_data(n):
@@ -403,8 +403,8 @@ def n_to_data(n):
     if n <= 62:
         return [n]
     elif n <= 258047:
-        return [63, (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
+        return [63, (n >> 12) & 0x3f, (n >> 6) & 0x3f, n & 0x3f]
     else:  # if n <= 68719476735:
         return [63, 63,
-                (n>>30) & 0x3f, (n>>24) & 0x3f, (n>>18) & 0x3f,
-                (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
+                (n >> 30) & 0x3f, (n >> 24) & 0x3f, (n >> 18) & 0x3f,
+                (n >> 12) & 0x3f, (n >> 6) & 0x3f, n & 0x3f]

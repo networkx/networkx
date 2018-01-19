@@ -1,5 +1,5 @@
 from nose.tools import assert_equal, assert_not_equal, \
-        assert_is, assert_true, assert_raises
+    assert_is, assert_true, assert_raises
 
 import networkx as nx
 

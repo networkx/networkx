@@ -16,6 +16,7 @@ import networkx as nx
 from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
 
+
 class TestJoin(object):
     """Unit tests for the :func:`networkx.tree.join` function."""
 

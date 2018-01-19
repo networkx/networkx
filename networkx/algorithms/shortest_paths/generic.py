@@ -241,7 +241,7 @@ def shortest_path_length(G, source=None, target=None, weight=None):
                     paths = path_length(G, target, weight=weight)
     else:
         if source not in G:
-            raise nx.NodeNotFound("Source {} not in G".format(source));
+            raise nx.NodeNotFound("Source {} not in G".format(source))
 
         if target is None:
             # Find paths to all nodes accessible from the source.
@@ -254,7 +254,7 @@ def shortest_path_length(G, source=None, target=None, weight=None):
             # Find shortest source-target path.
             if weight is None:
                 p = nx.bidirectional_shortest_path(G, source, target)
-                paths = len(p)-1
+                paths = len(p) - 1
             else:
                 paths = nx.dijkstra_path_length(G, source, target, weight)
     return paths
@@ -324,10 +324,11 @@ def average_shortest_path_length(G, weight=None):
         raise nx.NetworkXError("Graph is not connected.")
     # Compute all-pairs shortest paths.
     if weight is None:
-        path_length = lambda v: nx.single_source_shortest_path_length(G, v)
+        def path_length(v): return nx.single_source_shortest_path_length(G, v)
     else:
         ssdpl = nx.single_source_dijkstra_path_length
-        path_length = lambda v: ssdpl(G, v, weight=weight)
+
+        def path_length(v): return ssdpl(G, v, weight=weight)
     # Sum the distances for each (ordered) pair of source and target node.
     s = sum(l for u in G for l in path_length(u).values())
     return s / (n * (n - 1))
@@ -380,7 +381,7 @@ def all_shortest_paths(G, source, target, weight=None):
     else:
         pred = nx.predecessor(G, source)
 
-    if source not in G :
+    if source not in G:
         raise nx.NodeNotFound('Source {} is not in G'.format(source))
 
     if target not in pred:
@@ -391,7 +392,7 @@ def all_shortest_paths(G, source, target, weight=None):
     while top >= 0:
         node, i = stack[top]
         if node == source:
-            yield [p for p, n in reversed(stack[:top+1])]
+            yield [p for p, n in reversed(stack[:top + 1])]
         if len(pred[node]) > i:
             top += 1
             if top == len(stack):
@@ -399,5 +400,5 @@ def all_shortest_paths(G, source, target, weight=None):
             else:
                 stack[top] = [pred[node][i], 0]
         else:
-            stack[top-1][1] += 1
+            stack[top - 1][1] += 1
             top -= 1

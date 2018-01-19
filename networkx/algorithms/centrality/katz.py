@@ -175,15 +175,15 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
             for nbr in G[n]:
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
         for n in x:
-            x[n] = alpha*x[n] + b[n]
+            x[n] = alpha * x[n] + b[n]
 
         # check convergence
-        err = sum([abs(x[n]-xlast[n]) for n in x])
-        if err < nnodes*tol:
+        err = sum([abs(x[n] - xlast[n]) for n in x])
+        if err < nnodes * tol:
             if normalized:
                 # normalize vector
                 try:
-                    s = 1.0/sqrt(sum(v**2 for v in x.values()))
+                    s = 1.0 / sqrt(sum(v**2 for v in x.values()))
                 # this should never be zero?
                 except ZeroDivisionError:
                     s = 1.0
@@ -327,12 +327,12 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
 
     A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
-    centrality = np.linalg.solve(np.eye(n, n) - (alpha*A), b)
+    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
     else:
         norm = 1.0
-    centrality = dict(zip(nodelist, map(float, centrality/norm)))
+    centrality = dict(zip(nodelist, map(float, centrality / norm)))
     return centrality
 
 

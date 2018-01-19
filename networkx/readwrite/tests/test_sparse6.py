@@ -14,16 +14,16 @@ class TestSparseGraph6(object):
 
     def test_from_sparse6_bytes(self):
         data = b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM'
-        G=nx.from_sparse6_bytes(data)
+        G = nx.from_sparse6_bytes(data)
         assert_nodes_equal(sorted(G.nodes()),
-                     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                      10, 11, 12, 13, 14, 15, 16, 17])
+                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                            10, 11, 12, 13, 14, 15, 16, 17])
         assert_edges_equal(G.edges(),
-                     [(0, 1), (0, 2), (0, 3), (1, 12), (1, 14), (2, 13),
-                      (2, 15), (3, 16), (3, 17), (4, 7), (4, 9), (4, 11),
-                      (5, 6), (5, 8), (5, 9), (6, 10), (6, 11), (7, 8),
-                      (7, 10), (8, 12), (9, 15), (10, 14), (11, 13),
-                      (12, 16), (13, 17), (14, 17), (15, 16)])
+                           [(0, 1), (0, 2), (0, 3), (1, 12), (1, 14), (2, 13),
+                            (2, 15), (3, 16), (3, 17), (4, 7), (4, 9), (4, 11),
+                            (5, 6), (5, 8), (5, 9), (6, 10), (6, 11), (7, 8),
+                            (7, 10), (8, 12), (9, 15), (10, 14), (11, 13),
+                            (12, 16), (13, 17), (14, 17), (15, 16)])
 
     def test_from_bytes_multigraph_graph(self):
         graph_data = b':An'
@@ -35,23 +35,23 @@ class TestSparseGraph6(object):
 
     def test_read_sparse6(self):
         data = b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM'
-        G=nx.from_sparse6_bytes(data)
+        G = nx.from_sparse6_bytes(data)
         fh = BytesIO(data)
-        Gin=nx.read_sparse6(fh)
-        assert_nodes_equal(G.nodes(),Gin.nodes())
-        assert_edges_equal(G.edges(),Gin.edges())
+        Gin = nx.read_sparse6(fh)
+        assert_nodes_equal(G.nodes(), Gin.nodes())
+        assert_edges_equal(G.edges(), Gin.edges())
 
     def test_read_many_graph6(self):
         # Read many graphs into list
         data = (b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n'
                 b':Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM')
         fh = BytesIO(data)
-        glist=nx.read_sparse6(fh)
-        assert_equal(len(glist),2)
+        glist = nx.read_sparse6(fh)
+        assert_equal(len(glist), 2)
         for G in glist:
             assert_nodes_equal(G.nodes(),
-                         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                          10, 11, 12, 13, 14, 15, 16, 17])
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                10, 11, 12, 13, 14, 15, 16, 17])
 
 
 class TestWriteSparse6(TestCase):
@@ -142,7 +142,7 @@ class TestWriteSparse6(TestCase):
             fullfilename = f.name
         # file should be closed now, so write_sparse6 can open it
         nx.write_sparse6(nx.null_graph(), fullfilename)
-        fh=open(fullfilename, mode='rb')
+        fh = open(fullfilename, mode='rb')
         self.assertEqual(fh.read(), b'>>sparse6<<:?\n')
         fh.close()
         import os

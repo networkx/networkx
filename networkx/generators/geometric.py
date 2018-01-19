@@ -168,6 +168,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
 
     return G
 
+
 @nodes_or_number(0)
 def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     """Returns a soft random geometric graph in the unit cube of dimensions `dim`.
@@ -274,8 +275,8 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         pos = {v: [random.random() for i in range(dim)] for v in nodes}
     nx.set_node_attributes(G, pos, 'pos')
 
-    #if p_dist function not supplied the default function is an exponential
-    #distribution with rate parameter :math:`\lambda=1`.
+    # if p_dist function not supplied the default function is an exponential
+    # distribution with rate parameter :math:`\lambda=1`.
     if p_dist is None:
 
         def p_dist(dist):
@@ -284,10 +285,10 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     def should_join(pair):
         u, v = pair
         u_pos, v_pos = pos[u], pos[v]
-        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1/p)
-        #Check if dist is <= radius parameter. This check is redundant if scipy
-        #is availible and _fast_edges routine is used, but provides the check incase
-        #scipy is not availible and all edge combinations need to be checked
+        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
+        # Check if dist is <= radius parameter. This check is redundant if scipy
+        # is availible and _fast_edges routine is used, but provides the check incase
+        # scipy is not availible and all edge combinations need to be checked
         if dist <= radius:
             return random.random() < p_dist(dist)
         else:
@@ -437,7 +438,7 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
     nx.set_node_attributes(G, weight, 'weight')
     nx.set_node_attributes(G, pos, 'pos')
 
-    #if p_dist is not supplied, use default r^-2
+    # if p_dist is not supplied, use default r^-2
     if p_dist == None:
         def p_dist(r):
             return r**-2
@@ -449,7 +450,7 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
         u, v = pair
         u_pos, v_pos = pos[u], pos[v]
         u_weight, v_weight = weight[u], weight[v]
-        return (u_weight + v_weight)*p_dist(metric(u_pos, v_pos)) >= theta 
+        return (u_weight + v_weight) * p_dist(metric(u_pos, v_pos)) >= theta
 
     G.add_edges_from(filter(should_join, combinations(G, 2)))
     return G
@@ -556,9 +557,10 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
     # the Waxman-2 model, join randomly based on random l.
     if L is None:
         L = max(metric(x, y) for x, y in combinations(pos.values(), 2))
-        dist = lambda u, v: metric(pos[u], pos[v])
+
+        def dist(u, v): return metric(pos[u], pos[v])
     else:
-        dist = lambda u, v: random.random() * L
+        def dist(u, v): return random.random() * L
 
     # `pair` is the pair of nodes to decide whether to join.
     def should_join(pair):
@@ -637,6 +639,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             target = nodes[bisect_left(cdf, random.uniform(0, cdf[-1]))]
             G.add_edge(p1, target)
     return G
+
 
 @nodes_or_number(0)
 def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight=None, p=2):
@@ -758,14 +761,14 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
         u, v = pair
         u_weight, v_weight = weight[u], weight[v]
         u_pos, v_pos = pos[u], pos[v]
-        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1/p)
-        #Check if dist is <= radius parameter. This check is redundant if scipy
-        #is availible and _fast_edges routine is used, but provides the check incase
-        #scipy is not availible and all edge combinations need to be checked
+        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
+        # Check if dist is <= radius parameter. This check is redundant if scipy
+        # is availible and _fast_edges routine is used, but provides the check incase
+        # scipy is not availible and all edge combinations need to be checked
         if dist <= radius:
             return theta <= u_weight + v_weight
         else:
-            return False     
+            return False
 
     if _is_scipy_available:
         edges = _fast_edges(G, radius, p)

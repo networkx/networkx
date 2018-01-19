@@ -19,6 +19,7 @@ __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['all_node_cuts']
 
+
 def all_node_cuts(G, k=None, flow_func=None):
     r"""Returns all minimum k cutsets of an undirected graph G. 
 
@@ -26,7 +27,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     minimum-size node cut-sets of an undirected graph G; ie the set (or sets) 
     of nodes of cardinality equal to the node connectivity of G. Thus if 
     removed, would break G into two or more connected components.
-   
+
     Parameters
     ----------
     G : NetworkX graph
@@ -41,7 +42,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         edmonds_karp. This function performs better in sparse graphs with
         right tailed degree distributions. shortest_augmenting_path will
         perform better in denser graphs.
-        
+
 
     Returns
     -------
@@ -100,13 +101,13 @@ def all_node_cuts(G, k=None, flow_func=None):
             return
     # For complete Graphs
     if nx.density(G) == 1:
-        for cut_set in combinations(G, len(G)-1):
+        for cut_set in combinations(G, len(G) - 1):
             yield set(cut_set)
         return
     # Initialize data structures.
     # Keep track of the cuts already computed so we do not repeat them.
     seen = []
-    # Even-Tarjan reduction is what we call auxiliary digraph 
+    # Even-Tarjan reduction is what we call auxiliary digraph
     # for node connectivity.
     H = build_auxiliary_node_connectivity(G)
     mapping = H.graph['mapping']
@@ -121,7 +122,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # step 1: Find node connectivity k of G
     if k is None:
         k = nx.node_connectivity(G, flow_func=flow_func)
-    # step 2: 
+    # step 2:
     # Find k nodes with top degree, call it X:
     X = {n for n, d in sorted(G.degree(), key=itemgetter(1), reverse=True)[:k]}
     # Check if X is a k-node-cutset
@@ -140,12 +141,12 @@ def all_node_cuts(G, k=None, flow_func=None):
             flow_value = R.graph['flow_value']
 
             if flow_value == k:
-                ## Remove saturated edges form the residual network
+                # Remove saturated edges form the residual network
                 saturated_edges = [(u, w, d) for (u, w, d) in
-                                    R.edges(data=True)
-                                    if d['capacity'] == d['flow']]
+                                   R.edges(data=True)
+                                   if d['capacity'] == d['flow']]
                 R.remove_edges_from(saturated_edges)
-                # step 6: shrink the strongly connected components of 
+                # step 6: shrink the strongly connected components of
                 # residual flow network R and call it L
                 L = nx.condensation(R)
                 cmap = L.graph['mapping']
@@ -170,7 +171,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                             seen.append(node_cut)
                         # Add an edge (x, v) to make sure that we do not
                         # find this cutset again. This is equivalent
-                        # of adding the edge in the input graph 
+                        # of adding the edge in the input graph
                         # G.add_edge(x, v) and then regenerate H and R:
                         # Add edges to the auxiliary digraph.
                         H.add_edge('%sB' % mapping[x], '%sA' % mapping[v],

@@ -266,7 +266,7 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         ii = (i for i in cols for j in rows)
         jj = (j for i in cols for j in rows)
         xx = (0.5 * (j % 2) + i for i in cols for j in rows)
-        h = sqrt(3)/2
+        h = sqrt(3) / 2
         if periodic:
             yy = (h * j + .01 * i * i for i in cols for j in rows)
         else:
@@ -363,9 +363,9 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
     jj = (j for i in cols for j in rows)
     xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - .5)
           for i in cols for j in rows)
-    h = sqrt(3)/2
+    h = sqrt(3) / 2
     if periodic:
-        yy = (h * j + .01*i*i for i in cols for j in rows)
+        yy = (h * j + .01 * i * i for i in cols for j in rows)
     else:
         yy = (h * j for i in cols for j in rows)
     # exclude nodes not in G
