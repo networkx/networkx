@@ -330,6 +330,7 @@ class DiDegreeView(object):
     >>> DVnbunch = G.degree(nbunch=(1, 2))
     >>> assert(len(list(DVnbunch)) == 2)  # iteration over nbunch only
     """
+
     def __init__(self, G, nbunch=None, weight=None):
         self._graph = G
         self._succ = G._succ if hasattr(G, "_succ") else G._adj
@@ -429,6 +430,7 @@ class DegreeView(DiDegreeView):
     >>> DVnbunch = G.degree(nbunch=(1, 2))
     >>> assert(len(list(DVnbunch)) == 2)  # iteration over nbunch only
     """
+
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._succ[n]
@@ -453,6 +455,7 @@ class DegreeView(DiDegreeView):
 
 class OutDegreeView(DiDegreeView):
     """A DegreeView class to report out_degree for a DiGraph; See DegreeView"""
+
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._succ[n]
@@ -475,6 +478,7 @@ class OutDegreeView(DiDegreeView):
 
 class InDegreeView(DiDegreeView):
     """A DegreeView class to report in_degree for a DiGraph; See DegreeView"""
+
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._pred[n]
@@ -497,12 +501,13 @@ class InDegreeView(DiDegreeView):
 
 class MultiDegreeView(DiDegreeView):
     """A DegreeView class for undirected multigraphs; See DegreeView"""
+
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._succ[n]
         if weight is None:
             return sum(len(keys) for keys in nbrs.values()) + \
-                    (n in nbrs and len(nbrs[n]))
+                (n in nbrs and len(nbrs[n]))
         # edge weighted graph - degree is sum of nbr edge weights
         deg = sum(d.get(weight, 1) for key_dict in nbrs.values()
                   for d in key_dict.values())
@@ -530,6 +535,7 @@ class MultiDegreeView(DiDegreeView):
 
 class DiMultiDegreeView(DiDegreeView):
     """A DegreeView class for MultiDiGraph; See DegreeView"""
+
     def __getitem__(self, n):
         weight = self._weight
         succs = self._succ[n]
@@ -566,6 +572,7 @@ class DiMultiDegreeView(DiDegreeView):
 
 class InMultiDegreeView(DiDegreeView):
     """A DegreeView class for inward degree of MultiDiGraph; See DegreeView"""
+
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._pred[n]
@@ -592,6 +599,7 @@ class InMultiDegreeView(DiDegreeView):
 
 class OutMultiDegreeView(DiDegreeView):
     """A DegreeView class for outward degree of MultiDiGraph; See DegreeView"""
+
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._succ[n]
@@ -649,7 +657,7 @@ class OutEdgeDataView(object):
             self._report = lambda n, nbr, dd: (n, nbr)
         else:  # data is attribute name
             self._report = lambda n, nbr, dd: \
-                    (n, nbr, dd[data]) if data in dd else (n, nbr, default)
+                (n, nbr, dd[data]) if data in dd else (n, nbr, default)
 
     def __len__(self):
         return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
@@ -785,10 +793,10 @@ class OutMultiEdgeDataView(OutEdgeDataView):
         else:  # data is attribute name
             if keys is True:
                 self._report = lambda n, nbr, k, dd: (n, nbr, k, dd[data]) \
-                        if data in dd else (n, nbr, k, default)
+                    if data in dd else (n, nbr, k, default)
             else:
                 self._report = lambda n, nbr, k, dd: (n, nbr, dd[data]) \
-                        if data in dd else (n, nbr, default)
+                    if data in dd else (n, nbr, default)
 
     def __len__(self):
         return sum(1 for e in self)

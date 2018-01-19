@@ -27,10 +27,10 @@ class TestFromGraph6Bytes(TestCase):
 
     def test_from_graph6_bytes(self):
         data = b'DF{'
-        G=nx.from_graph6_bytes(data)
-        assert_nodes_equal(G.nodes(),[0, 1, 2, 3, 4])
+        G = nx.from_graph6_bytes(data)
+        assert_nodes_equal(G.nodes(), [0, 1, 2, 3, 4])
         assert_edges_equal(G.edges(),
-                     [(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
+                           [(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
 
     def test_read_equals_from_bytes(self):
         data = b'DF{'
@@ -100,7 +100,7 @@ class TestWriteGraph6(TestCase):
             # Strip the trailing newline.
             gstr = gstr.getvalue().rstrip()
             assert_equal(len(gstr),
-                         ((i-1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
+                         ((i - 1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
 
     def test_roundtrip(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:
@@ -118,11 +118,10 @@ class TestWriteGraph6(TestCase):
             f.seek(0)
             self.assertEqual(f.read(), b'>>graph6<<?\n')
 
-
     def test_relabeling(self):
-        G = nx.Graph([(0,1)])
+        G = nx.Graph([(0, 1)])
         assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')
-        G = nx.Graph([(1,2)])
+        G = nx.Graph([(1, 2)])
         assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')
-        G = nx.Graph([(1,42)])
+        G = nx.Graph([(1, 42)])
         assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')

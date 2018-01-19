@@ -73,7 +73,7 @@ def dfs_edges(G, source=None, depth_limit=None):
         nodes = [source]
     visited = set()
     if depth_limit is None:
-       depth_limit = len(G)
+        depth_limit = len(G)
     for start in nodes:
         if start in visited:
             continue
@@ -87,7 +87,7 @@ def dfs_edges(G, source=None, depth_limit=None):
                     yield parent, child
                     visited.add(child)
                     if depth_now > 1:
-                        stack.append((child, depth_now-1, iter(G[child])))
+                        stack.append((child, depth_now - 1, iter(G[child])))
             except StopIteration:
                 stack.pop()
 
@@ -392,7 +392,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
         nodes = [source]
     visited = set()
     if depth_limit is None:
-       depth_limit = len(G)
+        depth_limit = len(G)
     for start in nodes:
         if start in visited:
             continue
@@ -409,7 +409,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
                     yield parent, child, 'forward'
                     visited.add(child)
                     if depth_now > 1:
-                        stack.append((child, depth_now-1, iter(G[child])))
+                        stack.append((child, depth_now - 1, iter(G[child])))
             except StopIteration:
                 stack.pop()
                 if stack:

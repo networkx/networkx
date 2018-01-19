@@ -250,7 +250,7 @@ class TestEdgeDataView(object):
 
     def test_str(self):
         ev = self.eview(self.G)(data=True)
-        rep = str([(n, n+1, {}) for n in range(8)])
+        rep = str([(n, n + 1, {}) for n in range(8)])
         assert_equal(str(ev), rep)
 
     def test_repr(self):
@@ -444,7 +444,7 @@ class TestEdgeView(object):
 
     def test_str(self):
         ev = self.eview(self.G)
-        rep = str([(n, n+1) for n in range(8)])
+        rep = str([(n, n + 1) for n in range(8)])
         assert_equal(str(ev), rep)
 
     def test_repr(self):
@@ -587,7 +587,7 @@ class TestMultiEdgeView(TestEdgeView):
 
     def test_str(self):
         ev = self.eview(self.G)
-        replist = [(n, n+1, 0) for n in range(8)]
+        replist = [(n, n + 1, 0) for n in range(8)]
         replist.insert(2, (1, 2, 3))
         rep = str(replist)
         assert_equal(str(ev), rep)

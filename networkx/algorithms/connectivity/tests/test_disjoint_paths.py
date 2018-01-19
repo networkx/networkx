@@ -140,7 +140,7 @@ def test_petersen_disjoint_paths():
 
 
 def test_octahedral_disjoint_paths():
-    G=nx.octahedral_graph()
+    G = nx.octahedral_graph()
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
         # edge disjoint paths
@@ -154,7 +154,7 @@ def test_octahedral_disjoint_paths():
 
 
 def test_icosahedral_disjoint_paths():
-    G=nx.icosahedral_graph()
+    G = nx.icosahedral_graph()
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
         # edge disjoint paths
@@ -168,7 +168,7 @@ def test_icosahedral_disjoint_paths():
 
 
 def test_cutoff_disjoint_paths():
-    G=nx.icosahedral_graph()
+    G = nx.icosahedral_graph()
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
         for cutoff in [2, 4]:

@@ -24,7 +24,7 @@ class TestCycles:
         if len(b) != n:
             return False
         l = a + a
-        return any(l[i:i+n] == b for i in range(2 * n - n + 1))
+        return any(l[i:i + n] == b for i in range(2 * n - n + 1))
 
     def test_cycle_basis(self):
         G = self.G
@@ -42,7 +42,7 @@ class TestCycles:
         cy = networkx.cycle_basis(G, 9)
         sort_cy = sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5],
-                     ['A', 'B', 'C']])
+                               ['A', 'B', 'C']])
 
     @raises(nx.NetworkXNotImplemented)
     def test_cycle_basis(self):
@@ -100,18 +100,18 @@ class TestCycles:
         # see figure 1 in Johnson's paper
         # this graph has excactly 3k simple cycles
         G = nx.DiGraph()
-        for n in range(2, k+2):
+        for n in range(2, k + 2):
             G.add_edge(1, n)
-            G.add_edge(n, k+2)
-        G.add_edge(2*k+1, 1)
-        for n in range(k+2, 2*k+2):
-            G.add_edge(n, 2*k+2)
-            G.add_edge(n, n+1)
-        G.add_edge(2*k+3, k+2)
-        for n in range(2*k+3, 3*k+3):
-            G.add_edge(2*k+2, n)
-            G.add_edge(n, 3*k+3)
-        G.add_edge(3*k+3, 2*k+2)
+            G.add_edge(n, k + 2)
+        G.add_edge(2 * k + 1, 1)
+        for n in range(k + 2, 2 * k + 2):
+            G.add_edge(n, 2 * k + 2)
+            G.add_edge(n, n + 1)
+        G.add_edge(2 * k + 3, k + 2)
+        for n in range(2 * k + 3, 3 * k + 3):
+            G.add_edge(2 * k + 2, n)
+            G.add_edge(n, 3 * k + 3)
+        G.add_edge(3 * k + 3, 2 * k + 2)
         return G
 
     def test_worst_case_graph(self):
@@ -119,7 +119,7 @@ class TestCycles:
         for k in range(3, 10):
             G = self.worst_case_graph(k)
             l = len(list(nx.simple_cycles(G)))
-            assert_equal(l, 3*k)
+            assert_equal(l, 3 * k)
 
     def test_recursive_simple_and_not(self):
         for k in range(2, 10):

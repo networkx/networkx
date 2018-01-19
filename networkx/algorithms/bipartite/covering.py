@@ -54,7 +54,7 @@ def min_edge_cover(G, matching_algorithm=None):
     is bounded by the worst-case running time of the function
     ``matching_algorithm``.
     """
-    if G.order() == 0: # Special case for the empty graph
+    if G.order() == 0:  # Special case for the empty graph
         return set()
     if matching_algorithm is None:
         matching_algorithm = hopcroft_karp_matching

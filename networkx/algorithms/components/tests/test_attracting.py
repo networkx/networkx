@@ -51,7 +51,7 @@ class TestAttractingComponents(object):
         assert_false(nx.is_attracting_component(self.G4))
 
     def test_connected_raise(self):
-        G=nx.Graph()
+        G = nx.Graph()
         assert_raises(NetworkXNotImplemented, nx.attracting_components, G)
         assert_raises(NetworkXNotImplemented, nx.number_attracting_components, G)
         assert_raises(NetworkXNotImplemented, nx.is_attracting_component, G)

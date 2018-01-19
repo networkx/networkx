@@ -155,6 +155,7 @@ def large_clique_size(G):
 
     """
     degrees = G.degree
+
     def _clique_heuristic(G, U, size, best_size):
         if not U:
             return max(best_size, size)

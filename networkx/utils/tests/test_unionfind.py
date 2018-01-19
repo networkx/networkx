@@ -2,6 +2,7 @@ from nose.tools import *
 
 import networkx as nx
 
+
 def test_unionfind():
     # Fixed by: 2cddd5958689bdecdcd89b91ac9aaf6ce0e4f6b8
     # Previously (in 2.x), the UnionFind class could handle mixed types.

@@ -4,6 +4,7 @@ import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx import NetworkXNotImplemented
 
+
 class TestConnected:
 
     def setUp(self):
@@ -24,27 +25,26 @@ class TestConnected:
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (1, 3), (1, 4), (4, 2), (3, 4), (2, 3)])
-        C = [[2, 3, 4],[1]]
+        C = [[2, 3, 4], [1]]
         self.gc.append((G, C))
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 3), (3, 2), (2, 1)])
         C = [[1, 2, 3]]
-        self.gc.append((G,C))
+        self.gc.append((G, C))
 
         # Eppstein's tests
-        G = nx.DiGraph({0:[1], 1:[2, 3], 2:[4, 5], 3:[4, 5], 4:[6], 5:[], 6:[]})
-        C = [[0], [1], [2],[ 3], [4], [5], [6]]
-        self.gc.append((G,C))
+        G = nx.DiGraph({0: [1], 1: [2, 3], 2: [4, 5], 3: [4, 5], 4: [6], 5: [], 6: []})
+        C = [[0], [1], [2], [3], [4], [5], [6]]
+        self.gc.append((G, C))
 
-        G = nx.DiGraph({0:[1], 1:[2, 3, 4], 2:[0, 3], 3:[4], 4:[3]})
+        G = nx.DiGraph({0: [1], 1: [2, 3, 4], 2: [0, 3], 3: [4], 4: [3]})
         C = [[0, 1, 2], [3, 4]]
         self.gc.append((G, C))
 
         G = nx.DiGraph()
         C = []
         self.gc.append((G, C))
-
 
     def test_connected_components(self):
         cc = nx.connected_components
@@ -95,7 +95,7 @@ class TestConnected:
     def test_connected_raise(self):
         assert_raises(NetworkXNotImplemented, nx.connected_components, self.DG)
         assert_raises(NetworkXNotImplemented, nx.number_connected_components, self.DG)
-        assert_raises(NetworkXNotImplemented, nx.node_connected_component, self.DG,1)
+        assert_raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
         assert_raises(NetworkXNotImplemented, nx.is_connected, self.DG)
         assert_raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())
         # deprecated

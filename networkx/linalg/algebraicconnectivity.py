@@ -52,6 +52,7 @@ class _PCGSolver(object):
 
     Warning: There is no limit on number of iterations.
     """
+
     def __init__(self, A, M):
         self._A = A
         self._M = M or (lambda x: x.copy())
@@ -97,6 +98,7 @@ class _CholeskySolver(object):
     optional argument `tol` on solve method is ignored but included
     to match _PCGsolver API.
     """
+
     def __init__(self, A):
         if not self._cholesky:
             raise nx.NetworkXError('Cholesky solver unavailable.')
@@ -122,6 +124,7 @@ class _LUSolver(object):
     optional argument `tol` on solve method is ignored but included
     to match _PCGsolver API.
     """
+
     def __init__(self, A):
         if not self._splu:
             raise nx.NetworkXError('LU solver unavailable.')

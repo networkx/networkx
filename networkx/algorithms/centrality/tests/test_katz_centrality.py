@@ -241,7 +241,7 @@ class TestKatzCentralityDirected(object):
             0.272257430756461,
             0.4201989685435462,
             0.34229059218038554,
-            ]
+        ]
 
         H = nx.DiGraph(edges)
         self.H = G.reverse()
@@ -255,7 +255,7 @@ class TestKatzCentralityDirected(object):
             0.272257430756461,
             0.4201989685435462,
             0.34229059218038554,
-            ]
+        ]
 
     def test_katz_centrality_weighted(self):
         G = self.G
@@ -317,6 +317,6 @@ class TestKatzEigenvectorVKatz(object):
         G = nx.gnp_random_graph(10, 0.5, seed=1234)
         l = float(max(eigvals(nx.adjacency_matrix(G).todense())))
         e = nx.eigenvector_centrality_numpy(G)
-        k = nx.katz_centrality_numpy(G, 1.0/l)
+        k = nx.katz_centrality_numpy(G, 1.0 / l)
         for n in G:
             assert_almost_equal(e[n], k[n])

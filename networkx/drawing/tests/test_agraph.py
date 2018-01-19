@@ -24,7 +24,6 @@ class TestAGraph(object):
         G.graph['metal'] = 'bronze'
         return G
 
-
     def assert_equal(self, G1, G2):
         assert_nodes_equal(G1.nodes(), G2.nodes())
         assert_edges_equal(G1.edges(), G2.edges())
@@ -87,14 +86,13 @@ class TestAGraph(object):
         H = nx.nx_agraph.from_agraph(A)
         assert_equal(G.name, 'test')
 
-
     def test_graph_with_reserved_keywords(self):
         # test attribute/keyword clash case for #1582
         # node: n
         # edges: u,v
         G = nx.Graph()
         G = self.build_graph(G)
-        G.node['E']['n']='keyword'
-        G.edges[('A','B')]['u']='keyword'
-        G.edges[('A','B')]['v']='keyword'
+        G.node['E']['n'] = 'keyword'
+        G.edges[('A', 'B')]['u'] = 'keyword'
+        G.edges[('A', 'B')]['v'] = 'keyword'
         A = nx.nx_agraph.to_agraph(G)

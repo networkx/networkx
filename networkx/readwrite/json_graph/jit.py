@@ -39,6 +39,7 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['jit_graph', 'jit_data']
 
+
 def jit_graph(data, create_using=None):
     """Read a graph from JIT JSON.
 

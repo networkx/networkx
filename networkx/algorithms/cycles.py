@@ -26,7 +26,7 @@ __all__ = [
     'cycle_basis', 'simple_cycles',
     'recursive_simple_cycles', 'find_cycle',
     'minimum_cycle_basis',
-    ]
+]
 
 
 @not_implemented_for('directed')
@@ -521,7 +521,7 @@ def _min_cycle_basis(comp, weight):
     # *minimum* spanning tree. That is why we call the next function with
     # weight=None. Depending on implementation, it may be faster as well
     spanning_tree_edges = list(nx.minimum_spanning_edges(comp, weight=None,
-                               data=False))
+                                                         data=False))
     edges_excl = [frozenset(e) for e in comp.edges()
                   if e not in spanning_tree_edges]
     N = len(edges_excl)

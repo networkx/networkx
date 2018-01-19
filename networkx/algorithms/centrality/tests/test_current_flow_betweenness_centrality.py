@@ -55,7 +55,7 @@ class TestFlowBetweennessCentrality(object):
         """Betweenness centrality: P4 normalized"""
         G = nx.path_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
-        b_answer = {0: 0, 1: 2./3, 2: 2./3, 3: 0}
+        b_answer = {0: 0, 1: 2. / 3, 2: 2. / 3, 3: 0}
         for n in sorted(G):
             assert_almost_equal(b[n], b_answer[n])
 
@@ -106,7 +106,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         epsilon = 0.1
-        ba = approximate_cfbc(G, normalized=True, epsilon=0.5*epsilon)
+        ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
             assert_allclose(b[n], ba[n], atol=epsilon)
 
@@ -115,9 +115,9 @@ class TestApproximateFlowBetweennessCentrality(object):
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=False)
         epsilon = 0.1
-        ba = approximate_cfbc(G, normalized=False, epsilon=0.5*epsilon)
+        ba = approximate_cfbc(G, normalized=False, epsilon=0.5 * epsilon)
         for n in sorted(G):
-            assert_allclose(b[n], ba[n], atol=epsilon*len(G)**2)
+            assert_allclose(b[n], ba[n], atol=epsilon * len(G)**2)
 
     def test_star(self):
         "Approximate current-flow betweenness centrality: star"
@@ -125,7 +125,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         nx.add_star(G, ['a', 'b', 'c', 'd'])
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         epsilon = 0.1
-        ba = approximate_cfbc(G, normalized=True, epsilon=0.5*epsilon)
+        ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
             assert_allclose(b[n], ba[n], atol=epsilon)
 
@@ -134,7 +134,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         G = nx.grid_2d_graph(4, 4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         epsilon = 0.1
-        ba = approximate_cfbc(G, normalized=True, epsilon=0.5*epsilon)
+        ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
             assert_allclose(b[n], ba[n], atol=epsilon)
 
@@ -144,7 +144,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         epsilon = 0.1
         for solver in ['full', 'lu', 'cg']:
             b = approximate_cfbc(G, normalized=False, solver=solver,
-                                 epsilon=0.5*epsilon)
+                                 epsilon=0.5 * epsilon)
             b_answer = {0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
             for n in sorted(G):
                 assert_allclose(b[n], b_answer[n], atol=epsilon)

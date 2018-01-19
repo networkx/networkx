@@ -88,7 +88,7 @@ def test_connected_communities():
                          frozenset(['x', 'y']),
                          frozenset(['z'])])
     ground_truth2 = set([frozenset(['a', 'b', 'c', 'd', 'e',
-                         '1', '2', '3', '4', '5']),
+                                    '1', '2', '3', '4', '5']),
                          frozenset(['x', 'y']),
                          frozenset(['z'])])
     ground_truth = (ground_truth1, ground_truth2)

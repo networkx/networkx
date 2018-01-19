@@ -83,7 +83,8 @@ class TestGirvanNewman(object):
         G = nx.Graph()
         G.add_weighted_edges_from([(0, 1, 3), (1, 2, 2), (2, 3, 1)])
         # Let the most valuable edge be the one with the highest weight.
-        heaviest = lambda G: max(G.edges(data='weight'), key=itemgetter(2))[:2]
+
+        def heaviest(G): return max(G.edges(data='weight'), key=itemgetter(2))[:2]
         communities = list(girvan_newman(G, heaviest))
         assert_equal(len(communities), 3)
         validate_communities(communities[0], [{0}, {1, 2, 3}])

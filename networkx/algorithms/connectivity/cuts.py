@@ -12,7 +12,7 @@ from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
 from .utils import (build_auxiliary_node_connectivity,
-    build_auxiliary_edge_connectivity)
+                    build_auxiliary_edge_connectivity)
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -147,7 +147,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
     reachable, non_reachable = partition
-    # Any edge in the original graph linking the two sets in the 
+    # Any edge in the original graph linking the two sets in the
     # partition is part of the edge cutset
     cutset = set()
     for u, nbrs in ((n, G[n]) for n in reachable):
@@ -406,6 +406,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
         iter_func = itertools.permutations
+
         def neighbors(v):
             return itertools.chain.from_iterable([G.predecessors(v),
                                                   G.successors(v)])
@@ -565,17 +566,17 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         n = len(nodes)
         for i in range(n):
             try:
-                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i+1], **kwargs)
+                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i + 1], **kwargs)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
-            except IndexError: # Last node!
+            except IndexError:  # Last node!
                 this_cut = minimum_st_edge_cut(H, nodes[i], nodes[0], **kwargs)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
 
         return min_cut
 
-    else: # undirected
+    else:  # undirected
         # Based on algorithm 6 in [1]
         if not nx.is_connected(G):
             raise nx.NetworkXError('Input graph is not connected')

@@ -382,6 +382,7 @@ def contracted_nodes(G, u, v, self_loops=True):
         H.nodes[u]['contraction'] = {v: v_data}
     return H
 
+
 identified_nodes = contracted_nodes
 
 

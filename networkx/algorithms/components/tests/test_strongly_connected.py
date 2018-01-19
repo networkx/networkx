@@ -3,6 +3,7 @@ from nose.tools import *
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
+
 class TestStronglyConnected:
 
     def setUp(self):
@@ -24,7 +25,7 @@ class TestStronglyConnected:
         self.gc.append((G, C))
 
         # Eppstein's tests
-        G = nx.DiGraph({0: [1], 1:[2, 3], 2:[4, 5], 3:[4, 5], 4:[6], 5:[], 6:[]})
+        G = nx.DiGraph({0: [1], 1: [2, 3], 2: [4, 5], 3: [4, 5], 4: [6], 5: [], 6: []})
         C = {
             frozenset([0]),
             frozenset([1]),
@@ -36,7 +37,7 @@ class TestStronglyConnected:
         }
         self.gc.append((G, C))
 
-        G = nx.DiGraph({0:[1], 1:[2, 3, 4], 2:[0, 3], 3:[4], 4:[3]})
+        G = nx.DiGraph({0: [1], 1: [2, 3, 4], 2: [0, 3], 3: [4], 4: [3]})
         C = {frozenset([0, 1, 2]), frozenset([3, 4])}
         self.gc.append((G, C))
 
@@ -46,7 +47,7 @@ class TestStronglyConnected:
             assert_equal({frozenset(g) for g in scc(G)}, C)
 
     def test_tarjan_recursive(self):
-        scc=nx.strongly_connected_components_recursive
+        scc = nx.strongly_connected_components_recursive
         for G, C in self.gc:
             assert_equal({frozenset(g) for g in scc(G)}, C)
 
@@ -87,7 +88,7 @@ class TestStronglyConnected:
         # nodes
         assert_equal(sorted(cG.nodes()), [0, 1, 2, 3])
         # edges
-        mapping={}
+        mapping = {}
         for i, component in enumerate(scc):
             for n in component:
                 mapping[n] = i
@@ -136,7 +137,7 @@ class TestStronglyConnected:
             assert_equal(set(C[n]), cG.nodes[n]['members'])
 
     def test_null_graph(self):
-        G=nx.DiGraph()
+        G = nx.DiGraph()
         assert_equal(list(nx.strongly_connected_components(G)), [])
         assert_equal(list(nx.kosaraju_strongly_connected_components(G)), [])
         assert_equal(list(nx.strongly_connected_components_recursive(G)), [])
@@ -144,7 +145,7 @@ class TestStronglyConnected:
         assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
 
     def test_connected_raise(self):
-        G=nx.Graph()
+        G = nx.Graph()
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.kosaraju_strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components_recursive, G)

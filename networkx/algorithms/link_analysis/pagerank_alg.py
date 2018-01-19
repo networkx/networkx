@@ -137,7 +137,7 @@ def pagerank(G, alpha=0.85, personalization=None,
         dangling_weights = p
     else:
         s = float(sum(dangling.values()))
-        dangling_weights = dict((k, v/s) for k, v in dangling.items())
+        dangling_weights = dict((k, v / s) for k, v in dangling.items())
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
@@ -150,10 +150,10 @@ def pagerank(G, alpha=0.85, personalization=None,
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
                 x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
-            x[n] += danglesum * dangling_weights.get(n,0) + (1.0 - alpha) * p.get(n,0)
+            x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < N*tol:
+        if err < N * tol:
             return x
     raise nx.PowerIterationFailedConvergence(max_iter)
 
