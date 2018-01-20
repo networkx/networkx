@@ -1,13 +1,27 @@
+from nose import SkipTest
+from nose.tools import assert_true, assert_raises, assert_false
+
 import time
 from networkx import is_isomorphic
 from networkx.exception import NetworkXError
-from nose.tools import assert_true, assert_raises, assert_false
 from networkx.testing import assert_nodes_equal
 from networkx.generators.spectral_graph_forge import spectral_graph_forge
 from networkx.generators import karate_club_graph
 
 
 def test_spectral_graph_forge(ntimes=100):
+    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    scipy = 1
+
+    try:
+        import numpy
+    except ImportError:
+        raise SkipTest('NumPy not available.')
+    try:
+        import scipy
+    except ImportError:
+        raise SkipTest("SciPy not available")
+
     G = karate_club_graph()
 
     for _ in range(ntimes):
