@@ -40,9 +40,9 @@ def greedy_modularity_communities(G):
     >>> G = nx.karate_club_graph()
     >>> c = greedy_modularity_communities(G)
     >>> list(c)
-    [frozenset({8, 9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33}),
-     frozenset({1, 2, 3, 7, 12, 13, 17, 19, 21}),
-     frozenset({0, 4, 5, 6, 10, 11, 16})]
+    [frozenset([8, 9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]),
+     frozenset([1, 2, 3, 7, 12, 13, 17, 19, 21]),
+     frozenset([0, 4, 5, 6, 10, 11, 16])]
      
      References
     ----------
