@@ -113,11 +113,20 @@ def spectral_clustering(G, k):
     G : Graph
        A NetworkX Graph or DiGraph
 
+    k : int
+       The number of desired output clusters.
+
     Returns
     -------
     clustering : NumPy array
       The spectral clustering
 
+    Notes
+    -----
+    >>> G = nx.karate_club_graph()
+    >>> nx.spectral_clustering(G, 2)
+    array([1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
     References
     ----------
