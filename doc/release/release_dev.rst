@@ -1,7 +1,7 @@
-Announcement: NetworkX 2.X
+Announcement: NetworkX 2.1
 ==========================
 
-We're happy to announce the release of NetworkX 2.X!
+We're happy to announce the release of NetworkX 2.1!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -14,8 +14,8 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of X of work with over X pull requests by
-X contributors. Highlights include:
+This release is the result of four months of work with 74 pull requests by
+37 contributors. Highlights include:
 
 
 Improvements
@@ -69,10 +69,119 @@ Deprecations
 Contributors to this release
 ----------------------------
 
-<output of contribs.py>
+- Jack Amadeo
+- Boskovits
+- Daniel Bradburn
+- David Bradway
+- Ariel Chinn
+- Jon Crall
+- Rodrigo Dorantes-Gilardi
+- Bradley Ellert
+- Adam Erispaha
+- Ioannis Filippidis
+- ForFer
+- Louis Gatin
+- Aric Hagberg
+- Harry
+- Huston Hedinger
+- Charles Tapley Hoyt
+- James Lamb
+- Sanghack Lee
+- MD
+- Cole MacLean
+- Marco
+- Jarrod Millman
+- Sanggyu Nam
+- Viraj Parimi
+- Dima Pasechnik
+- Richard Penney
+- Naresh Peshwe
+- Zachary Sailer
+- Dan Schult
+- Jordi Torrents
+- John Wegis
+- aparamon
+- aweltsch
+- gfyoung
+- md0000
+- mddddd
+- talhum
 
 
 Pull requests merged in this release
 ------------------------------------
 
-<output of contribs.py>
+- Update release notes (#2838)
+- Update copyright (#2837)
+- Add a large clique size heuristic function (#2830)
+- Remove automatic processing of G.name attribute (#2829)
+- Add rooted product function (#2825)
+- Label Propagation Community Detection (#2821)
+- change variable names to avoid kwargs clobber (#2824)
+- Minimum cycle basis (#2823)
+- Deprecate component_subgraphs functions (#2819)
+- Temporarily disable sphinx doctests (#2818)
+- Adjust docs for graph class edge attrib assignment (#2817)
+- Add directed graphs support for jit_graph reading (#2753)
+- Arrows as a plot example. (#2801)
+- Fix bug in len(edges) for self-loops (#2816)
+- MRG: Remove ``to_pandas_dataframe`` and ``from_pandas_dataframe`` (#2811)
+- Fix Pydot tests so works with new version 1.2.4 (#2815)
+- MRG: Remove ``bellman_ford`` (#2812)
+- Combine generator modules and tweak docs (#2814)
+- Legacy array printing for NumPy 1.14+ (#2810)
+- Fix rare structurally forbidden mappings bug. (#2798)
+- Digraph Arrows to fix #2757 (#2760)
+- use a generic Integral type for parameters check (#2800)
+- Control node-border color in draw_networkx_nodes (#2788)
+- Add seed keyword argument to random_layout and spring_layout (#2766)
+- Add Mycielski Operator (#2785)
+- Adds prefix_tree, dag_to_branching, and example. (#2784)
+- Add inverse_line_graph generator from #2241 (#2782)
+- Add docs for steiner_tree and metric_closure (#2783)
+- Steiner tree and metric closure. (#2252)
+- Correct docstring for weight parameter (#2781)
+- Switch to xcode 7.3 for osx_image in .travis.yml (#2780)
+- Change how sparse6 tests filenames (#2779)
+- Add flow based node and edge disjoint paths. (#2063)
+- Update geometric networks with new models (#2498)
+- [WIP] Graph edit distance 2361 (#2729)
+- max_weight_matching returns set of edges (#2774)
+- Avoid keyword and attribute clash (#2775)
+- Add threshold option to spring layout (#2776)
+- Fix bug in expected_degree_graph generator (#2773)
+- Add support for incomplete partitions in quotient_graph. (#2771)
+- Fix SOURCE_DATE_EPOCH ignored bug (#2735) (#2736)
+- Makes write_graph6 less memory-intensive. (#2299)
+- all_simple_paths should not return cycles. Fix issue #2762 (#2770)
+- Fix typo in write_gml and add test (#2769)
+- Fix bug and add checks for non-convergent fiedler_vector (#2681)
+- Dictionary comprehensions from #1700 merged conflicts (#2768)
+- Fix 2763: Typo `furether` in networkx tutorial documentation (#2764)
+- Fix #2726: ensure add_path to add the first node (#2759)
+- a minor correction in docs (#2751)
+- Speedups for subgraph and copy methods (#2744)
+- fix typo in tutorial (#2746)
+- Expand documentation regarding strong connectivity (#2732)
+- Correct when we raise NetworkXNotImplemented (#2731)
+- removed list conversion from _triangles_and_degree_iter (#2725)
+- nx_shp fixes (#2721)
+- removed reference to create_using from union docs (#2722)
+- Copy graph in transitive closure algorithm. (#2718)
+- Fix dag_longest_path bug (#2703)
+- Fix for inter_community_edges (#2713)
+- Fix shortest_simple_paths. Issue #2427 (#2712)
+- Update migration_guide_from_1.x_to_2.0.rst (#2694)
+- mention `doc.txt` in `requirements/README.md` (#2699)
+- docs(centrality/dispersion): updating contributor email address (#2698)
+- Fixes bug #2503 by removing arrow labels (#2696)
+- Add example of spectral embedding of the grid graph (#2690)
+- Fix create_using of nx.from_pandas_adjacency() (#2693)
+- Added function for finding a k-edge-augmentation (#2572)
+- rm arg `strict` from function `networkx.drawing.nx_pydot.to_pydot` (#2672)
+- Fixed problem parsing graphml with nodes in groups (#2644)
+- Remove unused imports (#2653)
+- Improve subgraph node iteration (#2687)
+- Added Kamada-Kawai functions to Sphinx documentation (#2680)
+- unpacked dict to provide kwargs when creating nodes from shapefiles (#2678)
+- Fix typo in documentation (#2677)
