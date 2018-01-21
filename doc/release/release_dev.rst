@@ -17,10 +17,38 @@ Highlights
 This release is the result of four months of work with 74 pull requests by
 37 contributors. Highlights include:
 
+  - Arrows for drawing DiGraph edges are vastly improved!
+    And an example to show them.
+
+  - More than 12 new functions for graph generation, manipulation and/or
+    new graph algorithms.
+
+    - Add a large clique size heuristic function (#2830)
+    - Add rooted product function (#2825)
+    - Label Propagation Community Detection (#2821)
+    - Minimum cycle basis (#2823)
+    - Add Mycielski Operator (#2785)
+    - Adds prefix_tree, dag_to_branching, and example. (#2784)
+    - Add inverse_line_graph generator from #2241 (#2782)
+    - Steiner tree and metric closure. (#2252)
+    - Add flow based node and edge disjoint paths. (#2063)
+    - Update geometric networks with new models (#2498)
+    - Graph edit distance (#2729)
+    - Added function for finding a k-edge-augmentation (#2572)
+
+  - G.name is no longer processed by graph operators. It remains as a
+    property mechanism to access ``G.graph['name']`` but the user is in
+    charge of updating or changing it for copies, subgraphs, unions and
+    other graph operations.
 
 Improvements
 ------------
 
+  - Many bug fixes, documentation changes.
+  - Speed improvements especially for subgraphs.
+  - Changed input variable names for functions using ``**kwds``
+    to avoid name collisions -- especially ``add_node``
+  - New examples for arrows and spectral embedding of the grid graph.
 
 API Changes
 -----------
@@ -61,10 +89,29 @@ API Changes
   ``to_pandas_adjacency``, ``from_pandas_adjacency``, ``to_pandas_edgelist``,
   or ``from_pandas_edgelist``.
 
+* [`#2766 <https://github.com/networkx/networkx/pull/2766>`_]
+  Add seed keyword argument to random_layout and spring_layout
+
+* [`#2776 <https://github.com/networkx/networkx/pull/2776>`_]
+  Add threshold option to spring layout
+
+* [`#2774 <https://github.com/networkx/networkx/pull/2774>`_]
+  max_weight_matching returns set of edges
+
+* [`#2753 <https://github.com/networkx/networkx/pull/2753>`_]
+  Add directed graphs support for jit_graph reading
+
+* [`#2788 <https://github.com/networkx/networkx/pull/2788>`_]
+  Control node-border color in draw_networkx_nodes
 
 Deprecations
 ------------
 
+* [`#2819 <https://github.com/networkx/networkx/pull/2819>`_]
+  Deprecate ``connected_component_subgraphs``, ``biconnected_component_subgraphs``,
+  ``attracting_component_subgraphs``, ``strongly_connected_component_subgraphs``,
+  ``weakly_connected_component_subgraphs``.
+  Instead use: ``[G.subgraph(c) for c in *_components]``
 
 Contributors to this release
 ----------------------------
