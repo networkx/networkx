@@ -54,8 +54,9 @@ API Changes
 -----------
 
 * [`#2498 <https://github.com/networkx/networkx/pull/2498>`_]
-  Starting in NetworkX 2.1 the parameter ``alpha`` is deprecated and replaced
-  with the customizable ``p_dist`` function parameter, which defaults to r^-2
+  In ``geographical_threshold_graph``, starting in NetworkX 2.1 the parameter
+  ``alpha`` is deprecated and replaced with the customizable ``p_dist``
+  function parameter, which defaults to r^-2
   if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX
   versions, a custom function needs to be defined and passed as the ``p_dist``
   parameter. For example, if the parameter ``alpha`` = 2 was used in NetworkX 2.0,
