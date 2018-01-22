@@ -14,7 +14,7 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of four months of work with 74 pull requests by
+This release is the result of four months of work with 75 pull requests by
 37 contributors. Highlights include:
 
   - Arrows for drawing DiGraph edges are vastly improved!
@@ -159,6 +159,7 @@ Contributors to this release
 Pull requests merged in this release
 ------------------------------------
 
+- Update Release Notes for v2.1 (#2839)
 - Update release notes (#2838)
 - Update copyright (#2837)
 - Add a large clique size heuristic function (#2830)
