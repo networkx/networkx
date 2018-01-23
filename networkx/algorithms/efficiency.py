@@ -147,4 +147,4 @@ def local_efficiency(G):
 
     """
     # TODO This summation can be trivially parallelized.
-    return sum(global_efficiency(nx.ego_graph(G, v)) for v in G) / len(G)
+    return sum(global_efficiency(nx.ego_graph(G, v, center = False)) for v in G) / len(G)
