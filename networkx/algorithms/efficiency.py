@@ -147,5 +147,5 @@ def local_efficiency(G):
 
     """
     # TODO This summation can be trivially parallelized.
-    efficiency_list = [global_efficiency(G.subgraph(G[v])) for v in G]
+    efficiency_list = (global_efficiency(G.subgraph(G[v])) for v in G)
     return sum(efficiency_list) / len(G)
