@@ -53,15 +53,17 @@ class TestEfficiency:
 
     def test_local_efficiency_complete_graph(self):
         """
-        Test that the local efficiency for a complete graph should be one.
+        Test that the local efficiency for a complete graph with at least 3
+        nodes should be one. For a graph with only 2 nodes, the induced
+        subgraph has no edges.
         """
-        for n in range(2, 10):
+        for n in range(3, 10):
             G = nx.complete_graph(n)
             assert_equal(nx.local_efficiency(G), 1)
 
     def test_using_ego_graph(self):
         """
         Test that the ego graph is used when computing local efficiency.
-        For more information, see GitHub issue #2233.
+        For more information, see GitHub issue #2710.
         """
-        assert_equal(nx.local_efficiency(self.G3), 23 / 24)
+        assert_equal(nx.local_efficiency(self.G3), 7 / 12)
