@@ -49,9 +49,9 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     >>> G.node[0][label_name] = 'A'
     >>> G.node[3][label_name] = 'B'
     >>> G.nodes(data=True)
-    [(0, {'label': 'A'}), (1, {}), (2, {}), (3, {'label': 'B'})]
+    NodeDataView([(0, {'label': 'A'}), (1, {}), (2, {}), (3, {'label': 'B'})])
     >>> G.edges()
-    [(0, 1), (1, 2), (2, 3)]
+    EdgeView([(0, 1), (1, 2), (2, 3)])
     >>> predicted = node_classification.harmonic_function(G, label_name=label_name)
     >>> predicted
     ['A', 'A', 'B', 'B']

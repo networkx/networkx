@@ -8,7 +8,7 @@ For example:
   >>> from networkx.algorithms import node_classification
   >>> G = nx.path_graph(4)
   >>> G.edges()
-  [(0, 1), (1, 2), (2, 3)]
+  EdgeView([(0, 1), (1, 2), (2, 3)])
   >>> G.node[0]['label'] = 'A'
   >>> G.node[3]['label'] = 'B'
   >>> node_classification.harmonic_function(G, label_name='label')
@@ -16,5 +16,5 @@ For example:
 
 """
 
-from networkx.algorithms.node_classification.harmonic_function import *
-from networkx.algorithms.node_classification.local_and_global_consistency import *
+from networkx.algorithms.node_classification.hmn import *
+from networkx.algorithms.node_classification.lgc import *
