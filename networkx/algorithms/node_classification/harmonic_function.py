@@ -134,3 +134,16 @@ def _build_base_matrix(X, labels, n_classes):
     B = np.zeros((n_samples, n_classes))
     B[labels[:, 0], labels[:, 1]] = 1
     return B
+
+
+def setup_module(module):
+    """Fixture for nose tests."""
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
