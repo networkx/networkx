@@ -11,10 +11,8 @@ Semi-supervised learning using gaussian fields and harmonic functions.
 In ICML (Vol. 3, pp. 912-919).
 """
 
-import numpy as np
-import networkx as nx
 
-from scipy import sparse
+import networkx as nx
 
 from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import _get_label_info, _init_label_matrix, _propagate, _predict
@@ -64,6 +62,54 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     Semi-supervised learning using gaussian fields and harmonic functions.
     In ICML (Vol. 3, pp. 912-919).
     """
+    import numpy as np
+    from scipy import sparse
+
+    def _build_propagation_matrix(X, labels):
+        """Build propagation matrix of Harmonic function
+
+        Parameters
+        ----------
+        X : scipy sparse matrix, shape = [n_samples, n_samples]
+          Adjacency matrix
+        labels : array, shape = [n_samples, 2]
+          Array of pairs of node id and label id
+
+        Returns
+        ----------
+        P : scipy sparse matrix, shape = [n_samples, n_samples]
+          Propagation matrix
+
+        """
+        degrees = X.sum(axis=0).A[0]
+        degrees[degrees == 0] = 1  # Avoid division by 0
+        D = sparse.diags((1.0 / degrees), offsets=0)
+        P = D.dot(X).tolil()
+        P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
+        return P
+
+    def _build_base_matrix(X, labels, n_classes):
+        """Build base matrix of Harmonic function
+
+        Parameters
+        ----------
+        X : scipy sparse matrix, shape = [n_samples, n_samples]
+          Adjacency matrix
+        labels : array, shape = [n_samples, 2]
+          Array of pairs of node id and label id
+        n_classes : integer
+          The number of classes (distinct labels) on the input graph
+
+        Returns
+        ----------
+        B : array, shape = [n_samples, n_classes]
+          Base matrix
+        """
+        n_samples = X.shape[0]
+        B = np.zeros((n_samples, n_classes))
+        B[labels[:, 0], labels[:, 1]] = 1
+        return B
+
     X = nx.to_scipy_sparse_matrix(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
 
@@ -87,53 +133,6 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     predicted = _predict(F, label_dict)
 
     return predicted
-
-
-def _build_propagation_matrix(X, labels):
-    """Build propagation matrix of Harmonic function
-
-    Parameters
-    ----------
-    X : scipy sparse matrix, shape = [n_samples, n_samples]
-      Adjacency matrix
-    labels : array, shape = [n_samples, 2]
-      Array of pairs of node id and label id
-
-    Returns
-    ----------
-    P : scipy sparse matrix, shape = [n_samples, n_samples]
-      Propagation matrix
-
-    """
-    degrees = X.sum(axis=0).A[0]
-    degrees[degrees == 0] = 1  # Avoid division by 0
-    D = sparse.diags((1.0 / degrees), offsets=0)
-    P = D.dot(X).tolil()
-    P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
-    return P
-
-
-def _build_base_matrix(X, labels, n_classes):
-    """Build base matrix of Harmonic function
-
-    Parameters
-    ----------
-    X : scipy sparse matrix, shape = [n_samples, n_samples]
-      Adjacency matrix
-    labels : array, shape = [n_samples, 2]
-      Array of pairs of node id and label id
-    n_classes : integer
-      The number of classes (distinct labels) on the input graph
-
-    Returns
-    ----------
-    B : array, shape = [n_samples, n_classes]
-      Base matrix
-    """
-    n_samples = X.shape[0]
-    B = np.zeros((n_samples, n_classes))
-    B[labels[:, 0], labels[:, 1]] = 1
-    return B
 
 
 def setup_module(module):
