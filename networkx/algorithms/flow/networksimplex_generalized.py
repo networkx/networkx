@@ -117,7 +117,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             S.append(p)
             T.append(-1)
 
-    # TODO: check if Mu positive values should multiply here
+    # DONE: check if Mu positive values should multiply here
     mu_product = 1
     for i in [mu for mu in Mu if mu > 1]:
         mu_product *= i
@@ -139,15 +139,16 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     prev = list(range(-1, n))                    # previous nodes in depth-first thread
     last = list(chain(range(n), [n - 1]))        # last descendants in depth-first thread
 
+    print('######################################################')
     print('# Tree Variables #####################################')
-    print('# number of edges', e)
-    print('# edge flows', x)
-    print('# node potentials', pi)
-    print('# parent nodes', parent)
-    print('# edges to parents', edge)
-    print('# subtree sizes', size)
-    print('# next nodes in dfs thread', next)
-    print('# previous nodes in dfs thread', prev)
+    print('# number of edges\t\t', e)
+    print('# edge flows\t\t\t', x)
+    print('# node potentials\t\t', pi)
+    print('# parent nodes\t\t\t', parent)
+    print('# edges to parents\t\t', edge)
+    print('# subtree sizes\t\t\t', size)
+    print('# next nodes in dfs thread\t', next)
+    print('# previous nodes in dfs thread\t', prev)
     print('# last descendants in dfs thread', last)
 
     ###########################################################################
@@ -382,29 +383,31 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         for q in trace_subtree(q):
             pi[q] += d
 
-    print('# Data structures #########################################')
-    print('nodes: ', N)
-    print('node indices: ', I)
-    print('node demands: ', D)
-    print('edge sources: ', S)
-    print('edge targets: ', T)
-    if multigraph: 
-        print('edge keys: ', K)
-    print('edge indices: ', E)
-    print('edge capacities: ', U)
-    print('edge weights: ', C)
-    print('edge multipliers: ', Mu)
+    print('######################################################')
+    print('# Data structures ####################################')
+    print('# nodes\t\t\t', N)
+    print('# node indices\t\t', I)
+    print('# node demands\t\t', D)
+    print('# edge sources\t\t', S)
+    print('# edge targets\t\t', T)
+    if multigraph:
+        print('# edge keys\t\t', K)
+    print('# edge indices\t\t', E)
+    print('# edge capacities\t', U)
+    print('# edge weights\t\t', C)
+    print('# edge multipliers\t', Mu)
 
     # Pivot loop
     for i, p, q in find_entering_edges():
+        print('######################################################')
         print('# Pivot Loop #########################################')
-        print(i, p, q)
+        print('# entering edges\t', i, p, q)
         Wn, We = find_cycle(i, p, q)
-        print(Wn, We)
+        print('# find cycle\t\t', Wn, We)
         j, s, t = find_leaving_edge(Wn, We)
-        print(j, s, t)
+        print('# leaving edge\t\t', j, s, t)
         augment_flow(Wn, We, residual_capacity(j, s))
-        print(Wn, We)
+        print('# augment flow\t\t', Wn, We)
         if i != j:  # Do nothing more if the entering edge is the same as the
                     # the leaving edge.
             if parent[t] != s:
@@ -417,7 +420,6 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             make_root(q)
             add_edge(i, p, q)
             update_potentials(i, p, q)
-        print('######################################################')
 
     ###########################################################################
     # Infeasibility and unboundedness detection
