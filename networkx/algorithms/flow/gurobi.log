@@ -1,0 +1,299 @@
+
+Gurobi 7.5.1 (win64, Python) logging started 01/27/18 10:55:29
+
+Academic license - for non-commercial use only
+Warning: variables 5 and 9 have the same name "edge_C_to_F"
+Warning: to let Gurobi read it back, use rlp format
+Warning: variables 1 and 7 have the same name "edge_A_to_A"
+Warning: to let Gurobi read it back, use rlp format
+Warning: variables 1 and 3 have the same name "edge_F_to_D"
+Warning: to let Gurobi read it back, use rlp format
+Warning: variables 0 and 3 have the same name "edge_B_to_E"
+Warning: to let Gurobi read it back, use rlp format
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [3e+00, 6e+00]
+  RHS range        [1e+00, 3e+00]
+Presolve removed 1 rows and 0 columns
+Presolve time: 0.25s
+
+Solved in 0 iterations and 0.25 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [3e+00, 6e+00]
+  RHS range        [1e+00, 3e+00]
+Presolve removed 2 rows and 0 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.04 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [3e+00, 6e+00]
+  RHS range        [1e+00, 2e+00]
+Presolve removed 2 rows and 0 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.03 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [3e+00, 6e+00]
+  RHS range        [1e+00, 2e+00]
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.03 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [3e+00, 6e+00]
+  RHS range        [1e+00, 3e+00]
+Presolve removed 2 rows and 0 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.04 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [3e+00, 6e+00]
+  RHS range        [1e+00, 3e+00]
+Presolve removed 2 rows and 0 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.03 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [2e+00, 3e+00]
+Presolve removed 0 rows and 11 columns
+Presolve time: 0.10s
+
+Solved in 0 iterations and 0.10 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [2e+00, 3e+00]
+Presolve removed 0 rows and 11 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.03 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [9e+00, 1e+01]
+  RHS range        [1e+00, 3e+00]
+Presolve removed 0 rows and 11 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.04 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [9e+00, 1e+01]
+  RHS range        [3e+00, 3e+01]
+Presolve removed 2 rows and 0 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.04 seconds
+Infeasible model
+
+Gurobi 7.5.1 (win64, Python) logging started 01/27/18 12:14:37
+
+Academic license - for non-commercial use only
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [8e+00, 1e+01]
+  RHS range        [1e+00, 3e+01]
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.04 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 0 nonzeros
+Coefficient statistics:
+  Matrix range     [0e+00, 0e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 5 rows and 0 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.04 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 3e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 6 rows and 9 columns
+Presolve time: 0.17s
+Presolved: 1 rows, 2 columns, 2 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    0.0000000e+00   1.250000e-01   0.000000e+00      0s
+       1    4.6596514e-01   0.000000e+00   0.000000e+00      0s
+
+Solved in 1 iterations and 0.30 seconds
+Optimal objective  4.659651386e-01
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [6e-01, 2e+00]
+  Objective range  [1e+00, 3e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 5 rows and 8 columns
+Presolve time: 0.04s
+Presolved: 2 rows, 3 columns, 4 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    0.0000000e+00   1.250000e-01   0.000000e+00      0s
+Extra one simplex iteration after uncrush
+       3    1.8113102e+00   0.000000e+00   0.000000e+00      0s
+
+Solved in 3 iterations and 0.10 seconds
+Optimal objective  1.811310203e+00
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [2e-01, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 5 rows and 8 columns
+Presolve time: 0.04s
+Presolved: 2 rows, 3 columns, 4 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    0.0000000e+00   1.000000e+00   0.000000e+00      0s
+Extra 2 simplex iterations after uncrush
+       4    6.2307955e+00   0.000000e+00   0.000000e+00      0s
+
+Solved in 4 iterations and 0.07 seconds
+Optimal objective  6.230795535e+00
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [2e-01, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [3e+00, 3e+01]
+Presolve removed 3 rows and 6 columns
+Presolve time: 0.03s
+
+Solved in 0 iterations and 0.04 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [1e-01, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [1e+00, 2e+00]
+Presolve removed 7 rows and 11 columns
+Presolve time: 0.05s
+Presolve: All rows and columns removed
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    0.0000000e+00   0.000000e+00   0.000000e+00      0s
+
+Solved in 0 iterations and 0.07 seconds
+Optimal objective  0.000000000e+00
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [4e-01, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [1e+00, 3e+00]
+Presolve time: 0.03s
+Presolved: 7 rows, 11 columns, 22 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    0.0000000e+00   1.000000e+00   0.000000e+00      0s
+       2    5.2380792e+00   0.000000e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.06 seconds
+Optimal objective  5.238079221e+00
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [4e-01, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [1e+00, 3e+00]
+Presolve removed 3 rows and 3 columns
+Presolve time: 0.04s
+Presolved: 4 rows, 8 columns, 16 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    2.5576128e+01   9.788589e-01   0.000000e+00      0s
+       6    8.1367638e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 6 iterations and 0.07 seconds
+Optimal objective  8.136763753e+01
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [4e-01, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [8e+00, 1e+01]
+  RHS range        [2e+00, 2e+00]
+Presolve removed 4 rows and 5 columns
+Presolve time: 0.04s
+Presolved: 3 rows, 6 columns, 12 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.4636121e+01   1.806955e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.06 seconds
+Infeasible model
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [6e-01, 2e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [7e+00, 1e+01]
+  RHS range        [2e+00, 2e+00]
+Presolve removed 4 rows and 5 columns
+Presolve time: 0.03s
+Presolved: 3 rows, 6 columns, 12 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.3871404e+01   9.771325e-02   0.000000e+00      0s
+       4    5.0347023e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 4 iterations and 0.06 seconds
+Optimal objective  5.034702281e+01
+Optimize a model with 7 rows, 11 columns and 22 nonzeros
+Coefficient statistics:
+  Matrix range     [8e-01, 2e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [4e+00, 5e+00]
+  RHS range        [2e+00, 2e+00]
+Presolve removed 4 rows and 5 columns
+Presolve time: 0.03s
+Presolved: 3 rows, 6 columns, 12 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    8.2190000e+00   1.124000e-01   0.000000e+00      0s
+       4    1.3714286e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 4 iterations and 0.06 seconds
+Optimal objective  1.371428571e+01
