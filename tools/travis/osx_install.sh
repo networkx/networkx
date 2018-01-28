@@ -23,7 +23,7 @@ fi
 
 if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
     if [[ "${OSX_PKG_ENV}" == miniconda ]]; then
-        conda install graphviz
+        conda install graphviz=2.38
         export PKG_CONFIG_PATH=/Users/travis/miniconda/envs/testenv/lib/pkgconfig
     else
         brew install graphviz
