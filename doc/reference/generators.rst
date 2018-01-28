@@ -189,6 +189,7 @@ Line Graph
    :toctree: generated/
 
    line_graph
+   inverse_line_graph
 
 
 Ego Graph
@@ -249,11 +250,12 @@ Community
 
 Trees
 -----
-.. automodule:: networkx.generators.tree
+.. automodule:: networkx.generators.trees
 .. autosummary::
    :toctree: generated/
 
    random_tree
+   prefix_tree
 
 
 Non Isomorphic Trees
@@ -283,3 +285,12 @@ Joint Degree Sequence
 
    is_valid_joint_degree
    joint_degree_graph
+
+Mycielski
+---------
+.. automodule:: networkx.generators.mycielski
+.. autosummary::
+   :toctree: generated/
+
+   mycielskian
+   mycielski_graph

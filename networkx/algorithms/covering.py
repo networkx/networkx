@@ -1,4 +1,4 @@
-#    Copyright 2016-2017 NetworkX developers.
+#    Copyright 2016-2018 NetworkX developers.
 #    Copyright (C) 2016 by
 #    Nishant Nikhil <nishantiam@gmail.com>
 #    All rights reserved.
@@ -73,7 +73,7 @@ def min_edge_cover(G, matching_algorithm=None):
     maximum_matching = matching_algorithm(G)
     # ``min_cover`` is superset of ``maximum_matching``
     try:
-        min_cover = set(maximum_matching.items()) # bipartite matching case returns dict
+        min_cover = set(maximum_matching.items())  # bipartite matching case returns dict
     except AttributeError:
         min_cover = maximum_matching
     # iterate for uncovered nodes

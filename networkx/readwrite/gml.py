@@ -1,5 +1,5 @@
 # encoding: utf-8
-#    Copyright (C) 2008-2017 by
+#    Copyright (C) 2008-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -78,7 +78,7 @@ try:
     literal_eval(r"u'\u4444'")
 except SyntaxError:
     # Remove 'u' prefixes in unicode literals in Python 3
-    rtp_fix_unicode = lambda s: s[1:]
+    def rtp_fix_unicode(s): return s[1:]
 else:
     rtp_fix_unicode = None
 
@@ -308,7 +308,7 @@ def parse_gml_lines(lines, label, destringizer):
             r'\[',            # dict start
             r'\]',            # dict end
             r'#.*$|\s+'       # comments and whitespaces
-            ]
+        ]
         tokens = re.compile(
             '|'.join('(' + pattern + ')' for pattern in patterns))
         lineno = 0
@@ -688,7 +688,7 @@ def generate_gml(G, stringizer=None):
                         yield line
                 yield indent + ']'
             elif isinstance(value, (list, tuple)) and key != 'label' \
-                            and value and not in_list:
+                    and value and not in_list:
                 next_indent = indent + '  '
                 for val in value:
                     for line in stringize(key, val, (), next_indent, True):

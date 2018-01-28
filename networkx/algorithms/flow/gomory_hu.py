@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # gomory_hu.py - function for computing Gomory Hu trees
 #
-# Copyright 2017 NetworkX developers.
+# Copyright 2017-2018 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -30,7 +30,7 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
     A Gomory-Hu tree of an undirected graph with capacities is a
     weighted tree that represents the minimum s-t cuts for all s-t
     pairs in the graph.
-    
+
     It only requires `n-1` minimum cut computations instead of the
     obvious `n(n-1)/2`. The tree represents all s-t cuts as the
     minimum cut value among any pair of nodes is the minimum edge
@@ -44,7 +44,7 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
     cut.
 
     See Examples section below for details.
-   
+
     Parameters
     ----------
     G : NetworkX graph
@@ -143,7 +143,7 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
     if flow_func is None:
         flow_func = default_flow_func
 
-    if len(G) == 0: # empty graph
+    if len(G) == 0:  # empty graph
         msg = 'Empty Graph does not have a Gomory-Hu tree representation'
         raise nx.NetworkXError(msg)
 
@@ -164,8 +164,8 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
         target = tree[source]
         # compute minimum cut
         cut_value, partition = nx.minimum_cut(G, source, target,
-                                capacity=capacity, flow_func=flow_func,
-                                residual=R)
+                                              capacity=capacity, flow_func=flow_func,
+                                              residual=R)
         labels[(source, target)] = cut_value
         # Update the tree
         # Source will always be in partition[0] and target in partition[1]

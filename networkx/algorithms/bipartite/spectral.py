@@ -4,13 +4,14 @@ Spectral bipartivity measure.
 """
 import networkx as nx
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 __all__ = ['spectral_bipartivity']
+
 
 def spectral_bipartivity(G, nodes=None, weight='weight'):
     """Returns the spectral bipartivity.
@@ -31,7 +32,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
        A single number if the keyword nodes is not specified, or
        a dictionary keyed by node with the spectral bipartivity contribution
        of that node as the value.
-       
+
     Examples
     --------
     >>> from networkx.algorithms import bipartite
@@ -58,7 +59,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
     except ImportError:
         raise ImportError('spectral_bipartivity() requires SciPy: ',
                           'http://scipy.org/')
-    nodelist = list(G) # ordering of nodes in matrix
+    nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G, nodelist, weight=weight)
     expA = scipy.linalg.expm(A)
     expmA = scipy.linalg.expm(-A)
@@ -74,6 +75,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
             i = index[n]
             sb[n] = coshA[i, i] / expA[i, i]
         return sb
+
 
 def setup_module(module):
     """Fixture for nose tests."""

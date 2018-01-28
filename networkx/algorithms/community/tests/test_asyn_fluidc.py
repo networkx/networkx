@@ -3,6 +3,7 @@ from networkx import Graph
 from networkx.algorithms.community.asyn_fluidc import *
 import random
 
+
 def test_single_node():
     test = Graph()
 
@@ -117,4 +118,3 @@ def five_clique_ring():
     communities = asyn_fluidc(test, 5)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
-

@@ -16,6 +16,7 @@ flow_funcs = [
     shortest_augmenting_path,
 ]
 
+
 class TestGomoryHuTree:
 
     def minimum_edge_weight(self, T, u, v):

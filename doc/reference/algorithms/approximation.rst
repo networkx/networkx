@@ -1,6 +1,6 @@
-*************
-Approximation
-*************
+****************************
+Approximations and Heuristics
+****************************
 
 .. automodule:: networkx.algorithms.approximation
 
@@ -33,6 +33,7 @@ Clique
 
    max_clique
    clique_removal
+   large_clique_size
 
 Clustering
 ----------
@@ -77,6 +78,16 @@ Ramsey
    :toctree: generated/
 
    ramsey_R2
+
+
+Steiner Tree
+------------
+.. automodule:: networkx.algorithms.approximation.steinertree
+.. autosummary::
+   :toctree: generated/
+
+   metric_closure
+   steiner_tree
 
 
 Vertex Cover

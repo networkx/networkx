@@ -1,6 +1,6 @@
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -66,25 +66,25 @@ def _generate_sparse6_bytes(G, nodes, header):
         yield str.encode(chr(d + 63))
 
     k = 1
-    while 1<<k < n:
+    while 1 << k < n:
         k += 1
 
     def enc(x):
         """Big endian k-bit encoding of x"""
-        return [1 if (x & 1 << (k-1-i)) else 0 for i in range(k)]
+        return [1 if (x & 1 << (k - 1 - i)) else 0 for i in range(k)]
 
     edges = sorted((max(u, v), min(u, v)) for u, v in G.edges())
     bits = []
     curv = 0
     for (v, u) in edges:
-        if v == curv: # current vertex edge
+        if v == curv:  # current vertex edge
             bits.append(0)
             bits.extend(enc(u))
-        elif v == curv + 1: # next vertex edge
+        elif v == curv + 1:  # next vertex edge
             curv += 1
             bits.append(1)
             bits.extend(enc(u))
-        else: # skip to vertex v and then add edge to u
+        else:  # skip to vertex v and then add edge to u
             curv = v
             bits.append(1)
             bits.extend(enc(v))
@@ -100,8 +100,8 @@ def _generate_sparse6_bytes(G, nodes, header):
     else:
         bits.extend([1] * ((-len(bits)) % 6))
 
-    data = [(bits[i+0]<<5) + (bits[i+1]<<4) + (bits[i+2]<<3) + (bits[i+3]<<2) +
-            (bits[i+4]<<1) + (bits[i+5]<<0) for i in range(0, len(bits), 6)]
+    data = [(bits[i + 0] << 5) + (bits[i + 1] << 4) + (bits[i + 2] << 3) + (bits[i + 3] << 2) +
+            (bits[i + 4] << 1) + (bits[i + 5] << 0) for i in range(0, len(bits), 6)]
 
     for d in data:
         yield str.encode(chr(d + 63))
@@ -152,32 +152,32 @@ def from_sparse6_bytes(string):
         chars = [c - 63 for c in string[1:]]
     n, data = data_to_n(chars)
     k = 1
-    while 1<<k < n:
+    while 1 << k < n:
         k += 1
 
     def parseData():
         """Return stream of pairs b[i], x[i] for sparse6 format."""
         chunks = iter(data)
-        d = None # partial data word
-        dLen = 0 # how many unparsed bits are left in d
+        d = None  # partial data word
+        dLen = 0  # how many unparsed bits are left in d
 
         while 1:
             if dLen < 1:
                 d = next(chunks)
                 dLen = 6
             dLen -= 1
-            b = (d>>dLen) & 1 # grab top remaining bit
+            b = (d >> dLen) & 1  # grab top remaining bit
 
-            x = d & ((1<<dLen)-1) # partially built up value of x
+            x = d & ((1 << dLen) - 1)  # partially built up value of x
             xLen = dLen		# how many bits included so far in x
-            while xLen < k:	# now grab full chunks until we have enough
+            while xLen < k:  # now grab full chunks until we have enough
                 d = next(chunks)
                 dLen = 6
-                x = (x<<6) + d
+                x = (x << 6) + d
                 xLen += 6
-            x = (x >> (xLen - k)) # shift back the extra bits
+            x = (x >> (xLen - k))  # shift back the extra bits
             dLen = xLen - k
-            yield b,x
+            yield b, x
 
     v = 0
 
@@ -185,7 +185,7 @@ def from_sparse6_bytes(string):
     G.add_nodes_from(range(n))
 
     multigraph = False
-    for b,x in parseData():
+    for b, x in parseData():
         if b == 1:
             v += 1
         # padding with ones can cause overlarge number here
@@ -194,9 +194,9 @@ def from_sparse6_bytes(string):
         elif x > v:
             v = x
         else:
-            if G.has_edge(x,v):
+            if G.has_edge(x, v):
                 multigraph = True
-            G.add_edge(x,v)
+            G.add_edge(x, v)
     if not multigraph:
         G = nx.Graph(G)
     return G
@@ -252,7 +252,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
     return b''.join(_generate_sparse6_bytes(G, nodes, header))
 
 
-@open_file(0,mode='rb')
+@open_file(0, mode='rb')
 def read_sparse6(path):
     """Read an undirected graph in sparse6 format from path.
 

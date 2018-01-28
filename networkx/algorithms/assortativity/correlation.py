@@ -13,7 +13,8 @@ __all__ = ['degree_pearson_correlation_coefficient',
            'attribute_assortativity_coefficient',
            'numeric_assortativity_coefficient']
 
-def degree_assortativity_coefficient(G, x='out', y='in', weight=None, 
+
+def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
                                      nodes=None):
     """Compute degree assortativity of graph.
 
@@ -26,7 +27,7 @@ def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
 
     x: string ('in','out')
        The degree type for source node (directed graphs only).
-    
+
     y: string ('in','out')
        The degree type for target node (directed graphs only).
 
@@ -43,7 +44,7 @@ def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
     -------
     r : float
        Assortativity of graph by degree.
-    
+
     Examples
     --------
     >>> G=nx.path_graph(4)
@@ -77,7 +78,7 @@ def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
     return numeric_ac(M)
 
 
-def degree_pearson_correlation_coefficient(G, x='out', y='in', 
+def degree_pearson_correlation_coefficient(G, x='out', y='in',
                                            weight=None, nodes=None):
     """Compute degree assortativity of graph. 
 
@@ -110,7 +111,7 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
     -------
     r : float
        Assortativity of graph by degree.
-    
+
     Examples
     --------
     >>> G=nx.path_graph(4)
@@ -133,18 +134,18 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
         import scipy.stats as stats
     except ImportError:
         raise ImportError(
-          "Assortativity requires SciPy: http://scipy.org/ ")
-    xy=node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
-    x,y=zip(*xy)
-    return stats.pearsonr(x,y)[0]
+            "Assortativity requires SciPy: http://scipy.org/ ")
+    xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
+    x, y = zip(*xy)
+    return stats.pearsonr(x, y)[0]
 
 
-def attribute_assortativity_coefficient(G,attribute,nodes=None):
+def attribute_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for node attributes.
 
     Assortativity measures the similarity of connections
     in the graph with respect to the given attribute.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -160,7 +161,7 @@ def attribute_assortativity_coefficient(G,attribute,nodes=None):
     -------
     r: float
        Assortativity of graph for given attribute
-    
+
     Examples
     --------
     >>> G=nx.Graph()
@@ -181,7 +182,7 @@ def attribute_assortativity_coefficient(G,attribute,nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks,
        Physical Review E, 67 026126, 2003
     """
-    M = attribute_mixing_matrix(G,attribute,nodes)
+    M = attribute_mixing_matrix(G, attribute, nodes)
     return attribute_ac(M)
 
 
@@ -208,7 +209,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     -------
     r: float
        Assortativity of graph for given attribute
-    
+
     Examples
     --------
     >>> G=nx.Graph()
@@ -228,7 +229,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
-    a = numeric_mixing_matrix(G,attribute,nodes)
+    a = numeric_mixing_matrix(G, attribute, nodes)
     return numeric_ac(a)
 
 
@@ -255,13 +256,13 @@ def attribute_ac(M):
         import numpy
     except ImportError:
         raise ImportError(
-          "attribute_assortativity requires NumPy: http://scipy.org/ ")
+            "attribute_assortativity requires NumPy: http://scipy.org/ ")
     if M.sum() != 1.0:
-        M=M/float(M.sum())
-    M=numpy.asmatrix(M)
-    s=(M*M).sum()
-    t=M.trace()
-    r=(t-s)/(1-s)
+        M = M / float(M.sum())
+    M = numpy.asmatrix(M)
+    s = (M * M).sum()
+    t = M.trace()
+    r = (t - s) / (1 - s)
     return float(r)
 
 
@@ -274,17 +275,17 @@ def numeric_ac(M):
         raise ImportError('numeric_assortativity requires ',
                           'NumPy: http://scipy.org/')
     if M.sum() != 1.0:
-        M=M/float(M.sum())
-    nx,ny=M.shape # nx=ny
-    x=numpy.arange(nx)
-    y=numpy.arange(ny)
-    a=M.sum(axis=0)
-    b=M.sum(axis=1)
-    vara=(a*x**2).sum()-((a*x).sum())**2
-    varb=(b*x**2).sum()-((b*x).sum())**2
-    xy=numpy.outer(x,y)
-    ab=numpy.outer(a,b)
-    return (xy*(M-ab)).sum()/numpy.sqrt(vara*varb)
+        M = M / float(M.sum())
+    nx, ny = M.shape  # nx=ny
+    x = numpy.arange(nx)
+    y = numpy.arange(ny)
+    a = M.sum(axis=0)
+    b = M.sum(axis=1)
+    vara = (a * x**2).sum() - ((a * x).sum())**2
+    varb = (b * x**2).sum() - ((b * x).sum())**2
+    xy = numpy.outer(x, y)
+    ab = numpy.outer(a, b)
+    return (xy * (M - ab)).sum() / numpy.sqrt(vara * varb)
 
 
 # fixture for nose tests

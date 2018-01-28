@@ -1,27 +1,40 @@
 # -*- coding: utf-8 -*-
+#    Copyright (C) 2006-2018 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors:
+#    Aric Hagberg <aric.hagberg@gmail.com>
+#    Dan Schult <dschult@colgate.edu>
+#    Ben Edwards <bedwards@cs.unm.edu>
+#    Neil Girdhar <neil.girdhar@mcgill.ca>
+#
 """Algorithms for directed acyclic graphs (DAGs).
 
 Note that most of these functions are only guaranteed to work for DAGs.
 In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
-#    Copyright (C) 2006-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+
+from collections import defaultdict
 from fractions import gcd
+from functools import partial
+from itertools import chain
+from itertools import product
+from itertools import starmap
 import heapq
 
 import networkx as nx
-from networkx.utils import consume, arbitrary_element, pairwise
-from networkx.utils.decorators import *
+from networkx.generators.trees import NIL
+from networkx.utils import arbitrary_element
+from networkx.utils import consume
+from networkx.utils import pairwise
+from networkx.utils import generate_unique_node
+from networkx.utils import not_implemented_for
 
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Dan Schult (dschult@colgate.edu)',
-                            'Ben Edwards (bedwards@cs.unm.edu)',
-                            'Neil Girdhar (neil.girdhar@mcgill.ca)'])
 __all__ = ['descendants',
            'ancestors',
            'topological_sort',
@@ -32,7 +45,10 @@ __all__ = ['descendants',
            'transitive_reduction',
            'antichains',
            'dag_longest_path',
-           'dag_longest_path_length']
+           'dag_longest_path_length',
+           'dag_to_branching']
+
+chaini = chain.from_iterable
 
 
 def descendants(G, source):
@@ -51,9 +67,8 @@ def descendants(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    spl = nx.shortest_path_length(G, source=source)
-    des = set(spl) - set([source])
-    return des
+    des = set(n for n, d in nx.shortest_path_length(G, source=source).items())
+    return des - {source}
 
 
 def ancestors(G, source):
@@ -72,9 +87,18 @@ def ancestors(G, source):
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    spl = nx.shortest_path_length(G, target=source)
-    anc = set(spl) - set([source])
-    return anc
+    anc = set(n for n, d in nx.shortest_path_length(G, target=source).items())
+    return anc - {source}
+
+
+def has_cycle(G):
+    """Decides whether the directed graph has a cycle."""
+    try:
+        consume(topological_sort(G))
+    except nx.NetworkXUnfeasible:
+        return True
+    else:
+        return False
 
 
 def is_directed_acyclic_graph(G):
@@ -90,13 +114,7 @@ def is_directed_acyclic_graph(G):
     bool
         True if `G` is a DAG, False otherwise
     """
-    if not G.is_directed():
-        return False
-    try:
-        consume(topological_sort(G))
-        return True
-    except nx.NetworkXUnfeasible:
-        return False
+    return G.is_directed() and not has_cycle(G)
 
 
 def topological_sort(G):
@@ -149,8 +167,8 @@ def topological_sort(G):
 
     References
     ----------
-    .. [1] Manber, U. (1989). "Introduction to Algorithms: A Creative Approach."
-       Addison-Wesley.
+    .. [1] Manber, U. (1989).
+       *Introduction to Algorithms - A Creative Approach.* Addison-Wesley.
     """
     if not G.is_directed():
         raise nx.NetworkXError(
@@ -227,15 +245,15 @@ def lexicographical_topological_sort(G, key=None):
 
     References
     ----------
-    .. [1] Manber, U. (1989). "Introduction to Algorithms: A Creative Approach."
-       Addison-Wesley.
+    .. [1] Manber, U. (1989).
+       *Introduction to Algorithms - A Creative Approach.* Addison-Wesley.
     """
     if not G.is_directed():
         raise nx.NetworkXError(
             "Topological sort not defined on undirected graphs.")
 
     if key is None:
-        key = lambda x: x
+        def key(x): return x
 
     def create_tuple(node):
         return key(node), node
@@ -460,7 +478,8 @@ def antichains(G):
 def dag_longest_path(G, weight='weight', default_weight=1):
     """Returns the longest path in a directed acyclic graph (DAG).
 
-    If `G` has edges with `weight` attribute the edge data are used as weight values.
+    If `G` has edges with `weight` attribute the edge data are used as
+    weight values.
 
     Parameters
     ----------
@@ -486,6 +505,7 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     See also
     --------
     dag_longest_path_length
+
     """
     if not G:
         return []
@@ -493,7 +513,8 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     for v in nx.topological_sort(G):
         us = [(dist[u][0] + data.get(weight, default_weight), u)
               for u, data in G.pred[v].items()]
-        # Use the best predecessor if there is one and its distance is non-negative, otherwise terminate.
+        # Use the best predecessor if there is one and its distance is
+        # non-negative, otherwise terminate.
         maxu = max(us, key=lambda x: x[0]) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
     u = None
@@ -542,3 +563,119 @@ def dag_longest_path_length(G, weight='weight', default_weight=1):
         path_length += G[u][v].get(weight, default_weight)
 
     return path_length
+
+
+def root_to_leaf_paths(G):
+    """Yields root-to-leaf paths in a directed acyclic graph.
+
+    `G` must be a directed acyclic graph. If not, the behavior of this
+    function is undefined. A "root" in this graph is a node of in-degree
+    zero and a "leaf" a node of out-degree zero.
+
+    When invoked, this function iterates over each path from any root to
+    any leaf. A path is a list of nodes.
+
+    """
+    roots = (v for v, d in G.in_degree() if d == 0)
+    leaves = (v for v, d in G.out_degree() if d == 0)
+    all_paths = partial(nx.all_simple_paths, G)
+    # TODO In Python 3, this would be better as `yield from ...`.
+    return chaini(starmap(all_paths, product(roots, leaves)))
+
+
+@not_implemented_for('multigraph')
+@not_implemented_for('undirected')
+def dag_to_branching(G):
+    """Returns a branching representing all (overlapping) paths from
+    root nodes to leaf nodes in the given directed acyclic graph.
+
+    As described in :mod:`networkx.algorithms.tree.recognition`, a
+    *branching* is a directed forest in which each node has at most one
+    parent. In other words, a branching is a disjoint union of
+    *arborescences*. For this function, each node of in-degree zero in
+    `G` becomes a root of one of the arborescences, and there will be
+    one leaf node for each distinct path from that root to a leaf node
+    in `G`.
+
+    Each node `v` in `G` with *k* parents becomes *k* distinct nodes in
+    the returned branching, one for each parent, and the sub-DAG rooted
+    at `v` is duplicated for each copy. The algorithm then recurses on
+    the children of each copy of `v`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A directed acyclic graph.
+
+    Returns
+    -------
+    DiGraph
+        The branching in which there is a bijection between root-to-leaf
+        paths in `G` (in which multiple paths may share the same leaf)
+        and root-to-leaf paths in the branching (in which there is a
+        unique path from a root to a leaf).
+
+        Each node has an attribute 'source' whose value is the original
+        node to which this node corresponds. No other graph, node, or
+        edge attributes are copied into this new graph.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is not directed, or if `G` is a multigraph.
+
+    HasACycle
+        If `G` is not acyclic.
+
+    Examples
+    --------
+    To examine which nodes in the returned branching were produced by
+    which original node in the directed acyclic graph, we can collect
+    the mapping from source node to new nodes into a dictionary. For
+    example, consider the directed diamond graph::
+
+        >>> from collections import defaultdict
+        >>> from operator import itemgetter
+        >>>
+        >>> G = nx.DiGraph(nx.utils.pairwise('abd'))
+        >>> G.add_edges_from(nx.utils.pairwise('acd'))
+        >>> B = nx.dag_to_branching(G)
+        >>>
+        >>> sources = defaultdict(set)
+        >>> for v, source in B.nodes(data='source'):
+        ...     sources[source].add(v)
+        >>> len(sources['a'])
+        1
+        >>> len(sources['d'])
+        2
+
+    To copy node attributes from the original graph to the new graph,
+    you can use a dictionary like the one constructed in the above
+    example::
+
+        >>> for source, nodes in sources.items():
+        ...     for v in nodes:
+        ...         B.node[v].update(G.node[source])
+
+    Notes
+    -----
+    This function is not idempotent in the sense that the node labels in
+    the returned branching may be uniquely generated each time the
+    function is invoked. In fact, the node labels may not be integers;
+    in order to relabel the nodes to be more readable, you can use the
+    :func:`networkx.convert_node_labels_to_integers` function.
+
+    The current implementation of this function uses
+    :func:`networkx.prefix_tree`, so it is subject to the limitations of
+    that function.
+
+    """
+    if has_cycle(G):
+        msg = 'dag_to_branching is only defined for acyclic graphs'
+        raise nx.HasACycle(msg)
+    paths = root_to_leaf_paths(G)
+    B, root = nx.prefix_tree(paths)
+    # Remove the synthetic `root` and `NIL` nodes in the prefix tree.
+    B.remove_node(root)
+    B.remove_node(NIL)
+    return B

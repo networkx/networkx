@@ -190,18 +190,23 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     --------
     Construct an adjacency matrix:
 
+    >>> try:
+    ...    import numpy as np
+    ...    np.set_printoptions(legacy="1.13")
+    ... except TypeError:
+    ...    pass
     >>> G = nx.Graph()
-    >>> G.add_edge(0,1,thickness=1,weight=3)
-    >>> G.add_edge(0,2,thickness=2)
-    >>> G.add_edge(1,2,thickness=3)
-    >>> nx.attr_matrix(G, rc_order=[0,1,2])
+    >>> G.add_edge(0, 1, thickness=1, weight=3)
+    >>> G.add_edge(0, 2, thickness=2)
+    >>> G.add_edge(1, 2, thickness=3)
+    >>> nx.attr_matrix(G, rc_order=[0, 1, 2])
     matrix([[ 0.,  1.,  1.],
             [ 1.,  0.,  1.],
             [ 1.,  1.,  0.]])
 
     Alternatively, we can obtain the matrix describing edge thickness.
 
-    >>> nx.attr_matrix(G, edge_attr='thickness', rc_order=[0,1,2])
+    >>> nx.attr_matrix(G, edge_attr='thickness', rc_order=[0, 1, 2])
     matrix([[ 0.,  1.,  2.],
             [ 1.,  0.,  3.],
             [ 2.,  3.,  0.]])

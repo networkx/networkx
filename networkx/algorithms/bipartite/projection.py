@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2017 by
+#    Copyright (C) 2017-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -511,6 +511,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
             weight = weight_function(B, u, v)
             G.add_edge(u, v, weight=weight)
     return G
+
 
 def project(B, nodes, create_using=None):
     return projected_graph(B, nodes)

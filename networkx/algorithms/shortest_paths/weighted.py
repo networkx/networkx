@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,7 +19,6 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
-import warnings as _warnings
 
 
 __all__ = ['dijkstra_path',
@@ -42,7 +41,6 @@ __all__ = ['dijkstra_path',
            'single_source_bellman_ford_path_length',
            'all_pairs_bellman_ford_path',
            'all_pairs_bellman_ford_path_length',
-           'bellman_ford',
            'bellman_ford_predecessor_and_distance',
            'negative_edge_cycle',
            'goldberg_radzik',
@@ -1062,17 +1060,6 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     # TODO This can be trivially parallelized.
     for n in G:
         yield (n, path(G, n, cutoff=cutoff, weight=weight))
-
-
-def bellman_ford(G, source, weight='weight'):
-    """DEPRECATED: Replaced by bellman_ford_predecessor_and_distance().
-
-    """
-    msg = "Function bellman_ford() is deprecated and will be removed" \
-        "in 2.1, use bellman_ford_predecessor_and_distance() instead."
-    _warnings.warn(msg, DeprecationWarning)
-
-    return bellman_ford_predecessor_and_distance(G, source, weight=weight)
 
 
 def bellman_ford_predecessor_and_distance(G, source, target=None,

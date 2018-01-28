@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -154,13 +154,13 @@ def extrema_bounding(G, compute="diameter"):
         # updating maxuppernode and minlowernode for selection in next round
         for i in candidates:
             if minlowernode is None \
-                    or (ecc_lower[i] == ecc_lower[minlowernode] \
+                    or (ecc_lower[i] == ecc_lower[minlowernode]
                         and degrees[i] > degrees[minlowernode]) \
                     or (ecc_lower[i] < ecc_lower[minlowernode]):
                 minlowernode = i
 
             if maxuppernode is None \
-                    or (ecc_upper[i] == ecc_upper[maxuppernode] \
+                    or (ecc_upper[i] == ecc_upper[maxuppernode]
                         and degrees[i] > degrees[maxuppernode]) \
                     or (ecc_upper[i] > ecc_upper[maxuppernode]):
                 maxuppernode = i

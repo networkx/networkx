@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -47,8 +47,8 @@ class Graph(object):
 
     Parameters
     ----------
-    data : input graph
-        Data to initialize graph. If data=None (default) an empty
+    incoming_graph_data : input graph (optional, default: None)
+        Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
         dict of dicts, dict of lists, NetworkX graph, NumPy matrix
@@ -145,9 +145,11 @@ class Graph(object):
     >>> G[1][2]['weight'] = 4.7
     >>> G.edges[1, 2]['weight'] = 4
 
-    Warning: we protect the graph data structure by making `G.edges[1, 2]` a
-    read-only dict-like structure. Use 2 sets of brackets to add/change
-    data attributes. (For multigraphs: `MG.edges[u, v, key][name] = value`).
+    Warning: we protect the graph data structure by making `G.edges` a
+    read-only dict-like structure. However, you can assign to attributes
+    in e.g. `G.edges[1, 2]`. Thus, use 2 sets of brackets to add/change
+    data attributes: `G.edges[1, 2]['weight'] = 4`
+    (For multigraphs: `MG.edges[u, v, key][name] = value`).
 
     **Shortcuts:**
 
@@ -265,13 +267,13 @@ class Graph(object):
             del attr['degree']
         return attr
 
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
         ----------
-        data : input graph
-            Data to initialize graph.  If data=None (default) an empty
+        incoming_graph_data : input graph (optional, default: None)
+            Data to initialize graph. If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix
@@ -308,8 +310,8 @@ class Graph(object):
         self._node = ndf()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # attempt to load graph with data
-        if data is not None:
-            convert.to_networkx_graph(data, create_using=self)
+        if incoming_graph_data is not None:
+            convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
@@ -437,12 +439,12 @@ class Graph(object):
         """
         return self.adj[n]
 
-    def add_node(self, n, **attr):
-        """Add a single node n and update node attributes.
+    def add_node(self, node_for_adding, **attr):
+        """Add a single node `node_for_adding` and update node attributes.
 
         Parameters
         ----------
-        n : node
+        node_for_adding : node
             A node can be any hashable Python object except None.
         attr : keyword arguments, optional
             Set or change node attributes using key=value.
@@ -476,18 +478,18 @@ class Graph(object):
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        if n not in self._node:
-            self._adj[n] = self.adjlist_inner_dict_factory()
-            self._node[n] = attr
+        if node_for_adding not in self._node:
+            self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
+            self._node[node_for_adding] = attr
         else:  # update attr even if node already exists
-            self._node[n].update(attr)
+            self._node[node_for_adding].update(attr)
 
-    def add_nodes_from(self, nodes, **attr):
+    def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
 
         Parameters
         ----------
-        nodes : iterable container
+        nodes_for_adding : iterable container
             A container of nodes (list, dict, set, etc.).
             OR
             A container of (node, attribute dict) tuples.
@@ -526,7 +528,7 @@ class Graph(object):
         11
 
         """
-        for n in nodes:
+        for n in nodes_for_adding:
             # keep all this inside try/except because
             # CPython throws TypeError on n not in self._node,
             # while pre-2.7.5 ironpython throws on self._adj[n]
@@ -818,7 +820,7 @@ class Graph(object):
         except TypeError:
             return False
 
-    def add_edge(self, u, v, **attr):
+    def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -868,6 +870,7 @@ class Graph(object):
         >>> G[1][2].update({0: 5})
         >>> G.edges[1, 2].update({0: 5})
         """
+        u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._node:
             self._adj[u] = self.adjlist_inner_dict_factory()
@@ -881,12 +884,12 @@ class Graph(object):
         self._adj[u][v] = datadict
         self._adj[v][u] = datadict
 
-    def add_edges_from(self, ebunch, **attr):
-        """Add all the edges in ebunch.
+    def add_edges_from(self, ebunch_to_add, **attr):
+        """Add all the edges in ebunch_to_add.
 
         Parameters
         ----------
-        ebunch : container of edges
+        ebunch_to_add : container of edges
             Each edge given in the container will be added to the
             graph. The edges must be given as as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
@@ -919,8 +922,7 @@ class Graph(object):
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
         """
-        # process ebunch
-        for e in ebunch:
+        for e in ebunch_to_add:
             ne = len(e)
             if ne == 3:
                 u, v, dd = e
@@ -942,14 +944,14 @@ class Graph(object):
             self._adj[u][v] = datadict
             self._adj[v][u] = datadict
 
-    def add_weighted_edges_from(self, ebunch, weight='weight', **attr):
-        """Add all the weighted edges in ebunch with specified weights.
+    def add_weighted_edges_from(self, ebunch_to_add, weight='weight', **attr):
+        """Add weighted edges in `ebunch_to_add` with specified weight attr
 
         Parameters
         ----------
-        ebunch : container of edges
-            Each edge in the container is added to the graph.
-            The edges must be given as 3-tuples (u, v, w)
+        ebunch_to_add : container of edges
+            Each edge given in the list or container will be added
+            to the graph. The edges must be given as 3-tuples (u, v, w)
             where w is a number.
         weight : string, optional (default= 'weight')
             The attribute name for the edge weights to be added.
@@ -972,7 +974,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])
         """
-        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch),
+        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add),
                             **attr)
 
     def remove_edge(self, u, v):
@@ -1307,7 +1309,6 @@ class Graph(object):
         []
 
         """
-        self.name = ''
         self._adj.clear()
         self._node.clear()
         self.graph.clear()
@@ -1328,7 +1329,7 @@ class Graph(object):
         typically used to create an empty version of the graph.
 
         Notes
-        =====
+        -----
         If you subclass the base class you should overwrite this method
         to return your class of graph.
         """
@@ -1345,7 +1346,7 @@ class Graph(object):
         If `as_view` is True then a view is returned instead of a copy.
 
         Notes
-        =====
+        -----
         All copies reproduce the graph structure, but data attributes
         may be handled in different ways. There are four types of copies
         of a graph that people might want.

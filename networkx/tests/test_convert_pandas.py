@@ -45,9 +45,6 @@ class TestConvertPandas(object):
                           ('A', 'D', {'cost': 7, 'weight': 4})])
         G = nx.from_pandas_edgelist(self.df, 0, 'b', True)
         assert_graphs_equal(G, Gtrue)
-        # deprecated
-        G = nx.from_pandas_dataframe(self.df, 0, 'b', True)
-        assert_graphs_equal(G, Gtrue)
         # MultiGraph
         MGtrue = nx.MultiGraph(Gtrue)
         MGtrue.add_edge('A', 'D', cost=16, weight=4)
@@ -76,11 +73,11 @@ class TestConvertPandas(object):
                                  ('Z1', 'Z3', {'Co': 'zE', 'Mi': 9, 'St': 'Z2'}),
                                  ('Z1', 'Z3', {'Co': 'zE', 'Mi': 4, 'St': 'Z3'})])
         df = pd.DataFrame.from_items([
-                ('O', ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y1', 'Y1', 'Y1', 'Z1', 'Z1', 'Z1', 'Z1']),
-                ('D', ['X4', 'X4', 'X4', 'X4', 'Y3', 'Y3', 'Y3', 'Y3', 'Z3', 'Z3', 'Z3', 'Z3']),
-                ('St', ['X1', 'X2', 'X3', 'X4', 'Y1', 'Y2', 'X2', 'Y3', 'Z1', 'X3', 'Z2', 'Z3']),
-                ('Co', ['zA', 'zB', 'zB', 'zB', 'zC', 'zC', 'zC', 'zC', 'zD', 'zD', 'zE', 'zE']),
-                ('Mi', [0,   54,   49,   44,    0,   34,   29,   24,    0,   14,    9,   4])])
+            ('O', ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y1', 'Y1', 'Y1', 'Z1', 'Z1', 'Z1', 'Z1']),
+            ('D', ['X4', 'X4', 'X4', 'X4', 'Y3', 'Y3', 'Y3', 'Y3', 'Z3', 'Z3', 'Z3', 'Z3']),
+            ('St', ['X1', 'X2', 'X3', 'X4', 'Y1', 'Y2', 'X2', 'Y3', 'Z1', 'X3', 'Z2', 'Z3']),
+            ('Co', ['zA', 'zB', 'zB', 'zB', 'zC', 'zC', 'zC', 'zC', 'zD', 'zD', 'zE', 'zE']),
+            ('Mi', [0,   54,   49,   44,    0,   34,   29,   24,    0,   14,    9,   4])])
         G1 = nx.from_pandas_edgelist(df, source='O', target='D',
                                      edge_attr=True,
                                      create_using=nx.MultiDiGraph())
@@ -129,9 +126,6 @@ class TestConvertPandas(object):
         dftrue = pd.DataFrame([[1, 1], [1, 0]], dtype=int, index=nodelist, columns=nodelist)
         G = nx.Graph([(1, 1), (1, 2)])
         df = nx.to_pandas_adjacency(G, dtype=int)
-        pd.testing.assert_frame_equal(df, dftrue)
-        # deprecated
-        df = nx.to_pandas_dataframe(G, dtype=int)
         pd.testing.assert_frame_equal(df, dftrue)
 
     def test_roundtrip(self):

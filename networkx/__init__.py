@@ -47,12 +47,12 @@ License
 
 Released under the 3-Clause BSD license::
 
-   Copyright (C) 2004-2017 NetworkX Developers
+   Copyright (C) 2004-2018 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
 """
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

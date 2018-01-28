@@ -5,6 +5,7 @@ __author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['node_attribute_xy',
            'node_degree_xy']
 
+
 def node_attribute_xy(G, attribute, nodes=None):
     """Return iterator of node-attribute pairs for all edges in G.
 
@@ -44,19 +45,19 @@ def node_attribute_xy(G, attribute, nodes=None):
     else:
         nodes = set(nodes)
     Gnodes = G.nodes
-    for u,nbrsdict in G.adjacency():
+    for u, nbrsdict in G.adjacency():
         if u not in nodes:
             continue
-        uattr = Gnodes[u].get(attribute,None)
+        uattr = Gnodes[u].get(attribute, None)
         if G.is_multigraph():
-            for v,keys in nbrsdict.items():
-                vattr = Gnodes[v].get(attribute,None)
-                for k,d in keys.items():
-                    yield (uattr,vattr)
+            for v, keys in nbrsdict.items():
+                vattr = Gnodes[v].get(attribute, None)
+                for k, d in keys.items():
+                    yield (uattr, vattr)
         else:
-            for v,eattr in nbrsdict.items():
-                vattr = Gnodes[v].get(attribute,None)
-                yield (uattr,vattr)
+            for v, eattr in nbrsdict.items():
+                vattr = Gnodes[v].get(attribute, None)
+                yield (uattr, vattr)
 
 
 def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
@@ -109,16 +110,16 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
     xdeg = G.degree
     ydeg = G.degree
     if G.is_directed():
-        direction = {'out':G.out_degree,
-                     'in':G.in_degree}
+        direction = {'out': G.out_degree,
+                     'in': G.in_degree}
         xdeg = direction[x]
         ydeg = direction[y]
 
-    for u,degu in xdeg(nodes, weight=weight):
-        neighbors = (nbr for _,nbr in G.edges(u) if nbr in nodes)
-        for v,degv in ydeg(neighbors, weight=weight):
-            yield degu,degv
- 
+    for u, degu in xdeg(nodes, weight=weight):
+        neighbors = (nbr for _, nbr in G.edges(u) if nbr in nodes)
+        for v, degv in ydeg(neighbors, weight=weight):
+            yield degu, degv
+
 
 # fixture for nose tests
 def setup_module(module):

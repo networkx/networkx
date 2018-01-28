@@ -1,4 +1,4 @@
-#    Copyright (C) 2006-2017 by
+#    Copyright (C) 2006-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -89,7 +89,7 @@ def relabel_nodes(G, mapping, copy=True):
     """
     # you can pass a function f(old_label)->new_label
     # but we'll just make a dictionary here regardless
-    if not hasattr(mapping,"__getitem__"):
+    if not hasattr(mapping, "__getitem__"):
         m = {n: mapping(n) for n in G}
     else:
         m = mapping
@@ -154,9 +154,6 @@ def _relabel_copy(G, mapping):
     H = G.fresh_copy()
     H.add_nodes_from(mapping.get(n, n) for n in G)
     H._node.update((mapping.get(n, n), d.copy()) for n, d in G.nodes.items())
-    # FIXME this is overwritten below when H.graph is updated
-    if G.name:
-        H.name = "(%s)" % G.name
     if G.is_multigraph():
         H.add_edges_from((mapping.get(n1, n1), mapping.get(n2, n2), k, d.copy())
                          for (n1, n2, k, d) in G.edges(keys=True, data=True))
@@ -217,7 +214,6 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     else:
         raise nx.NetworkXError('Unknown node ordering: %s' % ordering)
     H = relabel_nodes(G, mapping)
-    H.name = "(" + G.name + ")_with_int_labels"
     # create node attribute with the old label
     if label_attribute is not None:
         nx.set_node_attributes(H, {v: k for k, v in mapping.items()},

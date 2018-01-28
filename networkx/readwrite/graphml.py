@@ -1,4 +1,4 @@
-#    Copyright (C) 2008-2017 by
+#    Copyright (C) 2008-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -539,7 +539,7 @@ class GraphMLWriter(GraphML):
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for elem in elem:
-                self.indent(elem, level+1)
+                self.indent(elem, level + 1)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         else:
@@ -684,6 +684,7 @@ class GraphMLWriterLxml(GraphMLWriter):
         self._graphml.__exit__(None, None, None)
         self._xml_base.__exit__(None, None, None)
 
+
 # Choose a writer function for default
 if lxmletree is None:
     write_graphml = write_graphml_xml
@@ -693,6 +694,7 @@ else:
 
 class GraphMLReader(GraphML):
     """Read a GraphML document.  Produces NetworkX graph objects."""
+
     def __init__(self, node_type=str, edge_key_type=int):
         try:
             import xml.etree.ElementTree

@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -80,7 +80,6 @@ def from_agraph(A, create_using=None):
 
     # assign defaults
     N = nx.empty_graph(0, create_using)
-    N.name = ''
     if A.name is not None:
         N.name = A.name
 
@@ -161,18 +160,16 @@ def to_agraph(N):
             str_edgedata = {k: str(v) for k, v in edgedata.items() if k != 'key'}
             A.add_edge(u, v, key=str(key))
             if edgedata is not None:
-                a = A.get_edge(u,v)
+                a = A.get_edge(u, v)
                 a.attr.update(str_edgedata)
-
 
     else:
         for u, v, edgedata in N.edges(data=True):
             str_edgedata = {k: str(v) for k, v in edgedata.items()}
             A.add_edge(u, v)
             if edgedata is not None:
-                a = A.get_edge(u,v)
+                a = A.get_edge(u, v)
                 a.attr.update(str_edgedata)
-
 
     return A
 

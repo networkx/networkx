@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # bridges.py - bridge-finding algorithms
 #
-# Copyright 2004-2017 NetworkX developers.
+# Copyright 2004-2018 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

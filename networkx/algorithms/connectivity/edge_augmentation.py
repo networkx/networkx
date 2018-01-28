@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -64,9 +64,9 @@ def is_k_edge_connected(G, k):
     Example
     -------
     >>> G = nx.barbell_graph(10, 0)
-    >>> is_k_edge_connected(G, k=1)
+    >>> nx.is_k_edge_connected(G, k=1)
     True
-    >>> is_k_edge_connected(G, k=2)
+    >>> nx.is_k_edge_connected(G, k=2)
     False
     """
     if k < 1:
@@ -119,6 +119,7 @@ def is_locally_k_edge_connected(G, s, t, k):
 
     Example
     -------
+    >>> from networkx.algorithms.connectivity import is_locally_k_edge_connected
     >>> G = nx.barbell_graph(10, 0)
     >>> is_locally_k_edge_connected(G, 5, 15, k=1)
     True
@@ -223,13 +224,13 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     >>> # Unweighted cases
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> G.add_node(5)
-    >>> sorted(k_edge_augmentation(G, k=1))
+    >>> sorted(nx.k_edge_augmentation(G, k=1))
     [(1, 5)]
-    >>> sorted(k_edge_augmentation(G, k=2))
+    >>> sorted(nx.k_edge_augmentation(G, k=2))
     [(1, 5), (5, 4)]
-    >>> sorted(k_edge_augmentation(G, k=3))
+    >>> sorted(nx.k_edge_augmentation(G, k=3))
     [(1, 4), (1, 5), (2, 5), (3, 5), (4, 5)]
-    >>> complement = list(k_edge_augmentation(G, k=5, partial=True))
+    >>> complement = list(nx.k_edge_augmentation(G, k=5, partial=True))
     >>> G.add_edges_from(complement)
     >>> nx.edge_connectivity(G)
     4
@@ -241,19 +242,19 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     >>> G.add_node(5)
     >>> # avail can be a tuple with a dict
     >>> avail = [(1, 5, {'weight': 11}), (2, 5, {'weight': 10})]
-    >>> sorted(k_edge_augmentation(G, k=1, avail=avail, weight='weight'))
+    >>> sorted(nx.k_edge_augmentation(G, k=1, avail=avail, weight='weight'))
     [(2, 5)]
     >>> # or avail can be a 3-tuple with a real number
     >>> avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 51)]
-    >>> sorted(k_edge_augmentation(G, k=2, avail=avail))
+    >>> sorted(nx.k_edge_augmentation(G, k=2, avail=avail))
     [(1, 5), (2, 5), (4, 5)]
     >>> # or avail can be a dict
     >>> avail = {(1, 5): 11, (2, 5): 10, (4, 3): 1, (4, 5): 51}
-    >>> sorted(k_edge_augmentation(G, k=2, avail=avail))
+    >>> sorted(nx.k_edge_augmentation(G, k=2, avail=avail))
     [(1, 5), (2, 5), (4, 5)]
     >>> # If augmentation is infeasible, then a partial solution can be found
     >>> avail = {(1, 5): 11}
-    >>> sorted(k_edge_augmentation(G, k=2, avail=avail, partial=True))
+    >>> sorted(nx.k_edge_augmentation(G, k=2, avail=avail, partial=True))
     [(1, 5)]
     """
     try:

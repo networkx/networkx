@@ -9,6 +9,7 @@ from nose.tools import raises
 
 import networkx as nx
 
+
 class TestShp(object):
     @classmethod
     def setupClass(cls):
@@ -101,8 +102,8 @@ class TestShp(object):
 
         # simplified
         G = nx.read_shp(self.shppath)
-        compare_graph_paths_names(G, self.simplified_paths, \
-                                    self.simplified_names)
+        compare_graph_paths_names(G, self.simplified_paths,
+                                  self.simplified_names)
 
         # unsimplified
         G = nx.read_shp(self.shppath, simplify=False)
@@ -148,7 +149,6 @@ class TestShp(object):
             "LINESTRING (4.0 0.9,4 2)"
         )
 
-
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
@@ -164,7 +164,6 @@ class TestShp(object):
         shpdir = ogr.Open(tpath)
         self.checkgeom(shpdir.GetLayerByName("nodes"), expectedpoints)
         self.checkgeom(shpdir.GetLayerByName("edges"), expectedlines)
-
 
     def test_attributeexport(self):
         def testattributes(lyr, graph):
@@ -314,7 +313,7 @@ class TestMissingAttrWrite(object):
         H = nx.read_shp(self.path)
 
         for u, v, d in H.edges(data=True):
-                if u == A and v == B:
-                        assert_equal(d['foo'], 100)
-                if u == A and v == C:
-                        assert_equal(d['foo'], None)
+            if u == A and v == B:
+                assert_equal(d['foo'], 100)
+            if u == A and v == C:
+                assert_equal(d['foo'], None)

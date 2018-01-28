@@ -19,7 +19,8 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = ['tensor_product', 'cartesian_product',
-           'lexicographic_product', 'strong_product', 'power']
+           'lexicographic_product', 'strong_product', 'power',
+           'rooted_product']
 
 
 def _dict_product(d1, d2):
@@ -179,7 +180,6 @@ def tensor_product(G, H):
     GH.add_edges_from(_directed_edges_cross_edges(G, H))
     if not GH.is_directed():
         GH.add_edges_from(_undirected_edges_cross_edges(G, H))
-    GH.name = "Tensor product(" + G.name + "," + H.name + ")"
     return GH
 
 
@@ -188,9 +188,9 @@ def cartesian_product(G, H):
 
     The Cartesian product $P$ of the graphs $G$ and $H$ has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    $P$ has an edge $((u,v),(x,y))$ if and only if either $u$ is equal to $x$ and
-    both $v$ and $y$ are adjacent in $H$ or if $v$ is equal to $y$ and both $u$
-    and $x$ are adjacent in $G$.
+    $P$ has an edge $((u,v),(x,y))$ if and only if either $u$ is equal to $x$
+    and both $v$ and $y$ are adjacent in $H$ or if $v$ is equal to $y$ and
+    both $u$ and $x$ are adjacent in $G$.
 
     Parameters
     ----------
@@ -234,7 +234,6 @@ def cartesian_product(G, H):
     GH.add_nodes_from(_node_product(G, H))
     GH.add_edges_from(_edges_cross_nodes(G, H))
     GH.add_edges_from(_nodes_cross_edges(G, H))
-    GH.name = "Cartesian product(" + G.name + "," + H.name + ")"
     return GH
 
 
@@ -287,7 +286,6 @@ def lexicographic_product(G, H):
     GH.add_edges_from(_edges_cross_nodes_and_nodes(G, H))
     # For each x in G, only if there is an edge in H
     GH.add_edges_from(_nodes_cross_edges(G, H))
-    GH.name = "Lexicographic product(" + G.name + "," + H.name + ")"
     return GH
 
 
@@ -343,7 +341,6 @@ def strong_product(G, H):
     GH.add_edges_from(_directed_edges_cross_edges(G, H))
     if not GH.is_directed():
         GH.add_edges_from(_undirected_edges_cross_edges(G, H))
-    GH.name = "Strong product(" + G.name + "," + H.name + ")"
     return GH
 
 
@@ -434,3 +431,41 @@ def power(G, k):
             level += 1
         H.add_edges_from((n, nbr) for nbr in seen)
     return H
+
+
+@not_implemented_for('multigraph')
+def rooted_product(G, H, root):
+    """ Return the rooted product of graphs G and H rooted at root in H.
+
+    A new graph is constructed representing the rooted product of
+    the inputted graphs, G and H, with a root in H.
+    A rooted product duplicates H for each nodes in G with the root
+    of H corresponding to the node in G. Nodes are renamed as the direct
+    product of G and H. The result is a subgraph of the cartesian product.
+
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph
+    root : node
+       A node in H
+
+    Returns
+    -------
+    R : The rooted product of G and H with a specified root in H
+
+    Notes
+    -----
+    The nodes of R are the Cartesian Product of the nodes of G and H.
+    The nodes of G and H are not relabeled.
+    """
+    if root not in H:
+        raise nx.NetworkXError('root must be a vertex in H')
+
+    R = nx.Graph()
+    R.add_nodes_from(product(G, H))
+
+    R.add_edges_from(((e[0], root), (e[1], root)) for e in G.edges())
+    R.add_edges_from(((g, e[0]), (g, e[1])) for g in G for e in H.edges())
+
+    return R

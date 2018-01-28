@@ -160,7 +160,7 @@ class TestMatching():
         for u, v in tc.edges():
             btc.add_edge((0, u), (1, v))
 
-        top_nodes = {n for n in btc if n[0]==0}
+        top_nodes = {n for n in btc if n[0] == 0}
         matching = hopcroft_karp_matching(btc, top_nodes)
         vertex_cover = to_vertex_cover(btc, matching, top_nodes)
         independent_set = set(G) - {v for _, v in vertex_cover}
@@ -194,5 +194,5 @@ def test_eppstein_matching():
     G.add_edges_from([('a', 1), ('a', 'b'), (2, 'b'),
                       (2, 'c'), (3, 'c'), (4, 1)])
     matching = eppstein_matching(G)
-    assert_true(len(matching)==len(maximum_matching(G)))
+    assert_true(len(matching) == len(maximum_matching(G)))
     assert all(x in set(matching.keys()) for x in set(matching.values()))

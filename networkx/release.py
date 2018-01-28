@@ -29,7 +29,7 @@ tar.gz file. This is why write_versionfile() includes an early escape.
 
 """
 
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -177,7 +177,7 @@ def get_info(dynamic=True):
 # Version information
 name = 'networkx'
 major = "2"
-minor = "1rc1"
+minor = "2rc1"
 
 
 # Declare current release as a development release.

@@ -11,6 +11,7 @@ __all__ = ['average_clustering']
 __author__ = """\n""".join(['Fred Morstatter <fred.morstatter@asu.edu>',
                             'Jordi Torrents <jtorrents@milnou.net>'])
 
+
 @not_implemented_for('directed')
 def average_clustering(G, trials=1000):
     r"""Estimates the average clustering coefficient of G.

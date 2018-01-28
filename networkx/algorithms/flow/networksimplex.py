@@ -311,7 +311,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         B = int(ceil(sqrt(e)))  # pivot block size
         M = (e + B - 1) // B    # number of blocks needed to cover all edges
         m = 0                   # number of consecutive blocks without eligible
-                                # entering edges
+        # entering edges
         f = 0                   # first edge in block
         while m < M:
             # Determine the next block of edges.
@@ -391,7 +391,6 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         Wn += WnR
         We += WeR
         return Wn, We
-
 
     def residual_capacity(i, p):
         """Return the residual capacity of an edge i in the direction away

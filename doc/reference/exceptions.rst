@@ -21,6 +21,8 @@ Exceptions
 
 .. autoclass:: networkx.NodeNotFound
 
+.. autoclass:: networkx.HasACycle
+
 .. autoclass:: networkx.NetworkXUnbounded
 
 .. autoclass:: networkx.NetworkXNotImplemented

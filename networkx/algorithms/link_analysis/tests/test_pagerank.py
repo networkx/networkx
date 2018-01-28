@@ -70,7 +70,7 @@ class TestPageRank(object):
         p = numpy.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
         for (a, b) in zip(p, self.G.pagerank.values()):
             assert_almost_equal(a, b)
-        
+
     def test_personalization(self):
         G = networkx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
@@ -83,7 +83,7 @@ class TestPageRank(object):
         G = networkx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 0}
         assert_raises(ZeroDivisionError, networkx.pagerank, G,
-                  personalization=personalize)
+                      personalization=personalize)
 
     def test_one_nonzero_personalization_value(self):
         G = networkx.complete_graph(4)
@@ -92,7 +92,7 @@ class TestPageRank(object):
         p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
             assert_almost_equal(p[n], answer[n], places=4)
-            
+
     def test_incomplete_personalization(self):
         G = networkx.complete_graph(4)
         personalize = {3: 1}
@@ -100,7 +100,7 @@ class TestPageRank(object):
         p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
             assert_almost_equal(p[n], answer[n], places=4)
-       
+
     def test_dangling_matrix(self):
         """
         Tests that the google_matrix doesn't change except for the dangling
@@ -131,14 +131,11 @@ class TestPageRank(object):
         for n in self.G:
             assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
-
-
     def test_empty(self):
         G = networkx.Graph()
         assert_equal(networkx.pagerank(G), {})
         assert_equal(networkx.pagerank_numpy(G), {})
         assert_equal(networkx.google_matrix(G).shape, (0, 0))
-
 
 
 class TestPageRankScipy(TestPageRank):

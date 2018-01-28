@@ -155,14 +155,15 @@ class TestWeightedPath(WeightedTestBase):
         G = nx.path_graph(4)
         assert_equal(nx.dijkstra_predecessor_and_distance(G, 0),
                      ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
+
     def test_dijkstra_predecessor2(self):
         # 4-cycle
-        G = nx.Graph([(0,1),(1,2),(2,3),(3,0)])
+        G = nx.Graph([(0, 1), (1, 2), (2, 3), (3, 0)])
         pred, dist = nx.dijkstra_predecessor_and_distance(G, (0))
-        assert_equal(pred[0],[])
-        assert_equal(pred[1],[0])
-        assert_true(pred[2] in [[1,3],[3,1]])
-        assert_equal(pred[3],[0])
+        assert_equal(pred[0], [])
+        assert_equal(pred[1], [0])
+        assert_true(pred[2] in [[1, 3], [3, 1]])
+        assert_equal(pred[3], [0])
         assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
 
     def test_dijkstra_predecessor3(self):
@@ -227,7 +228,8 @@ class TestWeightedPath(WeightedTestBase):
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
-        weight = lambda u, v, d: 1 / d['weight']
+
+        def weight(u, v, d): return 1 / d['weight']
         # The shortest path from 0 to 2 using the actual weights on the
         # edges should be [0, 1, 2].
         distance, path = nx.single_source_dijkstra(G, 0, 2)
@@ -240,16 +242,16 @@ class TestWeightedPath(WeightedTestBase):
         assert_equal(path, [0, 2])
 
     def test_all_pairs_dijkstra_path(self):
-        cycle=nx.cycle_graph(7)
-        p=dict(nx.all_pairs_dijkstra_path(cycle))
+        cycle = nx.cycle_graph(7)
+        p = dict(nx.all_pairs_dijkstra_path(cycle))
         assert_equal(p[0][3], [0, 1, 2, 3])
 
         cycle[1][2]['weight'] = 10
-        p=dict(nx.all_pairs_dijkstra_path(cycle))
+        p = dict(nx.all_pairs_dijkstra_path(cycle))
         assert_equal(p[0][3], [0, 6, 5, 4, 3])
 
     def test_all_pairs_dijkstra_path_length(self):
-        cycle=nx.cycle_graph(7)
+        cycle = nx.cycle_graph(7)
         pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
         assert_equal(pl[0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
 
@@ -258,7 +260,7 @@ class TestWeightedPath(WeightedTestBase):
         assert_equal(pl[0], {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1})
 
     def test_all_pairs_dijkstra(self):
-        cycle=nx.cycle_graph(7)
+        cycle = nx.cycle_graph(7)
         out = dict(nx.all_pairs_dijkstra(cycle))
         assert_equal(out[0][0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
         assert_equal(out[0][1][3], [0, 1, 2, 3])
@@ -289,7 +291,8 @@ class TestDijkstraPathLength(object):
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
-        weight = lambda u, v, d: 1 / d['weight']
+
+        def weight(u, v, d): return 1 / d['weight']
         # The shortest path from 0 to 2 using the actual weights on the
         # edges should be [0, 1, 2]. However, with the above weight
         # function, the shortest path should be [0, 2], since that has a
@@ -332,7 +335,7 @@ class TestMultiSourceDijkstra(object):
         lengths = nx.multi_source_dijkstra_path_length(G, [0])
         assert_equal(lengths, {n: n for n in G})
         paths = nx.multi_source_dijkstra_path(G, [0])
-        assert_equal(paths, {n: list(range(n+1)) for n in G})
+        assert_equal(paths, {n: list(range(n + 1)) for n in G})
 
 
 class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
@@ -494,28 +497,27 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
     def test_4_cycle(self):
         # 4-cycle
-        G = nx.Graph([(0,1),(1,2),(2,3),(3,0)])
+        G = nx.Graph([(0, 1), (1, 2), (2, 3), (3, 0)])
         dist, path = nx.single_source_bellman_ford(G, 0)
         assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
-        assert_equal(path[0],[0])
-        assert_equal(path[1],[0,1])
-        assert_true(path[2] in [[0,1,2],[0,3,2]])
-        assert_equal(path[3],[0,3])
+        assert_equal(path[0], [0])
+        assert_equal(path[1], [0, 1])
+        assert_true(path[2] in [[0, 1, 2], [0, 3, 2]])
+        assert_equal(path[3], [0, 3])
 
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
-        assert_equal(pred[0],[None])
-        assert_equal(pred[1],[0])
-        assert_true(pred[2] in [[1,3],[3,1]])
-        assert_equal(pred[3],[0])
+        assert_equal(pred[0], [None])
+        assert_equal(pred[1], [0])
+        assert_true(pred[2] in [[1, 3], [3, 1]])
+        assert_equal(pred[3], [0])
         assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
 
         pred, dist = nx.goldberg_radzik(G, 0)
-        assert_equal(pred[0],None)
-        assert_equal(pred[1],0)
-        assert_true(pred[2] in [1,3])
-        assert_equal(pred[3],0)
+        assert_equal(pred[0], None)
+        assert_equal(pred[1], 0)
+        assert_true(pred[2] in [1, 3])
+        assert_equal(pred[3], 0)
         assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
-
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):
@@ -529,26 +531,25 @@ class TestJohnsonAlgorithm(WeightedTestBase):
     def test_negative_cycle(self):
         G = nx.DiGraph()
         G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -5),
-                                     ('0', '2', 2), ('1', '2', 4),
-                                     ('2', '3', 1)])
+                                   ('0', '2', 2), ('1', '2', 4),
+                                   ('2', '3', 1)])
         assert_raises(nx.NetworkXUnbounded, nx.johnson, G)
         G = nx.Graph()
         G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -5),
-                                     ('0', '2', 2), ('1', '2', 4),
-                                     ('2', '3', 1)])
+                                   ('0', '2', 2), ('1', '2', 4),
+                                   ('2', '3', 1)])
         assert_raises(nx.NetworkXUnbounded, nx.johnson, G)
-
 
     def test_negative_weights(self):
         G = nx.DiGraph()
         G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5),
-                                     ('0', '2', 2), ('1', '2', 4),
-                                     ('2', '3', 1)])
+                                   ('0', '2', 2), ('1', '2', 4),
+                                   ('2', '3', 1)])
         paths = nx.johnson(G)
         assert_equal(paths, {'1': {'1': ['1'], '3': ['1', '2', '3'],
-                             '2': ['1', '2']}, '0': {'1': ['0', '1'],
-                             '0': ['0'], '3': ['0', '1', '2', '3'],
-                             '2': ['0', '1', '2']}, '3': {'3': ['3']},
+                                   '2': ['1', '2']}, '0': {'1': ['0', '1'],
+                                                           '0': ['0'], '3': ['0', '1', '2', '3'],
+                                                           '2': ['0', '1', '2']}, '3': {'3': ['3']},
                              '2': {'3': ['2', '3'], '2': ['2']}})
 
     @raises(nx.NetworkXError)
@@ -563,4 +564,3 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         validate_path(self.XG3, 0, 3, 15, nx.johnson(self.XG3)[0][3])
         validate_path(self.XG4, 0, 2, 4, nx.johnson(self.XG4)[0][2])
         validate_path(self.MXG4, 0, 2, 4, nx.johnson(self.MXG4)[0][2])
-

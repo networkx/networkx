@@ -18,6 +18,7 @@ from ...utils import generate_unique_node
 from ...utils import not_implemented_for
 from ...utils import arbitrary_element
 
+
 def _detect_unboundedness(R):
     """Detect infinite-capacity negative cycles.
     """
@@ -265,7 +266,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
     flow_cost = sum(
         0 if e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0
         else e[capacity] * e[weight]
-        for u, v, e in nx.selfloop_edges(G,data=True))
+        for u, v, e in nx.selfloop_edges(G, data=True))
 
     # Determine the maxmimum edge capacity.
     wmax = max(chain([-inf],

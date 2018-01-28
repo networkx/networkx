@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -49,9 +49,9 @@ from collections import Mapping
 
 from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
 from networkx.classes.coreviews import ReadOnlyGraph, \
-                         AtlasView, AdjacencyView, MultiAdjacencyView, \
-                         FilterAtlas, FilterAdjacency, FilterMultiAdjacency, \
-                         UnionAdjacency, UnionMultiAdjacency
+    AtlasView, AdjacencyView, MultiAdjacencyView, \
+    FilterAtlas, FilterAdjacency, FilterMultiAdjacency, \
+    UnionAdjacency, UnionMultiAdjacency
 from networkx.classes.filters import no_filter, show_nodes, show_edges
 from networkx.exception import NetworkXError, NetworkXNotImplemented
 from networkx.utils import not_implemented_for

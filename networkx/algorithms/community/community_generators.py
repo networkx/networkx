@@ -359,8 +359,10 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
 
     # Generate a degree sequence with a power law distribution.
     low, high = min_degree, max_degree
-    condition = lambda seq: sum(seq) % 2 == 0
-    length = lambda seq: len(seq) >= n
+
+    def condition(seq): return sum(seq) % 2 == 0
+
+    def length(seq): return len(seq) >= n
     deg_seq = _powerlaw_sequence(tau1, low, high, condition, length, max_iters)
 
     # Validate parameters for generating the community size sequence.
@@ -378,8 +380,10 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     # that one. As a result, this code is allowed many more chances to
     # generate a valid community size sequence.
     low, high = min_community, max_community
-    condition = lambda seq: sum(seq) == n
-    length = lambda seq: sum(seq) >= n
+
+    def condition(seq): return sum(seq) == n
+
+    def length(seq): return sum(seq) >= n
     comms = _powerlaw_sequence(tau2, low, high, condition, length, max_iters)
 
     # Generate the communities based on the given degree sequence and

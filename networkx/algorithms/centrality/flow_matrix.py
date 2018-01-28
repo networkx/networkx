@@ -20,9 +20,9 @@ def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
     for u, v in sorted(sorted((u, v)) for u, v in G.edges()):
         B = np.zeros(w, dtype=dtype)
         c = G[u][v].get(weight, 1.0)
-        B[u%w] = c
-        B[v%w] = -c
-        # get only the rows needed in the inverse laplacian 
+        B[u % w] = c
+        B[v % w] = -c
+        # get only the rows needed in the inverse laplacian
         # and multiply to get the flow matrix row
         row = np.dot(B, C.get_rows(u, v))
         yield row, (u, v)
@@ -56,7 +56,7 @@ class InverseLaplacian(object):
         raise("Implement solver")
 
     def get_rows(self, r1, r2):
-        for r in range(r1, r2+1):
+        for r in range(r1, r2 + 1):
             self.C[r % self.w, 1:] = self.solve_inverse(r)
         return self.C
 
@@ -70,8 +70,8 @@ class InverseLaplacian(object):
             w = 0
             x, y = np.nonzero(row)
             if len(y) > 0:
-                v = y-i
-                w = v.max()-v.min()+1
+                v = y - i
+                w = v.max() - v.min() + 1
                 m = max(w, m)
         return m
 
@@ -111,7 +111,7 @@ class CGInverseLaplacian(InverseLaplacian):
         global linalg
         from scipy.sparse import linalg
         ilu = linalg.spilu(self.L1.tocsc())
-        n = self.n-1
+        n = self.n - 1
         self.M = linalg.LinearOperator(shape=(n, n), matvec=ilu.solve)
 
     def solve(self, rhs):

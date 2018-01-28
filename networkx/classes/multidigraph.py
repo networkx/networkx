@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -37,8 +37,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     Parameters
     ----------
-    data : input graph
-        Data to initialize graph. If data=None (default) an empty
+    incoming_graph_data : input graph (optional, default: None)
+        Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
         dict of dicts, dict of lists, NetworkX graph, NumPy matrix
@@ -141,8 +141,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
     >>> G.edges[1, 2, 0]['weight'] = 4
 
     Warning: we protect the graph data structure by making `G.edges[1, 2]` a
-    read-only dict-like structure. Use 2 sets of brackets to add/change
-    data attributes. (For multigraphs: `MG.edges[u, v, key][name] = value`).
+    read-only dict-like structure. However, you can assign to attributes
+    in e.g. `G.edges[1, 2]`. Thus, use 2 sets of brackets to add/change
+    data attributes: `G.edges[1, 2]['weight'] = 4`
+    (For multigraphs: `MG.edges[u, v, key][name] = value`).
 
     **Shortcuts:**
 
@@ -244,14 +246,14 @@ class MultiDiGraph(MultiGraph, DiGraph):
     edge_key_dict_factory = dict
     # edge_attr_dict_factory = dict
 
-    def __init__(self, data=None, **attr):
+    def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
         ----------
-        data : input graph
-            Data to initialize graph.  If data=None (default) an empty
-            graph is created.  The data can be an edge list, or any
+        incoming_graph_data : input graph
+            Data to initialize graph.  If incoming_graph_data=None (default)
+            an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix
             or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
@@ -278,7 +280,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         """
         self.edge_key_dict_factory = self.edge_key_dict_factory
-        DiGraph.__init__(self, data, **attr)
+        DiGraph.__init__(self, incoming_graph_data, **attr)
 
     @property
     def adj(self):
@@ -332,7 +334,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return MultiAdjacencyView(self._pred)
 
-    def add_edge(self, u, v, key=None, **attr):
+    def add_edge(self, u_for_edge, v_for_edge, key=None, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -343,7 +345,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Parameters
         ----------
-        u, v : nodes
+        u_for_edge, v_for_edge : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         key : hashable identifier, optional (default=lowest unused integer)
@@ -401,6 +403,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> G[1][2][0].update({0: 5})
         >>> G.edges[1, 2, 0].update({0: 5})
         """
+        u, v = u_for_edge, v_for_edge
         # add nodes
         if u not in self._succ:
             self._succ[u] = self.adjlist_inner_dict_factory()
@@ -763,7 +766,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         typically used to create an empty version of the graph.
 
         Notes
-        =====
+        -----
         If you subclass the base class you should overwrite this method
         to return your class of graph.
         """
@@ -780,7 +783,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         If `as_view` is True then a view is returned instead of a copy.
 
         Notes
-        =====
+        -----
         All copies reproduce the graph structure, but data attributes
         may be handled in different ways. There are four types of copies
         of a graph that people might want.
@@ -988,8 +991,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
         if copy:
             H = self.fresh_copy()
             H.graph.update(deepcopy(self.graph))
-            if 'name' in H.graph:
-                H.name = "Reverse of (%s)" % H.name
             H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
             H.add_edges_from((v, u, k, deepcopy(d)) for u, v, k, d
                              in self.edges(keys=True, data=True))

@@ -258,7 +258,8 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         maintain the self.tests if needed, to keep the match() method
         functional. Implementations should consider multigraphs.
         """
-        pred, succ = [n for n in self.G1.predecessors(G1_node) if n in self.core_1], [n for n in self.G1.successors(G1_node) if n in self.core_1]
+        pred, succ = [n for n in self.G1.predecessors(G1_node) if n in self.core_1], [
+            n for n in self.G1.successors(G1_node) if n in self.core_1]
         if not self.one_hop(self.G1, G1_node, self.core_1, pred, succ):  # Fail fast on first node.
             return False
         if not self.two_hop_pred(self.G1, G1_node, self.core_1, pred):

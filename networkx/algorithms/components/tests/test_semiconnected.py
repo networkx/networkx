@@ -2,6 +2,7 @@ from itertools import chain
 import networkx as nx
 from nose.tools import *
 
+
 class TestIsSemiconnected(object):
 
     def test_undirected(self):

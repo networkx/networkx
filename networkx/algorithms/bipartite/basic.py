@@ -4,7 +4,7 @@
 Bipartite Graph Algorithms
 ==========================
 """
-#    Copyright (C) 2013-2017 by
+#    Copyright (C) 2013-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -13,12 +13,12 @@ Bipartite Graph Algorithms
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = [ 'is_bipartite',
-            'is_bipartite_node_set',
-            'color',
-            'sets',
-            'density',
-            'degrees']
+__all__ = ['is_bipartite',
+           'is_bipartite_node_set',
+           'color',
+           'sets',
+           'density',
+           'degrees']
 
 
 def color(G):
@@ -57,21 +57,22 @@ def color(G):
     """
     if G.is_directed():
         import itertools
+
         def neighbors(v):
             return itertools.chain.from_iterable([G.predecessors(v),
                                                   G.successors(v)])
     else:
-        neighbors=G.neighbors
+        neighbors = G.neighbors
 
     color = {}
-    for n in G: # handle disconnected graphs
-        if n in color or len(G[n])==0: # skip isolates
+    for n in G:  # handle disconnected graphs
+        if n in color or len(G[n]) == 0:  # skip isolates
             continue
         queue = [n]
-        color[n] = 1 # nodes seen with color (1 or 0)
+        color[n] = 1  # nodes seen with color (1 or 0)
         while queue:
             v = queue.pop()
-            c = 1 - color[v] # opposite color of node v
+            c = 1 - color[v]  # opposite color of node v
             for w in neighbors(v):
                 if w in color:
                     if color[w] == color[v]:
@@ -80,8 +81,9 @@ def color(G):
                     color[w] = c
                     queue.append(w)
     # color isolates with 0
-    color.update(dict.fromkeys(nx.isolates(G),0))
+    color.update(dict.fromkeys(nx.isolates(G), 0))
     return color
+
 
 def is_bipartite(G):
     """ Returns True if graph G is bipartite, False if not.
@@ -107,7 +109,8 @@ def is_bipartite(G):
     except nx.NetworkXError:
         return False
 
-def is_bipartite_node_set(G,nodes):
+
+def is_bipartite_node_set(G, nodes):
     """Returns True if nodes and G/nodes are a bipartition of G.
 
     Parameters
@@ -130,11 +133,11 @@ def is_bipartite_node_set(G,nodes):
     For connected graphs the bipartite sets are unique.  This function handles
     disconnected graphs.
     """
-    S=set(nodes)
+    S = set(nodes)
     for CC in nx.connected_component_subgraphs(G):
-        X,Y=sets(CC)
-        if not ( (X.issubset(S) and Y.isdisjoint(S)) or
-                 (Y.issubset(S) and X.isdisjoint(S)) ):
+        X, Y = sets(CC)
+        if not ((X.issubset(S) and Y.isdisjoint(S)) or
+                (Y.issubset(S) and X.isdisjoint(S))):
             return False
     return True
 
@@ -206,6 +209,7 @@ def sets(G, top_nodes=None):
         Y = {n for n, is_top in c.items() if not is_top}
     return (X, Y)
 
+
 def density(B, nodes):
     """Return density of bipartite graph B.
 
@@ -244,18 +248,19 @@ def density(B, nodes):
     --------
     color
     """
-    n=len(B)
-    m=nx.number_of_edges(B)
-    nb=len(nodes)
-    nt=n-nb
-    if m==0: # includes cases n==0 and n==1
-        d=0.0
+    n = len(B)
+    m = nx.number_of_edges(B)
+    nb = len(nodes)
+    nt = n - nb
+    if m == 0:  # includes cases n==0 and n==1
+        d = 0.0
     else:
         if B.is_directed():
-            d=m/(2.0*float(nb*nt))
+            d = m / (2.0 * float(nb * nt))
         else:
-            d= m/float(nb*nt)
+            d = m / float(nb * nt)
     return d
+
 
 def degrees(B, nodes, weight=None):
     """Return the degrees of the two node sets in the bipartite graph B.
@@ -298,7 +303,6 @@ def degrees(B, nodes, weight=None):
     --------
     color, density
     """
-    bottom=set(nodes)
-    top=set(B)-bottom
-    return (B.degree(top,weight),B.degree(bottom,weight))
-
+    bottom = set(nodes)
+    top = set(B) - bottom
+    return (B.degree(top, weight), B.degree(bottom, weight))

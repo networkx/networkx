@@ -30,7 +30,7 @@ INTERCHANGE_INVALID = [
     'saturation_largest_first',
     'DSATUR'
 ]
-    
+
 
 class TestColoring:
     def test_basic_cases(self):
@@ -61,13 +61,14 @@ class TestColoring:
             assert_true(any(verify_length(coloring, n_colors)
                             for n_colors in colors))
             assert_true(verify_coloring(graph, coloring))
-            
+
         for strategy, arglist in SPECIAL_TEST_CASES.items():
             for args in arglist:
                 yield (check_special_case, strategy, args[0], args[1], args[2])
 
     def test_interchange_invalid(self):
         graph = one_node_graph()
+
         def check_raises(strategy):
             assert_raises(nx.NetworkXPointlessConcept,
                           nx.coloring.greedy_color,
@@ -103,9 +104,11 @@ def verify_coloring(graph, coloring):
 
     return True
 
+
 def verify_length(coloring, expected):
     coloring = dict_to_sets(coloring)
     return len(coloring) == expected
+
 
 def dict_to_sets(colors):
     if len(colors) == 0:
@@ -120,25 +123,31 @@ def dict_to_sets(colors):
     return sets
 
 ############################## Graph Generation ##############################
+
+
 def empty_graph():
     return nx.Graph()
+
 
 def one_node_graph():
     graph = nx.Graph()
     graph.add_nodes_from([1])
     return graph
 
+
 def two_node_graph():
     graph = nx.Graph()
-    graph.add_nodes_from([1,2])
-    graph.add_edges_from([(1,2)])
+    graph.add_nodes_from([1, 2])
+    graph.add_edges_from([(1, 2)])
     return graph
+
 
 def three_node_clique():
     graph = nx.Graph()
-    graph.add_nodes_from([1,2, 3])
-    graph.add_edges_from([(1,2), (1,3), (2,3)])
+    graph.add_nodes_from([1, 2, 3])
+    graph.add_edges_from([(1, 2), (1, 3), (2, 3)])
     return graph
+
 
 def disconnected():
     graph = nx.Graph()
@@ -150,51 +159,55 @@ def disconnected():
     ])
     return graph
 
+
 def rs_shc():
     graph = nx.Graph()
-    graph.add_nodes_from([1,2,3,4])
+    graph.add_nodes_from([1, 2, 3, 4])
     graph.add_edges_from([
-        (1,2),
-        (2,3),
-        (3,4)
+        (1, 2),
+        (2, 3),
+        (3, 4)
     ])
     return graph
+
 
 def slf_shc():
     graph = nx.Graph()
-    graph.add_nodes_from([1,2,3,4,5,6,7])
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7])
     graph.add_edges_from([
-        (1,2),
-        (1,5),
-        (1,6),
-        (2,3),
-        (2,7),
-        (3,4),
-        (3,7),
-        (4,5),
-        (4,6),
-        (5,6)
+        (1, 2),
+        (1, 5),
+        (1, 6),
+        (2, 3),
+        (2, 7),
+        (3, 4),
+        (3, 7),
+        (4, 5),
+        (4, 6),
+        (5, 6)
     ])
     return graph
 
+
 def slf_hc():
     graph = nx.Graph()
-    graph.add_nodes_from([1,2,3,4,5,6,7,8])
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8])
     graph.add_edges_from([
-        (1,2),
-        (1,3),
-        (1,4),
-        (1,5),
-        (2,3),
-        (2,4),
-        (2,6),
-        (5,7),
-        (5,8),
-        (6,7),
-        (6,8),
-        (7,8)  
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (1, 5),
+        (2, 3),
+        (2, 4),
+        (2, 6),
+        (5, 7),
+        (5, 8),
+        (6, 7),
+        (6, 8),
+        (7, 8)
     ])
-    return graph    
+    return graph
+
 
 def lf_shc():
     graph = nx.Graph()
@@ -207,6 +220,7 @@ def lf_shc():
         (2, 5)
     ])
     return graph
+
 
 def lf_hc():
     graph = nx.Graph()
@@ -225,7 +239,8 @@ def lf_hc():
         (4, 3)
     ])
     return graph
-    
+
+
 def sl_shc():
     graph = nx.Graph()
     graph.add_nodes_from([1, 2, 3, 4, 5, 6])
@@ -241,6 +256,7 @@ def sl_shc():
         (5, 6)
     ])
     return graph
+
 
 def sl_hc():
     graph = nx.Graph()
@@ -265,6 +281,7 @@ def sl_hc():
     ])
     return graph
 
+
 def gis_shc():
     graph = nx.Graph()
     graph.add_nodes_from([1, 2, 3, 4])
@@ -274,6 +291,7 @@ def gis_shc():
         (3, 4)
     ])
     return graph
+
 
 def gis_hc():
     graph = nx.Graph()
@@ -286,6 +304,7 @@ def gis_hc():
         (5, 6)
     ])
     return graph
+
 
 def cs_shc():
     graph = nx.Graph()
@@ -301,6 +320,7 @@ def cs_shc():
     ])
     return graph
 
+
 def rsi_shc():
     graph = nx.Graph()
     graph.add_nodes_from([1, 2, 3, 4, 5, 6])
@@ -315,6 +335,7 @@ def rsi_shc():
         (5, 6)
     ])
     return graph
+
 
 def lfi_shc():
     graph = nx.Graph()
@@ -332,6 +353,7 @@ def lfi_shc():
         (5, 6)
     ])
     return graph
+
 
 def lfi_hc():
     graph = nx.Graph()
@@ -354,6 +376,7 @@ def lfi_hc():
     ])
     return graph
 
+
 def sli_shc():
     graph = nx.Graph()
     graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7])
@@ -371,6 +394,7 @@ def sli_shc():
         (6, 7)
     ])
     return graph
+
 
 def sli_hc():
     graph = nx.Graph()

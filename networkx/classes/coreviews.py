@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2017 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -337,7 +337,7 @@ class FilterAdjacency(Mapping):   # edgedict
     def copy(self):
         if hasattr(self.NODE_OK, 'nodes'):
             return {u: {v: d for v, d in self._atlas[u].items()
-                        if self.NODE_OK(v) if self.EDGE_OK(u,v)}
+                        if self.NODE_OK(v) if self.EDGE_OK(u, v)}
                     for u in self.NODE_OK.nodes if u in self._atlas}
         return {u: {v: d for v, d in nbrs.items() if self.NODE_OK(v)
                     if self.EDGE_OK(u, v)}

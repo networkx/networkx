@@ -1,6 +1,6 @@
 """ Fast approximation for node connectivity
 """
-#    Copyright (C) 2015 by 
+#    Copyright (C) 2015 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    All rights reserved.
 #    BSD license.
@@ -20,7 +20,7 @@ INF = float('inf')
 
 def local_node_connectivity(G, source, target, cutoff=None):
     """Compute node connectivity between source and target.
-    
+
     Pairwise or local node connectivity between two distinct and nonadjacent 
     nodes is the minimum number of nodes that must be removed (minimum 
     separating cutset) to disconnect them. By Menger's theorem, this is equal 
@@ -83,7 +83,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
- 
+
     """
     if target == source:
         raise nx.NetworkXError("source and target have to be different nodes.")
@@ -97,7 +97,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     K = 0
     if not possible:
         return K
-    
+
     if cutoff is None:
         cutoff = INF
 
@@ -128,7 +128,7 @@ def node_connectivity(G, s=None, t=None):
     This algorithm is based on a fast approximation that gives an strict lower
     bound on the actual number of node independent paths between two nodes [1]_. 
     It works for both directed and undirected graphs.
-   
+
     Parameters
     ----------
     G : NetworkX graph
@@ -153,7 +153,7 @@ def node_connectivity(G, s=None, t=None):
     >>> G = nx.octahedral_graph()
     >>> approx.node_connectivity(G)
     4
-    
+
     Notes
     -----
     This algorithm [1]_ finds node independents paths between two nodes by 
@@ -191,6 +191,7 @@ def node_connectivity(G, s=None, t=None):
     if G.is_directed():
         connected_func = nx.is_weakly_connected
         iter_func = itertools.permutations
+
         def neighbors(v):
             return itertools.chain(G.predecessors(v), G.successors(v))
     else:
@@ -322,7 +323,7 @@ def _bidirectional_shortest_path(G, source, target, exclude):
     .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
-    
+
     """
     # call helper to do the real work
     results = _bidirectional_pred_succ(G, source, target, exclude)
@@ -348,10 +349,10 @@ def _bidirectional_pred_succ(G, source, target, exclude):
     # does BFS from both source and target and meets in the middle
     # excludes nodes in the container "exclude" from the search
     if source is None or target is None:
-        raise nx.NetworkXException(\
+        raise nx.NetworkXException(
             "Bidirectional shortest path called without source or target")
     if target == source:
-        return ({target:None},{source:None},source)
+        return ({target: None}, {source: None}, source)
 
     # handle either directed or undirected
     if G.is_directed():
@@ -370,7 +371,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
     reverse_fringe = [target]
 
     level = 0
-    
+
     while forward_fringe and reverse_fringe:
         # Make sure that we iterate one step forward and one step backwards
         # thus source and target will only tigger "found path" when they are
@@ -387,7 +388,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                         forward_fringe.append(w)
                         pred[w] = v
                     if w in succ:
-                        return pred, succ, w # found path
+                        return pred, succ, w  # found path
         else:
             this_level = reverse_fringe
             reverse_fringe = []
@@ -398,7 +399,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                     if w not in succ:
                         succ[w] = v
                         reverse_fringe.append(w)
-                    if w in pred: 
-                        return pred, succ, w # found path
+                    if w in pred:
+                        return pred, succ, w  # found path
 
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))

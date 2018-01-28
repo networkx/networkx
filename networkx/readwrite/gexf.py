@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 by
+# Copyright (C) 2013-2018 by
 #
 # Authors: Aric Hagberg <hagberg@lanl.gov>
 #          Dan Schult <dschult@colgate.edu>
