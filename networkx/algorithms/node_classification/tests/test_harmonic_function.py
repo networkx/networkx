@@ -52,9 +52,9 @@ class TestHarmonicFunction:
     @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
-        G.add_edge(0,1)
-        G.add_edge(1,2)
-        G.add_edge(2,3)
+        G.add_edge(0, 1)
+        G.add_edge(1, 2)
+        G.add_edge(2, 3)
         label_name = 'label'
         G.node[0][label_name] = 'A'
         G.node[3][label_name] = 'B'
