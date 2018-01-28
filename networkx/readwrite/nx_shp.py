@@ -260,6 +260,22 @@ def write_shp(G, outdir):
         lyr.CreateFeature(feature)
         feature.Destroy()
 
+    # Conversion dict between python and ogr types
+    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+
+    # Check/add fields from attribute data to Shapefile layers
+    def add_fields_to_layer(key, value, fields, layer):
+        # Field not in previous edges so add to dict
+        if type(value) in OGRTypes:
+            fields[key] = OGRTypes[type(value)]
+        else:
+            # Data type not supported, default to string (char 80)
+            fields[key] = ogr.OFTString
+        # Create the new field
+        newfield = ogr.FieldDefn(key, fields[key])
+        layer.CreateField(newfield)
+
+
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
     # delete pre-existing output first otherwise ogr chokes
@@ -268,10 +284,29 @@ def write_shp(G, outdir):
     except:
         pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
+
+    # Storage for node field names and their data types
+    node_fields = {}
+
+    def create_attributes(data, fields, layer):
+        attributes = {}  # storage for attribute data (indexed by field names)
+        for key, value in data.items():
+            # Reject spatial data not required for attribute table
+            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
+                    and key != 'ShpName'):
+                # Check/add field and data type to fields dict
+                if key not in fields:
+                    add_fields_to_layer(key, value, fields, layer)
+                # Store the data from new field to dict for CreateLayer()
+                attributes[key] = value
+        return attributes, layer
+
     for n in G:
         data = G.nodes[n]
         g = netgeometry(n, data)
-        create_feature(g, nodes)
+        attributes, nodes = create_attributes(data, node_fields, nodes)
+        create_feature(g, nodes, attributes)
+
     try:
         shpdir.DeleteLayer("edges")
     except:
@@ -279,38 +314,12 @@ def write_shp(G, outdir):
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
 
     # New edge attribute write support merged into edge loop
-    fields = {}      # storage for field names and their data types
+    edge_fields = {}      # storage for field names and their data types
 
-    # Conversion dict between python and ogr types
-    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
-
-    # Edge loop
     for e in G.edges(data=True):
-        attributes = {}  # storage for attribute data (indexed by field names)
         data = G.get_edge_data(*e)
         g = netgeometry(e, data)
-        # Loop through attribute data in edges
-        for key, data in e[2].items():
-            # Reject spatial data not required for attribute table
-            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
-                    and key != 'ShpName'):
-                # For all edges check/add field and data type to fields dict
-                if key not in fields:
-                    # Field not in previous edges so add to dict
-                    if type(data) in OGRTypes:
-                        fields[key] = OGRTypes[type(data)]
-                    else:
-                        # Data type not supported, default to string (char 80)
-                        fields[key] = ogr.OFTString
-                    # Create the new field
-                    newfield = ogr.FieldDefn(key, fields[key])
-                    edges.CreateField(newfield)
-                    # Store the data from new field to dict for CreateLayer()
-                    attributes[key] = data
-                else:
-                    # Field already exists, add data to dict for CreateLayer()
-                    attributes[key] = data
-        # Create the feature with, passing new attribute data
+        attributes, edges = create_attributes(e[2], edge_fields, edges)
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None

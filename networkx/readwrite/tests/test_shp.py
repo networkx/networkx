@@ -185,6 +185,25 @@ class TestShp(object):
         edges = shpdir.GetLayerByName("edges")
         testattributes(edges, G)
 
+    # Test export of node attributes in nx.write_shp (#2778)
+    def test_nodeattributeexport(self):
+        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
+
+        G = nx.DiGraph()
+        A = (0, 0)
+        B = (1, 1)
+        C = (2, 2)
+        G.add_edge(A, B)
+        G.add_edge(A, C)
+        label = 'node_label'
+        for n, d in G.nodes(data=True):
+            d['label'] = label
+        nx.write_shp(G, tpath)
+
+        H = nx.read_shp(tpath)
+        for n, d in H.nodes(data=True):
+            assert_equal(d['label'], label)
+
     def test_wkt_export(self):
         G = nx.DiGraph()
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
