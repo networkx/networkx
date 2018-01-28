@@ -53,15 +53,13 @@ def local_and_global_consistency(G, alpha=0.99,
     --------
     >>> from networkx.algorithms import node_classification
     >>> G = nx.path_graph(4)
-    >>> label_name = 'label'
-    >>> G.node[0][label_name] = 'A'
-    >>> G.node[3][label_name] = 'B'
+    >>> G.node[0]['label'] = 'A'
+    >>> G.node[3]['label'] = 'B'
     >>> G.nodes(data=True)
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()
     EdgeView([(0, 1), (1, 2), (2, 3)])
-    >>> predicted = node_classification.local_and_global_consistency(G,
-        label_name=label_name)
+    >>> predicted = node_classification.local_and_global_consistency(G)
     >>> predicted
     ['A', 'A', 'B', 'B']
 
