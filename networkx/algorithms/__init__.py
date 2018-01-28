@@ -50,6 +50,7 @@ from networkx.algorithms.wiener import *
 # the `networkx` namespace.
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
+import networkx.algorithms.node_classification
 import networkx.algorithms.centrality
 import networkx.algorithms.chordal
 import networkx.algorithms.cluster
