@@ -14,24 +14,31 @@ Advances in neural information processing systems, 16(16), 321-328.
 import networkx as nx
 
 from networkx.utils.decorators import not_implemented_for
-from networkx.algorithms.node_classification.utils import _get_label_info, _init_label_matrix, _propagate, _predict
+from networkx.algorithms.node_classification.utils import (
+    _get_label_info,
+    _init_label_matrix,
+    _propagate,
+    _predict,
+)
 
 __all__ = ['local_and_global_consistency']
 
 
 @not_implemented_for('directed')
-def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name='label'):
+def local_and_global_consistency(G, alpha=0.99,
+                                 max_iter=30,
+                                 label_name='label'):
     """Node classification by Local and Global Consistency
 
     Parameters
     ----------
     G : NetworkX Graph
     alpha : float
-      Clamping factor
+        Clamping factor
     max_iter : int
-      Maximum number of iterations allowed
+        Maximum number of iterations allowed
     label_name : string
-      Name of target labels to predict
+        Name of target labels to predict
 
     Raises
     ----------
@@ -40,7 +47,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name='label')
     Returns
     ----------
     predicted : array, shape = [n_samples]
-      Array of predicted labels
+        Array of predicted labels
 
     Examples
     --------
@@ -53,7 +60,8 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name='label')
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()
     EdgeView([(0, 1), (1, 2), (2, 3)])
-    >>> predicted = node_classification.local_and_global_consistency(G, label_name=label_name)
+    >>> predicted = node_classification.local_and_global_consistency(G,
+        label_name=label_name)
     >>> predicted
     ['A', 'A', 'B', 'B']
 
@@ -68,12 +76,14 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name='label')
         import numpy as np
     except ImportError:
         raise ImportError(
-            "local_and_global_consistency() requires numpy: http://scipy.org/ ")
+            "local_and_global_consistency() requires numpy: ",
+            "http://scipy.org/ ")
     try:
         from scipy import sparse
     except ImportError:
         raise ImportError(
-            "local_and_global_consistensy() requires scipy: http://scipy.org/ ")
+            "local_and_global_consistensy() requires scipy: ",
+            "http://scipy.org/ ")
 
     def _build_propagation_matrix(X, labels, alpha):
         """Build propagation matrix of Local and global consistency
@@ -81,16 +91,16 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name='label')
         Parameters
         ----------
         X : scipy sparse matrix, shape = [n_samples, n_samples]
-          Adjacency matrix
+            Adjacency matrix
         labels : array, shape = [n_samples, 2]
-          Array of pairs of node id and label id
+            Array of pairs of node id and label id
         alpha : float
-          Clamping factor
+            Clamping factor
 
         Returns
         ----------
         S : scipy sparse matrix, shape = [n_samples, n_samples]
-          Propagation matrix
+            Propagation matrix
 
         """
         degrees = X.sum(axis=0).A[0]
@@ -105,18 +115,18 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name='label')
         Parameters
         ----------
         X : scipy sparse matrix, shape = [n_samples, n_samples]
-          Adjacency matrix
+            Adjacency matrix
         labels : array, shape = [n_samples, 2]
-          Array of pairs of node id and label id
+            Array of pairs of node id and label id
         alpha : float
-          Clamping factor
+            Clamping factor
         n_classes : integer
-          The number of classes (distinct labels) on the input graph
+            The number of classes (distinct labels) on the input graph
 
         Returns
         ----------
         B : array, shape = [n_samples, n_classes]
-          Base matrix
+            Base matrix
         """
 
         n_samples = X.shape[0]
@@ -153,9 +163,9 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-    except:
+    except ImportError:
         raise SkipTest("NumPy not available")
     try:
         import scipy
-    except:
+    except ImportError:
         raise SkipTest("SciPy not available")

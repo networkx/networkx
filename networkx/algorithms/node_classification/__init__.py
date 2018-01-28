@@ -1,7 +1,10 @@
 """ This module provides the functions for node classification problem.
 
-The functions in this module are not imported into the top level `networkx` namespace.
-You can access these functions by importing the `networkx.algorithms.node_classification` modules, then accessing the functions as attributes of `node_classification`.
+The functions in this module are not imported
+into the top level `networkx` namespace.
+You can access these functions by importing
+the `networkx.algorithms.node_classification` modules,
+then accessing the functions as attributes of `node_classification`.
 For example:
 
   >>> import networkx as nx
@@ -11,7 +14,7 @@ For example:
   EdgeView([(0, 1), (1, 2), (2, 3)])
   >>> G.node[0]['label'] = 'A'
   >>> G.node[3]['label'] = 'B'
-  >>> node_classification.harmonic_function(G, label_name='label')  # doctest: +SKIP
+  >>> node_classification.harmonic_function(G)  # doctest: +SKIP
   ['A', 'A', 'B', 'B']
 
 """

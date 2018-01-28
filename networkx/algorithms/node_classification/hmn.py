@@ -15,7 +15,12 @@ In ICML (Vol. 3, pp. 912-919).
 import networkx as nx
 
 from networkx.utils.decorators import not_implemented_for
-from networkx.algorithms.node_classification.utils import _get_label_info, _init_label_matrix, _propagate, _predict
+from networkx.algorithms.node_classification.utils import (
+    _get_label_info,
+    _init_label_matrix,
+    _propagate,
+    _predict,
+)
 
 __all__ = ['harmonic_function']
 
@@ -28,9 +33,9 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     ----------
     G : NetworkX Graph
     max_iter : int
-      maximum number of iterations allowed
+        maximum number of iterations allowed
     label_name : string
-      name of target labels to predict
+        name of target labels to predict
 
     Raises
     ----------
@@ -39,7 +44,7 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     Returns
     ----------
     predicted : array, shape = [n_samples]
-      Array of predicted labels
+        Array of predicted labels
 
     Examples
     --------
@@ -52,7 +57,8 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()
     EdgeView([(0, 1), (1, 2), (2, 3)])
-    >>> predicted = node_classification.harmonic_function(G, label_name=label_name)
+    >>> predicted = node_classification.harmonic_function(G,
+        label_name=label_name)
     >>> predicted
     ['A', 'A', 'B', 'B']
 
@@ -79,14 +85,14 @@ def harmonic_function(G, max_iter=30, label_name='label'):
         Parameters
         ----------
         X : scipy sparse matrix, shape = [n_samples, n_samples]
-          Adjacency matrix
+            Adjacency matrix
         labels : array, shape = [n_samples, 2]
-          Array of pairs of node id and label id
+            Array of pairs of node id and label id
 
         Returns
         ----------
         P : scipy sparse matrix, shape = [n_samples, n_samples]
-          Propagation matrix
+            Propagation matrix
 
         """
         degrees = X.sum(axis=0).A[0]
@@ -102,16 +108,16 @@ def harmonic_function(G, max_iter=30, label_name='label'):
         Parameters
         ----------
         X : scipy sparse matrix, shape = [n_samples, n_samples]
-          Adjacency matrix
+            Adjacency matrix
         labels : array, shape = [n_samples, 2]
-          Array of pairs of node id and label id
+            Array of pairs of node id and label id
         n_classes : integer
-          The number of classes (distinct labels) on the input graph
+            The number of classes (distinct labels) on the input graph
 
         Returns
         ----------
         B : array, shape = [n_samples, n_classes]
-          Base matrix
+            Base matrix
         """
         n_samples = X.shape[0]
         B = np.zeros((n_samples, n_classes))
@@ -148,9 +154,9 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-    except:
+    except ImportError:
         raise SkipTest("NumPy not available")
     try:
         import scipy
-    except:
+    except ImportError:
         raise SkipTest("SciPy not available")

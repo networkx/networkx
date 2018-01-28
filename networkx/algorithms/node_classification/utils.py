@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+#
+# Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
 
 def _propagate(P, F, B):
     """Propagate labels by one step
@@ -5,19 +8,17 @@ def _propagate(P, F, B):
     Parameters
     ----------
     P : scipy sparse matrix, shape = [n_samples, n_samples]
-      Propagation matrix
+        Propagation matrix
     F : numpy array, shape = [n_samples, n_classes]
-      Label matrix
+        Label matrix
     B : numpy array, shape = [n_samples, n_classes]
-      Base matrix
+        Base matrix
 
     Returns
     ----------
     F_new : array, shape = [n_samples, n_classes]
-      Label matrix
+        Label matrix
     """
-    import numpy as np
-
     F_new = P.dot(F) + B
     return F_new
 
@@ -29,15 +30,15 @@ def _get_label_info(G, label_name):
     ----------
     G : Network X graph
     label_name : string
-      Name of the target label
+        Name of the target label
 
     Returns
     ----------
     labels : numpy array, shape = [n_labeled_samples, 2]
-      Array of pairs of labeled node ID and label ID
+        Array of pairs of labeled node ID and label ID
     label_dict : numpy array, shape = [n_classes]
-      Array of labels
-      i-th element contains the label corresponding label ID `i`
+        Array of labels
+        i-th element contains the label corresponding label ID `i`
     """
     import numpy as np
 
@@ -63,14 +64,14 @@ def _init_label_matrix(n_samples, n_classes):
     Parameters
     ----------
     n_samples : integer
-      The number of nodes (samples) on the input graph
+        The number of nodes (samples) on the input graph
     n_classes : integer
-      The number of classes (distinct labels) on the input graph
+        The number of classes (distinct labels) on the input graph
 
     Returns
     ----------
     F : numpy array, shape = [n_samples, n_classes]
-      Label matrix
+        Label matrix
     """
     import numpy as np
 
@@ -84,15 +85,15 @@ def _predict(F, label_dict):
     Parameters
     ----------
     F : numpy array, shape = [n_samples, n_classes]
-      Learnt (resulting) label matrix
+        Learnt (resulting) label matrix
     label_dict : numpy array, shape = [n_classes]
-      Array of labels
-      i-th element contains the label corresponding label ID `i`
+        Array of labels
+        i-th element contains the label corresponding label ID `i`
 
     Returns
     ----------
     predicted : numpy array, shape = [n_samples]
-      Array of predicted labels
+        Array of predicted labels
     """
     import numpy as np
 
