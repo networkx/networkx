@@ -100,22 +100,20 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     ###########################################################################
     # Initialization
     ###########################################################################
+    # For every node, add a dummy self loop edge with infinite-capacity and
+    # infinite-weight. Those edges will be used to satisfy the node demands
+    # and create an initial feasible solution.
 
-    # Add a dummy node -1 and connect all existing nodes to it with infinite-
-    # capacity dummy edges. Node -1 will serve as the root of the
-    # spanning tree of the network simplex method. The new edges will used to
-    # trivially satisfy the node demands and create an initial strongly
-    # feasible spanning tree.
     n = len(N)  # number of nodes
     for p, d in enumerate(D):
-        if d > 0:  # Must be greater-than here. Zero-demand nodes must have
+        S.append(p)
+        T.append(p)
+        if d < 0:  # Must be greater-than here. Zero-demand nodes must have
                    # edges pointing towards the root to ensure strong
                    # feasibility.
-            S.append(-1)
-            T.append(p)
+            Mu.append(0.5)
         else:
-            S.append(p)
-            T.append(-1)
+            Mu.append(2)
 
     # DONE: check if Mu positive values should multiply here
     mu_product = 1
@@ -129,15 +127,20 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     U.extend(repeat(faux_inf, n))
 
     # Construct the initial spanning tree.
-    e = len(E)                                           # number of edges
-    x = list(chain(repeat(0, e), (abs(d) for d in D)))   # edge flows
-    pi = [faux_inf if d <= 0 else -faux_inf for d in D]  # node potentials
-    parent = list(chain(repeat(-1, n), [None]))  # parent nodes
-    edge = list(range(e, e + n))                 # edges to parents
-    size = list(chain(repeat(1, n), [n + 1]))    # subtree sizes
-    next = list(chain(range(1, n), [-1, 0]))     # next nodes in depth-first thread
-    prev = list(range(-1, n))                    # previous nodes in depth-first thread
-    last = list(chain(range(n), [n - 1]))        # last descendants in depth-first thread
+    e = len(E)                     # number of edges
+    edge = list(repeat(None, n))   # edges to parents
+    size = list(repeat(1, n))      # subtree sizes
+    next = list(range(n))          # next nodes in depth-first thread
+    prev = list(range(n))          # previous nodes in depth-first thread
+    last = list(range(n))          # last descendants in depth-first thread
+    parent = list(repeat(None, n)) # parent nodes
+    # edge flows
+    x = list(chain(repeat(0, e), (-d/(1-Mu[e+i]) for i, d in enumerate(D))))
+    # edge potentials
+    pi = list(chain(repeat(0, e), (faux_inf/(1-Mu[e+i]) for i, d in enumerate(D))))
+
+    forest_root = list(range(n)) # augmented forest roots
+    extra_edge = list(range(e, e+n)) # augmented forest extra edges
 
     print('######################################################')
     print('# Tree Variables #####################################')
@@ -150,6 +153,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     print('# next nodes in dfs thread\t', next)
     print('# previous nodes in dfs thread\t', prev)
     print('# last descendants in dfs thread', last)
+    print('# augmented forest roots\t', forest_root)
+    print('# extra edges\t\t\t', extra_edge)
 
     ###########################################################################
     # Pivot loop
