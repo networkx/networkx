@@ -237,7 +237,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                     size_q = size[q]
                 else:
                     return p
-
+    #TODO - check in new data structure
     def trace_path(p, w):
         """Return the nodes and edges on the path from node p to its ancestor
         w.
@@ -249,7 +249,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             p = parent[p]
             Wn.append(p)
         return Wn, We
-
+    
+    #TODO - find cycle must return a boolean whether tree's were different 
     def find_cycle(i, p, q):
         """Return the nodes and edges on the cycle containing edge i == (p, q)
         when the latter is added to the spanning tree.
@@ -395,6 +396,12 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         for q in trace_subtree(q):
             pi[q] += d
 
+    # TODO
+    def find_extra_edge(root):
+        """ Returns the extra edge belonging to the tree rooted at 'root'
+        """
+
+
     print('######################################################')
     print('# Data structures ####################################')
     print('# nodes\t\t\t', N)
@@ -410,28 +417,49 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     print('# edge multipliers\t', Mu)
 
     # Pivot loop
-    for i, p, q in find_entering_edges():
+    for enter_edge_id, enter_edge_origin, enter_edge_destination in find_entering_edges():
         print('######################################################')
         print('# Pivot Loop #########################################')
-        print('# entering edges\t', i, p, q)
-        Wn, We = find_cycle(i, p, q)
+        print('# entering edges\t', enter_edge_id, 
+                                    enter_edge_origin, 
+                                    enter_edge_destination)
+
+        #TODO - create enlongated variables names and create structure to deal with two cycles
+        different_trees, cycle_root, Wn1, We1 = find_cycle(enter_edge_id, 
+                                                            enter_edge_origin, 
+                                                            enter_edge_destination)
+        if different_trees:
+            #assert len(cycle_root) == 2
+            extra_edge_1_id, extra_edge_1_origin, extra_edge_1_destination = find_extra_edge(cycle_root[0])
+            _, _, Wn1, We1 = find_cycle(extra_edge_1_id, 
+                                        extra_edge_1_origin, 
+                                        extra_edge_1_destination)
+            extra_edge_2_id, extra_edge_2_origin, extra_edge_2_destination = find_extra_edge(cycle_root[1])
+            _, _, Wn2, We2 = find_cycle(extra_edge_2_id, 
+                                        extra_edge_2_origin, 
+                                        extra_edge_2_destination)
+        else:
+            extra_edge_id, extra_edge_origin, extra_edge_destination = find_extra_edge(cycle_root)
+        _, _, Wn2, We2 = find_cycle(extra_edge_id,
+                                     extra_edge_origin,
+                                     extra_edge_destination)
         print('# find cycle\t\t', Wn, We)
-        j, s, t = find_leaving_edge(Wn, We)
-        print('# leaving edge\t\t', j, s, t)
-        augment_flow(Wn, We, residual_capacity(j, s))
+        leav_edge_id, leav_edge_origin, leav_edge_destination = find_leaving_edge(Wn, We)
+        print('# leaving edge\t\t', leav_edge_id, leav_edge_origin, leav_edge_destination)
+        augment_flow(Wn, We, residual_capacity(leav_edge_id, leav_edge_origin))
         print('# augment flow\t\t', Wn, We)
-        if i != j:  # Do nothing more if the entering edge is the same as the
+        if enter_edge_id != leav_edge_id:  # Do nothing more if the entering edge is the same as the
                     # the leaving edge.
-            if parent[t] != s:
+            if parent[leav_edge_destination] != leav_edge_origin:
                 # Ensure that s is the parent of t.
-                s, t = t, s
-            if We.index(i) > We.index(j):
+                leav_edge_origin, leav_edge_destination = leav_edge_destination, leav_edge_origin
+            if We.index(enter_edge_id) > We.index(leav_edge_id):
                 # Ensure that q is in the subtree rooted at t.
-                p, q = q, p
-            remove_edge(s, t)
-            make_root(q)
-            add_edge(i, p, q)
-            update_potentials(i, p, q)
+                enter_edge_origin, enter_edge_destination = enter_edge_destination, enter_edge_origin
+            remove_edge(leav_edge_origin, leav_edge_destination)
+            make_root(enter_edge_destination)
+            add_edge(enter_edge_id, enter_edge_origin, enter_edge_destination)
+            update_potentials(enter_edge_id, enter_edge_origin, enter_edge_destination)
 
     ###########################################################################
     # Infeasibility and unboundedness detection
