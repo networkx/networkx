@@ -163,7 +163,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     def reduced_cost(i):
         """Return the reduced cost of an edge i.
         """
-        c = C[i] - pi[S[i]] + pi[T[i]]
+        c = C[i] - pi[S[i]] + Mu[i]*pi[T[i]]
         return c if x[i] == 0 else -c
 
     def find_entering_edges():
@@ -178,8 +178,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         # blocks to search is determined following Bland's rule.
         B = int(ceil(sqrt(e)))  # pivot block size
         M = (e + B - 1) // B    # number of blocks needed to cover all edges
-        m = 0                   # number of consecutive blocks without eligible
-                                # entering edges
+        m = 0                   # number of consecutive blocks without eligible entering edges
         f = 0                   # first edge in block
         while m < M:
             # Determine the next block of edges.
