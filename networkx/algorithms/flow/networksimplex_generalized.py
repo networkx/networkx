@@ -6,6 +6,7 @@ Generalized flow algorithms on directed connected graphs.
 __authors__ = """Alexandre Costa, Georges Spyrides, Matheus Telles"""
 __all__ = ['network_simplex_generalized']
 
+from random import shuffle
 from itertools import chain, islice, repeat
 from math import ceil, sqrt
 import networkx as nx
@@ -176,19 +177,25 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         # rule. The edges are cyclically grouped into blocks of size B. Within
         # each block, Dantzig's rule is applied to find an entering edge. The
         # blocks to search is determined following Bland's rule.
-        B = int(ceil(sqrt(e)))  # pivot block size
-        M = (e + B - 1) // B    # number of blocks needed to cover all edges
-        m = 0                   # number of consecutive blocks without eligible entering edges
-        f = 0                   # first edge in block
+        B = int(ceil(sqrt(e))) # pivot block size
+        M = (e + B - 1) // B   # number of blocks needed to cover all edges
+        m = 0                  # number of consecutive blocks without eligible entering edges
+
+        # Iterate through blocks in a random order to stimulate finding faraway edges
+        blocks_random = list(range(M))
+        shuffle(blocks_random)
+
         while m < M:
             # Determine the next block of edges.
-            l = f + B
+            block_index = blocks_random[m]
+            f = B * block_index # first edge in block
+            l = f + B           # last edge in block
             if l <= e:
                 edges = range(f, l)
             else:
                 l -= e
                 edges = chain(range(f, e), range(l))
-            f = l
+
             # Find the first edge with the lowest reduced cost.
             i = min(edges, key=reduced_cost)
             c = reduced_cost(i)
@@ -205,6 +212,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                     q = S[i]
                 yield i, p, q
                 m = 0
+                shuffle(blocks_random)
         # All edges have nonnegative reduced costs. The current flow is
         # optimal.
 
