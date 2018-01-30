@@ -137,7 +137,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     # edge flows
     x = list(chain(repeat(0, e), (-d/(1-Mu[e+i]) for i, d in enumerate(D))))
     # edge potentials
-    pi = list(chain(repeat(0, e), (faux_inf/(1-Mu[e+i]) for i, d in enumerate(D))))
+    pi = list(((faux_inf/(1-Mu[e+i]) for i, d in enumerate(D))))
 
     forest_root = list(range(n)) # augmented forest roots
     extra_edge = list(range(e, e+n)) # augmented forest extra edges
