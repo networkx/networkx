@@ -125,7 +125,7 @@ class TestOpenFileDecorator(object):
         self.fobj.close()
         assert_equal(self.read(self.name), ''.join(self.text))
 
-    def test_writer_kwarg_fobj(self):
+    def test_writer_kwarg_path_none(self):
         self.writer_kwarg(path=None)
 
     def tearDown(self):
