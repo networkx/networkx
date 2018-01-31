@@ -19,21 +19,25 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
-from collections import defaultdict
-from fractions import gcd
 from functools import partial
 from itertools import chain
 from itertools import product
 from itertools import starmap
 import heapq
 
+import six
+
 import networkx as nx
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 from networkx.utils import consume
 from networkx.utils import pairwise
-from networkx.utils import generate_unique_node
 from networkx.utils import not_implemented_for
+
+if six.PY2:
+    from fractions import gcd
+else:
+    from math import gcd
 
 __all__ = ['descendants',
            'ancestors',
