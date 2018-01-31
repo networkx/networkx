@@ -187,19 +187,6 @@ class TestEdgelist:
         os.close(fd)
         os.unlink(fname)
 
-    def test_edgelist_digraph(self):
-        G = self.DG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_edgelist(G, fname)
-        H = nx.read_edgelist(fname, create_using=nx.DiGraph())
-        G.remove_node('g')  # isolated nodes are not written in edgelist
-        H2 = nx.read_edgelist(fname, create_using=nx.DiGraph())
-        assert_not_equal(H, H2)  # they should be different graphs
-        assert_nodes_equal(list(H), list(G))
-        assert_edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
-
     def test_edgelist_multigraph(self):
         G = self.XG
         (fd, fname) = tempfile.mkstemp()

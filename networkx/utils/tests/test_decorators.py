@@ -108,7 +108,7 @@ class TestOpenFileDecorator(object):
         self.fobj.close()
         assert_equal(self.read(self.name), ''.join(self.text))
 
-    def test_writer_arg2default_fobj(self):
+    def test_writer_arg2default_fobj_path_none(self):
         self.writer_arg2default(0, path=None)
 
     def test_writer_arg4default_fobj(self):
