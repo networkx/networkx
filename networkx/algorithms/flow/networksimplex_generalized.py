@@ -412,16 +412,28 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 last[p] = last_q
             p = parent[p]
 
-    def update_potentials(i, p, q):
-        """Update the potentials of the nodes in the subtree rooted at a node
-        q connected to its parent p by an edge i.
-        """
-        if q == T[i]:
-            d = pi[p] - C[i] - pi[q]
-        else:
-            d = pi[p] + C[i] - pi[q]
+    def update_potentials(i, q):
+        """Update the potentials of the nodes in the tree rooted at node
+        q and possessing an extra edge i.
+        """        
+        tree_node, f, g = {q}, {q:0}, {q:1}
         for q in trace_subtree(q):
-            pi[q] += d
+            tree_node.add(q)
+
+            p = prev[q]
+            if p == parent[q]:
+                j = edge[q]
+                f[q] = (f[p] - C[j]) / Mu[j]
+                g[q] = g[p] / Mu[j]
+            elif q == parent[p]:
+                j = edge[p]
+                f[q] = (f[p] - C[j]) * Mu[j]
+                g[q] = g[p] * Mu[j]
+
+        theta = (C[i] - f[S[i]] + Mu[i] * f[T[i]]) / (g[S[i]] - Mu[i] * g[T[i]])
+
+        for q in tree_node:
+            pi[q] = f[q] + g[q] * theta
 
     #TODO new, discuss
     def find_extra_edge(root):
