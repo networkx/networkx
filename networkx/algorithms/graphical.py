@@ -246,7 +246,7 @@ def is_multigraphical(sequence):
 
     Parameters
     ----------
-    deg_sequence : list
+    sequence : list
         A list of integers
 
     Returns
