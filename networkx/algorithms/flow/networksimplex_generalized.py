@@ -281,7 +281,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
         #if found two different roots, we are going to work with two trees
         if Wn[-1] != WnR[-1]:
-            return False, (Wn[-1], WnR[-1]), None, None
+            return True, (Wn[-1], WnR[-1]), None, None
 
         tree_root = Wn[-1]
         Wn, WnR = eliminate_redundancy(Wn, WnR)
@@ -293,7 +293,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         del WnR[-1]
         Wn += WnR
         We += WeR
-        return True, tree_root, Wn, We
+        return False, tree_root, Wn, We
 
 
     def residual_capacity(i, p):
@@ -302,7 +302,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         """
         return U[i] - x[i] if S[i] == p else x[i]
 
-    def find_leaving_edge(Wn, We):
+    def find_leaving_edge(Wn1, We1, Wn2, We2):
         """Return the leaving edge in a cycle represented by Wn and We.
         """
         j, s = min(zip(reversed(We), reversed(Wn)),
@@ -427,6 +427,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     def find_extra_edge(root):
         """ Returns the extra edge belonging to the tree rooted at 'root'
         """
+        edge_id = extra_edge[forest_root.index(root)]
+        return edge_id, S[edge_id], T[edge_id]
 
 
     print('######################################################')
@@ -447,34 +449,43 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     for enter_edge_id, enter_edge_origin, enter_edge_destination in find_entering_edges():
         print('######################################################')
         print('# Pivot Loop #########################################')
-        print('# entering edges\t', enter_edge_id, 
-                                    enter_edge_origin, 
+        print('# entering edges\t', enter_edge_id,
+                                    enter_edge_origin,
                                     enter_edge_destination)
 
         #TODO - create enlongated variables names and create structure to deal with two cycles
-        different_trees, cycle_root, Wn1, We1 = find_cycle(enter_edge_id, 
-                                                            enter_edge_origin, 
+        different_trees, cycle_root, Wn1, We1 = find_cycle(enter_edge_id,
+                                                            enter_edge_origin,
                                                             enter_edge_destination)
+
+        print('# different trees: ', different_trees)
+        print('# cycle_root: ', cycle_root)
+        print('# Wn1: ', Wn1)
+        print('# We1: ', We1)
+
         if different_trees:
             #assert len(cycle_root) == 2
             extra_edge_1_id, extra_edge_1_origin, extra_edge_1_destination = find_extra_edge(cycle_root[0])
-            _, _, Wn1, We1 = find_cycle(extra_edge_1_id, 
-                                        extra_edge_1_origin, 
+            _, _, Wn1, We1 = find_cycle(extra_edge_1_id,
+                                        extra_edge_1_origin,
                                         extra_edge_1_destination)
             extra_edge_2_id, extra_edge_2_origin, extra_edge_2_destination = find_extra_edge(cycle_root[1])
-            _, _, Wn2, We2 = find_cycle(extra_edge_2_id, 
-                                        extra_edge_2_origin, 
+            _, _, Wn2, We2 = find_cycle(extra_edge_2_id,
+                                        extra_edge_2_origin,
                                         extra_edge_2_destination)
         else:
             extra_edge_id, extra_edge_origin, extra_edge_destination = find_extra_edge(cycle_root)
             _, _, Wn2, We2 = find_cycle(extra_edge_id,
                                         extra_edge_origin,
                                         extra_edge_destination)
-        print('# find cycle\t\t', Wn, We)
-        leav_edge_id, leav_edge_origin, leav_edge_destination = find_leaving_edge(Wn, We)
+        print('# find cycle\t\t', Wn1, We1, Wn2, We2)
+
+        leav_edge_id, leav_edge_origin, leav_edge_destination = find_leaving_edge(Wn1, We1, Wn2, We2)
         print('# leaving edge\t\t', leav_edge_id, leav_edge_origin, leav_edge_destination)
+
         augment_flow(Wn, We, residual_capacity(leav_edge_id, leav_edge_origin))
         print('# augment flow\t\t', Wn, We)
+
         if enter_edge_id != leav_edge_id:  # Do nothing more if the entering edge is the same as the
                     # the leaving edge.
             if parent[leav_edge_destination] != leav_edge_origin:
@@ -483,6 +494,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             if We.index(enter_edge_id) > We.index(leav_edge_id):
                 # Ensure that q is in the subtree rooted at t.
                 enter_edge_origin, enter_edge_destination = enter_edge_destination, enter_edge_origin
+
             remove_edge(leav_edge_origin, leav_edge_destination)
             make_root(enter_edge_destination)
             add_edge(enter_edge_id, enter_edge_origin, enter_edge_destination)
