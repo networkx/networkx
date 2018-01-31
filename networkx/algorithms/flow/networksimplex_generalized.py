@@ -412,14 +412,12 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 last[p] = last_q
             p = parent[p]
 
-    def update_potentials(i, q):
+    def update_potentials(i, h):
         """Update the potentials of the nodes in the tree rooted at node
-        q and possessing an extra edge i.
+        h and possessing an extra edge i.
         """        
-        tree_node, f, g = {q}, {q:0}, {q:1}
-        for q in trace_subtree(q):
-            tree_node.add(q)
-
+        f, g = {q}, {q:0}, {q:1}
+        for q in trace_subtree(h):
             p = prev[q]
             if p == parent[q]:
                 j = edge[q]
@@ -432,7 +430,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
         theta = (C[i] - f[S[i]] + Mu[i] * f[T[i]]) / (g[S[i]] - Mu[i] * g[T[i]])
 
-        for q in tree_node:
+        for q in trace_subtree(h):
             pi[q] = f[q] + g[q] * theta
 
     #TODO new, discuss
@@ -442,6 +440,49 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         edge_id = extra_edge[forest_root.index(root)]
         return edge_id, S[edge_id], T[edge_id]
 
+    def update_flows(i, h):
+        """Update the flows of the nodes in the tree rooted at a node
+        h and possessing an extra edge i.
+        """
+        remaining, f, g = {}, {}, {}
+        for q in trace_subtree(h):
+            remaining[q] = size[q]
+            f[q] = D[q]
+            g[q] = 0
+        g[S[i]] = -1
+        g[T[i]] = Mu[i]
+
+        while list(remaining.keys()) != [h]:
+            q = -1
+            for node, count in remaining.items():
+                if count > 1:
+                    continue
+                q = node
+                break
+            
+            p = prev[q]
+            if p == parent[q]:
+                j = edge[q]
+                f[p] += f[q] / Mu[j]
+                g[p] += g[q] / Mu[j]
+            elif q == parent[p]:
+                j = edge[p]
+                f[p] += f[q] * Mu[j]
+                g[p] += g[q] * Mu[j]
+
+            remaining[p] -= 1
+            del remaining[leaf]
+
+        theta = -f[h] / g[h]
+
+        for q in trace_subtree(h):
+            p = prev[q]
+            if p == parent[q]:
+                j = edge[q]
+                x[j] = -(f[q] + g[q] * theta) / Mu[j]
+            elif q == parent[p]:
+                j = edge[p]
+                x[j] = f[q] + g[q] * theta
 
     print('######################################################')
     print('# Data structures ####################################')
