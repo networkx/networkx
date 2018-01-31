@@ -248,7 +248,7 @@ class TestFunction(object):
 
         assert_raises(nx.NetworkXError, nx.info, G, n=-1)
 
-    def test_neighbors(self):
+    def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
         pop = random.sample(list(graph), 1)
         nbors = list(nx.neighbors(graph, pop[0]))

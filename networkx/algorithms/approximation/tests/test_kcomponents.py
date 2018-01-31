@@ -251,7 +251,7 @@ class TestAntiGraph:
             assert_raises(nx.NetworkXError, A.neighbors, node)
             assert_raises(nx.NetworkXError, G.neighbors, node)
 
-    def test_degree(self):
+    def test_degree_thingraph(self):
         for G, A in self.GA:
             node = list(G.nodes())[0]
             nodes = list(G.nodes())[1:4]
