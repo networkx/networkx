@@ -237,19 +237,38 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                     size_q = size[q]
                 else:
                     return p
+    
+    #TODO new, discuss
+    def is_root(p):
+        """Returns true if node p is 
+        """
+        return p in forest_root
+    
     #TODO - check in new data structure
-    def trace_path(p, w):
-        """Return the nodes and edges on the path from node p to its ancestor
-        w.
+    def trace_path(p):
+        """Return the path from a given node p to its respective augmented tree root
         """
         Wn = [p]
         We = []
-        while p != w:
+        while not is_root(p):
             We.append(edge[p])
             p = parent[p]
             Wn.append(p)
         return Wn, We
-    
+
+    def eliminate_redundancy(a, b):
+        """ Takes two lists and crops their until it has only one element in common.
+        """
+        #only necessary for lists with more than two elements
+        if len(a) <= 1 or len(b) <= 1:
+            return a, b
+        
+        while a[-2] == b[-2]:
+            del a[-1]
+            del b[-1]
+        return a, b
+
+
     #TODO - find cycle must return a boolean whether tree's were different 
     def find_cycle(i, p, q):
         """Return the nodes and edges on the cycle containing edge i == (p, q)
@@ -257,16 +276,24 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
         The cycle is oriented in the direction from p to q.
         """
-        w = find_apex(p, q)
-        Wn, We = trace_path(p, w)
+        Wn, We = trace_path(p)
+        WnR, WeR = trace_path(q)
+
+        #if found two different roots, we are going to work with two trees
+        if Wn[-1] != WnR[-1]:
+            return False, (Wn[-1], WnR[-1]), None, None
+
+        tree_root = Wn[-1]
+        Wn, WnR = eliminate_redundancy(Wn, WnR)
+        We, WeR = eliminate_redundancy(We, WeR)
+
         Wn.reverse()
         We.reverse()
         We.append(i)
-        WnR, WeR = trace_path(q, w)
         del WnR[-1]
         Wn += WnR
         We += WeR
-        return Wn, We
+        return True, tree_root, Wn, We
 
 
     def residual_capacity(i, p):
@@ -396,7 +423,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         for q in trace_subtree(q):
             pi[q] += d
 
-    # TODO
+    #TODO new, discuss
     def find_extra_edge(root):
         """ Returns the extra edge belonging to the tree rooted at 'root'
         """
@@ -440,9 +467,9 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                                         extra_edge_2_destination)
         else:
             extra_edge_id, extra_edge_origin, extra_edge_destination = find_extra_edge(cycle_root)
-        _, _, Wn2, We2 = find_cycle(extra_edge_id,
-                                     extra_edge_origin,
-                                     extra_edge_destination)
+            _, _, Wn2, We2 = find_cycle(extra_edge_id,
+                                        extra_edge_origin,
+                                        extra_edge_destination)
         print('# find cycle\t\t', Wn, We)
         leav_edge_id, leav_edge_origin, leav_edge_destination = find_leaving_edge(Wn, We)
         print('# leaving edge\t\t', leav_edge_id, leav_edge_origin, leav_edge_destination)
