@@ -216,6 +216,8 @@ def add_star(G_to_add_to, nodes_for_star, **attr):
 
     Parameters
     ----------
+    G_to_add_to : graph
+        A NetworkX graph
     nodes_for_star : iterable container
         A container of nodes.
     attr : keyword arguments, optional (default= no attributes)
@@ -242,6 +244,8 @@ def add_path(G_to_add_to, nodes_for_path, **attr):
 
     Parameters
     ----------
+    G_to_add_to : graph
+        A NetworkX graph
     nodes_for_path : iterable container
         A container of nodes.  A path will be constructed from
         the nodes (in order) and added to the graph.
@@ -272,6 +276,8 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
 
     Parameters
     ----------
+    G_to_add_to : graph
+        A NetworkX graph
     nodes_for_cycle: iterable container
         A container of nodes.  A cycle will be constructed from
         the nodes (in order) and added to the graph.

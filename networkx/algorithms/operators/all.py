@@ -129,7 +129,7 @@ def intersection_all(graphs):
 
     Parameters
     ----------
-    graphs_list : list
+    graphs : list
        List of NetworkX graphs
 
     Returns
