@@ -95,8 +95,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if e[-1].get(capacity, inf) < 0:
-            raise nx.NetworkXUnfeasible(
-                'edge %r has negative capacity' % (e[:-1],))
+            raise nx.NetworkXUnfeasible('edge %r has negative capacity' % (e[:-1],))
 
     ###########################################################################
     # Initialization
@@ -127,14 +126,14 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     C.extend(repeat(faux_inf, n))
     U.extend(repeat(faux_inf, n))
 
-    # Construct the initial spanning tree.
+    # Construct the initial augmented forest
     e = len(E)                     # number of edges
-    edge = list(range(e, e+n))   # edges to parents
+    edge = list(range(e, e+n))     # edges to parents
     size = list(repeat(1, n))      # subtree sizes
     next = list(range(n))          # next nodes in depth-first thread
     prev = list(range(n))          # previous nodes in depth-first thread
     last = list(range(n))          # last descendants in depth-first thread
-    parent = list(range(n)) # parent nodes
+    parent = list(range(n))        # parent nodes
     # edge flows
     x = list(chain(repeat(0, e), (-d/(1-Mu[e+i]) for i, d in enumerate(D))))
     # edge potentials
@@ -235,15 +234,15 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                     size_p = size[p]
                     q = parent[q]
                     size_q = size[q]
-                else:                    
+                else:
                     return p
-    
+
     #TODO new, discuss
     def is_root(p):
-        """Returns true if node p is 
+        """Returns true if node p is
         """
         return p in forest_root
-    
+
     #TODO - check in new data structure
     def trace_path(p):
         """Return the path from a given node p to its respective augmented tree root
@@ -262,14 +261,14 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         #only necessary for lists with more than two elements
         if len(a) <= 1 or len(b) <= 1:
             return a, b
-        
+
         while a[-2] == b[-2]:
             del a[-1]
             del b[-1]
         return a, b
 
 
-    #TODO - find cycle must return a boolean whether tree's were different 
+    #TODO - find cycle must return a boolean whether tree's were different
     def find_cycle(i, p, q):
         """Return the nodes and edges on the cycle containing edge i == (p, q)
         when the latter is added to the spanning tree.
@@ -295,20 +294,41 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         We += WeR
         return False, tree_root, Wn, We
 
-
     def residual_capacity(i, p):
         """Return the residual capacity of an edge i in the direction away
         from its endpoint p.
         """
         return U[i] - x[i] if S[i] == p else x[i]
 
-    def find_leaving_edge(Wn1, We1, Wn2, We2):
-        """Return the leaving edge in a cycle represented by Wn and We.
+    def maximum_additional_flow(i, y):
+        """Return the maximum additional flow of an edge i, given a hipotetic flow rate
+        of y from the entering edge
         """
-        j, s = min(zip(reversed(We), reversed(Wn)),
-                   key=lambda i_p: residual_capacity(*i_p))
-        t = T[j] if S[j] == s else S[j]
-        return j, s, t
+        if y > 0:
+            return (U[i] - x[i]) / y
+        elif y < 0:
+            return x[i] / -y
+        else:
+            return faux_inf
+
+    def find_leaving_edge(j, h):
+        """Return the leaving edge of a augmented tree with root h,
+        given an entering edge j. Also returns the amount of flow necessary
+        on edge j for the chosen edge to leave.
+        """
+        y = compute_flow_of_entering_edge(j, h)
+        min_sigma = faux_inf
+        leaving_edge = -1
+        # for every edge i in this augmented tree
+        #   sigma = maximum_additional_flow(i, y[i])
+        #   if sigma < min_sigma:
+        #       leaving_edge = i
+        #       min_sigma = sigma
+        # return leaving_edge, min_sigma
+
+        # j, s = min(zip(reversed(We), reversed(Wn)), key=lambda i_p: residual_capacity(*i_p))
+        # t = T[j] if S[j] == s else S[j]
+        # return j, s, t
 
     def augment_flow(Wn, We, f):
         """Augment f units of flow along a cycle represented by Wn and We.
@@ -412,10 +432,10 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 last[p] = last_q
             p = parent[p]
 
-    def update_potentials(i, h):
-        """Update the potentials of the nodes in the tree rooted at node
-        h and possessing an extra edge i.
-        """        
+    def update_potentials(h):
+        """Update the potentials of the nodes in the tree rooted at node h
+        """
+        i = find_extra_edge(h)
         f, g = {q}, {q:0}, {q:1}
         for q in trace_subtree(h):
             p = prev[q]
@@ -440,11 +460,32 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         edge_id = extra_edge[forest_root.index(root)]
         return edge_id, S[edge_id], T[edge_id]
 
-    def update_flows(i, h):
-        """Update the flows of the nodes in the tree rooted at a node
-        h and possessing an extra edge i.
+    def compute_flow_of_entering_edge(j, h):
+        """For each edge in the tree rooted at node h,
+        compute the change in flow of those edges per unit increase of flow
+        in the entering edge j. It runs update_flows() on the tree,
+        with zero demand values, and does not change the x global flow.
         """
+        x_copy = list(x)
+        D_copy = list(D)
+        D = [0] * len(N)
+        x = [0] * len(E)
+
+        D[S[j]] = -1
+        D[T[j]] = Mu[j]
+        update_flows(h)
+
+        y = x
+        x = x_copy
+        D = D_copy
+        return y
+
+    def update_flows(h):
+        """Update the flows of the nodes in the tree rooted at a node h
+        """
+        i = find_extra_edge(h)
         remaining, f, g = {}, {}, {}
+
         for q in trace_subtree(h):
             remaining[q] = size[q]
             f[q] = -D[q]
@@ -459,12 +500,12 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                     continue
                 q = node
                 break
-            
+
             p = prev[q]
             if q == parent[p]:
                 j = edge[p]
                 f[p] += f[q] * Mu[j]
-                g[p] += g[q] * Mu[j]            
+                g[p] += g[q] * Mu[j]
             elif p == parent[q]:
                 j = edge[q]
                 f[p] += f[q] / Mu[j]
@@ -528,6 +569,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                                         extra_edge_2_destination)
         else:
             extra_edge_id, extra_edge_origin, extra_edge_destination = find_extra_edge(cycle_root)
+            #TODO Wn1, We1 <- perguntar pra Georges
             _, _, Wn2, We2 = find_cycle(extra_edge_id,
                                         extra_edge_origin,
                                         extra_edge_destination)
@@ -540,7 +582,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         print('# augment flow\t\t', Wn, We)
 
         if enter_edge_id != leav_edge_id:  # Do nothing more if the entering edge is the same as the
-                    # the leaving edge.
+                                           # the leaving edge.
             if parent[leav_edge_destination] != leav_edge_origin:
                 # Ensure that s is the parent of t.
                 leav_edge_origin, leav_edge_destination = leav_edge_destination, leav_edge_origin
@@ -551,7 +593,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             remove_edge(leav_edge_origin, leav_edge_destination)
             make_root(enter_edge_destination)
             add_edge(enter_edge_id, enter_edge_origin, enter_edge_destination)
-            update_potentials(enter_edge_id, enter_edge_origin, enter_edge_destination)
+            update_potentials(enter_edge_origin, enter_edge_destination)
 
     ###########################################################################
     # Infeasibility and unboundedness detection
