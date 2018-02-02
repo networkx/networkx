@@ -42,8 +42,8 @@ class TestFunction(object):
                      sorted(nx.degree(self.DG, weight='weight')))
 
     def test_neighbors(self):
-        assert_equal(self.G.neighbors(1), nx.neighbors(self.G, 1))
-        assert_equal(self.DG.neighbors(1), nx.neighbors(self.DG, 1))
+        assert_equal(list(self.G.neighbors(1)), list(nx.neighbors(self.G, 1)))
+        assert_equal(list(self.DG.neighbors(1)), list(nx.neighbors(self.DG, 1)))
 
     def test_number_of_nodes(self):
         assert_equal(self.G.number_of_nodes(), nx.number_of_nodes(self.G))
