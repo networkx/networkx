@@ -238,11 +238,12 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     return npos
 
 
-@random_state(10)
+@random_state(11)
 def fruchterman_reingold_layout(G,
                                 k=None,
                                 pos=None,
                                 fixed=None,
+                                fixed_coords=None,
                                 iterations=50,
                                 threshold=1e-4,
                                 weight='weight',
@@ -269,6 +270,10 @@ def fruchterman_reingold_layout(G,
 
     fixed : list or None  optional (default=None)
         Nodes to keep fixed at initial position.
+
+    fixed_coords : dict or None  optional (default=None)
+        Node coordinates to keep fixed. A dictionary with node as keys
+        and values as a `dim` long list or tuple of boolean values.
 
     iterations : int  optional (default=50)
         Maximum number of iterations taken
@@ -320,6 +325,18 @@ def fruchterman_reingold_layout(G,
         nfixed = dict(zip(G, range(len(G))))
         fixed = np.asarray([nfixed[v] for v in fixed])
 
+    fixed_nodes = None
+    fixed_indices = None
+    if fixed_coords is not None:
+        nfixed = dict(zip(G, range(len(G))))
+        coords = np.arange(dim)
+        fixed_nodes = []
+        fixed_indices = []
+        for n, c in fixed_coords.items():
+            node_coords = coords[np.asarray(c)]
+            fixed_nodes.extend(len(node_coords)*[nfixed[n]])
+            fixed_indices.extend(node_coords)
+
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
         dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
@@ -358,7 +375,7 @@ def fruchterman_reingold_layout(G,
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations,
-                                    threshold, dim, random_state)
+                                    threshold, dim, random_state, fixed_nodes, fixed_indices)
     if fixed is None:
         pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
@@ -370,7 +387,8 @@ spring_layout = fruchterman_reingold_layout
 
 @random_state(7)
 def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
-                          threshold=1e-4, dim=2, random_state=None):
+                          threshold=1e-4, dim=2, random_state=None,
+                          fixed_nodes=None, fixed_indices=None):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     try:
@@ -428,6 +446,9 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
         if fixed is not None:
             # don't change positions of fixed nodes
             delta_pos[fixed] = 0.0
+        if fixed_nodes is not None:
+            # don't change positions of fixed node coordinates
+            delta_pos[fixed_nodes, fixed_indices] = 0.0
         pos += delta_pos
         # cool temperature
         t -= dt
