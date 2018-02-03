@@ -115,6 +115,7 @@ is partially historical, and now, mostly arbitrary.
 - Jarrod Millman, GitHub: `jarrodmillman <https://github.com/jarrodmillman>`_
 - Andre Weltsch
 - Lewis Robbins
+- Mads Jensen, Github: `atombrella <https://github.com/atombrella>`_
 
 Support
 -------
