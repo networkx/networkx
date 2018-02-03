@@ -182,7 +182,7 @@ class NodeView(Mapping, Set):
         return n in self._nodes
 
     @classmethod
-    def _from_iterable(self, it):
+    def _from_iterable(cls, it):
         return set(it)
 
     # DataView method
@@ -898,7 +898,7 @@ class OutEdgeView(Set, Mapping):
         self._nodes_nbrs = self._adjdict.items
 
     @classmethod
-    def _from_iterable(self, it):
+    def _from_iterable(cls, it):
         return set(it)
 
     dataview = OutEdgeDataView
