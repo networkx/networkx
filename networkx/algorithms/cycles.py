@@ -1,14 +1,13 @@
-#    Copyright (C) 2010-2018 by
+#    Copyright (C) 2010-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 #
-# Authors: Jon Olav Vik <jonovik@gmail.com>
+# Authors: Jon Olav Vik <jonovik@gmail.com>,
 #          Dan Schult <dschult@colgate.edu>
 #          Aric Hagberg <hagberg@lanl.gov>
-#          Debsankha Manik <dmanik@nld.ds.mpg.de>
 """
 ========================
 Cycle finding algorithms
@@ -16,17 +15,13 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
-from itertools import tee
 
 import networkx as nx
-from networkx.utils import not_implemented_for, pairwise
-from networkx.algorithms.traversal.edgedfs import helper_funcs
+from networkx.utils import *
+from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
 
 __all__ = [
-    'cycle_basis', 'simple_cycles',
-    'recursive_simple_cycles', 'find_cycle',
-    'minimum_cycle_basis',
-]
+    'cycle_basis', 'simple_cycles', 'recursive_simple_cycles', 'find_cycle']
 
 
 @not_implemented_for('directed')
@@ -107,7 +102,7 @@ def cycle_basis(G, root=None):
 
 
 @not_implemented_for('undirected')
-def simple_cycles(G):
+def simple_cycles(G, max_edges_in_cycle=None):
     """Find simple cycles (elementary circuits) of a directed graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -121,6 +116,8 @@ def simple_cycles(G):
     ----------
     G : NetworkX DiGraph
        A directed graph
+    max_edges_in_cycle : int
+                         Return cycles where number of edges is less than max_edges_in_cycle
 
     Returns
     -------
@@ -176,27 +173,62 @@ def simple_cycles(G):
                 stack.update(B[node])
                 B[node].clear()
 
+    def _filterG(G, home_node, nhb_name='NHB', hb_name='HB'):
+        # Give better name
+        # Creates a graph that origins edges from and to
+        subG = nx.MultiDiGraph()
+        for source, target, attr in G.edges(data=True):
+            if attr['Purpose'] == nhb_name:
+                if not (source == home_node or target == home_node):
+                    subG.add_edge(source, target, Purpose=attr['Purpose'])
+            elif attr['Purpose'] == hb_name:
+                if (source == home_node or target == home_node):
+                    subG.add_edge(source, target, Purpose=attr['Purpose'])
+
+        return subG
+
+
     # Johnson's algorithm requires some ordering of the nodes.
     # We assign the arbitrary ordering given by the strongly connected comps
     # There is no need to track the ordering as each node removed as processed.
     # Also we save the actual graph so we can mutate it. We only take the
     # edges because we do not want to copy edge and node attributes here.
-    subG = type(G)(G.edges())
-    sccs = list(nx.strongly_connected_components(subG))
+
+    if max_edges_in_cycle is None:
+        max_edges_in_cycle = G.number_of_edges()
+
+    #subG = type(G)(G.edges(data=True))
+    sccs = list(nx.strongly_connected_components(G))
     while sccs:
         scc = sccs.pop()
         # order of scc determines ordering of nodes
         startnode = scc.pop()
+
+        # Keep only the from source edges and the nhb ones
+        # Intermediate legs in trip chain can only be nhb
+
+        subG = _filterG(G, startnode)
+
         # Processing node runs "circuit" routine from recursive version
         path = [startnode]
         blocked = set()  # vertex: blocked from search?
         closed = set()   # nodes involved in a cycle
         blocked.add(startnode)
         B = defaultdict(set)  # graph portions that yield no elementary circuit
-        stack = [(startnode, list(subG[startnode]))]  # subG gives comp nbrs
+
+        stack = []
+        try:
+            stack = [(startnode, list(subG[startnode]))]  # subG gives comp nbrs
+        except:
+            continue
+
         while stack:
             thisnode, nbrs = stack[-1]
             if nbrs:
+                if len(path) > max_edges_in_cycle:
+                    nextnode = nbrs.pop()
+                    nbrs.clear()
+                    continue
                 nextnode = nbrs.pop()
                 if nextnode == startnode:
                     yield path[:]
@@ -411,7 +443,7 @@ def find_cycle(G, source=None, orientation='original'):
         active_nodes = {start_node}
         previous_head = None
 
-        for edge in nx.edge_dfs(G, start_node, orientation):
+        for edge in edge_dfs(G, start_node, orientation):
             # Determine if this edge is a continuation of the active path.
             tail, head = tailhead(edge)
             if head in explored:
@@ -469,126 +501,3 @@ def find_cycle(G, source=None, orientation='original'):
             break
 
     return cycle[i:]
-
-
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def minimum_cycle_basis(G, weight=None):
-    """ Returns a minimum weight cycle basis for G
-
-    Minimum weight means a cycle basis for which the total weight
-    (length for unweighted graphs) of all the cycles is minimum.
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-    weight: string
-        name of the edge attribute to use for edge weights
-
-    Returns
-    -------
-    A list of cycle lists.  Each cycle list is a list of nodes
-    which forms a cycle (loop) in G. Note that the nodes are not
-    necessarily returned in a order by which they appear in the cycle
-
-    Examples
-    --------
-    >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
-    >>> print(nx.minimum_cycle_basis(G))
-    [[0, 1, 2, 3], [0, 3, 4, 5]]
-
-    References:
-        [1] Kavitha, Telikepalli, et al. "An O(m^2n) Algorithm for
-        Minimum Cycle Basis of Graphs."
-        http://link.springer.com/article/10.1007/s00453-007-9064-z
-        [2] de Pina, J. 1995. Applications of shortest path methods.
-        Ph.D. thesis, University of Amsterdam, Netherlands
-
-    See Also
-    --------
-    simple_cycles, cycle_basis
-    """
-    # We first split the graph in commected subgraphs
-    return sum((_min_cycle_basis(c, weight) for c in
-                nx.connected_component_subgraphs(G)), [])
-
-
-def _min_cycle_basis(comp, weight):
-    cb = []
-    # We  extract the edges not in a spanning tree. We do not really need a
-    # *minimum* spanning tree. That is why we call the next function with
-    # weight=None. Depending on implementation, it may be faster as well
-    spanning_tree_edges = list(nx.minimum_spanning_edges(comp, weight=None,
-                                                         data=False))
-    edges_excl = [frozenset(e) for e in comp.edges()
-                  if e not in spanning_tree_edges]
-    N = len(edges_excl)
-
-    # We maintain a set of vectors orthogonal to sofar found cycles
-    set_orth = [set([edge]) for edge in edges_excl]
-    for k in range(N):
-        # kth cycle is "parallel" to kth vector in set_orth
-        new_cycle = _min_cycle(comp, set_orth[k], weight=weight)
-        cb.append(list(set().union(*new_cycle)))
-        # now update set_orth so that k+1,k+2... th elements are
-        # orthogonal to the newly found cycle, as per [p. 336, 1]
-        base = set_orth[k]
-        set_orth[k + 1:] = [orth ^ base if len(orth & new_cycle) % 2 else orth
-                            for orth in set_orth[k + 1:]]
-    return cb
-
-
-def _min_cycle(G, orth, weight=None):
-    """
-    Computes the minimum weight cycle in G,
-    orthogonal to the vector orth as per [p. 338, 1]
-    """
-    T = nx.Graph()
-
-    nodes_idx = {node: idx for idx, node in enumerate(G.nodes())}
-    idx_nodes = {idx: node for node, idx in nodes_idx.items()}
-
-    nnodes = len(nodes_idx)
-
-    # Add 2 copies of each edge in G to T. If edge is in orth, add cross edge;
-    # otherwise in-plane edge
-    for u, v, data in G.edges(data=True):
-        uidx, vidx = nodes_idx[u], nodes_idx[v]
-        edge_w = data.get(weight, 1)
-        if frozenset((u, v)) in orth:
-            T.add_edges_from(
-                [(uidx, nnodes + vidx), (nnodes + uidx, vidx)], weight=edge_w)
-        else:
-            T.add_edges_from(
-                [(uidx, vidx), (nnodes + uidx, nnodes + vidx)], weight=edge_w)
-
-    all_shortest_pathlens = dict(nx.shortest_path_length(T, weight=weight))
-    cross_paths_w_lens = {n: all_shortest_pathlens[n][nnodes + n]
-                          for n in range(nnodes)}
-
-    # Now compute shortest paths in T, which translates to cyles in G
-    start = min(cross_paths_w_lens, key=cross_paths_w_lens.get)
-    end = nnodes + start
-    min_path = nx.shortest_path(T, source=start, target=end, weight='weight')
-
-    # Now we obtain the actual path, re-map nodes in T to those in G
-    min_path_nodes = [node if node < nnodes else node - nnodes
-                      for node in min_path]
-    # Now remove the edges that occur two times
-    mcycle_pruned = _path_to_cycle(min_path_nodes)
-
-    return {frozenset((idx_nodes[u], idx_nodes[v])) for u, v in mcycle_pruned}
-
-
-def _path_to_cycle(path):
-    """
-    Removes the edges from path that occur even number of times.
-    Returns a set of edges
-    """
-    edges = set()
-    for edge in pairwise(path):
-        # Toggle whether to keep the current edge.
-        edges ^= {edge}
-    return edges
