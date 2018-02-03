@@ -192,6 +192,10 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     -----
     Node and edge attribute data are copied to the new (relabeled) graph.
 
+    There is no guarantee that the relabeling of nodes to integers will
+    give the same two integers for two (even identical graphs).
+    Use the `ordering` argument to try to preserve the order.
+
     See Also
     --------
     relabel_nodes
