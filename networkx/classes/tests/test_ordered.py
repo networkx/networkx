@@ -4,16 +4,16 @@ import networkx as nx
 
 class SmokeTestOrdered(object):
     # Just test instantiation.
-    def test_graph():
+    def test_graph(self):
         G = nx.OrderedGraph()
 
-    def test_digraph():
+    def test_digraph(self):
         G = nx.OrderedDiGraph()
 
-    def test_multigraph():
+    def test_multigraph(self):
         G = nx.OrderedMultiGraph()
 
-    def test_multidigraph():
+    def test_multidigraph(self):
         G = nx.OrderedMultiDiGraph()
 
 

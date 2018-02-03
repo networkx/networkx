@@ -57,7 +57,7 @@ class TestCore:
         assert_nodes_equal(nodes_by_core[1], [1, 3])
         assert_nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
 
-    def test_directed_find_cores(Self):
+    def test_directed_find_cores(self):
         '''core number had a bug for directed graphs found in issue #1959'''
         # small example where too timid edge removal can make cn[2] = 3
         G = nx.DiGraph()
