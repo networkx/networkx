@@ -214,7 +214,7 @@ class TestAntiGraph:
 
     def test_degree(self):
         for G, A in self.GA:
-            assert_equal(list(G.degree()), list(A.degree()))
+            assert_equal(sorted(G.degree()), sorted(A.degree()))
 
     def test_core_number(self):
         for G, A in self.GA:
