@@ -142,6 +142,10 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     forest_root = list(range(n)) # augmented forest roots
     extra_edge = list(range(e, e+n)) # augmented forest extra edges
 
+    upper = set()                  # edges at upper bound
+    lower = set(range(e))          # edges at lower bound
+    forest = set(range(e, e+n))    # edges at augment forest
+
     print('######################################################')
     print('# Tree Variables #####################################')
     print('# number of edges\t\t', e)
@@ -480,6 +484,10 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         D = D_copy
         return y
 
+    def update_flows():
+        x = list(repeat(0, e + n))
+        for 
+
     def update_flows(h):
         """Update the flows of the nodes in the tree rooted at a node h
         """
@@ -524,6 +532,59 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             elif p == parent[q]:
                 j = edge[q]
                 x[j] = -(f[q] + g[q] * theta) / Mu[j]
+
+    def update_tree_indices(edge_ids):        
+        source_ids = set(S[edge_id] for edge_id in edge_ids)
+        target_ids = set(T[edge_id] for edge_id in edge_ids)
+        node_ids = source_ids | target_ids
+
+        adjacencies = {node_id:{} for node_id in node_ids}
+        for edge_id in edge_ids:
+            adjacencies[S[edge_id]][T[edge_id]] = edge_id
+            adjacencies[T[edge_id]][S[edge_id]] = edge_id
+
+        for node_id in node_ids:
+            edge[node_id] = None
+            size[node_id] = None
+            next[node_id] = None
+            prev[node_id] = None
+            last[node_id] = None
+            parent[node_id] = None            
+
+        def dfs(graph, root_id, visited):
+            last_node_id = root_id
+            total_nodes = 1
+
+            visited[root_id] = True
+            for node_id, edge_id in graph[root_id].items():
+                if node_id in visited:
+                    if parent[root_id] != node_id:
+                        extra_edge = edge_id
+                    continue
+
+                parent[node_id] = root_id
+                edge[node_id] = edge_id
+
+                _, n_nodes, last_node_id = dfs(graph, node_id, visited)
+                total_nodes += n_nodes
+
+            last[root_id] = last_node_id
+            size[root_id] = total_nodes
+            return visited, total_nodes, last_node_id
+
+
+        total_nodes = 0
+        visited = OrderedDict()
+        for node_id in node_ids:
+            if node_id in visited:
+                continue
+            visited, n_nodes, _ = dfs(adjacencies, node_id, visited)
+            total_nodes += n_nodes
+
+        visited = list(visited)
+        for i, node in enumerate(visited):
+            prev[node] = visited[(i-1)%total_nodes]
+            next[node] = visited[(i+1)%total_nodes]
 
     print('######################################################')
     print('# Data structures ####################################')
