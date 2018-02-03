@@ -1,18 +1,11 @@
 #!/usr/bin/env python
 from nose.tools import *
+from collections import OrderedDict
 import networkx as nx
 from test_graph import TestGraph
 from test_digraph import TestDiGraph
 from test_multigraph import TestMultiGraph
 from test_multidigraph import TestMultiDiGraph
-try:  # python 2.7+
-    from collections import OrderedDict
-except ImportError:  # python 2.6
-    try:
-        from ordereddict import OrderedDict
-    except ImportError:
-        from nose import SkipTest
-        raise SkipTest('ordereddict not available')
 
 
 class SpecialGraphTester(TestGraph):
