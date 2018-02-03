@@ -315,7 +315,7 @@ class TestMaxflowMinCutCommon:
 
         compare_flows_and_cuts(G, 's', 't', H, 97)
 
-    def test_digraph4(self):
+    def test_digraph5(self):
         # From ticket #429 by mfrasca.
         G = nx.DiGraph()
         G.add_edge('s', 'a', capacity=2)

@@ -214,7 +214,7 @@ class TestAntiGraph:
 
     def test_degree(self):
         for G, A in self.GA:
-            assert_equal(G.degree(), A.degree())
+            assert_equal(sorted(G.degree()), sorted(A.degree()))
 
     def test_core_number(self):
         for G, A in self.GA:
@@ -251,7 +251,7 @@ class TestAntiGraph:
             assert_raises(nx.NetworkXError, A.neighbors, node)
             assert_raises(nx.NetworkXError, G.neighbors, node)
 
-    def test_degree(self):
+    def test_degree_thingraph(self):
         for G, A in self.GA:
             node = list(G.nodes())[0]
             nodes = list(G.nodes())[1:4]

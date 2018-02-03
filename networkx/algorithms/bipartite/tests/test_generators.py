@@ -191,7 +191,7 @@ class TestGeneratorsBipartite():
         assert_equal(set(range(n)), X)
         assert_equal(set(range(n, n + m)), Y)
 
-    def test_random_graph(self):
+    def test_random_digraph(self):
         n = 10
         m = 20
         G = random_graph(n, m, 0.9, directed=True)

@@ -203,7 +203,7 @@ class TestFindCycle(object):
         x_ = [(1, 2, 0, FORWARD), (1, 2, 1, REVERSE)]
         assert_equal(x, x_)
 
-    def test_multidigraph_ignore2(self):
+    def test_multidigraph_original(self):
         # Node 2 doesn't need to be searched again from visited from 4.
         # The goal here is to cover the case when 2 to be researched from 4,
         # when 4 is visited from the first time (so we must make sure that 4
