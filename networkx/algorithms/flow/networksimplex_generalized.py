@@ -22,7 +22,7 @@ except NameError:
     pass
 
 
-@not_implemented_for('undirected')
+@not_implemented_for('undirected', 'multigraph')
 def network_simplex_generalized(G, demand='demand', capacity='capacity', weight='weight', multiplier='multiplier'):
     ###########################################################################
     # Problem essentials extraction and sanity check
@@ -43,27 +43,19 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         if abs(b) == inf:
             raise nx.NetworkXError('node %r has infinite demand' % (p,))
 
-    multigraph = G.is_multigraph()
     S = []  # edge sources
     T = []  # edge targets
-    if multigraph:
-        K = []  # edge keys
     E = {}  # edge indices
     U = []  # edge capacities
     C = []  # edge weights
     Mu = []  # edge multipliers
 
-    if not multigraph:
-        edges = G.edges(data=True)
-    else:
-        edges = G.edges(data=True, keys=True)
+    edges = G.edges(data=True)
     edges = (e for e in edges
              if e[0] != e[1] and e[-1].get(capacity, inf) != 0)
     for i, e in enumerate(edges):
         S.append(I[e[0]])
         T.append(I[e[1]])
-        if multigraph:
-            K.append(e[2])
         E[e[:-1]] = i
         U.append(e[-1].get(capacity, inf))
         C.append(e[-1].get(weight, 0))
@@ -74,10 +66,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             raise nx.NetworkXError('edge %r has invalid multiplier' % (e,))
         if abs(c) == inf:
             raise nx.NetworkXError('edge %r has infinite weight' % (e,))
-    if not multigraph:
-        edges = nx.selfloop_edges(G, data=True)
-    else:
-        edges = nx.selfloop_edges(G, data=True, keys=True)
+    
+    edges = nx.selfloop_edges(G, data=True)
     for e in edges:
         if abs(e[-1].get(weight, 0)) == inf:
             raise nx.NetworkXError('edge %r has infinite weight' % (e[:-1],))
@@ -89,10 +79,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     for e, u in zip(E, U):
         if u < 0:
             raise nx.NetworkXUnfeasible('edge %r has negative capacity' % (e,))
-    if not multigraph:
-        edges = nx.selfloop_edges(G, data=True)
-    else:
-        edges = nx.selfloop_edges(G, data=True, keys=True)
+    edges = nx.selfloop_edges(G, data=True)
     for e in edges:
         if e[-1].get(capacity, inf) < 0:
             raise nx.NetworkXUnfeasible('edge %r has negative capacity' % (e[:-1],))
@@ -121,8 +108,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         mu_product *= i
 
     faux_inf = 3 * mu_product * max(chain([sum(u for u in U if u < inf),
-                              sum(abs(c) for c in C)],
-                             (abs(d) for d in D))) or 1
+                                           sum(abs(c) for c in C)],
+                                          (abs(d) for d in D))) or 1
     C.extend(repeat(faux_inf, n))
     U.extend(repeat(faux_inf, n))
 
@@ -505,8 +492,6 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     print('# node demands\t\t', D)
     print('# edge sources\t\t', S)
     print('# edge targets\t\t', T)
-    if multigraph:
-        print('# edge keys\t\t', K)
     print('# edge indices\t\t', E)
     print('# edge capacities\t', U)
     print('# edge weights\t\t', C)
@@ -604,14 +589,9 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
     S = (N[s] for s in S)  # Use original nodes.
     T = (N[t] for t in T)  # Use original nodes.
-    if not multigraph:
-        for e in zip(S, T, x):
-            add_entry(e)
-        edges = G.edges(data=True)
-    else:
-        for e in zip(S, T, K, x):
-            add_entry(e)
-        edges = G.edges(data=True, keys=True)
+    for e in zip(S, T, x):
+        add_entry(e)
+    edges = G.edges(data=True)
     for e in edges:
         if e[0] != e[1]:
             if e[-1].get(capacity, inf) == 0:
