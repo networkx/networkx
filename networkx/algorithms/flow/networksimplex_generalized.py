@@ -484,10 +484,6 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         D = D_copy
         return y
 
-    def update_flows():
-        x = list(repeat(0, e + n))
-        for 
-
     def update_flows(h):
         """Update the flows of the nodes in the tree rooted at a node h
         """
