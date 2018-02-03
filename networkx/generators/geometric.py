@@ -439,7 +439,7 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
     nx.set_node_attributes(G, pos, 'pos')
 
     # if p_dist is not supplied, use default r^-2
-    if p_dist == None:
+    if p_dist is None:
         def p_dist(r):
             return r**-2
 
