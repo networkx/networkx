@@ -121,13 +121,11 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     prev = list(range(n))          # previous nodes in depth-first thread
     last = list(range(n))          # last descendants in depth-first thread
     parent = list(range(n))        # parent nodes
-    # edge flows
-    x = list(chain(repeat(0, e), (-d/(1-Mu[e+i]) for i, d in enumerate(D))))
-    # edge potentials
-    pi = list(((faux_inf/(1-Mu[e+i]) for i, d in enumerate(D))))
+    x = list(chain(repeat(0, e), (-d/(1-Mu[e+i]) for i, d in enumerate(D)))) # edge flows
+    pi = list(((faux_inf/(1-Mu[e+i]) for i, d in enumerate(D)))) # edge potentials
 
-    forest_root = list(range(n))     # augmented forest roots
-    extra_edge = list(range(e, e+n)) # augmented forest extra edges
+    root = list(range(n))     # root of the augmented forest cotaining node
+    extra = dict(i:i+e for i in range(n)) # augmented forest extra edges
 
     upper = set()                  # edges at upper bound
     lower = set(range(e))          # edges at lower bound
@@ -228,13 +226,6 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 else:
                     return p
 
-    #TODO new, discuss
-    def is_root(p):
-        """Returns true if node p is
-        """
-        return p in forest_root
-
-    #TODO - check in new data structure
     def trace_path(p):
         """Return the path from a given node p to its respective augmented tree root
         """
@@ -266,24 +257,16 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
         The cycle is oriented in the direction from p to q.
         """
-        Wn, We = trace_path(p)
-        WnR, WeR = trace_path(q)
-
-        #if found two different roots, we are going to work with two trees
-        if Wn[-1] != WnR[-1]:
-            return True, (Wn[-1], WnR[-1]), None, None
-
-        tree_root = Wn[-1]
-        Wn, WnR = eliminate_redundancy(Wn, WnR)
-        We, WeR = eliminate_redundancy(We, WeR)
-
+        w = find_apex(p, q)
+        Wn, We = trace_path(p, w)
         Wn.reverse()
         We.reverse()
         We.append(i)
+        WnR, WeR = trace_path(q, w)
         del WnR[-1]
         Wn += WnR
         We += WeR
-        return False, tree_root, Wn, We
+        return Wn, We
 
     def residual_capacity(i, p):
         """Return the residual capacity of an edge i in the direction away
@@ -363,13 +346,6 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         for q in trace_subtree(h):
             pi[q] = f[q] + g[q] * theta
 
-    #TODO new, discuss
-    def find_extra_edge(root):
-        """ Returns the extra edge belonging to the tree rooted at 'root'
-        """
-        edge_id = extra_edge[forest_root.index(root)]
-        return edge_id, S[edge_id], T[edge_id]
-
     def compute_flows(d, h):
         """Compute the flows of the nodes in the tree rooted at a node h
         given demands d.
@@ -414,7 +390,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 y[j] = -(f[q] + g[q] * theta) / Mu[j]        
         return y
 
-    def update_tree_indices(edge_ids):        
+    def update_tree_indices(edge_ids):
         source_ids = set(S[edge_id] for edge_id in edge_ids)
         target_ids = set(T[edge_id] for edge_id in edge_ids)
         node_ids = source_ids | target_ids
@@ -430,42 +406,43 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             next[node_id] = None
             prev[node_id] = None
             last[node_id] = None
-            parent[node_id] = None            
+            parent[node_id] = None
+            root[node_id] = None  
 
-        def dfs(graph, root_id, visited):
-            last_node_id = root_id
+        def dfs(graph, start_id, root_id, visited):
+            last_node_id = start_id
             total_nodes = 1
 
-            visited[root_id] = True
-            for node_id, edge_id in graph[root_id].items():
+            visited[start_id] = True
+            for node_id, edge_id in graph[start_id].items():
                 if node_id in visited:
-                    if parent[root_id] != node_id:
-                        extra_edge = edge_id
+                    if parent[start_id] != node_id:
+                        extra_edge[root_id] = edge_id
                     continue
 
-                parent[node_id] = root_id
+                parent[node_id] = start_id
                 edge[node_id] = edge_id
 
-                _, n_nodes, last_node_id = dfs(graph, node_id, visited)
+                _, n_nodes, last_node_id = dfs(graph, node_id, root_id, visited)
                 total_nodes += n_nodes
 
-            last[root_id] = last_node_id
-            size[root_id] = total_nodes
+            last[start_id] = last_node_id
+            size[start_id] = total_nodes
             return visited, total_nodes, last_node_id
 
-
-        total_nodes = 0
-        visited = OrderedDict()
+        global_visited = OrderedDict()
         for node_id in node_ids:
-            if node_id in visited:
+            if node_id in global_visited:
                 continue
-            visited, n_nodes, _ = dfs(adjacencies, node_id, visited)
-            total_nodes += n_nodes
 
-        visited = list(visited)
-        for i, node in enumerate(visited):
-            prev[node] = visited[(i-1)%total_nodes]
-            next[node] = visited[(i+1)%total_nodes]
+            visited = OrderedDict()
+            visited, n_nodes, _ = dfs(adjacencies, node_id, node_id, visited)
+            global_visited.update(visited)
+
+            visited = list(visited)
+            for i, node in enumerate(visited):
+                prev[node] = visited[(i-1)%n_nodes]
+                next[node] = visited[(i+1)%n_nodes]
 
     print('######################################################')
     print('# Data structures ####################################')
@@ -480,43 +457,13 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     print('# edge multipliers\t', Mu)
 
     # Pivot loop
-    for enter_edge_id, enter_edge_origin, enter_edge_destination in find_entering_edges():
+    for i, p, q in find_entering_edges():
         print('######################################################')
         print('# Pivot Loop #########################################')
-        print('# entering edges\t', enter_edge_id,
-                                    enter_edge_origin,
-                                    enter_edge_destination)
+        print('# entering edges\t', i, p, q)
 
-        #TODO - create enlongated variables names and create structure to deal with two cycles
-        different_trees, cycle_root, Wn1, We1 = find_cycle(enter_edge_id,
-                                                            enter_edge_origin,
-                                                            enter_edge_destination)
-
-        print('# different trees: ', different_trees)
-        print('# cycle_root: ', cycle_root)
-        print('# Wn1: ', Wn1)
-        print('# We1: ', We1)
-
-        if different_trees:
-            #assert len(cycle_root) == 2
-            extra_edge_1_id, extra_edge_1_origin, extra_edge_1_destination = find_extra_edge(cycle_root[0])
-            _, _, Wn1, We1 = find_cycle(extra_edge_1_id,
-                                        extra_edge_1_origin,
-                                        extra_edge_1_destination)
-            extra_edge_2_id, extra_edge_2_origin, extra_edge_2_destination = find_extra_edge(cycle_root[1])
-            _, _, Wn2, We2 = find_cycle(extra_edge_2_id,
-                                        extra_edge_2_origin,
-                                        extra_edge_2_destination)
-        else:
-            extra_edge_id, extra_edge_origin, extra_edge_destination = find_extra_edge(cycle_root)
-            #TODO Wn1, We1 <- perguntar pra Georges
-            _, _, Wn2, We2 = find_cycle(extra_edge_id,
-                                        extra_edge_origin,
-                                        extra_edge_destination)
-        print('# find cycle\t\t', Wn1, We1, Wn2, We2)
-
-        leave_edge_id, leave_edge_origin, leave_edge_destination = find_leaving_edge(Wn1, We1, Wn2, We2)
-        print('# leaving edge\t\t', leave_edge_id, leave_edge_origin, leave_edge_destination)
+        j, s, t = find_leaving_edge(i, p, q)
+        print('# leaving edge\t\t', j, s, t)
 
         augment_flow(Wn, We, residual_capacity(leave_edge_id, leave_edge_origin))
         print('# augment flow\t\t', Wn, We)
