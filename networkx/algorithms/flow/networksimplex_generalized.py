@@ -533,22 +533,22 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                                         extra_edge_destination)
         print('# find cycle\t\t', Wn1, We1, Wn2, We2)
 
-        leav_edge_id, leav_edge_origin, leav_edge_destination = find_leaving_edge(Wn1, We1, Wn2, We2)
-        print('# leaving edge\t\t', leav_edge_id, leav_edge_origin, leav_edge_destination)
+        leave_edge_id, leave_edge_origin, leave_edge_destination = find_leaving_edge(Wn1, We1, Wn2, We2)
+        print('# leaving edge\t\t', leave_edge_id, leave_edge_origin, leave_edge_destination)
 
-        augment_flow(Wn, We, residual_capacity(leav_edge_id, leav_edge_origin))
+        augment_flow(Wn, We, residual_capacity(leave_edge_id, leave_edge_origin))
         print('# augment flow\t\t', Wn, We)
 
-        if enter_edge_id != leav_edge_id:  # Do nothing more if the entering edge is the same as the
+        if enter_edge_id != leave_edge_id:  # Do nothing more if the entering edge is the same as the
                                            # the leaving edge.
-            if parent[leav_edge_destination] != leav_edge_origin:
+            if parent[leave_edge_destination] != leave_edge_origin:
                 # Ensure that s is the parent of t.
-                leav_edge_origin, leav_edge_destination = leav_edge_destination, leav_edge_origin
-            if We.index(enter_edge_id) > We.index(leav_edge_id):
+                leave_edge_origin, leave_edge_destination = leave_edge_destination, leave_edge_origin
+            if We.index(enter_edge_id) > We.index(leave_edge_id):
                 # Ensure that q is in the subtree rooted at t.
                 enter_edge_origin, enter_edge_destination = enter_edge_destination, enter_edge_origin
 
-            remove_edge(leav_edge_origin, leav_edge_destination)
+            remove_edge(leave_edge_origin, leave_edge_destination)
             make_root(enter_edge_destination)
             add_edge(enter_edge_id, enter_edge_origin, enter_edge_destination)
             update_potentials(enter_edge_origin, enter_edge_destination)
