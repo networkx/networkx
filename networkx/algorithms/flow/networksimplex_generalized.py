@@ -126,7 +126,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     # edge potentials
     pi = list(((faux_inf/(1-Mu[e+i]) for i, d in enumerate(D))))
 
-    forest_root = list(range(n)) # augmented forest roots
+    forest_root = list(range(n))     # augmented forest roots
     extra_edge = list(range(e, e+n)) # augmented forest extra edges
 
     upper = set()                  # edges at upper bound
@@ -307,7 +307,10 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         given an entering edge j. Also returns the amount of flow necessary
         on edge j for the chosen edge to leave.
         """
-        y = compute_flow_of_entering_edge(j, h)
+        d = {q:0 for q in trace_subtree(h)}
+        d[S[j]], d[T[j]] = -1, Mu[j]
+        y = compute_flows(d, h)
+
         min_sigma = faux_inf
         leaving_edge = -1
         # for every edge i in this augmented tree
@@ -367,70 +370,49 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         edge_id = extra_edge[forest_root.index(root)]
         return edge_id, S[edge_id], T[edge_id]
 
-    def compute_flow_of_entering_edge(j, h):
-        """For each edge in the tree rooted at node h,
-        compute the change in flow of those edges per unit increase of flow
-        in the entering edge j. It runs update_flows() on the tree,
-        with zero demand values, and does not change the x global flow.
-        """
-        x_copy = list(x)
-        D_copy = list(D)
-        D = [0] * len(N)
-        x = [0] * len(E)
-
-        D[S[j]] = -1
-        D[T[j]] = Mu[j]
-        update_flows(h)
-
-        y = x
-        x = x_copy
-        D = D_copy
-        return y
-
-    def update_flows(h):
-        """Update the flows of the nodes in the tree rooted at a node h
+    def compute_flows(d, h):
+        """Compute the flows of the nodes in the tree rooted at a node h
+        given demands d.
         """
         i = find_extra_edge(h)
         remaining, f, g = {}, {}, {}
 
         for q in trace_subtree(h):
             remaining[q] = size[q]
-            f[q] = -D[q]
+            f[q] = -d[q]
             g[q] = 0
         g[S[i]] = -1
         g[T[i]] = Mu[i]
 
         while list(remaining.keys()) != [h]:
-            q = -1
-            for node, count in remaining.items():
-                if count > 1:
-                    continue
-                q = node
-                break
+            to_compute = [node for node, count in remaining.items()
+                          if count < 2]
+            for q in to_compute:
+                p = prev[q]
+                if q == parent[p]:
+                    j = edge[p]
+                    f[p] += f[q] * Mu[j]
+                    g[p] += g[q] * Mu[j]
+                elif p == parent[q]:
+                    j = edge[q]
+                    f[p] += f[q] / Mu[j]
+                    g[p] += g[q] / Mu[j]
 
-            p = prev[q]
-            if q == parent[p]:
-                j = edge[p]
-                f[p] += f[q] * Mu[j]
-                g[p] += g[q] * Mu[j]
-            elif p == parent[q]:
-                j = edge[q]
-                f[p] += f[q] / Mu[j]
-                g[p] += g[q] / Mu[j]
-
-            remaining[p] -= 1
-            del remaining[q]
+                remaining[p] -= 1
+                del remaining[q]
 
         theta = f[h] / g[h]
 
+        y = {}
         for q in trace_subtree(h):
             p = prev[q]
             if q == parent[p]:
                 j = edge[p]
-                x[j] = f[q] + g[q] * theta
+                y[j] = f[q] + g[q] * theta
             elif p == parent[q]:
                 j = edge[q]
-                x[j] = -(f[q] + g[q] * theta) / Mu[j]
+                y[j] = -(f[q] + g[q] * theta) / Mu[j]        
+        return y
 
     def update_tree_indices(edge_ids):        
         source_ids = set(S[edge_id] for edge_id in edge_ids)
