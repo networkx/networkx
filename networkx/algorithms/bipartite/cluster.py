@@ -41,7 +41,7 @@ def latapy_clustering(G, nodes=None, mode='dot'):
 
     .. math::
 
-       c_u = \frac{\sum_{v \in N(N(v))} c_{uv} }{|N(N(u))|}
+       c_u = \frac{\sum_{v \in N(N(u))} c_{uv} }{|N(N(u))|}
 
     where `N(N(u))` are the second order neighbors of `u` in `G` excluding `u`, 
     and `c_{uv}` is the pairwise clustering coefficient between nodes 
