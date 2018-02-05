@@ -6,11 +6,12 @@ Generalized flow algorithms on directed connected graphs.
 __authors__ = """Alexandre Costa, Georges Spyrides, Matheus Telles"""
 __all__ = ['network_simplex_generalized']
 
-from random import shuffle
+from collections import OrderedDict
 from itertools import chain, islice, repeat
 from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
+from random import shuffle
 
 try:
     from itertools import izip as zip
@@ -127,19 +128,9 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     root = list(range(n))     # root of the augmented forest cotaining node
     extra = dict((i,i+e) for i in range(n)) # augmented forest extra edges
 
-    print('######################################################')
-    print('# Tree Variables #####################################')
-    print('# number of edges\t\t', e)
-    print('# edge flows\t\t\t', x)
-    print('# node potentials\t\t', pi)
-    print('# parent nodes\t\t\t', parent)
-    print('# edges to parents\t\t', edge)
-    print('# subtree sizes\t\t\t', size)
-    print('# next nodes in dfs thread\t', next)
-    print('# previous nodes in dfs thread\t', prev)
-    print('# last descendants in dfs thread', last)
-    print('# augmented forest roots\t', root)
-    print('# extra edges\t\t\t', extra)
+    upper = set()
+    lower = set(range(e))
+    forest = set(range(e,e+n))
 
     ###########################################################################
     # Pivot loop
@@ -181,6 +172,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 edges = chain(range(f, e), range(l))
 
             # Find the first edge with the lowest reduced cost.
+            print("0", reduced_cost(0))
+            print("Reduced cost", [(x, reduced_cost(x)) for x in edges])
             i = min(edges, key=reduced_cost)
             c = reduced_cost(i)
             if c >= 0:
@@ -188,13 +181,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 m += 1
             else:
                 # Entering edge found.
-                if x[i] == 0:
-                    p = S[i]
-                    q = T[i]
-                else:
-                    p = T[i]
-                    q = S[i]
-                yield i, p, q
+                yield i
                 m = 0
                 shuffle(blocks_random)
         # All edges have nonnegative reduced costs. The current flow is
@@ -222,12 +209,12 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 else:
                     return p
 
-    def trace_path(p):
+    def trace_path(p, w):
         """Return the path from a given node p to its respective augmented tree root
         """
         Wn = [p]
         We = []
-        while not is_root(p):
+        while p != w:
             We.append(edge[p])
             p = parent[p]
             Wn.append(p)
@@ -265,7 +252,6 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         """
         i = extra[root[h]]
         remaining, f, g = {}, {}, {}
-
         for q in trace_subtree(h):
             remaining[q] = size[q]
             f[q] = -d[q]
@@ -292,7 +278,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
         theta = f[h] / g[h]
 
-        y = {}
+        y = {i:theta}
         for q in trace_subtree(h):
             p = prev[q]
             if q == parent[p]:
@@ -300,7 +286,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 y[j] = f[q] + g[q] * theta
             elif p == parent[q]:
                 j = edge[q]
-                y[j] = -(f[q] + g[q] * theta) / Mu[j]        
+                y[j] = f[q] + g[q] * theta
+                #y[j] = -(f[q] + g[q] * theta) / Mu[j]
         return y
 
     def maximum_additional_flow(i, y):
@@ -324,49 +311,66 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         if root[S[j]] != root[T[j]]:
             d2 = {q:0 for q in trace_subtree(root[T[j]])}
             d.update(d2)
-        d[S[j]], d[T[j]] = (-1, Mu[j]) if x[j] == 0 else (1./Mu[j], -1)
+        d[S[j]], d[T[j]] = (1, -Mu[j]) if x[j] == 0 else (-1./Mu[j], 1)
 
         y = compute_flows(d, root[S[j]])
-        if root[S[j]] != root[T[j]]:
+        if root[S[j]] != root[T[j]]:            
             y2 = compute_flows(d, root[T[j]])
             y.update(y2)
-
-        leaving_edge, sigma = min(y.items(),
-                                  key=lambda i_y: maximum_additional_flow(*i_y))
+        y[j] = 1 if x[j] == 0 else -1
+        #print(y)
+        #print([maximum_additional_flow(*i_y) for i_y in y.items()])
+        leaving_edge, flow = min(y.items(),
+                                 key=lambda i_y: maximum_additional_flow(*i_y))
+        sigma = maximum_additional_flow(leaving_edge, flow)
+        
+        if y[leaving_edge] < 0:
+            sigma *= -1
+        
         return leaving_edge, sigma
 
     def update_potentials(h):
         """Update the potentials of the nodes in the tree rooted at node h
         """
         i = extra[root[h]]
-        f, g = {q}, {q:0}, {q:1}
-        for q in trace_subtree(h):
+        f, g = {h:0}, {h:1}
+        for q in trace_subtree(next[h]):
             p = prev[q]
+            print("p, q", p, q)
             if p == parent[q]:
                 j = edge[q]
                 f[q] = (f[p] - C[j]) / Mu[j]
                 g[q] = g[p] / Mu[j]
             elif q == parent[p]:
                 j = edge[p]
-                f[q] = (f[p] - C[j]) * Mu[j]
+                f[q] = f[p] * Mu[j] + C[j]
                 g[q] = g[p] * Mu[j]
 
+        print("i, s, t", i, S[i], T[i])
+        print("C[i], f[s], g[s], f[t], g[t]", C[i], f[S[i]], g[S[i]], f[T[i]], g[T[i]])
         theta = (C[i] - f[S[i]] + Mu[i] * f[T[i]]) / (g[S[i]] - Mu[i] * g[T[i]])
 
         for q in trace_subtree(h):
             pi[q] = f[q] + g[q] * theta
+        print("Theta", theta)
+        print("Pi", pi)
 
     def update_flows(h):
-        d = {D[q] for q in trace_subtree(h)}
-        for e in E.values():
-            if x[e] != U[e]:
-                continue
+        d = {q:D[q] for q in trace_subtree(h)}
+        for q in trace_subtree(next[h]):
+            x[edge[q]] = 0
+        x[extra[h]] = 0
+        for e in lower:
+            x[e] = 0
+        for e in upper:
+            x[e] = U[e]
             if S[e] in d:
-                d[S[e]] -= U[e]
+                d[S[e]] += U[e]
             if T[e] in d:
-                d[S[e]] += Mu[e] * U[e]
+                d[T[e]] -= Mu[e] * U[e]
         y = compute_flows(d, h)
-        for q, flow in y:
+        #print(y)
+        for q, flow in y.items():
             x[q] = flow
 
     def update_tree_indices(i, j):
@@ -378,9 +382,12 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         if root[S[i]] != root[T[i]]:
             edge_ids += [edge[q] for q in trace_subtree(root[T[i]])] + \
                         [extra[root[T[i]]]]
-            del root[T[i]]
-        del root[S[i]]
+            del extra[root[T[i]]]
+        del extra[root[S[i]]]
+        edge_ids = list(set(edge_ids))
+        edge_ids.append(i)
         edge_ids.remove(j)
+        print(edge_ids)
 
         source_ids = set(S[edge_id] for edge_id in edge_ids)
         target_ids = set(T[edge_id] for edge_id in edge_ids)
@@ -408,14 +415,17 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             for node_id, edge_id in graph[start_id].items():
                 if node_id in visited:
                     if parent[start_id] != node_id:
-                        extra_edge[root_id] = edge_id
+                        extra[root_id] = edge_id
+                    #if not parent[node_id] and start_id == node_id:
+                    #    parent[node_id] = node_id
+                    #    edge[node_id] = edge_id
                     continue
-                root[node_id] = root_id
                 parent[node_id] = start_id
                 edge[node_id] = edge_id
                 _, n_nodes, last_node_id = dfs(graph, node_id, root_id, visited)
                 total_nodes += n_nodes
 
+            root[start_id] = root_id
             last[start_id] = last_node_id
             size[start_id] = total_nodes
             return visited, total_nodes, last_node_id
@@ -433,6 +443,24 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 prev[node] = visited[(i-1)%n_nodes]
                 next[node] = visited[(i+1)%n_nodes]
 
+    def print_augmented_forest_info():
+        print('######################################################')
+        print('# Forest Variables #####################################')
+        print('# number of edges\t\t', e)
+        print('# edge flows\t\t\t', x)
+        print('# node potentials\t\t', pi)
+        print('# parent nodes\t\t\t', parent)
+        print('# edges to parents\t\t', edge)
+        print('# subtree sizes\t\t\t', size)
+        print('# next nodes in dfs thread\t', next)
+        print('# previous nodes in dfs thread\t', prev)
+        print('# last descendants in dfs thread', last)
+        print('# augmented forest roots\t', root)
+        print('# extra edges\t\t\t', extra)
+        print('# Edges in upper\t\t\t', upper)
+        print('# Edges in lower\t\t\t', lower)
+        print('# Edges in forest\t\t\t', forest)
+
     print('######################################################')
     print('# Data structures ####################################')
     print('# nodes\t\t\t', N)
@@ -445,16 +473,28 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     print('# edge weights\t\t', C)
     print('# edge multipliers\t', Mu)
 
-    # Pivot loop
-    for i, p, q in find_entering_edges():
+    # Pivot loop    
+    for i in find_entering_edges():
+        print_augmented_forest_info()
         print('######################################################')
         print('# Pivot Loop #########################################')
-        print('# entering edges\t', i, p, q)
-
+        print('# entering edges (i)\t', i)
         j, sigma = find_leaving_edge(i)
-        print('# leaving edges\t', j, sigma)
+        print('# leaving edges (i, sigma)\t', j, sigma)
+        
+        forest.add(i)
+        forest.remove(j)
+        upper -= set([i])
+        lower -= set([i])
+        # Leaving edge is bounded above
+        if sigma > 0:
+            upper.add(j)
+        else:
+            lower.add(j)
 
-        update_tree_indices(i, j)
+        if i != j:
+            update_tree_indices(i, j)
+
         # It's only necessary to update new augmented tree
         update_potentials(root[S[j]])        
         update_flows(root[S[j]])
@@ -462,6 +502,8 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         if root[S[j]] != root[T[j]]:
             update_potentials(root[T[j]])
             update_flows(root[T[j]])
+
+    print_augmented_forest_info()
 
 
     ###########################################################################
