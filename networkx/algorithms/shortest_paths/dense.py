@@ -7,8 +7,11 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Aric Hagberg <aric.hagberg@gmail.com>
+#          Miguel Sozinho Ramalho <m.ramalho@fe.up.pt>
 import networkx as nx
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['floyd_warshall',
            'floyd_warshall_predecessor_and_distance',
            'floyd_warshall_numpy']
@@ -76,6 +79,15 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
        Dictionaries, keyed by source and target, of predecessors and distances
        in the shortest path.
 
+    Examples
+    --------
+    >>> G = nx.gnm_random_graph(10, 20)
+    >>> predecessors, distances = nx.floyd_warshall_predecessor_and_distance(G)
+    >>> print(reconstruct_path(1, 2, predecessors))
+    [1, 3, 2]
+    >>> print(reconstruct_path(1, 1, predecessors))
+    []
+
     Notes
     ------
     Floyd's algorithm is appropriate for finding shortest paths
@@ -115,6 +127,49 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
                     dist[u][v] = dist[u][w] + dist[w][v]
                     pred[u][v] = pred[w][v]
     return dict(pred), dict(dist)
+
+
+def reconstruct_path(source, target, predecessors):
+    """Reconstruct a path from source to target using the predecessors
+    dict as returned by floyd_warshall_predecessor_and_distance
+
+    Parameters
+    ----------
+    source : node
+       Starting node for path
+
+    target : node
+       Ending node for path
+
+    predecessors: dictionary
+       Dictionary, keyed by source and target, of predecessors in the
+       shortest path, as returned by floyd_warshall_predecessor_and_distance
+
+    Returns
+    -------
+    path : list
+       A list of nodes containing the shortest path from source to target
+
+       If source and target are the same, an empty list is returned
+
+    Notes
+    ------
+    This function is meant to give more applicability to the
+    floyd_warshall_predecessor_and_distance function
+
+    See Also
+    --------
+    floyd_warshall_predecessor_and_distance
+    """
+    if source == target:
+        return []
+    prev = predecessors[source]
+    curr = prev[target]
+    path = [target, curr]
+    while curr != source:
+        curr = prev[curr]
+        path.append(curr)
+    return list(reversed(path))
 
 
 def floyd_warshall(G, weight='weight'):
