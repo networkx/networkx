@@ -81,7 +81,7 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
 
     Examples
     --------
-    >>> G = nx.gnm_random_graph(10, 20)
+    >>> G = nx.gnm_random_graph(10, 20) # results could differ
     >>> predecessors, distances = nx.floyd_warshall_predecessor_and_distance(G)
     >>> print(reconstruct_path(1, 2, predecessors))
     [1, 3, 2]
