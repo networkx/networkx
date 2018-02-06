@@ -58,14 +58,14 @@ class TestFloyd:
                                     ('y', 's', 7), ('y', 'v', 6)])
         predecessors, _ = nx.floyd_warshall_predecessor_and_distance(XG)
 
-        path = reconstruct_path('s', 'v', predecessors)
+        path = nx.reconstruct_path('s', 'v', predecessors)
         assert_equal(path, ['s', 'x', 'u', 'v'])
 
-        path = reconstruct_path('s', 's', predecessors)
+        path = nx.reconstruct_path('s', 's', predecessors)
         assert_equal(path, [])
 
         # this part raises the keyError
-        reconstruct_path('1', '2', predecessors)
+        nx.reconstruct_path('1', '2', predecessors)
 
     def test_cycle(self):
         path, dist = nx.floyd_warshall_predecessor_and_distance(

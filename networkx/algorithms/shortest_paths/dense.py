@@ -14,6 +14,7 @@ import networkx as nx
 
 __all__ = ['floyd_warshall',
            'floyd_warshall_predecessor_and_distance',
+           'reconstruct_path',
            'floyd_warshall_numpy']
 
 
