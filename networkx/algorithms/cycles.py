@@ -102,7 +102,7 @@ def cycle_basis(G, root=None):
 
 
 @not_implemented_for('undirected')
-def simple_cycles(G, max_edges_in_cycle=None):
+def simple_cycles(G, max_edges_in_cycle=None, filter_edge_purposes=False):
     """Find simple cycles (elementary circuits) of a directed graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -119,6 +119,10 @@ def simple_cycles(G, max_edges_in_cycle=None):
     max_edges_in_cycle : int
                          Return cycles where number of edges is less than max_edges_in_cycle
 
+    filter_edge_purposes : bool
+                           ad-hoc optimisation param
+                           Reduces iteratively the network so that first and last edges of cycle are HB
+                           and NHB for the rest of the edges
     Returns
     -------
     cycle_generator: generator
@@ -173,7 +177,7 @@ def simple_cycles(G, max_edges_in_cycle=None):
                 stack.update(B[node])
                 B[node].clear()
 
-    def _filterG(G, home_node, nhb_name='NHB', hb_name='HB'):
+    def _filter_G_edges_trip_purpose(G, home_node, nhb_name='NHB', hb_name='HB'):
         # Give better name
         # Creates a graph that origins edges from and to
         subG = nx.MultiDiGraph()
@@ -197,7 +201,6 @@ def simple_cycles(G, max_edges_in_cycle=None):
     if max_edges_in_cycle is None:
         max_edges_in_cycle = G.number_of_edges()
 
-    #subG = type(G)(G.edges(data=True))
     sccs = list(nx.strongly_connected_components(G))
     while sccs:
         scc = sccs.pop()
@@ -207,7 +210,8 @@ def simple_cycles(G, max_edges_in_cycle=None):
         # Keep only the from source edges and the nhb ones
         # Intermediate legs in trip chain can only be nhb
 
-        subG = _filterG(G, startnode)
+        if filter_edge_purposes == True:
+            subG = _filter_G_edges_trip_purpose(G, startnode)
 
         # Processing node runs "circuit" routine from recursive version
         path = [startnode]
