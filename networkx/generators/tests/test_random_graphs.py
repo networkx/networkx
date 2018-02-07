@@ -100,7 +100,7 @@ class TestGeneratorsRandom(object):
 
     def test_extended_barabasi_albert(self, m=2):
         """
-        Tests that the extended BA random graph generated behaves consistenly.
+        Tests that the extended BA random graph generated behaves consistently.
 
         Tests the exceptions are raised as expected.
 

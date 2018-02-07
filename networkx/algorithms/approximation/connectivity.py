@@ -313,7 +313,7 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 
     Notes
     -----
-    This function and its helper are originaly from
+    This function and its helper are originally from
     networkx.algorithms.shortest_paths.unweighted and are modified to 
     accept the extra parameter 'exclude', which is a container for nodes 
     already used in other paths that should be ignored.
@@ -374,7 +374,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
 
     while forward_fringe and reverse_fringe:
         # Make sure that we iterate one step forward and one step backwards
-        # thus source and target will only tigger "found path" when they are
+        # thus source and target will only trigger "found path" when they are
         # adjacent and then they can be safely included in the container 'exclude'
         level += 1
         if not level % 2 == 0:

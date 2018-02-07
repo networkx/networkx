@@ -254,9 +254,9 @@ class EdgeComponentAuxGraph(object):
 
     Notes
     -----
-    This implementation is based on [1]_. The idea is to construct an auxillary
+    This implementation is based on [1]_. The idea is to construct an auxiliary
     graph from which the k-edge-ccs can be extracted in linear time. The
-    auxillary graph is constructed in $O(|V|\cdot F)$ operations, where F is the
+    auxiliary graph is constructed in $O(|V|\cdot F)$ operations, where F is the
     complexity of max flow. Querying the components takes an additional $O(|V|)$
     operations. This algorithm can be slow for large graphs, but it handles an
     arbitrary k and works for both directed and undirected inputs.
@@ -300,7 +300,7 @@ class EdgeComponentAuxGraph(object):
 
     Example
     -------
-    >>> # The auxillary graph is primarilly used for k-edge-ccs but it
+    >>> # The auxiliary graph is primarilly used for k-edge-ccs but it
     >>> # can also speed up the queries of k-edge-subgraphs by refining the
     >>> # search space.
     >>> import itertools as it
@@ -322,19 +322,19 @@ class EdgeComponentAuxGraph(object):
     # @not_implemented_for('multigraph')  # TODO: fix decor for classmethods
     @classmethod
     def construct(EdgeComponentAuxGraph, G):
-        """Builds an auxillary graph encoding edge-connectivity between nodes.
+        """Builds an auxiliary graph encoding edge-connectivity between nodes.
 
         Notes
         -----
-        Given G=(V, E), initialize an empty auxillary graph A.
+        Given G=(V, E), initialize an empty auxiliary graph A.
         Choose an arbitrary source node s.  Initialize a set N of available
         nodes (that can be used as the sink). The algorithm picks an
         arbitrary node t from N - {s}, and then computes the minimum st-cut
         (S, T) with value w. If G is directed the the minimum of the st-cut or
         the ts-cut is used instead. Then, the edge (s, t) is added to the
-        auxillary graph with weight w. The algorithm is called recursively
+        auxiliary graph with weight w. The algorithm is called recursively
         first using S as the available nodes and s as the source, and then
-        using T and t. Recusion stops when the source is the only available
+        using T and t. Recursion stops when the source is the only available
         node.
 
         Parameters
@@ -368,7 +368,7 @@ class EdgeComponentAuxGraph(object):
         H.add_nodes_from(G.nodes())
         H.add_edges_from(G.edges(), capacity=1)
 
-        # A is the auxillary graph to be constructed
+        # A is the auxiliary graph to be constructed
         # It is a weighted undirected tree
         A = nx.Graph()
 
@@ -381,7 +381,7 @@ class EdgeComponentAuxGraph(object):
             # This constructs A
             _recursive_build(H, A, source, avail)
 
-        # This class is a container the holds the auxillary graph A and
+        # This class is a container the holds the auxiliary graph A and
         # provides access the the k_edge_components function.
         self = EdgeComponentAuxGraph()
         self.A = A
@@ -389,7 +389,7 @@ class EdgeComponentAuxGraph(object):
         return self
 
     def k_edge_components(self, k):
-        """Queries the auxillary graph for k-edge-connected components.
+        """Queries the auxiliary graph for k-edge-connected components.
 
         Parameters
         ----------
@@ -402,9 +402,9 @@ class EdgeComponentAuxGraph(object):
 
         Notes
         -----
-        Given the auxillary graph, the k-edge-connected components can be
+        Given the auxiliary graph, the k-edge-connected components can be
         determined in linear time by removing all edges with weights less than
-        k from the auxillary graph.  The resulting connected components are the
+        k from the auxiliary graph.  The resulting connected components are the
         k-edge-ccs in the original graph.
         """
         if k < 1:
@@ -413,7 +413,7 @@ class EdgeComponentAuxGraph(object):
         # "traverse the auxiliary graph A and delete all edges with weights less
         # than k"
         aux_weights = nx.get_edge_attributes(A, 'weight')
-        # Create a relevant graph with the auxillary edges with weights >= k
+        # Create a relevant graph with the auxiliary edges with weights >= k
         R = nx.Graph()
         R.add_nodes_from(A.nodes())
         R.add_edges_from(e for e, w in aux_weights.items() if w >= k)
@@ -423,7 +423,7 @@ class EdgeComponentAuxGraph(object):
             yield cc
 
     def k_edge_subgraphs(self, k):
-        """Queries the auxillary graph for k-edge-connected subgraphs.
+        """Queries the auxiliary graph for k-edge-connected subgraphs.
 
         Parameters
         ----------
@@ -450,7 +450,7 @@ class EdgeComponentAuxGraph(object):
         # "traverse the auxiliary graph A and delete all edges with weights less
         # than k"
         aux_weights = nx.get_edge_attributes(A, 'weight')
-        # Create a relevant graph with the auxillary edges with weights >= k
+        # Create a relevant graph with the auxiliary edges with weights >= k
         R = nx.Graph()
         R.add_nodes_from(A.nodes())
         R.add_edges_from(e for e, w in aux_weights.items() if w >= k)
@@ -490,7 +490,7 @@ def _low_degree_nodes(G, k, nbunch=None):
 
 
 def _high_degree_components(G, k):
-    """Helper for filtering components that cant be k-edge-connected.
+    """Helper for filtering components that can't be k-edge-connected.
 
     Removes and generates each node with degree less than k.  Then generates
     remaining components where all nodes have degree at least k.
@@ -532,7 +532,7 @@ def general_k_edge_subgraphs(G, k):
     graph is a k-edge-connected subgraph and can be added to the results.
     Otherwise, the cut is used to split the graph in two and the procedure is
     applied recursively. If the graph is just a single node, then it is also
-    added to the results. At the end, each result is either gaurenteed to be
+    added to the results. At the end, each result is either guaranteed to be
     a single node or a subgraph of G that is k-edge-connected.
 
     This implementation contains optimizations for reducing the number of calls

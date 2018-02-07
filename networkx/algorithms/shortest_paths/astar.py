@@ -85,7 +85,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     # Uses Python heapq to keep in priority order.
     # Add a counter to the queue to prevent the underlying heap from
     # attempting to compare the nodes themselves. The hash breaks ties in the
-    # priority and is guarenteed unique for all nodes in the graph.
+    # priority and is guaranteed unique for all nodes in the graph.
     c = count()
     queue = [(0, next(c), source, 0, None)]
 

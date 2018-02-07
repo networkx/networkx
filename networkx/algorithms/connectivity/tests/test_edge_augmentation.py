@@ -163,7 +163,7 @@ def test_tarjan():
 
     aug_edges = set(_augment_and_check(G, k=2)[0])
     print('aug_edges = {!r}'.format(aug_edges))
-    # cant assert edge exactly equality due to non-determenant edge order
+    # can't assert edge exactly equality due to non-determinant edge order
     # but we do know the size of the solution must be 3
     assert_equal(len(aug_edges), 3)
 
@@ -171,7 +171,7 @@ def test_tarjan():
              (16, 17), (18, 14), (15, 14)]
     aug_edges = set(_augment_and_check(G, avail=avail, k=2)[0])
 
-    # Can't assert exact length since approximation depnds on the order of a
+    # Can't assert exact length since approximation depends on the order of a
     # dict traversal.
     assert_less_equal(len(aug_edges), 3 * 2)
 
@@ -309,7 +309,7 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
 
                 assert_less(max_aug_k, k, (
                     'avail should only be unfeasible if using all edges '
-                    'doesnt acheive k-edge-connectivity'))
+                    'does not achieve k-edge-connectivity'))
 
             # Test for a partial solution
             partial_edges = list(nx.k_edge_augmentation(

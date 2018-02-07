@@ -16,7 +16,7 @@ The :func:`grid_2d_graph`, :func:`triangular_lattice_graph`, and
 :func:`hexagonal_lattice_graph` functions correspond to the three
 `regular tilings of the plane`_, the square, triangular, and hexagonal
 tilings, respectively. :func:`grid_graph` and :func:`hypercube_graph`
-are similar for arbitrary dimensions. Useful relevent discussion can
+are similar for arbitrary dimensions. Useful relevant discussion can
 be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 
 .. _regular tilings of the plane: https://en.wikipedia.org/wiki/List_of_regular_polytopes_and_compounds#Euclidean_tilings

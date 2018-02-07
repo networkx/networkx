@@ -96,7 +96,7 @@ def maximum_flow(flowG, _s, _t,
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
@@ -237,7 +237,7 @@ def maximum_flow_value(flowG, _s, _t,
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
@@ -375,7 +375,7 @@ def minimum_cut(flowG, _s, _t,
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
@@ -468,7 +468,7 @@ def minimum_cut(flowG, _s, _t,
     # the minimum cut.
     non_reachable = set(dict(nx.shortest_path_length(R, target=_t)))
     partition = (set(flowG) - non_reachable, non_reachable)
-    # Finaly add again cutset edges to the residual network to make
+    # Finally add again cutset edges to the residual network to make
     # sure that it is reusable.
     if cutset is not None:
         R.add_edges_from(cutset)
@@ -537,7 +537,7 @@ def minimum_cut_value(flowG, _s, _t,
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the

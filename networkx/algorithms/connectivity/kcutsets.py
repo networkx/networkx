@@ -88,7 +88,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     if not nx.is_connected(G):
         raise nx.NetworkXError('Input graph is disconnected.')
 
-    # Addess some corner cases first.
+    # Address some corner cases first.
     # For cycle graphs
     if G.order() == G.size():
         if all(2 == d for n, d in G.degree()):

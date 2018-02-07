@@ -1,4 +1,4 @@
-"""Unit tests for PyGraphviz inteface."""
+"""Unit tests for PyGraphviz interface."""
 import os
 import tempfile
 from nose import SkipTest

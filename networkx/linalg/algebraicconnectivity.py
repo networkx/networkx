@@ -267,7 +267,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     while True:
         # Orthonormalize X.
         X = qr(X)[0]
-        # Compute interation matrix H.
+        # Compute iteration matrix H.
         W[:, :] = L * X
         H = X.T * W
         sigma, Y = eigh(H, overwrite_a=True)

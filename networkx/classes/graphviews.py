@@ -19,7 +19,7 @@ a graph to reverse directed edges, or treat a directed graph
 as undirected, etc. This module provides those graph views.
 
 The resulting views are essentially read-only graphs that
-report data from the orginal graph object. We provide three
+report data from the orignal graph object. We provide three
 attributes related to the underlying graph object.
 
     G._graph : the parent graph used for looking up graph data.

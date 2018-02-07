@@ -123,7 +123,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True,
     onodes.sort()
     onodes[:] = [vert for (l, vert) in onodes if l > 0]
 
-    # intialize betweenness
+    # initialize betweenness
     between = {}.fromkeys(length, 1.0)
 
     while onodes:
@@ -192,7 +192,7 @@ def _edge_betweenness(G, source, nodes=None, cutoff=False):
     (pred, length) = nx.predecessor(G, source, cutoff=cutoff, return_seen=True)
     # order the nodes by path length
     onodes = [n for n, d in sorted(length.items(), key=itemgetter(1))]
-    # intialize betweenness, doesn't account for any edge weights
+    # initialize betweenness, doesn't account for any edge weights
     between = {}
     for u, v in G.edges(nodes):
         between[(u, v)] = 1.0

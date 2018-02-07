@@ -302,7 +302,7 @@ class HistoricalTests(object):
         assert_equal(dict(d for n, d in P3.degree(['A', 'B'])), {})
         # nbunch can be a graph
         assert_equal(sorted(d for n, d in P5.degree(P3)), [1, 2, 2])
-        # nbunch can be a graph thats way to big
+        # nbunch can be a graph that's way too big
         assert_equal(sorted(d for n, d in P3.degree(P5)), [1, 1, 2])
         assert_equal(list(P5.degree([])), [])
         assert_equal(dict(P5.degree([])), {})

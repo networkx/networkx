@@ -133,7 +133,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
             return False
         if not self.two_hop(self.G1, self.core_1, G1_node, neighbors):
             return False
-        # Otherwise, this node is sematically feasible!
+        # Otherwise, this node is semantically feasible!
         return True
 
 
@@ -266,5 +266,5 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
             return False
         if not self.two_hop_succ(self.G1, G1_node, self.core_1, succ):
             return False
-        # Otherwise, this node is sematically feasible!
+        # Otherwise, this node is semantically feasible!
         return True

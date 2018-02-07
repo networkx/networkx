@@ -328,7 +328,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     -------
     cutset : set
         Set of nodes that, if removed, would disconnect G. If source
-        and target nodes are provided, the set contians the nodes that
+        and target nodes are provided, the set contains the nodes that
         if removed, would destroy all paths between source and target.
 
     Examples
@@ -401,7 +401,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         return minimum_st_node_cut(G, s, t, flow_func=flow_func)
 
     # Global minimum node cut.
-    # Analog to the algoritm 11 for global node connectivity in [1].
+    # Analog to the algorithm 11 for global node connectivity in [1].
     if G.is_directed():
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
@@ -473,7 +473,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     -------
     cutset : set
         Set of edges that, if removed, would disconnect G. If source
-        and target nodes are provided, the set contians the edges that
+        and target nodes are provided, the set contains the edges that
         if removed, would destroy all paths between source and target.
 
     Examples
@@ -553,7 +553,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         return minimum_st_edge_cut(H, s, t, **kwargs)
 
     # Global minimum edge cut
-    # Analog to the algoritm for global edge connectivity
+    # Analog to the algorithm for global edge connectivity
     if G.is_directed():
         # Based on algorithm 8 in [1]
         if not nx.is_weakly_connected(G):
