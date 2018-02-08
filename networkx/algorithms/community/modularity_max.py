@@ -142,7 +142,6 @@ def greedy_modularity_communities(G, weight=None):
         merges.append((i,j,dq))
         
         # New modularity
-        q = modularity(G, [[label_for_node[x] for x in c] for c in communities.values()])
         q_cnm += dq
 
         # Get list of communities connected to merged communities
