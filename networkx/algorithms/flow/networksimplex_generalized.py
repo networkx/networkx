@@ -67,7 +67,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             raise nx.NetworkXError('edge %r has invalid multiplier' % (e,))
         if abs(c) == inf:
             raise nx.NetworkXError('edge %r has infinite weight' % (e,))
-    
+
     edges = nx.selfloop_edges(G, data=True)
     for e in edges:
         if abs(e[-1].get(weight, 0)) == inf:
@@ -254,7 +254,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             remaining[q] = size[q]
             f[q] = d[q]
             g[q] = 0
-        g[S[i]] = -1            
+        g[S[i]] = -1
         g[T[i]] = Mu[i]
 
         while list(remaining.keys()) != [h]:
@@ -263,6 +263,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             for q in to_compute:
                 p = parent[q]
                 j = edge[q]
+
                 if S[j] == q:
                     f[p] += f[q] * Mu[j]
                     g[p] += g[q] * Mu[j]
@@ -308,7 +309,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         d[S[j]], d[T[j]] = (-1., Mu[j]) if x[j] == 0 else (1/Mu[j], -1.)
 
         y = compute_flows(d, root[S[j]])
-        if root[S[j]] != root[T[j]]:            
+        if root[S[j]] != root[T[j]]:
             y2 = compute_flows(d, root[T[j]])
             y.update(y2)
         y[j] = 1. if x[j] == 0 else -1.
@@ -318,10 +319,10 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         leaving_edge, flow = min(y.items(),
                                  key=lambda i_y: maximum_additional_flow(*i_y))
         sigma = maximum_additional_flow(leaving_edge, flow)
-        
+
         #if y[leaving_edge] < 0:
         #    sigma *= -1
-        
+
         return leaving_edge, sigma
 
     def update_potentials(h):
@@ -369,7 +370,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         """
         """
         edge_ids = [edge[q] for q in trace_subtree(root[S[i]]) if edge[q]] + \
-                   [extra[root[S[i]]]] 
+                   [extra[root[S[i]]]]
         # Entering arc connects two augmented trees
         if root[S[i]] != root[T[i]]:
             edge_ids += [edge[q] for q in trace_subtree(root[T[i]]) if edge[q]] + \
@@ -462,7 +463,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     print('# edge weights\t\t', C)
     print('# edge multipliers\t', Mu)
 
-    # Pivot loop    
+    # Pivot loop
     for i in find_entering_edges():
         print_augmented_forest_info()
         print('######################################################')
@@ -470,7 +471,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         print('# entering edges (i)\t', i)
         j, sigma = find_leaving_edge(i)
         print('# leaving edges (i, sigma)\t', j, sigma)
-        
+
         forest.add(i)
         forest.remove(j)
         upper -= set([i])
@@ -485,7 +486,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
             update_tree_indices(i, j)
 
         # It's only necessary to update new augmented tree
-        update_potentials(root[S[j]])        
+        update_potentials(root[S[j]])
         update_flows(root[S[j]])
         # Leaving edge may have disconnected the old augmented tree
         if root[S[j]] != root[T[j]]:
