@@ -11,7 +11,11 @@ from itertools import chain, islice, repeat
 from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
-from random import shuffle
+from random import shuffle, seed
+
+# UNDO
+seed(4) # choose BD as second entering edge
+# seed(1) # choose AC as second entering edge
 
 try:
     from itertools import izip as zip
@@ -111,8 +115,10 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     faux_inf = 3 * mu_product * max(chain([sum(u for u in U if u < inf),
                                            sum(abs(c) for c in C)],
                                           (abs(d) for d in D))) or 1
+    # UNDO
+    faux_inf = 1000
     C.extend(repeat(faux_inf, n))
-    U.extend(repeat(faux_inf, n))
+    U.extend(repeat(faux_inf*faux_inf, n))
 
     # Construct the initial augmented forest
     e = len(E)                     # number of edges
@@ -248,12 +254,15 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         """Compute the flows of the nodes in the tree rooted at a node h
         given demands d.
         """
-        i = extra[root[h]]
+        h = root[h]
+        i = extra[h]
         remaining, f, g = {}, {}, {}
+
         for q in trace_subtree(h):
             remaining[q] = size[q]
             f[q] = d[q]
             g[q] = 0
+
         g[S[i]] = -1
         g[T[i]] = Mu[i]
 
@@ -276,11 +285,23 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 remaining[p] -= 1
                 del remaining[q]
 
+        # if self loop node
+        if h == S[i] and S[i] == T[i] and i in forest:
+            # if self loop with demand on previous node
+            if d[prev[h]] != 0:
+                if prev[h] != h:
+                    f[h] = -d[h] - d[prev[h]]
+                else:
+                    f[h] = -d[prev[h]]
+            else:
+                f[h] = -d[h]
+            g[h] = (1 - Mu[i])
+
         theta =  -f[h] / g[h]
-        print("theta", theta)
-        print("f, g", f, g)
+
         y = {edge[q]:f[q] + g[q] * theta
              for q in trace_subtree(h) if q != h}
+
         y[i] = theta
 
         return y
@@ -364,13 +385,14 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
                 d[T[e]] += Mu[e] * U[e]
         y = compute_flows(d, h)
         for q, flow in y.items():
-            x[q] = flow
+            x[q] += flow
 
     def update_tree_indices(i, j):
         """
         """
-        edge_ids = [edge[q] for q in trace_subtree(root[S[i]]) if edge[q]] + \
+        edge_ids = [edge[q] for q in trace_subtree(root[S[i]]) if edge[q] != None] + \
                    [extra[root[S[i]]]]
+
         # Entering arc connects two augmented trees
         if root[S[i]] != root[T[i]]:
             edge_ids += [edge[q] for q in trace_subtree(root[T[i]]) if edge[q]] + \
