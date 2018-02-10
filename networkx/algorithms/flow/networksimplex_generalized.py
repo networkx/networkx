@@ -268,7 +268,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
         while list(remaining.keys()) != [h]:
             to_compute = [node for node, count in remaining.items()
-                          if count < 2 and node != h]
+                          if (count < 2 or len(remaining) == 2) and node != h]
             for q in to_compute:
                 p = parent[q]
                 j = edge[q]
@@ -402,7 +402,6 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
         edge_ids = list(set(edge_ids))
         edge_ids.append(i)
         edge_ids.remove(j)
-        print(edge_ids)
 
         source_ids = set(S[edge_id] for edge_id in edge_ids)
         target_ids = set(T[edge_id] for edge_id in edge_ids)
@@ -509,11 +508,14 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
 
         # It's only necessary to update new augmented tree
         update_potentials(root[S[j]])
-        update_flows(root[S[j]])
+        if any(pi[index] > 0 for index in range(0, n)):
+            update_flows(root[S[j]])
         # Leaving edge may have disconnected the old augmented tree
         if root[S[j]] != root[T[j]]:
             update_potentials(root[T[j]])
-            update_flows(root[T[j]])
+            if any(pi[index] > 0 for index in range(0, n)):
+                update_flows(root[T[j]])
+
 
     print_augmented_forest_info()
 
@@ -521,7 +523,7 @@ def network_simplex_generalized(G, demand='demand', capacity='capacity', weight=
     # Infeasibility and unboundedness detection
     ###########################################################################
 
-    if any(x[i] != 0 for i in range(-n, 0)):
+    if any(x[i] != 0 for i in range(0, e)):
         raise nx.NetworkXUnfeasible('no flow satisfies all node demands')
 
     if (any(x[i] * 2 >= faux_inf for i in range(e)) or
