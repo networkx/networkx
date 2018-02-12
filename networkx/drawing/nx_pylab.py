@@ -41,7 +41,7 @@ __all__ = ['draw',
            'draw_shell']
 
 
-def draw(G, pos=None, ax=None, **kwds):
+def draw(G, pos=None, ax=None, draw_loop=True,**kwds):
     """Draw the graph G with Matplotlib.
 
     Draw the graph as a simple representation with no node
@@ -121,9 +121,8 @@ def draw(G, pos=None, ax=None, **kwds):
 
     if 'with_labels' not in kwds:
         kwds['with_labels'] = 'labels' in kwds
-
     try:
-        draw_networkx(G, pos=pos, ax=ax, **kwds)
+        draw_networkx(G, pos=pos, ax=ax, draw_loop=draw_loop, **kwds)
         ax.set_axis_off()
         plt.draw_if_interactive()
     except:
@@ -131,7 +130,7 @@ def draw(G, pos=None, ax=None, **kwds):
     return
 
 
-def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
+def draw_networkx(G, pos=None, arrows=True, with_labels=True, draw_loop=True, **kwds):
     """Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
@@ -275,7 +274,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         pos = nx.drawing.spring_layout(G)  # default to spring layout
 
     node_collection = draw_networkx_nodes(G, pos, **kwds)
-    edge_collection = draw_networkx_edges(G, pos, arrows=arrows, **kwds)
+    edge_collection = draw_networkx_edges(G, pos, arrows=arrows, draw_loop=draw_loop, **kwds)
     if with_labels:
         draw_networkx_labels(G, pos, **kwds)
     plt.draw_if_interactive()
@@ -425,6 +424,7 @@ def draw_networkx_edges(G, pos,
                         alpha=1.0,
                         arrowstyle='-|>',
                         arrowsize=10,
+                        draw_loop=False,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None,
@@ -675,20 +675,54 @@ def draw_networkx_edges(G, pos,
             else:
                 line_width = lw[0]
             arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                    arrowstyle=arrowstyle,
-                                    shrinkA=shrink_source,
-                                    shrinkB=shrink_target,
-                                    mutation_scale=mutation_scale,
-                                    color=arrow_color,
-                                    linewidth=line_width,
-                                    zorder=1)  # arrows go behind nodes
-
-            # There seems to be a bug in matplotlib to make collections of
-            # FancyArrowPatch instances. Until fixed, the patches are added
-            # individually to the axes instance.
-            arrow_collection.append(arrow)
-            ax.add_patch(arrow)
-
+                        arrowstyle=arrowstyle,
+                        shrinkA=shrink_source,
+                        shrinkB=shrink_target,
+                        mutation_scale=mutation_scale,
+                        color=arrow_color,
+                        linewidth=line_width,
+                        zorder=1)  # arrows go behind nodes
+            if draw_loop==False:
+              arrow = arrow
+              arrow_collection.append(arrow)
+              ax.add_patch(arrow)
+            else:
+              cycle_edges = list(nx.simple_cycles(G))
+              loop_points = [(x,y) for x,y in cycle_edges]
+              for x in loop_points:
+                to_remove = list(G.edges())
+                half_cycle = to_remove.index(x)
+                second_half = to_remove.index(x[::-1])
+                if (src in edge_pos[half_cycle][0] and dst in edge_pos[half_cycle][1]) or (src in edge_pos[second_half][0] and dst in edge_pos[second_half][1]):
+                  arrow1 = FancyArrowPatch((x1, y1), (x2, y2),
+                                          arrowstyle=arrowstyle,
+                                          shrinkA=shrink_source,
+                                          connectionstyle='angle3, angleA=28.66', #180/2pi, approx
+                                          shrinkB=shrink_target,
+                                          mutation_scale=mutation_scale,
+                                          color=arrow_color,
+                                          linewidth=line_width,
+                                          zorder=1)  # arrows go behind nodes
+                  arrow_collection.append(arrow1)
+                  ax.add_patch(arrow1)
+                  try:
+                    arrow2 = FancyArrowPatch((x2, y2), (x1, y1),
+                                          arrowstyle=arrowstyle,
+                                          shrinkA=shrink_source,
+                                          connectionstyle='angle3, angleA=28.66', #180/2pi
+                                          shrinkB=shrink_target,
+                                          mutation_scale=mutation_scale,
+                                          color=arrow_color,
+                                          linewidth=line_width,
+                                          zorder=1)  # arrows go behind nodes
+                    arrow_collection.append(arrow2)
+                    ax.add_patch(arrow2)
+                  except nx.NetworkXError:
+                    raise
+                else:
+                  arrow = arrow
+                  arrow_collection.append(arrow)
+                  ax.add_patch(arrow)
     # update view
     minx = np.amin(np.ravel(edge_pos[:, :, 0]))
     maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
