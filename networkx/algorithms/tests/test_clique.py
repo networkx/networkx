@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
+from nose.tools import assert_equal, raises
+
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 

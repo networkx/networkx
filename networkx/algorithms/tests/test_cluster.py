@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
+from nose.tools import assert_equal, assert_almost_equal
+
 import networkx as nx
 
 

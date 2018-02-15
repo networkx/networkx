@@ -16,7 +16,6 @@ from networkx.classes.graph import Graph
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
-from networkx.utils import iterable
 
 
 class MultiGraph(Graph):

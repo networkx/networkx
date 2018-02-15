@@ -1,10 +1,12 @@
 #!/usr/bin/env python
-from nose.tools import *
-from networkx import *
-from networkx.convert import *
-from networkx.algorithms.operators import *
-from networkx.generators.classic import barbell_graph, cycle_graph
-from networkx.testing import *
+from nose.tools import assert_equal, assert_true, raises
+
+from networkx import (
+    convert_node_labels_to_integers, degree, empty_graph, relabel_nodes,
+    DiGraph, Graph, OrderedGraph, MultiGraph, MultiDiGraph,
+)
+from networkx.testing import assert_nodes_equal, assert_edges_equal
+import networkx as nx
 
 
 class TestRelabel():
