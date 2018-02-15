@@ -105,7 +105,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight'):
     G : graph
 
     partition : tuple
-        Pair of iterables containing an intial partition. If not
+        Pair of iterables containing an initial partition. If not
         specified, a random balanced partition is used.
 
     max_iter : int

@@ -98,7 +98,7 @@ class TestCycles:
 
     def worst_case_graph(self, k):
         # see figure 1 in Johnson's paper
-        # this graph has excactly 3k simple cycles
+        # this graph has exactly 3k simple cycles
         G = nx.DiGraph()
         for n in range(2, k + 2):
             G.add_edge(1, n)

@@ -13,7 +13,7 @@ Algorithms for finding k-edge-augmentations
 A k-edge-augmentation is a set of edges, that once added to a graph, ensures
 that the graph is k-edge-connected; i.e. the graph cannot be disconnected
 unless k or more edges are removed.  Typically, the goal is to find the
-augmentation with minimum weight.  In general, it is not gaurenteed that a
+augmentation with minimum weight.  In general, it is not guaranteed that a
 k-edge-augmentation exists.
 
 See Also
@@ -168,7 +168,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         The available edges that can be used in the augmentation.
 
         If unspecified, then all edges in the complement of G are available.
-        Otherwise, each item is an available edge (with an optinal weight).
+        Otherwise, each item is an available edge (with an optional weight).
 
         In the unweighted case, each item is an edge ``(u, v)``.
 
@@ -216,7 +216,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     Otherwise when k=2, this returns a 2-approximation of the optimal solution.
 
     For k>3, this problem is NP-hard and this uses a randomized algorithm that
-        produces a feasible solution, but provides no gaurentees on the
+        produces a feasible solution, but provides no guarantees on the
         solution weight.
 
     Example
@@ -287,7 +287,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             if avail is None:
                 aug_edges = complement_edges(G)
             else:
-                # If we cant k-edge-connect the entire graph, try to
+                # If we can't k-edge-connect the entire graph, try to
                 # k-edge-connect as much as possible
                 aug_edges = partial_k_edge_augmentation(G, k=k, avail=avail,
                                                         weight=weight)
@@ -552,7 +552,7 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
     Notes
     -----
     Each node in the metagraph is a k-edge-connected component in the original
-    graph.  We dont care about any edge within the same k-edge-connected
+    graph.  We don't care about any edge within the same k-edge-connected
     component, so we ignore self edges.  We also are only intereseted in the
     minimum weight edge bridging each k-edge-connected component so, we group
     the edges by meta-edge and take the lightest in each group.
@@ -716,7 +716,7 @@ def unconstrained_bridge_augmentation(G):
     -----
     Input: a graph G.
     First find the bridge components of G and collapse each bridge-cc into a
-    node of a metagraph graph C, which is gaurenteed to be a forest of trees.
+    node of a metagraph graph C, which is guaranteed to be a forest of trees.
 
     C contains p "leafs" --- nodes with exactly one incident edge.
     C contains q "isolated nodes" --- nodes with no incident edges.
@@ -995,7 +995,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         raise nx.NetworkXUnfeasible('no 2-edge-augmentation possible')
 
     # For each edge e, in the branching that did not belong to the directed
-    # tree T, add the correponding edge that **GENERATED** it (this is not
+    # tree T, add the corresponding edge that **GENERATED** it (this is not
     # necesarilly e itself!)
 
     # ensure the third case does not generate edges twice
@@ -1164,7 +1164,7 @@ if sys.version_info[0] == 2:
             input[i], input[j] = input[j], input[i]
 else:
     def _compat_shuffle(rng, input):
-        """wraper around rng.shuffle for python 2 compatibility reasons"""
+        """wrapper around rng.shuffle for python 2 compatibility reasons"""
         rng.shuffle(input)
 
 
@@ -1202,7 +1202,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     graph that are not yet locally k-edge-connected. Then edges are from the
     augmenting set are pruned as long as local-edge-connectivity is not broken.
 
-    This algorithm is greedy and does not provide optimiality gaurentees. It
+    This algorithm is greedy and does not provide optimality guarantees. It
     exists only to provide :func:`k_edge_augmentation` with the ability to
     generate a feasible solution for arbitrary k.
 
@@ -1267,7 +1267,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     rng = random.Random(seed)
     _compat_shuffle(rng, aug_edges)
     for (u, v) in list(aug_edges):
-        # Dont remove if we know it would break connectivity
+        # Don't remove if we know it would break connectivity
         if H.degree(u) <= k or H.degree(v) <= k:
             continue
         H.remove_edge(u, v)

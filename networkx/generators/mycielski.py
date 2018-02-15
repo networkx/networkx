@@ -47,7 +47,7 @@ def mycielskian(G, iterations=1):
         A simple, undirected NetworkX graph
     iterations : int
         The number of iterations of the Mycielski operation to
-        preform on G. Defaults to 1. Must be a non-negative integer.
+        perform on G. Defaults to 1. Must be a non-negative integer.
 
     Returns
     -------

@@ -40,7 +40,7 @@ def degree_centrality(G, nodes):
 
     Notes
     -----
-    The nodes input parameter must conatin all nodes in one bipartite node set,
+    The nodes input parameter must contain all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both bipartite node
     sets. See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
     for further details on how bipartite graphs are handled in NetworkX.
@@ -207,7 +207,7 @@ def closeness_centrality(G, nodes, normalized=True):
 
     Notes
     -----
-    The nodes input parameter must conatin all nodes in one bipartite node set,
+    The nodes input parameter must contain all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both node sets.
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
     for further details on how bipartite graphs are handled in NetworkX.

@@ -30,7 +30,7 @@ def flow_hierarchy(G, weight=None):
     Returns
     -------
     h : float
-       Flow heirarchy value
+       Flow hierarchy value
 
     Notes
     -----

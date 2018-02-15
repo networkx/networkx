@@ -111,14 +111,14 @@ def effective_size(G, nodes=None, weight=None):
 
     Notes
     -----
-    Burt also defined the related concept of *efficency* of a node's ego
+    Burt also defined the related concept of *efficiency* of a node's ego
     network, which is its effective size divided by the degree of that
-    node [1]_. So you can easily compute efficencty:
+    node [1]_. So you can easily compute efficiency:
 
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(0, 1), (0, 2), (1, 0), (2, 1)])
     >>> esize = nx.effective_size(G)
-    >>> efficency = {n: v / G.degree(n) for n, v in esize.items()}
+    >>> efficiency = {n: v / G.degree(n) for n, v in esize.items()}
 
     See also
     --------

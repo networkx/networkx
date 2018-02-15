@@ -6,7 +6,7 @@ Knuth Miles
 
 `miles_graph()` returns an undirected graph over the 128 US cities from
 the datafile `miles_dat.txt`. The cities each have location and population
-data.  The edges are labeled with the distance betwen the two cities.
+data.  The edges are labeled with the distance between the two cities.
 
 This example is described in Section 1.1 in Knuth's book (see [1]_ and [2]_).
 

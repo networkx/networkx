@@ -7,7 +7,7 @@
 """Functions to convert NetworkX graphs to and from numpy/scipy matrices.
 
 The preferred way of converting data to a NetworkX graph is through the
-graph constuctor.  The constructor calls the to_networkx_graph() function
+graph constructor.  The constructor calls the to_networkx_graph() function
 which attempts to guess the input type and convert it automatically.
 
 Examples

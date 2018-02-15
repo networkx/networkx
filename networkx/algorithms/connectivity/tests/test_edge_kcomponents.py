@@ -83,7 +83,7 @@ def _check_edge_connectivity(G):
     both local and subgraph edge connectivity of each cc. Also checks that
     alternate methods of computing the k-edge-ccs generate the same result.
     """
-    # Construct the auxillary graph that can be used to make each k-cc or k-sub
+    # Construct the auxiliary graph that can be used to make each k-cc or k-sub
     aux_graph = EdgeComponentAuxGraph.construct(G)
 
     # memoize the local connectivity in this graph

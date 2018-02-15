@@ -53,10 +53,10 @@ class TestGirvanNewman(object):
         # After one removal, we get the graph .-. .-.
         validate_communities(communities[0], [{0, 1}, {2, 3}])
         # After the next, we get the graph .-. . ., but there are two
-        # symmetric possible verisons.
+        # symmetric possible versions.
         validate_possible_communities(communities[1], [{0}, {1}, {2, 3}],
                                       [{0, 1}, {2}, {3}])
-        # After the last removal, we alway get the empty graph.
+        # After the last removal, we always get the empty graph.
         validate_communities(communities[2], [{0}, {1}, {2}, {3}])
 
     def test_directed(self):

@@ -525,7 +525,7 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         Maximum edit distance to consider.
 
     strictly_decreasing : bool
-        If True, return consequtive approximations of strictly
+        If True, return consecutive approximations of strictly
         decreasing cost.  Otherwise, return all edit paths of cost
         less than or equal to the previous minimum cost.
 

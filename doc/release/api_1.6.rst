@@ -20,7 +20,7 @@ Weighted graph algorithms
 -------------------------
 
 Many 'weighted' graph algorithms now take optional parameter to 
-specifiy which edge attribute should be used for the weight
+specify which edge attribute should be used for the weight
 (default='weight') (ticket https://networkx.lanl.gov/trac/ticket/573)
 
 In some cases the parameter name was changed from weighted, to weight.  Here is
@@ -28,7 +28,7 @@ how to specify which edge attribute will be used in the algorithms:
 
 - Use weight=None to consider all weights equally (unweighted case)
 
-- Use weight='weight' to use the 'weight' edge atribute
+- Use weight='weight' to use the 'weight' edge attribute
 
 - Use weight='other' to use the 'other' edge attribute 
 

@@ -817,7 +817,7 @@ class DiGraph(Graph):
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
             If False, return 2-tuple (u, v).
         default : value, optional (default=None)
-            Value used for edges that dont have the requested attribute.
+            Value used for edges that don't have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns
@@ -875,7 +875,7 @@ class DiGraph(Graph):
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
             If False, return 2-tuple (u, v).
         default : value, optional (default=None)
-            Value used for edges that dont have the requested attribute.
+            Value used for edges that don't have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns

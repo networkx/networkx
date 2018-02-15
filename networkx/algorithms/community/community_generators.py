@@ -13,7 +13,7 @@ from __future__ import division
 
 import random
 
-# HACK In order to accomodate both SciPy and non-SciPy implementations,
+# HACK In order to accommodate both SciPy and non-SciPy implementations,
 # we need to wrap the SciPy implementation of the zeta function with an
 # extra parameter, `tolerance`, which will be ignored.
 try:
