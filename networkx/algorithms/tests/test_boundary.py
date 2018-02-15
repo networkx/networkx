@@ -15,8 +15,8 @@ from nose.tools import assert_almost_equals
 from nose.tools import assert_equal
 
 import networkx as nx
-from networkx.testing.utils import *
 from networkx import convert_node_labels_to_integers as cnlti
+from networkx.testing import assert_edges_equal
 
 
 class TestNodeBoundary(object):

@@ -27,10 +27,6 @@ class TestCommunicability:
                       1: 1.5430806348152435
                       }
                   }
-#        answer={(0, 0): 1.5430806348152435,
-#                (0, 1): 1.1752011936438012,
-#                (1, 0): 1.1752011936438012,
-#                (1, 1): 1.5430806348152435}
 
         result = communicability(nx.path_graph(2))
         for k1, val in result.items():
