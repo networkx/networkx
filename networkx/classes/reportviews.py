@@ -715,12 +715,12 @@ class EdgeDataView(OutEdgeDataView):
         return sum(1 for e in self)
 
     def __iter__(self):
-        seen = {}
+        seen = set()
         for n, nbrs in self._nodes_nbrs():
             for nbr, dd in nbrs.items():
                 if nbr not in seen:
                     yield self._report(n, nbr, dd)
-            seen[n] = 1
+            seen.add(n)
         del seen
 
     def __contains__(self, e):
@@ -824,18 +824,38 @@ class OutMultiEdgeDataView(OutEdgeDataView):
         return False
 
 
+class MultiEdgeBunchDataView(OutMultiEdgeDataView):
+    """An EdgeDataView class for groups of edges of MultiGraph; See EdgeDataView"""
+    __slots__ = ()
+
+    def __iter__(self):
+        seen = set()
+        for node, neighbors in self._nodes_nbrs():
+            # nbr is a neighbor of n and kd is the edges between n and nbr keyed by index
+            for neighbor, kd in neighbors.items():
+                # check that nbr not in seen because all edges adjacent to nodes in seen have previously been yielded
+                if neighbor not in seen:
+                    # neighbor is one of node's neighbors and kd is a dictionary keyed by index of the edge between node
+                    # and neighbor, valued by the data of that edge between node and neighbor
+                    yield (node, neighbor, list(kd.values()))
+            # all the edges between n and its neighbors have been yielded. so in the future, when _nodes_nbrs() yields
+            # any of n's neighbors, do not yield any edges between that node and n
+            seen.add(node)
+        del seen
+
+
 class MultiEdgeDataView(OutMultiEdgeDataView):
     """An EdgeDataView class for edges of MultiGraph; See EdgeDataView"""
     __slots__ = ()
 
     def __iter__(self):
-        seen = {}
+        seen = set()
         for n, nbrs in self._nodes_nbrs():
             for nbr, kd in nbrs.items():
                 if nbr not in seen:
                     for k, dd in kd.items():
                         yield self._report(n, nbr, k, dd)
-            seen[n] = 1
+            seen.add(n)
         del seen
 
     def __contains__(self, e):
@@ -1022,12 +1042,12 @@ class EdgeView(OutEdgeView):
         return sum(len(nbrs) + (n in nbrs) for n, nbrs in self._nodes_nbrs()) // 2
 
     def __iter__(self):
-        seen = {}
+        seen = set()
         for n, nbrs in self._nodes_nbrs():
             for nbr in nbrs:
                 if nbr not in seen:
                     yield (n, nbr)
-            seen[n] = 1
+            seen.add(n)
         del seen
 
     def __contains__(self, e):
@@ -1116,6 +1136,25 @@ class OutMultiEdgeView(OutEdgeView):
         return self.dataview(self, nbunch, data, keys, default)
 
 
+class MultiEdgeBunchView(OutMultiEdgeView):
+    """A EdgeBunchView class for bunches of edges of a MultiGraph"""
+    __slots__ = ()
+
+    dataview = MultiEdgeBunchDataView
+
+    def __len__(self):
+        return sum(1 for e in self)
+
+    def __iter__(self):
+        seen = set()
+        for n, nbrs in self._nodes_nbrs():
+            for nbr, kd in nbrs.items():
+                if nbr not in seen:
+                    yield (n, nbr, list(kd.values()))
+            seen.add(n)
+        del seen
+
+
 class MultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for edges of a MultiGraph"""
     __slots__ = ()
@@ -1126,13 +1165,13 @@ class MultiEdgeView(OutMultiEdgeView):
         return sum(1 for e in self)
 
     def __iter__(self):
-        seen = {}
+        seen = set()
         for n, nbrs in self._nodes_nbrs():
             for nbr, kd in nbrs.items():
                 if nbr not in seen:
                     for k, dd in kd.items():
                         yield (n, nbr, k)
-            seen[n] = 1
+            seen.add(n)
         del seen
 
 

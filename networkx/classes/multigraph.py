@@ -14,7 +14,7 @@ from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.classes.coreviews import MultiAdjacencyView
-from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
+from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView, MultiEdgeBunchView
 from networkx import NetworkXError
 from networkx.utils import iterable
 
@@ -665,6 +665,16 @@ class MultiGraph(Graph):
             return False
 
     @property
+    def edge_bunches(self):
+        """
+        Returns an iterator over the edge bunches
+
+        Edge bunches are returned as tuples with data in the order (node, neighbor, data)
+        """
+        self.__dict__['edge_bunches'] = edge_bunches = MultiEdgeBunchView(self)
+        return edge_bunches
+
+    @property
     def edges(self):
         """Return an iterator over the edges.
 
@@ -693,7 +703,7 @@ class MultiGraph(Graph):
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
-            Value used for edges that don't have the requested attribute.
+            Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns
