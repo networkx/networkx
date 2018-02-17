@@ -102,7 +102,7 @@ __all__ = ['NodeView', 'NodeDataView',
            'MultiEdgeDataView', 'OutMultiEdgeDataView', 'InMultiEdgeDataView',
            'DegreeView', 'DiDegreeView', 'InDegreeView', 'OutDegreeView',
            'MultiDegreeView', 'DiMultiDegreeView',
-           'InMultiDegreeView', 'OutMultiDegreeView']
+           'InMultiDegreeView', 'OutMultiDegreeView', 'OutMultiEdgeBunchView']
 
 
 # NodeViews
@@ -182,7 +182,7 @@ class NodeView(Mapping, Set):
         return n in self._nodes
 
     @classmethod
-    def _from_iterable(cls, it):
+    def _from_iterable(self, it):
         return set(it)
 
     # DataView method
@@ -751,6 +751,103 @@ class InEdgeDataView(OutEdgeDataView):
             return False
         return e == self._report(u, v, ddict)
 
+class OutMultiEdgeBunchDataView(OutEdgeDataView):
+    """An EdgeDataView for outward edges of MultiDiGraph; See EdgeDataView"""
+    __slots__ = ('keys',)
+
+    def __getstate__(self):
+        return {'viewer': self._viewer,
+                'nbunch': self._nbunch,
+                'keys': self.keys,
+                'data': self._data,
+                'default': self._default}
+
+    def __setstate__(self, state):
+        self.__init__(**state)
+
+    def __init__(self, viewer, nbunch=None,
+                 data=False, keys=False, default=None, seen=False):
+        self._viewer = viewer
+        self._adjdict = viewer._adjdict
+        self.keys = keys
+        if nbunch is None:
+            self._nodes_nbrs = self._adjdict.items
+        else:
+            nbunch = list(viewer._graph.nbunch_iter(nbunch))
+            self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
+        self._nbunch = nbunch
+        self._data = data
+        self._default = default
+        # Set _report based on data and default
+        if data is True:
+            if keys is True:
+                if seen:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, dd, s)
+                else:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, dd)
+            else:
+                if seen:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, list(dd.values()), s)
+                else:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, list(dd.values()))
+        elif data is False:
+            if keys is True:
+                if seen:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, list(dd.keys()), s)
+                else:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, list(dd.keys()))
+            else:
+                if seen:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, s)
+                else:
+                    self._report = lambda n, nbr, dd, s: (n, nbr)
+        else:  # data is attribute name
+            if keys is True:
+                if seen:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, [(k, v[data]) for k, v in dd.items()], s) \
+                        if data in dd.values()[0] else (n, nbr, dd.keys(), default)
+                else:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, [(k, v[data]) for k, v in dd.items()]) \
+                        if data in dd.values()[0] else (n, nbr, dd.keys(), default, s)
+            else:
+                if seen:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, [d[data] for d in dd.values()], s) \
+                        if data in dd.values()[0] else (n, nbr, default, s)
+                else:
+                    self._report = lambda n, nbr, dd, s: (n, nbr, [d[data] for d in dd.values()]) \
+                        if data in dd.values()[0] else (n, nbr, default)
+
+    def __len__(self):
+        return sum(1 for e in self)
+
+    def __iter__(self):
+        # LOOK HERE FOR ITERATOR
+        seen = set()
+        for node, neighbors in self._nodes_nbrs():
+            for neighbor, kd in neighbors.items():
+                yield self._report(node, neighbor, kd, neighbor in seen)
+                # for k, dd in kd.items():
+                #     yield self._report(node, neighbor, k, dd)
+            seen.add(node)
+        del seen
+
+    def __contains__(self, e):
+        u, v = e[:2]
+        try:
+            kdict = self._adjdict[u][v]
+        except KeyError:
+            return False
+        if self.keys is True:
+            k = e[2]
+            try:
+                dd = kdict[k]
+            except KeyError:
+                return False
+            return e == self._report(u, v, k, dd)
+        for k, dd in kdict.items():
+            if e == self._report(u, v, k, dd):
+                return True
+        return False
 
 class OutMultiEdgeDataView(OutEdgeDataView):
     """An EdgeDataView for outward edges of MultiDiGraph; See EdgeDataView"""
@@ -825,7 +922,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
 
 
 class MultiEdgeBunchDataView(OutMultiEdgeDataView):
-    """An EdgeDataView class for groups of edges of MultiGraph; See EdgeDataView"""
+    """A very hacky EdgeDataView class for edges of MultiGraph; See EdgeDataView"""
     __slots__ = ()
 
     def __iter__(self):
@@ -851,10 +948,14 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
     def __iter__(self):
         seen = set()
         for n, nbrs in self._nodes_nbrs():
+            # nbr is a neighbor of n and kd is the edges between n and nbr keyed by index
             for nbr, kd in nbrs.items():
                 if nbr not in seen:
+                    # yield (nbr, kd)
                     for k, dd in kd.items():
                         yield self._report(n, nbr, k, dd)
+            # all the edges between n and its neighbors have been yielded. so in the future, when _nodes_nbrs() yields
+            # any of n's neighbors, do not yield any edges between that node and n
             seen.add(n)
         del seen
 
@@ -918,7 +1019,7 @@ class OutEdgeView(Set, Mapping):
         self._nodes_nbrs = self._adjdict.items
 
     @classmethod
-    def _from_iterable(cls, it):
+    def _from_iterable(self, it):
         return set(it)
 
     dataview = OutEdgeDataView
@@ -1091,6 +1192,51 @@ class InEdgeView(OutEdgeView):
         return self._adjdict[v][u]
 
 
+class OutMultiEdgeBunchView(OutEdgeView):
+    """A EdgeView class for outward edges of a MultiDiGraph"""
+    __slots__ = ()
+
+    dataview = OutMultiEdgeBunchDataView
+
+    def __len__(self):
+        return sum(len(kdict) for n, nbrs in self._nodes_nbrs()
+                   for nbr, kdict in nbrs.items())
+
+    def __iter__(self):
+        for n, nbrs in self._nodes_nbrs():
+            for nbr, kdict in nbrs.items():
+                for key in kdict:
+                    yield (n, nbr, key)
+
+    def __contains__(self, e):
+        N = len(e)
+        if N == 3:
+            u, v, k = e
+        elif N == 2:
+            u, v = e
+            k = 0
+        else:
+            raise ValueError("MultiEdge must have length 2 or 3")
+        try:
+            return k in self._adjdict[u][v]
+        except KeyError:
+            return False
+
+    def __getitem__(self, e):
+        u, v, k = e
+        return self._adjdict[u][v][k]
+
+    def __call__(self, nbunch=None, data=False, keys=False, default=None, seen=False):
+        if nbunch is None and data is False and keys is True:
+            # LOOK HERE: if and only if keys, returns self
+            return self
+        return self.dataview(self, nbunch, data, keys, default, seen)
+
+    def data(self, data=True, keys=False, default=None, nbunch=None):
+        if nbunch is None and data is False and keys is True:
+            return self
+        return self.dataview(self, nbunch, data, keys, default)
+
 class OutMultiEdgeView(OutEdgeView):
     """A EdgeView class for outward edges of a MultiDiGraph"""
     __slots__ = ()
@@ -1135,9 +1281,8 @@ class OutMultiEdgeView(OutEdgeView):
             return self
         return self.dataview(self, nbunch, data, keys, default)
 
-
 class MultiEdgeBunchView(OutMultiEdgeView):
-    """A EdgeBunchView class for bunches of edges of a MultiGraph"""
+    """A EdgeBunchView class for edges of a MultiGraph"""
     __slots__ = ()
 
     dataview = MultiEdgeBunchDataView
@@ -1153,7 +1298,6 @@ class MultiEdgeBunchView(OutMultiEdgeView):
                     yield (n, nbr, list(kd.values()))
             seen.add(n)
         del seen
-
 
 class MultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for edges of a MultiGraph"""
