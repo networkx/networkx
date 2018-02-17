@@ -17,7 +17,7 @@ from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import OutMultiEdgeView, InMultiEdgeView, \
-    DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView
+    DiMultiDegreeView, OutMultiDegreeView, InMultiDegreeView, OutMultiEdgeBunchView
 from networkx.exception import NetworkXError
 
 
@@ -494,6 +494,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
             # remove the key entries if last edge
             del self._succ[u][v]
             del self._pred[v][u]
+
+    @property
+    def edge_bunches(self):
+        self.__dict__['edge_bunches'] = edge_bunches = OutMultiEdgeBunchView(self)
+        self.__dict__['out_edge_bunches'] = edge_bunches
+        return edge_bunches
 
     @property
     def edges(self):
