@@ -303,11 +303,11 @@ def estrada_index(G):
     ----------
     .. [1] E. Estrada, "Characterization of 3D molecular structure",
        Chem. Phys. Lett. 319, 713 (2000).
-       http://dx.doi.org/10.1016/S0009-2614(00)00158-5
+       https://doi.org/10.1016/S0009-2614(00)00158-5
     .. [2] José Antonio de la Peñaa, Ivan Gutman, Juan Rada,
        "Estimating the Estrada index",
        Linear Algebra and its Applications. 427, 1 (2007).
-       http://dx.doi.org/10.1016/j.laa.2007.06.020
+       https://doi.org/10.1016/j.laa.2007.06.020
 
     Examples
     --------

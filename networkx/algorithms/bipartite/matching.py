@@ -104,7 +104,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
     ----------
     .. [1] John E. Hopcroft and Richard M. Karp. "An n^{5 / 2} Algorithm for
        Maximum Matchings in Bipartite Graphs" In: **SIAM Journal of Computing**
-       2.4 (1973), pp. 225--231. <https://dx.doi.org/10.1137/0202019>.
+       2.4 (1973), pp. 225--231. <https://doi.org/10.1137/0202019>.
 
     """
     # First we define some auxiliary search functions.

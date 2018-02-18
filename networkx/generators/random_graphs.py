@@ -336,7 +336,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     .. [1] M. E. J. Newman and D. J. Watts,
        Renormalization group analysis of the small-world network model,
        Physics Letters A, 263, 341, 1999.
-       http://dx.doi.org/10.1016/S0375-9601(99)00757-4
+       https://doi.org/10.1016/S0375-9601(99)00757-4
     """
     if seed is not None:
         random.seed(seed)
