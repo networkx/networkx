@@ -326,6 +326,18 @@ class GEXFWriter(GEXF):
                 kw['pid'] = make_str(pid)
             except KeyError:
                 pass
+            try:
+                start = node_data.pop('start')
+                kw['start'] = make_str(start)
+                self.alter_graph_mode_timeformat(start)
+            except KeyError:
+                pass
+            try:
+                end = node_data.pop('end')
+                kw['end'] = make_str(end)
+                self.alter_graph_mode_timeformat(end)
+            except KeyError:
+                pass
             # add node element with attributes
             node_element = Element('node', **kw)
             # add node element and attr subelements

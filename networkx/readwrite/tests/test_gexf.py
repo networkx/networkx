@@ -288,18 +288,20 @@ class TestGEXF(object):
             G.nodes[i]['id'] = i
             G.nodes[i]['label'] = i
             G.nodes[i]['pid'] = i
+            G.nodes[i]['start'] = i
+            G.nodes[i]['end'] = i + 1
 
         expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
-  <graph defaultedgetype="undirected" mode="static" name="">
+  <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <meta>
       <creator>NetworkX {}</creator>
       <lastmodified>{}</lastmodified>
     </meta>
     <nodes>
-      <node id="0" label="0" pid="0" />
-      <node id="1" label="1" pid="1" />
-      <node id="2" label="2" pid="2" />
-      <node id="3" label="3" pid="3" />
+      <node end="1" id="0" label="0" pid="0" start="0" />
+      <node end="2" id="1" label="1" pid="1" start="1" />
+      <node end="3" id="2" label="2" pid="2" start="2" />
+      <node end="4" id="3" label="3" pid="3" start="3" />
     </nodes>
     <edges>
       <edge id="0" source="0" target="1" />
