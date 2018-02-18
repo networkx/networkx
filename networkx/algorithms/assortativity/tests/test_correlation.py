@@ -34,15 +34,15 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
         r = nx.degree_assortativity_coefficient(self.M)
         npt.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
 
-    def test_degree_assortativity_undirected(self):
+    def test_degree_pearson_assortativity_undirected(self):
         r = nx.degree_pearson_correlation_coefficient(self.P4)
         npt.assert_almost_equal(r, -1.0 / 2, decimal=4)
 
-    def test_degree_assortativity_directed(self):
+    def test_degree_pearson_assortativity_directed(self):
         r = nx.degree_pearson_correlation_coefficient(self.D)
         npt.assert_almost_equal(r, -0.57735, decimal=4)
 
-    def test_degree_assortativity_multigraph(self):
+    def test_degree_pearson_assortativity_multigraph(self):
         r = nx.degree_pearson_correlation_coefficient(self.M)
         npt.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
 

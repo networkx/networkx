@@ -388,7 +388,7 @@ class TestAllPairsNodeConnectivity:
         assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
                      sorted((k, sorted(v)) for k, v in C.items()))
 
-    def test_all_pairs_connectivity_nbunch(self):
+    def test_all_pairs_connectivity_nbunch_combinations(self):
         G = nx.complete_graph(5)
         nbunch = [0, 2, 3]
         A = {n: {} for n in nbunch}
