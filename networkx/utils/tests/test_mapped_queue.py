@@ -15,7 +15,7 @@
 from nose.tools import assert_equal
 from nose.tools import raises
 
-from priorityq import MappedQueue
+from networkx.utils.mapped_queue import MappedQueue
 
 
 class TestMappedQueue(object):
