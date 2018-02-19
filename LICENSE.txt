@@ -1,10 +1,11 @@
 License
 =======
-NetworkX is distributed with the BSD license.
+
+NetworkX is distributed with the 3-clause BSD license.
 
 ::
 
-   Copyright (C) 2004-2016, NetworkX Developers
+   Copyright (C) 2004-2018, NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
@@ -26,7 +27,6 @@ NetworkX is distributed with the BSD license.
        contributors may be used to endorse or promote products derived
        from this software without specific prior written permission.
 
-
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -38,4 +38,3 @@ NetworkX is distributed with the BSD license.
    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-

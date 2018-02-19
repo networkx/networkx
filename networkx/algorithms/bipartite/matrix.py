@@ -4,7 +4,7 @@
 Biadjacency matrices
 ====================
 """
-#    Copyright (C) 2013-2016 by
+#    Copyright (C) 2013-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -16,7 +16,8 @@ from networkx.convert_matrix import _generate_weighted_edges
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = ['biadjacency_matrix','from_biadjacency_matrix']
+__all__ = ['biadjacency_matrix', 'from_biadjacency_matrix']
+
 
 def biadjacency_matrix(G, row_order, column_order=None,
                        dtype=None, weight='weight',  format='csr'):
@@ -76,9 +77,9 @@ def biadjacency_matrix(G, row_order, column_order=None,
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
+    .. [1] https://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
     .. [2] Scipy Dev. References, "Sparse Matrices",
-       http://docs.scipy.org/doc/scipy/reference/sparse.html
+       https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     from scipy import sparse
     nlen = len(row_order)
@@ -98,17 +99,17 @@ def biadjacency_matrix(G, row_order, column_order=None,
     col_index = dict(zip(column_order, itertools.count()))
 
     if G.number_of_edges() == 0:
-        row,col,data=[],[],[]
+        row, col, data = [], [], []
     else:
-        row,col,data = zip(*((row_index[u],col_index[v],d.get(weight,1))
-                             for u,v,d in G.edges(row_order,data=True)
-                             if u in row_index and v in col_index))
-    M = sparse.coo_matrix((data,(row,col)),
-                          shape=(nlen,mlen), dtype=dtype)
+        row, col, data = zip(*((row_index[u], col_index[v], d.get(weight, 1))
+                               for u, v, d in G.edges(row_order, data=True)
+                               if u in row_index and v in col_index))
+    M = sparse.coo_matrix((data, (row, col)),
+                          shape=(nlen, mlen), dtype=dtype)
     try:
         return M.asformat(format)
     except AttributeError:
-        raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
+        raise nx.NetworkXError("Unknown sparse matrix format: %s" % format)
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
@@ -145,16 +146,16 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
 
     References
     ----------
-    [1] http://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
+    [1] https://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
     """
     G = _prep_create_using(create_using)
     n, m = A.shape
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n), bipartite=0)
-    G.add_nodes_from(range(n,n+m), bipartite=1)
+    G.add_nodes_from(range(n, n + m), bipartite=1)
     # Create an iterable over (u, v, w) triples and for each triple, add an
     # edge from u to v with weight w.
-    triples = ((u, n+v, d) for (u, v, d) in _generate_weighted_edges(A))
+    triples = ((u, n + v, d) for (u, v, d) in _generate_weighted_edges(A))
     # If the entries in the adjacency matrix are integers and the graph is a
     # multigraph, then create parallel edges, each with weight 1, for each
     # entry in the adjacency matrix. Otherwise, create one edge for each
@@ -167,11 +168,11 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     return G
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:
         import scipy
     except:
         raise SkipTest("SciPy not available")
-
-

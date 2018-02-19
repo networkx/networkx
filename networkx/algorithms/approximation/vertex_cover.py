@@ -31,9 +31,9 @@ def min_weighted_vertex_cover(G, weight=None):
 
        w(S) \leq 2 * w(S^*),
 
-    where :math:`S` is the vertex cover returned by this function,
-    :math:`S^*` is the vertex cover of minimum weight out of all vertex
-    covers of the graph, and :math:`w` is the function that computes the
+    where $S$ is the vertex cover returned by this function,
+    $S^*$ is the vertex cover of minimum weight out of all vertex
+    covers of the graph, and $w$ is the function that computes the
     sum of the weights of each node in that given set.
 
     Parameters
@@ -41,7 +41,7 @@ def min_weighted_vertex_cover(G, weight=None):
     G : NetworkX graph
 
     weight : string, optional (default = None)
-        If None, every edge has weight 1. If a string, use this node
+        If None, every node has weight 1. If a string, use this node
         attribute as the node weight. A node without this attribute is
         assumed to have weight 1.
 
@@ -61,8 +61,8 @@ def min_weighted_vertex_cover(G, weight=None):
     This is the local-ratio algorithm for computing an approximate
     vertex cover. The algorithm greedily reduces the costs over edges,
     iteratively building a cover. The worst-case runtime of this
-    implementation is :math:`O(m \log n)`, where :math:`n` is the number
-    of nodes and :math:`m` the number of edges in the graph.
+    implementation is $O(m \log n)$, where $n$ is the number
+    of nodes and $m$ the number of edges in the graph.
 
     References
     ----------

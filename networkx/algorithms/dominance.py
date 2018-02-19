@@ -1,11 +1,14 @@
+#    Copyright (C) 2014-2018 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: ysitu (ysitu@users.noreply.github.com)
 """
 Dominance algorithms.
 """
-
-__author__ = 'ysitu <ysitu@users.noreply.github.com>'
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
 
 from functools import reduce
 import networkx as nx

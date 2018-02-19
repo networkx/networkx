@@ -1,5 +1,5 @@
 # Copyright 2016 NetworkX developers.
-# Copyright (C) 2004-2016 by
+# Copyright (C) 2004-2018 by
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
@@ -21,10 +21,10 @@ __all__ = ['is_matching', 'is_maximal_matching', 'max_weight_matching',
 
 
 def maximal_matching(G):
-    r"""Find a maximal cardinality matching in the graph.
+    r"""Find a maximal matching in the graph.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
+    A maximal matching cannot add more edges and still be a matching.
 
     Parameters
     ----------
@@ -39,7 +39,7 @@ def maximal_matching(G):
     Notes
     -----
     The algorithm greedily selects a maximal matching M of the graph G
-    (i.e. no superset of M exists). It runs in `O(|E|)` time.
+    (i.e. no superset of M exists). It runs in $O(|E|)$ time.
     """
     matching = set()
     nodes = set()
@@ -69,7 +69,8 @@ def matching_dict_to_set(matching):
     # appear in `matching.items()`, so we use a set of sets. This way,
     # only the (frozen)set `{u, v}` appears as an element in the
     # returned set.
-    return set(map(frozenset, matching.items()))
+
+    return set((u, v) for (u, v) in set(map(frozenset, matching.items())))
 
 
 def is_matching(G, matching):
@@ -152,8 +153,9 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
     """Compute a maximum-weighted matching of G.
 
     A matching is a subset of edges in which no node occurs more than once.
-    The cardinality of a matching is the number of matched edges.
     The weight of a matching is the sum of the weights of its edges.
+    A maximal matching cannot add more edges and still be a matching.
+    The cardinality of a matching is the number of matched edges.
 
     Parameters
     ----------
@@ -171,11 +173,8 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
 
     Returns
     -------
-    mate : dictionary
-       The matching is returned as a dictionary, mate, such that
-       mate[v] == w if node v is matched to node w.  Unmatched nodes do not
-       occur as a key in mate.
-
+    matching : set
+        A maximal matching of the graph.
 
     Notes
     -----
@@ -248,7 +247,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
     # Get a list of vertices.
     gnodes = list(G)
     if not gnodes:
-        return {}  # don't bother with empty graphs
+        return set()  # don't bother with empty graphs
 
     # Find the maximum edge weight.
     maxweight = 0
@@ -641,7 +640,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
                 bs = inblossom[s]
                 assert label[bs] == 1
                 assert (
-                        labeledge[bs] is None and blossombase[bs] not in mate)\
+                    labeledge[bs] is None and blossombase[bs] not in mate)\
                     or (labeledge[bs][0] == mate[blossombase[bs]])
                 # Augment through the S-blossom from s to base.
                 if isinstance(bs, Blossom):
@@ -726,7 +725,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             b.mybestedges = None
 
         # Loss of labeling means that we can not be sure that currently
-        # allowable edges remain allowable througout this stage.
+        # allowable edges remain allowable throughout this stage.
         allowedge.clear()
 
         # Make queue empty.
@@ -803,14 +802,14 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
                         # keep track of the least-slack non-allowable edge to
                         # a different S-blossom.
                         if bestedge.get(bv) is None or \
-                         kslack < slack(*bestedge[bv]):
+                                kslack < slack(*bestedge[bv]):
                             bestedge[bv] = (v, w)
                     elif label.get(w) is None:
                         # w is a free vertex (or an unreached vertex inside
                         # a T-blossom) but we can not reach it yet;
                         # keep track of the least-slack edge that reaches w.
                         if bestedge.get(w) is None or \
-                         kslack < slack(*bestedge[w]):
+                                kslack < slack(*bestedge[w]):
                             bestedge[w] = (v, w)
 
             if augmented:
@@ -823,7 +822,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             deltatype = -1
             delta = deltaedge = deltablossom = None
 
-            # Compute delta1: the minumum value of any vertex dual.
+            # Compute delta1: the minimum value of any vertex dual.
             if not maxcardinality:
                 deltatype = 1
                 delta = min(dualvar.values())
@@ -832,7 +831,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             # an S-vertex and a free vertex.
             for v in G.nodes():
                 if label.get(inblossom[v]) is None and \
-                 bestedge.get(v) is not None:
+                        bestedge.get(v) is not None:
                     d = slack(*bestedge[v])
                     if deltatype == -1 or d < delta:
                         delta = d
@@ -930,5 +929,4 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
     if allinteger:
         verifyOptimum()
 
-    return mate
-
+    return matching_dict_to_set(mate)

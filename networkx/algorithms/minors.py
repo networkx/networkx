@@ -20,7 +20,7 @@ from networkx.exception import NetworkXException
 from networkx.utils import arbitrary_element
 
 __all__ = ['contracted_edge', 'contracted_nodes',
-           'identified_nodes', 'quotient_graph', 'blockmodel']
+           'identified_nodes', 'quotient_graph']
 
 chaini = chain.from_iterable
 
@@ -220,11 +220,27 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
     # the blocks of the partition on the nodes of G induced by the
     # equivalence relation.
     if callable(partition):
+        # equivalence_classes always return partition of whole G.
         partition = equivalence_classes(G, partition)
+        return _quotient_graph(G, partition, edge_relation, node_data,
+                               edge_data, relabel, create_using)
+
+    # If the user provided partition as a collection of sets. Then we
+    # need to check if partition covers all of G nodes. If the answer
+    # is 'No' then we need to prepare suitable subgraph view.
+    partition_nodes = set().union(*partition)
+    if len(partition_nodes) != len(G):
+        G = G.subgraph(partition_nodes)
+    return _quotient_graph(G, partition, edge_relation, node_data,
+                           edge_data, relabel, create_using)
+
+
+def _quotient_graph(G, partition, edge_relation=None, node_data=None,
+                    edge_data=None, relabel=False, create_using=None):
     # Each node in the graph must be in exactly one block.
     if any(sum(1 for b in partition if v in b) != 1 for v in G):
         raise NetworkXException('each node must be in exactly one block')
-    H = type(create_using)() if create_using is not None else type(G)()
+    H = G.fresh_copy() if create_using is None else create_using.fresh_copy()
     # By default set some basic information about the subgraph that each block
     # represents on the nodes in the quotient graph.
     if node_data is None:
@@ -304,17 +320,34 @@ def contracted_nodes(G, u, v, self_loops=True):
        will be merged into the node `u`, so only `u` will appear in the
        returned graph.
 
+    Notes
+    -----
+    For multigraphs, the edge keys for the realigned edges may
+    not be the same as the edge keys for the old edges. This is
+    natural because edge keys are unique only within each pair of nodes.
+
     Examples
     --------
     Contracting two nonadjacent nodes of the cycle graph on four nodes `C_4`
     yields the path graph (ignoring parallel edges)::
 
-        >>> import networkx as nx
         >>> G = nx.cycle_graph(4)
         >>> M = nx.contracted_nodes(G, 1, 3)
         >>> P3 = nx.path_graph(3)
         >>> nx.is_isomorphic(M, P3)
         True
+
+        >>> G = nx.MultiGraph(P3)
+        >>> M = nx.contracted_nodes(G, 0, 2)
+        >>> M.edges
+        MultiEdgeView([(0, 1, 0), (0, 1, 1)])
+
+        >>> G = nx.Graph([(1,2), (2,2)])
+        >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
+        >>> list(H.nodes())
+        [1]
+        >>> list(H.edges())
+        [(1, 1)]
 
     See also
     --------
@@ -326,23 +359,29 @@ def contracted_nodes(G, u, v, self_loops=True):
     This function is also available as `identified_nodes`.
     """
     H = G.copy()
+    # edge code uses G.edges(v) instead of G.adj[v] to handle multiedges
     if H.is_directed():
-        in_edges = ((w, u, d) for w, x, d in G.in_edges(v, data=True)
+        in_edges = ((w if w != v else u, u, d)
+                    for w, x, d in G.in_edges(v, data=True)
                     if self_loops or w != u)
-        out_edges = ((u, w, d) for x, w, d in G.out_edges(v, data=True)
+        out_edges = ((u, w if w != v else u, d)
+                     for x, w, d in G.out_edges(v, data=True)
                      if self_loops or w != u)
         new_edges = chain(in_edges, out_edges)
     else:
-        new_edges = ((u, w, d) for x, w, d in G.edges(v, data=True)
+        new_edges = ((u, w if w != v else u, d)
+                     for x, w, d in G.edges(v, data=True)
                      if self_loops or w != u)
-    v_data = H.node[v]
+    v_data = H.nodes[v]
     H.remove_node(v)
     H.add_edges_from(new_edges)
-    if 'contraction' in H.node[u]:
-        H.node[u]['contraction'][v] = v_data
+
+    if 'contraction' in H.nodes[u]:
+        H.nodes[u]['contraction'][v] = v_data
     else:
-        H.node[u]['contraction'] = {v: v_data}
+        H.nodes[u]['contraction'] = {v: v_data}
     return H
+
 
 identified_nodes = contracted_nodes
 
@@ -412,60 +451,3 @@ def contracted_edge(G, edge, self_loops=True):
         raise ValueError('Edge {0} does not exist in graph G; cannot contract'
                          ' it'.format(edge))
     return contracted_nodes(G, *edge, self_loops=self_loops)
-
-
-def blockmodel(G, partition, multigraph=False):
-    """Returns a reduced graph constructed using the generalized block modeling
-    technique.
-
-    The blockmodel technique collapses nodes into blocks based on a
-    given partitioning of the node set.  Each partition of nodes
-    (block) is represented as a single node in the reduced graph.
-    Edges between nodes in the block graph are added according to the
-    edges in the original graph.  If the parameter multigraph is False
-    (the default) a single edge is added with a weight equal to the
-    sum of the edge weights between nodes in the original graph
-    The default is a weight of 1 if weights are not specified.  If the
-    parameter multigraph is True then multiple edges are added each
-    with the edge data from the original graph.
-
-    Parameters
-    ----------
-    G : graph
-        A networkx Graph or DiGraph
-
-    partition : list of lists, or list of sets
-        The partition of the nodes.  Must be non-overlapping.
-
-    multigraph : bool, optional
-        If True return a MultiGraph with the edge data of the original
-        graph applied to each corresponding edge in the new graph.
-        If False return a Graph with the sum of the edge weights, or a
-        count of the edges if the original graph is unweighted.
-
-    Returns
-    -------
-    blockmodel : a Networkx graph object
-
-    Examples
-    --------
-    >>> G = nx.path_graph(6)
-    >>> partition = [[0,1],[2,3],[4,5]]
-    >>> M = nx.blockmodel(G,partition)
-
-    References
-    ----------
-    .. [1] Patrick Doreian, Vladimir Batagelj, and Anuska Ferligoj
-           "Generalized Blockmodeling",Cambridge University Press, 2004.
-
-    .. note:: Deprecated in NetworkX v1.11
-
-        `blockmodel` will be removed in NetworkX 2.0. Instead use
-        `quotient_graph` with keyword argument `relabel=True`, and
-        `create_using=nx.MultiGraph()` for multigraphs.
-    """
-    if multigraph:
-        return nx.quotient_graph(G, partition,
-                                 create_using=nx.MultiGraph(), relabel=True)
-    else:
-        return nx.quotient_graph(G, partition, relabel=True)

@@ -2,7 +2,7 @@
 """
 Flow Hierarchy.
 """
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,6 +11,7 @@ Flow Hierarchy.
 import networkx as nx
 __authors__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)'])
 __all__ = ['flow_hierarchy']
+
 
 def flow_hierarchy(G, weight=None):
     """Returns the flow hierarchy of a directed network.
@@ -29,7 +30,7 @@ def flow_hierarchy(G, weight=None):
     Returns
     -------
     h : float
-       Flow heirarchy value
+       Flow hierarchy value
 
     Notes
     -----
@@ -37,7 +38,7 @@ def flow_hierarchy(G, weight=None):
     exponentiation of the adjacency matrix.  This function implements an
     alternative approach that finds strongly connected components.
     An edge is in a cycle if and only if it is in a strongly connected
-    component, which can be found in `O(m)` time using Tarjan's algorithm.
+    component, which can be found in $O(m)$ time using Tarjan's algorithm.
 
     References
     ----------
@@ -50,4 +51,4 @@ def flow_hierarchy(G, weight=None):
     if not G.is_directed():
         raise nx.NetworkXError("G must be a digraph in flow_heirarchy")
     scc = nx.strongly_connected_components(G)
-    return 1.-sum(G.subgraph(c).size(weight) for c in scc)/float(G.size(weight))
+    return 1. - sum(G.subgraph(c).size(weight) for c in scc) / float(G.size(weight))

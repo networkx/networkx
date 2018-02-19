@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
@@ -8,34 +8,40 @@ import itertools
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = [ 'clustering',
-            'average_clustering',
-            'latapy_clustering',
-            'robins_alexander_clustering']
+__all__ = ['clustering',
+           'average_clustering',
+           'latapy_clustering',
+           'robins_alexander_clustering']
 
 # functions for computing clustering of pairs
-def cc_dot(nu,nv):
-    return float(len(nu & nv))/len(nu | nv)
 
-def cc_max(nu,nv):
-    return float(len(nu & nv))/max(len(nu),len(nv))
 
-def cc_min(nu,nv):
-    return float(len(nu & nv))/min(len(nu),len(nv))
-    
-modes={'dot':cc_dot,
-       'min':cc_min,
-       'max':cc_max}
+def cc_dot(nu, nv):
+    return float(len(nu & nv)) / len(nu | nv)
+
+
+def cc_max(nu, nv):
+    return float(len(nu & nv)) / max(len(nu), len(nv))
+
+
+def cc_min(nu, nv):
+    return float(len(nu & nv)) / min(len(nu), len(nv))
+
+
+modes = {'dot': cc_dot,
+         'min': cc_min,
+         'max': cc_max}
+
 
 def latapy_clustering(G, nodes=None, mode='dot'):
     r"""Compute a bipartite clustering coefficient for nodes.
 
     The bipartie clustering coefficient is a measure of local density
     of connections defined as [1]_:
-    
+
     .. math::
 
-       c_u = \frac{\sum_{v \in N(N(v))} c_{uv} }{|N(N(u))|}
+       c_u = \frac{\sum_{v \in N(N(u))} c_{uv} }{|N(N(u))|}
 
     where `N(N(u))` are the second order neighbors of `u` in `G` excluding `u`, 
     and `c_{uv}` is the pairwise clustering coefficient between nodes 
@@ -74,7 +80,7 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     mode : string
         The pariwise bipartite clustering method to be used in the computation.
         It must be "dot", "max", or "min". 
-    
+
     Returns
     -------
     clustering : dictionary
@@ -97,7 +103,7 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     robins_alexander_clustering
     square_clustering
     average_clustering
-    
+
     References
     ----------
     .. [1] Latapy, Matthieu, Clémence Magnien, and Nathalie Del Vecchio (2008).
@@ -106,27 +112,29 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     """
     if not nx.algorithms.bipartite.is_bipartite(G):
         raise nx.NetworkXError("Graph is not bipartite")
-    
+
     try:
         cc_func = modes[mode]
     except KeyError:
-        raise nx.NetworkXError(\
-                "Mode for bipartite clustering must be: dot, min or max")
+        raise nx.NetworkXError(
+            "Mode for bipartite clustering must be: dot, min or max")
 
     if nodes is None:
         nodes = G
     ccs = {}
     for v in nodes:
         cc = 0.0
-        nbrs2=set([u for nbr in G[v] for u in G[nbr]])-set([v])
+        nbrs2 = set([u for nbr in G[v] for u in G[nbr]]) - set([v])
         for u in nbrs2:
-            cc += cc_func(set(G[u]),set(G[v]))
-        if cc > 0.0: # len(nbrs2)>0
+            cc += cc_func(set(G[u]), set(G[v]))
+        if cc > 0.0:  # len(nbrs2)>0
             cc /= len(nbrs2)
         ccs[v] = cc
     return ccs
 
+
 clustering = latapy_clustering
+
 
 def average_clustering(G, nodes=None, mode='dot'):
     r"""Compute the average bipartite clustering coefficient.
@@ -136,15 +144,15 @@ def average_clustering(G, nodes=None, mode='dot'):
     .. math::
 
        C = \frac{1}{n}\sum_{v \in G} c_v,
-       
+
     where `n` is the number of nodes in `G`.
 
     Similar measures for the two bipartite sets can be defined [1]_
-    
+
     .. math::
 
        C_X = \frac{1}{|X|}\sum_{v \in X} c_v,
-       
+
     where `X` is a bipartite set of `G`.
 
     Parameters
@@ -160,7 +168,7 @@ def average_clustering(G, nodes=None, mode='dot'):
     mode : string
         The pariwise bipartite clustering method. 
         It must be "dot", "max", or "min" 
-    
+
     Returns
     -------
     clustering : float
@@ -182,12 +190,15 @@ def average_clustering(G, nodes=None, mode='dot'):
     See Also
     --------
     clustering
-   
+
     Notes    
     -----
     The container of nodes passed to this function must contain all of the nodes
     in one of the bipartite sets ("top" or "bottom") in order to compute 
     the correct average bipartite clustering coefficients.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
 
     References
     ----------
@@ -196,9 +207,10 @@ def average_clustering(G, nodes=None, mode='dot'):
         Social Networks 30(1), 31--48.
     """
     if nodes is None:
-        nodes=G
-    ccs=latapy_clustering(G, nodes=nodes, mode=mode)
-    return float(sum(ccs[v] for v in nodes))/len(nodes)
+        nodes = G
+    ccs = latapy_clustering(G, nodes=nodes, mode=mode)
+    return float(sum(ccs[v] for v in nodes)) / len(nodes)
+
 
 def robins_alexander_clustering(G):
     r"""Compute the bipartite clustering of G.
@@ -210,7 +222,7 @@ def robins_alexander_clustering(G):
     .. math::
 
        CC_4 = \frac{4 * C_4}{L_3}
-       
+
     Parameters
     ----------
     G : graph
@@ -232,7 +244,7 @@ def robins_alexander_clustering(G):
     --------
     latapy_clustering
     square_clustering
-   
+
     References
     ----------
     .. [1] Robins, G. and M. Alexander (2004). Small worlds among interlocking 
@@ -248,12 +260,14 @@ def robins_alexander_clustering(G):
     C_4 = _four_cycles(G)
     return (4. * C_4) / L_3
 
+
 def _four_cycles(G):
     cycles = 0
     for v in G:
         for u, w in itertools.combinations(G[v], 2):
             cycles += len((set(G[u]) & set(G[w])) - set([v]))
     return cycles / 4
+
 
 def _threepaths(G):
     paths = 0

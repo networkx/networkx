@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-"""Generate graphs with given degree and triangle sequence.
-"""
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Joel Miller (joel.c.miller.research@gmail.com)
+"""Generate graphs with given degree and triangle sequence.
+"""
 import random
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Joel Miller (joel.c.miller.research@gmail.com)'])
 
 __all__ = ['random_clustered_graph']
 
 
 def random_clustered_graph(joint_degree_sequence, create_using=None,
                            seed=None):
-    """Generate a random graph with the given joint independent edge degree and
+    r"""Generate a random graph with the given joint independent edge degree and
     triangle degree sequence.
 
     This uses a configuration model-like approach to generate a random graph
@@ -25,13 +25,13 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
     the given joint degree sequence.
 
     The joint degree sequence is a list of pairs of integers of the form
-    `[(d_{1,i}, d_{1,t}), \dotsc, (d_{n,i}, d_{n,t})]`. According to this list,
-    vertex `u` is a member of `d_{u,t}` triangles and has `d_{u, i}` other
-    edges. The number `d_{u,t}` is the *triangle degree* of `u` and the number
-    `d_{u,i}` is the *independent edge degree*.
+    $[(d_{1,i}, d_{1,t}), \dotsc, (d_{n,i}, d_{n,t})]$. According to this list,
+    vertex $u$ is a member of $d_{u,t}$ triangles and has $d_{u, i}$ other
+    edges. The number $d_{u,t}$ is the *triangle degree* of $u$ and the number
+    $d_{u,i}$ is the *independent edge degree*.
 
-    Parameters 
-    ---------- 
+    Parameters
+    ----------
     joint_degree_sequence : list of integer pairs
         Each list entry corresponds to the independent edge degree and
         triangle degree of a node.
@@ -86,10 +86,10 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
     To remove parallel edges:
 
     >>> G = nx.Graph(G)
-	
+
     To remove self loops:
 
-    >>> G.remove_edges_from(G.selfloop_edges())
+    >>> G.remove_edges_from(nx.selfloop_edges(G))
 
     """
     if create_using is None:
@@ -97,14 +97,14 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
     elif create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
     # In Python 3, zip() returns an iterator. Make this into a list.
     joint_degree_sequence = list(joint_degree_sequence)
 
     N = len(joint_degree_sequence)
-    G = nx.empty_graph(N,create_using)
+    G = nx.empty_graph(N, create_using)
 
     ilist = []
     tlist = []
@@ -115,18 +115,16 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
         for tcount in range(degrees[1]):
             tlist.append(n)
 
-    if len(ilist)%2 != 0 or len(tlist)%3 != 0:
+    if len(ilist) % 2 != 0 or len(tlist) % 3 != 0:
         raise nx.NetworkXError('Invalid degree sequence')
 
     random.shuffle(ilist)
     random.shuffle(tlist)
     while ilist:
-        G.add_edge(ilist.pop(),ilist.pop())
+        G.add_edge(ilist.pop(), ilist.pop())
     while tlist:
         n1 = tlist.pop()
         n2 = tlist.pop()
         n3 = tlist.pop()
-        G.add_edges_from([(n1,n2),(n1,n3),(n2,n3)])
-    G.name = "random_clustered %d nodes %d edges"%(G.order(),G.size())
+        G.add_edges_from([(n1, n2), (n1, n3), (n2, n3)])
     return G
-

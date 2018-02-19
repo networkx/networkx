@@ -9,9 +9,9 @@ Generates a networkx.DiGraph from point and line shapefiles.
 data format for geographic information systems software. It is developed
 and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
-See http://en.wikipedia.org/wiki/Shapefile for additional information.
+See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Ben Reilly <benwreilly@gmail.com>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -23,7 +23,7 @@ __author__ = """Ben Reilly (benwreilly@gmail.com)"""
 __all__ = ['read_shp', 'write_shp']
 
 
-def read_shp(path, simplify=True, geom_attrs=True):
+def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     """Generates a networkx.DiGraph from shapefiles. Point geometries are
     translated into nodes, lines into edges. Coordinate tuples are used as
     keys. Attributes are preserved, line geometries are simplified into start
@@ -53,10 +53,26 @@ def read_shp(path, simplify=True, geom_attrs=True):
         the edge geometry as well (as they do when they are read via
         this method) and they change, your geomety will be out of sync.
 
+    strict: bool
+        If True, raise NetworkXError when feature geometry is missing or
+        GeometryType is not supported.
+        If False, silently ignore missing or unsupported geometry in features.
 
     Returns
     -------
     G : NetworkX graph
+
+    Raises
+    ------
+    ImportError
+       If ogr module is not available.
+
+    RuntimeError
+       If file cannot be open or read.
+
+    NetworkXError
+       If strict=True and feature is missing geometry or GeometryType is
+       not supported.
 
     Examples
     --------
@@ -64,7 +80,7 @@ def read_shp(path, simplify=True, geom_attrs=True):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Shapefile
+    .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
     try:
         from osgeo import ogr
@@ -76,24 +92,34 @@ def read_shp(path, simplify=True, geom_attrs=True):
 
     net = nx.DiGraph()
     shp = ogr.Open(path)
+    if shp is None:
+        raise RuntimeError("Unable to open {}".format(path))
     for lyr in shp:
         fields = [x.GetName() for x in lyr.schema]
         for f in lyr:
-            flddata = [f.GetField(f.GetFieldIndex(x)) for x in fields]
             g = f.geometry()
+            if g is None:
+                if strict:
+                    raise nx.NetworkXError("Bad data: feature missing geometry")
+                else:
+                    continue
+            flddata = [f.GetField(f.GetFieldIndex(x)) for x in fields]
             attributes = dict(zip(fields, flddata))
             attributes["ShpName"] = lyr.GetName()
             # Note:  Using layer level geometry type
             if g.GetGeometryType() == ogr.wkbPoint:
-                net.add_node((g.GetPoint_2D(0)), attributes)
+                net.add_node((g.GetPoint_2D(0)), **attributes)
             elif g.GetGeometryType() in (ogr.wkbLineString,
                                          ogr.wkbMultiLineString):
                 for edge in edges_from_line(g, attributes, simplify,
                                             geom_attrs):
-                    net.add_edge(*edge)
+                    e1, e2, attr = edge
+                    net.add_edge(e1, e2)
+                    net[e1][e2].update(attr)
             else:
-                raise ImportError("GeometryType {} not supported".
-                                  format(g.GetGeometryType()))
+                if strict:
+                    raise nx.NetworkXError("GeometryType {} not supported".
+                                           format(g.GetGeometryType()))
 
     return net
 
@@ -186,7 +212,7 @@ def write_shp(G, outdir):
 
     References
     ----------
-    .. [1] http://en.wikipedia.org/wiki/Shapefile
+    .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
     try:
         from osgeo import ogr
@@ -227,12 +253,28 @@ def write_shp(G, outdir):
     def create_feature(geometry, lyr, attributes=None):
         feature = ogr.Feature(lyr.GetLayerDefn())
         feature.SetGeometry(g)
-        if attributes != None:
+        if attributes is not None:
             # Loop through attributes, assigning data to each field
             for field, data in attributes.items():
                 feature.SetField(field, data)
         lyr.CreateFeature(feature)
         feature.Destroy()
+
+    # Conversion dict between python and ogr types
+    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+
+    # Check/add fields from attribute data to Shapefile layers
+    def add_fields_to_layer(key, value, fields, layer):
+        # Field not in previous edges so add to dict
+        if type(value) in OGRTypes:
+            fields[key] = OGRTypes[type(value)]
+        else:
+            # Data type not supported, default to string (char 80)
+            fields[key] = ogr.OFTString
+        # Create the new field
+        newfield = ogr.FieldDefn(key, fields[key])
+        layer.CreateField(newfield)
+
 
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
@@ -242,10 +284,29 @@ def write_shp(G, outdir):
     except:
         pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
+
+    # Storage for node field names and their data types
+    node_fields = {}
+
+    def create_attributes(data, fields, layer):
+        attributes = {}  # storage for attribute data (indexed by field names)
+        for key, value in data.items():
+            # Reject spatial data not required for attribute table
+            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
+                    and key != 'ShpName'):
+                # Check/add field and data type to fields dict
+                if key not in fields:
+                    add_fields_to_layer(key, value, fields, layer)
+                # Store the data from new field to dict for CreateLayer()
+                attributes[key] = value
+        return attributes, layer
+
     for n in G:
-        data = G.node[n]
+        data = G.nodes[n]
         g = netgeometry(n, data)
-        create_feature(g, nodes)
+        attributes, nodes = create_attributes(data, node_fields, nodes)
+        create_feature(g, nodes, attributes)
+
     try:
         shpdir.DeleteLayer("edges")
     except:
@@ -253,38 +314,12 @@ def write_shp(G, outdir):
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
 
     # New edge attribute write support merged into edge loop
-    fields = {}      # storage for field names and their data types
-    attributes = {}  # storage for attribute data (indexed by field names)
+    edge_fields = {}      # storage for field names and their data types
 
-    # Conversion dict between python and ogr types
-    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
-
-    # Edge loop
     for e in G.edges(data=True):
         data = G.get_edge_data(*e)
         g = netgeometry(e, data)
-        # Loop through attribute data in edges
-        for key, data in e[2].items():
-            # Reject spatial data not required for attribute table
-            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
-                and key != 'ShpName'):
-                  # For all edges check/add field and data type to fields dict
-                    if key not in fields:
-                  # Field not in previous edges so add to dict
-                        if type(data) in OGRTypes:
-                            fields[key] = OGRTypes[type(data)]
-                        else:
-                            # Data type not supported, default to string (char 80)
-                            fields[key] = ogr.OFTString
-                        # Create the new field
-                        newfield = ogr.FieldDefn(key, fields[key])
-                        edges.CreateField(newfield)
-                        # Store the data from new field to dict for CreateLayer()
-                        attributes[key] = data
-                    else:
-                     # Field already exists, add data to dict for CreateLayer()
-                        attributes[key] = data
-        # Create the feature with, passing new attribute data
+        attributes, edges = create_attributes(e[2], edge_fields, edges)
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None

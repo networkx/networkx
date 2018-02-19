@@ -1,27 +1,31 @@
-"""
-Threshold Graphs - Creation, manipulation and identification.
-"""
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 #
-
-__all__ = ['is_threshold_graph', 'find_threshold_graph']
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Pieter Swart (swart@lanl.gov)
+#          Dan Schult (dschult@colgate.edu)
+"""
+Threshold Graphs - Creation, manipulation and identification.
+"""
 
 import random  # for swap_d
 from math import sqrt
 import networkx
+
+__all__ = ['is_threshold_graph', 'find_threshold_graph']
+
 
 def is_threshold_graph(G):
     """
     Returns True if G is a threshold graph.
     """
     return is_threshold_sequence(list(d for n, d in G.degree()))
-    
+
+
 def is_threshold_sequence(degree_sequence):
     """
     Returns True if the sequence is a threshold degree seqeunce.
@@ -32,20 +36,20 @@ def is_threshold_sequence(degree_sequence):
     node that connects to the remaining nodes.  If this deconstruction
     failes then the sequence is not a threshold sequence.
     """
-    ds = degree_sequence[:] # get a copy so we don't destroy original
+    ds = degree_sequence[:]  # get a copy so we don't destroy original
     ds.sort()
     while ds:
-        if ds[0]==0:      # if isolated node
+        if ds[0] == 0:      # if isolated node
             ds.pop(0)     # remove it
             continue
-        if ds[-1] != len(ds)-1:  # is the largest degree node dominating?
+        if ds[-1] != len(ds) - 1:  # is the largest degree node dominating?
             return False       # no, not a threshold degree sequence
         ds.pop()               # yes, largest is the dominating node
-        ds=[ d-1 for d in ds ] # remove it and decrement all degrees
+        ds = [d - 1 for d in ds]  # remove it and decrement all degrees
     return True
 
 
-def creation_sequence(degree_sequence,with_labels=False,compact=False):
+def creation_sequence(degree_sequence, with_labels=False, compact=False):
     """
     Determines the creation sequence for the given threshold degree sequence.
 
@@ -78,62 +82,75 @@ def creation_sequence(degree_sequence,with_labels=False,compact=False):
 
     # make an indexed copy
     if isinstance(degree_sequence, dict):   # labeled degree seqeunce
-        ds = [ [degree,label] for (label,degree) in degree_sequence.items() ]
+        ds = [[degree, label] for (label, degree) in degree_sequence.items()]
     else:
-        ds=[ [d,i] for i,d in enumerate(degree_sequence) ]
+        ds = [[d, i] for i, d in enumerate(degree_sequence)]
     ds.sort()
-    cs=[]  # creation sequence
+    cs = []  # creation sequence
     while ds:
-        if ds[0][0]==0:     # isolated node
-            (d,v)=ds.pop(0)
-            if len(ds)>0:    # make sure we start with a d
-                cs.insert(0,(v,'i'))
+        if ds[0][0] == 0:     # isolated node
+            (d, v) = ds.pop(0)
+            if len(ds) > 0:    # make sure we start with a d
+                cs.insert(0, (v, 'i'))
             else:
-                cs.insert(0,(v,'d'))
+                cs.insert(0, (v, 'd'))
             continue
-        if ds[-1][0]!=len(ds)-1:     # Not dominating node
+        if ds[-1][0] != len(ds) - 1:     # Not dominating node
             return None  # not a threshold degree sequence
-        (d,v)=ds.pop()
-        cs.insert(0,(v,'d'))
-        ds=[ [d[0]-1,d[1]] for d in ds ]   # decrement due to removing node
+        (d, v) = ds.pop()
+        cs.insert(0, (v, 'd'))
+        ds = [[d[0] - 1, d[1]] for d in ds]   # decrement due to removing node
 
-    if with_labels: return cs
-    if compact: return make_compact(cs)
-    return [ v[1] for v in cs ]   # not labeled
+    if with_labels:
+        return cs
+    if compact:
+        return make_compact(cs)
+    return [v[1] for v in cs]   # not labeled
+
 
 def make_compact(creation_sequence):
     """
     Returns the creation sequence in a compact form
     that is the number of 'i's and 'd's alternating.
-    Examples:
-    [1,2,2,3] represents d,i,i,d,d,i,i,i.
-    [3,1,2] represents d,d,d,i,d,d.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.threshold import make_compact
+    >>> make_compact(['d', 'i', 'i', 'd', 'd', 'i', 'i', 'i'])
+    [1, 2, 2, 3]
+    >>> make_compact(['d', 'd', 'd', 'i', 'd', 'd'])
+    [3, 1, 2]
+
     Notice that the first number is the first vertex
     to be used for construction and so is always 'd'.
 
     Labeled creation sequences lose their labels in the
     compact representation.
+
+    >>> make_compact([3, 1, 2])
+    [3, 1, 2]
     """
-    first=creation_sequence[0]
-    if isinstance(first,str):    # creation sequence
+    first = creation_sequence[0]
+    if isinstance(first, str):    # creation sequence
         cs = creation_sequence[:]
-    elif isinstance(first,tuple):   # labeled creation sequence
-        cs = [ s[1] for s in creation_sequence ]
-    elif isinstance(first,int):   # compact creation sequence
+    elif isinstance(first, tuple):   # labeled creation sequence
+        cs = [s[1] for s in creation_sequence]
+    elif isinstance(first, int):   # compact creation sequence
         return creation_sequence
     else:
         raise TypeError("Not a valid creation sequence type")
 
-    ccs=[]
-    count=1 # count the run lengths of d's or i's.
-    for i in range(1,len(cs)):
-        if cs[i]==cs[i-1]:
-            count+=1
+    ccs = []
+    count = 1  # count the run lengths of d's or i's.
+    for i in range(1, len(cs)):
+        if cs[i] == cs[i - 1]:
+            count += 1
         else:
             ccs.append(count)
-            count=1
-    ccs.append(count) # don't forget the last one
+            count = 1
+    ccs.append(count)  # don't forget the last one
     return ccs
+
 
 def uncompact(creation_sequence):
     """
@@ -142,21 +159,22 @@ def uncompact(creation_sequence):
     If the creation_sequence is already standard, return it.
     See creation_sequence.
     """
-    first=creation_sequence[0]
-    if isinstance(first,str):    # creation sequence
+    first = creation_sequence[0]
+    if isinstance(first, str):    # creation sequence
         return creation_sequence
-    elif isinstance(first,tuple):   # labeled creation sequence
+    elif isinstance(first, tuple):   # labeled creation sequence
         return creation_sequence
-    elif isinstance(first,int):   # compact creation sequence
-        ccscopy=creation_sequence[:]
+    elif isinstance(first, int):   # compact creation sequence
+        ccscopy = creation_sequence[:]
     else:
         raise TypeError("Not a valid creation sequence type")
     cs = []
     while ccscopy:
-        cs.extend(ccscopy.pop(0)*['d'])
+        cs.extend(ccscopy.pop(0) * ['d'])
         if ccscopy:
-            cs.extend(ccscopy.pop(0)*['i'])
+            cs.extend(ccscopy.pop(0) * ['i'])
     return cs
+
 
 def creation_sequence_to_weights(creation_sequence):
     """
@@ -166,44 +184,46 @@ def creation_sequence_to_weights(creation_sequence):
     nodes is the same as that in the creation sequence.
     """
     # Turn input sequence into a labeled creation sequence
-    first=creation_sequence[0]
-    if isinstance(first,str):    # creation sequence
-        if isinstance(creation_sequence,list):
+    first = creation_sequence[0]
+    if isinstance(first, str):    # creation sequence
+        if isinstance(creation_sequence, list):
             wseq = creation_sequence[:]
         else:
-            wseq = list(creation_sequence) # string like 'ddidid'
-    elif isinstance(first,tuple):   # labeled creation sequence
-        wseq = [ v[1] for v in creation_sequence]
-    elif isinstance(first,int):  # compact creation sequence
+            wseq = list(creation_sequence)  # string like 'ddidid'
+    elif isinstance(first, tuple):   # labeled creation sequence
+        wseq = [v[1] for v in creation_sequence]
+    elif isinstance(first, int):  # compact creation sequence
         wseq = uncompact(creation_sequence)
     else:
         raise TypeError("Not a valid creation sequence type")
     # pass through twice--first backwards
     wseq.reverse()
-    w=0
-    prev='i'
-    for j,s in enumerate(wseq):
-        if s=='i':
-            wseq[j]=w
-            prev=s
-        elif prev=='i':
-            prev=s
-            w+=1
+    w = 0
+    prev = 'i'
+    for j, s in enumerate(wseq):
+        if s == 'i':
+            wseq[j] = w
+            prev = s
+        elif prev == 'i':
+            prev = s
+            w += 1
     wseq.reverse()  # now pass through forwards
-    for j,s in enumerate(wseq):
-        if s=='d':
-            wseq[j]=w
-            prev=s
-        elif prev=='d':
-            prev=s
-            w+=1
+    for j, s in enumerate(wseq):
+        if s == 'd':
+            wseq[j] = w
+            prev = s
+        elif prev == 'd':
+            prev = s
+            w += 1
     # Now scale weights
-    if prev=='d': w+=1
-    wscale=1./float(w)
-    return [ ww*wscale for ww in wseq]
-    #return wseq
+    if prev == 'd':
+        w += 1
+    wscale = 1. / float(w)
+    return [ww * wscale for ww in wseq]
+    # return wseq
 
-def weights_to_creation_sequence(weights,threshold=1,with_labels=False,compact=False):
+
+def weights_to_creation_sequence(weights, threshold=1, with_labels=False, compact=False):
     """
     Returns a creation sequence for a threshold graph
     determined by the weights and threshold given as input.
@@ -235,30 +255,32 @@ def weights_to_creation_sequence(weights,threshold=1,with_labels=False,compact=F
         raise ValueError("compact sequences cannot be labeled")
 
     # make an indexed copy
-    if isinstance(weights,dict):   # labeled weights
-        wseq = [ [w,label] for (label,w) in weights.items() ]
+    if isinstance(weights, dict):   # labeled weights
+        wseq = [[w, label] for (label, w) in weights.items()]
     else:
-        wseq = [ [w,i] for i,w in enumerate(weights) ]
+        wseq = [[w, i] for i, w in enumerate(weights)]
     wseq.sort()
-    cs=[]  # creation sequence
-    cutoff=threshold-wseq[-1][0]
+    cs = []  # creation sequence
+    cutoff = threshold - wseq[-1][0]
     while wseq:
-        if wseq[0][0]<cutoff:     # isolated node
-            (w,label)=wseq.pop(0)
-            cs.append((label,'i'))
+        if wseq[0][0] < cutoff:     # isolated node
+            (w, label) = wseq.pop(0)
+            cs.append((label, 'i'))
         else:
-            (w,label)=wseq.pop()
-            cs.append((label,'d'))
-            cutoff=threshold-wseq[-1][0]
-        if len(wseq)==1:     # make sure we start with a d
-            (w,label)=wseq.pop()
-            cs.append((label,'d'))
+            (w, label) = wseq.pop()
+            cs.append((label, 'd'))
+            cutoff = threshold - wseq[-1][0]
+        if len(wseq) == 1:     # make sure we start with a d
+            (w, label) = wseq.pop()
+            cs.append((label, 'd'))
     # put in correct order
     cs.reverse()
 
-    if with_labels: return cs
-    if compact: return make_compact(cs)
-    return [ v[1] for v in cs ]   # not labeled
+    if with_labels:
+        return cs
+    if compact:
+        return make_compact(cs)
+    return [v[1] for v in cs]   # not labeled
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
@@ -279,12 +301,12 @@ def threshold_graph(creation_sequence, create_using=None):
     Returns None if the sequence is not valid
     """
     # Turn input sequence into a labeled creation sequence
-    first=creation_sequence[0]
-    if isinstance(first,str):    # creation sequence
+    first = creation_sequence[0]
+    if isinstance(first, str):    # creation sequence
         ci = list(enumerate(creation_sequence))
-    elif isinstance(first,tuple):   # labeled creation sequence
+    elif isinstance(first, tuple):   # labeled creation sequence
         ci = creation_sequence[:]
-    elif isinstance(first,int):  # compact creation sequence
+    elif isinstance(first, int):  # compact creation sequence
         cs = uncompact(creation_sequence)
         ci = list(enumerate(cs))
     else:
@@ -299,23 +321,22 @@ def threshold_graph(creation_sequence, create_using=None):
         G = create_using
         G.clear()
 
-    G.name="Threshold Graph"
+    G.name = "Threshold Graph"
 
     # add nodes and edges
     # if type is 'i' just add nodea
     # if type is a d connect to everything previous
     while ci:
-        (v,node_type)=ci.pop(0)
-        if node_type=='d': # dominating type, connect to all existing nodes
+        (v, node_type) = ci.pop(0)
+        if node_type == 'd':  # dominating type, connect to all existing nodes
             # We use `for u in list(G):` instead of
             # `for u in G:` because we edit the graph `G` in
             # the loop. Hence using an iterator will result in
             # `RuntimeError: dictionary changed size during iteration`
             for u in list(G):
-                G.add_edge(v, u) 
+                G.add_edge(v, u)
         G.add_node(v)
     return G
-
 
 
 def find_alternating_4_cycle(G):
@@ -324,14 +345,13 @@ def find_alternating_4_cycle(G):
     Otherwise returns the cycle as [a,b,c,d] where (a,b)
     and (c,d) are edges and (a,c) and (b,d) are not.
     """
-    for (u,v) in G.edges():
+    for (u, v) in G.edges():
         for w in G.nodes():
-            if not G.has_edge(u,w) and u!=w:
+            if not G.has_edge(u, w) and u != w:
                 for x in G.neighbors(w):
-                    if not G.has_edge(v,x) and v!=x:
-                        return [u,v,w,x]
+                    if not G.has_edge(v, x) and v != x:
+                        return [u, v, w, x]
     return False
-
 
 
 def find_threshold_graph(G, create_using=None):
@@ -340,7 +360,7 @@ def find_threshold_graph(G, create_using=None):
     The threshold graph will contain the largest degree node in G.
 
     """
-    return threshold_graph(find_creation_sequence(G),create_using)
+    return threshold_graph(find_creation_sequence(G), create_using)
 
 
 def find_creation_sequence(G):
@@ -348,51 +368,50 @@ def find_creation_sequence(G):
     Find a threshold subgraph that is close to largest in G.
     Returns the labeled creation sequence of that threshold graph.
     """
-    cs=[]
+    cs = []
     # get a local pointer to the working part of the graph
-    H=G
-    while H.order()>0:
+    H = G
+    while H.order() > 0:
         # get new degree sequence on subgraph
         dsdict = dict(H.degree())
-        ds = [(d, v) for v,d in dsdict.items()]
+        ds = [(d, v) for v, d in dsdict.items()]
         ds.sort()
         # Update threshold graph nodes
-        if ds[-1][0]==0: # all are isolated
+        if ds[-1][0] == 0:  # all are isolated
             cs.extend(zip(dsdict, ['i'] * (len(ds) - 1) + ['d']))
             break   # Done!
         # pull off isolated nodes
-        while ds[0][0]==0:
-            (d,iso)=ds.pop(0)
-            cs.append((iso,'i'))
+        while ds[0][0] == 0:
+            (d, iso) = ds.pop(0)
+            cs.append((iso, 'i'))
         # find new biggest node
-        (d,bigv)=ds.pop()
+        (d, bigv) = ds.pop()
         # add edges of star to t_g
-        cs.append((bigv,'d'))
+        cs.append((bigv, 'd'))
         # form subgraph of neighbors of big node
-        H=H.subgraph(H.neighbors(bigv))
+        H = H.subgraph(H.neighbors(bigv))
     cs.reverse()
     return cs
 
 
-
-### Properties of Threshold Graphs
+# Properties of Threshold Graphs
 def triangles(creation_sequence):
     """
     Compute number of triangles in the threshold graph with the
     given creation sequence.
     """
-    # shortcut algoritm that doesn't require computing number
+    # shortcut algorithm that doesn't require computing number
     # of triangles at each node.
-    cs=creation_sequence    # alias
-    dr=cs.count("d")        # number of d's in sequence
-    ntri=dr*(dr-1)*(dr-2)/6 # number of triangles in clique of nd d's
+    cs = creation_sequence    # alias
+    dr = cs.count("d")        # number of d's in sequence
+    ntri = dr * (dr - 1) * (dr - 2) / 6  # number of triangles in clique of nd d's
     # now add dr choose 2 triangles for every 'i' in sequence where
     # dr is the number of d's to the right of the current i
-    for i,typ in enumerate(cs):
-        if typ=="i":
-            ntri+=dr*(dr-1)/2
+    for i, typ in enumerate(cs):
+        if typ == "i":
+            ntri += dr * (dr - 1) / 2
         else:
-            dr-=1
+            dr -= 1
     return ntri
 
 
@@ -401,42 +420,43 @@ def triangle_sequence(creation_sequence):
     Return triangle sequence for the given threshold graph creation sequence.
 
     """
-    cs=creation_sequence
-    seq=[]
-    dr=cs.count("d")     # number of d's to the right of the current pos
-    dcur=(dr-1)*(dr-2) // 2 # number of triangles through a node of clique dr
-    irun=0               # number of i's in the last run
-    drun=0               # number of d's in the last run
-    for i,sym in enumerate(cs):
-        if sym=="d":
-            drun+=1
-            tri=dcur+(dr-1)*irun    # new triangles at this d
-        else: # cs[i]="i":
-            if prevsym=="d":        # new string of i's
-                dcur+=(dr-1)*irun   # accumulate shared shortest paths
-                irun=0              # reset i run counter
-                dr-=drun            # reduce number of d's to right
-                drun=0              # reset d run counter
-            irun+=1
-            tri=dr*(dr-1) // 2      # new triangles at this i
+    cs = creation_sequence
+    seq = []
+    dr = cs.count("d")     # number of d's to the right of the current pos
+    dcur = (dr - 1) * (dr - 2) // 2  # number of triangles through a node of clique dr
+    irun = 0               # number of i's in the last run
+    drun = 0               # number of d's in the last run
+    for i, sym in enumerate(cs):
+        if sym == "d":
+            drun += 1
+            tri = dcur + (dr - 1) * irun    # new triangles at this d
+        else:  # cs[i]="i":
+            if prevsym == "d":        # new string of i's
+                dcur += (dr - 1) * irun   # accumulate shared shortest paths
+                irun = 0              # reset i run counter
+                dr -= drun            # reduce number of d's to right
+                drun = 0              # reset d run counter
+            irun += 1
+            tri = dr * (dr - 1) // 2      # new triangles at this i
         seq.append(tri)
-        prevsym=sym
+        prevsym = sym
     return seq
+
 
 def cluster_sequence(creation_sequence):
     """
     Return cluster sequence for the given threshold graph creation sequence.
     """
-    triseq=triangle_sequence(creation_sequence)
-    degseq=degree_sequence(creation_sequence)
-    cseq=[]
-    for i,deg in enumerate(degseq):
-        tri=triseq[i]
+    triseq = triangle_sequence(creation_sequence)
+    degseq = degree_sequence(creation_sequence)
+    cseq = []
+    for i, deg in enumerate(degseq):
+        tri = triseq[i]
         if deg <= 1:    # isolated vertex or single pair gets cc 0
             cseq.append(0)
             continue
-        max_size=(deg*(deg-1)) // 2
-        cseq.append(float(tri)/float(max_size))
+        max_size = (deg * (deg - 1)) // 2
+        cseq.append(float(tri) / float(max_size))
     return cseq
 
 
@@ -445,69 +465,71 @@ def degree_sequence(creation_sequence):
     Return degree sequence for the threshold graph with the given
     creation sequence
     """
-    cs=creation_sequence  # alias
-    seq=[]
-    rd=cs.count("d") # number of d to the right
-    for i,sym in enumerate(cs):
-        if sym=="d":
-            rd-=1
-            seq.append(rd+i)
+    cs = creation_sequence  # alias
+    seq = []
+    rd = cs.count("d")  # number of d to the right
+    for i, sym in enumerate(cs):
+        if sym == "d":
+            rd -= 1
+            seq.append(rd + i)
         else:
             seq.append(rd)
     return seq
+
 
 def density(creation_sequence):
     """
     Return the density of the graph with this creation_sequence.
     The density is the fraction of possible edges present.
     """
-    N=len(creation_sequence)
-    two_size=sum(degree_sequence(creation_sequence))
-    two_possible=N*(N-1)
-    den=two_size/float(two_possible)
+    N = len(creation_sequence)
+    two_size = sum(degree_sequence(creation_sequence))
+    two_possible = N * (N - 1)
+    den = two_size / float(two_possible)
     return den
+
 
 def degree_correlation(creation_sequence):
     """
     Return the degree-degree correlation over all edges.
     """
-    cs=creation_sequence
-    s1=0  # deg_i*deg_j
-    s2=0  # deg_i^2+deg_j^2
-    s3=0  # deg_i+deg_j
-    m=0   # number of edges
-    rd=cs.count("d") # number of d nodes to the right
-    rdi=[ i for i,sym in enumerate(cs) if sym=="d"] # index of "d"s
-    ds=degree_sequence(cs)
-    for i,sym in enumerate(cs):
-        if sym=="d":
-            if i!=rdi[0]:
-                print("Logic error in degree_correlation",i,rdi)
+    cs = creation_sequence
+    s1 = 0  # deg_i*deg_j
+    s2 = 0  # deg_i^2+deg_j^2
+    s3 = 0  # deg_i+deg_j
+    m = 0   # number of edges
+    rd = cs.count("d")  # number of d nodes to the right
+    rdi = [i for i, sym in enumerate(cs) if sym == "d"]  # index of "d"s
+    ds = degree_sequence(cs)
+    for i, sym in enumerate(cs):
+        if sym == "d":
+            if i != rdi[0]:
+                print("Logic error in degree_correlation", i, rdi)
                 raise ValueError
             rdi.pop(0)
-        degi=ds[i]
+        degi = ds[i]
         for dj in rdi:
-            degj=ds[dj]
-            s1+=degj*degi
-            s2+=degi**2+degj**2
-            s3+=degi+degj
-            m+=1
-    denom=(2*m*s2-s3*s3)
-    numer=(4*m*s1-s3*s3)
-    if denom==0:
-        if numer==0:
+            degj = ds[dj]
+            s1 += degj * degi
+            s2 += degi**2 + degj**2
+            s3 += degi + degj
+            m += 1
+    denom = (2 * m * s2 - s3 * s3)
+    numer = (4 * m * s1 - s3 * s3)
+    if denom == 0:
+        if numer == 0:
             return 1
-        raise ValueError("Zero Denominator but Numerator is %s"%numer)
-    return numer/float(denom)
+        raise ValueError("Zero Denominator but Numerator is %s" % numer)
+    return numer / float(denom)
 
 
-def shortest_path(creation_sequence,u,v):
+def shortest_path(creation_sequence, u, v):
     """
     Find the shortest path between u and v in a
     threshold graph G with the given creation_sequence.
 
     For an unlabeled creation_sequence, the vertices
-    u and v must be integers in (0,len(sequence)) refering
+    u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
 
     For a labeled creation_sequence, u and v are labels of veritices.
@@ -519,40 +541,42 @@ def shortest_path(creation_sequence,u,v):
     Example: if they are neighbors, it returns [u,v]
     """
     # Turn input sequence into a labeled creation sequence
-    first=creation_sequence[0]
-    if isinstance(first,str):    # creation sequence
-        cs = [(i,creation_sequence[i]) for i in range(len(creation_sequence))]
-    elif isinstance(first,tuple):   # labeled creation sequence
+    first = creation_sequence[0]
+    if isinstance(first, str):    # creation sequence
+        cs = [(i, creation_sequence[i]) for i in range(len(creation_sequence))]
+    elif isinstance(first, tuple):   # labeled creation sequence
         cs = creation_sequence[:]
-    elif isinstance(first,int):  # compact creation sequence
+    elif isinstance(first, int):  # compact creation sequence
         ci = uncompact(creation_sequence)
-        cs = [(i,ci[i]) for i in range(len(ci))]
+        cs = [(i, ci[i]) for i in range(len(ci))]
     else:
         raise TypeError("Not a valid creation sequence type")
 
-    verts=[ s[0] for s in cs ]
+    verts = [s[0] for s in cs]
     if v not in verts:
-        raise ValueError("Vertex %s not in graph from creation_sequence"%v)
+        raise ValueError("Vertex %s not in graph from creation_sequence" % v)
     if u not in verts:
-        raise ValueError("Vertex %s not in graph from creation_sequence"%u)
+        raise ValueError("Vertex %s not in graph from creation_sequence" % u)
     # Done checking
-    if u==v: return [u]
+    if u == v:
+        return [u]
 
-    uindex=verts.index(u)
-    vindex=verts.index(v)
-    bigind=max(uindex,vindex)
-    if cs[bigind][1]=='d':
-        return [u,v]
+    uindex = verts.index(u)
+    vindex = verts.index(v)
+    bigind = max(uindex, vindex)
+    if cs[bigind][1] == 'd':
+        return [u, v]
     # must be that cs[bigind][1]=='i'
-    cs=cs[bigind:]
+    cs = cs[bigind:]
     while cs:
-        vert=cs.pop()
-        if vert[1]=='d':
-            return [u,vert[0],v]
+        vert = cs.pop()
+        if vert[1] == 'd':
+            return [u, vert[0], v]
     # All after u are type 'i' so no connection
     return -1
 
-def shortest_path_length(creation_sequence,i):
+
+def shortest_path_length(creation_sequence, i):
     """
     Return the shortest path length from indicated node to
     every other node for the threshold graph with the given
@@ -565,75 +589,75 @@ def shortest_path_length(creation_sequence,i):
     Length to unreachable nodes is set to -1.
     """
     # Turn input sequence into a labeled creation sequence
-    first=creation_sequence[0]
-    if isinstance(first,str):    # creation sequence
-        if isinstance(creation_sequence,list):
+    first = creation_sequence[0]
+    if isinstance(first, str):    # creation sequence
+        if isinstance(creation_sequence, list):
             cs = creation_sequence[:]
         else:
             cs = list(creation_sequence)
-    elif isinstance(first,tuple):   # labeled creation sequence
-        cs = [ v[1] for v in creation_sequence]
+    elif isinstance(first, tuple):   # labeled creation sequence
+        cs = [v[1] for v in creation_sequence]
         i = [v[0] for v in creation_sequence].index(i)
-    elif isinstance(first,int):  # compact creation sequence
+    elif isinstance(first, int):  # compact creation sequence
         cs = uncompact(creation_sequence)
     else:
         raise TypeError("Not a valid creation sequence type")
 
     # Compute
-    N=len(cs)
-    spl=[2]*N       # length 2 to every node
-    spl[i]=0        # except self which is 0
+    N = len(cs)
+    spl = [2] * N       # length 2 to every node
+    spl[i] = 0        # except self which is 0
     # 1 for all d's to the right
-    for j in range(i+1,N):
-        if cs[j]=="d":
-            spl[j]=1
-    if cs[i]=='d': # 1 for all nodes to the left
+    for j in range(i + 1, N):
+        if cs[j] == "d":
+            spl[j] = 1
+    if cs[i] == 'd':  # 1 for all nodes to the left
         for j in range(i):
-            spl[j]=1
+            spl[j] = 1
     # and -1 for any trailing i to indicate unreachable
-    for j in range(N-1,0,-1):
-        if cs[j]=="d":
+    for j in range(N - 1, 0, -1):
+        if cs[j] == "d":
             break
-        spl[j]=-1
+        spl[j] = -1
     return spl
 
 
-def betweenness_sequence(creation_sequence,normalized=True):
+def betweenness_sequence(creation_sequence, normalized=True):
     """
     Return betweenness for the threshold graph with the given creation
     sequence.  The result is unscaled.  To scale the values
     to the iterval [0,1] divide by (n-1)*(n-2).
     """
-    cs=creation_sequence
-    seq=[]               # betweenness
-    lastchar='d'         # first node is always a 'd'
-    dr=float(cs.count("d"))  # number of d's to the right of curren pos
-    irun=0               # number of i's in the last run
-    drun=0               # number of d's in the last run
-    dlast=0.0              # betweenness of last d
-    for i,c in enumerate(cs):
-        if c=='d':    #cs[i]=="d":
+    cs = creation_sequence
+    seq = []               # betweenness
+    lastchar = 'd'         # first node is always a 'd'
+    dr = float(cs.count("d"))  # number of d's to the right of curren pos
+    irun = 0               # number of i's in the last run
+    drun = 0               # number of d's in the last run
+    dlast = 0.0              # betweenness of last d
+    for i, c in enumerate(cs):
+        if c == 'd':  # cs[i]=="d":
             # betweennees = amt shared with eariler d's and i's
             #             + new isolated nodes covered
             #             + new paths to all previous nodes
-            b=dlast + (irun-1)*irun/dr + 2*irun*(i-drun-irun)/dr
-            drun+=1           # update counter
+            b = dlast + (irun - 1) * irun / dr + 2 * irun * (i - drun - irun) / dr
+            drun += 1           # update counter
         else:      # cs[i]="i":
-            if lastchar=='d': # if this is a new run of i's
-                dlast=b       # accumulate betweenness
-                dr-=drun      # update number of d's to the right
-                drun=0        # reset d counter
-                irun=0        # reset i counter
-            b=0      # isolated nodes have zero betweenness
-            irun+=1  # add another i to the run
+            if lastchar == 'd':  # if this is a new run of i's
+                dlast = b       # accumulate betweenness
+                dr -= drun      # update number of d's to the right
+                drun = 0        # reset d counter
+                irun = 0        # reset i counter
+            b = 0      # isolated nodes have zero betweenness
+            irun += 1  # add another i to the run
         seq.append(float(b))
-        lastchar=c
+        lastchar = c
 
     # normalize by the number of possible shortest paths
     if normalized:
-        order=len(cs)
-        scale=1.0/((order-1)*(order-2))
-        seq=[ s*scale for s in seq ]
+        order = len(cs)
+        scale = 1.0 / ((order - 1) * (order - 2))
+        seq = [s * scale for s in seq]
 
     return seq
 
@@ -650,51 +674,53 @@ def eigenvectors(creation_sequence):
     Notice that the order of the eigenvalues returned by eigenvalues(cs)
     may not correspond to the order of these eigenvectors.
     """
-    ccs=make_compact(creation_sequence)
-    N=sum(ccs)
-    vec=[0]*N
-    val=vec[:]
+    ccs = make_compact(creation_sequence)
+    N = sum(ccs)
+    vec = [0] * N
+    val = vec[:]
     # get number of type d nodes to the right (all for first node)
-    dr=sum(ccs[::2])
+    dr = sum(ccs[::2])
 
-    nn=ccs[0]
-    vec[0]=[1./sqrt(N)]*N
-    val[0]=0
-    e=dr
-    dr-=nn
-    type_d=True
-    i=1
-    dd=1
-    while dd<nn:
-        scale=1./sqrt(dd*dd+i)
-        vec[i]=i*[-scale]+[dd*scale]+[0]*(N-i-1)
-        val[i]=e
-        i+=1
-        dd+=1
-    if len(ccs)==1: return (val,vec)
+    nn = ccs[0]
+    vec[0] = [1. / sqrt(N)] * N
+    val[0] = 0
+    e = dr
+    dr -= nn
+    type_d = True
+    i = 1
+    dd = 1
+    while dd < nn:
+        scale = 1. / sqrt(dd * dd + i)
+        vec[i] = i * [-scale] + [dd * scale] + [0] * (N - i - 1)
+        val[i] = e
+        i += 1
+        dd += 1
+    if len(ccs) == 1:
+        return (val, vec)
     for nn in ccs[1:]:
-        scale=1./sqrt(nn*i*(i+nn))
-        vec[i]=i*[-nn*scale]+nn*[i*scale]+[0]*(N-i-nn)
+        scale = 1. / sqrt(nn * i * (i + nn))
+        vec[i] = i * [-nn * scale] + nn * [i * scale] + [0] * (N - i - nn)
         # find eigenvalue
-        type_d=not type_d
+        type_d = not type_d
         if type_d:
-            e=i+dr
-            dr-=nn
+            e = i + dr
+            dr -= nn
         else:
-            e=dr
-        val[i]=e
-        st=i
-        i+=1
-        dd=1
-        while dd<nn:
-            scale=1./sqrt(i-st+dd*dd)
-            vec[i]=[0]*st+(i-st)*[-scale]+[dd*scale]+[0]*(N-i-1)
-            val[i]=e
-            i+=1
-            dd+=1
-    return (val,vec)
+            e = dr
+        val[i] = e
+        st = i
+        i += 1
+        dd = 1
+        while dd < nn:
+            scale = 1. / sqrt(i - st + dd * dd)
+            vec[i] = [0] * st + (i - st) * [-scale] + [dd * scale] + [0] * (N - i - 1)
+            val[i] = e
+            i += 1
+            dd += 1
+    return (val, vec)
 
-def spectral_projection(u,eigenpairs):
+
+def spectral_projection(u, eigenpairs):
     """
     Returns the coefficients of each eigenvector
     in a projection of the vector u onto the normalized
@@ -707,13 +733,12 @@ def spectral_projection(u,eigenpairs):
     There's not a lot of error checking on lengths of
     arrays, etc. so be careful.
     """
-    coeff=[]
-    evect=eigenpairs[1]
+    coeff = []
+    evect = eigenpairs[1]
     for ev in evect:
-        c=sum([ evv*uv for (evv,uv) in zip(ev,u)])
+        c = sum([evv * uv for (evv, uv) in zip(ev, u)])
         coeff.append(c)
     return coeff
-
 
 
 def eigenvalues(creation_sequence):
@@ -736,28 +761,28 @@ def eigenvalues(creation_sequence):
       }
 
     """
-    degseq=degree_sequence(creation_sequence)
+    degseq = degree_sequence(creation_sequence)
     degseq.sort()
-    eiglist=[]   # zero is always one eigenvalue
-    eig=0
-    row=len(degseq)
-    bigdeg=degseq.pop()
+    eiglist = []   # zero is always one eigenvalue
+    eig = 0
+    row = len(degseq)
+    bigdeg = degseq.pop()
     while row:
-        if bigdeg<row:
+        if bigdeg < row:
             eiglist.append(eig)
-            row-=1
+            row -= 1
         else:
-            eig+=1
+            eig += 1
             if degseq:
-                bigdeg=degseq.pop()
+                bigdeg = degseq.pop()
             else:
-                bigdeg=0
+                bigdeg = 0
     return eiglist
 
 
-### Threshold graph creation routines
+# Threshold graph creation routines
 
-def random_threshold_sequence(n,p,seed=None):
+def random_threshold_sequence(n, p, seed=None):
     """
     Create a random threshold sequence of size n.
     A creation sequence is built by randomly choosing d's with
@@ -773,14 +798,14 @@ def random_threshold_sequence(n,p,seed=None):
     G=nx.threshold_graph(s)
 
     """
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
     if not (0 <= p <= 1):
         raise ValueError("p must be in [0,1]")
 
-    cs=['d']  # threshold sequences always start with a d
-    for i in range(1,n):
+    cs = ['d']  # threshold sequences always start with a d
+    for i in range(1, n):
         if random.random() < p:
             cs.append('d')
         else:
@@ -788,13 +813,10 @@ def random_threshold_sequence(n,p,seed=None):
     return cs
 
 
-
-
-
 # maybe *_d_threshold_sequence routines should
 # be (or be called from) a single routine with a more descriptive name
 # and a keyword parameter?
-def right_d_threshold_sequence(n,m):
+def right_d_threshold_sequence(n, m):
     """
     Create a skewed threshold graph with a given number
     of vertices (n) and a given number of edges (m).
@@ -805,29 +827,30 @@ def right_d_threshold_sequence(n,m):
     FIXME: describe algorithm
 
     """
-    cs=['d']+['i']*(n-1) # create sequence with n insolated nodes
+    cs = ['d'] + ['i'] * (n - 1)  # create sequence with n insolated nodes
 
     #  m <n : not enough edges, make disconnected
     if m < n:
-        cs[m]='d'
+        cs[m] = 'd'
         return cs
 
     # too many edges
-    if m > n*(n-1)/2:
+    if m > n * (n - 1) / 2:
         raise ValueError("Too many edges for this many nodes.")
 
     # connected case m >n-1
-    ind=n-1
-    sum=n-1
-    while sum<m:
-        cs[ind]='d'
+    ind = n - 1
+    sum = n - 1
+    while sum < m:
+        cs[ind] = 'd'
         ind -= 1
         sum += ind
-    ind=m-(sum-ind)
-    cs[ind]='d'
+    ind = m - (sum - ind)
+    cs[ind] = 'd'
     return cs
 
-def left_d_threshold_sequence(n,m):
+
+def left_d_threshold_sequence(n, m):
     """
     Create a skewed threshold graph with a given number
     of vertices (n) and a given number of edges (m).
@@ -838,30 +861,31 @@ def left_d_threshold_sequence(n,m):
     FIXME: describe algorithm
 
     """
-    cs=['d']+['i']*(n-1) # create sequence with n insolated nodes
+    cs = ['d'] + ['i'] * (n - 1)  # create sequence with n insolated nodes
 
     #  m <n : not enough edges, make disconnected
     if m < n:
-        cs[m]='d'
+        cs[m] = 'd'
         return cs
 
     # too many edges
-    if m > n*(n-1)/2:
+    if m > n * (n - 1) / 2:
         raise ValueError("Too many edges for this many nodes.")
 
     # Connected case when M>N-1
-    cs[n-1]='d'
-    sum=n-1
-    ind=1
-    while sum<m:
-        cs[ind]='d'
+    cs[n - 1] = 'd'
+    sum = n - 1
+    ind = 1
+    while sum < m:
+        cs[ind] = 'd'
         sum += ind
         ind += 1
-    if sum>m:    # be sure not to change the first vertex
-        cs[sum-m]='i'
+    if sum > m:    # be sure not to change the first vertex
+        cs[sum - m] = 'i'
     return cs
 
-def swap_d(cs,p_split=1.0,p_combine=1.0,seed=None):
+
+def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
     """
     Perform a "swap" operation on a threshold sequence.
 
@@ -875,36 +899,35 @@ def swap_d(cs,p_split=1.0,p_combine=1.0,seed=None):
     in the graph, but shifts the edges from node to node
     maintaining the threshold quality of the graph.
     """
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
     # preprocess the creation sequence
-    dlist= [ i for (i,node_type) in enumerate(cs[1:-1]) if node_type=='d' ]
+    dlist = [i for (i, node_type) in enumerate(cs[1:-1]) if node_type == 'd']
     # split
-    if random.random()<p_split:
-        choice=random.choice(dlist)
-        split_to=random.choice(range(choice))
-        flip_side=choice-split_to
-        if split_to!=flip_side and cs[split_to]=='i' and cs[flip_side]=='i':
-            cs[choice]='i'
-            cs[split_to]='d'
-            cs[flip_side]='d'
+    if random.random() < p_split:
+        choice = random.choice(dlist)
+        split_to = random.choice(range(choice))
+        flip_side = choice - split_to
+        if split_to != flip_side and cs[split_to] == 'i' and cs[flip_side] == 'i':
+            cs[choice] = 'i'
+            cs[split_to] = 'd'
+            cs[flip_side] = 'd'
             dlist.remove(choice)
             # don't add or combine may reverse this action
             # dlist.extend([split_to,flip_side])
 #            print >>sys.stderr,"split at %s to %s and %s"%(choice,split_to,flip_side)
     # combine
-    if random.random()<p_combine and dlist:
-        first_choice= random.choice(dlist)
-        second_choice=random.choice(dlist)
-        target=first_choice+second_choice
-        if target >= len(cs) or cs[target]=='d' or first_choice==second_choice:
+    if random.random() < p_combine and dlist:
+        first_choice = random.choice(dlist)
+        second_choice = random.choice(dlist)
+        target = first_choice + second_choice
+        if target >= len(cs) or cs[target] == 'd' or first_choice == second_choice:
             return cs
         # OK to combine
-        cs[first_choice]='i'
-        cs[second_choice]='i'
-        cs[target]='d'
+        cs[first_choice] = 'i'
+        cs[second_choice] = 'i'
+        cs[target] = 'd'
 #        print >>sys.stderr,"combine %s and %s to make %s."%(first_choice,second_choice,target)
 
     return cs
-

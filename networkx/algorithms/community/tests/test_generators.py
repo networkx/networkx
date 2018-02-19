@@ -17,6 +17,7 @@ from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx
+from networkx.algorithms.community import LFR_benchmark_graph
 from networkx.algorithms.community.community_utils import is_partition
 
 
@@ -25,10 +26,10 @@ def test_generator():
     tau1 = 3
     tau2 = 1.5
     mu = 0.1
-    G = nx.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
-                               min_community=20, seed=10)
+    G = LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
+                            min_community=20, seed=10)
     assert_equal(len(G), 250)
-    C = {frozenset(G.node[v]['community']) for v in G}
+    C = {frozenset(G.nodes[v]['community']) for v in G}
     assert_true(is_partition(G.nodes(), C))
     # assert_equal([len(c) for c in C], [53, 12, 10, 15, 10])
     # assert_equal(len(G.edges()), 157)
@@ -40,7 +41,7 @@ def test_invalid_tau1():
     tau1 = 2
     tau2 = 1
     mu = 0.1
-    nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
+    LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 @raises(nx.NetworkXError)
@@ -49,7 +50,7 @@ def test_invalid_tau2():
     tau1 = 1
     tau2 = 2
     mu = 0.1
-    nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
+    LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 @raises(nx.NetworkXError)
@@ -58,7 +59,7 @@ def test_mu_too_large():
     tau1 = 2
     tau2 = 2
     mu = 1.1
-    nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
+    LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 @raises(nx.NetworkXError)
@@ -67,7 +68,7 @@ def test_mu_too_small():
     tau1 = 2
     tau2 = 2
     mu = -1
-    nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
+    LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 @raises(nx.NetworkXError)
@@ -76,7 +77,7 @@ def test_both_degrees_none():
     tau1 = 2
     tau2 = 2
     mu = -1
-    nx.LFR_benchmark_graph(n, tau1, tau2, mu)
+    LFR_benchmark_graph(n, tau1, tau2, mu)
 
 
 @raises(nx.NetworkXError)
@@ -85,4 +86,4 @@ def test_neither_degrees_none():
     tau1 = 2
     tau2 = 2
     mu = -1
-    nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, average_degree=5)
+    LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, average_degree=5)

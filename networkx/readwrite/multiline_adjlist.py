@@ -28,7 +28,7 @@ adjacency list (anything following the # in a line is a comment)::
 __author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Loïc Séguin-C. <loicseguin@gmail.com>'])
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -292,7 +292,7 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
                     edgedata = literal_eval(data)
                 except:
                     edgedata = {}
-            G.add_edge(u, v, attr_dict=edgedata)
+            G.add_edge(u, v, **edgedata)
 
     return G
 

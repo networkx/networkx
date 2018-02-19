@@ -12,7 +12,7 @@ True
 #               Dan Schult(dschult@colgate.edu),
 #               Ben Edwards(bedwards@cs.unm.edu)
 
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -47,26 +47,33 @@ except ImportError:
             total = func(total, element)
             yield total
 
-### some cookbook stuff
+# 2.x/3.x compatibility
+try:
+    basestring
+except NameError:
+    basestring = str
+    unicode = str
+
+# some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
 
-def is_string_like(obj): # from John Hunter, types-free version
+
+def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
-    try:
-        obj + ''
-    except (TypeError, ValueError):
-        return False
-    return True
+    return isinstance(obj, basestring)
+
 
 def iterable(obj):
     """ Return True if obj is iterable with a well-defined len()."""
-    if hasattr(obj,"__iter__"): return True
+    if hasattr(obj, "__iter__"):
+        return True
     try:
         len(obj)
     except:
         return False
     return True
+
 
 def flatten(obj, result=None):
     """ Return flattened version of (possibly nested) iterable object. """
@@ -81,12 +88,16 @@ def flatten(obj, result=None):
             flatten(item, result)
     return obj.__class__(result)
 
-def is_list_of_ints( intlist ):
+
+def is_list_of_ints(intlist):
     """ Return True if list is a list of ints. """
-    if not isinstance(intlist,list): return False
+    if not isinstance(intlist, list):
+        return False
     for i in intlist:
-        if not isinstance(i,int): return False
+        if not isinstance(i, int):
+            return False
     return True
+
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -114,6 +125,7 @@ def generate_unique_node():
     """ Generate a unique node label."""
     return str(uuid.uuid1())
 
+
 def default_opener(filename):
     """Opens `filename` using system's default program.
 
@@ -126,13 +138,14 @@ def default_opener(filename):
     from subprocess import call
 
     cmds = {'darwin': ['open'],
+            'linux': ['xdg-open'],
             'linux2': ['xdg-open'],
             'win32': ['cmd.exe', '/C', 'start', '']}
     cmd = cmds[sys.platform] + [filename]
     call(cmd)
 
 
-def dict_to_numpy_array(d,mapping=None):
+def dict_to_numpy_array(d, mapping=None):
     """Convert a dictionary of dictionaries to a numpy array
     with optional mapping."""
     try:
@@ -140,30 +153,32 @@ def dict_to_numpy_array(d,mapping=None):
     except (AttributeError, TypeError):
         # AttributeError is when no mapping was provided and v.keys() fails.
         # TypeError is when a mapping was provided and d[k1][k2] fails.
-        return dict_to_numpy_array1(d,mapping)
+        return dict_to_numpy_array1(d, mapping)
 
-def dict_to_numpy_array2(d,mapping=None):
+
+def dict_to_numpy_array2(d, mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
     with optional mapping.
 
     """
     import numpy
     if mapping is None:
-        s=set(d.keys())
-        for k,v in d.items():
+        s = set(d.keys())
+        for k, v in d.items():
             s.update(v.keys())
-        mapping=dict(zip(s,range(len(s))))
-    n=len(mapping)
+        mapping = dict(zip(s, range(len(s))))
+    n = len(mapping)
     a = numpy.zeros((n, n))
     for k1, i in mapping.items():
         for k2, j in mapping.items():
             try:
-                a[i,j]=d[k1][k2]
+                a[i, j] = d[k1][k2]
             except KeyError:
                 pass
     return a
 
-def dict_to_numpy_array1(d,mapping=None):
+
+def dict_to_numpy_array1(d, mapping=None):
     """Convert a dictionary of numbers to a 1d numpy array
     with optional mapping.
 
@@ -171,13 +186,14 @@ def dict_to_numpy_array1(d,mapping=None):
     import numpy
     if mapping is None:
         s = set(d.keys())
-        mapping = dict(zip(s,range(len(s))))
+        mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
     a = numpy.zeros(n)
-    for k1,i in mapping.items():
+    for k1, i in mapping.items():
         i = mapping[k1]
         a[i] = d[k1]
     return a
+
 
 def is_iterator(obj):
     """Returns True if and only if the given object is an iterator
@@ -270,3 +286,27 @@ def to_tuple(x):
     if not isinstance(x, (tuple, list)):
         return x
     return tuple(map(to_tuple, x))
+
+
+def create_random_state(random_state=None):
+    """Returns a numpy.random.RandomState instance depending on input.
+
+    Parameters
+    ----------
+    random_state : int or RandomState instance or None  optional (default=None)
+        If int, `random_state` is the seed used by the random number generator,
+        if numpy.random.RandomState instance, `random_state` is the random
+        number generator,
+        if None, the random number generator is the RandomState instance used
+        by numpy.random.
+    """
+    import numpy as np
+
+    if random_state is None or random_state is np.random:
+        return np.random.mtrand._rand
+    if isinstance(random_state, np.random.RandomState):
+        return random_state
+    if isinstance(random_state, int):
+        return np.random.RandomState(random_state)
+    msg = '%r cannot be used to generate a numpy.random.RandomState instance'
+    raise ValueError(msg % random_state)

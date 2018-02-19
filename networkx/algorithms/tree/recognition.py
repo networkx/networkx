@@ -84,6 +84,7 @@ __author__ = """\n""".join([
 
 __all__ = ['is_arborescence', 'is_branching', 'is_forest', 'is_tree']
 
+
 @nx.utils.not_implemented_for('undirected')
 def is_arborescence(G):
     """

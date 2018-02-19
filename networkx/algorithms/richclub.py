@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -71,19 +71,19 @@ def rich_club_coefficient(G, normalized=True, Q=100):
        and Tibério S. Caetano,
        "The rich-club phenomenon across complex network hierarchies",
        Applied Physics Letters Vol 91 Issue 8, August 2007.
-       http://arxiv.org/abs/physics/0701290
+       https://arxiv.org/abs/physics/0701290
     .. [2] R. Milo, N. Kashtan, S. Itzkovitz, M. E. J. Newman, U. Alon,
        "Uniform generation of random graphs with arbitrary degree
-       sequences", 2006. http://arxiv.org/abs/cond-mat/0312028
+       sequences", 2006. https://arxiv.org/abs/cond-mat/0312028
     """
-    if G.number_of_selfloops() > 0:
+    if nx.number_of_selfloops(G) > 0:
         raise Exception('rich_club_coefficient is not implemented for '
                         'graphs with self loops.')
     rc = _compute_rc(G)
     if normalized:
         # make R a copy of G, randomize with Q*|E| double edge swaps
         # and use rich_club coefficient of R to normalize
-        R = G.copy(with_data=False)
+        R = G.copy()
         E = R.number_of_edges()
         nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10)
         rcran = _compute_rc(R)

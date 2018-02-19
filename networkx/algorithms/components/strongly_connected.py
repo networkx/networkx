@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,6 +11,7 @@
 #          Christopher Ellison
 #          Ben Edwards (bedwards@cs.unm.edu)
 """Strongly connected components."""
+import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -30,7 +31,7 @@ def strongly_connected_components(G):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -127,7 +128,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -187,7 +188,7 @@ def strongly_connected_components_recursive(G):
     Parameters
     ----------
     G : NetworkX Graph
-        An directed graph.
+        A directed graph.
 
     Returns
     -------
@@ -267,54 +268,18 @@ def strongly_connected_components_recursive(G):
 
 @not_implemented_for('undirected')
 def strongly_connected_component_subgraphs(G, copy=True):
-    """Generate strongly connected components as subgraphs.
+    """DEPRECATED: Use ``(G.subgraph(c) for c in strongly_connected_components(G))``
 
-    Parameters
-    ----------
-    G : NetworkX Graph
-       A directed graph.
-
-    copy : boolean, optional
-        if copy is True, Graph, node, and edge attributes are copied to
-        the subgraphs.
-
-    Returns
-    -------
-    comp : generator of graphs
-      A generator of graphs, one for each strongly connected component of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is undirected.
-
-    Examples
-    --------
-    Generate a sorted list of strongly connected components, largest first.
-
-    >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
-    >>> nx.add_cycle(G, [10, 11, 12])
-    >>> [len(Gc) for Gc in sorted(nx.strongly_connected_component_subgraphs(G),
-    ...                         key=len, reverse=True)]
-    [4, 3]
-
-    If you only want the largest component, it's more efficient to
-    use max instead of sort.
-
-    >>> Gc = max(nx.strongly_connected_component_subgraphs(G), key=len)
-
-    See Also
-    --------
-    strongly_connected_components
-    connected_component_subgraphs
-    weakly_connected_component_subgraphs
-
+         Or ``(G.subgraph(c).copy() for c in strongly_connected_components(G))``
     """
-    for comp in strongly_connected_components(G):
+    msg = "strongly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
+        "use (G.subgraph(c).copy() for c in strongly_connected_components(G))"
+    _warnings.warn(msg, DeprecationWarning)
+    for c in strongly_connected_components(G):
         if copy:
-            yield G.subgraph(comp).copy()
+            yield G.subgraph(c).copy()
         else:
-            yield G.subgraph(comp)
+            yield G.subgraph(c)
 
 
 @not_implemented_for('undirected')
@@ -346,12 +311,15 @@ def number_strongly_connected_components(G):
     -----
     For directed graphs only.
     """
-    return len(list(strongly_connected_components(G)))
+    return sum(1 for scc in strongly_connected_components(G))
 
 
 @not_implemented_for('undirected')
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
+
+    A directed graph is strongly connected if and only if every vertex in
+    the graph is reachable from every other vertex.
 
     Parameters
     ----------
@@ -431,7 +399,10 @@ def condensation(G, scc=None):
     mapping = {}
     members = {}
     C = nx.DiGraph()
-    i = 0  # required if G is empty
+    # Add mapping dict as graph attribute
+    C.graph['mapping'] = mapping
+    if len(G) == 0:
+        return C
     for i, component in enumerate(scc):
         members[i] = component
         mapping.update((n, i) for n in component)
@@ -440,7 +411,5 @@ def condensation(G, scc=None):
     C.add_edges_from((mapping[u], mapping[v]) for u, v in G.edges()
                      if mapping[u] != mapping[v])
     # Add a list of members (ie original nodes) to each node (ie scc) in C.
-    nx.set_node_attributes(C, 'members', members)
-    # Add mapping dict as graph attribute
-    C.graph['mapping'] = mapping
+    nx.set_node_attributes(C, members, 'members')
     return C

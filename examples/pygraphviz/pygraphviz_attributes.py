@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 """
+=====================
+Pygraphviz Attributes
+=====================
+
 An example showing how to use the interface to the pygraphviz
 AGraph class to convert to and from graphviz.
 
 Also see the pygraphviz documentation and examples at
 http://pygraphviz.github.io/
-
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2006-2016 by
+#    Copyright (C) 2006-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

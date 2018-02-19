@@ -3,11 +3,13 @@
 #    Christian Olsson <chro@itu.dk>
 #    Jan Aagaard Meier <jmei@itu.dk>
 #    Henrik Haugbølle <hhau@itu.dk>
+#    Arya McCarthy <admccarthy@smu.edu>
 #    All rights reserved.
 #    BSD license.
 """
 Greedy graph coloring using various strategies.
 """
+from collections import defaultdict, deque
 import itertools
 import random
 
@@ -15,9 +17,6 @@ import networkx as nx
 from networkx.utils import arbitrary_element
 from . import greedy_coloring_with_interchange as _interchange
 
-__author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
-                        "Jan Aagaard Meier <jmei@itu.dk>",
-                        "Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = ['greedy_color', 'strategy_connected_sequential',
            'strategy_connected_sequential_bfs',
            'strategy_connected_sequential_dfs', 'strategy_independent_set',
@@ -46,17 +45,18 @@ def strategy_random_sequential(G, colors):
     return nodes
 
 
-# TODO There is a faster implementation of this algorithm: keep track of
-# the degrees and update them manually each time a node is removed.
 def strategy_smallest_last(G, colors):
-    """Returns a list of the nodes of ``G``, "smallest" last.
+    """Returns a deque of the nodes of ``G``, "smallest" last.
 
-    Specifically, the node of minimum degree is repeatedly popped from
-    the graph, then this order is reversed.
+    Specifically, the degrees of each node are tracked in a bucket queue.
+    From this, the node of minimum degree is repeatedly popped from the
+    graph, updating its neighbors' degrees.
 
     ``G`` is a NetworkX graph. ``colors`` is ignored.
 
-    This implementation of the strategy runs in `O(n^2)` time.
+    This implementation of the strategy runs in $O(n + m)$ time
+    (ignoring polylogarithmic factors), where $n$ is the number of nodes
+    and $m$ is the number of edges.
 
     This strategy is related to :func:`strategy_independent_set`: if we
     interpret each node removed as an independent set of size one, then
@@ -64,15 +64,42 @@ def strategy_smallest_last(G, colors):
     maximal independent set.
 
     """
-    H = G.copy(with_data=False)
+    H = G.copy()
+    result = deque()
 
-    def min_and_pop():
-        """Removes and returns the minimum degree node in ``H``."""
-        node = min(H, key=H.degree)
-        H.remove_node(node)
-        return node
+    # Build initial degree list (i.e. the bucket queue data structure)
+    degrees = defaultdict(set)  # set(), for fast random-access removals
+    lbound = float('inf')
+    for node, d in H.degree():
+        degrees[d].add(node)
+        lbound = min(lbound, d)  # Lower bound on min-degree.
 
-    return reversed([min_and_pop() for x in G])
+    def find_min_degree():
+        # Save time by starting the iterator at `lbound`, not 0.
+        # The value that we find will be our new `lbound`, which we set later.
+        return next(d for d in itertools.count(lbound) if d in degrees)
+
+    for _ in G:
+        # Pop a min-degree node and add it to the list.
+        min_degree = find_min_degree()
+        u = degrees[min_degree].pop()
+        if not degrees[min_degree]:  # Clean up the degree list.
+            del degrees[min_degree]
+        result.appendleft(u)
+
+        # Update degrees of removed node's neighbors.
+        for v in H[u]:
+            degree = H.degree(v)
+            degrees[degree].remove(v)
+            if not degrees[degree]:  # Clean up the degree list.
+                del degrees[degree]
+            degrees[degree - 1].add(v)
+
+        # Finally, remove the node.
+        H.remove_node(u)
+        lbound = min_degree - 1  # Subtract 1 in case of tied neighbors.
+
+    return result
 
 
 def _maximal_independent_set(G):
@@ -226,7 +253,8 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     neighbours of a node can have same color as the node itself. The
     given strategy determines the order in which nodes are colored.
 
-    The strategies are described in [1]_.
+    The strategies are described in [1]_, and smallest-last is based on
+    [2]_.
 
     Parameters
     ----------
@@ -258,7 +286,7 @@ def greedy_color(G, strategy='largest_first', interchange=False):
        * ``'DSATUR'`` (alias for the previous strategy)
 
     interchange: bool
-       Will use the color interchange algorithm described by [2]_ if set
+       Will use the color interchange algorithm described by [3]_ if set
        to ``True``.
 
        Note that ``strategy_saturation_largest_first`` and
@@ -290,7 +318,10 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     .. [1] Adrian Kosowski, and Krzysztof Manuszewski,
        Classical Coloring of Graphs, Graph Colorings, 2-19, 2004.
        ISBN 0-8218-3458-4.
-    .. [2] Maciej M. Sysło, Marsingh Deo, Janusz S. Kowalik,
+    .. [2] David W. Matula, and Leland L. Beck, "Smallest-last
+       ordering and clustering and graph coloring algorithms." *J. ACM* 30,
+       3 (July 1983), 417–427. <http://dx.doi.org/10.1145/2402.322385>
+    .. [3] Maciej M. Sysło, Marsingh Deo, Janusz S. Kowalik,
        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.
        ISBN 0-486-45353-7.
 

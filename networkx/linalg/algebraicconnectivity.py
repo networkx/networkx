@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
-"""
-Algebraic connectivity and Fiedler vectors of undirected graphs.
-"""
-
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
 # All rights reserved.
 # BSD license.
-
+#
+# Author: ysitu <ysitu@users.noreply.github.com>
+"""
+Algebraic connectivity and Fiedler vectors of undirected graphs.
+"""
 from functools import partial
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import reverse_cuthill_mckee_ordering
-from re import compile
 
 try:
-    from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, ones,
-                       reshape, sqrt, zeros)
+    from numpy import array, asmatrix, asarray, dot, ndarray, ones, sqrt, zeros
     from numpy.linalg import norm, qr
     from numpy.random import normal
     from scipy.linalg import eigh, inv
@@ -29,10 +26,8 @@ except ImportError:
 try:
     from scipy.linalg.blas import dasum, daxpy, ddot
 except ImportError:
-
     if __all__:
         # Make sure the imports succeeded.
-
         # Use minimal replacements if BLAS is unavailable from SciPy.
         dasum = partial(norm, ord=1)
         ddot = dot
@@ -41,11 +36,21 @@ except ImportError:
             y += a * x
             return y
 
-_tracemin_method = compile('^tracemin(?:_(.*))?$')
-
 
 class _PCGSolver(object):
     """Preconditioned conjugate gradient method.
+
+    To solve Ax = b:
+        M = A.diagonal() # or some other preconditioner
+        solver = _PCGSolver(lambda x: A * x, lambda x: M * x)
+        x = solver.solve(b)
+
+    The inputs A and M are functions which compute
+    matrix multiplication on the argument.
+    A - multiply by the matrix A in Ax=b
+    M - multiply by M, the preconditioner surragate for A
+
+    Warning: There is no limit on number of iterations.
     """
 
     def __init__(self, A, M):
@@ -85,6 +90,13 @@ class _PCGSolver(object):
 
 class _CholeskySolver(object):
     """Cholesky factorization.
+
+    To solve Ax = b:
+        solver = _CholeskySolver(A)
+        x = solver.solve(b)
+
+    optional argument `tol` on solve method is ignored but included
+    to match _PCGsolver API.
     """
 
     def __init__(self, A):
@@ -92,7 +104,7 @@ class _CholeskySolver(object):
             raise nx.NetworkXError('Cholesky solver unavailable.')
         self._chol = self._cholesky(A)
 
-    def solve(self, B):
+    def solve(self, B, tol=None):
         return self._chol(B)
 
     try:
@@ -104,6 +116,13 @@ class _CholeskySolver(object):
 
 class _LUSolver(object):
     """LU factorization.
+
+    To solve Ax = b:
+        solver = _LUSolver(A)
+        x = solver.solve(b)
+
+    optional argument `tol` on solve method is ignored but included
+    to match _PCGsolver API.
     """
 
     def __init__(self, A):
@@ -111,7 +130,7 @@ class _LUSolver(object):
             raise nx.NetworkXError('LU solver unavailable.')
         self._LU = self._splu(A)
 
-    def solve(self, B):
+    def solve(self, B, tol=None):
         B = asarray(B)
         X = ndarray(B.shape, order='F')
         for j in range(B.shape[1]):
@@ -164,6 +183,37 @@ def _rcm_estimate(G, nodelist):
 
 def _tracemin_fiedler(L, X, normalized, tol, method):
     """Compute the Fiedler vector of L using the TraceMIN-Fiedler algorithm.
+
+    The Fiedler vector of a connected undirected graph is the eigenvector
+    corresponding to the second smallest eigenvalue of the Laplacian matrix of
+    of the graph. This function starts with the Laplacian L, not the Graph.
+
+    Parameters
+    ----------
+    L : Laplacian of a possibly weighted or normalized, but undirected graph
+
+    X : Initial guess for a solution. Usually a matrix of random numbers.
+        This function allows more than one column in X to identify more than
+        one eigenvector if desired.
+
+    normalized : bool
+        Whether the normalized Laplacian matrix is used.
+
+    tol : float
+        Tolerance of relative residual in eigenvalue computation.
+        Warning: There is no limit on number of iterations.
+
+    method : string
+        Should be 'tracemin_pcg', 'tracemin_chol' or 'tracemin_lu'.
+        Otherwise exception is raised.
+
+    Returns
+    -------
+    sigma, X : Two NumPy arrays of floats.
+        The lowest eigenvalues and corresponding eigenvectors of L.
+        The size of input X determines the size of these outputs.
+        As this is for Fiedler vectors, the zero eigenvalue (and
+        constant eigenvector) are avoided.
     """
     n = X.shape[0]
 
@@ -175,35 +225,25 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         L = D * L * D
         e *= 1. / norm(e, 2)
 
-    if not normalized:
-        def project(X):
-            """Make X orthogonal to the nullspace of L.
-            """
-            X = asarray(X)
-            for j in range(X.shape[1]):
-                X[:, j] -= X[:, j].sum() / n
-    else:
+    if normalized:
         def project(X):
             """Make X orthogonal to the nullspace of L.
             """
             X = asarray(X)
             for j in range(X.shape[1]):
                 X[:, j] -= dot(X[:, j], e) * e
+    else:
+        def project(X):
+            """Make X orthogonal to the nullspace of L.
+            """
+            X = asarray(X)
+            for j in range(X.shape[1]):
+                X[:, j] -= X[:, j].sum() / n
 
-
-    if method is None:
-        method = 'pcg'
-    if method == 'pcg':
-        # See comments below for the semantics of P and D.
-        def P(x):
-            x -= asarray(x * X * X.T)[0, :]
-            if not normalized:
-                x -= x.sum() / n
-            else:
-                x = daxpy(e, x, a=-ddot(x, e))
-            return x
-        solver = _PCGSolver(lambda x: P(L * P(x)), lambda x: D * x)
-    elif method == 'chol' or method == 'lu':
+    if method == 'tracemin_pcg':
+        D = L.diagonal().astype(float)
+        solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
+    elif method == 'tracemin_chol' or method == 'tracemin_lu':
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
@@ -212,9 +252,12 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # corresponding element in the solution.
         i = (A.indptr[1:] - A.indptr[:-1]).argmax()
         A[i, i] = float('inf')
-        solver = (_CholeskySolver if method == 'chol' else _LUSolver)(A)
+        if method == 'tracemin_chol':
+            solver = _CholeskySolver(A)
+        else:
+            solver = _LUSolver(A)
     else:
-        raise nx.NetworkXError('unknown linear system solver.')
+        raise nx.NetworkXError('Unknown linear system solver: ' + method)
 
     # Initialize.
     Lnorm = abs(L).sum(axis=1).flatten().max()
@@ -224,7 +267,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     while True:
         # Orthonormalize X.
         X = qr(X)[0]
-        # Compute interation matrix H.
+        # Compute iteration matrix H.
         W[:, :] = L * X
         H = X.T * W
         sigma, Y = eigh(H, overwrite_a=True)
@@ -234,30 +277,12 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         res = dasum(W * asmatrix(Y)[:, 0] - sigma[0] * X[:, 0]) / Lnorm
         if res < tol:
             break
-        # Depending on the linear solver to be used, two mathematically
-        # equivalent formulations are used.
-        if method == 'pcg':
-            # Compute X = X - (P * L * P) \ (P * L * X) where
-            # P = I - [e X] * [e X]' is a projection onto the orthogonal
-            # complement of [e X].
-            W *= Y  # L * X == W * Y
-            W -= (W.T * X * X.T).T
-            project(W)
-            # Compute the diagonal of P * L * P as a Jacobi preconditioner.
-            D = L.diagonal().astype(float)
-            D += 2. * (asarray(X) * asarray(W)).sum(axis=1)
-            D += (asarray(X) * asarray(X * (W.T * X))).sum(axis=1)
-            D[D < tol * Lnorm] = 1.
-            D = 1. / D
-            # Since TraceMIN is globally convergent, the relative residual can
-            # be loose.
-            X -= solver.solve(W, 0.1)
-        else:
-            # Compute X = L \ X / (X' * (L \ X)). L \ X can have an arbitrary
-            # projection on the nullspace of L, which will be eliminated.
-            W[:, :] = solver.solve(X)
-            project(W)
-            X = (inv(W.T * X) * W.T).T  # Preserves Fortran storage order.
+        # Compute X = L \ X / (X' * (L \ X)).
+        # L \ X can have an arbitrary projection on the nullspace of L,
+        # which will be eliminated.
+        W[:, :] = solver.solve(X, tol)
+        X = (inv(W.T * X) * W.T).T  # Preserves Fortran storage order.
+        project(X)
 
     return sigma, asarray(X)
 
@@ -265,11 +290,11 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 def _get_fiedler_func(method):
     """Return a function that solves the Fiedler eigenvalue problem.
     """
-    match = _tracemin_method.match(method)
-    if match:
-        method = match.group(1)
+    if method == "tracemin":  # old style keyword <v2.1
+        method = "tracemin_pcg"
+    if method in ("tracemin_pcg", "tracemin_chol", "tracemin_lu"):
         def find_fiedler(L, x, normalized, tol):
-            q = 2 if method == 'pcg' else min(4, L.shape[0] - 1)
+            q = 1 if method == 'tracemin_pcg' else min(4, L.shape[0] - 1)
             X = asmatrix(normal(size=(q, L.shape[0]))).T
             sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
             return sigma[0], X[:, 0]
@@ -304,7 +329,7 @@ def _get_fiedler_func(method):
 
 @not_implemented_for('directed')
 def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
-                           method='tracemin'):
+                           method='tracemin_pcg'):
     """Return the algebraic connectivity of an undirected graph.
 
     The algebraic connectivity of a connected undirected graph is the second
@@ -315,21 +340,20 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
     G : NetworkX graph
         An undirected graph.
 
-    weight : object, optional
+    weight : object, optional (default: None)
         The data key used to determine the weight of each edge. If None, then
-        each edge has unit weight. Default value: None.
+        each edge has unit weight.
 
-    normalized : bool, optional
-        Whether the normalized Laplacian matrix is used. Default value: False.
+    normalized : bool, optional (default: False)
+        Whether the normalized Laplacian matrix is used.
 
-    tol : float, optional
-        Tolerance of relative residual in eigenvalue computation. Default
-        value: 1e-8.
+    tol : float, optional (default: 1e-8)
+        Tolerance of relative residual in eigenvalue computation.
 
-    method : string, optional
-        Method of eigenvalue computation. It should be one of 'tracemin'
-        (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
-        Default value: 'tracemin'.
+    method : string, optional (default: 'tracemin_pcg')
+        Method of eigenvalue computation. It must be one of the tracemin
+        options shown below (TraceMIN), 'lanczos' (Lanczos iteration)
+        or 'lobpcg' (LOBPCG).
 
         The TraceMIN algorithm uses a linear system solver. The following
         values allow specifying the solver to be used.
@@ -379,12 +403,13 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
 
     find_fiedler = _get_fiedler_func(method)
     x = None if method != 'lobpcg' else _rcm_estimate(G, G)
-    return find_fiedler(L, x, normalized, tol)[0]
+    sigma, fiedler = find_fiedler(L, x, normalized, tol)
+    return sigma
 
 
 @not_implemented_for('directed')
 def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
-                   method='tracemin'):
+                   method='tracemin_pcg'):
     """Return the Fiedler vector of a connected undirected graph.
 
     The Fiedler vector of a connected undirected graph is the eigenvector
@@ -396,21 +421,20 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
     G : NetworkX graph
         An undirected graph.
 
-    weight : object, optional
+    weight : object, optional (default: None)
         The data key used to determine the weight of each edge. If None, then
-        each edge has unit weight. Default value: None.
+        each edge has unit weight.
 
-    normalized : bool, optional
-        Whether the normalized Laplacian matrix is used. Default value: False.
+    normalized : bool, optional (default: False)
+        Whether the normalized Laplacian matrix is used.
 
-    tol : float, optional
-        Tolerance of relative residual in eigenvalue computation. Default
-        value: 1e-8.
+    tol : float, optional (default: 1e-8)
+        Tolerance of relative residual in eigenvalue computation.
 
-    method : string, optional
-        Method of eigenvalue computation. It should be one of 'tracemin'
-        (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
-        Default value: 'tracemin'.
+    method : string, optional (default: 'tracemin_pcg')
+        Method of eigenvalue computation. It must be one of the tracemin
+        options shown below (TraceMIN), 'lanczos' (Lanczos iteration)
+        or 'lobpcg' (LOBPCG).
 
         The TraceMIN algorithm uses a linear system solver. The following
         values allow specifying the solver to be used.
@@ -460,11 +484,12 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
     find_fiedler = _get_fiedler_func(method)
     L = nx.laplacian_matrix(G)
     x = None if method != 'lobpcg' else _rcm_estimate(G, G)
-    return find_fiedler(L, x, normalized, tol)[1]
+    sigma, fiedler = find_fiedler(L, x, normalized, tol)
+    return fiedler
 
 
 def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
-                      method='tracemin'):
+                      method='tracemin_pcg'):
     """Compute the spectral_ordering of a graph.
 
     The spectral ordering of a graph is an ordering of its nodes where nodes
@@ -476,21 +501,20 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
     G : NetworkX graph
         A graph.
 
-    weight : object, optional
+    weight : object, optional (default: None)
         The data key used to determine the weight of each edge. If None, then
-        each edge has unit weight. Default value: None.
+        each edge has unit weight.
 
-    normalized : bool, optional
-        Whether the normalized Laplacian matrix is used. Default value: False.
+    normalized : bool, optional (default: False)
+        Whether the normalized Laplacian matrix is used.
 
-    tol : float, optional
-        Tolerance of relative residual in eigenvalue computation. Default
-        value: 1e-8.
+    tol : float, optional (default: 1e-8)
+        Tolerance of relative residual in eigenvalue computation.
 
-    method : string, optional
-        Method of eigenvalue computation. It should be one of 'tracemin'
-        (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
-        Default value: 'tracemin'.
+    method : string, optional (default: 'tracemin_pcg')
+        Method of eigenvalue computation. It must be one of the tracemin
+        options shown below (TraceMIN), 'lanczos' (Lanczos iteration)
+        or 'lobpcg' (LOBPCG).
 
         The TraceMIN algorithm uses a linear system solver. The following
         values allow specifying the solver to be used.
@@ -536,9 +560,9 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
         if size > 2:
             L = nx.laplacian_matrix(G, component)
             x = None if method != 'lobpcg' else _rcm_estimate(G, component)
-            fiedler = find_fiedler(L, x, normalized, tol)[1]
-            order.extend(
-                u for x, c, u in sorted(zip(fiedler, range(size), component)))
+            sigma, fiedler = find_fiedler(L, x, normalized, tol)
+            sort_info = zip(fiedler, range(size), component)
+            order.extend(u for x, c, u in sorted(sort_info))
         else:
             order.extend(component)
 

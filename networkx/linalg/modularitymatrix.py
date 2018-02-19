@@ -1,6 +1,6 @@
 """Modularity matrix of graphs.
 """
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -28,8 +28,8 @@ def modularity_matrix(G, nodelist=None, weight=None):
     More specifically, the element B_ij of B is defined as
         A_ij - k_i k_j / 2 * m
     where k_i(in) is the degree of node i, and were m is the number of edges
-    in the graph. When weight is set to a name of an attribute edge, Aij, k_i, 
-    k_j and m are computed using its value. 
+    in the graph. When weight is set to a name of an attribute edge, Aij, k_i,
+    k_j and m are computed using its value.
 
     Parameters
     ----------
@@ -39,7 +39,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
-    
+
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used for
        the edge weight.  If None then all edge weights are 1.
@@ -138,7 +138,7 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
 
     References
     ----------
-    .. [1] E. A. Leicht, M. E. J. Newman, 
+    .. [1] E. A. Leicht, M. E. J. Newman,
        "Community structure in directed networks",
         Phys. Rev Lett., vol. 100, no. 11, p. 118703, 2008.
     """

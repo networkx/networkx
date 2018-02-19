@@ -4,6 +4,7 @@ from networkx.generators.joint_degree_seq import is_valid_joint_degree, joint_de
 from networkx.algorithms.assortativity import degree_mixing_dict
 from networkx.generators import powerlaw_cluster_graph
 
+
 def test_is_valid_joint_degree():
     ''' Tests for conditions that invalidate a joint degree dict '''
 
@@ -41,8 +42,9 @@ def test_is_valid_joint_degree():
 
     # test condition 5
     # joint_degrees_5[1][1] not even
-    joint_degrees_5 = {1:{1:9}}
+    joint_degrees_5 = {1: {1: 9}}
     assert_false(is_valid_joint_degree(joint_degrees_5))
+
 
 def test_joint_degree_graph(ntimes=100):
     for _ in range(ntimes):

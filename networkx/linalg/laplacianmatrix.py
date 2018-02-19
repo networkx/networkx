@@ -1,6 +1,6 @@
 """Laplacian matrix of graphs.
 """
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -15,6 +15,7 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
            'directed_laplacian_matrix']
+
 
 @not_implemented_for('directed')
 def laplacian_matrix(G, nodelist=None, weight='weight'):
@@ -55,10 +56,11 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   format='csr')
-    n,m = A.shape
+    n, m = A.shape
     diags = A.sum(axis=1)
     D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csr')
-    return  D - A
+    return D - A
+
 
 @not_implemented_for('directed')
 def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
@@ -117,12 +119,12 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   format='csr')
-    n,m = A.shape
+    n, m = A.shape
     diags = A.sum(axis=1).flatten()
     D = scipy.sparse.spdiags(diags, [0], m, n, format='csr')
     L = D - A
     with scipy.errstate(divide='ignore'):
-       diags_sqrt = 1.0/scipy.sqrt(diags)
+        diags_sqrt = 1.0 / scipy.sqrt(diags)
     diags_sqrt[scipy.isinf(diags_sqrt)] = 0
     DH = scipy.sparse.spdiags(diags_sqrt, [0], m, n, format='csr')
     return DH.dot(L.dot(DH))
@@ -130,6 +132,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 ###############################################################################
 # Code based on
 # https://bitbucket.org/bedwards/networkx-community/src/370bd69fc02f/networkx/algorithms/community/
+
 
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
@@ -213,9 +216,9 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
                                   dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = spdiags(1.0/sp.array(M.sum(axis=1).flat), [0], n, n)
+        DI = spdiags(1.0 / sp.array(M.sum(axis=1).flat), [0], n, n)
         if walk_type == "random":
-            P =  DI * M
+            P = DI * M
         else:
             I = identity(n)
             P = (I + DI * M) / 2.0
@@ -237,14 +240,16 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
 
     evals, evecs = linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
-    p =  v / v.sum()
+    p = v / v.sum()
     sqrtp = sp.sqrt(p)
-    Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0/sqrtp, [0], n, n)
+    Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0 / sqrtp, [0], n, n)
     I = sp.identity(len(G))
 
-    return I  - (Q + Q.T) /2.0
+    return I - (Q + Q.T) / 2.0
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

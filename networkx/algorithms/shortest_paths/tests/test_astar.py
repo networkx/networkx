@@ -110,7 +110,7 @@ class TestAStar:
         assert_equal(nx.dijkstra_path(C, 0, 4), [0, 6, 5, 4])
 
     def test_unorderable_nodes(self):
-        """Tests that A* accomodates nodes that are not orderable.
+        """Tests that A* accommodates nodes that are not orderable.
 
         For more information, see issue #554.
 

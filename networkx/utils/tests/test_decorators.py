@@ -2,15 +2,20 @@ import tempfile
 import os
 
 from nose.tools import *
+from nose import SkipTest
 
 import networkx as nx
-from networkx.utils.decorators import open_file,not_implemented_for
+from networkx.utils.decorators import open_file, not_implemented_for
+from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
+    random_state
+
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
     def test1(G):
         pass
     test1(nx.Graph())
+
 
 @raises(KeyError)
 def test_not_implemented_decorator_key():
@@ -19,13 +24,13 @@ def test_not_implemented_decorator_key():
         pass
     test1(nx.Graph())
 
+
 @raises(nx.NetworkXNotImplemented)
 def test_not_implemented_decorator_raise():
     @not_implemented_for('graph')
     def test1(G):
         pass
     test1(nx.Graph())
-
 
 
 class TestOpenFileDecorator(object):
@@ -54,48 +59,27 @@ class TestOpenFileDecorator(object):
     @open_file(2, 'wb')
     def writer_arg2default(self, x, path=None):
         if path is None:
-            fh = tempfile.NamedTemporaryFile('wb+', delete=False)
-            close_fh = True
+            with tempfile.NamedTemporaryFile('wb+') as fh:
+                self.write(fh)
         else:
-            fh = path
-            close_fh = False
-
-        try:
-            self.write(fh)
-        finally:
-            if close_fh:
-                fh.close()
+            self.write(path)
 
     @open_file(4, 'wb')
     def writer_arg4default(self, x, y, other='hello', path=None, **kwargs):
         if path is None:
-            fh = tempfile.NamedTemporaryFile('wb+', delete=False)
-            close_fh = True
+            with tempfile.NamedTemporaryFile('wb+') as fh:
+                self.write(fh)
         else:
-            fh = path
-            close_fh = False
-
-        try:
-            self.write(fh)
-        finally:
-            if close_fh:
-                fh.close()
+            self.write(path)
 
     @open_file('path', 'wb')
     def writer_kwarg(self, **kwargs):
         path = kwargs.get('path', None)
         if path is None:
-            fh = tempfile.NamedTemporaryFile('wb+', delete=False)
-            close_fh = True
+            with tempfile.NamedTemporaryFile('wb+') as fh:
+                self.write(fh)
         else:
-            fh = path
-            close_fh = False
-
-        try:
-            self.write(fh)
-        finally:
-            if close_fh:
-                fh.close()
+            self.write(path)
 
     def test_writer_arg0_str(self):
         self.writer_arg0(self.name)
@@ -105,44 +89,105 @@ class TestOpenFileDecorator(object):
 
     def test_writer_arg1_str(self):
         self.writer_arg1(self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg1_fobj(self):
         self.writer_arg1(self.fobj)
         assert_false(self.fobj.closed)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_str(self):
         self.writer_arg2default(0, path=None)
         self.writer_arg2default(0, path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_arg2default_fobj(self):
         self.writer_arg2default(0, path=self.fobj)
         assert_false(self.fobj.closed)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
-    def test_writer_arg2default_fobj(self):
+    def test_writer_arg2default_fobj_path_none(self):
         self.writer_arg2default(0, path=None)
 
     def test_writer_arg4default_fobj(self):
-        self.writer_arg4default(0, 1, dog='dog', other='other2')
-        self.writer_arg4default(0, 1, dog='dog', other='other2', path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        self.writer_arg4default(0, 1, dog='dog', other='other')
+        self.writer_arg4default(0, 1, dog='dog', other='other', path=self.name)
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_str(self):
         self.writer_kwarg(path=self.name)
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
     def test_writer_kwarg_fobj(self):
         self.writer_kwarg(path=self.fobj)
         self.fobj.close()
-        assert_equal( self.read(self.name), ''.join(self.text) )
+        assert_equal(self.read(self.name), ''.join(self.text))
 
-    def test_writer_kwarg_fobj(self):
+    def test_writer_kwarg_path_none(self):
         self.writer_kwarg(path=None)
 
     def tearDown(self):
         self.fobj.close()
+        os.unlink(self.name)
+
+
+@preserve_random_state
+def test_preserve_random_state():
+    try:
+        import numpy.random
+        r = numpy.random.random()
+    except ImportError:
+        return
+    assert(abs(r - 0.61879477158568) < 1e-16)
+
+
+class TestRandomState(object):
+    @classmethod
+    def setUp(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+
+    @random_state(1)
+    def instantiate_random_state(self, random_state):
+        assert_true(isinstance(random_state, np.random.RandomState))
+        return random_state
+
+    def test_random_state_None(self):
+        self.instantiate_random_state(random_state=None)
+
+    def test_random_state_np_random(self):
+        self.instantiate_random_state(random_state=np.random)
+
+    def test_random_state_int(self):
+        seed = 1
+        random_state = self.instantiate_random_state(random_state=seed)
+        assert_true(np.all((np.random.RandomState(seed).rand(10),
+                            random_state.rand(10))))
+
+    def test_random_state_np_random_RandomState(self):
+        seed = 1
+        rng = np.random.RandomState(seed)
+        random_state = self.instantiate_random_state(random_state=rng)
+        assert_true(np.all((np.random.RandomState(seed).rand(10),
+                            random_state.rand(10))))
+
+
+@raises(nx.NetworkXError)
+def test_string_arg_index():
+    @random_state('a')
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)
+
+
+@raises(nx.NetworkXError)
+def test_invalid_arg_index():
+    @random_state(2)
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)

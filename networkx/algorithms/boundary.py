@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -77,9 +77,10 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     """
     nset1 = {v for v in G if v in nbunch1}
     # Here we create an iterator over edges incident to nodes in the set
-    # `nset1`. We will assume that the first two elements of the tuples
-    # over which this iterator iterates are the source and target nodes
-    # of the edge.
+    # `nset1`. The `Graph.edges()` method does not provide a guarantee
+    # on the orientation of the edges, so our algorithm below must
+    # handle the case in which exactly one orientation, either (u, v) or
+    # (v, u), appears in this iterable.
     if G.is_multigraph():
         edges = G.edges(nset1, data=data, keys=keys, default=default)
     else:
@@ -89,9 +90,11 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     # implemented by using the `not in` operator, instead of by creating
     # an additional set and using the `in` operator.
     if nbunch2 is None:
-        return (e for e in edges if e[1] not in nset1)
+        return (e for e in edges if (e[0] in nset1) ^ (e[1] in nset1))
     nset2 = set(nbunch2)
-    return (e for e in edges if e[1] in nset2)
+    return (e for e in edges
+            if (e[0] in nset1 and e[1] in nset2)
+            or (e[1] in nset1 and e[0] in nset2))
 
 
 def node_boundary(G, nbunch1, nbunch2=None):

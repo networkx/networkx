@@ -11,16 +11,15 @@ try:
 except ImportError:  # Python3 has zip_longest
     from itertools import zip_longest
 import networkx as nx
-# from networkx.utils import is_string_like
 
-__author__ = """\n""".join([ 'Robert King <kingrobertking@gmail.com>',
-                             'Aric Hagberg <aric.hagberg@gmail.com>'])
+__author__ = """\n""".join(['Robert King <kingrobertking@gmail.com>',
+                            'Aric Hagberg <aric.hagberg@gmail.com>'])
 
 __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
            'intersection_all']
 
 
-def union_all(graphs, rename=(None,), name=None):
+def union_all(graphs, rename=(None,)):
     """Return the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
@@ -34,9 +33,6 @@ def union_all(graphs, rename=(None,), name=None):
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
-
-    name : string
-       Specify the name for the union graph@not_implemnted_for('direct
 
     Returns
     -------
@@ -59,7 +55,7 @@ def union_all(graphs, rename=(None,), name=None):
     graphs_names = zip_longest(graphs, rename)
     U, gname = next(graphs_names)
     for H, hname in graphs_names:
-        U = nx.union(U, H, (gname, hname), name=name)
+        U = nx.union(U, H, (gname, hname))
         gname = None
     return U
 
@@ -94,7 +90,7 @@ def disjoint_union_all(graphs):
     return U
 
 
-def compose_all(graphs, name=None):
+def compose_all(graphs):
     """Return the composition of all graphs.
 
     Composition is the simple union of the node sets and edge sets.
@@ -104,9 +100,6 @@ def compose_all(graphs, name=None):
     ----------
     graphs : list
        List of NetworkX graphs
-
-    name : string
-       Specify name for new graph
 
     Returns
     -------
@@ -124,7 +117,7 @@ def compose_all(graphs, name=None):
     graphs = iter(graphs)
     C = next(graphs)
     for H in graphs:
-        C = nx.compose(C, H, name=name)
+        C = nx.compose(C, H)
     return C
 
 
@@ -136,7 +129,7 @@ def intersection_all(graphs):
 
     Parameters
     ----------
-    graphs_list : list
+    graphs : list
        List of NetworkX graphs
 
     Returns

@@ -10,8 +10,6 @@ graph.
 """
 from __future__ import division
 
-from functools import partial
-
 from networkx.classes import DiGraph
 from networkx.classes import MultiDiGraph
 from networkx.utils import not_implemented_for

@@ -56,15 +56,19 @@ STYLES = {
 
 INF = float('inf')
 
+
 def random_string(L=15, seed=None):
     random.seed(seed)
     return ''.join([random.choice(string.ascii_letters) for n in range(L)])
 
+
 def _min_weight(weight):
     return -weight
 
+
 def _max_weight(weight):
     return weight
+
 
 def branching_weight(G, attr='weight', default=1):
     """
@@ -72,6 +76,7 @@ def branching_weight(G, attr='weight', default=1):
 
     """
     return sum(edge[2].get(attr, default) for edge in G.edges(data=True))
+
 
 def greedy_branching(G, attr='weight', default=1, kind='max'):
     """
@@ -149,6 +154,7 @@ def greedy_branching(G, attr='weight', default=1, kind='max'):
 
     return B
 
+
 class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     """
     MultiDiGraph which assigns unique keys to every edge.
@@ -165,9 +171,10 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     of edges. We must reliably track edges across graph mutations.
 
     """
-    def __init__(self, data=None, **attr):
+
+    def __init__(self, incoming_graph_data=None, **attr):
         cls = super(MultiDiGraph_EdgeKey, self)
-        cls.__init__(data=data, **attr)
+        cls.__init__(incoming_graph_data=incoming_graph_data, **attr)
 
         self._cls = cls
         self.edge_index = {}
@@ -188,25 +195,31 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         for n in nbunch:
             self.remove_node(n)
 
-    def add_edge(self, u, v, key, attr_dict=None, **attr):
+    def fresh_copy(self):
+        # Needed to make .copy() work
+        return MultiDiGraph_EdgeKey()
+
+    def add_edge(self, u_for_edge, v_for_edge, key_for_edge, **attr):
         """
         Key is now required.
 
         """
+        u, v, key = u_for_edge, v_for_edge, key_for_edge
         if key in self.edge_index:
             uu, vv, _ = self.edge_index[key]
             if (u != uu) or (v != vv):
                 raise Exception("Key {0!r} is already in use.".format(key))
 
-        self._cls.add_edge(u, v, key=key, attr_dict=attr_dict, **attr)
+        self._cls.add_edge(u, v, key, **attr)
         self.edge_index[key] = (u, v, self.succ[u][v][key])
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
-        raise NotImplementedError
+    def add_edges_from(self, ebunch_to_add, **attr):
+        for u, v, k, d in ebunch_to_add:
+            self.add_edge(u, v, k, **d)
 
     def remove_edge_with_key(self, key):
         try:
-            u, v, _  = self.edge_index[key]
+            u, v, _ = self.edge_index[key]
         except KeyError:
             raise KeyError('Invalid edge key {0!r}'.format(key))
         else:
@@ -239,11 +252,13 @@ def get_path(G, u, v):
     edges = [first_key(i, vv) for i, vv in enumerate(nodes[1:])]
     return nodes, edges
 
+
 class Edmonds(object):
     """
     Edmonds algorithm for finding optimal branchings and spanning arborescences.
 
     """
+
     def __init__(self, G, seed=None):
         self.G_original = G
 
@@ -516,6 +531,7 @@ class Edmonds(object):
                             nodes = iter(list(G.nodes()))
                             self.level += 1
 
+
         def is_root(G, u, edgekeys):
             """
             Returns True if `u` is a root node in G.
@@ -641,9 +657,10 @@ def minimum_spanning_arborescence(G, attr='weight', default=1, store_results=Fal
     ed = Edmonds(G)
     B = ed.find_optimum(attr, default, kind='min', style='arborescence', store_results=store_results)
     if not is_arborescence(B):
-        msg = 'No maximum spanning arborescence in G.'
+        msg = 'No minimum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
+
 
 docstring_branching = """
 Returns a {kind} {style} from G.

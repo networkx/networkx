@@ -7,12 +7,12 @@ import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # cut algorithms.
-from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
 from .utils import (build_auxiliary_node_connectivity,
-    build_auxiliary_edge_connectivity)
+                    build_auxiliary_edge_connectivity)
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -147,7 +147,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
     reachable, non_reachable = partition
-    # Any edge in the original graph linking the two sets in the 
+    # Any edge in the original graph linking the two sets in the
     # partition is part of the edge cutset
     cutset = set()
     for u, nbrs in ((n, G[n]) for n in reachable):
@@ -292,7 +292,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     edge_cut = minimum_st_edge_cut(H, '%sB' % mapping[s], '%sA' % mapping[t],
                                    **kwargs)
     # Each node in the original graph maps to two nodes of the auxiliary graph
-    node_cut = set(H.node[node]['id'] for edge in edge_cut for node in edge)
+    node_cut = set(H.nodes[node]['id'] for edge in edge_cut for node in edge)
     return node_cut - set([s, t])
 
 
@@ -328,7 +328,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     -------
     cutset : set
         Set of nodes that, if removed, would disconnect G. If source
-        and target nodes are provided, the set contians the nodes that
+        and target nodes are provided, the set contains the nodes that
         if removed, would destroy all paths between source and target.
 
     Examples
@@ -401,11 +401,12 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         return minimum_st_node_cut(G, s, t, flow_func=flow_func)
 
     # Global minimum node cut.
-    # Analog to the algoritm 11 for global node connectivity in [1].
+    # Analog to the algorithm 11 for global node connectivity in [1].
     if G.is_directed():
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
         iter_func = itertools.permutations
+
         def neighbors(v):
             return itertools.chain.from_iterable([G.predecessors(v),
                                                   G.successors(v)])
@@ -472,7 +473,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     -------
     cutset : set
         Set of edges that, if removed, would disconnect G. If source
-        and target nodes are provided, the set contians the edges that
+        and target nodes are provided, the set contains the edges that
         if removed, would destroy all paths between source and target.
 
     Examples
@@ -552,7 +553,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         return minimum_st_edge_cut(H, s, t, **kwargs)
 
     # Global minimum edge cut
-    # Analog to the algoritm for global edge connectivity
+    # Analog to the algorithm for global edge connectivity
     if G.is_directed():
         # Based on algorithm 8 in [1]
         if not nx.is_weakly_connected(G):
@@ -565,17 +566,17 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         n = len(nodes)
         for i in range(n):
             try:
-                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i+1], **kwargs)
+                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i + 1], **kwargs)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
-            except IndexError: # Last node!
+            except IndexError:  # Last node!
                 this_cut = minimum_st_edge_cut(H, nodes[i], nodes[0], **kwargs)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
 
         return min_cut
 
-    else: # undirected
+    else:  # undirected
         # Based on algorithm 6 in [1]
         if not nx.is_connected(G):
             raise nx.NetworkXError('Input graph is not connected')

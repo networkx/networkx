@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,11 +17,11 @@ See the following references for details:
 
 An O(m) Algorithm for Cores Decomposition of Networks
 Vladimir Batagelj and Matjaz Zaversnik, 2003.
-http://arxiv.org/abs/cs.DS/0310049
+https://arxiv.org/abs/cs.DS/0310049
 
 Generalized Cores
 Vladimir Batagelj and Matjaz Zaversnik, 2002.
-http://arxiv.org/pdf/cs/0202039
+https://arxiv.org/pdf/cs/0202039
 
 For directed graphs a more general notion is that of D-cores which
 looks at (k, l) restrictions on (in, out) degree. The (k, k) D-core
@@ -75,11 +75,11 @@ def core_number(G):
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
        Vladimir Batagelj and Matjaz Zaversnik, 2003.
-       http://arxiv.org/abs/cs.DS/0310049
+       https://arxiv.org/abs/cs.DS/0310049
     """
-    if G.number_of_selfloops() > 0:
+    if nx.number_of_selfloops(G) > 0:
         msg = ('Input graph has self loops which is not permitted; '
-               'Consider using G.remove_edges_from(G.selfloop_edges()).')
+               'Consider using G.remove_edges_from(nx.selfloop_edges(G)).')
         raise NetworkXError(msg)
     degrees = dict(G.degree())
     # Sort nodes by degree.
@@ -88,7 +88,7 @@ def core_number(G):
     curr_degree = 0
     for i, v in enumerate(nodes):
         if degrees[v] > curr_degree:
-            bin_boundaries.extend([i] * (degrees[v]-curr_degree))
+            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
             curr_degree = degrees[v]
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.
@@ -181,7 +181,7 @@ def k_core(G, k=None, core_number=None):
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
        Vladimir Batagelj and Matjaz Zaversnik,  2003.
-       http://arxiv.org/abs/cs.DS/0310049
+       https://arxiv.org/abs/cs.DS/0310049
     """
     def k_filter(v, k, c):
         return c[v] >= k

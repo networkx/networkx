@@ -5,7 +5,7 @@
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
-# Copyright (C) 2016 by NetworkX developers.
+# Copyright (C) 2016-2018 by NetworkX developers.
 #
 # All rights reserved.
 # BSD license.
@@ -37,7 +37,7 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
 
     node : object
         If specified, only the closeness vitality for this node will be
-        returned. Otherwise, a dictionary mappping each node to its
+        returned. Otherwise, a dictionary mapping each node to its
         closeness vitality will be returned.
 
     Other parameters
@@ -50,7 +50,7 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     Returns
     -------
     dictionary or float
-        If `node` is None, this function returnes a dictionary
+        If `node` is None, this function returns a dictionary
         with nodes as keys and closeness vitality as the
         value. Otherwise, it returns only the closeness vitality for the
         specified `node`.

@@ -12,6 +12,7 @@ from ...utils import arbitrary_element
 __all__ = ["ramsey_R2"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
+
 def ramsey_R2(G):
     r"""Approximately computes the Ramsey number `R(2;s,t)` for graph.
 
@@ -31,8 +32,8 @@ def ramsey_R2(G):
     node = arbitrary_element(G)
     nbrs = nx.all_neighbors(G, node)
     nnbrs = nx.non_neighbors(G, node)
-    c_1, i_1 = ramsey_R2(G.subgraph(nbrs))
-    c_2, i_2 = ramsey_R2(G.subgraph(nnbrs))
+    c_1, i_1 = ramsey_R2(G.subgraph(nbrs).copy())
+    c_2, i_2 = ramsey_R2(G.subgraph(nnbrs).copy())
 
     c_1.add(node)
     i_2.add(node)

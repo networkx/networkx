@@ -1,6 +1,6 @@
 These files are for testing the methods and functions in NetworkX
 The nose testing package is required for all tests:
-http://somethingaboutorange.com/mrl/projects/nose
+http://nose.readthedocs.io/en/latest/
 
 The tests also demonstrate the usage of many of the features of NetworkX.
 

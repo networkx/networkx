@@ -53,7 +53,7 @@ __all__ = ['maximum_matching', 'hopcroft_karp_matching', 'eppstein_matching',
 INFINITY = float('inf')
 
 
-def hopcroft_karp_matching(G):
+def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
     Parameters
@@ -61,6 +61,12 @@ def hopcroft_karp_matching(G):
     G : NetworkX graph
 
       Undirected bipartite graph
+
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
 
     Returns
     -------
@@ -70,12 +76,24 @@ def hopcroft_karp_matching(G):
       ``matches[v] == w`` if node `v` is matched to node `w`. Unmatched
       nodes do not occur as a key in mate.
 
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
+
     Notes
     -----
 
     This function is implemented with the `Hopcroft--Karp matching algorithm
     <https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm>`_ for
     bipartite graphs.
+
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
@@ -125,7 +143,7 @@ def hopcroft_karp_matching(G):
         return True
 
     # Initialize the "global" variables that maintain state during the search.
-    left, right = bipartite_sets(G)
+    left, right = bipartite_sets(G, top_nodes)
     leftmatches = {v: None for v in left}
     rightmatches = {v: None for v in right}
     distances = {}
@@ -153,7 +171,7 @@ def hopcroft_karp_matching(G):
     return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
 
 
-def eppstein_matching(G):
+def eppstein_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
     Parameters
@@ -161,6 +179,12 @@ def eppstein_matching(G):
     G : NetworkX graph
 
       Undirected bipartite graph
+
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
 
     Returns
     -------
@@ -170,6 +194,15 @@ def eppstein_matching(G):
       ``matching[v] == w`` if node `v` is matched to node `w`. Unmatched
       nodes do not occur as a key in mate.
 
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
+
     Notes
     -----
 
@@ -177,6 +210,9 @@ def eppstein_matching(G):
     Hopcroft--Karp algorithm (see :func:`hopcroft_karp_matching`), which
     originally appeared in the `Python Algorithms and Data Structures library
     (PADS) <http://www.ics.uci.edu/~eppstein/PADS/ABOUT-PADS.txt>`_.
+
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
@@ -186,7 +222,7 @@ def eppstein_matching(G):
     """
     # Due to its original implementation, a directed graph is needed
     # so that the two sets of bipartite nodes can be distinguished
-    left = bipartite_sets(G)[0]
+    left, right = bipartite_sets(G, top_nodes)
     G = nx.DiGraph(G.edges(left))
     # initialize greedy matching (redundant, but faster than full search)
     matching = {}
@@ -270,7 +306,8 @@ def eppstein_matching(G):
             recurse(v)
 
 
-def _is_connected_by_alternating_path(G, v, matching, targets):
+def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges,
+                                      targets):
     """Returns True if and only if the vertex `v` is connected to one of
     the target vertices by an alternating path in `G`.
 
@@ -284,65 +321,56 @@ def _is_connected_by_alternating_path(G, v, matching, targets):
 
     `v` is a vertex in `G`.
 
-    `matching` is a dictionary representing a maximum matching in `G`, as
-    returned by, for example, :func:`maximum_matching`.
+    `matched_edges` is a set of edges present in a maximum matching in `G`.
+
+    `unmatched_edges` is a set of edges not present in a maximum
+    matching in `G`.
 
     `targets` is a set of vertices.
 
     """
-    # Get the set of matched edges and the set of unmatched edges. Only include
-    # one version of each undirected edge (for example, include edge (1, 2) but
-    # not edge (2, 1)).
-    matched_edges = {(u, v) for u, v in matching.items() if u <= v}
-    unmatched_edges = set(G.edges()) - matched_edges
-
-    def _alternating_dfs(u, depth, along_matched=True):
+    def _alternating_dfs(u, along_matched=True):
         """Returns True if and only if `u` is connected to one of the
         targets by an alternating path.
 
         `u` is a vertex in the graph `G`.
-
-        `depth` specifies the maximum recursion depth of the depth-first
-        search.
 
         If `along_matched` is True, this step of the depth-first search
         will continue only through edges in the given matching. Otherwise, it
         will continue only through edges *not* in the given matching.
 
         """
-        # Base case 1: u is one of the target vertices. `u` is connected to one
-        # of the target vertices by an alternating path of length zero.
-        if u in targets:
-            return True
-        # Base case 2: we have exceeded are allowed depth. In this case, we
-        # have looked at a path of length `n`, so looking any further won't
-        # help.
-        if depth < 0:
-            return False
-        # Determine which set of edges to look across.
-        valid_edges = matched_edges if along_matched else unmatched_edges
-        for v in G[u]:
-            # Consider only those neighbors connected via a valid edge.
-            if (u, v) in valid_edges or (v, u) in valid_edges:
-                # Recursively perform a depth-first search starting from the
-                # neighbor. Decrement the depth limit and switch which set of
-                # vertices will be valid for next time.
-                return _alternating_dfs(v, depth - 1, not along_matched)
-        # If there are no more vertices to look through and we haven't yet
-        # found a target vertex, simply say that no path exists.
+        if along_matched:
+            edges = itertools.cycle([matched_edges, unmatched_edges])
+        else:
+            edges = itertools.cycle([unmatched_edges, matched_edges])
+        visited = set()
+        stack = [(u, iter(G[u]), next(edges))]
+        while stack:
+            parent, children, valid_edges = stack[-1]
+            try:
+                child = next(children)
+                if child not in visited:
+                    if ((parent, child) in valid_edges
+                            or (child, parent) in valid_edges):
+                        if child in targets:
+                            return True
+                        visited.add(child)
+                        stack.append((child, iter(G[child]), next(edges)))
+            except StopIteration:
+                stack.pop()
         return False
 
     # Check for alternating paths starting with edges in the matching, then
     # check for alternating paths starting with edges not in the
-    # matching. Initiate the depth-first search with the current depth equal to
-    # the number of nodes in the graph.
-    return (_alternating_dfs(v, len(G), along_matched=True) or
-            _alternating_dfs(v, len(G), along_matched=False))
+    # matching.
+    return (_alternating_dfs(v, along_matched=True) or
+            _alternating_dfs(v, along_matched=False))
 
 
 def _connected_by_alternating_paths(G, matching, targets):
     """Returns the set of vertices that are connected to one of the target
-    vertices by an alternating path in `G`.
+    vertices by an alternating path in `G` or are themselves a target.
 
     An *alternating path* is a path in which every other edge is in the
     specified maximum matching (and the remaining edges in the path are not in
@@ -358,12 +386,21 @@ def _connected_by_alternating_paths(G, matching, targets):
     `targets` is a set of vertices.
 
     """
-    # TODO This can be parallelized.
-    return {v for v in G if _is_connected_by_alternating_path(G, v, matching,
-                                                              targets)}
+    # Get the set of matched edges and the set of unmatched edges. Only include
+    # one version of each undirected edge (for example, include edge (1, 2) but
+    # not edge (2, 1)). Using frozensets as an intermediary step we do not
+    # require nodes to be orderable.
+    edge_sets = {frozenset((u, v)) for u, v in matching.items()}
+    matched_edges = {tuple(edge) for edge in edge_sets}
+    unmatched_edges = {(u, v) for (u, v) in G.edges()
+                       if frozenset((u, v)) not in edge_sets}
+
+    return {v for v in G if v in targets or
+            _is_connected_by_alternating_path(G, v, matched_edges,
+                                              unmatched_edges, targets)}
 
 
-def to_vertex_cover(G, matching):
+def to_vertex_cover(G, matching, top_nodes=None):
     """Returns the minimum vertex cover corresponding to the given maximum
     matching of the bipartite graph `G`.
 
@@ -381,6 +418,12 @@ def to_vertex_cover(G, matching):
       by, for example, :func:`maximum_matching`. The dictionary *must*
       represent the maximum matching.
 
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
+
     Returns
     -------
 
@@ -388,12 +431,21 @@ def to_vertex_cover(G, matching):
 
       The minimum vertex cover in `G`.
 
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
+
     Notes
     -----
 
     This function is implemented using the procedure guaranteed by `Konig's
     theorem
-    <http://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29>`_,
+    <https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29>`_,
     which proves an equivalence between a maximum matching and a minimum vertex
     cover in bipartite graphs.
 
@@ -409,10 +461,13 @@ def to_vertex_cover(G, matching):
     >>> print(list(independent_set))
     [2, 3, 4]
 
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
     """
     # This is a Python implementation of the algorithm described at
     # <https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29#Proof>.
-    L, R = bipartite_sets(G)
+    L, R = bipartite_sets(G, top_nodes)
     # Let U be the set of unmatched vertices in the left vertex set.
     unmatched_vertices = set(G) - set(matching)
     U = unmatched_vertices & L
@@ -422,6 +477,7 @@ def to_vertex_cover(G, matching):
     # At this point, every edge either has a right endpoint in Z or a left
     # endpoint not in Z. This gives us the vertex cover.
     return (L - Z) | (R & Z)
+
 
 #: Returns the maximum cardinality matching in the given bipartite graph.
 #:

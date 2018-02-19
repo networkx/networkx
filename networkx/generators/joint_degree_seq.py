@@ -1,6 +1,5 @@
-#    Copyright (C) 2016 by
+#    Copyright (C) 2016-2018 by
 #    Minas Gjoka
-#    All rights reserved.
 #    BSD license.
 #
 # Author:  Minas Gjoka (minas.gjoka@gmail.com)
@@ -70,18 +69,18 @@ def is_valid_joint_degree(joint_degrees):
                 return False
 
             if (k != l) and (joint_degrees[k][l] >
-                             degree_count[k]*degree_count[l]):
+                             degree_count[k] * degree_count[l]):
                 return False
             elif k == l:
-                if joint_degrees[k][k] > degree_count[k]*(degree_count[k]-1):
+                if joint_degrees[k][k] > degree_count[k] * (degree_count[k] - 1):
                     return False
                 if joint_degrees[k][k] % 2 != 0:
                     return False
 
-
     # if all above conditions have been satisfied then the input
     # joint degree is realizable as a simple graph.
     return True
+
 
 def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
     """ Releases one free stub for saturated node ``w``, while preserving
@@ -131,7 +130,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
                 break
 
     # select switch_node, a neighbor of w, that is not connected to w_prime
-    w_prime_neighbs = G[w_prime] # slightly faster declaring this variable
+    w_prime_neighbs = G[w_prime]  # slightly faster declaring this variable
     for v in G[w]:
         if (v not in w_prime_neighbs) and (v != w_prime):
             switch_node = v
@@ -145,6 +144,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
     h_node_residual[w_prime] -= 1
     if h_node_residual[w_prime] == 0:
         unsat.remove(w_prime)
+
 
 def joint_degree_graph(joint_degrees, seed=None):
     """ Generates a random simple graph with the given joint degree dictionary.
@@ -209,12 +209,11 @@ def joint_degree_graph(joint_degrees, seed=None):
         random.seed(seed)
 
     # compute degree count from joint_degrees
-    degree_count = {k: sum(l.values())//k for k, l in joint_degrees.items() if k > 0}
+    degree_count = {k: sum(l.values()) // k for k, l in joint_degrees.items() if k > 0}
 
     # start with empty N-node graph
     N = sum(degree_count.values())
     G = nx.empty_graph(N)
-
 
     # for a given degree group, keep the list of all node ids
     h_degree_nodelist = {}
@@ -225,7 +224,7 @@ def joint_degree_graph(joint_degrees, seed=None):
     # populate h_degree_nodelist and h_node_residual
     nodeid = 0
     for degree, num_nodes in degree_count.items():
-        h_degree_nodelist[degree] = range(nodeid, nodeid+num_nodes)
+        h_degree_nodelist[degree] = range(nodeid, nodeid + num_nodes)
         for v in h_degree_nodelist[degree]:
             h_node_residual[v] = degree
         nodeid += int(num_nodes)
@@ -257,7 +256,7 @@ def joint_degree_graph(joint_degrees, seed=None):
                     l_unsat = set(w for w in l_nodes if h_node_residual[w] > 0)
                 else:
                     l_unsat = k_unsat
-                    n_edges_add = joint_degrees[k][l]//2
+                    n_edges_add = joint_degrees[k][l] // 2
 
                 while n_edges_add > 0:
 
@@ -277,7 +276,7 @@ def joint_degree_graph(joint_degrees, seed=None):
                             if k != l:
                                 _neighbor_switch(G, w, l_unsat, h_node_residual)
                             else:
-                                _neighbor_switch(G, w, l_unsat, h_node_residual,\
+                                _neighbor_switch(G, w, l_unsat, h_node_residual,
                                                  avoid_node_id=v)
 
                         # add edge (v, w) and update data structures
@@ -290,7 +289,4 @@ def joint_degree_graph(joint_degrees, seed=None):
                             k_unsat.discard(v)
                         if h_node_residual[w] == 0:
                             l_unsat.discard(w)
-
-
-    G.name = "joint_degree_graph %d nodes"%(G.order())
     return G

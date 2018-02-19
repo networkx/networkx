@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -8,6 +8,7 @@
 #
 # Authors: Christopher Ellison
 """Attracting components."""
+import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -20,7 +21,7 @@ __all__ = ['number_attracting_components',
 
 @not_implemented_for('undirected')
 def attracting_components(G):
-    """Generates a list of attracting components in `G`.
+    """Generates the attracting components in `G`.
 
     An attracting component in a directed graph `G` is a strongly connected
     component with the property that a random walker on the graph will never
@@ -49,7 +50,6 @@ def attracting_components(G):
     --------
     number_attracting_components
     is_attracting_component
-    attracting_component_subgraphs
 
     """
     scc = list(nx.strongly_connected_components(G))
@@ -82,11 +82,9 @@ def number_attracting_components(G):
     --------
     attracting_components
     is_attracting_component
-    attracting_component_subgraphs
 
     """
-    n = len(list(attracting_components(G)))
-    return n
+    return sum(1 for ac in attracting_components(G))
 
 
 @not_implemented_for('undirected')
@@ -112,49 +110,25 @@ def is_attracting_component(G):
     --------
     attracting_components
     number_attracting_components
-    attracting_component_subgraphs
 
     """
     ac = list(attracting_components(G))
-    if len(ac[0]) == len(G):
-        attracting = True
-    else:
-        attracting = False
-    return attracting
+    if len(ac) == 1:
+        return len(ac[0]) == len(G)
+    return False
 
 
 @not_implemented_for('undirected')
 def attracting_component_subgraphs(G, copy=True):
-    """Generates a list of attracting component subgraphs from `G`.
+    """DEPRECATED: Use ``(G.subgraph(c) for c in attracting_components(G))``
 
-    Parameters
-    ----------
-    G : DiGraph, MultiDiGraph
-        The graph to be analyzed.
-
-    Returns
-    -------
-    subgraphs : list
-        A list of node-induced subgraphs of the attracting components of `G`.
-
-    copy : bool
-        If copy is True, graph, node, and edge attributes are copied to the
-        subgraphs.
-
-    Raises
-    ------
-    NetworkXNotImplemented :
-        If the input graph is undirected.
-
-    See Also
-    --------
-    attracting_components
-    number_attracting_components
-    is_attracting_component
-
+           Or ``(G.subgraph(c).copy() for c in attracting_components(G))``
     """
-    for ac in attracting_components(G):
+    msg = "attracting_component_subgraphs is deprecated and will be removed" \
+        "in 2.2. Use (G.subgraph(c).copy() for c in attracting_components(G))"
+    _warnings.warn(msg, DeprecationWarning)
+    for c in attracting_components(G):
         if copy:
-            yield G.subgraph(ac).copy()
+            yield G.subgraph(c).copy()
         else:
-            yield G.subgraph(ac)
+            yield G.subgraph(c)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
+from networkx.testing.utils import *
 
 
 class TestCore:
@@ -39,10 +40,10 @@ class TestCore:
         core = nx.find_cores(self.G)
         nodes_by_core = [sorted([n for n in core if core[n] == val])
                          for val in range(4)]
-        assert_equal(nodes_by_core[0], [21])
-        assert_equal(nodes_by_core[1], [17, 18, 19, 20])
-        assert_equal(nodes_by_core[2], [9, 10, 11, 12, 13, 14, 15, 16])
-        assert_equal(nodes_by_core[3], [1, 2, 3, 4, 5, 6, 7, 8])
+        assert_nodes_equal(nodes_by_core[0], [21])
+        assert_nodes_equal(nodes_by_core[1], [17, 18, 19, 20])
+        assert_nodes_equal(nodes_by_core[2], [9, 10, 11, 12, 13, 14, 15, 16])
+        assert_nodes_equal(nodes_by_core[3], [1, 2, 3, 4, 5, 6, 7, 8])
 
     def test_core_number(self):
         # smoke test real name
@@ -52,11 +53,11 @@ class TestCore:
         core = nx.find_cores(self.H)
         nodes_by_core = [sorted([n for n in core if core[n] == val])
                          for val in range(3)]
-        assert_equal(nodes_by_core[0], [0])
-        assert_equal(nodes_by_core[1], [1, 3])
-        assert_equal(nodes_by_core[2], [2, 4, 5, 6])
+        assert_nodes_equal(nodes_by_core[0], [0])
+        assert_nodes_equal(nodes_by_core[1], [1, 3])
+        assert_nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
 
-    def test_directed_find_cores(Self):
+    def test_directed_find_cores(self):
         '''core number had a bug for directed graphs found in issue #1959'''
         # small example where too timid edge removal can make cn[2] = 3
         G = nx.DiGraph()

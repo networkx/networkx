@@ -78,7 +78,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> from operator import itemgetter
         >>> G = nx.path_graph(10)
         >>> edges = G.edges()
-        >>> nx.set_edge_attributes(G, 'weight', {(u, v): v for u, v in edges})
+        >>> nx.set_edge_attributes(G, {(u, v): v for u, v in edges}, 'weight')
         >>> def heaviest(G):
         ...     u, v, w = max(G.edges(data='weight'), key=itemgetter(2))
         ...     return (u, v)
@@ -149,7 +149,7 @@ def girvan_newman(G, most_valuable_edge=None):
     g = G.copy().to_undirected()
     # Self-loops must be removed because their removal has no effect on
     # the connected components of the graph.
-    g.remove_edges_from(g.selfloop_edges())
+    g.remove_edges_from(nx.selfloop_edges(g))
     while g.number_of_edges() > 0:
         yield _without_most_central_edges(g, most_valuable_edge)
 

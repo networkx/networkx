@@ -1,6 +1,6 @@
 # voronoi.py - functions for computing the Voronoi partition of a graph
 #
-# Copyright 2016 NetworkX developers.
+# Copyright 2016-2018 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

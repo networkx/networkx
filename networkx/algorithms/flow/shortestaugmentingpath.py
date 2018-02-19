@@ -32,7 +32,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
     else:
         R = residual
 
-    R_node = R.node
+    R_nodes = R.nodes
     R_pred = R.pred
     R_succ = R.succ
 
@@ -63,15 +63,16 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
 
     # Initialize heights and 'current edge' data structures of the nodes.
     for u in R:
-        R_node[u]['height'] = heights[u] if u in heights else n
-        R_node[u]['curr_edge'] = CurrentEdge(R_succ[u])
+        R_nodes[u]['height'] = heights[u] if u in heights else n
+        R_nodes[u]['curr_edge'] = CurrentEdge(R_succ[u])
 
     # Initialize counts of nodes in each level.
     counts = [0] * (2 * n - 1)
     for u in R:
-        counts[R_node[u]['height']] += 1
+        counts[R_nodes[u]['height']] += 1
 
     inf = R.graph['inf']
+
     def augment(path):
         """Augment flow along a path from s to t.
         """
@@ -101,7 +102,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
         height = n - 1
         for v, attr in R_succ[u].items():
             if attr['flow'] < attr['capacity']:
-                height = min(height, R_node[v]['height'])
+                height = min(height, R_nodes[v]['height'])
         return height + 1
 
     if cutoff is None:
@@ -113,15 +114,15 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
     path = [s]
     u = s
     d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2. / 3)))
-    done = R_node[s]['height'] >= d
+    done = R_nodes[s]['height'] >= d
     while not done:
-        height = R_node[u]['height']
-        curr_edge = R_node[u]['curr_edge']
+        height = R_nodes[u]['height']
+        curr_edge = R_nodes[u]['curr_edge']
         # Depth-first search for the next node on the path to t.
         while True:
             v, attr = curr_edge.get()
-            if (height == R_node[v]['height'] + 1 and
-                attr['flow'] < attr['capacity']):
+            if (height == R_nodes[v]['height'] + 1 and
+                    attr['flow'] < attr['capacity']):
                 # Advance to the next node following an admissible edge.
                 path.append(v)
                 u = v
@@ -148,7 +149,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
                         done = True
                         break
                 counts[height] += 1
-                R_node[u]['height'] = height
+                R_nodes[u]['height'] = height
                 if u != s:
                     # After relabeling, the last edge on the path is no longer
                     # admissible. Retreat one step to look for an alternative.
@@ -181,7 +182,7 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
-    This algorithm has a running time of `O(n^2 m)` for `n` nodes and `m`
+    This algorithm has a running time of $O(n^2 m)$ for $n$ nodes and $m$
     edges.
 
 
@@ -214,8 +215,8 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
 
     two_phase : bool
         If True, a two-phase variant is used. The two-phase variant improves
-        the running time on unit-capacity networks from `O(nm)` to
-        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
+        the running time on unit-capacity networks from $O(nm)$ to
+        $O(\min(n^{2/3}, m^{1/2}) m)$. Default value: False.
 
     cutoff : integer, float
         If specified, the algorithm will terminate when the flow value reaches

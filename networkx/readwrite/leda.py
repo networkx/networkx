@@ -11,7 +11,7 @@ See http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fi
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -20,18 +20,19 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_leda', 'parse_leda']
 
-import networkx as nx 
+import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, is_string_like
 
-@open_file(0,mode='rb')
+
+@open_file(0, mode='rb')
 def read_leda(path, encoding='UTF-8'):
     """Read graph in LEDA format from path.
 
     Parameters
     ----------
     path : file or string
-       File or filename to read.  Filenames ending in .gz or .bz2  will be 
+       File or filename to read.  Filenames ending in .gz or .bz2  will be
        uncompressed.
 
     Returns
@@ -41,13 +42,13 @@ def read_leda(path, encoding='UTF-8'):
     Examples
     --------
     G=nx.read_leda('file.leda')
- 
+
     References
     ----------
     .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
     """
-    lines=(line.decode(encoding) for line in path)
-    G=parse_leda(lines)
+    lines = (line.decode(encoding) for line in path)
+    G = parse_leda(lines)
     return G
 
 
@@ -66,41 +67,42 @@ def parse_leda(lines):
     Examples
     --------
     G=nx.parse_leda(string)
- 
+
     References
     ----------
     .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
     """
-    if is_string_like(lines): lines=iter(lines.split('\n'))
-    lines = iter([line.rstrip('\n') for line in lines \
-            if not (line.startswith('#') or line.startswith('\n') or line=='')])
+    if is_string_like(lines):
+        lines = iter(lines.split('\n'))
+    lines = iter([line.rstrip('\n') for line in lines
+                  if not (line.startswith('#') or line.startswith('\n') or line == '')])
     for i in range(3):
         next(lines)
     # Graph
-    du = int(next(lines)) # -1=directed, -2=undirected
-    if du==-1:
+    du = int(next(lines))  # -1=directed, -2=undirected
+    if du == -1:
         G = nx.DiGraph()
     else:
         G = nx.Graph()
-        
-    # Nodes
-    n =int(next(lines)) # number of nodes
-    node={}
-    for i in range(1,n+1):  # LEDA counts from 1 to n
-        symbol=next(lines).rstrip().strip('|{}|  ')
-        if symbol=="": symbol=str(i) # use int if no label - could be trouble
-        node[i]=symbol
 
-    G.add_nodes_from([s for i,s in node.items()])
-	
+    # Nodes
+    n = int(next(lines))  # number of nodes
+    node = {}
+    for i in range(1, n + 1):  # LEDA counts from 1 to n
+        symbol = next(lines).rstrip().strip('|{}|  ')
+        if symbol == "":
+            symbol = str(i)  # use int if no label - could be trouble
+        node[i] = symbol
+
+    G.add_nodes_from([s for i, s in node.items()])
+
     # Edges
-    m = int(next(lines)) # number of edges
+    m = int(next(lines))  # number of edges
     for i in range(m):
         try:
-            s,t,reversal,label=next(lines).split()
+            s, t, reversal, label = next(lines).split()
         except:
-            raise NetworkXError('Too few fields in LEDA.GRAPH edge %d'%(i+1))
+            raise NetworkXError('Too few fields in LEDA.GRAPH edge %d' % (i + 1))
         # BEWARE: no handling of reversal edges
-        G.add_edge(node[int(s)],node[int(t)],label=label[2:-2])
+        G.add_edge(node[int(s)], node[int(t)], label=label[2:-2])
     return G
-

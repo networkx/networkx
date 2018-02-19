@@ -29,7 +29,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
 
     heuristic : function, optional
       Function to choose starting node for RCM algorithm.  If None
-      a node from a psuedo-peripheral pair is used.  A user-defined function
+      a node from a pseudo-peripheral pair is used.  A user-defined function
       can be supplied that takes a graph object and returns a single node.
 
     Returns
@@ -88,7 +88,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
 
     heuristic : function, optional
       Function to choose starting node for RCM algorithm.  If None
-      a node from a psuedo-peripheral pair is used.  A user-defined function
+      a node from a pseudo-peripheral pair is used.  A user-defined function
       can be supplied that takes a graph object and returns a single node.
 
     Returns

@@ -12,6 +12,7 @@ REVERSE = 'reverse'
 
 __all__ = ['edge_dfs']
 
+
 def helper_funcs(G, orientation):
     """
     These are various G-specific functions that help us implement the algorithm
@@ -24,14 +25,14 @@ def helper_funcs(G, orientation):
     if ignore_orientation:
         # When we ignore the orientation, we still need to know how the edge
         # was traversed, so we add an object representing the direction.
-        def out_edges(u, **kwds):
-            for edge in G.out_edges(u, **kwds):
+        def out_edges(u_for_edges, **kwds):
+            for edge in G.out_edges(u_for_edges, **kwds):
                 yield edge + (FORWARD,)
-            for edge in G.in_edges(u, **kwds):
+            for edge in G.in_edges(u_for_edges, **kwds):
                 yield edge + (REVERSE,)
     elif reverse_orientation:
-        def out_edges(u, **kwds):
-            for edge in G.in_edges(u, **kwds):
+        def out_edges(u_for_edges, **kwds):
+            for edge in G.in_edges(u_for_edges, **kwds):
                 yield edge + (REVERSE,)
     else:
         # If "yield from" were an option, we could pass kwds automatically.
@@ -72,6 +73,7 @@ def helper_funcs(G, orientation):
         return tail, head
 
     return out_edges, key, traversed_tailhead
+
 
 def edge_dfs(G, source=None, orientation='original'):
     """
@@ -167,7 +169,7 @@ def edge_dfs(G, source=None, orientation='original'):
         while stack:
             current_node = stack[-1]
             if current_node not in visited_nodes:
-                edges[current_node] = out_edges(current_node, **kwds)
+                edges[current_node] = iter(out_edges(current_node, **kwds))
                 visited_nodes.add(current_node)
 
             try:
@@ -182,4 +184,3 @@ def edge_dfs(G, source=None, orientation='original'):
                     # Mark the traversed "to" node as to-be-explored.
                     stack.append(tailhead(edge)[1])
                     yield edge
-

@@ -1,7 +1,7 @@
 """
 Eigenvalue spectrum of graphs.
 """
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -43,7 +43,8 @@ def laplacian_spectrum(G, weight='weight'):
     laplacian_matrix
     """
     from scipy.linalg import eigvalsh
-    return eigvalsh(nx.laplacian_matrix(G,weight=weight).todense())
+    return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
+
 
 def adjacency_spectrum(G, weight='weight'):
     """Return eigenvalues of the adjacency matrix of G.
@@ -72,7 +73,8 @@ def adjacency_spectrum(G, weight='weight'):
     adjacency_matrix
     """
     from scipy.linalg import eigvals
-    return eigvals(nx.adjacency_matrix(G,weight=weight).todense())
+    return eigvals(nx.adjacency_matrix(G, weight=weight).todense())
+
 
 def modularity_spectrum(G):
     """Return eigenvalues of the modularity matrix of G.
@@ -103,6 +105,8 @@ def modularity_spectrum(G):
         return eigvals(nx.modularity_matrix(G))
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

@@ -18,6 +18,7 @@ from ...utils import generate_unique_node
 from ...utils import not_implemented_for
 from ...utils import arbitrary_element
 
+
 def _detect_unboundedness(R):
     """Detect infinite-capacity negative cycles.
     """
@@ -49,16 +50,16 @@ def _detect_unboundedness(R):
 def _build_residual_network(G, demand, capacity, weight):
     """Build a residual network and initialize a zero flow.
     """
-    if sum(G.node[u].get(demand, 0) for u in G) != 0:
+    if sum(G.nodes[u].get(demand, 0) for u in G) != 0:
         raise nx.NetworkXUnfeasible("Sum of the demands should be 0.")
 
     R = nx.MultiDiGraph()
-    R.add_nodes_from((u, {'excess': -G.node[u].get(demand, 0),
+    R.add_nodes_from((u, {'excess': -G.nodes[u].get(demand, 0),
                           'potential': 0}) for u in G)
 
     inf = float('inf')
     # Detect selfloops with infinite capacities and negative weights.
-    for u, v, e in G.selfloop_edges(data=True):
+    for u, v, e in nx.selfloop_edges(G, data=True):
         if e.get(weight, 0) < 0 and e.get(capacity, inf) == inf:
             raise nx.NetworkXUnbounded(
                 'Negative cost cycle of infinite capacity found. '
@@ -77,7 +78,7 @@ def _build_residual_network(G, demand, capacity, weight):
     # zero. This allows the infinite-capacity edges to be distinguished for
     # unboundedness detection and directly participate in residual capacity
     # calculation.
-    inf = max(sum(abs(R.node[u]['excess']) for u in R),
+    inf = max(sum(abs(R.nodes[u]['excess']) for u in R),
               2 * sum(e[capacity] for u, v, k, e in edge_list
                       if capacity in e and e[capacity] != inf)) or 1
     for u, v, k, e in edge_list:
@@ -172,7 +173,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         :class:`MinHeap` or implement a compatible interface.
 
         If a stock heap implementation is to be used, :class:`BinaryHeap` is
-        recommeded over :class:`PairingHeap` for Python implementations without
+        recommended over :class:`PairingHeap` for Python implementations without
         optimized attribute accesses (e.g., CPython) despite a slower
         asymptotic running time. For Python implementations with optimized
         attribute accesses (e.g., PyPy), :class:`PairingHeap` provides better
@@ -265,7 +266,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
     flow_cost = sum(
         0 if e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0
         else e[capacity] * e[weight]
-        for u, v, e in G.selfloop_edges(data=True))
+        for u, v, e in nx.selfloop_edges(G, data=True))
 
     # Determine the maxmimum edge capacity.
     wmax = max(chain([-inf],
@@ -274,7 +275,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         # Residual network has no edges.
         return flow_cost, _build_flow_dict(G, R, capacity, weight)
 
-    R_node = R.node
+    R_nodes = R.nodes
     R_succ = R.succ
 
     delta = 2 ** int(log(wmax, 2))
@@ -282,17 +283,17 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         # Saturate Δ-residual edges with negative reduced costs to achieve
         # Δ-optimality.
         for u in R:
-            p_u = R_node[u]['potential']
+            p_u = R_nodes[u]['potential']
             for v, es in R_succ[u].items():
                 for k, e in es.items():
                     flow = e['capacity'] - e['flow']
-                    if e['weight'] - p_u + R_node[v]['potential'] < 0:
+                    if e['weight'] - p_u + R_nodes[v]['potential'] < 0:
                         flow = e['capacity'] - e['flow']
                         if flow >= delta:
                             e['flow'] += flow
                             R_succ[v][u][(k[0], not k[1])]['flow'] -= flow
-                            R_node[u]['excess'] -= flow
-                            R_node[v]['excess'] += flow
+                            R_nodes[u]['excess'] -= flow
+                            R_nodes[v]['excess'] += flow
         # Determine the Δ-active nodes.
         S = set()
         T = set()
@@ -301,7 +302,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         T_add = T.add
         T_remove = T.remove
         for u in R:
-            excess = R_node[u]['excess']
+            excess = R_nodes[u]['excess']
             if excess >= delta:
                 S_add(u)
             elif excess <= -delta:
@@ -326,7 +327,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                     # Path found.
                     t = u
                     break
-                p_u = R_node[u]['potential']
+                p_u = R_nodes[u]['potential']
                 for v, es in R_succ[u].items():
                     if v in d:
                         continue
@@ -342,7 +343,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                     if wmin == inf:
                         continue
                     # Update the distance label of v.
-                    d_v = d_u + wmin - p_u + R_node[v]['potential']
+                    d_v = d_u + wmin - p_u + R_nodes[v]['potential']
                     if h_insert(v, d_v):
                         pred[v] = (u, kmin, emin)
             if t is not None:
@@ -353,22 +354,22 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                     e['flow'] += delta
                     R_succ[v][u][(k[0], not k[1])]['flow'] -= delta
                 # Account node excess and deficit.
-                R_node[s]['excess'] -= delta
-                R_node[t]['excess'] += delta
-                if R_node[s]['excess'] < delta:
+                R_nodes[s]['excess'] -= delta
+                R_nodes[t]['excess'] += delta
+                if R_nodes[s]['excess'] < delta:
                     S_remove(s)
-                if R_node[t]['excess'] > -delta:
+                if R_nodes[t]['excess'] > -delta:
                     T_remove(t)
                 # Update node potentials.
                 d_t = d[t]
                 for u, d_u in d.items():
-                    R_node[u]['potential'] -= d_u - d_t
+                    R_nodes[u]['potential'] -= d_u - d_t
             else:
                 # Path not found.
                 S_remove(s)
         delta //= 2
 
-    if any(R.node[u]['excess'] != 0 for u in R):
+    if any(R.nodes[u]['excess'] != 0 for u in R):
         raise nx.NetworkXUnfeasible('No flow satisfying all demands.')
 
     # Calculate the flow cost.

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # test_duplication.py - unit tests for the generators.duplication module
 #
-# Copyright 2010–2016 NetworkX developers.
+# Copyright 2010-2018 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

@@ -1,4 +1,4 @@
-Modifed from the example at of D3
+Modified from the example at of D3
 http://mbostock.github.com/d3/ex/force.html
 
 Run the file force.py to generate the force.json data file needed for this to work.

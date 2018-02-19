@@ -1,7 +1,7 @@
 # duplication.py - functions for generating graphs by duplicating nodes
 #
-# Copyright 2016 NetworkX developers.
-# Copyright (C) 2004-2016 by
+# Copyright 2016-2018 NetworkX developers.
+# Copyright (C) 2004-2018 by
 # Aric Hagberg <hagberg@lanl.gov>
 # Dan Schult <dschult@colgate.edu>
 # Pieter Swart <swart@lanl.gov>
@@ -80,7 +80,6 @@ def partial_duplication_graph(N, n, p, q, seed=None):
         random.seed(seed)
 
     G = nx.complete_graph(n)
-    G.name = 'partial_duplication_graph({}, {}, {}, {})'.format(N, n, p, q)
     for new_node in range(n, N):
         # Add a new vertex, v, to the graph.
         G.add_node(new_node)
@@ -150,7 +149,6 @@ def duplication_divergence_graph(n, p, seed=None):
         random.seed(seed)
 
     G = nx.Graph()
-    G.name = "duplication_divergence_graph({}, {})".format(n, p)
 
     # Initialize the graph with two connected nodes.
     G.add_edge(0, 1)

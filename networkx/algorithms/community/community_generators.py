@@ -13,7 +13,7 @@ from __future__ import division
 
 import random
 
-# HACK In order to accomodate both SciPy and non-SciPy implementations,
+# HACK In order to accommodate both SciPy and non-SciPy implementations,
 # we need to wrap the SciPy implementation of the zeta function with an
 # extra parameter, `tolerance`, which will be ignored.
 try:
@@ -77,7 +77,7 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters):
 
     ``max_iters`` indicates the number of times to generate a list
     satisfying ``length``. If the number of iterations exceeds this
-    value, :exc:`~networkx.exception.NetworkXError` is raised.
+    value, :exc:`~networkx.exception.ExceededMaxIterations` is raised.
 
     """
     for i in range(max_iters):
@@ -86,7 +86,7 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters):
             seq.append(_zipf_rv_below(gamma, low, high))
         if condition(seq):
             return seq
-    raise nx.NetworkXError("Could not create power law sequence")
+    raise nx.ExceededMaxIterations("Could not create power law sequence")
 
 
 # TODO Needs documentation.
@@ -100,7 +100,7 @@ def _generate_min_degree(gamma, average_degree, max_degree, tolerance,
     mid_avg_deg = 0
     while abs(mid_avg_deg - average_degree) > tolerance:
         if itrs > max_iters:
-            raise nx.NetworkXError("Could not match average_degree")
+            raise nx.ExceededMaxIterations("Could not match average_degree")
         mid_avg_deg = 0
         for x in range(int(min_deg_mid), max_degree + 1):
             mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid,
@@ -129,15 +129,11 @@ def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
     ``mu`` is a float in the interval [0, 1] indicating the fraction of
     intra-community edges incident to each node.
 
-    ``max_iters`` indicates the number of times to generate a list
-    satisfying ``length``. If the number of iterations exceeds this
-    value, :exc:`~networkx.exception.NetworkXError` is raised.
-
     ``max_iters`` is the number of times to try to add a node to a
     community. This must be greater than the length of
     ``degree_sequence``, otherwise this function will always fail. If
     the number of iterations exceeds this value,
-    :exc:`~networkx.exception.NetworkXError` is raised.
+    :exc:`~networkx.exception.ExceededMaxIterations` is raised.
 
     The communities returned by this are sets of integers in the set {0,
     ..., *n* - 1}, where *n* is the length of ``degree_sequence``.
@@ -164,8 +160,8 @@ def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
             free.append(result[c].pop())
         if not free:
             return result
-    raise nx.NetworkXError('Could not assign communities; try increasing'
-                           ' min_community')
+    msg = 'Could not assign communities; try increasing min_community'
+    raise nx.ExceededMaxIterations(msg)
 
 
 def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
@@ -284,6 +280,7 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
         If ``min_degree`` is not specified and a suitable ``min_degree``
         cannot be found.
 
+    ExceededMaxIterations
         If a valid degree sequence cannot be created within
         ``max_iters`` number of iterations.
 
@@ -297,17 +294,18 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     --------
     Basic usage::
 
+        >>> from networkx.algorithms.community import LFR_benchmark_graph
         >>> n = 250
         >>> tau1 = 3
         >>> tau2 = 1.5
         >>> mu = 0.1
-        >>> G = nx.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
-        ...                            min_community=20, seed=10)
+        >>> G = LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
+        ...                         min_community=20, seed=10)
 
     Continuing the example above, you can get the communities from the
     node attributes of the graph::
 
-        >>> communities = {frozenset(G.node[v]['community']) for v in G}
+        >>> communities = {frozenset(G.nodes[v]['community']) for v in G}
 
     Notes
     -----
@@ -361,8 +359,10 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
 
     # Generate a degree sequence with a power law distribution.
     low, high = min_degree, max_degree
-    condition = lambda seq: sum(seq) % 2 == 0
-    length = lambda seq: len(seq) >= n
+
+    def condition(seq): return sum(seq) % 2 == 0
+
+    def length(seq): return len(seq) >= n
     deg_seq = _powerlaw_sequence(tau1, low, high, condition, length, max_iters)
 
     # Validate parameters for generating the community size sequence.
@@ -380,8 +380,10 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     # that one. As a result, this code is allowed many more chances to
     # generate a valid community size sequence.
     low, high = min_community, max_community
-    condition = lambda seq: sum(seq) == n
-    length = lambda seq: sum(seq) >= n
+
+    def condition(seq): return sum(seq) == n
+
+    def length(seq): return sum(seq) >= n
     comms = _powerlaw_sequence(tau2, low, high, condition, length, max_iters)
 
     # Generate the communities based on the given degree sequence and
@@ -403,5 +405,5 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
                 v = random.choice(range(n))
                 if v not in c:
                     G.add_edge(u, v)
-            G.node[u]['community'] = c
+            G.nodes[u]['community'] = c
     return G

@@ -20,7 +20,7 @@ import random
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-from .community_utils import is_partition
+from networkx.algorithms.community.community_utils import is_partition
 
 __all__ = ['kernighan_lin_bisection']
 
@@ -105,7 +105,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight'):
     G : graph
 
     partition : tuple
-        Pair of iterables containing an intial partition. If not
+        Pair of iterables containing an initial partition. If not
         specified, a random balanced partition is used.
 
     max_iter : int

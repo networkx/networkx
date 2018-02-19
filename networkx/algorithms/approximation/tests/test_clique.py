@@ -14,11 +14,12 @@ from __future__ import division
 
 from nose.tools import assert_greater
 from nose.tools import assert_true
-from nose.tools import eq_
+from nose.tools import assert_equal
 
 import networkx as nx
 from networkx.algorithms.approximation import max_clique
 from networkx.algorithms.approximation import clique_removal
+from networkx.algorithms.approximation import large_clique_size
 
 
 def is_independent_set(G, nodes):
@@ -79,13 +80,13 @@ class TestMaxClique(object):
 
     def test_null_graph(self):
         G = nx.null_graph()
-        eq_(len(max_clique(G)), 0)
+        assert_equal(len(max_clique(G)), 0)
 
     def test_complete_graph(self):
         graph = nx.complete_graph(30)
         # this should return the entire graph
         mc = max_clique(graph)
-        eq_(30, len(mc))
+        assert_equal(30, len(mc))
 
     def test_maximal_by_cardinality(self):
         """Tests that the maximal clique is computed according to maximum
@@ -102,3 +103,17 @@ class TestMaxClique(object):
         G = nx.lollipop_graph(30, 2)
         clique = max_clique(G)
         assert_greater(len(clique), 2)
+
+
+def test_large_clique_size():
+    G = nx.complete_graph(9)
+    nx.add_cycle(G, [9, 10, 11])
+    G.add_edge(8, 9)
+    G.add_edge(1, 12)
+    G.add_node(13)
+
+    assert_equal(large_clique_size(G), 9)
+    G.remove_node(5)
+    assert_equal(large_clique_size(G), 8)
+    G.remove_edge(2, 3)
+    assert_equal(large_clique_size(G), 7)

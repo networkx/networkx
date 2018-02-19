@@ -1,6 +1,6 @@
 # test_voronoi.py - unit tests for the networkx.algorithms.voronoi module
 #
-# Copyright 2016 NetworkX developers.
+# Copyright 2016-2018 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -45,7 +45,7 @@ class TestVoronoiCells(object):
         """
         # This is the singly-linked reverse directed cycle graph on six nodes.
         G = nx.DiGraph(pairwise(range(6), cyclic=True))
-        G.reverse(copy=False)
+        G = G.reverse(copy=False)
         cells = nx.voronoi_cells(G, {0, 3})
         expected = {0: {0, 4, 5}, 3: {1, 2, 3}}
         assert_equal(expected, cells)

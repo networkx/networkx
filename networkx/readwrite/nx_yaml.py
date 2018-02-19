@@ -14,7 +14,7 @@ http://pyyaml.org/wiki/PyYAML
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -26,8 +26,9 @@ __all__ = ['read_yaml', 'write_yaml']
 import networkx as nx
 from networkx.utils import open_file
 
-@open_file(1,mode='w')
-def write_yaml(G, path, encoding='UTF-8', **kwds):
+
+@open_file(1, mode='w')
+def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
     """Write graph G in YAML format to path. 
 
     YAML is a data serialization format designed for human readability 
@@ -40,8 +41,11 @@ def write_yaml(G, path, encoding='UTF-8', **kwds):
     path : file or string
        File or filename to write. 
        Filenames ending in .gz or .bz2 will be compressed.
-    encoding: string, optional
-       Specify which encoding to use when writing file.
+
+    Notes
+    -----
+    To use encoding on the output file include e.g. `encoding='utf-8'`
+    in the keyword arguments.
 
     Examples
     --------
@@ -56,9 +60,10 @@ def write_yaml(G, path, encoding='UTF-8', **kwds):
         import yaml
     except ImportError:
         raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/")
-    yaml.dump(G, path, **kwds)
-    
-@open_file(0,mode='r')
+    yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)
+
+
+@open_file(0, mode='r')
 def read_yaml(path):
     """Read graph in YAML format from path.
 
@@ -80,7 +85,7 @@ def read_yaml(path):
     >>> G=nx.path_graph(4)
     >>> nx.write_yaml(G,'test.yaml')
     >>> G=nx.read_yaml('test.yaml')
- 
+
     References
     ----------
     .. [1] http://www.yaml.org
@@ -91,7 +96,7 @@ def read_yaml(path):
     except ImportError:
         raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/")
 
-    G=yaml.load(path)
+    G = yaml.load(path)
     return G
 
 
@@ -104,6 +109,8 @@ def setup_module(module):
         raise SkipTest("PyYAML not available")
 
 # fixture for nose tests
+
+
 def teardown_module(module):
     import os
     os.unlink('test.yaml')

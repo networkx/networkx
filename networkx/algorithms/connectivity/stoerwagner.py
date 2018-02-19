@@ -33,9 +33,9 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     ============== =============================================
     Type of heap   Running time
     ============== =============================================
-    Binary heap    `O(n (m + n) \log n)`
-    Fibonacci heap `O(nm + n^2 \log n)`
-    Pairing heap   `O(2^{2 \sqrt{\log \log n}} nm + n^2 \log n)`
+    Binary heap    $O(n (m + n) \log n)$
+    Fibonacci heap $O(nm + n^2 \log n)$
+    Pairing heap   $O(2^{2 \sqrt{\log \log n}} nm + n^2 \log n)$
     ============== =============================================
 
     Parameters
@@ -54,7 +54,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
         :class:`MinHeap` or implement a compatible interface.
 
         If a stock heap implementation is to be used, :class:`BinaryHeap` is
-        recommeded over :class:`PairingHeap` for Python implementations without
+        recommended over :class:`PairingHeap` for Python implementations without
         optimized attribute accesses (e.g., CPython) despite a slower
         asymptotic running time. For Python implementations with optimized
         attribute accesses (e.g., PyPy), :class:`PairingHeap` provides better
@@ -80,14 +80,14 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_edge('x','a', weight=3)
-    >>> G.add_edge('x','b', weight=1)
-    >>> G.add_edge('a','c', weight=3)
-    >>> G.add_edge('b','c', weight=5)
-    >>> G.add_edge('b','d', weight=4)
-    >>> G.add_edge('d','e', weight=2)
-    >>> G.add_edge('c','y', weight=2)
-    >>> G.add_edge('e','y', weight=3)
+    >>> G.add_edge('x', 'a', weight=3)
+    >>> G.add_edge('x', 'b', weight=1)
+    >>> G.add_edge('a', 'c', weight=3)
+    >>> G.add_edge('b', 'c', weight=5)
+    >>> G.add_edge('b', 'd', weight=4)
+    >>> G.add_edge('d', 'e', weight=2)
+    >>> G.add_edge('c', 'y', weight=2)
+    >>> G.add_edge('e', 'y', weight=3)
     >>> cut_value, partition = nx.stoer_wagner(G)
     >>> cut_value
     4
@@ -151,7 +151,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     G = nx.Graph(islice(contractions, best_phase))
     v = contractions[best_phase][1]
     G.add_node(v)
-    reachable = set(n for n, d in nx.single_source_shortest_path_length(G, v))
+    reachable = set(nx.single_source_shortest_path_length(G, v))
     partition = (list(reachable), list(nodes - reachable))
 
     return cut_value, partition

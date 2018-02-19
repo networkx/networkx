@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 #    Copyright 2015 NetworkX developers.
-#    Copyright (C) 2004-2016 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

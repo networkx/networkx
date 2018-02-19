@@ -7,10 +7,12 @@ from operator import eq
 
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
+
+
 def test_simple():
     # 16 simple tests
     w = 'weight'
-    edges = [(0,0,1),(0,0,1.5),(0,1,2),(1,0,3)]
+    edges = [(0, 0, 1), (0, 0, 1.5), (0, 1, 2), (1, 0, 3)]
     for g1 in [nx.Graph(),
                nx.DiGraph(),
                nx.MultiGraph(),
@@ -23,55 +25,57 @@ def test_simple():
             em = iso.numerical_multiedge_match('weight', 1)
         else:
             em = iso.numerical_edge_match('weight', 1)
-        assert_true( nx.is_isomorphic(g1,g2,edge_match=em) )
+        assert_true(nx.is_isomorphic(g1, g2, edge_match=em))
 
         for mod1, mod2 in [(False, True), (True, False), (True, True)]:
             # mod1 tests a regular edge
             # mod2 tests a selfloop
             if g2.is_multigraph():
                 if mod1:
-                    data1 = {0:{'weight':10}}
+                    data1 = {0: {'weight': 10}}
                 if mod2:
-                    data2 = {0:{'weight':1},1:{'weight':2.5}}
+                    data2 = {0: {'weight': 1}, 1: {'weight': 2.5}}
             else:
                 if mod1:
-                    data1 = {'weight':10}
+                    data1 = {'weight': 10}
                 if mod2:
-                    data2 = {'weight':2.5}
+                    data2 = {'weight': 2.5}
 
-            g2 = g1.subgraph(g1.nodes())
+            g2 = g1.subgraph(g1.nodes()).copy()
             if mod1:
                 if not g1.is_directed():
-                    g2.adj[1][0] = data1
-                    g2.adj[0][1] = data1
+                    g2._adj[1][0] = data1
+                    g2._adj[0][1] = data1
                 else:
-                    g2.succ[1][0] = data1
-                    g2.pred[0][1] = data1
+                    g2._succ[1][0] = data1
+                    g2._pred[0][1] = data1
             if mod2:
                 if not g1.is_directed():
-                    g2.adj[0][0] = data2
+                    g2._adj[0][0] = data2
                 else:
-                    g2.succ[0][0] = data2
-                    g2.pred[0][0] = data2
+                    g2._succ[0][0] = data2
+                    g2._pred[0][0] = data2
 
-            assert_false(nx.is_isomorphic(g1,g2,edge_match=em))
+            assert_false(nx.is_isomorphic(g1, g2, edge_match=em))
+
 
 def test_weightkey():
     g1 = nx.DiGraph()
     g2 = nx.DiGraph()
 
-    g1.add_edge('A','B', weight=1)
-    g2.add_edge('C','D', weight=0)
+    g1.add_edge('A', 'B', weight=1)
+    g2.add_edge('C', 'D', weight=0)
 
-    assert_true(  nx.is_isomorphic(g1, g2) )
+    assert_true(nx.is_isomorphic(g1, g2))
     em = iso.numerical_edge_match('nonexistent attribute', 1)
-    assert_true(  nx.is_isomorphic(g1, g2, edge_match=em) )
+    assert_true(nx.is_isomorphic(g1, g2, edge_match=em))
     em = iso.numerical_edge_match('weight', 1)
-    assert_false( nx.is_isomorphic(g1, g2, edge_match=em) )
+    assert_false(nx.is_isomorphic(g1, g2, edge_match=em))
 
     g2 = nx.DiGraph()
-    g2.add_edge('C','D')
-    assert_true( nx.is_isomorphic(g1, g2, edge_match=em) )
+    g2.add_edge('C', 'D')
+    assert_true(nx.is_isomorphic(g1, g2, edge_match=em))
+
 
 class TestNodeMatch_Graph(object):
     def setUp(self):
@@ -87,25 +91,25 @@ class TestNodeMatch_Graph(object):
         self.g1.add_node('A', color='red')
         self.g2.add_node('C', color='blue')
 
-        self.g1.add_edge('A','B', weight=1)
-        self.g2.add_edge('C','D', weight=1)
+        self.g1.add_edge('A', 'B', weight=1)
+        self.g2.add_edge('C', 'D', weight=1)
 
     def test_noweight_nocolor(self):
-        assert_true(  nx.is_isomorphic(self.g1, self.g2) )
+        assert_true(nx.is_isomorphic(self.g1, self.g2))
 
     def test_color1(self):
-        assert_false(  nx.is_isomorphic(self.g1, self.g2, node_match=self.nm) )
+        assert_false(nx.is_isomorphic(self.g1, self.g2, node_match=self.nm))
 
     def test_color2(self):
-        self.g1.node['A']['color'] = 'blue'
-        assert_true(  nx.is_isomorphic(self.g1, self.g2, node_match=self.nm) )
+        self.g1.nodes['A']['color'] = 'blue'
+        assert_true(nx.is_isomorphic(self.g1, self.g2, node_match=self.nm))
 
     def test_weight1(self):
-        assert_true(  nx.is_isomorphic(self.g1, self.g2, edge_match=self.em) )
+        assert_true(nx.is_isomorphic(self.g1, self.g2, edge_match=self.em))
 
     def test_weight2(self):
         self.g1.add_edge('A', 'B', weight=2)
-        assert_false(  nx.is_isomorphic(self.g1, self.g2, edge_match=self.em) )
+        assert_false(nx.is_isomorphic(self.g1, self.g2, edge_match=self.em))
 
     def test_colorsandweights1(self):
         iso = nx.is_isomorphic(self.g1, self.g2,
@@ -113,7 +117,7 @@ class TestNodeMatch_Graph(object):
         assert_false(iso)
 
     def test_colorsandweights2(self):
-        self.g1.node['A']['color'] = 'blue'
+        self.g1.nodes['A']['color'] = 'blue'
         iso = nx.is_isomorphic(self.g1, self.g2,
                                node_match=self.nm, edge_match=self.em)
         assert_true(iso)
@@ -121,8 +125,9 @@ class TestNodeMatch_Graph(object):
     def test_colorsandweights3(self):
         # make the weights disagree
         self.g1.add_edge('A', 'B', weight=2)
-        assert_false(  nx.is_isomorphic(self.g1, self.g2,
-                                        node_match=self.nm, edge_match=self.em) )
+        assert_false(nx.is_isomorphic(self.g1, self.g2,
+                                      node_match=self.nm, edge_match=self.em))
+
 
 class TestEdgeMatch_MultiGraph(object):
     def setUp(self):
@@ -149,32 +154,34 @@ class TestEdgeMatch_MultiGraph(object):
             self.emc = iso.categorical_multiedge_match('color', '')
             self.emcm = iso.categorical_multiedge_match(['color', 'weight'], ['', 1])
             self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
-            self.emg2 = iso.generic_multiedge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, iso.matchhelpers.close])
+            self.emg2 = iso.generic_multiedge_match(['color', 'weight', 'size'], ['red', 1, .5], [
+                                                    eq, eq, iso.matchhelpers.close])
         else:
             self.em = iso.numerical_edge_match('weight', 1)
             self.emc = iso.categorical_edge_match('color', '')
             self.emcm = iso.categorical_edge_match(['color', 'weight'], ['', 1])
             self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
-            self.emg2 = iso.generic_edge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, iso.matchhelpers.close])
+            self.emg2 = iso.generic_edge_match(['color', 'weight', 'size'], ['red', 1, .5], [
+                                               eq, eq, iso.matchhelpers.close])
 
     def test_weights_only(self):
-        assert_true( nx.is_isomorphic(self.g1, self.g2, edge_match=self.em) )
+        assert_true(nx.is_isomorphic(self.g1, self.g2, edge_match=self.em))
 
     def test_colors_only(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emc)
-        assert_true( gm.is_isomorphic() )
+        assert_true(gm.is_isomorphic())
 
     def test_colorsandweights(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emcm)
-        assert_false( gm.is_isomorphic() )
+        assert_false(gm.is_isomorphic())
 
     def test_generic1(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emg1)
-        assert_true( gm.is_isomorphic() )
+        assert_true(gm.is_isomorphic())
 
     def test_generic2(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emg2)
-        assert_false( gm.is_isomorphic() )
+        assert_false(gm.is_isomorphic())
 
 
 class TestEdgeMatch_DiGraph(TestNodeMatch_Graph):
@@ -183,10 +190,10 @@ class TestEdgeMatch_DiGraph(TestNodeMatch_Graph):
         self.g2 = nx.DiGraph()
         self.build()
 
+
 class TestEdgeMatch_MultiDiGraph(TestEdgeMatch_MultiGraph):
     def setUp(self):
         self.g1 = nx.MultiDiGraph()
         self.g2 = nx.MultiDiGraph()
         self.GM = iso.MultiDiGraphMatcher
         self.build()
-
