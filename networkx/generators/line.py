@@ -21,7 +21,6 @@ from networkx.utils.decorators import *
 __all__ = ['line_graph', 'inverse_line_graph']
 
 
-@not_implemented_for('multigraph')
 def line_graph(G, create_using=None):
     """Returns the line graph of the graph or digraph `G`.
 
