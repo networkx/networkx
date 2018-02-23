@@ -68,7 +68,7 @@ def partial_duplication_graph(N, n, p, q, seed=None):
     ----------
     .. [1] Knudsen Michael, and Carsten Wiuf. "A Markov chain approach to
            randomly grown graphs." Journal of Applied Mathematics 2008.
-           <https://dx.doi.org/10.1155/2008/190836>
+           <https://doi.org/10.1155/2008/190836>
 
     """
     if p < 0 or p > 1 or q < 0 or q > 1:

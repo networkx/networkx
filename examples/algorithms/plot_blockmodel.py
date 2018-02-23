@@ -10,7 +10,7 @@ used is the Hartford, CT drug users network::
 
     @article{weeks2002social,
       title={Social networks of drug users in high-risk sites: Finding the connections},
-      url = {http://dx.doi.org/10.1023/A:1015457400897},
+      url = {https://doi.org/10.1023/A:1015457400897},
       doi = {10.1023/A:1015457400897},
       author={Weeks, Margaret R and Clair, Scott and Borgatti, Stephen P and Radda, Kim and Schensul, Jean J},
       journal={{AIDS and Behavior}},

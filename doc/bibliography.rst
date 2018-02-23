@@ -19,7 +19,7 @@ Bibliography
 
 .. [choudum1986] S.A. Choudum. "A simple proof of the Erdős-Gallai theorem on 
    graph sequences." Bulletin of the Australian Mathematical Society, 33, 
-   pp 67-70, 1986. http://dx.doi.org/10.1017/S0004972700002872
+   pp 67-70, 1986. https://doi.org/10.1017/S0004972700002872
 
 .. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997. 
    http://diestel-graph-theory.com/index.html

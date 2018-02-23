@@ -141,7 +141,7 @@ def large_clique_size(G):
        "Fast Algorithms for the Maximum Clique Problem on Massive Graphs
        with Applications to Overlapping Community Detection."
        *Internet Mathematics* 11.4-5 (2015): 421--448.
-       <https://dx.doi.org/10.1080/15427951.2014.986778>
+       <https://doi.org/10.1080/15427951.2014.986778>
 
     See also
     --------

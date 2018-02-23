@@ -403,7 +403,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     .. [1] Jean-Loup Guillaume and Matthieu Latapy,
        Bipartite structure of all complex networks,
        Inf. Process. Lett. 90, 2004, pg. 215-221
-       http://dx.doi.org/10.1016/j.ipl.2004.03.007
+       https://doi.org/10.1016/j.ipl.2004.03.007
 
     Notes
     -----
