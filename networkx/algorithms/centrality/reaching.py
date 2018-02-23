@@ -91,7 +91,7 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     .. [1] Mones, Enys, Lilla Vicsek, and Tamás Vicsek.
            "Hierarchy Measure for Complex Networks."
            *PLoS ONE* 7.3 (2012): e33799.
-           https://dx.doi.org/10.1371/journal.pone.0033799
+           https://doi.org/10.1371/journal.pone.0033799
     """
     if nx.is_negatively_weighted(G, weight=weight):
         raise nx.NetworkXError('edge weights must be positive')
@@ -181,7 +181,7 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     .. [1] Mones, Enys, Lilla Vicsek, and Tamás Vicsek.
            "Hierarchy Measure for Complex Networks."
            *PLoS ONE* 7.3 (2012): e33799.
-           https://dx.doi.org/10.1371/journal.pone.0033799
+           https://doi.org/10.1371/journal.pone.0033799
     """
     if paths is None:
         if nx.is_negatively_weighted(G, weight=weight):

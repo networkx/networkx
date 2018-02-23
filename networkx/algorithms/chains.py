@@ -60,7 +60,7 @@ def chain_decomposition(G, root=None):
     ----------
     .. [1] Jens M. Schmidt (2013). "A simple test on 2-vertex-
        and 2-edge-connectivity." *Information Processing Letters*,
-       113, 241–244. Elsevier. <http://dx.doi.org/10.1016/j.ipl.2013.01.016>
+       113, 241–244. Elsevier. <https://doi.org/10.1016/j.ipl.2013.01.016>
 
     """
 

@@ -469,7 +469,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
        Link prediction in complex networks based on cluster information.
        In Proceedings of the 21st Brazilian conference on Advances in
        Artificial Intelligence (SBIA'12)
-       http://dx.doi.org/10.1007/978-3-642-34459-6_10
+       https://doi.org/10.1007/978-3-642-34459-6_10
     """
     if delta <= 0:
         raise nx.NetworkXAlgorithmError('Delta must be greater than zero')

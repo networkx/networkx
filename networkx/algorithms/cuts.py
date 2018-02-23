@@ -311,7 +311,7 @@ def mixing_expansion(G, S, T=None, weight=None):
            "Pseudorandomness."
            *Foundations and Trends
            in Theoretical Computer Science* 7.1–3 (2011): 1–336.
-           <http://dx.doi.org/10.1561/0400000010>
+           <https://doi.org/10.1561/0400000010>
 
     """
     num_cut_edges = cut_size(G, S, T=T, weight=weight)
@@ -351,7 +351,7 @@ def node_expansion(G, S):
            "Pseudorandomness."
            *Foundations and Trends
            in Theoretical Computer Science* 7.1–3 (2011): 1–336.
-           <http://dx.doi.org/10.1561/0400000010>
+           <https://doi.org/10.1561/0400000010>
 
     """
     neighborhood = set(chain.from_iterable(G.neighbors(v) for v in S))
@@ -390,7 +390,7 @@ def boundary_expansion(G, S):
            "Pseudorandomness."
            *Foundations and Trends in Theoretical Computer Science*
            7.1–3 (2011): 1–336.
-           <http://dx.doi.org/10.1561/0400000010>
+           <https://doi.org/10.1561/0400000010>
 
     """
     return len(nx.node_boundary(G, S)) / len(S)

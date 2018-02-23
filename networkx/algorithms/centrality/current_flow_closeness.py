@@ -68,7 +68,7 @@ def current_flow_closeness_centrality(G, weight=None,
     .. [2] Karen Stephenson and Marvin Zelen:
        Rethinking centrality: Methods and examples.
        Social Networks 11(1):1-37, 1989.
-       http://dx.doi.org/10.1016/0378-8733(89)90016-6
+       https://doi.org/10.1016/0378-8733(89)90016-6
     """
     import numpy as np
     import scipy

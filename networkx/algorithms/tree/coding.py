@@ -270,7 +270,7 @@ def to_prufer_sequence(T):
     .. [1] Wang, Xiaodong, Lei Wang, and Yingjie Wu.
            "An optimal algorithm for Prufer codes."
            *Journal of Software Engineering and Applications* 2.02 (2009): 111.
-           <http://dx.doi.org/10.4236/jsea.2009.22016>
+           <https://doi.org/10.4236/jsea.2009.22016>
 
     Examples
     --------
@@ -354,7 +354,7 @@ def from_prufer_sequence(sequence):
     .. [1] Wang, Xiaodong, Lei Wang, and Yingjie Wu.
            "An optimal algorithm for Prufer codes."
            *Journal of Software Engineering and Applications* 2.02 (2009): 111.
-           <http://dx.doi.org/10.4236/jsea.2009.22016>
+           <https://doi.org/10.4236/jsea.2009.22016>
 
     See also
     --------
