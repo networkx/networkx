@@ -688,41 +688,46 @@ def draw_networkx_edges(G, pos,
               ax.add_patch(arrow)
             else:
               cycle_edges = list(nx.simple_cycles(G))
-              loop_points = [(x,y) for x,y in cycle_edges]
-              for x in loop_points:
-                to_remove = list(G.edges())
-                half_cycle = to_remove.index(x)
-                second_half = to_remove.index(x[::-1])
-                if (src in edge_pos[half_cycle][0] and dst in edge_pos[half_cycle][1]) or (src in edge_pos[second_half][0] and dst in edge_pos[second_half][1]):
-                  arrow1 = FancyArrowPatch((x1, y1), (x2, y2),
-                                          arrowstyle=arrowstyle,
-                                          shrinkA=shrink_source,
-                                          connectionstyle='angle3, angleA=28.66', #180/2pi, approx
-                                          shrinkB=shrink_target,
-                                          mutation_scale=mutation_scale,
-                                          color=arrow_color,
-                                          linewidth=line_width,
-                                          zorder=1)  # arrows go behind nodes
-                  arrow_collection.append(arrow1)
-                  ax.add_patch(arrow1)
-                  try:
-                    arrow2 = FancyArrowPatch((x2, y2), (x1, y1),
-                                          arrowstyle=arrowstyle,
-                                          shrinkA=shrink_source,
-                                          connectionstyle='angle3, angleA=28.66', #180/2pi
-                                          shrinkB=shrink_target,
-                                          mutation_scale=mutation_scale,
-                                          color=arrow_color,
-                                          linewidth=line_width,
-                                          zorder=1)  # arrows go behind nodes
-                    arrow_collection.append(arrow2)
-                    ax.add_patch(arrow2)
-                  except nx.NetworkXError:
-                    raise
-                else:
-                  arrow = arrow
-                  arrow_collection.append(arrow)
-                  ax.add_patch(arrow)
+              if cycle_edges:
+                loop_points = [tuple(x) for x in cycle_edges]
+                for loop in loop_points:
+                  to_remove = list(G.edges())
+                  if len(loop) > 2:
+                    edges = []
+                    for ind, y in enumerate(loop):
+                      if ind == len(loop)-1:
+                        break
+                      else:
+                        edges.append((y,loop[ind+1]))
+                    edges.append((loop[-1], loop[0]))
+                    first_half_indices_to_remove = [to_remove.index(y) for y in edges if y in to_remove]
+                    second_half_indices_to_remove = [to_remove.index(y) for y in [x[::-1] for x in edges] if y in to_remove]
+                    half_cycle = first_half_indices_to_remove
+                    second_half = second_half_indices_to_remove
+                    if not second_half:
+                      second_half = half_cycle
+                  else:
+                    half_cycle = to_remove.index(loop)
+                    second_half = to_remove.index(loop[::-1])
+                  if (src in edge_pos[half_cycle] and dst in edge_pos[half_cycle]) or (src in edge_pos[second_half] and dst in edge_pos[second_half]):
+                    arrow1 = FancyArrowPatch((x1, y1), (x2, y2),
+                                            arrowstyle=arrowstyle,
+                                            shrinkA=shrink_source,
+                                            connectionstyle='angle3, angleA=28.66', #180/2pi, approx
+                                            shrinkB=shrink_target,
+                                            mutation_scale=mutation_scale,
+                                            color=arrow_color,
+                                            linewidth=line_width,
+                                            zorder=1)  # arrows go behind nodes
+                    arrow_collection.append(arrow1)
+                    ax.add_patch(arrow1)
+                  else:
+                    arrow = arrow
+                    arrow_collection.append(arrow)
+                    ax.add_patch(arrow)
+              else:
+                print('No cycles found in graph')
+                break
     # update view
     minx = np.amin(np.ravel(edge_pos[:, :, 0]))
     maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
