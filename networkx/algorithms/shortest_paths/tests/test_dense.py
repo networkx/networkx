@@ -48,8 +48,28 @@ class TestFloyd:
         dist = nx.floyd_warshall(G)
         assert_equal(dist['s']['v'], 2)
 
+    @raises(KeyError)
+    def test_reconstruct_path(self):
+        XG = nx.DiGraph()
+        XG.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
+                                    ('u', 'v', 1), ('u', 'x', 2),
+                                    ('v', 'y', 1), ('x', 'u', 3),
+                                    ('x', 'v', 5), ('x', 'y', 2),
+                                    ('y', 's', 7), ('y', 'v', 6)])
+        predecessors, _ = nx.floyd_warshall_predecessor_and_distance(XG)
+
+        path = nx.reconstruct_path('s', 'v', predecessors)
+        assert_equal(path, ['s', 'x', 'u', 'v'])
+
+        path = nx.reconstruct_path('s', 's', predecessors)
+        assert_equal(path, [])
+
+        # this part raises the keyError
+        nx.reconstruct_path('1', '2', predecessors)
+
     def test_cycle(self):
-        path, dist = nx.floyd_warshall_predecessor_and_distance(nx.cycle_graph(7))
+        path, dist = nx.floyd_warshall_predecessor_and_distance(
+            nx.cycle_graph(7))
         assert_equal(dist[0][3], 3)
         assert_equal(path[0][3], 2)
         assert_equal(dist[0][4], 3)
@@ -105,7 +125,8 @@ class TestFloyd:
 
     def test_zero_weight(self):
         G = nx.DiGraph()
-        edges = [(1, 2, -2), (2, 3, -4), (1, 5, 1), (5, 4, 0), (4, 3, -5), (2, 5, -7)]
+        edges = [(1, 2, -2), (2, 3, -4), (1, 5, 1),
+                 (5, 4, 0), (4, 3, -5), (2, 5, -7)]
         G.add_weighted_edges_from(edges)
         dist = nx.floyd_warshall(G)
         assert_equal(dist[1][3], -14)
