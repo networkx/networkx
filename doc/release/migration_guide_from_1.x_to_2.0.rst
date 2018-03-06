@@ -15,12 +15,12 @@ work with both NetworkX v1.x and v2.0.
 We have made some major changes to the methods in the Multi/Di/Graph classes.
 The methods changed are explained with examples below.
 
-With the release of NetworkX 2.0 we are moving to a view/iterator reporting API.
-We have moved many methods from reporting lists or dicts to iterating over
+With the release of NetworkX 2.0 we are moving to a view/iterable reporting API.
+We have changed many methods from reporting lists or dicts to iterating over
 the information. Most of the changes in this regard are in the base classes.
 Methods that used to return containers now return views (inspired from
 `dictionary views <https://docs.python.org/3/library/stdtypes.html#dict-views>`_
-in Python) and methods that returned iterators have been removed.
+in Python) and methods that returned an iterable have been removed.
 The methods which create new graphs have changed in the depth of data copying.
 ``G.subgraph``/``edge_subgraph``/``reverse``/``to_directed``/``to_undirected``
 are affected.  Many now have options for view creation instead of copying data.
@@ -43,7 +43,7 @@ graph classes. These are too numerous to catalog here, but a couple obvious
 ones include:
 
 - centering of nodes in ``drawing/nx_pylab``,
-- iterator vs dict output from a few ``shortest_path`` routines
+- iterable vs dict output from a few ``shortest_path`` routines
 
 -------
 
@@ -234,6 +234,18 @@ create a null graph of the correct type---ready to fill with nodes and edges.
 Graph views can also be views-of-views-of-views-of-graphs. If you want to find the
 original graph at the end of this chain use ``G.root_graph``. Be careful though
 because it may be a different graph type (directed/undirected) than the view.
+
+-------
+
+``topolgical_sort``  no longer accepts ``reverse`` or ``nbunch`` arguments.
+If ``nbunch`` was a single node source, then the same effect can now be achieved
+using the ``subgraph`` operator:
+
+    >>> nx.topological_sort(G.subgraph(nx.descendants(G, nbunch)))
+    
+To achieve a reverse topological sort, the output should be converted to a list:
+
+    >>>> reversed(list(nx.topological_sort(G)
 
 -------
 
