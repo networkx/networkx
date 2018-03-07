@@ -245,7 +245,7 @@ using the ``subgraph`` operator:
     
 To achieve a reverse topological sort, the output should be converted to a list:
 
-    >>>> reversed(list(nx.topological_sort(G)
+    >>>> reversed(list(nx.topological_sort(G)))
 
 -------
 
