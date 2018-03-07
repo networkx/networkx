@@ -15,12 +15,12 @@ work with both NetworkX v1.x and v2.0.
 We have made some major changes to the methods in the Multi/Di/Graph classes.
 The methods changed are explained with examples below.
 
-With the release of NetworkX 2.0 we are moving to a view/iterable reporting API.
+With the release of NetworkX 2.0 we are moving to a view/iterator reporting API.
 We have changed many methods from reporting lists or dicts to iterating over
 the information. Most of the changes in this regard are in the base classes.
 Methods that used to return containers now return views (inspired from
 `dictionary views <https://docs.python.org/3/library/stdtypes.html#dict-views>`_
-in Python) and methods that returned an iterable have been removed.
+in Python) and methods that returned an iterator have been removed.
 The methods which create new graphs have changed in the depth of data copying.
 ``G.subgraph``/``edge_subgraph``/``reverse``/``to_directed``/``to_undirected``
 are affected.  Many now have options for view creation instead of copying data.
