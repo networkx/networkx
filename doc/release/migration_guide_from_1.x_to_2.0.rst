@@ -43,7 +43,7 @@ graph classes. These are too numerous to catalog here, but a couple obvious
 ones include:
 
 - centering of nodes in ``drawing/nx_pylab``,
-- iterable vs dict output from a few ``shortest_path`` routines
+- iterator vs dict output from a few ``shortest_path`` routines
 
 -------
 
