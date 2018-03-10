@@ -13,7 +13,7 @@
 from __future__ import division
 
 from collections import Counter
-from itertools import chain
+from itertools import chain, combinations
 try:
     from itertools import zip_longest
 except ImportError:
@@ -27,7 +27,7 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
            'induced_subgraph', 'edge_subgraph', 'restricted_view',
            'reverse_view', 'to_directed', 'to_undirected',
-           'add_star', 'add_path', 'add_cycle',
+           'add_star', 'add_path', 'add_cycle', 'add_clique',
            'create_empty_copy', 'set_node_attributes',
            'get_node_attributes', 'set_edge_attributes',
            'get_edge_attributes', 'all_neighbors', 'non_neighbors',
@@ -225,7 +225,7 @@ def add_star(G_to_add_to, nodes_for_star, **attr):
 
     See Also
     --------
-    add_path, add_cycle
+    add_path, add_cycle, add_clique
 
     Examples
     --------
@@ -254,7 +254,7 @@ def add_path(G_to_add_to, nodes_for_path, **attr):
 
     See Also
     --------
-    add_star, add_cycle
+    add_star, add_cycle, add_clique
 
     Examples
     --------
@@ -286,7 +286,7 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
 
     See Also
     --------
-    add_path, add_star
+    add_path, add_star, add_clique
 
     Examples
     --------
@@ -295,6 +295,32 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
     >>> nx.add_cycle(G, [10, 11, 12], weight=7)
     """
     G_to_add_to.add_edges_from(pairwise(nodes_for_cycle, cyclic=True), **attr)
+
+
+def add_clique(G_to_add_to, nodes_for_clique, **attr):
+    """Add a clique to the Graph G_to_add_to.
+
+    Parameters
+    ----------
+    G_to_add_to : graph
+        A NetworkX graph
+    nodes_for_clique: iterable container
+        A container of nodes.  A clique will be constructed from
+        the nodes (in order) and added to the graph.
+    attr : keyword arguments, optional (default= no attributes)
+        Attributes to add to every edge in clique.
+
+    See Also
+    --------
+    add_path, add_star, add_cycle
+
+    Examples
+    --------
+    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> nx.add_clique(G, [0, 1, 2, 3])
+    >>> nx.add_clique(G, [10, 11, 12], weight=7)
+    """
+    G_to_add_to.add_edges_from(combinations(nodes_for_clique, 2), **attr)
 
 
 def subgraph(G, nbunch):

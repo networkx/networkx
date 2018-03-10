@@ -136,6 +136,22 @@ class TestFunction(object):
         nx.add_cycle(G, nlist, weight=1.0)
         assert_true(sorted(G.edges(nlist, data=True)) in oklists)
 
+    def test_add_clique(self):
+        G = self.G.copy()
+        nlist = [12, 13, 14, 15]
+        okset = frozenset([(12, 13), (12, 14), (12, 15),
+                           (13, 14), (13, 15),
+                           (14, 15)])
+        nx.add_clique(G, nlist)
+        assert_true(frozenset(G.edges(nlist)) == okset)
+        G = self.G.copy()
+        okset = frozenset([(12, 13, 1.), (12, 14, 1.), (12, 15, 1.),
+                           (13, 14, 1.), (13, 15, 1.),
+                           (14, 15, 1.)])
+        nx.add_clique(G, nlist, weight=1.0)
+        comparedset = frozenset((s, t, d['weight']) for s, t, d in G.edges(nlist, data=True))
+        assert_true(comparedset == okset)
+
     def test_subgraph(self):
         assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,
                      nx.subgraph(self.G, [0, 1, 2, 4]).adj)
