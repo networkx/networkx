@@ -26,7 +26,7 @@ try:  # Python 2.6+
 except TypeError:  # Python 3.x
     nx.write_adjlist(G, sys.stdout.buffer)  # write adjacency list to screen
 # write edgelist to grid.edgelist
-nx. write_edgelist(G, path="grid.edgelist", delimiter=":")
+nx.write_edgelist(G, path="grid.edgelist", delimiter=":")
 # read edgelist from grid.edgelist
 H = nx.read_edgelist(path="grid.edgelist", delimiter=":")
 
