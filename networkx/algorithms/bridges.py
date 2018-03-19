@@ -55,8 +55,8 @@ def bridges(G, root=None):
     Notes
     -----
     This is an implementation of the algorithm described in _[1].  An edge is a
-    bridge iff it is not contained in any chain. Chains are found using the
-    :func:`networkx.chain_decomposition` function.
+    bridge if and only if it is not contained in any chain. Chains are found
+    using the :func:`networkx.chain_decomposition` function.
 
     Ignoring polylogarithmic factors, the worst-case time complexity is the
     same as the :func:`networkx.chain_decomposition` function,
