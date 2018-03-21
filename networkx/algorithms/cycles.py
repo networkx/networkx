@@ -102,7 +102,8 @@ def cycle_basis(G, root=None):
 
 
 @not_implemented_for('undirected')
-def simple_cycles(G, max_edges_in_cycle=None, filter_edge_purposes=False):
+def simple_cycles(G, max_edges_in_cycle=None,
+                  filter_edge_purposes=False, filter_edge_purpose_names=None):
     """Find simple cycles (elementary circuits) of a directed graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -177,9 +178,15 @@ def simple_cycles(G, max_edges_in_cycle=None, filter_edge_purposes=False):
                 stack.update(B[node])
                 B[node].clear()
 
-    def _filter_G_edges_trip_purpose(G, home_node, nhb_names=['NHB'],
-                                     hb_from_home_names=['HB'],
-                                     hb_to_home_names=['HB']):
+    def _filter_G_edges_trip_purpose(G, home_node, filter_edge_purpose_names):
+
+        if filter_edge_purpose_names:
+            hb_from_home_names, hb_to_home_names, nhb_names = filter_edge_purpose_names
+        else:
+            nhb_names = ['NHB_NonHomeBased'],
+            hb_from_home_names = ['HB_FromHome'],
+            hb_to_home_names = ['HB_ToHome']
+
         # Give better name
         # Creates a graph that origins edges from and to
         subG = nx.MultiDiGraph()
@@ -217,7 +224,7 @@ def simple_cycles(G, max_edges_in_cycle=None, filter_edge_purposes=False):
         # Intermediate legs in trip chain can only be nhb
 
         if filter_edge_purposes == True:
-            subG = _filter_G_edges_trip_purpose(G, startnode)
+            subG = _filter_G_edges_trip_purpose(G, startnode, filter_edge_purpose_names)
 
         # Processing node runs "circuit" routine from recursive version
         path = [startnode]
