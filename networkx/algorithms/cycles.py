@@ -177,16 +177,22 @@ def simple_cycles(G, max_edges_in_cycle=None, filter_edge_purposes=False):
                 stack.update(B[node])
                 B[node].clear()
 
-    def _filter_G_edges_trip_purpose(G, home_node, nhb_name='NHB', hb_name='HB'):
+    def _filter_G_edges_trip_purpose(G, home_node, nhb_names=['NHB'],
+                                     hb_from_home_names=['HB'],
+                                     hb_to_home_names=['HB']):
         # Give better name
         # Creates a graph that origins edges from and to
         subG = nx.MultiDiGraph()
         for source, target, attr in G.edges(data=True):
-            if attr['Purpose'] == nhb_name:
+            if attr['Purpose'] in nhb_names:
+                # NHB trips are added only when the source is not home
                 if not (source == home_node or target == home_node):
                     subG.add_edge(source, target, Purpose=attr['Purpose'])
-            elif attr['Purpose'] == hb_name:
-                if (source == home_node or target == home_node):
+            elif attr['Purpose'] in hb_from_home_names:
+                if (source == home_node):
+                    subG.add_edge(source, target, Purpose=attr['Purpose'])
+            elif attr['Purpose'] in hb_to_home_names:
+                if (target == home_node):
                     subG.add_edge(source, target, Purpose=attr['Purpose'])
 
         return subG
