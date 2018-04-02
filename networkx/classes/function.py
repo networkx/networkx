@@ -585,6 +585,9 @@ def info(G, n=None):
 def set_node_attributes(G, values, name=None):
     """Sets node attributes from a given value or dictionary of values.
 
+    .. Warning:: The call order of arguments `values` and `name`
+        switched between v1.x & v2.x.
+
     Parameters
     ----------
     G : NetworkX Graph
@@ -693,6 +696,9 @@ def get_node_attributes(G, name):
 
 def set_edge_attributes(G, values, name=None):
     """Sets edge attributes from a given value or dictionary of values.
+
+    .. Warning:: The call order of arguments `values` and `name`
+        switched between v1.x & v2.x.
 
     Parameters
     ----------
