@@ -268,7 +268,7 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     NetworkXError
         If any of the parameters do not meet their upper and lower bounds:
 
-        - ``tau1`` and ``tau2`` must be less than or equal to one.
+        - ``tau1`` and ``tau2`` must be strictly greater than 1.
         - ``mu`` must be in [0, 1].
         - ``max_degree`` must be in {1, ..., *n*}.
         - ``min_community`` and ``max_community`` must be in {0, ...,
