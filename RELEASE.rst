@@ -47,6 +47,8 @@ How to make a new release of ``networkx``
 - Publish on PyPi::
 
    git clean -fxd
+   pip install -U pip setuptools wheel
+   pip intsall -U twine
    python setup.py sdist --formats=gztar,zip bdist_wheel
    twine upload -s dist/*
 
