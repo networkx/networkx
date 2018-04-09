@@ -102,8 +102,7 @@ def cycle_basis(G, root=None):
 
 
 @not_implemented_for('undirected')
-def simple_cycles(G, max_edges_in_cycle=None,
-                  filter_edge_purposes=False, filter_edge_purpose_names=None):
+def simple_cycles(G, root=None, max_cycle_len=None):
     """Find simple cycles (elementary circuits) of a directed graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -117,13 +116,10 @@ def simple_cycles(G, max_edges_in_cycle=None,
     ----------
     G : NetworkX DiGraph
        A directed graph
-    max_edges_in_cycle : int
-                         Return cycles where number of edges is less than max_edges_in_cycle
-
-    filter_edge_purposes : bool
-                           ad-hoc optimisation param
-                           Reduces iteratively the network so that first and last edges of cycle are HB
-                           and NHB for the rest of the edges
+    root : node, optional
+       Specify starting node for basis.
+    max_cycle_len : integer
+       the maximum allowed lenthg of the returned path
     Returns
     -------
     cycle_generator: generator
@@ -178,77 +174,54 @@ def simple_cycles(G, max_edges_in_cycle=None,
                 stack.update(B[node])
                 B[node].clear()
 
-    def _filter_G_edges_trip_purpose(G, home_node, filter_edge_purpose_names):
-
-        if filter_edge_purpose_names:
-            hb_from_home_names, hb_to_home_names, nhb_names = filter_edge_purpose_names
-        else:
-            nhb_names = ['NHB_NonHomeBased'],
-            hb_from_home_names = ['HB_FromHome'],
-            hb_to_home_names = ['HB_ToHome']
-
-        # Give better name
-        # Creates a graph that origins edges from and to
-        subG = nx.MultiDiGraph()
-        for source, target, attr in G.edges(data=True):
-            if attr['Purpose'] in nhb_names:
-                # NHB trips are added only when the source is not home
-                if not (source == home_node or target == home_node):
-                    subG.add_edge(source, target, Purpose=attr['Purpose'])
-            elif attr['Purpose'] in hb_from_home_names:
-                if (source == home_node):
-                    subG.add_edge(source, target, Purpose=attr['Purpose'])
-            elif attr['Purpose'] in hb_to_home_names:
-                if (target == home_node):
-                    subG.add_edge(source, target, Purpose=attr['Purpose'])
-
-        return subG
-
-
     # Johnson's algorithm requires some ordering of the nodes.
     # We assign the arbitrary ordering given by the strongly connected comps
     # There is no need to track the ordering as each node removed as processed.
     # Also we save the actual graph so we can mutate it. We only take the
     # edges because we do not want to copy edge and node attributes here.
+    subG = type(G)(G.edges())
+    sccs = list(nx.strongly_connected_components(subG))
 
-    if max_edges_in_cycle is None:
-        max_edges_in_cycle = G.number_of_edges()
+    if max_cycle_len is not None:
+        limit_cycles_length = True
+    else:
+        limit_cycles_length = False
 
-    sccs = list(nx.strongly_connected_components(G))
+    if root is None:
+        rootless = True
+    else:
+        rootless = False
+
     while sccs:
         scc = sccs.pop()
         # order of scc determines ordering of nodes
-        startnode = scc.pop()
-
-        # Keep only the from source edges and the nhb ones
-        # Intermediate legs in trip chain can only be nhb
-
-        if filter_edge_purposes == True:
-            subG = _filter_G_edges_trip_purpose(G, startnode, filter_edge_purpose_names)
-
+        if not rootless:
+            startnode = root
+            if startnode not in scc:
+                continue
+        else:
+            startnode = scc.pop()
         # Processing node runs "circuit" routine from recursive version
         path = [startnode]
         blocked = set()  # vertex: blocked from search?
         closed = set()   # nodes involved in a cycle
         blocked.add(startnode)
         B = defaultdict(set)  # graph portions that yield no elementary circuit
-
-        stack = []
-        try:
-            stack = [(startnode, list(subG[startnode]))]  # subG gives comp nbrs
-        except:
-            continue
-
+        stack = [(startnode, list(subG[startnode]))]  # subG gives comp nbrs
         while stack:
             thisnode, nbrs = stack[-1]
+
             if nbrs:
-                if len(path) > max_edges_in_cycle:
-                    nextnode = nbrs.pop()
-                    nbrs.clear()
-                    continue
                 nextnode = nbrs.pop()
+
+                # Complete the loop prematurely
+                if limit_cycles_length and not rootless:
+                    if len(path) > max_cycle_len + 1:
+                        nextnode = startnode
+
                 if nextnode == startnode:
-                    yield path[:]
+                    if len(path) <= max_cycle_len:
+                        yield path[:]
                     closed.update(path)
 #                        print "Found a cycle", path, closed
                 elif nextnode not in blocked:
