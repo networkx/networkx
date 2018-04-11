@@ -57,6 +57,18 @@ class TestPajek(object):
         for n in G:
             assert_equal(G.nodes[n], Gin.nodes[n])
 
+    def test_write_pajek(self):
+        import io
+        G = parse_pajek(self.data)
+        fh = io.BytesIO()
+        nx.write_pajek(G,fh)
+        fh.seek(0)
+        H = nx.read_pajek(fh)
+        assert_nodes_equal(list(G), list(H))
+        assert_edges_equal(list(G.edges()), list(H.edges()))
+        # Graph name is left out for now, therefore it is not tested.
+        # assert_equal(G.graph, H.graph)
+
     def test_noname(self):
         # Make sure we can parse a line such as:  *network
         # Issue #952
