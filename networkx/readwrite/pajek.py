@@ -63,7 +63,7 @@ def generate_pajek(G):
         shape = na.get('shape', 'ellipse')
         s = ' '.join(map(make_qstr, (id, n, x, y, shape)))
         for k, v in na.items():
-            if v.strip() != '':
+            if is_string_like(v) and v.strip() != '':
                 s += ' %s %s' % (make_qstr(k), make_qstr(v))
         yield s
 
@@ -77,7 +77,7 @@ def generate_pajek(G):
         value = d.pop('weight', 1.0)  # use 1 as default edge value
         s = ' '.join(map(make_qstr, (nodenumber[u], nodenumber[v], value)))
         for k, v in d.items():
-            if v.strip() != '':
+            if is_string_like(v) and v.strip() != '':
                 s += ' %s %s' % (make_qstr(k), make_qstr(v))
         yield s
 
