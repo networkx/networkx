@@ -55,13 +55,16 @@ def generate_pajek(G):
     # make dictionary mapping nodes to integers
     nodenumber = dict(zip(nodes, range(1, len(nodes) + 1)))
     for n in nodes:
-        na = G.nodes.get(n, {})
-        x = na.get('x', 0.0)
-        y = na.get('y', 0.0)
-        id = int(na.get('id', nodenumber[n]))
+        # copy node attributes and pop mandatory attributes
+        # to avoid duplication.
+        na = G.nodes.get(n, {}).copy()
+        x = na.pop('x', 0.0)
+        y = na.pop('y', 0.0)
+        id = int(na.pop('id', nodenumber[n]))
         nodenumber[n] = id
-        shape = na.get('shape', 'ellipse')
+        shape = na.pop('shape', 'ellipse')
         s = ' '.join(map(make_qstr, (id, n, x, y, shape)))
+        # only optional attributes are left in na.
         for k, v in na.items():
             if is_string_like(v) and v.strip() != '':
                 s += ' %s %s' % (make_qstr(k), make_qstr(v))
