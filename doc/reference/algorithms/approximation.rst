@@ -90,6 +90,19 @@ Steiner Tree
    steiner_tree
 
 
+Treewidth
+---------
+.. automodule:: networkx.algorithms.approximation.treewidth
+.. autosummary::
+   :toctree: generated/
+
+   treewidth_min_degree
+   treewidth_min_fill_in
+   min_degree_heuristic
+   min_fill_in_heuristic
+   treewidth_decomp
+
+
 Vertex Cover
 ------------
 .. automodule:: networkx.algorithms.approximation.vertex_cover
