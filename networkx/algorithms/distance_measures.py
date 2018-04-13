@@ -3,6 +3,7 @@
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    William Schwartz <wkschwartz@gmail.com>
 #    All rights reserved.
 #    BSD license.
 #
@@ -12,7 +13,7 @@
 import networkx
 
 __all__ = ['extrema_bounding', 'eccentricity', 'diameter',
-           'radius', 'periphery', 'center']
+           'radius', 'periphery', 'center', 'barycenter']
 
 
 def extrema_bounding(G, compute="diameter"):
@@ -354,3 +355,53 @@ def center(G, e=None, usebounds=False):
     radius = min(e.values())
     p = [v for v in e if e[v] == radius]
     return p
+
+
+def barycenter(G, weight=None):
+    """Calculate barycenter of a connected graph `G` with optional edge weights.
+
+    The _barycenter_, sometimes called the _median_, is the subgraph induced by
+    the set of nodes :math:`v` minimizing _barycentricity_,
+
+    .. math::
+
+        \sum_{u \in V(g)} d_g(u, v),
+
+    where :math:`d_G` is either the path length or the weighted path length,
+    depending on whether `weight` is None. The barycenter is defined only for
+    connected graphs [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    weight : :class:`str` (optional)
+        Passed to NetworkX's ``shortest_path_length`` function.
+
+    Returns
+    -------
+    barycenter : NetworkX subgraph view of `G`
+        Subgraph of `G` induced by the vertices minimizing barycentricity.
+
+    Raises
+    ------
+    :exc:`NetworkXNoPath`
+        When the input graph `G` is disconnected
+
+    References
+    ----------
+    .. [1] Douglas West, _Introduction to Graph Theory_, 2nd ed., Pearson, 2000,
+        p. 78.
+    """
+    smallest, barycenter_vertices, n = float('inf'), [], len(G)
+    for v, dists in networkx.shortest_path_length(G, weight=weight):
+        if len(dists) < n:
+            raise networkx.NetworkXNoPath(
+                ("Input graph %r is disconnected, so every induced subgraph has"
+                 " infinite barycentricity.") % G)
+        barycentricity = sum(dists.values())
+        if barycentricity < smallest:
+            smallest = barycentricity
+            barycenter_vertices = [v]
+        elif barycentricity == smallest:
+            barycenter_vertices.append(v)
+    return G.subgraph(barycenter_vertices)
