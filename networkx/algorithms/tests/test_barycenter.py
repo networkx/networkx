@@ -58,7 +58,7 @@ class TestBarycenter(TestCase):
 			'y': ['x', 'z'],
 			'z': ['y', 0, 1, 2, 3, 4],
 			0: ['z'], 1: ['z'], 2: ['z'], 3: ['z'], 4: ['z']})
-		b = networkx.barycenter(g)
+		b = networkx.barycenter(g, attr='barycentricity')
 		self.assertEqual(list(b), ['z'])
 		self.assertFalse(b.edges)
 		expected_barycentricity = {

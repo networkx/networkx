@@ -357,7 +357,7 @@ def center(G, e=None, usebounds=False):
     return p
 
 
-def barycenter(G, weight=None):
+def barycenter(G, weight=None, attr=None):
     """Calculate barycenter of a connected graph `G` with optional edge weights.
 
     The _barycenter_, sometimes called the _median_, is the subgraph induced by
@@ -376,6 +376,9 @@ def barycenter(G, weight=None):
     G : NetworkX graph
     weight : :class:`str` (optional)
         Passed to NetworkX's ``shortest_path_length`` function.
+    attr : :class:`str` (optional)
+        If given, write the barycentricity to each node's `attr` attribute.
+        Otherwise do not store the barycentricity.
 
     Returns
     -------
@@ -399,6 +402,8 @@ def barycenter(G, weight=None):
                 ("Input graph %r is disconnected, so every induced subgraph has"
                  " infinite barycentricity.") % G)
         barycentricity = sum(dists.values())
+        if attr is not None:
+            G.nodes[v][attr] = barycentricity
         if barycentricity < smallest:
             smallest = barycentricity
             barycenter_vertices = [v]
