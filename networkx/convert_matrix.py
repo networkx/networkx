@@ -798,7 +798,9 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         M = sparse.coo_matrix((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
         return M.asformat(format)
-    except AttributeError:
+    # From Scipy 1.1.0, asformat will throw a ValueError instead of an
+    # AttributeError if the format if not recognized.
+    except (AttributeError, ValueError):
         raise nx.NetworkXError("Unknown sparse matrix format: %s" % format)
 
 
