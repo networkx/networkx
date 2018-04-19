@@ -22,6 +22,8 @@ for format information.
 
 """
 
+import warnings
+
 import networkx as nx
 from networkx.utils import is_string_like, open_file, make_str
 
@@ -68,6 +70,11 @@ def generate_pajek(G):
         for k, v in na.items():
             if is_string_like(v) and v.strip() != '':
                 s += ' %s %s' % (make_qstr(k), make_qstr(v))
+            else:
+                warnings.warn('Node attribute %s is not processed. %s.' %
+                              (k,
+                               'Empty attribute' if is_string_like(v) else
+                               'Non-string attribute'))
         yield s
 
     # write edges with attributes
@@ -82,6 +89,11 @@ def generate_pajek(G):
         for k, v in d.items():
             if is_string_like(v) and v.strip() != '':
                 s += ' %s %s' % (make_qstr(k), make_qstr(v))
+            else:
+                warnings.warn('Edge attribute %s is not processed. %s.' %
+                              (k,
+                               'Empty attribute' if is_string_like(v) else
+                               'Non-string attribute'))
         yield s
 
 
@@ -101,6 +113,12 @@ def write_pajek(G, path, encoding='UTF-8'):
     --------
     >>> G=nx.path_graph(4)
     >>> nx.write_pajek(G, "test.net")
+
+    Warnings
+    --------
+    Optional node attributes and edge attributes must be non-empty strings.
+    Otherwise it will not be written into the file. You will need to
+    convert those attributes to strings if you want to keep them.
 
     References
     ----------
