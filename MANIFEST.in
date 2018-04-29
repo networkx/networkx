@@ -7,8 +7,8 @@ include LICENSE.txt
 include README.rst
 include RELEASE.rst
 
-recursive-include examples *.py *.edgelist *.mbox *.gz *.bz2 *.zip
-recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc
+recursive-include examples *.txt *.py *.edgelist *.mbox *.gz *.bz2 *.zip *.html *.js *.css
+recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc *.js
 
 include networkx/tests/*.py
 include networkx/*/tests/*.txt

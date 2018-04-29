@@ -81,6 +81,10 @@ for d in ['.',
     data.append((dd, glob(os.path.join(pp, "*.gz"))))
     data.append((dd, glob(os.path.join(pp, "*.mbox"))))
     data.append((dd, glob(os.path.join(pp, "*.edgelist"))))
+# add js force examples
+dd = os.path.join(docdirbase, 'examples', 'javascript/force')
+pp = os.path.join('examples', 'javascript/force')
+data.append((dd, glob(os.path.join(pp, "*"))))
 
 # add the tests
 package_data = {
