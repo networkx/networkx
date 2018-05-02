@@ -40,7 +40,7 @@ def is_tree_decomp(graph, decomp):
     for v in graph.nodes():
         subset = []
         for bag in decomp.nodes():
-            if (v in bag):
+            if v in bag:
                 subset.append(bag)
         subGraph = decomp.subgraph(subset)
         ok_(nx.is_connected(subGraph))
@@ -153,11 +153,11 @@ class TestTreewidthMinDegree(object):
             print("Removing {}:".format(elim_node))
             steps.append(elim_node)
             neighbors = graph[elim_node]
-            for n in neighbors:
-                for m in neighbors:
-                    if n != m and not m in graph[n]:
-                        graph[n].add(m)
-                        graph[m].add(n)
+            for u in neighbors:
+                for v in neighbors:
+                    if u != v and v not in graph[u]:
+                        graph[u].add(v)
+                        graph[v].add(u)
             for u in graph:
                 if elim_node in graph[u]:
                     graph[u].remove(elim_node)
@@ -257,11 +257,11 @@ class TestTreewidthMinFillIn(object):
             print("Removing {}:".format(elim_node))
             steps.append(elim_node)
             neighbors = graph[elim_node]
-            for n in neighbors:
-                for m in neighbors:
-                    if n != m and not m in graph[n]:
-                        graph[n].add(m)
-                        graph[m].add(n)
+            for u in neighbors:
+                for v in neighbors:
+                    if u != v and v not in graph[u]:
+                        graph[u].add(v)
+                        graph[v].add(u)
             for u in graph:
                 if elim_node in graph[u]:
                     graph[u].remove(elim_node)
