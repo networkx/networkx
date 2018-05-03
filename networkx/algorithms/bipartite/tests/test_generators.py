@@ -50,6 +50,17 @@ class TestGeneratorsBipartite():
         assert_equal(G.size(), 4)
 
     def test_configuration_model(self):
+        aseq = []
+        bseq = []
+        G = configuration_model(aseq, bseq)
+        assert_equal(len(G), 0)
+
+        aseq = [0, 0]
+        bseq = [0, 0]
+        G = configuration_model(aseq, bseq)
+        assert_equal(len(G), 4)
+        assert_equal(G.number_of_edges(), 0)
+
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
         assert_raises(networkx.exception.NetworkXError,
