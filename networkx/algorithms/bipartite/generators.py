@@ -129,7 +129,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
 
     G = _add_nodes_with_bipartite_label(G, lena, lenb)
 
-    if max(aseq) == 0:
+    if len(aseq) == 0 or max(aseq) == 0:
         return G  # done if no edges
 
     # build lists of degree-repeated vertex numbers
