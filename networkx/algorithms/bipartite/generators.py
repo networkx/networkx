@@ -205,7 +205,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
 
     G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
 
-    if max(aseq) == 0:
+    if len(aseq) == 0 or max(aseq) == 0:
         return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
@@ -280,7 +280,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
     G = _add_nodes_with_bipartite_label(G, lena, lenb)
 
-    if max(aseq) == 0:
+    if len(aseq) == 0 or max(aseq) == 0:
         return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
@@ -356,7 +356,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
 
     G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
 
-    if max(aseq) == 0:
+    if len(aseq) == 0 or max(aseq) == 0:
         return G  # done if no edges
     # build list of degree-repeated vertex numbers
     astubs = [[aseq[v], v] for v in range(0, naseq)]
