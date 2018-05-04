@@ -215,9 +215,22 @@ class TestGeneratorsBipartite():
     def test_gnmk_random_graph(self):
         n = 10
         m = 20
+        edges = 100
+        G = gnmk_random_graph(n, m, edges)
+        assert_equal(len(G), n + m)
+        assert_true(is_bipartite(G))
+        X, Y = nx.algorithms.bipartite.sets(G)
+        print(X)
+        assert_equal(set(range(n)), X)
+        assert_equal(set(range(n, n + m)), Y)
+        assert_equal(edges, len(list(G.edges())))
+
+    def test_gnmk_random_graph_complete(self):
+        n = 10
+        m = 20
         edges = 200
         G = gnmk_random_graph(n, m, edges)
-        assert_equal(len(G), 30)
+        assert_equal(len(G), n + m)
         assert_true(is_bipartite(G))
         X, Y = nx.algorithms.bipartite.sets(G)
         print(X)
