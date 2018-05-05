@@ -154,7 +154,7 @@ def simple_cycles(G, root=None, max_cycle_len=None):
     ----------
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
-       https://doi.org/10.1137/0204007
+       http://dx.doi.org/10.1137/0204007
     .. [2] Enumerating the cycles of a digraph: a new preprocessing strategy.
        G. Loizou and P. Thanish, Information Sciences, v. 27, 163-182, 1982.
     .. [3] A search strategy for the elementary cycles of a directed graph.
@@ -182,20 +182,20 @@ def simple_cycles(G, root=None, max_cycle_len=None):
     subG = type(G)(G.edges())
     sccs = list(nx.strongly_connected_components(subG))
 
-    if max_cycle_len is not None:
-        limit_cycles_length = True
-    else:
-        limit_cycles_length = False
+    if max_cycle_len is None:
+        max_cycle_len = G.number_of_edges()
+        limit_cycle_len = False
 
-    if root is None:
-        rootless = True
-    else:
-        rootless = False
+    if max_cycle_len is not None:
+        if root is None:
+            raise ValueError('max_cycle_len requires root to be specified')
+        else:
+            limit_cycle_len = True
 
     while sccs:
         scc = sccs.pop()
         # order of scc determines ordering of nodes
-        if not rootless:
+        if root is not None:
             startnode = root
             if startnode not in scc:
                 continue
@@ -215,13 +215,12 @@ def simple_cycles(G, root=None, max_cycle_len=None):
                 nextnode = nbrs.pop()
 
                 # Complete the loop prematurely
-                if limit_cycles_length and not rootless:
-                    if len(path) > max_cycle_len + 1:
-                        nextnode = startnode
+                if limit_cycle_len:
+                    if len(path) > max_cycle_len:
+                        closed.update(path)
 
                 if nextnode == startnode:
-                    if len(path) <= max_cycle_len:
-                        yield path[:]
+                    yield path[:]
                     closed.update(path)
 #                        print "Found a cycle", path, closed
                 elif nextnode not in blocked:
@@ -291,7 +290,7 @@ def recursive_simple_cycles(G):
     ----------
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
-       https://doi.org/10.1137/0204007
+       http://dx.doi.org/10.1137/0204007
 
     See Also
     --------
