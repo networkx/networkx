@@ -207,18 +207,6 @@ class TestMultilineAdjlist():
         os.close(fd)
         os.unlink(fname)
 
-    def test_multiline_adjlist_digraph(self):
-        G = self.DG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_multiline_adjlist(G, fname)
-        H = nx.read_multiline_adjlist(fname, create_using=nx.DiGraph())
-        H2 = nx.read_multiline_adjlist(fname, create_using=nx.DiGraph())
-        assert_not_equal(H, H2)  # they should be different graphs
-        assert_nodes_equal(list(H), list(G))
-        assert_edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
-
     def test_multiline_adjlist_multigraph(self):
         G = self.XG
         (fd, fname) = tempfile.mkstemp()

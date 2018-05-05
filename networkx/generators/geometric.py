@@ -208,7 +208,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         be any function that takes the metric value as input
         and outputs a single probability value between 0-1. The scipy.stats
         package has many probability distribution functions implemented and tools
-        for custom probability distribution defintions [2], and passing the .pdf
+        for custom probability distribution definitions [2], and passing the .pdf
         method of scipy.stats distributions can be used here. If the probability
         function, `p_dist`, is not supplied, the default function is an exponential
         distribution with rate parameter :math:`\lambda=1`.
@@ -287,8 +287,8 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         u_pos, v_pos = pos[u], pos[v]
         dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
         # Check if dist is <= radius parameter. This check is redundant if scipy
-        # is availible and _fast_edges routine is used, but provides the check incase
-        # scipy is not availible and all edge combinations need to be checked
+        # is available and _fast_edges routine is used, but provides the check in case
+        # scipy is not available and all edge combinations need to be checked
         if dist <= radius:
             return random.random() < p_dist(dist)
         else:
@@ -356,7 +356,7 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
         be any function that takes the metric value as input
         and outputs a single probability value between 0-1. The scipy.stats
         package has many probability distribution functions implemented and tools
-        for custom probability distribution defintions [2], and passing the .pdf
+        for custom probability distribution definitions [2], and passing the .pdf
         method of scipy.stats distributions can be used here. If the probability
         function, `p_dist`, is not supplied, the default exponential function
         :math: `r^{-2}` is used.
@@ -531,7 +531,7 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
     -----
     Starting in NetworkX 2.0 the parameters alpha and beta align with their
     usual roles in the probability distribution. In earlier versions their
-    positions in the expresssion were reversed. Their position in the calling
+    positions in the expression were reversed. Their position in the calling
     sequence reversed as well to minimize backward incompatibility.
 
     References
@@ -648,7 +648,7 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
     The thresholded random geometric graph [1] model places `n` nodes uniformly at
     random in the unit cube. Each node `u` is assigned a weight
     :math:`w_u`. Two nodes `u` and `v` are joined by an edge if they are within
-    the maximum conenction distance, `radius` computed by the `p`-Minkowski distance
+    the maximum connection distance, `radius` computed by the `p`-Minkowski distance
     and the summation of weights :math:`w_u` + :math:`w_v` is greater than or equal
     to the threshold parameter `theta`.
 
@@ -763,8 +763,8 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
         u_pos, v_pos = pos[u], pos[v]
         dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
         # Check if dist is <= radius parameter. This check is redundant if scipy
-        # is availible and _fast_edges routine is used, but provides the check incase
-        # scipy is not availible and all edge combinations need to be checked
+        # is available and _fast_edges routine is used, but provides the check in case
+        # scipy is not available and all edge combinations need to be checked
         if dist <= radius:
             return theta <= u_weight + v_weight
         else:

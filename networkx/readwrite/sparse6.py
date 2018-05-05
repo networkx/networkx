@@ -264,7 +264,7 @@ def read_sparse6(path):
     Returns
     -------
     G : Graph/Multigraph or list of Graphs/MultiGraphs
-       If the file contains multple lines then a list of graphs is returned
+       If the file contains multiple lines then a list of graphs is returned
 
     Raises
     ------

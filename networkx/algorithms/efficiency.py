@@ -52,7 +52,7 @@ def efficiency(G, u, v):
     .. [1] Latora, Vito, and Massimo Marchiori.
            "Efficient behavior of small-world networks."
            *Physical Review Letters* 87.19 (2001): 198701.
-           <http://dx.doi.org/10.1103/PhysRevLett.87.198701>
+           <https://doi.org/10.1103/PhysRevLett.87.198701>
 
     """
     try:
@@ -94,7 +94,7 @@ def global_efficiency(G):
     .. [1] Latora, Vito, and Massimo Marchiori.
            "Efficient behavior of small-world networks."
            *Physical Review Letters* 87.19 (2001): 198701.
-           <http://dx.doi.org/10.1103/PhysRevLett.87.198701>
+           <https://doi.org/10.1103/PhysRevLett.87.198701>
 
     """
     n = len(G)
@@ -143,7 +143,7 @@ def local_efficiency(G):
     .. [1] Latora, Vito, and Massimo Marchiori.
            "Efficient behavior of small-world networks."
            *Physical Review Letters* 87.19 (2001): 198701.
-           <http://dx.doi.org/10.1103/PhysRevLett.87.198701>
+           <https://doi.org/10.1103/PhysRevLett.87.198701>
 
     """
     # TODO This summation can be trivially parallelized.

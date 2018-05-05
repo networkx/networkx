@@ -24,7 +24,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     G : graph
       A NetworkX graph
 
-    max_iter : interger, optional
+    max_iter : integer, optional
       Maximum number of iterations in power method.
 
     tol : float, optional
@@ -221,7 +221,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
     G : graph
       A NetworkX graph
 
-    max_iter : interger, optional
+    max_iter : integer, optional
       Maximum number of iterations in power method.
 
     tol : float, optional

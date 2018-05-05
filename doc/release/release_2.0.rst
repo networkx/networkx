@@ -198,6 +198,11 @@ API Changes
 
 * [`#2620 <https://github.com/networkx/networkx/pull/2620>`_]
   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
+  
+* [`#1662 <https://github.com/networkx/networkx/pull/1662>`_]
+  Rewrote ``topolgical_sort`` as a generator.  It no longer accepts
+  ``reverse`` or ``nbunch`` arguments and is slightly faster.
+  Added ``lexicographical_topological_sort``, which accepts a key.
 
 Deprecations
 ------------
@@ -300,6 +305,7 @@ Contributors to this release
 - thegreathippo
 - vpodpecan
 - yash14123
+- Neil Girdhar
 
 Pull requests merged in this release
 ------------------------------------
@@ -497,3 +503,4 @@ Pull requests merged in this release
 - Prep beta release (#2624)
 - Refactor travis tests and deploy docs with travis (#2647)
 - matplotlib 2.1 deprecated is_string_like (#2659)
+- topolgical_sort, lexicographical_topological_sort (#1662)

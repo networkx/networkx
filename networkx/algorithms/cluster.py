@@ -9,6 +9,7 @@
 """Algorithms to characterize the number of triangles in a graph."""
 from __future__ import division
 
+from itertools import chain
 from itertools import combinations
 from collections import Counter
 
@@ -123,6 +124,86 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
         yield (i, len(inbrs), 2 * weighted_triangles)
 
 
+@not_implemented_for('multigraph')
+def _directed_triangles_and_degree_iter(G, nodes=None):
+    """ Return an iterator of
+    (node, total_degree, reciprocal_degree, directed_triangles).
+
+    Used for directed clustering.
+
+    """
+    nodes_nbrs = ((n, G._pred[n], G._succ[n]) for n in G.nbunch_iter(nodes))
+
+    for i, preds, succs in nodes_nbrs:
+        ipreds = set(preds) - {i}
+        isuccs = set(succs) - {i}
+
+        directed_triangles = 0
+        for j in chain(ipreds, isuccs):
+            jpreds = set(G._pred[j]) - {j}
+            jsuccs = set(G._succ[j]) - {j}
+            directed_triangles += sum((1 for k in
+                                       chain((ipreds & jpreds),
+                                             (ipreds & jsuccs),
+                                             (isuccs & jpreds),
+                                             (isuccs & jsuccs))))
+        dtotal = len(ipreds) + len(isuccs)
+        dbidirectional = len(ipreds & isuccs)
+        yield (i, dtotal, dbidirectional, directed_triangles)
+
+
+@not_implemented_for('multigraph')
+def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight = 'weight'):
+    """ Return an iterator of
+    (node, total_degree, reciprocal_degree, directed_weighted_triangles).
+
+    Used for directed weighted clustering.
+
+    """
+    if weight is None or G.number_of_edges() == 0:
+        max_weight = 1
+    else:
+        max_weight = max(d.get(weight, 1) for u, v, d in G.edges(data=True))
+
+    nodes_nbrs = ((n, G._pred[n], G._succ[n]) for n in G.nbunch_iter(nodes))
+
+    def wt(u, v):
+        return G[u][v].get(weight, 1) / max_weight
+
+    for i, preds, succs in nodes_nbrs:
+        ipreds = set(preds) - {i}
+        isuccs = set(succs) - {i}
+
+        directed_triangles = 0
+        for j in ipreds:
+            jpreds = set(G._pred[j]) - {j}
+            jsuccs = set(G._succ[j]) - {j}
+            directed_triangles += sum((wt(j, i) * wt(k, i) * wt(k, j))**(1 / 3)
+                                      for k in ipreds & jpreds)
+            directed_triangles += sum((wt(j, i) * wt(k, i) * wt(j, k))**(1 / 3)
+                                      for k in ipreds & jsuccs)
+            directed_triangles += sum((wt(j, i) * wt(i, k) * wt(k, j))**(1 / 3)
+                                      for k in isuccs & jpreds)
+            directed_triangles += sum((wt(j, i) * wt(i, k) * wt(j, k))**(1 / 3)
+                                      for k in isuccs & jsuccs)
+
+        for j in isuccs:
+            jpreds = set(G._pred[j]) - {j}
+            jsuccs = set(G._succ[j]) - {j}
+            directed_triangles += sum((wt(i, j) * wt(k, i) * wt(k, j))**(1 / 3)
+                                      for k in ipreds & jpreds)
+            directed_triangles += sum((wt(i, j) * wt(k, i) * wt(j, k))**(1 / 3)
+                                      for k in ipreds & jsuccs)
+            directed_triangles += sum((wt(i, j) * wt(i, k) * wt(k, j))**(1 / 3)
+                                      for k in isuccs & jpreds)
+            directed_triangles += sum((wt(i, j) * wt(i, k) * wt(j, k))**(1 / 3)
+                                      for k in isuccs & jsuccs)
+
+        dtotal = len(ipreds) + len(isuccs)
+        dbidirectional = len(ipreds & isuccs)
+        yield (i, dtotal, dbidirectional, directed_triangles)
+
+
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
 
@@ -182,7 +263,6 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     return sum(c) / len(c)
 
 
-@not_implemented_for('directed')
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
@@ -196,18 +276,32 @@ def clustering(G, nodes=None, weight=None):
     where `T(u)` is the number of triangles through node `u` and
     `deg(u)` is the degree of `u`.
 
-    For weighted graphs, the clustering is defined
-    as the geometric average of the subgraph edge weights [1]_,
+    For weighted graphs, there are several ways to define clustering [1]_.
+    the one used here is defined
+    as the geometric average of the subgraph edge weights [2]_,
 
     .. math::
 
        c_u = \frac{1}{deg(u)(deg(u)-1))}
-            \sum_{uv} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
+             \sum_{uv} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
 
     The edge weights `\hat{w}_{uv}` are normalized by the maximum weight in the
     network `\hat{w}_{uv} = w_{uv}/\max(w)`.
 
     The value of `c_u` is assigned to 0 if `deg(u) < 2`.
+
+    For directed graphs, the clustering is similarly defined as the fraction
+    of all possible directed triangles or geometric average of the subgraph
+    edge weights for unweighted and weighted directed graph respectively [3]_.
+
+    .. math::
+
+       c_u = \frac{1}{deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u)}
+             T(u),
+
+    where `T(u)` is the number of directed triangles through node `u`,
+    `deg^{tot}(u)` is the sum of in degree and out degree of `u` and
+    `deg^{\leftrightarrow}(u)` is the reciprocal degree of `u`.
 
     Parameters
     ----------
@@ -243,15 +337,31 @@ def clustering(G, nodes=None, weight=None):
        complex networks by J. Saramäki, M. Kivelä, J.-P. Onnela,
        K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).
        http://jponnela.com/web_documents/a9.pdf
+    .. [2] Intensity and coherence of motifs in weighted complex
+       networks by J. P. Onnela, J. Saramäki, J. Kertész, and K. Kaski,
+       Physical Review E, 71(6), 065103 (2005).
+    .. [3] Clustering in complex directed networks by G. Fagiolo,
+       Physical Review E, 76(2), 026107 (2007).
     """
-    if weight is not None:
-        td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
-        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
-                    v, d, t in td_iter}
+    if G.is_directed():
+        if weight is not None:
+            td_iter = _directed_weighted_triangles_and_degree_iter(
+                G, nodes, weight)
+            clusterc = {v: 0 if t == 0 else t / ((dt * (dt - 1) - 2 * db) * 2)
+                        for v, dt, db, t in td_iter}
+        else:
+            td_iter = _directed_triangles_and_degree_iter(G, nodes)
+            clusterc = {v: 0 if t == 0 else t / ((dt * (dt - 1) - 2 * db) * 2)
+                        for v, dt, db, t in td_iter}
     else:
-        td_iter = _triangles_and_degree_iter(G, nodes)
-        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
-                    v, d, t, _ in td_iter}
+        if weight is not None:
+            td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
+            clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
+                        v, d, t in td_iter}
+        else:
+            td_iter = _triangles_and_degree_iter(G, nodes)
+            clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
+                        v, d, t, _ in td_iter}
     if nodes in G:
         # Return the value of the sole entry in the dictionary.
         return clusterc[nodes]

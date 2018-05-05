@@ -647,7 +647,7 @@ class Graph(object):
             If False, return just the nodes n.
 
         default : value, optional (default=None)
-            Value used for nodes that dont have the requested attribute.
+            Value used for nodes that don't have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns
@@ -928,7 +928,7 @@ class Graph(object):
                 u, v, dd = e
             elif ne == 2:
                 u, v = e
-                dd = {}  # doesnt need edge_attr_dict_factory
+                dd = {}  # doesn't need edge_attr_dict_factory
             else:
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
@@ -1154,7 +1154,7 @@ class Graph(object):
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
             If False, return 2-tuple (u, v).
         default : value, optional (default=None)
-            Value used for edges that dont have the requested attribute.
+            Value used for edges that don't have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns

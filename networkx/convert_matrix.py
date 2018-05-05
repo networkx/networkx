@@ -7,7 +7,7 @@
 """Functions to convert NetworkX graphs to and from numpy/scipy matrices.
 
 The preferred way of converting data to a NetworkX graph is through the
-graph constuctor.  The constructor calls the to_networkx_graph() function
+graph constructor.  The constructor calls the to_networkx_graph() function
 which attempts to guess the input type and convert it automatically.
 
 Examples
@@ -798,7 +798,9 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         M = sparse.coo_matrix((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
         return M.asformat(format)
-    except AttributeError:
+    # From Scipy 1.1.0, asformat will throw a ValueError instead of an
+    # AttributeError if the format if not recognized.
+    except (AttributeError, ValueError):
         raise nx.NetworkXError("Unknown sparse matrix format: %s" % format)
 
 

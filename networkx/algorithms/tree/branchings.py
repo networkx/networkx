@@ -19,7 +19,7 @@ This implementation is based on:
 #    doi={10.1007/BF02579168},
 #    title={Efficient algorithms for finding minimum spanning trees in
 #        undirected and directed graphs},
-#    url={http://dx.doi.org/10.1007/BF02579168},
+#    url={https://doi.org/10.1007/BF02579168},
 #    publisher={Springer-Verlag},
 #    keywords={68 B 15; 68 C 05},
 #    author={Gabow, Harold N. and Galil, Zvi and Spencer, Thomas and Tarjan,

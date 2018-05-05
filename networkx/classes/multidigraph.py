@@ -525,7 +525,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
-            Value used for edges that dont have the requested attribute.
+            Value used for edges that don't have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns
@@ -590,7 +590,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
-            Value used for edges that dont have the requested attribute.
+            Value used for edges that don't have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns

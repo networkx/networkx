@@ -53,7 +53,7 @@ def test_tensor_product_size():
 
 
 def test_tensor_product_combinations():
-    # basic smoke test, more realistic tests would be usefule
+    # basic smoke test, more realistic tests would be useful
     P5 = nx.path_graph(5)
     K3 = nx.complete_graph(3)
     G = nx.tensor_product(P5, K3)

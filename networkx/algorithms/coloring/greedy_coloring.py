@@ -320,7 +320,7 @@ def greedy_color(G, strategy='largest_first', interchange=False):
        ISBN 0-8218-3458-4.
     .. [2] David W. Matula, and Leland L. Beck, "Smallest-last
        ordering and clustering and graph coloring algorithms." *J. ACM* 30,
-       3 (July 1983), 417–427. <http://dx.doi.org/10.1145/2402.322385>
+       3 (July 1983), 417–427. <https://doi.org/10.1145/2402.322385>
     .. [3] Maciej M. Sysło, Marsingh Deo, Janusz S. Kowalik,
        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.
        ISBN 0-486-45353-7.

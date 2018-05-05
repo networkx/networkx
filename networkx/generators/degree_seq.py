@@ -793,9 +793,9 @@ class DegreeSequenceRandomGraph(object):
         return self.graph
 
     def update_remaining(self, u, v, aux_graph=None):
-        # decrement remaining nodes, modify auxilliary graph if in phase3
+        # decrement remaining nodes, modify auxiliary graph if in phase3
         if aux_graph is not None:
-            # remove edges from auxilliary graph
+            # remove edges from auxiliary graph
             aux_graph.remove_edge(u, v)
         if self.remaining_degree[u] == 1:
             del self.remaining_degree[u]
@@ -855,7 +855,7 @@ class DegreeSequenceRandomGraph(object):
     def phase3(self):
         # build potential remaining edges and choose with rejection sampling
         potential_edges = combinations(self.remaining_degree, 2)
-        # build auxilliary graph of potential edges not already in graph
+        # build auxiliary graph of potential edges not already in graph
         H = nx.Graph([(u, v) for (u, v) in potential_edges
                       if not self.graph.has_edge(u, v)])
         while self.remaining_degree:

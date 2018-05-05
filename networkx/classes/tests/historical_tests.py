@@ -226,15 +226,15 @@ class HistoricalTests(object):
                           ('C', 'B'), ('C', 'D')])
         # node not in nbunch should be quietly ignored
         assert_raises(nx.NetworkXError, G.edges, 6)
-        assert_equals(G.edges('Z'), [])  # iterable non-node
+        assert_equals(list(G.edges('Z')), [])  # iterable non-node
         # nbunch can be an empty list
-        assert_equals(G.edges([]), [])
+        assert_equals(list(G.edges([])), [])
         if G.is_directed():
             elist = [('A', 'B'), ('A', 'C'), ('B', 'D')]
         else:
             elist = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         # nbunch can be a list
-        assert_edges_equal(G.edges(['A', 'B']), elist)
+        assert_edges_equal(list(G.edges(['A', 'B'])), elist)
         # nbunch can be a set
         assert_edges_equal(G.edges(set(['A', 'B'])), elist)
         # nbunch can be a graph
@@ -245,39 +245,14 @@ class HistoricalTests(object):
         ndict = {'A': "thing1", 'B': "thing2"}
         assert_edges_equal(G.edges(ndict), elist)
         # nbunch can be a single node
-        assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
+        assert_edges_equal(list(G.edges('A')), [('A', 'B'), ('A', 'C')])
         assert_nodes_equal(sorted(G), ['A', 'B', 'C', 'D'])
 
-    def test_edges_nbunch(self):
-        G = self.G()
-        G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
-                          ('C', 'B'), ('C', 'D')])
-        # Test G.edges(nbunch) with various forms of nbunch
-        # node not in nbunch should be quietly ignored
-        assert_equals(list(G.edges('Z')), [])
-        # nbunch can be an empty list
-        assert_equals(sorted(G.edges([])), [])
-        if G.is_directed():
-            elist = [('A', 'B'), ('A', 'C'), ('B', 'D')]
-        else:
-            elist = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
-        # nbunch can be a list
-        assert_edges_equal(G.edges(['A', 'B']), elist)
-        # nbunch can be a set
-        assert_edges_equal(G.edges(set(['A', 'B'])), elist)
-        # nbunch can be a graph
-        G1 = self.G()
-        G1.add_nodes_from(['A', 'B'])
-        assert_edges_equal(G.edges(G1), elist)
-        # nbunch can be a dict with nodes as keys
-        ndict = {'A': "thing1", 'B': "thing2"}
-        assert_edges_equal(G.edges(ndict), elist)
-        # nbunch can be a single node
-        assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
-
         # nbunch can be nothing (whole graph)
-        assert_edges_equal(G.edges(), [('A', 'B'), ('A', 'C'), ('B', 'D'),
-                                       ('C', 'B'), ('C', 'D')])
+        assert_edges_equal(
+            list(G.edges()),
+            [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')]
+        )
 
     def test_degree(self):
         G = self.G()
@@ -302,7 +277,7 @@ class HistoricalTests(object):
         assert_equal(dict(d for n, d in P3.degree(['A', 'B'])), {})
         # nbunch can be a graph
         assert_equal(sorted(d for n, d in P5.degree(P3)), [1, 2, 2])
-        # nbunch can be a graph thats way to big
+        # nbunch can be a graph that's way too big
         assert_equal(sorted(d for n, d in P3.degree(P5)), [1, 1, 2])
         assert_equal(list(P5.degree([])), [])
         assert_equal(dict(P5.degree([])), {})

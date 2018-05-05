@@ -725,7 +725,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             b.mybestedges = None
 
         # Loss of labeling means that we can not be sure that currently
-        # allowable edges remain allowable througout this stage.
+        # allowable edges remain allowable throughout this stage.
         allowedge.clear()
 
         # Make queue empty.
@@ -822,7 +822,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             deltatype = -1
             delta = deltaedge = deltablossom = None
 
-            # Compute delta1: the minumum value of any vertex dual.
+            # Compute delta1: the minimum value of any vertex dual.
             if not maxcardinality:
                 deltatype = 1
                 delta = min(dualvar.values())

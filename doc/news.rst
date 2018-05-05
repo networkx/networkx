@@ -76,7 +76,7 @@ Highlights
 
 - pyparsing dependence removed from GML reader/parser
 - improve flow algorithms
-- new generators releated to expander graphs.
+- new generators related to expander graphs.
 - new generators for multipartite graphs, nonisomorphic trees, 
   circulant graphs
 - allow graph subclasses to use dict-like objects in place of dicts
@@ -144,7 +144,7 @@ Highlights
 - Functions to generate all simple paths
 - Improved shapefile reader
 - More flexible weighted projection of bipartite graphs
-- Faster topological sort, decendents and ancestors of DAGs
+- Faster topological sort, descendants and ancestors of DAGs
 - Scaling parameter for force-directed layout
 
 Bug fixes

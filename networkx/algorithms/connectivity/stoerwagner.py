@@ -54,7 +54,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
         :class:`MinHeap` or implement a compatible interface.
 
         If a stock heap implementation is to be used, :class:`BinaryHeap` is
-        recommeded over :class:`PairingHeap` for Python implementations without
+        recommended over :class:`PairingHeap` for Python implementations without
         optimized attribute accesses (e.g., CPython) despite a slower
         asymptotic running time. For Python implementations with optimized
         attribute accesses (e.g., PyPy), :class:`PairingHeap` provides better

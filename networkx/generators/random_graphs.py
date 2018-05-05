@@ -336,7 +336,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     .. [1] M. E. J. Newman and D. J. Watts,
        Renormalization group analysis of the small-world network model,
        Physics Letters A, 263, 341, 1999.
-       http://dx.doi.org/10.1016/S0375-9601(99)00757-4
+       https://doi.org/10.1016/S0375-9601(99)00757-4
     """
     if seed is not None:
         random.seed(seed)
@@ -648,7 +648,7 @@ def barabasi_albert_graph(n, m, seed=None):
         # And the new node "source" has m edges to add to the list.
         repeated_nodes.extend([source] * m)
         # Now choose m unique nodes from the existing nodes
-        # Pick uniformly from repeated_nodes (preferential attachement)
+        # Pick uniformly from repeated_nodes (preferential attachment)
         targets = _random_subset(repeated_nodes, m)
         source += 1
     return G
@@ -658,7 +658,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     """Returns an extended Barabási–Albert model graph.
 
     An extended Barabási–Albert model graph is a random graph constructed
-    using preferential attachment. The extended model allows new egdes,
+    using preferential attachment. The extended model allows new edges,
     rewired edges or new nodes. Based on the probabilities $p$ and $q$
     with $p + q < 1$, the growing behavior of the graph is determined as:
 
@@ -666,7 +666,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     starting from randomly chosen existing nodes and attached preferentially at the other end.
 
     2) With $q$ probability, $m$ existing edges are rewired
-    by randomly chosing an edge and rewiring one end to a preferentially chosen node.
+    by randomly choosing an edge and rewiring one end to a preferentially chosen node.
 
     3) With $(1 - p - q)$ probability, $m$ new nodes are added to the graph
     with edges attached preferentially.

@@ -269,7 +269,7 @@ class GraphMatcher(object):
 
         self.state = GMState(self)
 
-        # Provide a convienient way to access the isomorphism mapping.
+        # Provide a convenient way to access the isomorphism mapping.
         self.mapping = self.core_1.copy()
 
     def is_isomorphic(self):
@@ -587,7 +587,7 @@ class DiGraphMatcher(GraphMatcher):
 
         self.state = DiGMState(self)
 
-        # Provide a convienient way to access the isomorphism mapping.
+        # Provide a convenient way to access the isomorphism mapping.
         self.mapping = self.core_1.copy()
 
     def syntactic_feasibility(self, G1_node, G2_node):

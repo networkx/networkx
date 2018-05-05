@@ -400,7 +400,7 @@ def triangles(creation_sequence):
     Compute number of triangles in the threshold graph with the
     given creation sequence.
     """
-    # shortcut algoritm that doesn't require computing number
+    # shortcut algorithm that doesn't require computing number
     # of triangles at each node.
     cs = creation_sequence    # alias
     dr = cs.count("d")        # number of d's in sequence
@@ -529,7 +529,7 @@ def shortest_path(creation_sequence, u, v):
     threshold graph G with the given creation_sequence.
 
     For an unlabeled creation_sequence, the vertices
-    u and v must be integers in (0,len(sequence)) refering
+    u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
 
     For a labeled creation_sequence, u and v are labels of veritices.

@@ -85,7 +85,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     # Uses Python heapq to keep in priority order.
     # Add a counter to the queue to prevent the underlying heap from
     # attempting to compare the nodes themselves. The hash breaks ties in the
-    # priority and is guarenteed unique for all nodes in the graph.
+    # priority and is guaranteed unique for all nodes in the graph.
     c = count()
     queue = [(0, next(c), source, 0, None)]
 
@@ -120,10 +120,10 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             ncost = dist + w.get(weight, 1)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
-                # if qcost < ncost, a longer path to neighbor remains
-                # enqueued. Removing it would need to filter the whole
-                # queue, it's better just to leave it there and ignore
-                # it when we visit the node a second time.
+                # if qcost <= ncost, a less costly path from the
+                # neighbor to the source was already determined.
+                # Therefore, we won't attempt to push this neighbor
+                # to the queue
                 if qcost <= ncost:
                     continue
             else:

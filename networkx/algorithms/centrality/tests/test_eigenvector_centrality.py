@@ -131,7 +131,6 @@ class TestEigenvectorCentralityExceptions(object):
             import scipy
         except ImportError:
             raise SkipTest('SciPy not available.')
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @raises(nx.NetworkXException)
     def test_multigraph(self):

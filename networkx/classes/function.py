@@ -54,7 +54,7 @@ def edges(G, nbunch=None):
 
 def degree(G, nbunch=None, weight=None):
     """Return a degree view of single node or of nbunch of nodes.
-    If nbunch is ommitted, then return degrees of *all* nodes.
+    If nbunch is omitted, then return degrees of *all* nodes.
     """
     return G.degree(nbunch, weight)
 
@@ -461,7 +461,7 @@ def restricted_view(G, nodes, edges):
     with a chain of subgraph views. Such chains can get quite slow
     for lengths near 15. To avoid long chains, try to make your subgraph
     based on the original graph (`subgraph.root_graph`). We do not
-    rule out chains programatically so that odd cases like an
+    rule out chains programmatically so that odd cases like an
     `edge_subgraph` of a `restricted_view` can be created.
 
     Examples
@@ -585,6 +585,9 @@ def info(G, n=None):
 def set_node_attributes(G, values, name=None):
     """Sets node attributes from a given value or dictionary of values.
 
+    .. Warning:: The call order of arguments `values` and `name`
+        switched between v1.x & v2.x.
+
     Parameters
     ----------
     G : NetworkX Graph
@@ -693,6 +696,9 @@ def get_node_attributes(G, name):
 
 def set_edge_attributes(G, values, name=None):
     """Sets edge attributes from a given value or dictionary of values.
+
+    .. Warning:: The call order of arguments `values` and `name`
+        switched between v1.x & v2.x.
 
     Parameters
     ----------
@@ -1099,7 +1105,7 @@ def selfloop_edges(G, data=False, keys=False, default=None):
     keys : bool, optional (default=False)
         If True, return edge keys with each edge.
     default : value, optional (default=None)
-        Value used for edges that dont have the requested attribute.
+        Value used for edges that don't have the requested attribute.
         Only relevant if data is not True or False.
 
     Returns

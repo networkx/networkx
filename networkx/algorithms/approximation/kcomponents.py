@@ -35,7 +35,7 @@ def k_components(G, min_density=0.95):
     one or more 3-components, and so forth.
 
     This implementation is based on the fast heuristics to approximate
-    the `k`-component sturcture of a graph [1]_. Which, in turn, it is based on
+    the `k`-component structure of a graph [1]_. Which, in turn, it is based on
     a fast approximation algorithm for finding good lower bounds of the number
     of node independent paths between two nodes [2]_.
 
@@ -45,7 +45,7 @@ def k_components(G, min_density=0.95):
         Undirected graph
 
     min_density : Float
-        Density relaxation treshold. Default value 0.95
+        Density relaxation threshold. Default value 0.95
 
     Returns
     -------

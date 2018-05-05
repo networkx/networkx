@@ -550,7 +550,7 @@ class GraphMLWriter(GraphML):
 class IncrementalElement(object):
     """Wrapper for _IncrementalWriter providing an Element like interface.
 
-    This wrapper does not intend to be a complete implemenation but rather to
+    This wrapper does not intend to be a complete implementation but rather to
     deal with those calls used in GraphMLWriter.
     """
 
@@ -852,7 +852,7 @@ class GraphMLReader(GraphML):
                 if node_label is not None:
                     data['label'] = node_label.text
 
-                # check all the diffrent types of edges avaivable in yEd.
+                # check all the different types of edges avaivable in yEd.
                 for e in ['PolyLineEdge', 'SplineEdge', 'QuadCurveEdge',
                           'BezierEdge', 'ArcEdge']:
                     pref = "{%s}%s/{%s}" % (self.NS_Y, e, self.NS_Y)

@@ -51,16 +51,16 @@ def extrema_bounding(G, compute="diameter"):
     F.W. Takes and W.A. Kosters, Determining the Diameter of Small World
     Networks, in Proceedings of the 20th ACM International Conference on
     Information and Knowledge Management (CIKM 2011), pp. 1191-1196, 2011.
-    doi: http://dx.doi.org/10.1145/2063576.2063748
+    doi: https://doi.org/10.1145/2063576.2063748
 
     F.W. Takes and W.A. Kosters, Computing the Eccentricity Distribution of
     Large Graphs, Algorithms 6(1): 100-118, 2013.
-    doi: http://dx.doi.org/10.3390/a6010100
+    doi: https://doi.org/10.3390/a6010100
 
     M. Borassi, P. Crescenzi, M. Habib, W.A. Kosters, A. Marino and F.W. Takes,
     Fast Graph Diameter and Radius BFS-Based Computation in (Weakly Connected)
     Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
-    doi: http://dx.doi.org/10.1016/j.tcs.2015.02.033
+    doi: https://doi.org/10.1016/j.tcs.2015.02.033
     """
 
     # init variables

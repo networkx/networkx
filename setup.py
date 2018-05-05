@@ -62,7 +62,8 @@ docdirbase = 'share/doc/networkx-%s' % version
 # add basic documentation
 data = [(docdirbase, glob("*.txt"))]
 # add examples
-for d in ['advanced',
+for d in ['.',
+          'advanced',
           'algorithms',
           'basic',
           '3d_drawing',
@@ -74,6 +75,7 @@ for d in ['advanced',
           'subclass']:
     dd = os.path.join(docdirbase, 'examples', d)
     pp = os.path.join('examples', d)
+    data.append((dd, glob(os.path.join(pp, "*.txt"))))
     data.append((dd, glob(os.path.join(pp, "*.py"))))
     data.append((dd, glob(os.path.join(pp, "*.bz2"))))
     data.append((dd, glob(os.path.join(pp, "*.gz"))))
@@ -112,7 +114,7 @@ package_data = {
 
 install_requires = ['decorator>=4.1.0']
 extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
-                          'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml']}
+                          'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml','nose']}
 
 if __name__ == "__main__":
 

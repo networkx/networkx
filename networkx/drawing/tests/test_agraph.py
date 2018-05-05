@@ -1,4 +1,4 @@
-"""Unit tests for PyGraphviz inteface."""
+"""Unit tests for PyGraphviz interface."""
 import os
 import tempfile
 from nose import SkipTest
@@ -79,12 +79,6 @@ class TestAGraph(object):
         G.add_edge(1, 2, weight=7)
         G.add_edge(2, 3, weight=8)
         nx.nx_agraph.view_pygraphviz(G, edgelabel='weight')
-
-    def test_from_agraph_name(self):
-        G = nx.Graph(name='test')
-        A = nx.nx_agraph.to_agraph(G)
-        H = nx.nx_agraph.from_agraph(A)
-        assert_equal(G.name, 'test')
 
     def test_graph_with_reserved_keywords(self):
         # test attribute/keyword clash case for #1582
