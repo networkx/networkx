@@ -154,7 +154,7 @@ def simple_cycles(G, root=None, max_cycle_len=None):
     ----------
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
-       https://doi.org/10.1137/0204007
+       http://dx.doi.org/10.1137/0204007
     .. [2] Enumerating the cycles of a digraph: a new preprocessing strategy.
        G. Loizou and P. Thanish, Information Sciences, v. 27, 163-182, 1982.
     .. [3] A search strategy for the elementary cycles of a directed graph.
@@ -182,10 +182,11 @@ def simple_cycles(G, root=None, max_cycle_len=None):
     subG = type(G)(G.edges())
     sccs = list(nx.strongly_connected_components(subG))
 
-    if max_cycle_len is not None:
-        limit_cycles_length = True
-    else:
+    if max_cycle_len is None:
         limit_cycles_length = False
+        max_cycle_len = G.number_of_edges()
+    else:
+        limit_cycles_length = True
 
     if root is None:
         rootless = True
@@ -291,7 +292,7 @@ def recursive_simple_cycles(G):
     ----------
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
-       https://doi.org/10.1137/0204007
+       http://dx.doi.org/10.1137/0204007
 
     See Also
     --------
