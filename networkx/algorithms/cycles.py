@@ -216,7 +216,7 @@ def simple_cycles(G, root=None, max_cycle_len=None):
 
                 # Complete the loop prematurely
                 if limit_cycle_len:
-                    if len(path) > max_cycle_len:
+                    if len(path) - 1 > max_cycle_len:
                         closed.update(path)
 
                 if nextnode == startnode:
