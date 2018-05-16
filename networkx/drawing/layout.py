@@ -29,7 +29,8 @@ from __future__ import division
 import networkx as nx
 from networkx.utils import random_state
 
-__all__ = ['circular_layout',
+__all__ = ['bipartite_layout',
+           'circular_layout',
            'kamada_kawai_layout',
            'random_layout',
            'rescale_layout',
@@ -236,6 +237,92 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
         radius += 1.0
 
     return npos
+
+
+def bipartite_layout(G, nodes, align='vertical', width=3, height=2):
+    """Position nodes in two straight lines.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
+
+    nodes : list or container
+            Nodes in one node set of the bipartite graph.
+            This set will be placed on left or top.
+
+    align : string (default='vertical')
+            The alignment of nodes. Vertical or horizontal.
+
+    width : number (default=3)
+            The width of the layout, measured by the distance between
+            the leftmost and the rightmost node.
+
+    height : number (default=2)
+             The height of the layout, measured by the distance between
+             the highest and the lowest node.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.bipartite.gnmk_random_graph(3, 5, 10)
+    >>> top = nx.bipartite.sets(G)[0]
+    >>> pos = nx.bipartite_layout(G, top)
+
+    Notes
+    -----
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
+
+    """
+
+    import numpy as np
+
+    G, _ = _process_params(G, center=None, dim=2)
+
+    top = set(nodes)
+    bottom = set(G) - top
+
+    pos = {}
+
+    if align == 'vertical':
+        left_x = 0.0
+        right_x = width
+        left_ys = np.linspace(0, height, len(top))
+        right_ys = np.linspace(0, height, len(bottom))
+
+        top_pos = { node : (left_x, y)
+                    for node, y in zip(top, left_ys) }
+        bottom_pos = { node : (right_x, y)
+                       for node, y in zip(bottom, right_ys) }
+
+        pos.update(top_pos)
+        pos.update(bottom_pos)
+
+        return pos
+
+    if align == 'horizontal':
+        top_y = height
+        bottom_y = 0.0
+        top_xs = np.linspace(0, width, len(top))
+        bottom_xs = np.linspace(0, width, len(bottom))
+
+        top_pos = { node : (x, top_y)
+                    for node, x in zip(top, top_xs) }
+        bottom_pos = { node : (x, bottom_y)
+                       for node, x in zip(bottom, bottom_xs) }
+
+        pos.update(top_pos)
+        pos.update(bottom_pos)
+
+        return pos
+
+    msg = 'align must be either vertical or horizontal.'
+    raise ValueError(msg)
 
 
 @random_state(10)

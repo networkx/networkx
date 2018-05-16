@@ -47,6 +47,7 @@ class TestLayout(object):
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
+        vpos = nx.bipartite_layout(G, G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
 
@@ -187,6 +188,8 @@ class TestLayout(object):
         assert_equal(vpos, {})
         vpos = nx.circular_layout(G, center=(1, 1))
         assert_equal(vpos, {})
+        vpos = nx.bipartite_layout(G, G)
+        assert_equal(vpos, {})
         vpos = nx.spring_layout(G, center=(1, 1))
         assert_equal(vpos, {})
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
@@ -195,6 +198,28 @@ class TestLayout(object):
         assert_equal(vpos, {})
         vpos = nx.shell_layout(G, center=(1, 1))
         assert_equal(vpos, {})
+
+    def test_bipartite_layout(self):
+        G = nx.complete_bipartite_graph(3,5)
+        top, bottom = nx.bipartite.sets(G)
+        vpos = nx.bipartite_layout(G, top)
+        assert_equal(len(vpos), len(G))
+        for node in top:
+            assert_equal(vpos[node][0], 0)
+        for node in bottom:
+            assert_equal(vpos[node][0], 3)
+
+        vpos = nx.bipartite_layout(G, top,
+                                   align='horizontal',
+                                   height=5,
+                                   width=3)
+        assert_equal(len(vpos), len(G))
+        for node in top:
+            assert_equal(vpos[node][1], 5)
+        for node in bottom:
+            assert_equal(vpos[node][1], 0)
+
+        assert_raises(ValueError, nx.bipartite_layout, G, top, align='foo')
 
     def test_kamada_kawai_costfn_1d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
