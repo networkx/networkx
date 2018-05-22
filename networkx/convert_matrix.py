@@ -218,7 +218,7 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     >>> G = nx.Graph([('A', 'B', {'cost': 1, 'weight': 7}),
     ...               ('C', 'E', {'cost': 9, 'weight': 10})])
     >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'])
-    >>> df
+    >>> df[['cost', 'source', 'target', 'weight']]
        cost source target  weight
     0     1      A      B       7
     1     9      C      E      10
@@ -290,7 +290,7 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])
     >>> df[0] = a
     >>> df['b'] = b
-    >>> df
+    >>> df[['weight', 'cost', 0, 'b']]
        weight  cost  0  b
     0       4     7  A  D
     1       7     1  B  A
