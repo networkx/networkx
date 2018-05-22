@@ -218,10 +218,10 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     >>> G = nx.Graph([('A', 'B', {'cost': 1, 'weight': 7}),
     ...               ('C', 'E', {'cost': 9, 'weight': 10})])
     >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'])
-    >>> df[['cost', 'source', 'target', 'weight']]
-       cost source target  weight
-    0     1      A      B       7
-    1     9      C      E      10
+    >>> df[['source', 'target', 'cost', 'weight']]
+      source target  cost  weight
+    0      A      B     1       7
+    1      C      E     9      10
 
     """
     import pandas as pd
