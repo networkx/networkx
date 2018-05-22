@@ -278,6 +278,40 @@ class TestIsMaximalMatching(object):
         assert_false(nx.is_maximal_matching(G, {(0, 1)}))
 
 
+class TestIsPerfectMatching(object):
+    """Unit tests for the
+    :func:`~networkx.algorithms.matching.is_perfect_matching` function.
+
+    """
+
+    def test_dict(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_perfect_matching(G, {0: 1, 1: 0, 2: 3, 3: 2}))
+
+    def test_valid(self):
+        G = nx.path_graph(4)
+        assert_true(nx.is_perfect_matching(G, {(0, 1), (2, 3)}))
+
+    def test_valid_not_path(self):
+        G = nx.cycle_graph(4)
+        G.add_edge(0, 4)
+        G.add_edge(1, 4)
+        G.add_edge(5, 2)
+
+        assert_true(nx.is_perfect_matching(G, {(1, 4), (0, 3), (5, 2)}))
+
+    def test_not_matching(self):
+        G = nx.path_graph(4)
+        assert_false(nx.is_perfect_matching(G, {(0, 1), (1, 2), (2, 3)}))
+
+    def test_maximal_but_not_perfect(self):
+        G = nx.cycle_graph(4)
+        G.add_edge(0, 4)
+        G.add_edge(1, 4)
+
+        assert_false(nx.is_perfect_matching(G, {(1, 4), (0, 3)}))
+
+
 class TestMaximalMatching(object):
     """Unit tests for the
     :func:`~networkx.algorithms.matching.maximal_matching`.
