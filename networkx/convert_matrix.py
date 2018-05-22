@@ -219,9 +219,9 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     ...               ('C', 'E', {'cost': 9, 'weight': 10})])
     >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'])
     >>> df
-       cost source target  weight
-    0     1      A      B       7
-    1     9      C      E      10
+      source target  cost  weight
+    0      A      B     1       7
+    1      C      E     9      10
 
     """
     import pandas as pd
@@ -232,8 +232,10 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     source_nodes = [s for s, t, d in edgelist]
     target_nodes = [t for s, t, d in edgelist]
     all_keys = set().union(*(d.keys() for s, t, d in edgelist))
-    edge_attr = {k: [d.get(k, float("nan")) for s, t, d in edgelist] for k in all_keys}
-    edgelistdict = {source: source_nodes, target: target_nodes}
+    from collections import OrderedDict
+    edge_attr = OrderedDict({k: [d.get(k, float("nan")) for s, t, d in edgelist]
+                             for k in all_keys})
+    edgelistdict = OrderedDict({source: source_nodes, target: target_nodes})
     edgelistdict.update(edge_attr)
     return pd.DataFrame(edgelistdict)
 
