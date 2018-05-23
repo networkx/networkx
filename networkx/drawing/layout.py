@@ -460,11 +460,7 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
                           threshold=1e-4, dim=2, random_state=None):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
-    try:
-        import numpy as np
-    except ImportError:
-        msg = "_fruchterman_reingold() requires numpy: http://scipy.org/ "
-        raise ImportError(msg)
+    import numpy as np
 
     try:
         nnodes, _ = A.shape
@@ -531,11 +527,8 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
-    try:
-        import numpy as np
-    except ImportError:
-        m = "_sparse_fruchterman_reingold() requires numpy: http://scipy.org/"
-        raise ImportError(m)
+    import numpy as np
+
     try:
         nnodes, _ = A.shape
     except AttributeError:
@@ -650,11 +643,7 @@ def kamada_kawai_layout(G, dist=None,
     >>> G = nx.path_graph(4)
     >>> pos = nx.kamada_kawai_layout(G)
     """
-    try:
-        import numpy as np
-    except ImportError:
-        msg = 'Kamada-Kawai layout requires numpy: http://scipy.org'
-        raise ImportError(msg)
+    import numpy as np
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
@@ -687,11 +676,7 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
     # and starting locations.
 
     import numpy as np
-    try:
-        from scipy.optimize import minimize
-    except ImportError:
-        msg = 'Kamada-Kawai layout requires scipy: http://scipy.org'
-        raise ImportError(msg)
+    from scipy.optimize import minimize
 
     meanwt = 1e-3
     costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3),
@@ -806,11 +791,8 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
 def _spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses dense eigenvalue solver from numpy
-    try:
-        import numpy as np
-    except ImportError:
-        msg = "spectral_layout() requires numpy: http://scipy.org/ "
-        raise ImportError(msg)
+    import numpy as np
+
     try:
         nnodes, _ = A.shape
     except AttributeError:
@@ -834,13 +816,10 @@ def _sparse_spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
-    try:
-        import numpy as np
-        from scipy.sparse import spdiags
-        from scipy.sparse.linalg.eigen import eigsh
-    except ImportError:
-        msg = "_sparse_spectral() requires scipy & numpy: http://scipy.org/ "
-        raise ImportError(msg)
+    import numpy as np
+    from scipy.sparse import spdiags
+    from scipy.sparse.linalg.eigen import eigsh
+
     try:
         nnodes, _ = A.shape
     except AttributeError:
