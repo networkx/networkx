@@ -869,7 +869,6 @@ def rescale_layout(pos, scale=1):
         scaled positions. Each row is a position.
 
     """
-    import numpy as np
     # Find max length over all dimensions
     lim = 0  # max coordinate for all axes
     for i in range(pos.shape[1]):
