@@ -53,7 +53,15 @@ def hide_multiedges(edges):
 # write show_nodes as a class to make SubGraph pickleable
 class show_nodes(object):
     def __init__(self, nodes):
-        self.nodes = set(nodes)
+        # Remove duplicates in the selection,
+        # but keep the order in case it matters.
+        seen = set()
+        unique_nodes = []
+        for node in nodes:
+            if node not in seen:
+                unique_nodes.append(node)
+                seen.add(node)
+        self.nodes = tuple(unique_nodes)
 
     def __call__(self, node):
         return node in self.nodes
