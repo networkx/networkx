@@ -21,6 +21,7 @@ __all__ = [
     'connected_component_subgraphs',
     'is_connected',
     'node_connected_component',
+    'betti'
 ]
 
 
@@ -209,3 +210,17 @@ def _plain_bfs(G, source):
                 yield v
                 seen.add(v)
                 nextlevel.update(G_adj[v])
+
+@not_implemented_for('directed')
+def betti(G):
+    # connected components = 0th betti number
+    # edges - vertices + connected components = 1st betti number
+    connected_components = nx.number_connected_components(G)
+    if connected_components:
+        zeroth = connected_components
+        first = len(G.edges()) - len(G.nodes()) + connected_components
+        return (zeroth, first)
+    else:
+        print("Graph has no connected components")
+
+
