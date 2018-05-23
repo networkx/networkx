@@ -14,7 +14,7 @@ from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.classes.coreviews import MultiAdjacencyView
-from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
+from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView, MultiEdgeBunchView
 from networkx import NetworkXError
 from networkx.utils import iterable
 
@@ -665,6 +665,46 @@ class MultiGraph(Graph):
             return False
 
     @property
+    def edge_bunches(self):
+        """
+        Returns an iterator over the edge bunches.
+
+        edge_bunches(self)
+
+        Edge bunches are returned as tuples with data in the order (node,
+        neighbor, data) where data is an array of dicts of the attributes
+        of each edge.
+
+        Returns
+        -------
+        edge_bunches : MultiEdgeBunchView
+            A view of edge bunch attributes, usually it iterates over
+            (u, v, d) tuples of edge bunches.
+
+
+        Examples
+        --------
+        >>> G = nx.MultiGraph()   # or MultiDiGraph
+        >>> nx.add_path(G, [0, 1, 2])
+        >>> nx.add_path(G, [0, 1, 2])
+        >>> [eb for eb in G.edge_bunches()]
+        [(0, 1, [{}, {}]), (1, 2, [{}, {}])]
+        >>> G = nx.MultiGraph()   # or MultiDiGraph
+        >>> G.add_edge(0, 1, weight=1)
+        >>> G.add_edge(0, 1, weight=2)
+        >>> G.add_edge(1, 2, weight=2)
+        >>> G.add_edge(0, 2, weight=4)
+        >>> [eb for eb in G.edge_bunches()]
+        [(0, 1, [{'weight': 1}, {'weight': 2}]), (0, 2, [{'weight': 4}]), (1, 2, [{'weight': 2}])]
+
+        Edge bunches are returned as tuples with data in the order (node, neighbor, data)
+        # TODO: enable data=False to be used as an argument. Currently outputs data as default.
+        # TODO: enable output of keys
+        """
+        self.__dict__['edge_bunches'] = edge_bunches = MultiEdgeBunchView(self)
+        return edge_bunches
+
+    @property
     def edges(self):
         """Return an iterator over the edges.
 
@@ -693,7 +733,7 @@ class MultiGraph(Graph):
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
-            Value used for edges that don't have the requested attribute.
+            Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
 
         Returns
