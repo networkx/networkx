@@ -205,17 +205,18 @@ class TestLayout(object):
         vpos = nx.bipartite_layout(G, top)
         assert_equal(len(vpos), len(G))
         for node in top:
-            assert_equal(vpos[node][0], 0)
+            assert_equal(vpos[node][0], -1)
         for node in bottom:
-            assert_equal(vpos[node][0], 3)
+            assert_equal(vpos[node][0], 1)
 
         vpos = nx.bipartite_layout(G, top,
                                    align='horizontal',
-                                   height=5,
-                                   width=3)
+                                   center=(2,2),
+                                   scale=2,
+                                   aspect_ratio=1)
         assert_equal(len(vpos), len(G))
         for node in top:
-            assert_equal(vpos[node][1], 5)
+            assert_equal(vpos[node][1], 4)
         for node in bottom:
             assert_equal(vpos[node][1], 0)
 

@@ -239,7 +239,8 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
     return npos
 
 
-def bipartite_layout(G, nodes, align='vertical', width=3, height=2):
+def bipartite_layout(G, nodes, align='vertical',
+                     scale=1, center=None, aspect_ratio=4/3):
     """Position nodes in two straight lines.
 
     Parameters
@@ -248,19 +249,20 @@ def bipartite_layout(G, nodes, align='vertical', width=3, height=2):
         A position will be assigned to every node in G.
 
     nodes : list or container
-            Nodes in one node set of the bipartite graph.
-            This set will be placed on left or top.
+        Nodes in one node set of the bipartite graph.
+        This set will be placed on left or top.
 
     align : string (default='vertical')
-            The alignment of nodes. Vertical or horizontal.
+        The alignment of nodes. Vertical or horizontal.
 
-    width : number (default=3)
-            The width of the layout, measured by the distance between
-            the leftmost and the rightmost node.
+    scale : number (default: 1)
+        Scale factor for positions.
 
-    height : number (default=2)
-             The height of the layout, measured by the distance between
-             the highest and the lowest node.
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    aspect_ratio : number (default=4/3):
+        The ratio of the width to the height of the layout.
 
     Returns
     -------
@@ -282,43 +284,44 @@ def bipartite_layout(G, nodes, align='vertical', width=3, height=2):
 
     import numpy as np
 
-    G, _ = _process_params(G, center=None, dim=2)
+    G, center = _process_params(G, center=center, dim=2)
+    if len(G) == 0:
+        return {}
+
+    height = 1
+    width = aspect_ratio * height
+    offset = (width/2, height/2)
 
     top = set(nodes)
     bottom = set(G) - top
-
-    pos = {}
+    nodes = list(top) + list(bottom)
 
     if align == 'vertical':
-        left_x = 0.0
-        right_x = width
+        left_xs = np.repeat(0, len(top))
+        right_xs = np.repeat(width, len(bottom))
         left_ys = np.linspace(0, height, len(top))
         right_ys = np.linspace(0, height, len(bottom))
 
-        top_pos = { node : (left_x, y)
-                    for node, y in zip(top, left_ys) }
-        bottom_pos = { node : (right_x, y)
-                       for node, y in zip(bottom, right_ys) }
+        top_pos = np.column_stack([left_xs, left_ys]) - offset
+        bottom_pos = np.column_stack([right_xs, right_ys]) - offset
 
-        pos.update(top_pos)
-        pos.update(bottom_pos)
-
+        pos = np.concatenate([top_pos, bottom_pos])
+        pos = rescale_layout(pos, scale=scale) + center
+        pos = dict(zip(nodes, pos))
         return pos
 
     if align == 'horizontal':
-        top_y = height
-        bottom_y = 0.0
+        top_ys = np.repeat(height, len(top))
+        bottom_ys = np.repeat(0, len(bottom))
         top_xs = np.linspace(0, width, len(top))
         bottom_xs = np.linspace(0, width, len(bottom))
 
-        top_pos = { node : (x, top_y)
-                    for node, x in zip(top, top_xs) }
-        bottom_pos = { node : (x, bottom_y)
-                       for node, x in zip(bottom, bottom_xs) }
+        top_pos = np.column_stack([top_xs, top_ys]) - offset
+        bottom_pos = np.column_stack([bottom_xs, bottom_ys]) - offset
 
-        pos.update(top_pos)
-        pos.update(bottom_pos)
-
+        pos = np.concatenate([top_pos, bottom_pos])
+        pos = rescale_layout(pos, scale=scale) + center
+        pos = dict(zip(nodes, pos))
         return pos
 
     msg = 'align must be either vertical or horizontal.'
@@ -847,7 +850,7 @@ def rescale_layout(pos, scale=1):
     Each position is one row of the array. The dimension of the space
     equals the number of columns. Each coordinate in one column.
 
-    To rescale, the mean (center) is subtracted from each axis separately.
+    To rescale, the center is subtracted from each axis separately.
     Then all values are scaled so that the largest magnitude value
     from all axes equals `scale` (thus, the aspect ratio is preserved).
     The resulting NumPy Array is returned (order of rows unchanged).
@@ -866,10 +869,12 @@ def rescale_layout(pos, scale=1):
         scaled positions. Each row is a position.
 
     """
+    import numpy as np
     # Find max length over all dimensions
     lim = 0  # max coordinate for all axes
     for i in range(pos.shape[1]):
-        pos[:, i] -= pos[:, i].mean()
+        center = (max(pos[:, i]) + min(pos[:, i])) / 2
+        pos[:, i] -= center
         lim = max(abs(pos[:, i]).max(), lim)
     # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
