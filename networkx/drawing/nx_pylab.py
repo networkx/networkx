@@ -788,24 +788,26 @@ def draw_networkx_labels(G, pos,
     verticalalignment = kwds.get('verticalalignment', 'center')
 
     text_items = {}  # there is no text collection so we'll fake one
+
     for n, label in labels.items():
-        (x, y) = pos[n]
-        if not is_string_like(label):
-            label = str(label)  # this makes "1" and 1 labeled the same
-        t = ax.text(x, y,
-                    label,
-                    size=font_size,
-                    color=font_color,
-                    family=font_family,
-                    weight=font_weight,
-                    alpha=alpha,
-                    horizontalalignment=horizontalalignment,
-                    verticalalignment=verticalalignment,
-                    transform=ax.transData,
-                    bbox=bbox,
-                    clip_on=True,
-                    )
-        text_items[n] = t
+        if n in pos: ## This checks to make sure that a node in labels is also in pos, avoiding keyerrors.
+            (x, y) = pos[n]
+            if not is_string_like(label):
+                label = str(label)  # this makes "1" and 1 labeled the same
+            t = ax.text(x, y,
+                        label,
+                        size=font_size,
+                        color=font_color,
+                        family=font_family,
+                        weight=font_weight,
+                        alpha=alpha,
+                        horizontalalignment=horizontalalignment,
+                        verticalalignment=verticalalignment,
+                        transform=ax.transData,
+                        bbox=bbox,
+                        clip_on=True,
+                        )
+            text_items[n] = t
 
     return text_items
 
