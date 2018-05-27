@@ -728,6 +728,8 @@ def draw_networkx_labels(G, pos,
 
     labels : dictionary, optional (default=None)
        Node labels in a dictionary keyed by node of text labels
+       Node-keys in labels should appear as keys in `pos`.
+       If needed use: `{n:lab for n,lab in labels.items() if n in pos}`
 
     font_size : int
        Font size for text labels (default=12)
