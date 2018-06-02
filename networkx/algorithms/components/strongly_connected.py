@@ -84,8 +84,11 @@ def strongly_connected_components(G):
     lowlink = {}
     scc_found = {}
     scc_queue = []
+    nbrs = {}
     i = 0     # Preorder counter
-    for source in G:
+    G_local = G.copy()
+    for source in list(G_local):
+
         if source not in scc_found:
             queue = [source]
             while queue:
@@ -94,8 +97,11 @@ def strongly_connected_components(G):
                     i = i + 1
                     preorder[v] = i
                 done = 1
-                v_nbrs = G[v]
-                for w in v_nbrs:
+                v_nbrs = G_local[v]
+                if v not in nbrs:
+                    nbrs[v] = list(v_nbrs)
+                for _ in range(len(nbrs[v])):
+                    w = nbrs[v].pop()
                     if w not in preorder:
                         queue.append(w)
                         done = 0
@@ -116,6 +122,7 @@ def strongly_connected_components(G):
                             k = scc_queue.pop()
                             scc_found[k] = True
                             scc.add(k)
+                        G_local.remove_nodes_from(scc)
                         yield scc
                     else:
                         scc_queue.append(v)
