@@ -56,7 +56,6 @@ STYLES = {
 
 INF = float('inf')
 
-
 def random_string(L=15, seed=None):
     random.seed(seed)
     return ''.join([random.choice(string.ascii_letters) for n in range(L)])
@@ -262,9 +261,6 @@ class Edmonds(object):
     def __init__(self, G, seed=None):
         self.G_original = G
 
-        # Need to fix this. We need the whole tree.
-        self.store = True
-
         # The final answer.
         self.edges = []
 
@@ -272,7 +268,7 @@ class Edmonds(object):
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + '_{0}'
 
-    def _init(self, attr, default, kind, style):
+    def _init(self, attr, default, kind, style, store_results):
         if kind not in KINDS:
             raise nx.NetworkXException("Unknown value for `kind`.")
 
@@ -312,8 +308,15 @@ class Edmonds(object):
         # graph B^i. So we will have strictly more B^i than the paper does.
         self.B = MultiDiGraph_EdgeKey()
         self.B.edge_index = {}
-        self.graphs = []        # G^i
-        self.branchings = []    # B^i
+
+        if store_results:
+            self.graphs = []
+            self.branchings = []
+        else:
+            # Edges for rebuild the graph from circuits, indexed by self.level
+            self.unroll = {}
+            self.unroll[self.level] = []
+
         self.uf = nx.utils.UnionFind()
 
         # A list of lists of edge indexes. Each list is a circuit for graph G^i.
@@ -326,7 +329,8 @@ class Edmonds(object):
         # in circuit G^0 (depsite their weights being different).
         self.minedge_circuit = []
 
-    def find_optimum(self, attr='weight', default=1, kind='max', style='branching'):
+
+    def find_optimum(self, attr='weight', default=1, kind='max', style='branching', store_results=False):
         """
         Returns a branching from G.
 
@@ -352,13 +356,10 @@ class Edmonds(object):
             The branching.
 
         """
-        self._init(attr, default, kind, style)
+        self._init(attr, default, kind, style, store_results)
         uf = self.uf
 
-        # This enormous while loop could use some refactoring...
-
         G, B = self.G, self.B
-        D = set([])
         nodes = iter(list(G.nodes()))
         attr = self._attr
         G_pred = G.pred
@@ -378,149 +379,158 @@ class Edmonds(object):
 
             return edge, weight
 
-        while True:
-            # (I1): Choose a node v in G^i not in D^i.
-            try:
-                v = next(nodes)
-            except StopIteration:
-                # If there are no more new nodes to consider, then we *should*
-                # meet the break condition (b) from the paper:
-                #   (b) every node of G^i is in D^i and E^i is a branching
-                # Construction guarantees that it's a branching.
-                assert(len(G) == len(B))
-                if len(B):
-                    assert(is_branching(B))
+        def get_final_graph_and_branch(nodes, store_results):
+            D = set()
+            while True:
+                # (I1): Choose a node v in G^i not in D^i.
+                try:
+                   v = next(nodes)
+                except StopIteration:
+                    # If there are no more new nodes to consider, then we *should*
+                    # meet the break condition (b) from the paper:
+                    #   (b) every node of G^i is in D^i and E^i is a branching
+                    # Construction guarantees that it's a branching.
+                    if len(G) != len(B):
+                        raise Exception('Graph and branching must have the same number of nodes.')
+                    if len(B):
+                        if not(is_branching(B)):
+                            raise Exception('The branching must be a branching by definition.')
 
-                if self.store:
-                    self.graphs.append(G.copy())
-                    self.branchings.append(B.copy())
+                    if store_results:
+                        self.graphs.append(G.copy())
+                        self.branchings.append(B.copy())
 
                     # Add these to keep the lengths equal. Element i is the
                     # circuit at level i that was merged to form branching i+1.
                     # There is no circuit for the last level.
                     self.circuits.append([])
                     self.minedge_circuit.append(None)
-                break
-            else:
-                if v in D:
-                    #print("v in D", v)
+                    return G, B 
+                else:
+                    if v in D:
+                        continue
+
+                # Put v into bucket D^i.
+                #print("Adding node {0}".format(v))
+                D.add(v)
+                B.add_node(v)
+
+                edge, weight = desired_edge(v)
+                if edge is None:
+                    # If there is no edge, continue with a new node at (I1).
                     continue
-
-            # Put v into bucket D^i.
-            #print("Adding node {0}".format(v))
-            D.add(v)
-            B.add_node(v)
-
-            edge, weight = desired_edge(v)
-            #print("Max edge is {0!r}".format(edge))
-            if edge is None:
-                # If there is no edge, continue with a new node at (I1).
-                continue
-            else:
-                # Determine if adding the edge to E^i would mean its no longer
-                # a branching. Presently, v has indegree 0 in B---it is a root.
-                u = edge[0]
-
-                if uf[u] == uf[v]:
-                    # Then adding the edge will create a circuit. Then B
-                    # contains a unique path P from v to u. So condition (a)
-                    # from the paper does hold. We need to store the circuit
-                    # for future reference.
-                    Q_nodes, Q_edges = get_path(B, v, u)
-                    Q_edges.append(edge[2])
                 else:
-                    # Then B with the edge is still a branching and condition
-                    # (a) from the paper does not hold.
-                    Q_nodes, Q_edges = None, None
+                    # Determine if adding the edge to E^i would mean its no longer
+                    # a branching. Presently, v has indegree 0 in B---it is a root.
+                    u = edge[0]
 
-                # Conditions for adding the edge.
-                # If weight < 0, then it cannot help in finding a maximum branching.
-                if self.style == 'branching' and weight <= 0:
-                    acceptable = False
-                else:
-                    acceptable = True
+                    if uf[u] == uf[v]:
+                        # Then adding the edge will create a circuit. Then B
+                        # contains a unique path P from v to u. So condition (a)
+                        # from the paper does hold. We need to store the circuit
+                        # for future reference.
+                        Q_nodes, Q_edges = get_path(B, v, u)
+                        Q_edges.append(edge[2])
+                    else:
+                        # Then B with the edge is still a branching and condition
+                        # (a) from the paper does not hold.
+                        Q_nodes, Q_edges = None, None
 
-                #print("Edge is acceptable: {0}".format(acceptable))
-                if acceptable:
-                    dd = {attr: weight}
-                    B.add_edge(u, v, edge[2], **dd)
-                    G[u][v][edge[2]]['candidate'] = True
-                    uf.union(u, v)
-                    if Q_edges is not None:
-                        #print("Edge introduced a simple cycle:")
-                        #print(Q_nodes, Q_edges)
+                    # Conditions for adding the edge.
+                    # If weight < 0, then it cannot help in finding a maximum branching.
+                    if not(self.style == 'branching' and weight <= 0):
+                        dd = {attr: weight}
+                        B.add_edge(u, v, key=edge[2], **dd)
+                        G[u][v][edge[2]]['candidate'] = True
+                        uf.union(u, v)
+                        if Q_edges is not None:
+                            # Move to method
+                            # Previous meaning of u and v is no longer important.
 
-                        # Move to method
-                        # Previous meaning of u and v is no longer important.
+                            # Apply (I2).
+                            # Get the edge in the cycle with the minimum weight.
+                            # Also, save total - the incoming weights for each node.
+                            minweight = INF
+                            minedge = None
+                            Q_incoming_weight = {}
+                            for edge_key in Q_edges:
+                                u, v, data = B.edge_index[edge_key]
+                                w = data[attr]
+                                Q_incoming_weight[v] = w
+                                if  w < minweight:
+                                    minweight = w
+                                    minedge = edge_key
 
-                        # Apply (I2).
-                        # Get the edge in the cycle with the minimum weight.
-                        # Also, save the incoming weights for each node.
-                        minweight = INF
-                        minedge = None
-                        Q_incoming_weight = {}
-                        for edge_key in Q_edges:
-                            u, v, data = B.edge_index[edge_key]
-                            w = data[attr]
-                            Q_incoming_weight[v] = w
-                            if w < minweight:
-                                minweight = w
-                                minedge = edge_key
+                            self.circuits.append(Q_edges)
+                            self.minedge_circuit.append(minedge)
 
-                        self.circuits.append(Q_edges)
-                        self.minedge_circuit.append(minedge)
+                            if store_results:
+                                self.graphs.append(G.copy())
+                                self.branchings.append(B.copy())
 
-                        if self.store:
-                            self.graphs.append(G.copy())
-                        # Always need the branching with circuits.
-                        self.branchings.append(B.copy())
+                            # Now we mutate it.
+                            new_node = self.template.format(self.level)
 
-                        # Now we mutate it.
-                        new_node = self.template.format(self.level)
+                            G.add_node(new_node)
+                            new_edges = []
 
-                        #print(minweight, minedge, Q_incoming_weight)
+                            if not(store_results):
+                                if self.level not in self.unroll:
+                                    self.unroll[self.level] = []
 
-                        G.add_node(new_node)
-                        new_edges = []
-                        for u, v, key, data in G.edges(data=True, keys=True):
-                            if u in Q_incoming_weight:
-                                if v in Q_incoming_weight:
-                                    # Circuit edge, do nothing for now.
-                                    # Eventually delete it.
-                                    continue
+                            for u, v, key, data in G.edges(data=True, keys=True):
+                                if u in Q_incoming_weight:
+                                    if v in Q_incoming_weight:
+                                        if store_results:
+                                            continue
+                                        # The edge must be saved to rebuild the graph
+                                        dd = data.copy()
+                                        if 'candidate' in dd:
+                                            del dd['candidate']
+                                        self.unroll[self.level].append((u, v, key, dd))                                       
+                                    else:
+                                        # Outgoing edge. Make it from new node
+
+                                        new_edges.append((new_node, v, key, data.copy()))
+                                        if not(store_results):
+                                            dd = data.copy()
+                                            if 'candidate' in dd:
+                                                del dd['candidate']
+                                            # The edge must be saved to rebuild the graph
+                                            self.unroll[self.level].append((u, v, key, dd))
                                 else:
-                                    # Outgoing edge. Make it from new node
-                                    dd = data.copy()
-                                    new_edges.append((new_node, v, key, dd))
-                            else:
-                                if v in Q_incoming_weight:
-                                    # Incoming edge. Change its weight
-                                    w = data[attr]
-                                    w += minweight - Q_incoming_weight[v]
-                                    dd = data.copy()
-                                    dd[attr] = w
-                                    new_edges.append((u, new_node, key, dd))
-                                else:
-                                    # Outside edge. No modification necessary.
-                                    continue
+                                    if v in Q_incoming_weight:
+                                        # Incoming edge. Change its weight
+                                        w = data[attr]
+                                        w += minweight - Q_incoming_weight[v]
+                                        dd = data.copy()
+                                        dd[attr] = w
+                                        new_edges.append((u, new_node, key, dd))
 
-                        G.remove_nodes_from(Q_nodes)
-                        B.remove_nodes_from(Q_nodes)
-                        D.difference_update(set(Q_nodes))
+                                        if not(store_results):
+                                            ddcp = data.copy()
+                                            if 'candidate' in ddcp:
+                                                del ddcp['candidate']
+                                            # The edge must be saved to rebuild the graph                                       
+                                            self.unroll[self.level].append((u, v, key, ddcp))
 
-                        for u, v, key, data in new_edges:
-                            G.add_edge(u, v, key, **data)
-                            if 'candidate' in data:
-                                del data['candidate']
-                                B.add_edge(u, v, key, **data)
-                                uf.union(u, v)
+                                    else:
+                                        # Outside edge. No modification necessary.
+                                        continue
 
-                        nodes = iter(list(G.nodes()))
-                        self.level += 1
+                            G.remove_nodes_from(Q_nodes)
+                            B.remove_nodes_from(Q_nodes)
+                            D.difference_update(set(Q_nodes))
 
-        # (I3) Branch construction.
-        # print(self.level)
-        H = self.G_original.fresh_copy()
+                            for u, v, key, data in new_edges:
+                                G.add_edge(u, v, key, **data)
+                                if 'candidate' in data:
+                                    del data['candidate']
+                                    B.add_edge(u, v, key, **data)
+                                    uf.union(u, v)
+
+                            nodes = iter(list(G.nodes()))
+                            self.level += 1
 
         def is_root(G, u, edgekeys):
             """
@@ -531,7 +541,6 @@ class Edmonds(object):
 
             """
             if u not in G:
-                #print(G.nodes(), u)
                 raise Exception('{0!r} not in G'.format(u))
             for v in G.pred[u]:
                 for edgekey in G.pred[u][v]:
@@ -540,97 +549,113 @@ class Edmonds(object):
             else:
                 return True, None
 
-        # Start with the branching edges in the last level.
-        edges = set(self.branchings[self.level].edge_index)
-        while self.level > 0:
-            self.level -= 1
+        # (I3) Branch construction.
+        def branch_construction(graph, branching, store_results):
+            H = self.G_original.__class__()
 
-            # The current level is i, and we start counting from 0.
-
-            # We need the node at level i+1 that results from merging a circuit
-            # at level i. randomname_0 is the first merged node and this
-            # happens at level 1. That is, randomname_0 is a node at level 1
-            # that results from merging a circuit at level 0.
-            merged_node = self.template.format(self.level)
-
-            # The circuit at level i that was merged as a node the graph
-            # at level i+1.
-            circuit = self.circuits[self.level]
-            # print
-            #print(merged_node, self.level, circuit)
-            #print("before", edges)
-            # Note, we ask if it is a root in the full graph, not the branching.
-            # The branching alone doesn't have all the edges.
-
-            isroot, edgekey = is_root(self.graphs[self.level + 1],
-                                      merged_node, edges)
-            edges.update(circuit)
-            if isroot:
-                minedge = self.minedge_circuit[self.level]
-                if minedge is None:
-                    raise Exception
-
-                # Remove the edge in the cycle with minimum weight.
-                edges.remove(minedge)
+            # Start with the branching edges in the last level.
+            if store_results:
+                edges = set(self.branchings[self.level].edge_index)
             else:
-                # We have identified an edge at next higher level that
-                # transitions into the merged node at the level. That edge
-                # transitions to some corresponding node at the current level.
-                # We want to remove an edge from the cycle that transitions
-                # into the corresponding node.
-                #print("edgekey is: ", edgekey)
-                #print("circuit is: ", circuit)
-                # The branching at level i
-                G = self.graphs[self.level]
-                # print(G.edge_index)
-                target = G.edge_index[edgekey][1]
-                for edgekey in circuit:
-                    u, v, data = G.edge_index[edgekey]
-                    if v == target:
-                        break
+                edges = set(branching.edge_index)
+            while self.level > 0:
+                self.level -= 1
+
+                # The current level is i, and we start counting from 0.
+
+                # We need the node at level i+1 that results from merging a circuit
+                # at level i. randomname_0 is the first merged node and this
+                # happens at level 1. That is, randomname_0 is a node at level 1
+                # that results from merging a circuit at level 0.
+                merged_node = self.template.format(self.level)
+
+                # The circuit at level i that was merged as a node the graph
+                # at level i+1.
+                circuit = self.circuits[self.level]
+                # Note, we ask if it is a root in the full graph, not the branching.
+                # The branching alone doesn't have all the edges.
+                if store_results:
+                    isroot, edgekey = is_root(self.graphs[self.level + 1], merged_node, edges)
                 else:
-                    raise Exception("Couldn't find edge incoming to merged node.")
-                #print("not a root. removing {0}".format(edgekey))
+                    isroot, edgekey = is_root(graph, merged_node, edges)
+                
+                    # Rebuilding the graph of the level i
+                    graph.remove_node(merged_node)
 
-                edges.remove(edgekey)
+                    for u,v,key,data in self.unroll[self.level]:
+                        graph.add_edge(u,v,key,**data)
 
-        self.edges = edges
+                edges.update(circuit)
 
-        H.add_nodes_from(self.G_original)
-        for edgekey in edges:
-            u, v, d = self.graphs[0].edge_index[edgekey]
-            dd = {self.attr: self.trans(d[self.attr])}
-            # TODO: make this preserve the key. In fact, make this use the
-            # same edge attributes as the original graph.
-            H.add_edge(u, v, **dd)
+                if isroot:
+                    minedge = self.minedge_circuit[self.level]
+                    if minedge is None:
+                        raise Exception
 
-        return H
+                    # Remove the edge in the cycle with minimum weight.
+                    edges.remove(minedge)
+                else:
+                    # We have identified an edge at next higher level that
+                    # transitions into the merged node at the level. That edge
+                    # transitions to some corresponding node at the current level.
+                    # We want to remove an edge from the cycle that transitions
+                    # into the corresponding node.
+                    #print("edgekey is: ", edgekey)
+                    #print("circuit is: ", circuit)
+                    # The branching at level i
+                    
+                    if store_results:
+                        graph = self.graphs[self.level]
 
+                    target = graph.edge_index[edgekey][1]
+                    for edgekey in circuit:
+                        u, v, data = graph.edge_index[edgekey]
+                        if v == target:
+                            break
+                    else:
+                        raise Exception("Couldn't find edge incoming to merged node.")
 
-def maximum_branching(G, attr='weight', default=1):
+                    edges.remove(edgekey)
+
+            self.edges = edges
+
+            if store_results:
+                graph = self.graphs[0]
+
+            H.add_nodes_from(self.G_original)
+            for edgekey in edges: 
+                u, v, d = graph.edge_index[edgekey]
+                dd = {self.attr: self.trans(d[self.attr])}
+                # TODO: make this preserve the key. In fact, make this use the
+                # same edge attributes as the original graph.
+                H.add_edge(u, v, **dd)
+
+            return H
+
+        G, B = get_final_graph_and_branch(nodes, store_results)
+        return branch_construction(G, B, store_results)
+
+def maximum_branching(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='max', style='branching')
+    B = ed.find_optimum(attr, default, kind='max', style='branching', store_results=store_results)
     return B
 
-
-def minimum_branching(G, attr='weight', default=1):
+def minimum_branching(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='min', style='branching')
+    B = ed.find_optimum(attr, default, kind='min', style='branching', store_results=store_results)
     return B
 
-
-def maximum_spanning_arborescence(G, attr='weight', default=1):
+def maximum_spanning_arborescence(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='max', style='arborescence')
+    B = ed.find_optimum(attr, default, kind='max', style='arborescence', store_results=store_results)
     if not is_arborescence(B):
         msg = 'No maximum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
 
-
-def minimum_spanning_arborescence(G, attr='weight', default=1):
+def minimum_spanning_arborescence(G, attr='weight', default=1, store_results=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='min', style='arborescence')
+    B = ed.find_optimum(attr, default, kind='min', style='arborescence', store_results=store_results)
     if not is_arborescence(B):
         msg = 'No minimum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
@@ -665,13 +690,13 @@ NetworkXException
 """
 
 maximum_branching.__doc__ = \
-    docstring_branching.format(kind='maximum', style='branching')
+    docstring_branching.format(kind='maximum', style='branching', store_results=False)
 
 minimum_branching.__doc__ = \
-    docstring_branching.format(kind='minimum', style='branching')
+    docstring_branching.format(kind='minimum', style='branching', store_results=False)
 
 maximum_spanning_arborescence.__doc__ = \
-    docstring_arborescence.format(kind='maximum', style='spanning arborescence')
+    docstring_arborescence.format(kind='maximum', style='spanning arborescence', store_results=False)
 
 minimum_spanning_arborescence.__doc__ = \
-    docstring_arborescence.format(kind='minimum', style='spanning arborescence')
+    docstring_arborescence.format(kind='minimum', style='spanning arborescence', store_results=False)
