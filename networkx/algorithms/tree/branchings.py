@@ -338,8 +338,8 @@ class Edmonds(object):
         # in circuit G^0 (depsite their weights being different).
         self.minedge_circuit = []
 
-    def find_optimum(self, attr='weight', default=1, preserve_attrs=False,
-                     kind='max', style='branching'):
+    def find_optimum(self, attr='weight', default=1, kind='max',
+                     style='branching', preserve_attrs=False):
         """
         Returns a branching from G.
 
@@ -350,9 +350,6 @@ class Edmonds(object):
         default : float
             The value of the edge attribute used if an edge does not have
             the attribute `attr`.
-        preserve_attrs : bool
-            If True, preserve the other edge attributes of the original
-            graph (that are not the one passed to `attr`)
         kind : {'min', 'max'}
             The type of optimum to search for, either 'min' or 'max'.
         style : {'branching', 'arborescence'}
@@ -361,6 +358,9 @@ class Edmonds(object):
             branching is also an arborescence, then the branching is an
             optimal spanning arborescences. A given graph G need not have
             an optimal spanning arborescence.
+        preserve_attrs : bool
+            If True, preserve the other edge attributes of the original
+            graph (that are not the one passed to `attr`)
 
         Returns
         -------
@@ -632,23 +632,23 @@ class Edmonds(object):
 
 def maximum_branching(G, attr='weight', default=1, preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, preserve_attrs,
-                        kind='max', style='branching')
+    B = ed.find_optimum(attr, default, kind='max', style='branching',
+                        preserve_attrs=preserve_attrs)
     return B
 
 
 def minimum_branching(G, attr='weight', default=1, preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, preserve_attrs,
-                        kind='min', style='branching')
+    B = ed.find_optimum(attr, default, kind='min', style='branching',
+                        preserve_attrs=preserve_attrs)
     return B
 
 
 def maximum_spanning_arborescence(G, attr='weight', default=1,
                                   preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, preserve_attrs,
-                        kind='max', style='arborescence')
+    B = ed.find_optimum(attr, default, kind='max', style='arborescence',
+                        preserve_attrs=preserve_attrs)
     if not is_arborescence(B):
         msg = 'No maximum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
@@ -658,8 +658,8 @@ def maximum_spanning_arborescence(G, attr='weight', default=1,
 def minimum_spanning_arborescence(G, attr='weight', default=1,
                                   preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, preserve_attrs,
-                        kind='min', style='arborescence')
+    B = ed.find_optimum(attr, default, kind='min', style='arborescence',
+                        preserve_attrs=preserve_attrs)
     if not is_arborescence(B):
         msg = 'No minimum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
