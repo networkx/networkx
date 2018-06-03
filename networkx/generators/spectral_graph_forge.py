@@ -88,6 +88,13 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     """ Spectral Graph Forge (SGF) generates a random simple graph resembling
         the global properties of the input one.
 
+    This algorithm, called Spectral Graph Forge (SGF), computes the
+    eigenvectors of a given graph adjacency matrix, filters them and
+    builds a random graph with a similar eigenstructure.
+    SGF has been proved to be particularly useful for synthesizing
+    realistic social networks and it can also be used to anonymize
+    graph sensitive data.
+
     Parameters
     ----------
     G : Graph
@@ -108,7 +115,7 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     Raises
     ------
     NetworkXError
-        If transformation has a value different from 'identity' or 'modularity'.
+        If transformation has a value different from 'identity' or 'modularity'
 
     Notes
     -----
@@ -138,6 +145,7 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     ----------
     ..  [1] L. Baldesi, C. T. Butts, A. Markopoulou, "Spectral Graph Forge:
         Graph Generation Targeting Modularity", IEEE Infocom, '18.
+        https://arxiv.org/abs/1801.01715
     ..  [2] M. Newman, "Networks: an introduction", Oxford university press,
         2010
 
