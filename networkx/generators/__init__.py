@@ -21,6 +21,7 @@ from networkx.generators.random_clustered import *
 from networkx.generators.random_graphs import *
 from networkx.generators.small import *
 from networkx.generators.social import *
+from networkx.generators.spectral_graph_forge import *
 from networkx.generators.stochastic import *
 from networkx.generators.trees import *
 from networkx.generators.triads import *
