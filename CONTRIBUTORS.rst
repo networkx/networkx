@@ -102,6 +102,7 @@ is partially historical, and now, mostly arbitrary.
 - Alejandro Weinstein
 - Dustin Smith
 - Mathieu Larose
+- Romain Fontugne
 - Vincent Gauthier
 - chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
 - Jeffrey Finkelstein
@@ -114,7 +115,6 @@ is partially historical, and now, mostly arbitrary.
 - Niels van Adrichem, GitHub: `NvanAdrichem <https://github.com/NvanAdrichem>`_
 - Michael E. Rose, GitHub: `Michael-E-Rose <https://github.com/Michael-E-Rose>`_
 - Jarrod Millman, GitHub: `jarrodmillman <https://github.com/jarrodmillman>`_
-- Romain Fontugne
 
 Support
 -------

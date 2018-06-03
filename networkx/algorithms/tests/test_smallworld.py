@@ -1,40 +1,48 @@
 #!/usr/bin/env python
-from nose.tools import *
-from networkx.algorithms.smallworld import *
+from nose.tools import assert_true
+import random
+
+from networkx import random_reference, lattice_reference, sigma, omega
 import networkx as nx
 
-import random
 random.seed(0)
 
+
 def test_random_reference():
-    G = nx.generators.random_graphs.connected_watts_strogatz_graph(100,6,0.1)
-    Gr = random_reference(G)
+    G = nx.connected_watts_strogatz_graph(100, 6, 0.1)
+    Gr = random_reference(G, niter=1)
     C = nx.average_clustering(G)
     Cr = nx.average_clustering(Gr)
-    assert_true(C>Cr)
+    assert_true(C > Cr)
+
 
 def test_lattice_reference():
-    G = nx.generators.random_graphs.connected_watts_strogatz_graph(100,6,1)
-    Gl = lattice_reference(G)
+    G = nx.connected_watts_strogatz_graph(100, 6, 1)
+    Gl = lattice_reference(G, niter=1)
     L = nx.average_shortest_path_length(G)
     Ll = nx.average_shortest_path_length(Gl)
-    assert_true(Ll>L)
+    assert_true(Ll > L)
+
 
 def test_sigma():
-    Gs = nx.generators.random_graphs.connected_watts_strogatz_graph(100,6,0.1)
-    Gr = nx.generators.random_graphs.connected_watts_strogatz_graph(100,6,1)
-    sigmas = sigma(Gs)
-    sigmar = sigma(Gr)
-    assert_true(sigmar<sigmas)
+    Gs = nx.connected_watts_strogatz_graph(100, 6, 0.1)
+    Gr = nx.connected_watts_strogatz_graph(100, 6, 1)
+    sigmas = sigma(Gs, niter=1, nrand=2)
+    sigmar = sigma(Gr, niter=1, nrand=2)
+    assert_true(sigmar < sigmas)
+
 
 def test_omega():
-    Gs = nx.generators.random_graphs.connected_watts_strogatz_graph(100,6,0.1)
-    Gl = nx.generators.random_graphs.connected_watts_strogatz_graph(100,6,0)
-    Gr = nx.generators.random_graphs.connected_watts_strogatz_graph(100,6,1)
-    omegas = omega(Gs)
-    omegal = omega(Gl)
-    omegar = omega(Gr)
-    assert_true(omegal<omegas and omegas<omegar)
+    Gs = nx.connected_watts_strogatz_graph(100, 6, 0.1)
+    Gl = nx.connected_watts_strogatz_graph(100, 6, 0)
+    Gr = nx.connected_watts_strogatz_graph(100, 6, 1)
+    omegas = omega(Gs, niter=1, nrand=1)
+    omegal = omega(Gl, niter=1, nrand=1)
+    omegar = omega(Gr, niter=1, nrand=1)
+    print("omegas, omegal, omegar")
+    print(omegas, omegal, omegar)
+    assert_true(omegal < omegas and omegas < omegar)
+
 
 # fixture for nose tests
 def setup_module(module):
