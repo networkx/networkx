@@ -1,3 +1,4 @@
+from nose.tools import assert_raises
 import networkx as nx
 from networkx.algorithms.approximation.steinertree import metric_closure
 from networkx.algorithms.approximation.steinertree import steiner_tree
@@ -16,6 +17,11 @@ class TestSteinerTree:
         G.add_edge(7, 5, weight=1)
         self.G = G
         self.term_nodes = [1, 2, 3, 4, 5]
+
+    def test_connected_metric_closure(self):
+        G = self.G.copy()
+        G.add_node(100)
+        assert_raises(nx.NetworkXError, metric_closure, G)
 
     def test_metric_closure(self):
         M = metric_closure(self.G)
