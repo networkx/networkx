@@ -101,6 +101,7 @@ is partially historical, and now, mostly arbitrary.
 - Alejandro Weinstein
 - Dustin Smith
 - Mathieu Larose
+- Romain Fontugne
 - Vincent Gauthier
 - chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
 - Jeffrey Finkelstein

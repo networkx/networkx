@@ -36,6 +36,7 @@ from networkx.algorithms.richclub import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.similarity import *
 from networkx.algorithms.simple_paths import *
+from networkx.algorithms.smallworld import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.structuralholes import *
 from networkx.algorithms.triads import *
