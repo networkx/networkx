@@ -42,8 +42,8 @@ def from_agraph(A, create_using=None):
     A : PyGraphviz AGraph
       A graph created with PyGraphviz
 
-    create_using : NetworkX graph class instance
-      The output is created using the given graph class instance
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Examples
     --------
@@ -69,14 +69,14 @@ def from_agraph(A, create_using=None):
     if create_using is None:
         if A.is_directed():
             if A.is_strict():
-                create_using = nx.DiGraph()
+                create_using = nx.DiGraph
             else:
-                create_using = nx.MultiDiGraph()
+                create_using = nx.MultiDiGraph
         else:
             if A.is_strict():
-                create_using = nx.Graph()
+                create_using = nx.Graph
             else:
-                create_using = nx.MultiGraph()
+                create_using = nx.MultiGraph
 
     # assign defaults
     N = nx.empty_graph(0, create_using)

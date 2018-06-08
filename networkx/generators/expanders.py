@@ -54,9 +54,8 @@ def margulis_gabber_galil_graph(n, create_using=None):
     ----------
     n : int
         Determines the number of nodes in the graph: `n^2`.
-    create_using : graph-like
-        A graph-like object that receives the constructed edges. If None,
-        then a :class:`~networkx.MultiGraph` instance is used.
+    create_using : NetworkX graph constructor, optional (default MultiGraph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -69,14 +68,11 @@ def margulis_gabber_galil_graph(n, create_using=None):
         If the graph is directed or not a multigraph.
 
     """
-    if create_using is None:
-        create_using = nx.MultiGraph()
-    elif create_using.is_directed() or not create_using.is_multigraph():
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed() or not G.is_multigraph():
         msg = "`create_using` must be an undirected multigraph."
         raise nx.NetworkXError(msg)
 
-    G = create_using
-    G.clear()
     for (x, y) in itertools.product(range(n), repeat=2):
         for (u, v) in (((x + 2 * y) % n, y), ((x + (2 * y + 1)) % n, y),
                        (x, (y + 2 * x) % n), (x, (y + (2 * x + 1)) % n)):
@@ -101,9 +97,8 @@ def chordal_cycle_graph(p, create_using=None):
         The number of vertices in the graph. This also indicates where the
         chordal edges in the cycle will be created.
 
-    create_using : graph-like
-        A graph-like object that receives the constructed edges. If None,
-        then a :class:`~networkx.MultiGraph` instance is used.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -114,8 +109,7 @@ def chordal_cycle_graph(p, create_using=None):
     ------
     NetworkXError
 
-        If the graph provided in `create_using` is directed or not a
-        multigraph.
+        If `create_using` indicates directed or not a multigraph.
 
     References
     ----------
@@ -125,13 +119,11 @@ def chordal_cycle_graph(p, create_using=None):
            Birkhäuser Verlag, Basel, 1994.
 
     """
-    if create_using is None:
-        create_using = nx.MultiGraph()
-    elif create_using.is_directed() or not create_using.is_multigraph():
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed() or not G.is_multigraph():
         msg = "`create_using` must be an undirected multigraph."
         raise nx.NetworkXError(msg)
-    G = create_using
-    G.clear()
+
     for x in range(p):
         left = (x - 1) % p
         right = (x + 1) % p

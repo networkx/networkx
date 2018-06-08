@@ -82,8 +82,7 @@ def _configuration_model(deg_sequence, create_using, directed=False,
     ``deg_sequence`` is a list of nonnegative integers representing the
     degree of the node whose label is the index of the list element.
 
-    ``create_using`` is a NetworkX graph instance. For more information
-    on this keyword argument, see :func:`~networkx.empty_graph`.
+    ``create_using`` see :func:`~networkx.empty_graph`.
 
     ``directed`` and ``in_deg_sequence`` are required if you want the
     returned graph to be generated using the directed configuration
@@ -111,7 +110,7 @@ def _configuration_model(deg_sequence, create_using, directed=False,
     if seed is not None:
         random.seed(seed)
     n = len(deg_sequence)
-    G = nx.empty_graph(n, create_using=create_using)
+    G = nx.empty_graph(n, create_using)
     # If empty, return the null graph immediately.
     if n == 0:
         return G
@@ -156,8 +155,8 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
     ----------
     deg_sequence :  list of nonnegative integers
         Each list entry corresponds to the degree of a node.
-    create_using : graph, optional (default MultiGraph)
-       Return graph of this type. The instance will be cleared.
+    create_using : NetworkX graph constructor, optional (default MultiGraph)
+        Graph type to create. If graph instance, then cleared before populated.
     seed : hashable object, optional
         Seed for random number generator.
 
@@ -236,12 +235,11 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
         msg = 'Invalid degree sequence: sum of degrees must be even, not odd'
         raise nx.NetworkXError(msg)
 
-    if create_using is None:
-        create_using = nx.MultiGraph()
-    elif create_using.is_directed():
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed():
         raise nx.NetworkXNotImplemented('not implemented for directed graphs')
 
-    G = _configuration_model(deg_sequence, create_using, seed=seed)
+    G = _configuration_model(deg_sequence, G, seed=seed)
 
     return G
 
@@ -261,8 +259,8 @@ def directed_configuration_model(in_degree_sequence,
        Each list entry corresponds to the in-degree of a node.
     out_degree_sequence :  list of nonnegative integers
        Each list entry corresponds to the out-degree of a node.
-    create_using : graph, optional (default MultiDiGraph)
-       Return graph of this type. The instance will be cleared.
+    create_using : NetworkX graph constructor, optional (default MultiDiGraph)
+        Graph type to create. If graph instance, then cleared before populated.
     seed : hashable object, optional
         Seed for random number generator.
 
@@ -332,7 +330,7 @@ def directed_configuration_model(in_degree_sequence,
         raise nx.NetworkXError(msg)
 
     if create_using is None:
-        create_using = nx.MultiDiGraph()
+        create_using = nx.MultiDiGraph
 
     G = _configuration_model(out_degree_sequence, create_using, directed=True,
                              in_deg_sequence=in_degree_sequence, seed=seed)
@@ -458,8 +456,8 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     ----------
     deg_sequence: list of integers
         Each integer corresponds to the degree of a node (need not be sorted).
-    create_using : graph, optional (default Graph)
-        Return graph of this type. The instance will be cleared.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
         Directed graphs are not allowed.
 
     Raises
@@ -491,11 +489,11 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     """
     if not nx.is_graphical(deg_sequence):
         raise nx.NetworkXError('Invalid degree sequence')
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed graphs are not supported")
 
     p = len(deg_sequence)
     G = nx.empty_graph(p, create_using)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed graphs are not supported")
     num_degs = [[] for i in range(p)]
     dmax, dsum, n = 0, 0, 0
     for d in deg_sequence:
@@ -550,11 +548,11 @@ def directed_havel_hakimi_graph(in_deg_sequence,
     Parameters
     ----------
     in_deg_sequence :  list of integers
-       Each list entry corresponds to the in-degree of a node.
+        Each list entry corresponds to the in-degree of a node.
     out_deg_sequence : list of integers
-       Each list entry corresponds to the out-degree of a node.
-    create_using : graph, optional (default DiGraph)
-       Return graph of this type. The instance will be cleared.
+        Each list entry corresponds to the out-degree of a node.
+    create_using : NetworkX graph constructor, optional (default DiGraph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -585,15 +583,12 @@ def directed_havel_hakimi_graph(in_deg_sequence,
     assert(nx.utils.is_list_of_ints(in_deg_sequence))
     assert(nx.utils.is_list_of_ints(out_deg_sequence))
 
-    if create_using is None:
-        create_using = nx.DiGraph()
-
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or nonzero out degrees
     sumin, sumout = 0, 0
     nin, nout = len(in_deg_sequence), len(out_deg_sequence)
     maxn = max(nin, nout)
-    G = nx.empty_graph(maxn, create_using)
+    G = nx.empty_graph(maxn, create_using, default=nx.DiGraph)
     if maxn == 0:
         return G
     maxin = 0
@@ -672,7 +667,8 @@ def degree_sequence_tree(deg_sequence, create_using=None):
         msg = ('Invalid degree sequence: tree must have number of nodes equal'
                ' to one less than the number of edges')
         raise nx.NetworkXError(msg)
-    if create_using is not None and create_using.is_directed():
+    G = nx.empty_graph(0, create_using)
+    if G.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
 
     # Sort all degrees greater than 1 in decreasing order.
@@ -682,7 +678,7 @@ def degree_sequence_tree(deg_sequence, create_using=None):
 
     # make path graph as backbone
     n = len(deg) + 2
-    G = nx.path_graph(n, create_using)
+    nx.add_path(G, range(n))
     last = n
 
     # add the leaves

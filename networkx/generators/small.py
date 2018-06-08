@@ -51,9 +51,10 @@ def make_small_undirected_graph(graph_description, create_using=None):
 
     See make_small_graph.
     """
-    if create_using is not None and create_using.is_directed():
+    G = empty_graph(0, create_using)
+    if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
-    return make_small_graph(graph_description, create_using)
+    return make_small_graph(graph_description, G)
 
 
 def make_small_graph(graph_description, create_using=None):
@@ -147,14 +148,13 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
     and references.
 
     """
-    if create_using is not None and create_using.is_directed():
-        raise NetworkXError("Directed Graph not supported")
-
     if n <= 0:
         return empty_graph(0, create_using)
 
     # start with the n-cycle
     G = cycle_graph(n, create_using)
+    if G.is_directed():
+        raise NetworkXError("Directed Graph not supported")
     G.name = "LCF_graph"
     nodes = sorted(list(G))
 

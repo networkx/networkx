@@ -62,9 +62,8 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
         If this is ``True`` the nodes on the grid boundaries are joined
         to the corresponding nodes on the opposite grid boundaries.
 
-    create_using : NetworkX graph (default: Graph())
-        If provided this graph is cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -132,18 +131,13 @@ def grid_graph(dim, periodic=False):
     """
     dlabel = "%s" % dim
     if not dim:
-        G = empty_graph(0)
-        return G
+        return empty_graph(0)
 
     func = cycle_graph if periodic else path_graph
     G = func(dim[0])
     for current_dim in dim[1:]:
-        # order matters: copy before it is cleared during the creation of Gnew
-        Gold = G.copy()
         Gnew = func(current_dim)
-        # explicit: create_using = None
-        # This is so that we get a new graph of Gnew's class.
-        G = cartesian_product(Gnew, Gold)
+        G = cartesian_product(Gnew, G)
     # graph G is done but has labels of the form (1, (2, (3, 1))) so relabel
     H = relabel_nodes(G, flatten)
     return H
@@ -222,10 +216,8 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         Periodic positions shift the nodes vertically in a nonlinear way so
         the edges don't overlap so much.
 
-    create_using : NetworkX graph
-        If specified, this must be an instance of a NetworkX graph
-        class. It will be cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -316,10 +308,8 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
         Periodic positions shift the nodes vertically in a nonlinear way so
         the edges don't overlap so much.
 
-    create_using : NetworkX graph
-        If specified, this must be an instance of a NetworkX graph
-        class. It will be cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
         If graph is directed, edges will point up or right.
 
     Returns
@@ -327,8 +317,7 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
     NetworkX graph
         The *m* by *n* hexagonal lattice graph.
     """
-    G = create_using if create_using is not None else Graph()
-    G.clear()
+    G = empty_graph(0, create_using)
     if m == 0 or n == 0:
         return G
     if periodic and (n % 2 == 1 or m < 2 or n < 2):

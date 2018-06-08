@@ -14,7 +14,7 @@ Threshold Graphs - Creation, manipulation and identification.
 
 import random  # for swap_d
 from math import sqrt
-import networkx
+import networkx as nx
 
 __all__ = ['is_threshold_graph', 'find_threshold_graph']
 
@@ -313,13 +313,9 @@ def threshold_graph(creation_sequence, create_using=None):
         print("not a valid creation sequence type")
         return None
 
-    if create_using is None:
-        G = networkx.Graph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
-    else:
-        G = create_using
-        G.clear()
+    G = nx.empty_graph(0, create_using)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     G.name = "Threshold Graph"
 

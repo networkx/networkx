@@ -24,7 +24,12 @@ Improvements
 
 API Changes
 -----------
+empty_graph has taken over the functionality from
+nx.convert._prep_create_using which was removed.
 
+create_using should now be a Graph Constructor like nx.Graph or nx.DiGraph.
+It can still be a graph class which will be cleared before use, but the
+preferred use is a constructor.
 
 Deprecations
 ------------
