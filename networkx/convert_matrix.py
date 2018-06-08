@@ -243,7 +243,7 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     """Return a graph from Pandas DataFrame containing an edge list.
 
     The Pandas DataFrame should contain at least two columns of node names and
-    zero or more columns of node attributes. Each row will be processed as one
+    zero or more columns of edge attributes. Each row will be processed as one
     edge instance.
 
     Note: This function iterates over DataFrame.values, which is not
