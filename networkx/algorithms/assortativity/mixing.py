@@ -73,7 +73,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None,
        Mapping from node attribute to integer index in matrix.
        If not specified, an arbitrary ordering will be used.
 
-    normalized : bool (default=False)
+    normalized : bool (default=True)
        Return counts if False or probabilities if True.
 
     Returns
@@ -144,7 +144,7 @@ def degree_mixing_matrix(G, x='out', y='in', weight=None,
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
-    normalized : bool (default=False)
+    normalized : bool (default=True)
        Return counts if False or probabilities if True.
 
     Returns
@@ -180,7 +180,7 @@ def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
     nodes: list or iterable (optional)
         Build the matrix only with nodes in container. The default is all nodes.
 
-    normalized : bool (default=False)
+    normalized : bool (default=True)
        Return counts if False or probabilities if True.
 
     Returns
