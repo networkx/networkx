@@ -272,7 +272,8 @@ class Edmonds(object):
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + '_{0}'
 
-    def _init(self, attr, default, kind, style):
+
+    def _init(self, attr, default, kind, style, preserve_attrs):
         if kind not in KINDS:
             raise nx.NetworkXException("Unknown value for `kind`.")
 
@@ -295,10 +296,21 @@ class Edmonds(object):
         # This is the actual attribute used by the algorithm.
         self._attr = attr
 
+        # This attribute is used to store whether a particular edge is still
+        # a candidate. We generate a random attr to remove clashes with
+        # preserved edges
+        self.candidate_attr = 'candidate_' + random_string()
+
         # The object we manipulate at each step is a multidigraph.
         self.G = G = MultiDiGraph_EdgeKey()
         for key, (u, v, data) in enumerate(self.G_original.edges(data=True)):
             d = {attr: trans(data.get(attr, default))}
+
+            if preserve_attrs:
+                for (d_k, d_v) in data.items():
+                    if d_k != attr:
+                        d[d_k] = d_v
+
             G.add_edge(u, v, key, **d)
 
         self.level = 0
@@ -326,7 +338,8 @@ class Edmonds(object):
         # in circuit G^0 (depsite their weights being different).
         self.minedge_circuit = []
 
-    def find_optimum(self, attr='weight', default=1, kind='max', style='branching'):
+    def find_optimum(self, attr='weight', default=1, kind='max',
+                     style='branching', preserve_attrs=False):
         """
         Returns a branching from G.
 
@@ -345,6 +358,9 @@ class Edmonds(object):
             branching is also an arborescence, then the branching is an
             optimal spanning arborescences. A given graph G need not have
             an optimal spanning arborescence.
+        preserve_attrs : bool
+            If True, preserve the other edge attributes of the original
+            graph (that are not the one passed to `attr`)
 
         Returns
         -------
@@ -352,7 +368,7 @@ class Edmonds(object):
             The branching.
 
         """
-        self._init(attr, default, kind, style)
+        self._init(attr, default, kind, style, preserve_attrs)
         uf = self.uf
 
         # This enormous while loop could use some refactoring...
@@ -444,7 +460,7 @@ class Edmonds(object):
                 if acceptable:
                     dd = {attr: weight}
                     B.add_edge(u, v, edge[2], **dd)
-                    G[u][v][edge[2]]['candidate'] = True
+                    G[u][v][edge[2]][self.candidate_attr] = True
                     uf.union(u, v)
                     if Q_edges is not None:
                         #print("Edge introduced a simple cycle:")
@@ -510,8 +526,8 @@ class Edmonds(object):
 
                         for u, v, key, data in new_edges:
                             G.add_edge(u, v, key, **data)
-                            if 'candidate' in data:
-                                del data['candidate']
+                            if self.candidate_attr in data:
+                                del data[self.candidate_attr]
                                 B.add_edge(u, v, key, **data)
                                 uf.union(u, v)
 
@@ -600,37 +616,50 @@ class Edmonds(object):
         for edgekey in edges:
             u, v, d = self.graphs[0].edge_index[edgekey]
             dd = {self.attr: self.trans(d[self.attr])}
-            # TODO: make this preserve the key. In fact, make this use the
-            # same edge attributes as the original graph.
+
+            # Optionally, preserve the other edge attributes of the original
+            # graph
+            if preserve_attrs:
+                for (key, value) in d.items():
+                    if key not in [self.attr, self.candidate_attr]:
+                        dd[key] = value
+
+            # TODO: make this preserve the key.
             H.add_edge(u, v, **dd)
 
         return H
 
 
-def maximum_branching(G, attr='weight', default=1):
+def maximum_branching(G, attr='weight', default=1, preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='max', style='branching')
+    B = ed.find_optimum(attr, default, kind='max', style='branching',
+                        preserve_attrs=preserve_attrs)
     return B
 
 
-def minimum_branching(G, attr='weight', default=1):
+def minimum_branching(G, attr='weight', default=1, preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='min', style='branching')
+    B = ed.find_optimum(attr, default, kind='min', style='branching',
+                        preserve_attrs=preserve_attrs)
     return B
 
 
-def maximum_spanning_arborescence(G, attr='weight', default=1):
+def maximum_spanning_arborescence(G, attr='weight', default=1,
+                                  preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='max', style='arborescence')
+    B = ed.find_optimum(attr, default, kind='max', style='arborescence',
+                        preserve_attrs=preserve_attrs)
     if not is_arborescence(B):
         msg = 'No maximum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
 
 
-def minimum_spanning_arborescence(G, attr='weight', default=1):
+def minimum_spanning_arborescence(G, attr='weight', default=1,
+                                  preserve_attrs=False):
     ed = Edmonds(G)
-    B = ed.find_optimum(attr, default, kind='min', style='arborescence')
+    B = ed.find_optimum(attr, default, kind='min', style='arborescence',
+                        preserve_attrs=preserve_attrs)
     if not is_arborescence(B):
         msg = 'No minimum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
@@ -649,6 +678,9 @@ attr : str
 default : float
     The value of the edge attribute used if an edge does not have
     the attribute `attr`.
+preserve_attrs : bool
+    If True, preserve the other attributes of the original graph (that are not
+    passed to `attr`)
 
 Returns
 -------
