@@ -566,9 +566,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         --------
         in_edges, out_edges
         """
-        self.__dict__['edges'] = edges = OutMultiEdgeView(self)
-        self.__dict__['out_edges'] = edges
-        return edges
+        return OutMultiEdgeView(self)
 
     # alias out_edges to edges
     out_edges = edges
@@ -604,8 +602,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         --------
         edges
         """
-        self.__dict__['in_edges'] = in_edges = InMultiEdgeView(self)
-        return in_edges
+        return InMultiEdgeView(self)
 
     @property
     def degree(self):
@@ -652,8 +649,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         [(0, 1), (1, 2), (2, 2)]
 
         """
-        self.__dict__['degree'] = degree = DiMultiDegreeView(self)
-        return degree
+        return DiMultiDegreeView(self)
 
     @property
     def in_degree(self):
@@ -700,8 +696,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         [(0, 0), (1, 1), (2, 1)]
 
         """
-        self.__dict__['in_degree'] = in_degree = InMultiDegreeView(self)
-        return in_degree
+        return InMultiDegreeView(self)
 
     @property
     def out_degree(self):
@@ -747,8 +742,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         [(0, 1), (1, 1), (2, 1)]
 
         """
-        self.__dict__['out_degree'] = out_degree = OutMultiDegreeView(self)
-        return out_degree
+        return OutMultiDegreeView(self)
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

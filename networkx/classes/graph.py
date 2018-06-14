@@ -256,17 +256,6 @@ class Graph(object):
     adjlist_inner_dict_factory = dict
     edge_attr_dict_factory = dict
 
-    def __getstate__(self):
-        attr = self.__dict__.copy()
-        # remove lazy property attributes
-        if 'nodes' in attr:
-            del attr['nodes']
-        if 'edges' in attr:
-            del attr['edges']
-        if 'degree' in attr:
-            del attr['degree']
-        return attr
-
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -1184,8 +1173,7 @@ class Graph(object):
         >>> G.edges(0)  # only edges incident to a single node (use G.adj[0]?)
         EdgeDataView([(0, 1)])
         """
-        self.__dict__['edges'] = edges = EdgeView(self)
-        return edges
+        return EdgeView(self)
 
     def get_edge_data(self, u, v, default=None):
         """Return the attribute dictionary associated with edge (u, v).
@@ -1291,8 +1279,7 @@ class Graph(object):
         >>> list(G.degree([0, 1, 2]))
         [(0, 1), (1, 2), (2, 2)]
         """
-        self.__dict__['degree'] = degree = DegreeView(self)
-        return degree
+        return DegreeView(self)
 
     def clear(self):
         """Remove all nodes and edges from the graph.

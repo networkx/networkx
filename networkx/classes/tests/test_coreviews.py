@@ -17,6 +17,9 @@ class TestAtlasView(object):
         pview = pickle.loads(pickle.dumps(view, -1))
         assert_equal(view, pview)
         assert_equal(view.__slots__, pview.__slots__)
+        pview = pickle.loads(pickle.dumps(view))
+        assert_equal(view, pview)
+        assert_equal(view.__slots__, pview.__slots__)
 
     def test_len(self):
         assert_equal(len(self.av), len(self.d))
