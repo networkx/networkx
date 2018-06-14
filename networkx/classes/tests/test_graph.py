@@ -3,6 +3,7 @@ from nose.tools import assert_is
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
 from nose.tools import raises
+import pickle
 
 import networkx as nx
 from networkx.testing.utils import *
@@ -468,6 +469,13 @@ class TestGraph(BaseAttrGraphTester):
         self.K3._node[0] = {}
         self.K3._node[1] = {}
         self.K3._node[2] = {}
+
+    def test_pickle(self):
+        G = self.K3
+        pg = pickle.loads(pickle.dumps(G, -1))
+        self.graphs_equal(pg, G)
+        pg = pickle.loads(pickle.dumps(G))
+        self.graphs_equal(pg, G)
 
     def test_data_input(self):
         G = self.Graph({1: [2], 2: [1]}, name="test")

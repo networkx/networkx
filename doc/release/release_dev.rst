@@ -21,6 +21,8 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+Cyclic references between graph classes and views have been removed to ease
+subclassing without memory leaks. Graphs no longer hold references to view.
 
 API Changes
 -----------

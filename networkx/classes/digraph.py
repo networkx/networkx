@@ -243,25 +243,6 @@ class DiGraph(Graph):
     a dictionary-like object.
     """
 
-    def __getstate__(self):
-        attr = self.__dict__.copy()
-        # remove lazy property attributes
-        if 'nodes' in attr:
-            del attr['nodes']
-        if 'edges' in attr:
-            del attr['edges']
-        if 'out_edges' in attr:
-            del attr['out_edges']
-        if 'in_edges' in attr:
-            del attr['in_edges']
-        if 'degree' in attr:
-            del attr['degree']
-        if 'in_degree' in attr:
-            del attr['in_degree']
-        if 'out_degree' in attr:
-            del attr['out_degree']
-        return attr
-
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -853,9 +834,7 @@ class DiGraph(Graph):
         OutEdgeDataView([(0, 1)])
 
         """
-        self.__dict__['edges'] = edges = OutEdgeView(self)
-        self.__dict__['out_edges'] = edges
-        return edges
+        return OutEdgeView(self)
 
     # alias out_edges to edges
     out_edges = edges
@@ -889,8 +868,7 @@ class DiGraph(Graph):
         --------
         edges
         """
-        self.__dict__['in_edges'] = in_edges = InEdgeView(self)
-        return in_edges
+        return InEdgeView(self)
 
     @property
     def degree(self):
@@ -937,8 +915,7 @@ class DiGraph(Graph):
         [(0, 1), (1, 2), (2, 2)]
 
         """
-        self.__dict__['degree'] = degree = DiDegreeView(self)
-        return degree
+        return DiDegreeView(self)
 
     @property
     def in_degree(self):
@@ -985,8 +962,7 @@ class DiGraph(Graph):
         [(0, 0), (1, 1), (2, 1)]
 
         """
-        self.__dict__['in_degree'] = in_degree = InDegreeView(self)
-        return in_degree
+        return InDegreeView(self)
 
     @property
     def out_degree(self):
@@ -1033,8 +1009,7 @@ class DiGraph(Graph):
         [(0, 1), (1, 1), (2, 1)]
 
         """
-        self.__dict__['out_degree'] = out_degree = OutDegreeView(self)
-        return out_degree
+        return OutDegreeView(self)
 
     def clear(self):
         """Remove all nodes and edges from the graph.
