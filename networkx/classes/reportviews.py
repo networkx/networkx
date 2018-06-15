@@ -887,15 +887,26 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 # EdgeViews    have set operations and no data reported
 class OutEdgeView(Set, Mapping):
     """A EdgeView class for outward edges of a DiGraph"""
-    __slots__ = ('_adjdict', '_graph', '_nodes_nbrs')
+    __slots__ = ('__adjdict', '_graph', '__nodes_nbrs')
 
     def __getstate__(self):
         return {'_graph': self._graph}
 
     def __setstate__(self, state):
-        self._graph = G = state['_graph']
-        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
-        self._nodes_nbrs = self._adjdict.items
+        self._graph = state['_graph']
+
+    @property
+    def _adjdict(self):
+        G = self._graph
+        if not hasattr(self,'__adjdict'):
+            self.__adjdict = G._succ if hasattr(G, "succ") else G._adj
+        return self.__adjdict
+
+    @property
+    def _nodes_nbrs(self):
+        if not hasattr(self,'__nodes_nbrs'):
+            self.__nodes_nbrs = self._adjdict.items
+        return self.__nodes_nbrs
 
     @classmethod
     def _from_iterable(cls, it):
@@ -905,8 +916,6 @@ class OutEdgeView(Set, Mapping):
 
     def __init__(self, G):
         self._graph = G
-        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
-        self._nodes_nbrs = self._adjdict.items
 
     # Set methods
     def __len__(self):
@@ -1043,16 +1052,25 @@ class InEdgeView(OutEdgeView):
     __slots__ = ()
 
     def __setstate__(self, state):
-        self._graph = G = state['_graph']
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
+        self._graph = state['_graph']
+
+    @property
+    def _adjdict(self):
+        G = self._graph
+        if not hasattr(self,'__adjdict'):
+            self.__adjdict = G._succ if hasattr(G, "pred") else G._adj
+        return self.__adjdict
+
+    @property
+    def _nodes_nbrs(self):
+        if not hasattr(self,'__nodes_nbrs'):
+            self.__nodes_nbrs = self._adjdict.items
+        return self.__nodes_nbrs
 
     dataview = InEdgeDataView
 
     def __init__(self, G):
         self._graph = G
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
 
     def __iter__(self):
         for n, nbrs in self._nodes_nbrs():
@@ -1142,15 +1160,22 @@ class InMultiEdgeView(OutMultiEdgeView):
 
     def __setstate__(self, state):
         self._graph = G = state['_graph']
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
+
+    @property
+    def _adjdict(self):
+        G = self._graph
+        if not hasattr(self,'__adjdict'):
+            self.__adjdict = G._succ if hasattr(G, "pred") else G._adj
+        return self.__adjdict
+
+    @property
+    def _nodes_nbrs(self):
+        return self._adjdict.items
 
     dataview = InMultiEdgeDataView
 
     def __init__(self, G):
         self._graph = G
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
 
     def __iter__(self):
         for n, nbrs in self._nodes_nbrs():
