@@ -163,7 +163,7 @@ class Graph(object):
     5
 
     Often the best way to traverse all edges of a graph is via the neighbors.
-    The neighbors are reported as an adjacency-dict `G.adj` or as `G.adjacency()`
+    The neighbors are reported as an adjacency-dict `G.adj` or `G.adjacency()`
 
     >>> for n, nbrsdict in G.adjacency():
     ...     for nbr, eattr in nbrsdict.items():
@@ -294,7 +294,6 @@ class Graph(object):
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.root_graph = self
         self.graph = {}   # dictionary for graph attributes
         self._node = ndf()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict

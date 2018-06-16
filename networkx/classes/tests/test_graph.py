@@ -207,14 +207,6 @@ class BaseAttrGraphTester(BaseGraphTester):
         self.different_attrdict(H, G)
         self.shallow_copy_attrdict(H, G)
 
-    def test_root_graph(self):
-        G = self.Graph([(0, 1), (1, 2)])
-        assert_is(G, G.root_graph)
-        DG = G.to_directed(as_view=True)
-        SDG = DG.subgraph([0, 1])
-        RSDG = SDG.reverse(copy=False)
-        assert_is(G, RSDG.root_graph)
-
     def test_fresh_copy(self):
         G = self.Graph()
         G.add_node(0)

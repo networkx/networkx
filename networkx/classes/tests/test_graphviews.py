@@ -204,8 +204,9 @@ class TestChainsOfViews(object):
         nodes = [4, 5, 6, 7, 8]
         SG = nx.induced_subgraph(RG, nodes)
         SSG = RG.subgraph(nodes)
-        assert_is(SSG.root_graph, SSG._graph)
-        assert_is_not(SG.root_graph, SG._graph)
+        assert_is(RG._graph, self.G)
+        assert_is(SSG._graph, self.G)
+        assert_is(SG._graph, RG)
         assert_edges_equal(SG.edges, SSG.edges)
         # should be same as morphing the graph
         CG = self.G.copy()
@@ -217,7 +218,7 @@ class TestChainsOfViews(object):
         # switch order: subgraph first, then restricted view
         SSSG = self.G.subgraph(nodes)
         RSG = nx.restricted_view(SSSG, hide_nodes, hide_edges)
-        assert_is_not(RSG.root_graph, RSG._graph)
+        assert_is_not(RSG._graph, self.G)
         assert_edges_equal(RSG.edges, CG.edges)
 
     def test_subgraph_todirected(self):

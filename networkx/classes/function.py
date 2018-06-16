@@ -397,10 +397,10 @@ def edge_subgraph(G, edges):
     If you create a subgraph of a subgraph recursively you can end up
     with a chain of subgraphs that becomes very slow with about 15
     nested subgraph views. Luckily the edge_subgraph filter nests
-    nicely so you can use the original graph (`subgraph.root_graph`)
-    as G in this function to avoid chains. We do not rule out chains
-    programmatically so that odd cases like an `edge_subgraph` of a
-    `restricted_view` can be created.
+    nicely so you can use the original graph as G in this function
+    to avoid chains. We do not rule out chains programmatically so
+    that odd cases like an `edge_subgraph` of a `restricted_view`
+    can be created.
 
     Examples
     --------
@@ -460,9 +460,9 @@ def restricted_view(G, nodes, edges):
     If you create a subgraph of a subgraph recursively you may end up
     with a chain of subgraph views. Such chains can get quite slow
     for lengths near 15. To avoid long chains, try to make your subgraph
-    based on the original graph (`subgraph.root_graph`). We do not
-    rule out chains programmatically so that odd cases like an
-    `edge_subgraph` of a `restricted_view` can be created.
+    based on the original graph.  We do not rule out chains programmatically
+    so that odd cases like an `edge_subgraph` of a `restricted_view`
+    can be created.
 
     Examples
     --------
