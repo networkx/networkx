@@ -249,11 +249,13 @@ class TestGeneratorsBipartite():
         n = 10
         m = 20
         edges = 100
-        G = gnmk_random_graph(n, m, edges)
+        # set seed because sometimes it is not connected
+        # which raises an error in bipartite.sets(G) below.
+        G = gnmk_random_graph(n, m, edges, seed=1234)
         assert_equal(len(G), n + m)
         assert_true(is_bipartite(G))
         X, Y = nx.algorithms.bipartite.sets(G)
-        print(X)
+        #print(X)
         assert_equal(set(range(n)), X)
         assert_equal(set(range(n, n + m)), Y)
         assert_equal(edges, len(list(G.edges())))
@@ -266,7 +268,7 @@ class TestGeneratorsBipartite():
         assert_equal(len(G), n + m)
         assert_true(is_bipartite(G))
         X, Y = nx.algorithms.bipartite.sets(G)
-        print(X)
+        #print(X)
         assert_equal(set(range(n)), X)
         assert_equal(set(range(n, n + m)), Y)
         assert_equal(edges, len(list(G.edges())))
