@@ -159,7 +159,7 @@ class MultiGraph(Graph):
     AdjacencyView({2: {0: {'weight': 4}, 1: {'color': 'blue'}}})
 
     Often the best way to traverse all edges of a graph is via the neighbors.
-    The neighbors are reported as an adjacency-dict `G.adj` or as `G.adjacency()`.
+    The neighbors are reported as an adjacency-dict `G.adj` or `G.adjacency()`.
 
     >>> for n, nbrsdict in G.adjacency():
     ...     for nbr, keydict in nbrsdict.items():

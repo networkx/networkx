@@ -24,6 +24,9 @@ Improvements
 Cyclic references between graph classes and views have been removed to ease
 subclassing without memory leaks. Graphs no longer hold references to view.
 
+Cyclic references between a graph and itself have been removed by eliminating
+G.root_graph. It turns out this was an avoidable construct anyway.
+
 API Changes
 -----------
 

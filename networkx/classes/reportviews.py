@@ -1019,7 +1019,8 @@ class EdgeView(OutEdgeView):
     dataview = EdgeDataView
 
     def __len__(self):
-        return sum(len(nbrs) + (n in nbrs) for n, nbrs in self._nodes_nbrs()) // 2
+        num_nbrs = (len(nbrs) + (n in nbrs) for n, nbrs in self._nodes_nbrs())
+        return sum(num_nbrs) // 2
 
     def __iter__(self):
         seen = {}
