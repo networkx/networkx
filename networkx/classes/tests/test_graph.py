@@ -4,6 +4,8 @@ from nose.tools import assert_not_equal
 from nose.tools import assert_raises
 from nose.tools import raises
 import pickle
+import gc
+import collections
 
 import networkx as nx
 from networkx.testing.utils import *
@@ -70,6 +72,28 @@ class BaseGraphTester(object):
         G = self.K3
         assert_equal(sorted(G.neighbors(0)), [1, 2])
         assert_raises((KeyError, nx.NetworkXError), G.neighbors, -1)
+
+    def test_memory_leak(self):
+        G = self.Graph()
+        def count_objects_of_type(_type):
+            return sum(1 for obj in gc.get_objects() if isinstance(obj, _type))
+
+        gc.collect()
+        before = count_objects_of_type(self.Graph)
+        G.copy()
+        after = count_objects_of_type(self.Graph)
+        assert_equal(before, after)
+
+        # test a subgraph of the base class
+        class MyGraph(self.Graph):
+            pass
+
+        gc.collect()
+        G = MyGraph()
+        before = count_objects_of_type(MyGraph)
+        G.copy()
+        after = count_objects_of_type(MyGraph)
+        assert_equal(before, after)
 
     def test_edges(self):
         G = self.K3
@@ -184,6 +208,15 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.Graph(name='test')
         assert_equal(G.__str__(), "test")
         assert_equal(G.name, "test")
+
+    def test_graph_chain(self):
+        G = self.Graph([(0, 1), (1, 2)])
+        DG = G.to_directed(as_view=True)
+        SDG = DG.subgraph([0, 1])
+        RSDG = SDG.reverse(copy=False)
+        assert_is(G, DG._graph)
+        assert_is(DG, SDG._graph)
+        assert_is(SDG, RSDG._graph)
 
     def test_copy(self):
         G = self.Graph()
