@@ -1547,6 +1547,24 @@ class Graph(object):
         For an inplace reduction of a graph to a subgraph you can remove nodes:
         G.remove_nodes_from([n for n in G if n not in set(nodes)])
 
+        Subgraph views are sometimes NOT what you want. In most cases where
+        you want to do more than simply look at the induced edges, it makes
+        more sense to just create the subgraph as its own graph with code like:
+
+        # Create a subgraph SG based on a (possibly multigraph) G
+        SG = G.fresh_copy()
+        SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)
+        if SG.is_multigraph:
+            SG.add_edges_from((n, nbr, key, d)
+                for n, nbrs in G.adj.items() if n in largest_wcc
+                for nbr, keydict in nbrs.items() if nbr in largest_wcc
+                for key, d in keydict.items())
+        else:
+            SG.add_edges_from((n, nbr, d)
+                for n, nbrs in G.adj.items() if n in largest_wcc
+                for nbr, d in nbrs.items() if nbr in largest_wcc)
+        SG.graph.update(G.graph)
+
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
