@@ -1,11 +1,11 @@
-Node Classification
-===================
+Node Classifications
+====================
 .. automodule:: networkx.algorithms.node_classification
 .. currentmodule:: networkx
 
 Harmonic Function
 -----------------
-.. automodule:: networkx.algorithms.node_classification.hmn
+.. automodule:: networkx.algorithms.node_classification
 .. autosummary::
    :toctree: generated/
 
@@ -14,7 +14,7 @@ Harmonic Function
 
 Local and Global Consistency
 ----------------------------
-.. automodule:: networkx.algorithms.node_classification.lgc
+.. automodule:: networkx.algorithms.node_classification
 .. autosummary::
    :toctree: generated/
 

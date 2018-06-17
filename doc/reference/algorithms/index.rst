@@ -47,6 +47,7 @@ Algorithms
    matching
    minors
    mis
+   node_classification
    operators
    reciprocity
    rich_club

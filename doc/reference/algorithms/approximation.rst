@@ -1,6 +1,6 @@
-****************************
+*****************************
 Approximations and Heuristics
-****************************
+*****************************
 
 .. automodule:: networkx.algorithms.approximation
 

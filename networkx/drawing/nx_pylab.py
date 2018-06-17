@@ -505,7 +505,7 @@ def draw_networkx_edges(G, pos,
     Notes
     -----
     For directed graphs, arrows are drawn at the head end.  Arrows can be
-    turned off with keyword arrows=False. Be sure to include `node_size' as a
+    turned off with keyword arrows=False. Be sure to include `node_size` as a
     keyword argument; arrows are drawn considering the size of nodes.
 
     Examples
