@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
 # Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
-
 """Function for computing Local and global consistency algorithm by Zhou et al.
 
 References
@@ -10,7 +9,6 @@ Zhou, D., Bousquet, O., Lal, T. N., Weston, J., & Schölkopf, B. (2004).
 Learning with local and global consistency.
 Advances in neural information processing systems, 16(16), 321-328.
 """
-
 import networkx as nx
 
 from networkx.utils.decorators import not_implemented_for

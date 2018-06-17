@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
 # Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
-
 """Function for computing Harmonic function algorithm by Zhu et al.
 
 References
@@ -10,8 +9,6 @@ Zhu, X., Ghahramani, Z., & Lafferty, J. (2003, August).
 Semi-supervised learning using gaussian fields and harmonic functions.
 In ICML (Vol. 3, pp. 912-919).
 """
-
-
 import networkx as nx
 
 from networkx.utils.decorators import not_implemented_for

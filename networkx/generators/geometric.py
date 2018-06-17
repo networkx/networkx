@@ -101,7 +101,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
         Which Minkowski distance metric to use.  `p` has to meet the condition
         ``1 <= p <= infinity``.
 
-        If this argument is not specified, the :math:`L^2` metric 
+        If this argument is not specified, the :math:`L^2` metric
         (the Euclidean distance metric), p = 2 is used.
         This should not be confused with the `p` of an Erdős-Rényi random
         graph, which represents probability.
@@ -171,16 +171,17 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2):
 
 @nodes_or_number(0)
 def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
-    """Returns a soft random geometric graph in the unit cube of dimensions `dim`.
+    """Returns a soft random geometric graph in the unit cube.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
-    random in the unit cube. Two nodes of distance, dist, computed by the `p`-Minkowski
-    distance metric are joined by an edge with probability `p_dist` if the computed
-    distance metric value of the nodes is at most `radius`, otherwise 
-    they are not joined.
+    random in the unit cube in dimension `dim`. Two nodes of distance, `dist`,
+    computed by the `p`-Minkowski distance metric are joined by an edge with
+    probability `p_dist` if the computed distance metric value of the nodes
+    is at most `radius`, otherwise they are not joined.
 
-    Edges within `radius` of each other are determined using a KDTree when SciPy
-    is available. This reduces the time complexity from :math:`O(n^2)` to :math:`O(n)`.
+    Edges within `radius` of each other are determined using a KDTree when
+    SciPy is available. This reduces the time complexity from :math:`O(n^2)`
+    to :math:`O(n)`.
 
     Parameters
     ----------
@@ -193,25 +194,25 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     pos : dict, optional
         A dictionary keyed by node with node positions as values.
     p : float, optional
-        Which Minkowski distance metric to use.  `p` has to meet the condition
-        ``1 <= p <= infinity``.
+        Which Minkowski distance metric to use.
+        `p` has to meet the condition ``1 <= p <= infinity``.
 
-        If this argument is not specified, the :math:`L^2` metric (the Euclidean
-        distance metric), p = 2 is used.
+        If this argument is not specified, the :math:`L^2` metric
+        (the Euclidean distance metric), p = 2 is used.
 
         This should not be confused with the `p` of an Erdős-Rényi random
         graph, which represents probability.
     p_dist : function, optional
-        A probability density function computing the probability of 
-        connecting two nodes that are of distance, dist, computed by the 
-        Minkowski distance metric. The probability density function, `p_dist`, must
-        be any function that takes the metric value as input
+        A probability density function computing the probability of
+        connecting two nodes that are of distance, dist, computed by the
+        Minkowski distance metric. The probability density function, `p_dist`,
+        must be any function that takes the metric value as input
         and outputs a single probability value between 0-1. The scipy.stats
-        package has many probability distribution functions implemented and tools
-        for custom probability distribution definitions [2], and passing the .pdf
-        method of scipy.stats distributions can be used here. If the probability
-        function, `p_dist`, is not supplied, the default function is an exponential
-        distribution with rate parameter :math:`\lambda=1`.
+        package has many probability distribution functions implemented and
+        tools for custom probability distribution definitions [2], and passing
+        the .pdf method of scipy.stats distributions can be used here.  If the
+        probability function, `p_dist`, is not supplied, the default function
+        is an exponential distribution with rate parameter :math:`\lambda=1`.
 
     Returns
     -------
@@ -231,9 +232,9 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     Custom Graph:
 
     Create a soft random geometric graph on 100 uniformly distributed nodes
-    where nodes are joined by an edge with probability computed from an exponential
-    distribution with rate parameter :math:`\lambda=1` if their Euclidean distance 
-    is at most 0.2.
+    where nodes are joined by an edge with probability computed from an
+    exponential distribution with rate parameter :math:`\lambda=1` if their
+    Euclidean distance is at most 0.2.
 
     Notes
     -----
@@ -245,7 +246,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     For example, to use a 2D Gaussian distribution of node positions with mean
     (0, 0) and standard deviation 2
 
-    The scipy.stats package can be used to define the probaility distribution
+    The scipy.stats package can be used to define the probability distribution
     with the .pdf method used as `p_dist`.
 
     ::
@@ -254,17 +255,17 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
     >>> import math
     >>> n = 100
     >>> pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
-    >>> def p_dist(dist): return math.exp(-dist)
+    >>> p_dist = lambda dist : math.exp(-dist)
     >>> G = nx.soft_random_geometric_graph(n, 0.2, pos=pos, p_dist=p_dist)
 
     References
     ----------
     .. [1] Penrose, Mathew D. "Connectivity of soft random geometric graphs."
            The Annals of Applied Probability 26.2 (2016): 986-1028.
-       [2] scipy.stats - https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
+       [2] scipy.stats -
+           https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
 
     """
-
     n_name, nodes = n
     G = nx.Graph()
     G.name = 'soft_random_geometric_graph({}, {}, {})'.format(n, radius, dim)
@@ -286,9 +287,10 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None):
         u, v = pair
         u_pos, v_pos = pos[u], pos[v]
         dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
-        # Check if dist is <= radius parameter. This check is redundant if scipy
-        # is available and _fast_edges routine is used, but provides the check in case
-        # scipy is not available and all edge combinations need to be checked
+        # Check if dist <= radius parameter. This check is redundant if scipy
+        # is available and _fast_edges routine is used, but provides the
+        # check in case scipy is not available and all edge combinations
+        # need to be checked
         if dist <= radius:
             return random.random() < p_dist(dist)
         else:
@@ -314,7 +316,7 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
 
     .. math::
 
-       (w_u + w_v)h(r) \ge \theta 
+       (w_u + w_v)h(r) \ge \theta
 
     where `r` is the distance between `u` and `v`, h(r) is a probability of
     connection as a function of `r`, and :math:`\theta` as the threshold
@@ -350,14 +352,15 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
 
         .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
     p_dist : function, optional
-        A probability density function computing the probability of 
+        A probability density function computing the probability of
         connecting two nodes that are of distance, r, computed by metric.
         The probability density function, `p_dist`, must
         be any function that takes the metric value as input
-        and outputs a single probability value between 0-1. The scipy.stats
-        package has many probability distribution functions implemented and tools
-        for custom probability distribution definitions [2], and passing the .pdf
-        method of scipy.stats distributions can be used here. If the probability
+        and outputs a single probability value between 0-1.
+        The scipy.stats package has many probability distribution functions
+        implemented and tools for custom probability distribution
+        definitions [2], and passing the .pdf method of scipy.stats
+        distributions can be used here. If the probability
         function, `p_dist`, is not supplied, the default exponential function
         :math: `r^{-2}` is used.
 
@@ -403,12 +406,13 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None,
 
     Starting in NetworkX 2.1 the parameter ``alpha`` is deprecated and replaced
     with the customizable ``p_dist`` function parameter, which defaults to r^-2
-    if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX 
-    versions, a custom function needs to be defined and passed as the ``p_dist``
-    parameter. For example, if the parameter ``alpha`` = 2 was used in NetworkX 2.0,
-    the custom function def custom_dist(r): r**-2 can be passed in versions >=2.1
-    as the parameter p_dist = custom_dist to produce an equivalent network. Note the
-    change in sign from +2 to -2 in this parameter change.
+    if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX
+    versions, a custom function needs to be defined and passed as the
+    ``p_dist`` parameter. For example, if the parameter ``alpha`` = 2 was used
+    in NetworkX 2.0, the custom function def custom_dist(r): r**-2 can be
+    passed in versions >=2.1 as the parameter p_dist = custom_dist to
+    produce an equivalent network. Note the change in sign from +2 to -2 in
+    this parameter change.
 
     References
     ----------
@@ -642,18 +646,21 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 
 @nodes_or_number(0)
-def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight=None, p=2):
-    """Returns a thresholded random geometric graph in the unit cube of dimensions `dim`.
+def thresholded_random_geometric_graph(n, radius, theta, dim=2,
+                                       pos=None, weight=None, p=2):
+    """Returns a thresholded random geometric graph in the unit cube.
 
-    The thresholded random geometric graph [1] model places `n` nodes uniformly at
-    random in the unit cube. Each node `u` is assigned a weight
-    :math:`w_u`. Two nodes `u` and `v` are joined by an edge if they are within
-    the maximum connection distance, `radius` computed by the `p`-Minkowski distance
-    and the summation of weights :math:`w_u` + :math:`w_v` is greater than or equal
+    The thresholded random geometric graph [1] model places `n` nodes
+    uniformly at random in the unit cube of dimensions `dim`. Each node
+    `u` is assigned a weight :math:`w_u`. Two nodes `u` and `v` are
+    joined by an edge if they are within the maximum connection distance,
+    `radius` computed by the `p`-Minkowski distance and the summation of
+    weights :math:`w_u` + :math:`w_v` is greater than or equal
     to the threshold parameter `theta`.
 
-    Edges within `radius` of each other are determined using a KDTree when SciPy
-    is available. This reduces the time complexity from :math:`O(n^2)` to :math:`O(n)`.
+    Edges within `radius` of each other are determined using a KDTree when
+    SciPy is available. This reduces the time complexity from :math:`O(n^2)`
+    to :math:`O(n)`.
 
     Parameters
     ----------
@@ -673,8 +680,8 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
         Which Minkowski distance metric to use.  `p` has to meet the condition
         ``1 <= p <= infinity``.
 
-        If this argument is not specified, the :math:`L^2` metric (the Euclidean
-        distance metric), p = 2 is used.
+        If this argument is not specified, the :math:`L^2` metric
+        (the Euclidean distance metric), p = 2 is used.
 
         This should not be confused with the `p` of an Erdős-Rényi random
         graph, which represents probability.
@@ -700,10 +707,10 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
 
     Custom Graph:
 
-    Create a thresholded random geometric graph on 50 uniformly distributed nodes
-    where nodes are joined by an edge if their sum weights drawn from a exponential
-    distribution with rate = 5 are >= theta = 0.1 and their Euclidean distance 
-    is at most 0.2.
+    Create a thresholded random geometric graph on 50 uniformly distributed
+    nodes where nodes are joined by an edge if their sum weights drawn from
+    a exponential distribution with rate = 5 are >= theta = 0.1 and their
+    Euclidean distance is at most 0.2.
 
     Notes
     -----
@@ -727,7 +734,7 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
     >>> n = 50
     >>> pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
     >>> w = {i: random.expovariate(5.0) for i in range(n)}
-    >>> G = nx.thresholded_random_geometric_graph(n, 0.2, 0.1, pos=pos, weight=w)
+    >>> G = nx.thresholded_random_geometric_graph(n, 0.2, 0.1, 2, pos, w)
 
     References
     ----------
@@ -762,9 +769,10 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2, pos=None, weight
         u_weight, v_weight = weight[u], weight[v]
         u_pos, v_pos = pos[u], pos[v]
         dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
-        # Check if dist is <= radius parameter. This check is redundant if scipy
-        # is available and _fast_edges routine is used, but provides the check in case
-        # scipy is not available and all edge combinations need to be checked
+        # Check if dist is <= radius parameter. This check is redundant if
+        # scipy is available and _fast_edges routine is used, but provides
+        # the check in case scipy is not available and all edge combinations
+        # need to be checked
         if dist <= radius:
             return theta <= u_weight + v_weight
         else:

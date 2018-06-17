@@ -52,7 +52,7 @@ def greedy_modularity_communities(G, weight=None):
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
-     References
+    References
     ----------
     .. [1] M. E. J Newman 'Networks: An Introduction', page 224
        Oxford University Press 2011.
