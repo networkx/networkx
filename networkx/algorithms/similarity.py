@@ -628,11 +628,13 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         #assert Ce.C.shape == (M + N, M + N)
 
         g_ind = list(i for i in range(M)
-                     if any(pending_g[i] in ((p, u), (u, p), (u, u))
-                            for p, q in matched_uv))
+                     if any(pending_g[i] in ((p, u), (u, p))
+                            for p, q in matched_uv)
+                     or pending_g[i] == (u, u))
         h_ind = list(j for j in range(N)
-                     if any(pending_h[j] in ((q, v), (v, q), (v, v))
-                            for p, q in matched_uv))
+                     if any(pending_h[j] in ((q, v), (v, q))
+                            for p, q in matched_uv)
+                     or pending_h[j] == (v, v))
         m = len(g_ind)
         n = len(h_ind)
 
@@ -647,8 +649,8 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                 for l, j in zip(range(n), h_ind):
                     h = pending_h[j]
                     if not any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
-                               or g == (u, u) and h == (v, v)
-                               for p, q in matched_uv):
+                               for p, q in matched_uv) \
+                                   and g != (u, u) and h != (v, v):
                         C[k, l] = inf
 
             localCe = make_CostMatrix(C, m, n)

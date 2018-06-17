@@ -187,6 +187,93 @@ class TestSimilarity:
     #     G2 = circular_ladder_graph(16)
     #     assert_equal(graph_edit_distance(G1, G2), 22)
 
+    def test_selfloops(self):
+        G0 = nx.Graph()
+        G1 = nx.Graph()
+        G1.add_edges_from((('A', 'A'), ('A', 'B')))
+        G2 = nx.Graph()
+        G2.add_edges_from((('A', 'B'), ('B', 'B')))
+        G3 = nx.Graph()
+        G3.add_edges_from((('A', 'A'), ('A', 'B'), ('B', 'B')))
+
+        assert_equal(graph_edit_distance(G0, G0), 0)
+        assert_equal(graph_edit_distance(G0, G1), 4)
+        assert_equal(graph_edit_distance(G1, G0), 4)
+        assert_equal(graph_edit_distance(G0, G2), 4)
+        assert_equal(graph_edit_distance(G2, G0), 4)
+        assert_equal(graph_edit_distance(G0, G3), 5)
+        assert_equal(graph_edit_distance(G3, G0), 5)
+
+        assert_equal(graph_edit_distance(G1, G1), 0)
+        assert_equal(graph_edit_distance(G1, G2), 0)
+        assert_equal(graph_edit_distance(G2, G1), 0)
+        assert_equal(graph_edit_distance(G1, G3), 1)
+        assert_equal(graph_edit_distance(G3, G1), 1)
+
+        assert_equal(graph_edit_distance(G2, G2), 0)
+        assert_equal(graph_edit_distance(G2, G3), 1)
+        assert_equal(graph_edit_distance(G3, G2), 1)
+
+        assert_equal(graph_edit_distance(G3, G3), 0)
+
+    def test_digraph(self):
+        G0 = nx.DiGraph()
+        G1 = nx.DiGraph()
+        G1.add_edges_from((('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'A')))
+        G2 = nx.DiGraph()
+        G2.add_edges_from((('A', 'B'), ('B', 'C'), ('C', 'D'), ('A', 'D')))
+        G3 = nx.DiGraph()
+        G3.add_edges_from((('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'D')))
+
+        assert_equal(graph_edit_distance(G0, G0), 0)
+        assert_equal(graph_edit_distance(G0, G1), 8)
+        assert_equal(graph_edit_distance(G1, G0), 8)
+        assert_equal(graph_edit_distance(G0, G2), 8)
+        assert_equal(graph_edit_distance(G2, G0), 8)
+        assert_equal(graph_edit_distance(G0, G3), 8)
+        assert_equal(graph_edit_distance(G3, G0), 8)
+
+        assert_equal(graph_edit_distance(G1, G1), 0)
+        assert_equal(graph_edit_distance(G1, G2), 2)
+        assert_equal(graph_edit_distance(G2, G1), 2)
+        assert_equal(graph_edit_distance(G1, G3), 4)
+        assert_equal(graph_edit_distance(G3, G1), 4)
+
+        assert_equal(graph_edit_distance(G2, G2), 0)
+        assert_equal(graph_edit_distance(G2, G3), 2)
+        assert_equal(graph_edit_distance(G3, G2), 2)
+
+        assert_equal(graph_edit_distance(G3, G3), 0)
+
+    def test_multigraph(self):
+        G0 = nx.MultiGraph()
+        G1 = nx.MultiGraph()
+        G1.add_edges_from((('A', 'B'), ('B', 'C'), ('A', 'C')))
+        G2 = nx.MultiGraph()
+        G2.add_edges_from((('A', 'B'), ('B', 'C'), ('B', 'C'), ('A', 'C')))
+        G3 = nx.MultiGraph()
+        G3.add_edges_from((('A', 'B'), ('B', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C')))
+
+        assert_equal(graph_edit_distance(G0, G0), 0)
+        assert_equal(graph_edit_distance(G0, G1), 6)
+        assert_equal(graph_edit_distance(G1, G0), 6)
+        assert_equal(graph_edit_distance(G0, G2), 7)
+        assert_equal(graph_edit_distance(G2, G0), 7)
+        assert_equal(graph_edit_distance(G0, G3), 8)
+        assert_equal(graph_edit_distance(G3, G0), 8)
+
+        assert_equal(graph_edit_distance(G1, G1), 0)
+        assert_equal(graph_edit_distance(G1, G2), 1)
+        assert_equal(graph_edit_distance(G2, G1), 1)
+        assert_equal(graph_edit_distance(G1, G3), 2)
+        assert_equal(graph_edit_distance(G3, G1), 2)
+
+        assert_equal(graph_edit_distance(G2, G2), 0)
+        assert_equal(graph_edit_distance(G2, G3), 1)
+        assert_equal(graph_edit_distance(G3, G2), 1)
+
+        assert_equal(graph_edit_distance(G3, G3), 0)
+
     # by https://github.com/jfbeaumont
     def testCopy(self):
         G = nx.Graph()
