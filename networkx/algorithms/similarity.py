@@ -641,7 +641,7 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
             #assert C.shape == (m + n, m + n)
 
             # Forbid structurally invalid matches
-            inf = min(min(Ce.C.sum(axis=0)), min(Ce.C.sum(axis=1))) + 1
+            # NOTE: inf remembered from Ce construction
             for k, i in zip(range(m), g_ind):
                 g = pending_g[i]
                 for l, j in zip(range(n), h_ind):
@@ -710,7 +710,7 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         if prune(matched_cost + Cv.ls + localCe.ls + Ce_xy.ls):
             pass
         else:
-            # # get reduced Cv efficiently
+            # get reduced Cv efficiently
             Cv_ij = CostMatrix(reduce_C(Cv.C, (i,), (j,), m, n),
                                reduce_ind(Cv.lsa_row_ind, (i, m + j)),
                                reduce_ind(Cv.lsa_col_ind, (j, n + i)),
@@ -781,15 +781,15 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         #debug_print('matched-cost:', matched_cost)
         #debug_print('pending-u:', pending_u)
         #debug_print('pending-v:', pending_v)
-        # debug_print(Cv.C)
+        #debug_print(Cv.C)
         #assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))
         #assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))
         #debug_print('pending-g:', pending_g)
         #debug_print('pending-h:', pending_h)
-        # debug_print(Ce.C)
+        #debug_print(Ce.C)
         #assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))
         #assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))
-        # debug_print()
+        #debug_print()
 
         if prune(matched_cost + Cv.ls + Ce.ls):
             return
@@ -882,7 +882,7 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                                 for i in range(n) for j in range(n)]).reshape(n, n)
     Cv = make_CostMatrix(C, m, n)
     #debug_print('Cv: {} x {}'.format(m, n))
-    # debug_print(Cv.C)
+    #debug_print(Cv.C)
 
     pending_g = list(G1.edges)
     pending_h = list(G2.edges)
@@ -918,8 +918,8 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                                 for i in range(n) for j in range(n)]).reshape(n, n)
     Ce = make_CostMatrix(C, m, n)
     #debug_print('Ce: {} x {}'.format(m, n))
-    # debug_print(Ce.C)
-    # debug_print()
+    #debug_print(Ce.C)
+    #debug_print()
 
     class MaxCost:
         def __init__(self):
