@@ -23,6 +23,7 @@ from collections import deque
 import sys
 import uuid
 from itertools import tee, chain
+import networkx as nx
 
 # itertools.accumulate is only available on Python 3.2 or later.
 #
@@ -112,7 +113,7 @@ if PY2:
             # convert any encoded strings to unicode before using the library.
             #
             # Also, the str() is necessary to convert integers, etc.
-            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer.
+            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer
             #
             return unicode(str(x), 'unicode-escape')
 else:

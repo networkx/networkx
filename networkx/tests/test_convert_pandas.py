@@ -80,10 +80,10 @@ class TestConvertPandas(object):
             ('Mi', [0,   54,   49,   44,    0,   34,   29,   24,    0,   14,    9,   4])])
         G1 = nx.from_pandas_edgelist(df, source='O', target='D',
                                      edge_attr=True,
-                                     create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph)
         G2 = nx.from_pandas_edgelist(df, source='O', target='D',
                                      edge_attr=['St', 'Co', 'Mi'],
-                                     create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph)
         assert_graphs_equal(G1, Gtrue)
         assert_graphs_equal(G2, Gtrue)
 
@@ -117,7 +117,7 @@ class TestConvertPandas(object):
         GG = nx.from_pandas_edgelist(edges, edge_attr='weight')
         assert_nodes_equal(G.nodes(), GG.nodes())
         assert_edges_equal(G.edges(), GG.edges())
-        GW = nx.to_networkx_graph(edges, create_using=nx.Graph())
+        GW = nx.to_networkx_graph(edges, create_using=nx.Graph)
         assert_nodes_equal(G.nodes(), GW.nodes())
         assert_edges_equal(G.edges(), GW.edges())
 

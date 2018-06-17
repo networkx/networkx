@@ -156,8 +156,10 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     .. [2] E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
     """
     if directed:
+        edges = itertools.permutations(range(n), 2)
         G = nx.DiGraph()
     else:
+        edges = itertools.combinations(range(n), 2)
         G = nx.Graph()
     G.add_nodes_from(range(n))
     if p <= 0:
@@ -167,11 +169,6 @@ def gnp_random_graph(n, p, seed=None, directed=False):
 
     if seed is not None:
         random.seed(seed)
-
-    if G.is_directed():
-        edges = itertools.permutations(range(n), 2)
-    else:
-        edges = itertools.combinations(range(n), 2)
 
     for e in edges:
         if random.random() < p:

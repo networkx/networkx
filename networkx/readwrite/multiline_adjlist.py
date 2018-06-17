@@ -198,8 +198,8 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
     lines : list or iterator of strings
         Input data in multiline adjlist format
 
-    create_using: NetworkX graph container
-       Use given NetworkX graph for holding nodes or edges.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     nodetype : Python type, optional
        Convert nodes to this type.
@@ -228,15 +228,7 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
 
     """
     from ast import literal_eval
-    if create_using is None:
-        G = nx.Graph()
-    else:
-        try:
-            G = create_using
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a networkx graph type")
-
+    G = nx.empty_graph(0, create_using)
     for line in lines:
         p = line.find(comments)
         if p >= 0:
@@ -310,8 +302,8 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
        Filename or file handle to read.
        Filenames ending in .gz or .bz2 will be uncompressed.
 
-    create_using: NetworkX graph container
-       Use given NetworkX graph for holding nodes or edges.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     nodetype : Python type, optional
        Convert nodes to this type.
@@ -363,7 +355,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
     The default is Graph(), an undirected graph.  To read the data as
     a directed graph use
 
-    >>> G=nx.read_multiline_adjlist("test.adjlist", create_using=nx.DiGraph())
+    >>> G=nx.read_multiline_adjlist("test.adjlist", create_using=nx.DiGraph)
 
     Notes
     -----

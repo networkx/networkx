@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
-"""
-Generators and functions for bipartite graphs.
-
-"""
 #    Copyright (C) 2006-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Aric Hagberg <aric.hagberg@gmail.com>
+#                        Pieter Swart <swart@lanl.gov>
+#                        Dan Schult <dschult@colgate.edu>
+"""
+Generators and functions for bipartite graphs.
+"""
 import math
 import numbers
 import random
-import networkx
 from functools import reduce
 import networkx as nx
 from networkx.utils import nodes_or_number
 
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['configuration_model',
            'havel_hakimi_graph',
            'reverse_havel_hakimi_graph',
@@ -55,13 +54,9 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
     """
-    if create_using is None:
-        G = nx.Graph()
-    else:
-        if create_using.is_directed():
-            raise nx.NetworkXError("Directed Graph not supported")
-        G = create_using
-        G.clear()
+    G = nx.empty_graph(0, create_using)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     n1, top = n1
     n2, bottom = n2
@@ -105,13 +100,9 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     This function is not imported in the main namespace.
     To use it you have to explicitly import the bipartite package.
     """
-    if create_using is None:
-        create_using = networkx.MultiGraph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError(
-            "Directed Graph not supported")
-
-    G = networkx.empty_graph(0, create_using)
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     if not seed is None:
         random.seed(seed)
@@ -123,7 +114,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
             'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
             % (suma, sumb))
 
@@ -183,13 +174,9 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
     """
-    if create_using is None:
-        create_using = networkx.MultiGraph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError(
-            "Directed Graph not supported")
-
-    G = networkx.empty_graph(0, create_using)
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     # length of the each sequence
     naseq = len(aseq)
@@ -199,7 +186,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
             'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
             % (suma, sumb))
 
@@ -259,13 +246,9 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
     """
-    if create_using is None:
-        create_using = networkx.MultiGraph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError(
-            "Directed Graph not supported")
-
-    G = networkx.empty_graph(0, create_using)
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     # length of the each sequence
     lena = len(aseq)
@@ -274,7 +257,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
             'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
             % (suma, sumb))
 
@@ -335,13 +318,9 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
     """
-    if create_using is None:
-        create_using = networkx.MultiGraph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError(
-            "Directed Graph not supported")
-
-    G = networkx.empty_graph(0, create_using)
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     # length of the each sequence
     naseq = len(aseq)
@@ -350,7 +329,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
             'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
             % (suma, sumb))
 
@@ -411,16 +390,12 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     This function is not imported in the main namespace.
     To use it you have to explicitly import the bipartite package.
     """
-    if create_using is None:
-        create_using = networkx.MultiGraph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError(
-            "Directed Graph not supported")
+    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     if p > 1:
-        raise networkx.NetworkXError("probability %s > 1" % (p))
-
-    G = networkx.empty_graph(0, create_using)
+        raise nx.NetworkXError("probability %s > 1" % (p))
 
     if not seed is None:
         random.seed(seed)
@@ -555,7 +530,7 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
 
     Examples
     --------
-    from networkx.algorithms import bipartite
+    from nx.algorithms import bipartite
     G = bipartite.gnmk_random_graph(10,20,50)
 
     See Also
@@ -571,7 +546,7 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
 
     This graph is a bipartite version of the `G_{nm}` random graph model.
     """
-    G = networkx.Graph()
+    G = nx.Graph()
     G = _add_nodes_with_bipartite_label(G, n, m)
     if directed:
         G = nx.DiGraph(G)
@@ -582,7 +557,7 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
         return G
     max_edges = n * m  # max_edges for bipartite networks
     if k >= max_edges:  # Maybe we should raise an exception here
-        return networkx.complete_bipartite_graph(n, m, create_using=G)
+        return nx.complete_bipartite_graph(n, m, create_using=G)
 
     top = [n for n, d in G.nodes(data=True) if d['bipartite'] == 0]
     bottom = list(set(G) - set(top))

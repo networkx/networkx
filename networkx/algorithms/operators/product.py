@@ -117,8 +117,8 @@ def _edges_cross_nodes_and_nodes(G, H):
 
 def _init_product_graph(G, H):
     if not G.is_directed() == H.is_directed():
-        raise nx.NetworkXError("G and H must be both directed or",
-                               "both undirected")
+        msg = "G and H must be both directed or both undirected"
+        raise nx.NetworkXError(msg)
     if G.is_multigraph() or H.is_multigraph():
         GH = nx.MultiGraph()
     else:
@@ -227,9 +227,6 @@ def cartesian_product(G, H):
     Edge attributes and edge keys (for multigraphs) are also copied to the
     new product graph
     """
-    if not G.is_directed() == H.is_directed():
-        raise nx.NetworkXError("G and H must be both directed or",
-                               "both undirected")
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(_node_product(G, H))
     GH.add_edges_from(_edges_cross_nodes(G, H))
