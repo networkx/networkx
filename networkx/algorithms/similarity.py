@@ -628,13 +628,13 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         #assert Ce.C.shape == (M + N, M + N)
 
         g_ind = list(i for i in range(M)
-                     if any(pending_g[i] in ((p, u), (u, p))
+                     if any(pending_g[i][:2] in ((p, u), (u, p))
                             for p, q in matched_uv)
-                     or pending_g[i] == (u, u))
+                     or pending_g[i][:2] == (u, u))
         h_ind = list(j for j in range(N)
-                     if any(pending_h[j] in ((q, v), (v, q))
+                     if any(pending_h[j][:2] in ((q, v), (v, q))
                             for p, q in matched_uv)
-                     or pending_h[j] == (v, v))
+                     or pending_h[j][:2] == (v, v))
         m = len(g_ind)
         n = len(h_ind)
 
@@ -645,9 +645,9 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
             # Forbid structurally invalid matches
             # NOTE: inf remembered from Ce construction
             for k, i in zip(range(m), g_ind):
-                g = pending_g[i]
+                g = pending_g[i][:2]
                 for l, j in zip(range(n), h_ind):
-                    h = pending_h[j]
+                    h = pending_h[j][:2]
                     if not any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
                                for p, q in matched_uv) \
                                    and g != (u, u) and h != (v, v):
