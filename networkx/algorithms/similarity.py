@@ -648,7 +648,7 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                 g = pending_g[i][:2]
                 for l, j in zip(range(n), h_ind):
                     h = pending_h[j][:2]
-                    if nx.is_directed(G2) or nx.is_directed(G2):
+                    if nx.is_directed(G1) or nx.is_directed(G2):
                         if any(g == (p, u) and h == (q, v) or g == (u, p) and h == (v, q)
                                for p, q in matched_uv):
                             continue

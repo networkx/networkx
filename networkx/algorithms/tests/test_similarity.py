@@ -274,6 +274,15 @@ class TestSimilarity:
 
         assert_equal(graph_edit_distance(G3, G3), 0)
 
+    def test_multidigraph(self):
+        G1 = nx.MultiGraph()
+        G1.add_edges_from((('hardware', 'kernel'), ('kernel', 'hardware'), ('kernel', 'userspace'), ('userspace', 'kernel')))
+        G2 = nx.MultiGraph()
+        G2.add_edges_from((('winter', 'spring'), ('spring', 'summer'), ('summer', 'autumn'), ('autumn', 'winter')))
+
+        assert_equal(graph_edit_distance(G1, G2), 5)
+        assert_equal(graph_edit_distance(G2, G1), 5)
+
     # by https://github.com/jfbeaumont
     def testCopy(self):
         G = nx.Graph()
