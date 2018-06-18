@@ -648,10 +648,19 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                 g = pending_g[i][:2]
                 for l, j in zip(range(n), h_ind):
                     h = pending_h[j][:2]
-                    if not any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
-                               for p, q in matched_uv) \
-                                   and g != (u, u) and h != (v, v):
-                        C[k, l] = inf
+                    if nx.is_directed(G2) or nx.is_directed(G2):
+                        if any(g == (p, u) and h == (q, v) or g == (u, p) and h == (v, q)
+                               for p, q in matched_uv):
+                            continue
+                    else:
+                        if any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
+                               for p, q in matched_uv):
+                            continue
+                    if g == (u, u):
+                        continue
+                    if h == (v, v):
+                        continue
+                    C[k, l] = inf
 
             localCe = make_CostMatrix(C, m, n)
             ij = list((g_ind[k] if k < m else M + h_ind[l],
