@@ -157,7 +157,8 @@ def to_agraph(N):
     # loop over edges
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edgedata = {k: str(v) for k, v in edgedata.items() if k != 'key'}
+            str_edgedata = {k: str(v) for k, v in edgedata.items()
+                            if k != 'key'}
             A.add_edge(u, v, key=str(key))
             if edgedata is not None:
                 a = A.get_edge(u, v)
@@ -265,6 +266,18 @@ def pygraphviz_layout(G, prog='neato', root=None, args=''):
     >>> G = nx.petersen_graph()
     >>> pos = nx.nx_agraph.graphviz_layout(G)
     >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
+
+    Notes
+    -----
+    If you use complex node objects, they may have the same string
+    representation and GraphViz could treat them as the same node.
+    The layout may assign both nodes a single location. See Issue #1568
+    If this occurs in your case, consider relabeling the nodes just
+    for the layout computation using something similar to:
+
+        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
+        H_layout = nx.nx_agraph.pygraphviz_layout(G, prog='dot')
+        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
 
     """
     try:

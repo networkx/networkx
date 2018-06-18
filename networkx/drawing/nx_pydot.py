@@ -229,7 +229,8 @@ def to_pydot(N):
 
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edgedata = dict((k, make_str(v)) for k, v in edgedata.items() if k != 'key')
+            str_edgedata = dict((k, make_str(v)) for k, v in edgedata.items()
+                                if k != 'key')
             edge = pydot.Edge(make_str(u), make_str(v),
                               key=make_str(key), **str_edgedata)
             P.add_edge(edge)
@@ -261,8 +262,8 @@ def graphviz_layout(G, prog='neato', root=None, **kwds):
 
 
 # FIXME: Document the "root" parameter.
-# FIXME: Why does this function accept a variadic dictionary of keyword arguments
-# (i.e., "**kwds") but fail to do anything with those arguments? This is probably
+# FIXME: Why does this function accept a variadic dict of keyword arguments
+# (i.e., "**kwds") but fail to do anything with them? This is probably
 # wrong, as unrecognized keyword arguments will be silently ignored.
 def pydot_layout(G, prog='neato', root=None, **kwds):
     """Create node positions using :mod:`pydot` and Graphviz.
@@ -273,7 +274,7 @@ def pydot_layout(G, prog='neato', root=None, **kwds):
         NetworkX graph to be laid out.
     prog : optional[str]
         Basename of the GraphViz command with which to layout this graph.
-        Defaults to `neato`, the default GraphViz command for undirected graphs.
+        Defaults to `neato`: default GraphViz command for undirected graphs.
 
     Returns
     --------
@@ -285,6 +286,19 @@ def pydot_layout(G, prog='neato', root=None, **kwds):
     >>> G = nx.complete_graph(4)
     >>> pos = nx.nx_pydot.pydot_layout(G)
     >>> pos = nx.nx_pydot.pydot_layout(G, prog='dot')
+
+    Notes
+    -----
+    If you use complex node objects, they may have the same string
+    representation and GraphViz could treat them as the same node.
+    The layout may assign both nodes a single location. See Issue #1568
+    If this occurs in your case, consider relabeling the nodes just
+    for the layout computation using something similar to:
+
+        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
+        H_layout = nx.nx_pydot.pydot_layout(G, prog='dot')
+        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+
     """
     pydot = _import_pydot()
     P = to_pydot(G)
@@ -295,7 +309,7 @@ def pydot_layout(G, prog='neato', root=None, **kwds):
     # from the passed graph with the passed external GraphViz command.
     D_bytes = P.create_dot(prog=prog)
 
-    # Unique string decoded from these bytes with the preferred locale encoding.
+    # Unique string decoded from these bytes with the preferred locale encoding
     D = unicode(D_bytes, encoding=getpreferredencoding())
 
     if D == "":  # no data returned
