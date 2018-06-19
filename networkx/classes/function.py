@@ -597,11 +597,12 @@ def set_node_attributes(G, values, name=None):
         not a dictionary, then it is treated as a single attribute value
         that is then applied to every node in `G`.  This means that if
         you provide a mutable object, like a list, updates to that object
-        will be reflected in the node attribute for each edge.  The attribute
-        name will be `name`.
+        will be reflected in the node attribute for every node.
+        The attribute name will be `name`.
 
-        If `values` is a dict or a dict of dict, the corresponding node's
-        attributes will be updated to `values`.
+        If `values` is a dict or a dict of dict, it should be keyed
+        by node to either an attribute value or a dict of attribute key/value
+        pairs used to update the node's attributes.
 
     name : string (optional, default=None)
         Name of the node attribute to set if values is a scalar.
@@ -635,7 +636,8 @@ def set_node_attributes(G, values, name=None):
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,
-    the entire dictionary will be used to update node attributes::
+    the outer dictionary is assumed to be keyed by node to an inner
+    dictionary of node attributes for that node::
 
         >>> G = nx.path_graph(3)
         >>> attrs = {0: {'attr1': 20, 'attr2': 'nothing'}, 1: {'attr2': 3}}
@@ -712,11 +714,12 @@ def set_edge_attributes(G, values, name=None):
         will be reflected in the edge attribute for each edge.  The attribute
         name will be `name`.
 
-        If `values` is a dict or a dict of dict, the corresponding edge'
-        attributes will be updated to `values`.  For multigraphs, the tuples
-        must be of the form ``(u, v, key)``, where `u` and `v` are nodes
-        and `key` is the key corresponding to the edge.  For non-multigraphs,
-        the keys must be tuples of the form ``(u, v)``.
+        If `values` is a dict or a dict of dict, it should be keyed
+        by edge tuple to either an attribute value or a dict of attribute
+        key/value pairs used to update the edge's attributes.
+        For multigraphs, the edge tuples must be of the form ``(u, v, key)``,
+        where `u` and `v` are nodes and `key` is the edge key.
+        For non-multigraphs, the keys must be tuples of the form ``(u, v)``.
 
     name : string (optional, default=None)
         Name of the edge attribute to set if values is a scalar.
