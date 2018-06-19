@@ -505,6 +505,8 @@ def to_directed(graph):
     """Return a directed view of the graph `graph`.
 
     Identical to graph.to_directed(as_view=True)
+    Note that graph.to_directed defaults to `as_view=False`
+    while this function always provides a view.
     """
     if graph.is_multigraph():
         return nx.graphviews.MultiDiGraphView(graph)
@@ -515,6 +517,8 @@ def to_undirected(graph):
     """Return an undirected view of the graph `graph`.
 
     Identical to graph.to_undirected(as_view=True)
+    Note that graph.to_undirected defaults to `as_view=False`
+    while this function always provides a view.
     """
     if graph.is_multigraph():
         return nx.graphviews.MultiGraphView(graph)
