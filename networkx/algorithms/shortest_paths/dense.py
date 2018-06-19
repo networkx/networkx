@@ -87,7 +87,7 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     ...     ('u', 'v', 1), ('u', 'x', 2), ('v', 'y', 1), ('x', 'u', 3),
     ...     ('x', 'v', 5), ('x', 'y', 2), ('y', 's', 7), ('y', 'v', 6)])
     >>> predecessors, _ = nx.floyd_warshall_predecessor_and_distance(G)
-    >>> print(reconstruct_path('s', 'v', predecessors))
+    >>> print(nx.reconstruct_path('s', 'v', predecessors))
     ['s', 'x', 'u', 'v']
 
     Notes

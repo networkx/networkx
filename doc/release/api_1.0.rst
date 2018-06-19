@@ -39,7 +39,7 @@ Graph attributes
 ----------------
 Each graph keeps a dictionary of key=value attributes
 in the member G.graph.  These attributes can be accessed
-directly using G.graph or added at instantiation using 
+directly using G.graph or added at instantiation using
 keyword arguments.
 
 >>> G=nx.Graph(region='Africa')
@@ -65,7 +65,7 @@ Add node attributes using add_node(), add_nodes_from() or G.node
 Edge attributes
 ---------------
 Each edge has a corresponding dictionary of attributes.
-The default edge data is now an empty dictionary of attributes   
+The default edge data is now an empty dictionary of attributes
 and adding attributes to edges is optional.
 
 A common use case is to add a weight attribute to an edge:
@@ -98,11 +98,11 @@ add_node()
 
 
 add_nodes_from()
-^^^^^^^^^^^^^^^^	
-   Now takes optional keyword=value attributes or a dictionary of 
+^^^^^^^^^^^^^^^^
+   Now takes optional keyword=value attributes or a dictionary of
    attributes applied to all affected nodes.
 
-   >>> G.add_nodes_from([1,2],time='2pm')  # all nodes have same attribute 
+   >>> G.add_nodes_from([1,2],time='2pm')  # all nodes have same attribute
 
 add_edge()
 ^^^^^^^^^^
@@ -111,8 +111,8 @@ add_edge()
    >>> G.add_edge(1, 2, weight=4.7 )
 
 add_edges_from()
-^^^^^^^^^^^^^^^^	
-   Now takes optional keyword=value attributes or a dictionary of 
+^^^^^^^^^^^^^^^^
+   Now takes optional keyword=value attributes or a dictionary of
    attributes applied to all affected edges.
 
    >>> G.add_edges_from([(3,4),(4,5)], color='red')
@@ -151,7 +151,7 @@ to_directed(), to_undirected()
 subgraph()
 ^^^^^^^^^^
 
-   With copy=True now returns a deep copy of the graph 
+   With copy=True now returns a deep copy of the graph
    (copies all underlying data and attributes for nodes and edges).
 
    >>> G = nx.Graph()
@@ -160,7 +160,7 @@ subgraph()
 
 add_cycle(), add_path(), add_star()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   Now take optional keyword=value attributes or a dictionary of 
+   Now take optional keyword=value attributes or a dictionary of
    attributes which are applied to all edges affected by the method.
 
    >>> G = nx.Graph()
@@ -171,7 +171,7 @@ Methods removed
 
 delete_node()
 ^^^^^^^^^^^^^
-   The preferred name is now remove_node().        
+   The preferred name is now remove_node().
 
 delete_nodes_from()
 ^^^^^^^^^^^^^^^^^^^
@@ -189,7 +189,7 @@ delete_edges_from()
 
 has_neighbor():
 
-   Use has_edge()  
+   Use has_edge()
 
 get_edge()
 ^^^^^^^^^^
@@ -213,13 +213,13 @@ Methods added
 -------------
 
 add_weighted edges_from()
-^^^^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^^^^
    Convenience method to add weighted edges to graph using a list of
    3-tuples (u,v,weight).
 
 get_edge_data()
 ^^^^^^^^^^^^^^^
-   Renamed from get_edge().	
+   Renamed from get_edge().
 
    The fastest way to get edge data for edge (u,v) is to use G[u][v]
    instead of G.get_edge_data(u,v)
@@ -249,8 +249,8 @@ UbiGraph
 Additional functions/generators
 ===============================
 
-ego_graph, stochastic_graph, PageRank algorithm, HITS algorithm, 
-GraphML writer, freeze, is_frozen, A* algorithm, 
+ego_graph, stochastic_graph, PageRank algorithm, HITS algorithm,
+GraphML writer, freeze, is_frozen, A* algorithm,
 directed scale-free generator, random clustered graph.
 
 
@@ -261,7 +261,7 @@ Weighted edges
 --------------
 
 Edge information is now stored in an attribution dictionary
-so all edge data must be given a key to identify it.  
+so all edge data must be given a key to identify it.
 
 There is currently only one standard/reserved key, 'weight', which is
 used by algorithms and functions that use weighted edges.  The
@@ -272,7 +272,7 @@ users to assign as needed.
 >>> G.add_edge(1,2,weight=3.1415) # add the edge 1-2 with a weight
 >>> G[1][2]['weight']=2.3 # set the weight to 2.3
 
-Similarly, for direct access the edge data, use 
+Similarly, for direct access the edge data, use
 the key of the edge data to retrieve it.
 
 >>> w = G[1][2]['weight']
