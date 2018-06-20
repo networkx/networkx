@@ -415,6 +415,10 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     resulting Numpy matrix can be modified as follows:
 
     >>> import numpy as np
+    >>> try:
+    ...    np.set_printoptions(legacy="1.13")
+    ... except TypeError:
+    ...    pass
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_numpy_matrix(G)
     >>> A
