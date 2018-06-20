@@ -769,9 +769,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def copy(self, as_view=False):
         """Return a copy of the graph.
 
-        The copy method by default returns a shallow copy of the graph
-        and attributes. That is, if an attribute is a container, that
-        container is shared by the original an the copy.
+        The copy method by default returns an independent shallow copy
+        of the graph and attributes. That is, if an attribute is a
+        container, that container is shared by the original an the copy.
         Use Python's `copy.deepcopy` for new containers.
 
         If `as_view` is True then a view is returned instead of a copy.
@@ -782,11 +782,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
         may be handled in different ways. There are four types of copies
         of a graph that people might want.
 
-        Deepcopy -- The default behavior is a "deepcopy" where the graph
-        structure as well as all data attributes and any objects they might
-        contain are copied. The entire graph object is new so that changes
-        in the copy do not affect the original object. (see Python's
-        copy.deepcopy)
+        Deepcopy -- A "deepcopy" copies the graph structure as well as
+        all data attributes and any objects they might contain.
+        The entire graph object is new so that changes in the copy
+        do not affect the original object. (see Python's copy.deepcopy)
 
         Data Reference (Shallow) -- For a shallow copy the graph structure
         is copied but the edge, node and graph attribute dicts are

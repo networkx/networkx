@@ -66,14 +66,13 @@ def asyn_fluidc(G, k, max_iter=100):
     """
     # Initial checks
     if not isinstance(k, int):
-        raise NetworkXError("k muts be an integer.")
+        raise NetworkXError("k must be an integer.")
     if not k > 0:
-        raise NetworkXError("k muts be greater than 0.")
+        raise NetworkXError("k must be greater than 0.")
     if not is_connected(G):
-        raise NetworkXError("Fluid Communities can only be run on connected\
-        Graphs.")
+        raise NetworkXError("Fluid Communities require connected Graphs.")
     if len(G) < k:
-        raise NetworkXError("k must be greater than graph size.")
+        raise NetworkXError("k cannot be bigger than the number of nodes.")
     # Initialization
     max_density = 1.0
     vertices = list(G)

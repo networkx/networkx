@@ -455,6 +455,16 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     seed : int, optional
          The seed for random number generator.
 
+    Notes
+    -----
+    First create a ring over $n$ nodes [1]_.  Then each node in the ring is joined
+    to its $k$ nearest neighbors (or $k - 1$ neighbors if $k$ is odd).
+    Then shortcuts are created by replacing some edges as follows: for each
+    edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest neighbors"
+    with probability $p$ replace it with a new edge $(u, w)$ with uniformly
+    random choice of existing node $w$.
+    The entire process is repeated until a connected graph results.
+
     See Also
     --------
     newman_watts_strogatz_graph()
@@ -465,6 +475,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
         G = watts_strogatz_graph(n, k, p, seed)
         if nx.is_connected(G):
             return G
+        if seed is not None:
+            seed += 1
     raise nx.NetworkXError('Maximum number of tries exceeded')
 
 
