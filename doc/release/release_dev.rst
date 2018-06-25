@@ -33,8 +33,15 @@ empty_graph has taken over the functionality from
 nx.convert._prep_create_using which was removed.
 
 create_using should now be a Graph Constructor like nx.Graph or nx.DiGraph.
-It can still be a graph class which will be cleared before use, but the
+It can still be a graph instance which will be cleared before use, but the
 preferred use is a constructor.
+
+New Base Class Method: update
+H.update(G) adds the nodes, edges and graph attributes of G to H.
+H.update(edges=e, nodes=n) add the edges and nodes from containers e and n.
+H.update(e), and H.update(nodes=n) are also allowed.
+First argument is a graph if it has `edges` and `nodes` attributes.
+Otherwise the first argument is treated as a list of edges.
 
 Deprecations
 ------------

@@ -1032,6 +1032,109 @@ class Graph(object):
                 if u != v:  # self loop needs only one entry removed
                     del adj[v][u]
 
+    def update(self, edges=None, nodes=None):
+        """Update the graph using nodes/edges/graphs as input.
+
+        Like dict.update, this method takes a graph as input, adding the
+        graph's noes and edges to this graph. It can also take two inputs:
+        edges and nodes. Finally it can take either edges or nodes.
+        To specify only nodes the keyword `nodes` must be used.
+
+        The collections of edges and nodes are treated similarly to
+        the add_edges_from/add_nodes_from methods. When iterated, they
+        should yield 2-tuples (u, v) or 3-tuples (u, v, datadict).
+
+        Parameters
+        ----------
+        edges : Graph object, collection of edges, or None
+            The first parameter can be a graph or some edges. If it has
+            attributes `nodes` and `edges`, then it is taken to be a
+            Graph-like object and those attributes are used as collections
+            of nodes and edges to be added to the graph.
+            If the first parameter does not have those attributes, it is
+            treated as a collection of edges and added to the graph.
+            If the first argument is None, no edges are added.
+        nodes : collection of nodes, or None
+            The second parameter is treated as a collection of nodes
+            to be added to the graph unless it is None.
+            If `edges is None` and `nodes is None` an exception is raised.
+            If the first parameter is a Graph, then `nodes` is ignored.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(5)
+        >>> G.update(nx.complete_graph(range(4,10)))
+        >>> from itertools import combinations
+        >>> edges = ((u, v, {'power': u * v})
+        ...          for u, v in combinations(range(10, 20), 2)
+        ...          if u * v < 225)
+        >>> nodes = [1000]  # for singleton, use a container
+        >>> G.update(edges, nodes)
+
+        Notes
+        -----
+        It you want to update the graph using an adjacency structure
+        it is straightforward to obtain the edges/nodes from adjacency.
+        The following examples provide common cases, your adjacency may
+        be slightly different and require tweaks of these examples.
+
+        >>> # dict-of-set/list/tuple
+        >>> adj = {1: {2, 3}, 2: {1, 3}, 3: {1, 2}}
+        >>> e = [(u, v) for u, nbrs in adj.items() for v in  nbrs]
+        >>> G.update(edges=e, nodes=adj)
+
+        >>> DG = nx.DiGraph()
+        >>> # dict-of-dict-of-attribute
+        >>> adj = {1: {2: 1.3, 3: 0.7}, 2: {1: 1.4}, 3: {1: 0.7}}
+        >>> e = [(u, v, {'weight': d}) for u, nbrs in adj.items()
+        ...      for v, d in nbrs.items()]
+        >>> DG.update(edges=e, nodes=adj)
+
+        >>> # dict-of-dict-of-dict
+        >>> adj = {1: {2: {'weight': 1.3}, 3: {'color': 0.7, 'weight':1.2}}}
+        >>> e = [(u, v, {'weight': d}) for u, nbrs in adj.items()
+        ...      for v, d in nbrs.items()]
+        >>> DG.update(edges=e, nodes=adj)
+
+        >>> # predecessor adjacency (dict-of-set)
+        >>> pred = {1: {2, 3}, 2: {3}, 3: {3}}
+        >>> e = [(v, u) for u, nbrs in pred.items() for v in nbrs]
+
+        >>> # MultiGraph dict-of-dict-of-dict-of-attribute
+        >>> MDG = nx.MultiDiGraph()
+        >>> adj = {1: {2: {0: {'weight': 1.3}, 1: {'weight': 1.2}}},
+        ...        3: {2: {0: {'weight': 0.7}}}}
+        >>> e = [(u, v, ekey, d) for u, nbrs in adj.items()
+        ...      for v, keydict in nbrs.items()
+        ...      for ekey, d in keydict.items()]
+        >>> MDG.update(edges=e)
+
+        See Also
+        --------
+        add_edges_from: add multiple edges to a graph
+        add_nodes_from: add multiple nodes to a graph
+        """
+        if edges is not None:
+            if nodes is not None:
+                self.add_nodes_from(nodes)
+                self.add_edges_from(edges)
+            else:
+                # check if edges is a Graph object
+                try:
+                    graph_nodes = edges.nodes
+                    graph_edges = edges.edges
+                except AttributeError:
+                    # edge not Graph-like
+                    self.add_edges_from(edges)
+                else:  # edges is Graph-like
+                    self.add_nodes_from(graph_nodes.data())
+                    self.add_edges_from(graph_edges.data())
+                    self.graph.update(edges.graph)
+        elif nodes is not None:
+            self.add_nodes_from(nodes)
+        else:
+            raise NetworkXError("update needs nodes or edges input")
+
     def has_edge(self, u, v):
         """Return True if the edge (u, v) is in the graph.
 

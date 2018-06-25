@@ -28,6 +28,7 @@ Adding and removing nodes and edges
    Graph.add_weighted_edges_from
    Graph.remove_edge
    Graph.remove_edges_from
+   Graph.update
    Graph.clear
 
 
