@@ -38,7 +38,7 @@ def min_weighted_dominating_set(G, weight=None):
         Undirected graph.
 
     weight : string
-        The node attribute storing the weight of an edge. If provided,
+        The node attribute storing the weight of an node. If provided,
         the node attribute with this key must be a number for each
         node. If not provided, each node is assumed to have weight one.
 
