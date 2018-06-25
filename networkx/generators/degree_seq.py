@@ -837,7 +837,6 @@ class DegreeSequenceRandomGraph(object):
     def phase2(self):
         # choose remaining nodes uniformly at random and use rejection sampling
         while len(self.remaining_degree) >= 2 * self.dmax:
-            norm = float(max(self.remaining_degree.values()))**2
             while True:
                 u, v = sorted(random.sample(self.remaining_degree.keys(), 2))
                 if self.graph.has_edge(u, v):
