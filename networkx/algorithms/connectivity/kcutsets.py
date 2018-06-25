@@ -136,7 +136,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         non_adjacent = set(G) - X - set(G[x])
         for v in non_adjacent:
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
-            # and step:5 build the associated residual network R
+            # and step 5: build the associated residual network R
             R = flow_func(H, '%sB' % mapping[x], '%sA' % mapping[v], **kwargs)
             flow_value = R.graph['flow_value']
 
@@ -150,8 +150,9 @@ def all_node_cuts(G, k=None, flow_func=None):
                 # residual flow network R and call it L
                 L = nx.condensation(R)
                 cmap = L.graph['mapping']
-                # step 7: Compute antichains of L; they map to closed sets in H
-                # Any edge in H that links a closed set is part of a cutset
+                # step 7: Compute all antichains of L;
+                # they map to closed sets in H.
+                # Any edge in H that links a closed set is part of a cutset.
                 for antichain in nx.antichains(L):
                     # Nodes in an antichain of the condensation graph of
                     # the residual network map to a closed set of nodes that
@@ -166,24 +167,29 @@ def all_node_cuts(G, k=None, flow_func=None):
                     node_cut = {H.nodes[n]['id'] for edge in cutset for n in edge}
 
                     if len(node_cut) == k:
+                        # The cut is invalid if it includes internal edges of
+                        # end nodes.
+                        if x in node_cut or v in node_cut:
+                            continue
                         if node_cut not in seen:
                             yield node_cut
                             seen.append(node_cut)
-                        # Add an edge (x, v) to make sure that we do not
-                        # find this cutset again. This is equivalent
-                        # of adding the edge in the input graph
-                        # G.add_edge(x, v) and then regenerate H and R:
-                        # Add edges to the auxiliary digraph.
-                        H.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
-                                   capacity=1)
-                        H.add_edge('%sB' % mapping[v], '%sA' % mapping[x],
-                                   capacity=1)
-                        # Add edges to the residual network.
-                        R.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
-                                   capacity=1)
-                        R.add_edge('%sA' % mapping[v], '%sB' % mapping[x],
-                                   capacity=1)
-                        break
+
+                # Add an edge (x, v) to make sure that we do not
+                # find this cutset again. This is equivalent
+                # of adding the edge in the input graph
+                # G.add_edge(x, v) and then regenerate H and R:
+                # Add edges to the auxiliary digraph.
+                H.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
+                           capacity=1)
+                H.add_edge('%sB' % mapping[v], '%sA' % mapping[x],
+                           capacity=1)
+                # Add edges to the residual network.
+                R.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
+                           capacity=1)
+                R.add_edge('%sA' % mapping[v], '%sB' % mapping[x],
+                           capacity=1)
+
                 # Add again the saturated edges to reuse the residual network
                 R.add_edges_from(saturated_edges)
 
