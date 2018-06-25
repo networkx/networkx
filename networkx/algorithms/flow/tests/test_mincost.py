@@ -321,6 +321,18 @@ class TestMinCostFlow:
         assert_equal(H, soln)
         assert_equal(nx.cost_of_flow(G, H), 2857140)
 
+    def test_deadend(self):
+        """Check if one-node cycles are handled properly. Taken from ticket
+        #2906 from @sshraven."""
+        G = nx.DiGraph()
+
+        G.add_nodes_from(range(5), demand=0)
+        G.node[4]['demand'] = -13
+        G.node[3]['demand'] = 13
+
+        G.add_edges_from([(0,2), (0, 3), (2, 1)], capacity=20, weight=0.1)
+        assert_raises(nx.NetworkXUnfeasible, nx.min_cost_flow, G)
+
     def test_infinite_capacity_neg_digon(self):
         """An infinite capacity negative cost digon results in an unbounded
         instance."""
