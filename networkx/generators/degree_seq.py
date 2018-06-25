@@ -116,7 +116,7 @@ def _configuration_model(deg_sequence, create_using, directed=False,
         return G
     # Build a list of available degree-repeated nodes.  For example,
     # for degree sequence [3, 2, 1, 1, 1], the "stub list" is
-    # initially [1, 1, 1, 2, 2, 3, 4, 5], that is, node 1 has degree
+    # initially [0, 0, 0, 1, 1, 2, 3, 4], that is, node 0 has degree
     # 3 and thus is repeated 3 times, etc.
     #
     # Also, shuffle the stub list in order to get a random sequence of
