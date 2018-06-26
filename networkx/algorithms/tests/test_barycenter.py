@@ -71,8 +71,8 @@ class TestBarycenter(TestCase):
 		# Doubling the weights should do nothing but double the barycentricities
 		for edge in g.edges:
 			g.edges[edge]['weight'] = 2
-		b = networkx.barycenter(g, 'weight')
+		b = networkx.barycenter(g, 'weight', attr='barycentricity2')
 		self.assertEqual(list(b), ['z'])
 		self.assertFalse(b.edges)
 		for node, barycentricity in expected_barycentricity.items():
-			self.assertEqual(g.nodes[node]['barycentricity'], barycentricity*2)
+			self.assertEqual(g.nodes[node]['barycentricity2'], barycentricity*2)
