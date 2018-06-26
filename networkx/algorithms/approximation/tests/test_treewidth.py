@@ -4,16 +4,17 @@
 #    Dominik Meier <dominik.meier@rwth-aachen.de>
 #    All rights reserved.
 #    BSD license.
-"""Unit tests for the :mod:`networkx.algorithms.approximation.treewidth` module."""
 import networkx as nx
-from nose.tools import assert_equals, assert_is_none, ok_
-from networkx.algorithms.approximation import treewidth_min_degree, treewidth_min_fill_in
-from networkx.algorithms.approximation.treewidth import min_fill_in_heuristic, MinDegreeHeuristic
+from nose.tools import assert_equals, ok_
+from networkx.algorithms.approximation import treewidth_min_degree
+from networkx.algorithms.approximation import treewidth_min_fill_in
+from networkx.algorithms.approximation.treewidth import min_fill_in_heuristic
+from networkx.algorithms.approximation.treewidth import MinDegreeHeuristic
 import itertools
 
 
 def is_tree_decomp(graph, decomp):
-    """Check if the given decomposition tree is a decomposition tree of the given graph"""
+    """Check if the given tree decomposition is valid."""
     for x in graph.nodes():
         appear_once = False
         for bag in decomp.nodes():
@@ -22,7 +23,7 @@ def is_tree_decomp(graph, decomp):
                 break
         ok_(appear_once)
 
-    # Check if each connected pair of nodes appears at least once together in a bag
+    # Check if each connected pair of nodes are at least once together in a bag
     for (x, y) in graph.edges():
         appear_together = False
         for bag in decomp.nodes():
@@ -42,9 +43,7 @@ def is_tree_decomp(graph, decomp):
 
 
 class TestTreewidthMinDegree(object):
-    """Unit tests for the :mod:`networkx.algorithms.approximation.treewidth_min_degree`
-    function.
-    """
+    """Unit tests for the min_degree function"""
     def setUp(self):
         """Setup for different kinds of trees"""
         self.complete = nx.Graph()
@@ -88,31 +87,31 @@ class TestTreewidthMinDegree(object):
 
         self.deterministic_graph.add_edge(7, 8)
         self.deterministic_graph.add_edge(7, 9)  # deg(7) = 5
-        
+
         self.deterministic_graph.add_edge(8, 9)  # deg(8) = 4
 
-    def test_tree_decomposition(self):
-        """Test if the returned decomposition is a valid decomposition for a selection 
-        of various graphs
-        """
+    def test_peterson_graph(self):
+        """Test Petersen graph tree decomposition result"""
         G = nx.petersen_graph()
         _, decomp = treewidth_min_degree(G)
         is_tree_decomp(G, decomp)
-        # Check if each vertex appears at least once in a bag
 
     def test_small_tree_treewidth(self):
-        """Test if the computed treewidth of the known self.small_tree is 2.
-        As we know which value we can expect from our heuristic, values other than two are regressions
+        """Test small tree
+
+        Test if the computed treewidth of the known self.small_tree is 2.
+        As we know which value we can expect from our heuristic, values other
+        than two are regressions
         """
         G = self.small_tree
-        # the order of removal should be (with [] denoting any order of the containing nodes) [1,2,4]3[5,6,7],
-        # resulting in treewdith 2 for the heuristic
-        
+        # the order of removal should be [1,2,4]3[5,6,7]
+        # (with [] denoting any order of the containing nodes)
+        # resulting in treewidth 2 for the heuristic
         treewidth, _ = treewidth_min_fill_in(G)
         assert_equals(treewidth, 2)
 
     def test_heuristic_abort(self):
-        """Test if min_degree_heuristic returns None for fully connected graph"""
+        """Test heuristic abort condition for fully connected graph"""
         graph = {}
         for u in self.complete:
             graph[u] = set()
@@ -142,7 +141,8 @@ class TestTreewidthMinDegree(object):
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_degree heuristic"""
-        graph = {n: set(self.deterministic_graph[n]) - set([n]) for n in self.deterministic_graph}
+        graph = {n: set(self.deterministic_graph[n]) - set([n])
+                 for n in self.deterministic_graph}
         deg_heuristic = MinDegreeHeuristic(graph)
         elim_node = deg_heuristic.best_node(graph)
         print("Graph {}:".format(graph))
@@ -170,9 +170,7 @@ class TestTreewidthMinDegree(object):
 
 
 class TestTreewidthMinFillIn(object):
-    """Unit tests for the :mod:`networkx.algorithms.approximation.treewidth_min_fill_in`
-    function.
-    """
+    """Unit tests for the treewidth_min_fill_in function."""
     def setUp(self):
         """Setup for different kinds of trees"""
         self.complete = nx.Graph()
@@ -201,10 +199,8 @@ class TestTreewidthMinFillIn(object):
         self.deterministic_graph.add_edge(3, 6)
         self.deterministic_graph.add_edge(5, 6)
 
-    def test_tree_decomposition(self):
-        """Test if the returned decomposition is a valid decomposition for a selection 
-        of various graphs
-        """
+    def test_peterson_graph(self):
+        """Test Petersen graph tree decomposition result"""
         G = nx.petersen_graph()
         _, decomp = treewidth_min_fill_in(G)
         is_tree_decomp(G, decomp)
@@ -212,7 +208,8 @@ class TestTreewidthMinFillIn(object):
     def test_small_tree_treewidth(self):
         """Test if the computed treewidth of the known self.small_tree is 2"""
         G = self.small_tree
-        # the order of removal should be (with [] denoting any order of the containing nodes) [1,2,4]3[5,6,7],
+        # the order of removal should be [1,2,4]3[5,6,7]
+        # (with [] denoting any order of the containing nodes)
         # resulting in treewidth 2 for the heuristic
         treewidth, _ = treewidth_min_fill_in(G)
         assert_equals(treewidth, 2)
@@ -246,7 +243,8 @@ class TestTreewidthMinFillIn(object):
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_fill_in heuristic"""
-        graph = {n: set(self.deterministic_graph[n]) - set([n]) for n in self.deterministic_graph}
+        graph = {n: set(self.deterministic_graph[n]) - set([n])
+                 for n in self.deterministic_graph}
         print("Graph {}:".format(graph))
         elim_node = min_fill_in_heuristic(graph)
         steps = []

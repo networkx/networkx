@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Functions for computing treewidth decomposition.
-   
+
 Treewidth of an undirected graph is a number associated with the graph.
 It can be defined as the size of the largest vertex set (bag) in a tree
 decomposition of the graph minus one.
@@ -13,17 +13,18 @@ intractable (e.g., NP-hard) on arbitrary graphs become efficiently
 solvable (e.g., with a linear time algorithm) when the treewidth of the
 input graphs is bounded by a constant [1]_ [2]_.
 
-There are two different functions for computing a tree decomposition: :func:`treewidth_min_degree`
-and :func:`treewidth_min_fill_in`.
-   
-.. [1] Hans L. Bodlaender and Arie M. C. A. Koster. 2010. "Treewidth computations
-      I.Upper bounds". Inf. Comput. 208, 3 (March 2010),259-275.
+There are two different functions for computing a tree decomposition:
+:func:`treewidth_min_degree` and :func:`treewidth_min_fill_in`.
+
+.. [1] Hans L. Bodlaender and Arie M. C. A. Koster. 2010. "Treewidth
+      computations I.Upper bounds". Inf. Comput. 208, 3 (March 2010),259-275.
       http://dx.doi.org/10.1016/j.ic.2009.03.008
 
-.. [2] Hand L. Bodlaender. "Discovering Treewidth". Institute of Information and
-      Computing Sciences, Utrecht University. Technical Report UU-CS-2005-018.
+.. [2] Hand L. Bodlaender. "Discovering Treewidth". Institute of Information
+      and Computing Sciences, Utrecht University.
+      Technical Report UU-CS-2005-018.
       http://www.cs.uu.nl
-   
+
 .. [3] K. Wang, Z. Lu, and J. Hicks *Treewidth*.
       http://web.eecs.utk.edu/~cphillip/cs594_spring2015_projects/treewidth.pdf
 
@@ -42,10 +43,12 @@ __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def treewidth_min_degree(G):
-    """ Returns a treewidth decomposition using the Minimum Degree heuristic. The
-        heuristic chooses the nodes according to their degree, i.e., first the node
-        with the lowest degree is chosen, then the graph is updated and the corresponding
-        node is removed. Next, a new node with the lowest degree is chosen, and so on.
+    """ Returns a treewidth decomposition using the Minimum Degree heuristic.
+
+    The heuristic chooses the nodes according to their degree, i.e., first
+    the node with the lowest degree is chosen, then the graph is updated
+    and the corresponding node is removed. Next, a new node with the lowest
+    degree is chosen, and so on.
 
     Parameters
     ----------
@@ -54,7 +57,7 @@ def treewidth_min_degree(G):
     Returns
     -------
     Treewidth decomposition : (int, Graph) tuple
-          2-tuple with treewidth and the corresponding decomposed tree (NetworkX graph).
+          2-tuple with treewidth and the corresponding decomposed tree.
     """
     deg_heuristic = MinDegreeHeuristic(G)
     return treewidth_decomp(G, lambda graph: deg_heuristic.best_node(graph))
@@ -63,9 +66,11 @@ def treewidth_min_degree(G):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def treewidth_min_fill_in(G):
-    """ Returns a treewidth decomposition using the Minimum Fill-in heuristic. The
-    heuristic chooses a node from the graph, where the number of edges added when
-    turning the neighbourhood of the chosen node into clique is as small as possible.
+    """ Returns a treewidth decomposition using the Minimum Fill-in heuristic.
+
+    The heuristic chooses a node from the graph, where the number of edges
+    added turning the neighbourhood of the chosen node into clique is as
+    small as possible.
 
     Parameters
     ----------
@@ -74,13 +79,14 @@ def treewidth_min_fill_in(G):
     Returns
     -------
     Treewidth decomposition : (int, Graph) tuple
-        2-tuple with treewidth and the corresponding decomposed tree (NetworkX graph).
+        2-tuple with treewidth and the corresponding decomposed tree.
     """
     return treewidth_decomp(G,  min_fill_in_heuristic)
 
 
 class MinDegreeHeuristic:
     """ Implements the Minimum Degree heuristic.
+
     The heuristic chooses the nodes according to their degree
     (number of neighbours), i.e., first the node with the lowest degree is
     chosen, then the graph is updated and the corresponding node is
@@ -89,7 +95,7 @@ class MinDegreeHeuristic:
     def __init__(self, graph):
         self._graph = graph
 
-        # a collection of nodes that have to be updated in the heap before each iteration
+        # nodes that have to be updated in the heap before each iteration
         self._update_nodes = []
 
         self._degreeq = []  # a heapq with 2-tuples (degree,node)
@@ -124,7 +130,9 @@ class MinDegreeHeuristic:
 
 
 def min_fill_in_heuristic(graph):
-    """ Returns the node from the graph, where the number of edges added when
+    """ Implements the Minimum Degree heuristic.
+
+    Returns the node from the graph, where the number of edges added when
     turning the neighbourhood of the chosen node into clique is as small as
     possible. This algorithm chooses the nodes using the Minimum Fill-In
     heuristic. The running time of the algorithm is :math:`O(V^3)` and it uses
@@ -151,7 +159,8 @@ def min_fill_in_heuristic(graph):
         nbrs = graph[node]
         for nbr in nbrs:
             # count how many nodes in nbrs current nbr is not connected to
-            num_fill_in += len(nbrs - graph[nbr]) - 1  # subtract 1 for the node itself
+            # subtract 1 for the node itself
+            num_fill_in += len(nbrs - graph[nbr]) - 1
             if num_fill_in >= 2 * min_fill_in:
                 break
 
@@ -177,13 +186,13 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     Returns
     -------
     Treewidth decomposition : (int, Graph) tuple
-        2-tuple with treewidth and the corresponding decomposed tree (NetworkX graph).
+        2-tuple with treewidth and the corresponding decomposed tree.
     """
-    
+
     # make dict-of-sets structure
     graph = {n: set(G[n]) - set([n]) for n in G}
 
-    # stack where nodes and their neighbors are pushed in the order they are selected by the heuristic
+    # stack containing nodes and neighbors in the order from the heuristic
     node_stack = []
 
     # get first node from heuristic
@@ -199,9 +208,9 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
         node_stack.append((elim_node, nbrs))
 
         # remove node from graph
-        for u in graph:
-            if elim_node in graph[u]:
-                graph[u].remove(elim_node)
+        for u in graph[elim_node]:
+            graph[u].remove(elim_node)
+
         del graph[elim_node]
         elim_node = heuristic(graph)
 
@@ -224,7 +233,8 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
                 break
 
         if old_bag is None:
-            old_bag = first_bag  # no old_bag was found: just connect to the first_bag
+            # no old_bag was found: just connect to the first_bag
+            old_bag = first_bag
 
         # create new node for decomposition
         nbrs.add(curr_node)
