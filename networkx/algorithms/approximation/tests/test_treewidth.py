@@ -90,7 +90,7 @@ class TestTreewidthMinDegree(object):
 
         self.deterministic_graph.add_edge(8, 9)  # deg(8) = 4
 
-    def test_peterson_graph(self):
+    def test_petersen_graph(self):
         """Test Petersen graph tree decomposition result"""
         G = nx.petersen_graph()
         _, decomp = treewidth_min_degree(G)
@@ -199,7 +199,7 @@ class TestTreewidthMinFillIn(object):
         self.deterministic_graph.add_edge(3, 6)
         self.deterministic_graph.add_edge(5, 6)
 
-    def test_peterson_graph(self):
+    def test_petersen_graph(self):
         """Test Petersen graph tree decomposition result"""
         G = nx.petersen_graph()
         _, decomp = treewidth_min_fill_in(G)
