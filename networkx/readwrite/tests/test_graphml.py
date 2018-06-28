@@ -960,8 +960,8 @@ class TestWriteGraphML(BaseGraphML):
         wtG = G[1][2]['weight']
         wtH = H[1][2]['weight']
         assert_almost_equal(wtG, wtH, places=6)
-        assert_equal(type(wtG), np.float32)
-        assert_equal(type(wtH), np.float32)
+        assert_equal(type(wtG), np.float64)
+        assert_equal(type(wtH), float)
         os.close(fd)
         os.unlink(fname)
 
@@ -980,7 +980,7 @@ class TestWriteGraphML(BaseGraphML):
         wtH = H[1][2]['weight']
         assert_almost_equal(wtG, wtH, places=6)
         assert_equal(type(wtG), np.float32)
-        assert_equal(type(wtH), np.float32)
+        assert_equal(type(wtH), float)
         os.close(fd)
         os.unlink(fname)
 
