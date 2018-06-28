@@ -173,7 +173,9 @@ def all_node_cuts(G, k=None, flow_func=None):
                         continue
                     # Nodes in an antichain of the condensation graph of
                     # the residual network map to a closed set of nodes that
-                    # define a node partition of the auxiliary digraph H.
+                    # define a node partition of the auxiliary digraph H
+                    # through taking all of antichain's predecessors in the
+                    # transitive closure.
                     S = {n for n, scc in cmap.items() if scc in antichain}
                     S |= {x for n in S for x in R_closure.predecessors(n)}
                     if '%sB' % mapping[x] not in S or '%sA' % mapping[v] in S:
@@ -191,10 +193,6 @@ def all_node_cuts(G, k=None, flow_func=None):
                     node_cut = {H.nodes[u]['id'] for u, _ in cutset}
 
                     if len(node_cut) == k:
-                        # The cut is invalid if it includes internal edges of
-                        # end nodes. The other half of Lemma 8 in ref.
-                        if x in node_cut or v in node_cut:
-                            continue
                         if node_cut not in seen:
                             yield node_cut
                             seen.append(node_cut)
