@@ -385,7 +385,8 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         Wn, We = trace_path(p, w)
         Wn.reverse()
         We.reverse()
-        We.append(i)
+        if We != [i]:
+            We.append(i)
         WnR, WeR = trace_path(q, w)
         del WnR[-1]
         Wn += WnR
