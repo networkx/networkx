@@ -470,6 +470,11 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     newman_watts_strogatz_graph()
     watts_strogatz_graph()
 
+    References
+    ----------
+    .. [1] Duncan J. Watts and Steven H. Strogatz,
+       Collective dynamics of small-world networks,
+       Nature, 393, pp. 440--442, 1998.
     """
     for i in range(tries):
         G = watts_strogatz_graph(n, k, p, seed)
