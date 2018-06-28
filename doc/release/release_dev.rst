@@ -27,6 +27,11 @@ subclassing without memory leaks. Graphs no longer hold references to view.
 Cyclic references between a graph and itself have been removed by eliminating
 G.root_graph. It turns out this was an avoidable construct anyway.
 
+GraphML can now be written with attributes using numpy numeric types.
+In particular, np.float64 and np.int64 no longer need to convert to Python
+float and int to be written. They are still written as generic floats so
+reading them back in will not make the numpy values.
+
 API Changes
 -----------
 empty_graph has taken over the functionality from
