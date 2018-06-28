@@ -30,7 +30,7 @@ API Changes
   With the release of NetworkX 2.0 we are moving towards a view/iterator reporting API.
   We used to have two methods for the same property of the graph, one that returns a
   list and one that returns an iterator. With 2.0 we have replaced them with a view.
-  A view is a read-only object that is quick to create, automatically updated, and 
+  A view is a read-only object that is quick to create, automatically updated, and
   provides basic access like iteration, membership and set operations where appropriate.
   For example, ``G.nodes()`` used to return a list and ``G.nodes_iter()`` an iterator.
   Now ``G.nodes()`` returns a view and ``G.nodes_iter()`` is removed. ``G.degree()``
@@ -198,7 +198,7 @@ API Changes
 
 * [`#2620 <https://github.com/networkx/networkx/pull/2620>`_]
   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
-  
+
 * [`#1662 <https://github.com/networkx/networkx/pull/1662>`_]
   Rewrote ``topolgical_sort`` as a generator.  It no longer accepts
   ``reverse`` or ``nbunch`` arguments and is slightly faster.

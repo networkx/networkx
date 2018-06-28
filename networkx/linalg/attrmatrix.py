@@ -190,8 +190,8 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     --------
     Construct an adjacency matrix:
 
+    >>> import numpy as np
     >>> try:
-    ...    import numpy as np
     ...    np.set_printoptions(legacy="1.13")
     ... except TypeError:
     ...    pass
@@ -352,6 +352,11 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     --------
     Construct an adjacency matrix:
 
+    >>> import numpy as np
+    >>> try:
+    ...    np.set_printoptions(legacy="1.13")
+    ... except TypeError:
+    ...    pass
     >>> G = nx.Graph()
     >>> G.add_edge(0,1,thickness=1,weight=3)
     >>> G.add_edge(0,2,thickness=2)
