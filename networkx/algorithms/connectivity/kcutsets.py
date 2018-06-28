@@ -90,7 +90,7 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     # Address some corner cases first.
     # For cycle graphs
-    if G.order() == G.size():
+    """    if G.order() == G.size():
         if all(2 == d for n, d in G.degree()):
             seen = set()
             for u in G:
@@ -98,7 +98,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                     if (u, v) not in seen and (v, u) not in seen:
                         yield {v, u}
                         seen.add((v, u))
-            return
+            return"""
     # For complete Graphs
     if nx.density(G) == 1:
         for cut_set in combinations(G, len(G) - 1):
@@ -111,6 +111,8 @@ def all_node_cuts(G, k=None, flow_func=None):
     # for node connectivity.
     H = build_auxiliary_node_connectivity(G)
     mapping = H.graph['mapping']
+    # Reversed H for helping finding cut.
+    H_reversed = H.reverse()
     R = build_residual_network(H, 'capacity')
     kwargs = dict(capacity='capacity', residual=R)
     # Define default flow function
@@ -141,34 +143,56 @@ def all_node_cuts(G, k=None, flow_func=None):
             flow_value = R.graph['flow_value']
 
             if flow_value == k:
-                # Remove saturated edges form the residual network
+                # Find the nodes incident to the flow.
+                E1 = flowed_edges = [(u, w) for (u, w, d) in
+                                     R.edges(data=True)
+                                     if d['flow'] != 0]
+                VE1 = incident_nodes = set([n for edge in E1 for n in edge])
+                # Remove saturated edges form the residual network.
+                # Note that reversed edges are introduced with capacity 0
+                # in the residual graph and they need to be removed too.
                 saturated_edges = [(u, w, d) for (u, w, d) in
                                    R.edges(data=True)
-                                   if d['capacity'] == d['flow']]
+                                   if d['capacity'] == d['flow']
+                                   or d['capacity'] == 0]
                 R.remove_edges_from(saturated_edges)
+                R_closure = nx.transitive_closure(R)
                 # step 6: shrink the strongly connected components of
-                # residual flow network R and call it L
+                # residual flow network R and call it L.
                 L = nx.condensation(R)
                 cmap = L.graph['mapping']
+                # Find the incident nodes in the condensed graph.
+                VE1 = set([cmap[n] for n in VE1])
                 # step 7: Compute all antichains of L;
                 # they map to closed sets in H.
                 # Any edge in H that links a closed set is part of a cutset.
                 for antichain in nx.antichains(L):
+                    # Only antichains that are subsets of incident nodes counts.
+                    # Lemma 8 in reference.
+                    if not set(antichain).issubset(VE1):
+                        continue
                     # Nodes in an antichain of the condensation graph of
                     # the residual network map to a closed set of nodes that
                     # define a node partition of the auxiliary digraph H.
                     S = {n for n, scc in cmap.items() if scc in antichain}
+                    S |= {x for n in S for x in R_closure.predecessors(n)}
+                    if '%sB' % mapping[x] not in S or '%sA' % mapping[v] in S:
+                        continue
                     # Find the cutset that links the node partition (S,~S) in H
                     cutset = set()
                     for u in S:
-                        cutset.update((u, w) for w in H[u] if w not in S)
+                        cutset.update((u, w)
+                                      for w in H_reversed[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    node_cut = {H.nodes[n]['id'] for edge in cutset for n in edge}
+                    if any([H.nodes[u]['id'] != H.nodes[w]['id']
+                            for u, w in cutset]):
+                        continue
+                    node_cut = {H.nodes[u]['id'] for u, _ in cutset}
 
                     if len(node_cut) == k:
                         # The cut is invalid if it includes internal edges of
-                        # end nodes.
+                        # end nodes. The other half of Lemma 8 in ref.
                         if x in node_cut or v in node_cut:
                             continue
                         if node_cut not in seen:
@@ -188,7 +212,11 @@ def all_node_cuts(G, k=None, flow_func=None):
                 R.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
                            capacity=1)
                 R.add_edge('%sA' % mapping[v], '%sB' % mapping[x],
+                           capacity=0)
+                R.add_edge('%sB' % mapping[v], '%sA' % mapping[x],
                            capacity=1)
+                R.add_edge('%sA' % mapping[x], '%sB' % mapping[v],
+                           capacity=0)
 
                 # Add again the saturated edges to reuse the residual network
                 R.add_edges_from(saturated_edges)
