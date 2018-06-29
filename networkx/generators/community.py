@@ -10,6 +10,7 @@
 #           Konstantinos Karakatsanis (dinoskarakas@gmail.com)
 #           Jean-Gabriel Young (jean.gabriel.young@gmail.com)
 """Generators for classes of graphs used in studying social networks."""
+from __future__ import division
 import itertools
 import math
 import random
@@ -513,6 +514,7 @@ def windmill_graph(n, k):
     G.add_edges_from((0, i) for i in range(k, G.number_of_nodes()))
     return G
 
+
 def stochastic_block_model(sizes, p, nodelist=None, seed=None,
                            directed=False, selfloops=False, sparse=True):
     """Return a stochastic block model graph.
@@ -559,30 +561,26 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
 
     Examples
     --------
-    >>> from __future__ import division
-    >>> import numpy as np
-    >>> import networkx as nx
-    >>>
     >>> sizes = [75, 75, 300]
     >>> probs = [[0.25, 0.05, 0.02],
     ...          [0.05, 0.35, 0.07],
     ...          [0.02, 0.07, 0.40]]
-    >>> g = nx.stochastic_block_model(sizes, probs)
+    >>> g = nx.stochastic_block_model(sizes, probs, seed=0)
     >>> len(g)
     450
-    >>> H = nx.algorithms.blockmodel(g, g.graph['partition'])
-    >>> for v in H.nodes_iter(data=True):
+    >>> H = nx.quotient_graph(g, g.graph['partition'], relabel=True)
+    >>> for v in H.nodes(data=True):
     ...     print v[1]['density']
     ...
-    0.254414414414
-    0.357477477477
-    0.401672240803
-    >>> for v in H.edges_iter(data=True):
+    0.245045045045
+    0.348108108108
+    0.405105908584
+    >>> for v in H.edges(data=True):
     ...     print v[2]['weight'] / (sizes[v[0]] * sizes[v[1]])
     ...
-    0.0483555555556
-    0.0195555555556
-    0.0728888888889
+    0.0506666666667
+    0.0216
+    0.0699555555556
 
     See Also
     --------
@@ -667,16 +665,16 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
             edges = itertools.product(g.graph['partition'][i],
                                       g.graph['partition'][j])
         if sparse:
-            consume = lambda it, n: next(itertools.islice(it, n, n), None)
-            geo = lambda p: math.floor(math.log(random.random()) / math.log(1 - p))  # noqa
             if p[i][j] == 1:  # Test edges cases p_ij = 0 or 1
                 for e in edges:
                     g.add_edge(*e)
             elif p[i][j] > 0:
                 while True:
                     try:
-                        skip = geo(p[i][j])
-                        consume(edges, skip)
+                        logrand = math.log(random.random())
+                        skip = math.floor(logrand / math.log(1 - p[i][j]))
+                        # consume "skip" edges
+                        next(itertools.islice(edges, skip, skip), None)
                         e = next(edges)
                         g.add_edge(*e)  # __safe
                     except StopIteration:
