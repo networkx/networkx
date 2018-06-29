@@ -334,6 +334,23 @@ class GraphML(object):
              (float, "float"), (float, "double"),
              (bool, "boolean")]
 
+    # These additions to types allow writing numpy types
+    try:
+        import numpy as np
+    except:
+        pass
+    else:
+        # prepend so that python types are created upon read (last entry wins)
+        types = [(np.float64, "float"), (np.float32, "float"),
+                 (np.float16, "float"), (np.float_, "float"),
+                 (np.int, "int"), (np.int8, "int"),
+                 (np.int16, "int"), (np.int32, "int"),
+                 (np.int64, "int"), (np.uint8, "int"),
+                 (np.uint16, "int"), (np.uint32, "int"),
+                 (np.uint64, "int"), (np.int_, "int"),
+                 (np.intc, "int"), (np.intp, "int"),
+                ] + types
+
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
 
