@@ -570,13 +570,13 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
     450
     >>> H = nx.quotient_graph(g, g.graph['partition'], relabel=True)
     >>> for v in H.nodes(data=True):
-    ...     print v[1]['density']
+    ...     print(v[1]['density'])
     ...
     0.245045045045
     0.348108108108
     0.405105908584
     >>> for v in H.edges(data=True):
-    ...     print v[2]['weight'] / (sizes[v[0]] * sizes[v[1]])
+    ...     print(v[2]['weight'] / (sizes[v[0]] * sizes[v[1]]))
     ...
     0.0506666666667
     0.0216
