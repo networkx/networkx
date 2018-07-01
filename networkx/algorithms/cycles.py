@@ -20,7 +20,6 @@ from itertools import tee
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
-from networkx.algorithms.traversal.edgedfs import helper_funcs
 
 __all__ = [
     'cycle_basis', 'simple_cycles',
