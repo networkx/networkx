@@ -161,20 +161,32 @@ def test_stochastic_block_model():
 
     # Test Exceptions
     sbm = nx.stochastic_block_model
+    badnodelist = list(range(400))  # not enough nodes to match sizes
     badprobs1 = [[0.25, 0.05, 1.02],
                  [0.05, 0.35, 0.07],
                  [0.02, 0.07, 0.40]]
     badprobs2 = [[0.25, 0.05, 0.02],
                  [0.05, -0.35, 0.07],
                  [0.02, 0.07, 0.40]]
-    probs_rect = [[0.25, 0.05, 0.02],
-                  [0.05, -0.35, 0.07]]
+    probs_rect1 = [[0.25, 0.05, 0.02],
+                   [0.05, -0.35, 0.07]]
+    probs_rect2 = [[0.25, 0.05],
+                   [0.05, -0.35],
+                   [0.02, 0.07]]
     asymprobs = [[0.25, 0.05, 0.01],
                  [0.05, -0.35, 0.07],
                  [0.02, 0.07, 0.40]]
     assert_raises(nx.NetworkXException, sbm, sizes, badprobs1)
     assert_raises(nx.NetworkXException, sbm, sizes, badprobs2)
-    assert_raises(nx.NetworkXException, sbm, sizes, probs_rect, directed=True)
+    assert_raises(nx.NetworkXException, sbm, sizes, probs_rect1, directed=True)
+    assert_raises(nx.NetworkXException, sbm, sizes, probs_rect2, directed=True)
     assert_raises(nx.NetworkXException, sbm, sizes, asymprobs, directed=False)
+    assert_raises(nx.NetworkXException, sbm, sizes, probs, badnodelist)
     nodelist = [0] + list(range(449))  # repeated node name in nodelist
     assert_raises(nx.NetworkXException, sbm, sizes, probs, nodelist)
+
+    # Extra keyword arguments test
+    GG = nx.stochastic_block_model(sizes, probs, seed=0, selfloops=True)
+    assert_equal(G.nodes, GG.nodes)
+    GG = nx.stochastic_block_model(sizes, probs, seed=0, sparse=False)
+    assert_equal(G.nodes, GG.nodes)

@@ -230,7 +230,8 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
         p[r][r] = p_in
 
     return stochastic_block_model(sizes, p, nodelist=None, seed=seed,
-                                  directed=directed, selfloops=False, sparse=True)
+                                  directed=directed, selfloops=False,
+                                  sparse=True)
 
 
 def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
@@ -595,25 +596,23 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
     if seed is not None:
         random.seed(seed)
 
+    parts = g.graph['partition']
     for i, j in block_iter:
         if i == j:
             if directed:
                 if selfloops:
-                    edges = itertools.product(g.graph['partition'][i],
-                                              g.graph['partition'][i])
+                    edges = itertools.product(parts[i], parts[i])
                 else:
-                    edges = itertools.permutations(g.graph['partition'][i], 2)
+                    edges = itertools.permutations(parts[i], 2)
             else:
-                edges = itertools.combinations(g.graph['partition'][i], 2)
+                edges = itertools.combinations(parts[i], 2)
                 if selfloops:
-                    edges = itertools.chain(edges, zip(g.graph['partition'][i],
-                                                       g.graph['partition'][i]))  # noqa
+                    edges = itertools.chain(edges, zip(parts[i], parts[i]))
             for e in edges:
                 if random.random() < p[i][j]:
                     g.add_edge(*e)
         else:
-            edges = itertools.product(g.graph['partition'][i],
-                                      g.graph['partition'][j])
+            edges = itertools.product(parts[i], parts[j])
         if sparse:
             if p[i][j] == 1:  # Test edges cases p_ij = 0 or 1
                 for e in edges:
