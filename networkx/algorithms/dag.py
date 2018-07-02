@@ -19,7 +19,7 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
-from collections import defaultdict
+from collections import defaultdict, deque
 from fractions import gcd
 from functools import partial
 from itertools import chain
@@ -39,6 +39,7 @@ __all__ = ['descendants',
            'ancestors',
            'topological_sort',
            'lexicographical_topological_sort',
+           'all_topological_sorts',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
@@ -284,6 +285,104 @@ def lexicographical_topological_sort(G, key=None):
                                     "during iteration")
 
 
+def _all_topological_sorts(G, count, D, current_sort, all_sorts):
+    # internal routine for all_topological_sorts
+    # actual recursive implementation of the all_topological_sorts function
+    # implementation based on:
+    # Knuth, Donald E., Szwarcfiter, Jayme L. (1974).
+    # "A Structured Program to Generate All Topological Sorting Arrangements"
+    # for complete reference see the documentation of all_topological_sorts
+
+    # parameters:
+    # count : dict(node, int)
+    #   current in-degree of each node
+    # D : deque
+    #   current list of vertices with degree 0
+    # current_sort : list
+    #   current part of the next topological sort
+    # all_sorts : list
+    #   list of topological sorts
+    if len(D) == 0:
+        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+
+    # the variable names are chosen to match Knuth and Szwarcfiter (1974)
+    base = D[-1]
+    # do-while construct
+    while True:
+        q = D.pop()
+        # "erase" all edges (q, x)
+        for j in G.successors(q):
+            count[j] -= 1
+            assert count[j] >= 0
+            if count[j] == 0:
+                D.append(j)
+
+        sort = current_sort + [q]
+        if len(sort) == len(G):
+            all_sorts.append(sort)
+        else:
+            _all_topological_sorts(G, count, D, sort, all_sorts)
+
+        # "restores" all edges (q, x)
+        for j in G.successors(q):
+            count[j] += 1
+            assert count[j] >= 0
+        # remove entries from D
+        while len(D) > 0 and count[D[-1]] > 0:
+            D.pop()
+
+        assert all([count[v] == 0 for v in D])
+
+        D.appendleft(q)
+        if D[-1] == base:
+            break
+
+
+@not_implemented_for('undirected')
+def all_topological_sorts(G):
+    """Returns a list of all topologicals sortings of the directed graph G.
+    Implements the recursive algorithm given in [1].
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed graph
+
+    Returns
+    -------
+    list
+        List of all topological sorts of the digraph G
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is not directed
+    NetworkXUnfeasible
+        If `G` is not acyclic
+
+    References
+    ----------
+    .. [1] Knuth, Donald E., Szwarcfiter, Jayme L. (1974).
+       "A Structured Program to Generate All Topological Sorting Arrangements"
+       Information Processing Letters, Volume 2, Issue 6, 1974, Pages 153-157,
+       ISSN 0020-0190,
+       https://doi.org/10.1016/0020-0190(74)90001-5.
+       Elsevier (North-Holland), Amsterdam
+    """
+    if not G.is_directed():
+        raise nx.NetworkXError(
+            "Topological sort not defined on undirected graphs.")
+
+    # the names of count and D are chosen to match the global variables in [1]
+    # number of edges originating in a vertex v
+    count = dict(G.in_degree())
+    # vertices with indegree 0
+    D = deque([v for v, d in G.in_degree() if d == 0])
+    top_sorts = []
+    _all_topological_sorts(G, count, D, [], top_sorts)
+    return top_sorts
+
+
 def is_aperiodic(G):
     """Return True if `G` is aperiodic.
 
@@ -343,7 +442,6 @@ def is_aperiodic(G):
     else:
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
-
 @not_implemented_for('undirected')
 def transitive_closure(G):
     """ Returns transitive closure of a directed graph
@@ -377,7 +475,6 @@ def transitive_closure(G):
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
     return TC
-
 
 @not_implemented_for('undirected')
 def transitive_reduction(G):

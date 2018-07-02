@@ -1,4 +1,4 @@
-from itertools import combinations
+from itertools import combinations, permutations
 
 from nose.tools import assert_equal
 from nose.tools import assert_false
@@ -213,6 +213,37 @@ class TestDAG:
             assert_raises(RuntimeError, runtime_error)
             assert_raises(RuntimeError, runtime_error2)
             assert_raises(nx.NetworkXUnfeasible, unfeasible_error)
+
+    def test_all_topological_sorts_1(self):
+        DG = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5)])
+        assert_equal(list(nx.all_topological_sorts(DG)), [[1, 2, 3, 4, 5]])
+
+    def test_all_topological_sorts_2(self):
+        DG = nx.DiGraph([(1, 3), (2, 1), (2, 4), (4, 3), (4, 5)])
+        assert_equal(sorted(nx.all_topological_sorts(DG)),
+                     [[2, 1, 4, 3, 5],
+                      [2, 1, 4, 5, 3],
+                      [2, 4, 1, 3, 5],
+                      [2, 4, 1, 5, 3],
+                      [2, 4, 5, 1, 3]])
+
+    def test_all_topological_sorts_3(self):
+        def unfeasible():
+            DG = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 2), (4, 5)])
+            nx.all_topological_sorts(DG)
+
+        def not_implemented():
+            G = nx.Graph([(1, 2), (2, 3)])
+            nx.all_topological_sorts(G)
+        assert_raises(nx.NetworkXUnfeasible, unfeasible)
+        assert_raises(nx.NetworkXNotImplemented, not_implemented)
+
+    def test_all_topological_sorts_4(self):
+        DG = nx.DiGraph()
+        for i in range(7):
+            DG.add_node(i)
+        assert_equal(sorted(map(list, permutations(DG.nodes))),
+                     sorted(nx.all_topological_sorts(DG)))
 
     def test_ancestors(self):
         G = nx.DiGraph()
