@@ -188,5 +188,7 @@ def test_stochastic_block_model():
     # Extra keyword arguments test
     GG = nx.stochastic_block_model(sizes, probs, seed=0, selfloops=True)
     assert_equal(G.nodes, GG.nodes)
+    GG = nx.stochastic_block_model(sizes, probs, selfloops=True, directed=True)
+    assert_equal(G.nodes, GG.nodes)
     GG = nx.stochastic_block_model(sizes, probs, seed=0, sparse=False)
     assert_equal(G.nodes, GG.nodes)
