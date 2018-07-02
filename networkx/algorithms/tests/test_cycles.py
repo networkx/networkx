@@ -221,6 +221,12 @@ class TestFindCycle(object):
         x_ = [(0, 1, FORWARD), (1, 0, FORWARD)]
         assert_equal(x, x_)
 
+    def test_digraph_reverse(self):
+        G = nx.DiGraph(self.edges)
+        x = list(find_cycle(G, self.nodes, orientation='reverse'))
+        x_ = [(1, 0, REVERSE), (0, 1, REVERSE)]
+        assert_equal(x, x_)
+
     def test_multidigraph_ignore(self):
         G = nx.MultiDiGraph(self.edges)
         x = list(find_cycle(G, self.nodes, orientation='ignore'))
