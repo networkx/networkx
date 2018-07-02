@@ -22,6 +22,9 @@ __all__ = ['dfs_edges', 'dfs_tree',
 def dfs_edges(G, source=None, depth_limit=None):
     """Iterate over edges in a depth-first-search (DFS).
 
+    Perform a depth-first-search over the nodes of G and yield
+    the edges in order. This may not generate all edges in G (see edge_dfs).
+
     Parameters
     ----------
     G : NetworkX graph
@@ -64,6 +67,7 @@ def dfs_edges(G, source=None, depth_limit=None):
     dfs_preorder_nodes
     dfs_postorder_nodes
     dfs_labeled_edges
+    edge_dfs
     """
     if source is None:
         # edges for all components

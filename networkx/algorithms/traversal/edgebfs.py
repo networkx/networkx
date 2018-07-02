@@ -1,23 +1,24 @@
 """
-===========================
-Depth First Search on Edges
-===========================
+=============================
+Breadth First Search on Edges
+=============================
 
 Algorithms for a depth-first traversal of edges in a graph.
 
 """
+from collections import deque
 import networkx as nx
 
 FORWARD = 'forward'
 REVERSE = 'reverse'
 
-__all__ = ['edge_dfs']
+__all__ = ['edge_bfs']
 
 
-def edge_dfs(G, source=None, orientation=None):
-    """A directed, depth-first-search of edges in `G`, beginning at `source`.
+def edge_bfs(G, source=None, orientation=None):
+    """A directed, breadth-first-search of edges in `G`, beginning at `source`.
 
-    Yield the edges of G in a depth-first-search order continuing until
+    Yield the edges of G in a breadth-first-search order continuing until
     all edges are generated.
 
     Parameters
@@ -44,7 +45,7 @@ def edge_dfs(G, source=None, orientation=None):
     Yields
     ------
     edge : directed edge
-        A directed edge indicating the path taken by the depth-first traversal.
+        A directed edge indicating the path taken by the breadth-first-search.
         For graphs, `edge` is of the form `(u, v)` where `u` and `v`
         are the tail and head of the edge as determined by the traversal.
         For multigraphs, `edge` is of the form `(u, v, key)`, where `key` is
@@ -57,38 +58,40 @@ def edge_dfs(G, source=None, orientation=None):
     --------
     >>> import networkx as nx
     >>> nodes = [0, 1, 2, 3]
-    >>> edges = [(0, 1), (1, 0), (1, 0), (2, 1), (3, 1)]
+    >>> edges = [(0, 1), (1, 0), (1, 0), (2, 0), (2, 1), (3, 1)]
 
-    >>> list(nx.edge_dfs(nx.Graph(edges), nodes))
-    [(0, 1), (1, 2), (1, 3)]
+    >>> list(nx.edge_bfs(nx.Graph(edges), nodes))
+    [(0, 1), (0, 2), (1, 2), (1, 3)]
 
-    >>> list(nx.edge_dfs(nx.DiGraph(edges), nodes))
-    [(0, 1), (1, 0), (2, 1), (3, 1)]
+    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes))
+    [(0, 1), (1, 0), (2, 0), (2, 1), (3, 1)]
 
-    >>> list(nx.edge_dfs(nx.MultiGraph(edges), nodes))
-    [(0, 1, 0), (1, 0, 1), (0, 1, 2), (1, 2, 0), (1, 3, 0)]
+    >>> list(nx.edge_bfs(nx.MultiGraph(edges), nodes))
+    [(0, 1, 0), (0, 1, 1), (0, 1, 2), (0, 2, 0), (1, 2, 0), (1, 3, 0)]
 
-    >>> list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes))
-    [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
+    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes))
+    [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 0, 0), (2, 1, 0), (3, 1, 0)]
 
-    >>> list(nx.edge_dfs(nx.DiGraph(edges), nodes, orientation='ignore'))
-    [(0, 1, 'forward'), (1, 0, 'forward'), (2, 1, 'reverse'), (3, 1, 'reverse')]
+    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes, orientation='ignore'))
+    [(0, 1, 'forward'), (1, 0, 'reverse'), (2, 0, 'reverse'), (2, 1, 'reverse'), (3, 1, 'reverse')]
 
-    >>> list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
-    [(0, 1, 0, 'forward'), (1, 0, 0, 'forward'), (1, 0, 1, 'reverse'), (2, 1, 0, 'reverse'), (3, 1, 0, 'reverse')]
+    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
+    [(0, 1, 0, 'forward'), (1, 0, 0, 'reverse'), (1, 0, 1, 'reverse'), (2, 0, 0, 'reverse'), (2, 1, 0, 'reverse'), (3, 1, 0, 'reverse')]
 
     Notes
     -----
     The goal of this function is to visit edges. It differs from the more
-    familiar depth-first traversal of nodes, as provided by
-    :func:`networkx.algorithms.traversal.depth_first_search.dfs_edges`, in
+    familiar breadth-first-search of nodes, as provided by
+    :func:`networkx.algorithms.traversal.breadth_first_search.bfs_edges`, in
     that it does not stop once every node has been visited. In a directed graph
     with edges [(0, 1), (1, 2), (2, 1)], the edge (2, 1) would not be visited
     if not for the functionality provided by this function.
 
     See Also
     --------
-    dfs_edges
+    bfs_edges
+    bfs_tree
+    edge_dfs
 
     """
     nodes = list(G.nbunch_iter(source))
@@ -121,44 +124,33 @@ def edge_dfs(G, source=None, orientation=None):
     else:
         raise nx.NetworkXError("invalid orientation argument.")
 
-    # set up formation of edge_id to easily look up if edge already returned
     if directed:
+        neighbors = G.successors
         def edge_id(edge):
             # remove direction indicator
             return edge[:-1] if orientation is not None else edge
     else:
+        neighbors = G.neighbors
         def edge_id(edge):
-            # single id for undirected requires frozenset on nodes
-            return (frozenset(edge[:2]),) + edge[2:]
+            return (frozenset(edge[:2]),) +edge[2:]
 
-    # Basic setup
     check_reverse = directed and orientation in ('reverse', 'ignore')
 
+    # start BFS
+    visited_nodes = {n for n in nodes}
     visited_edges = set()
-    visited_nodes = set()
-    edges = {}
-
-    # start DFS
-    for start_node in nodes:
-        stack = [start_node]
-        while stack:
-            current_node = stack[-1]
-            if current_node not in visited_nodes:
-                edges[current_node] = edges_from(current_node)
-                visited_nodes.add(current_node)
-
-            try:
-                edge = next(edges[current_node])
-            except StopIteration:
-                # No more edges from the current node.
-                stack.pop()
+    queue = deque([(n, edges_from(n)) for n in nodes])
+    while queue:
+        parent, children_edges = queue.popleft()
+        for edge in children_edges:
+            if check_reverse and edge[-1] == REVERSE:
+                child = edge[0]
             else:
-                edgeid = edge_id(edge)
-                if edgeid not in visited_edges:
-                    visited_edges.add(edgeid)
-                    # Mark the traversed "to" node as to-be-explored.
-                    if check_reverse and edge[-1] == REVERSE:
-                        stack.append(edge[0])
-                    else:
-                        stack.append(edge[1])
-                    yield edge
+                child = edge[1]
+            if child not in visited_nodes:
+                visited_nodes.add(child)
+                queue.append((child, edges_from(child)))
+            edgeid = edge_id(edge)
+            if edgeid not in visited_edges:
+                visited_edges.add(edgeid)
+                yield edge

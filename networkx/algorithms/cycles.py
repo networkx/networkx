@@ -20,7 +20,6 @@ from itertools import tee
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
-from networkx.algorithms.traversal.edgedfs import helper_funcs
 
 __all__ = [
     'cycle_basis', 'simple_cycles',
@@ -329,9 +328,11 @@ def recursive_simple_cycles(G):
     return result
 
 
-def find_cycle(G, source=None, orientation='original'):
-    """
-    Returns the edges of a cycle found via a directed, depth-first traversal.
+def find_cycle(G, source=None, orientation=None):
+    """Returns a cycle found via depth-first traversal.
+
+    The cycle is a list of edges indicating the cyclic path.
+    Orientation of directed edges is controlled by `orientation`.
 
     Parameters
     ----------
@@ -343,30 +344,29 @@ def find_cycle(G, source=None, orientation='original'):
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
-    orientation : 'original' | 'reverse' | 'ignore'
+    orientation : None | 'original' | 'reverse' | 'ignore' (default: None)
         For directed graphs and directed multigraphs, edge traversals need not
-        respect the original orientation of the edges. When set to 'reverse',
-        then every edge will be traversed in the reverse direction. When set to
-        'ignore', then each directed edge is treated as a single undirected
-        edge that can be traversed in either direction. For undirected graphs
-        and undirected multigraphs, this parameter is meaningless and is not
-        consulted by the algorithm.
+        respect the original orientation of the edges.
+        When set to 'reverse' every edge is traversed in the reverse direction.
+        When set to 'ignore', every edge is treated as undirected.
+        When set to 'original', every edge is treated as directed.
+        In all three cases, the yielded edge tuples add a last entry to
+        indicate the direction in which that edge was traversed.
+        If orientation is None, the yielded edge has no direction indicated.
+        The direction is respected, but not reported.
 
     Returns
     -------
     edges : directed edges
-        A list of directed edges indicating the path taken for the loop. If
-        no cycle is found, then an exception is raised. For graphs, an
-        edge is of the form `(u, v)` where `u` and `v` are the tail and head
-        of the edge as determined by the traversal. For multigraphs, an edge is
-        of the form `(u, v, key)`, where `key` is the key of the edge. When the
-        graph is directed, then `u` and `v` are always in the order of the
-        actual directed edge. If orientation is 'ignore', then an edge takes
-        the form `(u, v, key, direction)` where direction indicates if the edge
-        was followed in the forward (tail to head) or reverse (head to tail)
-        direction. When the direction is forward, the value of `direction`
-        is 'forward'. When the direction is reverse, the value of `direction`
-        is 'reverse'.
+        A list of directed edges indicating the path taken for the loop.
+        If no cycle is found, then an exception is raised.
+        For graphs, an edge is of the form `(u, v)` where `u` and `v`
+        are the tail and head of the edge as determined by the traversal.
+        For multigraphs, an edge is of the form `(u, v, key)`, where `key` is
+        the key of the edge. When the graph is directed, then `u` and `v`
+        are always in the order of the actual directed edge.
+        If orientation is not None then the edge tuple is extended to include
+        the direction of traversal ('forward' or 'reverse') on that edge.
 
     Raises
     ------
@@ -394,7 +394,17 @@ def find_cycle(G, source=None, orientation='original'):
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """
-    out_edge, key, tailhead = helper_funcs(G, orientation)
+    if not G.is_directed() or orientation in (None, 'original'):
+        def tailhead(edge):
+            return edge[:2]
+    elif orientation == 'reverse':
+        def tailhead(edge):
+            return edge[1], edge[0]
+    elif orientation == 'ignore':
+        def tailhead(edge):
+            if edge[-1] == 'reverse':
+                return edge[1], edge[0]
+            return edge[:2]
 
     explored = set()
     cycle = []
