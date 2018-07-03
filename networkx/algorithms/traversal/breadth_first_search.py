@@ -97,7 +97,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit = None):
                     visited.add(child)
                     queue.append((child, neighbors(child)))
         except StopIteration:
-                queue.popleft()
+            queue.popleft()
      
     
 
