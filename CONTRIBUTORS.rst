@@ -119,7 +119,7 @@ is partially historical, and now, mostly arbitrary.
 - Mads Jensen, Github: `atombrella <https://github.com/atombrella>`_
 - Edward L. Platt, `elplatt <https://elplatt.com>`_
 - James Owen, Github: `leamingrad <https://github.com/leamingrad>`_
-
+- Jaideep Seth.
 Support
 -------
 
