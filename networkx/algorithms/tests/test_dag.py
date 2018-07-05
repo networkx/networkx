@@ -230,11 +230,13 @@ class TestDAG:
     def test_all_topological_sorts_3(self):
         def unfeasible():
             DG = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 2), (4, 5)])
-            nx.all_topological_sorts(DG)
+            # convert to list to execute generator
+            list(nx.all_topological_sorts(DG))
 
         def not_implemented():
             G = nx.Graph([(1, 2), (2, 3)])
-            nx.all_topological_sorts(G)
+            # convert to list to execute generator
+            list(nx.all_topological_sorts(G))
         assert_raises(nx.NetworkXUnfeasible, unfeasible)
         assert_raises(nx.NetworkXNotImplemented, not_implemented)
 

@@ -285,59 +285,6 @@ def lexicographical_topological_sort(G, key=None):
                                     "during iteration")
 
 
-def _all_topological_sorts(G, count, D, current_sort, all_sorts):
-    # internal routine for all_topological_sorts
-    # actual recursive implementation of the all_topological_sorts function
-    # implementation based on:
-    # Knuth, Donald E., Szwarcfiter, Jayme L. (1974).
-    # "A Structured Program to Generate All Topological Sorting Arrangements"
-    # for complete reference see the documentation of all_topological_sorts
-
-    # parameters:
-    # count : dict(node, int)
-    #   current in-degree of each node
-    # D : deque
-    #   current list of vertices with degree 0
-    # current_sort : list
-    #   current part of the next topological sort
-    # all_sorts : list
-    #   list of topological sorts
-    if len(D) == 0:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
-
-    # the variable names are chosen to match Knuth and Szwarcfiter (1974)
-    base = D[-1]
-    # do-while construct
-    while True:
-        q = D.pop()
-        # "erase" all edges (q, x)
-        for j in G.successors(q):
-            count[j] -= 1
-            assert count[j] >= 0
-            if count[j] == 0:
-                D.append(j)
-
-        sort = current_sort + [q]
-        if len(sort) == len(G):
-            all_sorts.append(sort)
-        else:
-            _all_topological_sorts(G, count, D, sort, all_sorts)
-
-        # "restores" all edges (q, x)
-        for j in G.successors(q):
-            count[j] += 1
-            assert count[j] >= 0
-        # remove entries from D
-        while len(D) > 0 and count[D[-1]] > 0:
-            D.pop()
-
-        assert all([count[v] == 0 for v in D])
-
-        D.appendleft(q)
-        if D[-1] == base:
-            break
-
-
 @not_implemented_for('undirected')
 def all_topological_sorts(G):
     """Returns a list of all topologicals sortings of the directed graph G.
@@ -350,8 +297,8 @@ def all_topological_sorts(G):
 
     Returns
     -------
-    list
-        List of all topological sorts of the digraph G
+    generator
+        All topological sorts of the digraph G
 
     Raises
     ------
@@ -378,9 +325,66 @@ def all_topological_sorts(G):
     count = dict(G.in_degree())
     # vertices with indegree 0
     D = deque([v for v, d in G.in_degree() if d == 0])
-    top_sorts = []
-    _all_topological_sorts(G, count, D, [], top_sorts)
-    return top_sorts
+    # stack of first value chosen at a position k in the topological sort
+    bases = []
+    current_sort = []
+
+    # do-while construct
+    while True:
+        assert all([count[v] == 0 for v in D])
+
+        if len(current_sort) == len(G):
+            yield current_sort
+
+            # clean-up stack
+            while len(current_sort) > 0:
+                assert len(bases) == len(current_sort)
+                q = current_sort[-1]
+                current_sort = current_sort[:-1]
+
+                # "restores" all edges (q, x)
+                for j in G.successors(q):
+                    count[j] += 1
+                    assert count[j] >= 0
+                # remove entries from D
+                while len(D) > 0 and count[D[-1]] > 0:
+                    D.pop()
+
+                # corresponds to a circular shift of the values in D
+                # if the first value chosen (the base) is in the first
+                # position of D again, we are done and need to consider the
+                # previous condition
+                D.appendleft(q)
+                if D[-1] == bases[-1]:
+                    # all possible values have been chosen at current position
+                    # remove corresponding marker
+                    bases.pop()
+                else:
+                    # there are still elements that have not been fixed
+                    # at the current position in the topological sort
+                    # stop removing elements, escape inner loop
+                    break
+
+        else:
+            if len(D) == 0:
+                raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+
+            # choose next node
+            q = D.pop()
+            # "erase" all edges (q, x)
+            for j in G.successors(q):
+                count[j] -= 1
+                assert count[j] >= 0
+                if count[j] == 0:
+                    D.append(j)
+            current_sort = current_sort + [q]
+
+            # base for current position might _not_ be fixed yet
+            if len(bases) < len(current_sort):
+                bases.append(q)
+
+        if len(bases) == 0:
+            break
 
 
 def is_aperiodic(G):
