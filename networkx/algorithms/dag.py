@@ -288,6 +288,7 @@ def lexicographical_topological_sort(G, key=None):
 @not_implemented_for('undirected')
 def all_topological_sorts(G):
     """Returns a list of all topologicals sortings of the directed graph G.
+
     Implements the recursive algorithm given in [1].
 
     Parameters
@@ -446,6 +447,7 @@ def is_aperiodic(G):
     else:
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
+
 @not_implemented_for('undirected')
 def transitive_closure(G):
     """ Returns transitive closure of a directed graph
@@ -479,6 +481,7 @@ def transitive_closure(G):
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
     return TC
+
 
 @not_implemented_for('undirected')
 def transitive_reduction(G):
