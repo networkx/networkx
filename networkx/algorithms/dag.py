@@ -287,9 +287,11 @@ def lexicographical_topological_sort(G, key=None):
 
 @not_implemented_for('undirected')
 def all_topological_sorts(G):
-    """Returns a list of all topologicals sortings of the directed graph G.
+    """Returns a generator of _all_ topological sorts of the directed graph G.
 
-    Implements the recursive algorithm given in [1].
+    A topological sort is a nonunique permutation of the nodes such that an
+    edge from u to v implies that u appears before v in the topological sort
+    order.
 
     Parameters
     ----------
@@ -307,6 +309,18 @@ def all_topological_sorts(G):
         If `G` is not directed
     NetworkXUnfeasible
         If `G` is not acyclic
+
+    Examples
+    --------
+    To enumerate all topological sorts of directed graph:
+
+    >>> DG = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
+    >>> list(nx.all_topological_sorts(DG))
+    [[1, 2, 4, 3], [1, 2, 3, 4]]
+
+    Notes
+    -----
+    Implements an iterative version of the algorithm given in [1].
 
     References
     ----------
