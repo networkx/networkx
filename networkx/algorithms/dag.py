@@ -392,7 +392,7 @@ def all_topological_sorts(G):
                 assert count[j] >= 0
                 if count[j] == 0:
                     D.append(j)
-            current_sort = current_sort + [q]
+            current_sort.append(q)
 
             # base for current position might _not_ be fixed yet
             if len(bases) < len(current_sort):
