@@ -90,6 +90,7 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
     resulting Pandas DataFrame can be modified as follows:
 
     >>> import pandas as pd
+    >>> pd.options.display.max_columns = 20
     >>> import numpy as np
     >>> G = nx.Graph([(1, 1)])
     >>> df = nx.to_pandas_adjacency(G, dtype=int)
@@ -159,6 +160,7 @@ def from_pandas_adjacency(df, create_using=None):
     Simple integer weights on edges:
 
     >>> import pandas as pd
+    >>> pd.options.display.max_columns = 20
     >>> df = pd.DataFrame([[1, 1], [2, 1]])
     >>> df
        0  1
@@ -281,6 +283,7 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     Simple integer weights on edges:
 
     >>> import pandas as pd
+    >>> pd.options.display.max_columns = 20
     >>> import numpy as np
     >>> r = np.random.RandomState(seed=5)
     >>> ints = r.random_integers(1, 10, size=(3,2))
