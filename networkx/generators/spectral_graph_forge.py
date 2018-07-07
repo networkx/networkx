@@ -7,6 +7,7 @@
 
 
 import networkx as nx
+from networkx.utils import np_random_state
 
 __all__ = ['spectral_graph_forge']
 
@@ -84,9 +85,9 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
     return B
 
 
+@np_random_state(3)
 def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
-    """ Spectral Graph Forge (SGF) generates a random simple graph resembling
-        the global properties of the input one.
+    """Return a random simple graph with spectrum resembling that of `G`
 
     This algorithm, called Spectral Graph Forge (SGF), computes the
     eigenvectors of a given graph adjacency matrix, filters them and
@@ -104,8 +105,9 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     transformation : string, optional
         Represents the intended matrix linear transformation, possible values
         are 'identity' and 'modularity'
-    seed : integer, optional
-        Seed for random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of numpy random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -165,8 +167,6 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     A = nx.to_numpy_matrix(G)
     n = A.shape[1]
     level = int(round(n*alpha))
-    if seed:
-        np.random.seed(int(seed))
 
     if transformation not in available_transformations:
         msg = '\'{0}\' is not a valid transformation. '.format(transformation)
@@ -188,7 +188,7 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     np.fill_diagonal(B, np.zeros((1, n)))
 
     for i in range(n-1):
-        B[i, i+1:] = stats.bernoulli.rvs(B[i, i+1:])
+        B[i, i+1:] = stats.bernoulli.rvs(B[i, i+1:], random_state=seed)
         B[i+1:, i] = np.transpose(B[i, i+1:])
 
     H = nx.from_numpy_matrix(B)

@@ -1,5 +1,6 @@
 import tempfile
 import os
+import random
 
 from nose.tools import *
 from nose import SkipTest
@@ -7,8 +8,8 @@ from nose import SkipTest
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
-    random_state
-
+    py_random_state, np_random_state, random_state
+from networkx.utils.misc import PythonRandomInterface
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
@@ -157,17 +158,38 @@ class TestRandomState(object):
         assert_true(isinstance(random_state, np.random.RandomState))
         return random_state
 
+    @np_random_state(1)
+    def instantiate_np_random_state(self, random_state):
+        assert_true(isinstance(random_state, np.random.RandomState))
+        return random_state
+
+    @py_random_state(1)
+    def instantiate_py_random_state(self, random_state):
+        assert_true(isinstance(random_state, random.Random) or
+                    isinstance(random_state, PythonRandomInterface))
+        return random_state
+
     def test_random_state_None(self):
         self.instantiate_random_state(random_state=None)
+        self.instantiate_np_random_state(random_state=None)
+        self.instantiate_py_random_state(random_state=None)
 
     def test_random_state_np_random(self):
         self.instantiate_random_state(random_state=np.random)
+        self.instantiate_np_random_state(random_state=np.random)
+        self.instantiate_py_random_state(random_state=np.random)
 
     def test_random_state_int(self):
         seed = 1
         random_state = self.instantiate_random_state(random_state=seed)
         assert_true(np.all((np.random.RandomState(seed).rand(10),
                             random_state.rand(10))))
+        random_state = self.instantiate_np_random_state(random_state=seed)
+        assert_true(np.all((np.random.RandomState(seed).rand(10),
+                            random_state.rand(10))))
+        random_state = self.instantiate_py_random_state(random_state=seed)
+        assert_true(np.all((random.Random(seed).random(),
+                            random_state.random())))
 
     def test_random_state_np_random_RandomState(self):
         seed = 1
@@ -175,6 +197,21 @@ class TestRandomState(object):
         random_state = self.instantiate_random_state(random_state=rng)
         assert_true(np.all((np.random.RandomState(seed).rand(10),
                             random_state.rand(10))))
+        random_state = self.instantiate_np_random_state(random_state=rng)
+        assert_true(np.all((np.random.RandomState(seed).rand(10),
+                            random_state.rand(10))))
+        random_state = self.instantiate_py_random_state(random_state=rng)
+        assert_true(np.all((np.random.RandomState(seed).rand(),
+                            random_state.random())))
+
+    def test_random_state_py_random(self):
+        seed = 1
+        rng = random.Random(seed)
+        random_state = self.instantiate_py_random_state(random_state=rng)
+        assert_true(np.all((random.Random(seed).random(),
+                            random_state.random())))
+        assert_raises(ValueError, self.instantiate_random_state, rng)
+        assert_raises(ValueError, self.instantiate_np_random_state, rng)
 
 
 @raises(nx.NetworkXError)

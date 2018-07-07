@@ -295,10 +295,9 @@ def create_random_state(random_state=None):
     Parameters
     ----------
     random_state : int or RandomState instance or None  optional (default=None)
-        If int, `random_state` is the seed used by the random number generator,
-        if numpy.random.RandomState instance, `random_state` is the random
-        number generator,
-        if None, the random number generator is the RandomState instance used
+        If int, return a numpy.random.RandomState instance set with seed=int.
+        if numpy.random.RandomState instance, return it.
+        if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
     import numpy as np
@@ -310,4 +309,81 @@ def create_random_state(random_state=None):
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
     msg = '%r cannot be used to generate a numpy.random.RandomState instance'
+    raise ValueError(msg % random_state)
+
+
+class PythonRandomInterface(object):
+    def __init__(self, rng=None):
+        if rng is None:
+            self._rng = np.random.mtrand._rand
+        self._rng = rng
+
+    from numpy.random import (
+        random,
+        randint as randrange,
+        choice,
+        #  Commented out methods are not used by NetworkX
+        # uniform,
+        # beta as betavariate,
+        # gamma as gammavariate,
+        normal as gauss,
+        # lognormal as lognormvariate,
+        # vonmises as vonmisesvariate,
+        # pareto as paretovariate,
+        shuffle,
+        )
+
+#    Some methods don't match API for numpy RandomState.
+#    Commented out versions are not used by NetworkX
+
+    def sample(self, seq, k):
+        return self._rng.choice(seq, size=(k,), replace=False)
+
+    def randint(self, a, b):
+        return self._rng.randrange(a, b + 1)
+
+#    exponential as expovariate with 1/argument,
+#    def expovariate(scale):
+#        return self._rng.exponential(1/scale)
+#
+#    weibull as weibullvariate multiplied by beta,
+#    def weibullvariate(alpha, beta):
+#        return self._rng.weibull(alpha) * beta
+#
+#    def triangular(self, low, high, mode):
+#        return self._rng.triangular(low, mode, high)
+#
+#    def choices(self, seq, weights=None, cum_weights=None, k=1):
+#        return self._rng.choice(seq
+
+
+def create_py_random_state(random_state=None):
+    """Returns a random.Random instance depending on input.
+
+    Parameters
+    ----------
+    random_state : int or random.Random instance or None (default=None)
+        If int, return a random.Random instance set with seed=int.
+        if random.Random instance, return it.
+        if None or the `random` package, return the global random number
+        generator used by `random`.
+    """
+    import random
+    try:
+        import numpy as np
+        if random_state is np.random:
+            return PythonRandomInterface(np.random.mtrand._rand)
+        if isinstance(random_state, np.random.RandomState):
+            return PythonRandomInterface(random_state)
+        has_numpy = True
+    except ImportError:
+        has_numpy = False
+
+    if random_state is None or random_state is random:
+        return random._inst
+    if isinstance(random_state, random.Random):
+        return random_state
+    if isinstance(random_state, int):
+        return random.Random(random_state)
+    msg = '%r cannot be used to generate a random.Random instance'
     raise ValueError(msg % random_state)
