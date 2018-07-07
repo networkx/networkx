@@ -19,8 +19,8 @@ class TestConvertPandas(object):
         global pd
         import pandas as pd
 
-        self.r = pd.np.random.RandomState(seed=5)
-        ints = self.r.random_integers(1, 10, size=(3, 2))
+        self.rng = pd.np.random.RandomState(seed=5)
+        ints = self.rng.randint(1, 11, size=(3, 2))
         a = ['A', 'B', 'C']
         b = ['D', 'A', 'E']
         df = pd.DataFrame(ints, columns=['weight', 'cost'])
