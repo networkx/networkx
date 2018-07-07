@@ -20,6 +20,7 @@ True
 #    BSD license.
 from collections import defaultdict
 from collections import deque
+import warnings
 import sys
 import uuid
 from itertools import tee, chain
@@ -318,29 +319,30 @@ class PythonRandomInterface(object):
             self._rng = np.random.mtrand._rand
         self._rng = rng
 
-    from numpy.random import (
-        random,
-        randint as randrange,
-        choice,
-        #  Commented out methods are not used by NetworkX
-        # uniform,
-        # beta as betavariate,
-        # gamma as gammavariate,
-        normal as gauss,
-        # lognormal as lognormvariate,
-        # vonmises as vonmisesvariate,
-        # pareto as paretovariate,
-        shuffle,
+    try:
+        from numpy.random import (
+            random,
+            randint as randrange,
+            choice,
+            #  Commented out methods are not used by NetworkX
+            # uniform,
+            # beta as betavariate,
+            # gamma as gammavariate,
+            normal as gauss,
+            # lognormal as lognormvariate,
+            # vonmises as vonmisesvariate,
+            # pareto as paretovariate,
+            shuffle,
         )
 
 #    Some methods don't match API for numpy RandomState.
 #    Commented out versions are not used by NetworkX
 
-    def sample(self, seq, k):
-        return self._rng.choice(seq, size=(k,), replace=False)
+        def sample(self, seq, k):
+            return self._rng.choice(seq, size=(k,), replace=False)
 
-    def randint(self, a, b):
-        return self._rng.randrange(a, b + 1)
+        def randint(self, a, b):
+            return self._rng.randrange(a, b + 1)
 
 #    exponential as expovariate with 1/argument,
 #    def expovariate(scale):
@@ -355,6 +357,9 @@ class PythonRandomInterface(object):
 #
 #    def choices(self, seq, weights=None, cum_weights=None, k=1):
 #        return self._rng.choice(seq
+    except ImportError:
+        msg = 'numpy not found, only random.random available.'
+        warnings.warn(msg, ImportWarning)
 
 
 def create_py_random_state(random_state=None):
@@ -387,3 +392,12 @@ def create_py_random_state(random_state=None):
         return random.Random(random_state)
     msg = '%r cannot be used to generate a random.Random instance'
     raise ValueError(msg % random_state)
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
