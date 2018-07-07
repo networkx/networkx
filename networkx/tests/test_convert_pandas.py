@@ -72,12 +72,12 @@ class TestConvertPandas(object):
                                  ('Z1', 'Z3', {'Co': 'zD', 'Mi': 14, 'St': 'X3'}),
                                  ('Z1', 'Z3', {'Co': 'zE', 'Mi': 9, 'St': 'Z2'}),
                                  ('Z1', 'Z3', {'Co': 'zE', 'Mi': 4, 'St': 'Z3'})])
-        df = pd.DataFrame.from_items([
-            ('O', ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y1', 'Y1', 'Y1', 'Z1', 'Z1', 'Z1', 'Z1']),
-            ('D', ['X4', 'X4', 'X4', 'X4', 'Y3', 'Y3', 'Y3', 'Y3', 'Z3', 'Z3', 'Z3', 'Z3']),
-            ('St', ['X1', 'X2', 'X3', 'X4', 'Y1', 'Y2', 'X2', 'Y3', 'Z1', 'X3', 'Z2', 'Z3']),
-            ('Co', ['zA', 'zB', 'zB', 'zB', 'zC', 'zC', 'zC', 'zC', 'zD', 'zD', 'zE', 'zE']),
-            ('Mi', [0,   54,   49,   44,    0,   34,   29,   24,    0,   14,    9,   4])])
+        df = pd.DataFrame.from_dict({
+            'O': ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y1', 'Y1', 'Y1', 'Z1', 'Z1', 'Z1', 'Z1'],
+            'D': ['X4', 'X4', 'X4', 'X4', 'Y3', 'Y3', 'Y3', 'Y3', 'Z3', 'Z3', 'Z3', 'Z3'],
+            'St': ['X1', 'X2', 'X3', 'X4', 'Y1', 'Y2', 'X2', 'Y3', 'Z1', 'X3', 'Z2', 'Z3'],
+            'Co': ['zA', 'zB', 'zB', 'zB', 'zC', 'zC', 'zC', 'zC', 'zD', 'zD', 'zE', 'zE'],
+            'Mi': [0,   54,   49,   44,    0,   34,   29,   24,    0,   14,    9,   4]})
         G1 = nx.from_pandas_edgelist(df, source='O', target='D',
                                      edge_attr=True,
                                      create_using=nx.MultiDiGraph)
