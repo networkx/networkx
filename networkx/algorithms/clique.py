@@ -423,7 +423,9 @@ def graph_clique_number(G, cliques=None):
     """
     if cliques is None:
         cliques = find_cliques(G)
-    return max([len(c) for c in cliques])
+    if len(G.nodes) < 1:
+        return 0
+    return max([len(c) for c in cliques] or [1])
 
 
 def graph_number_of_cliques(G, cliques=None):
