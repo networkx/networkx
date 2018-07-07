@@ -54,6 +54,8 @@ __all__ = ['balanced_tree',
 # -------------------------------------------------------------------
 
 def _tree_edges(n, r):
+    if n == 0:
+        return
     # helper function for trees
     # yields edges in rooted tree at 0 with n nodes and branching ratio r
     nodes = iter(range(n))
