@@ -85,8 +85,11 @@ matrix:
       language: generic
       env: TRAVIS_PYTHON_VERSION=3.6
     - python: 2.7
+    - python: 3.4
     - python: 3.5
     - python: 3.6
+    - python: 3.7
+  allow_failures:
     - python: 3.7
 
 before_install:
