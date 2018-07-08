@@ -29,7 +29,9 @@ seed of each RNG to an arbitrary integer:
 
 .. nbplot::
 
+   >>> import random
    >>> random.seed(246)        # or any integer
+   >>> import numpy
    >>> numpy.random.seed(4812)
 
 Many users will be satisfied with this level of control.
