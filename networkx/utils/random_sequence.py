@@ -23,11 +23,12 @@ from networkx.utils import py_random_state
 # uses Python's random module
 # https://docs.python.org/2/library/random.html
 
-def powerlaw_sequence(n, exponent=2.0):
+@py_random_state(2)
+def powerlaw_sequence(n, exponent=2.0, seed=None):
     """
     Return sample sequence of length n from a power law distribution.
     """
-    return [random.paretovariate(exponent - 1) for i in range(n)]
+    return [seed.paretovariate(exponent - 1) for i in range(n)]
 
 
 @py_random_state(2)
@@ -104,7 +105,8 @@ def cumulative_distribution(distribution):
     return cdf
 
 
-def discrete_sequence(n, distribution=None, cdistribution=None):
+@py_random_state(3)
+def discrete_sequence(n, distribution=None, cdistribution=None, seed=None):
     """
     Return sample sequence of length n from a given discrete distribution
     or discrete cumulative distribution.
@@ -127,14 +129,15 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
             "discrete_sequence: distribution or cdistribution missing")
 
     # get a uniform random number
-    inputseq = [random.random() for i in range(n)]
+    inputseq = [seed.random() for i in range(n)]
 
     # choose from CDF
     seq = [bisect.bisect_left(cdf, s) - 1 for s in inputseq]
     return seq
 
 
-def random_weighted_sample(mapping, k):
+@py_random_state(2)
+def random_weighted_sample(mapping, k, seed=None):
     """Return k items without replacement from a weighted sample.
 
     The input is a dictionary of items with weights as values.
@@ -143,17 +146,18 @@ def random_weighted_sample(mapping, k):
         raise ValueError("sample larger than population")
     sample = set()
     while len(sample) < k:
-        sample.add(weighted_choice(mapping))
+        sample.add(weighted_choice(mapping, seed))
     return list(sample)
 
 
-def weighted_choice(mapping):
+@py_random_state(1)
+def weighted_choice(mapping, seed=None):
     """Return a single element from a weighted sample.
 
     The input is a dictionary of items with weights as values.
     """
     # use roulette method
-    rnd = random.random() * sum(mapping.values())
+    rnd = seed.random() * sum(mapping.values())
     for k, w in mapping.items():
         rnd -= w
         if rnd < 0:

@@ -21,9 +21,9 @@ class TestRandomGeometricGraph(object):
     """
 
     def test_number_of_nodes(self):
-        G = nx.random_geometric_graph(50, 0.25)
+        G = nx.random_geometric_graph(50, 0.25, seed=42)
         assert_equal(len(G), 50)
-        G = nx.random_geometric_graph(range(50), 0.25)
+        G = nx.random_geometric_graph(range(50), 0.25, seed=42)
         assert_equal(len(G), 50)
 
     def test_distances(self):
@@ -85,9 +85,9 @@ class TestSoftRandomGeometricGraph(object):
     """
 
     def test_number_of_nodes(self):
-        G = nx.soft_random_geometric_graph(50, 0.25)
+        G = nx.soft_random_geometric_graph(50, 0.25, seed=42)
         assert_equal(len(G), 50)
-        G = nx.soft_random_geometric_graph(range(50), 0.25)
+        G = nx.soft_random_geometric_graph(range(50), 0.25, seed=42)
         assert_equal(len(G), 50)
 
     def test_distances(self):
@@ -180,9 +180,9 @@ class TestGeographicalThresholdGraph(object):
     """
 
     def test_number_of_nodes(self):
-        G = nx.geographical_threshold_graph(50, 100)
+        G = nx.geographical_threshold_graph(50, 100, seed=42)
         assert_equal(len(G), 50)
-        G = nx.geographical_threshold_graph(range(50), 100)
+        G = nx.geographical_threshold_graph(range(50), 100, seed=42)
         assert_equal(len(G), 50)
 
     def test_distances(self):
@@ -233,9 +233,9 @@ class TestWaxmanGraph(object):
     """Unit tests for the :func:`~networkx.waxman_graph` function."""
 
     def test_number_of_nodes_1(self):
-        G = nx.waxman_graph(50, 0.5, 0.1)
+        G = nx.waxman_graph(50, 0.5, 0.1, seed=42)
         assert_equal(len(G), 50)
-        G = nx.waxman_graph(range(50), 0.5, 0.1)
+        G = nx.waxman_graph(range(50), 0.5, 0.1, seed=42)
         assert_equal(len(G), 50)
 
     def test_number_of_nodes_2(self):
@@ -258,7 +258,7 @@ class TestWaxmanGraph(object):
 class TestNavigableSmallWorldGraph(object):
 
     def test_navigable_small_world(self):
-        G = nx.navigable_small_world_graph(5, p=1, q=0)
+        G = nx.navigable_small_world_graph(5, p=1, q=0, seed=42)
         gg = nx.grid_2d_graph(5, 5).to_directed()
         assert_true(nx.is_isomorphic(G, gg))
 
@@ -278,7 +278,7 @@ class TestThresholdedRandomGeometricGraph(object):
     """
 
     def test_number_of_nodes(self):
-        G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1)
+        G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1, seed=42)
         assert_equal(len(G), 50)
         G = nx.thresholded_random_geometric_graph(range(50), 0.2, 0.1)
         assert_equal(len(G), 50)

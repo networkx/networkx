@@ -6,10 +6,11 @@ from networkx import random_reference, lattice_reference, sigma, omega
 import networkx as nx
 
 rng = random.Random(0)
+rng = 42
 
 
 def test_random_reference():
-    G = nx.connected_watts_strogatz_graph(100, 6, 0.1, seed=rng)
+    G = nx.connected_watts_strogatz_graph(50, 6, 0.1, seed=rng)
     Gr = random_reference(G, niter=1, seed=rng)
     C = nx.average_clustering(G)
     Cr = nx.average_clustering(Gr)
@@ -23,7 +24,7 @@ def test_random_reference():
 
 
 def test_lattice_reference():
-    G = nx.connected_watts_strogatz_graph(100, 6, 1, seed=rng)
+    G = nx.connected_watts_strogatz_graph(50, 6, 1, seed=rng)
     Gl = lattice_reference(G, niter=1, seed=rng)
     L = nx.average_shortest_path_length(G)
     Ll = nx.average_shortest_path_length(Gl)
@@ -37,17 +38,17 @@ def test_lattice_reference():
 
 
 def test_sigma():
-    Gs = nx.connected_watts_strogatz_graph(100, 6, 0.1, seed=rng)
-    Gr = nx.connected_watts_strogatz_graph(100, 6, 1, seed=rng)
+    Gs = nx.connected_watts_strogatz_graph(50, 6, 0.1, seed=rng)
+    Gr = nx.connected_watts_strogatz_graph(50, 6, 1, seed=rng)
     sigmas = sigma(Gs, niter=1, nrand=2, seed=rng)
     sigmar = sigma(Gr, niter=1, nrand=2, seed=rng)
     assert_true(sigmar < sigmas)
 
 
 def test_omega():
-    Gl = nx.connected_watts_strogatz_graph(100, 6, 0, seed=rng)
-    Gr = nx.connected_watts_strogatz_graph(100, 6, 1, seed=rng)
-    Gs = nx.connected_watts_strogatz_graph(100, 6, 0.1, seed=rng)
+    Gl = nx.connected_watts_strogatz_graph(50, 6, 0, seed=rng)
+    Gr = nx.connected_watts_strogatz_graph(50, 6, 1, seed=rng)
+    Gs = nx.connected_watts_strogatz_graph(50, 6, 0.1, seed=rng)
     omegal = omega(Gl, niter=1, nrand=1, seed=rng)
     omegar = omega(Gr, niter=1, nrand=1, seed=rng)
     omegas = omega(Gs, niter=1, nrand=1, seed=rng)

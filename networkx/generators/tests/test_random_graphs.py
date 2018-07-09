@@ -31,6 +31,8 @@ from networkx.generators.random_graphs import newman_watts_strogatz_graph
 from networkx.generators.random_graphs import powerlaw_cluster_graph
 from networkx.generators.random_graphs import random_kernel_graph
 from networkx.generators.random_graphs import random_lobster
+from networkx.generators.random_graphs import random_powerlaw_tree
+from networkx.generators.random_graphs import random_powerlaw_tree_sequence
 from networkx.generators.random_graphs import random_regular_graph
 from networkx.generators.random_graphs import random_shell_graph
 from networkx.generators.random_graphs import watts_strogatz_graph
@@ -103,6 +105,10 @@ class TestGeneratorsRandom(object):
         G = random_shell_graph(constructor, seed)
 
         G = random_lobster(10, 0.1, 0.5, seed)
+
+        # difficult to find seed that requires few tries
+        seq = random_powerlaw_tree_sequence(10, 3, seed=14, tries=1)
+        G = random_powerlaw_tree(10, 3, seed=14, tries=1)
 
     def test_extended_barabasi_albert(self, m=2):
         """
@@ -229,4 +235,5 @@ class TestGeneratorsRandom(object):
             return r / c + w
         c = 1
         graph = random_kernel_graph(1000, integral, root)
+        graph = random_kernel_graph(1000, integral, root, seed=42)
         assert_equal(len(graph), 1000)
