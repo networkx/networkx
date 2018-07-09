@@ -419,9 +419,9 @@ def transitive_reduction(G):
     for u in G:
         u_nbrs = set(G[u])
         for v in G[u]:
-            if v not in descendants:
-                descendants[v] = {y for x, y in nx.dfs_edges(G, v)}
             if v in u_nbrs:
+                if v not in descendants:
+                    descendants[v] = {y for x, y in nx.dfs_edges(G, v)}
                 u_nbrs -= descendants[v]
             check_count[v] -= 1
             if check_count[v] == 0:
