@@ -163,6 +163,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
 
     """
     import numpy as np
+    from networkx.utils import cumulative_distribution, discrete_sequence
     local_conn = nx.connectivity.local_edge_connectivity
 
     if G.is_directed():
@@ -175,7 +176,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     # probability weighted by degree.
     G = G.copy()
     keys, degrees = zip(*G.degree())  # keys, degree
-    cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    cdf = cumulative_distribution(degrees)  # cdf of degree
 
     nnodes = len(G)
     nedges = nx.number_of_edges(G)
@@ -198,7 +199,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
         while n < ntries:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
-            (ai, ci) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+            (ai, ci) = discrete_sequence(2, cdistribution=cdf, seed=seed)
             if ai == ci:
                 continue  # same source, skip
             a = keys[ai]  # convert index to label
