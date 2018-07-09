@@ -10,7 +10,7 @@
 from __future__ import division
 
 import math
-import random
+from networkx.utils import py_random_state
 
 import networkx as nx
 
@@ -24,7 +24,8 @@ __all__ = ['double_edge_swap',
            'connected_double_edge_swap']
 
 
-def double_edge_swap(G, nswap=1, max_tries=100):
+@py_random_state(3)
+def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """Swap two edges in the graph while keeping the node degrees fixed.
 
     A double-edge swap removes two randomly chosen edges u-v and x-y
@@ -47,6 +48,10 @@ def double_edge_swap(G, nswap=1, max_tries=100):
 
     max_tries : integer (optional)
        Maximum number of attempts to swap edges
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -83,8 +88,8 @@ def double_edge_swap(G, nswap=1, max_tries=100):
         u = keys[ui]  # convert index to label
         x = keys[xi]
         # choose target uniformly from neighbors
-        v = random.choice(list(G[u]))
-        y = random.choice(list(G[x]))
+        v = seed.choice(list(G[u]))
+        y = seed.choice(list(G[x]))
         if v == y:
             continue  # same target, skip
         if (x not in G[u]) and (y not in G[v]):  # don't create parallel edges
@@ -101,7 +106,8 @@ def double_edge_swap(G, nswap=1, max_tries=100):
     return G
 
 
-def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
+@py_random_state(3)
+def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     """Attempts the specified number of double-edge swaps in the graph `G`.
 
     A double-edge swap removes two randomly chosen edges `(u, v)` and `(x,
@@ -138,6 +144,10 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
        path joining the two nodes whose edge was just removed. If the window
        size is above this threshold, then the algorithm performs do all the
        swaps in the window and only then check if the graph is still connected.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -196,8 +206,8 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
                 u = dk[ui]
                 x = dk[xi]
                 # Choose targets uniformly from neighbors.
-                v = random.choice(list(G.neighbors(u)))
-                y = random.choice(list(G.neighbors(x)))
+                v = seed.choice(list(G.neighbors(u)))
+                y = seed.choice(list(G.neighbors(x)))
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue
@@ -240,8 +250,8 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
                 u = dk[ui]
                 x = dk[xi]
                 # Choose targets uniformly from neighbors.
-                v = random.choice(list(G.neighbors(u)))
-                y = random.choice(list(G.neighbors(x)))
+                v = seed.choice(list(G.neighbors(u)))
+                y = seed.choice(list(G.neighbors(x)))
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue

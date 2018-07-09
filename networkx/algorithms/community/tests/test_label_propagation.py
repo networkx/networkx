@@ -128,6 +128,13 @@ class TestAsynLpaCommunities(object):
         ground_truth = {frozenset('abc'), frozenset('def')}
         self._check_communities(G, ground_truth)
 
+    def test_seed_argument(self):
+        G = nx.Graph(['ab', 'ac', 'bc', 'de', 'df', 'fe'])
+        ground_truth = {frozenset('abc'), frozenset('def')}
+        communities = asyn_lpa_communities(G, seed=1)
+        result = {frozenset(c) for c in communities}
+        assert_equal(result, ground_truth)
+
     def test_several_communities(self):
         # This graph is the disjoint union of five triangles.
         ground_truth = {frozenset(range(3 * i, 3 * (i + 1))) for i in range(5)}

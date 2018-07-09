@@ -16,6 +16,7 @@ random selections.
 import random
 import sys
 import networkx as nx
+from networkx.utils import py_random_state
 
 
 # The same helpers for choosing random sequences from distributions
@@ -29,6 +30,7 @@ def powerlaw_sequence(n, exponent=2.0):
     return [random.paretovariate(exponent - 1) for i in range(n)]
 
 
+@py_random_state(2)
 def zipf_rv(alpha, xmin=1, seed=None):
     r"""Return a random value chosen from the Zipf distribution.
 
@@ -46,8 +48,9 @@ def zipf_rv(alpha, xmin=1, seed=None):
       Exponent value of the distribution
     xmin : int
       Minimum value
-    seed : int
-      Seed value for random number generator
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -79,13 +82,11 @@ def zipf_rv(alpha, xmin=1, seed=None):
         raise ValueError("xmin < 1")
     if alpha <= 1:
         raise ValueError("a <= 1.0")
-    if seed is not None:
-        random.seed(seed)
     a1 = alpha - 1.0
     b = 2**a1
     while True:
-        u = 1.0 - random.random()  # u in (0,1]
-        v = random.random()  # v in [0,1)
+        u = 1.0 - seed.random()  # u in (0,1]
+        v = seed.random()  # v in [0,1)
         x = int(xmin * u**-(1.0 / a1))
         t = (1.0 + (1.0 / x))**a1
         if v * x * (t - 1.0) / (b - 1.0) <= t / b:

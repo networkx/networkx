@@ -347,7 +347,7 @@ def test_edge_attribute_preservation_normal_graph():
     G.add_edges_from(edgelist)
 
     ed = branchings.Edmonds(G)
-    B = ed.find_optimum('weight', preserve_attrs=True)
+    B = ed.find_optimum('weight', preserve_attrs=True, seed=1)
 
     assert_equal(B[0][1]['otherattr'], 1)
     assert_equal(B[0][1]['otherattr2'], 3)

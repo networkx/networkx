@@ -36,6 +36,7 @@ import random
 from operator import itemgetter
 
 import networkx as nx
+from networkx.utils import py_random_state
 
 from .recognition import *
 
@@ -57,9 +58,9 @@ STYLES = {
 INF = float('inf')
 
 
+@py_random_state(1)
 def random_string(L=15, seed=None):
-    random.seed(seed)
-    return ''.join([random.choice(string.ascii_letters) for n in range(L)])
+    return ''.join([seed.choice(string.ascii_letters) for n in range(L)])
 
 
 def _min_weight(weight):
@@ -78,7 +79,8 @@ def branching_weight(G, attr='weight', default=1):
     return sum(edge[2].get(attr, default) for edge in G.edges(data=True))
 
 
-def greedy_branching(G, attr='weight', default=1, kind='max'):
+@py_random_state(4)
+def greedy_branching(G, attr='weight', default=1, kind='max', seed=None):
     """
     Returns a branching obtained through a greedy algorithm.
 
@@ -101,6 +103,9 @@ def greedy_branching(G, attr='weight', default=1, kind='max'):
         `default` specifies what value it should take.
     kind : str
         The type of optimum to search for: 'min' or 'max' greedy branching.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -118,7 +123,7 @@ def greedy_branching(G, attr='weight', default=1, kind='max'):
 
     if attr is None:
         # Generate a random string the graph probably won't have.
-        attr = random_string()
+        attr = random_string(seed=seed)
 
     edges = [(u, v, data.get(attr, default))
              for (u, v, data) in G.edges(data=True)]
@@ -273,7 +278,7 @@ class Edmonds(object):
         self.template = random_string(seed=seed) + '_{0}'
 
 
-    def _init(self, attr, default, kind, style, preserve_attrs):
+    def _init(self, attr, default, kind, style, preserve_attrs, seed):
         if kind not in KINDS:
             raise nx.NetworkXException("Unknown value for `kind`.")
 
@@ -291,7 +296,7 @@ class Edmonds(object):
 
         if attr is None:
             # Generate a random attr the graph probably won't have.
-            attr = random_string()
+            attr = random_string(seed=seed)
 
         # This is the actual attribute used by the algorithm.
         self._attr = attr
@@ -299,7 +304,7 @@ class Edmonds(object):
         # This attribute is used to store whether a particular edge is still
         # a candidate. We generate a random attr to remove clashes with
         # preserved edges
-        self.candidate_attr = 'candidate_' + random_string()
+        self.candidate_attr = 'candidate_' + random_string(seed=seed)
 
         # The object we manipulate at each step is a multidigraph.
         self.G = G = MultiDiGraph_EdgeKey()
@@ -339,7 +344,7 @@ class Edmonds(object):
         self.minedge_circuit = []
 
     def find_optimum(self, attr='weight', default=1, kind='max',
-                     style='branching', preserve_attrs=False):
+                     style='branching', preserve_attrs=False, seed=None):
         """
         Returns a branching from G.
 
@@ -361,6 +366,9 @@ class Edmonds(object):
         preserve_attrs : bool
             If True, preserve the other edge attributes of the original
             graph (that are not the one passed to `attr`)
+        seed : integer, random_state, or None (default)
+            Indicator of random number generation state.
+            See :ref:`Randomness<randomness>`.
 
         Returns
         -------
@@ -368,7 +376,7 @@ class Edmonds(object):
             The branching.
 
         """
-        self._init(attr, default, kind, style, preserve_attrs)
+        self._init(attr, default, kind, style, preserve_attrs, seed)
         uf = self.uf
 
         # This enormous while loop could use some refactoring...

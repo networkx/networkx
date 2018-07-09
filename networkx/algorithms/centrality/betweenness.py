@@ -11,14 +11,15 @@
 from __future__ import division
 from heapq import heappush, heappop
 from itertools import count
-import random
 
 import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = ['betweenness_centrality', 'edge_betweenness_centrality',
            'edge_betweenness']
 
 
+@py_random_state(5)
 def betweenness_centrality(G, k=None, normalized=True, weight=None,
                            endpoints=False, seed=None):
     r"""Compute the shortest-path betweenness centrality for nodes.
@@ -57,6 +58,11 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
 
     endpoints : bool, optional
       If True include the endpoints in the shortest path counts.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+        Note that this is only used if k is not None.
 
     Returns
     -------
@@ -106,8 +112,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     if k is None:
         nodes = G
     else:
-        random.seed(seed)
-        nodes = random.sample(G.nodes(), k)
+        nodes = seed.sample(G.nodes(), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
@@ -125,6 +130,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     return betweenness
 
 
+@py_random_state(4)
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
                                 seed=None):
     r"""Compute betweenness centrality for edges.
@@ -158,6 +164,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+        Note that this is only used if k is not None.
 
     Returns
     -------
@@ -193,8 +204,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     if k is None:
         nodes = G
     else:
-        random.seed(seed)
-        nodes = random.sample(G.nodes(), k)
+        nodes = seed.sample(G.nodes(), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
