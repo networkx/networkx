@@ -316,7 +316,7 @@ def all_topological_sorts(G):
 
     >>> DG = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
     >>> list(nx.all_topological_sorts(DG))
-    [(1, 2, 4, 3), (1, 2, 3, 4)]
+    [[1, 2, 4, 3], [1, 2, 3, 4]]
 
     Notes
     -----
