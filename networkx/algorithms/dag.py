@@ -316,7 +316,7 @@ def all_topological_sorts(G):
 
     >>> DG = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
     >>> list(nx.all_topological_sorts(DG))
-    [[1, 2, 4, 3], [1, 2, 3, 4]]
+    [(1, 2, 4, 3), (1, 2, 3, 4)]
 
     Notes
     -----
@@ -349,13 +349,12 @@ def all_topological_sorts(G):
         assert all([count[v] == 0 for v in D])
 
         if len(current_sort) == len(G):
-            yield current_sort
+            yield list(current_sort)
 
             # clean-up stack
             while len(current_sort) > 0:
                 assert len(bases) == len(current_sort)
-                q = current_sort[-1]
-                current_sort = current_sort[:-1]
+                q = current_sort.pop()
 
                 # "restores" all edges (q, x)
                 for j in G.successors(q):
