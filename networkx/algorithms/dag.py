@@ -357,7 +357,9 @@ def all_topological_sorts(G):
                 q = current_sort.pop()
 
                 # "restores" all edges (q, x)
-                for j in G.successors(q):
+                # NOTE: it is important to iterate over edges instead
+                # of successors, so count is updated correctly in multigraphs
+                for _, j in G.edges(q):
                     count[j] += 1
                     assert count[j] >= 0
                 # remove entries from D
@@ -386,7 +388,9 @@ def all_topological_sorts(G):
             # choose next node
             q = D.pop()
             # "erase" all edges (q, x)
-            for j in G.successors(q):
+            # NOTE: it is important to iterate over edges instead
+            # of successors, so count is updated correctly in multigraphs
+            for _, j in G.out_edges(q):
                 count[j] -= 1
                 assert count[j] >= 0
                 if count[j] == 0:

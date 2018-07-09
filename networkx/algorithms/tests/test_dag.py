@@ -237,8 +237,13 @@ class TestDAG:
             G = nx.Graph([(1, 2), (2, 3)])
             # convert to list to execute generator
             list(nx.all_topological_sorts(G))
+
+        def not_implemted_2():
+            G = nx.MultiGraph([(1, 2), (1, 2), (2, 3)])
+            list(nx.all_topological_sorts(G))
         assert_raises(nx.NetworkXUnfeasible, unfeasible)
         assert_raises(nx.NetworkXNotImplemented, not_implemented)
+        assert_raises(nx.NetworkXNotImplemented, not_implemted_2)
 
     def test_all_topological_sorts_4(self):
         DG = nx.DiGraph()
@@ -246,6 +251,22 @@ class TestDAG:
             DG.add_node(i)
         assert_equal(sorted(map(list, permutations(DG.nodes))),
                      sorted(nx.all_topological_sorts(DG)))
+
+    def test_all_topological_sorts_multigraph_1(self):
+        DG = nx.MultiDiGraph([(1, 2), (1, 2), (2, 3),
+                              (3, 4), (3, 5), (3, 5), (3, 5)])
+        assert_equal(sorted(nx.all_topological_sorts(DG)),
+                     sorted([[1, 2, 3, 4, 5],
+                             [1, 2, 3, 5, 4]]))
+
+    def test_all_topological_sorts_multigraph_2(self):
+        N = 9
+        edges = []
+        for i in range(1, N):
+            edges.extend([(i, i+1)] * i)
+        DG = nx.MultiDiGraph(edges)
+        assert_equal(list(nx.all_topological_sorts(DG)),
+                     [list(range(1, N+1))])
 
     def test_ancestors(self):
         G = nx.DiGraph()
