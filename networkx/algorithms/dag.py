@@ -359,7 +359,7 @@ def all_topological_sorts(G):
                 # "restores" all edges (q, x)
                 # NOTE: it is important to iterate over edges instead
                 # of successors, so count is updated correctly in multigraphs
-                for _, j in G.edges(q):
+                for _, j in G.out_edges(q):
                     count[j] += 1
                     assert count[j] >= 0
                 # remove entries from D
