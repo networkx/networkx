@@ -573,7 +573,7 @@ def general_k_edge_subgraphs(G, k):
     if G.number_of_nodes() < k:
         for node in G.nodes():
             yield G.subgraph([node]).copy()
-        raise StopIteration()
+        return
 
     # Intermediate results
     R0 = {G.subgraph(cc).copy() for cc in find_ccs(G)}

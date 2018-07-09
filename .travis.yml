@@ -64,6 +64,16 @@ matrix:
           packages:
           - libgdal-dev
           - graphviz
+    - os: linux
+      python: 3.7-dev
+      env:
+      - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
     - os: osx
       osx_image: xcode7.3
       language: generic
@@ -78,6 +88,9 @@ matrix:
     - python: 3.4
     - python: 3.5
     - python: 3.6
+    - python: 3.7-dev
+  allow_failures:
+    - python: 3.7-dev
 
 before_install:
   # prepare the system to install prerequisites or dependencies

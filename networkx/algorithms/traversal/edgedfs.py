@@ -93,7 +93,7 @@ def edge_dfs(G, source=None, orientation=None):
     """
     nodes = list(G.nbunch_iter(source))
     if not nodes:
-        raise StopIteration
+        return
 
     directed = G.is_directed()
     kwds = {'data': False}
