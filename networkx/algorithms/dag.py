@@ -143,7 +143,7 @@ def topological_sort(G):
     NetworkXUnfeasible
         If `G` is not a directed acyclic graph (DAG) no topological sort exists
         and a :exc:`NetworkXUnfeasible` exception is raised.  This can also be
-        raised if `G` is changed while the returned iterator is being processed.
+        raised if `G` is changed while the returned iterator is being processed
 
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
@@ -155,6 +155,16 @@ def topological_sort(G):
     >>> DG = nx.DiGraph([(1, 2), (2, 3)])
     >>> list(reversed(list(nx.topological_sort(DG))))
     [3, 2, 1]
+
+    If your DiGraph naturally has the edges representing tasks/inputs
+    and nodes representing people/processes that initiate tasks, then
+    topological_sort is not quite what you need. You will have to change
+    the tasks to nodes with dependence reflected by edges. The result is
+    a kind of topological sort of the edges. This can be done
+    with :func:`networkx.line_graph` as follows:
+
+    >>> list(nx.topological_sort(nx.line_graph(DG)))
+    [(1, 2), (2, 3)]
 
     Notes
     -----
@@ -229,7 +239,7 @@ def lexicographical_topological_sort(G, key=None):
     NetworkXUnfeasible
         If `G` is not a directed acyclic graph (DAG) no topological sort exists
         and a :exc:`NetworkXUnfeasible` exception is raised.  This can also be
-        raised if `G` is changed while the returned iterator is being processed.
+        raised if `G` is changed while the returned iterator is being processed
 
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
