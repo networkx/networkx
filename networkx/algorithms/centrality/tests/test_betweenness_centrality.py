@@ -84,9 +84,11 @@ class TestBetweennessCentrality(object):
                                       weight=None,
                                       normalized=False,
                                       seed=1)
-        b_approx = {0: 0.0, 1: 1.5, 2: 0.0}
+        # python versions give different results with same seed
+        b_approx1 = {0: 0.0, 1: 1.5, 2: 0.0}
+        b_approx2 = {0: 0.0, 1: 0.75, 2: 0.0}
         for n in sorted(G):
-            assert_almost_equal(b[n], b_approx[n])
+            assert_in(b[n], (b_approx1[n], b_approx2[n]))
 
     def test_P3_endpoints(self):
         """Betweenness centrality: P3 endpoints"""

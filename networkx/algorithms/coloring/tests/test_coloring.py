@@ -94,8 +94,8 @@ class TestColoring:
         graph = lf_shc()
         rs = nx.coloring.strategy_random_sequential
         c1 = nx.coloring.greedy_color(graph,lambda g, c: rs(g, c, seed=1))
-        c2 = {3: 0, 4: 1, 6: 0, 1: 2, 5: 0, 2: 1}
-        assert_equal(c1, c2)
+        for u, v in graph.edges:
+            assert_not_equal(c1[u], c1[v])
 
 
 ############################## Utility functions ##############################
