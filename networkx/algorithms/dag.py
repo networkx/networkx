@@ -540,15 +540,24 @@ def transitive_reduction(G):
 
     """
     if not is_directed_acyclic_graph(G):
-        raise nx.NetworkXError(
-            "Transitive reduction only uniquely defined on directed acyclic graphs.")
+        msg = "Directed Acyclic Graph required for transitive_reduction"
+        raise nx.NetworkXError(msg)
     TR = nx.DiGraph()
     TR.add_nodes_from(G.nodes())
+    descendants = {}
+    # count before removing set stored in descendants
+    check_count = dict(G.in_degree)
     for u in G:
-        u_edges = set(G[u])
+        u_nbrs = set(G[u])
         for v in G[u]:
-            u_edges -= {y for x, y in nx.dfs_edges(G, v)}
-        TR.add_edges_from((u, v) for v in u_edges)
+            if v in u_nbrs:
+                if v not in descendants:
+                    descendants[v] = {y for x, y in nx.dfs_edges(G, v)}
+                u_nbrs -= descendants[v]
+            check_count[v] -= 1
+            if check_count[v] == 0:
+                del descendants[v]
+        TR.add_edges_from((u, v) for v in u_nbrs)
     return TR
 
 
