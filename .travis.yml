@@ -69,15 +69,15 @@ matrix:
           - libgdal-dev
           - graphviz
     - os: osx
-      osx_image: xcode9.4
+      osx_image: xcode9.3
       language: generic
       env:
-      - TRAVIS_PYTHON_VERSION=3.6.0
+      - TRAVIS_PYTHON_VERSION=3.7.0
       - OPTIONAL_DEPS=1
       - OSX_PKG_ENV=miniconda
     - os: osx
       language: generic
-      env: TRAVIS_PYTHON_VERSION=3.6
+      env: TRAVIS_PYTHON_VERSION=3.7
     - python: 2.7
     - python: 3.5
     - python: 3.6
