@@ -215,7 +215,7 @@ class TestRandomState(object):
 
 
 @raises(nx.NetworkXError)
-def test_string_arg_index():
+def test_random_state_string_arg_index():
     @random_state('a')
     def make_random_state(rs):
         pass
@@ -223,8 +223,24 @@ def test_string_arg_index():
 
 
 @raises(nx.NetworkXError)
-def test_invalid_arg_index():
+def test_py_random_state_string_arg_index():
+    @py_random_state('a')
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)
+
+
+@raises(nx.NetworkXError)
+def test_random_state_invalid_arg_index():
     @random_state(2)
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)
+
+
+@raises(nx.NetworkXError)
+def test_py_random_state_invalid_arg_index():
+    @py_random_state(2)
     def make_random_state(rs):
         pass
     rstate = make_random_state(1)

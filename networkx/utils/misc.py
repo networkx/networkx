@@ -314,35 +314,39 @@ def create_random_state(random_state=None):
 
 
 class PythonRandomInterface(object):
-    def __init__(self, rng=None):
-        if rng is None:
-            self._rng = np.random.mtrand._rand
-        self._rng = rng
-
     try:
-        from numpy.random import (
-            random,
-            randint as randrange,
-            choice,
-            #  Commented out methods are not used by NetworkX
-            # uniform,
-            # beta as betavariate,
-            # gamma as gammavariate,
-            normal as gauss,
-            # lognormal as lognormvariate,
-            # vonmises as vonmisesvariate,
-            # pareto as paretovariate,
-            shuffle,
-        )
+        def __init__(self, rng=None):
+            import numpy
+            if rng is None:
+                self._rng = numpy.random.mtrand._rand
+            self._rng = rng
+    except ImportError:
+        msg = 'numpy not found, only random.random available.'
+        warnings.warn(msg, ImportWarning)
+
+    def random(self):
+        return self._rng.random_sample()
+
+    def randrange(self, a, b=None):
+        return self._rng.randint(a, b)
+
+    def choice(self, seq):
+        return self._rng.choice(seq)
+
+    def gauss(self, mu, sigma):
+        return self._rng.normal(mu, sigma)
+
+    def shuffle(self, seq):
+        return self._rng.shuffle(seq)
 
 #    Some methods don't match API for numpy RandomState.
 #    Commented out versions are not used by NetworkX
 
-        def sample(self, seq, k):
-            return self._rng.choice(seq, size=(k,), replace=False)
+    def sample(self, seq, k):
+        return self._rng.choice(seq, size=(k,), replace=False)
 
-        def randint(self, a, b):
-            return self._rng.randrange(a, b + 1)
+    def randint(self, a, b):
+        return self._rng.randint(a, b + 1)
 
 #    exponential as expovariate with 1/argument,
 #    def expovariate(scale):
@@ -357,9 +361,6 @@ class PythonRandomInterface(object):
 #
 #    def choices(self, seq, weights=None, cum_weights=None, k=1):
 #        return self._rng.choice(seq
-    except ImportError:
-        msg = 'numpy not found, only random.random available.'
-        warnings.warn(msg, ImportWarning)
 
 
 def create_py_random_state(random_state=None):
