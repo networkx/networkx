@@ -29,7 +29,7 @@ if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
         brew install graphviz
     fi
     dot -V
-    sed -i "" 's/^gdal.*/gdal==1.11.2/' requirements/extras.txt
+    sed -i "" 's/^gdal.*/gdal==2.3.0/' requirements/extras.txt
 fi
 
 set +ex
