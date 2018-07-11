@@ -102,7 +102,7 @@ def cycle_basis(G, root=None):
 
 
 @not_implemented_for('undirected')
-def simple_cycles(G, root=None, max_cycle_len=None):
+def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -194,8 +194,7 @@ def simple_cycles(G, root=None, max_cycle_len=None):
             if nbrs:
                 nextnode = nbrs.pop()
                 if nextnode == startnode:
-                    if len(path) - 1 <= max_cycle_len:
-                        yield path[:]
+                    yield path[:]
                     closed.update(path)
 #                        print "Found a cycle", path, closed
                 elif nextnode not in blocked:

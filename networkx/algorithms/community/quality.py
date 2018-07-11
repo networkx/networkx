@@ -1,6 +1,6 @@
 # quality.py - functions for measuring partitions of a graph
 #
-# Copyright 2015-2018 NetworkX developers.
+# Copyright 2015-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

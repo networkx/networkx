@@ -1,4 +1,4 @@
-#    Copyright (C) 2010-2018 by
+#    Copyright (C) 2010-2017 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
