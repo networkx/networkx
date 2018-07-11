@@ -193,9 +193,9 @@ def test_degree_sequence_tree():
 
 def test_random_degree_sequence_graph():
     d = [1, 2, 2, 3]
-    G = nx.random_degree_sequence_graph(d)
-    assert_equal(d, sorted(d for n, d in G.degree()))
     G = nx.random_degree_sequence_graph(d, seed=42)
+    assert_equal(d, sorted(d for n, d in G.degree()))
+    G = nx.random_degree_sequence_graph(d)
     assert_equal(d, sorted(d for n, d in G.degree()))
 
 
