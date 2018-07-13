@@ -215,6 +215,7 @@ def test_PythonRandomInterface():
     assert_equal(rng.randrange(3, 5), rs42.randint(3, 5))
     assert_true(np.all(rng.choice([1, 2, 3]) == rs42.choice([1, 2, 3])))
     assert_equal(rng.gauss(0, 1), rs42.normal(0, 1))
+    assert_equal(rng.expovariate(1.5), rs42.exponential(1/1.5))
     assert_true(np.all(rng.shuffle([1, 2, 3]) == rs42.shuffle([1, 2, 3])))
     assert_true(np.all(rng.sample([1, 2, 3], 2) ==
                        rs42.choice([1, 2, 3], (2,), replace=False)))

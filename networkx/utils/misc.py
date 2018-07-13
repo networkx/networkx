@@ -327,11 +327,14 @@ class PythonRandomInterface(object):
     def random(self):
         return self._rng.random_sample()
 
+    def uniform(self, a, b):
+        return a + (b - a) * self._rng.random_sample()
+
     def randrange(self, a, b=None):
         return self._rng.randint(a, b)
 
     def choice(self, seq):
-        return self._rng.choice(seq)
+        return seq[self._rng.randint(0, len(seq))]
 
     def gauss(self, mu, sigma):
         return self._rng.normal(mu, sigma)
@@ -343,17 +346,21 @@ class PythonRandomInterface(object):
 #    Commented out versions are not used by NetworkX
 
     def sample(self, seq, k):
-        return self._rng.choice(seq, size=(k,), replace=False)
+        return self._rng.choice(list(seq), size=(k,), replace=False)
 
     def randint(self, a, b):
         return self._rng.randint(a, b + 1)
 
 #    exponential as expovariate with 1/argument,
-#    def expovariate(scale):
-#        return self._rng.exponential(1/scale)
-#
+    def expovariate(self, scale):
+        return self._rng.exponential(1/scale)
+
+#    pareto as paretovariate with 1/argument,
+    def paretovariate(self, shape):
+        return self._rng.pareto(shape)
+
 #    weibull as weibullvariate multiplied by beta,
-#    def weibullvariate(alpha, beta):
+#    def weibullvariate(self, alpha, beta):
 #        return self._rng.weibull(alpha) * beta
 #
 #    def triangular(self, low, high, mode):
@@ -368,11 +375,16 @@ def create_py_random_state(random_state=None):
 
     Parameters
     ----------
-    random_state : int or random.Random instance or None (default=None)
+    random_state : int or random number generator or None (default=None)
         If int, return a random.Random instance set with seed=int.
         if random.Random instance, return it.
         if None or the `random` package, return the global random number
         generator used by `random`.
+        if np.random package, return the global numpy random number
+        generator wrapped in a PythonRandomInterface class.
+        if np.random.RandomState instance, return it wrapped in
+        PythonRandomInterface
+        if a PythonRandomInterface instance, return it
     """
     import random
     try:
@@ -381,6 +393,8 @@ def create_py_random_state(random_state=None):
             return PythonRandomInterface(np.random.mtrand._rand)
         if isinstance(random_state, np.random.RandomState):
             return PythonRandomInterface(random_state)
+        if isinstance(random_state, PythonRandomInterface):
+            return random_state
         has_numpy = True
     except ImportError:
         has_numpy = False
