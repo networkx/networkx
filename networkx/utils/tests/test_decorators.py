@@ -186,11 +186,11 @@ class TestRandomState(object):
         np.random.seed(42)
         rv = np.random.random_sample()
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_random_state(np.random)
+        assert_equal(rv, self.instantiate_random_state(np.random))
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_np_random_state(np.random)
+        assert_equal(rv, self.instantiate_np_random_state(np.random))
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_py_random_state(np.random)
+        assert_equal(rv, self.instantiate_py_random_state(np.random))
 
     def test_random_state_int(self):
         np.random.seed(42)
