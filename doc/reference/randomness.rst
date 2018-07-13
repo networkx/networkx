@@ -43,12 +43,13 @@ RNG package to use, and whether to use a global or local RNG.
 
 .. nbplot::
 
-    >>> G = nx.path_graph(9)
-    >>> random_layout(G, seed=None)  # use (either) global default RNG
-    >>> random_layout(G, seed=42)    # create local RNG for this function call
-    >>> random_layout(G, seed=numpy.random)  # use the numpy global RNG
+    >>> from networkx import path_graph, random_layout
+    >>> G = path_graph(9)
+    >>> pos = random_layout(G, seed=None)  # use (either) global default RNG
+    >>> pos = random_layout(G, seed=42)  # local RNG just for this call
+    >>> pos = random_layout(G, seed=numpy.random)  # use numpy global RNG
     >>> random_state = numpy.random.RandomState(42) 
-    >>> random_layout(G, seed=random_state)  # use (and reuse) your own RNG
+    >>> pos = random_layout(G, seed=random_state)  # use/reuse your own RNG
 
 Each NetworkX function that uses an RNG was written with one RNG package
 in mind. It either uses `random` or `numpy.random` by default.
