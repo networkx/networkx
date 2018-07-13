@@ -61,7 +61,7 @@ def average_clustering(G, trials=1000, seed=None):
         nbrs = list(G[nodes[i]])
         if len(nbrs) < 2:
             continue
-        u, v = random.sample(nbrs, 2)
+        u, v = seed.sample(nbrs, 2)
         if u in G[v]:
             triangles += 1
     return triangles / float(trials)

@@ -78,11 +78,12 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     swapcount = 0
     keys, degrees = zip(*G.degree())  # keys, degree
     cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    discrete_sequence = nx.utils.discrete_sequence
     while swapcount < nswap:
         #        if random.random() < 0.5: continue # trick to avoid periodicities?
         # pick two random edges without creating edge list
         # choose source node indices from discrete distribution
-        (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+        (ui, xi) = discrete_sequence(2, cdistribution=cdf, seed=seed)
         if ui == xi:
             continue  # same source, skip
         u = keys[ui]  # convert index to label
@@ -185,6 +186,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     # Label key for nodes
     dk = list(n for n, d in G.degree())
     cdf = nx.utils.cumulative_distribution(list(d for n, d in G.degree()))
+    discrete_sequence = nx.utils.discrete_sequence
     window = 1
     while n < nswap:
         wcount = 0
@@ -198,7 +200,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
             while wcount < window and n < nswap:
                 # Pick two random edges without creating the edge list. Choose
                 # source nodes from the discrete degree distribution.
-                (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+                (ui, xi) = discrete_sequence(2, cdistribution=cdf, seed=seed)
                 # If the source nodes are the same, skip this pair.
                 if ui == xi:
                     continue

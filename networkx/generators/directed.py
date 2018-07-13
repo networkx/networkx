@@ -454,7 +454,7 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
             adjustment = Counter({u: weights[u]})
         else:
             adjustment = Counter()
-        v = weighted_choice(weights - adjustment)
+        v = weighted_choice(weights - adjustment, seed=seed)
         G.add_edge(u, v)
         weights[v] += 1
     return G

@@ -81,6 +81,11 @@ def test_directed_configuation_model():
     assert_equal(len(G), 0)
 
 
+def test_simple_directed_configuation_model():
+    G = nx.directed_configuration_model([1, 1], [1, 1], seed=0)
+    assert_equal(len(G), 2)
+
+
 def test_expected_degree_graph_empty():
     # empty graph has empty degree sequence
     deg_seq = []

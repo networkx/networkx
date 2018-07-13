@@ -70,6 +70,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
 
+    from networkx.utils import cumulative_distribution, discrete_sequence
     local_conn = nx.connectivity.local_edge_connectivity
 
     G = G.copy()
@@ -86,7 +87,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
         while n < ntries:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
-            (ai, ci) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+            (ai, ci) = discrete_sequence(2, cdistribution=cdf, seed=seed)
             if ai == ci:
                 continue  # same source, skip
             a = keys[ai]  # convert index to label
@@ -369,7 +370,7 @@ def omega(G, niter=100, nrand=10, seed=None):
     randMetrics = {"C": [], "L": []}
     for i in range(nrand):
         Gr = random_reference(G, niter=niter, seed=seed)
-        Gl = lattice_reference(G, niter=niter)
+        Gl = lattice_reference(G, niter=niter, seed=seed)
         randMetrics["C"].append(nx.transitivity(Gl))
         randMetrics["L"].append(nx.average_shortest_path_length(Gr))
 
