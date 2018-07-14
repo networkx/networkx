@@ -136,6 +136,11 @@ def circular_layout(G, scale=1, center=None, dim=2):
     pos : dict
         A dictionary of positions keyed by node
 
+    Raises
+    -------
+    ValueError
+        If dim < 2
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -148,6 +153,9 @@ def circular_layout(G, scale=1, center=None, dim=2):
 
     """
     import numpy as np
+
+    if dim < 2:
+        raise ValueError('cannot handle dimensions < 2')
 
     G, center = _process_params(G, center, dim)
 

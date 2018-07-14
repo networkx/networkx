@@ -114,6 +114,10 @@ class TestLayout(object):
         if self.scipy is not None:
             sc(nx.kamada_kawai_layout(G), scale=1, center=c)
 
+    def test_circular_dim_error(self):
+        G = nx.path_graph(4)
+        assert_raises(ValueError, nx.circular_layout, G, dim=1)
+
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_matrix(self.Gs)
         pos = nx.drawing.layout._fruchterman_reingold(A)
