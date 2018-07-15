@@ -130,6 +130,7 @@ def circular_layout(G, scale=1, center=None, dim=2):
         Dimension of layout.
         If dim>2, the remaining dimensions are set to zero
         in the returned positions.
+        If dim<2, a ValueError is raised.
 
     Returns
     -------
