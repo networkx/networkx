@@ -65,6 +65,7 @@ class TestLayout(object):
         vpos = nx.shell_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
+            vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -76,6 +77,7 @@ class TestLayout(object):
         vpos = nx.shell_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
+            vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def check_scale_and_center(self, pos, scale, center):
         center = numpy.array(center)
