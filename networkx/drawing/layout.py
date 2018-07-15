@@ -629,7 +629,7 @@ def kamada_kawai_layout(G, dist=None,
     pos : dict or None  optional (default=None)
         Initial positions for nodes as a dictionary with node as keys
         and values as a coordinate list or tuple.  If None, then use
-        circular_layout() for dim > 2 and a linear layout for dim == 1.
+        circular_layout() for dim >= 2 and a linear layout for dim == 1.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
