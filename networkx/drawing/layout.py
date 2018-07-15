@@ -197,11 +197,17 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 
     dim : int
         Dimension of layout, currently only dim=2 is supported.
+        Other dimension values result in a ValueError.
 
     Returns
     -------
     pos : dict
         A dictionary of positions keyed by node
+
+    Raises
+    -------
+    ValueError
+        If dim != 2
 
     Examples
     --------
@@ -216,6 +222,9 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 
     """
     import numpy as np
+
+    if dim != 2:
+        raise ValueError('can only handle 2 dimensions')
 
     G, center = _process_params(G, center, dim)
 
