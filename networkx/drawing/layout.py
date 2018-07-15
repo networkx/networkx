@@ -671,10 +671,11 @@ def kamada_kawai_layout(G, dist=None,
                 continue
             dist_mtx[row][col] = rdist[nc]
 
-    if pos is None and dim >= 2:
-        pos = circular_layout(G, dim=dim)
-    elif pos is None:
-        pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
+    if pos is None:
+        if dim >= 2:
+            pos = circular_layout(G, dim=dim)
+        else:
+            pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
     pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
