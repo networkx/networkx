@@ -200,6 +200,9 @@ def open_file(path_arg, mode='r'):
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
+        if hasattr(path, 'resolve'):
+            # path is a pathlib reference to a filename
+            path = str(path)
         if is_string_like(path):
             ext = splitext(path)[1]
             fobj = _dispatch_dict[ext](path, mode=mode)
