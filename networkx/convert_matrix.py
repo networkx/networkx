@@ -315,16 +315,20 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     g = nx.empty_graph(0, create_using)
     cols = []
 
+    # If all additional columns requested
     if edge_attr:
-        # If all additional columns requested
         if edge_attr is True:
             cols = [c for c in df.columns if c is not source and c is not target]
         elif isinstance(edge_attr, (list, tuple)):
             cols = [c for c in df.columns if c is not source and c is not target and c in edge_attr]
-        else:   # If a string is passed
-            cols = [c for c in df.columns if c in [edge_attr]]  # Note -- ints aren't allowed anymore. Could add another case for them.
+        elif isinstance(edge_attr, int) and (0 <= edge_attr < len(df.columns)):
+            cols = [df.columns[edge_attr]]
+        elif isinstance(edge_attr, str):
+            cols = [c for c in df.columns if c in [edge_attr]]
+        else:
+            raise NetworkXError("Invalid edge_attr argument")
 
-    for s, t, *attrs in zip(df[source], df[target], *[df[col] for col in cols]):
+    for s, t, attrs in zip(df[source], df[target], zip(*[df[col] for col in cols])):
 
         g.add_edge(s, t)
 
