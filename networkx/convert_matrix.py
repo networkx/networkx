@@ -346,8 +346,8 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
 
     # If no column names are given, then just return the edges.
     else:
-        for row in df.values:
-            g.add_edge(row[src_i], row[tar_i])
+        for s,t in zip(df[source], df[target]):
+            g.add_edge(s, t)
 
     return g
 
