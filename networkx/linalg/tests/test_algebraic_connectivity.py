@@ -141,6 +141,16 @@ class TestAlgebraicConnectivity(object):
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
+    def test_seed_argument(self):
+        G = nx.cycle_graph(8)
+        A = nx.laplacian_matrix(G)
+        sigma = 2 - sqrt(2)
+        for method in self._methods:
+            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method, seed=1)
+            assert_almost_equal(ac, sigma)
+            x = nx.fiedler_vector(G, tol=1e-12, method=method, seed=1)
+            check_eigenvector(A, sigma, x)
+
     def test_buckminsterfullerene(self):
         G = nx.Graph(
             [(1, 10), (1, 41), (1, 59), (2, 12), (2, 42), (2, 60), (3, 6),
@@ -237,6 +247,17 @@ class TestSpectralOrdering(object):
         nx.add_path(G, path)
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
+            ok_(order in [path, list(reversed(path))])
+
+    def test_seed_argument(self):
+        # based on setupClass numpy is installed if we get here
+        from numpy.random import shuffle
+        path = list(range(10))
+        shuffle(path)
+        G = nx.Graph()
+        nx.add_path(G, path)
+        for method in self._methods:
+            order = nx.spectral_ordering(G, method=method, seed=1)
             ok_(order in [path, list(reversed(path))])
 
     def test_disconnected(self):

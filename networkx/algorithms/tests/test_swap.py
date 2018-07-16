@@ -2,8 +2,8 @@
 from nose.tools import *
 from networkx import *
 
-import random
-random.seed(0)
+#import random
+#random.seed(0)
 
 
 def test_double_edge_swap():
@@ -13,10 +13,17 @@ def test_double_edge_swap():
     assert_equal(degrees, sorted(d for n, d in graph.degree()))
 
 
+def test_double_edge_swap_seed():
+    graph = barabasi_albert_graph(200, 1)
+    degrees = sorted(d for n, d in graph.degree())
+    G = double_edge_swap(graph, 40, seed=1)
+    assert_equal(degrees, sorted(d for n, d in graph.degree()))
+
+
 def test_connected_double_edge_swap():
     graph = barabasi_albert_graph(200, 1)
     degrees = sorted(d for n, d in graph.degree())
-    G = connected_double_edge_swap(graph, 40)
+    G = connected_double_edge_swap(graph, 40, seed=1)
     assert_true(is_connected(graph))
     assert_equal(degrees, sorted(d for n, d in graph.degree()))
 

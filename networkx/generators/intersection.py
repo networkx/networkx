@@ -11,6 +11,7 @@ Generators for random intersection graphs.
 import random
 import networkx as nx
 from networkx.algorithms import bipartite
+from networkx.utils import py_random_state
 
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'])
 
@@ -20,6 +21,7 @@ __all__ = ['uniform_random_intersection_graph',
            ]
 
 
+@py_random_state(3)
 def uniform_random_intersection_graph(n, m, p, seed=None):
     """Return a uniform random intersection graph.
 
@@ -31,8 +33,9 @@ def uniform_random_intersection_graph(n, m, p, seed=None):
         The number of nodes in the second bipartite set (attributes)
     p : float
         Probability of connecting nodes between bipartite sets
-    seed : int, optional
-        Seed for random number generator (default=None).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     See Also
     --------
@@ -47,11 +50,12 @@ def uniform_random_intersection_graph(n, m, p, seed=None):
        An equivalence theorem relating the evolution of the g(n, m, p)
        and g(n, p) models. Random Struct. Algorithms 16, 2 (2000), 156–176.
     """
-    G = bipartite.random_graph(n, m, p, seed=seed)
+    G = bipartite.random_graph(n, m, p, seed)
     return nx.projected_graph(G, range(n))
 
 
-def k_random_intersection_graph(n, m, k):
+@py_random_state(3)
+def k_random_intersection_graph(n, m, k, seed=None):
     """Return a intersection graph with randomly chosen attribute sets for
     each node that are of equal size (k).
 
@@ -63,8 +67,9 @@ def k_random_intersection_graph(n, m, k):
         The number of nodes in the second bipartite set (attributes)
     k : float
         Size of attribute set to assign to each node.
-    seed : int, optional
-        Seed for random number generator (default=None).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     See Also
     --------
@@ -79,12 +84,13 @@ def k_random_intersection_graph(n, m, k):
     G = nx.empty_graph(n + m)
     mset = range(n, n + m)
     for v in range(n):
-        targets = random.sample(mset, k)
+        targets = seed.sample(mset, k)
         G.add_edges_from(zip([v] * len(targets), targets))
     return nx.projected_graph(G, range(n))
 
 
-def general_random_intersection_graph(n, m, p):
+@py_random_state(3)
+def general_random_intersection_graph(n, m, p, seed=None):
     """Return a random intersection graph with independent probabilities
     for connections between node and attribute sets.
 
@@ -96,8 +102,9 @@ def general_random_intersection_graph(n, m, p):
         The number of nodes in the second bipartite set (attributes)
     p : list of floats of length m
         Probabilities for connecting nodes to each attribute
-    seed : int, optional
-        Seed for random number generator (default=None).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     See Also
     --------
@@ -117,6 +124,6 @@ def general_random_intersection_graph(n, m, p):
     mset = range(n, n + m)
     for u in range(n):
         for v, q in zip(mset, p):
-            if random.random() < q:
+            if seed.random() < q:
                 G.add_edge(u, v)
     return nx.projected_graph(G, range(n))

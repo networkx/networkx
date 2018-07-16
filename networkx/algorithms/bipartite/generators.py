@@ -17,7 +17,7 @@ import numbers
 import random
 from functools import reduce
 import networkx as nx
-from networkx.utils import nodes_or_number
+from networkx.utils import nodes_or_number, py_random_state
 
 __all__ = ['configuration_model',
            'havel_hakimi_graph',
@@ -69,6 +69,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     return G
 
 
+@py_random_state(3)
 def configuration_model(aseq, bseq, create_using=None, seed=None):
     """Return a random bipartite graph from two given degree sequences.
 
@@ -80,8 +81,9 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
-    seed : integer, optional
-       Seed for random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Nodes from the set A are connected to nodes in the set B by
     choosing randomly from the possible free stubs, one in A and
@@ -103,9 +105,6 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
-
-    if not seed is None:
-        random.seed(seed)
 
     # length and sum of each sequence
     lena = len(aseq)
@@ -135,8 +134,8 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     bstubs = [x for subseq in stubs for x in subseq]
 
     # shuffle lists
-    random.shuffle(astubs)
-    random.shuffle(bstubs)
+    seed.shuffle(astubs)
+    seed.shuffle(bstubs)
 
     G.add_edges_from([[astubs[i], bstubs[i]] for i in range(suma)])
 
@@ -362,6 +361,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
+@py_random_state(3)
 def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     """Create a bipartite graph with a preferential attachment model from
     a given single degree sequence.
@@ -374,8 +374,9 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
        Probability that a new bottom node is added.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
-    seed : integer, optional
-       Seed for random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     References
     ----------
@@ -397,9 +398,6 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     if p > 1:
         raise nx.NetworkXError("probability %s > 1" % (p))
 
-    if not seed is None:
-        random.seed(seed)
-
     naseq = len(aseq)
     G = _add_nodes_with_bipartite_label(G, naseq, 0)
     vv = [[v] * aseq[v] for v in range(0, naseq)]
@@ -407,7 +405,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
         while vv[0]:
             source = vv[0][0]
             vv[0].remove(source)
-            if random.random() < p or G.number_of_nodes() == naseq:
+            if seed.random() < p or G.number_of_nodes() == naseq:
                 target = G.number_of_nodes()
                 G.add_node(target, bipartite=1)
                 G.add_edge(source, target)
@@ -416,7 +414,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
                 # flatten the list of lists into a list.
                 bbstubs = reduce(lambda x, y: x + y, bb)
                 # choose preferentially a bottom node.
-                target = random.choice(bbstubs)
+                target = seed.choice(bbstubs)
                 G.add_node(target, bipartite=1)
                 G.add_edge(source, target)
         vv.remove(vv[0])
@@ -424,6 +422,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     return G
 
 
+@py_random_state(3)
 def random_graph(n, m, p, seed=None, directed=False):
     """Return a bipartite random graph.
 
@@ -437,8 +436,9 @@ def random_graph(n, m, p, seed=None, directed=False):
         The number of nodes in the second bipartite set.
     p : float
         Probability for edge creation.
-    seed : int, optional
-        Seed for random number generator (default=None).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     directed : bool, optional (default=False)
         If True return a directed graph
 
@@ -471,9 +471,6 @@ def random_graph(n, m, p, seed=None, directed=False):
         G = nx.DiGraph(G)
     G.name = "fast_gnp_random_graph(%s,%s,%s)" % (n, m, p)
 
-    if not seed is None:
-        random.seed(seed)
-
     if p <= 0:
         return G
     if p >= 1:
@@ -484,7 +481,7 @@ def random_graph(n, m, p, seed=None, directed=False):
     v = 0
     w = -1
     while v < n:
-        lr = math.log(1.0 - random.random())
+        lr = math.log(1.0 - seed.random())
         w = w + 1 + int(lr / lp)
         while w >= m and v < n:
             w = w - m
@@ -498,7 +495,7 @@ def random_graph(n, m, p, seed=None, directed=False):
         v = 0
         w = -1
         while v < n:
-            lr = math.log(1.0 - random.random())
+            lr = math.log(1.0 - seed.random())
             w = w + 1 + int(lr / lp)
             while w >= m and v < n:
                 w = w - m
@@ -509,6 +506,7 @@ def random_graph(n, m, p, seed=None, directed=False):
     return G
 
 
+@py_random_state(3)
 def gnmk_random_graph(n, m, k, seed=None, directed=False):
     """Return a random bipartite graph G_{n,m,k}.
 
@@ -523,8 +521,9 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
         The number of nodes in the second bipartite set.
     k : int
         The number of edges
-    seed : int, optional
-        Seed for random number generator (default=None).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     directed : bool, optional (default=False)
         If True return a directed graph
 
@@ -551,8 +550,6 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
     if directed:
         G = nx.DiGraph(G)
     G.name = "bipartite_gnm_random_graph(%s,%s,%s)" % (n, m, k)
-    if seed is not None:
-        random.seed(seed)
     if n == 1 or m == 1:
         return G
     max_edges = n * m  # max_edges for bipartite networks
@@ -564,8 +561,8 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
     edge_count = 0
     while edge_count < k:
         # generate random edge,u,v
-        u = random.choice(top)
-        v = random.choice(bottom)
+        u = seed.choice(top)
+        v = seed.choice(bottom)
         if v in G[u]:
             continue
         else:

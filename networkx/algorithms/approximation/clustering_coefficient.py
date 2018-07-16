@@ -6,14 +6,16 @@
 #   BSD license.
 import random
 from networkx.utils import not_implemented_for
+from networkx.utils import py_random_state
 
 __all__ = ['average_clustering']
 __author__ = """\n""".join(['Fred Morstatter <fred.morstatter@asu.edu>',
                             'Jordi Torrents <jtorrents@milnou.net>'])
 
 
+@py_random_state(2)
 @not_implemented_for('directed')
-def average_clustering(G, trials=1000):
+def average_clustering(G, trials=1000, seed=None):
     r"""Estimates the average clustering coefficient of G.
 
     The local clustering of each node in `G` is the fraction of triangles
@@ -35,6 +37,10 @@ def average_clustering(G, trials=1000):
     trials : integer
         Number of trials to perform (default 1000).
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     Returns
     -------
     c : float
@@ -51,11 +57,11 @@ def average_clustering(G, trials=1000):
     n = len(G)
     triangles = 0
     nodes = list(G)
-    for i in [int(random.random() * n) for i in range(trials)]:
+    for i in [int(seed.random() * n) for i in range(trials)]:
         nbrs = list(G[nodes[i]])
         if len(nbrs) < 2:
             continue
-        u, v = random.sample(nbrs, 2)
+        u, v = seed.sample(nbrs, 2)
         if u in G[v]:
             triangles += 1
     return triangles / float(trials)

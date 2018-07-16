@@ -9,14 +9,14 @@
 #          Joel Miller (joel.c.miller.research@gmail.com)
 """Generate graphs with given degree and triangle sequence.
 """
-import random
 import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = ['random_clustered_graph']
 
 
-def random_clustered_graph(joint_degree_sequence, create_using=None,
-                           seed=None):
+@py_random_state(2)
+def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     r"""Generate a random graph with the given joint independent edge degree and
     triangle degree sequence.
 
@@ -37,8 +37,9 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
         triangle degree of a node.
     create_using : NetworkX graph constructor, optional (default MultiGraph)
        Graph type to create. If graph instance, then cleared before populated.
-    seed : hashable object, optional
-        The seed for the random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -92,9 +93,6 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
     >>> G.remove_edges_from(nx.selfloop_edges(G))
 
     """
-    if seed is not None:
-        random.seed(seed)
-
     # In Python 3, zip() returns an iterator. Make this into a list.
     joint_degree_sequence = list(joint_degree_sequence)
 
@@ -115,8 +113,8 @@ def random_clustered_graph(joint_degree_sequence, create_using=None,
     if len(ilist) % 2 != 0 or len(tlist) % 3 != 0:
         raise nx.NetworkXError('Invalid degree sequence')
 
-    random.shuffle(ilist)
-    random.shuffle(tlist)
+    seed.shuffle(ilist)
+    seed.shuffle(tlist)
     while ilist:
         G.add_edge(ilist.pop(), ilist.pop())
     while tlist:

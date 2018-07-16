@@ -20,16 +20,17 @@ For more information, see the Wikipedia article on small-world network [1]_.
 .. [1] Small-world network:: https://en.wikipedia.org/wiki/Small-world_network
 
 """
-import random
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.utils import py_random_state
 
 __all__ = ['random_reference', 'lattice_reference', 'sigma', 'omega']
 
 
+@py_random_state(3)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def random_reference(G, niter=1, connectivity=True):
+def random_reference(G, niter=1, connectivity=True, seed=None):
     """Compute a random graph by swapping edges of a given graph.
 
     Parameters
@@ -42,6 +43,10 @@ def random_reference(G, niter=1, connectivity=True):
 
     connectivity: boolean (optional, default=True)
         When True, ensure connectivity for the randomized graph.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -65,6 +70,7 @@ def random_reference(G, niter=1, connectivity=True):
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
 
+    from networkx.utils import cumulative_distribution, discrete_sequence
     local_conn = nx.connectivity.local_edge_connectivity
 
     G = G.copy()
@@ -81,14 +87,14 @@ def random_reference(G, niter=1, connectivity=True):
         while n < ntries:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
-            (ai, ci) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+            (ai, ci) = discrete_sequence(2, cdistribution=cdf, seed=seed)
             if ai == ci:
                 continue  # same source, skip
             a = keys[ai]  # convert index to label
             c = keys[ci]
             # choose target uniformly from neighbors
-            b = random.choice(list(G.neighbors(a)))
-            d = random.choice(list(G.neighbors(c)))
+            b = seed.choice(list(G.neighbors(a)))
+            d = seed.choice(list(G.neighbors(c)))
             bi = keys.index(b)
             di = keys.index(d)
             if b in [a, c, d] or d in [a, b, c]:
@@ -115,9 +121,10 @@ def random_reference(G, niter=1, connectivity=True):
     return G
 
 
+@py_random_state(4)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def lattice_reference(G, niter=1, D=None, connectivity=True):
+def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     """Latticize the given graph by swapping edges.
 
     Parameters
@@ -133,6 +140,10 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
 
     connectivity: boolean (optional, default=True)
         Ensure connectivity for the latticized graph when set to True.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -153,6 +164,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
 
     """
     import numpy as np
+    from networkx.utils import cumulative_distribution, discrete_sequence
     local_conn = nx.connectivity.local_edge_connectivity
 
     if G.is_directed():
@@ -165,7 +177,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
     # probability weighted by degree.
     G = G.copy()
     keys, degrees = zip(*G.degree())  # keys, degree
-    cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    cdf = cumulative_distribution(degrees)  # cdf of degree
 
     nnodes = len(G)
     nedges = nx.number_of_edges(G)
@@ -188,14 +200,14 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
         while n < ntries:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
-            (ai, ci) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+            (ai, ci) = discrete_sequence(2, cdistribution=cdf, seed=seed)
             if ai == ci:
                 continue  # same source, skip
             a = keys[ai]  # convert index to label
             c = keys[ci]
             # choose target uniformly from neighbors
-            b = random.choice(list(G.neighbors(a)))
-            d = random.choice(list(G.neighbors(c)))
+            b = seed.choice(list(G.neighbors(a)))
+            d = seed.choice(list(G.neighbors(c)))
             bi = keys.index(b)
             di = keys.index(d)
 
@@ -226,9 +238,10 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
     return G
 
 
+@py_random_state(3)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def sigma(G, niter=100, nrand=10):
+def sigma(G, niter=100, nrand=10, seed=None):
     """Return the small-world coefficient (sigma) of the given graph.
 
     The small-world coefficient is defined as:
@@ -252,6 +265,10 @@ def sigma(G, niter=100, nrand=10):
     nrand: integer (optional, default=10)
         Number of random graphs generated to compute the average clustering
         coefficient (Cr) and average shortest path length (Lr).
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -280,7 +297,7 @@ def sigma(G, niter=100, nrand=10):
     # for an equivalent random graph
     randMetrics = {"C": [], "L": []}
     for i in range(nrand):
-        Gr = random_reference(G, niter=niter)
+        Gr = random_reference(G, niter=niter, seed=seed)
         randMetrics["C"].append(nx.transitivity(Gr))
         randMetrics["L"].append(nx.average_shortest_path_length(Gr))
 
@@ -294,9 +311,10 @@ def sigma(G, niter=100, nrand=10):
     return sigma
 
 
+@py_random_state(3)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def omega(G, niter=100, nrand=10):
+def omega(G, niter=100, nrand=10, seed=None):
     """Return the small-world coefficient (omega) of a graph
 
     The small-world coefficient of a graph G is:
@@ -326,6 +344,10 @@ def omega(G, niter=100, nrand=10):
         Number of random graphs generated to compute the average clustering
         coefficient (Cr) and average shortest path length (Lr).
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     Returns
     -------
     omega
@@ -347,8 +369,8 @@ def omega(G, niter=100, nrand=10):
     # for an equivalent random graph
     randMetrics = {"C": [], "L": []}
     for i in range(nrand):
-        Gr = random_reference(G, niter=niter)
-        Gl = lattice_reference(G, niter=niter)
+        Gr = random_reference(G, niter=niter, seed=seed)
+        Gl = lattice_reference(G, niter=niter, seed=seed)
         randMetrics["C"].append(nx.transitivity(Gl))
         randMetrics["L"].append(nx.average_shortest_path_length(Gr))
 

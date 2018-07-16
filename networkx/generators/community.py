@@ -13,8 +13,8 @@
 from __future__ import division
 import itertools
 import math
-import random
 import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = ['caveman_graph', 'connected_caveman_graph',
            'relaxed_caveman_graph', 'random_partition_graph',
@@ -111,6 +111,7 @@ def connected_caveman_graph(l, k):
     return G
 
 
+@py_random_state(3)
 def relaxed_caveman_graph(l, k, p, seed=None):
     """Return a relaxed caveman graph.
 
@@ -125,8 +126,9 @@ def relaxed_caveman_graph(l, k, p, seed=None):
       Size of cliques
     p : float
       Probabilty of rewiring each edge.
-    seed : int,optional
-      Seed for random number generator(default=None)
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -148,13 +150,11 @@ def relaxed_caveman_graph(l, k, p, seed=None):
        Physics Reports Volume 486, Issues 3-5, February 2010, Pages 75-174.
        https://arxiv.org/abs/0906.0612
     """
-    if seed is not None:
-        random.seed(seed)
     G = nx.caveman_graph(l, k)
     nodes = list(G)
     for (u, v) in G.edges():
-        if random.random() < p:  # rewire the edge
-            x = random.choice(nodes)
+        if seed.random() < p:  # rewire the edge
+            x = seed.choice(nodes)
             if G.has_edge(u, x):
                 continue
             G.remove_edge(u, v)
@@ -162,6 +162,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     return G
 
 
+@py_random_state(3)
 def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     """Return the random partition graph with a partition of sizes.
 
@@ -180,8 +181,9 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
       probability of edges between groups
     directed : boolean optional, default=False
       Whether to create a directed graph
-    seed : int optional, default None
-      A seed for the random number generator
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -216,8 +218,6 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     """
     # Use geometric method for O(n+m) complexity algorithm
     # partition = nx.community_sets(nx.get_node_attributes(G, 'affiliation'))
-    if seed is not None:
-        random.seed(seed)
     if not 0.0 <= p_in <= 1.0:
         raise nx.NetworkXError("p_in must be in [0,1]")
     if not 0.0 <= p_out <= 1.0:
@@ -234,6 +234,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
                                   sparse=True)
 
 
+@py_random_state(4)
 def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     """Return the planted l-partition graph.
 
@@ -252,8 +253,9 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
       probability of connecting vertices within a group
     p_out : float
       probability of connected vertices between groups
-    seed : int,optional
-      Seed for random number generator(default=None)
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     directed : bool,optional (default=False)
       If True return a directed graph
 
@@ -269,7 +271,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     Examples
     --------
-    >>> G = nx.planted_partition_graph(4, 3, 0.5, 0.1,seed=42)
+    >>> G = nx.planted_partition_graph(4, 3, 0.5, 0.1, seed=42)
 
     See Also
     --------
@@ -287,6 +289,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     return random_partition_graph([k] * l, p_in, p_out, seed, directed)
 
 
+@py_random_state(6)
 def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
                                     seed=None):
     """Generate a Gaussian random partition graph.
@@ -310,8 +313,9 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
       Probability of inter cluster connection.
     directed : boolean, optional default=False
       Whether to create a directed graph or not
-    seed : int
-      Seed value for random number generator
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -351,7 +355,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
     assigned = 0
     sizes = []
     while True:
-        size = int(random.normalvariate(s, float(s) / v + 0.5))
+        size = int(seed.gauss(s, float(s) / v + 0.5))
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
@@ -466,6 +470,7 @@ def windmill_graph(n, k):
     return G
 
 
+@py_random_state(3)
 def stochastic_block_model(sizes, p, nodelist=None, seed=None,
                            directed=False, selfloops=False, sparse=True):
     """Return a stochastic block model graph.
@@ -487,8 +492,9 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
         The block tags are assigned according to the node identifiers
         in nodelist. If nodelist is None, then the ordering is the
         range [0,sum(sizes)-1].
-    seed : int, optional,  default=None
-        Seed for random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     directed : boolean optional, default=False
         Whether to create a directed graph or not.
     selfloops : boolean optional, default=False
@@ -593,9 +599,6 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
     g.name = "stochastic_block_model"
 
     # Test for edge existence
-    if seed is not None:
-        random.seed(seed)
-
     parts = g.graph['partition']
     for i, j in block_iter:
         if i == j:
@@ -609,7 +612,7 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
                 if selfloops:
                     edges = itertools.chain(edges, zip(parts[i], parts[i]))
             for e in edges:
-                if random.random() < p[i][j]:
+                if seed.random() < p[i][j]:
                     g.add_edge(*e)
         else:
             edges = itertools.product(parts[i], parts[j])
@@ -620,7 +623,7 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
             elif p[i][j] > 0:
                 while True:
                     try:
-                        logrand = math.log(random.random())
+                        logrand = math.log(seed.random())
                         skip = math.floor(logrand / math.log(1 - p[i][j]))
                         # consume "skip" edges
                         next(itertools.islice(edges, skip, skip), None)
@@ -630,6 +633,6 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
                         break
         else:
             for e in edges:
-                if random.random() < p[i][j]:
+                if seed.random() < p[i][j]:
                     g.add_edge(*e)  # __safe
     return g

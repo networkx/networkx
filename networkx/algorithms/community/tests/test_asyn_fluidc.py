@@ -41,7 +41,6 @@ def test_two_nodes():
 
 
 def test_two_clique_communities():
-    random.seed(7)
     test = Graph()
 
     # c1
@@ -61,14 +60,15 @@ def test_two_clique_communities():
     ground_truth = set([frozenset(['a', 'c', 'b']),
                         frozenset(['e', 'd', 'f'])])
 
-    communities = asyn_fluidc(test, 2)
+    communities = asyn_fluidc(test, 2, seed=7)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
 
 def five_clique_ring():
-    """Not auto-tested (not named test_...) due to cross-version seed issues"""
-    random.seed(9)
+    """Not auto-tested (not named test_...) due to cross-version seed issues
+    python3.4 in particular gives different results.
+    """
     test = Graph()
 
     # c1
@@ -125,6 +125,6 @@ def five_clique_ring():
                         frozenset(['4a', '4b', '4c', '4d']),
                         frozenset(['5a', '5b', '5c', '5d'])])
 
-    communities = asyn_fluidc(test, 5)
+    communities = asyn_fluidc(test, 5, seed=9)
     result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)

@@ -6,9 +6,9 @@ A graph is chordal if every cycle of length at least 4 has a chord
 (an edge joining two nodes not adjacent in the cycle).
 https://en.wikipedia.org/wiki/Chordal_graph
 """
-import networkx as nx
-import random
 import sys
+import networkx as nx
+from networkx.utils import arbitrary_element
 
 __authors__ = "\n".join(['Jesus Cerquides <cerquide@iiia.csic.es>'])
 #    Copyright (C) 2010 by
@@ -283,7 +283,7 @@ def _max_cardinality_node(G, choices, wanna_connect):
 
 def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     """ Given a graph G, starts a max cardinality search
-    (starting from s if s is given and from a random node otherwise)
+    (starting from s if s is given and from an arbitrary node otherwise)
     trying to find a non-chordal cycle.
 
     If it does find one, it returns (u,v,w) where u,v,w are the three
@@ -292,7 +292,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
     unnumbered = set(G)
     if s is None:
-        s = random.choice(list(unnumbered))
+        s = arbitrary_element(G)
     unnumbered.remove(s)
     numbered = set([s])
 #    current_treewidth = None
@@ -325,7 +325,7 @@ def _connected_chordal_graph_cliques(G):
     else:
         cliques = set()
         unnumbered = set(G.nodes())
-        v = random.choice(list(unnumbered))
+        v = arbitrary_element(G)
         unnumbered.remove(v)
         numbered = set([v])
         clique_wanna_be = set([v])

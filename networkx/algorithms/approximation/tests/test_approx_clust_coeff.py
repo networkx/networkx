@@ -13,6 +13,13 @@ def test_petersen():
                  nx.average_clustering(G))
 
 
+def test_petersen_seed():
+    # Actual coefficient is 0
+    G = nx.petersen_graph()
+    assert_equal(average_clustering(G, trials=int(len(G) / 2), seed=1),
+                 nx.average_clustering(G))
+
+
 def test_tetrahedral():
     # Actual coefficient is 1
     G = nx.tetrahedral_graph()

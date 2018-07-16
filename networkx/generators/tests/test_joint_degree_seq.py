@@ -46,9 +46,9 @@ def test_is_valid_joint_degree():
     assert_false(is_valid_joint_degree(joint_degrees_5))
 
 
-def test_joint_degree_graph(ntimes=100):
+def test_joint_degree_graph(ntimes=10):
     for _ in range(ntimes):
-        seed = time.time()
+        seed = int(time.time())
 
         n, m, p = 20, 10, 1
         # generate random graph with model powerlaw_cluster and calculate

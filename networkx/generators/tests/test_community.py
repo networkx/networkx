@@ -3,7 +3,7 @@ from nose.tools import *
 
 
 def test_random_partition_graph():
-    G = nx.random_partition_graph([3, 3, 3], 1, 0)
+    G = nx.random_partition_graph([3, 3, 3], 1, 0, seed=42)
     C = G.graph['partition']
     assert_equal(C, [set([0, 1, 2]), set([3, 4, 5]), set([6, 7, 8])])
     assert_equal(len(G), 9)
@@ -41,7 +41,7 @@ def test_random_partition_graph():
 
 
 def test_planted_partition_graph():
-    G = nx.planted_partition_graph(4, 3, 1, 0)
+    G = nx.planted_partition_graph(4, 3, 1, 0, seed=42)
     C = G.graph['partition']
     assert_equal(len(C), 4)
     assert_equal(len(G), 12)
@@ -89,6 +89,8 @@ def test_relaxed_caveman_graph():
     assert_equal(len(G), 12)
     G = nx.relaxed_caveman_graph(4, 3, 0.5)
     assert_equal(len(G), 12)
+    G = nx.relaxed_caveman_graph(4, 3, 0.5, seed=42)
+    assert_equal(len(G), 12)
 
 
 def test_connected_caveman_graph():
@@ -112,6 +114,15 @@ def test_caveman_graph():
 
 def test_gaussian_random_partition_graph():
     G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01)
+    assert_equal(len(G), 100)
+    G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
+                                           directed=True)
+    assert_equal(len(G), 100)
+    G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
+                                           directed=False, seed=42)
+    assert_equal(len(G), 100)
+    G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
+                                           directed=True, seed=42)
     assert_equal(len(G), 100)
     assert_raises(nx.NetworkXError,
                   nx.gaussian_random_partition_graph, 100, 101, 10, 1, 0)

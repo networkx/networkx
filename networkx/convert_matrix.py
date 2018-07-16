@@ -15,7 +15,7 @@ Examples
 Create a 10 node random graph from a numpy matrix
 
 >>> import numpy as np
->>> a = np.reshape(np.random.random_integers(0, 1, size=100), (10, 10))
+>>> a = np.random.randint(0, 2, size=(10, 10))
 >>> D = nx.DiGraph(a)
 
 or equivalently
@@ -285,8 +285,8 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     >>> import pandas as pd
     >>> pd.options.display.max_columns = 20
     >>> import numpy as np
-    >>> r = np.random.RandomState(seed=5)
-    >>> ints = r.random_integers(1, 10, size=(3,2))
+    >>> rng = np.random.RandomState(seed=5)
+    >>> ints = rng.randint(1, 11, size=(3,2))
     >>> a = ['A', 'B', 'C']
     >>> b = ['D', 'A', 'E']
     >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])

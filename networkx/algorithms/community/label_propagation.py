@@ -8,16 +8,17 @@
 Label propagation community detection algorithms.
 """
 from collections import Counter
-import random
 
 import networkx as nx
 from networkx.utils import groups
-from networkx.utils.decorators import not_implemented_for
+from networkx.utils import not_implemented_for
+from networkx.utils import py_random_state
 
 __all__ = ['label_propagation_communities', 'asyn_lpa_communities']
 
 
-def asyn_lpa_communities(G, weight=None):
+@py_random_state(2)
+def asyn_lpa_communities(G, weight=None, seed=None):
     """Returns communities in `G` as detected by asynchronous label
     propagation.
 
@@ -47,6 +48,10 @@ def asyn_lpa_communities(G, weight=None):
         frequency with which a label appears among the neighbors of a
         node: a higher weight means the label appears more often.
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     Returns
     -------
     communities : iterable
@@ -68,7 +73,7 @@ def asyn_lpa_communities(G, weight=None):
     while cont:
         cont = False
         nodes = list(G)
-        random.shuffle(nodes)
+        seed.shuffle(nodes)
         # Calculate the label for each node
         for node in nodes:
             if len(G[node]) < 1:
@@ -86,7 +91,7 @@ def asyn_lpa_communities(G, weight=None):
             max_freq = max(label_freq.values())
             best_labels = [label for label, freq in label_freq.items()
                            if freq == max_freq]
-            new_label = random.choice(best_labels)
+            new_label = seed.choice(best_labels)
             labels[node] = new_label
             # Continue until all nodes have a label that is better than other
             # neighbour labels (only one label has max_freq for each node).

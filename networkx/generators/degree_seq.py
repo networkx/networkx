@@ -26,10 +26,9 @@ except ImportError:
     from itertools import izip_longest as zip_longest
 import math
 from operator import itemgetter
-import random
 
 import networkx as nx
-from networkx.utils import random_weighted_sample
+from networkx.utils import random_weighted_sample, py_random_state
 
 __all__ = ['configuration_model',
            'directed_configuration_model',
@@ -98,7 +97,7 @@ def _configuration_model(deg_sequence, create_using, directed=False,
        ``deg_sequence`` and ``in_deg_sequence`` need not be the same
        length.
 
-    ``seed`` is the seed for the random number generator.
+    ``seed`` is a random.Random or numpy.random.RandomState instance
 
     This function returns a graph, directed if and only if ``directed``
     is ``True``, generated according to the configuration model
@@ -107,8 +106,6 @@ def _configuration_model(deg_sequence, create_using, directed=False,
     functions.
 
     """
-    if seed is not None:
-        random.seed(seed)
     n = len(deg_sequence)
     G = nx.empty_graph(n, create_using)
     # If empty, return the null graph immediately.
@@ -129,8 +126,8 @@ def _configuration_model(deg_sequence, create_using, directed=False,
         out_stublist = _to_stublist(out_deg)
         in_stublist = _to_stublist(in_deg)
 
-        random.shuffle(out_stublist)
-        random.shuffle(in_stublist)
+        seed.shuffle(out_stublist)
+        seed.shuffle(in_stublist)
     else:
         stublist = _to_stublist(deg_sequence)
         # Choose a random balanced bipartition of the stublist, which
@@ -138,12 +135,13 @@ def _configuration_model(deg_sequence, create_using, directed=False,
         # shuffle the list and then split it in half.
         n = len(stublist)
         half = n // 2
-        random.shuffle(stublist)
+        seed.shuffle(stublist)
         out_stublist, in_stublist = stublist[:half], stublist[half:]
     G.add_edges_from(zip(out_stublist, in_stublist))
     return G
 
 
+@py_random_state(2)
 def configuration_model(deg_sequence, create_using=None, seed=None):
     """Return a random graph with the given degree sequence.
 
@@ -157,8 +155,9 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
         Each list entry corresponds to the degree of a node.
     create_using : NetworkX graph constructor, optional (default MultiGraph)
         Graph type to create. If graph instance, then cleared before populated.
-    seed : hashable object, optional
-        Seed for random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -244,6 +243,7 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
     return G
 
 
+@py_random_state(3)
 def directed_configuration_model(in_degree_sequence,
                                  out_degree_sequence,
                                  create_using=None, seed=None):
@@ -261,8 +261,9 @@ def directed_configuration_model(in_degree_sequence,
        Each list entry corresponds to the out-degree of a node.
     create_using : NetworkX graph constructor, optional (default MultiDiGraph)
         Graph type to create. If graph instance, then cleared before populated.
-    seed : hashable object, optional
-        Seed for random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -339,6 +340,7 @@ def directed_configuration_model(in_degree_sequence,
     return G
 
 
+@py_random_state(1)
 def expected_degree_graph(w, seed=None, selfloops=True):
     r"""Return a random graph with given expected degrees.
 
@@ -356,8 +358,9 @@ def expected_degree_graph(w, seed=None, selfloops=True):
         The list of expected degrees.
     selfloops: bool (default=True)
         Set to False to remove the possibility of self-loop edges.
-    seed : hashable object, optional
-        The seed for the random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -417,8 +420,6 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     if n == 0 or max(w) == 0:
         return G
 
-    if seed is not None:
-        random.seed(seed)
     rho = 1 / sum(w)
     # Sort the weights in decreasing order. The original order of the
     # weights dictates the order of the (integer) node labels, so we
@@ -437,11 +438,11 @@ def expected_degree_graph(w, seed=None, selfloops=True):
         p = min(seq[v] * factor, 1)
         while v < n and p > 0:
             if p != 1:
-                r = random.random()
+                r = seed.random()
                 v += int(math.floor(math.log(r, 1 - p)))
             if v < n:
                 q = min(seq[v] * factor, 1)
-                if random.random() < q / p:
+                if seed.random() < q / p:
                     G.add_edge(mapping[u], mapping[v])
                 v += 1
                 p = q
@@ -694,6 +695,7 @@ def degree_sequence_tree(deg_sequence, create_using=None):
     return G
 
 
+@py_random_state(1)
 def random_degree_sequence_graph(sequence, seed=None, tries=10):
     r"""Return a simple random graph with the given degree sequence.
 
@@ -705,8 +707,9 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     ----------
     sequence :  list of integers
         Sequence of degrees
-    seed : hashable object, optional
-        Seed for random number generator
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     tries : int, optional
         Maximum number of tries to create a graph
 
@@ -746,7 +749,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     >>> sorted(d for n, d in G.degree())
     [1, 2, 2, 3]
     """
-    DSRG = DegreeSequenceRandomGraph(sequence, seed=seed)
+    DSRG = DegreeSequenceRandomGraph(sequence, seed)
     for try_n in range(tries):
         try:
             return DSRG.generate()
@@ -758,11 +761,10 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
 class DegreeSequenceRandomGraph(object):
     # class to generate random graphs with a given degree sequence
     # use random_degree_sequence_graph()
-    def __init__(self, degree, seed=None):
+    def __init__(self, degree, rng):
         if not nx.is_graphical(degree):
             raise nx.NetworkXUnfeasible('degree sequence is not graphical')
-        if seed is not None:
-            random.seed(seed)
+        self.rng = rng
         self.degree = list(degree)
         # node labels are integers 0,...,n-1
         self.m = sum(self.degree) / 2.0  # number of edges
@@ -826,24 +828,27 @@ class DegreeSequenceRandomGraph(object):
 
     def phase1(self):
         # choose node pairs from (degree) weighted distribution
-        while sum(self.remaining_degree.values()) >= 2 * self.dmax**2:
-            u, v = sorted(random_weighted_sample(self.remaining_degree, 2))
+        rem_deg = self.remaining_degree
+        while sum(rem_deg.values()) >= 2 * self.dmax**2:
+            u, v = sorted(random_weighted_sample(rem_deg, 2, self.rng))
             if self.graph.has_edge(u, v):
                 continue
-            if random.random() < self.p(u, v):  # accept edge
+            if self.rng.random() < self.p(u, v):  # accept edge
                 self.graph.add_edge(u, v)
                 self.update_remaining(u, v)
 
     def phase2(self):
         # choose remaining nodes uniformly at random and use rejection sampling
-        while len(self.remaining_degree) >= 2 * self.dmax:
+        remaining_deg = self.remaining_degree
+        rng = self.rng
+        while len(remaining_deg) >= 2 * self.dmax:
             while True:
-                u, v = sorted(random.sample(self.remaining_degree.keys(), 2))
+                u, v = sorted(rng.sample(remaining_deg.keys(), 2))
                 if self.graph.has_edge(u, v):
                     continue
-                if random.random() < self.q(u, v):
+                if rng.random() < self.q(u, v):
                     break
-            if random.random() < self.p(u, v):  # accept edge
+            if rng.random() < self.p(u, v):  # accept edge
                 self.graph.add_edge(u, v)
                 self.update_remaining(u, v)
 
@@ -853,13 +858,14 @@ class DegreeSequenceRandomGraph(object):
         # build auxiliary graph of potential edges not already in graph
         H = nx.Graph([(u, v) for (u, v) in potential_edges
                       if not self.graph.has_edge(u, v)])
+        rng = self.rng
         while self.remaining_degree:
             if not self.suitable_edge():
                 raise nx.NetworkXUnfeasible('no suitable edges left')
             while True:
-                u, v = sorted(random.choice(list(H.edges())))
-                if random.random() < self.q(u, v):
+                u, v = sorted(rng.choice(list(H.edges())))
+                if rng.random() < self.q(u, v):
                     break
-            if random.random() < self.p(u, v):  # accept edge
+            if rng.random() < self.p(u, v):  # accept edge
                 self.graph.add_edge(u, v)
                 self.update_remaining(u, v, aux_graph=H)

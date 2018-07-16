@@ -193,7 +193,7 @@ def test_general_k_edge_subgraph_quick_return():
 
 def test_random_gnp():
     # seeds = [1550709854, 1309423156, 4208992358, 2785630813, 1915069929]
-    seeds = [2785630813, 1915069929]
+    seeds = [12, 13]
 
     for seed in seeds:
         G = nx.gnp_random_graph(20, 0.2, seed=seed)
@@ -201,7 +201,8 @@ def test_random_gnp():
 
 
 def test_configuration():
-    seeds = [2718183590, 2470619828, 1694705158, 3001036531, 2401251497]
+    # seeds = [2718183590, 2470619828, 1694705158, 3001036531, 2401251497]
+    seeds = [14, 15]
     for seed in seeds:
         deg_seq = nx.random_powerlaw_tree_sequence(20, seed=seed, tries=5000)
         G = nx.Graph(nx.configuration_model(deg_seq, seed=seed))
@@ -211,7 +212,7 @@ def test_configuration():
 
 def test_shell():
     # seeds = [2057382236, 3331169846, 1840105863, 476020778, 2247498425]
-    seeds = [2057382236]
+    seeds = [20]
     for seed in seeds:
         constructor = [(12, 70, 0.8), (15, 40, 0.6)]
         G = nx.random_shell_graph(constructor, seed=seed)
@@ -483,7 +484,7 @@ def test_directed_aux_graph():
 
 def test_random_gnp_directed():
     # seeds = [3894723670, 500186844, 267231174, 2181982262, 1116750056]
-    seeds = [2181982262]
+    seeds = [21]
     for seed in seeds:
         G = nx.gnp_random_graph(20, 0.2, directed=True, seed=seed)
         _check_edge_connectivity(G)
@@ -491,7 +492,7 @@ def test_random_gnp_directed():
 
 def test_configuration_directed():
     # seeds = [671221681, 2403749451, 124433910, 672335939, 1193127215]
-    seeds = [672335939]
+    seeds = [67]
     for seed in seeds:
         deg_seq = nx.random_powerlaw_tree_sequence(20, seed=seed, tries=5000)
         G = nx.DiGraph(nx.configuration_model(deg_seq, seed=seed))
@@ -501,7 +502,7 @@ def test_configuration_directed():
 
 def test_shell_directed():
     # seeds = [3134027055, 4079264063, 1350769518, 1405643020, 530038094]
-    seeds = [3134027055]
+    seeds = [31]
     for seed in seeds:
         constructor = [(12, 70, 0.8), (15, 40, 0.6)]
         G = nx.random_shell_graph(constructor, seed=seed).to_directed()
