@@ -130,11 +130,17 @@ def circular_layout(G, scale=1, center=None, dim=2):
         Dimension of layout.
         If dim>2, the remaining dimensions are set to zero
         in the returned positions.
+        If dim<2, a ValueError is raised.
 
     Returns
     -------
     pos : dict
         A dictionary of positions keyed by node
+
+    Raises
+    -------
+    ValueError
+        If dim < 2
 
     Examples
     --------
@@ -148,6 +154,9 @@ def circular_layout(G, scale=1, center=None, dim=2):
 
     """
     import numpy as np
+
+    if dim < 2:
+        raise ValueError('cannot handle dimensions < 2')
 
     G, center = _process_params(G, center, dim)
 
@@ -188,11 +197,17 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 
     dim : int
         Dimension of layout, currently only dim=2 is supported.
+        Other dimension values result in a ValueError.
 
     Returns
     -------
     pos : dict
         A dictionary of positions keyed by node
+
+    Raises
+    -------
+    ValueError
+        If dim != 2
 
     Examples
     --------
@@ -207,6 +222,9 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 
     """
     import numpy as np
+
+    if dim != 2:
+        raise ValueError('can only handle 2 dimensions')
 
     G, center = _process_params(G, center, dim)
 
@@ -621,7 +639,7 @@ def kamada_kawai_layout(G, dist=None,
     pos : dict or None  optional (default=None)
         Initial positions for nodes as a dictionary with node as keys
         and values as a coordinate list or tuple.  If None, then use
-        circular_layout().
+        circular_layout() for dim >= 2 and a linear layout for dim == 1.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
@@ -664,7 +682,10 @@ def kamada_kawai_layout(G, dist=None,
             dist_mtx[row][col] = rdist[nc]
 
     if pos is None:
-        pos = circular_layout(G, dim=dim)
+        if dim >= 2:
+            pos = circular_layout(G, dim=dim)
+        else:
+            pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
     pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
