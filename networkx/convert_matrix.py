@@ -313,41 +313,26 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     """
 
     g = nx.empty_graph(0, create_using)
+    cols = []
 
-    # Index of source and target
-    src_i = df.columns.get_loc(source)
-    tar_i = df.columns.get_loc(target)
     if edge_attr:
-        # If all additional columns requested, build up a list of tuples
-        # [(name, index),...]
+        # If all additional columns requested
         if edge_attr is True:
-            # Create a list of all columns indices, ignore nodes
-            edge_i = []
-            for i, col in enumerate(df.columns):
-                if col is not source and col is not target:
-                    edge_i.append((col, i))
-        # If a list or tuple of name is requested
+            cols = [c for c in df.columns if c is not source and c is not target]
         elif isinstance(edge_attr, (list, tuple)):
-            edge_i = [(i, df.columns.get_loc(i)) for i in edge_attr]
-        # If a string or int is passed
+            cols = [c for c in df.columns if c is not source and c is not target and c in edge_attr]
+        else:   # If a string is passed
+            cols = [c for c in df.columns if c in [edge_attr]]  # Note -- ints aren't allowed anymore. Could add another case for them.
+
+    for s, t, *attrs in zip(df[source], df[target], *[df[col] for col in cols]):
+
+        g.add_edge(s, t)
+
+        if g.is_multigraph():
+            key = max(g[s][t])  # default keys just count, so max is most recent
+            g[s][t][key].update((attr, val) for attr, val in zip(cols, attrs))
         else:
-            edge_i = [(edge_attr, df.columns.get_loc(edge_attr)), ]
-
-        # Iteration on values returns the rows as Numpy arrays
-        for row in df.values:
-            s, t = row[src_i], row[tar_i]
-            if g.is_multigraph():
-                g.add_edge(s, t)
-                key = max(g[s][t])  # default keys just count, so max is most recent
-                g[s][t][key].update((i, row[j]) for i, j in edge_i)
-            else:
-                g.add_edge(s, t)
-                g[s][t].update((i, row[j]) for i, j in edge_i)
-
-    # If no column names are given, then just return the edges.
-    else:
-        for s,t in zip(df[source], df[target]):
-            g.add_edge(s, t)
+            g[s][t].update((attr, val) for attr, val in zip(cols, attrs))
 
     return g
 
