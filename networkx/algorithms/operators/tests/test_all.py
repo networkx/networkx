@@ -199,3 +199,23 @@ def test_mixed_type_compose():
     H = nx.MultiGraph()
     I = nx.Graph()
     U = nx.compose_all([G, H, I])
+
+
+@raises(ValueError)
+def test_empty_union():
+    nx.union_all([])
+
+
+@raises(ValueError)
+def test_empty_disjoint_union():
+    nx.disjoint_union_all([])
+
+
+@raises(ValueError)
+def test_empty_compose_all():
+    nx.compose_all([])
+
+
+@raises(ValueError)
+def test_empty_intersection_all():
+    nx.intersection_all([])
