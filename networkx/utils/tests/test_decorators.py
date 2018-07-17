@@ -90,7 +90,7 @@ class TestOpenFileDecorator(object):
     def test_writer_arg0_pathlib(self):
         try:
             import pathlib
-            self.writer_arg0(pathlib.Path('test.txt'))
+            self.writer_arg0(pathlib.Path(self.name))
         except ImportError:
             return
 

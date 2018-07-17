@@ -3,6 +3,11 @@ import sys
 from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
+try:
+    from pathlib import Path
+except ImportError:
+    # Use Path to indicate if pathlib exists (like numpy does)
+    Path = None
 
 import networkx as nx
 from decorator import decorator
@@ -200,9 +205,6 @@ def open_file(path_arg, mode='r'):
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
-        if hasattr(path, 'resolve'):
-            # path is a pathlib reference to a filename
-            path = str(path)
         if is_string_like(path):
             ext = splitext(path)[1]
             fobj = _dispatch_dict[ext](path, mode=mode)
@@ -211,6 +213,10 @@ def open_file(path_arg, mode='r'):
             # path is already a file-like object
             fobj = path
             close_fobj = False
+        elif Path is not None and isinstance(path, Path):
+            # path is a pathlib reference to a filename
+            fobj = _dispatch_dict[path.suffix](str(path), mode=mode)
+            close_fobj = True
         else:
             # could be None, in which case the algorithm will deal with it
             fobj = path
