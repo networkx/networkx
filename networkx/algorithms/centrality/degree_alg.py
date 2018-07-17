@@ -46,8 +46,8 @@ def degree_centrality(G):
     be higher than n-1 and values of degree centrality greater than 1
     are possible.
     """
-    if len(G) == 1:
-        return {n: 1 for n in G.nodes()}
+    if len(G) <= 1:
+        return {n: 1 for n in G}
 
     s = 1.0 / (len(G) - 1.0)
     centrality = {n: d * s for n, d in G.degree()}
@@ -89,8 +89,8 @@ def in_degree_centrality(G):
     be higher than n-1 and values of degree centrality greater than 1
     are possible.
     """
-    if len(G) == 1:
-        return {n: 1 for n in G.nodes()}
+    if len(G) <= 1:
+        return {n: 1 for n in G}
 
     s = 1.0 / (len(G) - 1.0)
     centrality = {n: d * s for n, d in G.in_degree()}
@@ -132,8 +132,8 @@ def out_degree_centrality(G):
     be higher than n-1 and values of degree centrality greater than 1
     are possible.
     """
-    if len(G) == 1:
-        return {n: 1 for n in G.nodes()}
+    if len(G) <= 1:
+        return {n: 1 for n in G}
 
     s = 1.0 / (len(G) - 1.0)
     centrality = {n: d * s for n, d in G.out_degree()}
