@@ -89,16 +89,6 @@ def all_node_cuts(G, k=None, flow_func=None):
         raise nx.NetworkXError('Input graph is disconnected.')
 
     # Address some corner cases first.
-    # For cycle graphs
-    """    if G.order() == G.size():
-        if all(2 == d for n, d in G.degree()):
-            seen = set()
-            for u in G:
-                for v in nx.non_neighbors(G, u):
-                    if (u, v) not in seen and (v, u) not in seen:
-                        yield {v, u}
-                        seen.add((v, u))
-            return"""
     # For complete Graphs
     if nx.density(G) == 1:
         for cut_set in combinations(G, len(G) - 1):
@@ -193,6 +183,10 @@ def all_node_cuts(G, k=None, flow_func=None):
                     node_cut = {H.nodes[u]['id'] for u, _ in cutset}
 
                     if len(node_cut) == k:
+                        # The cut is invalid if it includes internal edges of
+                        # end nodes. The other half of Lemma 8 in ref.
+                        if x in node_cut or v in node_cut:
+                            continue
                         if node_cut not in seen:
                             yield node_cut
                             seen.append(node_cut)
@@ -202,6 +196,8 @@ def all_node_cuts(G, k=None, flow_func=None):
                 # of adding the edge in the input graph
                 # G.add_edge(x, v) and then regenerate H and R:
                 # Add edges to the auxiliary digraph.
+                # See build_residual_network for convention we used
+                # in residual graphs.
                 H.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
                            capacity=1)
                 H.add_edge('%sB' % mapping[v], '%sA' % mapping[x],

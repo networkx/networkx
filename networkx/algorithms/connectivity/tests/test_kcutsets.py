@@ -7,6 +7,7 @@ import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
+MAX_CUTSETS_TO_TEST = 10
 
 flow_funcs = [
     flow.boykov_kolmogorov,
@@ -122,7 +123,10 @@ def _check_separating_sets(G):
             continue
         node_conn = nx.node_connectivity(Gc)
         all_cuts = nx.all_node_cuts(Gc)
-        for cut in itertools.islice(all_cuts, 5):
+        # Only test a limited number of cut sets to reduce
+        # test time.
+        for cut in itertools.islice(all_cuts,
+                                    MAX_CUTSETS_TO_TEST):
             assert_equal(node_conn, len(cut))
             H = Gc.copy()
             H.remove_nodes_from(cut)
@@ -207,20 +211,19 @@ def test_disconnected_graph():
     assert_raises(nx.NetworkXError, next, cuts)
 
 
-"""
 def test_alternative_flow_functions():
-    graph_funcs = [graph_example_1, nx.davis_southern_women_graph]
-    for graph_func in graph_funcs:
-        G = graph_func()
+    graphs = [nx.grid_2d_graph(4, 4),
+              nx.cycle_graph(5)]
+    for G in graphs:
         node_conn = nx.node_connectivity(G)
         for flow_func in flow_funcs:
             all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
-            for cut in itertools.islice(all_cuts, 5):
+            for cut in all_cuts:
                 assert_equal(node_conn, len(cut))
                 H = G.copy()
                 H.remove_nodes_from(cut)
                 assert_false(nx.is_connected(H))
-"""
+
 
 def test_is_separating_set_complete_graph():
     G = nx.complete_graph(5)
