@@ -323,16 +323,15 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     if edge_attr is True:
         cols = [c for c in df.columns if c is not source and c is not target]
     elif isinstance(edge_attr, (list, tuple)):
-        cols = [c for c in df.columns
-                if c in edge_attr and c is not source and c is not target]
-    elif isinstance(edge_attr, int) and (0 <= edge_attr < len(df.columns)):
-        cols = [df.columns[edge_attr]]
-    elif isinstance(edge_attr, str):
-        cols = [c for c in df.columns if c in [edge_attr]]
+        cols = edge_attr
     else:
-        raise NetworkXError("Invalid edge_attr argument")
+        cols = [edge_attr]
 
-    eattrs = zip(*[df[col] for col in cols])
+    try:
+        eattrs = zip(*[df[col] for col in cols])
+    except (KeyError, TypeError) as e:
+        msg = "Invalid edge_attr argument: %s" % edge_attr
+        raise nx.NetworkXError(msg)
     for s, t, attrs in zip(df[source], df[target], eattrs):
 
         g.add_edge(s, t)
