@@ -183,6 +183,7 @@ def freeze(G):
     G.remove_nodes_from = frozen
     G.add_edge = frozen
     G.add_edges_from = frozen
+    G.add_weighted_edges_from = frozen
     G.remove_edge = frozen
     G.remove_edges_from = frozen
     G.clear = frozen
@@ -362,13 +363,7 @@ def induced_subgraph(G, nbunch):
     [(0, 1), (1, 2)]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
-    if G.is_multigraph():
-        if G.is_directed():
-            return nx.graphviews.SubMultiDiGraph(G, induced_nodes)
-        return nx.graphviews.SubMultiGraph(G, induced_nodes)
-    if G.is_directed():
-        return nx.graphviews.SubDiGraph(G, induced_nodes)
-    return nx.graphviews.SubGraph(G, induced_nodes)
+    return nx.graphviews.subgraph_view(G, induced_nodes)
 
 
 def edge_subgraph(G, edges):
@@ -422,14 +417,14 @@ def edge_subgraph(G, edges):
     if G.is_multigraph():
         if G.is_directed():
             induced_edges = nxf.show_multidiedges(edges)
-            return nxg.SubMultiDiGraph(G, induced_nodes, induced_edges)
-        induced_edges = nxf.show_multiedges(edges)
-        return nxg.SubMultiGraph(G, induced_nodes, induced_edges)
-    if G.is_directed():
-        induced_edges = nxf.show_diedges(edges)
-        return nxg.SubDiGraph(G, induced_nodes, induced_edges)
-    induced_edges = nxf.show_edges(edges)
-    return nxg.SubGraph(G, induced_nodes, induced_edges)
+        else:
+            induced_edges = nxf.show_multiedges(edges)
+    else:
+        if G.is_directed():
+            induced_edges = nxf.show_diedges(edges)
+        else:
+            induced_edges = nxf.show_edges(edges)
+    return nxg.subgraph_view(G, induced_nodes, induced_edges)
 
 
 def restricted_view(G, nodes, edges):
@@ -475,19 +470,18 @@ def restricted_view(G, nodes, edges):
     [(2, 3)]
     """
     nxf = nx.filters
-    nxg = nx.graphviews
     h_nodes = nxf.hide_nodes(nodes)
     if G.is_multigraph():
         if G.is_directed():
             h_edges = nxf.hide_multidiedges(edges)
-            return nxg.SubMultiDiGraph(G, h_nodes, h_edges)
-        h_edges = nxf.hide_multiedges(edges)
-        return nxg.SubMultiGraph(G, h_nodes, h_edges)
-    if G.is_directed():
-        h_edges = nxf.hide_diedges(edges)
-        return nxg.SubDiGraph(G, h_nodes, h_edges)
-    h_edges = nxf.hide_edges(edges)
-    return nxg.SubGraph(G, h_nodes, h_edges)
+        else:
+            h_edges = nxf.hide_multiedges(edges)
+    else:
+        if G.is_directed():
+            h_edges = nxf.hide_diedges(edges)
+        else:
+            h_edges = nxf.hide_edges(edges)
+    return nx.graphviews.subgraph_view(G, h_nodes, h_edges)
 
 
 @not_implemented_for('undirected')
@@ -496,9 +490,7 @@ def reverse_view(digraph):
 
     Identical to digraph.reverse(copy=False)
     """
-    if digraph.is_multigraph():
-        return nx.graphviews.MultiReverseView(digraph)
-    return nx.graphviews.ReverseView(digraph)
+    return nx.graphviews.reverse_view(digraph)
 
 
 def to_directed(graph):

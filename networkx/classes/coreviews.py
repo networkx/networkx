@@ -18,7 +18,6 @@ __all__ = ['AtlasView', 'AdjacencyView', 'MultiAdjacencyView',
            'UnionMultiInner', 'UnionMultiAdjacency',
            'FilterAtlas', 'FilterAdjacency',
            'FilterMultiInner', 'FilterMultiAdjacency',
-           'ReadOnlyGraph',
            ]
 
 
@@ -257,27 +256,6 @@ class UnionMultiAdjacency(UnionAdjacency):
 
     def __getitem__(self, node):
         return UnionMultiInner(self._succ[node], self._pred[node])
-
-
-class ReadOnlyGraph(object):
-    """A Mixin Class to mask the write methods of a graph class."""
-
-    def not_allowed(self, *args, **kwds):
-        msg = "SubGraph Views are readonly. Mutations not allowed"
-        raise nx.NetworkXError(msg)
-
-    add_node = not_allowed
-    remove_node = not_allowed
-    add_nodes_from = not_allowed
-    remove_nodes_from = not_allowed
-
-    add_edge = not_allowed
-    remove_edge = not_allowed
-    add_edges_from = not_allowed
-    add_weighted_edges_from = not_allowed
-    remove_edges_from = not_allowed
-
-    clear = not_allowed
 
 
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict

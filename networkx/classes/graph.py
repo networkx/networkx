@@ -1502,7 +1502,7 @@ class Graph(object):
 
         """
         if as_view is True:
-            return nx.graphviews.GraphView(self)
+            return nx.graphviews.generic_graph_view(self)
         G = self.fresh_copy()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
@@ -1553,10 +1553,10 @@ class Graph(object):
         >>> list(H.edges)
         [(0, 1)]
         """
-        if as_view is True:
-            return nx.graphviews.DiGraphView(self)
-        # deepcopy when not a view
         from networkx import DiGraph
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self, DiGraph)
+        # deepcopy when not a view
         G = DiGraph()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
@@ -1609,7 +1609,7 @@ class Graph(object):
         [(0, 1)]
         """
         if as_view is True:
-            return nx.graphviews.GraphView(self)
+            return nx.graphviews.generic_graph_view(self, Graph)
         # deepcopy when not a view
         G = Graph()
         G.graph.update(deepcopy(self.graph))

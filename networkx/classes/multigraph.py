@@ -937,7 +937,7 @@ class MultiGraph(Graph):
 
         """
         if as_view is True:
-            return nx.graphviews.MultiGraphView(self)
+            return nx.graphviews.generic_graph_view(self)
         G = self.fresh_copy()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
@@ -989,10 +989,10 @@ class MultiGraph(Graph):
         >>> list(H.edges)
         [(0, 1)]
         """
-        if as_view is True:
-            return nx.graphviews.MultiDiGraphView(self)
-        # deepcopy when not a view
         from networkx.classes.multidigraph import MultiDiGraph
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self, MultiDiGraph)
+        # deepcopy when not a view
         G = MultiDiGraph()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
@@ -1041,7 +1041,7 @@ class MultiGraph(Graph):
         [(0, 1)]
         """
         if as_view is True:
-            return nx.graphviews.MultiGraphView(self)
+            return nx.graphviews.generic_graph_view(self)
         # deepcopy when not a view
         G = MultiGraph()
         G.graph.update(deepcopy(self.graph))
