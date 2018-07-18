@@ -58,6 +58,13 @@ class TestConvertPandas(object):
         G = nx.from_pandas_edgelist(self.df, 0, 'b', ['weight', 'cost'])
         assert_graphs_equal(G, Gtrue)
 
+    def test_from_edgelist_multi_attr_incl_target(self):
+        Gtrue = nx.Graph([('E', 'C', {0: 'C', 'b': 'E', 'weight': 10}),
+                          ('B', 'A', {0: 'B', 'b': 'A', 'weight': 7}),
+                          ('A', 'D', {0: 'A', 'b': 'D', 'weight': 4})])
+        G = nx.from_pandas_edgelist(self.df, 0, 'b', [0, 'b', 'weight'])
+        assert_graphs_equal(G, Gtrue)
+
     def test_from_edgelist_multidigraph_and_edge_attr(self):
         # example from issue #2374
         Gtrue = nx.MultiDiGraph([('X1', 'X4', {'Co': 'zA', 'Mi': 0, 'St': 'X1'}),
@@ -93,6 +100,23 @@ class TestConvertPandas(object):
                           ('A', 'D', {'weight': 4})])
         G = nx.from_pandas_edgelist(self.df, 0, 'b', 'weight')
         assert_graphs_equal(G, Gtrue)
+
+    def test_from_edgelist_int_attr_name(self):
+        # note: this also tests that edge_attr can be `source`
+        Gtrue = nx.Graph([('E', 'C', {0: 'C'}),
+                          ('B', 'A', {0: 'B'}),
+                          ('A', 'D', {0: 'A'})])
+        G = nx.from_pandas_edgelist(self.df, 0, 'b', 0)
+        assert_graphs_equal(G, Gtrue)
+
+    def test_from_edgelist_invalid_attr(self):
+        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+                      self.df, 0, 'b', 'misspell')
+        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+                      self.df, 0, 'b', 1)
+        # unhashable attribute name
+        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+                      self.df, 0, 'b', {})
 
     def test_from_edgelist_no_attr(self):
         Gtrue = nx.Graph([('E', 'C', {}),

@@ -182,8 +182,9 @@ def from_pandas_adjacency(df, create_using=None):
     try:
         df = df[df.index]
     except:
-        raise nx.NetworkXError("Columns must match Indices.", "%s not in columns" %
-                               list(set(df.index).difference(set(df.columns))))
+        msg = "%s not in columns"
+        missing = list(set(df.index).difference(set(df.columns)))
+        raise nx.NetworkXError("Columns must match Indices.", msg % missing)
 
     nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
     return G
@@ -233,7 +234,8 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     source_nodes = [s for s, t, d in edgelist]
     target_nodes = [t for s, t, d in edgelist]
     all_keys = set().union(*(d.keys() for s, t, d in edgelist))
-    edge_attr = {k: [d.get(k, float("nan")) for s, t, d in edgelist] for k in all_keys}
+    edge_attr = {k: [d.get(k, float("nan")) for s, t, d in edgelist]
+                 for k in all_keys}
     edgelistdict = {source: source_nodes, target: target_nodes}
     edgelistdict.update(edge_attr)
     return pd.DataFrame(edgelistdict)
@@ -268,8 +270,8 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
 
     edge_attr : str or int, iterable, True
         A valid column name (str or integer) or list of column names that will
-        be used to retrieve items from the row and add them to the graph as edge
-        attributes. If `True`, all of the remaining columns will be added.
+        be used to retrieve items from the row and add them to the graph as
+        edge attributes. If `True`, all of the remaining columns will be added.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
@@ -311,43 +313,34 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     'red'
 
     """
-
     g = nx.empty_graph(0, create_using)
 
-    # Index of source and target
-    src_i = df.columns.get_loc(source)
-    tar_i = df.columns.get_loc(target)
-    if edge_attr:
-        # If all additional columns requested, build up a list of tuples
-        # [(name, index),...]
-        if edge_attr is True:
-            # Create a list of all columns indices, ignore nodes
-            edge_i = []
-            for i, col in enumerate(df.columns):
-                if col is not source and col is not target:
-                    edge_i.append((col, i))
-        # If a list or tuple of name is requested
-        elif isinstance(edge_attr, (list, tuple)):
-            edge_i = [(i, df.columns.get_loc(i)) for i in edge_attr]
-        # If a string or int is passed
-        else:
-            edge_i = [(edge_attr, df.columns.get_loc(edge_attr)), ]
+    if edge_attr is None:
+        g.add_edges_from(zip(df[source], df[target]))
+        return g
 
-        # Iteration on values returns the rows as Numpy arrays
-        for row in df.values:
-            s, t = row[src_i], row[tar_i]
-            if g.is_multigraph():
-                g.add_edge(s, t)
-                key = max(g[s][t])  # default keys just count, so max is most recent
-                g[s][t][key].update((i, row[j]) for i, j in edge_i)
-            else:
-                g.add_edge(s, t)
-                g[s][t].update((i, row[j]) for i, j in edge_i)
-
-    # If no column names are given, then just return the edges.
+    # Additional columns requested
+    if edge_attr is True:
+        cols = [c for c in df.columns if c is not source and c is not target]
+    elif isinstance(edge_attr, (list, tuple)):
+        cols = edge_attr
     else:
-        for row in df.values:
-            g.add_edge(row[src_i], row[tar_i])
+        cols = [edge_attr]
+
+    try:
+        eattrs = zip(*[df[col] for col in cols])
+    except (KeyError, TypeError) as e:
+        msg = "Invalid edge_attr argument: %s" % edge_attr
+        raise nx.NetworkXError(msg)
+    for s, t, attrs in zip(df[source], df[target], eattrs):
+
+        g.add_edge(s, t)
+
+        if g.is_multigraph():
+            key = max(g[s][t])  # default keys just count so max is most recent
+            g[s][t][key].update((attr, val) for attr, val in zip(cols, attrs))
+        else:
+            g[s][t].update((attr, val) for attr, val in zip(cols, attrs))
 
     return g
 
@@ -467,10 +460,10 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
         An adjacency matrix representation of a graph
 
     parallel_edges : Boolean
-        If this is True, `create_using` is a multigraph, and `A` is an
+        If True, `create_using` is a multigraph, and `A` is an
         integer matrix, then entry *(i, j)* in the matrix is interpreted as the
-        number of parallel edges joining vertices *i* and *j* in the graph. If it
-        is False, then the entries in the adjacency matrix are interpreted as
+        number of parallel edges joining vertices *i* and *j* in the graph.
+        If False, then the entries in the adjacency matrix are interpreted as
         the weight of a single edge joining the vertices.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
