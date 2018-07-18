@@ -4,6 +4,11 @@ from warnings import warn
 from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
+try:
+    from pathlib import Path
+except ImportError:
+    # Use Path to indicate if pathlib exists (like numpy does)
+    Path = None
 
 import networkx as nx
 from decorator import decorator
@@ -212,6 +217,10 @@ def open_file(path_arg, mode='r'):
             # path is already a file-like object
             fobj = path
             close_fobj = False
+        elif Path is not None and isinstance(path, Path):
+            # path is a pathlib reference to a filename
+            fobj = _dispatch_dict[path.suffix](str(path), mode=mode)
+            close_fobj = True
         else:
             # could be None, in which case the algorithm will deal with it
             fobj = path

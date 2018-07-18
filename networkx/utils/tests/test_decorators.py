@@ -88,6 +88,13 @@ class TestOpenFileDecorator(object):
     def test_writer_arg0_fobj(self):
         self.writer_arg0(self.fobj)
 
+    def test_writer_arg0_pathlib(self):
+        try:
+            import pathlib
+            self.writer_arg0(pathlib.Path(self.name))
+        except ImportError:
+            return
+
     def test_writer_arg1_str(self):
         self.writer_arg1(self.name)
         assert_equal(self.read(self.name), ''.join(self.text))
