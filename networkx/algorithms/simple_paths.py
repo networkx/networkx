@@ -204,15 +204,15 @@ def all_simple_paths(G, source, target, cutoff=None):
         return []
     if cutoff is None:
         cutoff = len(G) - 1
-    if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, target, cutoff=cutoff)
-    else:
-        return _all_simple_paths_graph(G, source, target, cutoff=cutoff)
-
-
-def _all_simple_paths_graph(G, source, target, cutoff=None):
     if cutoff < 1:
-        return
+        return []
+    if G.is_multigraph():
+        return _all_simple_paths_multigraph(G, source, target, cutoff)
+    else:
+        return _all_simple_paths_graph(G, source, target, cutoff)
+
+
+def _all_simple_paths_graph(G, source, target, cutoff):
     visited = collections.OrderedDict.fromkeys([source])
     stack = [iter(G[source])]
     while stack:
@@ -234,9 +234,7 @@ def _all_simple_paths_graph(G, source, target, cutoff=None):
             visited.popitem()
 
 
-def _all_simple_paths_multigraph(G, source, target, cutoff=None):
-    if cutoff < 1:
-        return
+def _all_simple_paths_multigraph(G, source, target, cutoff):
     visited = collections.OrderedDict.fromkeys([source])
     stack = [(v for u, v in G.edges(source))]
     while stack:
