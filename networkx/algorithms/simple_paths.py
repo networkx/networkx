@@ -3,6 +3,7 @@
 #    Sergio Nery Simoes <sergionery@gmail.com>
 #    All rights reserved.
 #    BSD license.
+import collections
 from heapq import heappush, heappop
 from itertools import count
 
@@ -212,50 +213,50 @@ def all_simple_paths(G, source, target, cutoff=None):
 def _all_simple_paths_graph(G, source, target, cutoff=None):
     if cutoff < 1:
         return
-    visited = [source]
+    visited = collections.OrderedDict.fromkeys([source])
     stack = [iter(G[source])]
     while stack:
         children = stack[-1]
         child = next(children, None)
         if child is None:
             stack.pop()
-            visited.pop()
+            visited.popitem()
         elif len(visited) < cutoff:
             if child == target:
-                yield visited + [target]
+                yield list(visited) + [target]
             elif child not in visited:
-                visited.append(child)
+                visited[child] = None
                 stack.append(iter(G[child]))
         else:  # len(visited) == cutoff:
             if child == target or target in children:
-                yield visited + [target]
+                yield list(visited) + [target]
             stack.pop()
-            visited.pop()
+            visited.popitem()
 
 
 def _all_simple_paths_multigraph(G, source, target, cutoff=None):
     if cutoff < 1:
         return
-    visited = [source]
+    visited = collections.OrderedDict.fromkeys([source])
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
         child = next(children, None)
         if child is None:
             stack.pop()
-            visited.pop()
+            visited.popitem()
         elif len(visited) < cutoff:
             if child == target:
-                yield visited + [target]
+                yield list(visited) + [target]
             elif child not in visited:
-                visited.append(child)
+                visited[child] = None
                 stack.append((v for u, v in G.edges(child)))
         else:  # len(visited) == cutoff:
             count = ([child] + list(children)).count(target)
             for i in range(count):
-                yield visited + [target]
+                yield list(visited) + [target]
             stack.pop()
-            visited.pop()
+            visited.popitem()
 
 
 @not_implemented_for('multigraph')
