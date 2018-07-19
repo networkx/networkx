@@ -38,6 +38,11 @@ def union_all(graphs, rename=(None,)):
     -------
     U : a graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     To force a disjoint union with node relabeling, use
@@ -52,6 +57,8 @@ def union_all(graphs, rename=(None,)):
     union
     disjoint_union_all
     """
+    if not graphs:
+        raise ValueError('cannot apply union_all to an empty list')
     graphs_names = zip_longest(graphs, rename)
     U, gname = next(graphs_names)
     for H, hname in graphs_names:
@@ -75,6 +82,11 @@ def disjoint_union_all(graphs):
     -------
     U : A graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     It is recommended that the graphs be either all directed or all undirected.
@@ -83,6 +95,8 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    if not graphs:
+        raise ValueError('cannot apply disjoint_union_all to an empty list')
     graphs = iter(graphs)
     U = next(graphs)
     for H in graphs:
@@ -105,6 +119,11 @@ def compose_all(graphs):
     -------
     C : A graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     It is recommended that the supplied graphs be either all directed or all
@@ -114,6 +133,8 @@ def compose_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    if not graphs:
+        raise ValueError('cannot apply compose_all to an empty list')
     graphs = iter(graphs)
     C = next(graphs)
     for H in graphs:
@@ -136,11 +157,18 @@ def intersection_all(graphs):
     -------
     R : A new graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
     """
+    if not graphs:
+        raise ValueError('cannot apply intersection_all to an empty list')
     graphs = iter(graphs)
     R = next(graphs)
     for H in graphs:
