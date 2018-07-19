@@ -408,7 +408,6 @@ def edge_subgraph(G, edges):
     [(0, 1), (3, 4)]
     """
     nxf = nx.filters
-    nxg = nx.graphviews
     edges = set(edges)
     nodes = set()
     for e in edges:
@@ -424,7 +423,7 @@ def edge_subgraph(G, edges):
             induced_edges = nxf.show_diedges(edges)
         else:
             induced_edges = nxf.show_edges(edges)
-    return nxg.subgraph_view(G, induced_nodes, induced_edges)
+    return nx.graphviews.subgraph_view(G, induced_nodes, induced_edges)
 
 
 def restricted_view(G, nodes, edges):
@@ -470,18 +469,18 @@ def restricted_view(G, nodes, edges):
     [(2, 3)]
     """
     nxf = nx.filters
-    h_nodes = nxf.hide_nodes(nodes)
+    hide_nodes = nxf.hide_nodes(nodes)
     if G.is_multigraph():
         if G.is_directed():
-            h_edges = nxf.hide_multidiedges(edges)
+            hide_edges = nxf.hide_multidiedges(edges)
         else:
-            h_edges = nxf.hide_multiedges(edges)
+            hide_edges = nxf.hide_multiedges(edges)
     else:
         if G.is_directed():
-            h_edges = nxf.hide_diedges(edges)
+            hide_edges = nxf.hide_diedges(edges)
         else:
-            h_edges = nxf.hide_edges(edges)
-    return nx.graphviews.subgraph_view(G, h_nodes, h_edges)
+            hide_edges = nxf.hide_edges(edges)
+    return nx.graphviews.subgraph_view(G, hide_nodes, hide_edges)
 
 
 @not_implemented_for('undirected')
@@ -500,9 +499,7 @@ def to_directed(graph):
     Note that graph.to_directed defaults to `as_view=False`
     while this function always provides a view.
     """
-    if graph.is_multigraph():
-        return nx.graphviews.MultiDiGraphView(graph)
-    return nx.graphviews.DiGraphView(graph)
+    return graph.to_directed()
 
 
 def to_undirected(graph):
@@ -512,9 +509,7 @@ def to_undirected(graph):
     Note that graph.to_undirected defaults to `as_view=False`
     while this function always provides a view.
     """
-    if graph.is_multigraph():
-        return nx.graphviews.MultiGraphView(graph)
-    return nx.graphviews.GraphView(graph)
+    return graph.to_undirected(as_view=True)
 
 
 def create_empty_copy(G, with_data=True):
