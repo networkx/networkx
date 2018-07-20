@@ -188,7 +188,7 @@ def eulerian_circuit(G, source=None, keys=False):
 @not_implemented_for('directed')
 def eulerize(G):
     """
-    Transforms a graph into an Eulerian graph by adding edges along 
+    Transforms a graph into an Eulerian graph
 
     Parameters
     ----------
@@ -206,13 +206,8 @@ def eulerize(G):
 
     See Also
     --------
-    is_eulerian
+    is_eulerian, eulerian_circuit
 
-    Notes
-    -----
-    This is a linear time implementation of an algorithm adapted from [1]_.
-
-    For general information about Euler tours, see [2]_.
 
     References
     ----------
