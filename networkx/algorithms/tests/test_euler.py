@@ -112,3 +112,15 @@ class TestEulerianCircuit(TestCase):
     @raises(nx.NetworkXError)
     def test_not_eulerian(self):
         f = list(eulerian_circuit(nx.complete_graph(4)))
+
+class TestEulerize(TestCase):
+
+    def test_on_random(self):
+        for i in range(10):
+            G = nx.fast_gnp_random_graph(25,0.5)
+            assert_true(nx.is_eulerian(nx.eulerize(G)))
+
+    def test_on_complete_graph(self):
+        for i in range(4,21,2):
+            G = nx.complete_graph(i)
+            assert_true(nx.is_eulerian(nx.eulerize(G)))
