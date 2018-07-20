@@ -85,4 +85,3 @@ Making copies and subgraphs
    MultiDiGraph.subgraph
    MultiDiGraph.edge_subgraph
    MultiDiGraph.reverse
-   MultiDiGraph.fresh_copy

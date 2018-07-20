@@ -227,6 +227,20 @@ class Graph(object):
         dict which holds attrbute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
+    Typically, if your extension doesn't impact the data structure all
+    methods will inherit without issue except: `to_directed/to_undirected`.
+    By default these methods create a DiGraph/Graph class and you probably
+    want them to create your extension of a DiGraph/Graph. To facilitate
+    this we define two class variables that you can set in your subclass.
+
+    to_directed_class : callable, (default: DiGraph or MultiDiGraph)
+        Class to create a new graph structure in the `to_directed` method.
+        If `None`, a NetworkX class (DiGraph or MultiDiGraph) is used.
+
+    to_undirected_class : callable, (default: Graph or MultiGraph)
+        Class to create a new graph structure in the `to_undirected` method.
+        If `None`, a NetworkX class (Graph or MultiGraph) is used.
+
     Examples
     --------
 
@@ -255,6 +269,22 @@ class Graph(object):
     adjlist_outer_dict_factory = dict
     adjlist_inner_dict_factory = dict
     edge_attr_dict_factory = dict
+
+    def to_directed_class(self):
+        """Returns the class to use for empty directed copies.
+
+        If you subclass the base classes, use this to designate
+        what directed class to use for `to_directed()` copies.
+        """
+        return nx.DiGraph
+
+    def to_undirected_class(self):
+        """Returns the class to use for empty undirected copies.
+
+        If you subclass the base classes, use this to designate
+        what directed class to use for `to_directed()` copies.
+        """
+        return Graph
 
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
@@ -1411,18 +1441,12 @@ class Graph(object):
         return False
 
     def fresh_copy(self):
-        """Return a fresh copy graph with the same data structure.
-
-        A fresh copy has no nodes, edges or graph attributes. It is
-        the same data structure as the current graph. This method is
-        typically used to create an empty version of the graph.
-
-        Notes
-        -----
-        If you subclass the base class you should overwrite this method
-        to return your class of graph.
+        """Deprecated method to create an empty copy. Use __class__().
         """
-        return Graph()
+        # remove by v3 if not before
+        msg = 'G.fresh_copy is deprecated. Use G.__class__ instead'
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
+        return self.__class__()
 
     def copy(self, as_view=False):
         """Return a copy of the graph.
@@ -1462,14 +1486,14 @@ class Graph(object):
             >>> H = G.copy()
             >>> H = G.copy(as_view=False)
             >>> H = nx.Graph(G)
-            >>> H = G.fresh_copy().__class__(G)
+            >>> H = G.__class__(G)
 
         Fresh Data -- For fresh data, the graph structure is copied while
         new empty data attribute dicts are created. The resulting graph
         is independent of the original and it has no edge, node or graph
         attributes. Fresh copies are not enabled. Instead use:
 
-            >>> H = G.fresh_copy()
+            >>> H = G.__class__()
             >>> H.add_nodes_from(G)
             >>> H.add_edges_from(G.edges)
 
@@ -1502,8 +1526,8 @@ class Graph(object):
 
         """
         if as_view is True:
-            return nx.graphviews.GraphView(self)
-        G = self.fresh_copy()
+            return nx.graphviews.generic_graph_view(self)
+        G = self.__class__()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
         G.add_edges_from((u, v, datadict.copy())
@@ -1553,11 +1577,11 @@ class Graph(object):
         >>> list(H.edges)
         [(0, 1)]
         """
+        graph_class = self.to_directed_class()
         if as_view is True:
-            return nx.graphviews.DiGraphView(self)
+            return nx.graphviews.generic_graph_view(self, graph_class)
         # deepcopy when not a view
-        from networkx import DiGraph
-        G = DiGraph()
+        G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         G.add_edges_from((u, v, deepcopy(data))
@@ -1608,10 +1632,11 @@ class Graph(object):
         >>> list(G2.edges)
         [(0, 1)]
         """
+        graph_class = self.to_undirected_class()
         if as_view is True:
-            return nx.graphviews.GraphView(self)
+            return nx.graphviews.generic_graph_view(self, graph_class)
         # deepcopy when not a view
-        G = Graph()
+        G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         G.add_edges_from((u, v, deepcopy(d))
@@ -1656,7 +1681,7 @@ class Graph(object):
         ::
 
             # Create a subgraph SG based on a (possibly multigraph) G
-            SG = G.fresh_copy()
+            SG = G.__class__()
             SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)
             if SG.is_multigraph:
                 SG.add_edges_from((n, nbr, key, d)
@@ -1677,11 +1702,11 @@ class Graph(object):
         [(0, 1), (1, 2)]
         """
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
-        SubGraph = nx.graphviews.SubGraph
         # if already a subgraph, don't make a chain
+        subgraph = nx.graphviews.subgraph_view
         if hasattr(self, '_NODE_OK'):
-            return SubGraph(self._graph, induced_nodes, self._EDGE_OK)
-        return SubGraph(self, induced_nodes)
+            return subgraph(self._graph, induced_nodes, self._EDGE_OK)
+        return subgraph(self, induced_nodes)
 
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.

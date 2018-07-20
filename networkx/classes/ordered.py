@@ -1,7 +1,7 @@
 """
 Consistently ordered variants of the default base classes.
-Note that if you are using Python 3.6, you shouldn't need these classes
-because the dicts in Python 3.6 are ordered.
+Note that if you are using Python 3.6+, you shouldn't need these classes
+because the dicts in Python 3.6+ are ordered.
 Note also that there are many differing expectations for the word "ordered"
 and that these classes may not provide the order you expect.
 The intent here is to give a consistent order not a particular order.
@@ -49,15 +49,6 @@ class OrderedGraph(Graph):
     adjlist_inner_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
 
-    def fresh_copy(self):
-        """Return a fresh copy graph with the same data structure.
-
-        A fresh copy has no nodes, edges or graph attributes. It is
-        the same data structure as the current graph. This method is
-        typically used to create an empty version of the graph.
-        """
-        return OrderedGraph()
-
 
 class OrderedDiGraph(DiGraph):
     """Consistently ordered variant of :class:`~networkx.DiGraph`."""
@@ -65,15 +56,6 @@ class OrderedDiGraph(DiGraph):
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
-
-    def fresh_copy(self):
-        """Return a fresh copy graph with the same data structure.
-
-        A fresh copy has no nodes, edges or graph attributes. It is
-        the same data structure as the current graph. This method is
-        typically used to create an empty version of the graph.
-        """
-        return OrderedDiGraph()
 
 
 class OrderedMultiGraph(MultiGraph):
@@ -84,15 +66,6 @@ class OrderedMultiGraph(MultiGraph):
     edge_key_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
 
-    def fresh_copy(self):
-        """Return a fresh copy graph with the same data structure.
-
-        A fresh copy has no nodes, edges or graph attributes. It is
-        the same data structure as the current graph. This method is
-        typically used to create an empty version of the graph.
-        """
-        return OrderedMultiGraph()
-
 
 class OrderedMultiDiGraph(MultiDiGraph):
     """Consistently ordered variant of :class:`~networkx.MultiDiGraph`."""
@@ -101,12 +74,3 @@ class OrderedMultiDiGraph(MultiDiGraph):
     adjlist_inner_dict_factory = OrderedDict
     edge_key_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
-
-    def fresh_copy(self):
-        """Return a fresh copy graph with the same data structure.
-
-        A fresh copy has no nodes, edges or graph attributes. It is
-        the same data structure as the current graph. This method is
-        typically used to create an empty version of the graph.
-        """
-        return OrderedMultiDiGraph()

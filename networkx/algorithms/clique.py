@@ -333,7 +333,7 @@ def make_max_clique_graph(G, create_using=None):
 
     """
     if create_using is None:
-        B = G.fresh_copy()
+        B = G.__class__()
     else:
         B = nx.empty_graph(0, create_using)
     cliques = list(enumerate(set(c) for c in find_cliques(G)))

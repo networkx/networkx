@@ -200,10 +200,6 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         for n in nbunch:
             self.remove_node(n)
 
-    def fresh_copy(self):
-        # Needed to make .copy() work
-        return MultiDiGraph_EdgeKey()
-
     def add_edge(self, u_for_edge, v_for_edge, key_for_edge, **attr):
         """
         Key is now required.
@@ -544,7 +540,7 @@ class Edmonds(object):
 
         # (I3) Branch construction.
         # print(self.level)
-        H = self.G_original.fresh_copy()
+        H = self.G_original.__class__()
 
         def is_root(G, u, edgekeys):
             """

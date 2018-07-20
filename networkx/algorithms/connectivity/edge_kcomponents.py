@@ -364,7 +364,7 @@ class EdgeComponentAuxGraph(object):
             _recursive_build(H, A, sink, avail.intersection(T))
 
         # Copy input to ensure all edges have unit capacity
-        H = G.fresh_copy()
+        H = G.__class__()
         H.add_nodes_from(G.nodes())
         H.add_edges_from(G.edges(), capacity=1)
 
