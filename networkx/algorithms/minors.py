@@ -238,7 +238,7 @@ def _quotient_graph(G, partition, edge_relation=None, node_data=None,
     if any(sum(1 for b in partition if v in b) != 1 for v in G):
         raise NetworkXException('each node must be in exactly one block')
     if create_using is None:
-        H = G.fresh_copy()
+        H = G.__class__()
     else:
         H = nx.empty_graph(0, create_using)
     # By default set some basic information about the subgraph that each block

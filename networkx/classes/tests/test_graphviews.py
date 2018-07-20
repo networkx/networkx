@@ -33,13 +33,13 @@ class TestReverseView(object):
 
     def test_exceptions(self):
         nxg = nx.graphviews
-        assert_raises(nx.NetworkXNotImplemented, nxg.ReverseView, nx.Graph())
+        assert_raises(nx.NetworkXNotImplemented, nxg.reverse_view, nx.Graph())
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
             def my_method(self):
                 return "me"
-            def fresh_copy(self):
+            def to_directed_class(self):
                 return MyGraph()
 
         M = MyGraph()
@@ -82,7 +82,7 @@ class TestMultiReverseView(object):
     def test_exceptions(self):
         nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
-        assert_raises(nx.NetworkXNotImplemented, nxg.ReverseView, MG)
+        assert_raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
 
 
 class TestToDirected(object):
@@ -324,7 +324,7 @@ class TestChainsOfViews(object):
         class MyGraph(nx.DiGraph):
             def my_method(self):
                 return "me"
-            def fresh_copy(self):
+            def to_directed_class(self):
                 return MyGraph()
 
         for origG in self.graphs:

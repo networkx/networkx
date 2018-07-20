@@ -913,14 +913,14 @@ class MultiGraph(Graph):
             >>> H = G.copy()
             >>> H = G.copy(as_view=False)
             >>> H = nx.Graph(G)
-            >>> H = G.fresh_copy().__class__(G)
+            >>> H = G.__class__(G)
 
         Fresh Data -- For fresh data, the graph structure is copied while
         new empty data attribute dicts are created. The resulting graph
         is independent of the original and it has no edge, node or graph
         attributes. Fresh copies are not enabled. Instead use:
 
-            >>> H = G.fresh_copy()
+            >>> H = G.__class__()
             >>> H.add_nodes_from(G)
             >>> H.add_edges_from(G.edges)
 
@@ -954,7 +954,7 @@ class MultiGraph(Graph):
         """
         if as_view is True:
             return nx.graphviews.generic_graph_view(self)
-        G = self.fresh_copy()
+        G = self.__class__()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
         G.add_edges_from((u, v, key, datadict.copy())

@@ -84,4 +84,3 @@ Making copies and subgraphs
    DiGraph.subgraph
    DiGraph.edge_subgraph
    DiGraph.reverse
-   DiGraph.fresh_copy

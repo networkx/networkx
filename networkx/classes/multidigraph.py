@@ -851,7 +851,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             the original graph.
         """
         if copy:
-            H = self.fresh_copy()
+            H = self.__class__()
             H.graph.update(deepcopy(self.graph))
             H.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
             H.add_edges_from((v, u, k, deepcopy(d)) for u, v, k, d

@@ -52,7 +52,7 @@ __all__ = ['generic_graph_view', 'subgraph_view', 'reverse_view',
 
 def generic_graph_view(G, create_using=None):
     if create_using is None:
-        newG = G.fresh_copy()
+        newG = G.__class__()
     else:
         newG = nx.empty_graph(0, create_using)
     if G.is_multigraph() != newG.is_multigraph():
@@ -84,7 +84,7 @@ def generic_graph_view(G, create_using=None):
 
 
 def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
-    newG = nx.freeze(G.fresh_copy())
+    newG = nx.freeze(G.__class__())
     newG._NODE_OK = filter_node
     newG._EDGE_OK = filter_edge
 
@@ -121,21 +121,53 @@ def reverse_view(G):
 
 
 # The remaining definitions are for backward compatibility with v2.0 and 2.1
-MultiReverseView = ReverseView = reverse_view
-SubMultiGraph = SubMultiDiGraph = SubDiGraph = SubGraph = subgraph_view
+def ReverseView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'ReverseView is deprecated. Use reverse_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return reverse_view(G)
+
+
+def SubGraph(G, filter_node=no_filter, filter_edge=no_filter):
+    # remove by v3 if not before
+    import warnings
+    msg = 'SubGraph is deprecated. Use subgraph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return subgraph_view(G, filter_node, filter_edge)
 
 
 def GraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
     return generic_graph_view(G, Graph)
 
 
 def DiGraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
     return generic_graph_view(G, DiGraph)
 
 
 def MultiGraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
     return generic_graph_view(G, MultiGraph)
 
 
 def MultiDiGraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
     return generic_graph_view(G, MultiDiGraph)
+
+
+MultiReverseView = ReverseView
+SubMultiGraph = SubMultiDiGraph = SubDiGraph = SubGraph

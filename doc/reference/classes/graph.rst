@@ -76,4 +76,3 @@ Making copies and subgraphs
    Graph.to_directed
    Graph.subgraph
    Graph.edge_subgraph
-   Graph.fresh_copy

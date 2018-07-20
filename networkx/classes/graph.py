@@ -1443,6 +1443,9 @@ class Graph(object):
     def fresh_copy(self):
         """Deprecated method to create an empty copy. Use __class__().
         """
+        # remove by v3 if not before
+        msg = 'G.fresh_copy is deprecated. Use G.__class__ instead'
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
         return self.__class__()
 
     def copy(self, as_view=False):
@@ -1483,14 +1486,14 @@ class Graph(object):
             >>> H = G.copy()
             >>> H = G.copy(as_view=False)
             >>> H = nx.Graph(G)
-            >>> H = G.fresh_copy().__class__(G)
+            >>> H = G.__class__(G)
 
         Fresh Data -- For fresh data, the graph structure is copied while
         new empty data attribute dicts are created. The resulting graph
         is independent of the original and it has no edge, node or graph
         attributes. Fresh copies are not enabled. Instead use:
 
-            >>> H = G.fresh_copy()
+            >>> H = G.__class__()
             >>> H.add_nodes_from(G)
             >>> H.add_edges_from(G.edges)
 
@@ -1524,7 +1527,7 @@ class Graph(object):
         """
         if as_view is True:
             return nx.graphviews.generic_graph_view(self)
-        G = self.fresh_copy()
+        G = self.__class__()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
         G.add_edges_from((u, v, datadict.copy())
@@ -1678,7 +1681,7 @@ class Graph(object):
         ::
 
             # Create a subgraph SG based on a (possibly multigraph) G
-            SG = G.fresh_copy()
+            SG = G.__class__()
             SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)
             if SG.is_multigraph:
                 SG.add_edges_from((n, nbr, key, d)

@@ -77,4 +77,3 @@ Making copies and subgraphs
    MultiGraph.to_directed
    MultiGraph.subgraph
    MultiGraph.edge_subgraph
-   MultiGraph.fresh_copy

@@ -32,7 +32,7 @@ def complement(G):
 
     Graph, node, and edge data are not propagated to the new graph.
     """
-    R = G.fresh_copy()
+    R = G.__class__()
     R.add_nodes_from(G)
     R.add_edges_from(((n, n2)
                       for n, nbrs in G.adjacency()

@@ -177,7 +177,7 @@ def _lg_directed(G, create_using=None):
        Default is to use the same graph class as `G`.
 
     """
-    L = nx.empty_graph(0, create_using, default=G.fresh_copy)
+    L = nx.empty_graph(0, create_using, default=G.__class__)
 
     # Create a graph specific edge function.
     get_edges = _edge_func(G)
@@ -215,7 +215,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     produce self-loops.
 
     """
-    L = nx.empty_graph(0, create_using, default=G.fresh_copy)
+    L = nx.empty_graph(0, create_using, default=G.__class__)
 
     # Graph specific functions for edges and sorted nodes.
     get_edges = _edge_func(G)
