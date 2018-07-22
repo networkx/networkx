@@ -20,7 +20,7 @@ from collections import deque
 __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
 
-def generic_bfs_edges(G, source, neighbors=None):
+def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     """Iterate over edges in a breadth-first search.
 
     The breadth-first search begins at `source` and enqueues the
@@ -44,6 +44,9 @@ def generic_bfs_edges(G, source, neighbors=None):
         that returns an iterator over some or all of the neighbors of a
         given node, in any order.
 
+    depth_limit : int, optional(default=len(G))
+        Specify the maximum search depth
+
     Yields
     ------
     edge
@@ -64,20 +67,23 @@ def generic_bfs_edges(G, source, neighbors=None):
 
     """
     visited = {source}
-    queue = deque([(source, neighbors(source))])
+    if depth_limit is None:
+        depth_limit = len(G)
+    queue = deque([(source, depth_limit, neighbors(source))])
     while queue:
-        parent, children = queue[0]
+        parent, depth_now, children = queue[0]
         try:
             child = next(children)
             if child not in visited:
                 yield parent, child
                 visited.add(child)
-                queue.append((child, neighbors(child)))
+                if depth_now>1:
+                    queue.append((child, depth_now - 1, neighbors(child)))
         except StopIteration:
             queue.popleft()
 
 
-def bfs_edges(G, source, reverse=False):
+def bfs_edges(G, source, reverse=False, depth_limit=None):
     """Iterate over edges in a breadth-first-search starting at source.
 
     Parameters
@@ -90,6 +96,9 @@ def bfs_edges(G, source, reverse=False):
 
     reverse : bool, optional
        If True traverse a directed graph in the reverse direction
+
+    depth_limit : int, optional(default=len(G))
+        Specify the maximum search depth
 
     Returns
     -------
@@ -123,11 +132,11 @@ def bfs_edges(G, source, reverse=False):
     else:
         successors = G.neighbors
     # TODO In Python 3.3+, this should be `yield from ...`
-    for e in generic_bfs_edges(G, source, successors):
+    for e in generic_bfs_edges(G, source, successors, depth_limit):
         yield e
 
 
-def bfs_tree(G, source, reverse=False):
+def bfs_tree(G, source, reverse=False, depth_limit=None):
     """Return an oriented tree constructed from of a breadth-first-search
     starting at source.
 
@@ -141,6 +150,9 @@ def bfs_tree(G, source, reverse=False):
 
     reverse : bool, optional
        If True traverse a directed graph in the reverse direction
+
+    depth_limit : int, optional(default=len(G))
+        Specify the maximum search depth
 
     Returns
     -------
@@ -160,11 +172,11 @@ def bfs_tree(G, source, reverse=False):
     """
     T = nx.DiGraph()
     T.add_node(source)
-    T.add_edges_from(bfs_edges(G, source, reverse=reverse))
+    T.add_edges_from(bfs_edges(G, source, reverse=reverse, depth_limit))
     return T
 
 
-def bfs_predecessors(G, source):
+def bfs_predecessors(G, source, depth_limit=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
     Parameters
@@ -174,6 +186,9 @@ def bfs_predecessors(G, source):
     source : node
        Specify starting node for breadth-first search and return edges in
        the component reachable from source.
+
+    depth_limit : int, optional(default=len(G))
+        Specify the maximum search depth
 
     Returns
     -------
@@ -196,11 +211,11 @@ def bfs_predecessors(G, source):
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
     """
-    for s, t in bfs_edges(G, source):
+    for s, t in bfs_edges(G, source, depth_limit):
         yield (t, s)
 
 
-def bfs_successors(G, source):
+def bfs_successors(G, source, depth_limit=None):
     """Returns an iterator of successors in breadth-first-search from source.
 
     Parameters
@@ -210,6 +225,9 @@ def bfs_successors(G, source):
     source : node
        Specify starting node for breadth-first search and return edges in
        the component reachable from source.
+
+    depth_limit : int, optional(default=len(G))
+        Specify the maximum search depth
 
     Returns
     -------
@@ -235,7 +253,7 @@ def bfs_successors(G, source):
     """
     parent = source
     children = []
-    for p, c in bfs_edges(G, source):
+    for p, c in bfs_edges(G, source, depth_limit=depth_limit):
         if p == parent:
             children.append(c)
             continue
