@@ -228,7 +228,7 @@ def bfs_predecessors(G, source, depth_limit=None):
     >>> nx.add_path(M, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(M, [2, 7, 8, 9, 10])
     >>> print(dict(nx.bfs_predecessors(M, source=1, depth_limit=3)))
-    {0: 1, 2: 1, 3: 2, 7: 2, 4: 3, 8: 7}
+    {0: 1, 2: 1, 3: 2, 4: 3, 7: 2, 8: 7}
 
 
     Notes
