@@ -176,7 +176,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     >>> H = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
-    >>> dict(nx.bfs_tree(H, source=3, depth_limit=3)
+    >>> dict(nx.bfs_tree(H, source=3, depth_limit=3))
     [(3, 2), (3, 4)]
 
 
@@ -226,7 +226,7 @@ def bfs_predecessors(G, source, depth_limit=None):
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
-    >>> dict(nx.bfs_predecessors(G, source=1, depth_limit=3)
+    >>> dict(nx.bfs_predecessors(G, source=1, depth_limit=3))
     {0: [1], 2: [1], 3: [2], 7: [2]}
 
 
@@ -238,7 +238,7 @@ def bfs_predecessors(G, source, depth_limit=None):
     "`Depth-limited search`_".
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    for s, t in bfs_edges(G, source, depth_limit):
+    for s, t in bfs_edges(G, source, depth_limit=depth_limit):
         yield (t, s)
 
 
@@ -274,7 +274,7 @@ def bfs_successors(G, source, depth_limit=None):
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
-    >>> dict(nx.bfs_successors(G, source=1, depth_limit=3)
+    >>> dict(nx.bfs_successors(G, source=1, depth_limit=3))
     {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]}
 
 
