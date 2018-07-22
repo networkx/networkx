@@ -172,7 +172,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     """
     T = nx.DiGraph()
     T.add_node(source)
-    T.add_edges_from(bfs_edges(G, source, reverse=reverse, depth_limit))
+    T.add_edges_from(bfs_edges(G, source, reverse=reverse, depth_limit=depth_limit))
     return T
 
 
