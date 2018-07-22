@@ -57,7 +57,21 @@ class TestBreadthLimitedSearch:
         self.D = D
 
     def bfs_test_successor(self):
-        assert_equal(nx.bfs_successors(self.G, source=1, depth_limit=3),
+        assert_equal(dict(nx.bfs_successors(self.G, source=1, depth_limit=3)),
                      {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]})
-        assert_equal(nx.bfs_successors(self.D, source=7, depth_limit=2),
+        assert_equal(dict(nx.bfs_successors(self.D, source=7, depth_limit=2)),
                      {8: [9], 2: [3], 7: [8, 2]})
+
+    def bfs_test_predecessor(self):
+        assert_equal(dict(nx.bfs_predecessors(self.G, source=1, depth_limit=3)),
+                     {0: [1], 2: [1], 3: [2], 7: [2]})
+        assert_equal(dict(nx.bfs_predecessors(self.D, source=7, depth_limit=2)),
+                     {2: [7], 3: [2], 8: [7]})
+
+    def bfs_test_tree(self):
+        T = nx.bfs_tree(self.G, source=3, depth_limit=1)
+        assert_equal(sorted(T.edges()), [(3, 2), (3, 4)])
+
+    def bfs_test_edges(self):
+        edges = nx.bfs_edges(self.G, source=9, depth_limit=4)
+        assert_equal(list(edges), [(9, 8), (9, 10), (8, 7), (7, 2), (2, 1), (2, 3)])
