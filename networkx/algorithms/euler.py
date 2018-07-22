@@ -227,10 +227,6 @@ def eulerize(G):
     """
     if not nx.is_connected(G):
         raise nx.NetworkXError("G is not connected")
-    return _eulerize_simplegraph(G)
-    
-
-def _eulerize_simplegraph(G):
     odd_degree_nodes = [n for n, d in G.degree() if d%2 == 1]
     G = nx.MultiGraph(G)
     if len(odd_degree_nodes) == 0:
@@ -256,5 +252,5 @@ def _eulerize_simplegraph(G):
     # duplicate each edge along each path in the set of paths in Gp
     for m,n in best_matching.edges():
         path = Gp[m][n]["path"]
-        G.add_edges_from([(path[i], path[i+1]) for i,_ in enumerate(path[:-1])])
+        G.add_edges_from(nx.utils.pairwise(path))
     return G
