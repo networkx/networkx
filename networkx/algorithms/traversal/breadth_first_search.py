@@ -176,7 +176,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     >>> H = nx.Graph()
     >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(H, [2, 7, 8, 9, 10])
-    >>> print(list(nx.bfs_tree(H, source=3, depth_limit=3).edges()))
+    >>> print(sorted(list(nx.bfs_tree(H, source=3, depth_limit=3).edges())))
     [(1, 0), (2, 1), (2, 7), (3, 2), (3, 4), (4, 5), (5, 6), (7, 8)]
 
 
