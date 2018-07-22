@@ -40,3 +40,24 @@ class TestBFS:
         T = nx.bfs_tree(G, source=1)
         assert_equal(sorted(T.nodes()), [1])
         assert_equal(sorted(T.edges()), [])
+
+
+class TestBreadthLimitedSearch:
+
+    def setUp(self):
+        # a tree
+        G = nx.Graph()
+        nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
+        nx.add_path(G, [2, 7, 8, 9, 10])
+        self.G = G
+        # a disconnected graph
+        D = nx.Graph()
+        D.add_edges_from([(0, 1), (2, 3)])
+        nx.add_path(D, [2, 7, 8, 9, 10])
+        self.D = D
+
+    def bfs_test_successor(self):
+        assert_equal(nx.bfs_successors(self.G, source=1, depth_limit=3),
+                     {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]})
+        assert_equal(nx.bfs_successors(self.D, source=7, depth_limit=2),
+                     {8: [9], 2: [3], 7: [8, 2]})
