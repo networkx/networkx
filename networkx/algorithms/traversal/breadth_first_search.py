@@ -174,8 +174,8 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     >>> print(list(nx.bfs_tree(G,1).edges()))
     [(1, 0), (1, 2)]
     >>> H = nx.Graph()
-    >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
-    >>> nx.add_path(G, [2, 7, 8, 9, 10])
+    >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
+    >>> nx.add_path(H, [2, 7, 8, 9, 10])
     >>> dict(nx.bfs_tree(H, source=3, depth_limit=3))
     [(3, 2), (3, 4)]
 
@@ -275,7 +275,7 @@ def bfs_successors(G, source, depth_limit=None):
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
     >>> dict(nx.bfs_successors(G, source=1, depth_limit=3))
-    {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]}
+    {0: 1, 2: 1, 3: 2, 4: 3, 7: 2, 8: 7}
 
 
     Notes
