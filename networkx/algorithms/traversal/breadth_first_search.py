@@ -57,8 +57,8 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     >>> G = nx.path_graph(3)
     >>> print(list(nx.bfs_edges(G,0)))
     [(0, 1), (1, 2)]
-    >>> print(list(nx.bfs_edges(G, source=0, depth_limit=2)))
-    [(0, 1), (1, 2)]
+    >>> print(list(nx.bfs_edges(G, source=0, depth_limit=1)))
+    [(0, 1)]
 
     Notes
     -----
@@ -67,8 +67,8 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
 
-    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py
-    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+    .._PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py
+    .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     visited = {source}
     if depth_limit is None:
@@ -134,7 +134,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
     by D. Eppstein, July 2004.The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
-    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+    .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     if reverse and G.is_directed():
         successors = G.predecessors
@@ -176,7 +176,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     >>> H = nx.Graph()
     >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(H, [2, 7, 8, 9, 10])
-    >>> print(list(nx.bfs_tree(H, source=3, depth_limit=3)).edges())
+    >>> print(list(nx.bfs_tree(H, source=3, depth_limit=3).edges()))
     [(1, 0), (2, 1), (2, 7), (3, 2), (3, 4), (4, 5), (5, 6), (7, 8)]
 
 
@@ -186,11 +186,12 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     by D. Eppstein, July 2004.The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
-    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+    .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     T = nx.DiGraph()
     T.add_node(source)
-    T.add_edges_from(bfs_edges(G, source, reverse=reverse, depth_limit=depth_limit))
+    edges_gen = bfs_edges(G, source, reverse=reverse, depth_limit=depth_limit)
+    T.add_edges_from(edges_generator)
     return T
 
 
@@ -227,7 +228,7 @@ def bfs_predecessors(G, source, depth_limit=None):
     >>> nx.add_path(M, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(M, [2, 7, 8, 9, 10])
     >>> print(dict(nx.bfs_predecessors(M, source=1, depth_limit=3)))
-    {0: [1], 2: [1], 3: [2], 7: [2]}
+    {0: 1, 2: 1, 3: 2, 7: 2, 4: 3, 8: 7}
 
 
     Notes
@@ -236,7 +237,7 @@ def bfs_predecessors(G, source, depth_limit=None):
     by D. Eppstein, July 2004.The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
-    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+    .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     for s, t in bfs_edges(G, source, depth_limit=depth_limit):
         yield (t, s)
@@ -284,7 +285,7 @@ def bfs_successors(G, source, depth_limit=None):
     by D. Eppstein, July 2004.The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
-    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+    .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
     parent = source
     children = []
