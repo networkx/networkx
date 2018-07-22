@@ -66,7 +66,7 @@ class TestBreadthLimitedSearch:
         assert_equal(dict(nx.bfs_predecessors(self.G, source=1, depth_limit=3)),
                      {0: 1, 2: 1, 3: 2, 4: 3, 7: 2, 8: 7})
         assert_equal(dict(nx.bfs_predecessors(self.D, source=7, depth_limit=2)),
-                     {2: 7, 3: 2, 8: 7})
+                     {2: 7, 3: 2, 8: 7, 9: 8})
 
     def bfs_test_tree(self):
         T = nx.bfs_tree(self.G, source=3, depth_limit=1)

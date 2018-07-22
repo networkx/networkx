@@ -57,7 +57,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     >>> G = nx.path_graph(3)
     >>> print(list(nx.bfs_edges(G,0)))
     [(0, 1), (1, 2)]
-    >>> list(nx.bfs_edges(G, source=0, depth_limit=2))
+    >>> print(list(nx.bfs_edges(G, source=0, depth_limit=2)))
     [(0, 1), (1, 2)]
 
     Notes
@@ -176,7 +176,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     >>> H = nx.Graph()
     >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(H, [2, 7, 8, 9, 10])
-    >>> dict(nx.bfs_tree(H, source=3, depth_limit=3))
+    >>> print(list(nx.bfs_tree(H, source=3, depth_limit=3)))
     [(3, 2), (3, 4)]
 
 
@@ -221,12 +221,12 @@ def bfs_predecessors(G, source, depth_limit=None):
     {1: 0, 2: 1}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
-    >>> dict(nx.bfs_predecessors(H, 0))
+    >>> print(dict(nx.bfs_predecessors(H, 0)))
     {1: 0, 2: 0, 3: 1, 4: 1, 5: 2, 6: 2}
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
-    >>> dict(nx.bfs_predecessors(G, source=1, depth_limit=3))
+    >>> print(dict(nx.bfs_predecessors(G, source=1, depth_limit=3)))
     {0: [1], 2: [1], 3: [2], 7: [2]}
 
 
@@ -269,13 +269,13 @@ def bfs_successors(G, source, depth_limit=None):
     {0: [1], 1: [2]}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
-    >>> dict(nx.bfs_successors(H, 0))
+    >>> print(dict(nx.bfs_successors(H, 0)))
     {0: [1, 2], 1: [3, 4], 2: [5, 6]}
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
-    >>> dict(nx.bfs_successors(G, source=1, depth_limit=3))
-    {0: 1, 2: 1, 3: 2, 4: 3, 7: 2, 8: 7}
+    >>> print(dict(nx.bfs_successors(G, source=1, depth_limit=3)))
+    {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]}
 
 
     Notes
