@@ -81,7 +81,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
             if child not in visited:
                 yield parent, child
                 visited.add(child)
-                if depth_now>1:
+                if depth_now > 1:
                     queue.append((child, depth_now - 1, neighbors(child)))
         except StopIteration:
             queue.popleft()
@@ -191,7 +191,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     T = nx.DiGraph()
     T.add_node(source)
     edges_gen = bfs_edges(G, source, reverse=reverse, depth_limit=depth_limit)
-    T.add_edges_from(edges_generator)
+    T.add_edges_from(edges_gen)
     return T
 
 
