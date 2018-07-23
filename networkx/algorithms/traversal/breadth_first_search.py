@@ -131,7 +131,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
     Notes
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
-    by D. Eppstein, July 2004.The modifications
+    by D. Eppstein, July 2004. The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
     .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
@@ -183,7 +183,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     Notes
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
-    by D. Eppstein, July 2004.The modifications
+    by D. Eppstein, July 2004. The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
     .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
@@ -234,7 +234,7 @@ def bfs_predecessors(G, source, depth_limit=None):
     Notes
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
-    by D. Eppstein, July 2004.The modifications
+    by D. Eppstein, July 2004. The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited search`_".
     .._Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
