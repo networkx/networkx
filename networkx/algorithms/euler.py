@@ -225,6 +225,8 @@ def eulerize(G):
         True
 
     """
+    if G.order() == 0:
+        raise nx.NetworkXPointlessConcept("Cannot Eulerize null graph")
     if not nx.is_connected(G):
         raise nx.NetworkXError("G is not connected")
     odd_degree_nodes = [n for n, d in G.degree() if d % 2 == 1]

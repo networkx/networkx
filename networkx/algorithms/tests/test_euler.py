@@ -121,6 +121,14 @@ class TestEulerize(TestCase):
         G = nx.from_edgelist([(0, 1), (2, 3)])
         nx.eulerize(G)
 
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null_graph(self):
+        nx.eulerize(nx.Graph())
+
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null_multigraph(self):
+        nx.eulerize(nx.MultiGraph())
+
     @raises(nx.NetworkXError)
     def test_on_empty_graph(self):
         nx.eulerize(nx.empty_graph(3))
