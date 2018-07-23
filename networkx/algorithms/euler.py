@@ -10,14 +10,16 @@
 # Authors:
 #   Nima Mohammadi <nima.irt@gmail.com>
 #   Aric Hagberg <hagberg@lanl.gov>
+#   Mike Trenfield <william.trenfield@utsouthwestern.edu>
 """
 Eulerian circuits and graphs.
 """
+from itertools import combinations
+
 import networkx as nx
+from ..utils import arbitrary_element, not_implemented_for
 
-from ..utils import arbitrary_element
-
-__all__ = ['is_eulerian', 'eulerian_circuit']
+__all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize']
 
 
 def is_eulerian(G):
@@ -181,3 +183,76 @@ def eulerian_circuit(G, source=None, keys=False):
     else:
         for u, v in _simplegraph_eulerian_circuit(G, source):
             yield u, v
+
+
+@not_implemented_for('directed')
+def eulerize(G):
+    """
+    Transforms a graph into an Eulerian graph
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph
+
+    Returns
+    -------
+    G : NetworkX multigraph
+
+    Raises
+    ------
+    NetworkXError
+       If the graph is not connected.
+
+    See Also
+    --------
+    is_eulerian, eulerian_circuit
+
+
+    References
+    ----------
+    .. [1] J. Edmonds, E. L. Johnson.
+       Matching, Euler tours and the Chinese postman.
+       Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
+       [2] https://en.wikipedia.org/wiki/Eulerian_path
+    .. [3] http://web.math.princeton.edu/math_alive/5/Notes1.pdf
+
+    Examples
+    --------
+        >>> G = nx.complete_graph(10)
+        >>> H = nx.eulerize(G)
+        >>> nx.is_eulerian(H)
+        True
+
+    """
+    if G.order() == 0:
+        raise nx.NetworkXPointlessConcept("Cannot Eulerize null graph")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("G is not connected")
+    odd_degree_nodes = [n for n, d in G.degree() if d % 2 == 1]
+    G = nx.MultiGraph(G)
+    if len(odd_degree_nodes) == 0:
+        return G
+
+    # get all shortest paths between vertices of odd degree
+    odd_deg_pairs_paths = [(m,
+                            {n: nx.shortest_path(G, source=m, target=n)}
+                            )
+                           for m, n in combinations(odd_degree_nodes, 2)]
+
+    # use inverse path lengths as edge-weights in a new graph
+    # store the paths in the graph for easy indexing later
+    Gp = nx.Graph()
+    for n, Ps in odd_deg_pairs_paths:
+        for m, P in Ps.items():
+            if n != m:
+                Gp.add_edge(m, n, weight=1/len(P), path=P)
+
+    # find the minimum weight matching of edges in the weighted graph
+    best_matching = nx.Graph(list(nx.max_weight_matching(Gp)))
+
+    # duplicate each edge along each path in the set of paths in Gp
+    for m, n in best_matching.edges():
+        path = Gp[m][n]["path"]
+        G.add_edges_from(nx.utils.pairwise(path))
+    return G

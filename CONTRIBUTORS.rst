@@ -120,6 +120,7 @@ is partially historical, and now, mostly arbitrary.
 - Edward L. Platt, `elplatt <https://elplatt.com>`_
 - James Owen, Github: `leamingrad <https://github.com/leamingrad>`_
 - Robert Gmyr, Github: `gmyr <https://github.com/gmyr>`_
+- Mike Trenfield
 
 Support
 -------

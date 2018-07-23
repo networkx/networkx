@@ -112,3 +112,39 @@ class TestEulerianCircuit(TestCase):
     @raises(nx.NetworkXError)
     def test_not_eulerian(self):
         f = list(eulerian_circuit(nx.complete_graph(4)))
+
+
+class TestEulerize(TestCase):
+
+    @raises(nx.NetworkXError)
+    def test_disconnected(self):
+        G = nx.from_edgelist([(0, 1), (2, 3)])
+        nx.eulerize(G)
+
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null_graph(self):
+        nx.eulerize(nx.Graph())
+
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null_multigraph(self):
+        nx.eulerize(nx.MultiGraph())
+
+    @raises(nx.NetworkXError)
+    def test_on_empty_graph(self):
+        nx.eulerize(nx.empty_graph(3))
+
+    def test_on_eulerian(self):
+        G = nx.cycle_graph(3)
+        H = nx.eulerize(G)
+        assert_true(nx.is_isomorphic(G, H))
+
+    def test_on_eulerian_multigraph(self):
+        G = nx.MultiGraph(nx.cycle_graph(3))
+        G.add_edge(0, 1)
+        H = nx.eulerize(G)
+        assert_true(nx.is_eulerian(H))
+
+    def test_on_complete_graph(self):
+        G = nx.complete_graph(4)
+        assert_true(nx.is_eulerian(nx.eulerize(G)))
+        assert_true(nx.is_eulerian(nx.eulerize(nx.MultiGraph(G))))
