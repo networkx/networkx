@@ -137,6 +137,6 @@ class TestEulerize(TestCase):
         assert_true(nx.is_eulerian(H))
 
     def test_on_complete_graph(self):
-        G = nx.complete_graph(G)
+        G = nx.complete_graph(4)
         assert_true(nx.is_eulerian(nx.eulerize(G)))
         assert_true(nx.is_eulerian(nx.eulerize(nx.MultiGraph(G))))
