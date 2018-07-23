@@ -227,16 +227,16 @@ def eulerize(G):
     """
     if not nx.is_connected(G):
         raise nx.NetworkXError("G is not connected")
-    odd_degree_nodes = [n for n, d in G.degree() if d%2 == 1]
+    odd_degree_nodes = [n for n, d in G.degree() if d % 2 == 1]
     G = nx.MultiGraph(G)
     if len(odd_degree_nodes) == 0:
         return G
 
     # get all shortest paths between vertices of odd degree
-    odd_deg_pairs_paths = [(m, 
-                            {n : nx.shortest_path(G, source=m, target=n)}
+    odd_deg_pairs_paths = [(m,
+                            {n: nx.shortest_path(G, source=m, target=n)}
                             )
-                           for m,n in combinations(odd_degree_nodes, 2)]
+                           for m, n in combinations(odd_degree_nodes, 2)]
 
     # use inverse path lengths as edge-weights in a new graph
     # store the paths in the graph for easy indexing later
@@ -244,13 +244,13 @@ def eulerize(G):
     for n, Ps in odd_deg_pairs_paths:
         for m, P in Ps.items():
             if n != m:
-                Gp.add_edge(m,n,weight=1/len(P), path=P)
+                Gp.add_edge(m, n, weight=1/len(P), path=P)
 
     # find the minimum weight matching of edges in the weighted graph
     best_matching = nx.Graph(list(nx.max_weight_matching(Gp)))
 
     # duplicate each edge along each path in the set of paths in Gp
-    for m,n in best_matching.edges():
+    for m, n in best_matching.edges():
         path = Gp[m][n]["path"]
         G.add_edges_from(nx.utils.pairwise(path))
     return G
