@@ -145,7 +145,8 @@ def to_agraph(N):
     A.node_attr.update(N.graph.get('node', {}))
     A.edge_attr.update(N.graph.get('edge', {}))
 
-    A.graph_attr.update(N.graph)
+    A.graph_attr.update((k, v) for k, v in N.graph.items()
+                        if k not in ('graph', 'node', 'edge'))
 
     # add nodes
     for n, nodedata in N.nodes(data=True):
