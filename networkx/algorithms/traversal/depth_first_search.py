@@ -419,3 +419,38 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
                 if stack:
                     yield stack[-1][0], parent, 'reverse'
         yield start, start, 'reverse'
+
+
+def iterative_deepening_dfs(G, source, target, depth_limit=None):
+    """Iterate over Graph using Iterative deepening depth-first-search (IDDFS) to
+     find if a path exists from source to target or not.
+
+       Parameters
+       ----------
+       G : NetworkX graph
+
+       source : node
+          Specify starting node for depth-first search.
+
+       target : node
+          Specify target node for Iterative deepening depth-first search.
+
+       depth_limit : int, optional (default=len(G))
+          Specify the maximum search depth.
+
+       Returns
+       -------
+       Boolean: True or False depending on whether the target node is reachable
+       from source node or not.
+    """
+    if depth_limit is None:
+        depth_limit = len(G)
+
+    if source == target:
+        return True
+
+    for curr_depth in xrange(0, depth_limit):
+        if target in list(nx.dfs_preorder_nodes(G, source=source, depth_limit=curr_depth)):
+            return True
+    return False
+
