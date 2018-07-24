@@ -1,6 +1,6 @@
 from nose.tools import assert_equal, assert_raises
 from networkx import Graph, NetworkXError
-from networkx.algorithms.community.asyn_fluidc import *
+from networkx.algorithms.community.asyn_fluid import *
 import random
 
 
