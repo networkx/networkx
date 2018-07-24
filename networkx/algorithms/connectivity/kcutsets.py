@@ -2,8 +2,10 @@
 """
 Kanevsky all minimum node k cutsets algorithm.
 """
-from operator import itemgetter
+import copy
+from collections import defaultdict
 from itertools import combinations
+from operator import itemgetter
 
 import networkx as nx
 from .utils import build_auxiliary_node_connectivity
@@ -100,9 +102,11 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Even-Tarjan reduction is what we call auxiliary digraph
     # for node connectivity.
     H = build_auxiliary_node_connectivity(G)
+    H_nodes = H.nodes # for speed
     mapping = H.graph['mapping']
-    # Reversed H for helping finding cut.
-    H_reversed = H.reverse()
+    # Keep a copy of original predecessors, H will be modified later.
+    # Shallow copy is enough.
+    original_H_pred = copy.copy(H._pred)
     R = build_residual_network(H, 'capacity')
     kwargs = dict(capacity='capacity', residual=R)
     # Define default flow function
@@ -151,6 +155,9 @@ def all_node_cuts(G, k=None, flow_func=None):
                 # residual flow network R and call it L.
                 L = nx.condensation(R)
                 cmap = L.graph['mapping']
+                inv_cmap = defaultdict(list)
+                for n, scc in cmap.items():
+                    inv_cmap[scc].append(n)
                 # Find the incident nodes in the condensed graph.
                 VE1 = set([cmap[n] for n in VE1])
                 # step 7: Compute all antichains of L;
@@ -166,21 +173,26 @@ def all_node_cuts(G, k=None, flow_func=None):
                     # define a node partition of the auxiliary digraph H
                     # through taking all of antichain's predecessors in the
                     # transitive closure.
-                    S = {n for n, scc in cmap.items() if scc in antichain}
-                    S |= {x for n in S for x in R_closure.predecessors(n)}
+                    S = set()
+                    for scc in antichain:
+                        S.update(inv_cmap[scc])
+                    S_ancestors = set()
+                    for n in S:
+                        S_ancestors.update(R_closure._pred[n])
+                    S.update(S_ancestors)
                     if '%sB' % mapping[x] not in S or '%sA' % mapping[v] in S:
                         continue
                     # Find the cutset that links the node partition (S,~S) in H
                     cutset = set()
                     for u in S:
                         cutset.update((u, w)
-                                      for w in H_reversed[u] if w not in S)
+                                      for w in original_H_pred[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    if any([H.nodes[u]['id'] != H.nodes[w]['id']
+                    if any([H_nodes[u]['id'] != H_nodes[w]['id']
                             for u, w in cutset]):
                         continue
-                    node_cut = {H.nodes[u]['id'] for u, _ in cutset}
+                    node_cut = {H_nodes[u]['id'] for u, _ in cutset}
 
                     if len(node_cut) == k:
                         # The cut is invalid if it includes internal edges of
