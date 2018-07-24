@@ -7,7 +7,7 @@ import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
-MAX_CUTSETS_TO_TEST = 10
+MAX_CUTSETS_TO_TEST = 100
 
 flow_funcs = [
     flow.boykov_kolmogorov,
