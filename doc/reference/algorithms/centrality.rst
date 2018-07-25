@@ -97,3 +97,10 @@ Reaching
 
    local_reaching_centrality
    global_reaching_centrality
+
+Percolation
+-----------
+.. autosummary::
+   :toctree: generated/
+
+   percolation_centrality
