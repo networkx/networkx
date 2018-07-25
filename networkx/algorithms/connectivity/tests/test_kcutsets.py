@@ -1,11 +1,13 @@
 # Jordi Torrents
 # Test for k-cutsets
+import itertools
 from nose.tools import assert_equal, assert_false, assert_true, assert_raises
 
 import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
+MAX_CUTSETS_TO_TEST = 100
 
 flow_funcs = [
     flow.boykov_kolmogorov,
@@ -120,7 +122,11 @@ def _check_separating_sets(G):
         if len(Gc) < 3:
             continue
         node_conn = nx.node_connectivity(Gc)
-        for cut in nx.all_node_cuts(Gc):
+        all_cuts = nx.all_node_cuts(Gc)
+        # Only test a limited number of cut sets to reduce
+        # test time.
+        for cut in itertools.islice(all_cuts,
+                                    MAX_CUTSETS_TO_TEST):
             assert_equal(node_conn, len(cut))
             H = Gc.copy()
             H.remove_nodes_from(cut)
@@ -206,12 +212,13 @@ def test_disconnected_graph():
 
 
 def test_alternative_flow_functions():
-    graph_funcs = [graph_example_1, nx.davis_southern_women_graph]
-    for graph_func in graph_funcs:
-        G = graph_func()
+    graphs = [nx.grid_2d_graph(4, 4),
+              nx.cycle_graph(5)]
+    for G in graphs:
         node_conn = nx.node_connectivity(G)
         for flow_func in flow_funcs:
-            for cut in nx.all_node_cuts(G, flow_func=flow_func):
+            all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
+            for cut in all_cuts:
                 assert_equal(node_conn, len(cut))
                 H = G.copy()
                 H.remove_nodes_from(cut)
