@@ -144,6 +144,13 @@ class TestConvertNumpy(object):
         A = np.matrix([[1]]).astype(np.object)
         assert_raises(TypeError, nx.from_numpy_matrix, A)
 
+        G = nx.cycle_graph(3)
+        A = nx.adj_matrix(G).todense()
+        H = nx.from_numpy_matrix(A)
+        assert_true(all(type(m) == int and type(n) == int for m, n in H.edges()))
+        H = nx.from_numpy_array(A)
+        assert_true(all(type(m) == int and type(n) == int for m, n in H.edges()))
+
     def test_from_numpy_matrix_dtype(self):
         dt = [('weight', float), ('cost', int)]
         A = np.matrix([[(1.0, 2)]], dtype=dt)
