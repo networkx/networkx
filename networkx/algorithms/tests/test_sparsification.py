@@ -1,3 +1,4 @@
+from nose.tools import *
 import networkx as nx
 import random
 
@@ -84,3 +85,9 @@ def test_spanner_unweighted_disconnected_graph():
 
     spanner = nx.spanner(G, 10)
     _test_spanner(G, spanner, 10)
+
+
+@raises(ValueError)
+def test_spanner_invalid_stretch():
+    G = nx.empty_graph()
+    nx.spanner(G, 0)
