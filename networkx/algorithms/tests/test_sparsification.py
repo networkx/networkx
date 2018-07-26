@@ -3,7 +3,7 @@ import random
 
 
 def test_spanner_unweighted():
-    n = 1000
+    n = 100
     stretch = 3
 
     G = nx.complete_graph(n)
@@ -21,8 +21,8 @@ def test_spanner_unweighted():
 
 
 def test_spanner_weighted():
-    n = 100
-    stretch = 10
+    n = 1000
+    stretch = 4
 
     G = nx.complete_graph(n)
     for u, v in G.edges():
@@ -37,6 +37,4 @@ def test_spanner_weighted():
 
     for u in G.nodes():
         for v in G.nodes():
-            if length_spanner[u][v] > stretch * length_G[u][v]:
-                print(length_G[u][v], length_spanner[u][v])
-            # assert length_spanner[u][v] <= stretch * length_G[u][v]
+            assert length_spanner[u][v] <= stretch * length_G[u][v]

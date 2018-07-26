@@ -50,6 +50,7 @@ def baswana_sen_spanner(G, k, weight=None):
                         H[v][neighbor][weight] = residual_graph[v][neighbor]['weight'][0]
                 for neighbor in residual_graph.adj[v]:
                     edges_to_delete.add((v, neighbor))
+
             else:
                 lightest_edge_to_sampled_cluster_weight = _infinite_edge_weight()
                 lightest_edge_to_sampled_cluster_center = None
@@ -63,6 +64,14 @@ def baswana_sen_spanner(G, k, weight=None):
                     H[v][neighbor][weight] = residual_graph[v][neighbor]['weight'][0]
                 new_clustering[v] = lightest_edge_to_sampled_cluster_center
 
+                for center, edge_weight in lightest_edge_to_cluster_weight.items():
+                    if edge_weight < lightest_edge_to_sampled_cluster_weight:
+                        neighbor = lightest_edge_to_cluster_neighbor[center]
+                        H.add_edge(v, neighbor)
+                        if weight:
+                            H[v][neighbor][weight] = residual_graph[v][neighbor]['weight'][0]
+
+                # simplify this
                 for neighbor in residual_graph.adj[v]:
                     if clustering[neighbor] is clustering[lightest_edge_to_sampled_cluster_center] or lightest_edge_to_cluster_weight[clustering[neighbor]] < lightest_edge_to_sampled_cluster_weight:
                         edges_to_delete.add((v, neighbor))
