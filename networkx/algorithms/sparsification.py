@@ -93,6 +93,8 @@ def baswana_sen_spanner(G, k, weight=None):
             _lightest_edge_to_clusters_dicts(residual_graph, clustering, v)
         for neighbor in lightest_edge_to_cluster_neighbor.values():
             H.add_edge(v, neighbor)
+            if weight:
+                H[v][neighbor][weight] = residual_graph[v][neighbor]['weight'][0]
 
     return H
 
@@ -117,10 +119,7 @@ def _lightest_edge_to_clusters_dicts(residual_graph, clustering, node):
             continue
         weight = residual_graph[node][neighbor]['weight']
         neighbor_center = clustering[neighbor]
-        if neighbor_center not in lightest_edge_weight:
-            lightest_edge_weight[neighbor_center] = weight
-            lightest_edge_neighbor[neighbor_center] = neighbor
-        elif weight < lightest_edge_weight[neighbor_center]:
+        if neighbor_center not in lightest_edge_weight or weight < lightest_edge_weight[neighbor_center]:
             lightest_edge_weight[neighbor_center] = weight
             lightest_edge_neighbor[neighbor_center] = neighbor
     return lightest_edge_weight, lightest_edge_neighbor
