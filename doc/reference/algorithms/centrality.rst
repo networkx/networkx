@@ -36,6 +36,7 @@ Current Flow Closeness
    :toctree: generated/
 
    current_flow_closeness_centrality
+   information_centrality
 
 (Shortest Path) Betweenness
 ---------------------------

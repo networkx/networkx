@@ -77,6 +77,7 @@ Graph Layout
 .. autosummary::
    :toctree: generated/
 
+   bipartite_layout
    circular_layout
    kamada_kawai_layout
    random_layout

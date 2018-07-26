@@ -8,6 +8,8 @@ JSON
    node_link_graph
    adjacency_data
    adjacency_graph
+   cytoscape_data
+   cytoscape_graph
    tree_data
    tree_graph
    jit_data

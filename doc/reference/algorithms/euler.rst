@@ -8,3 +8,4 @@ Eulerian
 
    is_eulerian
    eulerian_circuit
+   eulerize
