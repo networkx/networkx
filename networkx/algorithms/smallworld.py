@@ -15,7 +15,7 @@ Both coefficients compare the average clustering coefficient and shortest path
 length of a given graph against the same quantities for an equivalent random
 or lattice graph.
 
-For more information, see the Wikipedia article on small-world network [1]_
+For more information, see the Wikipedia article on small-world network [1]_.
 
 .. [1] Small-world network:: https://en.wikipedia.org/wiki/Small-world_network
 
@@ -56,7 +56,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     Notes
     -----
     The implementation is adapted from the algorithm by Maslov and Sneppen
-    (2002) [1]_
+    (2002) [1]_.
 
     References
     ----------
@@ -152,8 +152,8 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
 
     Notes
     -----
-    The implementation is adapted from the algorithm by Sporns et al. [1]_
-    which is inspired from the original work from Maslov and Sneppen(2002) [2]_
+    The implementation is adapted from the algorithm by Sporns et al. [1]_.
+    which is inspired from the original work by Maslov and Sneppen(2002) [2]_.
 
     References
     ----------
@@ -275,14 +275,14 @@ def sigma(G, niter=100, nrand=10, seed=None):
 
     Notes
     -----
-    The implementation is adapted from Humphries et al. [1]_ [2]_
+    The implementation is adapted from Humphries et al. [1]_ [2]_.
 
     References
     ----------
     .. [1] The brainstem reticular formation is a small-world, not scale-free,
            network M. D. Humphries, K. Gurney and T. J. Prescott,
            Proc. Roy. Soc. B 2006 273, 503-511, doi:10.1098/rspb.2005.3354.
-    .. [2] Humphries and Gurney (2008). 
+    .. [2] Humphries and Gurney (2008).
            "Network 'Small-World-Ness': A Quantitative Method for Determining
            Canonical Network Equivalence".
            PLoS One. 3 (4). PMID 18446219. doi:10.1371/journal.pone.0002051.
@@ -352,7 +352,7 @@ def omega(G, niter=100, nrand=10, seed=None):
 
     Notes
     -----
-    The implementation is adapted from the algorithm by Telesford et al. [1]_
+    The implementation is adapted from the algorithm by Telesford et al. [1]_.
 
     References
     ----------
