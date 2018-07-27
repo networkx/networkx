@@ -15,7 +15,7 @@ for both the stable and the latest (i.e., development) releases.
 In addition to installing NetworkX and its dependencies, install the Python
 packages need to build the documentation by entering::
 
-   pip install -r requirements.txt
+    pip install -r requirements.txt
 
 in the ``doc/`` directory.
 
