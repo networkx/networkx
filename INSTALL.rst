@@ -142,6 +142,8 @@ or::
 
     python -c "import networkx as nx; nx.test()"
 
+.. autofunction:: networkx.test
+
 Testing for developers
 ^^^^^^^^^^^^^^^^^^^^^^
 

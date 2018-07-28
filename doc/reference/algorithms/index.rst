@@ -44,6 +44,7 @@ Algorithms
    isomorphism
    link_analysis
    link_prediction
+   lowest_common_ancestors
    matching
    minors
    mis
@@ -52,7 +53,10 @@ Algorithms
    reciprocity
    rich_club
    shortest_paths
+   similarity
    simple_paths
+   smallworld
+   smetric
    structuralholes
    swap
    tournament

@@ -50,8 +50,6 @@ def from_agraph(A, create_using=None):
     >>> K5 = nx.complete_graph(5)
     >>> A = nx.nx_agraph.to_agraph(K5)
     >>> G = nx.nx_agraph.from_agraph(A)
-    >>> G = nx.nx_agraph.from_agraph(A)
-
 
     Notes
     -----

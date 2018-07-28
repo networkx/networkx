@@ -8,3 +8,4 @@ Isolates
 
    is_isolate
    isolates
+   number_of_isolates
