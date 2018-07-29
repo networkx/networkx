@@ -90,7 +90,8 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
 
     Raises
     ------
-    ValueError: if method is not among the supported options
+    ValueError
+        If method is not among the supported options.
 
     Examples
     --------
@@ -175,7 +176,11 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
     return paths
 
 
-def shortest_path_length(G, source=None, target=None, weight=None):
+def shortest_path_length(G,
+                         source=None,
+                         target=None,
+                         weight=None,
+                         method='dijkstra'):
     """Compute shortest path lengths in the graph.
 
     Parameters
@@ -197,6 +202,13 @@ def shortest_path_length(G, source=None, target=None, weight=None):
         If a string, use this edge attribute as the edge weight.
         Any edge attribute not present defaults to 1.
 
+    method : string, optional (default = 'dijkstra')
+        The algorithm to use to compute the path length.
+        Supported options: 'dijkstra', 'bellman-ford'.
+        Other inputs produce a ValueError.
+        If *weight* is None, unweighted graph methods are used, and this
+        suggestion is ignored.
+
     Returns
     -------
     length: int or iterator
@@ -217,6 +229,9 @@ def shortest_path_length(G, source=None, target=None, weight=None):
     ------
     NetworkXNoPath
         If no path exists between source and target.
+
+    ValueError
+        If method is not among the supported options.
 
     Examples
     --------
@@ -250,13 +265,20 @@ def shortest_path_length(G, source=None, target=None, weight=None):
     single_source_dijkstra_path_length()
 
     """
+    if method not in ('dijkstra', 'bellman-ford'):
+        # so we don't need to check in each branch later
+        raise ValueError('method not supported: {}'.format(method))
     if source is None:
         if target is None:
             # Find paths between all pairs.
             if weight is None:
                 paths = nx.all_pairs_shortest_path_length(G)
             else:
-                paths = nx.all_pairs_dijkstra_path_length(G, weight=weight)
+                if method == 'dijkstra':
+                    paths = nx.all_pairs_dijkstra_path_length(G, weight=weight)
+                elif method == 'bellman-ford':
+                    paths = nx.all_pairs_bellman_ford_path_length(G,
+                                                                  weight=weight)
         else:
             # Find paths from all nodes co-accessible to the target.
             with nx.utils.reversed(G):
@@ -266,7 +288,10 @@ def shortest_path_length(G, source=None, target=None, weight=None):
                     path_length = nx.single_source_shortest_path_length
                     paths = path_length(G, target)
                 else:
-                    path_length = nx.single_source_dijkstra_path_length
+                    if method == 'dijkstra':
+                        path_length = nx.single_source_dijkstra_path_length
+                    elif method == 'bellman-ford':
+                        path_length = nx.single_source_bellman_ford_path_length
                     paths = path_length(G, target, weight=weight)
     else:
         if source not in G:
@@ -277,15 +302,22 @@ def shortest_path_length(G, source=None, target=None, weight=None):
             if weight is None:
                 paths = nx.single_source_shortest_path_length(G, source)
             else:
-                paths = nx.single_source_dijkstra_path_length(G, source,
-                                                              weight=weight)
+                if method == 'dijkstra':
+                    path_length = nx.single_source_dijkstra_path_length
+                elif method == 'bellman-ford':
+                    path_length = nx.single_source_bellman_ford_path_length
+                paths = path_length(G, source, weight=weight)
         else:
             # Find shortest source-target path.
             if weight is None:
                 p = nx.bidirectional_shortest_path(G, source, target)
                 paths = len(p) - 1
             else:
-                paths = nx.dijkstra_path_length(G, source, target, weight)
+                if method == 'dijkstra':
+                    paths = nx.dijkstra_path_length(G, source, target, weight)
+                elif method == 'bellman-ford':
+                    paths = nx.bellman_ford_path_length(G, source, target,
+                                                        weight)
     return paths
 
 
