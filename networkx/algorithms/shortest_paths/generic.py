@@ -66,7 +66,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
         The algorithm to use to compute the path.
         Supported options: 'dijkstra', 'bellman-ford'.
         Other inputs produce a ValueError.
-        If *weight* is None, unweighted graph methods are used, and this
+        If `weight` is None, unweighted graph methods are used, and this
         suggestion is ignored.
 
     Returns
@@ -91,7 +91,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
     Raises
     ------
     ValueError
-        If method is not among the supported options.
+        If `method` is not among the supported options.
 
     Examples
     --------
@@ -206,7 +206,7 @@ def shortest_path_length(G,
         The algorithm to use to compute the path length.
         Supported options: 'dijkstra', 'bellman-ford'.
         Other inputs produce a ValueError.
-        If *weight* is None, unweighted graph methods are used, and this
+        If `weight` is None, unweighted graph methods are used, and this
         suggestion is ignored.
 
     Returns
@@ -231,7 +231,7 @@ def shortest_path_length(G,
         If no path exists between source and target.
 
     ValueError
-        If method is not among the supported options.
+        If `method` is not among the supported options.
 
     Examples
     --------
@@ -261,9 +261,10 @@ def shortest_path_length(G,
     --------
     all_pairs_shortest_path_length()
     all_pairs_dijkstra_path_length()
+    all_pairs_bellman_ford_path_length()
     single_source_shortest_path_length()
     single_source_dijkstra_path_length()
-
+    single_source_bellman_ford_path_length()
     """
     if method not in ('dijkstra', 'bellman-ford'):
         # so we don't need to check in each branch later
@@ -321,7 +322,7 @@ def shortest_path_length(G,
     return paths
 
 
-def average_shortest_path_length(G, weight=None):
+def average_shortest_path_length(G, weight=None, method='dijkstra'):
     r"""Return the average shortest path length.
 
     The average shortest path length is
@@ -342,6 +343,13 @@ def average_shortest_path_length(G, weight=None):
        If None, every edge has weight/distance/cost 1.
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
+    
+    method : string, optional (default = 'dijkstra')
+        The algorithm to use to compute the path lengths.
+        Supported options: 'dijkstra', 'bellman-ford'.
+        Other inputs produce a ValueError.
+        If `weight` is None, unweighted graph methods are used, and this
+        suggestion is ignored.
 
     Raises
     ------
@@ -351,6 +359,9 @@ def average_shortest_path_length(G, weight=None):
     NetworkXError
         If `G` is not connected (or not weakly connected, in the case
         of a directed graph).
+    
+    ValueError
+        If `method` is not among the supported options.
 
     Examples
     --------
@@ -387,9 +398,14 @@ def average_shortest_path_length(G, weight=None):
     if weight is None:
         def path_length(v): return nx.single_source_shortest_path_length(G, v)
     else:
-        ssdpl = nx.single_source_dijkstra_path_length
+        if method == 'dijkstra':
+            path_len_fn = nx.single_source_dijkstra_path_length
+        elif method == 'bellman-ford':
+            path_len_fn = nx.single_source_bellman_ford_path_length
+        else:
+            raise ValueError('method not supported: {}'.format(method))
 
-        def path_length(v): return ssdpl(G, v, weight=weight)
+        def path_length(v): return path_len_fn(G, v, weight=weight)
     # Sum the distances for each (ordered) pair of source and target node.
     s = sum(l for u in G for l in path_length(u).values())
     return s / (n * (n - 1))
