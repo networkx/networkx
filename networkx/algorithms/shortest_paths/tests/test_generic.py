@@ -33,6 +33,11 @@ class TestGenericPath:
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
         self.cycle = nx.cycle_graph(7)
         self.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
+        self.neg_weights = nx.DiGraph()
+        self.neg_weights.add_edge(0, 1, weight=1)
+        self.neg_weights.add_edge(0, 2, weight=3)
+        self.neg_weights.add_edge(1, 3, weight=1)
+        self.neg_weights.add_edge(2, 3, weight=-2)
 
     def test_shortest_path(self):
         assert_equal(nx.shortest_path(self.cycle, 0, 3), [0, 1, 2, 3])
@@ -45,10 +50,35 @@ class TestGenericPath:
         validate_grid_path(4, 4, 1, 12, nx.shortest_path(self.grid, 1, 12, weight='weight'))
         assert_equal(nx.shortest_path(self.directed_cycle, 0, 3, weight='weight'),
                      [0, 1, 2, 3])
+        # weights and method specified
+        assert_equal(nx.shortest_path(self.directed_cycle, 0, 3,
+                                      weight='weight', method='dijkstra'),
+                     [0, 1, 2, 3])
+        assert_equal(nx.shortest_path(self.directed_cycle, 0, 3,
+                                      weight='weight', method='bellman-ford'),
+                     [0, 1, 2, 3])
+        # when Dijkstra's will probably (depending on precise implementation)
+        # incorrectly return [0, 1, 3] instead
+        assert_equal(nx.shortest_path(self.neg_weights, 0, 3, weight='weight',
+                                      method='bellman-ford'),
+                     [0, 2, 3])
+        # confirm bad method rejection
+        assert_raises(ValueError, nx.shortest_path, self.cycle, method='SPAM')
 
     def test_shortest_path_target(self):
+        answer = {0: [0, 1], 1: [1], 2: [2, 1]}
         sp = nx.shortest_path(nx.path_graph(3), target=1)
-        assert_equal(sp, {0: [0, 1], 1: [1], 2: [2, 1]})
+        assert_equal(sp, answer)
+        # with weights
+        sp = nx.shortest_path(nx.path_graph(3), target=1, weight='weight')
+        assert_equal(sp, answer)
+        # weights and method specified
+        sp = nx.shortest_path(nx.path_graph(3), target=1, weight='weight',
+                              method='dijkstra')
+        assert_equal(sp, answer)
+        sp = nx.shortest_path(nx.path_graph(3), target=1, weight='weight',
+                              method='bellman-ford')
+        assert_equal(sp, answer)
 
     def test_shortest_path_length(self):
         assert_equal(nx.shortest_path_length(self.cycle, 0, 3), 3)
@@ -77,6 +107,14 @@ class TestGenericPath:
         assert_equal(p, nx.single_source_dijkstra_path(self.cycle, 0))
         p = nx.shortest_path(self.grid, 1, weight='weight')
         validate_grid_path(4, 4, 1, 12, p[12])
+        # weights and method specified
+        p = nx.shortest_path(self.cycle, 0, method='dijkstra', weight='weight')
+        assert_equal(p[3], [0, 1, 2, 3])
+        assert_equal(p, nx.single_source_shortest_path(self.cycle, 0))
+        p = nx.shortest_path(self.cycle, 0, method='bellman-ford',
+                             weight='weight')
+        assert_equal(p[3], [0, 1, 2, 3])
+        assert_equal(p, nx.single_source_shortest_path(self.cycle, 0))
 
     def test_single_source_shortest_path_length(self):
         l = dict(nx.shortest_path_length(self.cycle, 0))
@@ -104,6 +142,13 @@ class TestGenericPath:
         assert_equal(p, dict(nx.all_pairs_dijkstra_path(self.cycle)))
         p = nx.shortest_path(self.grid, weight='weight')
         validate_grid_path(4, 4, 1, 12, p[1][12])
+        # weights and method specified
+        p = nx.shortest_path(self.cycle, weight='weight', method='dijkstra')
+        assert_equal(p[0][3], [0, 1, 2, 3])
+        assert_equal(p, dict(nx.all_pairs_dijkstra_path(self.cycle)))
+        p = nx.shortest_path(self.cycle, weight='weight', method='bellman-ford')
+        assert_equal(p[0][3], [0, 1, 2, 3])
+        assert_equal(p, dict(nx.all_pairs_bellman_ford_path(self.cycle)))
 
     def test_all_pairs_shortest_path_length(self):
         l = dict(nx.shortest_path_length(self.cycle))
