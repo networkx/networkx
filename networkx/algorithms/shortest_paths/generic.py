@@ -411,7 +411,7 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
     return s / (n * (n - 1))
 
 
-def all_shortest_paths(G, source, target, weight=None):
+def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
     """Compute all shortest paths in the graph.
 
     Parameters
@@ -429,10 +429,22 @@ def all_shortest_paths(G, source, target, weight=None):
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
 
+    method : string, optional (default = 'dijkstra')
+       The algorithm to use to compute the path lengths.
+       Supported options: 'dijkstra', 'bellman-ford'.
+       Other inputs produce a ValueError.
+       If `weight` is None, unweighted graph methods are used, and this
+       suggestion is ignored.
+
     Returns
     -------
     paths : generator of lists
         A generator of all paths between source and target.
+
+    Raises
+    ------
+    ValueError
+        If `method` is not among the supported options.
 
     Examples
     --------
@@ -453,8 +465,14 @@ def all_shortest_paths(G, source, target, weight=None):
     all_pairs_shortest_path()
     """
     if weight is not None:
-        pred, dist = nx.dijkstra_predecessor_and_distance(G, source,
-                                                          weight=weight)
+        if method == 'dijkstra':
+            pred, dist = nx.dijkstra_predecessor_and_distance(G, source,
+                                                              weight=weight)
+        elif method == 'bellman-ford':
+            pred, dist = nx.bellman_ford_predecessor_and_distance(G, source,
+                                                                  weight=weight)
+        else:
+            raise ValueError('method not supported: {}'.format(method))
     else:
         pred = nx.predecessor(G, source)
 

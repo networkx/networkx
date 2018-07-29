@@ -218,6 +218,25 @@ class TestGenericPath:
         nx.add_path(G, [0, 10, 20, 3])
         assert_equal([[0, 1, 2, 3], [0, 10, 20, 3]],
                      sorted(nx.all_shortest_paths(G, 0, 3)))
+        # with weights
+        G = nx.Graph()
+        nx.add_path(G, [0, 1, 2, 3])
+        nx.add_path(G, [0, 10, 20, 3])
+        assert_equal([[0, 1, 2, 3], [0, 10, 20, 3]],
+                     sorted(nx.all_shortest_paths(G, 0, 3, weight='weight')))
+        # weights and method specified
+        G = nx.Graph()
+        nx.add_path(G, [0, 1, 2, 3])
+        nx.add_path(G, [0, 10, 20, 3])
+        assert_equal([[0, 1, 2, 3], [0, 10, 20, 3]],
+                     sorted(nx.all_shortest_paths(G, 0, 3, weight='weight',
+                                                  method='dijkstra')))
+        G = nx.Graph()
+        nx.add_path(G, [0, 1, 2, 3])
+        nx.add_path(G, [0, 10, 20, 3])
+        assert_equal([[0, 1, 2, 3], [0, 10, 20, 3]],
+                     sorted(nx.all_shortest_paths(G, 0, 3, weight='weight',
+                                                  method='bellman-ford')))
 
     @raises(nx.NetworkXNoPath)
     def test_all_shortest_paths_raise(self):
