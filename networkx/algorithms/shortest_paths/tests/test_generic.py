@@ -259,6 +259,11 @@ class TestGenericPath:
         G.add_node(4)
         list(nx.all_shortest_paths(G, 0, 4))
 
+    @raises(ValueError)
+    def test_bad_method(self):
+        G = nx.path_graph(2)
+        list(nx.all_shortest_paths(G, 0, 1, weight='weight', method='SPAM'))
+
 
 class TestAverageShortestPathLength(object):
 
@@ -324,3 +329,8 @@ class TestAverageShortestPathLength(object):
     @raises(nx.NetworkXPointlessConcept)
     def test_null_graph(self):
         nx.average_shortest_path_length(nx.null_graph())
+
+    @raises(ValueError)
+    def test_bad_method(self):
+        G = nx.path_graph(2)
+        nx.average_shortest_path_length(G, weight='weight', method='SPAM')
