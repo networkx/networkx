@@ -257,7 +257,7 @@ class TestGenericPath:
     def test_all_shortest_paths_raise(self):
         G = nx.path_graph(4)
         G.add_node(4)
-        nx.all_shortest_paths(G, 0, 4)
+        list(nx.all_shortest_paths(G, 0, 4))
 
 
 class TestAverageShortestPathLength(object):
