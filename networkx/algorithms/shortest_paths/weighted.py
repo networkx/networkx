@@ -1115,13 +1115,13 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
     >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
     >>> sorted(pred.items())
-    [(0, [None]), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
+    [(0, []), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
     >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0, 1)
     >>> sorted(pred.items())
-    [(0, [None]), (1, [0])]
+    [(0, []), (1, [0])]
     >>> sorted(dist.items())
     [(0, 0), (1, 1)]
 
@@ -1143,6 +1143,8 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     not containing the source contains a negative cost (di)cycle, it
     will not be detected.
 
+    In NetworkX v2.1 and prior, the source node had predecessor `[None]`.
+    In NetworkX v2.2 this changed to the source node having predecessor `[]`
     """
     if source not in G:
         raise nx.NodeNotFound("Node %s is not found in the graph" % source)
@@ -1151,7 +1153,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     dist = {source: 0}
-    pred = {source: [None]}
+    pred = {source: []}
 
     if len(G) == 1:
         return pred, dist
@@ -1215,7 +1217,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     """
 
     if pred is None:
-        pred = {v: [None] for v in source}
+        pred = {v: [] for v in source}
 
     if dist is None:
         dist = {v: 0 for v in source}
@@ -1267,7 +1269,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
             path = [dst]
             cur = dst
 
-            while pred[cur][0] is not None:
+            while pred[cur]:
                 cur = pred[cur][0]
                 path.append(cur)
 
@@ -2096,7 +2098,7 @@ def johnson(G, weight='weight'):
         raise nx.NetworkXError('Graph is not weighted.')
 
     dist = {v: 0 for v in G}
-    pred = {v: [None] for v in G}
+    pred = {v: [] for v in G}
     weight = _weight_function(G, weight)
 
     # Calculate distance of shortest paths
