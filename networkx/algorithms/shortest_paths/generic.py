@@ -439,6 +439,9 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
     ValueError
         If `method` is not among the supported options.
 
+    NetworkXNoPath
+        If `target` cannot be reached from `source`.
+
     Examples
     --------
     >>> G = nx.Graph()
