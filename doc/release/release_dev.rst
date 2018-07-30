@@ -74,6 +74,10 @@ H.update(e), and H.update(nodes=n) are also allowed.
 First argument is a graph if it has `edges` and `nodes` attributes.
 Otherwise the first argument is treated as a list of edges.
 
+The bellman_ford predecessor dicts had sentinal value `[None]` for
+source nodes. That has been changed so source nodes have pred value '[]'
+
+
 Deprecations
 ------------
 

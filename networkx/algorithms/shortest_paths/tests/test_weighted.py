@@ -346,7 +346,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.single_source_bellman_ford_path(G, 0), {0: [0]})
         assert_equal(nx.single_source_bellman_ford_path_length(G, 0), {0: 0})
         assert_equal(nx.single_source_bellman_ford(G, 0), ({0: 0}, {0: [0]}))
-        assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0), ({0: [None]}, {0: 0}))
+        assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0), ({0: []}, {0: 0}))
         assert_equal(nx.goldberg_radzik(G, 0), ({0: None}, {0: 0}))
         assert_raises(nx.NodeNotFound, nx.bellman_ford_predecessor_and_distance, G, 1)
         assert_raises(nx.NodeNotFound, nx.goldberg_radzik, G, 1)
@@ -385,7 +385,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: 0, 1: 1, 2: -2, 3: -1, 4: 0},
                       {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3, 4]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0),
-                     ({0: [None], 1: [0], 2: [1], 3: [2], 4: [3]},
+                     ({0: [], 1: [0], 2: [1], 3: [2], 4: [3]},
                       {0: 0, 1: 1, 2: -2, 3: -1, 4: 0}))
         assert_equal(nx.goldberg_radzik(G, 0),
                      ({0: None, 1: 0, 2: 1, 3: 2, 4: 3},
@@ -403,7 +403,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
                       {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0),
-                     ({0: [None], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
+                     ({0: [], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
                       {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
         assert_equal(nx.goldberg_radzik(G, 0),
                      ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
@@ -423,7 +423,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
                       {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0, weight='load'),
-                     ({0: [None], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
+                     ({0: [], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
                       {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
         assert_equal(nx.goldberg_radzik(G, 0, weight='load'),
                      ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
@@ -481,7 +481,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: 2, 3: 3}, {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0),
-                     ({0: [None], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
+                     ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
         assert_equal(nx.goldberg_radzik(G, 0),
                      ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
         assert_equal(nx.single_source_bellman_ford_path(G, 3),
@@ -491,7 +491,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.single_source_bellman_ford(G, 3),
                      ({0: 3, 1: 2, 2: 1, 3: 0}, {0: [3, 2, 1, 0], 1: [3, 2, 1], 2: [3, 2], 3: [3]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 3),
-                     ({0: [1], 1: [2], 2: [3], 3: [None]}, {0: 3, 1: 2, 2: 1, 3: 0}))
+                     ({0: [1], 1: [2], 2: [3], 3: []}, {0: 3, 1: 2, 2: 1, 3: 0}))
         assert_equal(nx.goldberg_radzik(G, 3),
                      ({0: 1, 1: 2, 2: 3, 3: None}, {0: 3, 1: 2, 2: 1, 3: 0}))
 
@@ -506,7 +506,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(path[3], [0, 3])
 
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
-        assert_equal(pred[0], [None])
+        assert_equal(pred[0], [])
         assert_equal(pred[1], [0])
         assert_true(pred[2] in [[1, 3], [3, 1]])
         assert_equal(pred[3], [0])
