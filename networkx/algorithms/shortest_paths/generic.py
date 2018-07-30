@@ -22,6 +22,7 @@ __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
            'has_path']
 
+
 def has_path(G, source, target):
     """Return *True* if *G* has a path from *source* to *target*.
 
@@ -36,7 +37,7 @@ def has_path(G, source, target):
        Ending node for path
     """
     try:
-        sp = nx.shortest_path(G, source, target)
+        nx.shortest_path(G, source, target)
     except nx.NetworkXNoPath:
         return False
     return True
@@ -61,7 +62,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
         If None, every edge has weight/distance/cost 1.
         If a string, use this edge attribute as the edge weight.
         Any edge attribute not present defaults to 1.
-    
+
     method : string, optional (default = 'dijkstra')
         The algorithm to use to compute the path.
         Supported options: 'dijkstra', 'bellman-ford'.
@@ -334,7 +335,7 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
        If None, every edge has weight/distance/cost 1.
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
-    
+
     method : string, optional (default = 'dijkstra')
         The algorithm to use to compute the path lengths.
         Supported options: 'dijkstra', 'bellman-ford'.
@@ -350,7 +351,7 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
     NetworkXError
         If `G` is not connected (or not weakly connected, in the case
         of a directed graph).
-    
+
     ValueError
         If `method` is not among the supported options.
 
@@ -387,6 +388,7 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
     if not G.is_directed() and not nx.is_connected(G):
         raise nx.NetworkXError("Graph is not connected.")
     # Compute all-pairs shortest paths.
+
     def path_length(v):
         if method == 'unweighted':
             return nx.single_source_shortest_path_length(G, v)
