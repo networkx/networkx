@@ -290,8 +290,6 @@ def shortest_path_length(G,
                     path_length = nx.single_source_bellman_ford_path_length
                     paths = path_length(G, target, weight=weight)
     else:
-        if source not in G:
-            raise nx.NodeNotFound("Source {} not in G".format(source))
         if target is None:
             # Find paths to all nodes accessible from the source.
             if method == 'unweighted':
