@@ -469,9 +469,6 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
     else:
         raise ValueError('method not supported: {}'.format(method))
 
-    if source not in G:
-        raise nx.NodeNotFound('Source {} is not in G'.format(source))
-
     if target not in pred:
         raise nx.NetworkXNoPath('Target {} cannot be reached'
                                 'from Source {}'.format(target, source))
