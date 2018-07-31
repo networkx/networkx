@@ -290,18 +290,18 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        self.node_dict_factory = ndf = self.node_dict_factory
+        self.node_dict_factory = self.node_dict_factory
         self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
         self.graph = {}  # dictionary for graph attributes
-        self._node = ndf()  # dictionary for node attributes
+        self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
-        self._adj = ndf()  # empty adjacency dictionary
-        self._pred = ndf()  # predecessor
+        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
 
         # attempt to load graph with data
