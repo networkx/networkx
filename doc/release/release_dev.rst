@@ -57,6 +57,10 @@ Functions for Clauset-Newman-Moore modularity-max community detection.
 
 Functions for small world analysis, directed clustering and perfect matchings.
 
+The shortest_path generic and convenience functions now have a `method`
+parameter to choose between dijkstra and bellmon-ford in the weighted case.
+Default is dijkstra (which was the only option before).
+
 API Changes
 -----------
 empty_graph has taken over the functionality from

@@ -137,7 +137,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
                 paths = dict(nx.all_pairs_shortest_path(G))
             elif method == 'dijkstra':
                 paths = dict(nx.all_pairs_dijkstra_path(G, weight=weight))
-            elif method == 'bellman-ford':
+            else:  # method == 'bellman-ford':
                 paths = dict(nx.all_pairs_bellman_ford_path(G, weight=weight))
         else:
             # Find paths from all nodes co-accessible to the target.
@@ -147,7 +147,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
                 elif method == 'dijkstra':
                     paths = nx.single_source_dijkstra_path(G, target,
                                                            weight=weight)
-                elif method == 'bellman-ford':
+                else:  # method == 'bellman-ford':
                     paths = nx.single_source_bellman_ford_path(G, target,
                                                                weight=weight)
                 # Now flip the paths so they go from a source to the target.
@@ -163,7 +163,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
             elif method == 'dijkstra':
                 paths = nx.single_source_dijkstra_path(G, source,
                                                        weight=weight)
-            elif method == 'bellman-ford':
+            else:  # method == 'bellman-ford':
                 paths = nx.single_source_bellman_ford_path(G, source,
                                                            weight=weight)
         else:
@@ -172,7 +172,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
                 paths = nx.bidirectional_shortest_path(G, source, target)
             elif method == 'dijkstra':
                 paths = nx.dijkstra_path(G, source, target, weight)
-            elif method == 'bellman-ford':
+            else:  # method == 'bellman-ford':
                 paths = nx.bellman_ford_path(G, source, target, weight)
     return paths
 
@@ -281,7 +281,7 @@ def shortest_path_length(G,
                 paths = nx.all_pairs_shortest_path_length(G)
             elif method == 'dijkstra':
                 paths = nx.all_pairs_dijkstra_path_length(G, weight=weight)
-            elif method == 'bellman-ford':
+            else:  # method == 'bellman-ford':
                 paths = nx.all_pairs_bellman_ford_path_length(G, weight=weight)
         else:
             # Find paths from all nodes co-accessible to the target.
@@ -294,7 +294,7 @@ def shortest_path_length(G,
                 elif method == 'dijkstra':
                     path_length = nx.single_source_dijkstra_path_length
                     paths = path_length(G, target, weight=weight)
-                elif method == 'bellman-ford':
+                else:  # method == 'bellman-ford':
                     path_length = nx.single_source_bellman_ford_path_length
                     paths = path_length(G, target, weight=weight)
     else:
@@ -307,7 +307,7 @@ def shortest_path_length(G,
             elif method == 'dijkstra':
                 path_length = nx.single_source_dijkstra_path_length
                 paths = path_length(G, source, weight=weight)
-            elif method == 'bellman-ford':
+            else:  # method == 'bellman-ford':
                 path_length = nx.single_source_bellman_ford_path_length
                 paths = path_length(G, source, weight=weight)
         else:
@@ -317,7 +317,7 @@ def shortest_path_length(G,
                 paths = len(p) - 1
             elif method == 'dijkstra':
                 paths = nx.dijkstra_path_length(G, source, target, weight)
-            elif method == 'bellman-ford':
+            else:  # method == 'bellman-ford':
                 paths = nx.bellman_ford_path_length(G, source, target, weight)
     return paths
 
