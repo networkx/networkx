@@ -764,6 +764,11 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
         A mapping from node to shortest distance to that node from one
         of the source nodes.
 
+    Raises
+    ------
+    NodeNotFound
+        If any of `sources` is not in `G`.
+
     Notes
     -----
     The optional predecessor and path dictionaries can be accessed by
@@ -782,6 +787,8 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     c = count()
     fringe = []
     for source in sources:
+        if source not in G:
+            raise nx.NodeNotFound("Source {} not in G".format(source))
         seen[source] = 0
         push(fringe, (0, next(c), source))
     while fringe:
@@ -1209,12 +1216,18 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     Raises
     ------
+    NodeNotFound
+        If any of `source` is not in `G`.
+
     NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
        negative cost (di)cycle.  Note: any negative weight edge in an
        undirected graph is a negative cost cycle
     """
+    for s in source:
+        if s not in G:
+            raise nx.NodeNotFound("Source {} not in G".format(s))
 
     if pred is None:
         pred = {v: [] for v in source}
