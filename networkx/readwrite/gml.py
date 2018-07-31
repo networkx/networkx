@@ -195,7 +195,7 @@ def read_gml(path, label='label', destringizer=None):
     For additional documentation on the GML file format, please see the
     `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
-    See the module docstring :mod:`networkx.readwrite.gml` for additional details.
+    See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
     Examples
     --------
@@ -265,7 +265,7 @@ def parse_gml(lines, label='label', destringizer=None):
     For additional documentation on the GML file format, please see the
     `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
-    See the module docstring :mod:`networkx.readwrite.gml` for additional details.
+    See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
     def decode_line(line):
         if isinstance(line, bytes):
@@ -611,7 +611,7 @@ def generate_gml(G, stringizer=None):
     For additional documentation on the GML file format, please see the
     `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
-    See the module docstring :mod:`networkx.readwrite.gml` for additional details.
+    See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
     Examples
     --------
@@ -793,10 +793,13 @@ def write_gml(G, path, stringizer=None):
     specification.  For other data types, you need to explicitly supply a
     `stringizer`/`destringizer`.
 
+    Note that while we allow non-standard GML to be read from a file, we make
+    sure to write GML format. In particular, underscores are not allowed in
+    attribute names.
     For additional documentation on the GML file format, please see the
     `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
-    See the module docstring :mod:`networkx.readwrite.gml` for additional details.
+    See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
     Examples
     --------
