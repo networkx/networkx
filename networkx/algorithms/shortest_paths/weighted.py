@@ -123,6 +123,9 @@ def dijkstra_path(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
        If no path exists between source and target.
 
@@ -197,6 +200,9 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
         If no path exists between source and target.
 
@@ -265,6 +271,11 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
     paths : dictionary
        Dictionary of shortest path lengths keyed by target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     Examples
     --------
     >>> G=nx.path_graph(5)
@@ -324,6 +335,11 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     -------
     length : dict
         Dict keyed by node to shortest path length from source.
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -404,6 +420,10 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
        distance is the distance from source to target and path is a list
        representing the path from source to target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -512,6 +532,8 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
     ------
     ValueError
         If `sources` is empty.
+    NodeNotFound
+        If any of `sources` is not in `G`.
 
     See Also
     --------
@@ -587,6 +609,8 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     ------
     ValueError
         If `sources` is empty.
+    NodeNotFound
+        If any of `sources` is not in `G`.
 
     See Also
     --------
@@ -689,6 +713,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     ------
     ValueError
         If `sources` is empty.
+    NodeNotFound
+        If any of `sources` is not in `G`.
 
     See Also
     --------
@@ -863,6 +889,11 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
        of a node and the distance to each node.
        Warning: If target is specified, the dicts are incomplete as they
        only contain information for the nodes along a path to target.
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Notes
     -----
@@ -1110,6 +1141,9 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
@@ -1315,6 +1349,9 @@ def bellman_ford_path(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
        If no path exists between source and target.
 
@@ -1362,6 +1399,9 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
         If no path exists between source and target.
 
@@ -1416,6 +1456,11 @@ def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
     paths : dictionary
        Dictionary of shortest path lengths keyed by target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     Examples
     --------
     >>> G=nx.path_graph(5)
@@ -1460,6 +1505,11 @@ def single_source_bellman_ford_path_length(G, source,
     -------
     length : iterator
         (target, shortest path length) iterator
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -1518,6 +1568,10 @@ def single_source_bellman_ford(G, source,
        distance is the distance from source to target and path is a list
        representing the path from source to target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -1694,6 +1748,9 @@ def goldberg_radzik(G, source, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
@@ -1925,6 +1982,9 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If either `source` or `target` is not in `G`.
+
     NetworkXNoPath
         If no path exists between source and target.
 
