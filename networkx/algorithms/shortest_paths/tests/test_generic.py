@@ -69,6 +69,8 @@ class TestGenericPath:
                      [0, 2, 3])
         # confirm bad method rejection
         assert_raises(ValueError, nx.shortest_path, self.cycle, method='SPAM')
+        # confirm absent source rejection
+        assert_raises(nx.NodeNotFound, nx.shortest_path, self.cycle, 8)
 
     def test_shortest_path_target(self):
         answer = {0: [0, 1], 1: [1], 2: [2, 1]}
@@ -111,6 +113,8 @@ class TestGenericPath:
                       nx.shortest_path_length,
                       self.cycle,
                       method='SPAM')
+        # confirm absent source rejection
+        assert_raises(nx.NodeNotFound, nx.shortest_path_length, self.cycle, 8)
 
     def test_shortest_path_length_target(self):
         answer = {0: 1, 1: 0, 2: 1}
