@@ -91,6 +91,9 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     ValueError
         If `method` is not among the supported options.
 
@@ -151,6 +154,8 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
                 for target in paths:
                     paths[target] = list(reversed(paths[target]))
     else:
+        if source not in G:
+            raise nx.NodeNotFound("Source {} not in G".format(source))
         if target is None:
             # Find paths to all nodes accessible from the source.
             if method == 'unweighted':
@@ -223,6 +228,9 @@ def shortest_path_length(G,
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
         If no path exists between source and target.
 
