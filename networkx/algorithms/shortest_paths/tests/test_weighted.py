@@ -143,7 +143,7 @@ class TestWeightedPath(WeightedTestBase):
         P = nx.single_source_dijkstra_path(self.XG, 's')['v']
         validate_path(self.XG, 's', 'v', sum(self.XG[u][v]['weight'] for u, v in zip(
             P[:-1], P[1:])), nx.dijkstra_path(self.XG, 's', 'v'))
-        
+
         # check absent source
         G = nx.path_graph(2)
         assert_raises(nx.NodeNotFound, nx.bidirectional_dijkstra, G, 3, 0)
