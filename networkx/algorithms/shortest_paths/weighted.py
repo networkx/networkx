@@ -123,6 +123,9 @@ def dijkstra_path(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
        If no path exists between source and target.
 
@@ -197,6 +200,9 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
         If no path exists between source and target.
 
@@ -265,6 +271,11 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
     paths : dictionary
        Dictionary of shortest path lengths keyed by target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     Examples
     --------
     >>> G=nx.path_graph(5)
@@ -324,6 +335,11 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     -------
     length : dict
         Dict keyed by node to shortest path length from source.
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -404,6 +420,10 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
        distance is the distance from source to target and path is a list
        representing the path from source to target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -512,6 +532,8 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
     ------
     ValueError
         If `sources` is empty.
+    NodeNotFound
+        If any of `sources` is not in `G`.
 
     See Also
     --------
@@ -587,6 +609,8 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     ------
     ValueError
         If `sources` is empty.
+    NodeNotFound
+        If any of `sources` is not in `G`.
 
     See Also
     --------
@@ -689,6 +713,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     ------
     ValueError
         If `sources` is empty.
+    NodeNotFound
+        If any of `sources` is not in `G`.
 
     See Also
     --------
@@ -764,6 +790,11 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
         A mapping from node to shortest distance to that node from one
         of the source nodes.
 
+    Raises
+    ------
+    NodeNotFound
+        If any of `sources` is not in `G`.
+
     Notes
     -----
     The optional predecessor and path dictionaries can be accessed by
@@ -782,6 +813,8 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     c = count()
     fringe = []
     for source in sources:
+        if source not in G:
+            raise nx.NodeNotFound("Source {} not in G".format(source))
         seen[source] = 0
         push(fringe, (0, next(c), source))
     while fringe:
@@ -856,6 +889,11 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
        of a node and the distance to each node.
        Warning: If target is specified, the dicts are incomplete as they
        only contain information for the nodes along a path to target.
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Notes
     -----
@@ -1103,6 +1141,9 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
@@ -1209,12 +1250,18 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
     Raises
     ------
+    NodeNotFound
+        If any of `source` is not in `G`.
+
     NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
        negative cost (di)cycle.  Note: any negative weight edge in an
        undirected graph is a negative cost cycle
     """
+    for s in source:
+        if s not in G:
+            raise nx.NodeNotFound("Source {} not in G".format(s))
 
     if pred is None:
         pred = {v: [] for v in source}
@@ -1302,6 +1349,9 @@ def bellman_ford_path(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
        If no path exists between source and target.
 
@@ -1349,6 +1399,9 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXNoPath
         If no path exists between source and target.
 
@@ -1403,6 +1456,11 @@ def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
     paths : dictionary
        Dictionary of shortest path lengths keyed by target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     Examples
     --------
     >>> G=nx.path_graph(5)
@@ -1447,6 +1505,11 @@ def single_source_bellman_ford_path_length(G, source,
     -------
     length : iterator
         (target, shortest path length) iterator
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -1505,6 +1568,10 @@ def single_source_bellman_ford(G, source,
        distance is the distance from source to target and path is a list
        representing the path from source to target.
 
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
 
     Examples
     --------
@@ -1681,6 +1748,9 @@ def goldberg_radzik(G, source, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If `source` is not in `G`.
+
     NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
@@ -1912,6 +1982,9 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
     Raises
     ------
+    NodeNotFound
+        If either `source` or `target` is not in `G`.
+
     NetworkXNoPath
         If no path exists between source and target.
 
