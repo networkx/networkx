@@ -123,7 +123,7 @@ class TestLayout(object):
         assert_raises(ValueError, nx.shell_layout, G, dim=3)
 
     def test_adjacency_interface_numpy(self):
-        A = nx.to_numpy_matrix(self.Gs)
+        A = nx.to_numpy_array(self.Gs)
         pos = nx.drawing.layout._fruchterman_reingold(A)
         assert_equal(pos.shape, (6, 2))
         pos = nx.drawing.layout._fruchterman_reingold(A, dim=3)

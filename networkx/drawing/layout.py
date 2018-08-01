@@ -458,7 +458,7 @@ def fruchterman_reingold_layout(G,
                                            iterations, threshold,
                                            dim, seed)
     except:
-        A = nx.to_numpy_matrix(G, weight=weight)
+        A = nx.to_numpy_array(G, weight=weight)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
@@ -486,9 +486,6 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
     except AttributeError:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg)
-
-    # make sure we have an array instead of a matrix
-    A = np.asarray(A)
 
     if pos is None:
         # random initial positions
@@ -799,10 +796,10 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
         pos = _sparse_spectral(A, dim)
     except (ImportError, ValueError):
         # Dense matrix
-        A = nx.to_numpy_matrix(G, weight=weight)
+        A = nx.to_numpy_array(G, weight=weight)
         # Symmetrize directed graphs
         if G.is_directed():
-            A = A + np.transpose(A)
+            A += A.T
         pos = _spectral(A, dim)
 
     pos = rescale_layout(pos, scale) + center
@@ -822,8 +819,6 @@ def _spectral(A, dim=2):
         raise nx.NetworkXError(msg)
 
     # form Laplacian matrix
-    # make sure we have an array instead of a matrix
-    A = np.asarray(A)
     I = np.identity(nnodes, dtype=A.dtype)
     D = I * np.sum(A, axis=1)  # diagonal of degrees
     L = D - A
