@@ -28,16 +28,16 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     Eigenvector centrality computes the centrality for a node based on the
     centrality of its neighbors. The eigenvector centrality for node $i$ is
+    the $i$-th element of the vector $x$ defined by the equation
 
     .. math::
 
         Ax = \lambda x
 
     where $A$ is the adjacency matrix of the graph `G` with eigenvalue
-    $\lambda$. By virtue of the Perron–Frobenius theorem, there is
-    a unique and positive solution if $\lambda$ is the largest
-    eigenvalue associated with the eigenvector of the adjacency matrix
-    $A$ ([2]_).
+    $\lambda$. By virtue of the Perron–Frobenius theorem, there is a unique
+    solution $x$, all of whose entries are positive, if $\lambda$ is the
+    largest eigenvalue of the adjacency matrix $A$ ([2]_).
 
     Parameters
     ----------
