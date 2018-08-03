@@ -12,7 +12,16 @@ if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
   export C_INCLUDE_PATH=/usr/include/gdal
 
   # needed for view_graphviz and default_opener
-  alias xdg-open="file"
+  DIR=~/.local/bin
+  export PATH=$DIR:$PATH
+  mkdir -p $DIR
+  FILE=$DIR/xdg-open
+  cat <<EOF >$FILE
+#!/bin/sh
+
+echo $1
+EOF
+  chmod +x $FILE
 
 fi
 

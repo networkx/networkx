@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 section "Script section"
 
@@ -34,4 +34,4 @@ cd $NX_SOURCE
 
 section_end "Script section"
 
-set +ex
+set +e
