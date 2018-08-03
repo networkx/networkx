@@ -72,7 +72,7 @@ matrix:
       osx_image: xcode9.3
       language: generic
       env:
-      - TRAVIS_PYTHON_VERSION=3.7.0
+      - TRAVIS_PYTHON_VERSION=3.6.1
       - OPTIONAL_DEPS=1
       - OSX_PKG_ENV=miniconda
     - os: osx
