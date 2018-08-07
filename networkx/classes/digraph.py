@@ -769,6 +769,25 @@ class DiGraph(Graph):
     def successors(self, n):
         """Return an iterator over successor nodes of n.
 
+        A successor of n is a node m such that there exists a directed
+        edge from n to m.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        -------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        predecessors
+
+        Notes
+        -----
         neighbors() and successors() are the same.
         """
         try:
@@ -780,7 +799,25 @@ class DiGraph(Graph):
     neighbors = successors
 
     def predecessors(self, n):
-        """Return an iterator over predecessor nodes of n."""
+        """Return an iterator over predecessor nodes of n.
+
+        A predecessor of n is a node m such that there exists a directed
+        edge from m to n.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        -------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        successors
+        """
         try:
             return iter(self._pred[n])
         except KeyError:
