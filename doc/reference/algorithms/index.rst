@@ -50,6 +50,7 @@ Algorithms
    mis
    node_classification
    operators
+   planarity
    reciprocity
    rich_club
    shortest_paths
