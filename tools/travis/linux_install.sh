@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 # create new empty venv
 virtualenv -p python ~/venv
@@ -12,21 +12,17 @@ if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
   export C_INCLUDE_PATH=/usr/include/gdal
 
   # needed for view_graphviz and default_opener
-  DIR=~/.local/share/applications
+  DIR=~/.local/bin
+  export PATH=$DIR:$PATH
   mkdir -p $DIR
-  FILE=$DIR/png.desktop
+  FILE=$DIR/xdg-open
   cat <<EOF >$FILE
-[Desktop Entry]
-Name=png
-MimeType=image/png;
-Exec=/usr/bin/file
-Type=Application
-Terminal=true
-NoDisplay=true
-EOF
+#!/bin/sh
 
-  xdg-mime default png.desktop image/png
+echo $1
+EOF
+  chmod +x $FILE
 
 fi
 
-set +e
+set +ex

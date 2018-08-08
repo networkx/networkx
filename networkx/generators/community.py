@@ -533,7 +533,7 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
     0.348
     0.405
     >>> for v in H.edges(data=True):
-    ...     print(round(v[2]['weight'] / (sizes[v[0]] * sizes[v[1]]), 3))
+    ...     print(round(1.0 * v[2]['weight'] / (sizes[v[0]] * sizes[v[1]]), 3))
     ...
     0.051
     0.022

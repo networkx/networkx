@@ -290,18 +290,18 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        self.node_dict_factory = ndf = self.node_dict_factory
+        self.node_dict_factory = self.node_dict_factory
         self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
         self.graph = {}  # dictionary for graph attributes
-        self._node = ndf()  # dictionary for node attributes
+        self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
-        self._adj = ndf()  # empty adjacency dictionary
-        self._pred = ndf()  # predecessor
+        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
 
         # attempt to load graph with data
@@ -769,6 +769,25 @@ class DiGraph(Graph):
     def successors(self, n):
         """Return an iterator over successor nodes of n.
 
+        A successor of n is a node m such that there exists a directed
+        edge from n to m.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        -------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        predecessors
+
+        Notes
+        -----
         neighbors() and successors() are the same.
         """
         try:
@@ -780,7 +799,25 @@ class DiGraph(Graph):
     neighbors = successors
 
     def predecessors(self, n):
-        """Return an iterator over predecessor nodes of n."""
+        """Return an iterator over predecessor nodes of n.
+
+        A predecessor of n is a node m such that there exists a directed
+        edge from m to n.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        -------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        successors
+        """
         try:
             return iter(self._pred[n])
         except KeyError:

@@ -36,12 +36,12 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     Parameters
     ----------
     G : graph
-       An undirected graph with 4 or more nodes.
+        An undirected graph with 4 or more nodes.
 
     niter : integer (optional, default=1)
-       An edge is rewired approximately `niter` times.
+        An edge is rewired approximately `niter` times.
 
-    connectivity: boolean (optional, default=True)
+    connectivity : boolean (optional, default=True)
         When True, ensure connectivity for the randomized graph.
 
     seed : integer, random_state, or None (default)
@@ -51,7 +51,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     Returns
     -------
     G : graph
-       The randomized graph.
+        The randomized graph.
 
     Notes
     -----
@@ -60,9 +60,9 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
 
     References
     ----------
-    .. [1] Maslov, Sergei, and Kim Sneppen. "Specificity and stability in
-    topology of protein networks." Science 296.5569 (2002): 910-913.
-
+    .. [1] Maslov, Sergei, and Kim Sneppen.
+           "Specificity and stability in topology of protein networks."
+           Science 296.5569 (2002): 910-913.
     """
     if G.is_directed():
         msg = "random_reference() not defined for directed graphs."
@@ -130,15 +130,15 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     Parameters
     ----------
     G : graph
-       An undirected graph with 4 or more nodes.
+        An undirected graph with 4 or more nodes.
 
     niter : integer (optional, default=1)
-       An edge is rewired approximatively niter times.
+        An edge is rewired approximatively niter times.
 
-    D: numpy.array (optional, default=None)
-       Distance to the diagonal matrix.
+    D : numpy.array (optional, default=None)
+        Distance to the diagonal matrix.
 
-    connectivity: boolean (optional, default=True)
+    connectivity : boolean (optional, default=True)
         Ensure connectivity for the latticized graph when set to True.
 
     seed : integer, random_state, or None (default)
@@ -148,20 +148,21 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     Returns
     -------
     G : graph
-       The latticized graph.
+        The latticized graph.
 
     Notes
     -----
-    The implementation is adapted from the algorithm by Sporns et al. which is
-    inspired from the original work from Maslov and Sneppen (2002) [2]_.
+    The implementation is adapted from the algorithm by Sporns et al. [1]_.
+    which is inspired from the original work by Maslov and Sneppen(2002) [2]_.
 
     References
     ----------
-    .. [1] Sporns, Olaf, and Jonathan D. Zwi. "The small world of the cerebral
-    cortex." Neuroinformatics 2.2 (2004): 145-162.
-    .. [2] Maslov, Sergei, and Kim Sneppen. "Specificity and stability in
-    topology of protein networks." Science 296.5569 (2002): 910-913.
-
+    .. [1] Sporns, Olaf, and Jonathan D. Zwi.
+       "The small world of the cerebral cortex."
+       Neuroinformatics 2.2 (2004): 145-162.
+    .. [2] Maslov, Sergei, and Kim Sneppen.
+       "Specificity and stability in topology of protein networks."
+       Science 296.5569 (2002): 910-913.
     """
     import numpy as np
     from networkx.utils import cumulative_distribution, discrete_sequence
@@ -257,39 +258,34 @@ def sigma(G, niter=100, nrand=10, seed=None):
     ----------
     G : NetworkX graph
         An undirected graph.
-
-    niter: integer (optional, default=100)
+    niter : integer (optional, default=100)
         Approximate number of rewiring per edge to compute the equivalent
         random graph.
-
-    nrand: integer (optional, default=10)
+    nrand : integer (optional, default=10)
         Number of random graphs generated to compute the average clustering
         coefficient (Cr) and average shortest path length (Lr).
-
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
     Returns
     -------
-    sigma
+    sigma : float
         The small-world coefficient of G.
 
     Notes
     -----
-    The implementation is adapted from the algorithm by Humphries et al.
-    [1]_[2]_.
-
+    The implementation is adapted from Humphries et al. [1]_ [2]_.
 
     References
     ----------
     .. [1] The brainstem reticular formation is a small-world, not scale-free,
-    network M. D. Humphries, K. Gurney and T. J. Prescott, Proc. Roy. Soc. B
-    2006 273, 503-511, doi:10.1098/rspb.2005.3354.
-
-    .. [2] Humphries and Gurney (2008). "Network 'Small-World-Ness': A
-    Quantitative Method for Determining Canonical Network Equivalence". PLoS
-    One. 3 (4). PMID 18446219. doi:10.1371/journal.pone.0002051.
+           network M. D. Humphries, K. Gurney and T. J. Prescott,
+           Proc. Roy. Soc. B 2006 273, 503-511, doi:10.1098/rspb.2005.3354.
+    .. [2] Humphries and Gurney (2008).
+           "Network 'Small-World-Ness': A Quantitative Method for Determining
+           Canonical Network Equivalence".
+           PLoS One. 3 (4). PMID 18446219. doi:10.1371/journal.pone.0002051.
     """
     import numpy as np
 
@@ -348,9 +344,10 @@ def omega(G, niter=100, nrand=10, seed=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
+
     Returns
     -------
-    omega
+    omega : float
         The small-work coefficient (omega)
 
     Notes
@@ -359,9 +356,10 @@ def omega(G, niter=100, nrand=10, seed=None):
 
     References
     ----------
-    .. [1] Telesford, Joyce, Hayasaka, Burdette, and Laurienti (2011). "The
-    Ubiquity of Small-World Networks". Brain Connectivity. 1 (0038): 367-75.
-    PMC 3604768. PMID 22432451. doi:10.1089/brain.2011.0038.
+    .. [1] Telesford, Joyce, Hayasaka, Burdette, and Laurienti (2011).
+           "The Ubiquity of Small-World Networks".
+           Brain Connectivity. 1 (0038): 367-75.  PMC 3604768. PMID 22432451.
+           doi:10.1089/brain.2011.0038.
     """
     import numpy as np
 

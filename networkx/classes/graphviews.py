@@ -31,7 +31,7 @@ of a subgraph. We are careful not to disrupt any edge filter in
 the middle subgraph. In general, determining how to short-cut
 the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
-Often it is easiest to use `.copy()` to avoid chains.
+Often it is easiest to use .copy() to avoid chains.
 """
 from networkx.classes.coreviews import UnionAdjacency, UnionMultiAdjacency, \
     FilterAtlas, FilterAdjacency, FilterMultiAdjacency

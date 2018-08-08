@@ -44,3 +44,14 @@ Basic graph types
    :class:`~networkx.OrderedDiGraph`, :class:`~networkx.OrderedMultiGraph`,
    or :class:`~networkx.OrderedMultiDiGraph`, which behave like the base
    graph classes but give a consistent order for reporting of nodes and edges.
+
+Graph Views
+===========
+
+.. automodule:: networkx.classes.graphviews
+.. autosummary::
+   :toctree: generated/
+
+   generic_graph_view
+   subgraph_view
+   reverse_view

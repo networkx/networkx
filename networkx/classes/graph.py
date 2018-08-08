@@ -1441,8 +1441,6 @@ class Graph(object):
         return False
 
     def fresh_copy(self):
-        """Deprecated method to create an empty copy. Use __class__().
-        """
         # remove by v3 if not before
         msg = 'G.fresh_copy is deprecated. Use G.__class__ instead'
         warnings.warn(msg, DeprecationWarning, stacklevel=2)

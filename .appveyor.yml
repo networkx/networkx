@@ -11,19 +11,11 @@ environment:
 
   matrix:
     - PYTHON: "C:\\Python27"
-      PYTHON_VERSION: "2.7.13"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python27-x64"
-      PYTHON_VERSION: "2.7.13"
-      PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python34"
-      PYTHON_VERSION: "3.4.4"
-      PYTHON_ARCH: "32"
-
-    - PYTHON: "C:\\Python34-x64"
-      PYTHON_VERSION: "3.4.4"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python35"
@@ -35,11 +27,19 @@ environment:
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python36"
-      PYTHON_VERSION: "3.6.1"
+      PYTHON_VERSION: "3.6.6"
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.1"
+      PYTHON_VERSION: "3.6.6"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python37"
+      PYTHON_VERSION: "3.7.0"
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.0"
       PYTHON_ARCH: "64"
 
 install:
