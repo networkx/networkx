@@ -5,6 +5,23 @@ import random
 __all__ = ['spanner']
 
 
+def spanner(G, stretch, weight=None, limit_size=True):
+    if stretch < 1:
+        raise ValueError('stretch must be at least 1')
+
+    k = _stretch_to_k(stretch)
+    H = _baswana_sen_spanner(G, k, weight)
+
+    if limit_size:
+        size_limit = 2 * _spanner_expected_number_of_edges(G.number_of_nodes(), stretch)
+        while H.number_of_edges() > size_limit:
+            # TODO: add reference to paper
+            # this loop runs for O(1) iterations with high probability
+            H = _baswana_sen_spanner(G, k, weight)
+
+    return H
+
+
 def _stretch_to_k(stretch):
     return int(math.floor((stretch + 1) / 2))
 
@@ -14,24 +31,7 @@ def _spanner_expected_number_of_edges(number_of_nodes, stretch):
     return k * math.pow(number_of_nodes, 1 + 1 / k)
 
 
-def spanner(G, stretch, weight=None, limit_size=True):
-    if stretch < 1:
-        raise ValueError('stretch must be at least 1')
-
-    k = _stretch_to_k(stretch)
-    H = baswana_sen_spanner(G, k, weight)
-
-    if limit_size:
-        size_limit = 2 * _spanner_expected_number_of_edges(G.number_of_nodes(), stretch)
-        while H.number_of_edges() > size_limit:
-            # TODO: add reference to paper
-            # this loop runs for O(1) iterations with high probability
-            H = baswana_sen_spanner(G, k, weight)
-
-    return H
-
-
-def baswana_sen_spanner(G, k, weight=None):
+def _baswana_sen_spanner(G, k, weight=None):
     # initialize spanner H with empty edge set
     H = nx.empty_graph()
     H.add_nodes_from(G.nodes)
@@ -118,11 +118,6 @@ def baswana_sen_spanner(G, k, weight=None):
     return H
 
 
-# TODO: make this some kind of static variable?
-def _infinite_edge_weight():
-    return math.inf, math.inf, math.inf
-
-
 def _setup_residual_graph(G, weight):
     residual_graph = G.copy()
 
@@ -153,7 +148,7 @@ def _lightest_edge_dicts(residual_graph, clustering, node):
 
 def _closest_sampled_center(lightest_edge_weight, neighboring_sampled_centers):
     closest_center = None
-    closest_weight = _infinite_edge_weight()
+    closest_weight = math.inf, math.inf, math.inf
     for center in neighboring_sampled_centers:
         if lightest_edge_weight[center] < closest_weight:
             closest_center = center
