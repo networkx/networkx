@@ -116,7 +116,7 @@ package_data = {
     'networkx.utils': ['tests/*.py']
 }
 
-install_requires = ['decorator>=4.1.0']
+install_requires = ['decorator>=4.3.0']
 extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                           'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml',
                           'nose'],
@@ -155,6 +155,6 @@ if __name__ == "__main__":
         install_requires=install_requires,
         extras_require=extras_require,
         test_suite='nose.collector',
-        tests_require=['nose>=0.10.1'],
+        tests_require=['nose>=1.3.7'],
         zip_safe=False
     )

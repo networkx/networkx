@@ -8,6 +8,8 @@ NetworkX 2.2
 ------------
 Release date: TBD
 
+Supports Python 2.7, 3.5, 3.6 and 3.7.
+
 Release notes
 ~~~~~~~~~~~~~
 
@@ -19,7 +21,6 @@ NetworkX 2.1
 Release date: 22 January 2018
 
 Supports Python 2.7, 3.4, 3.5, and 3.6.
-
 
 Release notes
 ~~~~~~~~~~~~~

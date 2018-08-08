@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 pip install --retries 3 -q -r requirements/doc.txt
 pip list
@@ -11,4 +11,4 @@ make doctest
 make latexpdf
 cd ..
 
-set +e
+set +ex
