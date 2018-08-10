@@ -58,7 +58,7 @@ def second_order_centrality(G):
     >>> G = nx.star_graph(10)
     >>> soc = second_order_centrality(G)
     >>> print(sorted(soc.items(), key=lambda x:x[1])[0][0]) # pick first id
-    0  # most central node
+    0
 
     See Also
     --------
