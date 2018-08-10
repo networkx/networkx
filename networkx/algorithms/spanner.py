@@ -11,9 +11,9 @@ __all__ = ['spanner']
 def spanner(G, stretch, weight=None):
     """Returns a spanner with the given stretch of the given graph.
 
-        A spanner with stretch t of a graph `G` is a subgraph `H` of `G` such that
-        the distance between any pair of nodes in `H` is at most t times
-        the distance between the nodes in `G`.
+        A spanner with stretch t of a graph G = (V, E) is a subgraph H = (V, E_S)
+        such that E_S is a subset of E and the distance between any pair of nodes
+        in H is at most t times the distance between the nodes in G.
 
         Parameters
         ----------
@@ -44,10 +44,10 @@ def spanner(G, stretch, weight=None):
         This algorithm is a randomized las vegas algorithm:
         The expected running time is O(km) where
         k = floor((stretch + 1) / 2)) and m is the number of edges
-        in `G`. The returned graph is always a spanner of the given graph
+        in G. The returned graph is always a spanner of the given graph
         with the specified stretch. For weighted graphs the number
         of edges in the spanner is O(k * n^(1 + 1 / k)) where k is defined
-        as above and n is the number of nodes in `G`. For unweighted graphs
+        as above and n is the number of nodes in G. For unweighted graphs
         the number of edges is O(n^(1 + 1 / k) + kn).
 
         References
