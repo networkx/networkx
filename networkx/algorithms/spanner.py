@@ -1,11 +1,63 @@
 import math
 import networkx as nx
+from networkx.utils import not_implemented_for
 import random
 
 __all__ = ['spanner']
 
 
-def spanner(G, stretch, weight=None, limit_size=True):
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
+def spanner(G, stretch, weight=None):
+    """Returns a spanner with the given stretch of the given graph.
+
+        A spanner with stretch t of a graph `G` is a subgraph `H` of `G` such that
+        the distance between any pair of nodes in `H` is at most t times
+        the distance between the nodes in `G`.
+
+        Parameters
+        ----------
+        G : NetworkX graph
+            An undirected simple graph.
+
+        stretch : float
+            The stretch of the spanner.
+
+        weight : object
+            The edge attribute to use as distance.
+
+        Returns
+        -------
+        NetworkX graph
+            A spanner of the given graph with the given stretch.
+
+        Raises
+        ------
+        ValueError
+            If a stretch less than 1 is given.
+
+        Notes
+        -----
+        This function implements the spanner algorithm by Baswana and Sen,
+        see [1] below.
+
+        This algorithm is a randomized las vegas algorithm:
+        The expected running time is O(km) where
+        k = floor((stretch + 1) / 2)) and m is the number of edges
+        in `G`. The returned graph is always a spanner of the given graph
+        with the specified stretch. For weighted graphs the number
+        of edges in the spanner is O(k * n^(1 + 1 / k)) where k is defined
+        as above and n is the number of nodes in `G`. For unweighted graphs
+        the number of edges is O(n^(1 + 1 / k) + kn).
+
+        References
+        ----------
+        TODO: Complete reference
+        [1] S. Baswana, S. Sen. A Simple and Linear Time Randomized Algorithm
+        for Computing Sparse Spanners in Weighted Graphs.
+
+        """
+
     if stretch < 1:
         raise ValueError('stretch must be at least 1')
 
@@ -72,7 +124,7 @@ def spanner(G, stretch, weight=None, limit_size=True):
                         edges_to_remove.add((v, neighbor))
 
         # check whether iteration added too many edges to spanner, if so repeat
-        if limit_size and len(edges_to_add) > size_limit:
+        if len(edges_to_add) > size_limit:
             continue
 
         # iteration succeeded
@@ -112,10 +164,12 @@ def spanner(G, stretch, weight=None, limit_size=True):
 
 
 def _stretch_to_k(stretch):
+    """Compute the parameter k based on the given stretch."""
     return int(math.floor((stretch + 1) / 2))
 
 
 def _setup_residual_graph(G, weight):
+    """Setup the residual graph as a copy of `G` with unique edges weights."""
     residual_graph = G.copy()
 
     # establish unique edge weights, even for unweighted graphs
@@ -129,6 +183,7 @@ def _setup_residual_graph(G, weight):
 
 
 def _lightest_edge_dicts(residual_graph, clustering, node):
+    """Find the lightest edge to each cluster."""
     lightest_edge_neighbor = {}
     lightest_edge_weight = {}
     center = clustering[node]
@@ -144,6 +199,7 @@ def _lightest_edge_dicts(residual_graph, clustering, node):
 
 
 def _closest_sampled_center(lightest_edge_weight, neighboring_sampled_centers):
+    """Find the closest sampled center."""
     closest_center = None
     closest_weight = math.inf, math.inf, math.inf
     for center in neighboring_sampled_centers:
@@ -154,6 +210,7 @@ def _closest_sampled_center(lightest_edge_weight, neighboring_sampled_centers):
 
 
 def _add_edge_to_spanner(H, residual_graph, u, v, weight):
+    """Add the edge (u, v) to the spanner H and take weight from residual graph."""
     H.add_edge(u, v)
     if weight:
         H[u][v][weight] = residual_graph[u][v]['weight'][0]
