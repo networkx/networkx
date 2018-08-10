@@ -68,6 +68,8 @@ def spanner(G, stretch, weight=None):
     H.add_nodes_from(G.nodes)
 
     # phase 1: forming the clusters
+    # the residual graph has V' from the paper as its node set
+    # and E' from the paper as its edge set
     residual_graph = _setup_residual_graph(G, weight)
     clustering = {v: v for v in G.nodes}
     sample_prob = math.pow(G.number_of_nodes(), - 1 / k)
@@ -125,6 +127,7 @@ def spanner(G, stretch, weight=None):
 
         # check whether iteration added too many edges to spanner, if so repeat
         if len(edges_to_add) > size_limit:
+            # an iteration is repeated O(1) times on expectation
             continue
 
         # iteration succeeded
