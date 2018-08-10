@@ -186,11 +186,8 @@ def _lightest_edge_dicts(residual_graph, clustering, node):
     """Find the lightest edge to each cluster."""
     lightest_edge_neighbor = {}
     lightest_edge_weight = {}
-    center = clustering[node]
     for neighbor in residual_graph.adj[node]:
         neighbor_center = clustering[neighbor]
-        if neighbor_center is center:
-            continue
         weight = residual_graph[node][neighbor]['weight']
         if neighbor_center not in lightest_edge_weight or weight < lightest_edge_weight[neighbor_center]:
             lightest_edge_neighbor[neighbor_center] = neighbor
