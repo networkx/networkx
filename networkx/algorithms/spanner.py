@@ -9,7 +9,7 @@ __all__ = ['spanner']
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def spanner(G, stretch, weight=None):
-    """Returns a spanner with the given stretch of the given graph.
+    """Returns a spanner of the given graph with the given stretch.
 
         A spanner with stretch t of a graph G = (V, E) is a subgraph H = (V, E_S)
         such that E_S is a subset of E and the distance between any pair of nodes
