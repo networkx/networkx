@@ -52,9 +52,9 @@ def spanner(G, stretch, weight=None):
 
         References
         ----------
-        TODO: Complete reference
         [1] S. Baswana, S. Sen. A Simple and Linear Time Randomized Algorithm
-        for Computing Sparse Spanners in Weighted Graphs.
+        for Computing Sparse Spanners in Weighted Graphs. Random Struct.
+        Algorithms 30(4): 532-563 (2007).
 
         """
 
