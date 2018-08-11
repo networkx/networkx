@@ -1,3 +1,4 @@
+"""Unit tests for the spanner computation functions."""
 from nose.tools import *
 import networkx as nx
 import random

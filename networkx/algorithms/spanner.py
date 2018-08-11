@@ -1,3 +1,10 @@
+"""Functions for computing sparse spanners of graphs.
+
+A spanner of a graph G = (V, E) with stretch t is a subgraph H = (V, E_S)
+such that E_S is a subset of E and the distance between any pair of nodes
+in H is at most t times the distance between the nodes in G.
+
+"""
 import math
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -11,7 +18,7 @@ __all__ = ['spanner']
 def spanner(G, stretch, weight=None):
     """Returns a spanner of the given graph with the given stretch.
 
-        A spanner with stretch t of a graph G = (V, E) is a subgraph H = (V, E_S)
+        A spanner of a graph G = (V, E) with stretch t is a subgraph H = (V, E_S)
         such that E_S is a subset of E and the distance between any pair of nodes
         in H is at most t times the distance between the nodes in G.
 
@@ -71,6 +78,7 @@ def spanner(G, stretch, weight=None):
     # the residual graph has V' from the paper as its node set
     # and E' from the paper as its edge set
     residual_graph = _setup_residual_graph(G, weight)
+    # clustering is a dictionary that maps nodes in a cluster to the cluster center
     clustering = {v: v for v in G.nodes}
     sample_prob = math.pow(G.number_of_nodes(), - 1 / k)
     size_limit = 2 * math.pow(G.number_of_nodes(), 1 + 1 / k)
@@ -167,12 +175,48 @@ def spanner(G, stretch, weight=None):
 
 
 def _stretch_to_k(stretch):
-    """Compute the parameter k based on the given stretch."""
+    """Compute the parameter k based on the given stretch.
+
+        In the Baswana-Sen spanner algorithm the stretch of the spanner depends on a
+        parameter k. This function computes the value of k based on the desired stretch.
+
+        Parameters
+        ----------
+        stretch : float
+            The stretch of the spanner.
+
+        Returns
+        -------
+        int
+            The parameter k such that (at most) the desired stretch is achieved.
+
+    """
     return int(math.floor((stretch + 1) / 2))
 
 
 def _setup_residual_graph(G, weight):
-    """Setup the residual graph as a copy of `G` with unique edges weights."""
+    """Setup the residual graph as a copy of `G` with unique edges weights.
+
+        The node set of the residual graph corresponds to the set V' from the
+        Baswana-Sen paper and the edge set corresponds to the set E' from the paper.
+
+        This function associates distinct weights to the edges of the residual graph
+        (even for unweighted input graphs), as required by the algorithm.
+
+        Parameters
+        ----------
+        G : NetworkX graph
+            An undirected simple graph.
+
+        weight : object
+            The edge attribute to use as distance.
+
+        Returns
+        -------
+        NetworkX graph
+            The residual graph used by the Baswana-Sen algorithm.
+
+    """
     residual_graph = G.copy()
 
     # establish unique edge weights, even for unweighted graphs
@@ -186,7 +230,35 @@ def _setup_residual_graph(G, weight):
 
 
 def _lightest_edge_dicts(residual_graph, clustering, node):
-    """Find the lightest edge to each cluster."""
+    """Find the lightest edge to each cluster.
+
+        Searches for the minimum-weight edge to each cluster adjacent to the given node.
+
+        Parameters
+        ----------
+        residual_graph : NetworkX graph
+            The residual graph used by the Baswana-Sen algorithm.
+
+        clustering: dictionary
+            The current clustering of the nodes.
+
+        node : node
+            The node from which the search originates.
+
+        Returns
+        -------
+        lightest_edge_neighbor, lightest_edge_weight : dictionary, dictionary
+            lightest_edge_neighbor is a dictionary that maps a center C to a node v in the corresponding cluster
+            such that the edge from the given node to v is the lightest edge from the given node to any node in C.
+
+            lightest_edge_weight maps a center C to the weight of the aforementioned edge.
+
+        Notes
+        -----
+        If a cluster has no node that is adjacent to the given node in the residual graph,
+        then the center of the cluster is not a key in the returned dictionaries.
+
+    """
     lightest_edge_neighbor = {}
     lightest_edge_weight = {}
     for neighbor in residual_graph.adj[node]:
@@ -199,7 +271,22 @@ def _lightest_edge_dicts(residual_graph, clustering, node):
 
 
 def _closest_sampled_center(lightest_edge_weight, neighboring_sampled_centers):
-    """Find the closest sampled center."""
+    """Find the closest sampled center.
+
+        Parameters
+        ----------
+        lightest_edge_weight : dictionary
+            The dictionary returned by the function _lightest_edge_dicts.
+
+        neighboring_sampled_centers: set
+            The set of sampled cluster centers.
+
+        Returns
+        -------
+        node
+            A center that was sampled and has a minimum value in lightest_edge_weight.
+
+    """
     closest_center = None
     closest_weight = math.inf, math.inf, math.inf
     for center in neighboring_sampled_centers:
@@ -210,7 +297,27 @@ def _closest_sampled_center(lightest_edge_weight, neighboring_sampled_centers):
 
 
 def _add_edge_to_spanner(H, residual_graph, u, v, weight):
-    """Add the edge (u, v) to the spanner H and take weight from residual graph."""
+    """Add the edge (u, v) to the spanner H and take weight from residual graph.
+
+        Parameters
+        ----------
+        H : NetworkX graph
+            The spanner under construction.
+
+        residual_graph : NetworkX graph
+            The residual graph used by the Baswana-Sen algorithm.
+            The weight for the edge is taken from this graph.
+
+        u : node
+            One endpoint of the edge to be added.
+
+        v : node
+            The other endpoint of the edge to be added.
+
+        weight : object
+            The edge attribute to use as distance.
+
+    """
     H.add_edge(u, v)
     if weight:
         H[u][v][weight] = residual_graph[u][v]['weight'][0]
