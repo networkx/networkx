@@ -177,14 +177,15 @@ def from_pandas_adjacency(df, create_using=None):
 
     """
 
-    A = df.values
-    G = from_numpy_matrix(A, create_using=create_using)
     try:
         df = df[df.index]
     except:
         msg = "%s not in columns"
         missing = list(set(df.index).difference(set(df.columns)))
         raise nx.NetworkXError("Columns must match Indices.", msg % missing)
+
+    A = df.values
+    G = from_numpy_matrix(A, create_using=create_using)
 
     nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
     return G
