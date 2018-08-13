@@ -1,4 +1,4 @@
-# Copyright (C) 2014
+# Copyright (C) 2018
 # Robert Gmyr <robert@gmyr.net>
 # All rights reserved.
 # BSD license.
