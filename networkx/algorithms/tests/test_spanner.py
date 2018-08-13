@@ -1,3 +1,7 @@
+# Copyright (C) 2014
+# Robert Gmyr <robert@gmyr.net>
+# All rights reserved.
+# BSD license.
 """Unit tests for the spanner computation functions."""
 from nose.tools import *
 import networkx as nx
@@ -7,25 +11,24 @@ import random
 def _test_spanner(G, spanner, stretch, weight=None):
     """Test whether a spanner is valid.
 
-        This function tests whether the given spanner is a subgraph of the given graph G
-        with the same node set. It also tests for all shortest paths whether they adhere
-        to the given stretch.
+    This function tests whether the given spanner is a subgraph of the
+    given graph G with the same node set. It also tests for all shortest
+    paths whether they adhere to the given stretch.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        G : NetworkX graph
-            The original graph for which the spanner was constructed.
+    G : NetworkX graph
+        The original graph for which the spanner was constructed.
 
-        spanner : NetworkX graph
-            The spanner to be tested.
+    spanner : NetworkX graph
+        The spanner to be tested.
 
-        stretch : float
-            The proclaimed stretch of the spanner.
+    stretch : float
+        The proclaimed stretch of the spanner.
 
-        weight : object
-            The edge attribute to use as distance.
-
+    weight : object
+        The edge attribute to use as distance.
     """
     # check node set
     assert set(G.nodes()) == set(spanner.nodes())
