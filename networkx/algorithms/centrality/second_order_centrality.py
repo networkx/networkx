@@ -30,9 +30,6 @@
 #
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
 ''' Second order centrality measure.'''
-import networkx as nx
-import numpy as np
-import copy
 
 __all__ = ['second_order_centrality']
 
@@ -84,6 +81,15 @@ def second_order_centrality(G):
        "Second order centrality: Distributed assessment of nodes criticity in
        complex networks", Elsevier Computer Communications 34(5):619-628, 2011.
     """
+
+    import networkx as nx
+    import copy
+
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError('Requires NumPy: http://scipy.org/')
+
     n = len(G)
 
     if n == 0:
