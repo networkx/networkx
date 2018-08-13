@@ -83,8 +83,8 @@ def spanner(G, stretch, weight=None):
     # clustering is a dictionary that maps nodes in a cluster to the
     # cluster center
     clustering = {v: v for v in G.nodes}
-    sample_prob = math.pow(G.number_of_nodes(), - 1 / k)
-    size_limit = 2 * math.pow(G.number_of_nodes(), 1 + 1 / k)
+    sample_prob = math.pow(G.number_of_nodes(), - 1.0 / k)
+    size_limit = 2 * math.pow(G.number_of_nodes(), 1 + 1.0 / k)
 
     i = 0
     while i < k - 1:
@@ -306,7 +306,7 @@ def _closest_sampled_center(lightest_edge_weight, neighboring_sampled_centers):
         lightest_edge_weight.
     """
     closest_center = None
-    closest_weight = math.inf, math.inf, math.inf
+    closest_weight = float('inf'), float('inf'), float('inf')
     for center in neighboring_sampled_centers:
         if lightest_edge_weight[center] < closest_weight:
             closest_center = center
