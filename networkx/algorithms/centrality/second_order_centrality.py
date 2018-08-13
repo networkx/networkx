@@ -119,8 +119,6 @@ def second_order_centrality(G):
         
     return {k: v for k, v in enumerate(np.sqrt(H - np.square(M))[0, :])}# eq(4)
 
-
-
 # fixture for nose tests
 def setup_module(module):
     from nose import SkipTest
@@ -128,11 +126,3 @@ def setup_module(module):
         import numpy
     except:
         raise SkipTest("NumPy not available")
-
-
-
-if __name__ == '__main__':
-
-    G=nx.star_graph(10)
-    soc = second_order_centrality(G)
-    print("Most central node in the star graph is id: %d" % sorted(soc.items(), key=lambda x:x[1])[0][0])
