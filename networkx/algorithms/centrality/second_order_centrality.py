@@ -33,7 +33,11 @@
 
 __all__ = ['second_order_centrality']
 
-@nx.not_implemented_for('directed')
+import networkx as nx
+import copy
+from networkx.utils import not_implemented_for
+
+@not_implemented_for('directed')
 def second_order_centrality(G):
     """Compute the second order centrality for nodes of G.
 
@@ -81,9 +85,6 @@ def second_order_centrality(G):
        "Second order centrality: Distributed assessment of nodes criticity in
        complex networks", Elsevier Computer Communications 34(5):619-628, 2011.
     """
-
-    import networkx as nx
-    import copy
 
     try:
         import numpy as np
