@@ -113,6 +113,17 @@ def second_order_centrality(G):
     return {k: v for k, v in enumerate(np.sqrt(H - np.square(M))[0, :])}# eq(4)
 
 
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+
+
+
 if __name__ == '__main__':
 
     G=nx.star_graph(10)
