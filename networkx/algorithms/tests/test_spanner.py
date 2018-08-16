@@ -50,7 +50,7 @@ def _test_spanner(G, spanner, stretch, weight=None):
 
 def test_spanner_trivial():
     """Test a trivial spanner with stretch 1."""
-    G = nx.complete_graph(100)
+    G = nx.complete_graph(20)
     spanner = nx.spanner(G, 1)
 
     for u, v in G.edges:
@@ -59,18 +59,18 @@ def test_spanner_trivial():
 
 def test_spanner_unweighted_complete_graph():
     """Test spanner construction on a complete unweighted graph."""
-    G = nx.complete_graph(100)
+    G = nx.complete_graph(20)
 
     spanner = nx.spanner(G, 4)
     _test_spanner(G, spanner, 4)
 
     spanner = nx.spanner(G, 10)
     _test_spanner(G, spanner, 10)
-
+    
 
 def test_spanner_weighted_complete_graph():
     """Test spanner construction on a complete weighted graph."""
-    G = nx.complete_graph(100)
+    G = nx.complete_graph(20)
     for u, v in G.edges():
         G[u][v]['weight'] = random.random()
 
@@ -83,7 +83,7 @@ def test_spanner_weighted_complete_graph():
 
 def test_spanner_unweighted_gnp_graph():
     """Test spanner construction on an unweighted gnp graph."""
-    G = nx.gnp_random_graph(100, 0.2)
+    G = nx.gnp_random_graph(20, 0.4)
 
     spanner = nx.spanner(G, 4)
     _test_spanner(G, spanner, 4)
@@ -94,7 +94,7 @@ def test_spanner_unweighted_gnp_graph():
 
 def test_spanner_weighted_gnp_graph():
     """Test spanner construction on an weighted gnp graph."""
-    G = nx.gnp_random_graph(100, 0.2)
+    G = nx.gnp_random_graph(20, 0.4)
     for u, v in G.edges():
         G[u][v]['weight'] = random.random()
 
@@ -107,7 +107,7 @@ def test_spanner_weighted_gnp_graph():
 
 def test_spanner_unweighted_disconnected_graph():
     """Test spanner construction on a disconnected graph."""
-    G = nx.disjoint_union(nx.complete_graph(50), nx.complete_graph(50))
+    G = nx.disjoint_union(nx.complete_graph(10), nx.complete_graph(10))
 
     spanner = nx.spanner(G, 4)
     _test_spanner(G, spanner, 4)
