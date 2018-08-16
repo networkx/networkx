@@ -17,7 +17,6 @@ scale-free graphs.
 from __future__ import division
 
 from collections import Counter
-import math
 
 import networkx as nx
 from networkx.generators.classic import empty_graph
@@ -262,7 +261,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
     if gamma <= 0:
         raise ValueError('beta must be >= 0.')
 
-    if not math.isclose(alpha + beta + gamma, 1.0):
+    if abs(alpha + beta + gamma - 1.0) < 1e-9:
         raise ValueError('alpha+beta+gamma must equal 1.')
 
     number_of_edges = G.number_of_edges()
