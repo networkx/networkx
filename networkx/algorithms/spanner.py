@@ -11,15 +11,15 @@ in G.
 """
 import math
 import networkx as nx
-from networkx.utils import not_implemented_for
-import random
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ['spanner']
 
 
+@py_random_state(3)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def spanner(G, stretch, weight=None):
+def spanner(G, stretch, weight=None, seed=None):
     """Returns a spanner of the given graph with the given stretch.
 
     A spanner of a graph G = (V, E) with stretch t is a subgraph
@@ -37,6 +37,10 @@ def spanner(G, stretch, weight=None):
 
     weight : object
         The edge attribute to use as distance.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -91,7 +95,7 @@ def spanner(G, stretch, weight=None):
         # step 1: sample centers
         sampled_centers = set()
         for center in set(clustering.values()):
-            if random.random() < sample_prob:
+            if seed.random() < sample_prob:
                 sampled_centers.add(center)
 
         # combined loop for steps 2 and 3
