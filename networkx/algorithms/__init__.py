@@ -41,7 +41,7 @@ from networkx.algorithms.smallworld import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.structuralholes import *
 from networkx.algorithms.triads import *
-from networkx.algorithms.spanner import *
+from networkx.algorithms.sparsifiers import *
 from networkx.algorithms.swap import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *
@@ -68,7 +68,7 @@ import networkx.algorithms.link_analysis
 import networkx.algorithms.lowest_common_ancestors
 import networkx.algorithms.operators
 import networkx.algorithms.shortest_paths
-import networkx.algorithms.spanner
+import networkx.algorithms.sparsifiers
 import networkx.algorithms.tournament
 import networkx.algorithms.traversal
 import networkx.algorithms.tree

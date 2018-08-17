@@ -2,7 +2,7 @@
 # Robert Gmyr <robert@gmyr.net>
 # All rights reserved.
 # BSD license.
-"""Unit tests for the spanner computation functions."""
+"""Unit tests for the sparsifier computation functions."""
 from nose.tools import *
 import networkx as nx
 from networkx.utils import py_random_state

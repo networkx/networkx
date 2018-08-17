@@ -2,13 +2,7 @@
 # Robert Gmyr <robert@gmyr.net>
 # All rights reserved.
 # BSD license.
-"""Functions for computing (sparse) spanners of graphs.
-
-A spanner of a graph G = (V, E) with stretch t is a subgraph
-H = (V, E_S) such that E_S is a subset of E and the distance between any
-pair of nodes in H is at most t times the distance between the nodes
-in G.
-"""
+"""Functions for computing sparsifiers of graphs."""
 from __future__ import division
 import math
 import networkx as nx
