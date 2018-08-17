@@ -124,9 +124,8 @@ def spanner(G, stretch, weight=None, seed=None):
                     edges_to_remove.add((v, neighbor))
 
             else:  # there is a neighboring sampled center
-                closest_center =\
-                    _closest_sampled_center(lightest_edge_weight,
-                                            neighboring_sampled_centers)
+                closest_center = min(neighboring_sampled_centers,
+                                     key=lightest_edge_weight.get)
                 closest_center_weight = lightest_edge_weight[closest_center]
                 closest_center_neighbor =\
                     lightest_edge_neighbor[closest_center]
@@ -221,7 +220,7 @@ def _setup_residual_graph(G, weight):
     # establish unique edge weights, even for unweighted graphs
     for u, v in G.edges():
         if not weight:
-            residual_graph[u][v]['weight'] = (id(u), id(v), 0)
+            residual_graph[u][v]['weight'] = (id(u), id(v))
         else:
             residual_graph[u][v]['weight'] = (G[u][v][weight], id(u), id(v))
 
@@ -270,32 +269,6 @@ def _lightest_edge_dicts(residual_graph, clustering, node):
             lightest_edge_neighbor[neighbor_center] = neighbor
             lightest_edge_weight[neighbor_center] = weight
     return lightest_edge_neighbor, lightest_edge_weight
-
-
-def _closest_sampled_center(lightest_edge_weight, neighboring_sampled_centers):
-    """Find the closest sampled center.
-
-    Parameters
-    ----------
-    lightest_edge_weight : dictionary
-        The dictionary returned by the function _lightest_edge_dicts.
-
-    neighboring_sampled_centers: set
-        The set of sampled cluster centers.
-
-    Returns
-    -------
-    node
-        A center that was sampled and has a minimum value in
-        lightest_edge_weight.
-    """
-    closest_center = None
-    closest_weight = float('inf'), float('inf'), float('inf')
-    for center in neighboring_sampled_centers:
-        if lightest_edge_weight[center] < closest_weight:
-            closest_center = center
-            closest_weight = lightest_edge_weight[center]
-    return closest_center
 
 
 def _add_edge_to_spanner(H, residual_graph, u, v, weight):
