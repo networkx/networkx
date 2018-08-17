@@ -65,6 +65,21 @@ def second_order_centrality(G):
     >>> print(sorted(soc.items(), key=lambda x:x[1])[0][0]) # pick first id
     0
 
+    >>> G = nx.empty_graph()
+    >>> second_order_centrality(G)
+    networkx.exception.NetworkXException: Empty graph.
+
+    >>> G = nx.Graph()
+    >>> G.add_node(0)
+    >>> G.add_node(1)
+    >>> second_order_centrality(G)
+    networkx.exception.NetworkXException: Non connected graph.
+
+    Raises
+    ------
+    NetworkXException
+        If the graph ``G`` is empty or non connected.
+
     See Also
     --------
     betweenness_centrality
@@ -77,7 +92,7 @@ def second_order_centrality(G):
 
     This code implements the analytical version of the algorithm, i.e.,
     there is no simulation of a random walk process involved. The random walk
-    is here biased (corresponding to eq(4) of the paper [1]_).
+    is here biased (corresponding to eq 4 of the paper [1]_).
 
     Complexity of this implementation, made to run locally on a single machine,
     is O(n^3), with n the size of G, which makes it viable only for small
