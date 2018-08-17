@@ -59,9 +59,9 @@ def spanner(G, stretch, weight=None, seed=None):
     see [1].
 
     This algorithm is a randomized las vegas algorithm: The expected
-    running time is O(km) where k = floor((stretch + 1) / 2)) and m is
-    the number of edges in G. The returned graph is always a spanner of
-    the given graph with the specified stretch. For weighted graphs the
+    running time is O(km) where k = (stretch + 1) // 2 and m is the
+    number of edges in G. The returned graph is always a spanner of the
+    given graph with the specified stretch. For weighted graphs the
     number of edges in the spanner is O(k * n^(1 + 1 / k)) where k is
     defined as above and n is the number of nodes in G. For unweighted
     graphs the number of edges is O(n^(1 + 1 / k) + kn).

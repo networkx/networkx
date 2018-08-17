@@ -20,7 +20,6 @@ def _test_spanner(G, spanner, stretch, weight=None):
 
     Parameters
     ----------
-
     G : NetworkX graph
         The original graph for which the spanner was constructed.
 
