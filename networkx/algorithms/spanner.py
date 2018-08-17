@@ -145,7 +145,7 @@ def spanner(G, stretch, weight=None, seed=None):
                 for neighbor in residual_graph.adj[v]:
                     neighbor_cluster = clustering[neighbor]
                     neighbor_weight = lightest_edge_weight[neighbor_cluster]
-                    if neighbor_cluster is closest_center or neighbor_weight < closest_center_weight:
+                    if neighbor_cluster == closest_center or neighbor_weight < closest_center_weight:
                         edges_to_remove.add((v, neighbor))
 
         # check whether iteration added too many edges to spanner,
@@ -173,7 +173,7 @@ def spanner(G, stretch, weight=None, seed=None):
         # step 4: remove intra-cluster edges
         for u in residual_graph.nodes:
             for v in list(residual_graph.adj[u]):
-                if clustering[u] is clustering[v]:
+                if clustering[u] == clustering[v]:
                     residual_graph.remove_edge(u, v)
 
         # update residual graph node set
