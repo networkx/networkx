@@ -9,6 +9,7 @@ H = (V, E_S) such that E_S is a subset of E and the distance between any
 pair of nodes in H is at most t times the distance between the nodes
 in G.
 """
+from __future__ import division
 import math
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
@@ -74,7 +75,7 @@ def spanner(G, stretch, weight=None, seed=None):
     if stretch < 1:
         raise ValueError('stretch must be at least 1')
 
-    k = _stretch_to_k(stretch)
+    k = (stretch + 1) // 2
 
     # initialize spanner H with empty edge set
     H = nx.empty_graph()
@@ -87,8 +88,8 @@ def spanner(G, stretch, weight=None, seed=None):
     # clustering is a dictionary that maps nodes in a cluster to the
     # cluster center
     clustering = {v: v for v in G.nodes}
-    sample_prob = math.pow(G.number_of_nodes(), - 1.0 / k)
-    size_limit = 2 * math.pow(G.number_of_nodes(), 1 + 1.0 / k)
+    sample_prob = math.pow(G.number_of_nodes(), - 1 / k)
+    size_limit = 2 * math.pow(G.number_of_nodes(), 1 + 1 / k)
 
     i = 0
     while i < k - 1:
@@ -189,27 +190,6 @@ def spanner(G, stretch, weight=None, seed=None):
             _add_edge_to_spanner(H, residual_graph, v, neighbor, weight)
 
     return H
-
-
-def _stretch_to_k(stretch):
-    """Compute the parameter k based on the given stretch.
-
-    In the Baswana-Sen spanner algorithm the stretch of the spanner
-    depends on a parameter k. This function computes the value of k
-    on the basis of the desired stretch.
-
-    Parameters
-    ----------
-    stretch : float
-        The stretch of the spanner.
-
-    Returns
-    -------
-    int
-        The parameter k such that (at most) the desired stretch is
-        achieved.
-    """
-    return int(math.floor((stretch + 1) / 2))
 
 
 def _setup_residual_graph(G, weight):
