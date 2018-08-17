@@ -68,7 +68,6 @@ import networkx.algorithms.link_analysis
 import networkx.algorithms.lowest_common_ancestors
 import networkx.algorithms.operators
 import networkx.algorithms.shortest_paths
-import networkx.algorithms.sparsifiers
 import networkx.algorithms.tournament
 import networkx.algorithms.traversal
 import networkx.algorithms.tree

@@ -58,6 +58,7 @@ Algorithms
    simple_paths
    smallworld
    smetric
+   sparsifiers
    structuralholes
    swap
    tournament
