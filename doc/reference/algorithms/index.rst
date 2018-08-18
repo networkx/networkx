@@ -51,6 +51,7 @@ Algorithms
    node_classification
    operators
    planarity
+   planar_drawing
    reciprocity
    rich_club
    shortest_paths

@@ -43,6 +43,7 @@ class TestLayout(object):
         G = []
         vpos = nx.random_layout(G)
         vpos = nx.circular_layout(G)
+        vpos = nx.planar_layout(G)
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.spectral_layout(G)
@@ -55,6 +56,7 @@ class TestLayout(object):
         G = self.Gi
         vpos = nx.random_layout(G)
         vpos = nx.circular_layout(G)
+        vpos = nx.planar_layout(G)
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.fruchterman_reingold_layout(self.bigG)
@@ -71,6 +73,7 @@ class TestLayout(object):
         G = self.Gs
         vpos = nx.random_layout(G)
         vpos = nx.circular_layout(G)
+        vpos = nx.planar_layout(G)
         vpos = nx.spring_layout(G)
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.spectral_layout(G)
@@ -103,6 +106,15 @@ class TestLayout(object):
         if self.scipy is not None:
             sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
 
+    def test_planar_layout_non_planar_input(self):
+        G = nx.complete_graph(9)
+        assert_raises(nx.NetworkXException, nx.planar_layout, G)
+
+    def test_smoke_planar_layout_embedding_input(self):
+        embedding = nx.PlanarEmbedding()
+        embedding.set_data({0: [1, 2], 1: [0, 2], 2: [0, 1]})
+        nx.planar_layout(embedding)
+
     def test_default_scale_and_center(self):
         sc = self.check_scale_and_center
         c = (0, 0)
@@ -116,11 +128,13 @@ class TestLayout(object):
         if self.scipy is not None:
             sc(nx.kamada_kawai_layout(G), scale=1, center=c)
 
-    def test_circular_and_shell_dim_error(self):
+    def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
         assert_raises(ValueError, nx.circular_layout, G, dim=1)
         assert_raises(ValueError, nx.shell_layout, G, dim=1)
         assert_raises(ValueError, nx.shell_layout, G, dim=3)
+        assert_raises(ValueError, nx.planar_layout, G, dim=1)
+        assert_raises(ValueError, nx.planar_layout, G, dim=3)
 
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_array(self.Gs)
@@ -170,6 +184,8 @@ class TestLayout(object):
         vpos = nx.random_layout(G, center=(1, 1))
         vpos = nx.circular_layout(G, center=(1, 1))
         assert_equal(tuple(vpos[0]), (1, 1))
+        vpos = nx.planar_layout(G, center=(1, 1))
+        assert_equal(tuple(vpos[0]), (1, 1))
         vpos = nx.spring_layout(G, center=(1, 1))
         assert_equal(tuple(vpos[0]), (1, 1))
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
@@ -183,6 +199,7 @@ class TestLayout(object):
         G = nx.path_graph(1)
         assert_raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
+        assert_raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.fruchterman_reingold_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.fruchterman_reingold_layout, G, dim=3, center=(1, 1))
@@ -195,6 +212,8 @@ class TestLayout(object):
         vpos = nx.random_layout(G, center=(1, 1))
         assert_equal(vpos, {})
         vpos = nx.circular_layout(G, center=(1, 1))
+        assert_equal(vpos, {})
+        vpos = nx.planar_layout(G, center=(1, 1))
         assert_equal(vpos, {})
         vpos = nx.bipartite_layout(G, G)
         assert_equal(vpos, {})

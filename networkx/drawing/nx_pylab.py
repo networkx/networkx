@@ -25,7 +25,7 @@ import networkx as nx
 from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
-    spring_layout, random_layout
+    spring_layout, random_layout, planar_layout
 
 __all__ = ['draw',
            'draw_networkx',
@@ -38,6 +38,7 @@ __all__ = ['draw',
            'draw_random',
            'draw_spectral',
            'draw_spring',
+           'draw_planar',
            'draw_shell']
 
 
@@ -1054,6 +1055,22 @@ def draw_shell(G, **kwargs):
     if nlist is not None:
         del(kwargs['nlist'])
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
+
+
+def draw_planar(G, **kwargs):
+    """Draw a planar networkx graph with planar layout.
+
+    Parameters
+    ----------
+    G : graph
+       A planar networkx graph
+
+    kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
+    draw(G, planar_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
