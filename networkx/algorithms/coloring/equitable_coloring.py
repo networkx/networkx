@@ -382,11 +382,11 @@ def equitable_color(G, num_colors):
      >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
      True
 
-    Raises
-    ------
-    NetworkXAlgorithmError
-        If the maximum degree of the graph ``G`` is greater than
-        ``num_colors``.
+     Raises
+     ------
+     NetworkXAlgorithmError
+         If the maximum degree of the graph ``G`` is greater than
+         ``num_colors``.
 
      References
      ----------
