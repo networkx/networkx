@@ -107,7 +107,7 @@ Percolation
    percolation_centrality
 
 Second Order Centrality
---------
+-----------------------
 .. autosummary::
    :toctree: generated/
 
