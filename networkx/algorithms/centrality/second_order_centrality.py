@@ -154,5 +154,6 @@ class AssumptionTests(unittest.TestCase):
         self.assertRaises(nx.NetworkXException,
                           lambda: second_order_centrality(G))
 
+
 if __name__ == '__main__':
     unittest.main()
