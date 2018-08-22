@@ -34,7 +34,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import networkx as nx
 import copy
 from networkx.utils import not_implemented_for
-import unittest
 
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
 ''' Second order centrality measure.'''
@@ -127,32 +126,3 @@ def second_order_centrality(G):
 
     return {k: v for k, v in enumerate(
         np.sqrt(H - np.square(M))[0, :])}  # eq 4
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-
-# for codecov
-
-
-class AssumptionTests(unittest.TestCase):
-    def test_empty(self):
-        G = nx.empty_graph()
-        self.assertRaises(nx.NetworkXException,
-                          lambda: second_order_centrality(G))
-
-    def test_nonconnected(self):
-        G = nx.Graph()
-        G.add_node(0)
-        G.add_node(1)
-        self.assertRaises(nx.NetworkXException,
-                          lambda: second_order_centrality(G))
-
-
-unittest.main()
