@@ -1136,8 +1136,6 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     pred, dist : dictionaries
        Returns two dictionaries keyed by node to predecessor in the
        path and to the distance from the source respectively.
-       Warning: If target is specified, the dicts are incomplete as they
-       only contain information for the nodes along a path to target.
 
     Raises
     ------
@@ -1162,9 +1160,9 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
 
     >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0, 1)
     >>> sorted(pred.items())
-    [(0, []), (1, [0])]
+    [(0, []), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
     >>> sorted(dist.items())
-    [(0, 0), (1, 1)]
+    [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
