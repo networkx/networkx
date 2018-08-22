@@ -1290,10 +1290,6 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                     if dist_v > cutoff:
                         continue
 
-                if target is not None:
-                    if dist_v > dist.get(target, inf):
-                        continue
-
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
                         q.append(v)
