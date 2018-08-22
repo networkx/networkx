@@ -155,5 +155,4 @@ class AssumptionTests(unittest.TestCase):
                           lambda: second_order_centrality(G))
 
 
-if __name__ == '__main__':
-    unittest.main()
+unittest.main()
