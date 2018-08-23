@@ -124,5 +124,13 @@ def second_order_centrality(G):
                                   (np.identity(n) + _Qj(P, i)) *
                                   np.reshape(M[:, i], [n, 1]))[0]
 
-    return {k: v for k, v in enumerate(
-        np.sqrt(H - np.square(M))[0, :])}  # eq 4
+    return dict(zip(G.nodes, np.sqrt(H - np.square(M))[0, :]))  # eq 4
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
