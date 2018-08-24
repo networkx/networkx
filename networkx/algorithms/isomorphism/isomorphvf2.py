@@ -155,6 +155,18 @@ import networkx as nx
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']
 
+def set_min(s):
+    """
+    Returns the minimum of the set is possible. Otherwise, returns one
+    of the items of the set.
+    """
+
+    try:
+        return min(s)
+    except TypeError:
+        # some items in the set could not be compared
+        return next(iter(s))
+
 
 class GraphMatcher(object):
     """Implementation of VF2 algorithm for matching undirected graphs.
@@ -226,7 +238,7 @@ class GraphMatcher(object):
         # P(s) = T1_inout x {min T2_inout}
         if T1_inout and T2_inout:
             for node in T1_inout:
-                yield node, min(T2_inout)
+                yield node, set_min(T2_inout)
 
         else:
             # If T1_inout and T2_inout were both empty....
@@ -234,7 +246,7 @@ class GraphMatcher(object):
             # if not (T1_inout or T2_inout):       # as suggested by  [2], incorrect
             if 1:                                  # as inferred from [1], correct
                 # First we determine the candidate node for G2
-                other_node = min(G2_nodes - set(self.core_2))
+                other_node = set_min(G2_nodes - set(self.core_2))
                 for node in self.G1:
                     if node not in self.core_1:
                         yield node, other_node
@@ -525,7 +537,7 @@ class DiGraphMatcher(GraphMatcher):
         # If T1_out and T2_out are both nonempty.
         # P(s) = T1_out x {min T2_out}
         if T1_out and T2_out:
-            node_2 = min(T2_out)
+            node_2 = set_min(T2_out)
             for node_1 in T1_out:
                 yield node_1, node_2
 
@@ -540,7 +552,7 @@ class DiGraphMatcher(GraphMatcher):
             # If T1_in and T2_in are both nonempty.
             # P(s) = T1_out x {min T2_out}
             if T1_in and T2_in:
-                node_2 = min(T2_in)
+                node_2 = set_min(T2_in)
                 for node_1 in T1_in:
                     yield node_1, node_2
 
@@ -549,7 +561,7 @@ class DiGraphMatcher(GraphMatcher):
 
             # elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
             else:                          # as inferred from [1], correct
-                node_2 = min(G2_nodes - set(self.core_2))
+                node_2 = set_min(G2_nodes - set(self.core_2))
                 for node_1 in G1_nodes:
                     if node_1 not in self.core_1:
                         yield node_1, node_2
