@@ -1206,7 +1206,10 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
 
 def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                   target=None):
-    """Relaxation loop for Bellman–Ford algorithm
+    """Relaxation loop for Bellman–Ford algorithm.
+
+    This is an implementation of the SPFA variant.
+    See https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
 
     Parameters
     ----------
@@ -1216,10 +1219,10 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         List of source nodes
 
     weight : function
-       The weight of an edge is the value returned by the function. The
-       function must accept exactly three positional arguments: the two
-       endpoints of an edge and the dictionary of edge attributes for
-       that edge. The function must return a number.
+        The weight of an edge is the value returned by the function. The
+        function must accept exactly three positional arguments: the two
+        endpoints of an edge and the dictionary of edge attributes for
+        that edge. The function must return a number.
 
     pred: dict of lists, optional (default=None)
         dict to store a list of predecessors keyed by that node
