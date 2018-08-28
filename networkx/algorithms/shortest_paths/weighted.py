@@ -1216,7 +1216,8 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     G : NetworkX graph
 
     source: list
-        List of source nodes
+        List of source nodes. The shortest path from any of the source
+        nodes will be found if multiple sources are provided.
 
     weight : function
         The weight of an edge is the value returned by the function. The
