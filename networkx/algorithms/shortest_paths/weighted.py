@@ -1101,7 +1101,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 
 
 def bellman_ford_predecessor_and_distance(G, source, target=None,
-                                          cutoff=None, weight='weight'):
+                                          weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
@@ -1136,8 +1136,6 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     pred, dist : dictionaries
        Returns two dictionaries keyed by node to predecessor in the
        path and to the distance from the source respectively.
-       Warning: If target is specified, the dicts are incomplete as they
-       only contain information for the nodes along a path to target.
 
     Raises
     ------
@@ -1162,9 +1160,9 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
 
     >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0, 1)
     >>> sorted(pred.items())
-    [(0, []), (1, [0])]
+    [(0, []), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
     >>> sorted(dist.items())
-    [(0, 0), (1, 1)]
+    [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
@@ -1202,26 +1200,30 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     weight = _weight_function(G, weight)
 
     dist = _bellman_ford(G, [source], weight, pred=pred, dist=dist,
-                         cutoff=cutoff, target=target)
+                         target=target)
     return (pred, dist)
 
 
 def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
-                  cutoff=None, target=None):
-    """Relaxation loop for Bellman–Ford algorithm
+                  target=None):
+    """Relaxation loop for Bellman–Ford algorithm.
+
+    This is an implementation of the SPFA variant.
+    See https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
 
     Parameters
     ----------
     G : NetworkX graph
 
     source: list
-        List of source nodes
+        List of source nodes. The shortest path from any of the source
+        nodes will be found if multiple sources are provided.
 
     weight : function
-       The weight of an edge is the value returned by the function. The
-       function must accept exactly three positional arguments: the two
-       endpoints of an edge and the dictionary of edge attributes for
-       that edge. The function must return a number.
+        The weight of an edge is the value returned by the function. The
+        function must accept exactly three positional arguments: the two
+        endpoints of an edge and the dictionary of edge attributes for
+        that edge. The function must return a number.
 
     pred: dict of lists, optional (default=None)
         dict to store a list of predecessors keyed by that node
@@ -1235,9 +1237,6 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         dict to store distance from source to the keyed node
         If None, returned dist dict contents default to 0 for every node in the
         source list
-
-    cutoff: integer or float, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned
 
     target: node label, optional
         Ending node for path. Path lengths to other destinations may (and
@@ -1285,14 +1284,6 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
             dist_u = dist[u]
             for v, e in G_succ[u].items():
                 dist_v = dist_u + weight(v, u, e)
-
-                if cutoff is not None:
-                    if dist_v > cutoff:
-                        continue
-
-                if target is not None:
-                    if dist_v > dist.get(target, inf):
-                        continue
 
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
@@ -1434,7 +1425,7 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
             "node %s not reachable from %s" % (source, target))
 
 
-def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
+def single_source_bellman_ford_path(G, source, weight='weight'):
     """Compute shortest path between source and all other reachable
     nodes for a weighted graph.
 
@@ -1447,9 +1438,6 @@ def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
-
-    cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
 
     Returns
     -------
@@ -1479,12 +1467,11 @@ def single_source_bellman_ford_path(G, source, cutoff=None, weight='weight'):
 
     """
     (length, path) = single_source_bellman_ford(
-        G, source, cutoff=cutoff, weight=weight)
+        G, source, weight=weight)
     return path
 
 
-def single_source_bellman_ford_path_length(G, source,
-                                           cutoff=None, weight='weight'):
+def single_source_bellman_ford_path_length(G, source, weight='weight'):
     """Compute the shortest path length between source and all other
     reachable nodes for a weighted graph.
 
@@ -1497,9 +1484,6 @@ def single_source_bellman_ford_path_length(G, source,
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
-
-    cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
 
     Returns
     -------
@@ -1536,11 +1520,10 @@ def single_source_bellman_ford_path_length(G, source,
 
     """
     weight = _weight_function(G, weight)
-    return _bellman_ford(G, [source], weight, cutoff=cutoff)
+    return _bellman_ford(G, [source], weight)
 
 
-def single_source_bellman_ford(G, source,
-                               target=None, cutoff=None, weight='weight'):
+def single_source_bellman_ford(G, source, target=None, weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
 
     Uses Bellman-Ford algorithm for shortest paths.
@@ -1554,9 +1537,6 @@ def single_source_bellman_ford(G, source,
 
     target : node label, optional
        Ending node for path
-
-    cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
 
     Returns
     -------
@@ -1611,8 +1591,7 @@ def single_source_bellman_ford(G, source,
     weight = _weight_function(G, weight)
 
     paths = {source: [source]}  # dictionary of paths
-    dist = _bellman_ford(G, [source], weight, paths=paths, cutoff=cutoff,
-                         target=target)
+    dist = _bellman_ford(G, [source], weight, paths=paths, target=target)
     if target is None:
         return (dist, paths)
     try:
@@ -1622,7 +1601,7 @@ def single_source_bellman_ford(G, source,
         raise nx.NetworkXNoPath(msg)
 
 
-def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
+def all_pairs_bellman_ford_path_length(G, weight='weight'):
     """ Compute shortest path lengths between all nodes in a weighted graph.
 
     Parameters
@@ -1631,9 +1610,6 @@ def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
-
-    cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
 
     Returns
     -------
@@ -1666,10 +1642,10 @@ def all_pairs_bellman_ford_path_length(G, cutoff=None, weight='weight'):
     """
     length = single_source_bellman_ford_path_length
     for n in G:
-        yield (n, dict(length(G, n, cutoff=cutoff, weight=weight)))
+        yield (n, dict(length(G, n, weight=weight)))
 
 
-def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
+def all_pairs_bellman_ford_path(G, weight='weight'):
     """ Compute shortest paths between all nodes in a weighted graph.
 
     Parameters
@@ -1678,9 +1654,6 @@ def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
-
-    cutoff : integer or float, optional
-       Depth to stop the search. Only paths of length <= cutoff are returned.
 
     Returns
     -------
@@ -1707,7 +1680,7 @@ def all_pairs_bellman_ford_path(G, cutoff=None, weight='weight'):
     path = single_source_bellman_ford_path
     # TODO This can be trivially parallelized.
     for n in G:
-        yield (n, path(G, n, cutoff=cutoff, weight=weight))
+        yield (n, path(G, n, weight=weight))
 
 
 def goldberg_radzik(G, source, weight='weight'):
