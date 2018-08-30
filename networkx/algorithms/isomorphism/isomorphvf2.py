@@ -237,8 +237,9 @@ class GraphMatcher(object):
         # If T1_inout and T2_inout are both nonempty.
         # P(s) = T1_inout x {min T2_inout}
         if T1_inout and T2_inout:
-            for node in T1_inout:
-                yield node, set_min(T2_inout)
+            node_2 = set_min(T2_inout)
+            for node_1 in T1_inout:
+                yield node_1, node_2
 
         else:
             # If T1_inout and T2_inout were both empty....
