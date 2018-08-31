@@ -68,7 +68,7 @@ def second_order_centrality(G):
     Raises
     ------
     NetworkXException
-        If the graph ``G`` is empty or non connected.
+        If the graph G is empty, non connected or has negative weights.
 
     See Also
     --------
@@ -82,7 +82,10 @@ def second_order_centrality(G):
 
     This code implements the analytical version of the algorithm, i.e.,
     there is no simulation of a random walk process involved. The random walk
-    is here biased (corresponding to eq 4 of the paper [1]_).
+    is here unbiased (corresponding to eq 6 of the paper [1]_), thus the
+    centrality values are the standard deviations for random walk return times
+    on the transformed input graph G (equal in-degree at each nodes by adding
+    self-loops).
 
     Complexity of this implementation, made to run locally on a single machine,
     is O(n^3), with n the size of G, which makes it viable only for small
@@ -106,6 +109,20 @@ def second_order_centrality(G):
         raise nx.NetworkXException("Empty graph.")
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
+    if [True for (i, j, d) in G.edges(data=True)
+            if 'weight' in d and d['weight'] < 0]:
+        raise nx.NetworkXException("Graph has negative edge weights.")
+
+    def unbias_graph(G):
+        G = nx.DiGraph(G)
+        d_max = np.max([G.in_degree(i,
+                                    weight='weight') for i in range(len(G))])
+        for i in range(n):
+            if G.in_degree(i, weight='weight') < d_max:
+                G.add_edge(i, i, weight=d_max-G.in_degree(i, weight='weight'))
+        return G
+
+    G = unbias_graph(G)
 
     P = nx.to_numpy_matrix(G)
     P = P / P.sum(axis=1)  # to transition probability matrix
@@ -116,15 +133,14 @@ def second_order_centrality(G):
         return P
 
     M = np.empty([n, n])
-    H = np.empty([n, n])
+
     for i in range(n):
         M[:, i] = np.linalg.solve(np.identity(n) - _Qj(P, i),
-                                  np.ones([n, 1]))[0]  # eq 3
-        H[:, i] = np.linalg.solve((np.identity(n) - _Qj(P, i)),
-                                  (np.identity(n) + _Qj(P, i)) *
-                                  np.reshape(M[:, i], [n, 1]))[0]
+                                  np.ones([n, 1])[:, 0])  # eq 3
 
-    return dict(zip(G.nodes, np.sqrt(H - np.square(M))[0, :]))  # eq 4
+    return dict(zip(G.nodes,
+                    [np.sqrt((2*np.sum(M[:, i])-n*(n+1))) for i in range(n)]
+                    ))  # eq 6
 
 
 # fixture for nose tests
