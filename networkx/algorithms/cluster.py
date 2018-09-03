@@ -283,7 +283,7 @@ def clustering(G, nodes=None, weight=None):
     .. math::
 
        c_u = \frac{1}{deg(u)(deg(u)-1))}
-             \sum_{uv} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
+             \sum_{vw} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
 
     The edge weights `\hat{w}_{uv}` are normalized by the maximum weight in the
     network `\hat{w}_{uv} = w_{uv}/\max(w)`.
