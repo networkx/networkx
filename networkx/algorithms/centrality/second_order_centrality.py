@@ -109,20 +109,16 @@ def second_order_centrality(G):
         raise nx.NetworkXException("Empty graph.")
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
-    if [True for (i, j, d) in G.edges(data=True)
-            if 'weight' in d and d['weight'] < 0]:
+    if any(d.get('weight', 0) < 0 for u, v, d in G.edges(data=True)):
         raise nx.NetworkXException("Graph has negative edge weights.")
 
-    def unbias_graph(G):
-        G = nx.DiGraph(G)
-        d_max = np.max([G.in_degree(i,
-                                    weight='weight') for i in range(len(G))])
-        for i in range(n):
-            if G.in_degree(i, weight='weight') < d_max:
-                G.add_edge(i, i, weight=d_max-G.in_degree(i, weight='weight'))
-        return G
-
-    G = unbias_graph(G)
+    # balancing G for Metropolis-Hastings random walks
+    G = nx.DiGraph(G)
+    in_deg = dict(G.in_degree(weight='weight'))
+    d_max = max(in_deg.values())
+    for i, deg in in_deg.items():
+        if deg < d_max:
+            G.add_edge(i, i, weight=d_max-deg)
 
     P = nx.to_numpy_matrix(G)
     P = P / P.sum(axis=1)  # to transition probability matrix
