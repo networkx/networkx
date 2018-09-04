@@ -894,6 +894,24 @@ def rescale_layout(pos, scale=1):
             pos[:, i] *= scale / lim
     return pos
 
+def rescale_layout_dict(pos, scale=1):
+    """Return a dictionary of scaled positions keyed by node 
+
+    Parameters
+    ----------
+    pos : A dictionary of positions keyed by node
+
+    scale : number (default: 1)
+        The size of the resulting extent in all directions.
+
+    Returns
+    -------
+    pos : A dictionary of positions keyed by node
+
+    """
+    pos_v = np.array([(px, py) for px, py in pos.values()])
+    pos_v = rescale_layout(pos_v, scale=scale)
+    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
 
 # fixture for nose tests
 def setup_module(module):
