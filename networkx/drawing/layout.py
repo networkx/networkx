@@ -917,11 +917,13 @@ def rescale_layout_dict(pos, scale=1):
     --------
     rescale_layout
     """
+    import numpy as np
+    
     if len(pos)==0:
         ## the empty graph 
         return {}
     pos_v = np.array(list(pos.values()))
-    pos_v = rescale_layout(pos_v, scale=scale
+    pos_v = rescale_layout(pos_v, scale=scale)
     return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
 
 # fixture for nose tests
