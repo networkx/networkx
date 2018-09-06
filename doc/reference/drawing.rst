@@ -82,6 +82,7 @@ Graph Layout
    kamada_kawai_layout
    random_layout
    rescale_layout
+   rescale_layout_dict
    shell_layout
    spring_layout
    spectral_layout

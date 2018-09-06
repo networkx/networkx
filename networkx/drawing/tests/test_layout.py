@@ -286,3 +286,8 @@ class TestLayout(object):
 
                 assert_almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
                                     places=5)
+
+    def test_rescale_layout_dict(self):
+        G = nx.empty_graph()
+        vpos = nx.random_layout(G, center=(1, 1))
+        assert_equal(nx.rescale_layout_dict(vpos), {})

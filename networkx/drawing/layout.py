@@ -34,6 +34,7 @@ __all__ = ['bipartite_layout',
            'kamada_kawai_layout',
            'random_layout',
            'rescale_layout',
+           'rescale_layout_dict', 
            'shell_layout',
            'spring_layout',
            'spectral_layout',
@@ -882,6 +883,10 @@ def rescale_layout(pos, scale=1):
     pos : numpy array
         scaled positions. Each row is a position.
 
+    See Also
+    --------
+    rescale_layout_dict
+
     """
     # Find max length over all dimensions
     lim = 0  # max coordinate for all axes
@@ -894,6 +899,30 @@ def rescale_layout(pos, scale=1):
             pos[:, i] *= scale / lim
     return pos
 
+def rescale_layout_dict(pos, scale=1):
+    """Return a dictionary of scaled positions keyed by node 
+
+    Parameters
+    ----------
+    pos : A dictionary of positions keyed by node
+
+    scale : number (default: 1)
+        The size of the resulting extent in all directions.
+
+    Returns
+    -------
+    pos : A dictionary of positions keyed by node
+
+    See Also
+    --------
+    rescale_layout
+    """
+    if len(pos)==0:
+        ## the empty graph 
+        return {}
+    pos_v = np.array(list(pos.values()))
+    pos_v = rescale_layout(pos_v, scale=scale
+    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
 
 # fixture for nose tests
 def setup_module(module):
