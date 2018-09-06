@@ -32,7 +32,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
 import networkx as nx
-import copy
 from networkx.utils import not_implemented_for
 
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
@@ -124,7 +123,7 @@ def second_order_centrality(G):
     P = P / P.sum(axis=1)  # to transition probability matrix
 
     def _Qj(P, j):
-        P = copy.copy(P)
+        P = P.copy()
         P[:, j] = 0
         return P
 
