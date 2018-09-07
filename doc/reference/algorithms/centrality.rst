@@ -112,3 +112,10 @@ Second Order Centrality
    :toctree: generated/
 
    second_order_centrality
+
+VoteRank
+-----------
+.. autosummary::
+   :toctree: generated/
+
+   voterank 
