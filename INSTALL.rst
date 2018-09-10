@@ -96,7 +96,7 @@ The following optional packages provide additional functionality.
   is a tabular data structure with labeled axes.
 - `Matplotlib <http://matplotlib.org/>`_ (>= 2.2.2) provides flexible drawing of
   graphs.
-- `PyGraphviz <http://pygraphviz.github.io/>`_ and
+- `PyGraphviz <http://pygraphviz.github.io/>`_ (>= 1.5) and
   `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.4) provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
 - `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
