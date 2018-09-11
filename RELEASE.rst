@@ -48,7 +48,7 @@ How to make a new release of ``networkx``
 
    git clean -fxd
    python setup.py sdist --formats=zip
-   twine upload -s dist/pygraphviz*.zip
+   twine upload -s dist/networkx*.zip
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
