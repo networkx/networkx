@@ -563,7 +563,7 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal',
        Data key to use for edge weights.
 
     algorithm : string
-       The algorithm to use when finding a minimum spanning tree. Valid
+       The algorithm to use when finding a maximum spanning tree. Valid
        choices are 'kruskal', 'prim', or 'boruvka'. The default is
        'kruskal'.
 
@@ -575,7 +575,7 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal',
     Returns
     -------
     G : NetworkX Graph
-       A minimum spanning tree or forest.
+       A maximum spanning tree or forest.
 
 
     Examples
