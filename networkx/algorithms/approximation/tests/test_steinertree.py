@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+from nose.tools import assert_raises, raises
 import networkx as nx
 from networkx.algorithms.approximation.steinertree import metric_closure
 from networkx.algorithms.approximation.steinertree import steiner_tree
@@ -56,3 +56,22 @@ class TestSteinerTree:
                                  (3, 4, {'weight': 10}),
                                  (5, 7, {'weight': 1})]
         assert_edges_equal(list(S.edges(data=True)), expected_steiner_tree)
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_multigraph_steiner_tree(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([
+            (1, 2, 0, {'weight': 1}),
+            (2, 3, 0, {'weight': 999}),
+            (2, 3, 1, {'weight': 1}),
+            (3, 4, 0, {'weight': 1}),
+            (3, 5, 0, {'weight': 1})
+        ])
+        terminal_nodes = [2, 4, 5]
+        expected_edges = [
+            (2, 3, 1, {'weight': 1}),  # edge with key 1 has lower weight
+            (3, 4, 0, {'weight': 1}),
+            (3, 5, 0, {'weight': 1})
+        ]
+        # not implemented
+        T = steiner_tree(G, terminal_nodes)
