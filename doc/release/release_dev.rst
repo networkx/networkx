@@ -17,6 +17,12 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
+- Add support for Python 3.7. This is the last release to support Python 2.
+- Uniform random number generator (RNG) handling which defaults to global
+  RNGs but allows specification of a single RNG for all random numbers in NX.
+- Improved GraphViews to ease subclassing and remove cyclic references
+  which caused trouble with deepcopy and pickle.
+- New Graph method `G.update(H)`
 
 Improvements
 ------------
@@ -55,7 +61,9 @@ New functions for tree width and tree decompositions.
 
 Functions for Clauset-Newman-Moore modularity-max community detection.
 
-Functions for small world analysis, directed clustering and perfect matchings.
+Functions for small world analysis, directed clustering and perfect matchings,
+eulerizing a graph, depth-limited BFS, percolation centrality,
+planarity checking.
 
 The shortest_path generic and convenience functions now have a `method`
 parameter to choose between dijkstra and bellmon-ford in the weighted case.
