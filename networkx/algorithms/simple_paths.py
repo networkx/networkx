@@ -265,7 +265,7 @@ def shortest_simple_paths(G, source, target, weight=None):
     A simple path is a path with no repeated nodes.
 
     If a weighted shortest path search is to be used, no negative weights
-    are allawed.
+    are allowed.
 
     Parameters
     ----------
