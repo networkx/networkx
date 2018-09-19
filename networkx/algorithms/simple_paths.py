@@ -435,7 +435,7 @@ def _bidirectional_shortest_path(G, source, target,
        edges to ignore, optional
 
     weight : None
-       This function accepts a weight argument for convenience of
+       This function accepts a weight argument for convinience of
        shortest_simple_paths function. It will be ignored.
 
     Returns

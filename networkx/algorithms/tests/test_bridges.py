@@ -1,6 +1,6 @@
 # test_bridges.py - unit tests for bridge-finding algorithms
 #
-# Copyright 2004-2018 NetworkX developers.
+# Copyright 2004-2017 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

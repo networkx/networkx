@@ -1,4 +1,4 @@
-#    Copyright (C) 2016-2018 by
+#    Copyright (C) 2016-2017 by
 #    Minas Gjoka
 #    BSD license.
 #
