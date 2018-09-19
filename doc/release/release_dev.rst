@@ -14,8 +14,8 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of X of work with over X pull requests by
-X contributors. Highlights include:
+This release is the result of 8 months of work with over 149 commits by
+58 contributors. Highlights include:
 
 - Add support for Python 3.7. This is the last release to support Python 2.
 - Uniform random number generator (RNG) handling which defaults to global
@@ -26,6 +26,7 @@ X contributors. Highlights include:
 
 Improvements
 ------------
+
 Each function that uses random numbers now uses a `seed` argument to control
 the random number generation (RNG). By default the global default RNG is
 used. More precisely, the `random` package's default RNG or the numpy.random
@@ -105,10 +106,61 @@ are derecated in favor of `generic_graph_view(graph, create_using)`.
 Contributors to this release
 ----------------------------
 
-<output of contribs.py>
-
-
-Pull requests merged in this release
-------------------------------------
-
-<output of contribs.py>
+- Luca Baldesi
+- William Bernoudy
+- Alexander Condello
+- Saurav Das
+- Dormir30
+- Graham Fetterman
+- Robert Gmyr
+- Thomas Grainger
+- Benjamin M. Gyori
+- Ramiro Gómez
+- Darío Hereñú
+- Mads Jensen
+- Michael Johnson
+- Pranay Kanwar
+- Aabir Abubaker Kar
+- Jacek Karwowski
+- Mohammed Kashif
+- David Kraeutmann
+- Winni Kretzschmar
+- Ivan Laković
+- Daniel Leicht
+- Katrin Leinweber
+- Alexander Lenail
+- Lonnen
+- Ji Ma
+- Erwan Le Merrer
+- Jarrod Millman
+- Baurzhan Muftakhidinov
+- Neil
+- Jens P
+- Edward L Platt
+- Guillaume Plique
+- Miguel Sozinho Ramalho
+- Lewis Robbins
+- Romain
+- Federico Rosato
+- Tom Russell
+- Dan Schult
+- Gabe Schwartz
+- Aaron Smith
+- Leo Torres
+- Martin Váňa
+- Ruaridh Williamson
+- Huon Wilson
+- Haochen Wu
+- Yuto Yamaguchi
+- Felix Yan
+- Jean-Gabriel Young
+- aparamon
+- armando1793
+- aweltsch
+- chebee7i
+- hongshaoyang
+- komo-fr
+- leamingrad
+- luzpaz
+- mtrenfield
+- regstrtn
