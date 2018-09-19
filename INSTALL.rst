@@ -1,7 +1,7 @@
 Install
 =======
 
-NetworkX requires Python 2.7, 3.4, 3.5, or 3.6.  If you do not already
+NetworkX requires Python 2.7, 3.5, 3.6, or 3.7.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
@@ -87,17 +87,17 @@ Optional packages
 
 The following optional packages provide additional functionality.
 
-- `NumPy <http://www.numpy.org/>`_ (>= 1.12.0) provides matrix representation of
+- `NumPy <http://www.numpy.org/>`_ (>= 1.15.0) provides matrix representation of
   graphs and is used in some graph algorithms for high-performance matrix
   computations.
-- `SciPy <http://scipy.org/>`_ (>= 0.19.0) provides sparse matrix representation
+- `SciPy <http://scipy.org/>`_ (>= 1.1.0) provides sparse matrix representation
   of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ (>= 0.20.0) provides a DataFrame, which
+- `pandas <http://pandas.pydata.org/>`_ (>= 0.23.3) provides a DataFrame, which
   is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 2.0.2) provides flexible drawing of
+- `Matplotlib <http://matplotlib.org/>`_ (>= 2.2.2) provides flexible drawing of
   graphs.
-- `PyGraphviz <http://pygraphviz.github.io/>`_ and
-  `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.3) provide graph drawing
+- `PyGraphviz <http://pygraphviz.github.io/>`_ (>= 1.5) and
+  `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.4) provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
 - `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
 - `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
@@ -141,6 +141,8 @@ installed package with::
 or::
 
     python -c "import networkx as nx; nx.test()"
+
+.. autofunction:: networkx.test
 
 Testing for developers
 ^^^^^^^^^^^^^^^^^^^^^^

@@ -144,8 +144,8 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
     ratio: Bool (default=False)
         If True, edge weight is the ratio between actual shared neighbors
-        and possible shared neighbors. If False, edges weight is the number
-        of shared neighbors.
+        and maximum possible shared neighbors (i.e., the size of the other 
+        node set). If False, edges weight is the number of shared neighbors.
 
     Returns
     -------

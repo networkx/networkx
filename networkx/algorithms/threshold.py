@@ -11,10 +11,9 @@
 """
 Threshold Graphs - Creation, manipulation and identification.
 """
-
-import random  # for swap_d
 from math import sqrt
-import networkx
+import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = ['is_threshold_graph', 'find_threshold_graph']
 
@@ -313,13 +312,9 @@ def threshold_graph(creation_sequence, create_using=None):
         print("not a valid creation sequence type")
         return None
 
-    if create_using is None:
-        G = networkx.Graph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
-    else:
-        G = create_using
-        G.clear()
+    G = nx.empty_graph(0, create_using)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
 
     G.name = "Threshold Graph"
 
@@ -782,6 +777,7 @@ def eigenvalues(creation_sequence):
 
 # Threshold graph creation routines
 
+@py_random_state(2)
 def random_threshold_sequence(n, p, seed=None):
     """
     Create a random threshold sequence of size n.
@@ -797,16 +793,16 @@ def random_threshold_sequence(n, p, seed=None):
 
     G=nx.threshold_graph(s)
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     """
-    if seed is not None:
-        random.seed(seed)
-
     if not (0 <= p <= 1):
         raise ValueError("p must be in [0,1]")
 
     cs = ['d']  # threshold sequences always start with a d
     for i in range(1, n):
-        if random.random() < p:
+        if seed.random() < p:
             cs.append('d')
         else:
             cs.append('i')
@@ -885,6 +881,7 @@ def left_d_threshold_sequence(n, m):
     return cs
 
 
+@py_random_state(3)
 def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
     """
     Perform a "swap" operation on a threshold sequence.
@@ -898,16 +895,17 @@ def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
     This operation maintains the number of nodes and edges
     in the graph, but shifts the edges from node to node
     maintaining the threshold quality of the graph.
-    """
-    if seed is not None:
-        random.seed(seed)
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+    """
     # preprocess the creation sequence
     dlist = [i for (i, node_type) in enumerate(cs[1:-1]) if node_type == 'd']
     # split
-    if random.random() < p_split:
-        choice = random.choice(dlist)
-        split_to = random.choice(range(choice))
+    if seed.random() < p_split:
+        choice = seed.choice(dlist)
+        split_to = seed.choice(range(choice))
         flip_side = choice - split_to
         if split_to != flip_side and cs[split_to] == 'i' and cs[flip_side] == 'i':
             cs[choice] = 'i'
@@ -918,9 +916,9 @@ def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
             # dlist.extend([split_to,flip_side])
 #            print >>sys.stderr,"split at %s to %s and %s"%(choice,split_to,flip_side)
     # combine
-    if random.random() < p_combine and dlist:
-        first_choice = random.choice(dlist)
-        second_choice = random.choice(dlist)
+    if seed.random() < p_combine and dlist:
+        first_choice = seed.choice(dlist)
+        second_choice = seed.choice(dlist)
         target = first_choice + second_choice
         if target >= len(cs) or cs[target] == 'd' or first_choice == second_choice:
             return cs

@@ -144,12 +144,29 @@ class TestWeightedPath(WeightedTestBase):
         validate_path(self.XG, 's', 'v', sum(self.XG[u][v]['weight'] for u, v in zip(
             P[:-1], P[1:])), nx.dijkstra_path(self.XG, 's', 'v'))
 
+        # check absent source
+        G = nx.path_graph(2)
+        assert_raises(nx.NodeNotFound, nx.bidirectional_dijkstra, G, 3, 0)
+
     @raises(nx.NetworkXNoPath)
     def test_bidirectional_dijkstra_no_path(self):
         G = nx.Graph()
         nx.add_path(G, [1, 2, 3])
         nx.add_path(G, [4, 5, 6])
         path = nx.bidirectional_dijkstra(G, 1, 6)
+
+    def test_absent_source(self):
+        # the check is in _dijkstra_multisource, but this will provide
+        # regression testing against later changes to any of the "client"
+        # Dijkstra or Bellman-Ford functions
+        G = nx.path_graph(2)
+        for fn in (nx.dijkstra_path,
+                   nx.dijkstra_path_length,
+                   nx.single_source_dijkstra_path,
+                   nx.single_source_dijkstra_path_length,
+                   nx.single_source_dijkstra,
+                   nx.dijkstra_predecessor_and_distance,):
+            assert_raises(nx.NodeNotFound, fn, G, 3, 0)
 
     def test_dijkstra_predecessor1(self):
         G = nx.path_graph(4)
@@ -319,6 +336,13 @@ class TestMultiSourceDijkstra(object):
     def test_path_length_no_sources(self):
         nx.multi_source_dijkstra_path_length(nx.Graph(), {})
 
+    def test_absent_source(self):
+        G = nx.path_graph(2)
+        for fn in (nx.multi_source_dijkstra_path,
+                   nx.multi_source_dijkstra_path_length,
+                   nx.multi_source_dijkstra,):
+            assert_raises(nx.NodeNotFound, fn, G, [3], 0)
+
     def test_two_sources(self):
         edges = [(0, 1, 1), (1, 2, 1), (2, 3, 10), (3, 4, 1)]
         G = nx.Graph()
@@ -346,10 +370,25 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.single_source_bellman_ford_path(G, 0), {0: [0]})
         assert_equal(nx.single_source_bellman_ford_path_length(G, 0), {0: 0})
         assert_equal(nx.single_source_bellman_ford(G, 0), ({0: 0}, {0: [0]}))
-        assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0), ({0: [None]}, {0: 0}))
+        assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0), ({0: []}, {0: 0}))
         assert_equal(nx.goldberg_radzik(G, 0), ({0: None}, {0: 0}))
-        assert_raises(nx.NodeNotFound, nx.bellman_ford_predecessor_and_distance, G, 1)
-        assert_raises(nx.NodeNotFound, nx.goldberg_radzik, G, 1)
+
+    def test_absent_source_bellman_ford(self):
+        # the check is in _bellman_ford; this provides regression testing
+        # against later changes to "client" Bellman-Ford functions
+        G = nx.path_graph(2)
+        for fn in (nx.bellman_ford_predecessor_and_distance,
+                   nx.bellman_ford_path,
+                   nx.bellman_ford_path_length,
+                   nx.single_source_bellman_ford_path,
+                   nx.single_source_bellman_ford_path_length,
+                   nx.single_source_bellman_ford,):
+            assert_raises(nx.NodeNotFound, fn, G, 3, 0)
+
+    @raises(nx.NodeNotFound)
+    def test_absent_source_goldberg_radzik(self):
+        G = nx.path_graph(2)
+        nx.goldberg_radzik(G, 3, 0)
 
     def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
@@ -385,7 +424,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: 0, 1: 1, 2: -2, 3: -1, 4: 0},
                       {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3, 4]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0),
-                     ({0: [None], 1: [0], 2: [1], 3: [2], 4: [3]},
+                     ({0: [], 1: [0], 2: [1], 3: [2], 4: [3]},
                       {0: 0, 1: 1, 2: -2, 3: -1, 4: 0}))
         assert_equal(nx.goldberg_radzik(G, 0),
                      ({0: None, 1: 0, 2: 1, 3: 2, 4: 3},
@@ -403,7 +442,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
                       {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0),
-                     ({0: [None], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
+                     ({0: [], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
                       {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
         assert_equal(nx.goldberg_radzik(G, 0),
                      ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
@@ -423,7 +462,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                      ({0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
                       {0: [0], 1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0, weight='load'),
-                     ({0: [None], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
+                     ({0: [], 1: [0], 2: [0], 3: [0], 4: [0], 5: [0]},
                       {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
         assert_equal(nx.goldberg_radzik(G, 0, weight='load'),
                      ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
@@ -481,7 +520,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.single_source_bellman_ford(G, 0),
                      ({0: 0, 1: 1, 2: 2, 3: 3}, {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 0),
-                     ({0: [None], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
+                     ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3}))
         assert_equal(nx.goldberg_radzik(G, 0),
                      ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
         assert_equal(nx.single_source_bellman_ford_path(G, 3),
@@ -491,7 +530,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(nx.single_source_bellman_ford(G, 3),
                      ({0: 3, 1: 2, 2: 1, 3: 0}, {0: [3, 2, 1, 0], 1: [3, 2, 1], 2: [3, 2], 3: [3]}))
         assert_equal(nx.bellman_ford_predecessor_and_distance(G, 3),
-                     ({0: [1], 1: [2], 2: [3], 3: [None]}, {0: 3, 1: 2, 2: 1, 3: 0}))
+                     ({0: [1], 1: [2], 2: [3], 3: []}, {0: 3, 1: 2, 2: 1, 3: 0}))
         assert_equal(nx.goldberg_radzik(G, 3),
                      ({0: 1, 1: 2, 2: 3, 3: None}, {0: 3, 1: 2, 2: 1, 3: 0}))
 
@@ -506,7 +545,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(path[3], [0, 3])
 
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
-        assert_equal(pred[0], [None])
+        assert_equal(pred[0], [])
         assert_equal(pred[1], [0])
         assert_true(pred[2] in [[1, 3], [3, 1]])
         assert_equal(pred[3], [0])
@@ -518,6 +557,17 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_true(pred[2] in [1, 3])
         assert_equal(pred[3], 0)
         assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
+
+    def test_negative_weight(self):
+        G = nx.DiGraph()
+        G.add_nodes_from('abcd')
+        G.add_edge('a','d', weight = 0)
+        G.add_edge('a','b', weight = 1)
+        G.add_edge('b','c', weight = -3)
+        G.add_edge('c','d', weight = 1)
+
+        assert_equal(nx.bellman_ford_path(G, 'a', 'd'), ['a', 'b', 'c', 'd'])
+        assert_equal(nx.bellman_ford_path_length(G, 'a', 'd'), -1)
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):

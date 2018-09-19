@@ -39,6 +39,8 @@ def line_graph(G, create_using=None):
     ----------
     G : graph
         A NetworkX Graph, DiGraph, MultiGraph, or MultiDigraph.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -170,14 +172,12 @@ def _lg_directed(G, create_using=None):
     ----------
     G : digraph
         A directed graph or directed multigraph.
-    create_using : None
-        A digraph instance used to populate the line graph.
+    create_using : NetworkX graph constructor, optional
+       Graph type to create. If graph instance, then cleared before populated.
+       Default is to use the same graph class as `G`.
 
     """
-    if create_using is None:
-        L = G.fresh_copy()
-    else:
-        L = create_using
+    L = nx.empty_graph(0, create_using, default=G.__class__)
 
     # Create a graph specific edge function.
     get_edges = _edge_func(G)
@@ -206,8 +206,8 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     selfloops : bool
         If `True`, then self-loops are included in the line graph. If `False`,
         they are excluded.
-    create_using : None
-        A graph instance used to populate the line graph.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Notes
     -----
@@ -215,10 +215,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     produce self-loops.
 
     """
-    if create_using is None:
-        L = G.fresh_copy()
-    else:
-        L = create_using
+    L = nx.empty_graph(0, create_using, default=G.__class__)
 
     # Graph specific functions for edges and sorted nodes.
     get_edges = _edge_func(G)

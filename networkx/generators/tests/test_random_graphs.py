@@ -31,6 +31,8 @@ from networkx.generators.random_graphs import newman_watts_strogatz_graph
 from networkx.generators.random_graphs import powerlaw_cluster_graph
 from networkx.generators.random_graphs import random_kernel_graph
 from networkx.generators.random_graphs import random_lobster
+from networkx.generators.random_graphs import random_powerlaw_tree
+from networkx.generators.random_graphs import random_powerlaw_tree_sequence
 from networkx.generators.random_graphs import random_regular_graph
 from networkx.generators.random_graphs import random_shell_graph
 from networkx.generators.random_graphs import watts_strogatz_graph
@@ -41,19 +43,24 @@ class TestGeneratorsRandom(object):
     def smoke_test_random_graph(self):
         seed = 42
         G = gnp_random_graph(100, 0.25, seed)
+        G = gnp_random_graph(100, 0.25, seed, directed=True)
         G = binomial_graph(100, 0.25, seed)
         G = erdos_renyi_graph(100, 0.25, seed)
         G = fast_gnp_random_graph(100, 0.25, seed)
+        G = fast_gnp_random_graph(100, 0.25, seed, directed=True)
         G = gnm_random_graph(100, 20, seed)
+        G = gnm_random_graph(100, 20, seed, directed=True)
         G = dense_gnm_random_graph(100, 20, seed)
 
         G = watts_strogatz_graph(10, 2, 0.25, seed)
         assert_equal(len(G), 10)
         assert_equal(G.number_of_edges(), 10)
 
-        G = connected_watts_strogatz_graph(10, 2, 0.1, seed)
+        G = connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
         assert_equal(len(G), 10)
         assert_equal(G.number_of_edges(), 10)
+        assert_raises(NetworkXError, connected_watts_strogatz_graph, \
+                      10, 2, 0.1, tries=0)
 
         G = watts_strogatz_graph(10, 4, 0.25, seed)
         assert_equal(len(G), 10)
@@ -92,11 +99,16 @@ class TestGeneratorsRandom(object):
         G = random_regular_graph(10, 20, seed)
 
         assert_raises(NetworkXError, random_regular_graph, 3, 21)
+        assert_raises(NetworkXError, random_regular_graph, 33, 21)
 
         constructor = [(10, 20, 0.8), (20, 40, 0.8)]
         G = random_shell_graph(constructor, seed)
 
         G = random_lobster(10, 0.1, 0.5, seed)
+
+        # difficult to find seed that requires few tries
+        seq = random_powerlaw_tree_sequence(10, 3, seed=14, tries=1)
+        G = random_powerlaw_tree(10, 3, seed=14, tries=1)
 
     def test_extended_barabasi_albert(self, m=2):
         """
@@ -144,7 +156,7 @@ class TestGeneratorsRandom(object):
 
         """
         seed = 42
-        G = random_regular_graph(0, 10)
+        G = random_regular_graph(0, 10, seed)
         assert_equal(len(G), 10)
         assert_equal(sum(1 for _ in G.edges()), 0)
 
@@ -223,4 +235,5 @@ class TestGeneratorsRandom(object):
             return r / c + w
         c = 1
         graph = random_kernel_graph(1000, integral, root)
+        graph = random_kernel_graph(1000, integral, root, seed=42)
         assert_equal(len(graph), 1000)

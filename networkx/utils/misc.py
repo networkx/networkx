@@ -20,9 +20,11 @@ True
 #    BSD license.
 from collections import defaultdict
 from collections import deque
+import warnings
 import sys
 import uuid
 from itertools import tee, chain
+import networkx as nx
 
 # itertools.accumulate is only available on Python 3.2 or later.
 #
@@ -112,7 +114,7 @@ if PY2:
             # convert any encoded strings to unicode before using the library.
             #
             # Also, the str() is necessary to convert integers, etc.
-            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer.
+            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer
             #
             return unicode(str(x), 'unicode-escape')
 else:
@@ -294,10 +296,9 @@ def create_random_state(random_state=None):
     Parameters
     ----------
     random_state : int or RandomState instance or None  optional (default=None)
-        If int, `random_state` is the seed used by the random number generator,
-        if numpy.random.RandomState instance, `random_state` is the random
-        number generator,
-        if None, the random number generator is the RandomState instance used
+        If int, return a numpy.random.RandomState instance set with seed=int.
+        if numpy.random.RandomState instance, return it.
+        if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
     import numpy as np
@@ -310,3 +311,108 @@ def create_random_state(random_state=None):
         return np.random.RandomState(random_state)
     msg = '%r cannot be used to generate a numpy.random.RandomState instance'
     raise ValueError(msg % random_state)
+
+
+class PythonRandomInterface(object):
+    try:
+        def __init__(self, rng=None):
+            import numpy
+            if rng is None:
+                self._rng = numpy.random.mtrand._rand
+            self._rng = rng
+    except ImportError:
+        msg = 'numpy not found, only random.random available.'
+        warnings.warn(msg, ImportWarning)
+
+    def random(self):
+        return self._rng.random_sample()
+
+    def uniform(self, a, b):
+        return a + (b - a) * self._rng.random_sample()
+
+    def randrange(self, a, b=None):
+        return self._rng.randint(a, b)
+
+    def choice(self, seq):
+        return seq[self._rng.randint(0, len(seq))]
+
+    def gauss(self, mu, sigma):
+        return self._rng.normal(mu, sigma)
+
+    def shuffle(self, seq):
+        return self._rng.shuffle(seq)
+
+#    Some methods don't match API for numpy RandomState.
+#    Commented out versions are not used by NetworkX
+
+    def sample(self, seq, k):
+        return self._rng.choice(list(seq), size=(k,), replace=False)
+
+    def randint(self, a, b):
+        return self._rng.randint(a, b + 1)
+
+#    exponential as expovariate with 1/argument,
+    def expovariate(self, scale):
+        return self._rng.exponential(1/scale)
+
+#    pareto as paretovariate with 1/argument,
+    def paretovariate(self, shape):
+        return self._rng.pareto(shape)
+
+#    weibull as weibullvariate multiplied by beta,
+#    def weibullvariate(self, alpha, beta):
+#        return self._rng.weibull(alpha) * beta
+#
+#    def triangular(self, low, high, mode):
+#        return self._rng.triangular(low, mode, high)
+#
+#    def choices(self, seq, weights=None, cum_weights=None, k=1):
+#        return self._rng.choice(seq
+
+
+def create_py_random_state(random_state=None):
+    """Returns a random.Random instance depending on input.
+
+    Parameters
+    ----------
+    random_state : int or random number generator or None (default=None)
+        If int, return a random.Random instance set with seed=int.
+        if random.Random instance, return it.
+        if None or the `random` package, return the global random number
+        generator used by `random`.
+        if np.random package, return the global numpy random number
+        generator wrapped in a PythonRandomInterface class.
+        if np.random.RandomState instance, return it wrapped in
+        PythonRandomInterface
+        if a PythonRandomInterface instance, return it
+    """
+    import random
+    try:
+        import numpy as np
+        if random_state is np.random:
+            return PythonRandomInterface(np.random.mtrand._rand)
+        if isinstance(random_state, np.random.RandomState):
+            return PythonRandomInterface(random_state)
+        if isinstance(random_state, PythonRandomInterface):
+            return random_state
+        has_numpy = True
+    except ImportError:
+        has_numpy = False
+
+    if random_state is None or random_state is random:
+        return random._inst
+    if isinstance(random_state, random.Random):
+        return random_state
+    if isinstance(random_state, int):
+        return random.Random(random_state)
+    msg = '%r cannot be used to generate a random.Random instance'
+    raise ValueError(msg % random_state)
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")

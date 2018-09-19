@@ -90,6 +90,13 @@ class TestColoring:
                                             nx.coloring.strategy_largest_first)
         assert_equal(colors_1, colors_2)
 
+    def test_seed_argument(self):
+        graph = lf_shc()
+        rs = nx.coloring.strategy_random_sequential
+        c1 = nx.coloring.greedy_color(graph,lambda g, c: rs(g, c, seed=1))
+        for u, v in graph.edges:
+            assert_not_equal(c1[u], c1[v])
+
 
 ############################## Utility functions ##############################
 def verify_coloring(graph, coloring):

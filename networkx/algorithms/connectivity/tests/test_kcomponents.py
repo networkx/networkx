@@ -82,11 +82,11 @@ def test_directed():
 
 
 # Helper function
-def _check_connectivity(G):
-    result = nx.k_components(G)
-    for k, components in result.items():
+def _check_connectivity(G, k_components):
+    for k, components in k_components.items():
         if k < 3:
             continue
+        # check that k-components have node connectivity >= k.
         for component in components:
             C = G.subgraph(component)
             K = nx.node_connectivity(C)
@@ -95,30 +95,44 @@ def _check_connectivity(G):
 
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
-    _check_connectivity(G)
+    result = nx.k_components(G)
+    _check_connectivity(G, result)
+
+    # In this example graph there are 8 3-components, 4 with 15 nodes
+    # and 4 with 5 nodes.
+    assert_equal(len(result[3]), 8)
+    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
+    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
+    # There are also 8 4-components all with 5 nodes.
+    assert_equal(len(result[4]), 8)
+    assert_true(all(len(c) == 5 for c in result[4]))
 
 
 def test_random_gnp():
     G = nx.gnp_random_graph(50, 0.2)
-    _check_connectivity(G)
+    result = nx.k_components(G)
+    _check_connectivity(G, result)
 
 
 def test_shell():
     constructor = [(20, 80, 0.8), (80, 180, 0.6)]
     G = nx.random_shell_graph(constructor)
-    _check_connectivity(G)
+    result = nx.k_components(G)
+    _check_connectivity(G, result)
 
 
 def test_configuration():
     deg_seq = nx.random_powerlaw_tree_sequence(100, tries=5000)
     G = nx.Graph(nx.configuration_model(deg_seq))
     G.remove_edges_from(nx.selfloop_edges(G))
-    _check_connectivity(G)
+    result = nx.k_components(G)
+    _check_connectivity(G, result)
 
 
 def test_karate():
     G = nx.karate_club_graph()
-    _check_connectivity(G)
+    result = nx.k_components(G)
+    _check_connectivity(G, result)
 
 
 def test_karate_component_number():
@@ -134,30 +148,10 @@ def test_karate_component_number():
     assert_equal(karate_k_num, k_num)
 
 
-def test_torrents_and_ferraro_detail_3_and_4():
-    G = torrents_and_ferraro_graph()
-    result = nx.k_components(G)
-    # In this example graph there are 8 3-components, 4 with 15 nodes
-    # and 4 with 5 nodes.
-    assert_equal(len(result[3]), 8)
-    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
-    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
-    # There are also 8 4-components all with 5 nodes.
-    assert_equal(len(result[4]), 8)
-    assert_true(all(len(c) == 5 for c in result[4]))
-    # Finally check that the k-components detected have actually node
-    # connectivity >= k.
-    for k, components in result.items():
-        if k < 3:
-            continue
-        for component in components:
-            K = nx.node_connectivity(G.subgraph(component))
-            assert_greater_equal(K, k)
-
-
 def test_davis_southern_women():
     G = nx.davis_southern_women_graph()
-    _check_connectivity(G)
+    result = nx.k_components(G)
+    _check_connectivity(G, result)
 
 
 def test_davis_southern_women_detail_3_and_4():

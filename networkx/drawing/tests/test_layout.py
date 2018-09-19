@@ -47,6 +47,7 @@ class TestLayout(object):
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
+        vpos = nx.bipartite_layout(G, G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
 
@@ -64,6 +65,7 @@ class TestLayout(object):
         vpos = nx.shell_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
+            vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -75,6 +77,7 @@ class TestLayout(object):
         vpos = nx.shell_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
+            vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def check_scale_and_center(self, pos, scale, center):
         center = numpy.array(center)
@@ -113,8 +116,14 @@ class TestLayout(object):
         if self.scipy is not None:
             sc(nx.kamada_kawai_layout(G), scale=1, center=c)
 
+    def test_circular_and_shell_dim_error(self):
+        G = nx.path_graph(4)
+        assert_raises(ValueError, nx.circular_layout, G, dim=1)
+        assert_raises(ValueError, nx.shell_layout, G, dim=1)
+        assert_raises(ValueError, nx.shell_layout, G, dim=3)
+
     def test_adjacency_interface_numpy(self):
-        A = nx.to_numpy_matrix(self.Gs)
+        A = nx.to_numpy_array(self.Gs)
         pos = nx.drawing.layout._fruchterman_reingold(A)
         assert_equal(pos.shape, (6, 2))
         pos = nx.drawing.layout._fruchterman_reingold(A, dim=3)
@@ -187,6 +196,8 @@ class TestLayout(object):
         assert_equal(vpos, {})
         vpos = nx.circular_layout(G, center=(1, 1))
         assert_equal(vpos, {})
+        vpos = nx.bipartite_layout(G, G)
+        assert_equal(vpos, {})
         vpos = nx.spring_layout(G, center=(1, 1))
         assert_equal(vpos, {})
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
@@ -195,6 +206,36 @@ class TestLayout(object):
         assert_equal(vpos, {})
         vpos = nx.shell_layout(G, center=(1, 1))
         assert_equal(vpos, {})
+
+    def test_bipartite_layout(self):
+        G = nx.complete_bipartite_graph(3,5)
+        top, bottom = nx.bipartite.sets(G)
+
+        vpos = nx.bipartite_layout(G, top)
+        assert_equal(len(vpos), len(G))
+
+        top_x = vpos[list(top)[0]][0]
+        bottom_x = vpos[list(bottom)[0]][0]
+        for node in top:
+            assert_equal(vpos[node][0], top_x)
+        for node in bottom:
+            assert_equal(vpos[node][0], bottom_x)
+
+        vpos = nx.bipartite_layout(G, top,
+                                   align='horizontal',
+                                   center=(2,2),
+                                   scale=2,
+                                   aspect_ratio=1)
+        assert_equal(len(vpos), len(G))
+
+        top_y = vpos[list(top)[0]][1]
+        bottom_y = vpos[list(bottom)[0]][1]
+        for node in top:
+            assert_equal(vpos[node][1], top_y)
+        for node in bottom:
+            assert_equal(vpos[node][1], bottom_y)
+
+        assert_raises(ValueError, nx.bipartite_layout, G, top, align='foo')
 
     def test_kamada_kawai_costfn_1d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn

@@ -44,14 +44,21 @@ Algorithms
    isomorphism
    link_analysis
    link_prediction
+   lowest_common_ancestors
    matching
    minors
    mis
+   node_classification
    operators
+   planarity
    reciprocity
    rich_club
    shortest_paths
+   similarity
    simple_paths
+   smallworld
+   smetric
+   sparsifiers
    structuralholes
    swap
    tournament

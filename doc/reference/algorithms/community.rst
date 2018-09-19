@@ -51,7 +51,7 @@ Label propagation
 
 Fluid Communities
 -----------------
-.. automodule:: networkx.algorithms.community.asyn_fluidc
+.. automodule:: networkx.algorithms.community.asyn_fluid
 .. autosummary::
    :toctree: generated/
 

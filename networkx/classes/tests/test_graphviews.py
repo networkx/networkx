@@ -33,7 +33,24 @@ class TestReverseView(object):
 
     def test_exceptions(self):
         nxg = nx.graphviews
-        assert_raises(nx.NetworkXNotImplemented, nxg.ReverseView, nx.Graph())
+        assert_raises(nx.NetworkXNotImplemented, nxg.reverse_view, nx.Graph())
+
+    def test_subclass(self):
+        class MyGraph(nx.DiGraph):
+            def my_method(self):
+                return "me"
+            def to_directed_class(self):
+                return MyGraph()
+
+        M = MyGraph()
+        M.add_edge(1, 2)
+        RM = nx.reverse_view(M)
+        print("RM class",RM.__class__)
+        RMC = RM.copy()
+        print("RMC class",RMC.__class__)
+        print(RMC.edges)
+        assert_true(RMC.has_edge(2, 1))
+        assert_equal(RMC.my_method(), "me")
 
 
 class TestMultiReverseView(object):
@@ -65,7 +82,7 @@ class TestMultiReverseView(object):
     def test_exceptions(self):
         nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
-        assert_raises(nx.NetworkXNotImplemented, nxg.MultiReverseView, MG)
+        assert_raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
 
 
 class TestToDirected(object):
@@ -204,8 +221,9 @@ class TestChainsOfViews(object):
         nodes = [4, 5, 6, 7, 8]
         SG = nx.induced_subgraph(RG, nodes)
         SSG = RG.subgraph(nodes)
-        assert_is(SSG.root_graph, SSG._graph)
-        assert_is_not(SG.root_graph, SG._graph)
+        assert_is(RG._graph, self.G)
+        assert_is(SSG._graph, self.G)
+        assert_is(SG._graph, RG)
         assert_edges_equal(SG.edges, SSG.edges)
         # should be same as morphing the graph
         CG = self.G.copy()
@@ -217,8 +235,15 @@ class TestChainsOfViews(object):
         # switch order: subgraph first, then restricted view
         SSSG = self.G.subgraph(nodes)
         RSG = nx.restricted_view(SSSG, hide_nodes, hide_edges)
-        assert_is_not(RSG.root_graph, RSG._graph)
+        assert_is_not(RSG._graph, self.G)
         assert_edges_equal(RSG.edges, CG.edges)
+
+    def test_subgraph_copy(self):
+        for origG in self.graphs:
+            G = nx.OrderedGraph(origG)
+            SG = G.subgraph([4, 5, 6])
+            H = SG.copy()
+            assert_equal(type(G), type(H))
 
     def test_subgraph_todirected(self):
         SG = nx.induced_subgraph(self.G, [4, 5, 6])
@@ -262,29 +287,50 @@ class TestChainsOfViews(object):
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert_equal(CSG.__class__.__name__, 'GraphView')
-        assert_equal(DCSG.__class__.__name__, 'Graph')
+        assert_true(hasattr(CSG, '_graph'))  # is a view
+        assert_false(hasattr(DCSG, '_graph'))  # not a view
 
     def test_copy_disubgraph(self):
         G = self.DG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert_equal(CSG.__class__.__name__, 'DiGraphView')
-        assert_equal(DCSG.__class__.__name__, 'DiGraph')
+        assert_true(hasattr(CSG, '_graph'))  # is a view
+        assert_false(hasattr(DCSG, '_graph'))  # not a view
 
     def test_copy_multidisubgraph(self):
         G = self.MDG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert_equal(CSG.__class__.__name__, 'MultiDiGraphView')
-        assert_equal(DCSG.__class__.__name__, 'MultiDiGraph')
+        assert_true(hasattr(CSG, '_graph'))  # is a view
+        assert_false(hasattr(DCSG, '_graph'))  # not a view
 
     def test_copy_multisubgraph(self):
-        G = self.MGv.copy()
+        G = self.MG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert_equal(CSG.__class__.__name__, 'MultiGraphView')
-        assert_equal(DCSG.__class__.__name__, 'MultiGraph')
+        assert_true(hasattr(CSG, '_graph'))  # is a view
+        assert_false(hasattr(DCSG, '_graph'))  # not a view
+
+    def test_copy_of_view(self):
+        G = nx.OrderedMultiGraph(self.MGv)
+        assert_equal(G.__class__.__name__, 'OrderedMultiGraph')
+        G = G.copy(as_view=True)
+        assert_equal(G.__class__.__name__, 'OrderedMultiGraph')
+
+    def test_subclass(self):
+        class MyGraph(nx.DiGraph):
+            def my_method(self):
+                return "me"
+            def to_directed_class(self):
+                return MyGraph()
+
+        for origG in self.graphs:
+            G = MyGraph(origG)
+            SG = G.subgraph([4, 5, 6])
+            H = SG.copy()
+            assert_equal(SG.my_method(), "me")
+            assert_equal(H.my_method(), "me")
+            assert_false(3 in H or 3 in SG)

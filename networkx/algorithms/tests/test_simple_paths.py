@@ -104,8 +104,11 @@ def test_all_simple_paths_cutoff():
 
 def test_all_simple_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
+    paths = nx.all_simple_paths(G, 1, 1)
+    assert_equal(paths, [])
+    nx.add_path(G, [3, 1, 10, 2])
     paths = nx.all_simple_paths(G, 1, 2)
-    assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 2)})
+    assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 2), (1, 10, 2)})
 
 
 def test_all_simple_paths_multigraph_with_cutoff():
@@ -127,6 +130,10 @@ def test_all_simple_paths_empty():
     paths = nx.all_simple_paths(G, 0, 3, cutoff=2)
     assert_equal(list(list(p) for p in paths), [])
 
+def test_all_simple_paths_corner_cases():
+    assert_equal(list(nx.all_simple_paths(nx.empty_graph(2), 0, 0)), [])
+    assert_equal(list(nx.all_simple_paths(nx.empty_graph(2), 0, 1)), [])
+    assert_equal(list(nx.all_simple_paths(nx.path_graph(9), 0, 8, 0)), [])
 
 def hamiltonian_path(G, source):
     source = arbitrary_element(G)

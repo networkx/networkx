@@ -94,7 +94,7 @@ also supports set operations.
     [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
 
 ``G.degree`` now returns a DegreeView. This is less dict-like than the other views
-in the sense that it iterates over (node, degree) pairs, does not provide 
+in the sense that it iterates over (node, degree) pairs, does not provide
 keys/values/items/get methods. It does provide lookup ``G.degree[n]`` and
 ``(node, degree)`` iteration. A dict keyed by nodes to degree values can be
 easily created if needed as ``dict(G.degree)``.
@@ -117,7 +117,7 @@ easily created if needed as ``dict(G.degree)``.
 The degree of an individual node can be calculated by ``G.degree[node]``.
 Similar changes have been made to ``in_degree`` and ``out_degree``
 for directed graphs. If you want just the degree values, here are some options.
-They are shown for ``in_degree`` of a ``DiGraph``, but similar ideas work 
+They are shown for ``in_degree`` of a ``DiGraph``, but similar ideas work
 for ``out_degree`` and ``degree``
 
     >>> DG = nx.DiGraph()
@@ -241,11 +241,11 @@ because it may be a different graph type (directed/undirected) than the view.
 If ``nbunch`` was a single node source, then the same effect can now be achieved
 using the ``subgraph`` operator:
 
-    >>> nx.topological_sort(G.subgraph(nx.descendants(G, nbunch)))
-    
+    nx.topological_sort(G.subgraph(nx.descendants(G, nbunch)))
+
 To achieve a reverse topological sort, the output should be converted to a list:
 
-    >>>> reversed(list(nx.topological_sort(G)))
+    reversed(list(nx.topological_sort(G)))
 
 -------
 

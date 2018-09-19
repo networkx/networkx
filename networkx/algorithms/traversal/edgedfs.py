@@ -6,6 +6,7 @@ Depth First Search on Edges
 Algorithms for a depth-first traversal of edges in a graph.
 
 """
+import networkx as nx
 
 FORWARD = 'forward'
 REVERSE = 'reverse'
@@ -13,71 +14,11 @@ REVERSE = 'reverse'
 __all__ = ['edge_dfs']
 
 
-def helper_funcs(G, orientation):
-    """
-    These are various G-specific functions that help us implement the algorithm
-    for all graph types: graph, multigraph, directed or not.
+def edge_dfs(G, source=None, orientation=None):
+    """A directed, depth-first-search of edges in `G`, beginning at `source`.
 
-    """
-    ignore_orientation = G.is_directed() and orientation == 'ignore'
-    reverse_orientation = G.is_directed() and orientation == 'reverse'
-
-    if ignore_orientation:
-        # When we ignore the orientation, we still need to know how the edge
-        # was traversed, so we add an object representing the direction.
-        def out_edges(u_for_edges, **kwds):
-            for edge in G.out_edges(u_for_edges, **kwds):
-                yield edge + (FORWARD,)
-            for edge in G.in_edges(u_for_edges, **kwds):
-                yield edge + (REVERSE,)
-    elif reverse_orientation:
-        def out_edges(u_for_edges, **kwds):
-            for edge in G.in_edges(u_for_edges, **kwds):
-                yield edge + (REVERSE,)
-    else:
-        # If "yield from" were an option, we could pass kwds automatically.
-        out_edges = G.edges
-
-    # If every edge had a unique key, then it would be easier to track which
-    # edges had been visited. Since that is not available, we will form a
-    # unique identifier from the edge and key (if present). If the graph
-    # is undirected, then the head and tail need to be stored as a frozenset.
-    if ignore_orientation or reverse_orientation:
-        # edge is a 4-tuple: (u, v, key, direction)
-        # u and v always represent the true tail and head of the edge.
-        def key(edge):
-            # We want everything but the direction.
-            return edge[:-1]
-    else:
-        if G.is_directed():
-            def key(edge):
-                return edge
-        else:
-            # edge is a 3-tuple:  (u, v, key)
-            def key(edge):
-                new_edge = (frozenset(edge[:2]),) + edge[2:]
-                return new_edge
-
-    def traversed_tailhead(edge):
-        """
-        Returns the tail and head of an edge, as it was traversed.
-
-        So in general, this is different from the true tail and head.
-        (Also, undirected edges have no true tail or head.)
-
-        """
-        if (ignore_orientation or reverse_orientation) and edge[-1] == REVERSE:
-            tail, head = edge[1], edge[0]
-        else:
-            tail, head = edge[0], edge[1]
-        return tail, head
-
-    return out_edges, key, traversed_tailhead
-
-
-def edge_dfs(G, source=None, orientation='original'):
-    """
-    A directed, depth-first traversal of edges in `G`, beginning at `source`.
+    Yield the edges of G in a depth-first-search order continuing until
+    all edges are generated.
 
     Parameters
     ----------
@@ -89,28 +30,28 @@ def edge_dfs(G, source=None, orientation='original'):
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
-    orientation : 'original' | 'reverse' | 'ignore'
+    orientation : None | 'original' | 'reverse' | 'ignore' (default: None)
         For directed graphs and directed multigraphs, edge traversals need not
-        respect the original orientation of the edges. When set to 'reverse',
-        then every edge will be traversed in the reverse direction. When set to
-        'ignore', then each directed edge is treated as a single undirected
-        edge that can be traversed in either direction. For undirected graphs
-        and undirected multigraphs, this parameter is meaningless and is not
-        consulted by the algorithm.
+        respect the original orientation of the edges.
+        When set to 'reverse' every edge is traversed in the reverse direction.
+        When set to 'ignore', every edge is treated as undirected.
+        When set to 'original', every edge is treated as directed.
+        In all three cases, the yielded edge tuples add a last entry to
+        indicate the direction in which that edge was traversed.
+        If orientation is None, the yielded edge has no direction indicated.
+        The direction is respected, but not reported.
 
     Yields
     ------
     edge : directed edge
         A directed edge indicating the path taken by the depth-first traversal.
         For graphs, `edge` is of the form `(u, v)` where `u` and `v`
-        are the tail and head of the edge as determined by the traversal. For
-        multigraphs, `edge` is of the form `(u, v, key)`, where `key` is
+        are the tail and head of the edge as determined by the traversal.
+        For multigraphs, `edge` is of the form `(u, v, key)`, where `key` is
         the key of the edge. When the graph is directed, then `u` and `v`
-        are always in the order of the actual directed edge. If orientation is
-        'reverse' or 'ignore', then `edge` takes the form
-        `(u, v, key, direction)` where direction is a string, 'forward' or
-        'reverse', that indicates if the edge was traversed in the forward
-        (tail to head) or reverse (head to tail) direction, respectively.
+        are always in the order of the actual directed edge.
+        If orientation is not None then the edge tuple is extended to include
+        the direction of traversal ('forward' or 'reverse') on that edge.
 
     Examples
     --------
@@ -152,24 +93,58 @@ def edge_dfs(G, source=None, orientation='original'):
     """
     nodes = list(G.nbunch_iter(source))
     if not nodes:
-        raise StopIteration
+        return
 
+    directed = G.is_directed()
     kwds = {'data': False}
-    if G.is_multigraph():
+    if G.is_multigraph() is True:
         kwds['keys'] = True
 
-    out_edges, key, tailhead = helper_funcs(G, orientation)
+    # set up edge lookup
+    if orientation is None:
+        def edges_from(node):
+            return iter(G.edges(node, **kwds))
+    elif not directed or orientation == 'original':
+        def edges_from(node):
+            for e in G.edges(node, **kwds):
+                yield e + (FORWARD,)
+    elif orientation == 'reverse':
+        def edges_from(node):
+            for e in G.in_edges(node, **kwds):
+                yield e + (REVERSE,)
+    elif orientation == 'ignore':
+        def edges_from(node):
+            for e in G.edges(node, **kwds):
+                yield e + (FORWARD,)
+            for e in G.in_edges(node, **kwds):
+                yield e + (REVERSE,)
+    else:
+        raise nx.NetworkXError("invalid orientation argument.")
+
+    # set up formation of edge_id to easily look up if edge already returned
+    if directed:
+        def edge_id(edge):
+            # remove direction indicator
+            return edge[:-1] if orientation is not None else edge
+    else:
+        def edge_id(edge):
+            # single id for undirected requires frozenset on nodes
+            return (frozenset(edge[:2]),) + edge[2:]
+
+    # Basic setup
+    check_reverse = directed and orientation in ('reverse', 'ignore')
 
     visited_edges = set()
     visited_nodes = set()
     edges = {}
 
+    # start DFS
     for start_node in nodes:
         stack = [start_node]
         while stack:
             current_node = stack[-1]
             if current_node not in visited_nodes:
-                edges[current_node] = iter(out_edges(current_node, **kwds))
+                edges[current_node] = edges_from(current_node)
                 visited_nodes.add(current_node)
 
             try:
@@ -178,9 +153,12 @@ def edge_dfs(G, source=None, orientation='original'):
                 # No more edges from the current node.
                 stack.pop()
             else:
-                edge_key = key(edge)
-                if edge_key not in visited_edges:
-                    visited_edges.add(edge_key)
+                edgeid = edge_id(edge)
+                if edgeid not in visited_edges:
+                    visited_edges.add(edgeid)
                     # Mark the traversed "to" node as to-be-explored.
-                    stack.append(tailhead(edge)[1])
+                    if check_reverse and edge[-1] == REVERSE:
+                        stack.append(edge[0])
+                    else:
+                        stack.append(edge[1])
                     yield edge

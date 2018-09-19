@@ -44,6 +44,11 @@ class TestMaximalIndependantSet(object):
         self.florentine.add_edge('Bischeri', 'Guadagni')
         self.florentine.add_edge('Guadagni', 'Lamberteschi')
 
+    def test_random_seed(self):
+        G = nx.complete_graph(5)
+        for node in G:
+            assert_equal(nx.maximal_independent_set(G, [node], seed=1), [node])
+
     def test_K5(self):
         """Maximal independent set: K5"""
         G = nx.complete_graph(5)

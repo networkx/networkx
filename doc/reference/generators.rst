@@ -28,9 +28,11 @@ Classic
    complete_graph
    complete_multipartite_graph
    circular_ladder_graph
+   circulant_graph
    cycle_graph
    dorogovtsev_goltsev_mendes_graph
    empty_graph
+   full_rary_tree
    ladder_graph
    lollipop_graph
    null_graph
@@ -80,6 +82,7 @@ Small
    dodecahedral_graph
    frucht_graph
    heawood_graph
+   hoffman_singleton_graph
    house_graph
    house_x_graph
    icosahedral_graph
@@ -112,12 +115,14 @@ Random Graphs
    connected_watts_strogatz_graph
    random_regular_graph
    barabasi_albert_graph
+   extended_barabasi_albert_graph
    powerlaw_cluster_graph
    random_kernel_graph
    random_lobster
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence
+   random_kernel_graph
 
 
 Duplication Divergence
@@ -245,7 +250,17 @@ Community
    planted_partition_graph
    gaussian_random_partition_graph
    ring_of_cliques
+   stochastic_block_model
    windmill_graph
+
+
+Spectral
+--------
+.. automodule:: networkx.generators.spectral_graph_forge
+.. autosummary::
+   :toctree: generated/
+
+   spectral_graph_forge
 
 
 Trees

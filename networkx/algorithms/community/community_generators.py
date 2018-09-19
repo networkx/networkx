@@ -11,8 +11,6 @@
 """Functions for generating graphs with community structure."""
 from __future__ import division
 
-import random
-
 # HACK In order to accommodate both SciPy and non-SciPy implementations,
 # we need to wrap the SciPy implementation of the zeta function with an
 # extra parameter, `tolerance`, which will be ignored.
@@ -42,11 +40,12 @@ except ImportError:
         return z
 
 import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = ['LFR_benchmark_graph']
 
 
-def _zipf_rv_below(gamma, xmin, threshold):
+def _zipf_rv_below(gamma, xmin, threshold, seed):
     """Returns a random value chosen from the Zipf distribution,
     guaranteed to be less than or equal to the value ``threshold``.
 
@@ -54,13 +53,13 @@ def _zipf_rv_below(gamma, xmin, threshold):
     threshold is met, then returns that value.
 
     """
-    result = nx.utils.zipf_rv(gamma, xmin)
+    result = nx.utils.zipf_rv(gamma, xmin, seed)
     while result > threshold:
-        result = nx.utils.zipf_rv(gamma, xmin)
+        result = nx.utils.zipf_rv(gamma, xmin, seed)
     return result
 
 
-def _powerlaw_sequence(gamma, low, high, condition, length, max_iters):
+def _powerlaw_sequence(gamma, low, high, condition, length, max_iters, seed):
     """Returns a list of numbers obeying a power law distribution, with
     some additional restrictions.
 
@@ -79,11 +78,14 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters):
     satisfying ``length``. If the number of iterations exceeds this
     value, :exc:`~networkx.exception.ExceededMaxIterations` is raised.
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     """
     for i in range(max_iters):
         seq = []
         while not length(seq):
-            seq.append(_zipf_rv_below(gamma, low, high))
+            seq.append(_zipf_rv_below(gamma, low, high, seed))
         if condition(seq):
             return seq
     raise nx.ExceededMaxIterations("Could not create power law sequence")
@@ -116,11 +118,11 @@ def _generate_min_degree(gamma, average_degree, max_degree, tolerance,
     return round(min_deg_mid)
 
 
-def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
+def _generate_communities(degree_seq, community_sizes, mu, max_iters, seed):
     """Returns a list of sets, each of which represents a community in
     the graph.
 
-    ``degree_sequence`` is the degree sequence that must be met by the
+    ``degree_seq`` is the degree sequence that must be met by the
     graph.
 
     ``community_sizes`` is the community size distribution that must be
@@ -131,23 +133,27 @@ def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
 
     ``max_iters`` is the number of times to try to add a node to a
     community. This must be greater than the length of
-    ``degree_sequence``, otherwise this function will always fail. If
+    ``degree_seq``, otherwise this function will always fail. If
     the number of iterations exceeds this value,
     :exc:`~networkx.exception.ExceededMaxIterations` is raised.
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     The communities returned by this are sets of integers in the set {0,
-    ..., *n* - 1}, where *n* is the length of ``degree_sequence``.
+    ..., *n* - 1}, where *n* is the length of ``degree_seq``.
 
     """
     # This assumes the nodes in the graph will be natural numbers.
     result = [set() for _ in community_sizes]
-    n = len(degree_sequence)
+    n = len(degree_seq)
     free = list(range(n))
     for i in range(max_iters):
         v = free.pop()
-        c = random.choice(range(len(community_sizes)))
-        # s = int(degree_sequence[v] * (1 - mu) + 0.5)
-        s = round(degree_sequence[v] * (1 - mu))
+        c = seed.choice(range(len(community_sizes)))
+        # s = int(degree_seq[v] * (1 - mu) + 0.5)
+        s = round(degree_seq[v] * (1 - mu))
         # If the community is large enough, add the node to the chosen
         # community. Otherwise, return it to the list of unaffiliated
         # nodes.
@@ -164,6 +170,7 @@ def _generate_communities(degree_sequence, community_sizes, mu, max_iters):
     raise nx.ExceededMaxIterations(msg)
 
 
+@py_random_state(11)
 def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
                         min_degree=None, max_degree=None, min_community=None,
                         max_community=None, tol=1.0e-7, max_iters=500,
@@ -250,8 +257,9 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
         Maximum number of iterations to try to create the community sizes,
         degree distribution, and community affiliations.
 
-    seed : int
-        A seed for the random number generator.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -336,8 +344,6 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
 
     """
     # Perform some basic parameter validation.
-    if seed is not None:
-        random.seed(seed)
     if not tau1 > 1:
         raise nx.NetworkXError("tau1 must be greater than one")
     if not tau2 > 1:
@@ -363,7 +369,8 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     def condition(seq): return sum(seq) % 2 == 0
 
     def length(seq): return len(seq) >= n
-    deg_seq = _powerlaw_sequence(tau1, low, high, condition, length, max_iters)
+    deg_seq = _powerlaw_sequence(tau1, low, high, condition,
+                                 length, max_iters, seed)
 
     # Validate parameters for generating the community size sequence.
     if min_community is None:
@@ -384,12 +391,13 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     def condition(seq): return sum(seq) == n
 
     def length(seq): return sum(seq) >= n
-    comms = _powerlaw_sequence(tau2, low, high, condition, length, max_iters)
+    comms = _powerlaw_sequence(tau2, low, high, condition,
+                               length, max_iters, seed)
 
     # Generate the communities based on the given degree sequence and
     # community sizes.
     max_iters *= 10 * n
-    communities = _generate_communities(deg_seq, comms, mu, max_iters)
+    communities = _generate_communities(deg_seq, comms, mu, max_iters, seed)
 
     # Finally, generate the benchmark graph based on the given
     # communities, joining nodes according to the intra- and
@@ -399,10 +407,10 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     for c in communities:
         for u in c:
             while G.degree(u) < round(deg_seq[u] * (1 - mu)):
-                v = random.choice(list(c))
+                v = seed.choice(list(c))
                 G.add_edge(u, v)
             while G.degree(u) < deg_seq[u]:
-                v = random.choice(range(n))
+                v = seed.choice(range(n))
                 if v not in c:
                     G.add_edge(u, v)
             G.nodes[u]['community'] = c

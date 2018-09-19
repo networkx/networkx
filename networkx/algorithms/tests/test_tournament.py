@@ -64,10 +64,14 @@ class TestRandomTournament(object):
     function.
 
     """
-
     def test_graph_is_tournament(self):
         for n in range(10):
             G = random_tournament(5)
+            assert_true(is_tournament(G))
+
+    def test_graph_is_tournament_seed(self):
+        for n in range(10):
+            G = random_tournament(5, seed=1)
             assert_true(is_tournament(G))
 
 

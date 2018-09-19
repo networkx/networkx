@@ -18,7 +18,6 @@ __all__ = ['AtlasView', 'AdjacencyView', 'MultiAdjacencyView',
            'UnionMultiInner', 'UnionMultiAdjacency',
            'FilterAtlas', 'FilterAdjacency',
            'FilterMultiInner', 'FilterMultiAdjacency',
-           'ReadOnlyGraph',
            ]
 
 
@@ -259,27 +258,6 @@ class UnionMultiAdjacency(UnionAdjacency):
         return UnionMultiInner(self._succ[node], self._pred[node])
 
 
-class ReadOnlyGraph(object):
-    """A Mixin Class to mask the write methods of a graph class."""
-
-    def not_allowed(self, *args, **kwds):
-        msg = "SubGraph Views are readonly. Mutations not allowed"
-        raise nx.NetworkXError(msg)
-
-    add_node = not_allowed
-    remove_node = not_allowed
-    add_nodes_from = not_allowed
-    remove_nodes_from = not_allowed
-
-    add_edge = not_allowed
-    remove_edge = not_allowed
-    add_edges_from = not_allowed
-    add_weighted_edges_from = not_allowed
-    remove_edges_from = not_allowed
-
-    clear = not_allowed
-
-
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
     def __init__(self, d, NODE_OK):
         self._atlas = d
@@ -289,7 +267,11 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         return sum(1 for n in self)
 
     def __iter__(self):
-        if hasattr(self.NODE_OK, 'nodes'):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
             return (n for n in self.NODE_OK.nodes if n in self._atlas)
         return (n for n in self._atlas if self.NODE_OK(n))
 
@@ -299,7 +281,11 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         raise KeyError("Key {} not found".format(key))
 
     def copy(self):
-        if hasattr(self.NODE_OK, 'nodes'):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
             return {u: self._atlas[u] for u in self.NODE_OK.nodes
                     if u in self._atlas}
         return {u: d for u, d in self._atlas.items()
@@ -323,7 +309,11 @@ class FilterAdjacency(Mapping):   # edgedict
         return sum(1 for n in self)
 
     def __iter__(self):
-        if hasattr(self.NODE_OK, 'nodes'):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
             return (n for n in self.NODE_OK.nodes if n in self._atlas)
         return (n for n in self._atlas if self.NODE_OK(n))
 
@@ -335,7 +325,11 @@ class FilterAdjacency(Mapping):   # edgedict
         raise KeyError("Key {} not found".format(node))
 
     def copy(self):
-        if hasattr(self.NODE_OK, 'nodes'):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
             return {u: {v: d for v, d in self._atlas[u].items()
                         if self.NODE_OK(v) if self.EDGE_OK(u, v)}
                     for u in self.NODE_OK.nodes if u in self._atlas}
@@ -354,7 +348,11 @@ class FilterAdjacency(Mapping):   # edgedict
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
     def __iter__(self):
-        if hasattr(self.NODE_OK, 'nodes'):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
             my_nodes = (n for n in self.NODE_OK.nodes if n in self._atlas)
         else:
             my_nodes = (n for n in self._atlas if self.NODE_OK(n))
@@ -375,7 +373,11 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
         raise KeyError("Key {} not found".format(nbr))
 
     def copy(self):
-        if hasattr(self.NODE_OK, 'nodes'):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
             return {v: {k: d for k, d in self._atlas[v].items()
                         if self.EDGE_OK(v, k)}
                     for v in self.NODE_OK.nodes if v in self._atlas}
@@ -392,7 +394,11 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
         raise KeyError("Key {} not found".format(node))
 
     def copy(self):
-        if hasattr(self.NODE_OK, 'nodes'):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
             my_nodes = self.NODE_OK.nodes
             return {u: {v: {k: d for k, d in kd.items()
                             if self.EDGE_OK(u, v, k)}

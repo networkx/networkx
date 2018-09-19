@@ -40,6 +40,15 @@ class TestCliques:
         assert_equal(nx.graph_clique_number(G), 4)
         assert_equal(nx.graph_clique_number(G, cliques=self.cl), 4)
 
+    def test_clique_number2(self):
+        G = nx.Graph()
+        G.add_nodes_from([1, 2, 3])
+        assert_equal(nx.graph_clique_number(G), 1)
+
+    def test_clique_number3(self):
+        G = nx.Graph()
+        assert_equal(nx.graph_clique_number(G), 0)
+
     def test_number_of_cliques(self):
         G = self.G
         assert_equal(nx.graph_number_of_cliques(G), 5)

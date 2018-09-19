@@ -47,7 +47,9 @@ matrix:
           - libgdal-dev
           - graphviz
     - os: linux
-      python: 3.6
+      python: 3.7
+      dist: xenial
+      sudo: true
       env: OPTIONAL_DEPS=1
       addons:
         apt:
@@ -55,7 +57,9 @@ matrix:
           - libgdal-dev
           - graphviz
     - os: linux
-      python: 3.6
+      python: 3.7
+      dist: xenial
+      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - MINIMUM_REQUIREMENTS=1
@@ -68,16 +72,18 @@ matrix:
       osx_image: xcode7.3
       language: generic
       env:
-      - TRAVIS_PYTHON_VERSION=3.6.0
+      - TRAVIS_PYTHON_VERSION=3.6.1
       - OPTIONAL_DEPS=1
       - OSX_PKG_ENV=miniconda
     - os: osx
       language: generic
-      env: TRAVIS_PYTHON_VERSION=3.6
+      env: TRAVIS_PYTHON_VERSION=3.7
     - python: 2.7
-    - python: 3.4
     - python: 3.5
     - python: 3.6
+    - python: 3.7
+      dist: xenial
+      sudo: true
 
 before_install:
   # prepare the system to install prerequisites or dependencies

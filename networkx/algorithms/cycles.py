@@ -1,13 +1,14 @@
-#    Copyright (C) 2010-2012 by
+#    Copyright (C) 2010-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 #
-# Authors: Jon Olav Vik <jonovik@gmail.com>,
+# Authors: Jon Olav Vik <jonovik@gmail.com>
 #          Dan Schult <dschult@colgate.edu>
 #          Aric Hagberg <hagberg@lanl.gov>
+#          Debsankha Manik <dmanik@nld.ds.mpg.de>
 """
 ========================
 Cycle finding algorithms
@@ -15,13 +16,16 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
+from itertools import tee
 
 import networkx as nx
-from networkx.utils import *
-from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
-    'cycle_basis', 'simple_cycles', 'simple_cycles_root', 'recursive_simple_cycles', 'find_cycle']
+    'cycle_basis', 'simple_cycles',
+    'recursive_simple_cycles', 'find_cycle',
+    'minimum_cycle_basis', 'simple_cycles_root'
+]
 
 
 @not_implemented_for('directed')
@@ -411,7 +415,7 @@ def recursive_simple_cycles(G):
     ----------
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
-       http://dx.doi.org/10.1137/0204007
+       https://doi.org/10.1137/0204007
 
     See Also
     --------
@@ -471,9 +475,11 @@ def recursive_simple_cycles(G):
     return result
 
 
-def find_cycle(G, source=None, orientation='original'):
-    """
-    Returns the edges of a cycle found via a directed, depth-first traversal.
+def find_cycle(G, source=None, orientation=None):
+    """Returns a cycle found via depth-first traversal.
+
+    The cycle is a list of edges indicating the cyclic path.
+    Orientation of directed edges is controlled by `orientation`.
 
     Parameters
     ----------
@@ -485,30 +491,29 @@ def find_cycle(G, source=None, orientation='original'):
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
-    orientation : 'original' | 'reverse' | 'ignore'
+    orientation : None | 'original' | 'reverse' | 'ignore' (default: None)
         For directed graphs and directed multigraphs, edge traversals need not
-        respect the original orientation of the edges. When set to 'reverse',
-        then every edge will be traversed in the reverse direction. When set to
-        'ignore', then each directed edge is treated as a single undirected
-        edge that can be traversed in either direction. For undirected graphs
-        and undirected multigraphs, this parameter is meaningless and is not
-        consulted by the algorithm.
+        respect the original orientation of the edges.
+        When set to 'reverse' every edge is traversed in the reverse direction.
+        When set to 'ignore', every edge is treated as undirected.
+        When set to 'original', every edge is treated as directed.
+        In all three cases, the yielded edge tuples add a last entry to
+        indicate the direction in which that edge was traversed.
+        If orientation is None, the yielded edge has no direction indicated.
+        The direction is respected, but not reported.
 
     Returns
     -------
     edges : directed edges
-        A list of directed edges indicating the path taken for the loop. If
-        no cycle is found, then an exception is raised. For graphs, an
-        edge is of the form `(u, v)` where `u` and `v` are the tail and head
-        of the edge as determined by the traversal. For multigraphs, an edge is
-        of the form `(u, v, key)`, where `key` is the key of the edge. When the
-        graph is directed, then `u` and `v` are always in the order of the
-        actual directed edge. If orientation is 'ignore', then an edge takes
-        the form `(u, v, key, direction)` where direction indicates if the edge
-        was followed in the forward (tail to head) or reverse (head to tail)
-        direction. When the direction is forward, the value of `direction`
-        is 'forward'. When the direction is reverse, the value of `direction`
-        is 'reverse'.
+        A list of directed edges indicating the path taken for the loop.
+        If no cycle is found, then an exception is raised.
+        For graphs, an edge is of the form `(u, v)` where `u` and `v`
+        are the tail and head of the edge as determined by the traversal.
+        For multigraphs, an edge is of the form `(u, v, key)`, where `key` is
+        the key of the edge. When the graph is directed, then `u` and `v`
+        are always in the order of the actual directed edge.
+        If orientation is not None then the edge tuple is extended to include
+        the direction of traversal ('forward' or 'reverse') on that edge.
 
     Raises
     ------
@@ -536,7 +541,17 @@ def find_cycle(G, source=None, orientation='original'):
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """
-    out_edge, key, tailhead = helper_funcs(G, orientation)
+    if not G.is_directed() or orientation in (None, 'original'):
+        def tailhead(edge):
+            return edge[:2]
+    elif orientation == 'reverse':
+        def tailhead(edge):
+            return edge[1], edge[0]
+    elif orientation == 'ignore':
+        def tailhead(edge):
+            if edge[-1] == 'reverse':
+                return edge[1], edge[0]
+            return edge[:2]
 
     explored = set()
     cycle = []
@@ -553,7 +568,7 @@ def find_cycle(G, source=None, orientation='original'):
         active_nodes = {start_node}
         previous_head = None
 
-        for edge in edge_dfs(G, start_node, orientation):
+        for edge in nx.edge_dfs(G, start_node, orientation):
             # Determine if this edge is a continuation of the active path.
             tail, head = tailhead(edge)
             if head in explored:
@@ -611,3 +626,126 @@ def find_cycle(G, source=None, orientation='original'):
             break
 
     return cycle[i:]
+
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
+def minimum_cycle_basis(G, weight=None):
+    """ Returns a minimum weight cycle basis for G
+
+    Minimum weight means a cycle basis for which the total weight
+    (length for unweighted graphs) of all the cycles is minimum.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    weight: string
+        name of the edge attribute to use for edge weights
+
+    Returns
+    -------
+    A list of cycle lists.  Each cycle list is a list of nodes
+    which forms a cycle (loop) in G. Note that the nodes are not
+    necessarily returned in a order by which they appear in the cycle
+
+    Examples
+    --------
+    >>> G=nx.Graph()
+    >>> G.add_cycle([0,1,2,3])
+    >>> G.add_cycle([0,3,4,5])
+    >>> print(nx.minimum_cycle_basis(G))
+    [[0, 1, 2, 3], [0, 3, 4, 5]]
+
+    References:
+        [1] Kavitha, Telikepalli, et al. "An O(m^2n) Algorithm for
+        Minimum Cycle Basis of Graphs."
+        http://link.springer.com/article/10.1007/s00453-007-9064-z
+        [2] de Pina, J. 1995. Applications of shortest path methods.
+        Ph.D. thesis, University of Amsterdam, Netherlands
+
+    See Also
+    --------
+    simple_cycles, cycle_basis
+    """
+    # We first split the graph in commected subgraphs
+    return sum((_min_cycle_basis(c, weight) for c in
+                nx.connected_component_subgraphs(G)), [])
+
+
+def _min_cycle_basis(comp, weight):
+    cb = []
+    # We  extract the edges not in a spanning tree. We do not really need a
+    # *minimum* spanning tree. That is why we call the next function with
+    # weight=None. Depending on implementation, it may be faster as well
+    spanning_tree_edges = list(nx.minimum_spanning_edges(comp, weight=None,
+                                                         data=False))
+    edges_excl = [frozenset(e) for e in comp.edges()
+                  if e not in spanning_tree_edges]
+    N = len(edges_excl)
+
+    # We maintain a set of vectors orthogonal to sofar found cycles
+    set_orth = [set([edge]) for edge in edges_excl]
+    for k in range(N):
+        # kth cycle is "parallel" to kth vector in set_orth
+        new_cycle = _min_cycle(comp, set_orth[k], weight=weight)
+        cb.append(list(set().union(*new_cycle)))
+        # now update set_orth so that k+1,k+2... th elements are
+        # orthogonal to the newly found cycle, as per [p. 336, 1]
+        base = set_orth[k]
+        set_orth[k + 1:] = [orth ^ base if len(orth & new_cycle) % 2 else orth
+                            for orth in set_orth[k + 1:]]
+    return cb
+
+
+def _min_cycle(G, orth, weight=None):
+    """
+    Computes the minimum weight cycle in G,
+    orthogonal to the vector orth as per [p. 338, 1]
+    """
+    T = nx.Graph()
+
+    nodes_idx = {node: idx for idx, node in enumerate(G.nodes())}
+    idx_nodes = {idx: node for node, idx in nodes_idx.items()}
+
+    nnodes = len(nodes_idx)
+
+    # Add 2 copies of each edge in G to T. If edge is in orth, add cross edge;
+    # otherwise in-plane edge
+    for u, v, data in G.edges(data=True):
+        uidx, vidx = nodes_idx[u], nodes_idx[v]
+        edge_w = data.get(weight, 1)
+        if frozenset((u, v)) in orth:
+            T.add_edges_from(
+                [(uidx, nnodes + vidx), (nnodes + uidx, vidx)], weight=edge_w)
+        else:
+            T.add_edges_from(
+                [(uidx, vidx), (nnodes + uidx, nnodes + vidx)], weight=edge_w)
+
+    all_shortest_pathlens = dict(nx.shortest_path_length(T, weight=weight))
+    cross_paths_w_lens = {n: all_shortest_pathlens[n][nnodes + n]
+                          for n in range(nnodes)}
+
+    # Now compute shortest paths in T, which translates to cyles in G
+    start = min(cross_paths_w_lens, key=cross_paths_w_lens.get)
+    end = nnodes + start
+    min_path = nx.shortest_path(T, source=start, target=end, weight='weight')
+
+    # Now we obtain the actual path, re-map nodes in T to those in G
+    min_path_nodes = [node if node < nnodes else node - nnodes
+                      for node in min_path]
+    # Now remove the edges that occur two times
+    mcycle_pruned = _path_to_cycle(min_path_nodes)
+
+    return {frozenset((idx_nodes[u], idx_nodes[v])) for u, v in mcycle_pruned}
+
+
+def _path_to_cycle(path):
+    """
+    Removes the edges from path that occur even number of times.
+    Returns a set of edges
+    """
+    edges = set()
+    for edge in pairwise(path):
+        # Toggle whether to keep the current edge.
+        edges ^= {edge}
+    return edges

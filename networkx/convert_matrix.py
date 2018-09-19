@@ -15,12 +15,12 @@ Examples
 Create a 10 node random graph from a numpy matrix
 
 >>> import numpy as np
->>> a = np.reshape(np.random.random_integers(0, 1, size=100), (10, 10))
+>>> a = np.random.randint(0, 2, size=(10, 10))
 >>> D = nx.DiGraph(a)
 
 or equivalently
 
->>> D = nx.to_networkx_graph(a, create_using=nx.DiGraph())
+>>> D = nx.to_networkx_graph(a, create_using=nx.DiGraph)
 
 See Also
 --------
@@ -29,7 +29,6 @@ nx_agraph, nx_pydot
 
 import itertools
 import networkx as nx
-from networkx.convert import _prep_create_using
 from networkx.utils import not_implemented_for
 
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
@@ -91,6 +90,7 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
     resulting Pandas DataFrame can be modified as follows:
 
     >>> import pandas as pd
+    >>> pd.options.display.max_columns = 20
     >>> import numpy as np
     >>> G = nx.Graph([(1, 1)])
     >>> df = nx.to_pandas_adjacency(G, dtype=int)
@@ -139,8 +139,8 @@ def from_pandas_adjacency(df, create_using=None):
     df : Pandas DataFrame
       An adjacency matrix representation of a graph
 
-    create_using : NetworkX graph
-       Use specified graph for result.  The default is Graph()
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Notes
     -----
@@ -160,6 +160,7 @@ def from_pandas_adjacency(df, create_using=None):
     Simple integer weights on edges:
 
     >>> import pandas as pd
+    >>> pd.options.display.max_columns = 20
     >>> df = pd.DataFrame([[1, 1], [2, 1]])
     >>> df
        0  1
@@ -176,13 +177,15 @@ def from_pandas_adjacency(df, create_using=None):
 
     """
 
-    A = df.values
-    G = from_numpy_matrix(A, create_using=create_using)
     try:
         df = df[df.index]
     except:
-        raise nx.NetworkXError("Columns must match Indices.", "%s not in columns" %
-                               list(set(df.index).difference(set(df.columns))))
+        msg = "%s not in columns"
+        missing = list(set(df.index).difference(set(df.columns)))
+        raise nx.NetworkXError("Columns must match Indices.", msg % missing)
+
+    A = df.values
+    G = from_numpy_matrix(A, create_using=create_using)
 
     nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
     return G
@@ -218,10 +221,10 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     >>> G = nx.Graph([('A', 'B', {'cost': 1, 'weight': 7}),
     ...               ('C', 'E', {'cost': 9, 'weight': 10})])
     >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'])
-    >>> df
-       cost source target  weight
-    0     1      A      B       7
-    1     9      C      E      10
+    >>> df[['source', 'target', 'cost', 'weight']]
+      source target  cost  weight
+    0      A      B     1       7
+    1      C      E     9      10
 
     """
     import pandas as pd
@@ -232,7 +235,8 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
     source_nodes = [s for s, t, d in edgelist]
     target_nodes = [t for s, t, d in edgelist]
     all_keys = set().union(*(d.keys() for s, t, d in edgelist))
-    edge_attr = {k: [d.get(k, float("nan")) for s, t, d in edgelist] for k in all_keys}
+    edge_attr = {k: [d.get(k, float("nan")) for s, t, d in edgelist]
+                 for k in all_keys}
     edgelistdict = {source: source_nodes, target: target_nodes}
     edgelistdict.update(edge_attr)
     return pd.DataFrame(edgelistdict)
@@ -243,7 +247,7 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     """Return a graph from Pandas DataFrame containing an edge list.
 
     The Pandas DataFrame should contain at least two columns of node names and
-    zero or more columns of node attributes. Each row will be processed as one
+    zero or more columns of edge attributes. Each row will be processed as one
     edge instance.
 
     Note: This function iterates over DataFrame.values, which is not
@@ -267,11 +271,11 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
 
     edge_attr : str or int, iterable, True
         A valid column name (str or integer) or list of column names that will
-        be used to retrieve items from the row and add them to the graph as edge
-        attributes. If `True`, all of the remaining columns will be added.
+        be used to retrieve items from the row and add them to the graph as
+        edge attributes. If `True`, all of the remaining columns will be added.
 
-    create_using : NetworkX graph
-        Use specified graph for result.  The default is Graph()
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     See Also
     --------
@@ -282,15 +286,16 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     Simple integer weights on edges:
 
     >>> import pandas as pd
+    >>> pd.options.display.max_columns = 20
     >>> import numpy as np
-    >>> r = np.random.RandomState(seed=5)
-    >>> ints = r.random_integers(1, 10, size=(3,2))
+    >>> rng = np.random.RandomState(seed=5)
+    >>> ints = rng.randint(1, 11, size=(3,2))
     >>> a = ['A', 'B', 'C']
     >>> b = ['D', 'A', 'E']
     >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])
     >>> df[0] = a
     >>> df['b'] = b
-    >>> df
+    >>> df[['weight', 'cost', 0, 'b']]
        weight  cost  0  b
     0       4     7  A  D
     1       7     1  B  A
@@ -309,43 +314,34 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     'red'
 
     """
+    g = nx.empty_graph(0, create_using)
 
-    g = _prep_create_using(create_using)
+    if edge_attr is None:
+        g.add_edges_from(zip(df[source], df[target]))
+        return g
 
-    # Index of source and target
-    src_i = df.columns.get_loc(source)
-    tar_i = df.columns.get_loc(target)
-    if edge_attr:
-        # If all additional columns requested, build up a list of tuples
-        # [(name, index),...]
-        if edge_attr is True:
-            # Create a list of all columns indices, ignore nodes
-            edge_i = []
-            for i, col in enumerate(df.columns):
-                if col is not source and col is not target:
-                    edge_i.append((col, i))
-        # If a list or tuple of name is requested
-        elif isinstance(edge_attr, (list, tuple)):
-            edge_i = [(i, df.columns.get_loc(i)) for i in edge_attr]
-        # If a string or int is passed
-        else:
-            edge_i = [(edge_attr, df.columns.get_loc(edge_attr)), ]
-
-        # Iteration on values returns the rows as Numpy arrays
-        for row in df.values:
-            s, t = row[src_i], row[tar_i]
-            if g.is_multigraph():
-                g.add_edge(s, t)
-                key = max(g[s][t])  # default keys just count, so max is most recent
-                g[s][t][key].update((i, row[j]) for i, j in edge_i)
-            else:
-                g.add_edge(s, t)
-                g[s][t].update((i, row[j]) for i, j in edge_i)
-
-    # If no column names are given, then just return the edges.
+    # Additional columns requested
+    if edge_attr is True:
+        cols = [c for c in df.columns if c is not source and c is not target]
+    elif isinstance(edge_attr, (list, tuple)):
+        cols = edge_attr
     else:
-        for row in df.values:
-            g.add_edge(row[src_i], row[tar_i])
+        cols = [edge_attr]
+
+    try:
+        eattrs = zip(*[df[col] for col in cols])
+    except (KeyError, TypeError) as e:
+        msg = "Invalid edge_attr argument: %s" % edge_attr
+        raise nx.NetworkXError(msg)
+    for s, t, attrs in zip(df[source], df[target], eattrs):
+
+        g.add_edge(s, t)
+
+        if g.is_multigraph():
+            key = max(g[s][t])  # default keys just count so max is most recent
+            g[s][t][key].update((attr, val) for attr, val in zip(cols, attrs))
+        else:
+            g[s][t].update((attr, val) for attr, val in zip(cols, attrs))
 
     return g
 
@@ -416,6 +412,10 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     resulting Numpy matrix can be modified as follows:
 
     >>> import numpy as np
+    >>> try:
+    ...    np.set_printoptions(legacy="1.13")
+    ... except TypeError:
+    ...    pass
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_numpy_matrix(G)
     >>> A
@@ -461,23 +461,23 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
         An adjacency matrix representation of a graph
 
     parallel_edges : Boolean
-        If this is True, `create_using` is a multigraph, and `A` is an
+        If True, `create_using` is a multigraph, and `A` is an
         integer matrix, then entry *(i, j)* in the matrix is interpreted as the
-        number of parallel edges joining vertices *i* and *j* in the graph. If it
-        is False, then the entries in the adjacency matrix are interpreted as
+        number of parallel edges joining vertices *i* and *j* in the graph.
+        If False, then the entries in the adjacency matrix are interpreted as
         the weight of a single edge joining the vertices.
 
-    create_using : NetworkX graph
-        Use specified graph for result. The default is Graph()
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Notes
     -----
-    If `create_using` is an instance of :class:`networkx.MultiGraph` or
+    If `create_using` is :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
     entries of `A` are of type :class:`int`, then this function returns a
-    multigraph (of the same type as `create_using`) with parallel edges.
+    multigraph (constructed from `create_using`) with parallel edges.
 
-    If `create_using` is an undirected multigraph, then only the edges
+    If `create_using` indicates an undirected multigraph, then only the edges
     indicated by the upper triangle of the matrix `A` will be added to the
     graph.
 
@@ -500,18 +500,18 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     >>> A = np.matrix([[1, 1], [2, 1]])
     >>> G = nx.from_numpy_matrix(A)
 
-    If `create_using` is a multigraph and the matrix has only integer entries,
-    the entries will be interpreted as weighted edges joining the vertices
-    (without creating parallel edges):
+    If `create_using` indicates a multigraph and the matrix has only integer
+    entries and `parallel_edges` is False, then the entries will be treated
+    as weights for edges joining the nodes (without creating parallel edges):
 
     >>> A = np.matrix([[1, 1], [1, 2]])
-    >>> G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph())
+    >>> G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 2}})
 
-    If `create_using` is a multigraph and the matrix has only integer entries
-    but `parallel_edges` is True, then the entries will be interpreted as
-    the number of parallel edges joining those two vertices:
+    If `create_using` indicates a multigraph and the matrix has only integer
+    entries and `parallel_edges` is True, then the entries will be treated
+    as the number of parallel edges joining those two vertices:
 
     >>> A = np.matrix([[1, 1], [1, 2]])
     >>> temp = nx.MultiGraph()
@@ -546,7 +546,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
         kind_to_python_type['U'] = str
     except ValueError:  # Python 2.7
         kind_to_python_type['U'] = unicode
-    G = _prep_create_using(create_using)
+    G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:
         raise nx.NetworkXError("Adjacency matrix is not square.",
@@ -561,7 +561,8 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     G.add_nodes_from(range(n))
     # Get a list of all the entries in the matrix with nonzero entries. These
     # coordinates will become the edges in the graph.
-    edges = zip(*(np.asarray(A).nonzero()))
+    edges = map(lambda e: (int(e[0]), int(e[1])),
+                zip(*(np.asarray(A).nonzero())))
     # handle numpy constructed data type
     if python_type is 'void':
         # Sort the fields by their offset, then by dtype, then by name.
@@ -876,12 +877,12 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
     parallel_edges : Boolean
       If this is True, `create_using` is a multigraph, and `A` is an
       integer matrix, then entry *(i, j)* in the matrix is interpreted as the
-      number of parallel edges joining vertices *i* and *j* in the graph. If it
-      is False, then the entries in the adjacency matrix are interpreted as
+      number of parallel edges joining vertices *i* and *j* in the graph.
+      If it is False, then the entries in the matrix are interpreted as
       the weight of a single edge joining the vertices.
 
-    create_using: NetworkX graph
-       Use specified graph for result.  The default is Graph()
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     edge_attribute: string
        Name of edge attribute to store matrix numeric value. The data will
@@ -890,13 +891,13 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
     Notes
     -----
 
-    If `create_using` is an instance of :class:`networkx.MultiGraph` or
+    If `create_using` is :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
     entries of `A` are of type :class:`int`, then this function returns a
-    multigraph (of the same type as `create_using`) with parallel edges.
+    multigraph (constructed from `create_using`) with parallel edges.
     In this case, `edge_attribute` will be ignored.
 
-    If `create_using` is an undirected multigraph, then only the edges
+    If `create_using` indicates an undirected multigraph, then only the edges
     indicated by the upper triangle of the matrix `A` will be added to the
     graph.
 
@@ -906,27 +907,27 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
     >>> A = sp.sparse.eye(2, 2, 1)
     >>> G = nx.from_scipy_sparse_matrix(A)
 
-    If `create_using` is a multigraph and the matrix has only integer entries,
-    the entries will be interpreted as weighted edges joining the vertices
-    (without creating parallel edges):
+    If `create_using` indicates a multigraph and the matrix has only integer
+    entries and `parallel_edges` is False, then the entries will be treated
+    as weights for edges joining the nodes (without creating parallel edges):
 
     >>> A = sp.sparse.csr_matrix([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph())
+    >>> G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 2}})
 
-    If `create_using` is a multigraph and the matrix has only integer entries
-    but `parallel_edges` is True, then the entries will be interpreted as
-    the number of parallel edges joining those two vertices:
+    If `create_using` indicates a multigraph and the matrix has only integer
+    entries and `parallel_edges` is True, then the entries will be treated
+    as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_matrix([[1, 1], [1, 2]])
     >>> G = nx.from_scipy_sparse_matrix(A, parallel_edges=True,
-    ...                                 create_using=nx.MultiGraph())
+    ...                                 create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
     """
-    G = _prep_create_using(create_using)
+    G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:
         raise nx.NetworkXError(
@@ -1150,23 +1151,22 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
 
     parallel_edges : Boolean
         If this is True, `create_using` is a multigraph, and `A` is an
-        integer array, then entry *(i, j)* in the adjacency matrix is
-        interpreted as the number of parallel edges joining vertices *i*
-        and *j* in the graph. If it is False, then the entries in the
-        adjacency matrix are interpreted as the weight of a single edge
-        joining the vertices.
+        integer array, then entry *(i, j)* in the array is interpreted as the
+        number of parallel edges joining vertices *i* and *j* in the graph.
+        If it is False, then the entries in the array are interpreted as
+        the weight of a single edge joining the vertices.
 
-    create_using : NetworkX graph
-        Use specified graph for result. The default is Graph()
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Notes
     -----
-    If `create_using` is an instance of :class:`networkx.MultiGraph` or
+    If `create_using` is :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
     entries of `A` are of type :class:`int`, then this function returns a
     multigraph (of the same type as `create_using`) with parallel edges.
 
-    If `create_using` is an undirected multigraph, then only the edges
+    If `create_using` indicates an undirected multigraph, then only the edges
     indicated by the upper triangle of the array `A` will be added to the
     graph.
 
@@ -1191,18 +1191,18 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     >>> G.edges(data=True)
     EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), (1, 1, {'weight': 1})])
 
-    If `create_using` is a multigraph and the array has only integer entries,
-    the entries will be interpreted as weighted edges joining the vertices
-    (without creating parallel edges):
+    If `create_using` indicates a multigraph and the array has only integer
+    entries and `parallel_edges` is False, then the entries will be treated
+    as weights for edges joining the nodes (without creating parallel edges):
 
     >>> A = np.array([[1, 1], [1, 2]])
-    >>> G = nx.from_numpy_array(A, create_using=nx.MultiGraph())
+    >>> G = nx.from_numpy_array(A, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 2}})
 
-    If `create_using` is a multigraph and the array has only integer entries
-    but `parallel_edges` is True, then the entries will be interpreted as
-    the number of parallel edges joining those two vertices:
+    If `create_using` indicates a multigraph and the array has only integer
+    entries and `parallel_edges` is True, then the entries will be treated
+    as the number of parallel edges joining those two vertices:
 
     >>> A = np.array([[1, 1], [1, 2]])
     >>> temp = nx.MultiGraph()

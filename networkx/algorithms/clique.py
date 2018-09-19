@@ -21,7 +21,7 @@ try:
     from itertools import ifilter as filter
 except ImportError:
     pass
-import networkx
+import networkx as nx
 from networkx.utils import not_implemented_for
 __author__ = """Dan Schult (dschult@colgate.edu)"""
 __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
@@ -309,9 +309,8 @@ def make_max_clique_graph(G, create_using=None):
     ----------
     G : NetworkX graph
 
-    create_using : NetworkX graph
-        If provided, this graph will be cleared and the nodes and edges
-        of the maximal clique graph will be added to this graph.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -333,8 +332,10 @@ def make_max_clique_graph(G, create_using=None):
     steps.
 
     """
-    B = create_using if create_using is not None else networkx.Graph()
-    B.clear()
+    if create_using is None:
+        B = G.__class__()
+    else:
+        B = nx.empty_graph(0, create_using)
     cliques = list(enumerate(set(c) for c in find_cliques(G)))
     # Add a numbered node for each clique.
     B.add_nodes_from(i for i, c in cliques)
@@ -362,9 +363,8 @@ def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
         additional attribute, `pos`, a dictionary mapping node to
         position in the Euclidean plane.
 
-    create_using : NetworkX graph
-        If provided, this graph will be cleared and the nodes and edges
-        of the bipartite graph will be added to this graph.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -379,7 +379,7 @@ def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
         convention for bipartite graphs in NetworkX.
 
     """
-    B = create_using if create_using is not None else networkx.Graph()
+    B = nx.empty_graph(0, create_using)
     B.clear()
     # The "bottom" nodes in the bipartite graph are the nodes of the
     # original graph, G.
@@ -423,7 +423,9 @@ def graph_clique_number(G, cliques=None):
     """
     if cliques is None:
         cliques = find_cliques(G)
-    return max([len(c) for c in cliques])
+    if len(G.nodes) < 1:
+        return 0
+    return max([len(c) for c in cliques] or [1])
 
 
 def graph_number_of_cliques(G, cliques=None):
@@ -469,10 +471,10 @@ def node_clique_number(G, nodes=None, cliques=None):
             if isinstance(nodes, list):
                 d = {}
                 for n in nodes:
-                    H = networkx.ego_graph(G, n)
+                    H = nx.ego_graph(G, n)
                     d[n] = max((len(c) for c in find_cliques(H)))
             else:
-                H = networkx.ego_graph(G, nodes)
+                H = nx.ego_graph(G, nodes)
                 d = max((len(c) for c in find_cliques(H)))
             return d
         # nodes is None--find all cliques

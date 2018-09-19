@@ -8,5 +8,6 @@ Matching
 
    is_matching
    is_maximal_matching
+   is_perfect_matching
    maximal_matching
    max_weight_matching

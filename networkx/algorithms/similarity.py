@@ -1,4 +1,26 @@
 # -*- coding: utf-8 -*-
+#    Copyright (C) 2010 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Author:  Andrey Paramonov <paramon@acdlabs.ru>
+""" Functions measuring similarity using graph edit distance.
+
+The graph edit distance is the number of edge/node changes needed
+to make two graphs isomorphic.
+
+The default algorithm/implementation is sub-optimal for some graphs.
+The problem of finding the exact Graph Edit Distance (GED) is NP-hard
+so it is often slow. If the simple interface `graph_edit_distance`
+takes too long for your graph, try `optimize_graph_edit_distance`
+and/or `optimize_edit_paths`.
+
+At the same time, I encourage capable people to investigate
+alternative GED algorithms, in order to improve the choices available.
+"""
 from __future__ import print_function
 import math
 import networkx as nx
@@ -20,8 +42,10 @@ def debug_print(*args, **kwargs):
 
 
 def graph_edit_distance(G1, G2, node_match=None, edge_match=None,
-                        node_subst_cost=None, node_del_cost=None, node_ins_cost=None,
-                        edge_subst_cost=None, edge_del_cost=None, edge_ins_cost=None,
+                        node_subst_cost=None, node_del_cost=None,
+                        node_ins_cost=None,
+                        edge_subst_cost=None, edge_del_cost=None,
+                        edge_ins_cost=None,
                         upper_bound=None):
     """Returns GED (graph edit distance) between graphs G1 and G2.
 
@@ -152,8 +176,10 @@ def graph_edit_distance(G1, G2, node_match=None, edge_match=None,
 
 
 def optimal_edit_paths(G1, G2, node_match=None, edge_match=None,
-                       node_subst_cost=None, node_del_cost=None, node_ins_cost=None,
-                       edge_subst_cost=None, edge_del_cost=None, edge_ins_cost=None,
+                       node_subst_cost=None, node_del_cost=None,
+                       node_ins_cost=None,
+                       edge_subst_cost=None, edge_del_cost=None,
+                       edge_ins_cost=None,
                        upper_bound=None):
     """Returns all minimum-cost edit paths transforming G1 to G2.
 
@@ -296,8 +322,10 @@ def optimal_edit_paths(G1, G2, node_match=None, edge_match=None,
 
 
 def optimize_graph_edit_distance(G1, G2, node_match=None, edge_match=None,
-                                 node_subst_cost=None, node_del_cost=None, node_ins_cost=None,
-                                 edge_subst_cost=None, edge_del_cost=None, edge_ins_cost=None,
+                                 node_subst_cost=None, node_del_cost=None,
+                                 node_ins_cost=None,
+                                 edge_subst_cost=None, edge_del_cost=None,
+                                 edge_ins_cost=None,
                                  upper_bound=None):
     """Returns consecutive approximations of GED (graph edit distance)
     between graphs G1 and G2.
@@ -428,8 +456,10 @@ def optimize_graph_edit_distance(G1, G2, node_match=None, edge_match=None,
 
 
 def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
-                        node_subst_cost=None, node_del_cost=None, node_ins_cost=None,
-                        edge_subst_cost=None, edge_del_cost=None, edge_ins_cost=None,
+                        node_subst_cost=None, node_del_cost=None,
+                        node_ins_cost=None,
+                        edge_subst_cost=None, edge_del_cost=None,
+                        edge_ins_cost=None,
                         upper_bound=None, strictly_decreasing=True):
     """GED (graph edit distance) calculation: advanced interface.
 
@@ -574,18 +604,19 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         lsa_row_ind, lsa_col_ind = linear_sum_assignment(C)
 
         # Fixup dummy assignments:
-        # each substitution i<->j should have corresponding dummy assignment m+j<->n+i
+        # each substitution i<->j should have dummy assignment m+j<->n+i
         # NOTE: fast reduce of Cv relies on it
         #assert len(lsa_row_ind) == len(lsa_col_ind)
-        subst_ind = list(k for k, i, j in zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-                         if i < m and j < n)
-        dummy_ind = list(k for k, i, j in zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-                         if i >= m and j >= n)
+        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
+        subst_ind = list(k for k, i, j in indexes if i < m and j < n)
+        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
+        dummy_ind = list(k for k, i, j in indexes if i >= m and j >= n)
         #assert len(subst_ind) == len(dummy_ind)
         lsa_row_ind[dummy_ind] = lsa_col_ind[subst_ind] + m
         lsa_col_ind[dummy_ind] = lsa_row_ind[subst_ind] + n
 
-        return CostMatrix(C, lsa_row_ind, lsa_col_ind, C[lsa_row_ind, lsa_col_ind].sum())
+        return CostMatrix(C, lsa_row_ind, lsa_col_ind,
+                          C[lsa_row_ind, lsa_col_ind].sum())
 
     def extract_C(C, i, j, m, n):
         #assert(C.shape == (m + n, m + n))
@@ -627,12 +658,12 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         N = len(pending_h)
         #assert Ce.C.shape == (M + N, M + N)
 
-        g_ind = list(i for i in range(M)
-                     if any(pending_g[i] in ((p, u), (u, p), (u, u))
-                            for p, q in matched_uv))
-        h_ind = list(j for j in range(N)
-                     if any(pending_h[j] in ((q, v), (v, q), (v, v))
-                            for p, q in matched_uv))
+        g_ind = [i for i in range(M) if pending_g[i][:2] == (u, u) or
+                 any(pending_g[i][:2] in ((p, u), (u, p))
+                     for p, q in matched_uv)]
+        h_ind = [j for j in range(N) if pending_h[j][:2] == (v, v) or
+                 any(pending_h[j][:2] in ((q, v), (v, q))
+                     for p, q in matched_uv)]
         m = len(g_ind)
         n = len(h_ind)
 
@@ -641,15 +672,25 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
             #assert C.shape == (m + n, m + n)
 
             # Forbid structurally invalid matches
-            inf = min(min(Ce.C.sum(axis=0)), min(Ce.C.sum(axis=1))) + 1
+            # NOTE: inf remembered from Ce construction
             for k, i in zip(range(m), g_ind):
-                g = pending_g[i]
+                g = pending_g[i][:2]
                 for l, j in zip(range(n), h_ind):
-                    h = pending_h[j]
-                    if not any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
-                               or g == (u, u) and h == (v, v)
+                    h = pending_h[j][:2]
+                    if nx.is_directed(G1) or nx.is_directed(G2):
+                        if any(g == (p, u) and h == (q, v) or
+                               g == (u, p) and h == (v, q)
                                for p, q in matched_uv):
-                        C[k, l] = inf
+                            continue
+                    else:
+                        if any(g in ((p, u), (u, p)) and h in ((q, v), (v, q))
+                               for p, q in matched_uv):
+                            continue
+                    if g == (u, u):
+                        continue
+                    if h == (v, v):
+                        continue
+                    C[k, l] = inf
 
             localCe = make_CostMatrix(C, m, n)
             ij = list((g_ind[k] if k < m else M + h_ind[l],
@@ -703,14 +744,15 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         # 1) a vertex mapping from optimal linear sum assignment
         i, j = min((k, l) for k, l in zip(Cv.lsa_row_ind, Cv.lsa_col_ind)
                    if k < m or l < n)
-        xy, localCe = match_edges(pending_u[i] if i < m else None, pending_v[j] if j < n else None,
+        xy, localCe = match_edges(pending_u[i] if i < m else None,
+                                  pending_v[j] if j < n else None,
                                   pending_g, pending_h, Ce, matched_uv)
         Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
         #assert Ce.ls <= localCe.ls + Ce_xy.ls
         if prune(matched_cost + Cv.ls + localCe.ls + Ce_xy.ls):
             pass
         else:
-            # # get reduced Cv efficiently
+            # get reduced Cv efficiently
             Cv_ij = CostMatrix(reduce_C(Cv.C, (i,), (j,), m, n),
                                reduce_ind(Cv.lsa_row_ind, (i, m + j)),
                                reduce_ind(Cv.lsa_col_ind, (j, n + i)),
@@ -735,13 +777,15 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
             #assert Cv.ls <= Cv.C[i, j] + Cv_ij.ls
             if prune(matched_cost + Cv.C[i, j] + Cv_ij.ls + Ce.ls):
                 continue
-            xy, localCe = match_edges(pending_u[i] if i < m else None, pending_v[j] if j < n else None,
+            xy, localCe = match_edges(pending_u[i] if i < m else None,
+                                      pending_v[j] if j < n else None,
                                       pending_g, pending_h, Ce, matched_uv)
             if prune(matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls):
                 continue
             Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
             #assert Ce.ls <= localCe.ls + Ce_xy.ls
-            if prune(matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls + Ce_xy.ls):
+            if prune(matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls +
+                     Ce_xy.ls):
                 continue
             other.append(((i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls))
 
@@ -781,15 +825,15 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         #debug_print('matched-cost:', matched_cost)
         #debug_print('pending-u:', pending_u)
         #debug_print('pending-v:', pending_v)
-        # debug_print(Cv.C)
+        #debug_print(Cv.C)
         #assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))
         #assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))
         #debug_print('pending-g:', pending_g)
         #debug_print('pending-h:', pending_h)
-        # debug_print(Ce.C)
+        #debug_print(Ce.C)
         #assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))
         #assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))
-        # debug_print()
+        #debug_print()
 
         if prune(matched_cost + Cv.ls + Ce.ls):
             return
@@ -816,8 +860,10 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                 v = pending_v.pop(j) if j < len(pending_v) else None
                 matched_uv.append((u, v))
                 for x, y in xy:
-                    matched_gh.append((pending_g[x] if x < len(pending_g) else None,
-                                       pending_h[y] if y < len(pending_h) else None))
+                    len_g = len(pending_g)
+                    len_h = len(pending_h)
+                    matched_gh.append((pending_g[x] if x < len_g else None,
+                                       pending_h[y] if y < len_h else None))
                 sortedx = list(sorted(x for x, y in xy))
                 sortedy = list(sorted(y for x, y in xy))
                 G = list((pending_g.pop(x) if x < len(pending_g) else None)
@@ -826,15 +872,17 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                          for y in reversed(sortedy))
 
                 # yield from
-                for t in get_edit_paths(matched_uv, pending_u, pending_v, Cv_ij,
-                                        matched_gh, pending_g, pending_h, Ce_xy,
+                for t in get_edit_paths(matched_uv, pending_u, pending_v,
+                                        Cv_ij,
+                                        matched_gh, pending_g, pending_h,
+                                        Ce_xy,
                                         matched_cost + edit_cost):
                     yield t
 
                 # backtrack
-                if not u is None:
+                if u is not None:
                     pending_u.insert(i, u)
-                if not v is None:
+                if v is not None:
                     pending_v.insert(j, v)
                 matched_uv.pop()
                 for x, g in zip(sortedx, reversed(G)):
@@ -857,10 +905,12 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
     C = np.zeros((m + n, m + n))
     if node_subst_cost:
         C[0:m, 0:n] = np.array([node_subst_cost(G1.nodes[u], G2.nodes[v])
-                                for u in pending_u for v in pending_v]).reshape(m, n)
+                                for u in pending_u for v in pending_v]
+                               ).reshape(m, n)
     elif node_match:
         C[0:m, 0:n] = np.array([1 - int(node_match(G1.nodes[u], G2.nodes[v]))
-                                for u in pending_u for v in pending_v]).reshape(m, n)
+                                for u in pending_u for v in pending_v]
+                               ).reshape(m, n)
     else:
         # all zeroes
         pass
@@ -877,12 +927,14 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
     #assert not n or min(ins_costs) >= 0
     inf = C[0:m, 0:n].sum() + sum(del_costs) + sum(ins_costs) + 1
     C[0:m, n:n + m] = np.array([del_costs[i] if i == j else inf
-                                for i in range(m) for j in range(m)]).reshape(m, m)
+                                for i in range(m) for j in range(m)]
+                               ).reshape(m, m)
     C[m:m + n, 0:n] = np.array([ins_costs[i] if i == j else inf
-                                for i in range(n) for j in range(n)]).reshape(n, n)
+                                for i in range(n) for j in range(n)]
+                               ).reshape(n, n)
     Cv = make_CostMatrix(C, m, n)
     #debug_print('Cv: {} x {}'.format(m, n))
-    # debug_print(Cv.C)
+    #debug_print(Cv.C)
 
     pending_g = list(G1.edges)
     pending_h = list(G2.edges)
@@ -893,10 +945,12 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
     C = np.zeros((m + n, m + n))
     if edge_subst_cost:
         C[0:m, 0:n] = np.array([edge_subst_cost(G1.edges[g], G2.edges[h])
-                                for g in pending_g for h in pending_h]).reshape(m, n)
+                                for g in pending_g for h in pending_h]
+                               ).reshape(m, n)
     elif edge_match:
         C[0:m, 0:n] = np.array([1 - int(edge_match(G1.edges[g], G2.edges[h]))
-                                for g in pending_g for h in pending_h]).reshape(m, n)
+                                for g in pending_g for h in pending_h]
+                               ).reshape(m, n)
     else:
         # all zeroes
         pass
@@ -913,13 +967,15 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
     #assert not n or min(ins_costs) >= 0
     inf = C[0:m, 0:n].sum() + sum(del_costs) + sum(ins_costs) + 1
     C[0:m, n:n + m] = np.array([del_costs[i] if i == j else inf
-                                for i in range(m) for j in range(m)]).reshape(m, m)
+                                for i in range(m) for j in range(m)]
+                               ).reshape(m, m)
     C[m:m + n, 0:n] = np.array([ins_costs[i] if i == j else inf
-                                for i in range(n) for j in range(n)]).reshape(n, n)
+                                for i in range(n) for j in range(n)]
+                               ).reshape(n, n)
     Ce = make_CostMatrix(C, m, n)
     #debug_print('Ce: {} x {}'.format(m, n))
-    # debug_print(Ce.C)
-    # debug_print()
+    #debug_print(Ce.C)
+    #debug_print()
 
     class MaxCost:
         def __init__(self):
@@ -942,10 +998,10 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
     for vertex_path, edge_path, cost in \
         get_edit_paths([], pending_u, pending_v, Cv,
                        [], pending_g, pending_h, Ce, 0):
-        #assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in vertex_path if u is not None)))
-        #assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in vertex_path if v is not None)))
-        #assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in edge_path if g is not None)))
-        #assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in edge_path if h is not None)))
+        #assert sorted(G1.nodes) == sorted(u for u, v in vertex_path if u is not None)
+        #assert sorted(G2.nodes) == sorted(v for u, v in vertex_path if v is not None)
+        #assert sorted(G1.edges) == sorted(g for g, h in edge_path if g is not None)
+        #assert sorted(G2.edges) == sorted(h for g, h in edge_path if h is not None)
         #print(vertex_path, edge_path, cost, file = sys.stderr)
         #assert cost == maxcost.value
         yield list(vertex_path), list(edge_path), cost

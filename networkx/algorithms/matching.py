@@ -13,11 +13,12 @@
 # All rights reserved.
 # BSD license.
 """Functions for computing and verifying matchings in a graph."""
+from collections import Counter
 from itertools import combinations
 from itertools import repeat
 
-__all__ = ['is_matching', 'is_maximal_matching', 'max_weight_matching',
-           'maximal_matching']
+__all__ = ['is_matching', 'is_maximal_matching', 'is_perfect_matching',
+           'max_weight_matching', 'maximal_matching']
 
 
 def maximal_matching(G):
@@ -147,6 +148,42 @@ def is_maximal_matching(G, matching):
     unmatched_edges = all_edges - matched_edges
     # TODO This is parallelizable.
     return all(not is_matching(G, matching | {e}) for e in unmatched_edges)
+
+
+def is_perfect_matching(G, matching):
+    """Decides whether the given set represents a valid perfect matching in
+    ``G``.
+
+    A *perfect matching* in a graph is a matching in which exactly one edge
+    is incident upon each vertex.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    matching : dict or set
+        A dictionary or set representing a matching. If a dictionary, it
+        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        edge ``(u, v)`` in the matching. If a set, it must have elements
+        of the form ``(u, v)``, where ``(u, v)`` is an edge in the
+        matching.
+
+    Returns
+    -------
+    bool
+        Whether the given set or dictionary represents a valid perfect
+        matching in the graph.
+
+    """
+    if isinstance(matching, dict):
+        matching = matching_dict_to_set(matching)
+
+    if not is_matching(G, matching):
+        return False
+
+    counts = Counter(sum(matching, ()))
+
+    return all(counts[v] == 1 for v in G)
 
 
 def max_weight_matching(G, maxcardinality=False, weight='weight'):

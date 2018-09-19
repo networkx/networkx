@@ -3,6 +3,9 @@ from nose.tools import assert_is
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
 from nose.tools import raises
+import pickle
+import gc
+import collections
 
 import networkx as nx
 from networkx.testing.utils import *
@@ -70,6 +73,29 @@ class BaseGraphTester(object):
         assert_equal(sorted(G.neighbors(0)), [1, 2])
         assert_raises((KeyError, nx.NetworkXError), G.neighbors, -1)
 
+    def test_memory_leak(self):
+        G = self.Graph()
+
+        def count_objects_of_type(_type):
+            return sum(1 for obj in gc.get_objects() if isinstance(obj, _type))
+
+        gc.collect()
+        before = count_objects_of_type(self.Graph)
+        G.copy()
+        after = count_objects_of_type(self.Graph)
+        assert_equal(before, after)
+
+        # test a subgraph of the base class
+        class MyGraph(self.Graph):
+            pass
+
+        gc.collect()
+        G = MyGraph()
+        before = count_objects_of_type(MyGraph)
+        G.copy()
+        after = count_objects_of_type(MyGraph)
+        assert_equal(before, after)
+
     def test_edges(self):
         G = self.K3
         assert_edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
@@ -81,7 +107,8 @@ class BaseGraphTester(object):
         G = self.Graph()
         G.add_edge(1, 2, weight=2)
         G.add_edge(2, 3, weight=3)
-        assert_equal(sorted(d for n, d in G.degree(weight='weight')), [2, 3, 5])
+        assert_equal(sorted(d for n, d in G.degree(weight='weight')),
+                     [2, 3, 5])
         assert_equal(dict(G.degree(weight='weight')), {1: 2, 2: 5, 3: 3})
         assert_equal(G.degree(1, weight='weight'), 2)
         assert_equal(G.degree([1], weight='weight'), [(1, 2)])
@@ -159,7 +186,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.Graph()
         G.add_edge(1, 2, weight=2, other=3)
         G.add_edge(2, 3, weight=3, other=4)
-        assert_nodes_equal((d for n, d in G.degree(weight='weight')), [2, 5, 3])
+        assert_equal(sorted(d for n, d in G.degree(weight='weight')),
+                     [2, 3, 5])
         assert_equal(dict(G.degree(weight='weight')), {1: 2, 2: 5, 3: 3})
         assert_equal(G.degree(1, weight='weight'), 2)
         assert_nodes_equal((G.degree([1], weight='weight')), [(1, 2)])
@@ -184,6 +212,15 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_equal(G.__str__(), "test")
         assert_equal(G.name, "test")
 
+    def test_graph_chain(self):
+        G = self.Graph([(0, 1), (1, 2)])
+        DG = G.to_directed(as_view=True)
+        SDG = DG.subgraph([0, 1])
+        RSDG = SDG.reverse(copy=False)
+        assert_is(G, DG._graph)
+        assert_is(DG, SDG._graph)
+        assert_is(SDG, RSDG._graph)
+
     def test_copy(self):
         G = self.Graph()
         G.add_node(0)
@@ -205,14 +242,6 @@ class BaseAttrGraphTester(BaseGraphTester):
         self.graphs_equal(H, G)
         self.different_attrdict(H, G)
         self.shallow_copy_attrdict(H, G)
-
-    def test_root_graph(self):
-        G = self.Graph([(0, 1), (1, 2)])
-        assert_is(G, G.root_graph)
-        DG = G.to_directed(as_view=True)
-        SDG = DG.subgraph([0, 1])
-        RSDG = SDG.reverse(copy=False)
-        assert_is(G, RSDG.root_graph)
 
     def test_fresh_copy(self):
         G = self.Graph()
@@ -377,7 +406,8 @@ class BaseAttrGraphTester(BaseGraphTester):
 
     def test_edge_attr3(self):
         G = self.Graph()
-        G.add_edges_from([(1, 2, {'weight': 32}), (3, 4, {'weight': 64})], foo='foo')
+        G.add_edges_from([(1, 2, {'weight': 32}),
+                          (3, 4, {'weight': 64})], foo='foo')
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'foo': 'foo', 'weight': 32}),
                             (3, 4, {'foo': 'foo', 'weight': 64})])
@@ -404,9 +434,9 @@ class BaseAttrGraphTester(BaseGraphTester):
                            [(1, 2, {'data': 21, 'spam': 'bar', 'bar': 'foo'})])
         G.adj[1][2]['listdata'] = [20, 200]
         G.adj[1][2]['weight'] = 20
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'data': 21, 'spam': 'bar',
-                                    'bar': 'foo', 'listdata': [20, 200], 'weight':20})])
+        dd = {'data': 21, 'spam': 'bar', 'bar': 'foo',
+              'listdata': [20, 200], 'weight': 20}
+        assert_edges_equal(G.edges(data=True), [(1, 2, dd)])
 
     def test_to_undirected(self):
         G = self.K3
@@ -468,6 +498,13 @@ class TestGraph(BaseAttrGraphTester):
         self.K3._node[0] = {}
         self.K3._node[1] = {}
         self.K3._node[2] = {}
+
+    def test_pickle(self):
+        G = self.K3
+        pg = pickle.loads(pickle.dumps(G, -1))
+        self.graphs_equal(pg, G)
+        pg = pickle.loads(pickle.dumps(G))
+        self.graphs_equal(pg, G)
 
     def test_data_input(self):
         G = self.Graph({1: [2], 2: [1]}, name="test")
@@ -562,7 +599,8 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(G.adj, {0: {1: {}, 2: {'weight': 3}}, 1: {0: {}},
                              2: {0: {'weight': 3}}})
         G = self.Graph()
-        G.add_edges_from([(0, 1), (0, 2, {'weight': 3}), (1, 2, {'data': 4})], data=2)
+        G.add_edges_from([(0, 1), (0, 2, {'weight': 3}),
+                          (1, 2, {'data': 4})], data=2)
         assert_equal(G.adj, {
             0: {1: {'data': 2}, 2: {'weight': 3, 'data': 2}},
             1: {0: {'data': 2}, 2: {'data': 4}},
@@ -607,6 +645,58 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(G.get_edge_data(10, 20), None)
         assert_equal(G.get_edge_data(-1, 0), None)
         assert_equal(G.get_edge_data(-1, 0, default=1), 1)
+
+    def test_update(self):
+        # specify both edgees and nodes
+        G = self.K3.copy()
+        G.update(nodes=[3, (4, {'size': 2})],
+                 edges=[(4, 5), (6, 7, {'weight': 2})])
+        nlist = [(0, {}), (1, {}), (2, {}), (3, {}),
+                 (4, {'size': 2}), (5, {}), (6, {}), (7, {})]
+        assert_equal(sorted(G.nodes.data()), nlist)
+        if G.is_directed():
+            elist = [(0, 1, {}), (0, 2, {}), (1, 0, {}), (1, 2, {}),
+                     (2, 0, {}), (2, 1, {}),
+                     (4, 5, {}), (6, 7, {'weight': 2})]
+        else:
+            elist = [(0, 1, {}), (0, 2, {}), (1, 2, {}),
+                     (4, 5, {}), (6, 7, {'weight': 2})]
+        assert_equal(sorted(G.edges.data()), elist)
+        assert_equal(G.graph, {})
+
+        # no keywords -- order is edges, nodes
+        G = self.K3.copy()
+        G.update([(4, 5), (6, 7, {'weight': 2})], [3, (4, {'size': 2})])
+        assert_equal(sorted(G.nodes.data()), nlist)
+        assert_equal(sorted(G.edges.data()), elist)
+        assert_equal(G.graph, {})
+
+        # update using only a graph
+        G = self.Graph()
+        G.graph['foo'] = 'bar'
+        G.add_node(2, data=4)
+        G.add_edge(0, 1, weight=0.5)
+        GG = G.copy()
+        H = self.Graph()
+        GG.update(H)
+        assert_graphs_equal(G, GG)
+        H.update(G)
+        assert_graphs_equal(H, G)
+
+        # update nodes only
+        H = self.Graph()
+        H.update(nodes=[3, 4])
+        assert_equal(H.nodes ^ {3, 4}, set([]))
+        assert_equal(H.size(), 0)
+
+        # update edges only
+        H = self.Graph()
+        H.update(edges=[(3, 4)])
+        assert_equal(sorted(H.edges.data()), [(3, 4, {})])
+        assert_equal(H.size(), 1)
+
+        # No inputs -> exception
+        assert_raises(nx.NetworkXError, nx.Graph().update)
 
 
 class TestEdgeSubgraph(object):

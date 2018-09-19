@@ -932,6 +932,58 @@ class TestWriteGraphML(BaseGraphML):
         os.close(fd)
         os.unlink(fname)
 
+    def test_numpy_float(self):
+        try:
+            import numpy as np
+        except:
+            return
+        wt = np.float(3.4)
+        G = nx.Graph([(1, 2, {'weight': wt})])
+        fd, fname = tempfile.mkstemp()
+        self.writer(G, fname)
+        H = nx.read_graphml(fname, node_type=int)
+        assert_equal(G._adj, H._adj)
+        os.close(fd)
+        os.unlink(fname)
+
+    def test_numpy_float64(self):
+        try:
+            import numpy as np
+        except:
+            return
+        wt = np.float64(3.4)
+        G = nx.Graph([(1, 2, {'weight': wt})])
+        fd, fname = tempfile.mkstemp()
+        self.writer(G, fname)
+        H = nx.read_graphml(fname, node_type=int)
+        assert_equal(G.edges, H.edges)
+        wtG = G[1][2]['weight']
+        wtH = H[1][2]['weight']
+        assert_almost_equal(wtG, wtH, places=6)
+        assert_equal(type(wtG), np.float64)
+        assert_equal(type(wtH), float)
+        os.close(fd)
+        os.unlink(fname)
+
+    def test_numpy_float32(self):
+        try:
+            import numpy as np
+        except:
+            return
+        wt = np.float32(3.4)
+        G = nx.Graph([(1, 2, {'weight': wt})])
+        fd, fname = tempfile.mkstemp()
+        self.writer(G, fname)
+        H = nx.read_graphml(fname, node_type=int)
+        assert_equal(G.edges, H.edges)
+        wtG = G[1][2]['weight']
+        wtH = H[1][2]['weight']
+        assert_almost_equal(wtG, wtH, places=6)
+        assert_equal(type(wtG), np.float32)
+        assert_equal(type(wtH), float)
+        os.close(fd)
+        os.unlink(fname)
+
     def test_unicode_attributes(self):
         G = nx.Graph()
         try:  # Python 3.x

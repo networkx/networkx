@@ -7,22 +7,24 @@
 #
 # Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow betweenness centrality measures."""
-import random
-
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import *
-from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
+from networkx.utils import (not_implemented_for,
+                            reverse_cuthill_mckee_ordering,
+                            py_random_state)
 
 __all__ = ['current_flow_betweenness_centrality',
            'approximate_current_flow_betweenness_centrality',
            'edge_current_flow_betweenness_centrality']
 
 
+@py_random_state(7)
 @not_implemented_for('directed')
 def approximate_current_flow_betweenness_centrality(G, normalized=True,
                                                     weight=None,
                                                     dtype=float, solver='full',
-                                                    epsilon=0.5, kmax=10000):
+                                                    epsilon=0.5, kmax=10000,
+                                                    seed=None):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
     Approximates the current-flow betweenness centrality within absolute
@@ -56,6 +58,10 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
 
     kmax: int
        Maximum number of sample node pairs to use for approximation.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -112,11 +118,11 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     l = 1  # parameter in approximation, adjustable
     k = l * int(np.ceil((cstar / epsilon)**2 * np.log(n)))
     if k > kmax:
-        raise nx.NetworkXError('Number random pairs k>kmax (%d>%d) ' % (k, kmax),
-                               'Increase kmax or epsilon')
+        msg = 'Number random pairs k>kmax (%d>%d) ' % (k, kmax)
+        raise nx.NetworkXError(msg, 'Increase kmax or epsilon')
     cstar2k = cstar / (2 * k)
     for i in range(k):
-        s, t = random.sample(range(n), 2)
+        s, t = seed.sample(range(n), 2)
         b = np.zeros(n, dtype=dtype)
         b[s] = 1
         b[t] = -1

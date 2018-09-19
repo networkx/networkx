@@ -212,6 +212,7 @@ class TestGeneratorThreshold():
         s = nxt.left_d_threshold_sequence(5, 7)
         s = nxt.right_d_threshold_sequence(5, 7)
         s1 = nxt.swap_d(s, 1.0, 1.0)
+        s1 = nxt.swap_d(s, 1.0, 1.0, seed=1)
 
     @attr('numpy')
     def test_eigenvectors(self):

@@ -24,6 +24,11 @@ class TestGeneratorsDirected(object):
         gnc_graph(100)
         scale_free_graph(100)
 
+        gn_graph(100, seed=42)
+        gnr_graph(100, 0.5, seed=42)
+        gnc_graph(100, seed=42)
+        scale_free_graph(100, seed=42)
+
     def test_create_using_keyword_arguments(self):
         assert_raises(nx.NetworkXError,
                       gn_graph, 100, create_using=Graph())
@@ -43,6 +48,14 @@ class TestGeneratorsDirected(object):
         MG = gnc_graph(100, create_using=MultiDiGraph(), seed=1)
         assert_equal(sorted(G.edges()), sorted(MG.edges()))
 
+        G = scale_free_graph(100, alpha=0.3, beta=0.4, gamma=0.3,
+                             delta_in=0.3, delta_out=0.1,
+                             create_using=MultiDiGraph, seed=1)
+        assert_raises(ValueError, scale_free_graph, 100, 0.5, 0.4, 0.3)
+        assert_raises(ValueError, scale_free_graph, 100, alpha=-0.3)
+        assert_raises(ValueError, scale_free_graph, 100, beta=-0.3)
+        assert_raises(ValueError, scale_free_graph, 100, gamma=-0.3)
+
 
 class TestRandomKOutGraph(object):
     """Unit tests for the
@@ -56,6 +69,8 @@ class TestRandomKOutGraph(object):
         k = 3
         alpha = 1
         G = random_k_out_graph(n, k, alpha)
+        assert_true(all(d == k for v, d in G.out_degree()))
+        G = random_k_out_graph(n, k, alpha, seed=42)
         assert_true(all(d == k for v, d in G.out_degree()))
 
     def test_no_self_loops(self):
@@ -73,12 +88,13 @@ class TestUniformRandomKOutGraph(object):
     function.
 
     """
-
     def test_regularity(self):
         """Tests that the generated graph is `k`-out-regular."""
         n = 10
         k = 3
         G = random_uniform_k_out_graph(n, k)
+        assert_true(all(d == k for v, d in G.out_degree()))
+        G = random_uniform_k_out_graph(n, k, seed=42)
         assert_true(all(d == k for v, d in G.out_degree()))
 
     def test_no_self_loops(self):

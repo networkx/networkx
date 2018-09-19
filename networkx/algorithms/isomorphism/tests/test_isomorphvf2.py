@@ -229,9 +229,29 @@ def test_multiple():
             gmB = iso.DiGraphMatcher(g1, g3)
         assert_true(gmA.is_isomorphic())
         g2.remove_node('C')
+        if not g1.is_directed():
+            gmA = iso.GraphMatcher(g1, g2)
+        else:
+            gmA = iso.DiGraphMatcher(g1, g2)
         assert_true(gmA.subgraph_is_isomorphic())
         assert_true(gmB.subgraph_is_isomorphic())
 #        for m in [gmB.mapping, gmB.mapping]:
 #            assert_true(m['A'] == 'A')
 #            assert_true(m['B'] == 'B')
 #            assert_true('C' not in m)
+
+def test_noncomparable_nodes():
+    node1 = object()
+    node2 = object()
+    node3 = object()
+
+    # Graph
+    G = nx.path_graph([node1, node2, node3])
+    gm = iso.GraphMatcher(G, G)
+    assert_true(gm.is_isomorphic())
+
+    # DiGraph
+    G = nx.path_graph([node1, node2, node3], create_using=nx.DiGraph)
+    H = nx.path_graph([node3, node2, node1], create_using=nx.DiGraph)
+    dgm = iso.DiGraphMatcher(G, H)
+    assert_true(dgm.is_isomorphic())

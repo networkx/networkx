@@ -27,3 +27,4 @@ from networkx.algorithms.approximation.matching import *
 from networkx.algorithms.approximation.ramsey import *
 from networkx.algorithms.approximation.steinertree import *
 from networkx.algorithms.approximation.vertex_cover import *
+from networkx.algorithms.approximation.treewidth import *

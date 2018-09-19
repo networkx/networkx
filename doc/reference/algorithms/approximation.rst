@@ -1,6 +1,6 @@
-****************************
+*****************************
 Approximations and Heuristics
-****************************
+*****************************
 
 .. automodule:: networkx.algorithms.approximation
 
@@ -88,6 +88,16 @@ Steiner Tree
 
    metric_closure
    steiner_tree
+
+
+Treewidth
+---------
+.. automodule:: networkx.algorithms.approximation.treewidth
+.. autosummary::
+   :toctree: generated/
+
+   treewidth_min_degree
+   treewidth_min_fill_in
 
 
 Vertex Cover

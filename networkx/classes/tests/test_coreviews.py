@@ -17,6 +17,9 @@ class TestAtlasView(object):
         pview = pickle.loads(pickle.dumps(view, -1))
         assert_equal(view, pview)
         assert_equal(view.__slots__, pview.__slots__)
+        pview = pickle.loads(pickle.dumps(view))
+        assert_equal(view, pview)
+        assert_equal(view.__slots__, pview.__slots__)
 
     def test_len(self):
         assert_equal(len(self.av), len(self.d))
@@ -309,3 +312,53 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
 
         assert_false(hasattr(self.adjview, '__setitem__'))
         assert_true(hasattr(avcopy, '__setitem__'))
+
+
+class TestFilteredGraphs(object):
+    def setup(self):
+        self.Graphs = [nx.Graph,
+                       nx.DiGraph,
+                       nx.MultiGraph,
+                       nx.MultiDiGraph]
+        self.SubGraphs = [nx.graphviews.SubGraph,
+                          nx.graphviews.SubDiGraph,
+                          nx.graphviews.SubMultiGraph,
+                          nx.graphviews.SubMultiDiGraph]
+
+    def test_hide_show_nodes(self):
+        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+            G = nx.path_graph(4, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            assert_equal(SG.nodes, RG.nodes)
+            assert_equal(SG.edges, RG.edges)
+            SGC = SG.copy()
+            RGC = RG.copy()
+            assert_equal(SGC.nodes, RGC.nodes)
+            assert_equal(SGC.edges, RGC.edges)
+
+    def test_str_repr(self):
+        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+            G = nx.path_graph(4, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            str(SG.adj)
+            str(RG.adj)
+            repr(SG.adj)
+            repr(RG.adj)
+            str(SG.adj[2])
+            str(RG.adj[2])
+            repr(SG.adj[2])
+            repr(RG.adj[2])
+
+    def test_copy(self):
+        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+            G = nx.path_graph(4, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            assert_equal(G.adj.copy(), G.adj)
+            assert_equal(G.adj[2].copy(), G.adj[2])
+            assert_equal(SG.adj.copy(), SG.adj)
+            assert_equal(SG.adj[2].copy(), SG.adj[2])
+            assert_equal(RG.adj.copy(), RG.adj)
+            assert_equal(RG.adj[2].copy(), RG.adj[2])

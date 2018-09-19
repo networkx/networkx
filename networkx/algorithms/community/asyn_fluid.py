@@ -6,17 +6,18 @@
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter
-import random
 from networkx.exception import NetworkXError
 from networkx.algorithms.components import is_connected
 from networkx.utils import groups
-from networkx.utils.decorators import not_implemented_for
+from networkx.utils import not_implemented_for
+from networkx.utils import py_random_state
 
 __all__ = ['asyn_fluidc']
 
 
+@py_random_state(3)
 @not_implemented_for('directed', 'multigraph')
-def asyn_fluidc(G, k, max_iter=100):
+def asyn_fluidc(G, k, max_iter=100, seed=None):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
     The asynchronous fluid communities algorithm is described in
@@ -49,6 +50,10 @@ def asyn_fluidc(G, k, max_iter=100):
     max_iter : integer
         The number of maximum iterations allowed. By default 15.
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     Returns
     -------
     communities : iterable
@@ -66,18 +71,17 @@ def asyn_fluidc(G, k, max_iter=100):
     """
     # Initial checks
     if not isinstance(k, int):
-        raise NetworkXError("k muts be an integer.")
+        raise NetworkXError("k must be an integer.")
     if not k > 0:
-        raise NetworkXError("k muts be greater than 0.")
+        raise NetworkXError("k must be greater than 0.")
     if not is_connected(G):
-        raise NetworkXError("Fluid Communities can only be run on connected\
-        Graphs.")
+        raise NetworkXError("Fluid Communities require connected Graphs.")
     if len(G) < k:
-        raise NetworkXError("k must be greater than graph size.")
+        raise NetworkXError("k cannot be bigger than the number of nodes.")
     # Initialization
     max_density = 1.0
     vertices = list(G)
-    random.shuffle(vertices)
+    seed.shuffle(vertices)
     communities = {n: i for i, n in enumerate(vertices[:k])}
     density = {}
     com_to_numvertices = {}
@@ -92,7 +96,7 @@ def asyn_fluidc(G, k, max_iter=100):
         iter_count += 1
         # Loop over all vertices in graph in a random order
         vertices = list(G)
-        random.shuffle(vertices)
+        seed.shuffle(vertices)
         for vertex in vertices:
             # Updating rule
             com_counter = Counter()
@@ -126,7 +130,7 @@ def asyn_fluidc(G, k, max_iter=100):
                     # Set flag of non-convergence
                     cont = True
                     # Randomly chose a new community from candidates
-                    new_com = random.choice(best_communities)
+                    new_com = seed.choice(best_communities)
                     # Update previous community status
                     try:
                         com_to_numvertices[communities[vertex]] -= 1

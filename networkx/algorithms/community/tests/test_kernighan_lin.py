@@ -30,6 +30,12 @@ def test_partition():
     assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
 
 
+def test_seed_argument():
+    G = nx.barbell_graph(3, 0)
+    C = kernighan_lin_bisection(G, seed=1)
+    assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
+
+
 @raises(nx.NetworkXError)
 def test_non_disjoint_partition():
     G = nx.barbell_graph(3, 0)

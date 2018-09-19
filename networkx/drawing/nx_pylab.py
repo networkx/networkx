@@ -505,7 +505,7 @@ def draw_networkx_edges(G, pos,
     Notes
     -----
     For directed graphs, arrows are drawn at the head end.  Arrows can be
-    turned off with keyword arrows=False. Be sure to include `node_size' as a
+    turned off with keyword arrows=False. Be sure to include `node_size` as a
     keyword argument; arrows are drawn considering the size of nodes.
 
     Examples
@@ -728,6 +728,8 @@ def draw_networkx_labels(G, pos,
 
     labels : dictionary, optional (default=None)
        Node labels in a dictionary keyed by node of text labels
+       Node-keys in labels should appear as keys in `pos`.
+       If needed use: `{n:lab for n,lab in labels.items() if n in pos}`
 
     font_size : int
        Font size for text labels (default=12)

@@ -54,7 +54,7 @@ def union(G, H, rename=(None, None), name=None):
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
     # Union is the same type as G
-    R = G.fresh_copy()
+    R = G.__class__()
     # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
     R.graph.update(H.graph)
@@ -312,7 +312,7 @@ def compose(G, H):
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
 
-    R = G.fresh_copy()
+    R = G.__class__()
     # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
     R.graph.update(H.graph)

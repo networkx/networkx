@@ -28,12 +28,12 @@ To access the functions in this module, you must access them through the
 
 """
 from itertools import combinations
-import random
 
 import networkx as nx
 from networkx.algorithms.simple_paths import is_simple_path as is_path
 from networkx.utils import arbitrary_element
 from networkx.utils import not_implemented_for
+from networkx.utils import py_random_state
 
 __all__ = ['hamiltonian_path', 'is_reachable', 'is_strongly_connected',
            'is_tournament', 'random_tournament', 'score_sequence']
@@ -135,13 +135,17 @@ def hamiltonian_path(G):
     return hampath
 
 
-def random_tournament(n):
+@py_random_state(1)
+def random_tournament(n, seed=None):
     r"""Returns a random tournament graph on `n` nodes.
 
     Parameters
     ----------
     n : int
         The number of nodes in the returned graph.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -157,7 +161,7 @@ def random_tournament(n):
 
     """
     # Flip an unbiased coin for each pair of distinct nodes.
-    coins = (random.random() for i in range((n * (n - 1)) // 2))
+    coins = (seed.random() for i in range((n * (n - 1)) // 2))
     pairs = combinations(range(n), 2)
     edges = ((u, v) if r < 0.5 else (v, u) for (u, v), r in zip(pairs, coins))
     return nx.DiGraph(edges)

@@ -21,7 +21,7 @@ class TestConvertNumpy(object):
 
     def __init__(self):
         self.G1 = barbell_graph(10, 3)
-        self.G2 = cycle_graph(10, create_using=nx.DiGraph())
+        self.G2 = cycle_graph(10, create_using=nx.DiGraph)
 
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
@@ -46,7 +46,7 @@ class TestConvertNumpy(object):
         self.assert_equal(G, GG)
         GW = nx.to_networkx_graph(A, create_using=create_using)
         self.assert_equal(G, GW)
-        GI = create_using.__class__(A)
+        GI = nx.empty_graph(0, create_using).__class__(A)
         self.assert_equal(G, GI)
 
     def test_shape(self):
@@ -144,6 +144,13 @@ class TestConvertNumpy(object):
         A = np.matrix([[1]]).astype(np.object)
         assert_raises(TypeError, nx.from_numpy_matrix, A)
 
+        G = nx.cycle_graph(3)
+        A = nx.adj_matrix(G).todense()
+        H = nx.from_numpy_matrix(A)
+        assert_true(all(type(m) == int and type(n) == int for m, n in H.edges()))
+        H = nx.from_numpy_array(A)
+        assert_true(all(type(m) == int and type(n) == int for m, n in H.edges()))
+
     def test_from_numpy_matrix_dtype(self):
         dt = [('weight', float), ('cost', int)]
         A = np.matrix([[(1.0, 2)]], dtype=dt)
@@ -188,10 +195,10 @@ class TestConvertNumpy(object):
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
         actual = nx.from_numpy_matrix(A, parallel_edges=True,
-                                      create_using=nx.DiGraph())
+                                      create_using=nx.DiGraph)
         assert_graphs_equal(actual, expected)
         actual = nx.from_numpy_matrix(A, parallel_edges=False,
-                                      create_using=nx.DiGraph())
+                                      create_using=nx.DiGraph)
         assert_graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
@@ -200,14 +207,14 @@ class TestConvertNumpy(object):
         expected = nx.MultiDiGraph()
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         actual = nx.from_numpy_matrix(A, parallel_edges=True,
-                                      create_using=nx.MultiDiGraph())
+                                      create_using=nx.MultiDiGraph)
         assert_graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
         expected[1][1][0]['weight'] = 2
         actual = nx.from_numpy_matrix(A, parallel_edges=False,
-                                      create_using=nx.MultiDiGraph())
+                                      create_using=nx.MultiDiGraph)
         assert_graphs_equal(actual, expected)
 
     def test_symmetric(self):
@@ -216,7 +223,7 @@ class TestConvertNumpy(object):
 
         """
         A = np.matrix([[0, 1], [1, 0]])
-        G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph())
+        G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
         assert_graphs_equal(G, expected)
@@ -257,7 +264,7 @@ class TestConvertNumpyArray(object):
 
     def __init__(self):
         self.G1 = barbell_graph(10, 3)
-        self.G2 = cycle_graph(10, create_using=nx.DiGraph())
+        self.G2 = cycle_graph(10, create_using=nx.DiGraph)
 
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
@@ -278,7 +285,7 @@ class TestConvertNumpyArray(object):
         self.assert_equal(G, GG)
         GW = nx.to_networkx_graph(A, create_using=create_using)
         self.assert_equal(G, GW)
-        GI = create_using.__class__(A)
+        GI = nx.empty_graph(0, create_using).__class__(A)
         self.assert_equal(G, GI)
 
     def test_shape(self):
@@ -396,10 +403,10 @@ class TestConvertNumpyArray(object):
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
         actual = nx.from_numpy_array(A, parallel_edges=True,
-                                     create_using=nx.DiGraph())
+                                     create_using=nx.DiGraph)
         assert_graphs_equal(actual, expected)
         actual = nx.from_numpy_array(A, parallel_edges=False,
-                                     create_using=nx.DiGraph())
+                                     create_using=nx.DiGraph)
         assert_graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
@@ -408,14 +415,14 @@ class TestConvertNumpyArray(object):
         expected = nx.MultiDiGraph()
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         actual = nx.from_numpy_array(A, parallel_edges=True,
-                                     create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph)
         assert_graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
         expected[1][1][0]['weight'] = 2
         actual = nx.from_numpy_array(A, parallel_edges=False,
-                                     create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph)
         assert_graphs_equal(actual, expected)
 
     def test_symmetric(self):
@@ -424,7 +431,7 @@ class TestConvertNumpyArray(object):
 
         """
         A = np.array([[0, 1], [1, 0]])
-        G = nx.from_numpy_array(A, create_using=nx.MultiGraph())
+        G = nx.from_numpy_array(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
         assert_graphs_equal(G, expected)

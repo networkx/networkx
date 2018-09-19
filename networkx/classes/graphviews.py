@@ -13,25 +13,13 @@
 In some algorithms it is convenient to temporarily morph
 a graph to exclude some nodes or edges. It should be better
 to do that via a view than to remove and then re-add.
-
 In other algorithms it is convenient to temporarily morph
 a graph to reverse directed edges, or treat a directed graph
 as undirected, etc. This module provides those graph views.
 
 The resulting views are essentially read-only graphs that
-report data from the orignal graph object. We provide three
-attributes related to the underlying graph object.
-
-    G._graph : the parent graph used for looking up graph data.
-    G.root_graph : the root graph of the potential chain of views.
-        For example, if you have a subgraph of a reversed view of
-        an edge_subgraph of a graph, this points to original graph.
-    G.fresh_copy() : a method to return a null copy of the graph
-        represented by the view. This is useful if you want to
-        create a graph with the same data structure (directed/multi)
-        as the current view. This is similar to G.root_graph.__class__()
-        but reflects the fact that (Un)DirectedView could make the
-        type of data structure different from the root_graph.
+report data from the orignal graph object. We provide an
+attribute G._graph which points to the underlying graph object.
 
 Note: Since graphviews look like graphs, one can end up with
 view-of-view-of-view chains. Be careful with chains because
@@ -43,201 +31,143 @@ of a subgraph. We are careful not to disrupt any edge filter in
 the middle subgraph. In general, determining how to short-cut
 the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
-Often it is easiest to use `.copy()` to avoid chains.
+Often it is easiest to use .copy() to avoid chains.
 """
-from collections import Mapping
-
-from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
-from networkx.classes.coreviews import ReadOnlyGraph, \
-    AtlasView, AdjacencyView, MultiAdjacencyView, \
-    FilterAtlas, FilterAdjacency, FilterMultiAdjacency, \
-    UnionAdjacency, UnionMultiAdjacency
-from networkx.classes.filters import no_filter, show_nodes, show_edges
+from networkx.classes.coreviews import UnionAdjacency, UnionMultiAdjacency, \
+    FilterAtlas, FilterAdjacency, FilterMultiAdjacency
+from networkx.classes.filters import no_filter
 from networkx.exception import NetworkXError, NetworkXNotImplemented
-from networkx.utils import not_implemented_for
+# remove the graph class import when deprecated GraphView removed
+from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
 
+import networkx as nx
 
-__all__ = ['SubGraph', 'SubDiGraph', 'SubMultiGraph', 'SubMultiDiGraph',
+__all__ = ['generic_graph_view', 'subgraph_view', 'reverse_view',
+           'SubGraph', 'SubDiGraph', 'SubMultiGraph', 'SubMultiDiGraph',
            'ReverseView', 'MultiReverseView',
            'DiGraphView', 'MultiDiGraphView',
            'GraphView', 'MultiGraphView',
            ]
 
 
-class SubGraph(ReadOnlyGraph, Graph):
-    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
-        self._graph = graph
-        self.root_graph = graph.root_graph
-        self._NODE_OK = filter_node
-        self._EDGE_OK = filter_edge
+def generic_graph_view(G, create_using=None):
+    if create_using is None:
+        newG = G.__class__()
+    else:
+        newG = nx.empty_graph(0, create_using)
+    if G.is_multigraph() != newG.is_multigraph():
+        raise NetworkXError("Multigraph for G must agree with create_using")
+    newG = nx.freeze(newG)
 
-        # Set graph interface
-        self.graph = graph.graph
-        self._node = FilterAtlas(graph._node, filter_node)
-        self._adj = FilterAdjacency(graph._adj, filter_node, filter_edge)
+    # create view by assigning attributes from G
+    newG._graph = G
+    newG.graph = G.graph
 
-
-class SubDiGraph(ReadOnlyGraph, DiGraph):
-    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        self._NODE_OK = filter_node
-        self._EDGE_OK = filter_edge
-
-        # Set graph interface
-        self.graph = graph.graph
-        self._node = FilterAtlas(graph._node, filter_node)
-        self._adj = FilterAdjacency(graph._adj, filter_node, filter_edge)
-        self._pred = FilterAdjacency(graph._pred, filter_node,
-                                     lambda u, v: filter_edge(v, u))
-        self._succ = self._adj
-
-
-class SubMultiGraph(ReadOnlyGraph, MultiGraph):
-    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        self._NODE_OK = filter_node
-        self._EDGE_OK = filter_edge
-
-        # Set graph interface
-        self.graph = graph.graph
-        self._node = FilterAtlas(graph._node, filter_node)
-        self._adj = FilterMultiAdjacency(graph._adj, filter_node, filter_edge)
-
-
-class SubMultiDiGraph(ReadOnlyGraph, MultiDiGraph):
-    def __init__(self, graph, filter_node=no_filter, filter_edge=no_filter):
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        self._NODE_OK = filter_node
-        self._EDGE_OK = filter_edge
-
-        # Set graph interface
-        self.graph = graph.graph
-        self._node = FilterAtlas(graph._node, filter_node)
-        FMA = FilterMultiAdjacency
-        self._adj = FMA(graph._adj, filter_node, filter_edge)
-        self._pred = FMA(graph._pred, filter_node,
-                         lambda u, v, k: filter_edge(v, u, k))
-        self._succ = self._adj
-
-
-class ReverseView(ReadOnlyGraph, DiGraph):
-    def __init__(self, graph):
-        if not graph.is_directed():
-            msg = "not implemented for undirected type"
-            raise NetworkXNotImplemented(msg)
-
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        # Set graph interface
-        self.graph = graph.graph
-        self._node = graph._node
-        self._adj = graph._pred
-        self._pred = graph._succ
-        self._succ = self._adj
-
-
-class MultiReverseView(ReadOnlyGraph, MultiDiGraph):
-    def __init__(self, graph):
-        if not graph.is_directed():
-            msg = "not implemented for undirected type"
-            raise NetworkXNotImplemented(msg)
-
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        # Set graph interface
-        self.graph = graph.graph
-        self._node = graph._node
-        self._adj = graph._pred
-        self._pred = graph._succ
-        self._succ = self._adj
-
-
-class DiGraphView(ReadOnlyGraph, DiGraph):
-    def __init__(self, graph):
-        if graph.is_multigraph():
-            msg = 'Wrong View class. Use MultiDiGraphView.'
-            raise NetworkXError(msg)
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        self.graph = graph.graph
-        self._node = graph._node
-        if graph.is_directed():
-            self._pred = graph._pred
-            self._succ = graph._succ
+    newG._node = G._node
+    if newG.is_directed():
+        if G.is_directed():
+            newG._succ = G._succ
+            newG._pred = G._pred
+            newG._adj = G._succ
         else:
-            self._pred = graph._adj
-            self._succ = graph._adj
-        self._adj = self._succ
-
-
-class MultiDiGraphView(ReadOnlyGraph, MultiDiGraph):
-    def __init__(self, graph):
-        if not graph.is_multigraph():
-            msg = 'Wrong View class. Use DiGraphView.'
-            raise NetworkXError(msg)
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        self.graph = graph.graph
-        self._node = graph._node
-        if graph.is_directed():
-            self._pred = graph._pred
-            self._succ = graph._succ
+            newG._succ = G._adj
+            newG._pred = G._adj
+            newG._adj = G._adj
+    elif G.is_directed():
+        if G.is_multigraph():
+            newG._adj = UnionMultiAdjacency(G._succ, G._pred)
         else:
-            self._pred = graph._adj
-            self._succ = graph._adj
-        self._adj = self._succ
+            newG._adj = UnionAdjacency(G._succ, G._pred)
+    else:
+        newG._adj = G._adj
+    return newG
 
 
-class GraphView(ReadOnlyGraph, Graph):
-    UnionAdj = UnionAdjacency
+def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
+    newG = nx.freeze(G.__class__())
+    newG._NODE_OK = filter_node
+    newG._EDGE_OK = filter_edge
 
-    def __init__(self, graph):
-        if graph.is_multigraph():
-            msg = 'Wrong View class. Use MultiGraphView.'
-            raise NetworkXError(msg)
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        self.graph = graph.graph
-        self._node = graph._node
-        if graph.is_directed():
-            self._adj = self.UnionAdj(graph._succ, graph._pred)
-        else:
-            self._adj = graph._adj
+    # create view by assigning attributes from G
+    newG._graph = G
+    newG.graph = G.graph
+
+    newG._node = FilterAtlas(G._node, filter_node)
+    if G.is_multigraph():
+        Adj = FilterMultiAdjacency
+
+        def reverse_edge(u, v, k): return filter_edge(v, u, k)
+    else:
+        Adj = FilterAdjacency
+
+        def reverse_edge(u, v): return filter_edge(v, u)
+    if G.is_directed():
+        newG._succ = Adj(G._succ, filter_node, filter_edge)
+        newG._pred = Adj(G._pred, filter_node, reverse_edge)
+        newG._adj = newG._succ
+    else:
+        newG._adj = Adj(G._adj, filter_node, filter_edge)
+    return newG
 
 
-class MultiGraphView(ReadOnlyGraph, MultiGraph):
-    UnionAdj = UnionMultiAdjacency
+def reverse_view(G):
+    if not G.is_directed():
+        msg = "not implemented for undirected type"
+        raise NetworkXNotImplemented(msg)
+    newG = generic_graph_view(G)
+    newG._succ, newG._pred = G._pred, G._succ
+    newG._adj = newG._succ
+    return newG
 
-    def __init__(self, graph):
-        if not graph.is_multigraph():
-            msg = 'Wrong View class. Use GraphView.'
-            raise NetworkXError(msg)
-        self._graph = graph
-        self.root_graph = graph
-        while hasattr(self.root_graph, '_graph'):
-            self.root_graph = self.root_graph._graph
-        self.graph = graph.graph
-        self._node = graph._node
-        if graph.is_directed():
-            self._adj = self.UnionAdj(graph._succ, graph._pred)
-        else:
-            self._adj = graph._adj
+
+# The remaining definitions are for backward compatibility with v2.0 and 2.1
+def ReverseView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'ReverseView is deprecated. Use reverse_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return reverse_view(G)
+
+
+def SubGraph(G, filter_node=no_filter, filter_edge=no_filter):
+    # remove by v3 if not before
+    import warnings
+    msg = 'SubGraph is deprecated. Use subgraph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return subgraph_view(G, filter_node, filter_edge)
+
+
+def GraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return generic_graph_view(G, Graph)
+
+
+def DiGraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return generic_graph_view(G, DiGraph)
+
+
+def MultiGraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return generic_graph_view(G, MultiGraph)
+
+
+def MultiDiGraphView(G):
+    # remove by v3 if not before
+    import warnings
+    msg = 'GraphView is deprecated. Use generic_graph_view instead'
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+    return generic_graph_view(G, MultiDiGraph)
+
+
+MultiReverseView = ReverseView
+SubMultiGraph = SubMultiDiGraph = SubDiGraph = SubGraph

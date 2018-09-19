@@ -10,7 +10,7 @@
 from __future__ import division
 
 import math
-import random
+from networkx.utils import py_random_state
 
 import networkx as nx
 
@@ -24,7 +24,8 @@ __all__ = ['double_edge_swap',
            'connected_double_edge_swap']
 
 
-def double_edge_swap(G, nswap=1, max_tries=100):
+@py_random_state(3)
+def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """Swap two edges in the graph while keeping the node degrees fixed.
 
     A double-edge swap removes two randomly chosen edges u-v and x-y
@@ -47,6 +48,10 @@ def double_edge_swap(G, nswap=1, max_tries=100):
 
     max_tries : integer (optional)
        Maximum number of attempts to swap edges
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -73,18 +78,19 @@ def double_edge_swap(G, nswap=1, max_tries=100):
     swapcount = 0
     keys, degrees = zip(*G.degree())  # keys, degree
     cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    discrete_sequence = nx.utils.discrete_sequence
     while swapcount < nswap:
         #        if random.random() < 0.5: continue # trick to avoid periodicities?
         # pick two random edges without creating edge list
         # choose source node indices from discrete distribution
-        (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+        (ui, xi) = discrete_sequence(2, cdistribution=cdf, seed=seed)
         if ui == xi:
             continue  # same source, skip
         u = keys[ui]  # convert index to label
         x = keys[xi]
         # choose target uniformly from neighbors
-        v = random.choice(list(G[u]))
-        y = random.choice(list(G[x]))
+        v = seed.choice(list(G[u]))
+        y = seed.choice(list(G[x]))
         if v == y:
             continue  # same target, skip
         if (x not in G[u]) and (y not in G[v]):  # don't create parallel edges
@@ -101,7 +107,8 @@ def double_edge_swap(G, nswap=1, max_tries=100):
     return G
 
 
-def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
+@py_random_state(3)
+def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     """Attempts the specified number of double-edge swaps in the graph `G`.
 
     A double-edge swap removes two randomly chosen edges `(u, v)` and `(x,
@@ -139,6 +146,10 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
        size is above this threshold, then the algorithm performs do all the
        swaps in the window and only then check if the graph is still connected.
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     Returns
     -------
     int
@@ -175,6 +186,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
     # Label key for nodes
     dk = list(n for n, d in G.degree())
     cdf = nx.utils.cumulative_distribution(list(d for n, d in G.degree()))
+    discrete_sequence = nx.utils.discrete_sequence
     window = 1
     while n < nswap:
         wcount = 0
@@ -188,7 +200,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
             while wcount < window and n < nswap:
                 # Pick two random edges without creating the edge list. Choose
                 # source nodes from the discrete degree distribution.
-                (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+                (ui, xi) = discrete_sequence(2, cdistribution=cdf, seed=seed)
                 # If the source nodes are the same, skip this pair.
                 if ui == xi:
                     continue
@@ -196,8 +208,8 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
                 u = dk[ui]
                 x = dk[xi]
                 # Choose targets uniformly from neighbors.
-                v = random.choice(list(G.neighbors(u)))
-                y = random.choice(list(G.neighbors(x)))
+                v = seed.choice(list(G.neighbors(u)))
+                y = seed.choice(list(G.neighbors(x)))
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue
@@ -240,8 +252,8 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
                 u = dk[ui]
                 x = dk[xi]
                 # Choose targets uniformly from neighbors.
-                v = random.choice(list(G.neighbors(u)))
-                y = random.choice(list(G.neighbors(x)))
+                v = seed.choice(list(G.neighbors(u)))
+                y = seed.choice(list(G.neighbors(x)))
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue

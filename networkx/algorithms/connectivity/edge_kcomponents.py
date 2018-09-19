@@ -364,7 +364,7 @@ class EdgeComponentAuxGraph(object):
             _recursive_build(H, A, sink, avail.intersection(T))
 
         # Copy input to ensure all edges have unit capacity
-        H = G.fresh_copy()
+        H = G.__class__()
         H.add_nodes_from(G.nodes())
         H.add_edges_from(G.edges(), capacity=1)
 
@@ -573,7 +573,7 @@ def general_k_edge_subgraphs(G, k):
     if G.number_of_nodes() < k:
         for node in G.nodes():
             yield G.subgraph([node]).copy()
-        raise StopIteration()
+        return
 
     # Intermediate results
     R0 = {G.subgraph(cc).copy() for cc in find_ccs(G)}

@@ -29,6 +29,8 @@ class TestDuplicationDivergenceGraph(object):
     def test_final_size(self):
         G = duplication_divergence_graph(3, 1)
         assert_equal(len(G), 3)
+        G = duplication_divergence_graph(3, 1, seed=42)
+        assert_equal(len(G), 3)
 
     @raises(NetworkXError)
     def test_probability_too_large(self):
@@ -52,6 +54,8 @@ class TestPartialDuplicationGraph(object):
         p = 0.5
         q = 0.5
         G = partial_duplication_graph(N, n, p, q)
+        assert_equal(len(G), N)
+        G = partial_duplication_graph(N, n, p, q, seed=42)
         assert_equal(len(G), N)
 
     def test_initial_clique_size(self):

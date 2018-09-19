@@ -157,11 +157,11 @@ class TestGeneratorClassic():
         # complete_graph(m) is a connected graph with
         # m nodes and  m*(m+1)/2 edges
         for m in [0, 1, 3, 5]:
-            g = complete_graph(m, create_using=nx.DiGraph())
+            g = complete_graph(m, create_using=DiGraph())
             assert_true(number_of_nodes(g) == m)
             assert_true(number_of_edges(g) == m * (m - 1))
 
-        g = complete_graph("abc", create_using=nx.DiGraph())
+        g = complete_graph("abc", create_using=DiGraph())
         assert_equal(len(g), 3)
         assert_equal(g.size(), 6)
         assert_true(g.is_directed())
@@ -202,7 +202,7 @@ class TestGeneratorClassic():
         G = cycle_graph("abc")
         assert_equal(len(G), 3)
         assert_equal(G.size(), 3)
-        g = cycle_graph("abc", nx.DiGraph())
+        g = cycle_graph("abc", DiGraph())
         assert_equal(len(g), 3)
         assert_equal(g.size(), 3)
         assert_true(g.is_directed())
@@ -228,6 +228,36 @@ class TestGeneratorClassic():
         assert_raises(networkx.exception.NetworkXError,
                       dorogovtsev_goltsev_mendes_graph, 7,
                       create_using=MultiGraph())
+
+    def test_create_using(self):
+        G = empty_graph()
+        assert_true(isinstance(G, Graph))
+        assert_raises(TypeError, empty_graph, create_using=0.0)
+        assert_raises(TypeError, empty_graph, create_using="Graph")
+
+        G = empty_graph(create_using=MultiGraph)
+        assert_true(isinstance(G, MultiGraph))
+        G = empty_graph(create_using=DiGraph)
+        assert_true(isinstance(G, DiGraph))
+
+        G = empty_graph(create_using=DiGraph, default=MultiGraph)
+        assert_true(isinstance(G, DiGraph))
+        G = empty_graph(create_using=None, default=MultiGraph)
+        assert_true(isinstance(G, MultiGraph))
+        G = empty_graph(default=MultiGraph)
+        assert_true(isinstance(G, MultiGraph))
+
+        G = path_graph(5)
+        H = empty_graph(create_using=G)
+        assert_false(H.is_multigraph())
+        assert_false(H.is_directed())
+        assert_equal(len(H), 0)
+        assert_is(G, H)
+
+        H = empty_graph(create_using=MultiGraph())
+        assert_true(H.is_multigraph())
+        assert_false(H.is_directed())
+        assert_is_not(G, H)
 
     def test_empty_graph(self):
         G = empty_graph()
@@ -328,7 +358,7 @@ class TestGeneratorClassic():
         G = path_graph("abc")
         assert_equal(len(G), 3)
         assert_equal(G.size(), 2)
-        g = path_graph("abc", nx.DiGraph())
+        g = path_graph("abc", DiGraph())
         assert_equal(len(g), 3)
         assert_equal(g.size(), 2)
         assert_true(g.is_directed())
@@ -337,7 +367,7 @@ class TestGeneratorClassic():
         assert_true(is_isomorphic(star_graph(0), empty_graph(1)))
         assert_true(is_isomorphic(star_graph(1), path_graph(2)))
         assert_true(is_isomorphic(star_graph(2), path_graph(3)))
-        assert_true(is_isomorphic(star_graph(5), nx.complete_bipartite_graph(1, 5)))
+        assert_true(is_isomorphic(star_graph(5), complete_bipartite_graph(1, 5)))
 
         s = star_graph(10)
         assert_equal(sorted(d for n, d in s.degree()),
@@ -383,15 +413,15 @@ class TestGeneratorClassic():
 
     def test_complete_0_partite_graph(self):
         """Tests that the complete 0-partite graph is the null graph."""
-        G = nx.complete_multipartite_graph()
-        H = nx.null_graph()
+        G = complete_multipartite_graph()
+        H = null_graph()
         assert_nodes_equal(G, H)
         assert_edges_equal(G.edges(), H.edges())
 
     def test_complete_1_partite_graph(self):
         """Tests that the complete 1-partite graph is the empty graph."""
-        G = nx.complete_multipartite_graph(3)
-        H = nx.empty_graph(3)
+        G = complete_multipartite_graph(3)
+        H = empty_graph(3)
         assert_nodes_equal(G, H)
         assert_edges_equal(G.edges(), H.edges())
 
@@ -400,14 +430,14 @@ class TestGeneratorClassic():
         graph.
 
         """
-        G = nx.complete_multipartite_graph(2, 3)
-        H = nx.complete_bipartite_graph(2, 3)
+        G = complete_multipartite_graph(2, 3)
+        H = complete_bipartite_graph(2, 3)
         assert_nodes_equal(G, H)
         assert_edges_equal(G.edges(), H.edges())
 
     def test_complete_multipartite_graph(self):
         """Tests for generating the complete multipartite graph."""
-        G = nx.complete_multipartite_graph(2, 3, 4)
+        G = complete_multipartite_graph(2, 3, 4)
         blocks = [(0, 1), (2, 3, 4), (5, 6, 7, 8)]
         # Within each block, no two vertices should be adjacent.
         for block in blocks:

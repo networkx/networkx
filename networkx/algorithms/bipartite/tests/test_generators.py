@@ -36,11 +36,25 @@ class TestGeneratorsBipartite():
             assert_equal(number_of_nodes(G), m1 + m2)
             assert_equal(number_of_edges(G), m1 * m2)
 
-        assert_raises(networkx.exception.NetworkXError,
-                      complete_bipartite_graph, 7, 3, create_using=DiGraph())
+        assert_raises(networkx.NetworkXError, complete_bipartite_graph,
+                      7, 3, create_using=DiGraph())
+        assert_raises(networkx.NetworkXError, complete_bipartite_graph,
+                      7, 3, create_using=DiGraph)
+        assert_raises(networkx.NetworkXError, complete_bipartite_graph,
+                      7, 3, create_using=MultiDiGraph)
 
         mG = complete_bipartite_graph(7, 3, create_using=MultiGraph())
+        assert_true(mG.is_multigraph())
         assert_equal(sorted(mG.edges()), sorted(G.edges()))
+
+        mG = complete_bipartite_graph(7, 3, create_using=MultiGraph)
+        assert_true(mG.is_multigraph())
+        assert_equal(sorted(mG.edges()), sorted(G.edges()))
+
+        mG = complete_bipartite_graph(7, 3)  # default to Graph
+        assert_equal(sorted(mG.edges()), sorted(G.edges()))
+        assert_false(mG.is_multigraph())
+        assert_false(mG.is_directed())
 
         # specify nodes rather than number of nodes
         G = complete_bipartite_graph([1, 2], ['a', 'b'])
@@ -81,6 +95,8 @@ class TestGeneratorsBipartite():
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
         G = configuration_model(aseq, bseq)
+        assert_true(G.is_multigraph())
+        assert_false(G.is_directed())
         assert_equal(sorted(d for n, d in G.degree()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
@@ -90,9 +106,19 @@ class TestGeneratorsBipartite():
         GD = project(Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert_equal(GD.number_of_nodes(), 3)
 
+        G = reverse_havel_hakimi_graph(aseq, bseq, create_using=Graph)
+        assert_false(G.is_multigraph())
+        assert_false(G.is_directed())
+
         assert_raises(networkx.exception.NetworkXError,
                       configuration_model, aseq, bseq,
                       create_using=DiGraph())
+        assert_raises(networkx.exception.NetworkXError,
+                      configuration_model, aseq, bseq,
+                      create_using=DiGraph)
+        assert_raises(networkx.exception.NetworkXError,
+                      configuration_model, aseq, bseq,
+                      create_using=MultiDiGraph)
 
     def test_havel_hakimi_graph(self):
         aseq = []
@@ -119,6 +145,8 @@ class TestGeneratorsBipartite():
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = havel_hakimi_graph(aseq, bseq)
+        assert_true(G.is_multigraph())
+        assert_false(G.is_directed())
         assert_equal(sorted(d for n, d in G.degree()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
@@ -127,9 +155,20 @@ class TestGeneratorsBipartite():
 
         GD = project(Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert_equal(GD.number_of_nodes(), 4)
+
+        G = reverse_havel_hakimi_graph(aseq, bseq, create_using=Graph)
+        assert_false(G.is_multigraph())
+        assert_false(G.is_directed())
+
         assert_raises(networkx.exception.NetworkXError,
                       havel_hakimi_graph, aseq, bseq,
                       create_using=DiGraph())
+        assert_raises(networkx.exception.NetworkXError,
+                      havel_hakimi_graph, aseq, bseq,
+                      create_using=DiGraph)
+        assert_raises(networkx.exception.NetworkXError,
+                      havel_hakimi_graph, aseq, bseq,
+                      create_using=MultiDiGraph)
 
     def test_reverse_havel_hakimi_graph(self):
         aseq = []
@@ -162,6 +201,8 @@ class TestGeneratorsBipartite():
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
         G = reverse_havel_hakimi_graph(aseq, bseq)
+        assert_true(G.is_multigraph())
+        assert_false(G.is_directed())
         assert_equal(sorted(d for n, d in G.degree()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
@@ -170,9 +211,20 @@ class TestGeneratorsBipartite():
 
         GD = project(Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert_equal(GD.number_of_nodes(), 3)
+
+        G = reverse_havel_hakimi_graph(aseq, bseq, create_using=Graph)
+        assert_false(G.is_multigraph())
+        assert_false(G.is_directed())
+
         assert_raises(networkx.exception.NetworkXError,
                       reverse_havel_hakimi_graph, aseq, bseq,
                       create_using=DiGraph())
+        assert_raises(networkx.exception.NetworkXError,
+                      reverse_havel_hakimi_graph, aseq, bseq,
+                      create_using=DiGraph)
+        assert_raises(networkx.exception.NetworkXError,
+                      reverse_havel_hakimi_graph, aseq, bseq,
+                      create_using=MultiDiGraph)
 
     def test_alternating_havel_hakimi_graph(self):
         aseq = []
@@ -205,6 +257,8 @@ class TestGeneratorsBipartite():
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
         G = alternating_havel_hakimi_graph(aseq, bseq)
+        assert_true(G.is_multigraph())
+        assert_false(G.is_directed())
         assert_equal(sorted(d for n, d in G.degree()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
@@ -214,13 +268,36 @@ class TestGeneratorsBipartite():
         GD = project(Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert_equal(GD.number_of_nodes(), 3)
 
+        G = reverse_havel_hakimi_graph(aseq, bseq, create_using=Graph)
+        assert_false(G.is_multigraph())
+        assert_false(G.is_directed())
+
         assert_raises(networkx.exception.NetworkXError,
                       alternating_havel_hakimi_graph, aseq, bseq,
                       create_using=DiGraph())
+        assert_raises(networkx.exception.NetworkXError,
+                      alternating_havel_hakimi_graph, aseq, bseq,
+                      create_using=DiGraph)
+        assert_raises(networkx.exception.NetworkXError,
+                      alternating_havel_hakimi_graph, aseq, bseq,
+                      create_using=MultiDiGraph)
 
     def test_preferential_attachment(self):
         aseq = [3, 2, 1, 1]
         G = preferential_attachment_graph(aseq, 0.5)
+        assert_true(G.is_multigraph())
+        assert_false(G.is_directed())
+
+        G = preferential_attachment_graph(aseq, 0.5, create_using=Graph)
+        assert_false(G.is_multigraph())
+        assert_false(G.is_directed())
+
+        assert_raises(networkx.exception.NetworkXError,
+                      preferential_attachment_graph, aseq, 0.5,
+                      create_using=DiGraph())
+        assert_raises(networkx.exception.NetworkXError,
+                      preferential_attachment_graph, aseq, 0.5,
+                      create_using=DiGraph())
         assert_raises(networkx.exception.NetworkXError,
                       preferential_attachment_graph, aseq, 0.5,
                       create_using=DiGraph())
@@ -249,11 +326,13 @@ class TestGeneratorsBipartite():
         n = 10
         m = 20
         edges = 100
-        G = gnmk_random_graph(n, m, edges)
+        # set seed because sometimes it is not connected
+        # which raises an error in bipartite.sets(G) below.
+        G = gnmk_random_graph(n, m, edges, seed=1234)
         assert_equal(len(G), n + m)
         assert_true(is_bipartite(G))
         X, Y = nx.algorithms.bipartite.sets(G)
-        print(X)
+        #print(X)
         assert_equal(set(range(n)), X)
         assert_equal(set(range(n, n + m)), Y)
         assert_equal(edges, len(list(G.edges())))
@@ -266,7 +345,7 @@ class TestGeneratorsBipartite():
         assert_equal(len(G), n + m)
         assert_true(is_bipartite(G))
         X, Y = nx.algorithms.bipartite.sets(G)
-        print(X)
+        #print(X)
         assert_equal(set(range(n)), X)
         assert_equal(set(range(n, n + m)), Y)
         assert_equal(edges, len(list(G.edges())))

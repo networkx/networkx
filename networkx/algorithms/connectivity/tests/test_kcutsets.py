@@ -1,11 +1,13 @@
 # Jordi Torrents
 # Test for k-cutsets
+import itertools
 from nose.tools import assert_equal, assert_false, assert_true, assert_raises
 
 import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
+MAX_CUTSETS_TO_TEST = 4  # originally 100. cut to decrease testing time
 
 flow_funcs = [
     flow.boykov_kolmogorov,
@@ -116,15 +118,16 @@ def torrents_and_ferraro_graph():
 
 # Helper function
 def _check_separating_sets(G):
-    for Gc in nx.connected_component_subgraphs(G):
-        if len(Gc) < 3:
+    for cc in nx.connected_components(G):
+        if len(cc) < 3:
             continue
+        Gc = G.subgraph(cc)
         node_conn = nx.node_connectivity(Gc)
-        for cut in nx.all_node_cuts(Gc):
+        all_cuts = nx.all_node_cuts(Gc)
+        # Only test a limited number of cut sets to reduce test time.
+        for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
             assert_equal(node_conn, len(cut))
-            H = Gc.copy()
-            H.remove_nodes_from(cut)
-            assert_false(nx.is_connected(H))
+            assert_false(nx.is_connected(nx.restricted_view(G, cut, [])))
 
 
 def test_torrents_and_ferraro_graph():
@@ -206,16 +209,16 @@ def test_disconnected_graph():
 
 
 def test_alternative_flow_functions():
-    graph_funcs = [graph_example_1, nx.davis_southern_women_graph]
-    for graph_func in graph_funcs:
-        G = graph_func()
+    graphs = [nx.grid_2d_graph(4, 4),
+              nx.cycle_graph(5)]
+    for G in graphs:
         node_conn = nx.node_connectivity(G)
         for flow_func in flow_funcs:
-            for cut in nx.all_node_cuts(G, flow_func=flow_func):
+            all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
+            # Only test a limited number of cut sets to reduce test time.
+            for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
                 assert_equal(node_conn, len(cut))
-                H = G.copy()
-                H.remove_nodes_from(cut)
-                assert_false(nx.is_connected(H))
+                assert_false(nx.is_connected(nx.restricted_view(G, cut, [])))
 
 
 def test_is_separating_set_complete_graph():

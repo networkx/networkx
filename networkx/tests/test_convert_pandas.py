@@ -19,8 +19,8 @@ class TestConvertPandas(object):
         global pd
         import pandas as pd
 
-        self.r = pd.np.random.RandomState(seed=5)
-        ints = self.r.random_integers(1, 10, size=(3, 2))
+        self.rng = pd.np.random.RandomState(seed=5)
+        ints = self.rng.randint(1, 11, size=(3, 2))
         a = ['A', 'B', 'C']
         b = ['D', 'A', 'E']
         df = pd.DataFrame(ints, columns=['weight', 'cost'])
@@ -58,6 +58,13 @@ class TestConvertPandas(object):
         G = nx.from_pandas_edgelist(self.df, 0, 'b', ['weight', 'cost'])
         assert_graphs_equal(G, Gtrue)
 
+    def test_from_edgelist_multi_attr_incl_target(self):
+        Gtrue = nx.Graph([('E', 'C', {0: 'C', 'b': 'E', 'weight': 10}),
+                          ('B', 'A', {0: 'B', 'b': 'A', 'weight': 7}),
+                          ('A', 'D', {0: 'A', 'b': 'D', 'weight': 4})])
+        G = nx.from_pandas_edgelist(self.df, 0, 'b', [0, 'b', 'weight'])
+        assert_graphs_equal(G, Gtrue)
+
     def test_from_edgelist_multidigraph_and_edge_attr(self):
         # example from issue #2374
         Gtrue = nx.MultiDiGraph([('X1', 'X4', {'Co': 'zA', 'Mi': 0, 'St': 'X1'}),
@@ -72,18 +79,18 @@ class TestConvertPandas(object):
                                  ('Z1', 'Z3', {'Co': 'zD', 'Mi': 14, 'St': 'X3'}),
                                  ('Z1', 'Z3', {'Co': 'zE', 'Mi': 9, 'St': 'Z2'}),
                                  ('Z1', 'Z3', {'Co': 'zE', 'Mi': 4, 'St': 'Z3'})])
-        df = pd.DataFrame.from_items([
-            ('O', ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y1', 'Y1', 'Y1', 'Z1', 'Z1', 'Z1', 'Z1']),
-            ('D', ['X4', 'X4', 'X4', 'X4', 'Y3', 'Y3', 'Y3', 'Y3', 'Z3', 'Z3', 'Z3', 'Z3']),
-            ('St', ['X1', 'X2', 'X3', 'X4', 'Y1', 'Y2', 'X2', 'Y3', 'Z1', 'X3', 'Z2', 'Z3']),
-            ('Co', ['zA', 'zB', 'zB', 'zB', 'zC', 'zC', 'zC', 'zC', 'zD', 'zD', 'zE', 'zE']),
-            ('Mi', [0,   54,   49,   44,    0,   34,   29,   24,    0,   14,    9,   4])])
+        df = pd.DataFrame.from_dict({
+            'O': ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y1', 'Y1', 'Y1', 'Z1', 'Z1', 'Z1', 'Z1'],
+            'D': ['X4', 'X4', 'X4', 'X4', 'Y3', 'Y3', 'Y3', 'Y3', 'Z3', 'Z3', 'Z3', 'Z3'],
+            'St': ['X1', 'X2', 'X3', 'X4', 'Y1', 'Y2', 'X2', 'Y3', 'Z1', 'X3', 'Z2', 'Z3'],
+            'Co': ['zA', 'zB', 'zB', 'zB', 'zC', 'zC', 'zC', 'zC', 'zD', 'zD', 'zE', 'zE'],
+            'Mi': [0,   54,   49,   44,    0,   34,   29,   24,    0,   14,    9,   4]})
         G1 = nx.from_pandas_edgelist(df, source='O', target='D',
                                      edge_attr=True,
-                                     create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph)
         G2 = nx.from_pandas_edgelist(df, source='O', target='D',
                                      edge_attr=['St', 'Co', 'Mi'],
-                                     create_using=nx.MultiDiGraph())
+                                     create_using=nx.MultiDiGraph)
         assert_graphs_equal(G1, Gtrue)
         assert_graphs_equal(G2, Gtrue)
 
@@ -93,6 +100,23 @@ class TestConvertPandas(object):
                           ('A', 'D', {'weight': 4})])
         G = nx.from_pandas_edgelist(self.df, 0, 'b', 'weight')
         assert_graphs_equal(G, Gtrue)
+
+    def test_from_edgelist_int_attr_name(self):
+        # note: this also tests that edge_attr can be `source`
+        Gtrue = nx.Graph([('E', 'C', {0: 'C'}),
+                          ('B', 'A', {0: 'B'}),
+                          ('A', 'D', {0: 'A'})])
+        G = nx.from_pandas_edgelist(self.df, 0, 'b', 0)
+        assert_graphs_equal(G, Gtrue)
+
+    def test_from_edgelist_invalid_attr(self):
+        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+                      self.df, 0, 'b', 'misspell')
+        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+                      self.df, 0, 'b', 1)
+        # unhashable attribute name
+        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+                      self.df, 0, 'b', {})
 
     def test_from_edgelist_no_attr(self):
         Gtrue = nx.Graph([('E', 'C', {}),
@@ -117,7 +141,7 @@ class TestConvertPandas(object):
         GG = nx.from_pandas_edgelist(edges, edge_attr='weight')
         assert_nodes_equal(G.nodes(), GG.nodes())
         assert_edges_equal(G.edges(), GG.edges())
-        GW = nx.to_networkx_graph(edges, create_using=nx.Graph())
+        GW = nx.to_networkx_graph(edges, create_using=nx.Graph)
         assert_nodes_equal(G.nodes(), GW.nodes())
         assert_edges_equal(G.edges(), GW.edges())
 
@@ -139,3 +163,14 @@ class TestConvertPandas(object):
         df = nx.to_pandas_adjacency(Gtrue, dtype=int)
         G = nx.from_pandas_adjacency(df)
         assert_graphs_equal(Gtrue, G)
+
+    def test_from_adjacency_named(self):
+        # example from issue #3105
+        data = {"A": {"A": 0, "B": 0, "C": 0},
+                "B": {"A": 1, "B": 0, "C": 0},
+                "C": {"A": 0, "B": 1, "C": 0}}
+        dftrue = pd.DataFrame(data)
+        df = dftrue[["A", "C", "B"]]
+        G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph())
+        df = nx.to_pandas_adjacency(G, dtype=int)
+        pd.testing.assert_frame_equal(df, dftrue)

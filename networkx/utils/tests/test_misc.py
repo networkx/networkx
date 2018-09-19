@@ -178,4 +178,46 @@ def test_create_random_state():
     assert_true(isinstance(create_random_state(rs(1)), rs))
     assert_raises(ValueError, create_random_state, 'a')
 
-    assert_true(np.all((rs(1).rand(10), create_random_state(1).rand(10))))
+    assert_true(np.all((rs(1).rand(10) == create_random_state(1).rand(10))))
+
+
+def test_create_py_random_state():
+    pyrs = random.Random
+
+    assert_true(isinstance(create_py_random_state(1), pyrs))
+    assert_true(isinstance(create_py_random_state(None), pyrs))
+    assert_true(isinstance(create_py_random_state(pyrs(1)), pyrs))
+    assert_raises(ValueError, create_py_random_state, 'a')
+
+    try:
+        import numpy as np
+    except ImportError:
+        raise SkipTest('numpy not available.')
+
+    rs = np.random.RandomState
+    nprs = PythonRandomInterface
+    assert_true(isinstance(create_py_random_state(np.random), nprs))
+    assert_true(isinstance(create_py_random_state(rs(1)), nprs))
+    # test default rng input
+    assert_true(isinstance(PythonRandomInterface(), nprs))
+
+
+def test_PythonRandomInterface():
+    try:
+        import numpy as np
+    except ImportError:
+        raise SkipTest('numpy not available.')
+    rs = np.random.RandomState
+    rng = PythonRandomInterface(rs(42))
+    rs42 = rs(42)
+
+    # make sure these functions are same as expected outcome
+    assert_equal(rng.randrange(3, 5), rs42.randint(3, 5))
+    assert_true(np.all(rng.choice([1, 2, 3]) == rs42.choice([1, 2, 3])))
+    assert_equal(rng.gauss(0, 1), rs42.normal(0, 1))
+    assert_equal(rng.expovariate(1.5), rs42.exponential(1/1.5))
+    assert_true(np.all(rng.shuffle([1, 2, 3]) == rs42.shuffle([1, 2, 3])))
+    assert_true(np.all(rng.sample([1, 2, 3], 2) ==
+                       rs42.choice([1, 2, 3], (2,), replace=False)))
+    assert_equal(rng.randint(3, 5), rs42.randint(3, 6))
+    assert_equal(rng.random(), rs42.random_sample())

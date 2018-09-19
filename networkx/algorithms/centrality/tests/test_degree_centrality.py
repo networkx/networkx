@@ -89,3 +89,14 @@ class TestDegreeCentrality:
                  4: 0.125, 5: 0.375, 6: 0.0, 7: 0.0, 8: 0.0}
         for n, dc in d.items():
             assert_almost_equal(exact[n], dc)
+
+    def test_small_graph_centrality(self):
+        G = nx.empty_graph(create_using=nx.DiGraph)
+        assert_equal({}, nx.degree_centrality(G))
+        assert_equal({}, nx.out_degree_centrality(G))
+        assert_equal({}, nx.in_degree_centrality(G))
+
+        G = nx.empty_graph(1, create_using=nx.DiGraph)
+        assert_equal({0: 1}, nx.degree_centrality(G))
+        assert_equal({0: 1}, nx.out_degree_centrality(G))
+        assert_equal({0: 1}, nx.in_degree_centrality(G))

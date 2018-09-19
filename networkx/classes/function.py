@@ -183,6 +183,7 @@ def freeze(G):
     G.remove_nodes_from = frozen
     G.add_edge = frozen
     G.add_edges_from = frozen
+    G.add_weighted_edges_from = frozen
     G.remove_edge = frozen
     G.remove_edges_from = frozen
     G.clear = frozen
@@ -362,13 +363,7 @@ def induced_subgraph(G, nbunch):
     [(0, 1), (1, 2)]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
-    if G.is_multigraph():
-        if G.is_directed():
-            return nx.graphviews.SubMultiDiGraph(G, induced_nodes)
-        return nx.graphviews.SubMultiGraph(G, induced_nodes)
-    if G.is_directed():
-        return nx.graphviews.SubDiGraph(G, induced_nodes)
-    return nx.graphviews.SubGraph(G, induced_nodes)
+    return nx.graphviews.subgraph_view(G, induced_nodes)
 
 
 def edge_subgraph(G, edges):
@@ -397,10 +392,10 @@ def edge_subgraph(G, edges):
     If you create a subgraph of a subgraph recursively you can end up
     with a chain of subgraphs that becomes very slow with about 15
     nested subgraph views. Luckily the edge_subgraph filter nests
-    nicely so you can use the original graph (`subgraph.root_graph`)
-    as G in this function to avoid chains. We do not rule out chains
-    programmatically so that odd cases like an `edge_subgraph` of a
-    `restricted_view` can be created.
+    nicely so you can use the original graph as G in this function
+    to avoid chains. We do not rule out chains programmatically so
+    that odd cases like an `edge_subgraph` of a `restricted_view`
+    can be created.
 
     Examples
     --------
@@ -413,7 +408,6 @@ def edge_subgraph(G, edges):
     [(0, 1), (3, 4)]
     """
     nxf = nx.filters
-    nxg = nx.graphviews
     edges = set(edges)
     nodes = set()
     for e in edges:
@@ -422,14 +416,14 @@ def edge_subgraph(G, edges):
     if G.is_multigraph():
         if G.is_directed():
             induced_edges = nxf.show_multidiedges(edges)
-            return nxg.SubMultiDiGraph(G, induced_nodes, induced_edges)
-        induced_edges = nxf.show_multiedges(edges)
-        return nxg.SubMultiGraph(G, induced_nodes, induced_edges)
-    if G.is_directed():
-        induced_edges = nxf.show_diedges(edges)
-        return nxg.SubDiGraph(G, induced_nodes, induced_edges)
-    induced_edges = nxf.show_edges(edges)
-    return nxg.SubGraph(G, induced_nodes, induced_edges)
+        else:
+            induced_edges = nxf.show_multiedges(edges)
+    else:
+        if G.is_directed():
+            induced_edges = nxf.show_diedges(edges)
+        else:
+            induced_edges = nxf.show_edges(edges)
+    return nx.graphviews.subgraph_view(G, induced_nodes, induced_edges)
 
 
 def restricted_view(G, nodes, edges):
@@ -460,9 +454,9 @@ def restricted_view(G, nodes, edges):
     If you create a subgraph of a subgraph recursively you may end up
     with a chain of subgraph views. Such chains can get quite slow
     for lengths near 15. To avoid long chains, try to make your subgraph
-    based on the original graph (`subgraph.root_graph`). We do not
-    rule out chains programmatically so that odd cases like an
-    `edge_subgraph` of a `restricted_view` can be created.
+    based on the original graph.  We do not rule out chains programmatically
+    so that odd cases like an `edge_subgraph` of a `restricted_view`
+    can be created.
 
     Examples
     --------
@@ -475,19 +469,18 @@ def restricted_view(G, nodes, edges):
     [(2, 3)]
     """
     nxf = nx.filters
-    nxg = nx.graphviews
-    h_nodes = nxf.hide_nodes(nodes)
+    hide_nodes = nxf.hide_nodes(nodes)
     if G.is_multigraph():
         if G.is_directed():
-            h_edges = nxf.hide_multidiedges(edges)
-            return nxg.SubMultiDiGraph(G, h_nodes, h_edges)
-        h_edges = nxf.hide_multiedges(edges)
-        return nxg.SubMultiGraph(G, h_nodes, h_edges)
-    if G.is_directed():
-        h_edges = nxf.hide_diedges(edges)
-        return nxg.SubDiGraph(G, h_nodes, h_edges)
-    h_edges = nxf.hide_edges(edges)
-    return nxg.SubGraph(G, h_nodes, h_edges)
+            hide_edges = nxf.hide_multidiedges(edges)
+        else:
+            hide_edges = nxf.hide_multiedges(edges)
+    else:
+        if G.is_directed():
+            hide_edges = nxf.hide_diedges(edges)
+        else:
+            hide_edges = nxf.hide_edges(edges)
+    return nx.graphviews.subgraph_view(G, hide_nodes, hide_edges)
 
 
 @not_implemented_for('undirected')
@@ -496,29 +489,27 @@ def reverse_view(digraph):
 
     Identical to digraph.reverse(copy=False)
     """
-    if digraph.is_multigraph():
-        return nx.graphviews.MultiReverseView(digraph)
-    return nx.graphviews.ReverseView(digraph)
+    return nx.graphviews.reverse_view(digraph)
 
 
 def to_directed(graph):
     """Return a directed view of the graph `graph`.
 
     Identical to graph.to_directed(as_view=True)
+    Note that graph.to_directed defaults to `as_view=False`
+    while this function always provides a view.
     """
-    if graph.is_multigraph():
-        return nx.graphviews.MultiDiGraphView(graph)
-    return nx.graphviews.DiGraphView(graph)
+    return graph.to_directed()
 
 
 def to_undirected(graph):
     """Return an undirected view of the graph `graph`.
 
     Identical to graph.to_undirected(as_view=True)
+    Note that graph.to_undirected defaults to `as_view=False`
+    while this function always provides a view.
     """
-    if graph.is_multigraph():
-        return nx.graphviews.MultiGraphView(graph)
-    return nx.graphviews.GraphView(graph)
+    return graph.to_undirected(as_view=True)
 
 
 def create_empty_copy(G, with_data=True):
@@ -597,11 +588,12 @@ def set_node_attributes(G, values, name=None):
         not a dictionary, then it is treated as a single attribute value
         that is then applied to every node in `G`.  This means that if
         you provide a mutable object, like a list, updates to that object
-        will be reflected in the node attribute for each edge.  The attribute
-        name will be `name`.
+        will be reflected in the node attribute for every node.
+        The attribute name will be `name`.
 
-        If `values` is a dict or a dict of dict, the corresponding node's
-        attributes will be updated to `values`.
+        If `values` is a dict or a dict of dict, it should be keyed
+        by node to either an attribute value or a dict of attribute key/value
+        pairs used to update the node's attributes.
 
     name : string (optional, default=None)
         Name of the node attribute to set if values is a scalar.
@@ -635,7 +627,8 @@ def set_node_attributes(G, values, name=None):
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,
-    the entire dictionary will be used to update node attributes::
+    the outer dictionary is assumed to be keyed by node to an inner
+    dictionary of node attributes for that node::
 
         >>> G = nx.path_graph(3)
         >>> attrs = {0: {'attr1': 20, 'attr2': 'nothing'}, 1: {'attr2': 3}}
@@ -712,11 +705,12 @@ def set_edge_attributes(G, values, name=None):
         will be reflected in the edge attribute for each edge.  The attribute
         name will be `name`.
 
-        If `values` is a dict or a dict of dict, the corresponding edge'
-        attributes will be updated to `values`.  For multigraphs, the tuples
-        must be of the form ``(u, v, key)``, where `u` and `v` are nodes
-        and `key` is the key corresponding to the edge.  For non-multigraphs,
-        the keys must be tuples of the form ``(u, v)``.
+        If `values` is a dict or a dict of dict, it should be keyed
+        by edge tuple to either an attribute value or a dict of attribute
+        key/value pairs used to update the edge's attributes.
+        For multigraphs, the edge tuples must be of the form ``(u, v, key)``,
+        where `u` and `v` are nodes and `key` is the edge key.
+        For non-multigraphs, the keys must be tuples of the form ``(u, v)``.
 
     name : string (optional, default=None)
         Name of the edge attribute to set if values is a scalar.

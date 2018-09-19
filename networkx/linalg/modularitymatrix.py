@@ -26,8 +26,11 @@ def modularity_matrix(G, nodelist=None, weight=None):
     is described by the configuration model.
 
     More specifically, the element B_ij of B is defined as
-        A_ij - k_i k_j / 2 * m
-    where k_i(in) is the degree of node i, and were m is the number of edges
+
+    .. math::
+        A_{ij} - {k_i k_j m \over 2}
+
+    where k_i is the degree of node i, and were m is the number of edges
     in the graph. When weight is set to a name of an attribute edge, Aij, k_i,
     k_j and m are computed using its value.
 
@@ -67,7 +70,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
     References
     ----------
     .. [1] M. E. J. Newman, "Modularity and community structure in networks",
-       Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
+           Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     if nodelist is None:
         nodelist = list(G)
@@ -90,8 +93,11 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     is described by the configuration model.
 
     More specifically, the element B_ij of B is defined as
-        B_ij = A_ij - k_i(out) k_j(in) / m
-    where k_i(in) is the in degree of node i, and k_j(out) is the out degree
+
+    .. math::
+        B_{ij} = A_{ij} - k_i^{out} k_j^{in} / m
+
+    where :math:`k_i^{in}` is the in degree of node i, and :math:`k_j^{out}` is the out degree
     of node j, with m the number of edges in the graph. When weight is set
     to a name of an attribute edge, Aij, k_i, k_j and m are computed using
     its value.
@@ -139,7 +145,7 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     References
     ----------
     .. [1] E. A. Leicht, M. E. J. Newman,
-       "Community structure in directed networks",
+        "Community structure in directed networks",
         Phys. Rev Lett., vol. 100, no. 11, p. 118703, 2008.
     """
     if nodelist is None:

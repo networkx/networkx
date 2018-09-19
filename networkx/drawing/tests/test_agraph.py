@@ -3,7 +3,8 @@ import os
 import tempfile
 from nose import SkipTest
 from nose.tools import assert_true, assert_equal, assert_raises
-from networkx.testing import assert_edges_equal, assert_nodes_equal
+from networkx.testing import assert_edges_equal, assert_nodes_equal, \
+        assert_graphs_equal
 
 import networkx as nx
 
@@ -90,3 +91,16 @@ class TestAGraph(object):
         G.edges[('A', 'B')]['u'] = 'keyword'
         G.edges[('A', 'B')]['v'] = 'keyword'
         A = nx.nx_agraph.to_agraph(G)
+
+    def test_round_trip(self):
+        G = nx.Graph()
+        A = nx.nx_agraph.to_agraph(G)
+        H = nx.nx_agraph.from_agraph(A)
+        #assert_graphs_equal(G, H)
+        AA = nx.nx_agraph.to_agraph(H)
+        HH = nx.nx_agraph.from_agraph(AA)
+        assert_graphs_equal(H, HH)
+        G.graph['graph'] = {}
+        G.graph['node'] = {}
+        G.graph['edge'] = {}
+        assert_graphs_equal(G, HH)

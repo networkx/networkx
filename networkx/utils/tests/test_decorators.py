@@ -1,5 +1,6 @@
 import tempfile
 import os
+import random
 
 from nose.tools import *
 from nose import SkipTest
@@ -7,8 +8,8 @@ from nose import SkipTest
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
-    random_state
-
+    py_random_state, np_random_state, random_state
+from networkx.utils.misc import PythonRandomInterface
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
@@ -87,6 +88,13 @@ class TestOpenFileDecorator(object):
     def test_writer_arg0_fobj(self):
         self.writer_arg0(self.fobj)
 
+    def test_writer_arg0_pathlib(self):
+        try:
+            import pathlib
+            self.writer_arg0(pathlib.Path(self.name))
+        except ImportError:
+            return
+
     def test_writer_arg1_str(self):
         self.writer_arg1(self.name)
         assert_equal(self.read(self.name), ''.join(self.text))
@@ -155,30 +163,100 @@ class TestRandomState(object):
     @random_state(1)
     def instantiate_random_state(self, random_state):
         assert_true(isinstance(random_state, np.random.RandomState))
-        return random_state
+        return random_state.random_sample()
+
+    @np_random_state(1)
+    def instantiate_np_random_state(self, random_state):
+        assert_true(isinstance(random_state, np.random.RandomState))
+        return random_state.random_sample()
+
+    @py_random_state(1)
+    def instantiate_py_random_state(self, random_state):
+        assert_true(isinstance(random_state, random.Random) or
+                    isinstance(random_state, PythonRandomInterface))
+        return random_state.random()
 
     def test_random_state_None(self):
-        self.instantiate_random_state(random_state=None)
+        np.random.seed(42)
+        rv = np.random.random_sample()
+        np.random.seed(42)
+        assert_equal(rv, self.instantiate_random_state(None))
+        np.random.seed(42)
+        assert_equal(rv, self.instantiate_np_random_state(None))
+
+        random.seed(42)
+        rv = random.random()
+        random.seed(42)
+        assert_equal(rv, self.instantiate_py_random_state(None))
 
     def test_random_state_np_random(self):
-        self.instantiate_random_state(random_state=np.random)
+        np.random.seed(42)
+        rv = np.random.random_sample()
+        np.random.seed(42)
+        assert_equal(rv, self.instantiate_random_state(np.random))
+        np.random.seed(42)
+        assert_equal(rv, self.instantiate_np_random_state(np.random))
+        np.random.seed(42)
+        assert_equal(rv, self.instantiate_py_random_state(np.random))
 
     def test_random_state_int(self):
+        np.random.seed(42)
+        np_rv = np.random.random_sample()
+        random.seed(42)
+        py_rv = random.random()
+
+        np.random.seed(42)
         seed = 1
-        random_state = self.instantiate_random_state(random_state=seed)
-        assert_true(np.all((np.random.RandomState(seed).rand(10),
-                            random_state.rand(10))))
+        rval = self.instantiate_random_state(seed)
+        rval_expected = np.random.RandomState(seed).rand()
+        assert_true(rval, rval_expected)
+
+        rval = self.instantiate_np_random_state(seed)
+        rval_expected = np.random.RandomState(seed).rand()
+        assert_true(rval, rval_expected)
+        # test that global seed wasn't changed in function
+        assert_equal(np_rv, np.random.random_sample())
+
+        random.seed(42)
+        rval = self.instantiate_py_random_state(seed)
+        rval_expected = random.Random(seed).random()
+        assert_true(rval, rval_expected)
+        # test that global seed wasn't changed in function
+        assert_equal(py_rv, random.random())
 
     def test_random_state_np_random_RandomState(self):
+        np.random.seed(42)
+        np_rv = np.random.random_sample()
+
+        np.random.seed(42)
         seed = 1
         rng = np.random.RandomState(seed)
-        random_state = self.instantiate_random_state(random_state=rng)
-        assert_true(np.all((np.random.RandomState(seed).rand(10),
-                            random_state.rand(10))))
+        rval = self.instantiate_random_state(rng)
+        rval_expected = np.random.RandomState(seed).rand()
+        assert_true(rval, rval_expected)
+
+        rval = self.instantiate_np_random_state(seed)
+        rval_expected = np.random.RandomState(seed).rand()
+        assert_true(rval, rval_expected)
+
+        rval = self.instantiate_py_random_state(seed)
+        rval_expected = np.random.RandomState(seed).rand()
+        assert_true(rval, rval_expected)
+        # test that global seed wasn't changed in function
+        assert_equal(np_rv, np.random.random_sample())
+
+    def test_random_state_py_random(self):
+        seed = 1
+        rng = random.Random(seed)
+        rv = self.instantiate_py_random_state(rng)
+        assert_true(rv, random.Random(seed).random())
+
+        assert_raises(ValueError, self.instantiate_random_state, rng)
+        assert_raises(ValueError, self.instantiate_np_random_state, rng)
 
 
 @raises(nx.NetworkXError)
-def test_string_arg_index():
+def test_random_state_string_arg_index():
     @random_state('a')
     def make_random_state(rs):
         pass
@@ -186,8 +264,24 @@ def test_string_arg_index():
 
 
 @raises(nx.NetworkXError)
-def test_invalid_arg_index():
+def test_py_random_state_string_arg_index():
+    @py_random_state('a')
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)
+
+
+@raises(nx.NetworkXError)
+def test_random_state_invalid_arg_index():
     @random_state(2)
+    def make_random_state(rs):
+        pass
+    rstate = make_random_state(1)
+
+
+@raises(nx.NetworkXError)
+def test_py_random_state_invalid_arg_index():
+    @py_random_state(2)
     def make_random_state(rs):
         pass
     rstate = make_random_state(1)

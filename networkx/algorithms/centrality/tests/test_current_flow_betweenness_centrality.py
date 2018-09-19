@@ -138,6 +138,13 @@ class TestApproximateFlowBetweennessCentrality(object):
         for n in sorted(G):
             assert_allclose(b[n], ba[n], atol=epsilon)
 
+    def test_seed(self):
+        G = nx.complete_graph(4)
+        b = approximate_cfbc(G, normalized=False, epsilon=0.05, seed=1)
+        b_answer = {0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
+        for n in sorted(G):
+            assert_allclose(b[n], b_answer[n], atol=0.1)
+
     def test_solvers(self):
         "Approximate current-flow betweenness centrality: solvers"
         G = nx.complete_graph(4)

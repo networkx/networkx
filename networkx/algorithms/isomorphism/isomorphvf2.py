@@ -120,19 +120,7 @@ Notes
 -----
 
 The implementation handles both directed and undirected graphs as well
-as multigraphs. However, it does require that nodes in the graph are
-orderable (in addition to the general NetworkX requirement that nodes
-are hashable). If the nodes in your graph are not orderable, you can
-convert them to an orderable type (`int`, for example) by using the
-:func:`networkx.relabel` function. You can store the dictionary of
-old-to-new node labels to retrieve the original node labels after
-running the isomorphism algorithm::
-
-    >>> G = nx.Graph()
-    >>> node1, node2 = object(), object()
-    >>> G.add_nodes_from([node1, node2])
-    >>> mapping = {k: v for v, k in enumerate(G)}
-    >>> G = nx.relabel_nodes(G, mapping)
+as multigraphs.
 
 In general, the subgraph isomorphism problem is NP-complete whereas the
 graph isomorphism problem is most likely not NP-complete (although no
@@ -183,6 +171,7 @@ class GraphMatcher(object):
         self.G2 = G2
         self.G1_nodes = set(G1.nodes())
         self.G2_nodes = set(G2.nodes())
+        self.G2_node_order = {n: i for i, n in enumerate(G2)}
 
         # Set recursion limit.
         self.old_recursion_limit = sys.getrecursionlimit()
@@ -217,16 +206,18 @@ class GraphMatcher(object):
 
         G1_nodes = self.G1_nodes
         G2_nodes = self.G2_nodes
+        min_key = self.G2_node_order.__getitem__
 
         # First we compute the inout-terminal sets.
-        T1_inout = [node for node in G1_nodes if (node in self.inout_1) and (node not in self.core_1)]
-        T2_inout = [node for node in G2_nodes if (node in self.inout_2) and (node not in self.core_2)]
+        T1_inout = [node for node in self.inout_1 if node not in self.core_1]
+        T2_inout = [node for node in self.inout_2 if node not in self.core_2]
 
         # If T1_inout and T2_inout are both nonempty.
         # P(s) = T1_inout x {min T2_inout}
         if T1_inout and T2_inout:
-            for node in T1_inout:
-                yield node, min(T2_inout)
+            node_2 = min(T2_inout, key=min_key)
+            for node_1 in T1_inout:
+                yield node_1, node_2
 
         else:
             # If T1_inout and T2_inout were both empty....
@@ -234,7 +225,7 @@ class GraphMatcher(object):
             # if not (T1_inout or T2_inout):       # as suggested by  [2], incorrect
             if 1:                                  # as inferred from [1], correct
                 # First we determine the candidate node for G2
-                other_node = min(G2_nodes - set(self.core_2))
+                other_node = min(G2_nodes - set(self.core_2), key=min_key)
                 for node in self.G1:
                     if node not in self.core_1:
                         yield node, other_node
@@ -517,15 +508,16 @@ class DiGraphMatcher(GraphMatcher):
 
         G1_nodes = self.G1_nodes
         G2_nodes = self.G2_nodes
+        min_key = self.G2_node_order.__getitem__
 
         # First we compute the out-terminal sets.
-        T1_out = [node for node in G1_nodes if (node in self.out_1) and (node not in self.core_1)]
-        T2_out = [node for node in G2_nodes if (node in self.out_2) and (node not in self.core_2)]
+        T1_out = [node for node in self.out_1 if node not in self.core_1]
+        T2_out = [node for node in self.out_2 if node not in self.core_2]
 
         # If T1_out and T2_out are both nonempty.
         # P(s) = T1_out x {min T2_out}
         if T1_out and T2_out:
-            node_2 = min(T2_out)
+            node_2 = min(T2_out, key=min_key)
             for node_1 in T1_out:
                 yield node_1, node_2
 
@@ -534,13 +526,13 @@ class DiGraphMatcher(GraphMatcher):
 
         # elif not (T1_out or T2_out):   # as suggested by [2], incorrect
         else:                            # as suggested by [1], correct
-            T1_in = [node for node in G1_nodes if (node in self.in_1) and (node not in self.core_1)]
-            T2_in = [node for node in G2_nodes if (node in self.in_2) and (node not in self.core_2)]
+            T1_in = [node for node in self.in_1 if node not in self.core_1]
+            T2_in = [node for node in self.in_2 if node not in self.core_2]
 
             # If T1_in and T2_in are both nonempty.
             # P(s) = T1_out x {min T2_out}
             if T1_in and T2_in:
-                node_2 = min(T2_in)
+                node_2 = min(T2_in, key=min_key)
                 for node_1 in T1_in:
                     yield node_1, node_2
 
@@ -549,7 +541,7 @@ class DiGraphMatcher(GraphMatcher):
 
             # elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
             else:                          # as inferred from [1], correct
-                node_2 = min(G2_nodes - set(self.core_2))
+                node_2 = min(G2_nodes - set(self.core_2), key=min_key)
                 for node_1 in G1_nodes:
                     if node_1 not in self.core_1:
                         yield node_1, node_2
