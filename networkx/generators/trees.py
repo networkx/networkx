@@ -60,7 +60,7 @@ def prefix_tree(paths):
 
             >>> from networkx.generators.trees import NIL
             >>> paths = ['ab', 'abs', 'ad']
-            >>> T = nx.prefix_tree(paths)
+            >>> T, root = nx.prefix_tree(paths)
             >>> T.predecessors(NIL)  # doctest: +SKIP
 
     Notes
