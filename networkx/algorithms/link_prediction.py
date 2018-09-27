@@ -197,7 +197,7 @@ def adamic_adar_index(G, ebunch=None):
            http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
     """
     def predict(u, v):
-        return sum(1 / log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
+        return sum(1 / (log(G.degree(w))+1e-8) for w in nx.common_neighbors(G, u, v))
     return _apply_prediction(G, predict, ebunch)
 
 
