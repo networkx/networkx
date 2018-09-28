@@ -10,7 +10,15 @@
 #
 # Author:  Alex Roper <aroper@umich.edu>
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
-from collections import defaultdict, Mapping, Set
+from collections import defaultdict
+
+# Importing Abstract Base Classes directly from collections is deprecated
+# in pythn 3.8. There is no other option in python 2.7, though.
+try:
+    from collections.abc import Mapping, Set
+except ImportError:
+    from collections import Mapping, Set
+
 from itertools import chain, count
 
 import networkx as nx
