@@ -201,11 +201,11 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
         The NetworkX graph used to construct the Pandas DataFrame.
 
     source : str or int, optional
-        A valid column name (string or iteger) for the source nodes (for the
+        A valid column name (string or integer) for the source nodes (for the
         directed case).
 
     target : str or int, optional
-        A valid column name (string or iteger) for the target nodes (for the
+        A valid column name (string or integer) for the target nodes (for the
         directed case).
 
     nodelist : list, optional
@@ -262,11 +262,11 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
         An edge list representation of a graph
 
     source : str or int
-        A valid column name (string or iteger) for the source nodes (for the
+        A valid column name (string or integer) for the source nodes (for the
         directed case).
 
     target : str or int
-        A valid column name (string or iteger) for the target nodes (for the
+        A valid column name (string or integer) for the target nodes (for the
         directed case).
 
     edge_attr : str or int, iterable, True
