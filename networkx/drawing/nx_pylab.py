@@ -26,6 +26,7 @@ from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout
+from numbers import Number
 
 __all__ = ['draw',
            'draw_networkx',
@@ -608,7 +609,7 @@ def draw_networkx_edges(G, pos,
         # r7184 and r7189 (June 6 2009). We should then not set the alpha
         # value globally, since the user can instead provide per-edge alphas
         # now.  Only set it globally if provided as a scalar.
-        if cb.is_numlike(alpha):
+        if isinstance(alpha, Number):
             edge_collection.set_alpha(alpha)
 
         if edge_colors is None:
@@ -1094,7 +1095,6 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         Array containing RGBA format values for each of the node colours.
 
     """
-    import numbers
     from itertools import islice, cycle
 
     try:
@@ -1106,7 +1106,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.
-    if len(colors) == len(elem_list) and isinstance(colors[0], numbers.Number):
+    if len(colors) == len(elem_list) and isinstance(colors[0], Number):
         mapper = cm.ScalarMappable(cmap=cmap)
         mapper.set_clim(vmin, vmax)
         rgba_colors = mapper.to_rgba(colors)
