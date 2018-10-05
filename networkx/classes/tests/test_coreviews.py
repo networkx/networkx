@@ -362,3 +362,22 @@ class TestFilteredGraphs(object):
             assert_equal(SG.adj[2].copy(), SG.adj[2])
             assert_equal(RG.adj.copy(), RG.adj)
             assert_equal(RG.adj[2].copy(), RG.adj[2])
+
+    def test_unicode(self):
+        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+            G = Graph()
+            a, b, c = (u'\u4e59', u'\u4e19', u'\u7532')
+            G.add_nodes_from([a, b, c])
+            G.add_edge(a, b)
+            SG = G.subgraph([a, b])
+            RG = SubGraph(G, nx.filters.hide_nodes([c]))
+            assert_true(a in SG)
+            assert_false(c in SG)
+            assert_true(a in RG)
+            assert_false(c in RG)
+            assert_equal(G.adj.copy(), G.adj)
+            assert_equal(G.adj[a].copy(), G.adj[a])
+            assert_equal(SG.adj.copy(), SG.adj)
+            assert_equal(SG.adj[b].copy(), SG.adj[b])
+            assert_equal(RG.adj.copy(), RG.adj)
+            assert_equal(RG.adj[b].copy(), RG.adj[b])
