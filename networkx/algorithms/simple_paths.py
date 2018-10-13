@@ -103,8 +103,8 @@ def all_simple_paths(G, source, target, cutoff=None):
     source : node
        Starting node for path
 
-    target : node
-       Ending node for path
+    target : nodes
+       Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
         Depth to stop the search. Only paths of length <= cutoff are returned.
@@ -149,6 +149,17 @@ def all_simple_paths(G, source, target, cutoff=None):
         [(0, 2), (2, 3)]
         [(0, 3)]
 
+    Pass an iterable of nodes as target to generate all paths ending in any of several nodes::
+
+        >>> G = nx.complete_graph(4)
+        >>> for path in nx.all_simple_paths(G, source=0, target=[3, 2]):
+        ...     print(path)
+        ...
+        [0, 1, 2]
+        [0, 1, 3]
+        [0, 2]
+        [0, 3]
+
     Iterate over each path from the root nodes to the leaf nodes in a
     directed acyclic graph using a functional programming approach::
 
@@ -179,6 +190,20 @@ def all_simple_paths(G, source, target, cutoff=None):
         >>> all_paths
         [[0, 1, 2], [0, 3, 2]]
 
+    Iterate over each path from the root nodes to the leaf nodes in a
+    directed acyclic graph passing all leaves together to avoid unnecessary
+    compute::
+
+        >>> G = nx.DiGraph([(0, 1), (2, 1), (1, 3), (1, 4)])
+        >>> roots = (v for v, d in G.in_degree() if d == 0)
+        >>> leaves = [v for v, d in G.out_degree() if d == 0]
+        >>> all_paths = []
+        >>> for root in roots:
+        ...     paths = nx.all_simple_paths(G, root, leaves)
+        ...     all_paths.extend(paths)
+        >>> all_paths
+        [[0, 1, 3], [0, 1, 4], [2, 1, 3], [2, 1, 4]]
+
     Notes
     -----
     This algorithm uses a modified depth-first search to generate the
@@ -198,9 +223,14 @@ def all_simple_paths(G, source, target, cutoff=None):
     """
     if source not in G:
         raise nx.NodeNotFound('source node %s not in graph' % source)
-    if target not in G:
-        raise nx.NodeNotFound('target node %s not in graph' % target)
-    if source == target:
+    if target in G:
+        target = {target}
+    else:
+        try:
+            target = set(target)
+        except TypeError:
+            raise nx.NodeNotFound('target node %s not in graph' % target)
+    if source in target:
         return []
     if cutoff is None:
         cutoff = len(G) - 1
@@ -212,7 +242,7 @@ def all_simple_paths(G, source, target, cutoff=None):
         return _all_simple_paths_graph(G, source, target, cutoff)
 
 
-def _all_simple_paths_graph(G, source, target, cutoff):
+def _all_simple_paths_graph(G, source, targets, cutoff):
     visited = collections.OrderedDict.fromkeys([source])
     stack = [iter(G[source])]
     while stack:
@@ -222,19 +252,22 @@ def _all_simple_paths_graph(G, source, target, cutoff):
             stack.pop()
             visited.popitem()
         elif len(visited) < cutoff:
-            if child == target:
-                yield list(visited) + [target]
+            if child in targets:
+                yield list(visited) + [child]
             elif child not in visited:
                 visited[child] = None
                 stack.append(iter(G[child]))
         else:  # len(visited) == cutoff:
-            if child == target or target in children:
-                yield list(visited) + [target]
+            if child in targets:
+                yield list(visited) + [child]
+            else:
+                for target in targets & set(children):
+                    yield list(visited) + [target]
             stack.pop()
             visited.popitem()
 
 
-def _all_simple_paths_multigraph(G, source, target, cutoff):
+def _all_simple_paths_multigraph(G, source, targets, cutoff):
     visited = collections.OrderedDict.fromkeys([source])
     stack = [(v for u, v in G.edges(source))]
     while stack:
@@ -244,15 +277,16 @@ def _all_simple_paths_multigraph(G, source, target, cutoff):
             stack.pop()
             visited.popitem()
         elif len(visited) < cutoff:
-            if child == target:
-                yield list(visited) + [target]
+            if child in targets:
+                yield list(visited) + [child]
             elif child not in visited:
                 visited[child] = None
                 stack.append((v for u, v in G.edges(child)))
         else:  # len(visited) == cutoff:
-            count = ([child] + list(children)).count(target)
-            for i in range(count):
-                yield list(visited) + [target]
+            for target in targets:
+                count = ([child] + list(children)).count(target)
+                for i in range(count):
+                    yield list(visited) + [target]
             stack.pop()
             visited.popitem()
 
