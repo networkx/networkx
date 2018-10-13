@@ -224,22 +224,22 @@ def all_simple_paths(G, source, target, cutoff=None):
     if source not in G:
         raise nx.NodeNotFound('source node %s not in graph' % source)
     if target in G:
-        target = {target}
+        targets = {target}
     else:
         try:
-            target = set(target)
+            targets = set(target)
         except TypeError:
             raise nx.NodeNotFound('target node %s not in graph' % target)
-    if source in target:
+    if source in targets:
         return []
     if cutoff is None:
         cutoff = len(G) - 1
     if cutoff < 1:
         return []
     if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, target, cutoff)
+        return _all_simple_paths_multigraph(G, source, targets, cutoff)
     else:
-        return _all_simple_paths_graph(G, source, target, cutoff)
+        return _all_simple_paths_graph(G, source, targets, cutoff)
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
