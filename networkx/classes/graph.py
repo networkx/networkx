@@ -774,7 +774,7 @@ class Graph(object):
     def selfloop_edges(self, data=False, keys=False, default=None):
         msg = "selfloop_edges is deprecated. Use nx.selfloop_edges instead."
         warnings.warn(msg, DeprecationWarning)
-        return nx.selfloop_edges(self, data=False, keys=False, default=None)
+        return nx.selfloop_edges(self, data, keys, default)
     # Done with backward compatibility methods for 1.x
 
     def number_of_nodes(self):
