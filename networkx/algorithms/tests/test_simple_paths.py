@@ -8,8 +8,8 @@ from nose.tools import raises
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx.algorithms.simple_paths import _bidirectional_shortest_path
 from networkx.algorithms.simple_paths import _bidirectional_dijkstra
+from networkx.algorithms.simple_paths import _bidirectional_shortest_path
 from networkx.utils import arbitrary_element
 
 
@@ -88,6 +88,33 @@ def test_all_simple_paths():
     assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3)})
 
 
+def test_all_simple_paths_with_two_targets_emits_two_paths():
+    G = nx.path_graph(4)
+    G.add_edge(2, 4)
+    paths = nx.all_simple_paths(G, 0, [3, 4])
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3), (0, 1, 2, 4)})
+
+
+def test_all_simple_paths_with_two_targets_in_line_emits_one_path():
+    G = nx.path_graph(4)
+    paths = nx.all_simple_paths(G, 0, [2, 3])
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2)})
+
+
+def test_all_simple_paths_ignores_cycle():
+    G = nx.cycle_graph(3, create_using=nx.DiGraph())
+    G.add_edge(1, 3)
+    paths = nx.all_simple_paths(G, 0, 3)
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 3)})
+
+
+def test_all_simple_paths_with_two_targets_inside_cycle_emits_two_paths():
+    G = nx.cycle_graph(3, create_using=nx.DiGraph())
+    G.add_edge(1, 3)
+    paths = nx.all_simple_paths(G, 0, [2, 3])
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2), (0, 1, 3)})
+
+
 def test_all_simple_paths_source_target():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 1, 1)
@@ -130,10 +157,12 @@ def test_all_simple_paths_empty():
     paths = nx.all_simple_paths(G, 0, 3, cutoff=2)
     assert_equal(list(list(p) for p in paths), [])
 
+
 def test_all_simple_paths_corner_cases():
     assert_equal(list(nx.all_simple_paths(nx.empty_graph(2), 0, 0)), [])
     assert_equal(list(nx.all_simple_paths(nx.empty_graph(2), 0, 1)), [])
     assert_equal(list(nx.all_simple_paths(nx.path_graph(9), 0, 8, 0)), [])
+
 
 def hamiltonian_path(G, source):
     source = arbitrary_element(G)
@@ -174,9 +203,8 @@ def test_target_missing():
     nx.add_path(G, [1, 2, 3])
     paths = list(nx.all_simple_paths(nx.MultiGraph(G), 1, 4))
 
+
 # Tests for shortest_simple_paths
-
-
 def test_shortest_simple_paths():
     G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
     paths = nx.shortest_simple_paths(G, 1, 12)
@@ -209,6 +237,7 @@ def test_Greg_Bernstein():
 def test_weighted_shortest_simple_path():
     def cost_func(path):
         return sum(G.adj[u][v]['weight'] for (u, v) in zip(path, path[1:]))
+
     G = nx.complete_graph(5)
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
     nx.set_edge_attributes(G, weight, 'weight')
@@ -222,6 +251,7 @@ def test_weighted_shortest_simple_path():
 def test_directed_weighted_shortest_simple_path():
     def cost_func(path):
         return sum(G.adj[u][v]['weight'] for (u, v) in zip(path, path[1:]))
+
     G = nx.complete_graph(5)
     G = G.to_directed()
     weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
