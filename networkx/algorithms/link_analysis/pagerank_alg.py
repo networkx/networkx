@@ -16,7 +16,7 @@ __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 @not_implemented_for('multigraph')
 def pagerank(G, alpha=0.85, personalization=None,
              max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
-             dangling=None):
+             dangling=None, deterministic=False):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -59,6 +59,10 @@ def pagerank(G, alpha=0.85, personalization=None,
       specified). This must be selected to result in an irreducible transition
       matrix (see notes under google_matrix). It may be common to have the
       dangling dict to be the same as the personalization dict.
+
+    deterministic: boolean, optional
+      if True use a deterministic but more computational expensive version of
+      the algorithm.
 
     Returns
     -------
@@ -140,15 +144,24 @@ def pagerank(G, alpha=0.85, personalization=None,
         dangling_weights = dict((k, v / s) for k, v in dangling.items())
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
+    if deterministic:
+        node_list = sorted(D.nodes())
+    else:
+        node_list = D.nodes()
+
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast.keys(), 0)
         danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
-        for n in x:
+        for n in node_list:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
-            for nbr in W[n]:
+            if deterministic:
+                neighbours = sorted(W[n])
+            else:
+                neighbours = W[n]
+            for nbr in neighbours:
                 x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
             x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
