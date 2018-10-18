@@ -723,18 +723,23 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     repeated_nodes = []
     # Start adding the remaining nodes.
     source = max(m1,m2)
+    # Pick which m to use first time (m1 or m2)
+    if seed.random() < p:
+        m = m1
+    else:
+        m = m2
     while source < n:
-        # Pick which m to use (m1 or m2)
-        if seed.random() < p:
-            m = m1
-        else:
-            m = m2
         # Add edges to m nodes from the source.
         G.add_edges_from(zip([source] * m, targets))
         # Add one node to the list for each new edge just created.
         repeated_nodes.extend(targets)
         # And the new node "source" has m edges to add to the list.
         repeated_nodes.extend([source] * m)
+        # Pick which m to use next time (m1 or m2)
+        if seed.random() < p:
+            m = m1
+        else:
+            m = m2
         # Now choose m unique nodes from the existing nodes
         # Pick uniformly from repeated_nodes (preferential attachment)
         targets = _random_subset(repeated_nodes, m, seed)
