@@ -24,7 +24,7 @@ class TestCycles:
         if len(b) != n:
             return False
         l = a + a
-        return any(l[i:i + n] == b for i in range(2 * n - n + 1))
+        return any(l[i:i + n] == b for i in range(n))
 
     def test_cycle_basis(self):
         G = self.G
@@ -59,6 +59,7 @@ class TestCycles:
         G = nx.DiGraph(edges)
         cc = sorted(nx.simple_cycles(G))
         ca = [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
+        assert_equal(len(cc), len(ca))
         for c in cc:
             assert_true(any(self.is_cyclic_permutation(c, rc) for rc in ca))
 
@@ -81,6 +82,7 @@ class TestCycles:
         assert_true(self.is_cyclic_permutation(c[0], [1, 2, 3]))
         nx.add_cycle(G, [10, 20, 30])
         cc = sorted(nx.simple_cycles(G))
+        assert_equal(len(cc), 2)
         ca = [[1, 2, 3], [10, 20, 30]]
         for c in cc:
             assert_true(any(self.is_cyclic_permutation(c, rc) for rc in ca))
