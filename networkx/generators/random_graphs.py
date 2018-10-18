@@ -715,14 +715,14 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
         raise nx.NetworkXError("Dual Barabási–Albert network must have 0 <= p <= 1,"
                                "p = %f" % p)
 
-    # Add p*m1 + (1-p)*m2 initial nodes (m0 in barabasi-speak)
+    # Add max(m1,m2) initial nodes (m0 in barabasi-speak)
     G = empty_graph(max(m1,m2))
     # Target nodes for new edges
-    targets = list(range(len(G)))
+    targets = list(range(max(m1,m2)))
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = []
     # Start adding the remaining nodes.
-    source = len(G)
+    source = max(m1,m2)
     while source < n:
         # Pick which m to use (m1 or m2)
         if seed.random() < p:
