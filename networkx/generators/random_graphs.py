@@ -716,7 +716,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
                                "p = %f" % p)
 
     # Add p*m1 + (1-p)*m2 initial nodes (m0 in barabasi-speak)
-    G = empty_graph(int(p*m1+(1-p)*m2))
+    G = empty_graph(max(m1,m2))
     # Target nodes for new edges
     targets = list(range(len(G)))
     # List of existing nodes, with nodes repeated once for each adjacent edge
