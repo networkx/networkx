@@ -121,10 +121,10 @@ class TestGeneratorsRandom(object):
 
         """
         seed = 42
-        repeates = 2
+        repeats = 2
 
         while repeats:
-            repeates -= 1
+            repeats -= 1
 
             # This should be BA with m = m1
             BA1 = barabasi_albert_graph(100, m1, seed)
