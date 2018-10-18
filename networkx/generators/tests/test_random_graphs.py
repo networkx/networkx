@@ -142,7 +142,6 @@ class TestGeneratorsRandom(object):
         assert_raises(NetworkXError, dbag, m2, m1, m2, 0)
         assert_raises(NetworkXError, dbag, 100, m1, m2, -0.5)
         assert_raises(NetworkXError, dbag, 100, m1, m2, 1.5)
-        assert_raises(NetworkXError, 1, 0.5, 0.25, 0)
 
     def test_extended_barabasi_albert(self, m=2):
         """
