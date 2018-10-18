@@ -31,6 +31,7 @@ __all__ = ['fast_gnp_random_graph',
            'connected_watts_strogatz_graph',
            'random_regular_graph',
            'barabasi_albert_graph',
+           'dual_barabasi_albert_graph',
            'extended_barabasi_albert_graph',
            'powerlaw_cluster_graph',
            'random_lobster',
@@ -653,6 +654,81 @@ def barabasi_albert_graph(n, m, seed=None):
     # Start adding the other n-m nodes. The first node is m.
     source = m
     while source < n:
+        # Add edges to m nodes from the source.
+        G.add_edges_from(zip([source] * m, targets))
+        # Add one node to the list for each new edge just created.
+        repeated_nodes.extend(targets)
+        # And the new node "source" has m edges to add to the list.
+        repeated_nodes.extend([source] * m)
+        # Now choose m unique nodes from the existing nodes
+        # Pick uniformly from repeated_nodes (preferential attachment)
+        targets = _random_subset(repeated_nodes, m, seed)
+        source += 1
+    return G
+
+
+@py_random_state(4)
+def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
+    """Returns a random graph according to the dual Barabási–Albert preferential
+    attachment model.
+
+    A graph of $n$ nodes is grown by attaching new nodes each with either $m_1$
+    edges (with probability $p$) or $m_2$ edges (with probability $1-p$) that
+    are preferentially attached to existing nodes with high degree.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes
+    m1 : int
+        Number of edges to attach from a new node to existing nodes with probability $p$
+    m2 : int
+        Number of edges to attach from a new node to existing nodes with probability $1-p$
+    p : float
+        The probability of attaching $m_1$ edges (as opposed to $m_2$ edges)
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    G : Graph
+
+    Raises
+    ------
+    NetworkXError
+        If `m1` and `m2` do not satisfy ``1 <= m1,m2 < n`` or `p` does not satisfy ``0 <= p <= 1``.
+
+    References
+    ----------
+    .. [1] A. L. Barabási and R. Albert "Emergence of scaling in
+       random networks", Science 286, pp 509-512, 1999.
+    """
+
+    if m1 < 1 or m1 >= n:
+        raise nx.NetworkXError("Dual Barabási–Albert network must have m1 >= 1"
+                               " and m1 < n, m1 = %d, n = %d" % (m1, n))
+    if m2 < 1 or m2 >= n:
+        raise nx.NetworkXError("Dual Barabási–Albert network must have m2 >= 1"
+                               " and m2 < n, m2 = %d, n = %d" % (m2, n))
+    if p < 0 or p > 1:
+        raise nx.NetworkXError("Dual Barabási–Albert network must have 0 <= p <= 1,"
+                               "p = %f" % p)
+
+    # Add p*m1 + (1-p)*m2 initial nodes (m0 in barabasi-speak)
+    G = empty_graph(int(p*m1+(1-p)*m2))
+    # Target nodes for new edges
+    targets = list(range(len(G)))
+    # List of existing nodes, with nodes repeated once for each adjacent edge
+    repeated_nodes = []
+    # Start adding the remaining nodes.
+    source = len(G)
+    while source < n:
+        # Pick which m to use (m1 or m2)
+        if seed.random() < p:
+            m = m1
+        else:
+            m = m2
         # Add edges to m nodes from the source.
         G.add_edges_from(zip([source] * m, targets))
         # Add one node to the list for each new edge just created.
