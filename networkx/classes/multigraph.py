@@ -510,10 +510,7 @@ class MultiGraph(Graph):
                 u, v, key, dd = e
             elif ne == 3:
                 u, v, dd = e
-                if not hasattr(dd, 'keys'):
-                    key, dd = dd, {}
-                else:
-                    key = None
+                key = None
             elif ne == 2:
                 u, v = e
                 dd = {}
@@ -522,8 +519,16 @@ class MultiGraph(Graph):
                 msg = "Edge tuple {} must be a 2-tuple, 3-tuple or 4-tuple."
                 raise NetworkXError(msg.format(e))
             attr_dict = attr.copy()
-            attr_dict.update(dd)
-            keylist.append(self.add_edge(u, v, key, **attr_dict))
+            try:
+                attr_dict.update(dd)
+            except TypeError:  # in 3-tuple 3rd item not attrs
+                if ne != 3:
+                    raise
+                key = dd
+
+            key = self.add_edge(u, v, key)
+            self[u][v][key].update(attr_dict)  # keywords may be not strings
+            keylist.append(key)
         return keylist
 
     def remove_edge(self, u, v, key=None):
