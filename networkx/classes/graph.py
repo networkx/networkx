@@ -563,11 +563,7 @@ class Graph(object):
             else:
                 attr_dict = attr
 
-            if n not in self._node:
-                self._adj[n] = self.adjlist_inner_dict_factory()
-                self._node[n] = self.node_attr_dict_factory()
-
-            self._node[n].update(attr_dict)
+            self.add_node(n, **attr_dict)
 
     def remove_node(self, n):
         """Remove node n.
@@ -899,10 +895,10 @@ class Graph(object):
             self._node[v] = self.node_attr_dict_factory()
         # add the edge
         if v in self._adj[u]:
-            edge_attr = self._adj[u][v]
+            attr_dict = self._adj[u][v]
         else:
-            edge_attr = self._adj[u][v] = self._adj[v][u] = self.edge_attr_dict_factory()
-        edge_attr.update(attr)
+            attr_dict = self._adj[u][v] = self._adj[v][u] = self.edge_attr_dict_factory()
+        attr_dict.update(attr)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -952,19 +948,9 @@ class Graph(object):
             else:
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
-            if u not in self._node:
-                self._adj[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = self.node_attr_dict_factory()
-            if v not in self._node:
-                self._adj[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = self.node_attr_dict_factory()
-
-            if v in self._adj[u]:
-                edge_attr = self._adj[u][v]
-            else:
-                edge_attr = self._adj[u][v] = self._adj[v][u] = self.edge_attr_dict_factory()
-            edge_attr.update(attr)
-            edge_attr.update(dd)
+            attr_dict = attr.copy()
+            attr_dict.update(dd)
+            self.add_edge(u, v, **attr_dict)
 
     def add_weighted_edges_from(self, ebunch_to_add, weight='weight', **attr):
         """Add weighted edges in `ebunch_to_add` with specified weight attr
@@ -1531,8 +1517,8 @@ class Graph(object):
             return nx.graphviews.generic_graph_view(self)
         G = self.__class__()
         G.graph.update(self.graph)
-        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
-        G.add_edges_from((u, v, datadict.copy())
+        G.add_nodes_from((n, d) for n, d in self._node.items())
+        G.add_edges_from((u, v, datadict)
                          for u, nbrs in self._adj.items()
                          for v, datadict in nbrs.items())
         return G

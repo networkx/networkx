@@ -203,12 +203,18 @@ class MultiGraph(Graph):
     extra features can be added. To replace one of the dicts create
     a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names are
-    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
-    and edge_attr_dict_factory.
+    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
+    adjlist_outer_dict_factory, edge_key_dict_factory, edge_attr_dict_factory
+    and graph_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
         attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    node_attr_dict_factory: function, (default: dict)
+        Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object
 
     adjlist_outer_dict_factory : function, (default: dict)
@@ -228,7 +234,12 @@ class MultiGraph(Graph):
 
     edge_attr_dict_factory : function, (default: dict)
         Factory function to be used to create the edge attribute
-        dict which holds attrbute values keyed by attribute name.
+        dict which holds attribute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    graph_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
     Typically, if your extension doesn't impact the data structure all
@@ -252,11 +263,7 @@ class MultiGraph(Graph):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
-    # node_dict_factory = dict    # already assigned in Graph
-    # adjlist_outer_dict_factory = dict
-    # adjlist_inner_dict_factory = dict
     edge_key_dict_factory = dict
-    # edge_attr_dict_factory = dict
 
     def to_directed_class(self):
         """Returns the class to use for empty directed copies.
@@ -307,7 +314,6 @@ class MultiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        self.edge_key_dict_factory = self.edge_key_dict_factory
         Graph.__init__(self, incoming_graph_data, **attr)
 
     @property
@@ -426,27 +432,24 @@ class MultiGraph(Graph):
         """
         u, v = u_for_edge, v_for_edge
         # add nodes
-        if u not in self._adj:
+        if u not in self._node:
             self._adj[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = {}
-        if v not in self._adj:
+            self._node[u] = self.node_attr_dict_factory()
+        if v not in self._node:
             self._adj[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = {}
+            self._node[v] = self.node_attr_dict_factory()
         if key is None:
             key = self.new_edge_key(u, v)
         if v in self._adj[u]:
             keydict = self._adj[u][v]
-            datadict = keydict.get(key, self.edge_attr_dict_factory())
-            datadict.update(attr)
-            keydict[key] = datadict
         else:
-            # selfloops work this way without special treatment
-            datadict = self.edge_attr_dict_factory()
-            datadict.update(attr)
-            keydict = self.edge_key_dict_factory()
-            keydict[key] = datadict
-            self._adj[u][v] = keydict
-            self._adj[v][u] = keydict
+            keydict = self._adj[u][v] = self._adj[v][u] = self.edge_key_dict_factory()
+
+        if key in keydict:
+            attr_dict = keydict[key]
+        else:
+            attr_dict = keydict[key] = self.edge_attr_dict_factory()
+        attr_dict.update(attr)
         return key
 
     def add_edges_from(self, ebunch_to_add, **attr):
@@ -507,7 +510,10 @@ class MultiGraph(Graph):
                 u, v, key, dd = e
             elif ne == 3:
                 u, v, dd = e
-                key = None
+                if not hasattr(dd, 'keys'):
+                    key, dd = dd, {}
+                else:
+                    key = None
             elif ne == 2:
                 u, v = e
                 dd = {}
@@ -515,17 +521,9 @@ class MultiGraph(Graph):
             else:
                 msg = "Edge tuple {} must be a 2-tuple, 3-tuple or 4-tuple."
                 raise NetworkXError(msg.format(e))
-            ddd = {}
-            ddd.update(attr)
-            try:
-                ddd.update(dd)
-            except:
-                if ne != 3:
-                    raise
-                key = dd
-            key = self.add_edge(u, v, key)
-            self[u][v][key].update(ddd)
-            keylist.append(key)
+            attr_dict = attr.copy()
+            attr_dict.update(dd)
+            keylist.append(self.add_edge(u, v, key, **attr_dict))
         return keylist
 
     def remove_edge(self, u, v, key=None):
@@ -956,8 +954,8 @@ class MultiGraph(Graph):
             return nx.graphviews.generic_graph_view(self)
         G = self.__class__()
         G.graph.update(self.graph)
-        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
-        G.add_edges_from((u, v, key, datadict.copy())
+        G.add_nodes_from((n, d) for n, d in self._node.items())
+        G.add_edges_from((u, v, key, datadict)
                          for u, nbrs in self._adj.items()
                          for v, keydict in nbrs.items()
                          for key, datadict in keydict.items())

@@ -205,12 +205,18 @@ class MultiDiGraph(MultiGraph, DiGraph):
     extra features can be added. To replace one of the dicts create
     a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names are
-    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
-    and edge_attr_dict_factory.
+    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
+    adjlist_outer_dict_factory, edge_key_dict_factory, edge_attr_dict_factory
+    and graph_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
         attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    node_attr_dict_factory: function, (default: dict)
+        Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object
 
     adjlist_outer_dict_factory : function, (default: dict)
@@ -230,7 +236,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     edge_attr_dict_factory : function, (default: dict)
         Factory function to be used to create the edge attribute
-        dict which holds attrbute values keyed by attribute name.
+        dict which holds attribute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    graph_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
     Typically, if your extension doesn't impact the data structure all
@@ -254,11 +265,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
-    # node_dict_factory = dict    # already assigned in Graph
-    # adjlist_outer_dict_factory = dict
-    # adjlist_inner_dict_factory = dict
-    edge_key_dict_factory = dict
-    # edge_attr_dict_factory = dict
 
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
@@ -293,7 +299,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
         {'day': 'Friday'}
 
         """
-        self.edge_key_dict_factory = self.edge_key_dict_factory
         DiGraph.__init__(self, incoming_graph_data, **attr)
 
     @property
@@ -419,29 +424,26 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         u, v = u_for_edge, v_for_edge
         # add nodes
-        if u not in self._succ:
+        if u not in self._node:
             self._succ[u] = self.adjlist_inner_dict_factory()
             self._pred[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = {}
-        if v not in self._succ:
+            self._node[u] = self.node_attr_dict_factory()
+        if v not in self._node:
             self._succ[v] = self.adjlist_inner_dict_factory()
             self._pred[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = {}
+            self._node[v] = self.node_attr_dict_factory()
         if key is None:
             key = self.new_edge_key(u, v)
         if v in self._succ[u]:
-            keydict = self._adj[u][v]
-            datadict = keydict.get(key, self.edge_key_dict_factory())
-            datadict.update(attr)
-            keydict[key] = datadict
+            keydict = self._succ[u][v]
         else:
-            # selfloops work this way without special treatment
-            datadict = self.edge_attr_dict_factory()
-            datadict.update(attr)
-            keydict = self.edge_key_dict_factory()
-            keydict[key] = datadict
-            self._succ[u][v] = keydict
-            self._pred[v][u] = keydict
+            keydict = self._succ[u][v] = self._pred[v][u] = self.edge_key_dict_factory()
+
+        if key in keydict:
+            attr_dict = keydict[key]
+        else:
+            attr_dict = keydict[key] = self.edge_attr_dict_factory()
+        attr_dict.update(attr)
         return key
 
     def remove_edge(self, u, v, key=None):

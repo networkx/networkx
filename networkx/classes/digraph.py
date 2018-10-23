@@ -194,12 +194,17 @@ class DiGraph(Graph):
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
     holding the factory for that dict-like structure. The variable names are
-    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
-    and edge_attr_dict_factory.
+    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
+    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
         attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    node_attr_dict_factory: function, (default: dict)
+        Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object
 
     adjlist_outer_dict_factory : function, (default: dict)
@@ -214,7 +219,12 @@ class DiGraph(Graph):
 
     edge_attr_dict_factory : function, optional (default: dict)
         Factory function to be used to create the edge attribute
-        dict which holds attrbute values keyed by attribute name.
+        dict which holds attribute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    graph_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
     Typically, if your extension doesn't impact the data structure all
@@ -290,12 +300,8 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        self.node_dict_factory = self.node_dict_factory
-        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
-        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
-        self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.graph = {}  # dictionary for graph attributes
+        self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self._pred
@@ -405,12 +411,12 @@ class DiGraph(Graph):
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        if node_for_adding not in self._succ:
+        if node_for_adding not in self._node:
             self._succ[node_for_adding] = self.adjlist_inner_dict_factory()
             self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
-            self._node[node_for_adding] = attr
-        else:  # update attr even if node already exists
-            self._node[node_for_adding].update(attr)
+            self._node[node_for_adding] = self.node_attr_dict_factory()
+
+        self._node[node_for_adding].update(attr)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -457,28 +463,15 @@ class DiGraph(Graph):
 
         """
         for n in nodes_for_adding:
-            # keep all this inside try/except because
-            # CPython throws TypeError on n not in self._succ,
-            # while pre-2.7.5 ironpython throws on self._succ[n]
             try:
-                if n not in self._succ:
-                    self._succ[n] = self.adjlist_inner_dict_factory()
-                    self._pred[n] = self.adjlist_inner_dict_factory()
-                    self._node[n] = attr.copy()
-                else:
-                    self._node[n].update(attr)
+                hash(n)
             except TypeError:
-                nn, ndict = n
-                if nn not in self._succ:
-                    self._succ[nn] = self.adjlist_inner_dict_factory()
-                    self._pred[nn] = self.adjlist_inner_dict_factory()
-                    newdict = attr.copy()
-                    newdict.update(ndict)
-                    self._node[nn] = newdict
-                else:
-                    olddict = self._node[nn]
-                    olddict.update(attr)
-                    olddict.update(ndict)
+                n, ndict = n
+                attr_dict = attr.copy()
+                attr_dict.update(ndict)
+            else:
+                attr_dict = attr
+            self.add_node(n, **attr_dict)
 
     def remove_node(self, n):
         """Remove node n.
@@ -611,19 +604,20 @@ class DiGraph(Graph):
         """
         u, v = u_of_edge, v_of_edge
         # add nodes
-        if u not in self._succ:
+        if u not in self._node:
             self._succ[u] = self.adjlist_inner_dict_factory()
             self._pred[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = {}
-        if v not in self._succ:
+            self._node[u] = self.node_attr_dict_factory()
+        if v not in self._node:
             self._succ[v] = self.adjlist_inner_dict_factory()
             self._pred[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = {}
+            self._node[v] = self.node_attr_dict_factory()
         # add the edge
-        datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
-        datadict.update(attr)
-        self._succ[u][v] = datadict
-        self._pred[v][u] = datadict
+        if v in self._succ[u]:
+            attr_dict = self._succ[u][v]
+        else:
+            attr_dict = self._succ[u][v] = self._pred[v][u] = self.edge_attr_dict_factory()
+        attr_dict.update(attr)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -673,19 +667,9 @@ class DiGraph(Graph):
             else:
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
-            if u not in self._succ:
-                self._succ[u] = self.adjlist_inner_dict_factory()
-                self._pred[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = {}
-            if v not in self._succ:
-                self._succ[v] = self.adjlist_inner_dict_factory()
-                self._pred[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = {}
-            datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
-            datadict.update(attr)
-            datadict.update(dd)
-            self._succ[u][v] = datadict
-            self._pred[v][u] = datadict
+            attr_dict = attr.copy()
+            attr_dict.update(dd)
+            self.add_edge(u, v, **attr_dict)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
