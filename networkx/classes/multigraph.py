@@ -449,7 +449,8 @@ class MultiGraph(Graph):
             attr_dict = keydict[key]
         else:
             attr_dict = keydict[key] = self.edge_attr_dict_factory()
-        attr_dict.update(attr)
+        if attr:
+            attr_dict.update(attr)
         return key
 
     def add_edges_from(self, ebunch_to_add, **attr):
@@ -527,7 +528,7 @@ class MultiGraph(Graph):
                 key = dd
 
             key = self.add_edge(u, v, key)
-            self[u][v][key].update(attr_dict)  # keywords may be not strings
+            self._adj[u][v][key].update(attr_dict)  # keywords may be not strings
             keylist.append(key)
         return keylist
 

@@ -443,7 +443,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
             attr_dict = keydict[key]
         else:
             attr_dict = keydict[key] = self.edge_attr_dict_factory()
-        attr_dict.update(attr)
+        if attr:
+            attr_dict.update(attr)
         return key
 
     def remove_edge(self, u, v, key=None):

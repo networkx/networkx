@@ -617,7 +617,8 @@ class DiGraph(Graph):
             attr_dict = self._succ[u][v]
         else:
             attr_dict = self._succ[u][v] = self._pred[v][u] = self.edge_attr_dict_factory()
-        attr_dict.update(attr)
+        if attr:
+            attr_dict.update(attr)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -669,7 +670,8 @@ class DiGraph(Graph):
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
             attr_dict = attr.copy()
             attr_dict.update(dd)
-            self.add_edge(u, v, **attr_dict)
+            self.add_edge(u, v)
+            self._adj[u][v].update(attr_dict)  # keywords may be not strings
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.

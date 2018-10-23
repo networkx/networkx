@@ -898,7 +898,8 @@ class Graph(object):
             attr_dict = self._adj[u][v]
         else:
             attr_dict = self._adj[u][v] = self._adj[v][u] = self.edge_attr_dict_factory()
-        attr_dict.update(attr)
+        if attr:
+            attr_dict.update(attr)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -950,7 +951,8 @@ class Graph(object):
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
             attr_dict = attr.copy()
             attr_dict.update(dd)
-            self.add_edge(u, v, **attr_dict)
+            self.add_edge(u, v)
+            self._adj[u][v].update(attr_dict)  # keywords may be not strings
 
     def add_weighted_edges_from(self, ebunch_to_add, weight='weight', **attr):
         """Add weighted edges in `ebunch_to_add` with specified weight attr
