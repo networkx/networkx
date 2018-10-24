@@ -95,10 +95,31 @@ def test_all_simple_paths_with_two_targets_emits_two_paths():
     assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3), (0, 1, 2, 4)})
 
 
-def test_all_simple_paths_with_two_targets_in_line_emits_one_path():
+def test_digraph_all_simple_paths_with_two_targets_emits_two_paths():
+    G = nx.path_graph(4, create_using=nx.DiGraph())
+    G.add_edge(2, 4)
+    paths = nx.all_simple_paths(G, 0, [3, 4])
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3), (0, 1, 2, 4)})
+
+
+def test_all_simple_paths_with_two_targets_cutoff():
+    G = nx.path_graph(4)
+    G.add_edge(2, 4)
+    paths = nx.all_simple_paths(G, 0, [3, 4], cutoff=3)
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3), (0, 1, 2, 4)})
+
+
+def test_digraph_all_simple_paths_with_two_targets_cutoff():
+    G = nx.path_graph(4, create_using=nx.DiGraph())
+    G.add_edge(2, 4)
+    paths = nx.all_simple_paths(G, 0, [3, 4], cutoff=3)
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2, 3), (0, 1, 2, 4)})
+
+
+def test_all_simple_paths_with_two_targets_in_line_emits_two_paths():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 0, [2, 3])
-    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2)})
+    assert_equal(set(tuple(p) for p in paths), {(0, 1, 2), (0, 1, 2, 3)})
 
 
 def test_all_simple_paths_ignores_cycle():
@@ -129,18 +150,35 @@ def test_all_simple_paths_cutoff():
     assert_equal(set(tuple(p) for p in paths), {(0, 1), (0, 2, 1), (0, 3, 1)})
 
 
+def test_all_simple_paths_on_non_trivial_graph():
+    ''' you may need to draw this graph to make sure it is reasonable '''
+    G = nx.path_graph(5, create_using=nx.DiGraph())
+    G.add_edges_from([(0, 5), (1, 5), (1, 3), (5, 4), (4, 2), (4, 3)])
+    paths = nx.all_simple_paths(G, 1, [2, 3])
+    assert_equal(set(tuple(p) for p in paths), {
+        (1, 2), (1, 3, 4, 2), (1, 5, 4, 2), (1, 3), (1, 2, 3), (1, 5, 4, 3),
+        (1, 5, 4, 2, 3)})
+    paths = nx.all_simple_paths(G, 1, [2, 3], cutoff=3)
+    assert_equal(set(tuple(p) for p in paths), {
+        (1, 2), (1, 3, 4, 2), (1, 5, 4, 2), (1, 3), (1, 2, 3), (1, 5, 4, 3)})
+    paths = nx.all_simple_paths(G, 1, [2, 3], cutoff=2)
+    assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 3), (1, 2, 3)})
+
+
 def test_all_simple_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
     paths = nx.all_simple_paths(G, 1, 1)
     assert_equal(paths, [])
     nx.add_path(G, [3, 1, 10, 2])
-    paths = nx.all_simple_paths(G, 1, 2)
+    paths = list(nx.all_simple_paths(G, 1, 2))
+    assert_equal(len(paths), 3)
     assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 2), (1, 10, 2)})
 
 
 def test_all_simple_paths_multigraph_with_cutoff():
     G = nx.MultiGraph([(1, 2), (1, 2), (1, 10), (10, 2)])
-    paths = nx.all_simple_paths(G, 1, 2, cutoff=1)
+    paths = list(nx.all_simple_paths(G, 1, 2, cutoff=1))
+    assert_equal(len(paths), 2)
     assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 2)})
 
 
@@ -155,7 +193,7 @@ def test_all_simple_paths_directed():
 def test_all_simple_paths_empty():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 0, 3, cutoff=2)
-    assert_equal(list(list(p) for p in paths), [])
+    assert_equal(list(paths), [])
 
 
 def test_all_simple_paths_corner_cases():
