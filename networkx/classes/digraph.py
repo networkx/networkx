@@ -416,7 +416,8 @@ class DiGraph(Graph):
             self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
             self._node[node_for_adding] = self.node_attr_dict_factory()
 
-        self._node[node_for_adding].update(attr)
+        if attr:
+            self._node[node_for_adding].update(attr)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -471,7 +472,9 @@ class DiGraph(Graph):
                 attr_dict.update(ndict)
             else:
                 attr_dict = attr
-            self.add_node(n, **attr_dict)
+            self.add_node(n)
+            if attr_dict:
+                self._node[n].update(attr)
 
     def remove_node(self, n):
         """Remove node n.
@@ -671,7 +674,8 @@ class DiGraph(Graph):
             attr_dict = attr.copy()
             attr_dict.update(dd)
             self.add_edge(u, v)
-            self._adj[u][v].update(attr_dict)  # keywords may be not strings
+            if attr_dict:
+                self._adj[u][v].update(attr_dict)  # keywords may be not strings
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.

@@ -522,13 +522,14 @@ class MultiGraph(Graph):
             attr_dict = attr.copy()
             try:
                 attr_dict.update(dd)
-            except TypeError:  # in 3-tuple 3rd item not attrs
+            except (TypeError, ValueError):  # in 3-tuple 3rd item not attrs
                 if ne != 3:
                     raise
                 key = dd
 
             key = self.add_edge(u, v, key)
-            self._adj[u][v][key].update(attr_dict)  # keywords may be not strings
+            if attr_dict:
+                self._adj[u][v][key].update(attr_dict)  # keywords may be not strings
             keylist.append(key)
         return keylist
 
