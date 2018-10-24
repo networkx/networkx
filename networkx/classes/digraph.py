@@ -474,7 +474,7 @@ class DiGraph(Graph):
                 attr_dict = attr
             self.add_node(n)
             if attr_dict:
-                self._node[n].update(attr)
+                self._node[n].update(attr_dict)
 
     def remove_node(self, n):
         """Remove node n.
