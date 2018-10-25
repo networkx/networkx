@@ -528,8 +528,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 self._pred[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
             if v not in self._succ:
-                self._succ[u] = self.adjlist_inner_dict_factory()
-                self._pred[u] = self.adjlist_inner_dict_factory()
+                self._succ[v] = self.adjlist_inner_dict_factory()
+                self._pred[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
             # add keyed edge
             if v not in self._succ[u]:
