@@ -331,6 +331,13 @@ class Graph(object):
         {'day': 'Friday'}
 
         """
+        self.graph_attr_dict_factory = self.graph_attr_dict_factory
+        self.node_dict_factory = self.node_dict_factory
+        self.node_attr_dict_factory = self.node_attr_dict_factory
+        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
+        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
+        self.edge_attr_dict_factory = self.edge_attr_dict_factory
+
         self.graph = self.graph_attr_dict_factory()   # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
@@ -505,9 +512,9 @@ class Graph(object):
         """
         if node_for_adding not in self._node:
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            self._node[node_for_adding] = self.node_attr_dict_factory()
-
-        if attr:
+            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attr_dict.update(attr)
+        else:
             self._node[node_for_adding].update(attr)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
@@ -556,17 +563,23 @@ class Graph(object):
         """
         for n in nodes_for_adding:
             try:
+                # if n is hashable it is impossible to understand that tuple is
+                # (node, attrdict). attrdict may be hashable also.
+                # old checks also don't allow it
                 hash(n)
             except TypeError:
-                n, ndict = n
-                attr_dict = attr.copy()
-                attr_dict.update(ndict)
+                n, ndict = n  # exception raised if n not tuple, list etc with 2 elements
+                new_attr_dict = attr.copy()
+                new_attr_dict.update(ndict)
             else:
-                attr_dict = attr
+                new_attr_dict = attr
 
-            self.add_node(n)
-            if attr_dict:
-                self._node[n].update(attr_dict)
+            if n not in self._node:
+                self._adj[n] = self.adjlist_inner_dict_factory()
+                attr_dict = self._node[n] = self.node_attr_dict_factory()
+                attr_dict.update(new_attr_dict)
+            else:
+                self._node[n].update(new_attr_dict)
 
     def remove_node(self, n):
         """Remove node n.
@@ -890,19 +903,18 @@ class Graph(object):
         """
         u, v = u_of_edge, v_of_edge
         # add nodes
-        if u not in self._node:
+        if u not in self._adj:
             self._adj[u] = self.adjlist_inner_dict_factory()
             self._node[u] = self.node_attr_dict_factory()
-        if v not in self._node:
+        if v not in self._adj:
             self._adj[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
         # add the edge
-        if v in self._adj[u]:
-            attr_dict = self._adj[u][v]
-        else:
+        if v not in self._adj[u]:
             attr_dict = self._adj[u][v] = self._adj[v][u] = self.edge_attr_dict_factory()
-        if attr:
             attr_dict.update(attr)
+        else:
+            self._adj[u][v].update(attr)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -952,11 +964,21 @@ class Graph(object):
             else:
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
-            attr_dict = attr.copy()
-            attr_dict.update(dd)
-            self.add_edge(u, v)
-            if attr_dict:
-                self._adj[u][v].update(attr_dict)  # keywords may be not strings
+            new_attr_dict = attr.copy()
+            new_attr_dict.update(dd)
+            # add nodes
+            if u not in self._adj:
+                self._adj[u] = self.adjlist_inner_dict_factory()
+                self._node[u] = self.node_attr_dict_factory()
+            if v not in self._adj:
+                self._adj[v] = self.adjlist_inner_dict_factory()
+                self._node[v] = self.node_attr_dict_factory()
+            # add the edge
+            if v not in self._adj[u]:
+                attr_dict = self._adj[u][v] = self._adj[v][u] = self.edge_attr_dict_factory()
+                attr_dict.update(new_attr_dict)
+            else:
+                self._adj[u][v].update(new_attr_dict)
 
     def add_weighted_edges_from(self, ebunch_to_add, weight='weight', **attr):
         """Add weighted edges in `ebunch_to_add` with specified weight attr
@@ -1523,8 +1545,8 @@ class Graph(object):
             return nx.graphviews.generic_graph_view(self)
         G = self.__class__()
         G.graph.update(self.graph)
-        G.add_nodes_from((n, d) for n, d in self._node.items())
-        G.add_edges_from((u, v, datadict)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        G.add_edges_from((u, v, datadict.copy())
                          for u, nbrs in self._adj.items()
                          for v, datadict in nbrs.items())
         return G
