@@ -753,34 +753,6 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     return G
 
 
-@py_random_state(2)
-def multi_barabasi_albert_graph(n, m_max, seed=None):
-    # Add max(m1,m2) initial nodes (m0 in barabasi-speak)
-    G = empty_graph(m_max)
-    # Target nodes for new edges
-    targets = list(range(m_max))
-    # List of existing nodes, with nodes repeated once for each adjacent edge
-    repeated_nodes = []
-    # Start adding the remaining nodes.
-    source = m_max
-    # Pick which m to use first time
-    m = seed.randint(1,m_max)
-    while source < n:
-        # Add edges to m nodes from the source.
-        G.add_edges_from(zip([source] * m, targets))
-        # Add one node to the list for each new edge just created.
-        repeated_nodes.extend(targets)
-        # And the new node "source" has m edges to add to the list.
-        repeated_nodes.extend([source] * m)
-        # Pick which m to use next time
-        m = seed.randint(1,m_max)
-        # Now choose m unique nodes from the existing nodes
-        # Pick uniformly from repeated_nodes (preferential attachment)
-        targets = _random_subset(repeated_nodes, m, seed)
-        source += 1
-    return G
-
-
 @py_random_state(4)
 def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     """Returns an extended Barabási–Albert model graph.
