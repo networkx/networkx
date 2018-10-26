@@ -26,6 +26,7 @@ __all__ = ['fast_gnp_random_graph',
            'gnm_random_graph',
            'erdos_renyi_graph',
            'binomial_graph',
+           'multi_barabasi_albert_graph',
            'newman_watts_strogatz_graph',
            'watts_strogatz_graph',
            'connected_watts_strogatz_graph',
@@ -701,8 +702,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
 
     References
     ----------
-    .. [1] A. L. Barabási and R. Albert "Emergence of scaling in
-       random networks", Science 286, pp 509-512, 1999.
+    .. [1] N. Moshiri "The dual-Barabasi-Albert model", arXiv:1810.10538.
     """
 
     if m1 < 1 or m1 >= n:
@@ -746,6 +746,34 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
             m = m1
         else:
             m = m2
+        # Now choose m unique nodes from the existing nodes
+        # Pick uniformly from repeated_nodes (preferential attachment)
+        targets = _random_subset(repeated_nodes, m, seed)
+        source += 1
+    return G
+
+
+@py_random_state(2)
+def multi_barabasi_albert_graph(n, m_max, seed=None):
+    # Add max(m1,m2) initial nodes (m0 in barabasi-speak)
+    G = empty_graph(m_max)
+    # Target nodes for new edges
+    targets = list(range(m_max))
+    # List of existing nodes, with nodes repeated once for each adjacent edge
+    repeated_nodes = []
+    # Start adding the remaining nodes.
+    source = m_max
+    # Pick which m to use first time
+    m = seed.randint(1,m_max)
+    while source < n:
+        # Add edges to m nodes from the source.
+        G.add_edges_from(zip([source] * m, targets))
+        # Add one node to the list for each new edge just created.
+        repeated_nodes.extend(targets)
+        # And the new node "source" has m edges to add to the list.
+        repeated_nodes.extend([source] * m)
+        # Pick which m to use next time
+        m = seed.randint(1,m_max)
         # Now choose m unique nodes from the existing nodes
         # Pick uniformly from repeated_nodes (preferential attachment)
         targets = _random_subset(repeated_nodes, m, seed)
