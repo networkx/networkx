@@ -19,6 +19,7 @@ from nose.tools import assert_true
 
 from networkx.exception import NetworkXError
 from networkx.generators.random_graphs import barabasi_albert_graph
+from networkx.generators.random_graphs import dual_barabasi_albert_graph
 from networkx.generators.random_graphs import extended_barabasi_albert_graph
 from networkx.generators.random_graphs import binomial_graph
 from networkx.generators.random_graphs import connected_watts_strogatz_graph
@@ -109,6 +110,38 @@ class TestGeneratorsRandom(object):
         # difficult to find seed that requires few tries
         seq = random_powerlaw_tree_sequence(10, 3, seed=14, tries=1)
         G = random_powerlaw_tree(10, 3, seed=14, tries=1)
+
+    def test_dual_barabasi_albert(self, m1=1, m2=4, p=0.5):
+        """
+        Tests that the dual BA random graph generated behaves consistently.
+
+        Tests the exceptions are raised as expected.
+
+        The graphs generation are repeated several times to prevent lucky shots
+
+        """
+        seed = 42
+        repeats = 2
+
+        while repeats:
+            repeats -= 1
+
+            # This should be BA with m = m1
+            BA1 = barabasi_albert_graph(100, m1, seed)
+            DBA1 = dual_barabasi_albert_graph(100, m1, m2, 1, seed)
+            assert_equal(BA1.size(), DBA1.size())
+
+            # This should be BA with m = m2
+            BA2 = barabasi_albert_graph(100, m2, seed)
+            DBA2 = dual_barabasi_albert_graph(100, m1, m2, 0, seed)
+            assert_equal(BA2.size(), DBA2.size())
+
+        # Testing exceptions
+        dbag = dual_barabasi_albert_graph
+        assert_raises(NetworkXError, dbag, m1, m1, m2, 0)
+        assert_raises(NetworkXError, dbag, m2, m1, m2, 0)
+        assert_raises(NetworkXError, dbag, 100, m1, m2, -0.5)
+        assert_raises(NetworkXError, dbag, 100, m1, m2, 1.5)
 
     def test_extended_barabasi_albert(self, m=2):
         """
