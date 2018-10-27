@@ -300,10 +300,19 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        Graph.__init__(self)
+        self.graph_attr_dict_factory = self.graph_attr_dict_factory
+        self.node_dict_factory = self.node_dict_factory
+        self.node_attr_dict_factory = self.node_attr_dict_factory
+        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
+        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
+        self.edge_attr_dict_factory = self.edge_attr_dict_factory
+
+        self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
+        self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
+        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
 
@@ -413,7 +422,7 @@ class DiGraph(Graph):
             self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
             attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
             attr_dict.update(attr)
-        else:
+        else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
@@ -461,22 +470,30 @@ class DiGraph(Graph):
 
         """
         for n in nodes_for_adding:
+            # keep all this inside try/except because
+            # CPython throws TypeError on n not in self._succ,
+            # while pre-2.7.5 ironpython throws on self._succ[n]
             try:
-                hash(n)
+                if n not in self._succ:
+                    self._succ[n] = self.adjlist_inner_dict_factory()
+                    self._pred[n] = self.adjlist_inner_dict_factory()
+                    attr_dict = self._node[n] = self.node_attr_dict_factory()
+                    attr_dict.update(attr)
+                else:
+                    self._node[n].update(attr)
             except TypeError:
-                n, ndict = n
-                new_attr_dict = attr.copy()
-                new_attr_dict.update(ndict)
-            else:
-                new_attr_dict = attr
-
-            if n not in self._node:
-                self._succ[n] = self.adjlist_inner_dict_factory()
-                self._pred[n] = self.adjlist_inner_dict_factory()
-                attr_dict = self._node[n] = self.node_attr_dict_factory()
-                attr_dict.update(new_attr_dict)
-            else:
-                self._node[n].update(new_attr_dict)
+                nn, ndict = n
+                if nn not in self._succ:
+                    self._succ[nn] = self.adjlist_inner_dict_factory()
+                    self._pred[nn] = self.adjlist_inner_dict_factory()
+                    newdict = attr.copy()
+                    newdict.update(ndict)
+                    attr_dict = self._node[nn] = self.node_attr_dict_factory()
+                    attr_dict.update(newdict)
+                else:
+                    olddict = self._node[nn]
+                    olddict.update(attr)
+                    olddict.update(ndict)
 
     def remove_node(self, n):
         """Remove node n.
@@ -618,11 +635,10 @@ class DiGraph(Graph):
             self._pred[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
         # add the edge
-        if v not in self._succ[u]:
-            attr_dict = self._succ[u][v] = self._pred[v][u] = self.edge_attr_dict_factory()
-            attr_dict.update(attr)
-        else:
-            self._succ[u][v].update(attr)
+        datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+        datadict.update(attr)
+        self._succ[u][v] = datadict
+        self._pred[v][u] = datadict
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -672,9 +688,6 @@ class DiGraph(Graph):
             else:
                 raise NetworkXError(
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
-            new_attr_dict = attr.copy()
-            new_attr_dict.update(dd)
-            # add nodes
             if u not in self._succ:
                 self._succ[u] = self.adjlist_inner_dict_factory()
                 self._pred[u] = self.adjlist_inner_dict_factory()
@@ -683,12 +696,11 @@ class DiGraph(Graph):
                 self._succ[v] = self.adjlist_inner_dict_factory()
                 self._pred[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
-            # add the edge
-            if v not in self._succ[u]:
-                attr_dict = self._succ[u][v] = self._pred[v][u] = self.edge_attr_dict_factory()
-                attr_dict.update(new_attr_dict)
-            else:
-                self._succ[u][v].update(new_attr_dict)
+            datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+            datadict.update(attr)
+            datadict.update(dd)
+            self._succ[u][v] = datadict
+            self._pred[v][u] = datadict
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.

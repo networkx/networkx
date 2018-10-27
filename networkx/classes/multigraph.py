@@ -263,7 +263,11 @@ class MultiGraph(Graph):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
+    # node_dict_factory = dict    # already assigned in Graph
+    # adjlist_outer_dict_factory = dict
+    # adjlist_inner_dict_factory = dict
     edge_key_dict_factory = dict
+    # edge_attr_dict_factory = dict
 
     def to_directed_class(self):
         """Returns the class to use for empty directed copies.
@@ -441,18 +445,19 @@ class MultiGraph(Graph):
             self._node[v] = self.node_attr_dict_factory()
         if key is None:
             key = self.new_edge_key(u, v)
-        # add keyed edge
-        if v not in self._adj[u]:
-            key_dict = self._adj[u][v] = self._adj[v][u] = self.edge_key_dict_factory()
-            attr_dict = key_dict[key] = self.edge_attr_dict_factory()
-            attr_dict.update(attr)
+        if v in self._adj[u]:
+            keydict = self._adj[u][v]
+            datadict = keydict.get(key, self.edge_attr_dict_factory())
+            datadict.update(attr)
+            keydict[key] = datadict
         else:
-            key_dict = self._adj[u][v]
-            if key not in key_dict:
-                attr_dict = key_dict[key] = self.edge_attr_dict_factory()
-                attr_dict.update(attr)
-            else:
-                key_dict[key].update(attr)
+            # selfloops work this way without special treatment
+            datadict = self.edge_attr_dict_factory()
+            datadict.update(attr)
+            keydict = self.edge_key_dict_factory()
+            keydict[key] = datadict
+            self._adj[u][v] = keydict
+            self._adj[v][u] = keydict
         return key
 
     def add_edges_from(self, ebunch_to_add, **attr):
@@ -506,49 +511,33 @@ class MultiGraph(Graph):
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
         """
-        key_list = []
+        keylist = []
         for e in ebunch_to_add:
-            new_attr_dict = attr.copy()
             ne = len(e)
             if ne == 4:
                 u, v, key, dd = e
-                new_attr_dict.update(dd)
             elif ne == 3:
                 u, v, dd = e
-                try:
-                    new_attr_dict.update(dd)
-                except (TypeError, ValueError):  # in 3-tuple 3rd item may be key
-                    key = dd
-                else:
-                    key = self.new_edge_key(u, v)
+                key = None
             elif ne == 2:
                 u, v = e
-                key = self.new_edge_key(u, v)
+                dd = {}
+                key = None
             else:
                 msg = "Edge tuple {} must be a 2-tuple, 3-tuple or 4-tuple."
                 raise NetworkXError(msg.format(e))
-
-            # add nodes
-            if u not in self._adj:
-                self._adj[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = self.node_attr_dict_factory()
-            if v not in self._adj:
-                self._adj[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = self.node_attr_dict_factory()
-            # add keyed edge
-            if v not in self._adj[u]:
-                key_dict = self._adj[u][v] = self._adj[v][u] = self.edge_key_dict_factory()
-                attr_dict = key_dict[key] = self.edge_attr_dict_factory()
-                attr_dict.update(new_attr_dict)
-            else:
-                key_dict = self._adj[u][v]
-                if key not in key_dict:
-                    attr_dict = key_dict[key] = self.edge_attr_dict_factory()
-                    attr_dict.update(new_attr_dict)
-                else:
-                    key_dict[key].update(new_attr_dict)
-            key_list.append(key)
-        return key_list
+            ddd = {}
+            ddd.update(attr)
+            try:
+                ddd.update(dd)
+            except:
+                if ne != 3:
+                    raise
+                key = dd
+            key = self.add_edge(u, v, key)
+            self[u][v][key].update(ddd)
+            keylist.append(key)
+        return keylist
 
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.
