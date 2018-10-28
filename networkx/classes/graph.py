@@ -204,12 +204,17 @@ class Graph(object):
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
     holding the factory for that dict-like structure. The variable names are
-    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
-    and edge_attr_dict_factory.
+    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
+    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
         attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    node_attr_dict_factory: function, (default: dict)
+        Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object
 
     adjlist_outer_dict_factory : function, (default: dict)
@@ -224,7 +229,12 @@ class Graph(object):
 
     edge_attr_dict_factory : function, (default: dict)
         Factory function to be used to create the edge attribute
-        dict which holds attrbute values keyed by attribute name.
+        dict which holds attribute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    graph_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
     Typically, if your extension doesn't impact the data structure all
@@ -266,9 +276,11 @@ class Graph(object):
     a dictionary-like object.
     """
     node_dict_factory = dict
+    node_attr_dict_factory = dict
     adjlist_outer_dict_factory = dict
     adjlist_inner_dict_factory = dict
     edge_attr_dict_factory = dict
+    graph_attr_dict_factory = dict
 
     def to_directed_class(self):
         """Returns the class to use for empty directed copies.
@@ -319,13 +331,15 @@ class Graph(object):
         {'day': 'Friday'}
 
         """
-        self.node_dict_factory = ndf = self.node_dict_factory
+        self.graph_attr_dict_factory = self.graph_attr_dict_factory
+        self.node_dict_factory = self.node_dict_factory
+        self.node_attr_dict_factory = self.node_attr_dict_factory
         self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.graph = {}   # dictionary for graph attributes
-        self._node = ndf()  # empty node attribute dict
+        self.graph = self.graph_attr_dict_factory()   # dictionary for graph attributes
+        self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # attempt to load graph with data
         if incoming_graph_data is not None:
@@ -498,7 +512,8 @@ class Graph(object):
         """
         if node_for_adding not in self._node:
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            self._node[node_for_adding] = attr
+            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
@@ -553,7 +568,8 @@ class Graph(object):
             try:
                 if n not in self._node:
                     self._adj[n] = self.adjlist_inner_dict_factory()
-                    self._node[n] = attr.copy()
+                    attr_dict = self._node[n] = self.node_attr_dict_factory()
+                    attr_dict.update(attr)
                 else:
                     self._node[n].update(attr)
             except TypeError:
@@ -562,7 +578,8 @@ class Graph(object):
                     self._adj[nn] = self.adjlist_inner_dict_factory()
                     newdict = attr.copy()
                     newdict.update(ndict)
-                    self._node[nn] = newdict
+                    attr_dict = self._node[nn] = self.node_attr_dict_factory()
+                    attr_dict.update(newdict)
                 else:
                     olddict = self._node[nn]
                     olddict.update(attr)
@@ -892,10 +909,10 @@ class Graph(object):
         # add nodes
         if u not in self._node:
             self._adj[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = {}
+            self._node[u] = self.node_attr_dict_factory()
         if v not in self._node:
             self._adj[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = {}
+            self._node[v] = self.node_attr_dict_factory()
         # add the edge
         datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
         datadict.update(attr)
@@ -952,10 +969,10 @@ class Graph(object):
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
             if u not in self._node:
                 self._adj[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = {}
+                self._node[u] = self.node_attr_dict_factory()
             if v not in self._node:
                 self._adj[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = {}
+                self._node[v] = self.node_attr_dict_factory()
             datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
             datadict.update(attr)
             datadict.update(dd)
