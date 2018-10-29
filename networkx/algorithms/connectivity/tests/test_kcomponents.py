@@ -77,7 +77,7 @@ def torrents_and_ferraro_graph():
 
 @raises(nx.NetworkXNotImplemented)
 def test_directed():
-    G = nx.gnp_random_graph(10, 0.2, directed=True)
+    G = nx.gnp_random_graph(10, 0.2, directed=True, seed=42)
     nx.k_components(G)
 
 
@@ -109,20 +109,20 @@ def test_torrents_and_ferraro_graph():
 
 
 def test_random_gnp():
-    G = nx.gnp_random_graph(50, 0.2)
+    G = nx.gnp_random_graph(50, 0.2, seed=42)
     result = nx.k_components(G)
     _check_connectivity(G, result)
 
 
 def test_shell():
     constructor = [(20, 80, 0.8), (80, 180, 0.6)]
-    G = nx.random_shell_graph(constructor)
+    G = nx.random_shell_graph(constructor, seed=42)
     result = nx.k_components(G)
     _check_connectivity(G, result)
 
 
 def test_configuration():
-    deg_seq = nx.random_powerlaw_tree_sequence(100, tries=5000)
+    deg_seq = nx.random_powerlaw_tree_sequence(100, tries=5, seed=72)
     G = nx.Graph(nx.configuration_model(deg_seq))
     G.remove_edges_from(nx.selfloop_edges(G))
     result = nx.k_components(G)
