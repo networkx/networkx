@@ -440,20 +440,116 @@ class MultiDiGraph(MultiGraph, DiGraph):
             self._node[v] = self.node_attr_dict_factory()
         if key is None:
             key = self.new_edge_key(u, v)
-        if v in self._succ[u]:
-            keydict = self._adj[u][v]
-            datadict = keydict.get(key, self.edge_key_dict_factory())
-            datadict.update(attr)
-            keydict[key] = datadict
+        # add keyed edge
+        if v not in self._succ[u]:
+            key_dict = self._succ[u][v] = self._pred[v][u] = self.edge_key_dict_factory()
+            attr_dict = key_dict[key] = self.edge_attr_dict_factory()
+            attr_dict.update(attr)
         else:
-            # selfloops work this way without special treatment
-            datadict = self.edge_attr_dict_factory()
-            datadict.update(attr)
-            keydict = self.edge_key_dict_factory()
-            keydict[key] = datadict
-            self._succ[u][v] = keydict
-            self._pred[v][u] = keydict
+            key_dict = self._succ[u][v]
+            if key not in key_dict:
+                attr_dict = key_dict[key] = self.edge_attr_dict_factory()
+                attr_dict.update(attr)
+            else:
+                key_dict[key].update(attr)
         return key
+
+    def add_edges_from(self, ebunch_to_add, **attr):
+        """Add all the edges in ebunch_to_add.
+
+        Parameters
+        ----------
+        ebunch_to_add : container of edges
+            Each edge given in the container will be added to the
+            graph. The edges can be:
+
+                - 2-tuples (u, v) or
+                - 3-tuples (u, v, d) for an edge data dict d, or
+                - 3-tuples (u, v, k) for not iterable key k, or
+                - 4-tuples (u, v, k, d) for an edge with data and key k
+
+        attr : keyword arguments, optional
+            Edge data (or labels or objects) can be assigned using
+            keyword arguments.
+
+        Returns
+        -------
+        A list of edge keys assigned to the edges in `ebunch`.
+
+        See Also
+        --------
+        add_edge : add a single edge
+        add_weighted_edges_from : convenient way to add weighted edges
+
+        Notes
+        -----
+        Adding the same edge twice has no effect but any edge data
+        will be updated when each duplicate edge is added.
+
+        Edge attributes specified in an ebunch take precedence over
+        attributes specified via keyword arguments.
+
+        Default keys are generated using the method ``new_edge_key()``.
+        This method can be overridden by subclassing the base class and
+        providing a custom ``new_edge_key()`` method.
+
+        Examples
+        --------
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_edges_from([(0, 1), (1, 2)]) # using a list of edge tuples
+        >>> e = zip(range(0, 3), range(1, 4))
+        >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
+
+        Associate data to edges
+
+        >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
+        >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
+        """
+        key_list = []
+        for e in ebunch_to_add:
+            new_attr_dict = attr.copy()
+            ne = len(e)
+            if ne == 4:
+                u, v, key, dd = e
+                new_attr_dict.update(dd)
+            elif ne == 3:
+                u, v, dd = e
+                try:
+                    new_attr_dict.update(dd)
+                except (TypeError, ValueError):  # in 3-tuple 3rd item may be key
+                    key = dd
+                else:
+                    key = self.new_edge_key(u, v)
+            elif ne == 2:
+                u, v = e
+                key = self.new_edge_key(u, v)
+            else:
+                msg = "Edge tuple {} must be a 2-tuple, 3-tuple or 4-tuple."
+                raise NetworkXError(msg.format(e))
+
+            # add nodes
+            if u not in self._succ:
+                self._succ[u] = self.adjlist_inner_dict_factory()
+                self._pred[u] = self.adjlist_inner_dict_factory()
+                self._node[u] = self.node_attr_dict_factory()
+            if v not in self._succ:
+                self._succ[v] = self.adjlist_inner_dict_factory()
+                self._pred[v] = self.adjlist_inner_dict_factory()
+                self._node[v] = self.node_attr_dict_factory()
+            # add keyed edge
+            if v not in self._succ[u]:
+                key_dict = self._succ[u][v] = self._pred[v][u] = self.edge_key_dict_factory()
+                attr_dict = key_dict[key] = self.edge_attr_dict_factory()
+                attr_dict.update(new_attr_dict)
+            else:
+                key_dict = self._succ[u][v]
+                if key not in key_dict:
+                    attr_dict = key_dict[key] = self.edge_attr_dict_factory()
+                    attr_dict.update(new_attr_dict)
+                else:
+                    key_dict[key].update(new_attr_dict)
+            key_list.append(key)
+        return key_list
 
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.
