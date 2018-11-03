@@ -94,7 +94,7 @@ The following optional packages provide additional functionality.
   of graphs and many numerical scientific tools.
 - `pandas <http://pandas.pydata.org/>`_ (>= 0.23.3) provides a DataFrame, which
   is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 2.2.2) provides flexible drawing of
+- `Matplotlib <http://matplotlib.org/>`_ (>= 3.0.0) provides flexible drawing of
   graphs.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ (>= 1.5) and
   `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.4) provide graph drawing
