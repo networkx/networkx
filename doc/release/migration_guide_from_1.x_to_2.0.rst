@@ -81,9 +81,9 @@ views.
     >>> H = nx.Graph()
     >>> H.add_nodes_from([1, 'networkx', '2.0'])
     >>> G.nodes & H.nodes  # finding common nodes in 2 graphs
-    set([1])
+    {1}
     >>> G.nodes | H.nodes  # union of nodes in 2 graphs
-    set([0, 1, 2, 3, 4, 'networkx', '2.0'])
+    {0, 1, 2, 3, 4, 'networkx', '2.0'}
 
 Similarly, ``G.edges`` now returns an EdgeView instead of a list of edges and it
 also supports set operations.

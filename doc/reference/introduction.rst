@@ -317,7 +317,7 @@ edges $(A, B)$ and $(B, C)$.
    >>> G.add_edge('A', 'B')
    >>> G.add_edge('B', 'C')
    >>> print(G.adj)
-   {'A': {'B': {}}, 'C': {'B': {}}, 'B': {'A': {}, 'C': {}}}
+   {'A': {'B': {}}, 'B': {'A': {}, 'C': {}}, 'C': {'B': {}}}
 
 The data structure gets morphed slightly for each base graph class.
 For DiGraph two dict-of-dicts-of-dicts structures are provided, one
