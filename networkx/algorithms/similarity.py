@@ -35,7 +35,8 @@ __all__ = [
     'optimal_edit_paths',
     'optimize_graph_edit_distance',
     'optimize_edit_paths',
-    'simrank_similarity'
+    'simrank_similarity',
+    'simrank_similarity_numpy',
 ]
 
 
@@ -1077,7 +1078,7 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
         >>> from numpy import array
         >>> G = nx.cycle_graph(4)
         >>> sim = nx.simrank_similarity(G)
-        >>> array([[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)])
+        >>> sim_array = array([[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)])
 
     References
     ----------
@@ -1098,19 +1099,117 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
     #                                            in_neighbors_v))
     #
     prevsim = None
+
+    # build up our similarity adjacency dictionary output
     newsim = {u: {v: 1 if u == v else 0 for v in G} for u in G}
+
     # These functions compute the update to the similarity value of the nodes
     # `u` and `v` with respect to the previous similarity values.
     avg_sim = lambda s: sum(newsim[w][x] for (w, x) in s) / len(s)
     sim = lambda u, v: importance_factor * avg_sim(list(product(G[u], G[v])))
-    for i in range(max_iterations):
+
+    for _ in range(max_iterations):
         if prevsim and _is_close(prevsim, newsim, tolerance):
             break
         prevsim = newsim
         newsim = {u: {v: sim(u, v) if u is not v else 1
                       for v in newsim[u]} for u in newsim}
+
     if source is not None and target is not None:
         return newsim[source][target]
+    if source is not None:
+        return newsim[source]
+    return newsim
+
+
+def simrank_similarity_numpy(G, source=None, target=None, importance_factor=0.9,
+                             max_iterations=100, tolerance=1e-4):
+    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
+
+    The SimRank algorithm for determining node similarity is defined in
+    [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+
+    source : node
+        If this is specified, the returned dictionary maps each node
+        ``v`` in the graph to the similarity between ``source`` and
+        ``v``.
+
+    target : node
+        If both ``source`` and ``target`` are specified, the similarity
+        value between ``source`` and ``target`` is returned. If
+        ``target`` is specified but ``source`` is not, this argument is
+        ignored.
+
+    importance_factor : float
+        The relative importance of indirect neighbors with respect to
+        direct neighbors.
+
+    max_iterations : integer
+        Maximum number of iterations.
+
+    tolerance : float
+        Error tolerance used to check convergence. When an iteration of
+        the algorithm finds that no similarity value changes more than
+        this amount, the algorithm halts.
+
+    Returns
+    -------
+    similarity : dictionary or float
+        If ``source`` and ``target`` are both ``None``, this returns a
+        dictionary of dictionaries, where keys are node pairs and value
+        are similarity of the pair of nodes.
+
+        If ``source`` is not ``None`` but ``target`` is, this returns a
+        dictionary mapping node to the similarity of ``source`` and that
+        node.
+
+        If neither ``source`` nor ``target`` is ``None``, this returns
+        the similarity value for the given pair of nodes.
+
+    Examples
+    --------
+        >>> import networkx as nx
+        >>> from numpy import array
+        >>> G = nx.cycle_graph(4)
+        >>> sim = nx.simrank_similarity_numpy(G)
+
+    References
+    ----------
+    .. [1] G. Jeh and J. Widom.
+           "SimRank: a measure of structural-context similarity",
+           In KDD'02: Proceedings of the Eighth ACM SIGKDD
+           International Conference on Knowledge Discovery and Data Mining,
+           pp. 538--543. ACM Press, 2002.
+    """
+    # This algorithm follows roughly
+    #
+    #     S = max{C * (A.T * S * A), I}
+    #
+    # where C is the importance factor, A is the column normalized
+    # adjacency matrix, and I is the identity matrix.
+    import numpy as np
+    adjacency_matrix = nx.to_numpy_array(G)
+
+    # column-normalize the ``adjacency_matrix``
+    adjacency_matrix /= adjacency_matrix.sum(axis=0)
+
+    newsim = np.eye(adjacency_matrix.shape[0], dtype=np.float64)
+    for _ in range(max_iterations):
+        prevsim = np.copy(newsim)
+        newsim = importance_factor * np.matmul(
+            np.matmul(adjacency_matrix.T, prevsim), adjacency_matrix)
+        np.fill_diagonal(newsim, 1.0)
+
+        if np.allclose(prevsim, newsim, atol=tolerance):
+            break
+
+    if source is not None and target is not None:
+        return newsim[source, target]
     if source is not None:
         return newsim[source]
     return newsim
