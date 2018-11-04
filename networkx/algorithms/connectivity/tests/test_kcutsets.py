@@ -141,18 +141,18 @@ def test_example_1():
 
 
 def test_random_gnp():
-    G = nx.gnp_random_graph(100, 0.1)
+    G = nx.gnp_random_graph(100, 0.1, seed=42)
     _check_separating_sets(G)
 
 
 def test_shell():
     constructor = [(20, 80, 0.8), (80, 180, 0.6)]
-    G = nx.random_shell_graph(constructor)
+    G = nx.random_shell_graph(constructor, seed=42)
     _check_separating_sets(G)
 
 
 def test_configuration():
-    deg_seq = nx.random_powerlaw_tree_sequence(100, tries=5000)
+    deg_seq = nx.random_powerlaw_tree_sequence(100, tries=5, seed=72)
     G = nx.Graph(nx.configuration_model(deg_seq))
     G.remove_edges_from(nx.selfloop_edges(G))
     _check_separating_sets(G)
@@ -166,7 +166,7 @@ def test_karate():
 def _generate_no_biconnected(max_attempts=50):
     attempts = 0
     while True:
-        G = nx.fast_gnp_random_graph(100, 0.0575)
+        G = nx.fast_gnp_random_graph(100, 0.0575, seed=42)
         if nx.is_connected(G) and not nx.is_biconnected(G):
             attempts = 0
             yield G
@@ -203,7 +203,7 @@ def test_grid_2d_graph():
 
 
 def test_disconnected_graph():
-    G = nx.fast_gnp_random_graph(100, 0.01)
+    G = nx.fast_gnp_random_graph(100, 0.01, seed=42)
     cuts = nx.all_node_cuts(G)
     assert_raises(nx.NetworkXError, next, cuts)
 

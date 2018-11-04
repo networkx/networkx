@@ -23,7 +23,7 @@ msg = "Assertion failed in function: {0}"
 def _generate_no_biconnected(max_attempts=50):
     attempts = 0
     while True:
-        G = nx.fast_gnp_random_graph(100, 0.0575)
+        G = nx.fast_gnp_random_graph(100, 0.0575, seed=42)
         if nx.is_connected(G) and not nx.is_biconnected(G):
             attempts = 0
             yield G
@@ -316,14 +316,14 @@ class TestAllPairsNodeConnectivity:
         self.directed_path = nx.path_graph(7, create_using=nx.DiGraph())
         self.cycle = nx.cycle_graph(7)
         self.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
-        self.gnp = nx.gnp_random_graph(30, 0.1)
-        self.directed_gnp = nx.gnp_random_graph(30, 0.1, directed=True)
+        self.gnp = nx.gnp_random_graph(30, 0.1, seed=42)
+        self.directed_gnp = nx.gnp_random_graph(30, 0.1, directed=True, seed=42)
         self.K20 = nx.complete_graph(20)
         self.K10 = nx.complete_graph(10)
         self.K5 = nx.complete_graph(5)
         self.G_list = [self.path, self.directed_path, self.cycle,
-                       self.directed_cycle, self.gnp, self.directed_gnp, self.K10,
-                       self.K5, self.K20]
+                       self.directed_cycle, self.gnp, self.directed_gnp,
+                       self.K10, self.K5, self.K20]
 
     def test_cycles(self):
         K_undir = nx.all_pairs_node_connectivity(self.cycle)
