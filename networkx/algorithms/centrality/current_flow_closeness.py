@@ -1,17 +1,22 @@
-"""Current-flow closeness centrality measures.
-"""
-#    Copyright (C) 2010-2013 by
+#    Copyright (C) 2010-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Author: Aric Hagberg (hagberg@lanl.gov)
+"""Current-flow closeness centrality measures."""
 import networkx as nx
+
+from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 from networkx.algorithms.centrality.flow_matrix import *
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['current_flow_closeness_centrality', 'information_centrality']
 
-def current_flow_closeness_centrality(G, weight='weight',
+
+@not_implemented_for('directed')
+def current_flow_closeness_centrality(G, weight=None,
                                       dtype=float, solver='lu'):
     """Compute current-flow closeness centrality for nodes.
 
@@ -22,9 +27,13 @@ def current_flow_closeness_centrality(G, weight='weight',
     Parameters
     ----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
-    dtype: data type (float)
+    weight : None or string, optional (default=None)
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
+
+    dtype: data type (default=float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
@@ -54,21 +63,15 @@ def current_flow_closeness_centrality(G, weight='weight',
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
 
     .. [2] Karen Stephenson and Marvin Zelen:
        Rethinking centrality: Methods and examples.
        Social Networks 11(1):1-37, 1989.
-       http://dx.doi.org/10.1016/0378-8733(89)90016-6
+       https://doi.org/10.1016/0378-8733(89)90016-6
     """
-    from networkx.utils import reverse_cuthill_mckee_ordering
-
     import numpy as np
     import scipy
-
-    if G.is_directed():
-        raise nx.NetworkXError(
-            "current_flow_closeness_centrality() not defined for digraphs.")
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {"full": FullInverseLaplacian,
@@ -87,11 +90,12 @@ def current_flow_closeness_centrality(G, weight='weight',
     for v in H:
         col = C2.get_row(v)
         for w in H:
-            betweenness[v] += col[v]-2*col[w]
+            betweenness[v] += col[v] - 2 * col[w]
             betweenness[w] += col[v]
     for v in H:
         betweenness[v] = 1.0 / (betweenness[v])
     return dict((ordering[k], float(v)) for k, v in betweenness.items())
+
 
 information_centrality = current_flow_closeness_centrality
 

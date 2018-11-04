@@ -4,7 +4,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from itertools import chain, count
+from itertools import chain
 import networkx as nx
 __author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['adjacency_data', 'adjacency_graph']
@@ -74,8 +74,8 @@ def adjacency_data(G, attrs=_attrs):
     data['graph'] = list(G.graph.items())
     data['nodes'] = []
     data['adjacency'] = []
-    for n, nbrdict in G.adjacency_iter():
-        data['nodes'].append(dict(chain(G.node[n].items(), [(id_, n)])))
+    for n, nbrdict in G.adjacency():
+        data['nodes'].append(dict(chain(G.nodes[n].items(), [(id_, n)])))
         adj = []
         if multigraph:
             for nbr, keys in nbrdict.items():
@@ -145,15 +145,18 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
         node_data = d.copy()
         node = node_data.pop(id_)
         mapping.append(node)
-        graph.add_node(node, attr_dict=node_data)
+        graph.add_node(node)
+        graph.nodes[node].update(node_data)
     for i, d in enumerate(data['adjacency']):
         source = mapping[i]
         for tdata in d:
             target_data = tdata.copy()
             target = target_data.pop(id_)
             if not multigraph:
-                graph.add_edge(source, target, attr_dict=tdata)
+                graph.add_edge(source, target)
+                graph[source][target].update(tdata)
             else:
                 ky = target_data.pop(key, None)
-                graph.add_edge(source, target, key=ky, attr_dict=tdata)
+                graph.add_edge(source, target, key=ky)
+                graph[source][target][ky].update(tdata)
     return graph

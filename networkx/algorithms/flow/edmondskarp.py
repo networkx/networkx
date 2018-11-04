@@ -17,11 +17,12 @@ __all__ = ['edmonds_karp']
 def edmonds_karp_core(R, s, t, cutoff):
     """Implementation of the Edmonds-Karp algorithm.
     """
-    R_node = R.node
+    R_nodes = R.nodes
     R_pred = R.pred
     R_succ = R.succ
 
     inf = R.graph['inf']
+
     def augment(path):
         """Augment flow along a path from s to t.
         """
@@ -135,7 +136,7 @@ def edmonds_karp(G, s, t, capacity='capacity', residual=None, value_only=False,
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
-    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
+    This algorithm has a running time of $O(n m^2)$ for $n$ nodes and $m$
     edges.
 
 

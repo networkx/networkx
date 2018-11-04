@@ -13,81 +13,71 @@ NetworkX does not have a custom bipartite graph class but the Graph()
 or DiGraph() classes can be used to represent bipartite graphs. However,
 you have to keep track of which set each node belongs to, and make
 sure that there is no edge between nodes of the same set. The convention used
-in NetworkX is to use a node attribute named "bipartite" with values 0 or 1 to
-identify the sets each node belongs to.
+in NetworkX is to use a node attribute named `bipartite` with values 0 or 1 to
+identify the sets each node belongs to. This convention is not enforced in
+the source code of bipartite functions, it's only a recommendation.
  
 For example:
 
 >>> B = nx.Graph()
->>> B.add_nodes_from([1,2,3,4], bipartite=0) # Add the node attribute "bipartite"
->>> B.add_nodes_from(['a','b','c'], bipartite=1)
->>> B.add_edges_from([(1,'a'), (1,'b'), (2,'b'), (2,'c'), (3,'c'), (4,'a')])
+>>> # Add nodes with the node attribute "bipartite"
+>>> B.add_nodes_from([1, 2, 3, 4], bipartite=0)
+>>> B.add_nodes_from(['a', 'b', 'c'], bipartite=1)
+>>> # Add edges only between nodes of opposite node sets
+>>> B.add_edges_from([(1, 'a'), (1, 'b'), (2, 'b'), (2, 'c'), (3, 'c'), (4, 'a')])
 
 Many algorithms of the bipartite module of NetworkX require, as an argument, a
 container with all the nodes that belong to one set, in addition to the bipartite
-graph `B`. If `B` is connected, you can find the node sets using a two-coloring 
+graph `B`. The functions in the bipartite package do not check that the node set
+is actually correct nor that the input graph is actually bipartite.
+If `B` is connected, you can find the two node sets using a two-coloring 
 algorithm: 
 
 >>> nx.is_connected(B)
 True
 >>> bottom_nodes, top_nodes = bipartite.sets(B)
 
-list(top_nodes)
-[1, 2, 3, 4]
-list(bottom_nodes)
-['a', 'c', 'b']
-
 However, if the input graph is not connected, there are more than one possible
-colorations. Thus, the following result is correct:
+colorations. This is the reason why we require the user to pass a container
+with all nodes of one bipartite node set as an argument to most bipartite
+functions. In the face of ambiguity, we refuse the temptation to guess and
+raise an :exc:`AmbiguousSolution <networkx.AmbiguousSolution>`
+Exception if the input graph for
+:func:`bipartite.sets <networkx.algorithms.bipartite.basic.sets>`
+is disconnected.
 
->>> B.remove_edge(2,'c')
->>> nx.is_connected(B)
-False
->>> bottom_nodes, top_nodes = bipartite.sets(B)
+Using the `bipartite` node attribute, you can easily get the two node sets:
 
-list(top_nodes)
-[1, 2, 4, 'c']
-list(bottom_nodes)
-['a', 3, 'b']
-
-Using the "bipartite" node attribute, you can easily get the two node sets:
-
->>> top_nodes = set(n for n,d in B.nodes(data=True) if d['bipartite']==0)
+>>> top_nodes = {n for n, d in B.nodes(data=True) if d['bipartite']==0}
 >>> bottom_nodes = set(B) - top_nodes
-
-list(top_nodes)
-[1, 2, 3, 4]
-list(bottom_nodes)
-['a', 'c', 'b']
 
 So you can easily use the bipartite algorithms that require, as an argument, a
 container with all nodes that belong to one node set:
 
->>> print(round(bipartite.density(B, bottom_nodes),2))
-0.42
+>>> print(round(bipartite.density(B, bottom_nodes), 2))
+0.5
 >>> G = bipartite.projected_graph(B, top_nodes)
->>> G.edges()
-[(1, 2), (1, 4)]
 
 All bipartite graph generators in NetworkX build bipartite graphs with the 
-"bipartite" node attribute. Thus, you can use the same approach:
+`bipartite` node attribute. Thus, you can use the same approach:
 
 >>> RB = bipartite.random_graph(5, 7, 0.2)
->>> RB_top = set(n for n,d in RB.nodes(data=True) if d['bipartite']==0)
+>>> RB_top = {n for n, d in RB.nodes(data=True) if d['bipartite']==0}
 >>> RB_bottom = set(RB) - RB_top
 >>> list(RB_top)
 [0, 1, 2, 3, 4]
 >>> list(RB_bottom)
 [5, 6, 7, 8, 9, 10, 11]
 
-For other bipartite graph generators see the bipartite section of
-:doc:`generators`.
+For other bipartite graph generators see
+:mod:`Generators <networkx.algorithms.bipartite.generators>`.
 
 """
 
 from networkx.algorithms.bipartite.basic import *
 from networkx.algorithms.bipartite.centrality import *
 from networkx.algorithms.bipartite.cluster import *
+from networkx.algorithms.bipartite.covering import *
 from networkx.algorithms.bipartite.edgelist import *
 from networkx.algorithms.bipartite.matching import *
 from networkx.algorithms.bipartite.matrix import *

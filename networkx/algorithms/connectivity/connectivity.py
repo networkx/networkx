@@ -10,12 +10,15 @@ from operator import itemgetter
 import networkx as nx
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms.
-from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import boykov_kolmogorov
+from networkx.algorithms.flow import dinitz
+from networkx.algorithms.flow import edmonds_karp
+from networkx.algorithms.flow import shortest_augmenting_path
 from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
 from .utils import (build_auxiliary_node_connectivity,
-    build_auxiliary_edge_connectivity)
+                    build_auxiliary_edge_connectivity)
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -199,12 +202,16 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
         kwargs['two_phase'] = True
     elif flow_func is edmonds_karp:
         kwargs['cutoff'] = cutoff
+    elif flow_func is dinitz:
+        kwargs['cutoff'] = cutoff
+    elif flow_func is boykov_kolmogorov:
+        kwargs['cutoff'] = cutoff
 
     return nx.maximum_flow_value(H, '%sB' % mapping[s], '%sA' % mapping[t], **kwargs)
 
 
 def node_connectivity(G, s=None, t=None, flow_func=None):
-    r"""Returns node connectivity for a graph or digraph G.
+    """Returns node connectivity for a graph or digraph G.
 
     Node connectivity is equal to the minimum number of nodes that
     must be removed to disconnect G or render it trivial. If source
@@ -271,8 +278,8 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     Notes
     -----
     This is a flow based implementation of node connectivity. The
-    algorithm works by solving `O((n-\delta-1+\delta(\delta-1)/2))`
-    maximum flow problems on an auxiliary digraph. Where `\delta`
+    algorithm works by solving $O((n-\delta-1+\delta(\delta-1)/2))$
+    maximum flow problems on an auxiliary digraph. Where $\delta$
     is the minimum degree of G. For details about the auxiliary
     digraph and the computation of local node connectivity see
     :meth:`local_node_connectivity`. This implementation is based
@@ -311,14 +318,15 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         iter_func = itertools.permutations
         # It is necessary to consider both predecessors
         # and successors for directed graphs
+
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
         if not nx.is_connected(G):
             return 0
         iter_func = itertools.combinations
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
 
     # Reuse the auxiliary digraph and the residual network
     H = build_auxiliary_node_connectivity(G)
@@ -326,9 +334,8 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     # Pick a node with minimum degree
-    v, minimum_degree = min(G.degree().items(), key=itemgetter(1))
     # Node connectivity is bounded by degree.
-    K = minimum_degree
+    v, K = min(G.degree(), key=itemgetter(1))
     # compute local node connectivity with all its non-neighbors nodes
     for w in set(G) - set(neighbors(v)) - set([v]):
         kwargs['cutoff'] = K
@@ -406,7 +413,7 @@ def average_node_connectivity(G, flow_func=None):
         num += local_node_connectivity(G, u, v, **kwargs)
         den += 1
 
-    if den == 0: # Null Graph
+    if den == 0:  # Null Graph
         return 0
     return num / den
 
@@ -478,7 +485,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
-def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
+def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None,
                             residual=None, cutoff=None):
     r"""Returns local edge connectivity for nodes s and t in G.
 
@@ -633,10 +640,15 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
         kwargs['two_phase'] = True
     elif flow_func is edmonds_karp:
         kwargs['cutoff'] = cutoff
+    elif flow_func is dinitz:
+        kwargs['cutoff'] = cutoff
+    elif flow_func is boykov_kolmogorov:
+        kwargs['cutoff'] = cutoff
 
-    return nx.maximum_flow_value(H, u, v, **kwargs)
+    return nx.maximum_flow_value(H, s, t, **kwargs)
 
-def edge_connectivity(G, s=None, t=None, flow_func=None):
+
+def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     r"""Returns the edge connectivity of the graph or digraph G.
 
     The edge connectivity is equal to the minimum number of edges that
@@ -665,6 +677,13 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
         (:meth:`edmonds_karp`) is used. See below for details. The
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
+
+    cutoff : integer, float
+        If specified, the maximum flow algorithm will terminate when the
+        flow value reaches or exceeds the cutoff. This is only for the
+        algorithms that support the cutoff parameter: :meth:`edmonds_karp`
+        and :meth:`shortest_augmenting_path`. Other algorithms will ignore
+        this parameter. Default value: None.
 
     Returns
     -------
@@ -722,6 +741,8 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     :meth:`edmonds_karp`
     :meth:`preflow_push`
     :meth:`shortest_augmenting_path`
+    :meth:`k_edge_components`
+    :meth:`k_edge_subgraphs`
 
     References
     ----------
@@ -738,7 +759,8 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             raise nx.NetworkXError('node %s not in graph' % s)
         if t not in G:
             raise nx.NetworkXError('node %s not in graph' % t)
-        return local_edge_connectivity(G, s, t, flow_func=flow_func)
+        return local_edge_connectivity(G, s, t, flow_func=flow_func,
+                                       cutoff=cutoff)
 
     # Global edge connectivity
     # reuse auxiliary digraph and residual network
@@ -752,25 +774,33 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             return 0
 
         # initial value for \lambda is minimum degree
-        L = min(G.degree().values())
-        nodes = G.nodes()
+        L = min(d for n, d in G.degree())
+        nodes = list(G)
         n = len(nodes)
+
+        if cutoff is not None:
+            L = min(cutoff, L)
+
         for i in range(n):
             kwargs['cutoff'] = L
             try:
-                L = min(L, local_edge_connectivity(G, nodes[i], nodes[i+1],
+                L = min(L, local_edge_connectivity(G, nodes[i], nodes[i + 1],
                                                    **kwargs))
-            except IndexError: # last node!
+            except IndexError:  # last node!
                 L = min(L, local_edge_connectivity(G, nodes[i], nodes[0],
                                                    **kwargs))
         return L
-    else: # undirected
+    else:  # undirected
         # Algorithm 6 in [1]
         if not nx.is_connected(G):
             return 0
 
         # initial value for \lambda is minimum degree
-        L = min(G.degree().values())
+        L = min(d for n, d in G.degree())
+
+        if cutoff is not None:
+            L = min(cutoff, L)
+
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:

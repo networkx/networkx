@@ -1,11 +1,14 @@
+#    Copyright (C) 2014-2018 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: ysitu (ysitu@users.noreply.github.com)
 """
 Dominance algorithms.
 """
-
-__author__ = 'ysitu <ysitu@users.noreply.github.com>'
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
 
 from functools import reduce
 import networkx as nx
@@ -30,19 +33,19 @@ def immediate_dominators(G, start):
     -------
     idom : dict keyed by nodes
         A dict containing the immediate dominators of each node reachable from
-        ``start``.
+        `start`.
 
     Raises
     ------
     NetworkXNotImplemented
-        If ``G`` is undirected.
+        If `G` is undirected.
 
     NetworkXError
-        If ``start`` is not in ``G``.
+        If `start` is not in `G`.
 
     Notes
     -----
-    Except for ``start``, the immediate dominators are the parents of their
+    Except for `start`, the immediate dominators are the parents of their
     corresponding nodes in the dominator tree.
 
     Examples
@@ -102,15 +105,15 @@ def dominance_frontiers(G, start):
     -------
     df : dict keyed by nodes
         A dict containing the dominance frontiers of each node reachable from
-        ``start`` as lists.
+        `start` as lists.
 
     Raises
     ------
     NetworkXNotImplemented
-        If ``G`` is undirected.
+        If `G` is undirected.
 
     NetworkXError
-        If ``start`` is not in ``G``.
+        If `start` is not in `G`.
 
     Examples
     --------
@@ -126,17 +129,12 @@ def dominance_frontiers(G, start):
     """
     idom = nx.immediate_dominators(G, start)
 
-    df = {u: [] for u in idom}
-
+    df = {u: set() for u in idom}
     for u in idom:
-        if len(G.pred[u]) - int(u in G.pred[u]) >= 2:
-            p = set()
+        if len(G.pred[u]) >= 2:
             for v in G.pred[u]:
-                while v != idom[u] and v not in p:
-                    p.add(v)
-                    v = idom[v]
-            p.discard(u)
-            for v in p:
-                df[v].append(u)
-
+                if v in idom:
+                    while v != idom[u]:
+                        df[v].add(u)
+                        v = idom[v]
     return df

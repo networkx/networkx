@@ -1,7 +1,7 @@
 from itertools import combinations
 
 __author__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)',
-                        'Huston Hedinger (h@graphalchemist.com)',
+                        'Huston Hedinger (hstn@hdngr.com)',
                         'Dan Schult (dschult@colgate.edu)'])
 
 __all__ = ['dispersion']
@@ -35,8 +35,8 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     Notes
     -----
     This implementation follows Lars Backstrom and Jon Kleinberg [1]_. Typical
-    usage would be to run dispersion on the ego network :math:`G_u` if `u` were
-    specified.  Running :func:`dispersion` with neither `u` nor `v` specified
+    usage would be to run dispersion on the ego network $G_u$ if $u$ were
+    specified.  Running :func:`dispersion` with neither $u$ nor $v$ specified
     can take some time to complete.
 
     References
@@ -44,7 +44,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     .. [1] Romantic Partnerships and the Dispersion of Social Ties:
         A Network Analysis of Relationship Status on Facebook.
         Lars Backstrom, Jon Kleinberg.
-        http://arxiv.org/pdf/1310.6753v1.pdf
+        https://arxiv.org/pdf/1310.6753v1.pdf
 
     """
 
@@ -52,27 +52,27 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
         """dispersion for all nodes 'v' in a ego network G_u of node 'u'"""
         u_nbrs = set(G_u[u])
         ST = set(n for n in G_u[v] if n in u_nbrs)
-        set_uv=set([u,v])
-        #all possible ties of connections that u and b share
+        set_uv = set([u, v])
+        # all possible ties of connections that u and b share
         possib = combinations(ST, 2)
         total = 0
-        for (s,t) in possib:
-            #neighbors of s that are in G_u, not including u and v
+        for (s, t) in possib:
+            # neighbors of s that are in G_u, not including u and v
             nbrs_s = u_nbrs.intersection(G_u[s]) - set_uv
-            #s and t are not directly connected
-            if not t in nbrs_s:
-                #s and t do not share a connection
+            # s and t are not directly connected
+            if t not in nbrs_s:
+                # s and t do not share a connection
                 if nbrs_s.isdisjoint(G_u[t]):
-                    #tick for disp(u, v)
+                    # tick for disp(u, v)
                     total += 1
-        #neighbors that u and v share
+        # neighbors that u and v share
         embededness = len(ST)
 
         if normalized:
             if embededness + c != 0:
-                norm_disp = ((total + b)**alpha)/(embededness + c)
+                norm_disp = ((total + b)**alpha) / (embededness + c)
             else:
-                norm_disp = (total+b)**alpha
+                norm_disp = (total + b)**alpha
             dispersion = norm_disp
 
         else:
@@ -83,7 +83,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     if u is None:
         # v and u are not specified
         if v is None:
-            results = dict((n,{}) for n in G)
+            results = dict((n, {}) for n in G)
             for u in G:
                 for v in G[u]:
                     results[u][v] = _dispersion(G, u, v)

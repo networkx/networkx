@@ -11,16 +11,15 @@ try:
 except ImportError:  # Python3 has zip_longest
     from itertools import zip_longest
 import networkx as nx
-# from networkx.utils import is_string_like
 
-__author__ = """\n""".join([ 'Robert King <kingrobertking@gmail.com>',
-                             'Aric Hagberg <aric.hagberg@gmail.com>'])
+__author__ = """\n""".join(['Robert King <kingrobertking@gmail.com>',
+                            'Aric Hagberg <aric.hagberg@gmail.com>'])
 
 __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
            'intersection_all']
 
 
-def union_all(graphs, rename=(None,), name=None):
+def union_all(graphs, rename=(None,)):
     """Return the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
@@ -35,12 +34,14 @@ def union_all(graphs, rename=(None,), name=None):
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
 
-    name : string
-       Specify the name for the union graph@not_implemnted_for('direct
-
     Returns
     -------
     U : a graph with the same type as the first graph in list
+
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
 
     Notes
     -----
@@ -56,10 +57,12 @@ def union_all(graphs, rename=(None,), name=None):
     union
     disjoint_union_all
     """
+    if not graphs:
+        raise ValueError('cannot apply union_all to an empty list')
     graphs_names = zip_longest(graphs, rename)
     U, gname = next(graphs_names)
     for H, hname in graphs_names:
-        U = nx.union(U, H, (gname, hname), name=name)
+        U = nx.union(U, H, (gname, hname))
         gname = None
     return U
 
@@ -79,6 +82,11 @@ def disjoint_union_all(graphs):
     -------
     U : A graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     It is recommended that the graphs be either all directed or all undirected.
@@ -87,6 +95,8 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    if not graphs:
+        raise ValueError('cannot apply disjoint_union_all to an empty list')
     graphs = iter(graphs)
     U = next(graphs)
     for H in graphs:
@@ -94,7 +104,7 @@ def disjoint_union_all(graphs):
     return U
 
 
-def compose_all(graphs, name=None):
+def compose_all(graphs):
     """Return the composition of all graphs.
 
     Composition is the simple union of the node sets and edge sets.
@@ -105,12 +115,14 @@ def compose_all(graphs, name=None):
     graphs : list
        List of NetworkX graphs
 
-    name : string
-       Specify name for new graph
-
     Returns
     -------
     C : A graph with the same type as the first graph in list
+
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
 
     Notes
     -----
@@ -121,10 +133,12 @@ def compose_all(graphs, name=None):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    if not graphs:
+        raise ValueError('cannot apply compose_all to an empty list')
     graphs = iter(graphs)
     C = next(graphs)
     for H in graphs:
-        C = nx.compose(C, H, name=name)
+        C = nx.compose(C, H)
     return C
 
 
@@ -136,18 +150,25 @@ def intersection_all(graphs):
 
     Parameters
     ----------
-    graphs_list : list
+    graphs : list
        List of NetworkX graphs
 
     Returns
     -------
     R : A new graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
     """
+    if not graphs:
+        raise ValueError('cannot apply intersection_all to an empty list')
     graphs = iter(graphs)
     R = next(graphs)
     for H in graphs:

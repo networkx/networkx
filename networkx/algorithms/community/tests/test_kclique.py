@@ -1,46 +1,66 @@
-#!/usr/bin/env python
-from nose.tools import *
-import networkx as nx
 from itertools import combinations
-from networkx import k_clique_communities
 
-def test_overlaping_K5():
+from nose.tools import assert_equal
+from nose.tools import raises
+
+import networkx as nx
+from networkx.algorithms.community import k_clique_communities
+
+
+def test_overlapping_K5():
     G = nx.Graph()
-    G.add_edges_from(combinations(range(5), 2)) # Add a five clique
-    G.add_edges_from(combinations(range(2,7), 2)) # Add another five clique
-    c = list(nx.k_clique_communities(G, 4))
-    assert_equal(c,[frozenset([0, 1, 2, 3, 4, 5, 6])])
-    c= list(nx.k_clique_communities(G, 5))
-    assert_equal(set(c),set([frozenset([0,1,2,3,4]),frozenset([2,3,4,5,6])]))
+    G.add_edges_from(combinations(range(5), 2))  # Add a five clique
+    G.add_edges_from(combinations(range(2, 7), 2))  # Add another five clique
+    c = list(k_clique_communities(G, 4))
+    assert_equal(c, [frozenset(range(7))])
+    c = set(k_clique_communities(G, 5))
+    assert_equal(c, {frozenset(range(5)), frozenset(range(2, 7))})
+
 
 def test_isolated_K5():
     G = nx.Graph()
-    G.add_edges_from(combinations(range(0,5), 2)) # Add a five clique
-    G.add_edges_from(combinations(range(5,10), 2)) # Add another five clique
-    c= list(nx.k_clique_communities(G, 5))
-    assert_equal(set(c),set([frozenset([0,1,2,3,4]),frozenset([5,6,7,8,9])]))
+    G.add_edges_from(combinations(range(0, 5), 2))  # Add a five clique
+    G.add_edges_from(combinations(range(5, 10), 2))  # Add another five clique
+    c = set(k_clique_communities(G, 5))
+    assert_equal(c, {frozenset(range(5)), frozenset(range(5, 10))})
 
-def test_zachary():
-    z = nx.karate_club_graph()
-    # clique percolation with k=2 is just connected components
-    zachary_k2_ground_truth = set([frozenset(z.nodes())])
-    zachary_k3_ground_truth = set([frozenset([0, 1, 2, 3, 7, 8, 12, 13, 14, 
-                                              15, 17, 18, 19, 20, 21, 22, 23, 
-                                              26, 27, 28, 29, 30, 31, 32, 33]),
-                                   frozenset([0, 4, 5, 6, 10, 16]),
-                                   frozenset([24, 25, 31])])
-    zachary_k4_ground_truth = set([frozenset([0, 1, 2, 3, 7, 13]),
-                                   frozenset([8, 32, 30, 33]),
-                                   frozenset([32, 33, 29, 23])])
-    zachary_k5_ground_truth = set([frozenset([0, 1, 2, 3, 7, 13])])
-    zachary_k6_ground_truth = set([])
 
-    assert set(k_clique_communities(z, 2)) == zachary_k2_ground_truth
-    assert set(k_clique_communities(z, 3)) == zachary_k3_ground_truth
-    assert set(k_clique_communities(z, 4)) == zachary_k4_ground_truth
-    assert set(k_clique_communities(z, 5)) == zachary_k5_ground_truth
-    assert set(k_clique_communities(z, 6)) == zachary_k6_ground_truth
+class TestZacharyKarateClub(object):
+
+    def setup(self):
+        self.G = nx.karate_club_graph()
+
+    def _check_communities(self, k, expected):
+        communities = set(k_clique_communities(self.G, k))
+        assert_equal(communities, expected)
+
+    def test_k2(self):
+        # clique percolation with k=2 is just connected components
+        expected = {frozenset(self.G)}
+        self._check_communities(2, expected)
+
+    def test_k3(self):
+        comm1 = [0, 1, 2, 3, 7, 8, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23,
+                 26, 27, 28, 29, 30, 31, 32, 33]
+        comm2 = [0, 4, 5, 6, 10, 16]
+        comm3 = [24, 25, 31]
+        expected = {frozenset(comm1), frozenset(comm2), frozenset(comm3)}
+        self._check_communities(3, expected)
+
+    def test_k4(self):
+        expected = {frozenset([0, 1, 2, 3, 7, 13]), frozenset([8, 32, 30, 33]),
+                    frozenset([32, 33, 29, 23])}
+        self._check_communities(4, expected)
+
+    def test_k5(self):
+        expected = {frozenset([0, 1, 2, 3, 7, 13])}
+        self._check_communities(5, expected)
+
+    def test_k6(self):
+        expected = set()
+        self._check_communities(6, expected)
+
 
 @raises(nx.NetworkXError)
 def test_bad_k():
-    c = list(k_clique_communities(nx.Graph(),1))
+    list(k_clique_communities(nx.Graph(), 1))

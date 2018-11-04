@@ -6,7 +6,7 @@ from networkx.exception import NetworkXError
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Christopher Ellison cellison@cse.ucdavis.edu)'])
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,7 +17,8 @@ __all__ = ['could_be_isomorphic',
            'faster_could_be_isomorphic',
            'is_isomorphic']
 
-def could_be_isomorphic(G1,G2):
+
+def could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
     True does NOT guarantee isomorphism.
 
@@ -32,19 +33,20 @@ def could_be_isomorphic(G1,G2):
     """
 
     # Check global properties
-    if G1.order() != G2.order(): return False
+    if G1.order() != G2.order():
+        return False
 
     # Check local properties
-    d1=G1.degree()
-    t1=nx.triangles(G1)
-    c1=nx.number_of_cliques(G1)
-    props1=[ [d1[v], t1[v], c1[v]] for v in d1 ]
+    d1 = G1.degree()
+    t1 = nx.triangles(G1)
+    c1 = nx.number_of_cliques(G1)
+    props1 = [[d, t1[v], c1[v]] for v, d in d1]
     props1.sort()
 
-    d2=G2.degree()
-    t2=nx.triangles(G2)
-    c2=nx.number_of_cliques(G2)
-    props2=[ [d2[v], t2[v], c2[v]] for v in d2 ]
+    d2 = G2.degree()
+    t2 = nx.triangles(G2)
+    c2 = nx.number_of_cliques(G2)
+    props2 = [[d, t2[v], c2[v]] for v, d in d2]
     props2.sort()
 
     if props1 != props2:
@@ -53,9 +55,11 @@ def could_be_isomorphic(G1,G2):
     # OK...
     return True
 
-graph_could_be_isomorphic=could_be_isomorphic
 
-def fast_could_be_isomorphic(G1,G2):
+graph_could_be_isomorphic = could_be_isomorphic
+
+
+def fast_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
     True does NOT guarantee isomorphism.
@@ -70,27 +74,31 @@ def fast_could_be_isomorphic(G1,G2):
     Checks for matching degree and triangle sequences.
     """
     # Check global properties
-    if G1.order() != G2.order(): return False
+    if G1.order() != G2.order():
+        return False
 
     # Check local properties
-    d1=G1.degree()
-    t1=nx.triangles(G1)
-    props1=[ [d1[v], t1[v]] for v in d1 ]
+    d1 = G1.degree()
+    t1 = nx.triangles(G1)
+    props1 = [[d, t1[v]] for v, d in d1]
     props1.sort()
 
-    d2=G2.degree()
-    t2=nx.triangles(G2)
-    props2=[ [d2[v], t2[v]] for v in d2 ]
+    d2 = G2.degree()
+    t2 = nx.triangles(G2)
+    props2 = [[d, t2[v]] for v, d in d2]
     props2.sort()
 
-    if props1 != props2: return False
+    if props1 != props2:
+        return False
 
     # OK...
     return True
 
-fast_graph_could_be_isomorphic=fast_could_be_isomorphic
 
-def faster_could_be_isomorphic(G1,G2):
+fast_graph_could_be_isomorphic = fast_could_be_isomorphic
+
+
+def faster_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
     True does NOT guarantee isomorphism.
@@ -105,20 +113,22 @@ def faster_could_be_isomorphic(G1,G2):
     Checks for matching degree sequences.
     """
     # Check global properties
-    if G1.order() != G2.order(): return False
+    if G1.order() != G2.order():
+        return False
 
     # Check local properties
-    d1=list(G1.degree().values())
-    d1.sort()
-    d2=list(G2.degree().values())
-    d2.sort()
+    d1 = sorted(d for n, d in G1.degree())
+    d2 = sorted(d for n, d in G2.degree())
 
-    if d1 != d2: return False
+    if d1 != d2:
+        return False
 
     # OK...
     return True
 
-faster_graph_could_be_isomorphic=faster_could_be_isomorphic
+
+faster_graph_could_be_isomorphic = faster_could_be_isomorphic
+
 
 def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
@@ -135,7 +145,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
 
         The function will be called like
 
-           node_match(G1.node[n1], G2.node[n2]).
+           node_match(G1.nodes[n1], G2.nodes[n2]).
 
         That is, the function will receive the node attribute dictionaries
         for n1 and n2 as inputs.
@@ -165,8 +175,8 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
 
     >>> G1 = nx.DiGraph()
     >>> G2 = nx.DiGraph()
-    >>> G1.add_path([1,2,3,4],weight=1)
-    >>> G2.add_path([10,20,30,40],weight=2)
+    >>> nx.add_path(G1, [1,2,3,4], weight=1)
+    >>> nx.add_path(G2, [10,20,30,40], weight=2)
     >>> em = iso.numerical_edge_match('weight', 1)
     >>> nx.is_isomorphic(G1, G2)  # no weights considered
     True
@@ -177,10 +187,10 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
 
     >>> G1 = nx.MultiDiGraph()
     >>> G2 = nx.MultiDiGraph()
-    >>> G1.add_nodes_from([1,2,3],fill='red')
-    >>> G2.add_nodes_from([10,20,30,40],fill='red')
-    >>> G1.add_path([1,2,3,4],weight=3, linewidth=2.5)
-    >>> G2.add_path([10,20,30,40],weight=3)
+    >>> G1.add_nodes_from([1,2,3], fill='red')
+    >>> G2.add_nodes_from([10,20,30,40], fill='red')
+    >>> nx.add_path(G1, [1,2,3,4], weight=3, linewidth=2.5)
+    >>> nx.add_path(G2, [10,20,30,40], weight=3)
     >>> nm = iso.categorical_node_match('fill', 'red')
     >>> nx.is_isomorphic(G1, G2, node_match=nm)
     True
@@ -188,7 +198,9 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     For multidigraphs G1 and G2, using 'weight' edge attribute (default: 7)
 
     >>> G1.add_edge(1,2, weight=7)
+    1
     >>> G2.add_edge(10,20)
+    1
     >>> em = iso.numerical_multiedge_match('weight', 7, rtol=1e-6)
     >>> nx.is_isomorphic(G1, G2, edge_match=em)
     True
@@ -220,7 +232,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     elif (not G1.is_directed()) and (not G2.is_directed()):
         GM = nx.algorithms.isomorphism.GraphMatcher
     else:
-       raise NetworkXError("Graphs G1 and G2 are not of the same type.")
+        raise NetworkXError("Graphs G1 and G2 are not of the same type.")
 
     gm = GM(G1, G2, node_match=node_match, edge_match=edge_match)
 

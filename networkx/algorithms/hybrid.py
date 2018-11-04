@@ -1,25 +1,26 @@
-# coding: utf-8
-"""
-Provides functions for finding and testing for locally `(k, l)`-connected
-graphs.
-
-"""
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2015 by
+# -*- coding: utf-8 -*-
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors:  Aric Hagberg (hagberg@lanl.gov) and Dan Schult (dschult@colgate.edu)
+#
+"""
+Provides functions for finding and testing for locally `(k, l)`-connected
+graphs.
 
-_all__ = ['kl_connected_subgraph', 'is_kl_connected']
-
+"""
 import copy
 import networkx as nx
 
+__all__ = ['kl_connected_subgraph', 'is_kl_connected']
+
 
 def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
-    """Returns the maximum locally `(k, l)`-connected subgraph of ``G``.
+    """Returns the maximum locally `(k, l)`-connected subgraph of `G`.
 
     A graph is locally `(k, l)`-connected if for each edge `(u, v)` in the
     graph there are at least `l` edge-disjoint paths of length at most `k`
@@ -40,20 +41,20 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
         connectivity requirement.
 
     low_memory : bool
-        If this is ``True``, this function uses an algorithm that uses slightly
+        If this is True, this function uses an algorithm that uses slightly
         more time but less memory.
 
     same_as_graph : bool
-        If this is ``True`` then return a tuple of the form ``(H, is_same)``,
-        where ``H`` is the maximum locally `(k, l)`-connected subgraph and
-        ``is_same`` is a Boolean representing whether ``G`` is locally `(k,
-        l)`-connected (and hence, whether ``H`` is simply a copy of the input
-        graph ``G``).
+        If True then return a tuple of the form `(H, is_same)`,
+        where `H` is the maximum locally `(k, l)`-connected subgraph and
+        `is_same` is a Boolean representing whether `G` is locally `(k,
+        l)`-connected (and hence, whether `H` is simply a copy of the input
+        graph `G`).
 
     Returns
     -------
     NetworkX graph or two-tuple
-        If ``same_as_graph`` is ``True``, then this function returns a
+        If `same_as_graph` is True, then this function returns a
         two-tuple as described above. Otherwise, it returns only the maximum
         locally `(k, l)`-connected subgraph.
 
@@ -68,56 +69,62 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
             2004. 89--104.
 
     """
-    H=copy.deepcopy(G)    # subgraph we construct by removing from G
+    H = copy.deepcopy(G)    # subgraph we construct by removing from G
 
-    graphOK=True
-    deleted_some=True # hack to start off the while loop
+    graphOK = True
+    deleted_some = True  # hack to start off the while loop
     while deleted_some:
-        deleted_some=False
-        for edge in H.edges():
-            (u,v)=edge
-            ### Get copy of graph needed for this search
+        deleted_some = False
+        # We use `for edge in list(H.edges()):` instead of
+        # `for edge in H.edges():` because we edit the graph `H` in
+        # the loop. Hence using an iterator will result in
+        # `RuntimeError: dictionary changed size during iteration`
+        for edge in list(H.edges()):
+            (u, v) = edge
+            # Get copy of graph needed for this search
             if low_memory:
-                verts=set([u,v])
+                verts = set([u, v])
                 for i in range(k):
-                    [verts.update(G.neighbors(w)) for w in verts.copy()]
-                G2=G.subgraph(list(verts))
+                    for w in verts.copy():
+                        verts.update(G[w])
+                G2 = G.subgraph(verts).copy()
             else:
-                G2=copy.deepcopy(G)
+                G2 = copy.deepcopy(G)
             ###
-            path=[u,v]
-            cnt=0
-            accept=0
+            path = [u, v]
+            cnt = 0
+            accept = 0
             while path:
-                cnt += 1 # Found a path
-                if cnt>=l:
-                    accept=1
+                cnt += 1  # Found a path
+                if cnt >= l:
+                    accept = 1
                     break
                 # record edges along this graph
-                prev=u
+                prev = u
                 for w in path:
-                    if prev!=w:
-                        G2.remove_edge(prev,w)
-                        prev=w
-#                path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
+                    if prev != w:
+                        G2.remove_edge(prev, w)
+                        prev = w
+#                path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
                 try:
-                    path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+                    path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
                 except nx.NetworkXNoPath:
                     path = False
             # No Other Paths
-            if accept==0:
-                H.remove_edge(u,v)
-                deleted_some=True
-                if graphOK: graphOK=False
+            if accept == 0:
+                H.remove_edge(u, v)
+                deleted_some = True
+                if graphOK:
+                    graphOK = False
     # We looked through all edges and removed none of them.
     # So, H is the maximal (k,l)-connected subgraph of G
     if same_as_graph:
-        return (H,graphOK)
+        return (H, graphOK)
     return H
 
 
 def is_kl_connected(G, k, l, low_memory=False):
-    """Returns ``True`` if and only if ``G`` is locally `(k, l)`-connected.
+    """Returns True if and only if `G` is locally `(k, l)`-connected.
 
     A graph is locally `(k, l)`-connected if for each edge `(u, v)` in the
     graph there are at least `l` edge-disjoint paths of length at most `k`
@@ -137,7 +144,7 @@ def is_kl_connected(G, k, l, low_memory=False):
         connectivity requirement.
 
     low_memory : bool
-        If this is ``True``, this function uses an algorithm that uses slightly
+        If this is True, this function uses an algorithm that uses slightly
         more time but less memory.
 
     Returns
@@ -156,40 +163,40 @@ def is_kl_connected(G, k, l, low_memory=False):
             2004. 89--104.
 
     """
-    graphOK=True
+    graphOK = True
     for edge in G.edges():
-        (u,v)=edge
-        ### Get copy of graph needed for this search
+        (u, v) = edge
+        # Get copy of graph needed for this search
         if low_memory:
-            verts=set([u,v])
+            verts = set([u, v])
             for i in range(k):
                 [verts.update(G.neighbors(w)) for w in verts.copy()]
-            G2=G.subgraph(verts)
+            G2 = G.subgraph(verts)
         else:
-            G2=copy.deepcopy(G)
+            G2 = copy.deepcopy(G)
         ###
-        path=[u,v]
-        cnt=0
-        accept=0
+        path = [u, v]
+        cnt = 0
+        accept = 0
         while path:
-            cnt += 1 # Found a path
-            if cnt>=l:
-                accept=1
+            cnt += 1  # Found a path
+            if cnt >= l:
+                accept = 1
                 break
             # record edges along this graph
-            prev=u
+            prev = u
             for w in path:
-                if w!=prev:
-                    G2.remove_edge(prev,w)
-                    prev=w
-#            path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
+                if w != prev:
+                    G2.remove_edge(prev, w)
+                    prev = w
+#            path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
             try:
-                path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+                path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
             except nx.NetworkXNoPath:
                 path = False
         # No Other Paths
-        if accept==0:
-            graphOK=False
+        if accept == 0:
+            graphOK = False
             break
     # return status
     return graphOK

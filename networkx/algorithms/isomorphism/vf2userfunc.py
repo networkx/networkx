@@ -32,14 +32,13 @@
 """
 
 import networkx as nx
-
 from . import isomorphvf2 as vf2
 
 __all__ = ['GraphMatcher',
            'DiGraphMatcher',
            'MultiGraphMatcher',
            'MultiDiGraphMatcher',
-          ]
+           ]
 
 
 def _semantic_feasibility(self, G1_node, G2_node):
@@ -47,7 +46,7 @@ def _semantic_feasibility(self, G1_node, G2_node):
     """
     # Make sure the nodes match
     if self.node_match is not None:
-        nm = self.node_match(self.G1.node[G1_node], self.G2.node[G2_node])
+        nm = self.node_match(self.G1.nodes[G1_node], self.G2.nodes[G2_node])
         if not nm:
             return False
 
@@ -78,6 +77,7 @@ def _semantic_feasibility(self, G1_node, G2_node):
 class GraphMatcher(vf2.GraphMatcher):
     """VF2 isomorphism checker for undirected graphs.
     """
+
     def __init__(self, G1, G2, node_match=None, edge_match=None):
         """Initialize graph matcher.
 
@@ -91,7 +91,7 @@ class GraphMatcher(vf2.GraphMatcher):
             should be considered equal during the isomorphism test. The
             function will be called like::
 
-               node_match(G1.node[n1], G2.node[n2])
+               node_match(G1.nodes[n1], G2.nodes[n2])
 
             That is, the function will receive the node attribute dictionaries
             of the nodes under consideration. If None, then no attributes are
@@ -125,6 +125,7 @@ class GraphMatcher(vf2.GraphMatcher):
 class DiGraphMatcher(vf2.DiGraphMatcher):
     """VF2 isomorphism checker for directed graphs.
     """
+
     def __init__(self, G1, G2, node_match=None, edge_match=None):
         """Initialize graph matcher.
 
@@ -138,7 +139,7 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
             should be considered equal during the isomorphism test. The
             function will be called like::
 
-               node_match(G1.node[n1], G2.node[n2])
+               node_match(G1.nodes[n1], G2.nodes[n2])
 
             That is, the function will receive the node attribute dictionaries
             of the nodes under consideration. If None, then no attributes are
@@ -166,7 +167,6 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
         self.G1_adj = self.G1.adj
         self.G2_adj = self.G2.adj
 
-
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
 
@@ -184,15 +184,16 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
         return feasible
 
-## The "semantics" of edge_match are different for multi(di)graphs, but
-## the implementation is the same.  So, technically we do not need to
-## provide "multi" versions, but we do so to match NetworkX's base classes.
+# The "semantics" of edge_match are different for multi(di)graphs, but
+# the implementation is the same.  So, technically we do not need to
+# provide "multi" versions, but we do so to match NetworkX's base classes.
+
 
 class MultiGraphMatcher(GraphMatcher):
     """VF2 isomorphism checker for undirected multigraphs. """
     pass
 
+
 class MultiDiGraphMatcher(DiGraphMatcher):
     """VF2 isomorphism checker for directed multigraphs. """
     pass
-

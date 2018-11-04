@@ -7,12 +7,12 @@ import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # cut algorithms.
-from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
 from .utils import (build_auxiliary_node_connectivity,
-    build_auxiliary_edge_connectivity)
+                    build_auxiliary_edge_connectivity)
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -28,14 +28,12 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
 
     This function returns the set of edges of minimum cardinality that,
     if removed, would destroy all paths among source and target in G.
-    Edge weights are not considered
+    Edge weights are not considered. See :meth:`minimum_cut` for
+    computing minimum cuts considering edge weights.
 
     Parameters
     ----------
     G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
 
     s : node
         Source node for the flow.
@@ -149,7 +147,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
     reachable, non_reachable = partition
-    # Any edge in the original graph linking the two sets in the 
+    # Any edge in the original graph linking the two sets in the
     # partition is part of the edge cutset
     cutset = set()
     for u, nbrs in ((n, G[n]) for n in reachable):
@@ -285,7 +283,8 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     mapping = H.graph.get('mapping', None)
     if mapping is None:
         raise nx.NetworkXError('Invalid auxiliary digraph.')
-
+    if G.has_edge(s, t) or G.has_edge(t, s):
+        return []
     kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
@@ -293,7 +292,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     edge_cut = minimum_st_edge_cut(H, '%sB' % mapping[s], '%sA' % mapping[t],
                                    **kwargs)
     # Each node in the original graph maps to two nodes of the auxiliary graph
-    node_cut = set(H.node[node]['id'] for edge in edge_cut for node in edge)
+    node_cut = set(H.nodes[node]['id'] for edge in edge_cut for node in edge)
     return node_cut - set([s, t])
 
 
@@ -329,7 +328,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     -------
     cutset : set
         Set of nodes that, if removed, would disconnect G. If source
-        and target nodes are provided, the set contians the nodes that
+        and target nodes are provided, the set contains the nodes that
         if removed, would destroy all paths between source and target.
 
     Examples
@@ -402,19 +401,20 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         return minimum_st_node_cut(G, s, t, flow_func=flow_func)
 
     # Global minimum node cut.
-    # Analog to the algoritm 11 for global node connectivity in [1].
+    # Analog to the algorithm 11 for global node connectivity in [1].
     if G.is_directed():
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
         iter_func = itertools.permutations
+
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
         if not nx.is_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
         iter_func = itertools.combinations
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
 
     # Reuse the auxiliary digraph and the residual network.
     H = build_auxiliary_node_connectivity(G)
@@ -473,7 +473,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     -------
     cutset : set
         Set of edges that, if removed, would disconnect G. If source
-        and target nodes are provided, the set contians the edges that
+        and target nodes are provided, the set contains the edges that
         if removed, would destroy all paths between source and target.
 
     Examples
@@ -514,6 +514,8 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     flow between an arbitrary node in the dominating set and the rest of
     nodes in it. This is an implementation of algorithm 6 in [1]_. For 
     directed graphs, the algorithm does n calls to the max flow function.
+    The function raises an error if the directed graph is not weakly
+    connected and returns an empty set if it is weakly connected.
     It is an implementation of algorithm 8 in [1]_.
 
     See also
@@ -551,7 +553,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         return minimum_st_edge_cut(H, s, t, **kwargs)
 
     # Global minimum edge cut
-    # Analog to the algoritm for global edge connectivity
+    # Analog to the algorithm for global edge connectivity
     if G.is_directed():
         # Based on algorithm 8 in [1]
         if not nx.is_weakly_connected(G):
@@ -559,29 +561,29 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)
-        min_cut = G.edges(node)
-        nodes = G.nodes()
+        min_cut = set(G.edges(node))
+        nodes = list(G)
         n = len(nodes)
         for i in range(n):
             try:
-                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i+1], **kwargs)
+                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i + 1], **kwargs)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
-            except IndexError: # Last node!
+            except IndexError:  # Last node!
                 this_cut = minimum_st_edge_cut(H, nodes[i], nodes[0], **kwargs)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
 
         return min_cut
 
-    else: # undirected
+    else:  # undirected
         # Based on algorithm 6 in [1]
         if not nx.is_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)
-        min_cut = G.edges(node)
+        min_cut = set(G.edges(node))
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:

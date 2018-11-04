@@ -1,102 +1,143 @@
-"""
-Routines to find the boundary of a set of nodes.
-
-Edge boundaries are edges that have only one end
-in the set of nodes.
-
-Node boundaries are nodes outside the set of nodes
-that have an edge to a node in the set.
-
-"""
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Copyright 2015 NetworkX developers.
 #    All rights reserved.
 #    BSD license.
+"""Routines to find the boundary of a set of nodes.
 
-__all__=['edge_boundary','node_boundary']
+An edge boundary is a set of edges, each of which has exactly one
+endpoint in a given set of nodes (or, in the case of directed graphs,
+the set of edges whose source node is in the set).
 
-def edge_boundary(G, nbunch1, nbunch2=None):
-    """Return the edge boundary.
+A node boundary of a set *S* of nodes is the set of (out-)neighbors of
+nodes in *S* that are outside *S*.
 
-    Edge boundaries are edges that have only one end
-    in the given set of nodes.
+"""
+from itertools import chain
+
+__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
+
+__all__ = ['edge_boundary', 'node_boundary']
+
+
+def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
+                  default=None):
+    """Returns the edge boundary of `nbunch1`.
+
+    The *edge boundary* of a set *S* with respect to a set *T* is the
+    set of edges (*u*, *v*) such that *u* is in *S* and *v* is in *T*.
+    If *T* is not specified, it is assumed to be the set of all nodes
+    not in *S*.
 
     Parameters
     ----------
-    G : graph
-      A networkx graph
+    G : NetworkX graph
 
-    nbunch1 : list, container
-       Interior node set
+    nbunch1 : iterable
+        Iterable of nodes in the graph representing the set of nodes
+        whose edge boundary will be returned. (This is the set *S* from
+        the definition above.)
 
-    nbunch2 : list, container
-       Exterior node set.  If None then it is set to all of the
-       nodes in G not in nbunch1.
+    nbunch2 : iterable
+        Iterable of nodes representing the target (or "exterior") set of
+        nodes. (This is the set *T* from the definition above.) If not
+        specified, this is assumed to be the set of all nodes in `G`
+        not in `nbunch1`.
+
+    keys : bool
+        This parameter has the same meaning as in
+        :meth:`MultiGraph.edges`.
+
+    data : bool or object
+        This parameter has the same meaning as in
+        :meth:`MultiGraph.edges`.
+
+    default : object
+        This parameter has the same meaning as in
+        :meth:`MultiGraph.edges`.
 
     Returns
     -------
-    elist : list
-       List of edges
+    iterator
+        An iterator over the edges in the boundary of `nbunch1` with
+        respect to `nbunch2`. If `keys`, `data`, or `default`
+        are specified and `G` is a multigraph, then edges are returned
+        with keys and/or data, as in :meth:`MultiGraph.edges`.
 
     Notes
     -----
-    Nodes in nbunch1 and nbunch2 that are not in G are ignored.
+    Any element of `nbunch` that is not in the graph `G` will be
+    ignored.
 
-    nbunch1 and nbunch2 are usually meant to be disjoint,
-    but in the interest of speed and generality, that is
-    not required here.
+    `nbunch1` and `nbunch2` are usually meant to be disjoint, but in
+    the interest of speed and generality, that is not required here.
 
     """
-    if nbunch2 is None:     # Then nbunch2 is complement of nbunch1
-        nset1=set((n for n in nbunch1 if n in G))
-        return [(n1,n2) for n1 in nset1 for n2 in G[n1] \
-                if n2 not in nset1]
+    nset1 = {v for v in G if v in nbunch1}
+    # Here we create an iterator over edges incident to nodes in the set
+    # `nset1`. The `Graph.edges()` method does not provide a guarantee
+    # on the orientation of the edges, so our algorithm below must
+    # handle the case in which exactly one orientation, either (u, v) or
+    # (v, u), appears in this iterable.
+    if G.is_multigraph():
+        edges = G.edges(nset1, data=data, keys=keys, default=default)
+    else:
+        edges = G.edges(nset1, data=data, default=default)
+    # If `nbunch2` is not provided, then it is assumed to be the set
+    # complement of `nbunch1`. For the sake of efficiency, this is
+    # implemented by using the `not in` operator, instead of by creating
+    # an additional set and using the `in` operator.
+    if nbunch2 is None:
+        return (e for e in edges if (e[0] in nset1) ^ (e[1] in nset1))
+    nset2 = set(nbunch2)
+    return (e for e in edges
+            if (e[0] in nset1 and e[1] in nset2)
+            or (e[1] in nset1 and e[0] in nset2))
 
-    nset2=set(nbunch2)
-    return [(n1,n2) for n1 in nbunch1 if n1 in G for n2 in G[n1] \
-            if n2 in nset2]
 
 def node_boundary(G, nbunch1, nbunch2=None):
-    """Return the node boundary.
+    """Returns the node boundary of `nbunch1`.
 
-    The node boundary is all nodes in the edge boundary of a given
-    set of nodes that are in the set.
+    The *node boundary* of a set *S* with respect to a set *T* is the
+    set of nodes *v* in *T* such that for some *u* in *S*, there is an
+    edge joining *u* to *v*. If *T* is not specified, it is assumed to
+    be the set of all nodes not in *S*.
 
     Parameters
     ----------
-    G : graph
-      A networkx graph
+    G : NetworkX graph
 
-    nbunch1 : list, container
-       Interior node set
+    nbunch1 : iterable
+        Iterable of nodes in the graph representing the set of nodes
+        whose node boundary will be returned. (This is the set *S* from
+        the definition above.)
 
-    nbunch2 : list, container
-       Exterior node set.  If None then it is set to all of the
-       nodes in G not in nbunch1.
+    nbunch2 : iterable
+        Iterable of nodes representing the target (or "exterior") set of
+        nodes. (This is the set *T* from the definition above.) If not
+        specified, this is assumed to be the set of all nodes in `G`
+        not in `nbunch1`.
 
     Returns
     -------
-    nlist : list
-       List of nodes.
+    set
+        The node boundary of `nbunch1` with respect to `nbunch2`.
 
     Notes
     -----
-    Nodes in nbunch1 and nbunch2 that are not in G are ignored.
+    Any element of `nbunch` that is not in the graph `G` will be
+    ignored.
 
-    nbunch1 and nbunch2 are usually meant to be disjoint,
-    but in the interest of speed and generality, that is
-    not required here.
+    `nbunch1` and `nbunch2` are usually meant to be disjoint, but in
+    the interest of speed and generality, that is not required here.
 
     """
-    nset1=set(n for n in nbunch1 if n in G)
-    bdy=set()
-    for n1 in nset1:
-        bdy.update(G[n1])
-    bdy -= nset1
-    if nbunch2 is not None: # else nbunch2 is complement of nbunch1
+    nset1 = {n for n in nbunch1 if n in G}
+    bdy = set(chain.from_iterable(G[v] for v in nset1)) - nset1
+    # If `nbunch2` is not specified, it is assumed to be the set
+    # complement of `nbunch1`.
+    if nbunch2 is not None:
         bdy &= set(nbunch2)
-    return list(bdy)
-
+    return bdy

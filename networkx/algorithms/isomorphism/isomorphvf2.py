@@ -94,7 +94,7 @@ If G'=(N',E') is a node-induced subgraph, then:
     N' is a subset of N
     E' is the subset of edges in E relating nodes in N'
 
-If G'=(N',E') is an edge-induced subgrpah, then:
+If G'=(N',E') is an edge-induced subgraph, then:
     N' is the subset of nodes in N related by edges in E'
     E' is a subset of E
 
@@ -118,13 +118,13 @@ syntactic_feasibliity(), semantic_feasibility()
 
 Notes
 -----
-Modified to handle undirected graphs.
-Modified to handle multiple edges.
 
+The implementation handles both directed and undirected graphs as well
+as multigraphs.
 
-In general, this problem is NP-Complete.
-
-
+In general, the subgraph isomorphism problem is NP-complete whereas the
+graph isomorphism problem is most likely not NP-complete (although no
+polynomial-time algorithm is known to exist).
 
 """
 
@@ -143,11 +143,13 @@ import networkx as nx
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']
 
+
 class GraphMatcher(object):
     """Implementation of VF2 algorithm for matching undirected graphs.
 
     Suitable for Graph and MultiGraph instances.
     """
+
     def __init__(self, G1, G2):
         """Initialize GraphMatcher.
 
@@ -169,6 +171,7 @@ class GraphMatcher(object):
         self.G2 = G2
         self.G1_nodes = set(G1.nodes())
         self.G2_nodes = set(G2.nodes())
+        self.G2_node_order = {n: i for i, n in enumerate(G2)}
 
         # Set recursion limit.
         self.old_recursion_limit = sys.getrecursionlimit()
@@ -185,15 +188,15 @@ class GraphMatcher(object):
 
     def reset_recursion_limit(self):
         """Restores the recursion limit."""
-        ### TODO:
-        ###     Currently, we use recursion and set the recursion level higher.
-        ###     It would be nice to restore the level, but because the
-        ###     (Di)GraphMatcher classes make use of cyclic references, garbage
-        ###     collection will never happen when we define __del__() to
-        ###     restore the recursion level. The result is a memory leak.
-        ###     So for now, we do not automatically restore the recursion level,
-        ###     and instead provide a method to do this manually. Eventually,
-        ###     we should turn this into a non-recursive implementation.
+        # TODO:
+        # Currently, we use recursion and set the recursion level higher.
+        # It would be nice to restore the level, but because the
+        # (Di)GraphMatcher classes make use of cyclic references, garbage
+        # collection will never happen when we define __del__() to
+        # restore the recursion level. The result is a memory leak.
+        # So for now, we do not automatically restore the recursion level,
+        # and instead provide a method to do this manually. Eventually,
+        # we should turn this into a non-recursive implementation.
         sys.setrecursionlimit(self.old_recursion_limit)
 
     def candidate_pairs_iter(self):
@@ -203,24 +206,26 @@ class GraphMatcher(object):
 
         G1_nodes = self.G1_nodes
         G2_nodes = self.G2_nodes
+        min_key = self.G2_node_order.__getitem__
 
         # First we compute the inout-terminal sets.
-        T1_inout = [node for node in G1_nodes if (node in self.inout_1) and (node not in self.core_1)]
-        T2_inout = [node for node in G2_nodes if (node in self.inout_2) and (node not in self.core_2)]
+        T1_inout = [node for node in self.inout_1 if node not in self.core_1]
+        T2_inout = [node for node in self.inout_2 if node not in self.core_2]
 
         # If T1_inout and T2_inout are both nonempty.
         # P(s) = T1_inout x {min T2_inout}
         if T1_inout and T2_inout:
-            for node in T1_inout:
-                yield node, min(T2_inout)
+            node_2 = min(T2_inout, key=min_key)
+            for node_1 in T1_inout:
+                yield node_1, node_2
 
         else:
             # If T1_inout and T2_inout were both empty....
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
-            ##if not (T1_inout or T2_inout):       # as suggested by  [2], incorrect
+            # if not (T1_inout or T2_inout):       # as suggested by  [2], incorrect
             if 1:                                  # as inferred from [1], correct
                 # First we determine the candidate node for G2
-                other_node = min(G2_nodes - set(self.core_2))
+                other_node = min(G2_nodes - set(self.core_2), key=min_key)
                 for node in self.G1:
                     if node not in self.core_1:
                         yield node, other_node
@@ -255,7 +260,7 @@ class GraphMatcher(object):
 
         self.state = GMState(self)
 
-        # Provide a convienient way to access the isomorphism mapping.
+        # Provide a convenient way to access the isomorphism mapping.
         self.mapping = self.core_1.copy()
 
     def is_isomorphic(self):
@@ -266,12 +271,14 @@ class GraphMatcher(object):
         # For now, I just copy the code.
 
         # Check global properties
-        if self.G1.order() != self.G2.order(): return False
+        if self.G1.order() != self.G2.order():
+            return False
 
         # Check local properties
-        d1=sorted(self.G1.degree().values())
-        d2=sorted(self.G2.degree().values())
-        if d1 != d2: return False
+        d1 = sorted(d for n, d in self.G1.degree())
+        d2 = sorted(d for n, d in self.G2.degree())
+        if d1 != d2:
+            return False
 
         try:
             x = next(self.isomorphisms_iter())
@@ -392,12 +399,11 @@ class GraphMatcher(object):
         # singlet for Graph instances.  For MultiGraphs, the value in the
         # innermost dictionary is a list.
 
-
         ###
-        ### Test at each step to get a return value as soon as possible.
+        # Test at each step to get a return value as soon as possible.
         ###
 
-        ### Look ahead 0
+        # Look ahead 0
 
         # R_self
 
@@ -405,9 +411,8 @@ class GraphMatcher(object):
         # self-loops for G2_node. Without this check, we would fail on
         # R_neighbor at the next recursion level. But it is good to prune the
         # search tree now.
-        if self.G1.number_of_edges(G1_node,G1_node) != self.G2.number_of_edges(G2_node,G2_node):
+        if self.G1.number_of_edges(G1_node, G1_node) != self.G2.number_of_edges(G2_node, G2_node):
             return False
-
 
         # R_neighbor
 
@@ -427,7 +432,7 @@ class GraphMatcher(object):
                 elif self.G1.number_of_edges(self.core_2[neighbor], G1_node) != self.G2.number_of_edges(neighbor, G2_node):
                     return False
 
-        ### Look ahead 1
+        # Look ahead 1
 
         # R_terminout
         # The number of neighbors of n that are in T_1^{inout} is equal to the
@@ -443,12 +448,11 @@ class GraphMatcher(object):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
-
-        ### Look ahead 2
+        # Look ahead 2
 
         # R_new
 
@@ -466,7 +470,7 @@ class GraphMatcher(object):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
@@ -504,39 +508,40 @@ class DiGraphMatcher(GraphMatcher):
 
         G1_nodes = self.G1_nodes
         G2_nodes = self.G2_nodes
+        min_key = self.G2_node_order.__getitem__
 
         # First we compute the out-terminal sets.
-        T1_out = [node for node in G1_nodes if (node in self.out_1) and (node not in self.core_1)]
-        T2_out = [node for node in G2_nodes if (node in self.out_2) and (node not in self.core_2)]
+        T1_out = [node for node in self.out_1 if node not in self.core_1]
+        T2_out = [node for node in self.out_2 if node not in self.core_2]
 
         # If T1_out and T2_out are both nonempty.
         # P(s) = T1_out x {min T2_out}
         if T1_out and T2_out:
-            node_2 = min(T2_out)
+            node_2 = min(T2_out, key=min_key)
             for node_1 in T1_out:
                 yield node_1, node_2
 
         # If T1_out and T2_out were both empty....
         # We compute the in-terminal sets.
 
-        ##elif not (T1_out or T2_out):   # as suggested by [2], incorrect
+        # elif not (T1_out or T2_out):   # as suggested by [2], incorrect
         else:                            # as suggested by [1], correct
-            T1_in = [node for node in G1_nodes if (node in self.in_1) and (node not in self.core_1)]
-            T2_in = [node for node in G2_nodes if (node in self.in_2) and (node not in self.core_2)]
+            T1_in = [node for node in self.in_1 if node not in self.core_1]
+            T2_in = [node for node in self.in_2 if node not in self.core_2]
 
             # If T1_in and T2_in are both nonempty.
             # P(s) = T1_out x {min T2_out}
             if T1_in and T2_in:
-                node_2 = min(T2_in)
+                node_2 = min(T2_in, key=min_key)
                 for node_1 in T1_in:
                     yield node_1, node_2
 
             # If all terminal sets are empty...
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
 
-            ##elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
+            # elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
             else:                          # as inferred from [1], correct
-                node_2 = min(G2_nodes - set(self.core_2))
+                node_2 = min(G2_nodes - set(self.core_2), key=min_key)
                 for node_1 in G1_nodes:
                     if node_1 not in self.core_1:
                         yield node_1, node_2
@@ -574,7 +579,7 @@ class DiGraphMatcher(GraphMatcher):
 
         self.state = DiGMState(self)
 
-        # Provide a convienient way to access the isomorphism mapping.
+        # Provide a convenient way to access the isomorphism mapping.
         self.mapping = self.core_1.copy()
 
     def syntactic_feasibility(self, G1_node, G2_node):
@@ -600,14 +605,11 @@ class DiGraphMatcher(GraphMatcher):
         # dictionary is a singlet for DiGraph instances.  For MultiDiGraphs,
         # the value in the innermost dictionary is a list.
 
-
         ###
-        ### Test at each step to get a return value as soon as possible.
+        # Test at each step to get a return value as soon as possible.
         ###
 
-
-
-        ### Look ahead 0
+        # Look ahead 0
 
         # R_self
 
@@ -615,9 +617,8 @@ class DiGraphMatcher(GraphMatcher):
         # self-loops for G2_node. Without this check, we would fail on R_pred
         # at the next recursion level. This should prune the tree even further.
 
-        if self.G1.number_of_edges(G1_node,G1_node) != self.G2.number_of_edges(G2_node,G2_node):
+        if self.G1.number_of_edges(G1_node, G1_node) != self.G2.number_of_edges(G2_node, G2_node):
             return False
-
 
         # R_pred
 
@@ -638,7 +639,6 @@ class DiGraphMatcher(GraphMatcher):
                 elif self.G1.number_of_edges(self.core_2[predecessor], G1_node) != self.G2.number_of_edges(predecessor, G2_node):
                     return False
 
-
         # R_succ
 
         # For each successor n' of n in the partial mapping, the corresponding
@@ -658,8 +658,7 @@ class DiGraphMatcher(GraphMatcher):
                 elif self.G1.number_of_edges(G1_node, self.core_2[successor]) != self.G2.number_of_edges(G2_node, successor):
                     return False
 
-
-        ### Look ahead 1
+        # Look ahead 1
 
         # R_termin
         # The number of predecessors of n that are in T_1^{in} is equal to the
@@ -675,7 +674,7 @@ class DiGraphMatcher(GraphMatcher):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
@@ -692,7 +691,7 @@ class DiGraphMatcher(GraphMatcher):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
@@ -711,7 +710,7 @@ class DiGraphMatcher(GraphMatcher):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
@@ -728,11 +727,11 @@ class DiGraphMatcher(GraphMatcher):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
-        ### Look ahead 2
+        # Look ahead 2
 
         # R_new
 
@@ -750,7 +749,7 @@ class DiGraphMatcher(GraphMatcher):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
@@ -768,7 +767,7 @@ class DiGraphMatcher(GraphMatcher):
         if self.test == 'graph':
             if not (num1 == num2):
                 return False
-        else: # self.test == 'subgraph'
+        else:  # self.test == 'subgraph'
             if not (num1 >= num2):
                 return False
 
@@ -784,6 +783,7 @@ class GMState(object):
     these objects in memory at a time, due to the depth-first search
     strategy employed by the VF2 algorithm.
     """
+
     def __init__(self, GM, G1_node=None, G2_node=None):
         """Initializes GMState object.
 
@@ -823,7 +823,7 @@ class GMState(object):
             if G1_node not in GM.inout_1:
                 GM.inout_1[G1_node] = self.depth
             if G2_node not in GM.inout_2:
-                    GM.inout_2[G2_node] = self.depth
+                GM.inout_2[G2_node] = self.depth
 
             # Now we add every other node...
 
@@ -868,6 +868,7 @@ class DiGMState(object):
     strategy employed by the VF2 algorithm.
 
     """
+
     def __init__(self, GM, G1_node=None, G2_node=None):
         """Initializes DiGMState object.
 
@@ -918,7 +919,8 @@ class DiGMState(object):
             # Updates for T_1^{in}
             new_nodes = set([])
             for node in GM.core_1:
-                new_nodes.update([predecessor for predecessor in GM.G1.predecessors(node) if predecessor not in GM.core_1])
+                new_nodes.update([predecessor for predecessor in GM.G1.predecessors(node)
+                                  if predecessor not in GM.core_1])
             for node in new_nodes:
                 if node not in GM.in_1:
                     GM.in_1[node] = self.depth
@@ -926,7 +928,8 @@ class DiGMState(object):
             # Updates for T_2^{in}
             new_nodes = set([])
             for node in GM.core_2:
-                new_nodes.update([predecessor for predecessor in GM.G2.predecessors(node) if predecessor not in GM.core_2])
+                new_nodes.update([predecessor for predecessor in GM.G2.predecessors(node)
+                                  if predecessor not in GM.core_2])
             for node in new_nodes:
                 if node not in GM.in_2:
                     GM.in_2[node] = self.depth
@@ -962,4 +965,3 @@ class DiGMState(object):
             for node in list(vector.keys()):
                 if vector[node] == self.depth:
                     del vector[node]
-

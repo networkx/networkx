@@ -1,7 +1,7 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -70,38 +70,40 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
     """
     import scipy.sparse
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     if edgelist is None:
         if G.is_multigraph():
-            edgelist = G.edges(keys=True)
+            edgelist = list(G.edges(keys=True))
         else:
-            edgelist = G.edges()
-    A = scipy.sparse.lil_matrix((len(nodelist),len(edgelist)))
-    node_index = dict( (node,i) for i,node in enumerate(nodelist) )
-    for ei,e in enumerate(edgelist):
-        (u,v) = e[:2]
-        if u == v: continue  # self loops give zero column
+            edgelist = list(G.edges())
+    A = scipy.sparse.lil_matrix((len(nodelist), len(edgelist)))
+    node_index = dict((node, i) for i, node in enumerate(nodelist))
+    for ei, e in enumerate(edgelist):
+        (u, v) = e[:2]
+        if u == v:
+            continue  # self loops give zero column
         try:
             ui = node_index[u]
             vi = node_index[v]
         except KeyError:
-            raise NetworkXError('node %s or %s in edgelist '
-                                'but not in nodelist"%(u,v)')
+            raise nx.NetworkXError('node %s or %s in edgelist '
+                                   'but not in nodelist' % (u, v))
         if weight is None:
             wt = 1
         else:
             if G.is_multigraph():
                 ekey = e[2]
-                wt = G[u][v][ekey].get(weight,1)
+                wt = G[u][v][ekey].get(weight, 1)
             else:
-                wt = G[u][v].get(weight,1)
+                wt = G[u][v].get(weight, 1)
         if oriented:
-            A[ui,ei] = -wt
-            A[vi,ei] = wt
+            A[ui, ei] = -wt
+            A[vi, ei] = wt
         else:
-            A[ui,ei] = wt
-            A[vi,ei] = wt
+            A[ui, ei] = wt
+            A[vi, ei] = wt
     return A.asformat('csc')
+
 
 def adjacency_matrix(G, nodelist=None, weight='weight'):
     """Return adjacency matrix of G.
@@ -127,7 +129,7 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     Notes
     -----
     For directed graphs, entry i,j corresponds to an edge from i to j.
-    
+
     If you want a pure Python adjacency matrix representation try
     networkx.convert.to_dict_of_dicts which will return a
     dictionary-of-dictionaries format that can be addressed as a
@@ -157,11 +159,14 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     to_scipy_sparse_matrix
     to_dict_of_dicts
     """
-    return nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight)
+    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
 
-adj_matrix=adjacency_matrix
+
+adj_matrix = adjacency_matrix
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

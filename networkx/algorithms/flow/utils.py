@@ -104,7 +104,7 @@ def build_residual_network(G, capacity):
 
     inf = float('inf')
     # Extract edges with positive capacities. Self loops excluded.
-    edge_list = [(u, v, attr) for u, v, attr in G.edges_iter(data=True)
+    edge_list = [(u, v, attr) for u, v, attr in G.edges(data=True)
                  if u != v and attr.get(capacity, inf) > 0]
     # Simulate infinity with three times the sum of the finite edge capacities
     # or any positive value if the sum is zero. This allows the
@@ -164,7 +164,7 @@ def build_flow_dict(G, R):
     """
     flow_dict = {}
     for u in G:
-        flow_dict[u] = dict((v, 0) for v in G[u])
+        flow_dict[u] = {v: 0 for v in G[u]}
         flow_dict[u].update((v, attr['flow']) for v, attr in R[u].items()
                             if attr['flow'] > 0)
     return flow_dict

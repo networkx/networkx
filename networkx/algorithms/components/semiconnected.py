@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
-Semiconnectedness.
-"""
-
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
+#    Copyright (C) 2004-2018 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors: ysitu (ysitu@users.noreply.github.com)
+"""Semiconnectedness."""
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = ['is_semiconnected']
+
 
 @not_implemented_for('undirected')
 def is_semiconnected(G):
@@ -33,7 +34,7 @@ def is_semiconnected(G):
     Raises
     ------
     NetworkXNotImplemented :
-        If the input graph is not directed.
+        If the input graph is undirected.
 
     NetworkXPointlessConcept :
         If the graph is empty.
@@ -49,8 +50,10 @@ def is_semiconnected(G):
 
     See Also
     --------
-    is_strongly_connected,
+    is_strongly_connected
     is_weakly_connected
+    is_connected
+    is_biconnected
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
@@ -61,4 +64,4 @@ def is_semiconnected(G):
 
     G = nx.condensation(G)
     path = nx.topological_sort(G)
-    return all(G.has_edge(u, v) for u, v in zip(path[:-1], path[1:]))
+    return all(G.has_edge(u, v) for u, v in pairwise(path))

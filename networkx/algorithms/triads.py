@@ -12,16 +12,12 @@
 """Functions for analyzing triads of a graph."""
 from __future__ import division
 
-import networkx as nx
+from networkx.utils import not_implemented_for
 
 __author__ = '\n'.join(['Alex Levenson (alex@isnontinvain.com)',
                         'Diederik van Liere (diederik.vanliere@rotman.utoronto.ca)'])
 
 __all__ = ['triadic_census']
-
-#: The names of each type of triad.
-TRIAD_NAMES = ('003', '012', '102', '021D', '021U', '021C', '111D', '111U',
-               '030T', '030C', '201', '120D', '120U', '120C', '210', '300')
 
 #: The integer codes representing each type of triad.
 #:
@@ -31,49 +27,21 @@ TRICODES = (1, 2, 2, 3, 2, 4, 6, 8, 2, 6, 5, 7, 3, 8, 7, 11, 2, 6, 4, 8, 5, 9,
             9, 12, 8, 13, 14, 15, 3, 7, 8, 11, 7, 12, 14, 15, 8, 14, 13, 15,
             11, 15, 15, 16)
 
+#: The names of each type of triad. The order of the elements is
+#: important: it corresponds to the tricodes given in :data:`TRICODES`.
+TRIAD_NAMES = ('003', '012', '102', '021D', '021U', '021C', '111D', '111U',
+               '030T', '030C', '201', '120D', '120U', '120C', '210', '300')
+
+
 #: A dictionary mapping triad code to triad name.
 TRICODE_TO_NAME = {i: TRIAD_NAMES[code - 1] for i, code in enumerate(TRICODES)}
-
-
-def triad_graphs():
-    """Returns a dictionary mapping triad name to triad graph."""
-
-    def abc_graph():
-        """Returns a directed graph on three nodes, named ``'a'``, ``'b'``, and
-        ``'c'``.
-
-        """
-        G = nx.DiGraph()
-        G.add_nodes_from('abc')
-        return G
-
-    tg = {name: abc_graph() for name in TRIAD_NAMES}
-    tg['012'].add_edges_from([('a', 'b')])
-    tg['102'].add_edges_from([('a', 'b'), ('b', 'a')])
-    tg['102'].add_edges_from([('a', 'b'), ('b', 'a')])
-    tg['021D'].add_edges_from([('b', 'a'), ('b', 'c')])
-    tg['021U'].add_edges_from([('a', 'b'), ('c', 'b')])
-    tg['021C'].add_edges_from([('a', 'b'), ('b', 'c')])
-    tg['111D'].add_edges_from([('a', 'c'), ('c', 'a'), ('b', 'c')])
-    tg['111U'].add_edges_from([('a', 'c'), ('c', 'a'), ('c', 'b')])
-    tg['030T'].add_edges_from([('a', 'b'), ('c', 'b'), ('a', 'c')])
-    tg['030C'].add_edges_from([('b', 'a'), ('c', 'b'), ('a', 'c')])
-    tg['201'].add_edges_from([('a', 'b'), ('b', 'a'), ('a', 'c'), ('c', 'a')])
-    tg['120D'].add_edges_from([('b', 'c'), ('b', 'a'), ('a', 'c'), ('c', 'a')])
-    tg['120C'].add_edges_from([('a', 'b'), ('b', 'c'), ('a', 'c'), ('c', 'a')])
-    tg['120U'].add_edges_from([('a', 'b'), ('c', 'b'), ('a', 'c'), ('c', 'a')])
-    tg['210'].add_edges_from([('a', 'b'), ('b', 'c'), ('c', 'b'), ('a', 'c'),
-                              ('c', 'a')])
-    tg['300'].add_edges_from([('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'),
-                              ('a', 'c'), ('c', 'a')])
-    return tg
 
 
 def _tricode(G, v, u, w):
     """Returns the integer code of the given triad.
 
     This is some fancy magic that comes from Batagelj and Mrvar's paper. It
-    treats each edge joining a pair of ``v``, ``u``, and ``w`` as a bit in
+    treats each edge joining a pair of `v`, `u`, and `w` as a bit in
     the binary representation of an integer.
 
     """
@@ -82,6 +50,7 @@ def _tricode(G, v, u, w):
     return sum(x for u, v, x in combos if v in G[u])
 
 
+@not_implemented_for('undirected')
 def triadic_census(G):
     """Determines the triadic census of a directed graph.
 
@@ -100,8 +69,12 @@ def triadic_census(G):
 
     Notes
     -----
-    This algorithm has complexity `O(m)` where `m` is the number of edges in
+    This algorithm has complexity $O(m)$ where $m$ is the number of edges in
     the graph.
+
+    See also
+    --------
+    triad_graph
 
     References
     ----------
@@ -111,9 +84,6 @@ def triadic_census(G):
         http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf
 
     """
-    if not G.is_directed():
-        raise nx.NetworkXError('Not defined for undirected graphs.')
-
     # Initialize the count for each triad to be zero.
     census = {name: 0 for name in TRIAD_NAMES}
     n = len(G)
@@ -132,9 +102,9 @@ def triadic_census(G):
                 census['012'] += n - len(neighbors) - 2
             # Count connected triads.
             for w in neighbors:
-                if m[u] < m[w] or (m[v] < m[w] and m[w] < m[u]
-                                   and v not in G.pred[w]
-                                   and v not in G.succ[w]):
+                if m[u] < m[w] or (m[v] < m[w] < m[u] and
+                                   v not in G.pred[w] and
+                                   v not in G.succ[w]):
                     code = _tricode(G, v, u, w)
                     census[TRICODE_TO_NAME[code]] += 1
 

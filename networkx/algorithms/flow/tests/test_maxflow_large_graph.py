@@ -11,32 +11,43 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import (edmonds_karp, preflow_push, shortest_augmenting_path)
+from networkx.algorithms.flow import boykov_kolmogorov
+from networkx.algorithms.flow import dinitz
+from networkx.algorithms.flow import edmonds_karp
+from networkx.algorithms.flow import preflow_push
+from networkx.algorithms.flow import shortest_augmenting_path
 
-flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
+flow_funcs = [
+    boykov_kolmogorov,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+]
 
 msg = "Assertion failed in function: {0}"
 
+
 def gen_pyramid(N):
-        # This graph admits a flow of value 1 for which every arc is at
-        # capacity (except the arcs incident to the sink which have
-        # infinite capacity).
-        G = nx.DiGraph()
+    # This graph admits a flow of value 1 for which every arc is at
+    # capacity (except the arcs incident to the sink which have
+    # infinite capacity).
+    G = nx.DiGraph()
 
-        for i in range(N - 1):
-            cap = 1. / (i + 2)
-            for j in range(i + 1):
-                G.add_edge((i, j), (i + 1, j),
-                           capacity = cap)
-                cap = 1. / (i + 1) - cap
-                G.add_edge((i, j), (i + 1, j + 1),
-                        capacity = cap)
-                cap = 1. / (i + 2) - cap
+    for i in range(N - 1):
+        cap = 1. / (i + 2)
+        for j in range(i + 1):
+            G.add_edge((i, j), (i + 1, j),
+                       capacity=cap)
+            cap = 1. / (i + 1) - cap
+            G.add_edge((i, j), (i + 1, j + 1),
+                       capacity=cap)
+            cap = 1. / (i + 2) - cap
 
-        for j in range(N):
-            G.add_edge((N - 1, j), 't')
+    for j in range(N):
+        G.add_edge((N - 1, j), 't')
 
-        return G
+    return G
 
 
 def read_graph(name):
@@ -53,7 +64,7 @@ def validate_flows(G, s, t, soln_value, R, flow_func):
     for u in G:
         assert_equal(set(G[u]), set(flow_dict[u]),
                      msg=msg.format(flow_func.__name__))
-    excess = dict((u, 0) for u in flow_dict)
+    excess = {u: 0 for u in flow_dict}
     for u in flow_dict:
         for v, flow in flow_dict[u].items():
             ok_(flow <= G[u][v].get('capacity', float('inf')),
@@ -75,7 +86,7 @@ class TestMaxflowLargeGraph:
     def test_complete_graph(self):
         N = 50
         G = nx.complete_graph(N)
-        nx.set_edge_attributes(G, 'capacity', 5)
+        nx.set_edge_attributes(G, 5, 'capacity')
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)
 
@@ -87,7 +98,7 @@ class TestMaxflowLargeGraph:
 
     def test_pyramid(self):
         N = 10
-        #N = 100 # this gives a graph with 5051 nodes
+        # N = 100 # this gives a graph with 5051 nodes
         G = gen_pyramid(N)
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)
@@ -105,9 +116,13 @@ class TestMaxflowLargeGraph:
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)
 
-        for flow_func in flow_funcs:
-            validate_flows(G, s, t, 156545, flow_func(G, s, t, **kwargs),
-                           flow_func)
+        # do one flow_func to save time
+        flow_func = flow_funcs[0]
+        validate_flows(G, s, t, 156545, flow_func(G, s, t, **kwargs),
+                       flow_func)
+#        for flow_func in flow_funcs:
+#            validate_flows(G, s, t, 156545, flow_func(G, s, t, **kwargs),
+#                           flow_func)
 
     def test_gw1(self):
         G = read_graph('gw1')
@@ -127,9 +142,13 @@ class TestMaxflowLargeGraph:
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)
 
-        for flow_func in flow_funcs:
-            validate_flows(G, s, t, 11875108, flow_func(G, s, t, **kwargs),
-                           flow_func)
+        # do one flow_func to save time
+        flow_func = flow_funcs[0]
+        validate_flows(G, s, t, 11875108, flow_func(G, s, t, **kwargs),
+                       flow_func)
+#        for flow_func in flow_funcs:
+#            validate_flows(G, s, t, 11875108, flow_func(G, s, t, **kwargs),
+#                           flow_func)
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')

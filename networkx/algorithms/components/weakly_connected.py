@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-"""Weakly connected components.
-"""
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+#
+# Authors: Aric Hagberg (hagberg@lanl.gov)
+#          Christopher Ellison
+"""Weakly connected components."""
+import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-
-__authors__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison'])
 
 __all__ = [
     'number_weakly_connected_components',
@@ -37,23 +36,29 @@ def weakly_connected_components(G):
         A generator of sets of nodes, one for each weakly connected
         component of G.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     Examples
     --------
     Generate a sorted list of weakly connected components, largest first.
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
-    >>> G.add_path([10, 11, 12])
+    >>> nx.add_path(G, [10, 11, 12])
     >>> [len(c) for c in sorted(nx.weakly_connected_components(G),
     ...                         key=len, reverse=True)]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
-    use max instead of sort.
+    use max instead of sort:
 
     >>> largest_cc = max(nx.weakly_connected_components(G), key=len)
 
     See Also
     --------
+    connected_components
     strongly_connected_components
 
     Notes
@@ -83,74 +88,51 @@ def number_weakly_connected_components(G):
     n : integer
         Number of weakly connected components
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
-    connected_components
+    weakly_connected_components
+    number_connected_components
+    number_strongly_connected_components
 
     Notes
     -----
     For directed graphs only.
 
     """
-    return len(list(weakly_connected_components(G)))
+    return sum(1 for wcc in weakly_connected_components(G))
 
 
 @not_implemented_for('undirected')
 def weakly_connected_component_subgraphs(G, copy=True):
-    """Generate weakly connected components as subgraphs.
+    """DEPRECATED: Use ``(G.subgraph(c) for c in weakly_connected_components(G))``
 
-    Parameters
-    ----------
-    G : NetworkX graph
-        A directed graph.
-
-    copy: bool (default=True)
-        If True make a copy of the graph attributes
-
-    Returns
-    -------
-    comp : generator
-        A generator of graphs, one for each weakly connected component of G.
-
-    Examples
-    --------
-    Generate a sorted list of weakly connected components, largest first.
-
-    >>> G = nx.path_graph(4, create_using=nx.DiGraph())
-    >>> G.add_path([10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_component_subgraphs(G),
-    ...                         key=len, reverse=True)]
-    [4, 3]
-
-    If you only want the largest component, it's more efficient to
-    use max instead of sort.
-
-    >>> Gc = max(nx.weakly_connected_component_subgraphs(G), key=len)
-
-    See Also
-    --------
-    strongly_connected_components
-    connected_components
-
-    Notes
-    -----
-    For directed graphs only.
-    Graph, node, and edge attributes are copied to the subgraphs by default.
-
+           Or ``(G.subgraph(c).copy() for c in weakly_connected_components(G))``
     """
-    for comp in weakly_connected_components(G):
+    msg = "weakly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
+        "use (G.subgraph(c).copy() for c in weakly_connected_components(G))"
+    _warnings.warn(msg, DeprecationWarning)
+    for c in weakly_connected_components(G):
         if copy:
-            yield G.subgraph(comp).copy()
+            yield G.subgraph(c).copy()
         else:
-            yield G.subgraph(comp)
+            yield G.subgraph(c)
 
 
 @not_implemented_for('undirected')
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
-    A directed graph is weakly connected if, and only if, the graph
+    A directed graph is weakly connected if and only if the graph
     is connected when the direction of the edge between nodes is ignored.
+
+    Note that if a graph is strongly connected (i.e. the graph is connected
+    even when we account for directionality), it is by definition weakly
+    connected as well.
 
     Parameters
     ----------
@@ -162,11 +144,18 @@ def is_weakly_connected(G):
     connected : bool
         True if the graph is weakly connected, False otherwise.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is undirected.
+
     See Also
     --------
     is_strongly_connected
     is_semiconnected
     is_connected
+    is_biconnected
+    weakly_connected_components
 
     Notes
     -----

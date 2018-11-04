@@ -4,7 +4,7 @@
 Bipartite Graph Algorithms
 ==========================
 """
-#    Copyright (C) 2013-2015 by
+#    Copyright (C) 2013-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -13,12 +13,12 @@ Bipartite Graph Algorithms
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = [ 'is_bipartite',
-            'is_bipartite_node_set',
-            'color',
-            'sets',
-            'density',
-            'degrees']
+__all__ = ['is_bipartite',
+           'is_bipartite_node_set',
+           'color',
+           'sets',
+           'density',
+           'degrees']
 
 
 def color(G):
@@ -37,7 +37,7 @@ def color(G):
 
     Raises
     ------
-    NetworkXError if the graph is not two-colorable.
+    exc:`NetworkXError` if the graph is not two-colorable.
 
     Examples
     --------
@@ -49,29 +49,30 @@ def color(G):
 
     You can use this to set a node attribute indicating the biparite set:
 
-    >>> nx.set_node_attributes(G, 'bipartite', c)
-    >>> print(G.node[0]['bipartite'])
+    >>> nx.set_node_attributes(G, c, 'bipartite')
+    >>> print(G.nodes[0]['bipartite'])
     1
-    >>> print(G.node[1]['bipartite'])
+    >>> print(G.nodes[1]['bipartite'])
     0
     """
     if G.is_directed():
         import itertools
+
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
-        neighbors=G.neighbors_iter
+        neighbors = G.neighbors
 
     color = {}
-    for n in G: # handle disconnected graphs
-        if n in color or len(G[n])==0: # skip isolates
+    for n in G:  # handle disconnected graphs
+        if n in color or len(G[n]) == 0:  # skip isolates
             continue
         queue = [n]
-        color[n] = 1 # nodes seen with color (1 or 0)
+        color[n] = 1  # nodes seen with color (1 or 0)
         while queue:
             v = queue.pop()
-            c = 1 - color[v] # opposite color of node v
+            c = 1 - color[v]  # opposite color of node v
             for w in neighbors(v):
                 if w in color:
                     if color[w] == color[v]:
@@ -80,8 +81,9 @@ def color(G):
                     color[w] = c
                     queue.append(w)
     # color isolates with 0
-    color.update(dict.fromkeys(nx.isolates(G),0))
+    color.update(dict.fromkeys(nx.isolates(G), 0))
     return color
+
 
 def is_bipartite(G):
     """ Returns True if graph G is bipartite, False if not.
@@ -107,7 +109,8 @@ def is_bipartite(G):
     except nx.NetworkXError:
         return False
 
-def is_bipartite_node_set(G,nodes):
+
+def is_bipartite_node_set(G, nodes):
     """Returns True if nodes and G/nodes are a bipartition of G.
 
     Parameters
@@ -130,28 +133,50 @@ def is_bipartite_node_set(G,nodes):
     For connected graphs the bipartite sets are unique.  This function handles
     disconnected graphs.
     """
-    S=set(nodes)
+    S = set(nodes)
     for CC in nx.connected_component_subgraphs(G):
-        X,Y=sets(CC)
-        if not ( (X.issubset(S) and Y.isdisjoint(S)) or
-                 (Y.issubset(S) and X.isdisjoint(S)) ):
+        X, Y = sets(CC)
+        if not ((X.issubset(S) and Y.isdisjoint(S)) or
+                (Y.issubset(S) and X.isdisjoint(S))):
             return False
     return True
 
 
-def sets(G):
+def sets(G, top_nodes=None):
     """Returns bipartite node sets of graph G.
 
-    Raises an exception if the graph is not bipartite.
+    Raises an exception if the graph is not bipartite or if the input
+    graph is disconnected and thus more than one valid solution exists.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     Parameters
     ----------
     G : NetworkX graph
 
+    top_nodes : container
+
+      Container with all nodes in one bipartite node set. If not supplied
+      it will be computed. But if more than one solution exists an exception
+      will be raised.
+
     Returns
     -------
     (X,Y) : two-tuple of sets
        One set of nodes for each part of the bipartite graph.
+
+    Raises
+    ------
+    AmbiguousSolution : Exception
+
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
+
+    NetworkXError: Exception
+
+      Raised if the input graph is not bipartite.
 
     Examples
     --------
@@ -166,11 +191,24 @@ def sets(G):
     See Also
     --------
     color
+
     """
-    c = color(G)
-    X = set(n for n in c if c[n]) # c[n] == 1
-    Y = set(n for n in c if not c[n]) # c[n] == 0
+    if G.is_directed():
+        is_connected = nx.is_weakly_connected
+    else:
+        is_connected = nx.is_connected
+    if top_nodes is not None:
+        X = set(top_nodes)
+        Y = set(G) - X
+    else:
+        if not is_connected(G):
+            msg = 'Disconnected graph: Ambiguous solution for bipartite sets.'
+            raise nx.AmbiguousSolution(msg)
+        c = color(G)
+        X = {n for n, is_top in c.items() if is_top}
+        Y = {n for n, is_top in c.items() if not is_top}
     return (X, Y)
+
 
 def density(B, nodes):
     """Return density of bipartite graph B.
@@ -180,7 +218,7 @@ def density(B, nodes):
     G : NetworkX graph
 
     nodes: list or container
-      Nodes in one set of the bipartite graph.
+      Nodes in one node set of the bipartite graph.
 
     Returns
     -------
@@ -198,22 +236,31 @@ def density(B, nodes):
     >>> bipartite.density(G,Y)
     1.0
 
+    Notes
+    -----
+    The container of nodes passed as argument must contain all nodes
+    in one of the two bipartite node sets to avoid ambiguity in the
+    case of disconnected graphs.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
+
     See Also
     --------
     color
     """
-    n=len(B)
-    m=nx.number_of_edges(B)
-    nb=len(nodes)
-    nt=n-nb
-    if m==0: # includes cases n==0 and n==1
-        d=0.0
+    n = len(B)
+    m = nx.number_of_edges(B)
+    nb = len(nodes)
+    nt = n - nb
+    if m == 0:  # includes cases n==0 and n==1
+        d = 0.0
     else:
         if B.is_directed():
-            d=m/(2.0*float(nb*nt))
+            d = m / (2.0 * float(nb * nt))
         else:
-            d= m/float(nb*nt)
+            d = m / float(nb * nt)
     return d
+
 
 def degrees(B, nodes, weight=None):
     """Return the degrees of the two node sets in the bipartite graph B.
@@ -223,7 +270,7 @@ def degrees(B, nodes, weight=None):
     G : NetworkX graph
 
     nodes: list or container
-      Nodes in one set of the bipartite graph.
+      Nodes in one node set of the bipartite graph.
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -241,14 +288,21 @@ def degrees(B, nodes, weight=None):
     >>> G = nx.complete_bipartite_graph(3,2)
     >>> Y=set([3,4])
     >>> degX,degY=bipartite.degrees(G,Y)
-    >>> degX
+    >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
+
+    Notes
+    -----
+    The container of nodes passed as argument must contain all nodes
+    in one of the two bipartite node sets to avoid ambiguity in the
+    case of disconnected graphs.
+    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
+    for further details on how bipartite graphs are handled in NetworkX.
 
     See Also
     --------
     color, density
     """
-    bottom=set(nodes)
-    top=set(B)-bottom
-    return (B.degree(top,weight),B.degree(bottom,weight))
-
+    bottom = set(nodes)
+    top = set(B) - bottom
+    return (B.degree(top, weight), B.degree(bottom, weight))

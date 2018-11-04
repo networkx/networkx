@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+import time
 from nose.tools import *
 import networkx as nx
 from networkx import NetworkXNotImplemented
+
 
 class TestStronglyConnected:
 
@@ -24,7 +26,7 @@ class TestStronglyConnected:
         self.gc.append((G, C))
 
         # Eppstein's tests
-        G = nx.DiGraph({0: [1], 1:[2, 3], 2:[4, 5], 3:[4, 5], 4:[6], 5:[], 6:[]})
+        G = nx.DiGraph({0: [1], 1: [2, 3], 2: [4, 5], 3: [4, 5], 4: [6], 5: [], 6: []})
         C = {
             frozenset([0]),
             frozenset([1]),
@@ -36,7 +38,7 @@ class TestStronglyConnected:
         }
         self.gc.append((G, C))
 
-        G = nx.DiGraph({0:[1], 1:[2, 3, 4], 2:[0, 3], 3:[4], 4:[3]})
+        G = nx.DiGraph({0: [1], 1: [2, 3, 4], 2: [0, 3], 3: [4], 4: [3]})
         C = {frozenset([0, 1, 2]), frozenset([3, 4])}
         self.gc.append((G, C))
 
@@ -46,7 +48,7 @@ class TestStronglyConnected:
             assert_equal({frozenset(g) for g in scc(G)}, C)
 
     def test_tarjan_recursive(self):
-        scc=nx.strongly_connected_components_recursive
+        scc = nx.strongly_connected_components_recursive
         for G, C in self.gc:
             assert_equal({frozenset(g) for g in scc(G)}, C)
 
@@ -67,6 +69,7 @@ class TestStronglyConnected:
             else:
                 assert_false(nx.is_strongly_connected(G))
 
+    # deprecated
     def test_strongly_connected_component_subgraphs(self):
         scc = nx.strongly_connected_component_subgraphs
         for G, C in self.gc:
@@ -86,7 +89,7 @@ class TestStronglyConnected:
         # nodes
         assert_equal(sorted(cG.nodes()), [0, 1, 2, 3])
         # edges
-        mapping={}
+        mapping = {}
         for i, component in enumerate(scc):
             for n in component:
                 mapping[n] = i
@@ -116,7 +119,7 @@ class TestStronglyConnected:
         G.add_edge(4, 3)
         scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
-        assert_equal(cG.nodes(), [0, 1])
+        assert_equal(sorted(cG.nodes()), [0, 1])
         if 1 in scc[0]:
             edge = (0, 1)
         else:
@@ -132,14 +135,49 @@ class TestStronglyConnected:
         assert_true(all(0 == cN for n, cN in mapping.items() if n in C[0]))
         assert_true(all(1 == cN for n, cN in mapping.items() if n in C[1]))
         for n, d in cG.nodes(data=True):
-            assert_equal(set(C[n]), cG.node[n]['members'])
+            assert_equal(set(C[n]), cG.nodes[n]['members'])
+
+    def test_null_graph(self):
+        G = nx.DiGraph()
+        assert_equal(list(nx.strongly_connected_components(G)), [])
+        assert_equal(list(nx.kosaraju_strongly_connected_components(G)), [])
+        assert_equal(list(nx.strongly_connected_components_recursive(G)), [])
+        assert_equal(len(nx.condensation(G)), 0)
+        assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
 
     def test_connected_raise(self):
-        G=nx.Graph()
+        G = nx.Graph()
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.kosaraju_strongly_connected_components, G)
         assert_raises(NetworkXNotImplemented, nx.strongly_connected_components_recursive, G)
-        assert_raises(NetworkXNotImplemented, nx.strongly_connected_component_subgraphs, G)
         assert_raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
         assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
         assert_raises(NetworkXNotImplemented, nx.condensation, G)
+        # deprecated
+        assert_raises(NetworkXNotImplemented, nx.strongly_connected_component_subgraphs, G)
+
+#    Commented out due to variability on Travis-CI hardware/operating systems
+#    def test_linear_time(self):
+#        # See Issue #2831
+#        count = 100  # base case
+#        dg = nx.DiGraph()
+#        dg.add_nodes_from([0, 1])
+#        for i in range(2, count):
+#            dg.add_node(i)
+#            dg.add_edge(i, 1)
+#            dg.add_edge(0, i)
+#        t = time.time()
+#        ret = tuple(nx.strongly_connected_components(dg))
+#        dt = time.time() - t
+#
+#        count = 200
+#        dg = nx.DiGraph()
+#        dg.add_nodes_from([0, 1])
+#        for i in range(2, count):
+#            dg.add_node(i)
+#            dg.add_edge(i, 1)
+#            dg.add_edge(0, i)
+#        t = time.time()
+#        ret = tuple(nx.strongly_connected_components(dg))
+#        dt2 = time.time() - t
+#        assert_less(dt2, dt * 2.3)  # should be 2 times longer for this graph

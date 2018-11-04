@@ -1,46 +1,46 @@
 # coding=utf8
-"""
-Betweenness centrality measures.
-"""
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2018 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Author: Aric Hagberg (hagberg@lanl.gov)
+"""Betweenness centrality measures."""
+from __future__ import division
 from heapq import heappush, heappop
 from itertools import count
-import networkx as nx
-import random
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
-__all__ = ['betweenness_centrality',
-           'edge_betweenness_centrality',
+import networkx as nx
+from networkx.utils import py_random_state
+
+__all__ = ['betweenness_centrality', 'edge_betweenness_centrality',
            'edge_betweenness']
 
 
+@py_random_state(5)
 def betweenness_centrality(G, k=None, normalized=True, weight=None,
-                           endpoints=False,
-                           seed=None):
+                           endpoints=False, seed=None):
     r"""Compute the shortest-path betweenness centrality for nodes.
 
-    Betweenness centrality of a node `v` is the sum of the
-    fraction of all-pairs shortest paths that pass through `v`:
+    Betweenness centrality of a node $v$ is the sum of the
+    fraction of all-pairs shortest paths that pass through $v$
 
     .. math::
 
        c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
-    where `V` is the set of nodes, `\sigma(s, t)` is the number of
-    shortest `(s, t)`-paths,  and `\sigma(s, t|v)` is the number of those
-    paths  passing through some  node `v` other than `s, t`.
-    If `s = t`, `\sigma(s, t) = 1`, and if `v \in {s, t}`,
-    `\sigma(s, t|v) = 0` [2]_.
+    where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
+    shortest $(s, t)$-paths,  and $\sigma(s, t|v)$ is the number of
+    those paths  passing through some  node $v$ other than $s, t$.
+    If $s = t$, $\sigma(s, t) = 1$, and if $v \in {s, t}$,
+    $\sigma(s, t|v) = 0$ [2]_.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
     k : int, optional (default=None)
       If k is not None use k node samples to estimate betweenness.
@@ -52,12 +52,17 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
       for graphs, and `1/((n-1)(n-2))` for directed graphs where `n`
       is the number of nodes in G.
 
-    weight : None or string, optional
+    weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
 
     endpoints : bool, optional
       If True include the endpoints in the shortest path counts.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+        Note that this is only used if k is not None.
 
     Returns
     -------
@@ -102,14 +107,12 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
        A set of measures of centrality based on betweenness.
        Sociometry 40: 35–41, 1977
        http://moreno.ss.uci.edu/23.pdf
-
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     if k is None:
         nodes = G
     else:
-        random.seed(seed)
-        nodes = random.sample(G.nodes(), k)
+        nodes = seed.sample(G.nodes(), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
@@ -122,32 +125,31 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
         else:
             betweenness = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
-    betweenness = _rescale(betweenness, len(G),
-                           normalized=normalized,
-                           directed=G.is_directed(),
-                           k=k)
+    betweenness = _rescale(betweenness, len(G), normalized=normalized,
+                           directed=G.is_directed(), k=k, endpoints=endpoints)
     return betweenness
 
 
+@py_random_state(4)
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
                                 seed=None):
     r"""Compute betweenness centrality for edges.
 
-    Betweenness centrality of an edge `e` is the sum of the
-    fraction of all-pairs shortest paths that pass through `e`:
+    Betweenness centrality of an edge $e$ is the sum of the
+    fraction of all-pairs shortest paths that pass through $e$
 
     .. math::
 
        c_B(e) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
-    where `V` is the set of nodes,`\sigma(s, t)` is the number of
-    shortest `(s, t)`-paths, and `\sigma(s, t|e)` is the number of
-    those paths passing through edge `e` [2]_.
+    where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
+    shortest $(s, t)$-paths, and $\sigma(s, t|e)$ is the number of
+    those paths passing through edge $e$ [2]_.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
     k : int, optional (default=None)
       If k is not None use k node samples to estimate betweenness.
@@ -155,13 +157,18 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
       Higher values give better approximation.
 
     normalized : bool, optional
-      If True the betweenness values are normalized by `2/(n(n-1))`
-      for graphs, and `1/(n(n-1))` for directed graphs where `n`
+      If True the betweenness values are normalized by $2/(n(n-1))$
+      for graphs, and $1/(n(n-1))$ for directed graphs where $n$
       is the number of nodes in G.
 
-    weight : None or string, optional
+    weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+        Note that this is only used if k is not None.
 
     Returns
     -------
@@ -197,8 +204,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     if k is None:
         nodes = G
     else:
-        random.seed(seed)
-        nodes = random.sample(G.nodes(), k)
+        nodes = seed.sample(G.nodes(), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
@@ -210,8 +216,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     # rescaling
     for n in G:  # remove nodes to only return edges
         del betweenness[n]
-    betweenness = _rescale_e(betweenness, len(G),
-                             normalized=normalized,
+    betweenness = _rescale_e(betweenness, len(G), normalized=normalized,
                              directed=G.is_directed())
     return betweenness
 
@@ -249,7 +254,7 @@ def _single_source_shortest_path_basic(G, s):
     return S, P, sigma
 
 
-def _single_source_dijkstra_path_basic(G, s, weight='weight'):
+def _single_source_dijkstra_path_basic(G, s, weight):
     # modified from Eppstein
     S = []
     P = {}
@@ -288,7 +293,7 @@ def _accumulate_basic(betweenness, S, P, sigma, s):
     delta = dict.fromkeys(S, 0)
     while S:
         w = S.pop()
-        coeff = (1.0 + delta[w]) / sigma[w]
+        coeff = (1 + delta[w]) / sigma[w]
         for v in P[w]:
             delta[v] += sigma[v] * coeff
         if w != s:
@@ -301,7 +306,7 @@ def _accumulate_endpoints(betweenness, S, P, sigma, s):
     delta = dict.fromkeys(S, 0)
     while S:
         w = S.pop()
-        coeff = (1.0 + delta[w]) / sigma[w]
+        coeff = (1 + delta[w]) / sigma[w]
         for v in P[w]:
             delta[v] += sigma[v] * coeff
         if w != s:
@@ -313,7 +318,7 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
     delta = dict.fromkeys(S, 0)
     while S:
         w = S.pop()
-        coeff = (1.0 + delta[w]) / sigma[w]
+        coeff = (1 + delta[w]) / sigma[w]
         for v in P[w]:
             c = sigma[v] * coeff
             if (v, w) not in betweenness:
@@ -326,15 +331,22 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
     return betweenness
 
 
-def _rescale(betweenness, n, normalized, directed=False, k=None):
-    if normalized is True:
-        if n <= 2:
+def _rescale(betweenness, n, normalized,
+             directed=False, k=None, endpoints=False):
+    if normalized:
+        if endpoints:
+            if n < 2:
+                scale = None  # no normalization
+            else:
+                # Scale factor should include endpoint nodes
+                scale = 1 / (n * (n - 1))
+        elif n <= 2:
             scale = None  # no normalization b=0 for all nodes
         else:
-            scale = 1.0 / ((n - 1) * (n - 2))
+            scale = 1 / ((n - 1) * (n - 2))
     else:  # rescale by 2 for undirected graphs
         if not directed:
-            scale = 1.0 / 2.0
+            scale = 0.5
         else:
             scale = None
     if scale is not None:
@@ -346,14 +358,14 @@ def _rescale(betweenness, n, normalized, directed=False, k=None):
 
 
 def _rescale_e(betweenness, n, normalized, directed=False, k=None):
-    if normalized is True:
+    if normalized:
         if n <= 1:
             scale = None  # no normalization b=0 for all nodes
         else:
-            scale = 1.0 / (n * (n - 1))
+            scale = 1 / (n * (n - 1))
     else:  # rescale by 2 for undirected graphs
         if not directed:
-            scale = 1.0 / 2.0
+            scale = 0.5
         else:
             scale = None
     if scale is not None:

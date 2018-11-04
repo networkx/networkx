@@ -66,6 +66,91 @@ graph [
 ]
 """
 
+    def test_parse_gml_cytoscape_bug(self):
+        # example from issue #321, originally #324 in trac
+        cytoscape_example = """
+Creator "Cytoscape"
+Version 1.0
+graph   [
+    node    [
+        root_index  -3
+        id  -3
+        graphics    [
+            x   -96.0
+            y   -67.0
+            w   40.0
+            h   40.0
+            fill    "#ff9999"
+            type    "ellipse"
+            outline "#666666"
+            outline_width   1.5
+        ]
+        label   "node2"
+    ]
+    node    [
+        root_index  -2
+        id  -2
+        graphics    [
+            x   63.0
+            y   37.0
+            w   40.0
+            h   40.0
+            fill    "#ff9999"
+            type    "ellipse"
+            outline "#666666"
+            outline_width   1.5
+        ]
+        label   "node1"
+    ]
+    node    [
+        root_index  -1
+        id  -1
+        graphics    [
+            x   -31.0
+            y   -17.0
+            w   40.0
+            h   40.0
+            fill    "#ff9999"
+            type    "ellipse"
+            outline "#666666"
+            outline_width   1.5
+        ]
+        label   "node0"
+    ]
+    edge    [
+        root_index  -2
+        target  -2
+        source  -1
+        graphics    [
+            width   1.5
+            fill    "#0000ff"
+            type    "line"
+            Line    [
+            ]
+            source_arrow    0
+            target_arrow    3
+        ]
+        label   "DirectedEdge"
+    ]
+    edge    [
+        root_index  -1
+        target  -1
+        source  -3
+        graphics    [
+            width   1.5
+            fill    "#0000ff"
+            type    "line"
+            Line    [
+            ]
+            source_arrow    0
+            target_arrow    3
+        ]
+        label   "DirectedEdge"
+    ]
+]
+"""
+        nx.parse_gml(cytoscape_example)
+
     def test_parse_gml(self):
         G = nx.parse_gml(self.simple_data, label='label')
         assert_equals(sorted(G.nodes()),
@@ -96,22 +181,35 @@ graph [
         os.close(fd)
         os.unlink(fname)
 
+    def test_labels_are_strings(self):
+        # GML requires labels to be strings (i.e., in quotes)
+        answer = """graph [
+  node [
+    id 0
+    label "1203"
+  ]
+]"""
+        G = nx.Graph()
+        G.add_node(1203)
+        data = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
+        assert_equal(data, answer)
+
     def test_relabel_duplicate(self):
         data = """
 graph
 [
-	label	""
-	directed	1
-	node
-	[
-		id	0
-		label	"same"
-	]
-	node
-	[
-		id	1
-		label	"same"
-	]
+        label   ""
+        directed        1
+        node
+        [
+                id      0
+                label   "same"
+        ]
+        node
+        [
+                id      1
+                label   "same"
+        ]
 ]
 """
         fh = io.BytesIO(data.encode('UTF-8'))
@@ -122,7 +220,7 @@ graph
     def test_tuplelabels(self):
         # https://github.com/networkx/networkx/pull/1048
         # Writing tuple labels to GML failed.
-        G = nx.Graph()
+        G = nx.OrderedGraph()
         G.add_edge((0, 1), (1, 0))
         data = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
         answer = """graph [
@@ -145,8 +243,9 @@ graph
         # https://github.com/networkx/networkx/issues/1061
         # Encoding quotes as HTML entities.
         G = nx.path_graph(1)
+        G.name = "path_graph(1)"
         attr = 'This is "quoted" and this is a copyright: ' + unichr(169)
-        G.node[0]['demo'] = attr
+        G.nodes[0]['demo'] = attr
         fobj = tempfile.NamedTemporaryFile()
         nx.write_gml(G, fobj)
         fobj.seek(0)
@@ -156,8 +255,42 @@ graph
   name "path_graph(1)"
   node [
     id 0
-    label 0
+    label "0"
     demo "This is &#34;quoted&#34; and this is a copyright: &#169;"
+  ]
+]"""
+        assert_equal(data, answer)
+
+    def test_unicode_node(self):
+        node = 'node' + unichr(169)
+        G = nx.Graph()
+        G.add_node(node)
+        fobj = tempfile.NamedTemporaryFile()
+        nx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip().decode('ascii')
+        answer = """graph [
+  node [
+    id 0
+    label "node&#169;"
+  ]
+]"""
+        assert_equal(data, answer)
+
+    def test_float_label(self):
+        node = 1.0
+        G = nx.Graph()
+        G.add_node(node)
+        fobj = tempfile.NamedTemporaryFile()
+        nx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip().decode('ascii')
+        answer = """graph [
+  node [
+    id 0
+    label "1.0"
   ]
 ]"""
         assert_equal(data, answer)
@@ -177,7 +310,7 @@ graph
                     gml += ' directed ' + str(int(directed))
                 if multigraph is not None:
                     gml += ' multigraph ' + str(int(multigraph))
-                gml += ' node [ id 0 label 0 ]'
+                gml += ' node [ id 0 label "0" ]'
                 gml += ' edge [ source 0 target 0 ]'
                 gml += ' ]'
                 G = nx.parse_gml(gml)
@@ -190,7 +323,7 @@ graph
                     gml += '  multigraph 1\n'
                 gml += """  node [
     id 0
-    label 0
+    label "0"
   ]
   edge [
     source 0
@@ -202,8 +335,8 @@ graph
                 assert_equal(gml, '\n'.join(nx.generate_gml(G)))
 
     def test_data_types(self):
-        data = [10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
-                [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}]]
+        data = [True, False, 10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
+                [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}, (2, "3")]]
         try:
             data.append(unichr(0x14444))  # fails under IronPython
         except ValueError:
@@ -221,9 +354,9 @@ graph
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert_equal(data, G.name)
         assert_equal({'name': data, unicode('data'): data}, G.graph)
-        assert_equal(G.nodes(data=True),
+        assert_equal(list(G.nodes(data=True)),
                      [(0, dict(int=-1, data=dict(data=data)))])
-        assert_equal(G.edges(data=True), [(0, 0, dict(float=-2.5, data=data))])
+        assert_equal(list(G.edges(data=True)), [(0, 0, dict(float=-2.5, data=data))])
         G = nx.Graph()
         G.graph['data'] = 'frozenset([1, 2, 3])'
         G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)
@@ -323,3 +456,14 @@ graph
         G.graph['data'] = []
         assert_generate_error(G)
         assert_generate_error(G, stringizer=len)
+
+    def test_label_kwarg(self):
+        G = nx.parse_gml(self.simple_data, label='id')
+        assert_equals(sorted(G.nodes), [1, 2, 3])
+        labels = [G.nodes[n]['label'] for n in sorted(G.nodes)]
+        assert_equals(labels, ['Node 1', 'Node 2', 'Node 3'])
+
+        G = nx.parse_gml(self.simple_data, label=None)
+        assert_equals(sorted(G.nodes), [1, 2, 3])
+        labels = [G.nodes[n]['label'] for n in sorted(G.nodes)]
+        assert_equals(labels, ['Node 1', 'Node 2', 'Node 3'])

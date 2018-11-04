@@ -4,12 +4,22 @@ Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
 import networkx as nx
 
-# Define the default flow function for computing maximum flow.
+from .boykovkolmogorov import boykov_kolmogorov
+from .dinitz_alg import dinitz
 from .edmondskarp import edmonds_karp
 from .preflowpush import preflow_push
 from .shortestaugmentingpath import shortest_augmenting_path
 from .utils import build_flow_dict
+# Define the default flow function for computing maximum flow.
 default_flow_func = preflow_push
+# Functions that don't support cutoff for minimum cut computations.
+flow_funcs = [
+    boykov_kolmogorov,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+]
 
 __all__ = ['maximum_flow',
            'maximum_flow_value',
@@ -17,20 +27,21 @@ __all__ = ['maximum_flow',
            'minimum_cut_value']
 
 
-def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
+def maximum_flow(flowG, _s, _t,
+                 capacity='capacity', flow_func=None, **kwargs):
     """Find a maximum single-commodity flow.
 
     Parameters
     ----------
-    G : NetworkX graph
+    flowG : NetworkX graph
         Edges of the graph are expected to have an attribute called
         'capacity'. If this attribute is not present, the edge is
         considered to have infinite capacity.
 
-    s : node
+    _s : node
         Source node for the flow.
 
-    t : node
+    _t : node
         Sink node for the flow.
 
     capacity : string
@@ -85,7 +96,7 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
@@ -155,26 +166,27 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    R = flow_func(G, s, t, capacity=capacity, value_only=False, **kwargs)
-    flow_dict = build_flow_dict(G, R)
+    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=False, **kwargs)
+    flow_dict = build_flow_dict(flowG, R)
 
     return (R.graph['flow_value'], flow_dict)
 
 
-def maximum_flow_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
+def maximum_flow_value(flowG, _s, _t,
+                       capacity='capacity', flow_func=None, **kwargs):
     """Find the value of maximum single-commodity flow.
 
     Parameters
     ----------
-    G : NetworkX graph
+    flowG : NetworkX graph
         Edges of the graph are expected to have an attribute called
         'capacity'. If this attribute is not present, the edge is
         considered to have infinite capacity.
 
-    s : node
+    _s : node
         Source node for the flow.
 
-    t : node
+    _t : node
         Sink node for the flow.
 
     capacity : string
@@ -225,7 +237,7 @@ def maximum_flow_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
@@ -293,12 +305,13 @@ def maximum_flow_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
+    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
 
     return R.graph['flow_value']
 
 
-def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
+def minimum_cut(flowG, _s, _t,
+                capacity='capacity', flow_func=None, **kwargs):
     """Compute the value and the node partition of a minimum (s, t)-cut.
 
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -306,15 +319,15 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     Parameters
     ----------
-    G : NetworkX graph
+    flowG : NetworkX graph
         Edges of the graph are expected to have an attribute called
         'capacity'. If this attribute is not present, the edge is
         considered to have infinite capacity.
 
-    s : node
+    _s : node
         Source node for the flow.
 
-    t : node
+    _t : node
         Sink node for the flow.
 
     capacity : string
@@ -362,7 +375,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
@@ -420,7 +433,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     ...     cutset.update((u, v) for v in nbrs if v in non_reachable)
     >>> print(sorted(cutset))
     [('c', 'y'), ('x', 'b')]
-    >>> cut_value == sum(G.edge[u][v]['capacity'] for (u, v) in cutset)
+    >>> cut_value == sum(G.edges[u, v]['capacity'] for (u, v) in cutset)
     True
 
     You can also use alternative algorithms for computing the
@@ -441,12 +454,11 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if (kwargs.get('cutoff') is not None and
-        flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
+    if kwargs.get('cutoff') is not None and flow_func in flow_funcs:
         raise nx.NetworkXError("cutoff should not be specified.")
 
-    R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
-    # Remove saturated edges from the residual network 
+    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
+    # Remove saturated edges from the residual network
     cutset = [(u, v, d) for u, v, d in R.edges(data=True)
               if d['flow'] == d['capacity']]
     R.remove_edges_from(cutset)
@@ -454,16 +466,17 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     # Then, reachable and non reachable nodes from source in the
     # residual network form the node partition that defines
     # the minimum cut.
-    non_reachable = set(nx.shortest_path_length(R, target=t))
-    partition = (set(G) - non_reachable, non_reachable)
-    # Finaly add again cutset edges to the residual network to make
+    non_reachable = set(dict(nx.shortest_path_length(R, target=_t)))
+    partition = (set(flowG) - non_reachable, non_reachable)
+    # Finally add again cutset edges to the residual network to make
     # sure that it is reusable.
     if cutset is not None:
         R.add_edges_from(cutset)
     return (R.graph['flow_value'], partition)
 
 
-def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
+def minimum_cut_value(flowG, _s, _t,
+                      capacity='capacity', flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -471,15 +484,15 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     Parameters
     ----------
-    G : NetworkX graph
+    flowG : NetworkX graph
         Edges of the graph are expected to have an attribute called
         'capacity'. If this attribute is not present, the edge is
         considered to have infinite capacity.
 
-    s : node
+    _s : node
         Source node for the flow.
 
-    t : node
+    _t : node
         Sink node for the flow.
 
     capacity : string
@@ -524,7 +537,7 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     Notes
     -----
-    The function used in the flow_func paramter has to return a residual
+    The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
@@ -592,10 +605,9 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if (kwargs.get('cutoff') is not None and
-        flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
+    if kwargs.get('cutoff') is not None and flow_func in flow_funcs:
         raise nx.NetworkXError("cutoff should not be specified.")
 
-    R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
+    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
 
     return R.graph['flow_value']
