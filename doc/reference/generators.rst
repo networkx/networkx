@@ -115,6 +115,7 @@ Random Graphs
    connected_watts_strogatz_graph
    random_regular_graph
    barabasi_albert_graph
+   dual_barabasi_albert_graph
    extended_barabasi_albert_graph
    powerlaw_cluster_graph
    random_kernel_graph
