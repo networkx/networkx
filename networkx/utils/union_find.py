@@ -90,6 +90,10 @@ class UnionFind:
             [['x', 'y'], ['z']]
 
         """
+        # Ensure fully pruned paths
+        for x in self.parents.keys():
+            _ = self[x] # Evaluated for side-effect only
+
         # TODO In Python 3.3+, this should be `yield from ...`.
         for block in groups(self.parents).values():
             yield block
