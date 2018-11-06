@@ -124,6 +124,7 @@ is partially historical, and now, mostly arbitrary.
 - Jon Crall, Github: `Erotemic <https://github.com/Erotemic>`_
 - Issa Moradnejad, `Github <https://github.com/Moradnejad>`_, `LinkedIn <https://linkedin.com/in/moradnejad/>`_
 - Julien Klaus
+- Peter C. Kroon, Github: `pckroon <https://github.com/pckroon>`_
 
 Support
 -------
