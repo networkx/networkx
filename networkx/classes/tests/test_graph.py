@@ -571,6 +571,19 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(H.nodes[1]['c'], 'green')
         assert_equal(H.nodes[2]['c'], 'blue')
         assert_equal(H.nodes[3]['c'], 'cyan')
+        # test hashable node_attr_dict
+
+        class hashable_dict(dict):
+            # bad class, but enough to check add_nodes_from method
+            def __hash__(self):
+                return hash(tuple(self.items()))
+
+        R = self.Graph()
+        R.add_nodes_from([(1, hashable_dict(weight=1))])
+        R.add_nodes_from([(1, 2)])
+        assert 1 in R
+        assert R.nodes[1] == {'weight': 1}
+        assert (1, 2) in R
 
     def test_remove_node(self):
         G = self.K3

@@ -10,6 +10,7 @@
 #            Pieter Swart <swart@lanl.gov>
 """Base class for directed graphs."""
 from copy import deepcopy
+from collections import Mapping
 
 import networkx as nx
 from networkx.classes.graph import Graph
@@ -470,30 +471,22 @@ class DiGraph(Graph):
 
         """
         for n in nodes_for_adding:
-            # keep all this inside try/except because
-            # CPython throws TypeError on n not in self._succ,
-            # while pre-2.7.5 ironpython throws on self._succ[n]
-            try:
-                if n not in self._succ:
-                    self._succ[n] = self.adjlist_inner_dict_factory()
-                    self._pred[n] = self.adjlist_inner_dict_factory()
-                    attr_dict = self._node[n] = self.node_attr_dict_factory()
-                    attr_dict.update(attr)
-                else:
-                    self._node[n].update(attr)
-            except TypeError:
-                nn, ndict = n
-                if nn not in self._succ:
-                    self._succ[nn] = self.adjlist_inner_dict_factory()
-                    self._pred[nn] = self.adjlist_inner_dict_factory()
-                    newdict = attr.copy()
-                    newdict.update(ndict)
-                    attr_dict = self._node[nn] = self.node_attr_dict_factory()
-                    attr_dict.update(newdict)
-                else:
-                    olddict = self._node[nn]
-                    olddict.update(attr)
-                    olddict.update(ndict)
+            if isinstance(n, (tuple, list)) and len(n) == 2 and isinstance(n[1], Mapping):
+                # check for (node, attribute dict) tuple.
+                # attribute dict may be hashable
+                new_attr_dict = attr.copy()
+                new_attr_dict.update(n[1])
+                n = n[0]
+            else:
+                new_attr_dict = attr
+
+            if n not in self._node:
+                self._succ[n] = self.adjlist_inner_dict_factory()
+                self._pred[n] = self.adjlist_inner_dict_factory()
+                attr_dict = self._node[n] = self.node_attr_dict_factory()
+                attr_dict.update(new_attr_dict)
+            else:
+                self._node[n].update(new_attr_dict)
 
     def remove_node(self, n):
         """Remove node n.
