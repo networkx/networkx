@@ -121,6 +121,7 @@ is partially historical, and now, mostly arbitrary.
 - James Owen, Github: `leamingrad <https://github.com/leamingrad>`_
 - Robert Gmyr, Github: `gmyr <https://github.com/gmyr>`_
 - Mike Trenfield
+- Tanner Lee Woody, Github: `twoody <https://github.com/twoody>`_
 
 Support
 -------
