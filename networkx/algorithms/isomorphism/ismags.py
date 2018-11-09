@@ -246,6 +246,8 @@ class ISMAGS:
        Enumeration", PLoS One 9(5): e97896, 2014.
        https://doi.org/10.1371/journal.pone.0097896
     """
+    _symmetry_cache = {}
+
     def __init__(self, graph, subgraph, node_match=None, edge_match=None):
         """
         Parameters
@@ -398,7 +400,7 @@ class ISMAGS:
             return cmp(graph1.edges[edge1], graph2.edges[edge2])
         return comparer
 
-    def find_subgraphs(self, symmetry=True):
+    def find_isomorphisms(self, symmetry=True):
         """
         Find all subgraph isomorphisms between :attr:`subgraph` <=
         :attr:`graph`.
@@ -498,14 +500,16 @@ class ISMAGS:
                     tuple(map(tuple, node_partitions)), tuple(edge_colors.items())))
         if key in self._symmetry_cache:
             return self._symmetry_cache[key]
-        node_partitions = self._refine_node_partitions(graph,
-                                                       node_partitions,
-                                                       edge_colors)
+        node_partitions = list(self._refine_node_partitions(graph,
+                                                            node_partitions,
+                                                            edge_colors))
+        assert len(node_partitions) == 1
+        node_partitions = node_partitions[0]
         permutations, cosets = self._process_opp(graph,
                                                  node_partitions,
                                                  node_partitions,
                                                  edge_colors)
-        self._symmetry_cache[key] = permutations, cosets
+        self.__class__._symmetry_cache[key] = permutations, cosets
         return permutations, cosets
 
     def is_isomorphic(self, symmetry=False):
@@ -531,15 +535,26 @@ class ISMAGS:
         # symmetry=False, since we only need to know whether there is any
         # example; figuring out all symmetry elements probably costs more time
         # than it gains.
-        isom = next(self.find_subgraphs(symmetry=symmetry), None)
+        isom = next(self.subgraph_isomorphisms_iter(symmetry=symmetry), None)
         return isom is not None
 
     def isomorphisms_iter(self, symmetry=True):
+        """
+        Does the same as :meth:`find_isomorphisms` if :attr:`graph` and
+        :attr:`subgraph` have the same number of nodes.
+        
+        .. automethod:: find_isomorphisms
+        """
         if len(self.graph) == len(self.subgraph):
             yield from self.subgraph_isomorphisms_iter()
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        return self.find_subgraphs(symmetry)
+        """
+        Alternative name for :meth:`find_isomorphisms`.
+
+        .. automethod:: find_isomorphisms
+        """
+        return self.find_isomorphisms(symmetry)
 
     def _find_nodecolor_candidates(self):
         """
@@ -596,8 +611,24 @@ class ISMAGS:
 
         return node_edge_colors
 
+    @staticmethod
+    def _get_permutations_by_length(items):
+        """
+        Get all permutations of items, but only permute items with the same
+        length.
+
+        >>> list(_get_permutations_by_length([[1], [2], [3, 4], [4, 5]]))
+        [[[1], [2], [3, 4], [4, 5]], [[2], [1], [3, 4], [4, 5]],
+         [[1], [2], [4, 5], [3, 4]], [[2], [1], [4, 5], [3, 4]]]
+        """
+        by_len = defaultdict(list)
+        for item in items:
+            by_len[len(item)].append(item)
+
+        yield from itertools.product(*(itertools.permutations(by_len[l]) for l in sorted(by_len)))
+
     @classmethod
-    def _refine_node_partitions(cls, graph, node_partitions, edge_colors):
+    def _refine_node_partitions(cls, graph, node_partitions, edge_colors, branch=False):
         """
         Given a partition of nodes in graph, make the partitions smaller such
         that all nodes in a partition have 1) the same color, and 2) the same
@@ -606,16 +637,40 @@ class ISMAGS:
         def equal_color(node1, node2):
             return node_edge_colors[node1] == node_edge_colors[node2]
 
-        while True:
-            node_colors = partition_to_color(node_partitions)
-            node_edge_colors = cls._find_node_edge_color(graph, node_colors, edge_colors)
-            to_refine = any(not are_all_equal(node_edge_colors[node] for node in nodes)
-                            for nodes in node_partitions)
-            if not to_refine:
-                break
-            # Preserve the original order of the partitions where valid
-            node_partitions = make_partitions((n for p in node_partitions for n in p), equal_color)
-        return node_partitions
+        node_partitions = list(node_partitions)
+        node_colors = partition_to_color(node_partitions)
+        node_edge_colors = cls._find_node_edge_color(graph, node_colors, edge_colors)
+        if all(are_all_equal(node_edge_colors[node] for node in partition)
+               for partition in node_partitions):
+            yield node_partitions
+            return
+
+        new_partitions = []
+        output = [new_partitions]
+        for partition in node_partitions:
+            if not are_all_equal(node_edge_colors[node] for node in partition):
+                refined = make_partitions(partition, equal_color)
+                if branch and len(refined) != 1 and\
+                        len({len(r) for r in refined}) != len([len(r) for r in refined]):
+                    # This is where it breaks. There are multiple new cells
+                    # in refined with the same length, and their order
+                    # matters.
+                    # So option 1) Hit it with a big hammer and simply make all
+                    # orderings.
+                    permutations = cls._get_permutations_by_length(refined)
+                    new_output = []
+                    for n_p in output:
+                        for permutation in permutations:
+                            new_output.append(n_p + list(permutation[0]))
+                    output = new_output
+                else:
+                    for n_p in output:
+                        n_p.extend(sorted(refined, key=len))
+            else:
+                for n_p in output:
+                    n_p.append(partition)
+        for n_p in output:
+            yield from cls._refine_node_partitions(graph, n_p, edge_colors, branch)
 
     def _edges_of_same_color(self, sgn1, sgn2):
         """
@@ -876,23 +931,12 @@ class ISMAGS:
                                                           edge_colors)
         new_bottom_partitions = self._refine_node_partitions(graph,
                                                              new_bottom_partitions,
-                                                             edge_colors)
-        # We collect the nodes that are coupled so we can use it as a
-        # sanity check.
-        coupled = self._find_coupled_nodes(new_top_partitions, new_bottom_partitions)
-        # Sort the partitions by size. This works by the grace that sort
-        # is stable. We do this so we can deal with partitions like this:
-        # [{4}, {5, 6}, {0}, {1}, {3}, {2}] [{0, 4}, {5}, {6}, {1}, {3}, {2}]
-        # We need to do this, because _refine_node_partitions doesn't (can't?)
-        # keep the order sane and produces the example partitions above.
-        new_top_partitions = sorted(new_top_partitions, key=len)
-        new_bottom_partitions = sorted(new_bottom_partitions, key=len)
-        new_coupled = self._find_coupled_nodes(new_top_partitions, new_bottom_partitions)
-        # Make sure coupled <= new_coupled. This means that everything
-        # that was coupled still is. There may be more items coupled now
-        # though, and that's fine.
-        assert all(new_coupled[k] == v for k, v in coupled.items())
-        return new_top_partitions, new_bottom_partitions
+                                                             edge_colors, branch=True)
+        new_top_partitions = list(new_top_partitions)
+        assert len(new_top_partitions) == 1
+        new_top_partitions = new_top_partitions[0]
+        for bot in new_bottom_partitions:
+            yield list(new_top_partitions), bot
 
     def _process_opp(self, graph, top_partitions, bottom_partitions,
                      edge_colors, orbits=None, cosets=None):
@@ -943,17 +987,18 @@ class ISMAGS:
             partitions = self._couple_nodes(top_partitions, bottom_partitions,
                                             pair_idx, node, node2, graph,
                                             edge_colors)
-            new_top_partitions, new_bottom_partitions = partitions
+            for opp in partitions:
+                new_top_partitions, new_bottom_partitions = opp
 
-            new_perms, new_cosets = self._process_opp(graph,
-                                                      new_top_partitions,
-                                                      new_bottom_partitions,
-                                                      edge_colors,
-                                                      orbits,
-                                                      cosets)
-            # COMBINATION
-            permutations += new_perms
-            cosets.update(new_cosets)
+                new_perms, new_cosets = self._process_opp(graph,
+                                                          new_top_partitions,
+                                                          new_bottom_partitions,
+                                                          edge_colors,
+                                                          orbits,
+                                                          cosets)
+                # COMBINATION
+                permutations += new_perms
+                cosets.update(new_cosets)
 
         mapped = {k for top, bottom in zip(top_partitions, bottom_partitions)
                   for k in top if len(top) == 1 and top == bottom}

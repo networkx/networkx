@@ -60,6 +60,24 @@ class TestSelfIsomorphism(object):
             assert_equal(list(ismags.subgraph_isomorphisms_iter(symmetry=True)),
                          [{n: n for n in graph.nodes}])
 
+    def test_edgecase_self_isomorphism(self):
+        """
+        This edgecase is one of the cases in which it is hard to find all
+        symmetry elements.
+        """
+        graph = nx.Graph()
+        graph.add_path(range(5))
+        graph.add_edges_from([(2, 5), (5, 6)])
+
+        ismags = iso.ISMAGS(graph, graph)
+        ismags_answer = list(ismags.find_isomorphisms(True))
+        assert ismags_answer == [{n: n for n in graph.nodes}]
+
+        graph = nx.relabel_nodes(graph, {0: 0, 1: 1, 2: 2, 3: 3, 4: 6, 5: 4, 6: 5})
+        ismags = iso.ISMAGS(graph, graph)
+        ismags_answer = list(ismags.find_isomorphisms(True))
+        assert ismags_answer == [{n: n for n in graph.nodes}]
+
     @SkipTest
     def test_directed_self_isomorphism(self):
         """
@@ -80,8 +98,6 @@ class TestSelfIsomorphism(object):
 
 
 class TestSubgraphIsomorphism(object):
-    
-
     def test_isomorphism(self):
         g1 = nx.Graph()
         g1.add_cycle(range(4))
@@ -173,24 +189,24 @@ class TestLargestCommonSubgraph(object):
     def test_symmetry_mcis(self):
         graph1 = nx.Graph()
         graph1.add_path(range(4))
-        
+
         graph2 = nx.Graph()
         graph2.add_path(range(3))
         graph2.add_edge(1, 3)
-        
+
         # Only the symmetry of graph2 is taken into account here.
-        ismags = iso.ISMAGS(graph1, graph2, node_match=iso.categorical_node_match('color', None))
-        assert_equal(list(ismags.subgraph_isomorphisms_iter(True)), [])
-        found_mcis = _matches_to_sets(ismags.largest_common_subgraph())
+        ismags1 = iso.ISMAGS(graph1, graph2, node_match=iso.categorical_node_match('color', None))
+        assert_equal(list(ismags1.subgraph_isomorphisms_iter(True)), [])
+        found_mcis = _matches_to_sets(ismags1.largest_common_subgraph())
         expected = _matches_to_sets([{0: 0, 1: 1, 2: 2},
                                      {1: 0, 3: 2, 2: 1}])
         assert_equal(expected, found_mcis)
-        
+
         # Only the symmetry of graph1 is taken into account here.
-        ismags = iso.ISMAGS(graph2, graph1, node_match=iso.categorical_node_match('color', None))
-        assert_equal(list(ismags.subgraph_isomorphisms_iter(True)), [])
-        found_mcis = _matches_to_sets(ismags.largest_common_subgraph())
-        expected = _matches_to_sets([{3: 2, 0: 0, 1: 1}, 
+        ismags2 = iso.ISMAGS(graph2, graph1, node_match=iso.categorical_node_match('color', None))
+        assert_equal(list(ismags2.subgraph_isomorphisms_iter(True)), [])
+        found_mcis = _matches_to_sets(ismags2.largest_common_subgraph())
+        expected = _matches_to_sets([{3: 2, 0: 0, 1: 1},
                                      {2: 0, 0: 2, 1: 1},
                                      {3: 0, 0: 2, 1: 1},
                                      {3: 0, 1: 1, 2: 2},
@@ -198,3 +214,23 @@ class TestLargestCommonSubgraph(object):
                                      {2: 0, 3: 2, 1: 1}])
 
         assert_equal(expected, found_mcis)
+
+        found_mcis1 = _matches_to_sets(ismags1.largest_common_subgraph(False))
+        found_mcis2 = ismags2.largest_common_subgraph(False)
+        found_mcis2 = [{v: k for k, v in d.items()} for d in found_mcis2]
+        found_mcis2 = _matches_to_sets(found_mcis2)
+
+        expected = _matches_to_sets([{3: 2, 1: 3, 2: 1},
+                                     {2: 0, 0: 2, 1: 1},
+                                     {1: 2, 3: 3, 2: 1},
+                                     {3: 0, 1: 3, 2: 1},
+                                     {0: 2, 2: 3, 1: 1},
+                                     {3: 0, 1: 2, 2: 1},
+                                     {2: 0, 0: 3, 1: 1},
+                                     {0: 0, 2: 3, 1: 1},
+                                     {1: 0, 3: 3, 2: 1},
+                                     {1: 0, 3: 2, 2: 1},
+                                     {0: 3, 1: 1, 2: 2},
+                                     {0: 0, 1: 1, 2: 2}])
+        assert_equal(expected, found_mcis1)
+        assert_equal(expected, found_mcis2)
