@@ -82,7 +82,8 @@ views.
     >>> H.add_nodes_from([1, 'networkx', '2.0'])
     >>> G.nodes & H.nodes  # finding common nodes in 2 graphs
     {1}
-    >>> G.nodes | H.nodes  # union of nodes in 2 graphs
+    >>> # union of nodes in 2 graphs
+    >>> G.nodes | H.nodes  # doctest: +SKIP
     {0, 1, 2, 3, 4, 'networkx', '2.0'}
 
 Similarly, ``G.edges`` now returns an EdgeView instead of a list of edges and it
