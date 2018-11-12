@@ -287,8 +287,6 @@ class ISMAGS:
         self._node_compat_ = None
         self._edge_compat_ = None
 
-        self._symmetry_cache = {}
-
         if node_match is None:
             self.node_equality = self._node_match_maker(lambda n1, n2: True)
             self._sgn_partitions_ = [set(self.subgraph.nodes)]
@@ -893,18 +891,6 @@ class ISMAGS:
                 orbits[first].update(orbits[second])
                 del orbits[second]
 
-    @staticmethod
-    def _find_coupled_nodes(top_partitions, bottom_partitions):
-        """
-        Find all nodes in top and bottom partitions that are coupled. These
-        are nodes that are in their own partition in both top and bottom.
-        """
-        coupled = {}
-        for top, bot in zip(top_partitions, bottom_partitions):
-            if len(top) == len(bot) == 1:
-                coupled[next(iter(top))] = next(iter(bot))
-        return coupled
-
     def _couple_nodes(self, top_partitions, bottom_partitions, pair_idx,
                       t_node, b_node, graph, edge_colors):
         """
@@ -1004,7 +990,7 @@ class ISMAGS:
                   for k in top if len(top) == 1 and top == bottom}
         ks = {k for k in graph.nodes if k < node}
         # Have all nodes with ID < node been mapped?
-        find_coset = ks <= mapped
+        find_coset = ks <= mapped and node not in cosets
         if find_coset:
             # Find the orbit that contains node
             for orbit in orbits:
