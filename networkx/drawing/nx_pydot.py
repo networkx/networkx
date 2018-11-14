@@ -24,18 +24,10 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    BSD license.
 from locale import getpreferredencoding
 from networkx.utils import open_file, make_str
-from pkg_resources import parse_version
 import networkx as nx
 
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
-
-# Minimum required version of pydot, which broke backwards API compatibility in
-# non-trivial ways and is thus a hard NetworkX requirement. Note that, although
-# pydot 1.2.0 was the first to do so, pydot 1.2.3 resolves a critical long-
-# standing Python 2.x issue required for sane NetworkX operation. See also:
-#     https://github.com/erocarrera/pydot/blob/master/ChangeLog
-PYDOT_VERSION_MIN = '1.2.3'
 
 # 2.x/3.x compatibility
 try:
@@ -355,20 +347,10 @@ def _import_pydot():
     Raises
     --------
     ImportError
-        If the `pydot` module is either unimportable _or_ importable but of
-        insufficient version.
+        If the `pydot` module is unimportable.
     '''
 
     import pydot
-
-    # If the currently installed version of pydot is older than this minimum,
-    # raise an exception. The pkg_resources.parse_version() function bundled
-    # with setuptools is commonly regarded to be the most robust means of
-    # comparing version strings. (Your mileage may vary.)
-    if parse_version(pydot.__version__) < parse_version(PYDOT_VERSION_MIN):
-        raise ImportError(
-            'pydot %s < %s' % (pydot.__version__, PYDOT_VERSION_MIN))
-
     return pydot
 
 # fixture for nose tests
