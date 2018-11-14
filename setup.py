@@ -19,8 +19,8 @@ if sys.argv[-1] == 'setup.py':
     print("To install, run 'python setup.py install'")
     print()
 
-if sys.version_info[:2] < (2, 7):
-    print("NetworkX requires Python 2.7 or later (%d.%d detected)." %
+if sys.version_info[:2] < (3, 5):
+    print("NetworkX requires Python 3.5 or later (%d.%d detected)." %
           sys.version_info[:2])
     sys.exit(-1)
 
