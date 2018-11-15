@@ -1126,7 +1126,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         # rgba_colors) is the same as the number of elements, resize the array,
         # to avoid it being interpreted as a colormap by scatter()
         if len(alpha) > len(rgba_colors) or rgba_colors.size == len(elem_list):
-            rgba_colors.resize((len(elem_list), 4))
+            rgba_colors = np.resize(rgba_colors, (len(elem_list), 4))
             rgba_colors[1:, 0] = rgba_colors[0, 0]
             rgba_colors[1:, 1] = rgba_colors[0, 1]
             rgba_colors[1:, 2] = rgba_colors[0, 2]

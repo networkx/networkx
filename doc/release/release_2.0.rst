@@ -59,7 +59,7 @@ API Changes
     >>> G.nodes[3]
     {'color': 'blue'}
     >>> G.nodes & {3, 4, 5}
-    set([3, 4])
+    {3, 4}
 
   The following methods have changed:
 
