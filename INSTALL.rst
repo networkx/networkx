@@ -87,14 +87,14 @@ Optional packages
 
 The following optional packages provide additional functionality.
 
-- `NumPy <http://www.numpy.org/>`_ (>= 1.15.0) provides matrix representation of
+- `NumPy <http://www.numpy.org/>`_ (>= 1.15.4) provides matrix representation of
   graphs and is used in some graph algorithms for high-performance matrix
   computations.
 - `SciPy <http://scipy.org/>`_ (>= 1.1.0) provides sparse matrix representation
   of graphs and many numerical scientific tools.
 - `pandas <http://pandas.pydata.org/>`_ (>= 0.23.3) provides a DataFrame, which
   is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 3.0.0) provides flexible drawing of
+- `Matplotlib <http://matplotlib.org/>`_ (>= 3.0.2) provides flexible drawing of
   graphs.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ (>= 1.5) and
   `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.4) provide graph drawing
