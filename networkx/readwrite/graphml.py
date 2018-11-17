@@ -462,9 +462,12 @@ class GraphMLWriter(GraphML):
         type in the keys table.
         """
         if element_type not in self.xml_type:
-            msg = 'GraphML writer does not support %s as data values.'
-            raise nx.NetworkXError(msg % element_type)
-        keyid = self.get_key(name, self.xml_type[element_type], scope, default)
+            # If element_type is unknown we fall back to a string representation
+            keyid = self.get_key(name, "string", scope, default)
+            # msg = 'GraphML writer does not support %s as data values.'
+            # raise nx.NetworkXError(msg % element_type)
+        else:
+            keyid = self.get_key(name, self.xml_type[element_type], scope, default)
         data_element = self.myElement("data", key=keyid)
         data_element.text = make_str(value)
         return data_element
