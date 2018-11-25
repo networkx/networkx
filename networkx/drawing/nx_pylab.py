@@ -179,7 +179,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        Size of nodes.  If an array is specified it must be the
        same length as nodelist.
 
-    node_color : color string, or array of floats, (default='r')
+    node_color : color string, or array of floats, (default='#1f78b4')
        Node color. Can be a single color format string,
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
@@ -284,7 +284,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 def draw_networkx_nodes(G, pos,
                         nodelist=None,
                         node_size=300,
-                        node_color='r',
+                        node_color='#1f78b4',
                         node_shape='o',
                         alpha=1.0,
                         cmap=None,
@@ -319,7 +319,7 @@ def draw_networkx_nodes(G, pos,
        same length as nodelist.
 
     node_color : color string, or array of floats
-       Node color. Can be a single color format string (default='r'),
+       Node color. Can be a single color format string (default='#1f78b4'),
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
        colors using the cmap and vmin,vmax parameters.  See
