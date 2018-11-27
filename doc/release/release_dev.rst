@@ -28,7 +28,7 @@ API Changes
 * [`#2939 <https://github.com/networkx/networkx/issues/2939>`_]
   New algorithm for finding the *barycenter* or *median* of a graph:
 
-     :func:`networkx.algorithms.distance_measures.barycenter()`
+     :func:`networkx.algorithms.distance_measures.barycenter`
 
 Deprecations
 ------------

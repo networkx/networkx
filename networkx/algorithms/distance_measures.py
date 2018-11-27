@@ -397,6 +397,11 @@ def barycenter(G, weight=None, attr=None):
     ------
     :exc:`networkx.NetworkXNoPath`
         When the input graph :math:`G` is disconnected.
+
+    See Also
+    --------
+    center
+    periphery
     """
     smallest, barycenter_vertices, n = float('inf'), [], len(G)
     for v, dists in networkx.shortest_path_length(G, weight=weight):

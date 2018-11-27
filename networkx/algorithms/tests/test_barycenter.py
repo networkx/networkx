@@ -6,11 +6,7 @@ import networkx
 
 class TestBarycenter(TestCase):
 
-	"""Test ``barycenter``.
-
-	Refernces to West (2000) refer to the citation in ``barycenter``'s
-	docstring.
-	"""
+	"""Test :func:`networkx.algorithms.distance_measures.barycenter`."""
 
 	def test_must_be_connected(self):
 		self.assertRaises(
@@ -35,11 +31,7 @@ class TestBarycenter(TestCase):
 			prng.randrange(n) for i in range(n - 2)])
 
 	def test_trees(self):
-		"""The barycenter of a tree is a single vertex or an edge.
-
-		West (2000), p. 78.
-		"""
-		# random_tree is fast, but barycenter is slow, so use fewer nodes.
+		"""The barycenter of a tree is a single vertex or an edge [West01]_, p. 78."""
 		prng = Random(0xdeadbeef)
 		for i in range(50):
 			with self.subTest(trial=i):
@@ -51,7 +43,7 @@ class TestBarycenter(TestCase):
 					self.assertEqual(b.size(), 0)
 
 	def test_this_one_specific_tree(self):
-		"Test the tree pictured at the bottom of West (2000), p. 78."
+		"Test the tree pictured at the bottom of [West01]_, p. 78."
 		g = networkx.Graph({
 			'a': ['b'],
 			'b': ['a', 'x'],
