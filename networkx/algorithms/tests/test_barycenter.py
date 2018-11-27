@@ -12,30 +12,12 @@ class TestBarycenter(TestCase):
 		self.assertRaises(
 			networkx.NetworkXNoPath, networkx.barycenter, networkx.empty_graph(5))
 
-	@staticmethod
-	def random_tree(n, prng):
-		"""Return a uniformly random tree on `n` nodes.
-
-		Code copied from networkx.random_tree, version 2.1. The problem with
-		NetworkX's version of this function is that it modifies the global seed
-		on every call, making it difficult to get a consistent, random sample
-		from run to run.
-
-		prng should be a :class:`random.Random`.
-		"""
-		if n == 0:
-			raise networkx.NetworkXPointlessConcept('the null graph is not a tree')
-		if n == 1:
-			return networkx.empty_graph(1)
-		return networkx.from_prufer_sequence([
-			prng.randrange(n) for i in range(n - 2)])
-
 	def test_trees(self):
 		"""The barycenter of a tree is a single vertex or an edge [West01]_, p. 78."""
 		prng = Random(0xdeadbeef)
 		for i in range(50):
 			with self.subTest(trial=i):
-				b = networkx.barycenter(self.random_tree(prng.randint(1, 75), prng))
+				b = networkx.barycenter(networkx.random_tree(prng.randint(1, 75), prng))
 				if len(b) == 2:
 					self.assertEqual(b.size(), 1)
 				else:
