@@ -358,42 +358,45 @@ def center(G, e=None, usebounds=False):
 
 
 def barycenter(G, weight=None, attr=None):
-    """Calculate barycenter of a connected graph `G` with optional edge weights.
+    r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
-    The _barycenter_, sometimes called the _median_, is the subgraph induced by
-    the set of nodes :math:`v` minimizing _barycentricity_,
+    The :dfn:`barycenter`, sometimes called the :dfn:`median`, is the subgraph
+    of a connected graph :math:`G` induced by the set of its nodes :math:`v`
+    minimizing
 
     .. math::
+        :label: barycentricity
 
-        \sum_{u \in V(g)} d_g(u, v),
+        \sum_{u \in V(G)} d_G(u, v),
 
-    where :math:`d_G` is either the path length or the weighted path length,
-    depending on whether `weight` is None. The barycenter is defined only for
-    connected graphs [1]_.
+    where :math:`d_G` is the (possibly weighted) :func:`path length
+    <networkx.algorithms.shortest_paths.generic.shortest_path_length>`. See
+    [West01]_, p. 78.
 
     Parameters
     ----------
     G : NetworkX graph
-    weight : :class:`str` (optional)
-        Passed to NetworkX's ``shortest_path_length`` function.
-    attr : :class:`str` (optional)
-        If given, write the barycentricity to each node's `attr` attribute.
-        Otherwise do not store the barycentricity.
+        The connected graph :math:`G`.
+    weight : :const:`None` or :class:`str` (optional)
+        Passed to
+        :func:`~networkx.algorithms.shortest_paths.generic.shortest_path_length`:
+        If :const:`None`, every edge has weight/distance/cost 1. If a
+        :class:`str`, use this edge attribute as the edge weight. Any edge
+        attribute not present defaults to 1.
+    attr : :const:`None` or :class:`str` (optional)
+        If given, write the value of :eq:`barycentricity` to each node's *attr*
+        attribute. Otherwise do not store the value.
 
     Returns
     -------
-    barycenter : NetworkX subgraph view of `G`
-        Subgraph of `G` induced by the vertices minimizing barycentricity.
+    barycenter : :class:`networkx.classes.graphviews.subgraph_view`
+        Subgraph of :math:`G` induced by the vertices minimizing
+        :eq:`barycentricity`.
 
     Raises
     ------
-    :exc:`NetworkXNoPath`
-        When the input graph `G` is disconnected
-
-    References
-    ----------
-    .. [1] Douglas West, _Introduction to Graph Theory_, 2nd ed., Pearson, 2000,
-        p. 78.
+    :exc:`networkx.NetworkXNoPath`
+        When the input graph :math:`G` is disconnected.
     """
     smallest, barycenter_vertices, n = float('inf'), [], len(G)
     for v, dists in networkx.shortest_path_length(G, weight=weight):

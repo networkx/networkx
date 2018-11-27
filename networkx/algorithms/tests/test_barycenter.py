@@ -1,5 +1,5 @@
 from unittest import TestCase
-from numpy.random import RandomState
+from random import Random
 
 import networkx
 
@@ -25,13 +25,14 @@ class TestBarycenter(TestCase):
 		on every call, making it difficult to get a consistent, random sample
 		from run to run.
 
-		prng should be a NumPy `RandomState`.
+		prng should be a :class:`random.Random`.
 		"""
 		if n == 0:
 			raise networkx.NetworkXPointlessConcept('the null graph is not a tree')
 		if n == 1:
 			return networkx.empty_graph(1)
-		return networkx.from_prufer_sequence(prng.choice(n, n - 1))
+		return networkx.from_prufer_sequence([
+			prng.randrange(n) for i in range(n - 2)])
 
 	def test_trees(self):
 		"""The barycenter of a tree is a single vertex or an edge.
@@ -39,10 +40,10 @@ class TestBarycenter(TestCase):
 		West (2000), p. 78.
 		"""
 		# random_tree is fast, but barycenter is slow, so use fewer nodes.
-		prng, avg_order, trials = RandomState(0xdeadbeef), 25, 100
-		for i in range(trials):
-			with self.subTest(i):
-				b = networkx.barycenter(self.random_tree(prng.poisson(avg_order), prng))
+		prng = Random(0xdeadbeef)
+		for i in range(50):
+			with self.subTest(trial=i):
+				b = networkx.barycenter(self.random_tree(prng.randint(1, 75), prng))
 				if len(b) == 2:
 					self.assertEqual(b.size(), 1)
 				else:
