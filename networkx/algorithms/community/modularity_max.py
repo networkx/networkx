@@ -27,7 +27,7 @@ __all__ = [
     '_naive_greedy_modularity_communities']
 
 
-def greedy_modularity_communities(G, weight=None):
+def greedy_modularity_communities(G, weight=None, gamma=1.):
     """Find communities in graph using Clauset-Newman-Moore greedy modularity
     maximization. This method currently supports the Graph class and does not
     consider edge weights.
@@ -91,7 +91,7 @@ def greedy_modularity_communities(G, weight=None):
     a = [k[i]*q0 for i in range(N)]
     dq_dict = dict(
         (i, dict(
-            (j, 2*q0 - 2*k[i]*k[j]*q0*q0)
+            (j, 2*q0 - round(2*gamma*k[i]*k[j]*q0*q0, 8))
             for j in [
                 node_for_label[u]
                 for u in G.neighbors(label_for_node[i])]
@@ -155,10 +155,10 @@ def greedy_modularity_communities(G, weight=None):
             if k in both_set:
                 dq_jk = dq_dict[j][k] + dq_dict[i][k]
             elif k in j_set:
-                dq_jk = dq_dict[j][k] - 2.0*a[i]*a[k]
+                dq_jk = dq_dict[j][k] - round(2.0*gamma*a[i]*a[k], 8)
             else:
                 # k in i_set
-                dq_jk = dq_dict[i][k] - 2.0*a[j]*a[k]
+                dq_jk = dq_dict[i][k] - round(2.0*gamma*a[j]*a[k], 8)
             # Update rows j and k
             for row, col in [(j, k), (k, j)]:
                 # Save old value for finding heap index
@@ -226,7 +226,7 @@ def greedy_modularity_communities(G, weight=None):
     return sorted(communities, key=len, reverse=True)
 
 
-def _naive_greedy_modularity_communities(G):
+def _naive_greedy_modularity_communities(G, gamma = 1.):
     """Find communities in graph using the greedy modularity maximization.
     This implementation is O(n^4), much slower than alternatives, but it is
     provided as an easy-to-understand reference implementation.
@@ -237,7 +237,7 @@ def _naive_greedy_modularity_communities(G):
     merges = []
     # Greedily merge communities until no improvement is possible
     old_modularity = None
-    new_modularity = modularity(G, communities)
+    new_modularity = modularity(G, communities, gamma)
     while old_modularity is None or new_modularity > old_modularity:
         # Save modularity for comparison
         old_modularity = new_modularity
@@ -252,7 +252,7 @@ def _naive_greedy_modularity_communities(G):
                 # Merge communities u and v
                 trial_communities[j] = u | v
                 trial_communities[i] = frozenset([])
-                trial_modularity = modularity(G, trial_communities)
+                trial_modularity = modularity(G, trial_communities, gamma)
                 if trial_modularity >= new_modularity:
                     # Check if strictly better or tie
                     if trial_modularity > new_modularity:

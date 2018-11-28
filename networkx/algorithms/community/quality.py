@@ -247,7 +247,7 @@ def coverage(G, partition):
     return intra_edges / total_edges
 
 
-def modularity(G, communities, weight='weight'):
+def modularity(G, communities, weight='weight', gamma=1.):
     r"""Returns the modularity of the given partition of the graph.
 
     Modularity is defined in [1]_ as
@@ -306,7 +306,7 @@ def modularity(G, communities, weight='weight'):
         in_degree = out_degree
         norm = 1 / (2 * m)
 
-    def val(u, v):
+    def val(u, v, gamma):
         try:
             if multigraph:
                 w = sum(d.get(weight, 1) for k, d in G[u][v].items())
@@ -317,7 +317,7 @@ def modularity(G, communities, weight='weight'):
         # Double count self-loops if the graph is undirected.
         if u == v and not directed:
             w *= 2
-        return w - in_degree[u] * out_degree[v] * norm
+        return w - gamma * in_degree[u] * out_degree[v] * norm
 
-    Q = sum(val(u, v) for c in communities for u, v in product(c, repeat=2))
+    Q = sum(val(u, v, gamma) for c in communities for u, v in product(c, repeat=2))
     return Q * norm
