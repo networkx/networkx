@@ -295,6 +295,11 @@ def periphery(G, e=None, usebounds=False):
     -------
     p : list
        List of nodes in periphery
+
+    See Also
+    --------
+    barycenter
+    center
     """
     if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="periphery")
@@ -347,6 +352,11 @@ def center(G, e=None, usebounds=False):
     -------
     c : list
        List of nodes in center
+
+    See Also
+    --------
+    barycenter
+    periphery
     """
     if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="center")
