@@ -389,9 +389,8 @@ def barycenter(G, weight=None, attr=None):
 
     Returns
     -------
-    barycenter : :class:`networkx.classes.graphviews.subgraph_view`
-        Subgraph of :math:`G` induced by the vertices minimizing
-        :eq:`barycentricity`.
+    barycenter_nodes : list
+        List of nodes of :math:`G` that induce the barycenter of :math:`G`.
 
     Raises
     ------
@@ -417,4 +416,4 @@ def barycenter(G, weight=None, attr=None):
             barycenter_vertices = [v]
         elif barycentricity == smallest:
             barycenter_vertices.append(v)
-    return G.subgraph(barycenter_vertices)
+    return barycenter_vertices
