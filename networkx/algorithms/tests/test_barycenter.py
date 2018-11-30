@@ -1,5 +1,5 @@
-from unittest import TestCase
 from random import Random
+from unittest import TestCase
 
 import networkx
 
