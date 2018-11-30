@@ -11,8 +11,9 @@ class TestBarycenter(TestCase):
     def get_barycenter_as_subgraph(self, g, **kwargs):
         """Wrap :func:`networkx.barycenter` with :meth:`networkx.Graph.subgraph`.
 
-        :meth:`get_barycenter_as_subgraph` asserts that :func:`networkx.barycenter`
-        returns a :class:`list` of nodes contained in ``g``.
+        :meth:`get_barycenter_as_subgraph` asserts that
+        :func:`networkx.barycenter` returns a :class:`list` of nodes contained
+        in ``g``.
         """
         b = networkx.barycenter(g, **kwargs)
         self.assertIsInstance(b, list)
@@ -42,7 +43,10 @@ class TestBarycenter(TestCase):
             sp=sp)
 
     def test_trees(self):
-        """The barycenter of a tree is a single vertex or an edge [West01]_, p. 78."""
+        """The barycenter of a tree is a single vertex or an edge.
+
+        See [West01]_, p. 78.
+        """
         prng = Random(0xdeadbeef)
         for i in range(50):
             with self.subTest(trial=i):
@@ -73,11 +77,13 @@ class TestBarycenter(TestCase):
         for node, barycentricity in expected_barycentricity.items():
             self.assertEqual(g.nodes[node]['barycentricity'], barycentricity)
 
-        # Doubling the weights should do nothing but double the barycentricities
+        # Doubling weights should do nothing but double the barycentricities
         for edge in g.edges:
             g.edges[edge]['weight'] = 2
-        b = self.get_barycenter_as_subgraph(g, weight='weight', attr='barycentricity2')
+        b = self.get_barycenter_as_subgraph(
+            g, weight='weight', attr='barycentricity2')
         self.assertEqual(list(b), ['z'])
         self.assertFalse(b.edges)
         for node, barycentricity in expected_barycentricity.items():
-            self.assertEqual(g.nodes[node]['barycentricity2'], barycentricity*2)
+            self.assertEqual(
+                g.nodes[node]['barycentricity2'], barycentricity*2)

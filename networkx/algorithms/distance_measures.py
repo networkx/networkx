@@ -405,8 +405,8 @@ def barycenter(G, weight=None, attr=None, sp=None):
     ------
     :exc:`networkx.NetworkXNoPath`
         If `G` is disconnected. `G` may appear disconnected to
-        :func:`barycenter` if `sp` is given but is missing shortest path lengths
-        for any pairs.
+        :func:`barycenter` if `sp` is given but is missing shortest path
+        lengths for any pairs.
     :exc:`ValueError`
         If `sp` and `weight` are both given.
 
@@ -420,13 +420,13 @@ def barycenter(G, weight=None, attr=None, sp=None):
     else:
         sp = sp.items()
         if weight is not None:
-            raise ValueError('Cannot pass both sp and weight arguments together')
+            raise ValueError('Cannot use both sp, weight arguments together')
     smallest, barycenter_vertices, n = float('inf'), [], len(G)
     for v, dists in sp:
         if len(dists) < n:
             raise networkx.NetworkXNoPath(
-                ("Input graph %r is disconnected, so every induced subgraph has"
-                 " infinite barycentricity.") % G)
+                ("Input graph %r is disconnected, so every induced subgraph "
+                 "has infinite barycentricity.") % G)
         barycentricity = sum(dists.values())
         if attr is not None:
             G.nodes[v][attr] = barycentricity
