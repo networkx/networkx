@@ -23,6 +23,23 @@ class TestBarycenter(TestCase):
         self.assertRaises(
             networkx.NetworkXNoPath, networkx.barycenter, networkx.empty_graph(5))
 
+    def test_sp_kwarg(self):
+        # Complete graph K_5. Normally it works...
+        K_5 = networkx.complete_graph(5)
+        sp = dict(networkx.shortest_path_length(K_5))
+        self.assertEqual(networkx.barycenter(K_5, sp=sp), list(K_5))
+        # ...but not with the weight argument
+        for node, data in K_5.nodes.data():
+            data['weight'] = 1
+        self.assertRaisesRegex(
+            ValueError, 'both.*(sp|weight).*(sp|weight)', networkx.barycenter,
+            K_5, sp=sp, weight='weight')
+        # ...and a corrupted sp can make it seem like K_5 is disconnected
+        del sp[0][1]
+        self.assertRaisesRegex(
+            networkx.NetworkXNoPath, 'disconnected', networkx.barycenter, K_5,
+            sp=sp)
+
     def test_trees(self):
         """The barycenter of a tree is a single vertex or an edge [West01]_, p. 78."""
         prng = Random(0xdeadbeef)

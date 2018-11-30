@@ -367,7 +367,7 @@ def center(G, e=None, usebounds=False):
     return p
 
 
-def barycenter(G, weight=None, attr=None):
+def barycenter(G, weight=None, attr=None, sp=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
     The :dfn:`barycenter` a
@@ -393,6 +393,8 @@ def barycenter(G, weight=None, attr=None):
     attr : :class:`str`, optional
         If given, write the value of :eq:`barycentricity` to each node's `attr`
         attribute. Otherwise do not store the value.
+    sp : dict of dicts, optional
+       All pairs shortest path lengths as a dictionary of dictionaries
 
     Returns
     -------
@@ -402,15 +404,25 @@ def barycenter(G, weight=None, attr=None):
     Raises
     ------
     :exc:`networkx.NetworkXNoPath`
-        When the input graph :math:`G` is disconnected.
+        If `G` is disconnected. `G` may appear disconnected to
+        :func:`barycenter` if `sp` is given but is missing shortest path lengths
+        for any pairs.
+    :exc:`ValueError`
+        If `sp` and `weight` are both given.
 
     See Also
     --------
     center
     periphery
     """
+    if sp is None:
+        sp = networkx.shortest_path_length(G, weight=weight)
+    else:
+        sp = sp.items()
+        if weight is not None:
+            raise ValueError('Cannot pass both sp and weight arguments together')
     smallest, barycenter_vertices, n = float('inf'), [], len(G)
-    for v, dists in networkx.shortest_path_length(G, weight=weight):
+    for v, dists in sp:
         if len(dists) < n:
             raise networkx.NetworkXNoPath(
                 ("Input graph %r is disconnected, so every induced subgraph has"
