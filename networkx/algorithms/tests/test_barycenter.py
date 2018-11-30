@@ -20,8 +20,9 @@ class TestBarycenter(TestCase):
         return g.subgraph(b)
 
     def test_must_be_connected(self):
-        self.assertRaises(
-            networkx.NetworkXNoPath, networkx.barycenter, networkx.empty_graph(5))
+        self.assertRaisesRegex(
+            networkx.NetworkXNoPath, 'disconnected', networkx.barycenter,
+            networkx.empty_graph(5))
 
     def test_sp_kwarg(self):
         # Complete graph K_5. Normally it works...
