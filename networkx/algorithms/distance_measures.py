@@ -370,37 +370,34 @@ def center(G, e=None, usebounds=False):
 def barycenter(G, weight=None, attr=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
-    The :dfn:`barycenter`, sometimes called the :dfn:`median`, is the subgraph
-    of a connected graph :math:`G` induced by the set of its nodes :math:`v`
-    minimizing
+    The :dfn:`barycenter` a
+    :func:`connected <networkx.algorithms.components.is_connected>` graph
+    :math:`G` is the subgraph induced by the set of its nodes :math:`v`
+    minimizing the objective function
 
     .. math::
-        :label: barycentricity
 
         \sum_{u \in V(G)} d_G(u, v),
 
     where :math:`d_G` is the (possibly weighted) :func:`path length
-    <networkx.algorithms.shortest_paths.generic.shortest_path_length>`. See
-    [West01]_, p. 78.
+    <networkx.algorithms.shortest_paths.generic.shortest_path_length>`.
+    The barycenter is also called the :dfn:`median`. See [West01]_, p. 78.
 
     Parameters
     ----------
-    G : NetworkX graph
+    G : :class:`networkx.Graph`
         The connected graph :math:`G`.
-    weight : :const:`None` or :class:`str` (optional)
-        Passed to
-        :func:`~networkx.algorithms.shortest_paths.generic.shortest_path_length`:
-        If :const:`None`, every edge has weight/distance/cost 1. If a
-        :class:`str`, use this edge attribute as the edge weight. Any edge
-        attribute not present defaults to 1.
-    attr : :const:`None` or :class:`str` (optional)
-        If given, write the value of :eq:`barycentricity` to each node's *attr*
+    weight : :class:`str`, optional
+        Passed through to
+        :func:`~networkx.algorithms.shortest_paths.generic.shortest_path_length`.
+    attr : :class:`str`, optional
+        If given, write the value of :eq:`barycentricity` to each node's `attr`
         attribute. Otherwise do not store the value.
 
     Returns
     -------
-    barycenter_nodes : list
-        List of nodes of :math:`G` that induce the barycenter of :math:`G`.
+    :class:`list`
+        Nodes of `G` that induce the barycenter of `G`.
 
     Raises
     ------
