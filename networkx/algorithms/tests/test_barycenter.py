@@ -31,7 +31,7 @@ class TestBarycenter(TestCase):
         sp = dict(networkx.shortest_path_length(K_5))
         self.assertEqual(networkx.barycenter(K_5, sp=sp), list(K_5))
         # ...but not with the weight argument
-        for node, data in K_5.nodes.data():
+        for u, v, data in K_5.edges.data():
             data['weight'] = 1
         self.assertRaisesRegex(
             ValueError, 'both.*(sp|weight).*(sp|weight)', networkx.barycenter,
