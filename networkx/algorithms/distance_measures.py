@@ -391,8 +391,8 @@ def barycenter(G, weight=None, attr=None, sp=None):
         Passed through to
         :func:`~networkx.algorithms.shortest_paths.generic.shortest_path_length`.
     attr : :class:`str`, optional
-        If given, write the value of :eq:`barycentricity` to each node's `attr`
-        attribute. Otherwise do not store the value.
+        If given, write the value of the objective function to each node's
+        `attr` attribute. Otherwise do not store the value.
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
 
