@@ -27,7 +27,7 @@ __all__ = [
     '_naive_greedy_modularity_communities']
 
 
-def greedy_modularity_communities(G, weight=None, gamma=1.):
+def greedy_modularity_communities(G, weight=None, resolution=1.):
     """Find communities in graph using Clauset-Newman-Moore greedy modularity
     maximization. This method currently supports the Graph class and does not
     consider edge weights.
@@ -35,6 +35,8 @@ def greedy_modularity_communities(G, weight=None, gamma=1.):
     Greedy modularity maximization begins with each node in its own community
     and joins the pair of communities that most increases modularity until no
     such pair exists.
+
+    This function is able to maximize the generalized modularity with resolution parameter $\gamma$.
 
     Parameters
     ----------
@@ -54,11 +56,13 @@ def greedy_modularity_communities(G, weight=None, gamma=1.):
 
     References
     ----------
-    .. [1] M. E. J Newman 'Networks: An Introduction', page 224
+    .. [1] M. E. J Newman "Networks: An Introduction", page 224
        Oxford University Press 2011.
     .. [2] Clauset, A., Newman, M. E., & Moore, C.
        "Finding community structure in very large networks."
        Physical Review E 70(6), 2004.
+    .. [3] Reichardt and Bornholdt "Statistical Mechanics of Community
+       Detection" Phys. Rev. E74, 2006.
     """
 
     # Count nodes and edges
@@ -91,7 +95,7 @@ def greedy_modularity_communities(G, weight=None, gamma=1.):
     a = [k[i]*q0 for i in range(N)]
     dq_dict = dict(
         (i, dict(
-            (j, 2*q0 - round(2*gamma*k[i]*k[j]*q0*q0, 8))
+            (j, 2*q0 - round(2*resolution*k[i]*k[j]*q0*q0, 8))
             for j in [
                 node_for_label[u]
                 for u in G.neighbors(label_for_node[i])]
@@ -155,10 +159,10 @@ def greedy_modularity_communities(G, weight=None, gamma=1.):
             if k in both_set:
                 dq_jk = dq_dict[j][k] + dq_dict[i][k]
             elif k in j_set:
-                dq_jk = dq_dict[j][k] - round(2.0*gamma*a[i]*a[k], 8)
+                dq_jk = dq_dict[j][k] - round(2.0*resolution*a[i]*a[k], 8)
             else:
                 # k in i_set
-                dq_jk = dq_dict[i][k] - round(2.0*gamma*a[j]*a[k], 8)
+                dq_jk = dq_dict[i][k] - round(2.0*resolution*a[j]*a[k], 8)
             # Update rows j and k
             for row, col in [(j, k), (k, j)]:
                 # Save old value for finding heap index
@@ -226,10 +230,11 @@ def greedy_modularity_communities(G, weight=None, gamma=1.):
     return sorted(communities, key=len, reverse=True)
 
 
-def _naive_greedy_modularity_communities(G, gamma = 1.):
+def _naive_greedy_modularity_communities(G, resolution = 1.):
     """Find communities in graph using the greedy modularity maximization.
     This implementation is O(n^4), much slower than alternatives, but it is
-    provided as an easy-to-understand reference implementation.
+    provided as an easy-to-understand reference implementation. Generalized
+    modularity with a resolution parameter is supported.
     """
     # First create one community for each node
     communities = list([frozenset([u]) for u in G.nodes()])
@@ -237,7 +242,7 @@ def _naive_greedy_modularity_communities(G, gamma = 1.):
     merges = []
     # Greedily merge communities until no improvement is possible
     old_modularity = None
-    new_modularity = modularity(G, communities, gamma)
+    new_modularity = modularity(G, communities, resolution)
     while old_modularity is None or new_modularity > old_modularity:
         # Save modularity for comparison
         old_modularity = new_modularity
@@ -252,7 +257,7 @@ def _naive_greedy_modularity_communities(G, gamma = 1.):
                 # Merge communities u and v
                 trial_communities[j] = u | v
                 trial_communities[i] = frozenset([])
-                trial_modularity = modularity(G, trial_communities, gamma)
+                trial_modularity = modularity(G, trial_communities, resolution)
                 if trial_modularity >= new_modularity:
                     # Check if strictly better or tie
                     if trial_modularity > new_modularity:
