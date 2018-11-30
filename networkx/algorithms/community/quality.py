@@ -246,50 +246,45 @@ def coverage(G, partition):
     total_edges = G.number_of_edges()
     return intra_edges / total_edges
 
-
-def modularity(G, communities, weight='weight', gamma=1.):
+def modularity(G, communities, weight='weight', resolution=1):
     r"""Returns the modularity of the given partition of the graph.
-
     Modularity is defined in [1]_ as
-
     .. math::
-
-        Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \frac{k_ik_j}{2m}\right)
+        Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \gamma\frac{k_ik_j}{2m}\right)
             \delta(c_i,c_j)
-
     where $m$ is the number of edges, $A$ is the adjacency matrix of
     `G`, $k_i$ is the degree of $i$ and $\delta(c_i, c_j)$
-    is 1 if $i$ and $j$ are in the same community and 0 otherwise.
-
+    is 1 if $i$ and $j$ are in the same community and 0 otherwise,
+    $\gamma$ is the resolution parameter.
     Parameters
     ----------
     G : NetworkX Graph
-
     communities : list
         List of sets of nodes of `G` representing a partition of the
         nodes.
-
+    resolution : float
+        Default 1.
+        If resolution is less than 1, modularity favors largers communities.
+        Greater than 1 favors smaller communities.
     Returns
     -------
     Q : float
         The modularity of the paritition.
-
     Raises
     ------
     NotAPartition
         If `communities` is not a partition of the nodes of `G`.
-
     Examples
     --------
     >>> G = nx.barbell_graph(3, 0)
     >>> nx.algorithms.community.modularity(G, [{0, 1, 2}, {3, 4, 5}])
     0.35714285714285704
-
     References
     ----------
     .. [1] M. E. J. Newman *Networks: An Introduction*, page 224.
        Oxford University Press, 2011.
-
+    .. [2] Reichardt and Bornholdt *Statistical Mechanics of Community
+       Detection* Phys. Rev. E74, 2006.
     """
     if not is_partition(G, communities):
         raise NotAPartition(G, communities)
@@ -306,7 +301,7 @@ def modularity(G, communities, weight='weight', gamma=1.):
         in_degree = out_degree
         norm = 1 / (2 * m)
 
-    def val(u, v, gamma):
+    def val(u, v):
         try:
             if multigraph:
                 w = sum(d.get(weight, 1) for k, d in G[u][v].items())
@@ -317,7 +312,8 @@ def modularity(G, communities, weight='weight', gamma=1.):
         # Double count self-loops if the graph is undirected.
         if u == v and not directed:
             w *= 2
-        return w - gamma * in_degree[u] * out_degree[v] * norm
+        return w - resolution * in_degree[u] * out_degree[v] * norm
 
-    Q = sum(val(u, v, gamma) for c in communities for u, v in product(c, repeat=2))
+    Q = sum(val(u, v) for c in communities for u, v in product(c, repeat=2))
     return Q * norm
+
