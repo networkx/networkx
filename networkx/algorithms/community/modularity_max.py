@@ -95,7 +95,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1.):
     a = [k[i]*q0 for i in range(N)]
     dq_dict = dict(
         (i, dict(
-            (j, 2*q0 - round(2*resolution*k[i]*k[j]*q0*q0, 8))
+            (j, 2*q0 - 2*resolution*k[i]*k[j]*q0*q0)
             for j in [
                 node_for_label[u]
                 for u in G.neighbors(label_for_node[i])]
@@ -159,10 +159,10 @@ def greedy_modularity_communities(G, weight=None, resolution=1.):
             if k in both_set:
                 dq_jk = dq_dict[j][k] + dq_dict[i][k]
             elif k in j_set:
-                dq_jk = dq_dict[j][k] - round(2.0*resolution*a[i]*a[k], 8)
+                dq_jk = dq_dict[j][k] - 2.0*resolution*a[i]*a[k]
             else:
                 # k in i_set
-                dq_jk = dq_dict[i][k] - round(2.0*resolution*a[j]*a[k], 8)
+                dq_jk = dq_dict[i][k] - 2.0*resolution*a[j]*a[k]
             # Update rows j and k
             for row, col in [(j, k), (k, j)]:
                 # Save old value for finding heap index
