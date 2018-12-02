@@ -92,14 +92,7 @@ EdgeDataView
 
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
-
-# Importing Abstract Base Classes directly from collections is deprecated
-# in pythn 3.8. There is no other option in python 2.7, though.
-try:
-    from collections.abc import Mapping, Set, Iterable
-except ImportError:
-    from collections import Mapping, Set, Iterable
-
+from collections.abc import Mapping, Set, Iterable
 import networkx as nx
 
 __all__ = ['NodeView', 'NodeDataView',

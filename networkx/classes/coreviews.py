@@ -10,13 +10,7 @@
 #          Dan Schult(dschult@colgate.edu)
 """
 """
-# Importing Abstract Base Classes directly from collections is deprecated
-# in pythn 3.8. There is no other option in python 2.7, though.
-try:
-    from collections.abc import Mapping
-except ImportError:
-    from collections import Mapping
-
+from collections.abc import Mapping
 import networkx as nx
 
 __all__ = ['AtlasView', 'AdjacencyView', 'MultiAdjacencyView',

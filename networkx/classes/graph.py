@@ -20,12 +20,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 from __future__ import division
 import warnings
 from copy import deepcopy
-# Importing Abstract Base Classes directly from collections is deprecated
-# in pythn 3.8. There is no other option in python 2.7, though.
-try:
-    from collections.abc import Mapping
-except ImportError:
-    from collections import Mapping
+from collections.abc import Mapping
 
 import networkx as nx
 from networkx.classes.coreviews import AtlasView, AdjacencyView
