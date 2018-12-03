@@ -184,7 +184,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     NetworkXError
         If NumPy cannot be imported
 
-    NetworkXNotImplemnted
+    NetworkXNotImplemented
         If G is not a DiGraph
 
     Notes
