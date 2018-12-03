@@ -206,9 +206,9 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         Probability for adding a new node connected to an existing node
         chosen randomly according to the out-degree distribution.
     delta_in : float
-        Bias for choosing ndoes from in-degree distribution.
+        Bias for choosing nodes from in-degree distribution.
     delta_out : float
-        Bias for choosing ndoes from out-degree distribution.
+        Bias for choosing nodes from out-degree distribution.
     create_using : NetworkX graph constructor, optional
         The default is a MultiDiGraph 3-cycle.
         If a graph instance, use it without clearing first.
