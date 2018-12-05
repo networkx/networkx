@@ -318,6 +318,8 @@ class TestAverageShortestPathLength(object):
         assert_raises(nx.NetworkXError, nx.average_shortest_path_length, g)
         g = g.to_directed()
         assert_raises(nx.NetworkXError, nx.average_shortest_path_length, g)
+        g.add_edge(1, 2)
+        assert_raises(nx.NetworkXError, nx.average_shortest_path_length, g)
 
     def test_trivial_graph(self):
         """Tests that the trivial graph has average path length zero,
