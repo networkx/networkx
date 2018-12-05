@@ -1,5 +1,7 @@
 from __future__ import division
 
+from nose import SkipTest
+
 from nose.tools import assert_almost_equal
 from nose.tools import assert_equal
 from nose.tools import assert_false
