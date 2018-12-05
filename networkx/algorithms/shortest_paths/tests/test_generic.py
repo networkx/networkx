@@ -304,10 +304,7 @@ class TestAverageShortestPathLength(object):
                                               weight='weight',
                                               method='floyd-warshall')
         assert_almost_equal(ans, 4)
-        ans = nx.average_shortest_path_length(G,
-                                              weight='weight',
-                                              method='floyd-warshall-numpy')
-        assert_almost_equal(ans, 4)
+
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(G,
@@ -321,10 +318,6 @@ class TestAverageShortestPathLength(object):
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='floyd-warshall')
-        assert_almost_equal(ans, 4)
-        ans = nx.average_shortest_path_length(G,
-                                              weight='weight',
-                                              method='floyd-warshall-numpy')
         assert_almost_equal(ans, 4)
 
     def test_disconnected(self):
@@ -354,3 +347,32 @@ class TestAverageShortestPathLength(object):
     def test_bad_method(self):
         G = nx.path_graph(2)
         nx.average_shortest_path_length(G, weight='weight', method='SPAM')
+
+class TestAverageShortestPathLengthNumpy(object):
+    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
+
+    @classmethod
+    def setupClass(cls):
+        global numpy
+        global assert_equal
+        global assert_almost_equal
+        try:
+            import numpy
+            from numpy.testing import assert_equal, assert_almost_equal
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+
+    def test_specified_methods_numpy(self):
+        G = nx.Graph()
+        nx.add_cycle(G, range(7), weight=2)
+        ans = nx.average_shortest_path_length(G,
+                                              weight='weight',
+                                              method='floyd-warshall-numpy')
+        assert_almost_equal(ans, 4)
+
+        G = nx.Graph()
+        nx.add_path(G, range(5), weight=2)
+        ans = nx.average_shortest_path_length(G,
+                                              weight='weight',
+                                              method='floyd-warshall-numpy')
+        assert_almost_equal(ans, 4)
