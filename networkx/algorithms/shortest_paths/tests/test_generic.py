@@ -300,6 +300,14 @@ class TestAverageShortestPathLength(object):
                                               weight='weight',
                                               method='bellman-ford')
         assert_almost_equal(ans, 4)
+        ans = nx.average_shortest_path_length(G,
+                                              weight='weight',
+                                              method='floyd-warshall')
+        assert_almost_equal(ans, 4)
+        ans = nx.average_shortest_path_length(G,
+                                              weight='weight',
+                                              method='floyd-warshall-numpy')
+        assert_almost_equal(ans, 4)
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(G,
@@ -309,6 +317,14 @@ class TestAverageShortestPathLength(object):
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='bellman-ford')
+        assert_almost_equal(ans, 4)
+        ans = nx.average_shortest_path_length(G,
+                                              weight='weight',
+                                              method='floyd-warshall')
+        assert_almost_equal(ans, 4)
+        ans = nx.average_shortest_path_length(G,
+                                              weight='weight',
+                                              method='floyd-warshall-numpy')
         assert_almost_equal(ans, 4)
 
     def test_disconnected(self):
