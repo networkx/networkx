@@ -10,7 +10,7 @@ Either this module or nx_agraph can be used to interface with graphviz.
 See Also
 --------
 pydot:         https://github.com/erocarrera/pydot
-Graphviz:      http://www.research.att.com/sw/tools/graphviz/
+Graphviz:      https://www.graphviz.org
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 # Author: Aric Hagberg (aric.hagberg@gmail.com)
