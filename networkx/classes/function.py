@@ -528,7 +528,7 @@ def create_empty_copy(G, with_data=True):
     empty_graph
 
     """
-    H = G.fresh_copy()
+    H = G.__class__()
     H.add_nodes_from(G.nodes(data=with_data))
     if with_data:
         H.graph.update(G.graph)
