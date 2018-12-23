@@ -1198,4 +1198,4 @@ class DiGraph(Graph):
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
             return H
-        return nx.graphviews.ReverseView(self)
+        return nx.graphviews.reverse_view(self)
