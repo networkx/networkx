@@ -137,7 +137,7 @@ def is_directed(G):
     return G.is_directed()
 
 
-def frozen(*args):
+def frozen(*args, **kwargs):
     """Dummy method for raising errors when trying to modify frozen graphs"""
     raise nx.NetworkXError("Frozen graph can't be modified")
 
