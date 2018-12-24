@@ -69,6 +69,43 @@ class TestFunction(object):
                             (12, 14, {'weight': 2.}),
                             (12, 15, {'weight': 2.})])
 
+        G = self.G.copy()
+        nlist = [None]
+        nx.add_star(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = iter([None])
+        nx.add_star(G, nlist)
+        assert_edges_equal(G.edges([None]), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = [12]
+        nx.add_star(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = iter([12])
+        nx.add_star(G, nlist)
+        assert_edges_equal(G.edges([12]), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = []
+        nx.add_star(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
+        G = self.G.copy()
+        nlist = iter([])
+        nx.add_star(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
+
     def test_add_path(self):
         G = self.G.copy()
         nlist = [12, 13, 14, 15]
@@ -135,6 +172,43 @@ class TestFunction(object):
                     (15, 12, {'weight': 1.})]]
         nx.add_cycle(G, nlist, weight=1.0)
         assert_true(sorted(G.edges(nlist, data=True)) in oklists)
+
+        G = self.G.copy()
+        nlist = [None]
+        nx.add_cycle(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = iter([None])
+        nx.add_cycle(G, nlist)
+        assert_edges_equal(G.edges([None]), [])
+        assert_nodes_equal(G, list(self.G) + [None])
+
+        G = self.G.copy()
+        nlist = [12]
+        nx.add_cycle(G, nlist)
+        assert_edges_equal(G.edges(nlist), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = iter([12])
+        nx.add_cycle(G, nlist)
+        assert_edges_equal(G.edges([12]), [])
+        assert_nodes_equal(G, list(self.G) + [12])
+
+        G = self.G.copy()
+        nlist = []
+        nx.add_cycle(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
+        G = self.G.copy()
+        nlist = iter([])
+        nx.add_cycle(G, nlist)
+        assert_edges_equal(G.edges, self.G.edges)
+        assert_nodes_equal(G, list(self.G))
+
 
     def test_subgraph(self):
         assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,

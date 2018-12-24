@@ -137,7 +137,7 @@ def is_directed(G):
     return G.is_directed()
 
 
-def frozen(*args, **kwargs):
+def frozen(*args):
     """Dummy method for raising errors when trying to modify frozen graphs"""
     raise nx.NetworkXError("Frozen graph can't be modified")
 
@@ -237,7 +237,13 @@ def add_star(G_to_add_to, nodes_for_star, **attr):
     nlist = iter(nodes_for_star)
     v = next(nlist)
     edges = ((v, n) for n in nlist)
-    G_to_add_to.add_edges_from(edges, **attr)
+
+    try:
+        first_node = next(nlist)
+    except StopIteration:
+        return
+    G_to_add_to.add_node(first_node)
+    G_to_add_to.add_edges_from(pairwise(chain((first_node,), nlist)), **attr)
 
 
 def add_path(G_to_add_to, nodes_for_path, **attr):
@@ -295,7 +301,13 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [10, 11, 12], weight=7)
     """
-    G_to_add_to.add_edges_from(pairwise(nodes_for_cycle, cyclic=True), **attr)
+    nlist = iter(nodes_for_cycle)
+    try:
+        first_node = next(nlist)
+    except StopIteration:
+        return
+    G_to_add_to.add_node(first_node)
+    G_to_add_to.add_edges_from(pairwise(chain((first_node,), nlist), cyclic=True), **attr)
 
 
 def subgraph(G, nbunch):
@@ -528,7 +540,7 @@ def create_empty_copy(G, with_data=True):
     empty_graph
 
     """
-    H = G.__class__()
+    H = G.fresh_copy()
     H.add_nodes_from(G.nodes(data=with_data))
     if with_data:
         H.graph.update(G.graph)
