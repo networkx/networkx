@@ -171,7 +171,7 @@ def hypercube_graph(n):
 
 def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
                              create_using=None):
-    """Returns the $m$ by $n$ triangular lattice graph.
+    r"""Returns the $m$ by $n$ triangular lattice graph.
 
     The `triangular lattice graph`_ is a two-dimensional `grid graph`_ in
     which each square unit has a diagonal edge (each grid unit has a chord).

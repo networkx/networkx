@@ -175,7 +175,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
 
 def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
                              value_only=False, two_phase=False, cutoff=None):
-    """Find a maximum single-commodity flow using the shortest augmenting path
+    r"""Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
     This function returns the residual network resulting after computing

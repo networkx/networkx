@@ -22,7 +22,7 @@ __all__ = ['line_graph', 'inverse_line_graph']
 
 
 def line_graph(G, create_using=None):
-    """Returns the line graph of the graph or digraph `G`.
+    r"""Returns the line graph of the graph or digraph `G`.
 
     The line graph of a graph `G` has a node for each edge in `G` and an
     edge joining those nodes if the two edges in `G` share a common node. For

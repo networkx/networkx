@@ -175,7 +175,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
 @nodes_or_number(0)
 def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
                                 seed=None):
-    """Returns a soft random geometric graph in the unit cube.
+    r"""Returns a soft random geometric graph in the unit cube.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
     random in the unit cube in dimension `dim`. Two nodes of distance, `dist`,
@@ -666,7 +666,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 @nodes_or_number(0)
 def thresholded_random_geometric_graph(n, radius, theta, dim=2,
                                        pos=None, weight=None, p=2, seed=None):
-    """Returns a thresholded random geometric graph in the unit cube.
+    r"""Returns a thresholded random geometric graph in the unit cube.
 
     The thresholded random geometric graph [1] model places `n` nodes
     uniformly at random in the unit cube of dimensions `dim`. Each node

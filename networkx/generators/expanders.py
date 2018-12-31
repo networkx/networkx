@@ -44,7 +44,7 @@ __all__ = ['margulis_gabber_galil_graph', 'chordal_cycle_graph']
 #     (x, (y + (2*x + 2)) % n),
 #
 def margulis_gabber_galil_graph(n, create_using=None):
-    """Return the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
+    r"""Return the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
     The undirected MultiGraph is regular with degree `8`. Nodes are integer
     pairs. The second-largest eigenvalue of the adjacency matrix of the graph
