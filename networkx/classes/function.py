@@ -235,7 +235,11 @@ def add_star(G_to_add_to, nodes_for_star, **attr):
     >>> nx.add_star(G, [10, 11, 12], weight=2)
     """
     nlist = iter(nodes_for_star)
-    v = next(nlist)
+    try:
+        v = next(nlist)
+    except StopIteration:
+        return
+    G_to_add_to.add_node(v)
     edges = ((v, n) for n in nlist)
     G_to_add_to.add_edges_from(edges, **attr)
 
@@ -295,7 +299,13 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [10, 11, 12], weight=7)
     """
-    G_to_add_to.add_edges_from(pairwise(nodes_for_cycle, cyclic=True), **attr)
+    nlist = iter(nodes_for_cycle)
+    try:
+        first_node = next(nlist)
+    except StopIteration:
+        return
+    G_to_add_to.add_node(first_node)
+    G_to_add_to.add_edges_from(pairwise(chain((first_node,), nlist), cyclic=True), **attr)
 
 
 def subgraph(G, nbunch):
