@@ -2,6 +2,7 @@
 
 from nose.tools import assert_equal
 from nose.tools import assert_true
+from nose.tools import assert_raises
 
 import networkx as nx
 from networkx import *
@@ -68,10 +69,32 @@ class TestHararyGraph:
             assert_true(set(G2.edges) < set(G1.edges))
             assert_equal(G1.number_of_edges(), m)
 
+        # Raise NetworkXError if n<1
+        n = 0
+        m = 0
+        assert_raises(networkx.exception.NetworkXError, hnm_harary_graph, n, m)
+
+        # Raise NetworkXError if m < n-1
+        n = 6
+        m = 4
+        assert_raises(networkx.exception.NetworkXError, hnm_harary_graph, n, m)
+
+        # Raise NetworkXError if m > n(n-1)/2
+        n = 6
+        m = 16
+        assert_raises(networkx.exception.NetworkXError, hnm_harary_graph, n, m)
+
     """ 
         Suppose connectivity k, number of nodes n 
     """
     def test_hkn_harary_graph(self):
+        # When k == 1, the hkn_harary_graph(k,n) is
+        # the path_graph(n)
+        for (k, n) in [(1, 6), (1, 7)]:
+            G1 = hkn_harary_graph(k, n)
+            G2 = path_graph(n)
+            assert_true(is_isomorphic(G1, G2))
+
         # When k is even, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,k/2+1)))
         for (k, n) in [(2, 6), (2, 7), (4, 6), (4, 7)]:
@@ -102,3 +125,13 @@ class TestHararyGraph:
                 # add half+1 edges between i and i+half
                 eSet3.add((i, (i+half) % n))
             assert_equal(eSet1, eSet2 | eSet3)
+
+        # Raise NetworkXError if k<1
+        k = 0
+        n = 0
+        assert_raises(networkx.exception.NetworkXError, hkn_harary_graph, k, n)
+
+        # Raise NetworkXError if n<k+1
+        k = 6
+        n = 6
+        assert_raises(networkx.exception.NetworkXError, hkn_harary_graph, k, n)
