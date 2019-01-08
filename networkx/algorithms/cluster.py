@@ -506,8 +506,8 @@ def generalized_degree(G, nodes=None):
     >>> G=nx.complete_graph(5)
     >>> print(nx.generalized_degree(G,0))
     Counter({3: 4})
-    >>> print(nx.generalized_degree(G))  # doctest: +ELLIPSIS
-    {0: Counter({3: 4}), 1: Counter({3: 4}), ..., 4: Counter({3: 4})}
+    >>> print(nx.generalized_degree(G))
+    {0: Counter({3: 4}), 1: Counter({3: 4}), 2: Counter({3: 4}), 3: Counter({3: 4}), 4: Counter({3: 4})}
 
     To recover the number of triangles attached to a node:
 
