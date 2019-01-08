@@ -29,7 +29,7 @@ __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 # TODO Why doesn't this algorithm work for directed graphs?
 @not_implemented_for('directed')
 def min_weighted_dominating_set(G, weight=None):
-    """Returns a dominating set that approximates the minimum weight node
+    r"""Returns a dominating set that approximates the minimum weight node
     dominating set.
 
     Parameters

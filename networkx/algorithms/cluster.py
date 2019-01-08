@@ -478,7 +478,7 @@ def square_clustering(G, nodes=None):
 
 @not_implemented_for('directed')
 def generalized_degree(G, nodes=None):
-    """ Compute the generalized degree for nodes.
+    r""" Compute the generalized degree for nodes.
 
     For each node, the generalized degree shows how many edges of given
     triangle multiplicity the node is connected to. The triangle multiplicity
@@ -507,8 +507,7 @@ def generalized_degree(G, nodes=None):
     >>> print(nx.generalized_degree(G,0))
     Counter({3: 4})
     >>> print(nx.generalized_degree(G))
-    {0: Counter({3: 4}), 1: Counter({3: 4}), 2: Counter({3: 4}), \
-3: Counter({3: 4}), 4: Counter({3: 4})}
+    {0: Counter({3: 4}), 1: Counter({3: 4}), 2: Counter({3: 4}), 3: Counter({3: 4}), 4: Counter({3: 4})}
 
     To recover the number of triangles attached to a node:
 

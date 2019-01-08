@@ -19,7 +19,7 @@ __all__ = ['modularity_matrix', 'directed_modularity_matrix']
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def modularity_matrix(G, nodelist=None, weight=None):
-    """Return the modularity matrix of G.
+    r"""Return the modularity matrix of G.
 
     The modularity matrix is the matrix B = A - <A>, where A is the adjacency
     matrix and <A> is the average adjacency matrix, assuming that the graph

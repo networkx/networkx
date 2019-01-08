@@ -1922,7 +1922,7 @@ def negative_edge_cycle(G, weight='weight'):
 
 
 def bidirectional_dijkstra(G, source, target, weight='weight'):
-    """Dijkstra's algorithm for shortest paths using bidirectional search.
+    r"""Dijkstra's algorithm for shortest paths using bidirectional search.
 
     Parameters
     ----------
