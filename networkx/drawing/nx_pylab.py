@@ -1012,7 +1012,7 @@ def draw_spectral(G, **kwargs):
     Using the unnormalized Laplacion, the layout shows possible clusters of
     nodes which are an approximation of the ratio cut. The positions are the
     entries of the second and third eigenvectors corresponding to the
-    eigenvalues in ascending order.
+    ascending eigenvalues starting from the second one.
 
     Parameters
     ----------
