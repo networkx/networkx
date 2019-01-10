@@ -180,14 +180,6 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     L : NumPy array
       Normalized Laplacian of G.
 
-    Raises
-    ------
-    NetworkXError
-        If NumPy cannot be imported
-
-    NetworkXNotImplemented
-        If G is not a DiGraph
-
     Notes
     -----
     Only implemented for DiGraphs
@@ -205,12 +197,10 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     import scipy as sp
     from scipy.sparse import spdiags, linalg
 
-    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  dtype=float)
-    n, m = M.shape
-
     P = _transition_matrix(G, nodelist=nodelist, weight=weight,
                            walk_type=walk_type, alpha=alpha)
+
+    n, m = P.shape
 
     evals, evecs = linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
@@ -220,6 +210,79 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     I = sp.identity(len(G))
 
     return I - (Q + Q.T) / 2.0
+
+@not_implemented_for('undirected')
+@not_implemented_for('multigraph')
+def directed_combinatorial_laplacian_matrix(G, nodelist=None, weight='weight',
+                                            walk_type=None, alpha=0.95):
+    r"""Return the directed combinatorial Laplacian matrix of G.
+
+    The graph directed combinatorial Laplacian is the matrix
+
+    .. math::
+
+        L = \Phi - (\Phi P + P^T \Phi) / 2
+
+    where `P` is the transition matrix of the graph and and `\Phi` a matrix
+    with the Perron vector of `P` in the diagonal and zeros elsewhere.
+
+    Depending on the value of walk_type, `P` can be the transition matrix
+    induced by a random walk, a lazy random walk, or a random walk with
+    teleportation (PageRank).
+
+    Parameters
+    ----------
+    G : DiGraph
+       A NetworkX graph
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    walk_type : string or None, optional (default=None)
+       If None, `P` is selected depending on the properties of the
+       graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
+
+    alpha : real
+       (1 - alpha) is the teleportation probability used with pagerank
+
+    Returns
+    -------
+    L : NumPy array
+      Combinatorial Laplacian of G.
+
+    Notes
+    -----
+    Only implemented for DiGraphs
+
+    See Also
+    --------
+    laplacian_matrix
+
+    References
+    ----------
+    .. [1] Fan Chung (2005).
+       Laplacians and the Cheeger inequality for directed graphs.
+       Annals of Combinatorics, 9(1), 2005
+    """
+    from scipy.sparse import spdiags, linalg
+
+    P = _transition_matrix(G, nodelist=nodelist, weight=weight,
+                           walk_type=walk_type, alpha=alpha)
+
+    n, m = P.shape
+
+    evals, evecs = linalg.eigs(P.T, k=1)
+    v = evecs.flatten().real
+    p = v / v.sum()
+    Phi = spdiags(p, [0], n, n)
+
+    return Phi - (Phi*P + P.T*Phi) /2.0
+
 
 def _transition_matrix(G, nodelist=None, weight='weight',
                        walk_type=None, alpha=0.95):
@@ -257,10 +320,7 @@ def _transition_matrix(G, nodelist=None, weight='weight',
     Raises
     ------
     NetworkXError
-        If NumPy cannot be imported
-
-    NetworkXNotImplemented
-        If G is not a DiGraph
+        If NumPy cannot be imported or alpha not in valid range
     """
 
     import scipy as sp
