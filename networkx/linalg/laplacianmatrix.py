@@ -16,6 +16,7 @@ __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
            'directed_laplacian_matrix']
 
+# pylint: disable=invalid-name
 
 @not_implemented_for('directed')
 def laplacian_matrix(G, nodelist=None, weight='weight'):
@@ -202,7 +203,68 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
        Annals of Combinatorics, 9(1), 2005
     """
     import scipy as sp
-    from scipy.sparse import identity, spdiags, linalg
+    from scipy.sparse import spdiags, linalg
+
+    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  dtype=float)
+    n, m = M.shape
+
+    P = _transition_matrix(G, nodelist=nodelist, weight=weight,
+                           walk_type=walk_type, alpha=alpha)
+
+    evals, evecs = linalg.eigs(P.T, k=1)
+    v = evecs.flatten().real
+    p = v / v.sum()
+    sqrtp = sp.sqrt(p)
+    Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0 / sqrtp, [0], n, n)
+    I = sp.identity(len(G))
+
+    return I - (Q + Q.T) / 2.0
+
+def _transition_matrix(G, nodelist=None, weight='weight',
+                       walk_type=None, alpha=0.95):
+    """Returns the transition matrix of G.
+
+    Depending on the value of walk_type, P can be the transition matrix
+    induced by a random walk, a lazy random walk, or a random walk with
+    teleportation (PageRank).
+
+    Parameters
+    ----------
+    G : DiGraph
+       A NetworkX graph
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    walk_type : string or None, optional (default=None)
+       If None, `P` is selected depending on the properties of the
+       graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
+
+    alpha : real
+       (1 - alpha) is the teleportation probability used with pagerank
+
+    Returns
+    -------
+    P : NumPy array
+      transition matrix of G.
+
+    Raises
+    ------
+    NetworkXError
+        If NumPy cannot be imported
+
+    NetworkXNotImplemented
+        If G is not a DiGraph
+    """
+
+    import scipy as sp
+    from scipy.sparse import identity, spdiags
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
@@ -238,14 +300,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
-    evals, evecs = linalg.eigs(P.T, k=1)
-    v = evecs.flatten().real
-    p = v / v.sum()
-    sqrtp = sp.sqrt(p)
-    Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0 / sqrtp, [0], n, n)
-    I = sp.identity(len(G))
-
-    return I - (Q + Q.T) / 2.0
+    return P
 
 # fixture for nose tests
 
