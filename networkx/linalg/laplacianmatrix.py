@@ -17,7 +17,6 @@ __all__ = ['laplacian_matrix',
            'directed_laplacian_matrix',
            'directed_combinatorial_laplacian_matrix']
 
-# pylint: disable=invalid-name
 
 @not_implemented_for('directed')
 def laplacian_matrix(G, nodelist=None, weight='weight'):
@@ -209,7 +208,6 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     sqrtp = sp.sqrt(p)
     Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0 / sqrtp, [0], n, n)
     I = sp.identity(len(G))
-
 
     return I - (Q + Q.T) / 2.0
 
