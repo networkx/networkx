@@ -14,7 +14,8 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Alejandro Weinstein <alejandro.weinstein@gmail.com>'])
 __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
-           'directed_laplacian_matrix']
+           'directed_laplacian_matrix',
+           'directed_combinatorial_laplacian_matrix']
 
 # pylint: disable=invalid-name
 
@@ -209,7 +210,9 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0 / sqrtp, [0], n, n)
     I = sp.identity(len(G))
 
+
     return I - (Q + Q.T) / 2.0
+
 
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
@@ -281,16 +284,19 @@ def directed_combinatorial_laplacian_matrix(G, nodelist=None, weight='weight',
     p = v / v.sum()
     Phi = spdiags(p, [0], n, n)
 
-    return Phi - (Phi*P + P.T*Phi) /2.0
+    Phi = Phi.todense()
+
+    return Phi - (Phi*P + P.T*Phi) / 2.0
 
 
 def _transition_matrix(G, nodelist=None, weight='weight',
                        walk_type=None, alpha=0.95):
     """Returns the transition matrix of G.
 
-    Depending on the value of walk_type, P can be the transition matrix
-    induced by a random walk, a lazy random walk, or a random walk with
-    teleportation (PageRank).
+    This is a row stochastic giving the transition probabilities while
+    performing a random walk on the graph. Depending on the value of walk_type,
+    P can be the transition matrix induced by a random walk, a lazy random walk,
+    or a random walk with teleportation (PageRank).
 
     Parameters
     ----------
@@ -320,7 +326,7 @@ def _transition_matrix(G, nodelist=None, weight='weight',
     Raises
     ------
     NetworkXError
-        If NumPy cannot be imported or alpha not in valid range
+        If walk_type not specified or alpha not in valid range
     """
 
     import scipy as sp
