@@ -4,10 +4,11 @@ Famous social networks.
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Katy Bold <kbold@princeton.edu>',
-                            'Aric Hagberg <aric.hagberg@gmail.com)'])
+                            'Aric Hagberg <aric.hagberg@gmail.com)',
+                            'Issa Annamoradnejad <i.moradnejad@gmail.com>'])
 
 __all__ = ['karate_club_graph', 'davis_southern_women_graph',
-           'florentine_families_graph']
+           'florentine_families_graph', 'les_miserables_graph']
 
 
 def karate_club_graph():
