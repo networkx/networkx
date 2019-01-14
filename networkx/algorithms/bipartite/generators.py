@@ -32,7 +32,7 @@ __all__ = ['configuration_model',
 
 @nodes_or_number([0, 1])
 def complete_bipartite_graph(n1, n2, create_using=None):
-    """Return the complete bipartite graph `K_{n_1,n_2}`.
+    """Returns the complete bipartite graph `K_{n_1,n_2}`.
 
     Composed of two partitions with `n_1` nodes in the first
     and `n_2` nodes in the second. Each node in the first is
@@ -71,7 +71,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
 
 @py_random_state(3)
 def configuration_model(aseq, bseq, create_using=None, seed=None):
-    """Return a random bipartite graph from two given degree sequences.
+    """Returns a random bipartite graph from two given degree sequences.
 
     Parameters
     ----------
@@ -144,7 +144,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
 
 
 def havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences using a
+    """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
 
     Nodes from the set A are connected to nodes in the set B by
@@ -216,7 +216,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences using a
+    """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
 
     Nodes from set A are connected to nodes in the set B by connecting
@@ -287,7 +287,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences using
+    """Returns a bipartite graph from two given degree sequences using
     an alternating Havel-Hakimi style construction.
 
     Nodes from the set A are connected to nodes in the set B by
@@ -424,7 +424,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
 
 @py_random_state(3)
 def random_graph(n, m, p, seed=None, directed=False):
-    """Return a bipartite random graph.
+    """Returns a bipartite random graph.
 
     This is a bipartite version of the binomial (Erdős-Rényi) graph.
 
@@ -508,7 +508,7 @@ def random_graph(n, m, p, seed=None, directed=False):
 
 @py_random_state(3)
 def gnmk_random_graph(n, m, k, seed=None, directed=False):
-    """Return a random bipartite graph G_{n,m,k}.
+    """Returns a random bipartite graph G_{n,m,k}.
 
     Produces a bipartite graph chosen randomly out of the set of all graphs
     with n top nodes, m bottom nodes, and k edges.

@@ -7,7 +7,7 @@ __all__ = ['node_attribute_xy',
 
 
 def node_attribute_xy(G, attribute, nodes=None):
-    """Return iterator of node-attribute pairs for all edges in G.
+    """Returns iterator of node-attribute pairs for all edges in G.
 
     Parameters
     ----------

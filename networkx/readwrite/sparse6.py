@@ -156,7 +156,7 @@ def from_sparse6_bytes(string):
         k += 1
 
     def parseData():
-        """Return stream of pairs b[i], x[i] for sparse6 format."""
+        """Returns stream of pairs b[i], x[i] for sparse6 format."""
         chunks = iter(data)
         d = None  # partial data word
         dLen = 0  # how many unparsed bits are left in d

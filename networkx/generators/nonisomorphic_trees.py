@@ -138,7 +138,7 @@ def _next_tree(candidate):
 
 
 def _split_tree(layout):
-    """Return a tuple of two layouts, one containing the left
+    """Returns a tuple of two layouts, one containing the left
     subtree of the root vertex, and one containing the original tree
     with the left subtree removed."""
 

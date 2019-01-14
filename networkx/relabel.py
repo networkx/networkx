@@ -166,7 +166,7 @@ def _relabel_copy(G, mapping):
 
 def convert_node_labels_to_integers(G, first_label=0, ordering="default",
                                     label_attribute=None):
-    """Return a copy of the graph G with the nodes relabeled using
+    """Returns a copy of the graph G with the nodes relabeled using
     consecutive integers.
 
     Parameters

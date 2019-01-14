@@ -863,7 +863,7 @@ def _sparse_spectral(A, dim=2):
 
 
 def rescale_layout(pos, scale=1):
-    """Return scaled position array to (-scale, scale) in all axes.
+    """Returns scaled position array to (-scale, scale) in all axes.
 
     The function acts on NumPy arrays which hold position information.
     Each position is one row of the array. The dimension of the space

@@ -446,7 +446,7 @@ def _bidirectional_shortest_path(G, source, target,
                                  ignore_nodes=None,
                                  ignore_edges=None,
                                  weight=None):
-    """Return the shortest path between source and target ignoring
+    """Returns the shortest path between source and target ignoring
        nodes and edges in the containers ignore_nodes and ignore_edges.
 
     This is a custom modification of the standard bidirectional shortest

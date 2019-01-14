@@ -768,21 +768,21 @@ class DiGraph(Graph):
                 del self._pred[v][u]
 
     def has_successor(self, u, v):
-        """Return True if node u has successor v.
+        """Returns True if node u has successor v.
 
         This is true if graph has the edge u->v.
         """
         return (u in self._succ and v in self._succ[u])
 
     def has_predecessor(self, u, v):
-        """Return True if node u has predecessor v.
+        """Returns True if node u has predecessor v.
 
         This is true if graph has the edge u<-v.
         """
         return (u in self._pred and v in self._pred[u])
 
     def successors(self, n):
-        """Return an iterator over successor nodes of n.
+        """Returns an iterator over successor nodes of n.
 
         A successor of n is a node m such that there exists a directed
         edge from n to m.
@@ -814,7 +814,7 @@ class DiGraph(Graph):
     neighbors = successors
 
     def predecessors(self, n):
-        """Return an iterator over predecessor nodes of n.
+        """Returns an iterator over predecessor nodes of n.
 
         A predecessor of n is a node m such that there exists a directed
         edge from m to n.
@@ -1096,15 +1096,15 @@ class DiGraph(Graph):
         self.graph.clear()
 
     def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
+        """Returns True if graph is a multigraph, False otherwise."""
         return False
 
     def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
+        """Returns True if graph is directed, False otherwise."""
         return True
 
     def to_undirected(self, reciprocal=False, as_view=False):
-        """Return an undirected representation of the digraph.
+        """Returns an undirected representation of the digraph.
 
         Parameters
         ----------
@@ -1179,7 +1179,7 @@ class DiGraph(Graph):
         return G
 
     def reverse(self, copy=True):
-        """Return the reverse of the graph.
+        """Returns the reverse of the graph.
 
         The reverse is a graph with the same nodes and edges
         but with the directions of the edges reversed.

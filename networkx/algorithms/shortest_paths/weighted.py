@@ -1865,7 +1865,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
 
 def negative_edge_cycle(G, weight='weight'):
-    """Return True if there exists a negative edge cycle anywhere in G.
+    """Returns True if there exists a negative edge cycle anywhere in G.
 
     Parameters
     ----------

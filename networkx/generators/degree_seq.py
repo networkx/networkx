@@ -143,7 +143,7 @@ def _configuration_model(deg_sequence, create_using, directed=False,
 
 @py_random_state(2)
 def configuration_model(deg_sequence, create_using=None, seed=None):
-    """Return a random graph with the given degree sequence.
+    """Returns a random graph with the given degree sequence.
 
     The configuration model generates a random pseudograph (graph with
     parallel edges and self loops) by randomly assigning edges to
@@ -247,7 +247,7 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
 def directed_configuration_model(in_degree_sequence,
                                  out_degree_sequence,
                                  create_using=None, seed=None):
-    """Return a directed_random graph with the given degree sequences.
+    """Returns a directed_random graph with the given degree sequences.
 
     The configuration model generates a random directed pseudograph
     (graph with parallel edges and self loops) by randomly assigning
@@ -342,7 +342,7 @@ def directed_configuration_model(in_degree_sequence,
 
 @py_random_state(1)
 def expected_degree_graph(w, seed=None, selfloops=True):
-    r"""Return a random graph with given expected degrees.
+    r"""Returns a random graph with given expected degrees.
 
     Given a sequence of expected degrees $W=(w_0,w_1,\ldots,w_{n-1})$
     of length $n$ this algorithm assigns an edge between node $u$ and
@@ -450,7 +450,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
 
 
 def havel_hakimi_graph(deg_sequence, create_using=None):
-    """Return a simple graph with given degree sequence constructed
+    """Returns a simple graph with given degree sequence constructed
     using the Havel-Hakimi algorithm.
 
     Parameters
@@ -544,7 +544,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
 def directed_havel_hakimi_graph(in_deg_sequence,
                                 out_deg_sequence,
                                 create_using=None):
-    """Return a directed graph with the given degree sequences.
+    """Returns a directed graph with the given degree sequences.
 
     Parameters
     ----------
@@ -697,7 +697,7 @@ def degree_sequence_tree(deg_sequence, create_using=None):
 
 @py_random_state(1)
 def random_degree_sequence_graph(sequence, seed=None, tries=10):
-    r"""Return a simple random graph with the given degree sequence.
+    r"""Returns a simple random graph with the given degree sequence.
 
     If the maximum degree $d_m$ in the sequence is $O(m^{1/4})$ then the
     algorithm produces almost uniform random graphs in $O(m d_m)$ time

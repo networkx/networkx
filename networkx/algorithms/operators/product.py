@@ -129,7 +129,7 @@ def _init_product_graph(G, H):
 
 
 def tensor_product(G, H):
-    r"""Return the tensor product of G and H.
+    r"""Returns the tensor product of G and H.
 
     The tensor product $P$ of the graphs $G$ and $H$ has a node set that
     is the tensor product of the node sets, $V(P)=V(G) \times V(H)$.
@@ -184,7 +184,7 @@ def tensor_product(G, H):
 
 
 def cartesian_product(G, H):
-    r"""Return the Cartesian product of G and H.
+    r"""Returns the Cartesian product of G and H.
 
     The Cartesian product $P$ of the graphs $G$ and $H$ has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
@@ -235,7 +235,7 @@ def cartesian_product(G, H):
 
 
 def lexicographic_product(G, H):
-    r"""Return the lexicographic product of G and H.
+    r"""Returns the lexicographic product of G and H.
 
     The lexicographical product $P$ of the graphs $G$ and $H$ has a node set
     that is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
@@ -287,7 +287,7 @@ def lexicographic_product(G, H):
 
 
 def strong_product(G, H):
-    r"""Return the strong product of G and H.
+    r"""Returns the strong product of G and H.
 
     The strong product $P$ of the graphs $G$ and $H$ has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.

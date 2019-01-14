@@ -12,7 +12,7 @@ __all__ = ['karate_club_graph', 'davis_southern_women_graph',
 
 
 def karate_club_graph():
-    """Return Zachary's Karate Club graph.
+    """Returns Zachary's Karate Club graph.
 
     Each node in the returned graph has a node attribute 'club' that
     indicates the name of the club to which the member represented by that node
@@ -96,7 +96,7 @@ def karate_club_graph():
 
 
 def davis_southern_women_graph():
-    """Return Davis Southern women social network.
+    """Returns Davis Southern women social network.
 
     This is a bipartite graph.
 
@@ -238,7 +238,7 @@ def davis_southern_women_graph():
 
 
 def florentine_families_graph():
-    """Return Florentine families graph.
+    """Returns Florentine families graph.
 
     References
     ----------
@@ -271,7 +271,7 @@ def florentine_families_graph():
 
 
 def les_miserables_graph():
-    """Return coappearance network of characters in the novel Les Miserables.
+    """Returns coappearance network of characters in the novel Les Miserables.
 
     References
     ----------
