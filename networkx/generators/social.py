@@ -276,8 +276,8 @@ def les_miserables_graph():
     References
     ----------
     .. [1] D. E. Knuth, 1993.
-    The Stanford GraphBase: a platform for combinatorial computing,
-    pp. 74-87. New York: AcM Press.
+       The Stanford GraphBase: a platform for combinatorial computing,
+       pp. 74-87. New York: AcM Press.
     """
     G = nx.Graph()
     G.add_edge('Napoleon', 'Myriel', weight=1)
