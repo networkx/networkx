@@ -435,6 +435,7 @@ def draw_networkx_edges(G, pos,
                         node_size=300,
                         nodelist=None,
                         node_shape="o",
+                        connectionstyle=None,
                         **kwds):
     """Draw the edges of the graph G.
 
@@ -489,6 +490,12 @@ def draw_networkx_edges(G, pos,
        For directed graphs, choose the size of the arrow head head's length and
        width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
+
+    connectionstyle : str, optional (default=None)
+       Pass the connectionstyle parameter to create curved arc of rounding
+       radius rad. For example, connectionstyle='arc3,rad=0.2'.
+       See :py:class: `matplotlib.patches.ConnectionStyle` and
+       :py:class: `matplotlib.patches.FancyArrowPatch` for more info.
 
     label : [None| string]
        Label for legend
@@ -682,6 +689,7 @@ def draw_networkx_edges(G, pos,
                                     mutation_scale=mutation_scale,
                                     color=arrow_color,
                                     linewidth=line_width,
+                                    connectionstyle=connectionstyle,
                                     zorder=1)  # arrows go behind nodes
 
             # There seems to be a bug in matplotlib to make collections of
