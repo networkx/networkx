@@ -89,7 +89,7 @@ References
 __author__ = 'P C Kroon (p.c.kroon@rug.nl)'
 __all__ = ['ISMAGS']
 
-from collections import defaultdict
+from collections import defaultdict, Counter
 from functools import reduce, wraps
 import itertools
 
@@ -246,32 +246,42 @@ class ISMAGS:
        Enumeration", PLoS One 9(5): e97896, 2014.
        https://doi.org/10.1371/journal.pone.0097896
     """
-    _symmetry_cache = {}
-
-    def __init__(self, graph, subgraph, node_match=None, edge_match=None):
+    def __init__(self, graph, subgraph, node_match=None, edge_match=None,
+                 cache=None):
         """
         Parameters
         ----------
         graph: networkx.Graph
         subgraph: networkx.Graph
-        node_match: collections.abc.Callable
-            Function used to determine whether two nodes are equivalent. It's
+        node_match: collections.abc.Callable or None
+            Function used to determine whether two nodes are equivalent. Its
             signature should look like ``f(n1: dict, n2: dict) -> bool``, with
             `n1` and `n2` node property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_node_match` and
             friends.
-        edge_match: collections.abc.Callable
-            Function used to determine whether two edges are equivalent. It's
+            If `None`, all nodes are considered equal. 
+        edge_match: collections.abc.Callable or None
+            Function used to determine whether two edges are equivalent. Its
             signature should look like ``f(e1: dict, e2: dict) -> bool``, with
             `e1` and `e2` edge property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_edge_match` and
             friends.
+            If `None`, all edges are considered equal.
+        cache: collections.abc.Mapping
+            A cache used for caching graph symmetries.
         """
         # TODO: graph and subgraph setter methods that invalidate the caches.
         # TODO: allow for precomputed partitions and colors
         self.graph = graph
         self.subgraph = subgraph
-
+        self._symmetry_cache = cache
+        # Naming conventions are taken from the original paper. For your
+        # sanity:
+        #   sg: subgraph
+        #   g: graph
+        #   e: edge(s)
+        #   n: node(s)
+        # So: sgn means "subgraph nodes".
         self._sgn_partitions_ = None
         self._sge_partitions_ = None
 
@@ -433,6 +443,11 @@ class ISMAGS:
             constraints = []
 
         candidates = self._find_nodecolor_candidates()
+        la_candidates = self._get_lookahead_candidates()
+        for sgn in self.subgraph:
+            extra_candidates = la_candidates[sgn]
+            if extra_candidates:
+                candidates[sgn] = candidates[sgn] | {frozenset(extra_candidates)}
 
         if any(candidates.values()):
             start_sgn = min(candidates, key=lambda n: min(candidates[n], key=len))
@@ -440,6 +455,55 @@ class ISMAGS:
             yield from self._map_nodes(start_sgn, candidates, constraints)
         else:
             return
+
+    @staticmethod
+    def _find_neighbor_color_count(graph, node, node_color, edge_color):
+        """
+        For `node` in `graph`, count the number of edges of a specific color
+        it has to nodes of a specific color.
+        """
+        counts = Counter()
+        neighbors = graph[node]
+        for neighbor in neighbors:
+            n_color = node_color[neighbor]
+            if (node, neighbor) in edge_color:
+                e_color = edge_color[node, neighbor]
+            else:
+                e_color = edge_color[neighbor, node]
+            counts[e_color, n_color] += 1
+        return counts
+
+    def _get_lookahead_candidates(self):
+        """
+        Returns a mapping of {subgraph node: collection of graph nodes} for
+        which the graph nodes are feasible candidates for the subgraph node, as
+        determined by looking ahead one edge.
+        """
+        g_counts = {}
+        for gn in self.graph:
+            g_counts[gn] = self._find_neighbor_color_count(self.graph, gn,
+                                                           self._gn_colors,
+                                                           self._ge_colors)
+        candidates = defaultdict(set)
+        for sgn in self.subgraph:
+            sg_count = self._find_neighbor_color_count(self.subgraph, sgn,
+                                                       self._sgn_colors,
+                                                       self._sge_colors)
+            new_sg_count = Counter()
+            for (sge_color, sgn_color), count in sg_count.items():
+                try:
+                    ge_color = self._edge_compatibility[sge_color]
+                    gn_color = self._node_compatibility[sgn_color]
+                except KeyError:
+                    pass
+                else:
+                    new_sg_count[ge_color, gn_color] = count
+            
+            for gn, g_count in g_counts.items():
+                if all(new_sg_count[x] <= g_count[x] for x in new_sg_count):
+                    # Valid candidate
+                    candidates[sgn].add(gn)
+        return candidates
 
     def largest_common_subgraph(self, symmetry=True):
         """
@@ -487,27 +551,30 @@ class ISMAGS:
 
         Returns
         -------
-        tuple[set[frozenset], dict]
-            The found permutations and co-sets. Permutations is a set of
-            frozenset of pairs of node keys which can be exchanged without
-            changing :attr:`subgraph`. The co-sets is a dictionary of node key:
-            set of node keys. Every key, value describes which values can be
-            interchanged while keeping all nodes less than the key the same.
+        set[frozenset]
+            The found permutations. This is a set of frozenset of pairs of node
+            keys which can be exchanged without changing :attr:`subgraph`.
+        dict[collections.abc.Hashable, set[collections.abc.Hashable]]
+            The found co-sets. The co-sets is a dictionary of {node key:
+            set of node keys}. Every key-value pair describes which `values`
+            can be interchanged without changing nodes less than `key`.
         """
-        key = hash((tuple(graph.nodes), tuple(graph.edges),
-                    tuple(map(tuple, node_partitions)), tuple(edge_colors.items())))
-        if key in self._symmetry_cache:
-            return self._symmetry_cache[key]
+        if self._symmetry_cache is not None:
+            key = hash((tuple(graph.nodes), tuple(graph.edges),
+                        tuple(map(tuple, node_partitions)), tuple(edge_colors.items())))
+            if key in self._symmetry_cache:
+                return self._symmetry_cache[key]
         node_partitions = list(self._refine_node_partitions(graph,
                                                             node_partitions,
                                                             edge_colors))
         assert len(node_partitions) == 1
         node_partitions = node_partitions[0]
-        permutations, cosets = self._process_opp(graph,
+        permutations, cosets = self._process_ordered_pair_partitions(graph,
                                                  node_partitions,
                                                  node_partitions,
                                                  edge_colors)
-        self.__class__._symmetry_cache[key] = permutations, cosets
+        if self._symmetry_cache is not None:
+            self._symmetry_cache[key] = permutations, cosets
         return permutations, cosets
 
     def is_isomorphic(self, symmetry=False):
@@ -580,7 +647,7 @@ class ISMAGS:
         for node_i, node_ts in cosets.items():
             for node_t in node_ts:
                 if node_i != node_t:
-                    # Node i must be smaller then node t.
+                    # Node i must be smaller than node t.
                     constraints.append((node_i, node_t))
         return constraints
 
@@ -648,8 +715,8 @@ class ISMAGS:
         for partition in node_partitions:
             if not are_all_equal(node_edge_colors[node] for node in partition):
                 refined = make_partitions(partition, equal_color)
-                if branch and len(refined) != 1 and\
-                        len({len(r) for r in refined}) != len([len(r) for r in refined]):
+                if (branch and len(refined) != 1 and
+                        len({len(r) for r in refined}) != len([len(r) for r in refined])):
                     # This is where it breaks. There are multiple new cells
                     # in refined with the same length, and their order
                     # matters.
@@ -736,7 +803,7 @@ class ISMAGS:
                 continue
 
             new_candidates = candidates.copy()
-            sgn_neighbours = self.subgraph[sgn]
+            sgn_neighbours = set(self.subgraph[sgn])
             not_gn_neighbours = set(self.graph.nodes) - set(self.graph[gn])
             for sgn2 in self.subgraph:
                 if sgn2 not in sgn_neighbours:
@@ -790,7 +857,11 @@ class ISMAGS:
             # There's no point in trying to find isomorphisms of
             # graph >= subgraph if subgraph has more nodes than graph.
 
-            for nodes in to_be_mapped:
+            # Try the isomorphism first with the nodes with lowest ID. So sort
+            # them. Those are more likely to be part of the final
+            # correspondence. This makes finding the first answer(s) faster. In
+            # theory.
+            for nodes in sorted(to_be_mapped, key=sorted):
                 # Find the isomorphism between subgraph[to_be_mapped] <= graph
                 next_sgn = min(nodes, key=lambda n: min(candidates[n], key=len))
                 isomorphs = self._map_nodes(next_sgn, candidates, constraints,
@@ -924,8 +995,9 @@ class ISMAGS:
         for bot in new_bottom_partitions:
             yield list(new_top_partitions), bot
 
-    def _process_opp(self, graph, top_partitions, bottom_partitions,
-                     edge_colors, orbits=None, cosets=None):
+    def _process_ordered_pair_partitions(self, graph, top_partitions,
+                                         bottom_partitions, edge_colors,
+                                         orbits=None, cosets=None):
         """
         Processes ordered pair partitions as per the reference paper. Finds and
         returns all permutations and cosets that leave the graph unchanged.
@@ -976,7 +1048,7 @@ class ISMAGS:
             for opp in partitions:
                 new_top_partitions, new_bottom_partitions = opp
 
-                new_perms, new_cosets = self._process_opp(graph,
+                new_perms, new_cosets = self._process_ordered_pair_partitions(graph,
                                                           new_top_partitions,
                                                           new_bottom_partitions,
                                                           edge_colors,
