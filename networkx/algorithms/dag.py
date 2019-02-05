@@ -415,6 +415,128 @@ def all_topological_sorts(G):
             break
 
 
+class IncrementalTopologicalSort():
+    """
+    FIXME
+    """
+    def __init__(self):
+        """Initialize a datastructure that enables incremental topological sorting.
+        """
+        self.graph = nx.DiGraph() # FIXME enable MultiDiGraph
+        self.top_sort = [] # this list will contain the node labels sorted in topological order
+        self.node_index = {} # map node label to index in top_sort
+        self.max_index = 0
+
+    # TODO do I need to support the usual interface for this?
+    def add_node(self, n, **attr):
+        # put node at the end of the top sort
+        if n not in self.graph.nodes:
+            # only insert node into top sort if we have not seen it yet to avoid duplicate entries
+            self.top_sort.append(n)
+            self.node_index[n] = self.max_index
+            self.max_index += 1
+
+        # update graph in any case
+        self.graph.add_node(n, **attr)
+
+    def add_edge(self, u, v, **attr):
+        assert all(self.top_sort[self.node_index[n]] == n for n in self.node_index), "Programming error: inconsitent data structure"
+        if u not in self.graph.nodes:
+            self.add_node(u)
+        if v not in self.graph.nodes:
+            self.add_node(v)
+
+        # we only update the datastructure if edge is not already inserted
+        if (u, v) not in self.graph.edges():
+            lb = self.node_index[v]
+            ub = self.node_index[u]
+
+            # only if the edge contradicts the current order, i.e. the index of v is less than u
+            # we need to update the datastructure
+            if lb < ub:
+                R_f = []
+                R_f = self._dfs_f(v, ub, R_f)
+                R_b = []
+                R_b = self._dfs_b(u, lb, R_b)
+                self._reorder(R_f, R_b)
+
+        self.graph.add_edge(u, v, **attr)
+
+    def _dfs_f(self, n, ub, R_f):
+        # visited?
+        # forward depth first search
+        assert self.node_index[n] < ub, "Programming error" # FIXME details
+        depth_limit = ub - self.node_index[n]
+        for u in nx.dfs_preorder_nodes(self.graph, source=n, depth_limit=depth_limit):
+            if self.node_index[u] == ub:
+                raise nx.NetworkXUnfeasible('Cycle detected')
+
+            if self.node_index[u] > ub:
+                continue
+
+            R_f.append(u)
+
+        return R_f
+
+    def _dfs_b(self, n, lb, R_b):
+        # backwards depth first search
+        visited = set()
+        S = [n]
+        while len(S):
+            u = S.pop()
+            if u in visited:
+                continue
+
+            visited.add(u)
+            R_b.append(u)
+
+            for v in self.graph.predecessors(u):
+                if lb < self.node_index[v]:
+                    S.append(v)
+
+        return R_b
+
+    def _reorder(self, R_f, R_b):
+        L = list()
+        R_f = list(sorted(R_f, key=lambda x: self.node_index[x]))
+        R_b = list(sorted(R_b, key=lambda x: self.node_index[x]))
+        for i in range(len(R_b)):
+            w = R_b[i]
+            R_b[i] = self.node_index[w]
+            L.append(w)
+
+        for i in range(len(R_f)):
+            w = R_f[i]
+            R_f[i] = self.node_index[w]
+            L.append(w)
+
+        R = self._merge(R_f, R_b)
+        for i in range(len(L)):
+            self.node_index[L[i]] = R[i]
+            self.top_sort[R[i]] = L[i]
+
+    def _merge(self, R_f, R_b):
+        # merges two sorted lists into one list that is also sorted
+        R = []
+        i = 0
+        j = 0
+        while i < len(R_f) and j < len(R_b):
+            if R_f[i] <= R_b[j]:
+                R.append(R_f[i])
+                i += 1
+            else:
+                R.append(R_b[j])
+                j += 1
+
+        assert (i == len(R_f)) or (j == len(R_b)), "programming error: at least one list has to be completed"
+
+        R += R_f[i:]
+        R += R_b[j:]
+        return R
+
+    def __iter__(self):
+        return iter(self.top_sort)
+
 def is_aperiodic(G):
     """Return True if `G` is aperiodic.
 
