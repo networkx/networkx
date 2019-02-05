@@ -289,7 +289,6 @@ class TestDAG:
             inc_sort.add_edge(*edge)
             assert_true(_is_topological_sort(edges[:i], list(inc_sort)))
 
-
     def test_incremental_topological_sort3(self):
         edges = [(0, 1), (1, 2), (1, 3), (0, 4), (4, 5), (4, 6)]
         inc_sort = nx.IncrementalTopologicalSort()

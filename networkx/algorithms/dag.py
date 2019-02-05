@@ -426,23 +426,25 @@ class IncrementalTopologicalSort():
     References
     ----------
     .. [1] David J. Pearce and Paul H. J. Kelly. (2003)
-       Online algorithms for topological order and strongly connected components
+       *Online algorithms for topological order and strongly connected
+       components*
     """
     def __init__(self):
-        """Initialize a datastructure that enables incremental topological sorting.
+        """Initialize a datastructure that enables incremental topological
+        sorting.
         """
-        self.graph = nx.DiGraph() # TODO enable MultiDiGraph
-        self.top_sort = [] # this list will contain the node labels sorted in topological order
-        self.node_index = {} # map node label to index in top_sort
-        self.max_index = 0 # current highest index
+        self.graph = nx.DiGraph()  # TODO enable MultiDiGraph
+        self.top_sort = []  # contains node labels sorted in topological order
+        self.node_index = {}  # map node label to index in top_sort
+        self.max_index = 0  # current highest index
 
     def add_node(self, n, **attr):
         """
-        Add a node to the topological sort without any relation to the other nodes.
+        Add a node to the topological sort without any relation to the other
+        nodes.
         """
-        # put node at the end of the top sort
+        # put node at the end of the top sort if not seen yet
         if n not in self.graph.nodes:
-            # only insert node into top sort if we have not seen it yet to avoid duplicate entries
             self.top_sort.append(n)
             self.node_index[n] = self.max_index
             self.max_index += 1
@@ -459,8 +461,9 @@ class IncrementalTopologicalSort():
         NetworkXUnfeasible
             If the edge will introduce a cycle in the underlying graph.
         """
-        assert all(self.top_sort[self.node_index[n]] == n for n in self.node_index), \
-                "Programming error: inconsistent data structure"
+        assert all(self.top_sort[self.node_index[n]] == n
+                   for n in self.node_index), \
+            "Programming error: inconsistent data structure"
 
         if u not in self.graph.nodes:
             self.add_node(u)
@@ -472,7 +475,8 @@ class IncrementalTopologicalSort():
             lb = self.node_index[v]
             ub = self.node_index[u]
 
-            # only if the edge contradicts the current order, i.e. the index of v is less than u
+            # only if the edge contradicts the current order
+            # (i.e. index[v] < index[u])
             # we need to update the datastructure
             if lb < ub:
                 R_f = []
@@ -485,9 +489,10 @@ class IncrementalTopologicalSort():
 
     def _dfs_f(self, n, ub, R_f):
         # forward depth first search
-        assert self.node_index[n] < ub, "Programming error" # TODO details
+        assert self.node_index[n] < ub, "Programming error"
         depth_limit = ub - self.node_index[n]
-        for u in nx.dfs_preorder_nodes(self.graph, source=n, depth_limit=depth_limit):
+        for u in nx.dfs_preorder_nodes(self.graph, source=n,
+                                       depth_limit=depth_limit):
             if self.node_index[u] == ub:
                 raise nx.NetworkXUnfeasible('Cycle detected')
 
@@ -549,7 +554,8 @@ class IncrementalTopologicalSort():
                 R.append(R_b[j])
                 j += 1
 
-        assert (i == len(R_f)) or (j == len(R_b)), "programming error: at least one list has to be completed"
+        assert (i == len(R_f)) or (j == len(R_b)), \
+            "programming error: at least one list has to be completed"
 
         R.extend(R_f[i:])
         R.extend(R_b[j:])
@@ -557,6 +563,7 @@ class IncrementalTopologicalSort():
 
     def __iter__(self):
         return iter(self.top_sort)
+
 
 def is_aperiodic(G):
     """Return True if `G` is aperiodic.
