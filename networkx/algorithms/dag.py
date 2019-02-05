@@ -40,6 +40,7 @@ __all__ = ['descendants',
            'topological_sort',
            'lexicographical_topological_sort',
            'all_topological_sorts',
+           'IncrementalTopologicalSort',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
@@ -417,18 +418,28 @@ def all_topological_sorts(G):
 
 class IncrementalTopologicalSort():
     """
-    FIXME
+    Datastructure that enables an incremental construction of a topological
+    sort.
+
+    Implementation based on the PK algorithm from [1].
+
+    References
+    ----------
+    .. [1] David J. Pearce and Paul H. J. Kelly. (2003)
+       Online algorithms for topological order and strongly connected components
     """
     def __init__(self):
         """Initialize a datastructure that enables incremental topological sorting.
         """
-        self.graph = nx.DiGraph() # FIXME enable MultiDiGraph
+        self.graph = nx.DiGraph() # TODO enable MultiDiGraph
         self.top_sort = [] # this list will contain the node labels sorted in topological order
         self.node_index = {} # map node label to index in top_sort
-        self.max_index = 0
+        self.max_index = 0 # current highest index
 
-    # TODO do I need to support the usual interface for this?
     def add_node(self, n, **attr):
+        """
+        Add a node to the topological sort without any relation to the other nodes.
+        """
         # put node at the end of the top sort
         if n not in self.graph.nodes:
             # only insert node into top sort if we have not seen it yet to avoid duplicate entries
@@ -440,7 +451,17 @@ class IncrementalTopologicalSort():
         self.graph.add_node(n, **attr)
 
     def add_edge(self, u, v, **attr):
-        assert all(self.top_sort[self.node_index[n]] == n for n in self.node_index), "Programming error: inconsitent data structure"
+        """
+        Add an edge between two nodes and update topological sort accordingly.
+
+        Raises
+        ------
+        NetworkXUnfeasible
+            If the edge will introduce a cycle in the underlying graph.
+        """
+        assert all(self.top_sort[self.node_index[n]] == n for n in self.node_index), \
+                "Programming error: inconsistent data structure"
+
         if u not in self.graph.nodes:
             self.add_node(u)
         if v not in self.graph.nodes:
@@ -463,9 +484,8 @@ class IncrementalTopologicalSort():
         self.graph.add_edge(u, v, **attr)
 
     def _dfs_f(self, n, ub, R_f):
-        # visited?
         # forward depth first search
-        assert self.node_index[n] < ub, "Programming error" # FIXME details
+        assert self.node_index[n] < ub, "Programming error" # TODO details
         depth_limit = ub - self.node_index[n]
         for u in nx.dfs_preorder_nodes(self.graph, source=n, depth_limit=depth_limit):
             if self.node_index[u] == ub:
@@ -497,6 +517,7 @@ class IncrementalTopologicalSort():
         return R_b
 
     def _reorder(self, R_f, R_b):
+        # reorder top_sort
         L = list()
         R_f = list(sorted(R_f, key=lambda x: self.node_index[x]))
         R_b = list(sorted(R_b, key=lambda x: self.node_index[x]))
@@ -516,7 +537,7 @@ class IncrementalTopologicalSort():
             self.top_sort[R[i]] = L[i]
 
     def _merge(self, R_f, R_b):
-        # merges two sorted lists into one list that is also sorted
+        # merge two sorted lists into a single sorted list
         R = []
         i = 0
         j = 0
@@ -530,8 +551,8 @@ class IncrementalTopologicalSort():
 
         assert (i == len(R_f)) or (j == len(R_b)), "programming error: at least one list has to be completed"
 
-        R += R_f[i:]
-        R += R_b[j:]
+        R.extend(R_f[i:])
+        R.extend(R_b[j:])
         return R
 
     def __iter__(self):

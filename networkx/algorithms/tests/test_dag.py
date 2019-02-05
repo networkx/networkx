@@ -14,6 +14,12 @@ from networkx.utils import arbitrary_element
 from networkx.utils import consume
 from networkx.utils import pairwise
 
+def _is_topological_sort(edges, seq):
+    """
+    Determine if seq is a topological sort on the graph defined by edges.
+    """
+    index = {v: i for (i, v) in enumerate(seq)}
+    return all(index[u] < index[v] for (u, v) in edges)
 
 class TestDagLongestPath(object):
     """Unit tests computing the longest path in a directed acyclic graph."""
@@ -267,6 +273,34 @@ class TestDAG:
         DG = nx.MultiDiGraph(edges)
         assert_equal(list(nx.all_topological_sorts(DG)),
                      [list(range(1, N+1))])
+
+    def test_incremental_topological_sort1(self):
+        # test on a path
+        N = 9
+        inc_sort = nx.IncrementalTopologicalSort()
+        for i in range(N):
+            inc_sort.add_edge(i, i+1)
+            assert_equal(list(inc_sort), list(range(i+2)))
+
+    def test_incremental_topological_sort2(self):
+        edges = [(1, 3), (3, 5), (0, 2), (0, 1), (2, 3), (3, 4)]
+        inc_sort = nx.IncrementalTopologicalSort()
+        for i, edge in enumerate(edges):
+            inc_sort.add_edge(*edge)
+            assert_true(_is_topological_sort(edges[:i], list(inc_sort)))
+
+
+    def test_incremental_topological_sort3(self):
+        edges = [(0, 1), (1, 2), (1, 3), (0, 4), (4, 5), (4, 6)]
+        inc_sort = nx.IncrementalTopologicalSort()
+        for i, edge in enumerate(edges):
+            inc_sort.add_edge(*edge)
+            assert_true(_is_topological_sort(edges[:i], list(inc_sort)))
+
+        def unfeasible():
+            inc_sort.add_edge(3, 0)
+
+        assert_raises(nx.NetworkXUnfeasible, unfeasible)
 
     def test_ancestors(self):
         G = nx.DiGraph()
