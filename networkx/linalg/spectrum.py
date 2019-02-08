@@ -47,7 +47,7 @@ def laplacian_spectrum(G, weight='weight'):
     return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
 
 
-def laplacian_spectrum(G, weight='weight'):
+def normalized_laplacian_spectrum(G, weight='weight'):
     """Return eigenvalues of the normalized Laplacian of G
 
     Parameters
