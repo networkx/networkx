@@ -28,9 +28,9 @@ def modularity_matrix(G, nodelist=None, weight=None):
     More specifically, the element B_ij of B is defined as
 
     .. math::
-        A_{ij} - {k_i k_j m \over 2}
+        A_{ij} - {k_i k_j \over 2 m}
 
-    where k_i is the degree of node i, and were m is the number of edges
+    where k_i is the degree of node i, and where m is the number of edges
     in the graph. When weight is set to a name of an attribute edge, Aij, k_i,
     k_j and m are computed using its value.
 
