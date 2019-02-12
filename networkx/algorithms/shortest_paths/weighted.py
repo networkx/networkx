@@ -84,15 +84,15 @@ def _weight_function(G, weight):
     # string representing the edge attribute containing the weight of
     # the edge.
     if G.is_multigraph():
-        return lambda u, v, data, e=None: _weight_function2_multigraph(u, v, data, e, weight)
+        return lambda u, v, data, e=None: _weight_function_multigraph(u, v, data, e, weight)
     return lambda u, v, data, e=None: data.get(weight, 1)
 
     """TODO write docs"""
-def _weight_function2_multigraph(u, v, data, least_cost_edge, weight):
+def _weight_function_multigraph(u, v, data, least_cost_key, weight):
     key = min(data, key=lambda x: data.get(x).get(weight, 1))
 
-    if least_cost_edge is not None:
-        least_cost_edge['key'] = key
+    if least_cost_key is not None:
+        least_cost_key['key'] = key
 
     return data.get(key).get(weight, 1)
 
@@ -673,13 +673,13 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
 
     Returns
     -------
-    distance, path, edges : pair of dictionaries, or numeric and list
+    distance, path, keys : pair of dictionaries, or numeric and list
        If target is None, returns a tuple of two dictionaries keyed by node.
        The first dictionary stores distance from one of the source nodes.
        The second stores the path from one of the sources to that node.
-       If target is not None, returns a tuple of (distance, path, edges) where
+       If target is not None, returns a tuple of (distance, path, keys) where
        distance is the distance from source to target, path is a list
-       representing the path from source to target and edges are keys of the
+       representing the path from source to target and keys of the
        edges used.
 
     Examples
@@ -740,18 +740,18 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
         return (0, [target])
     weight = _weight_function(G, weight)
     paths = {source: [source] for source in sources}  # dictionary of paths
-    edges = {source: [] for source in sources} if G.is_multigraph() else None # dictionary of edges
+    keys = {source: [] for source in sources} if G.is_multigraph() else None # dictionary of keys
     dist = _dijkstra_multisource(G, sources, weight, paths=paths,
-                                edges=edges, cutoff=cutoff, target=target)
+                                keys=keys, cutoff=cutoff, target=target)
     if target is None:
-        return (dist, paths, edges)
+        return (dist, paths, keys)
     try:
-        return (dist[target], paths[target], edges[target])
+        return (dist[target], paths[target], keys[target])
     except KeyError:
         raise nx.NetworkXNoPath("No path to {}.".format(target))
 
 
-def _dijkstra(G, source, weight, pred=None, paths=None, edges=None, cutoff=None,
+def _dijkstra(G, source, weight, pred=None, paths=None, keys=None, cutoff=None,
               target=None):
     """Uses Dijkstra's algorithm to find shortest weighted paths from a
     single source.
@@ -762,11 +762,11 @@ def _dijkstra(G, source, weight, pred=None, paths=None, edges=None, cutoff=None,
 
     """
     return _dijkstra_multisource(G, [source], weight, pred=pred, paths=paths,
-                                edges=edges, cutoff=cutoff, target=target)
+                                keys=keys, cutoff=cutoff, target=target)
 
 
 def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
-                          edges=None, cutoff=None, target=None):
+                          keys=None, cutoff=None, target=None):
     """Uses Dijkstra's algorithm to find shortest weighted paths
 
     Parameters
@@ -791,9 +791,9 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
         dict to store the path list from source to each node, keyed by node.
         If None, paths are not stored.
 
-    edges: dict, optional (default=None)
-        dict to store the edge ids that are used to build the path, keyed by edge keys.
-        If None, edges are not stored.
+    keys: dict, optional (default=None)
+        dict to store the keys that are used to build the path, keyed by edge key.
+        If None, keys are not stored.
 
     target : node label, optional
         Ending node for path. Search is halted when target is found.
@@ -842,8 +842,8 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
         if v == target:
             break
         for u, e in G_succ[v].items():
-            least_cost_edge = {} if edges else None
-            cost = weight(v, u, e, least_cost_edge)
+            least_cost_key = {} if keys else None
+            cost = weight(v, u, e, least_cost_key)
 
             if cost is None:
                 continue
@@ -860,11 +860,11 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
                 push(fringe, (vu_dist, next(c), u))
                 if paths is not None:
                     paths[u] = paths[v] + [u]
-                if edges is not None:
-                    if 'key' in least_cost_edge:
-                        edges[u] = edges[v] + [least_cost_edge['key']]
+                if keys is not None:
+                    if 'key' in least_cost_key:
+                        keys[u] = keys[v] + [least_cost_key['key']]
                     else:
-                        edges[u] = []
+                        keys[u] = []
                 if pred is not None:
                     pred[u] = [v]
             elif vu_dist == seen[u]:
