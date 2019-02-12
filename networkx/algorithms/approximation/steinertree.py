@@ -29,24 +29,26 @@ def metric_closure(G, weight='weight'):
 
     # check for connected graph while processing first node
     all_paths_iter = nx.all_pairs_dijkstra(G, weight=weight)
-    u, (distance, path) = next(all_paths_iter)
+    u, (distance, path, keys) = next(all_paths_iter)
+
     if Gnodes - set(distance):
         msg = "G is not a connected graph. metric_closure is not defined."
         raise nx.NetworkXError(msg)
     Gnodes.remove(u)
     for v in Gnodes:
-        M.add_edge(u, v, distance=distance[v], path=path[v])
+        current_keys = keys[v] if keys else None
+        M.add_edge(u, v, distance=distance[v], path=path[v], keys=current_keys)
 
     # first node done -- now process the rest
-    for u, (distance, path) in all_paths_iter:
+    for u, (distance, path, keys) in all_paths_iter:
         Gnodes.remove(u)
         for v in Gnodes:
-            M.add_edge(u, v, distance=distance[v], path=path[v])
+            current_keys = keys[v] if keys else None
+            M.add_edge(u, v, distance=distance[v], path=path[v], keys=current_keys)
 
     return M
 
 
-@not_implemented_for('multigraph')
 @not_implemented_for('directed')
 def steiner_tree(G, terminal_nodes, weight='weight'):
     """ Return an approximation to the minimum Steiner tree of a graph.
@@ -84,7 +86,22 @@ def steiner_tree(G, terminal_nodes, weight='weight'):
     # graph.
     H = M.subgraph(terminal_nodes)
     mst_edges = nx.minimum_spanning_edges(H, weight='distance', data=True)
-    # Create an iterator over each edge in each shortest path; repeats are okay
-    edges = chain.from_iterable(pairwise(d['path']) for u, v, d in mst_edges)
+
+    edges = []
+
+    if G.is_multigraph():
+        edges = []
+
+        for mst_edge in mst_edges:
+            (u, v, d) = mst_edge
+
+            for idx, pair in enumerate(pairwise(d['path'])):
+                edges.append((pair[0], pair[1], d['keys'][idx]))
+    else:
+        # Create an iterator over each edge in each shortest path; repeats are okay
+        edges = chain.from_iterable(pairwise(d['path']) for u, v, d in mst_edges)
+
+
     T = G.edge_subgraph(edges)
+
     return T

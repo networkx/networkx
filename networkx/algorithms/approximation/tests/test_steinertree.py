@@ -57,21 +57,26 @@ class TestSteinerTree:
                                  (5, 7, {'weight': 1})]
         assert_edges_equal(list(S.edges(data=True)), expected_steiner_tree)
 
-    @raises(nx.NetworkXNotImplemented)
+    # @raises(nx.NetworkXNotImplemented)
     def test_multigraph_steiner_tree(self):
         G = nx.MultiGraph()
+
         G.add_edges_from([
-            (1, 2, 0, {'weight': 1}),
-            (2, 3, 0, {'weight': 999}),
-            (2, 3, 1, {'weight': 1}),
-            (3, 4, 0, {'weight': 1}),
-            (3, 5, 0, {'weight': 1})
+            ('A', 'B', 'k1', {'weight': 1}),
+            ('A', 'B', 'k2', {'weight': 999}),
+            ('B', 'C', 'k3', {'weight': 999}),
+            ('B', 'C', 'k4', {'weight': 1}),
+            ('B', 'C', 'k5', {'weight': 1}),
+            ('C', 'D', 'k6', {'weight': 1}),
+            ('C', 'E', 'k7', {'weight': 1}),
+            # ('Q', 'W', 'k8', {'weight': 1}),
         ])
-        terminal_nodes = [2, 4, 5]
+        terminal_nodes = ['A', 'D']
         expected_edges = [
-            (2, 3, 1, {'weight': 1}),  # edge with key 1 has lower weight
-            (3, 4, 0, {'weight': 1}),
-            (3, 5, 0, {'weight': 1})
+            ('A', 'B', 'k1', {'weight': 1}),  # edge with key 1 has lower weight
+            ('B', 'C', 'k4', {'weight': 1}),
+            ('C', 'D', 'k6', {'weight': 1})
         ]
-        # not implemented
         T = steiner_tree(G, terminal_nodes)
+
+        assert_edges_equal(list(T.edges(keys=True, data=True)), expected_edges)
