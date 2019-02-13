@@ -51,7 +51,7 @@ def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
     """
     if undirected:
         if distance is not None:
-            sp, _ = nx.single_source_dijkstra(G.to_undirected(),
+            sp, _, k = nx.single_source_dijkstra(G.to_undirected(),
                                               n, cutoff=radius,
                                               weight=distance)
         else:
@@ -59,7 +59,7 @@ def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
                                                             n, cutoff=radius))
     else:
         if distance is not None:
-            sp, _ = nx.single_source_dijkstra(G,
+            sp, _, k = nx.single_source_dijkstra(G,
                                               n, cutoff=radius,
                                               weight=distance)
         else:

@@ -746,7 +746,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     if target is None:
         return (dist, paths, keys)
     try:
-        return (dist[target], paths[target], keys[target])
+        return_keys = keys[target] if keys else None
+        return (dist[target], paths[target], return_keys)
     except KeyError:
         raise nx.NetworkXNoPath("No path to {}.".format(target))
 
@@ -2177,8 +2178,8 @@ def johnson(G, weight='weight'):
 
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
-    def new_weight(u, v, d):
-        return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
+    def new_weight(u, v, d, k):
+        return weight(u, v, d, k) + dist_bellman[u] - dist_bellman[v]
 
     def dist_path(v):
         paths = {v: [v]}

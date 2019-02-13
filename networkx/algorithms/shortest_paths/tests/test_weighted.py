@@ -77,7 +77,9 @@ class WeightedTestBase(object):
 class TestWeightedPath(WeightedTestBase):
 
     def test_dijkstra(self):
-        (D, P) = nx.single_source_dijkstra(self.XG, 's')
+        from pprint import pprint 
+        pprint(nx.single_source_dijkstra(self.XG, 's'))
+        (D, P, K) = nx.single_source_dijkstra(self.XG, 's')
         validate_path(self.XG, 's', 'v', 9, P['v'])
         assert_equal(D['v'], 9)
 
@@ -95,7 +97,7 @@ class TestWeightedPath(WeightedTestBase):
         # make sure we get lower weight
         # to_undirected might choose either edge with weight 2 or weight 3
         GG['u']['x']['weight'] = 2
-        (D, P) = nx.single_source_dijkstra(GG, 's')
+        (D, P, K) = nx.single_source_dijkstra(GG, 's')
         validate_path(GG, 's', 'v', 8, P['v'])
         assert_equal(D['v'], 8)     # uses lower weight of 2 on u<->x edge
         validate_path(GG, 's', 'v', 8, nx.dijkstra_path(GG, 's', 'v'))
@@ -246,15 +248,15 @@ class TestWeightedPath(WeightedTestBase):
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
 
-        def weight(u, v, d): return 1 / d['weight']
+        def weight(u, v, d, k): return 1 / d['weight']
         # The shortest path from 0 to 2 using the actual weights on the
         # edges should be [0, 1, 2].
-        distance, path = nx.single_source_dijkstra(G, 0, 2)
+        distance, path, keys = nx.single_source_dijkstra(G, 0, 2)
         assert_equal(distance, 2)
         assert_equal(path, [0, 1, 2])
         # However, with the above weight function, the shortest path
         # should be [0, 2], since that has a very small weight.
-        distance, path = nx.single_source_dijkstra(G, 0, 2, weight=weight)
+        distance, path, keys = nx.single_source_dijkstra(G, 0, 2, weight=weight)
         assert_equal(distance, 1 / 10)
         assert_equal(path, [0, 2])
 
@@ -309,7 +311,7 @@ class TestDijkstraPathLength(object):
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
 
-        def weight(u, v, d): return 1 / d['weight']
+        def weight(u, v, d, k): return 1 / d['weight']
         # The shortest path from 0 to 2 using the actual weights on the
         # edges should be [0, 1, 2]. However, with the above weight
         # function, the shortest path should be [0, 2], since that has a
@@ -348,7 +350,7 @@ class TestMultiSourceDijkstra(object):
         G = nx.Graph()
         G.add_weighted_edges_from(edges)
         sources = {0, 4}
-        distances, paths = nx.multi_source_dijkstra(G, sources)
+        distances, paths, keys = nx.multi_source_dijkstra(G, sources)
         expected_distances = {0: 0, 1: 1, 2: 2, 3: 1, 4: 0}
         expected_paths = {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [4, 3], 4: [4]}
         assert_equal(distances, expected_distances)
