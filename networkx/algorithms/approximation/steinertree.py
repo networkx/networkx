@@ -50,7 +50,7 @@ def metric_closure(G, weight='weight'):
 
 
 @not_implemented_for('directed')
-def steiner_tree(G, terminal_nodes, weight='weight'):
+def steiner_tree(G, terminal_nodes, weight='weight', metric_closure=None):
     """ Return an approximation to the minimum Steiner tree of a graph.
 
     Parameters
@@ -60,6 +60,12 @@ def steiner_tree(G, terminal_nodes, weight='weight'):
     terminal_nodes : list
          A list of terminal nodes for which minimum steiner tree is
          to be found.
+
+    weight :
+         The weight to be used for calculating the shortest path
+
+    metric_closure:
+         A precalculated metric_closure of the graph
 
     Returns
     -------
@@ -81,7 +87,7 @@ def steiner_tree(G, terminal_nodes, weight='weight'):
     """
     # M is the subgraph of the metric closure induced by the terminal nodes of
     # G.
-    M = metric_closure(G, weight=weight)
+    M = metric_closure if metric_closure else metric_closure(G, weight=weight)
     # Use the 'distance' attribute of each edge provided by the metric closure
     # graph.
     H = M.subgraph(terminal_nodes)
