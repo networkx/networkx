@@ -413,6 +413,13 @@ def draw_networkx_nodes(G, pos,
                                  linewidths=linewidths,
                                  edgecolors=edgecolors,
                                  label=label)
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     node_collection.set_zorder(2)
     return node_collection
@@ -703,6 +710,14 @@ def draw_networkx_edges(G, pos,
     ax.update_datalim(corners)
     ax.autoscale_view()
 
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
+
     return arrow_collection
 
 
@@ -809,6 +824,14 @@ def draw_networkx_labels(G, pos,
                     clip_on=True,
                     )
         text_items[n] = t
+        
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     return text_items
 
@@ -955,6 +978,14 @@ def draw_networkx_edge_labels(G, pos,
                     )
         text_items[(n1, n2)] = t
 
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
+
     return text_items
 
 
@@ -1007,7 +1038,12 @@ def draw_random(G, **kwargs):
 
 
 def draw_spectral(G, **kwargs):
-    """Draw the graph G with a spectral layout.
+    """Draw the graph G with a spectral 2D layout.
+
+    Using the unnormalized Laplacion, the layout shows possible clusters of
+    nodes which are an approximation of the ratio cut. The positions are the
+    entries of the second and third eigenvectors corresponding to the
+    ascending eigenvalues starting from the second one.
 
     Parameters
     ----------

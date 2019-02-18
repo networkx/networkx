@@ -14,7 +14,7 @@ _attrs = dict(id='id', children='children')
 
 
 def tree_data(G, root, attrs=_attrs):
-    """Return data in tree format that is suitable for JSON serialization
+    """Returns data in tree format that is suitable for JSON serialization
     and use in Javascript documents.
 
     Parameters
@@ -97,7 +97,7 @@ def tree_data(G, root, attrs=_attrs):
 
 
 def tree_graph(data, attrs=_attrs):
-    """Return graph from tree data format.
+    """Returns graph from tree data format.
 
     Parameters
     ----------

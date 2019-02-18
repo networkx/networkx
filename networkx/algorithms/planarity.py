@@ -155,11 +155,11 @@ class Interval(object):
         return self.low is None and self.high is None
 
     def copy(self):
-        """Return a copy of this interval"""
+        """Returns a copy of this interval"""
         return Interval(self.low, self.high)
 
     def conflicting(self, b, planarity_state):
-        """Return True if interval I conflicts with edge b"""
+        """Returns True if interval I conflicts with edge b"""
         return (not self.empty() and
                 planarity_state.lowpt[self.high] > planarity_state.lowpt[b])
 
@@ -182,7 +182,7 @@ class ConflictPair(object):
         self.right = temp
 
     def lowest(self, planarity_state):
-        """Return the lowest lowpoint of a conflict pair"""
+        """Returns the lowest lowpoint of a conflict pair"""
         if self.left.empty():
             return planarity_state.lowpt[self.right.low]
         if self.right.empty():

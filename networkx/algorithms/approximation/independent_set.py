@@ -36,7 +36,7 @@ __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
 def maximum_independent_set(G):
-    """Return an approximate maximum independent set.
+    """Returns an approximate maximum independent set.
 
     Parameters
     ----------

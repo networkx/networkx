@@ -187,7 +187,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
 
 def bidirectional_shortest_path(G, source, target):
-    """Return a list of nodes in a shortest path between source and target.
+    """Returns a list of nodes in a shortest path between source and target.
 
     Parameters
     ----------

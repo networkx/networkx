@@ -98,7 +98,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
         raise nx.NetworkXError("Graph contains a cycle.")
 
     # Iterative implementation of Tarjan's offline lca algorithm
-    # as described in CLRS on page 521.
+    # as described in CLRS on page 521 (2nd edition)/page 584 (3rd edition)
     uf = UnionFind()
     ancestors = {}
     for node in G:

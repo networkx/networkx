@@ -35,7 +35,9 @@ For additional details, please see `INSTALL.rst`.
 Simple example
 --------------
 
-Find the shortest path between two nodes in an undirected graph::
+Find the shortest path between two nodes in an undirected graph:
+
+.. code:: python
 
     >>> import networkx as nx
     >>> G = nx.Graph()

@@ -104,7 +104,7 @@ def is_list_of_ints(intlist):
 PY2 = sys.version_info[0] == 2
 if PY2:
     def make_str(x):
-        """Return the string representation of t."""
+        """Returns the string representation of t."""
         if isinstance(x, unicode):
             return x
         else:
@@ -119,7 +119,7 @@ if PY2:
             return unicode(str(x), 'unicode-escape')
 else:
     def make_str(x):
-        """Return the string representation of t."""
+        """Returns the string representation of t."""
         return str(x)
 
 

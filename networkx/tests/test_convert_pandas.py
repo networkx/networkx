@@ -114,9 +114,6 @@ class TestConvertPandas(object):
                       self.df, 0, 'b', 'misspell')
         assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
                       self.df, 0, 'b', 1)
-        # unhashable attribute name
-        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
-                      self.df, 0, 'b', {})
 
     def test_from_edgelist_no_attr(self):
         Gtrue = nx.Graph([('E', 'C', {}),

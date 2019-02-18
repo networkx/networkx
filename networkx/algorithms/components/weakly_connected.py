@@ -76,7 +76,7 @@ def weakly_connected_components(G):
 
 @not_implemented_for('undirected')
 def number_weakly_connected_components(G):
-    """Return the number of weakly connected components in G.
+    """Returns the number of weakly connected components in G.
 
     Parameters
     ----------

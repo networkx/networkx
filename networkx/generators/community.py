@@ -113,7 +113,7 @@ def connected_caveman_graph(l, k):
 
 @py_random_state(3)
 def relaxed_caveman_graph(l, k, p, seed=None):
-    """Return a relaxed caveman graph.
+    """Returns a relaxed caveman graph.
 
     A relaxed caveman graph starts with `l` cliques of size `k`.  Edges are
     then randomly rewired with probability `p` to link different cliques.
@@ -164,7 +164,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
 @py_random_state(3)
 def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
-    """Return the random partition graph with a partition of sizes.
+    """Returns the random partition graph with a partition of sizes.
 
     A partition graph is a graph of communities with sizes defined by
     s in sizes. Nodes in the same group are connected with probability
@@ -236,7 +236,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
 
 @py_random_state(4)
 def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
-    """Return the planted l-partition graph.
+    """Returns the planted l-partition graph.
 
     This model partitions a graph with n=l*k vertices in
     l groups with k vertices each. Vertices of the same
@@ -473,7 +473,7 @@ def windmill_graph(n, k):
 @py_random_state(3)
 def stochastic_block_model(sizes, p, nodelist=None, seed=None,
                            directed=False, selfloops=False, sparse=True):
-    """Return a stochastic block model graph.
+    """Returns a stochastic block model graph.
 
     This model partitions the nodes in blocks of arbitrary sizes, and places
     edges between pairs of nodes independently, with a probability that depends

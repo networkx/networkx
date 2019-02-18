@@ -736,6 +736,11 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
 def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
     """Position nodes using the eigenvectors of the graph Laplacian.
 
+    Using the unnormalized Laplacion, the layout shows possible clusters of
+    nodes which are an approximation of the ratio cut. If dim is the number of
+    dimensions then the positions are the entries of the dim eigenvectors
+    corresponding to the ascending eigenvalues starting from the second one.
+
     Parameters
     ----------
     G : NetworkX graph or list of nodes
@@ -858,7 +863,7 @@ def _sparse_spectral(A, dim=2):
 
 
 def rescale_layout(pos, scale=1):
-    """Return scaled position array to (-scale, scale) in all axes.
+    """Returns scaled position array to (-scale, scale) in all axes.
 
     The function acts on NumPy arrays which hold position information.
     Each position is one row of the array. The dimension of the space

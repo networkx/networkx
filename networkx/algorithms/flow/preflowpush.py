@@ -296,7 +296,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
 
 def preflow_push(G, s, t, capacity='capacity', residual=None,
                  global_relabel_freq=1, value_only=False):
-    """Find a maximum single-commodity flow using the highest-label
+    r"""Find a maximum single-commodity flow using the highest-label
     preflow-push algorithm.
 
     This function returns the residual network resulting after computing

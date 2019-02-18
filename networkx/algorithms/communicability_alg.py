@@ -21,7 +21,7 @@ __all__ = ['communicability',
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability(G):
-    r"""Return communicability between all pairs of nodes in G.
+    r"""Returns communicability between all pairs of nodes in G.
 
     The communicability between pairs of nodes in G is the sum of
     closed walks of different lengths starting at node u and ending at node v.
@@ -102,7 +102,7 @@ def communicability(G):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_exp(G):
-    r"""Return communicability between all pairs of nodes in G.
+    r"""Returns communicability between all pairs of nodes in G.
 
     Communicability between pair of node (u,v) of node in G is the sum of
     closed walks of different lengths starting at node u and ending at node v.

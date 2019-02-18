@@ -87,7 +87,7 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
 
 @np_random_state(3)
 def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
-    """Return a random simple graph with spectrum resembling that of `G`
+    """Returns a random simple graph with spectrum resembling that of `G`
 
     This algorithm, called Spectral Graph Forge (SGF), computes the
     eigenvectors of a given graph adjacency matrix, filters them and

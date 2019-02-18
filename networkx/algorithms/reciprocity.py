@@ -16,7 +16,7 @@ __all__ = ['reciprocity', 'overall_reciprocity']
 
 @not_implemented_for('undirected', 'multigraph')
 def reciprocity(G, nodes=None):
-    """Compute the reciprocity in a directed graph.
+    r"""Compute the reciprocity in a directed graph.
 
     The reciprocity of a directed graph is defined as the ratio
     of the number of edges pointing in both directions to the total

@@ -10,7 +10,7 @@ Either this module or nx_agraph can be used to interface with graphviz.
 See Also
 --------
 pydot:         https://github.com/erocarrera/pydot
-Graphviz:      http://www.research.att.com/sw/tools/graphviz/
+Graphviz:      https://www.graphviz.org
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 # Author: Aric Hagberg (aric.hagberg@gmail.com)
@@ -50,7 +50,7 @@ def write_dot(G, path):
 
 @open_file(0, mode='r')
 def read_dot(path):
-    """Return a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
+    """Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
     dot file with the passed path.
 
     If this file contains multiple graphs, only the first such graph is
@@ -82,7 +82,7 @@ def read_dot(path):
 
 
 def from_pydot(P):
-    """Return a NetworkX graph from a Pydot graph.
+    """Returns a NetworkX graph from a Pydot graph.
 
     Parameters
     ----------
@@ -172,7 +172,7 @@ def from_pydot(P):
 
 
 def to_pydot(N):
-    """Return a pydot graph from a NetworkX graph N.
+    """Returns a pydot graph from a NetworkX graph N.
 
     Parameters
     ----------

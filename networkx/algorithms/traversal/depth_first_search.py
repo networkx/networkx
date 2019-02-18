@@ -97,7 +97,7 @@ def dfs_edges(G, source=None, depth_limit=None):
 
 
 def dfs_tree(G, source=None, depth_limit=None):
-    """Return oriented tree constructed from a depth-first-search from source.
+    """Returns oriented tree constructed from a depth-first-search from source.
 
     Parameters
     ----------
@@ -135,7 +135,7 @@ def dfs_tree(G, source=None, depth_limit=None):
 
 
 def dfs_predecessors(G, source=None, depth_limit=None):
-    """Return dictionary of predecessors in depth-first-search from source.
+    """Returns dictionary of predecessors in depth-first-search from source.
 
     Parameters
     ----------
@@ -178,7 +178,7 @@ def dfs_predecessors(G, source=None, depth_limit=None):
 
 
 def dfs_successors(G, source=None, depth_limit=None):
-    """Return dictionary of successors in depth-first-search from source.
+    """Returns dictionary of successors in depth-first-search from source.
 
     Parameters
     ----------
