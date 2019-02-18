@@ -21,7 +21,7 @@ __all__ = ['astar_path', 'astar_path_length']
 
 @not_implemented_for('multigraph')
 def astar_path(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target
+    """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
@@ -135,7 +135,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):
-    """Return the length of the shortest path between source and target using
+    """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
 
     Parameters

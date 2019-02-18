@@ -38,12 +38,12 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
 
 
 def nodes(G):
-    """Return an iterator over the graph nodes."""
+    """Returns an iterator over the graph nodes."""
     return G.nodes()
 
 
 def edges(G, nbunch=None):
-    """Return an edge view of edges incident to nodes in nbunch.
+    """Returns an edge view of edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
@@ -53,29 +53,29 @@ def edges(G, nbunch=None):
 
 
 def degree(G, nbunch=None, weight=None):
-    """Return a degree view of single node or of nbunch of nodes.
+    """Returns a degree view of single node or of nbunch of nodes.
     If nbunch is omitted, then return degrees of *all* nodes.
     """
     return G.degree(nbunch, weight)
 
 
 def neighbors(G, n):
-    """Return a list of nodes connected to node n. """
+    """Returns a list of nodes connected to node n. """
     return G.neighbors(n)
 
 
 def number_of_nodes(G):
-    """Return the number of nodes in the graph."""
+    """Returns the number of nodes in the graph."""
     return G.number_of_nodes()
 
 
 def number_of_edges(G):
-    """Return the number of edges in the graph. """
+    """Returns the number of edges in the graph. """
     return G.number_of_edges()
 
 
 def density(G):
-    r"""Return the density of a graph.
+    r"""Returns the density of a graph.
 
     The density for undirected graphs is
 
@@ -110,7 +110,7 @@ def density(G):
 
 
 def degree_histogram(G):
-    """Return a list of the frequency of each degree value.
+    """Returns a list of the frequency of each degree value.
 
     Parameters
     ----------
@@ -192,7 +192,7 @@ def freeze(G):
 
 
 def is_frozen(G):
-    """Return True if graph is frozen.
+    """Returns True if graph is frozen.
 
     Parameters
     ----------
@@ -309,7 +309,7 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
 
 
 def subgraph(G, nbunch):
-    """Return the subgraph induced on nodes in nbunch.
+    """Returns the subgraph induced on nodes in nbunch.
 
     Parameters
     ----------
@@ -332,7 +332,7 @@ def subgraph(G, nbunch):
 
 
 def induced_subgraph(G, nbunch):
-    """Return a SubGraph view of `G` showing only nodes in nbunch.
+    """Returns a SubGraph view of `G` showing only nodes in nbunch.
 
     The induced subgraph of a graph on a set of nodes N is the
     graph with nodes N and edges from G which have both ends in N.
@@ -503,7 +503,7 @@ def reverse_view(digraph):
 
 
 def to_directed(graph):
-    """Return a directed view of the graph `graph`.
+    """Returns a directed view of the graph `graph`.
 
     Identical to graph.to_directed(as_view=True)
     Note that graph.to_directed defaults to `as_view=False`
@@ -513,7 +513,7 @@ def to_directed(graph):
 
 
 def to_undirected(graph):
-    """Return an undirected view of the graph `graph`.
+    """Returns an undirected view of the graph `graph`.
 
     Identical to graph.to_undirected(as_view=True)
     Note that graph.to_undirected defaults to `as_view=False`
@@ -523,7 +523,7 @@ def to_undirected(graph):
 
 
 def create_empty_copy(G, with_data=True):
-    """Return a copy of the graph G with all of the edges removed.
+    """Returns a copy of the graph G with all of the edges removed.
 
     Parameters
     ----------
@@ -902,7 +902,7 @@ def non_edges(graph):
 
 @not_implemented_for('directed')
 def common_neighbors(G, u, v):
-    """Return the common neighbors of two nodes in a graph.
+    """Returns the common neighbors of two nodes in a graph.
 
     Parameters
     ----------
@@ -1175,7 +1175,7 @@ def selfloop_edges(G, data=False, keys=False, default=None):
 
 
 def number_of_selfloops(G):
-    """Return the number of selfloop edges.
+    """Returns the number of selfloop edges.
 
     A selfloop edge has the same node at both ends.
 

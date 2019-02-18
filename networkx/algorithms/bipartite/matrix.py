@@ -20,7 +20,7 @@ __all__ = ['biadjacency_matrix', 'from_biadjacency_matrix']
 
 def biadjacency_matrix(G, row_order, column_order=None,
                        dtype=None, weight='weight',  format='csr'):
-    r"""Return the biadjacency matrix of the bipartite graph G.
+    r"""Returns the biadjacency matrix of the bipartite graph G.
 
     Let `G = (U, V, E)` be a bipartite graph with node sets
     `U = u_{1},...,u_{r}` and `V = v_{1},...,v_{s}`. The biadjacency

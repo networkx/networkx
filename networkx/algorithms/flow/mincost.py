@@ -111,7 +111,7 @@ def min_cost_flow_cost(G, demand='demand', capacity='capacity',
 
 def min_cost_flow(G, demand='demand', capacity='capacity',
                   weight='weight'):
-    r"""Return a minimum cost flow satisfying all demands in digraph G.
+    r"""Returns a minimum cost flow satisfying all demands in digraph G.
 
     G is a digraph with edge costs and capacities and in which nodes
     have demand, i.e., they want to send or receive some amount of
@@ -246,7 +246,7 @@ def cost_of_flow(G, flowDict, weight='weight'):
 
 
 def max_flow_min_cost(G, s, t, capacity='capacity', weight='weight'):
-    """Return a maximum (s, t)-flow of minimum cost.
+    """Returns a maximum (s, t)-flow of minimum cost.
 
     G is a digraph with edge costs and capacities. There is a source
     node s and a sink node t. This function finds a maximum flow from

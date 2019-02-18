@@ -243,7 +243,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def sigma(G, niter=100, nrand=10, seed=None):
-    """Return the small-world coefficient (sigma) of the given graph.
+    """Returns the small-world coefficient (sigma) of the given graph.
 
     The small-world coefficient is defined as:
     sigma = C/Cr / L/Lr
@@ -311,7 +311,7 @@ def sigma(G, niter=100, nrand=10, seed=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def omega(G, niter=100, nrand=10, seed=None):
-    """Return the small-world coefficient (omega) of a graph
+    """Returns the small-world coefficient (omega) of a graph
 
     The small-world coefficient of a graph G is:
 

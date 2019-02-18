@@ -136,7 +136,7 @@ def graph_atlas(i):
 
 
 def graph_atlas_g():
-    """Return the list of all graphs with up to seven nodes named in the
+    """Returns the list of all graphs with up to seven nodes named in the
     Graph Atlas.
 
     The graphs are listed in increasing order by

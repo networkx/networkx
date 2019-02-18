@@ -16,7 +16,7 @@ __all__ = ['is_semiconnected']
 
 @not_implemented_for('undirected')
 def is_semiconnected(G):
-    """Return True if the graph is semiconnected, False otherwise.
+    """Returns True if the graph is semiconnected, False otherwise.
 
     A graph is semiconnected if, and only if, for any pair of nodes, either one
     is reachable from the other, or they are mutually reachable.

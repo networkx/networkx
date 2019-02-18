@@ -24,7 +24,7 @@ __all__ = ['shortest_path', 'all_shortest_paths',
 
 
 def has_path(G, source, target):
-    """Return *True* if *G* has a path from *source* to *target*.
+    """Returns *True* if *G* has a path from *source* to *target*.
 
     Parameters
     ----------
@@ -319,7 +319,7 @@ def shortest_path_length(G,
 
 
 def average_shortest_path_length(G, weight=None, method='dijkstra'):
-    r"""Return the average shortest path length.
+    r"""Returns the average shortest path length.
 
     The average shortest path length is
 

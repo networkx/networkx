@@ -191,7 +191,7 @@ def extrema_bounding(G, compute="diameter"):
 
 
 def eccentricity(G, v=None, sp=None):
-    """Return the eccentricity of nodes in G.
+    """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
     all other nodes in G.
@@ -249,7 +249,7 @@ def eccentricity(G, v=None, sp=None):
 
 
 def diameter(G, e=None, usebounds=False):
-    """Return the diameter of the graph G.
+    """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
 
@@ -278,7 +278,7 @@ def diameter(G, e=None, usebounds=False):
 
 
 def periphery(G, e=None, usebounds=False):
-    """Return the periphery of the graph G.
+    """Returns the periphery of the graph G.
 
     The periphery is the set of nodes with eccentricity equal to the diameter.
 
@@ -305,7 +305,7 @@ def periphery(G, e=None, usebounds=False):
 
 
 def radius(G, e=None, usebounds=False):
-    """Return the radius of the graph G.
+    """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
 
@@ -330,7 +330,7 @@ def radius(G, e=None, usebounds=False):
 
 
 def center(G, e=None, usebounds=False):
-    """Return the center of the graph G.
+    """Returns the center of the graph G.
 
     The center is the set of nodes with eccentricity equal to radius.
 

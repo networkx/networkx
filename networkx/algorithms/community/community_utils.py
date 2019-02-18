@@ -16,7 +16,7 @@ __all__ = ['is_partition']
 
 
 def is_partition(G, communities):
-    """Return True if and only if `communities` is a partition of
+    """Returns True if and only if `communities` is a partition of
     the nodes of `G`.
 
     A partition of a universe set is a family of pairwise disjoint sets

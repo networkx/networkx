@@ -18,7 +18,7 @@ __all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum',
 
 
 def laplacian_spectrum(G, weight='weight'):
-    """Return eigenvalues of the Laplacian of G
+    """Returns eigenvalues of the Laplacian of G
 
     Parameters
     ----------
@@ -78,7 +78,7 @@ def normalized_laplacian_spectrum(G, weight='weight'):
 
 
 def adjacency_spectrum(G, weight='weight'):
-    """Return eigenvalues of the adjacency matrix of G.
+    """Returns eigenvalues of the adjacency matrix of G.
 
     Parameters
     ----------
@@ -108,7 +108,7 @@ def adjacency_spectrum(G, weight='weight'):
 
 
 def modularity_spectrum(G):
-    """Return eigenvalues of the modularity matrix of G.
+    """Returns eigenvalues of the modularity matrix of G.
 
     Parameters
     ----------

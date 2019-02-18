@@ -19,7 +19,7 @@ __all__ = ['laplacian_matrix',
 
 @not_implemented_for('directed')
 def laplacian_matrix(G, nodelist=None, weight='weight'):
-    """Return the Laplacian matrix of G.
+    """Returns the Laplacian matrix of G.
 
     The graph Laplacian is the matrix L = D - A, where
     A is the adjacency matrix and D is the diagonal matrix of node degrees.
@@ -64,7 +64,7 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
 
 @not_implemented_for('directed')
 def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
-    r"""Return the normalized Laplacian matrix of G.
+    r"""Returns the normalized Laplacian matrix of G.
 
     The normalized graph Laplacian is the matrix
 
@@ -138,7 +138,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 @not_implemented_for('multigraph')
 def directed_laplacian_matrix(G, nodelist=None, weight='weight',
                               walk_type=None, alpha=0.95):
-    r"""Return the directed Laplacian matrix of G.
+    r"""Returns the directed Laplacian matrix of G.
 
     The graph directed Laplacian is the matrix
 

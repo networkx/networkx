@@ -109,7 +109,7 @@ def min_weighted_dominating_set(G, weight=None):
 
 
 def min_edge_dominating_set(G):
-    r"""Return minimum cardinality edge dominating set.
+    r"""Returns minimum cardinality edge dominating set.
 
     Parameters
     ----------

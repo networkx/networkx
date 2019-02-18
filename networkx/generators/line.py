@@ -162,7 +162,7 @@ def _sorted_edge(u, v):
 
 
 def _lg_directed(G, create_using=None):
-    """Return the line graph L of the (multi)digraph G.
+    """Returns the line graph L of the (multi)digraph G.
 
     Edges in G appear as nodes in L, represented as tuples of the form (u,v)
     or (u,v,key) if G is a multidigraph. A node in L corresponding to the edge
@@ -192,7 +192,7 @@ def _lg_directed(G, create_using=None):
 
 
 def _lg_undirected(G, selfloops=False, create_using=None):
-    """Return the line graph L of the (multi)graph G.
+    """Returns the line graph L of the (multi)graph G.
 
     Edges in G appear as nodes in L, represented as sorted tuples of the form
     (u,v), or (u,v,key) if G is a multigraph. A node in L corresponding to

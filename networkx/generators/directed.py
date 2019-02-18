@@ -30,7 +30,7 @@ __all__ = ['gn_graph', 'gnc_graph', 'gnr_graph', 'random_k_out_graph',
 
 @py_random_state(3)
 def gn_graph(n, kernel=None, create_using=None, seed=None):
-    """Return the growing network (GN) digraph with `n` nodes.
+    """Returns the growing network (GN) digraph with `n` nodes.
 
     The GN graph is built by adding nodes one at a time with a link to one
     previously added node.  The target node for the link is chosen with
@@ -95,7 +95,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
 @py_random_state(3)
 def gnr_graph(n, p, create_using=None, seed=None):
-    """Return the growing network with redirection (GNR) digraph with `n`
+    """Returns the growing network with redirection (GNR) digraph with `n`
     nodes and redirection probability `p`.
 
     The GNR graph is built by adding nodes one at a time with a link to one
@@ -148,7 +148,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
 
 @py_random_state(2)
 def gnc_graph(n, create_using=None, seed=None):
-    """Return the growing network with copying (GNC) digraph with `n` nodes.
+    """Returns the growing network with copying (GNC) digraph with `n` nodes.
 
     The GNC graph is built by adding nodes one at a time with a link to one
     previously added node (chosen uniformly at random) and to all of that

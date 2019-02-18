@@ -14,7 +14,7 @@ __all__ = ['complement', 'reverse']
 
 
 def complement(G):
-    """Return the graph complement of G.
+    """Returns the graph complement of G.
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ def complement(G):
 
 
 def reverse(G, copy=True):
-    """Return the reverse directed graph of G.
+    """Returns the reverse directed graph of G.
 
     Parameters
     ----------

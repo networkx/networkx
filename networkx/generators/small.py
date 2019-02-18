@@ -177,7 +177,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 #-------------------------------------------------------------------------------
 
 def bull_graph(create_using=None):
-    """Return the Bull graph. """
+    """Returns the Bull graph. """
     description = [
         "adjacencylist",
         "Bull Graph",
@@ -189,7 +189,7 @@ def bull_graph(create_using=None):
 
 
 def chvatal_graph(create_using=None):
-    """Return the Chvátal graph."""
+    """Returns the Chvátal graph."""
     description = [
         "adjacencylist",
         "Chvatal Graph",
@@ -203,7 +203,7 @@ def chvatal_graph(create_using=None):
 
 
 def cubical_graph(create_using=None):
-    """Return the 3-regular Platonic Cubical graph."""
+    """Returns the 3-regular Platonic Cubical graph."""
     description = [
         "adjacencylist",
         "Platonic Cubical Graph",
@@ -223,7 +223,7 @@ def desargues_graph(create_using=None):
 
 
 def diamond_graph(create_using=None):
-    """Return the Diamond graph. """
+    """Returns the Diamond graph. """
     description = [
         "adjacencylist",
         "Diamond Graph",
@@ -242,7 +242,7 @@ def dodecahedral_graph(create_using=None):
 
 
 def frucht_graph(create_using=None):
-    """Return the Frucht Graph.
+    """Returns the Frucht Graph.
 
     The Frucht Graph is the smallest cubical graph whose
     automorphism group consists only of the identity element.
@@ -281,7 +281,7 @@ def hoffman_singleton_graph():
 
 
 def house_graph(create_using=None):
-    """Return the House graph (square with triangle on top)."""
+    """Returns the House graph (square with triangle on top)."""
     description = [
         "adjacencylist",
         "House Graph",
@@ -293,7 +293,7 @@ def house_graph(create_using=None):
 
 
 def house_x_graph(create_using=None):
-    """Return the House graph with a cross inside the house square."""
+    """Returns the House graph with a cross inside the house square."""
     description = [
         "adjacencylist",
         "House-with-X-inside Graph",
@@ -305,7 +305,7 @@ def house_x_graph(create_using=None):
 
 
 def icosahedral_graph(create_using=None):
-    """Return the Platonic Icosahedral graph."""
+    """Returns the Platonic Icosahedral graph."""
     description = [
         "adjacencylist",
         "Platonic Icosahedral Graph",
@@ -341,14 +341,14 @@ def krackhardt_kite_graph(create_using=None):
 
 
 def moebius_kantor_graph(create_using=None):
-    """Return the Moebius-Kantor graph."""
+    """Returns the Moebius-Kantor graph."""
     G = LCF_graph(16, [5, -5], 8, create_using)
     G.name = "Moebius-Kantor Graph"
     return G
 
 
 def octahedral_graph(create_using=None):
-    """Return the Platonic Octahedral graph."""
+    """Returns the Platonic Octahedral graph."""
     description = [
         "adjacencylist",
         "Platonic Octahedral Graph",
@@ -367,7 +367,7 @@ def pappus_graph():
 
 
 def petersen_graph(create_using=None):
-    """Return the Petersen graph."""
+    """Returns the Petersen graph."""
     description = [
         "adjacencylist",
         "Petersen Graph",
@@ -405,7 +405,7 @@ def tetrahedral_graph(create_using=None):
 
 
 def truncated_cube_graph(create_using=None):
-    """Return the skeleton of the truncated cube."""
+    """Returns the skeleton of the truncated cube."""
     description = [
         "adjacencylist",
         "Truncated Cube Graph",
@@ -422,7 +422,7 @@ def truncated_cube_graph(create_using=None):
 
 
 def truncated_tetrahedron_graph(create_using=None):
-    """Return the skeleton of the truncated Platonic tetrahedron."""
+    """Returns the skeleton of the truncated Platonic tetrahedron."""
     G = path_graph(12, create_using)
 #    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
     G.add_edges_from([(0, 2), (0, 9), (1, 6), (3, 11), (4, 11), (5, 7), (8, 10)])
@@ -431,7 +431,7 @@ def truncated_tetrahedron_graph(create_using=None):
 
 
 def tutte_graph(create_using=None):
-    """Return the Tutte graph."""
+    """Returns the Tutte graph."""
     description = [
         "adjacencylist",
         "Tutte's Graph",
