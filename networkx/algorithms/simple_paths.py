@@ -156,9 +156,15 @@ def all_simple_paths(G, source, target, cutoff=None):
         ...     print(path)
         ...
         [0, 1, 2]
+        [0, 1, 2, 3]
         [0, 1, 3]
+        [0, 1, 3, 2]
         [0, 2]
+        [0, 2, 1, 3]
+        [0, 2, 3]
         [0, 3]
+        [0, 3, 1, 2]
+        [0, 3, 2]
 
     Iterate over each path from the root nodes to the leaf nodes in a
     directed acyclic graph using a functional programming approach::
@@ -252,17 +258,18 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
             stack.pop()
             visited.popitem()
         elif len(visited) < cutoff:
+            if child in visited:
+                continue
             if child in targets:
                 yield list(visited) + [child]
-            elif child not in visited:
-                visited[child] = None
+            visited[child] = None
+            if targets - set(visited.keys()):  # expand stack until find all targets
                 stack.append(iter(G[child]))
-        else:  # len(visited) == cutoff:
-            if child in targets:
-                yield list(visited) + [child]
             else:
-                for target in targets & set(children):
-                    yield list(visited) + [target]
+                visited.popitem()  # maybe other ways to child
+        else:  # len(visited) == cutoff:
+            for target in (targets & (set(children) | {child})) - set(visited.keys()):
+                yield list(visited) + [target]
             stack.pop()
             visited.popitem()
 
@@ -277,13 +284,17 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
             stack.pop()
             visited.popitem()
         elif len(visited) < cutoff:
+            if child in visited:
+                continue
             if child in targets:
                 yield list(visited) + [child]
-            elif child not in visited:
-                visited[child] = None
+            visited[child] = None
+            if targets - set(visited.keys()):
                 stack.append((v for u, v in G.edges(child)))
+            else:
+                visited.popitem()
         else:  # len(visited) == cutoff:
-            for target in targets:
+            for target in targets - set(visited.keys()):
                 count = ([child] + list(children)).count(target)
                 for i in range(count):
                     yield list(visited) + [target]
