@@ -132,7 +132,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     single_source_shortest_path_length, shortest_path_length
     """
     if target not in G:
-        raise nx.NodeNotFound('Target {} is not in G'.format(source))
+        raise nx.NodeNotFound('Target {} is not in G'.format(target))
 
     if cutoff is None:
         cutoff = float('inf')
