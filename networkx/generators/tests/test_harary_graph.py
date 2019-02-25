@@ -1,4 +1,5 @@
-"""Unit tests for the :mod:`networkx.generators.harary_graph` module."""
+"""Unit tests for the :mod:`networkx.generators.harary_graph` module.
+"""
 
 from nose.tools import assert_equal
 from nose.tools import assert_true
@@ -14,7 +15,7 @@ from networkx.testing import assert_nodes_equal
 
 
 class TestHararyGraph:
-    """ 
+    """
         Suppose n nodes, m >= n-1 edges, d = 2m // n, r = 2m % n
     """
     def test_hnm_harary_graph(self):
@@ -36,8 +37,8 @@ class TestHararyGraph:
             assert_true(set(G2.edges) < set(G1.edges))
             assert_equal(G1.number_of_edges(), m)
 
-        # When d is odd and n is even and r = 0, the hnm_harary_graph(n,m) is
-        # the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
+        # When d is odd and n is even and r = 0, the hnm_harary_graph(n,m)
+        # is the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
         for (n, m) in [(6, 9), (8, 12), (10, 15)]:
             G1 = hnm_harary_graph(n, m)
             d = 2*m // n
@@ -46,8 +47,8 @@ class TestHararyGraph:
             G2 = circulant_graph(n, L)
             assert_true(is_isomorphic(G1, G2))
 
-        # When d is odd and n is even and r > 0, the hnm_harary_graph(n,m) is
-        # the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
+        # When d is odd and n is even and r > 0, the hnm_harary_graph(n,m)
+        # is the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
         # with r edges added arbitrarily
         for (n, m) in [(6, 10), (8, 13), (10, 17)]:
             G1 = hnm_harary_graph(n, m)
@@ -84,8 +85,8 @@ class TestHararyGraph:
         m = 16
         assert_raises(networkx.exception.NetworkXError, hnm_harary_graph, n, m)
 
-    """ 
-        Suppose connectivity k, number of nodes n 
+    """
+        Suppose connectivity k, number of nodes n
     """
     def test_hkn_harary_graph(self):
         # When k == 1, the hkn_harary_graph(k,n) is
