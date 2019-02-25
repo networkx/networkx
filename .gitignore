@@ -47,3 +47,4 @@ networkx.egg-info/
 
 # PyCharm project file
 .idea
+.vscode/settings.json
