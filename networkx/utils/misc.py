@@ -19,7 +19,7 @@ True
 #    All rights reserved.
 #    BSD license.
 from collections import defaultdict, deque
-from typing import Iterable, Iterator
+from typing import Iterable, Iterator, ItemsView
 from numbers import Integral
 import warnings
 import sys
@@ -93,7 +93,7 @@ def flatten(obj, result=None):
 
 def is_list_of_ints(intlist):
     """ Return True if list is a list of ints. """
-    if isinstance(intlist, Iterator) or not isinstance(intlist, Iterable):
+    if isinstance(intlist, (Iterator, ItemsView)) or not isinstance(intlist, Iterable):
         return False
     for i in intlist:
         if not isinstance(i, Integral):
