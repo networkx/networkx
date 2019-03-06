@@ -18,13 +18,13 @@ True
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from collections import defaultdict
-from collections import deque
+from collections import defaultdict, deque
+from typing import Iterable
+from numbers import Integral
 import warnings
 import sys
 import uuid
 from itertools import tee, chain
-import networkx as nx
 
 # itertools.accumulate is only available on Python 3.2 or later.
 #
@@ -93,10 +93,10 @@ def flatten(obj, result=None):
 
 def is_list_of_ints(intlist):
     """ Return True if list is a list of ints. """
-    if not isinstance(intlist, list):
+    if not isinstance(intlist, Iterable):
         return False
     for i in intlist:
-        if not isinstance(i, int):
+        if not isinstance(i, Integral):
             return False
     return True
 
