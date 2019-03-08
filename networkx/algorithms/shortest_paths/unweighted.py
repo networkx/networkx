@@ -413,7 +413,7 @@ def single_target_shortest_path(G, target, cutoff=None):
     shortest_path, single_source_shortest_path
     """
     if target not in G:
-        raise nx.NodeNotFound("Target {} not in G".format(source))
+        raise nx.NodeNotFound("Target {} not in G".format(target))
 
     def join(p1, p2):
         return p2 + p1
