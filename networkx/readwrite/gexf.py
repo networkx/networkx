@@ -375,6 +375,11 @@ class GEXFWriter(GEXF):
         for u, v, key, edge_data in edge_key_data(G):
             kw = {'id': make_str(key)}
             try:
+                edge_label = edge_data.pop('label')
+                kw['label'] = make_str(edge_label)
+            except KeyError:
+                pass
+            try:
                 edge_weight = edge_data.pop('weight')
                 kw['weight'] = make_str(edge_weight)
             except KeyError:
