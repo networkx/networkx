@@ -1,4 +1,4 @@
-# __init__.py - package containing heuristics for optimization problems
+# __init__.py - package containing moralization
 #
 # Copyright 2016-2018 NetworkX developers.
 #
