@@ -57,3 +57,13 @@ class TestMCS:
         cliques = set([frozenset([1, 2, 3]), frozenset([2, 3, 4]),
                        frozenset([3, 4, 5, 6])])
         assert_equal(nx.chordal_graph_cliques(self.connected_chordal_G), cliques)
+
+
+    def test_complete_to_chordal_graph(self):
+        test_graphs = [nx.barbell_graph(6, 2), nx.cycle_graph(15), nx.wheel_graph(20), nx.grid_graph([10, 4]),
+                       nx.ladder_graph(15), nx.star_graph(5), nx.bull_graph(), nx.fast_gnp_random_graph(20, 0.3)]
+        for G in test_graphs:
+            H, a = nx.complete_to_chordal_graph(G)
+            assert_true(nx.is_chordal(H))
+            if nx.is_chordal(G):
+                assert_true(G.number_of_edges() - H.number_of_edges() == 0)

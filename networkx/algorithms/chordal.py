@@ -7,10 +7,12 @@ A graph is chordal if every cycle of length at least 4 has a chord
 https://en.wikipedia.org/wiki/Chordal_graph
 """
 import sys
-import networkx as nx
-from networkx.utils import arbitrary_element
 
-__authors__ = "\n".join(['Jesus Cerquides <cerquide@iiia.csic.es>'])
+import networkx as nx
+from networkx.utils import arbitrary_element, not_implemented_for
+
+__authors__ = "\n".join(['Jesus Cerquides <cerquide@iiia.csic.es>',
+                         'Julien Klaus <julien.klaus@uni-jena.de'])
 #    Copyright (C) 2010 by
 #    Jesus Cerquides <cerquide@iiia.csic.es>
 #    All rights reserved.
@@ -20,7 +22,8 @@ __all__ = ['is_chordal',
            'find_induced_nodes',
            'chordal_graph_cliques',
            'chordal_graph_treewidth',
-           'NetworkXTreewidthBoundExceeded']
+           'NetworkXTreewidthBoundExceeded',
+           'complete_to_chordal_graph']
 
 
 class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
@@ -271,7 +274,7 @@ def _max_cardinality_node(G, choices, wanna_connect):
     """Returns a the node in choices that has more connections in G
     to nodes in wanna_connect.
     """
-#    max_number = None
+    #    max_number = None
     max_number = -1
     for x in choices:
         number = len([y for y in G[x] if y in wanna_connect])
@@ -295,7 +298,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
         s = arbitrary_element(G)
     unnumbered.remove(s)
     numbered = set([s])
-#    current_treewidth = None
+    #    current_treewidth = None
     current_treewidth = -1
     while unnumbered:  # and current_treewidth <= treewidth_bound:
         v = _max_cardinality_node(G, unnumbered, numbered)
@@ -344,3 +347,76 @@ def _connected_chordal_graph_cliques(G):
                 raise nx.NetworkXError("Input graph is not chordal.")
         cliques.add(frozenset(clique_wanna_be))
         return cliques
+
+
+@not_implemented_for('directed')
+def complete_to_chordal_graph(G):
+    r"""Complete to chordal graph
+
+        Enhances the graph by edges to receive a chordal graph.
+
+        Parameters
+        ----------
+        G : NetworkX graph
+            Undirected graph
+
+        Returns
+        -------
+        H : NetworkX graph
+            The chordal enhancement of G
+        alpha : Dictionary
+                The elimination ordering of nodes of G
+
+        Notes
+        ------
+        A graph G=(V,E) is called chordal if for each cycle with
+        length bigger than 3, two non adjacent nodes are connected
+        by an edge (called chord). There are different approaches
+        to calculate the chordal enhancement of a graph.
+        The algorithm used here is called MCS-M and gives a minimal
+        triangulation of graph. Note that this triangulation must not
+        be minimum.
+
+        https://en.wikipedia.org/wiki/Chordal_graph
+
+        References
+        ----------
+        .. [1] Berry, Anne & Blair, Jean & Heggernes, Pinar & Peyton, Barry. (2004).
+               Maximum Cardinality Search for Computing Minimal Triangulations of Graphs.
+               Algorithmica. 39. 287-298. 10.1007/s00453-004-1084-3.
+
+        Examples
+        --------
+        >>> import networkx as nx
+        >>> from networkx.algorithms.chordal import complete_to_chordal_graph
+        >>> G = nx.wheel_graph(10)
+        >>> H,alpha = complete_to_chordal_graph(G)
+    """
+    if G is None:
+        raise ValueError("Expected NetworkX graph!")
+    H = G.copy()
+    alpha = {node: 0 for node in H.nodes()}
+    if nx.is_chordal(H):
+        return H, alpha
+    chords = []
+    weight = {node: 0 for node in H.nodes()}
+    unnumbered_nodes = list(H.nodes())
+    for i in range(len(H.nodes()), 0, -1):
+        # get the node in unnumbered_nodes with the maximum weight
+        z = [node for node in unnumbered_nodes if weight.get(node) == max([weight.get(i) for i in unnumbered_nodes])][0]
+        unnumbered_nodes.remove(z)
+        alpha[z] = i
+        update_nodes = []
+        sub_graph_unnumbered = nx.subgraph(H, unnumbered_nodes + [z])
+        for y in unnumbered_nodes:
+            # weights of nodes on a path between y and z should have smaller weight than y
+            lower_nodes = [node for node in unnumbered_nodes if weight.get(node) < weight.get(y)]
+            if nx.has_path(nx.subgraph(H, lower_nodes+[z, y]), y, z):
+                update_nodes.append(y)
+                if (z, y) not in chords and (z, y) not in G.edges():
+                    chords.append((z, y))
+        # during calculation of paths the weights should not be updated
+        for node in update_nodes:
+            weight[node] += 1
+    H.add_edges_from(chords)
+    return H, alpha
