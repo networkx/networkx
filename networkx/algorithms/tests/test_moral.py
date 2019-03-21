@@ -1,8 +1,8 @@
 import networkx as nx
 
-from networkx.algorithms.moral.moralize import get_moral_graph
+from networkx.algorithms.moral import get_moral_graph
 
-from nose.tools import assert_equal, assert_true, assert_raises
+from nose.tools import assert_true
 
 
 def test_get_moral_graph():
