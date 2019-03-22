@@ -6,4 +6,4 @@ Moral
 .. autosummary::
    :toctree: generated/
 
-   get_moral_graph
+   moral_graph

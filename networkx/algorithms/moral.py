@@ -13,11 +13,11 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 import itertools
 
-__all__ = ['get_moral_graph']
+__all__ = ['moral_graph']
 
 
 @not_implemented_for('undirected')
-def get_moral_graph(G):
+def moral_graph(G):
     r"""Return the Moral Graph
 
         Returns the moralized graph of a given directed graph.
