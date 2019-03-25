@@ -3,7 +3,7 @@
 #   All rights reserved.
 #   BSD license.
 #
-"""Algorithm to compute influetial seeds in a graph using voterank."""
+"""Algorithm to compute influential seeds in a graph using voterank."""
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['voterank']
@@ -18,7 +18,7 @@ def voterank(G, number_of_nodes=None, max_iter=10000):
     VoteRank computes a ranking of the nodes in the graph G based on a voting
     scheme. With VoteRank, all nodes vote for each neighbours and the node with
     the highest score is elected iteratively. The voting ability of neighbors of
-    elected nodes will be decreased in subsequent turnself.
+    elected nodes will be decreased in subsequent turn.
 
     Parameters
     ----------
@@ -47,11 +47,11 @@ def voterank(G, number_of_nodes=None, max_iter=10000):
         Identifying a set of influential spreaders in complex networks.
         Sci. Rep. 6, 27823; doi: 10.1038/srep27823.
     """
+    voterank = []
     if len(G) == 0:
-        return list()
+        return voterank
     if number_of_nodes is None or number_of_nodes > len(G):
         number_of_nodes = len(G)
-    voterank = list()
     avgDegree = sum(deg for _, deg in G.degree()) / float(len(G))
     # step 1 - initiate all nodes to (0,1) (score, voting ability)
     for _, v in G.nodes(data=True):
