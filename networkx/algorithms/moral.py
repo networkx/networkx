@@ -50,12 +50,8 @@ def moral_graph(G):
     if G is None:
         raise ValueError("Expected NetworkX graph!")
 
-    H = G.copy()
-    for node in H.nodes():
-        predecessors = list(H.predecessors(node))
-        # connect the parents of a given node
-        if len(predecessors) > 1:
-            # r is the number of elements per combination
-            predecessors_combinations = itertools.combinations(predecessors, r=2)
-            H.add_edges_from(predecessors_combinations)
-    return H.to_undirected()
+    H = G.to_undirected()
+    for preds in G.pred.values():
+        predecessors_combinations = itertools.combinations(preds, r=2)
+        H.add_edges_from(predecessors_combinations)
+    return H
