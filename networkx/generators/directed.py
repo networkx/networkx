@@ -255,11 +255,11 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         raise nx.NetworkXError("MultiDiGraph required in create_using")
 
     if alpha <= 0:
-        raise ValueError('alpha must be >= 0.')
+        raise ValueError('alpha must be > 0.')
     if beta <= 0:
-        raise ValueError('beta must be >= 0.')
+        raise ValueError('beta must be > 0.')
     if gamma <= 0:
-        raise ValueError('beta must be >= 0.')
+        raise ValueError('gamma must be > 0.')
 
     if abs(alpha + beta + gamma - 1.0) >= 1e-9:
         raise ValueError('alpha+beta+gamma must equal 1.')
