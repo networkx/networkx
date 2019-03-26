@@ -50,10 +50,10 @@ class InverseLaplacian(object):
         pass
 
     def solve(self, r):
-        raise("Implement solver")
+        raise nx.NetworkXError("Implement solver")
 
     def solve_inverse(self, r):
-        raise("Implement solver")
+        raise nx.NetworkXError("Implement solver")
 
     def get_rows(self, r1, r2):
         for r in range(r1, r2 + 1):
