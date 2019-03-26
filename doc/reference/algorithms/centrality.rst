@@ -105,3 +105,17 @@ Percolation
    :toctree: generated/
 
    percolation_centrality
+
+Second Order Centrality
+-----------------------
+.. autosummary::
+   :toctree: generated/
+
+   second_order_centrality
+
+VoteRank
+-----------
+.. autosummary::
+   :toctree: generated/
+
+   voterank 

@@ -13,11 +13,12 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Dan Schult(dschult@colgate.edu)',
                         'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
-__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum']
+__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum', 
+   'normalized_laplacian_spectrum']
 
 
 def laplacian_spectrum(G, weight='weight'):
-    """Return eigenvalues of the Laplacian of G
+    """Returns eigenvalues of the Laplacian of G
 
     Parameters
     ----------
@@ -46,8 +47,38 @@ def laplacian_spectrum(G, weight='weight'):
     return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
 
 
+def normalized_laplacian_spectrum(G, weight='weight'):
+    """Return eigenvalues of the normalized Laplacian of G
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    Notes
+    -----
+    For MultiGraph/MultiDiGraph, the edges weights are summed.
+    See to_numpy_matrix for other options.
+
+    See Also
+    --------
+    normalized_laplacian_matrix
+    """
+    from scipy.linalg import eigvalsh
+    return eigvalsh(nx.normalized_laplacian_matrix(G, weight=weight).todense())
+
+
 def adjacency_spectrum(G, weight='weight'):
-    """Return eigenvalues of the adjacency matrix of G.
+    """Returns eigenvalues of the adjacency matrix of G.
 
     Parameters
     ----------
@@ -77,7 +108,7 @@ def adjacency_spectrum(G, weight='weight'):
 
 
 def modularity_spectrum(G):
-    """Return eigenvalues of the modularity matrix of G.
+    """Returns eigenvalues of the modularity matrix of G.
 
     Parameters
     ----------

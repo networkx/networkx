@@ -70,7 +70,7 @@ def jit_graph(data, create_using=None):
 
 @not_implemented_for('multigraph')
 def jit_data(G, indent=None):
-    """Return data in JIT JSON format.
+    """Returns data in JIT JSON format.
 
     Parameters
     ----------

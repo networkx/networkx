@@ -31,6 +31,7 @@ class TestLoadCentrality:
         self.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
                                 (2, 4), (4, 5), (3, 5)])
         self.F = nx.florentine_families_graph()
+        self.LM = nx.les_miserables_graph()
         self.D = nx.cycle_graph(3, create_using=nx.DiGraph())
         self.D.add_edges_from([(3, 0), (4, 3)])
 
@@ -116,6 +117,89 @@ class TestLoadCentrality:
              'Salviati':      0.143,
              'Strozzi':       0.106,
              'Tornabuoni':    0.090}
+        for n in sorted(G):
+            assert_almost_equal(c[n], d[n], places=3)
+
+    def test_les_miserables_load(self):
+        G = self.LM
+        c = nx.load_centrality(G)
+        d = {'Napoleon': 0.000,
+             'Myriel': 0.177,
+             'MlleBaptistine': 0.000,
+             'MmeMagloire': 0.000,
+             'CountessDeLo': 0.000,
+             'Geborand': 0.000,
+             'Champtercier': 0.000,
+             'Cravatte': 0.000,
+             'Count': 0.000,
+             'OldMan': 0.000,
+             'Valjean': 0.567,
+             'Labarre': 0.000,
+             'Marguerite': 0.000,
+             'MmeDeR': 0.000,
+             'Isabeau': 0.000,
+             'Gervais': 0.000,
+             'Listolier': 0.000,
+             'Tholomyes': 0.043,
+             'Fameuil': 0.000,
+             'Blacheville': 0.000,
+             'Favourite': 0.000,
+             'Dahlia': 0.000,
+             'Zephine': 0.000,
+             'Fantine': 0.128,
+             'MmeThenardier': 0.029,
+             'Thenardier': 0.075,
+             'Cosette': 0.024,
+             'Javert': 0.054,
+             'Fauchelevent': 0.026,
+             'Bamatabois': 0.008,
+             'Perpetue': 0.000,
+             'Simplice': 0.009,
+             'Scaufflaire': 0.000,
+             'Woman1': 0.000,
+             'Judge': 0.000,
+             'Champmathieu': 0.000,
+             'Brevet': 0.000,
+             'Chenildieu': 0.000,
+             'Cochepaille': 0.000,
+             'Pontmercy': 0.007,
+             'Boulatruelle': 0.000,
+             'Eponine': 0.012,
+             'Anzelma': 0.000,
+             'Woman2': 0.000,
+             'MotherInnocent': 0.000,
+             'Gribier': 0.000,
+             'MmeBurgon': 0.026,
+             'Jondrette': 0.000,
+             'Gavroche': 0.164,
+             'Gillenormand': 0.021,
+             'Magnon': 0.000,
+             'MlleGillenormand': 0.047,
+             'MmePontmercy': 0.000,
+             'MlleVaubois': 0.000,
+             'LtGillenormand': 0.000,
+             'Marius': 0.133,
+             'BaronessT': 0.000,
+             'Mabeuf': 0.028,
+             'Enjolras': 0.041,
+             'Combeferre': 0.001,
+             'Prouvaire': 0.000,
+             'Feuilly': 0.001,
+             'Courfeyrac': 0.006,
+             'Bahorel': 0.002,
+             'Bossuet': 0.032,
+             'Joly': 0.002,
+             'Grantaire': 0.000,
+             'MotherPlutarch': 0.000,
+             'Gueulemer': 0.005,
+             'Babet': 0.005,
+             'Claquesous': 0.005,
+             'Montparnasse': 0.004,
+             'Toussaint': 0.000,
+             'Child1': 0.000,
+             'Child2': 0.000,
+             'Brujon': 0.000,
+             'MmeHucheloup': 0.000}
         for n in sorted(G):
             assert_almost_equal(c[n], d[n], places=3)
 

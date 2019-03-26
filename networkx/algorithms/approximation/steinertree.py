@@ -46,6 +46,7 @@ def metric_closure(G, weight='weight'):
     return M
 
 
+@not_implemented_for('multigraph')
 @not_implemented_for('directed')
 def steiner_tree(G, terminal_nodes, weight='weight'):
     """ Return an approximation to the minimum Steiner tree of a graph.

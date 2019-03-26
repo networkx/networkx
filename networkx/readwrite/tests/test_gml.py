@@ -456,3 +456,14 @@ graph
         G.graph['data'] = []
         assert_generate_error(G)
         assert_generate_error(G, stringizer=len)
+
+    def test_label_kwarg(self):
+        G = nx.parse_gml(self.simple_data, label='id')
+        assert_equals(sorted(G.nodes), [1, 2, 3])
+        labels = [G.nodes[n]['label'] for n in sorted(G.nodes)]
+        assert_equals(labels, ['Node 1', 'Node 2', 'Node 3'])
+
+        G = nx.parse_gml(self.simple_data, label=None)
+        assert_equals(sorted(G.nodes), [1, 2, 3])
+        labels = [G.nodes[n]['label'] for n in sorted(G.nodes)]
+        assert_equals(labels, ['Node 1', 'Node 2', 'Node 3'])

@@ -26,7 +26,6 @@ https://raw.githubusercontent.com/networkx/networkx/master/examples/drawing/unix
 #    All rights reserved.
 #    BSD license.
 
-import email
 from email.utils import getaddresses, parseaddr
 import mailbox
 import sys
@@ -35,17 +34,10 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 # unix mailbox recipe
-# see https://docs.python.org/2/library/mailbox.html
-
+# see https://docs.python.org/3/library/mailbox.html
 
 def mbox_graph():
-    try:
-        fh = open("unix_email.mbox", 'rb')
-    except IOError:
-        print("unix_email.mbox not found")
-        raise
-
-    mbox = mailbox.UnixMailbox(fh, email.message_from_file)  # parse unix mailbox
+    mbox = mailbox.mbox("unix_email.mbox")  # parse unix mailbox
 
     G = nx.MultiDiGraph()  # create empty graph
 
@@ -53,7 +45,7 @@ def mbox_graph():
     for msg in mbox:  # msg is python email.Message.Message object
         (source_name, source_addr) = parseaddr(msg['From'])  # sender
         # get all recipients
-        # see https://docs.python.org/2/library/email.html
+        # see https://docs.python.org/3/library/email.html
         tos = msg.get_all('to', [])
         ccs = msg.get_all('cc', [])
         resent_tos = msg.get_all('resent-to', [])

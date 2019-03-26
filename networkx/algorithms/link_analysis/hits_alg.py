@@ -13,7 +13,7 @@ __all__ = ['hits', 'hits_numpy', 'hits_scipy', 'authority_matrix', 'hub_matrix']
 
 
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
-    """Return HITS hubs and authorities values for nodes.
+    """Returns HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -127,19 +127,19 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 
 def authority_matrix(G, nodelist=None):
-    """Return the HITS authority matrix."""
+    """Returns the HITS authority matrix."""
     M = nx.to_numpy_matrix(G, nodelist=nodelist)
     return M.T * M
 
 
 def hub_matrix(G, nodelist=None):
-    """Return the HITS hub matrix."""
+    """Returns the HITS hub matrix."""
     M = nx.to_numpy_matrix(G, nodelist=nodelist)
     return M * M.T
 
 
 def hits_numpy(G, normalized=True):
-    """Return HITS hubs and authorities values for nodes.
+    """Returns HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -210,7 +210,7 @@ def hits_numpy(G, normalized=True):
 
 
 def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
-    """Return HITS hubs and authorities values for nodes.
+    """Returns HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.

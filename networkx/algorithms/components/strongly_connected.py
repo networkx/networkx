@@ -287,7 +287,7 @@ def strongly_connected_component_subgraphs(G, copy=True):
 
 @not_implemented_for('undirected')
 def number_strongly_connected_components(G):
-    """Return number of strongly connected components in graph.
+    """Returns number of strongly connected components in graph.
 
     Parameters
     ----------

@@ -21,6 +21,7 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
+from numbers import Number
 import networkx as nx
 from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
@@ -180,7 +181,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        Size of nodes.  If an array is specified it must be the
        same length as nodelist.
 
-    node_color : color string, or array of floats, (default='r')
+    node_color : color string, or array of floats, (default='#1f78b4')
        Node color. Can be a single color format string,
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
@@ -285,7 +286,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 def draw_networkx_nodes(G, pos,
                         nodelist=None,
                         node_size=300,
-                        node_color='r',
+                        node_color='#1f78b4',
                         node_shape='o',
                         alpha=1.0,
                         cmap=None,
@@ -320,7 +321,7 @@ def draw_networkx_nodes(G, pos,
        same length as nodelist.
 
     node_color : color string, or array of floats
-       Node color. Can be a single color format string (default='r'),
+       Node color. Can be a single color format string (default='#1f78b4'),
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
        colors using the cmap and vmin,vmax parameters.  See
@@ -413,6 +414,13 @@ def draw_networkx_nodes(G, pos,
                                  linewidths=linewidths,
                                  edgecolors=edgecolors,
                                  label=label)
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     node_collection.set_zorder(2)
     return node_collection
@@ -435,6 +443,7 @@ def draw_networkx_edges(G, pos,
                         node_size=300,
                         nodelist=None,
                         node_shape="o",
+                        connectionstyle=None,
                         **kwds):
     """Draw the edges of the graph G.
 
@@ -489,6 +498,12 @@ def draw_networkx_edges(G, pos,
        For directed graphs, choose the size of the arrow head head's length and
        width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
+
+    connectionstyle : str, optional (default=None)
+       Pass the connectionstyle parameter to create curved arc of rounding
+       radius rad. For example, connectionstyle='arc3,rad=0.2'.
+       See :py:class: `matplotlib.patches.ConnectionStyle` and
+       :py:class: `matplotlib.patches.FancyArrowPatch` for more info.
 
     label : [None| string]
        Label for legend
@@ -609,7 +624,7 @@ def draw_networkx_edges(G, pos,
         # r7184 and r7189 (June 6 2009). We should then not set the alpha
         # value globally, since the user can instead provide per-edge alphas
         # now.  Only set it globally if provided as a scalar.
-        if cb.is_numlike(alpha):
+        if isinstance(alpha, Number):
             edge_collection.set_alpha(alpha)
 
         if edge_colors is None:
@@ -682,6 +697,7 @@ def draw_networkx_edges(G, pos,
                                     mutation_scale=mutation_scale,
                                     color=arrow_color,
                                     linewidth=line_width,
+                                    connectionstyle=connectionstyle,
                                     zorder=1)  # arrows go behind nodes
 
             # There seems to be a bug in matplotlib to make collections of
@@ -702,6 +718,14 @@ def draw_networkx_edges(G, pos,
     corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
+
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     return arrow_collection
 
@@ -809,6 +833,14 @@ def draw_networkx_labels(G, pos,
                     clip_on=True,
                     )
         text_items[n] = t
+        
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     return text_items
 
@@ -955,6 +987,14 @@ def draw_networkx_edge_labels(G, pos,
                     )
         text_items[(n1, n2)] = t
 
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
+
     return text_items
 
 
@@ -1007,7 +1047,12 @@ def draw_random(G, **kwargs):
 
 
 def draw_spectral(G, **kwargs):
-    """Draw the graph G with a spectral layout.
+    """Draw the graph G with a spectral 2D layout.
+
+    Using the unnormalized Laplacion, the layout shows possible clusters of
+    nodes which are an approximation of the ratio cut. The positions are the
+    entries of the second and third eigenvectors corresponding to the
+    ascending eigenvalues starting from the second one.
 
     Parameters
     ----------
@@ -1111,7 +1156,6 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         Array containing RGBA format values for each of the node colours.
 
     """
-    import numbers
     from itertools import islice, cycle
 
     try:
@@ -1123,7 +1167,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.
-    if len(colors) == len(elem_list) and isinstance(colors[0], numbers.Number):
+    if len(colors) == len(elem_list) and isinstance(colors[0], Number):
         mapper = cm.ScalarMappable(cmap=cmap)
         mapper.set_clim(vmin, vmax)
         rgba_colors = mapper.to_rgba(colors)
@@ -1143,7 +1187,7 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         # rgba_colors) is the same as the number of elements, resize the array,
         # to avoid it being interpreted as a colormap by scatter()
         if len(alpha) > len(rgba_colors) or rgba_colors.size == len(elem_list):
-            rgba_colors.resize((len(elem_list), 4))
+            rgba_colors = np.resize(rgba_colors, (len(elem_list), 4))
             rgba_colors[1:, 0] = rgba_colors[0, 0]
             rgba_colors[1:, 1] = rgba_colors[0, 1]
             rgba_colors[1:, 2] = rgba_colors[0, 2]

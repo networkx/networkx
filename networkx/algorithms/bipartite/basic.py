@@ -211,7 +211,7 @@ def sets(G, top_nodes=None):
 
 
 def density(B, nodes):
-    """Return density of bipartite graph B.
+    """Returns density of bipartite graph B.
 
     Parameters
     ----------
@@ -263,7 +263,7 @@ def density(B, nodes):
 
 
 def degrees(B, nodes, weight=None):
-    """Return the degrees of the two node sets in the bipartite graph B.
+    """Returns the degrees of the two node sets in the bipartite graph B.
 
     Parameters
     ----------

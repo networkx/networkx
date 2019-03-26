@@ -33,7 +33,7 @@ def powerlaw_sequence(n, exponent=2.0, seed=None):
 
 @py_random_state(2)
 def zipf_rv(alpha, xmin=1, seed=None):
-    r"""Return a random value chosen from the Zipf distribution.
+    r"""Returns a random value chosen from the Zipf distribution.
 
     The return value is an integer drawn from the probability distribution
 
@@ -96,7 +96,7 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
 
 def cumulative_distribution(distribution):
-    """Return normalized cumulative distribution from discrete distribution."""
+    """Returns normalized cumulative distribution from discrete distribution."""
 
     cdf = [0.0]
     psum = float(sum(distribution))
@@ -138,7 +138,7 @@ def discrete_sequence(n, distribution=None, cdistribution=None, seed=None):
 
 @py_random_state(2)
 def random_weighted_sample(mapping, k, seed=None):
-    """Return k items without replacement from a weighted sample.
+    """Returns k items without replacement from a weighted sample.
 
     The input is a dictionary of items with weights as values.
     """
@@ -152,7 +152,7 @@ def random_weighted_sample(mapping, k, seed=None):
 
 @py_random_state(1)
 def weighted_choice(mapping, seed=None):
-    """Return a single element from a weighted sample.
+    """Returns a single element from a weighted sample.
 
     The input is a dictionary of items with weights as values.
     """

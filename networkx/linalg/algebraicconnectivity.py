@@ -289,7 +289,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
 
 def _get_fiedler_func(method):
-    """Return a function that solves the Fiedler eigenvalue problem.
+    """Returns a function that solves the Fiedler eigenvalue problem.
     """
     if method == "tracemin":  # old style keyword <v2.1
         method = "tracemin_pcg"
@@ -332,7 +332,7 @@ def _get_fiedler_func(method):
 @not_implemented_for('directed')
 def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
                            method='tracemin_pcg', seed=None):
-    """Return the algebraic connectivity of an undirected graph.
+    """Returns the algebraic connectivity of an undirected graph.
 
     The algebraic connectivity of a connected undirected graph is the second
     smallest eigenvalue of its Laplacian matrix.
@@ -417,7 +417,7 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
 @not_implemented_for('directed')
 def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
                    method='tracemin_pcg', seed=None):
-    """Return the Fiedler vector of a connected undirected graph.
+    """Returns the Fiedler vector of a connected undirected graph.
 
     The Fiedler vector of a connected undirected graph is the eigenvector
     corresponding to the second smallest eigenvalue of the Laplacian matrix of

@@ -293,7 +293,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     ###########################################################################
 
     def reduced_cost(i):
-        """Return the reduced cost of an edge i.
+        """Returns the reduced cost of an edge i.
         """
         c = C[i] - pi[S[i]] + pi[T[i]]
         return c if x[i] == 0 else -c
@@ -364,7 +364,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
                     return p
 
     def trace_path(p, w):
-        """Return the nodes and edges on the path from node p to its ancestor
+        """Returns the nodes and edges on the path from node p to its ancestor
         w.
         """
         Wn = [p]
@@ -376,7 +376,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         return Wn, We
 
     def find_cycle(i, p, q):
-        """Return the nodes and edges on the cycle containing edge i == (p, q)
+        """Returns the nodes and edges on the cycle containing edge i == (p, q)
         when the latter is added to the spanning tree.
 
         The cycle is oriented in the direction from p to q.
@@ -394,13 +394,13 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         return Wn, We
 
     def residual_capacity(i, p):
-        """Return the residual capacity of an edge i in the direction away
+        """Returns the residual capacity of an edge i in the direction away
         from its endpoint p.
         """
         return U[i] - x[i] if S[i] == p else x[i]
 
     def find_leaving_edge(Wn, We):
-        """Return the leaving edge in a cycle represented by Wn and We.
+        """Returns the leaving edge in a cycle represented by Wn and We.
         """
         j, s = min(zip(reversed(We), reversed(Wn)),
                    key=lambda i_p: residual_capacity(*i_p))

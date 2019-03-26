@@ -147,7 +147,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
 
 
 def bfs_tree(G, source, reverse=False, depth_limit=None):
-    """Return an oriented tree constructed from of a breadth-first-search
+    """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.
 
     Parameters

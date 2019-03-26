@@ -12,7 +12,9 @@ cache:
 matrix:
   include:
     - os: linux
-      python: 2.7
+      python: 3.7
+      dist: xenial
+      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - BUILD_DOCS=1
@@ -26,7 +28,9 @@ matrix:
           - texlive-latex-extra
           - latexmk
     - os: linux
-      python: 2.7
+      python: 3.7
+      dist: xenial
+      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - MINIMUM_REQUIREMENTS=1
@@ -37,32 +41,12 @@ matrix:
           - libgdal-dev
           - graphviz
     - os: linux
-      python: 2.7
+      python: 3.7
+      dist: xenial
+      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - PIP_FLAGS="--pre"
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: linux
-      python: 3.7
-      dist: xenial
-      sudo: true
-      env: OPTIONAL_DEPS=1
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: linux
-      python: 3.7
-      dist: xenial
-      sudo: true
-      env:
-      - OPTIONAL_DEPS=1
-      - MINIMUM_REQUIREMENTS=1
       addons:
         apt:
           packages:
@@ -78,7 +62,6 @@ matrix:
     - os: osx
       language: generic
       env: TRAVIS_PYTHON_VERSION=3.7
-    - python: 2.7
     - python: 3.5
     - python: 3.6
     - python: 3.7

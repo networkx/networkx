@@ -18,7 +18,7 @@ _attrs = dict(source='source', target='target', name='id',
 
 
 def node_link_data(G, attrs=None):
-    """Return data in node-link format that is suitable for JSON serialization
+    """Returns data in node-link format that is suitable for JSON serialization
     and use in Javascript documents.
 
     Parameters
@@ -102,7 +102,7 @@ def node_link_data(G, attrs=None):
 
 
 def node_link_graph(data, directed=False, multigraph=True, attrs=None):
-    """Return graph from node-link data format.
+    """Returns graph from node-link data format.
 
     Parameters
     ----------

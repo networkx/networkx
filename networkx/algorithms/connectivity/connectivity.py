@@ -211,7 +211,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
 
 def node_connectivity(G, s=None, t=None, flow_func=None):
-    """Returns node connectivity for a graph or digraph G.
+    r"""Returns node connectivity for a graph or digraph G.
 
     Node connectivity is equal to the minimum number of nodes that
     must be removed to disconnect G or render it trivial. If source

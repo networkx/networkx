@@ -203,12 +203,18 @@ class MultiGraph(Graph):
     extra features can be added. To replace one of the dicts create
     a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names are
-    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
-    and edge_attr_dict_factory.
+    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
+    adjlist_outer_dict_factory, edge_key_dict_factory, edge_attr_dict_factory
+    and graph_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
         attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    node_attr_dict_factory: function, (default: dict)
+        Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object
 
     adjlist_outer_dict_factory : function, (default: dict)
@@ -228,7 +234,12 @@ class MultiGraph(Graph):
 
     edge_attr_dict_factory : function, (default: dict)
         Factory function to be used to create the edge attribute
-        dict which holds attrbute values keyed by attribute name.
+        dict which holds attribute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    graph_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
     Typically, if your extension doesn't impact the data structure all
@@ -330,7 +341,7 @@ class MultiGraph(Graph):
         return MultiAdjacencyView(self._adj)
 
     def new_edge_key(self, u, v):
-        """Return an unused key for edges between nodes `u` and `v`.
+        """Returns an unused key for edges between nodes `u` and `v`.
 
         The nodes `u` and `v` do not need to be already in the graph.
 
@@ -428,10 +439,10 @@ class MultiGraph(Graph):
         # add nodes
         if u not in self._adj:
             self._adj[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = {}
+            self._node[u] = self.node_attr_dict_factory()
         if v not in self._adj:
             self._adj[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = {}
+            self._node[v] = self.node_attr_dict_factory()
         if key is None:
             key = self.new_edge_key(u, v)
         if v in self._adj[u]:
@@ -639,7 +650,7 @@ class MultiGraph(Graph):
                 pass
 
     def has_edge(self, u, v, key=None):
-        """Return True if the graph has an edge between nodes u and v.
+        """Returns True if the graph has an edge between nodes u and v.
 
         This is the same as `v in G[u] or key in G[u][v]`
         without KeyError exceptions.
@@ -696,7 +707,7 @@ class MultiGraph(Graph):
 
     @property
     def edges(self):
-        """Return an iterator over the edges.
+        """Returns an iterator over the edges.
 
         edges(self, nbunch=None, data=False, keys=False, default=None)
 
@@ -763,7 +774,7 @@ class MultiGraph(Graph):
         return MultiEdgeView(self)
 
     def get_edge_data(self, u, v, key=None, default=None):
-        """Return the attribute dictionary associated with edge (u, v).
+        """Returns the attribute dictionary associated with edge (u, v).
 
         This is identical to `G[u][v][key]` except the default is returned
         instead of an exception is the edge doesn't exist.
@@ -868,15 +879,15 @@ class MultiGraph(Graph):
         return MultiDegreeView(self)
 
     def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
+        """Returns True if graph is a multigraph, False otherwise."""
         return True
 
     def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
+        """Returns True if graph is directed, False otherwise."""
         return False
 
     def copy(self, as_view=False):
-        """Return a copy of the graph.
+        """Returns a copy of the graph.
 
         The copy method by default returns an independent shallow copy
         of the graph and attributes. That is, if an attribute is a
@@ -964,7 +975,7 @@ class MultiGraph(Graph):
         return G
 
     def to_directed(self, as_view=False):
-        """Return a directed representation of the graph.
+        """Returns a directed representation of the graph.
 
         Returns
         -------
@@ -1019,7 +1030,7 @@ class MultiGraph(Graph):
         return G
 
     def to_undirected(self, as_view=False):
-        """Return an undirected copy of the graph.
+        """Returns an undirected copy of the graph.
 
         Returns
         -------
@@ -1070,7 +1081,7 @@ class MultiGraph(Graph):
         return G
 
     def number_of_edges(self, u=None, v=None):
-        """Return the number of edges between two nodes.
+        """Returns the number of edges between two nodes.
 
         Parameters
         ----------

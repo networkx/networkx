@@ -20,7 +20,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 from __future__ import division
 import warnings
 from copy import deepcopy
-from collections import Mapping
+from collections.abc import Mapping
 
 import networkx as nx
 from networkx.classes.coreviews import AtlasView, AdjacencyView
@@ -204,12 +204,17 @@ class Graph(object):
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
     holding the factory for that dict-like structure. The variable names are
-    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
-    and edge_attr_dict_factory.
+    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
+    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
         attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    node_attr_dict_factory: function, (default: dict)
+        Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object
 
     adjlist_outer_dict_factory : function, (default: dict)
@@ -224,7 +229,12 @@ class Graph(object):
 
     edge_attr_dict_factory : function, (default: dict)
         Factory function to be used to create the edge attribute
-        dict which holds attrbute values keyed by attribute name.
+        dict which holds attribute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    graph_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
     Typically, if your extension doesn't impact the data structure all
@@ -266,9 +276,11 @@ class Graph(object):
     a dictionary-like object.
     """
     node_dict_factory = dict
+    node_attr_dict_factory = dict
     adjlist_outer_dict_factory = dict
     adjlist_inner_dict_factory = dict
     edge_attr_dict_factory = dict
+    graph_attr_dict_factory = dict
 
     def to_directed_class(self):
         """Returns the class to use for empty directed copies.
@@ -319,13 +331,15 @@ class Graph(object):
         {'day': 'Friday'}
 
         """
-        self.node_dict_factory = ndf = self.node_dict_factory
+        self.graph_attr_dict_factory = self.graph_attr_dict_factory
+        self.node_dict_factory = self.node_dict_factory
+        self.node_attr_dict_factory = self.node_attr_dict_factory
         self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.graph = {}   # dictionary for graph attributes
-        self._node = ndf()  # empty node attribute dict
+        self.graph = self.graph_attr_dict_factory()   # dictionary for graph attributes
+        self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # attempt to load graph with data
         if incoming_graph_data is not None:
@@ -367,7 +381,7 @@ class Graph(object):
         self.graph['name'] = s
 
     def __str__(self):
-        """Return the graph name.
+        """Returns the graph name.
 
         Returns
         -------
@@ -401,7 +415,7 @@ class Graph(object):
         return iter(self._node)
 
     def __contains__(self, n):
-        """Return True if n is a node, False otherwise. Use: 'n in G'.
+        """Returns True if n is a node, False otherwise. Use: 'n in G'.
 
         Examples
         --------
@@ -415,7 +429,7 @@ class Graph(object):
             return False
 
     def __len__(self):
-        """Return the number of nodes. Use: 'len(G)'.
+        """Returns the number of nodes. Use: 'len(G)'.
 
         Returns
         -------
@@ -432,7 +446,7 @@ class Graph(object):
         return len(self._node)
 
     def __getitem__(self, n):
-        """Return a dict of neighbors of node n.  Use: 'G[n]'.
+        """Returns a dict of neighbors of node n.  Use: 'G[n]'.
 
         Parameters
         ----------
@@ -498,7 +512,8 @@ class Graph(object):
         """
         if node_for_adding not in self._node:
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            self._node[node_for_adding] = attr
+            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
@@ -553,7 +568,8 @@ class Graph(object):
             try:
                 if n not in self._node:
                     self._adj[n] = self.adjlist_inner_dict_factory()
-                    self._node[n] = attr.copy()
+                    attr_dict = self._node[n] = self.node_attr_dict_factory()
+                    attr_dict.update(attr)
                 else:
                     self._node[n].update(attr)
             except TypeError:
@@ -562,7 +578,8 @@ class Graph(object):
                     self._adj[nn] = self.adjlist_inner_dict_factory()
                     newdict = attr.copy()
                     newdict.update(ndict)
-                    self._node[nn] = newdict
+                    attr_dict = self._node[nn] = self.node_attr_dict_factory()
+                    attr_dict.update(newdict)
                 else:
                     olddict = self._node[nn]
                     olddict.update(attr)
@@ -774,11 +791,11 @@ class Graph(object):
     def selfloop_edges(self, data=False, keys=False, default=None):
         msg = "selfloop_edges is deprecated. Use nx.selfloop_edges instead."
         warnings.warn(msg, DeprecationWarning)
-        return nx.selfloop_edges(self, data=False, keys=False, default=None)
+        return nx.selfloop_edges(self, data, keys, default)
     # Done with backward compatibility methods for 1.x
 
     def number_of_nodes(self):
-        """Return the number of nodes in the graph.
+        """Returns the number of nodes in the graph.
 
         Returns
         -------
@@ -798,7 +815,7 @@ class Graph(object):
         return len(self._node)
 
     def order(self):
-        """Return the number of nodes in the graph.
+        """Returns the number of nodes in the graph.
 
         Returns
         -------
@@ -813,7 +830,7 @@ class Graph(object):
         return len(self._node)
 
     def has_node(self, n):
-        """Return True if the graph contains the node n.
+        """Returns True if the graph contains the node n.
 
         Identical to `n in G`
 
@@ -892,10 +909,10 @@ class Graph(object):
         # add nodes
         if u not in self._node:
             self._adj[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = {}
+            self._node[u] = self.node_attr_dict_factory()
         if v not in self._node:
             self._adj[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = {}
+            self._node[v] = self.node_attr_dict_factory()
         # add the edge
         datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
         datadict.update(attr)
@@ -952,10 +969,10 @@ class Graph(object):
                     "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
             if u not in self._node:
                 self._adj[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = {}
+                self._node[u] = self.node_attr_dict_factory()
             if v not in self._node:
                 self._adj[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = {}
+                self._node[v] = self.node_attr_dict_factory()
             datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
             datadict.update(attr)
             datadict.update(dd)
@@ -1166,7 +1183,7 @@ class Graph(object):
             raise NetworkXError("update needs nodes or edges input")
 
     def has_edge(self, u, v):
-        """Return True if the edge (u, v) is in the graph.
+        """Returns True if the edge (u, v) is in the graph.
 
         This is the same as `v in G[u]` without KeyError exceptions.
 
@@ -1207,7 +1224,7 @@ class Graph(object):
             return False
 
     def neighbors(self, n):
-        """Return an iterator over all neighbors of node n.
+        """Returns an iterator over all neighbors of node n.
 
         This is identical to `iter(G[n])`
 
@@ -1308,7 +1325,7 @@ class Graph(object):
         return EdgeView(self)
 
     def get_edge_data(self, u, v, default=None):
-        """Return the attribute dictionary associated with edge (u, v).
+        """Returns the attribute dictionary associated with edge (u, v).
 
         This is identical to `G[u][v]` except the default is returned
         instead of an exception is the edge doesn't exist.
@@ -1354,7 +1371,7 @@ class Graph(object):
             return default
 
     def adjacency(self):
-        """Return an iterator over (node, adjacency dict) tuples for all nodes.
+        """Returns an iterator over (node, adjacency dict) tuples for all nodes.
 
         For directed graphs, only outgoing neighbors/adjacencies are included.
 
@@ -1433,11 +1450,11 @@ class Graph(object):
         self.graph.clear()
 
     def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
+        """Returns True if graph is a multigraph, False otherwise."""
         return False
 
     def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
+        """Returns True if graph is directed, False otherwise."""
         return False
 
     def fresh_copy(self):
@@ -1447,7 +1464,7 @@ class Graph(object):
         return self.__class__()
 
     def copy(self, as_view=False):
-        """Return a copy of the graph.
+        """Returns a copy of the graph.
 
         The copy method by default returns an independent shallow copy
         of the graph and attributes. That is, if an attribute is a
@@ -1534,7 +1551,7 @@ class Graph(object):
         return G
 
     def to_directed(self, as_view=False):
-        """Return a directed representation of the graph.
+        """Returns a directed representation of the graph.
 
         Returns
         -------
@@ -1588,7 +1605,7 @@ class Graph(object):
         return G
 
     def to_undirected(self, as_view=False):
-        """Return an undirected copy of the graph.
+        """Returns an undirected copy of the graph.
 
         Parameters
         ----------
@@ -1643,7 +1660,7 @@ class Graph(object):
         return G
 
     def subgraph(self, nodes):
-        """Return a SubGraph view of the subgraph induced on `nodes`.
+        """Returns a SubGraph view of the subgraph induced on `nodes`.
 
         The induced subgraph of the graph contains the nodes in `nodes`
         and the edges between those nodes.
@@ -1747,7 +1764,7 @@ class Graph(object):
         return nx.edge_subgraph(self, edges)
 
     def size(self, weight=None):
-        """Return the number of edges or total of all edge weights.
+        """Returns the number of edges or total of all edge weights.
 
         Parameters
         ----------
@@ -1790,7 +1807,7 @@ class Graph(object):
         return s // 2 if weight is None else s / 2
 
     def number_of_edges(self, u=None, v=None):
-        """Return the number of edges between two nodes.
+        """Returns the number of edges between two nodes.
 
         Parameters
         ----------
@@ -1842,7 +1859,7 @@ class Graph(object):
         return 0
 
     def nbunch_iter(self, nbunch=None):
-        """Return an iterator over nodes contained in nbunch that are
+        """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
         The nodes in nbunch are checked for membership in the graph
