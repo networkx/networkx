@@ -48,6 +48,7 @@ Algorithms
    matching
    minors
    mis
+   moral
    node_classification
    operators
    planarity
