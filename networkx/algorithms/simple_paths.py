@@ -32,6 +32,7 @@ def all_simple_paths(G, source, target, cutoff=None):
        A generator that produces lists of simple paths.  If there are no paths
        between the source and target within the given cutoff the generator
        produces no output.
+       For multigraphs, a list of edges `(u,v,k)`.
 
     Examples
     --------
@@ -47,6 +48,17 @@ def all_simple_paths(G, source, target, cutoff=None):
     >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
     >>> print(list(paths))
     [[0, 1, 3], [0, 2, 3], [0, 3]]
+
+
+    >>> mg = nx.MultiGraph()
+    >>> mg.add_edges_from([(1,2),(1,2),(1,3),(2,4),(3,4),(4,5),(3,5),(3,5)])
+    >>> paths = nx.all_simple_paths(mg, source=1, target=5, cutoff=3)
+    >>> print list(paths)
+    [[(1, 2, 0), (2, 4, 0), (4, 5, 0)], [(1, 2, 1), (2, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 5, 0)], [(1, 3, 0), (3, 5, 1)]]
+    >>> paths = nx.all_simple_paths(mg, source=1, target=5)
+    >>> print list(paths)
+    [[(1, 2, 0), (2, 4, 0), (4, 3, 0), (3, 5, 0)], [(1, 2, 0), (2, 4, 0), (4, 3, 0), (3, 5, 1)], [(1, 2, 0), (2, 4, 0), (4, 5, 0)], [(1, 2, 1), (2, 4, 0), (4, 3, 0), (3, 5, 0)], [(1, 2, 1), (2, 4, 0), (4, 3, 0), (3, 5, 1)], [(1, 2, 1), (2, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 5, 0)], [(1, 3, 0), (3, 5, 1)]]
+
 
     Notes
     -----
@@ -103,7 +115,7 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
     if cutoff < 1:
         return
     visited = [source]
-    stack = [(v for u,v in G.edges(source))]
+    stack = [iter(G.edges(source, keys=True))]
     while stack:
         children = stack[-1]
         child = next(children, None)
@@ -111,14 +123,14 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
             stack.pop()
             visited.pop()
         elif len(visited) < cutoff:
-            if child == target:
-                yield visited + [target]
-            elif child not in visited:
+            if child[1] == target:
+                yield visited[1:] + [child]
+            elif child[1] not in [v[0] for v in visited[1:]]:
                 visited.append(child)
-                stack.append((v for u,v in G.edges(child)))
+                stack.append(iter(G.edges(child[1], keys=True)))
         else: #len(visited) == cutoff:
-            count = ([child]+list(children)).count(target)
-            for i in range(count):
-                yield visited + [target]
+            for (u,v,k) in [child]+list(children):
+                if v == target:
+                    yield visited[1:] + [(u,v,k)]
             stack.pop()
             visited.pop()
