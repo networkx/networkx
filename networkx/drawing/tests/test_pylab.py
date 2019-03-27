@@ -26,6 +26,7 @@ class TestPylab(object):
         try:
             functions = [nx.draw_circular,
                          nx.draw_kamada_kawai,
+                         nx.draw_planar,
                          nx.draw_random,
                          nx.draw_spectral,
                          nx.draw_spring,
