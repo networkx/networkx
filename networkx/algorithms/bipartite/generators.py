@@ -380,7 +380,11 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
 
     References
     ----------
-    .. [1] Jean-Loup Guillaume and Matthieu Latapy,
+    .. [1] Guillaume, J.L. and Latapy, M., 
+       Bipartite graphs as models of complex networks.
+       Physica A: Statistical Mechanics and its Applications,
+       2006, 371(2), pp.795-813.
+    .. [2] Jean-Loup Guillaume and Matthieu Latapy,
        Bipartite structure of all complex networks,
        Inf. Process. Lett. 90, 2004, pg. 215-221
        https://doi.org/10.1016/j.ipl.2004.03.007
