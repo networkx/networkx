@@ -202,24 +202,28 @@ class GEXF(object):
              (float, "double"),
              (bool, "boolean"),
              (list, "string"),
-             (dict, "string")]
+             (dict, "string"),
+             (int, "long"),
+             (str, "liststring"),
+             (str, "anyURI"),
+             (str, "string")]
 
-    try:  # Python 3.x
-        blurb = chr(1245)  # just to trigger the exception
-        types.extend([
-            (int, "long"),
-            (str, "liststring"),
-            (str, "anyURI"),
-            (str, "string")])
-    except ValueError:  # Python 2.6+
-        types.extend([
-            (long, "long"),
-            (str, "liststring"),
-            (str, "anyURI"),
-            (str, "string"),
-            (unicode, "liststring"),
-            (unicode, "anyURI"),
-            (unicode, "string")])
+    # These additions to types allow writing numpy types
+    try:
+        import numpy as np
+    except ImportError:
+        pass
+    else:
+        # prepend so that python types are created upon read (last entry wins)
+        types = [(np.float64, "float"), (np.float32, "float"),
+                 (np.float16, "float"), (np.float_, "float"),
+                 (np.int, "int"), (np.int8, "int"),
+                 (np.int16, "int"), (np.int32, "int"),
+                 (np.int64, "int"), (np.uint8, "int"),
+                 (np.uint16, "int"), (np.uint32, "int"),
+                 (np.uint64, "int"), (np.int_, "int"),
+                 (np.intc, "int"), (np.intp, "int"),
+                ] + types
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
@@ -434,6 +438,8 @@ class GEXFWriter(GEXF):
             if k == 'key':
                 k = 'networkx_key'
             val_type = type(v)
+            if val_type not in self.xml_type:
+                raise TypeError('attribute value type is not allowed: %s' % val_type)
             if isinstance(v, list):
                 # dynamic data
                 for val, start, end in v:
