@@ -313,6 +313,33 @@ class TestGEXF(object):
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
+    def test_edge_id_construct(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
+        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <meta>
+      <creator>NetworkX {}</creator>
+      <lastmodified>{}</lastmodified>
+    </meta>
+    <nodes>
+      <node id="0" label="0" />
+      <node id="1" label="1" />
+      <node id="2" label="2" />
+      <node id="3" label="3" />
+    </nodes>
+    <edges>
+      <edge id="0" source="0" target="1" />
+      <edge id="2" source="1" target="2" />
+      <edge id="1" source="2" target="3" />
+    </edges>
+  </graph>
+</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+        obtained = '\n'.join(nx.generate_gexf(G))
+        print(obtained)
+        print(expected)
+        assert_equal(expected, obtained)
+
     def test_bool(self):
         G = nx.Graph()
         G.add_node(1, testattr=True)

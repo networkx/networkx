@@ -268,6 +268,7 @@ class GEXFWriter(GEXF):
         # counters for edge and attribute identifiers
         self.edge_id = itertools.count()
         self.attr_id = itertools.count()
+        self.all_edge_ids = set()
         # default attributes are stored in dictionaries
         self.attr = {}
         self.attr['node'] = {}
@@ -287,6 +288,11 @@ class GEXFWriter(GEXF):
         return s
 
     def add_graph(self, G):
+        # first pass through G collecting edge ids
+        for u, v, dd in G.edges(data=True):
+            eid = dd.get('id')
+            if eid is not None:
+                self.all_edge_ids.add(make_str(eid))
         # set graph attributes
         if G.graph.get('mode') == 'dynamic':
             mode = 'dynamic'
@@ -363,6 +369,9 @@ class GEXFWriter(GEXF):
                     edge_id = edge_data.pop('id', None)
                     if edge_id is None:
                         edge_id = next(self.edge_id)
+                        while make_str(edge_id) in self.all_edge_ids:
+                            edge_id = next(self.edge_id)
+                        self.all_edge_ids.add(make_str(edge_id))
                     yield u, v, edge_id, edge_data
             else:
                 for u, v, data in G.edges(data=True):
@@ -370,6 +379,9 @@ class GEXFWriter(GEXF):
                     edge_id = edge_data.pop('id', None)
                     if edge_id is None:
                         edge_id = next(self.edge_id)
+                        while make_str(edge_id) in self.all_edge_ids:
+                            edge_id = next(self.edge_id)
+                        self.all_edge_ids.add(make_str(edge_id))
                     yield u, v, edge_id, edge_data
         edges_element = Element('edges')
         for u, v, key, edge_data in edge_key_data(G):
