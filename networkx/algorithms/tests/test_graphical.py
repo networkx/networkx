@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+from nose.tools import assert_true, assert_false, raises
 from nose import SkipTest
 import networkx as nx
 
@@ -31,7 +31,14 @@ def test_string_input():
 def test_negative_input():
     assert_false(nx.is_graphical([-1], 'hh'))
     assert_false(nx.is_graphical([-1], 'eg'))
-    assert_false(nx.is_graphical([72.5], 'eg'))
+
+@raises(nx.NetworkXException)
+def test_non_integer_input():
+    a = nx.is_graphical([72.5], 'eg')
+
+@raises(nx.NetworkXException)
+def test_non_integer_input():
+    a = nx.is_graphical([72.5], 'hh')
 
 
 class TestAtlas(object):
@@ -133,3 +140,24 @@ def test_pseudo_sequence():
     # Test for negative integer in sequence
     seq = [1000, 3, 3, 3, 3, 2, 2, -2, 1, 1]
     assert_false(nx.is_pseudographical(seq))
+
+def test_numpy_degree_sequence():
+    try:
+        import numpy
+    except ImportError:
+        return
+    ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.int64)
+    assert_true(nx.is_graphical(ds, 'eg'))
+    assert_true(nx.is_graphical(ds, 'hh'))
+    ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.float64)
+    assert_true(nx.is_graphical(ds, 'eg'))
+    assert_true(nx.is_graphical(ds, 'hh'))
+
+@raises(nx.NetworkXError, AssertionError)
+def test_numpy_noninteger_degree_sequence():
+    try:
+        import numpy
+    except ImportError:
+        raise nx.NetworkXError('make test pass by raising exception')
+    ds = numpy.array([1.1, 2, 2, 2, 1], dtype=numpy.float64)
+    a = nx.is_graphical(ds, 'eg')
