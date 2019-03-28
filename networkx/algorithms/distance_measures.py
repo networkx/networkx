@@ -8,11 +8,16 @@
 #
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Dan Schult (dschult@colgate.edu)
+#          Brian Kiefer (bkiefer@asu.edu)
 """Graph diameter, radius, eccentricity and other properties."""
-import networkx
+import bisect
+
+import networkx as nx
+from networkx.utils import not_implemented_for
+
 
 __all__ = ['extrema_bounding', 'eccentricity', 'diameter',
-           'radius', 'periphery', 'center']
+           'radius', 'periphery', 'center', 'resistance_distance']
 
 
 def extrema_bounding(G, compute="diameter"):
@@ -89,10 +94,10 @@ def extrema_bounding(G, compute="diameter"):
         high = not high
 
         # get distances from/to current node and derive eccentricity
-        dist = dict(networkx.single_source_shortest_path_length(G, current))
+        dist = dict(nx.single_source_shortest_path_length(G, current))
         if len(dist) != N:
             msg = ('Cannot compute metric because graph is not connected.')
-            raise networkx.NetworkXError(msg)
+            raise nx.NetworkXError(msg)
         current_ecc = max(dist.values())
 
         # print status update
@@ -223,14 +228,14 @@ def eccentricity(G, v=None, sp=None):
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = networkx.single_source_shortest_path_length(G, n)
+            length = nx.single_source_shortest_path_length(G, n)
             L = len(length)
         else:
             try:
                 length = sp[n]
                 L = len(length)
             except TypeError:
-                raise networkx.NetworkXError('Format of "sp" is invalid.')
+                raise nx.NetworkXError('Format of "sp" is invalid.')
         if L != order:
             if G.is_directed():
                 msg = ('Found infinite path length because the digraph is not'
@@ -238,7 +243,7 @@ def eccentricity(G, v=None, sp=None):
             else:
                 msg = ('Found infinite path length because the graph is not'
                        ' connected')
-            raise networkx.NetworkXError(msg)
+            raise nx.NetworkXError(msg)
 
         e[n] = max(length.values())
 
@@ -354,3 +359,149 @@ def center(G, e=None, usebounds=False):
     radius = min(e.values())
     p = [v for v in e if e[v] == radius]
     return p
+
+
+
+
+def _laplacian_submatrix(node, mat, node_list):
+    """Removes row/col from a LIL sparse matrix and returns the submatrix
+    """
+    import numpy as np
+    j = node_list.index(node)
+    
+    # Remove row from LIL matrix
+    if j < 0:
+        j += mat.shape[0]
+
+    if j < 0 or j >= mat.shape[0]:
+        raise IndexError('Row index out of bounds')
+
+    mat.rows = np.delete(mat.rows, j, 0)
+    mat.data = np.delete(mat.data, j, 0)
+    mat._shape = (mat._shape[0] - 1, mat.shape[1])
+    
+    # Remove column from LIL matrix
+    if j < 0:
+        j += mat.shape[1]
+
+    if j < 0 or j >= mat.shape[1]:
+        raise IndexError('Column index out of bounds')
+
+    rows = mat.rows
+    data = mat.data
+    for i in range(mat.shape[0]):
+        pos = bisect.bisect_left(rows[i], j)
+        if pos == len(rows[i]):
+            continue
+        elif rows[i][pos] == j:
+            rows[i].pop(pos)
+            data[i].pop(pos)
+            if pos == len(rows[i]):
+                continue
+        for pos2 in range(pos, len(rows[i])):
+            rows[i][pos2] -= 1
+
+    mat._shape = (mat._shape[0], mat._shape[1] - 1)
+
+    node_list.pop(i)
+
+    return mat, node_list
+
+@not_implemented_for('directed')
+def resistance_distance(G, nodeA, nodeB, weight=None):
+    """Returns the resistance distance between node A and node B on graph G.
+
+    The resistance distance between two nodes of a graph is akin to treating
+    the graph as a grid of resistorses with a resistance equal to the provided 
+    weight. 
+    
+    If weight is not provided, then a weight of 1 is used for all edges.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    nodeA : node
+      A node within graph G.
+
+    nodeB : node
+      A node within graph G, exclusive of Node A.
+
+    weight : string or None, optional (default=None)
+       The edge data key used to compute the resistance distance. Weight cannot be zero.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    rd : float
+       Value of effective resistance distance
+
+    Notes
+    -----
+    Overview discussion:
+    * https://en.wikipedia.org/wiki/Resistance_distance
+    * http://mathworld.wolfram.com/ResistanceDistance.html
+
+    Additional details:
+    Vaya Sapobi Samui Vos, “Methods for determining the effective resistance,” M.S., 
+    Mathematisch Instituut, Universiteit Leiden, Leiden, Netherlands, 2016
+    Available: `Link to thesis <https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
+    """
+    import numpy as np
+    import scipy.sparse
+
+    if nodeA not in G:
+        msg = ('Node A is not in graph G.')
+        raise nx.NetworkXError(msg)
+    elif nodeB not in G:
+        msg = ('Node B is not in graph G.')
+        raise nx.NetworkXError(msg)
+    elif nodeA == nodeB:
+        msg = ('Node A and Node B cannot be the same.')
+        raise nx.NetworkXError(msg)
+
+    node_list = list(G.nodes())
+        
+    L = nx.laplacian_matrix(G, node_list, weight=weight)
+    L = L.tolil()
+
+    Lsub_a, node_list_a = _laplacian_submatrix(nodeA, L.copy(), node_list[:])
+    Lsub_ab, node_list_ab = _laplacian_submatrix(nodeB, Lsub_a.copy(), node_list_a[:])
+    
+    Lsub_a = Lsub_a.tocsc()
+    Lsub_ab = Lsub_ab.tocsc()
+
+    # Factorize Laplacian submatrixes and extract diagonals
+    # Order the diagonals to minimize the likelihood over overflows during computing the determinant
+    lu_a = scipy.sparse.linalg.splu(Lsub_a)
+    LdiagA = lu_a.U.diagonal()
+    LdiagA_s = np.product(np.sign(LdiagA))
+    LdiagA = np.absolute(LdiagA)
+    LdiagA = np.sort(LdiagA)
+    for i, x in enumerate(lu_a.perm_r):
+        if i != x:
+            LdiagA_s *= -1
+    for i, x in enumerate(lu_a.perm_c):
+        if i != x:
+            LdiagA_s *= -1
+    
+    lu_ab = scipy.sparse.linalg.splu(Lsub_ab)
+    LdiagAB = lu_ab.U.diagonal()
+    LdiagAB_s = np.product(np.sign(LdiagAB))
+    LdiagAB = np.absolute(LdiagAB)
+    LdiagAB = np.sort(LdiagAB)
+    for i, x in enumerate(lu_ab.perm_r):
+        if i != x:
+            LdiagAB_s *= -1
+    for i, x in enumerate(lu_ab.perm_c):
+        if i != x:
+            LdiagAB_s *= -1
+
+    # Calculate the ratio of determinant, rd = det(Lsub_ab)/det(Lsub_a)
+    Ldet = np.product(np.multiply(np.append(LdiagAB,[1]), np.reciprocal(LdiagA)))
+    rd = Ldet * LdiagAB_s / LdiagA_s
+    
+    return rd
+
+    
