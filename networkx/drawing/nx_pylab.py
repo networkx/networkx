@@ -674,7 +674,7 @@ def draw_networkx_edges(G, pos,
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
             if cb.iterable(node_size):  # many node sizes
-                src_node, dst_node = edgelist[i]
+                src_node, dst_node = edgelist[i][:2]
                 index_node = nodelist.index(dst_node)
                 marker_size = node_size[index_node]
                 shrink_target = to_marker_edge(marker_size, node_shape)
