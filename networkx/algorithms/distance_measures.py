@@ -361,8 +361,6 @@ def center(G, e=None, usebounds=False):
     return p
 
 
-
-
 def _laplacian_submatrix(node, mat, node_list):
     """Removes row/col from a LIL sparse matrix and returns the submatrix
     """
@@ -403,12 +401,13 @@ def _laplacian_submatrix(node, mat, node_list):
 
     mat._shape = (mat._shape[0], mat._shape[1] - 1)
 
-    node_list.pop(i)
+    node_list.pop(j)
 
     return mat, node_list
 
+
 @not_implemented_for('directed')
-def resistance_distance(G, nodeA, nodeB, weight=None):
+def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """Returns the resistance distance between node A and node B on graph G.
 
     The resistance distance between two nodes of a graph is akin to treating
@@ -429,8 +428,13 @@ def resistance_distance(G, nodeA, nodeB, weight=None):
       A node within graph G, exclusive of Node A.
 
     weight : string or None, optional (default=None)
-       The edge data key used to compute the resistance distance. Weight cannot be zero.
+       The edge data key used to compute the resistance distance.
        If None, then each edge has weight 1.
+
+    invert_weight : boolean (default=True)
+        Proper calculation of resistance distance requires building the 
+        Laplacian matrix with the reciprocal of the weight. Not required 
+        if the weight is already inverted. Weight cannot be zero.
 
     Returns
     -------
@@ -461,8 +465,17 @@ def resistance_distance(G, nodeA, nodeB, weight=None):
         msg = ('Node A and Node B cannot be the same.')
         raise nx.NetworkXError(msg)
 
+    G = G.copy()
     node_list = list(G.nodes())
-        
+
+    if invert_weight and weight is not None and type(G) is nx.Graph:
+        for (u,v,d) in list(G.edges(data=True)):
+            ]G[u][v][weight] = 1/d[weight]
+    elif invert_weight and weight is not None and type(G) is nx.MultiGraph:
+        for (u,v,k,d) in list(G.edges(keys=True, data=True)):
+            G[u][v][k][weight] = 1/d[weight]
+    # Replace with collapsing topology or approximated zero?
+
     L = nx.laplacian_matrix(G, node_list, weight=weight)
     L = L.tolil()
 
@@ -474,7 +487,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None):
 
     # Factorize Laplacian submatrixes and extract diagonals
     # Order the diagonals to minimize the likelihood over overflows during computing the determinant
-    lu_a = scipy.sparse.linalg.splu(Lsub_a)
+    lu_a = scipy.sparse.linalg.splu(Lsub_a,options=dict(SymmetricMode=True))
     LdiagA = lu_a.U.diagonal()
     LdiagA_s = np.product(np.sign(LdiagA))
     LdiagA = np.absolute(LdiagA)
@@ -486,7 +499,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None):
         if i != x:
             LdiagA_s *= -1
     
-    lu_ab = scipy.sparse.linalg.splu(Lsub_ab)
+    lu_ab = scipy.sparse.linalg.splu(Lsub_ab,options=dict(SymmetricMode=True))
     LdiagAB = lu_ab.U.diagonal()
     LdiagAB_s = np.product(np.sign(LdiagAB))
     LdiagAB = np.absolute(LdiagAB)
@@ -503,5 +516,3 @@ def resistance_distance(G, nodeA, nodeB, weight=None):
     rd = Ldet * LdiagAB_s / LdiagA_s
     
     return rd
-
-    
