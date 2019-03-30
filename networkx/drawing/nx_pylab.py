@@ -288,7 +288,7 @@ def draw_networkx_nodes(G, pos,
                         node_size=300,
                         node_color='#1f78b4',
                         node_shape='o',
-                        alpha=1.0,
+                        alpha=None,
                         cmap=None,
                         vmin=None,
                         vmax=None,
@@ -618,14 +618,6 @@ def draw_networkx_edges(G, pos,
         edge_collection.set_zorder(1)  # edges go behind nodes
         edge_collection.set_label(label)
         ax.add_collection(edge_collection)
-
-        # Note: there was a bug in mpl regarding the handling of alpha values
-        # for each line in a LineCollection. It was fixed in matplotlib by
-        # r7184 and r7189 (June 6 2009). We should then not set the alpha
-        # value globally, since the user can instead provide per-edge alphas
-        # now.  Only set it globally if provided as a scalar.
-        if isinstance(alpha, Number):
-            edge_collection.set_alpha(alpha)
 
         if edge_colors is None:
             if edge_cmap is not None:
