@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2018 by
+#   Copyright (C) 2011-2019 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>
 #   All rights reserved.
 #   BSD license.
-#   Copyright 2016-2018 NetworkX developers.
+#   Copyright 2016-2019 NetworkX developers.
 #   NetworkX is distributed under a BSD license
 #
 # Authors:    Nicholas Mancuso (nick.mancuso@gmail.com)

@@ -14,7 +14,7 @@ http://www-personal.umich.edu/~mejn/netdata/football.zip
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2007-2018 by
+#    Copyright (C) 2007-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

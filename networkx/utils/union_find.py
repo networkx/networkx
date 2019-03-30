@@ -1,5 +1,5 @@
-#    Copyright 2016-2018 NetworkX developers.
-#    Copyright (C) 2004-2018 by
+#    Copyright 2016-2019 NetworkX developers.
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

@@ -1,4 +1,4 @@
-#    Copyright(C) 2011, 2015, 2018 by
+#    Copyright(C) 2011-2019 by
 #    Ben Edwards <bedwards@cs.unm.edu>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Konstantinos Karakatsanis <dinoskarakas@gmail.com>

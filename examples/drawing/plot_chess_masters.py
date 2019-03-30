@@ -26,7 +26,7 @@ The key statement in `chess_pgn_graph` below is::
 
 where `game_info` is a `dict` describing each game.
 """
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

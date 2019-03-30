@@ -1,6 +1,6 @@
 # breadth_first_search.py - breadth-first traversal of a graph
 #
-# Copyright (C) 2004-2018 NetworkX Developers
+# Copyright (C) 2004-2019 NetworkX Developers
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>

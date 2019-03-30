@@ -10,7 +10,7 @@ Random graph from given degree sequence.
 # Date: 2004-11-03 08:11:09 -0700 (Wed, 03 Nov 2004)
 # Revision: 503
 
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
