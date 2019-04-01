@@ -5,7 +5,7 @@
 #    BSD license.
 import collections
 from heapq import heappush, heappop
-from itertools import countall
+from itertools import count
 
 import networkx as nx
 from networkx.utils import not_implemented_for
