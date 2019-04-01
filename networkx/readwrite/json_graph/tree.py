@@ -4,7 +4,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from itertools import chain, count
+from itertools import chain
 import networkx as nx
 from networkx.utils import make_str
 __author__ = """Aric Hagberg (hagberg@lanl.gov))"""
@@ -14,7 +14,7 @@ _attrs = dict(id='id', children='children')
 
 
 def tree_data(G, root, attrs=_attrs):
-    """Return data in tree format that is suitable for JSON serialization
+    """Returns data in tree format that is suitable for JSON serialization
     and use in Javascript documents.
 
     Parameters
@@ -84,20 +84,20 @@ def tree_data(G, root, attrs=_attrs):
             return []
         children_ = []
         for child in nbrs:
-            d = dict(chain(G.node[child].items(), [(id_, child)]))
+            d = dict(chain(G.nodes[child].items(), [(id_, child)]))
             c = add_children(child, G)
             if c:
                 d[children] = c
             children_.append(d)
         return children_
 
-    data = dict(chain(G.node[root].items(), [(id_, root)]))
+    data = dict(chain(G.nodes[root].items(), [(id_, root)]))
     data[children] = add_children(root, G)
     return data
 
 
 def tree_graph(data, attrs=_attrs):
-    """Return graph from tree data format.
+    """Returns graph from tree data format.
 
     Parameters
     ----------
@@ -142,12 +142,12 @@ def tree_graph(data, attrs=_attrs):
                 add_children(child, grandchildren)
             nodedata = dict((make_str(k), v) for k, v in data.items()
                             if k != id_ and k != children)
-            graph.add_node(child, attr_dict=nodedata)
+            graph.add_node(child, **nodedata)
 
     root = data[id_]
     children_ = data.get(children, [])
     nodedata = dict((make_str(k), v) for k, v in data.items()
                     if k != id_ and k != children)
-    graph.add_node(root, attr_dict=nodedata)
+    graph.add_node(root, **nodedata)
     add_children(root, children_)
     return graph

@@ -1,4 +1,5 @@
-import networkx.algorithms.traversal.depth_first_search
-from networkx.algorithms.traversal.depth_first_search import *
-import networkx.algorithms.traversal.breadth_first_search
-from networkx.algorithms.traversal.breadth_first_search import *
+from .beamsearch import *
+from .breadth_first_search import *
+from .depth_first_search import *
+from .edgedfs import *
+from .edgebfs import *

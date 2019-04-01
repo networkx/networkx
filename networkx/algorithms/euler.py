@@ -1,33 +1,42 @@
 # -*- coding: utf-8 -*-
-"""
-Eulerian circuits and graphs.
-"""
-import networkx as nx
-
-__author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
+#
 #    Copyright (C) 2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors:
+#   Nima Mohammadi <nima.irt@gmail.com>
+#   Aric Hagberg <hagberg@lanl.gov>
+#   Mike Trenfield <william.trenfield@utsouthwestern.edu>
+"""
+Eulerian circuits and graphs.
+"""
+from itertools import combinations
 
-__all__ = ['is_eulerian', 'eulerian_circuit']
+import networkx as nx
+from ..utils import arbitrary_element, not_implemented_for
+
+__all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize']
+
 
 def is_eulerian(G):
-    """Return True if G is an Eulerian graph, False otherwise.
+    """Returns True if and only if `G` is Eulerian.
 
-    An Eulerian graph is a graph with an Eulerian circuit.
+    A graph is *Eulerian* if it has an Eulerian circuit. An *Eulerian
+    circuit* is a closed walk that includes each edge of a graph exactly
+    once.
 
     Parameters
     ----------
-    G : graph
-       A NetworkX Graph
+    G : NetworkX graph
+       A graph, either directed or undirected.
 
     Examples
     --------
-    >>> nx.is_eulerian(nx.DiGraph({0:[3], 1:[2], 2:[3], 3:[0, 1]}))
+    >>> nx.is_eulerian(nx.DiGraph({0: [3], 1: [2], 2: [3], 3: [0, 1]}))
     True
     >>> nx.is_eulerian(nx.complete_graph(5))
     True
@@ -36,45 +45,88 @@ def is_eulerian(G):
 
     Notes
     -----
-    This implementation requires the graph to be connected
-    (or strongly connected for directed graphs).
+    If the graph is not connected (or not strongly connected, for
+    directed graphs), this function returns False.
+
     """
     if G.is_directed():
-        # Every node must have equal in degree and out degree
-        for n in G.nodes_iter():
-            if G.in_degree(n) != G.out_degree(n):
-               return False
-        # Must be strongly connected
-        if not nx.is_strongly_connected(G):
-            return False
+        # Every node must have equal in degree and out degree and the
+        # graph must be strongly connected
+        return (all(G.in_degree(n) == G.out_degree(n) for n in G) and
+                nx.is_strongly_connected(G))
+    # An undirected Eulerian graph has no vertices of odd degree and
+    # must be connected.
+    return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
+
+
+def _simplegraph_eulerian_circuit(G, source):
+    if G.is_directed():
+        degree = G.out_degree
+        edges = G.out_edges
     else:
-        # An undirected Eulerian graph has no vertices of odd degrees
-        for v,d in G.degree_iter():
-            if d % 2 != 0:
-                return False
-        # Must be connected
-        if not nx.is_connected(G):
-            return False
-    return True
+        degree = G.degree
+        edges = G.edges
+    vertex_stack = [source]
+    last_vertex = None
+    while vertex_stack:
+        current_vertex = vertex_stack[-1]
+        if degree(current_vertex) == 0:
+            if last_vertex is not None:
+                yield (last_vertex, current_vertex)
+            last_vertex = current_vertex
+            vertex_stack.pop()
+        else:
+            _, next_vertex = arbitrary_element(edges(current_vertex))
+            vertex_stack.append(next_vertex)
+            G.remove_edge(current_vertex, next_vertex)
 
 
-def eulerian_circuit(G, source=None):
-    """Return the edges of an Eulerian circuit in G.
+def _multigraph_eulerian_circuit(G, source):
+    if G.is_directed():
+        degree = G.out_degree
+        edges = G.out_edges
+    else:
+        degree = G.degree
+        edges = G.edges
+    vertex_stack = [(source, None)]
+    last_vertex = None
+    last_key = None
+    while vertex_stack:
+        current_vertex, current_key = vertex_stack[-1]
+        if degree(current_vertex) == 0:
+            if last_vertex is not None:
+                yield (last_vertex, current_vertex, last_key)
+            last_vertex, last_key = current_vertex, current_key
+            vertex_stack.pop()
+        else:
+            _, next_vertex, next_key = arbitrary_element(edges(current_vertex, keys=True))
+            vertex_stack.append((next_vertex, next_key))
+            G.remove_edge(current_vertex, next_vertex, next_key)
 
-    An Eulerian circuit is a path that crosses every edge in G exactly once
-    and finishes at the starting node.
+
+def eulerian_circuit(G, source=None, keys=False):
+    """Returns an iterator over the edges of an Eulerian circuit in `G`.
+
+    An *Eulerian circuit* is a closed walk that includes each edge of a
+    graph exactly once.
 
     Parameters
     ----------
-    G : NetworkX Graph or DiGraph
-        A directed or undirected graph
+    G : NetworkX graph
+       A graph, either directed or undirected.
+
     source : node, optional
        Starting node for circuit.
 
+    keys : bool
+       If False, edges generated by this function will be of the form
+       ``(u, v)``. Otherwise, edges will be of the form ``(u, v, k)``.
+       This option is ignored unless `G` is a multigraph.
+
     Returns
     -------
-    edges : generator
-       A generator that produces edges in the Eulerian circuit.
+    edges : iterator
+       An iterator over edges in the Eulerian circuit.
 
     Raises
     ------
@@ -87,56 +139,120 @@ def eulerian_circuit(G, source=None):
 
     Notes
     -----
-    Linear time algorithm, adapted from [1]_.
-    General information about Euler tours [2]_.
+    This is a linear time implementation of an algorithm adapted from [1]_.
+
+    For general information about Euler tours, see [2]_.
 
     References
     ----------
     .. [1] J. Edmonds, E. L. Johnson.
        Matching, Euler tours and the Chinese postman.
        Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
-    .. [2] http://en.wikipedia.org/wiki/Eulerian_path
+    .. [2] https://en.wikipedia.org/wiki/Eulerian_path
 
     Examples
     --------
-    >>> G=nx.complete_graph(3)
-    >>> list(nx.eulerian_circuit(G))
-    [(0, 2), (2, 1), (1, 0)]
-    >>> list(nx.eulerian_circuit(G,source=1))
-    [(1, 2), (2, 0), (0, 1)]
-    >>> [u for u,v in nx.eulerian_circuit(G)]  # nodes in circuit
-    [0, 2, 1]
+    To get an Eulerian circuit in an undirected graph::
+
+        >>> G = nx.complete_graph(3)
+        >>> list(nx.eulerian_circuit(G))
+        [(0, 2), (2, 1), (1, 0)]
+        >>> list(nx.eulerian_circuit(G, source=1))
+        [(1, 2), (2, 0), (0, 1)]
+
+    To get the sequence of vertices in an Eulerian circuit::
+
+        >>> [u for u, v in nx.eulerian_circuit(G)]
+        [0, 2, 1]
+
     """
-    from operator import itemgetter
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
-    g = G.__class__(G) # copy graph structure (not attributes)
-
-    # set starting node
+    if G.is_directed():
+        G = G.reverse()
+    else:
+        G = G.copy()
     if source is None:
-        v = next(g.nodes_iter())
+        source = arbitrary_element(G)
+    if G.is_multigraph():
+        for u, v, k in _multigraph_eulerian_circuit(G, source):
+            if keys:
+                yield u, v, k
+            else:
+                yield u, v
     else:
-        v = source
+        for u, v in _simplegraph_eulerian_circuit(G, source):
+            yield u, v
 
-    if g.is_directed():
-        degree = g.in_degree
-        edges = g.in_edges_iter
-        get_vertex = itemgetter(0)
-    else:
-        degree = g.degree
-        edges = g.edges_iter
-        get_vertex = itemgetter(1)
 
-    vertex_stack = [v]
-    last_vertex = None
-    while vertex_stack:
-        current_vertex = vertex_stack[-1]
-        if degree(current_vertex) == 0:
-            if last_vertex is not None:
-                yield (last_vertex, current_vertex)
-            last_vertex = current_vertex
-            vertex_stack.pop()
-        else:
-            random_edge = next(edges(current_vertex))
-            vertex_stack.append(get_vertex(random_edge))
-            g.remove_edge(*random_edge)
+@not_implemented_for('directed')
+def eulerize(G):
+    """
+    Transforms a graph into an Eulerian graph
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph
+
+    Returns
+    -------
+    G : NetworkX multigraph
+
+    Raises
+    ------
+    NetworkXError
+       If the graph is not connected.
+
+    See Also
+    --------
+    is_eulerian, eulerian_circuit
+
+
+    References
+    ----------
+    .. [1] J. Edmonds, E. L. Johnson.
+       Matching, Euler tours and the Chinese postman.
+       Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
+       [2] https://en.wikipedia.org/wiki/Eulerian_path
+    .. [3] http://web.math.princeton.edu/math_alive/5/Notes1.pdf
+
+    Examples
+    --------
+        >>> G = nx.complete_graph(10)
+        >>> H = nx.eulerize(G)
+        >>> nx.is_eulerian(H)
+        True
+
+    """
+    if G.order() == 0:
+        raise nx.NetworkXPointlessConcept("Cannot Eulerize null graph")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("G is not connected")
+    odd_degree_nodes = [n for n, d in G.degree() if d % 2 == 1]
+    G = nx.MultiGraph(G)
+    if len(odd_degree_nodes) == 0:
+        return G
+
+    # get all shortest paths between vertices of odd degree
+    odd_deg_pairs_paths = [(m,
+                            {n: nx.shortest_path(G, source=m, target=n)}
+                            )
+                           for m, n in combinations(odd_degree_nodes, 2)]
+
+    # use inverse path lengths as edge-weights in a new graph
+    # store the paths in the graph for easy indexing later
+    Gp = nx.Graph()
+    for n, Ps in odd_deg_pairs_paths:
+        for m, P in Ps.items():
+            if n != m:
+                Gp.add_edge(m, n, weight=1/len(P), path=P)
+
+    # find the minimum weight matching of edges in the weighted graph
+    best_matching = nx.Graph(list(nx.max_weight_matching(Gp)))
+
+    # duplicate each edge along each path in the set of paths in Gp
+    for m, n in best_matching.edges():
+        path = Gp[m][n]["path"]
+        G.add_edges_from(nx.utils.pairwise(path))
+    return G

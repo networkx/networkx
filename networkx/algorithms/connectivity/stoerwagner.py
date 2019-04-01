@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
-Stoer-Wagner minimum cut algorithm.
-"""
-from itertools import islice
-import networkx as nx
-from networkx.utils import *
-
-__author__ = 'ysitu <ysitu@users.noreply.github.com>'
+#
 # Copyright (C) 2014
 # ysitu <ysitu@users.noreply.github.com>
 # All rights reserved.
 # BSD license.
+"""
+Stoer-Wagner minimum cut algorithm.
+"""
+from itertools import islice
+
+import networkx as nx
+from ...utils import BinaryHeap
+from ...utils import not_implemented_for
+from ...utils import arbitrary_element
+
+__author__ = 'ysitu <ysitu@users.noreply.github.com>'
 
 __all__ = ['stoer_wagner']
 
@@ -18,7 +22,7 @@ __all__ = ['stoer_wagner']
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def stoer_wagner(G, weight='weight', heap=BinaryHeap):
-    """Returns the weighted minimum edge cut using the Stoer-Wagner algorithm.
+    r"""Returns the weighted minimum edge cut using the Stoer-Wagner algorithm.
 
     Determine the minimum edge cut of a connected graph using the
     Stoer-Wagner algorithm. In weighted cases, all weights must be
@@ -29,9 +33,9 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     ============== =============================================
     Type of heap   Running time
     ============== =============================================
-    Binary heap    `O(n (m + n) \log n)`
-    Fibonacci heap `O(nm + n^2 \log n)`
-    Pairing heap   `O(2^{2 \sqrt{\log \log n}} nm + n^2 \log n)`
+    Binary heap    $O(n (m + n) \log n)$
+    Fibonacci heap $O(nm + n^2 \log n)$
+    Pairing heap   $O(2^{2 \sqrt{\log \log n}} nm + n^2 \log n)$
     ============== =============================================
 
     Parameters
@@ -50,7 +54,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
         :class:`MinHeap` or implement a compatible interface.
 
         If a stock heap implementation is to be used, :class:`BinaryHeap` is
-        recommeded over :class:`PairingHeap` for Python implementations without
+        recommended over :class:`PairingHeap` for Python implementations without
         optimized attribute accesses (e.g., CPython) despite a slower
         asymptotic running time. For Python implementations with optimized
         attribute accesses (e.g., PyPy), :class:`PairingHeap` provides better
@@ -76,14 +80,14 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_edge('x','a', weight=3)
-    >>> G.add_edge('x','b', weight=1)
-    >>> G.add_edge('a','c', weight=3)
-    >>> G.add_edge('b','c', weight=5)
-    >>> G.add_edge('b','d', weight=4)
-    >>> G.add_edge('d','e', weight=2)
-    >>> G.add_edge('c','y', weight=2)
-    >>> G.add_edge('e','y', weight=3)
+    >>> G.add_edge('x', 'a', weight=3)
+    >>> G.add_edge('x', 'b', weight=1)
+    >>> G.add_edge('a', 'c', weight=3)
+    >>> G.add_edge('b', 'c', weight=5)
+    >>> G.add_edge('b', 'd', weight=4)
+    >>> G.add_edge('d', 'e', weight=2)
+    >>> G.add_edge('c', 'y', weight=2)
+    >>> G.add_edge('e', 'y', weight=3)
     >>> cut_value, partition = nx.stoer_wagner(G)
     >>> cut_value
     4
@@ -96,9 +100,9 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
 
     # Make a copy of the graph for internal use.
     G = nx.Graph((u, v, {'weight': e.get(weight, 1)})
-                 for u, v, e in G.edges_iter(data=True) if u != v)
+                 for u, v, e in G.edges(data=True) if u != v)
 
-    for u, v, e, in G.edges_iter(data=True):
+    for u, v, e, in G.edges(data=True):
         if e['weight'] < 0:
             raise nx.NetworkXError('graph has a negative-weighted edge.')
 
@@ -109,7 +113,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     # Repeatedly pick a pair of nodes to contract until only one node is left.
     for i in range(n - 1):
         # Pick an arbitrary node u and create a set A = {u}.
-        u = next(iter(G))
+        u = arbitrary_element(G)
         A = set([u])
         # Repeatedly pick the node "most tightly connected" to A and add it to
         # A. The tightness of connectivity of a node not in A is defined by the

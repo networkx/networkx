@@ -20,7 +20,7 @@ convention's forest and tree.
 Summarizing::
 
    +-----------------------------+
-   | Convention 1 | Convention 2 |
+   | Convention A | Convention B |
    +=============================+
    | forest       | polyforest   |
    | tree         | polytree     |
@@ -37,7 +37,7 @@ arborescence. That is, take any spanning tree and choose one node as the root.
 Then every edge is assigned a direction such there is a directed path from the
 root to every other node. The result is a spanning arborescence.
 
-NetworkX follows the first convention. Explicitly, these are:
+NetworkX follows convention "A". Explicitly, these are:
 
 undirected forest
    An undirected graph with no undirected cycles.
@@ -48,20 +48,29 @@ undirected tree
 directed forest
    A directed graph with no undirected cycles. Equivalently, the underlying
    graph structure (which ignores edge orientations) is an undirected forest.
-   In another convention, this is known as a polyforest.
+   In convention B, this is known as a polyforest.
 
 directed tree
    A weakly connected, directed forest. Equivalently, the underlying graph
    structure (which ignores edge orientations) is an undirected tree. In
-   another convention, this is known as a polytree.
+   convention B, this is known as a polytree.
 
 branching
    A directed forest with each node having, at most, one parent. So the maximum
-   in-degree is equal to 1. In another convention, this is known as a forest.
+   in-degree is equal to 1. In convention B, this is known as a forest.
 
 arborescence
    A directed tree with each node having, at most, one parent. So the maximum
-   in-degree is equal to 1. In another convention, this is known as a tree.
+   in-degree is equal to 1. In convention B, this is known as a tree.
+
+For trees and arborescences, the adjective "spanning" may be added to designate
+that the graph, when considered as a forest/branching, consists of a single
+tree/arborescence that includes all nodes in the graph. It is true, by
+definition, that every tree/arborescence is spanning with respect to the nodes
+that define the tree/arborescence and so, it might seem redundant to introduce
+the notion of "spanning". However, the nodes may represent a subset of
+nodes from a larger graph, and it is in this context that the term "spanning"
+becomes a useful notion.
 
 """
 
@@ -75,10 +84,11 @@ __author__ = """\n""".join([
 
 __all__ = ['is_arborescence', 'is_branching', 'is_forest', 'is_tree']
 
+
 @nx.utils.not_implemented_for('undirected')
 def is_arborescence(G):
     """
-    Returns `True` if `G` is an arborescence.
+    Returns True if `G` is an arborescence.
 
     An arborescence is a directed tree with maximum in-degree equal to 1.
 
@@ -90,7 +100,7 @@ def is_arborescence(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is an arborescence.
+        A boolean that is True if `G` is an arborescence.
 
     Notes
     -----
@@ -101,18 +111,13 @@ def is_arborescence(G):
     is_tree
 
     """
-    if not is_tree(G):
-        return False
+    return is_tree(G) and max(d for n, d in G.in_degree()) <= 1
 
-    if max(G.in_degree().values()) > 1:
-        return False
-
-    return True
 
 @nx.utils.not_implemented_for('undirected')
 def is_branching(G):
     """
-    Returns `True` if `G` is a branching.
+    Returns True if `G` is a branching.
 
     A branching is a directed forest with maximum in-degree equal to 1.
 
@@ -124,7 +129,7 @@ def is_branching(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is a branching.
+        A boolean that is True if `G` is a branching.
 
     Notes
     -----
@@ -135,17 +140,12 @@ def is_branching(G):
     is_forest
 
     """
-    if not is_forest(G):
-        return False
+    return is_forest(G) and max(d for n, d in G.in_degree()) <= 1
 
-    if max(G.in_degree().values()) > 1:
-        return False
-
-    return True
 
 def is_forest(G):
     """
-    Returns `True` if G is a forest.
+    Returns True if `G` is a forest.
 
     A forest is a graph with no undirected cycles.
 
@@ -161,7 +161,7 @@ def is_forest(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is a forest.
+        A boolean that is True if `G` is a forest.
 
     Notes
     -----
@@ -181,16 +181,12 @@ def is_forest(G):
     else:
         components = nx.connected_component_subgraphs
 
-    for component in components(G):
-        # Make sure the component is a tree.
-        if component.number_of_edges() != component.number_of_nodes() - 1:
-            return False
+    return all(len(c) - 1 == c.number_of_edges() for c in components(G))
 
-    return True
 
 def is_tree(G):
     """
-    Returns `True` if `G` is a tree.
+    Returns True if `G` is a tree.
 
     A tree is a connected graph with no undirected cycles.
 
@@ -206,7 +202,7 @@ def is_tree(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is a tree.
+        A boolean that is True if `G` is a tree.
 
     Notes
     -----
@@ -221,13 +217,10 @@ def is_tree(G):
     if len(G) == 0:
         raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
 
-    # A connected graph with no cycles has n-1 edges.
-    if G.number_of_edges() != len(G) - 1:
-        return False
-
     if G.is_directed():
         is_connected = nx.is_weakly_connected
     else:
         is_connected = nx.is_connected
 
-    return is_connected(G)
+    # A connected graph with no cycles has n-1 edges.
+    return len(G) - 1 == G.number_of_edges() and is_connected(G)

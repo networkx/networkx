@@ -1,32 +1,36 @@
-import itertools
-import math
-import random
-import networkx as nx
-#    Copyright(C) 2011 by
+#    Copyright(C) 2011-2019 by
 #    Ben Edwards <bedwards@cs.unm.edu>
 #    Aric Hagberg <hagberg@lanl.gov>
+#    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
 #    All rights reserved.
 #    BSD license.
-__author__ = """\n""".join(['Ben Edwards (bedwards@cs.unm.edu)',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+#
+# Authors:  Ben Edwards (bedwards@cs.unm.edu)
+#           Aric Hagberg (hagberg@lanl.gov)
+#           Konstantinos Karakatsanis (dinoskarakas@gmail.com)
+#           Jean-Gabriel Young (jean.gabriel.young@gmail.com)
+"""Generators for classes of graphs used in studying social networks."""
+from __future__ import division
+import itertools
+import math
+import networkx as nx
+from networkx.utils import py_random_state
+
 __all__ = ['caveman_graph', 'connected_caveman_graph',
            'relaxed_caveman_graph', 'random_partition_graph',
-           'planted_partition_graph', 'gaussian_random_partition_graph']
+           'planted_partition_graph', 'gaussian_random_partition_graph',
+           'ring_of_cliques', 'windmill_graph', 'stochastic_block_model']
 
 
 def caveman_graph(l, k):
-    """Returns a caveman graph of l cliques of size k.
-
-    The caveman graph is formed by creating n cliques of size k.
+    """Returns a caveman graph of `l` cliques of size `k`.
 
     Parameters
     ----------
-    n : int
+    l : int
       Number of cliques
     k : int
       Size of cliques
-    directed : boolean optional (default=True)
-      If true return directed caveman graph
 
     Returns
     -------
@@ -36,55 +40,8 @@ def caveman_graph(l, k):
     Notes
     -----
     This returns an undirected graph, it can be converted to a directed
-    graph using nx.to_directed(), or a multigraph using
-    nx.MultiGraph(nx.caveman_graph). Only the undirected version is
-    described in [1]_ and it is unclear which of the directed
-    generalizations is most useful.
-
-    Examples
-    --------
-    >>> G = nx.caveman_graph(3,3)
-
-    Reference
-    ---------
-    .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
-       Amer. J. Soc. 105, 493-527, 1999.
-    """
-    # l disjoint cliques of size k
-    G = nx.empty_graph(l*k)
-    G.name = "caveman_graph(%s,%s)" % (l*k, k)
-    if k > 1:
-        for start in range(0, l*k, k):
-            edges = itertools.combinations(range(start, start+k), 2)
-            G.add_edges_from(edges)
-    return G
-
-
-def connected_caveman_graph(l, k):
-    """Returns a connected caveman graph of n cliques of size k.
-
-    The connected caveman graph is formed by creating n cliques of size k. Then
-    a single node in each clique is rewired to a node in the adjacent clique.
-
-    Parameters
-    ----------
-    n : int
-      number of cliques
-    k : int
-      size of cliques
-    directed : boolean optional (default=True)
-      if true return directed caveman graph
-
-    Returns
-    -------
-    G : NetworkX Graph
-      caveman graph
-
-    Notes
-    -----
-    This returns an undirected graph, it can be converted to a directed
-    graph using nx.to_directed(), or a multigraph using
-    nx.MultiGraph(nx.caveman_graph). Only the undirected version is
+    graph using :func:`nx.to_directed`, or a multigraph using
+    ``nx.MultiGraph(nx.caveman_graph(l, k))``. Only the undirected version is
     described in [1]_ and it is unclear which of the directed
     generalizations is most useful.
 
@@ -92,25 +49,74 @@ def connected_caveman_graph(l, k):
     --------
     >>> G = nx.caveman_graph(3, 3)
 
-    Reference
-    ---------
+    See also
+    --------
+
+    connected_caveman_graph
+
+    References
+    ----------
+    .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
+       Amer. J. Soc. 105, 493-527, 1999.
+    """
+    # l disjoint cliques of size k
+    G = nx.empty_graph(l * k)
+    if k > 1:
+        for start in range(0, l * k, k):
+            edges = itertools.combinations(range(start, start + k), 2)
+            G.add_edges_from(edges)
+    return G
+
+
+def connected_caveman_graph(l, k):
+    """Returns a connected caveman graph of `l` cliques of size `k`.
+
+    The connected caveman graph is formed by creating `n` cliques of size
+    `k`, then a single edge in each clique is rewired to a node in an
+    adjacent clique.
+
+    Parameters
+    ----------
+    l : int
+      number of cliques
+    k : int
+      size of cliques
+
+    Returns
+    -------
+    G : NetworkX Graph
+      connected caveman graph
+
+    Notes
+    -----
+    This returns an undirected graph, it can be converted to a directed
+    graph using :func:`nx.to_directed`, or a multigraph using
+    ``nx.MultiGraph(nx.caveman_graph(l, k))``. Only the undirected version is
+    described in [1]_ and it is unclear which of the directed
+    generalizations is most useful.
+
+    Examples
+    --------
+    >>> G = nx.connected_caveman_graph(3, 3)
+
+    References
+    ----------
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
     G = nx.caveman_graph(l, k)
-    G.name = "connected_caveman_graph(%s,%s)" % (l, k)
-    for start in range(0, l*k, k):
-        G.remove_edge(start, start+1)
-        G.add_edge(start, (start-1) % (l*k))
+    for start in range(0, l * k, k):
+        G.remove_edge(start, start + 1)
+        G.add_edge(start, (start - 1) % (l * k))
     return G
 
 
-def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
-    """Return a relaxed caveman graph.
+@py_random_state(3)
+def relaxed_caveman_graph(l, k, p, seed=None):
+    """Returns a relaxed caveman graph.
 
-    A relaxed caveman graph starts with l cliques of size k.  Edges
-    are then randomly rewired with probability p to link different
-    cliques.
+    A relaxed caveman graph starts with `l` cliques of size `k`.  Edges are
+    then randomly rewired with probability `p` to link different cliques.
 
     Parameters
     ----------
@@ -120,10 +126,9 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
       Size of cliques
     p : float
       Probabilty of rewiring each edge.
-    seed : int,optional
-      Seed for random number generator(default=None)
-    directed : bool,optional (default=False)
-      If True return a directed graph
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -139,20 +144,17 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
     --------
     >>> G = nx.relaxed_caveman_graph(2, 3, 0.1, seed=42)
 
-     References
+    References
     ----------
     .. [1] Santo Fortunato, Community Detection in Graphs,
        Physics Reports Volume 486, Issues 3-5, February 2010, Pages 75-174.
-       http://arxiv.org/abs/0906.0612
+       https://arxiv.org/abs/0906.0612
     """
-    if not seed is None:
-        random.seed(seed)
     G = nx.caveman_graph(l, k)
-    nodes = G.nodes()
-    G.name = "relaxed_caveman_graph (%s,%s,%s)" % (l, k, p)
+    nodes = list(G)
     for (u, v) in G.edges():
-        if random.random() < p:  # rewire the edge
-            x = random.choice(nodes)
+        if seed.random() < p:  # rewire the edge
+            x = seed.choice(nodes)
             if G.has_edge(u, x):
                 continue
             G.remove_edge(u, v)
@@ -160,16 +162,17 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
     return G
 
 
+@py_random_state(3)
 def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
-    """Return the random partition graph with a partition of sizes.
+    """Returns the random partition graph with a partition of sizes.
 
     A partition graph is a graph of communities with sizes defined by
     s in sizes. Nodes in the same group are connected with probability
     p_in and nodes of different groups are connected with probability
     p_out.
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     sizes : list of ints
       Sizes of groups
     p_in : float
@@ -178,8 +181,9 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
       probability of edges between groups
     directed : boolean optional, default=False
       Whether to create a directed graph
-    seed : int optional, default None
-      A seed for the random number generator
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -210,80 +214,29 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     References
     ----------
     .. [1] Santo Fortunato 'Community Detection in Graphs' Physical Reports
-       Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
-       http://arxiv.org/abs/0906.0612
-       """
+       Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
+    """
     # Use geometric method for O(n+m) complexity algorithm
-    # partition=nx.community_sets(nx.get_node_attributes(G,'affiliation'))
-    if not seed is None:
-        random.seed(seed)
+    # partition = nx.community_sets(nx.get_node_attributes(G, 'affiliation'))
     if not 0.0 <= p_in <= 1.0:
         raise nx.NetworkXError("p_in must be in [0,1]")
     if not 0.0 <= p_out <= 1.0:
         raise nx.NetworkXError("p_out must be in [0,1]")
 
-    if directed:
-        G = nx.DiGraph()
-    else:
-        G = nx.Graph()
-    G.graph['partition'] = []
-    n = sum(sizes)
-    G.add_nodes_from(range(n))
-    # start with len(sizes) groups of gnp random graphs with parameter p_in
-    # graphs are unioned together with node labels starting at
-    # 0, sizes[0], sizes[0]+sizes[1], ...
-    next_group = {}  # maps node key (int) to first node in next group
-    start = 0
-    group = 0
-    for n in sizes:
-        edges = ((u+start, v+start)
-                 for u, v in
-                 nx.fast_gnp_random_graph(n, p_in, directed=directed).edges())
-        G.add_edges_from(edges)
-        next_group.update(dict.fromkeys(range(start, start+n), start+n))
-        G.graph['partition'].append(set(range(start, start+n)))
-        group += 1
-        start += n
-    # handle edge cases
-    if p_out == 0:
-        return G
-    if p_out == 1:
-        for n in next_group:
-            targets = range(next_group[n], len(G))
-            G.add_edges_from(zip([n]*len(targets), targets))
-            if directed:
-                G.add_edges_from(zip(targets, [n]*len(targets)))
-        return G
-    # connect each node in group randomly with the nodes not in group
-    # use geometric method like fast_gnp_random_graph()
-    lp = math.log(1.0 - p_out)
-    n = len(G)
-    if directed:
-        for u in range(n):
-            v = 0
-            while v < n:
-                lr = math.log(1.0 - random.random())
-                v += int(lr/lp)
-                # skip over nodes in the same group as v, including self loops
-                if next_group.get(v, n) == next_group[u]:
-                    v = next_group[u]
-                if v < n:
-                    G.add_edge(u, v)
-                    v += 1
-    else:
-        for u in range(n-1):
-            v = next_group[u]  # start with next node not in this group
-            while v < n:
-                lr = math.log(1.0 - random.random())
-                v += int(lr/lp)
-                if v < n:
-                    G.add_edge(u, v)
-                    v += 1
-    return G
+    # create connection matrix
+    num_blocks = len(sizes)
+    p = [[p_out for s in range(num_blocks)] for r in range(num_blocks)]
+    for r in range(num_blocks):
+        p[r][r] = p_in
+
+    return stochastic_block_model(sizes, p, nodelist=None, seed=seed,
+                                  directed=directed, selfloops=False,
+                                  sparse=True)
 
 
+@py_random_state(4)
 def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
-    """Return the planted l-partition graph.
+    """Returns the planted l-partition graph.
 
     This model partitions a graph with n=l*k vertices in
     l groups with k vertices each. Vertices of the same
@@ -300,8 +253,9 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
       probability of connecting vertices within a group
     p_out : float
       probability of connected vertices between groups
-    seed : int,optional
-      Seed for random number generator(default=None)
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     directed : bool,optional (default=False)
       If True return a directed graph
 
@@ -317,7 +271,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     Examples
     --------
-    >>> G = nx.planted_partition_graph(4, 3, 0.5, 0.1,seed=42)
+    >>> G = nx.planted_partition_graph(4, 3, 0.5, 0.1, seed=42)
 
     See Also
     --------
@@ -330,11 +284,12 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
         Random Struct. Algor. 18 (2001) 116-140.
 
     .. [2] Santo Fortunato 'Community Detection in Graphs' Physical Reports
-       Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
+       Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
     """
-    return random_partition_graph([k]*l, p_in, p_out, seed, directed)
+    return random_partition_graph([k] * l, p_in, p_out, seed, directed)
 
 
+@py_random_state(6)
 def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
                                     seed=None):
     """Generate a Gaussian random partition graph.
@@ -358,8 +313,9 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
       Probability of inter cluster connection.
     directed : boolean, optional default=False
       Whether to create a directed graph or not
-    seed : int
-      Seed value for random number generator
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -399,12 +355,284 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
     assigned = 0
     sizes = []
     while True:
-        size = int(random.normalvariate(s, float(s) / v + 0.5))
+        size = int(seed.gauss(s, float(s) / v + 0.5))
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
-            sizes.append(n-assigned)
+            sizes.append(n - assigned)
             break
         assigned += size
         sizes.append(size)
     return random_partition_graph(sizes, p_in, p_out, directed, seed)
+
+
+def ring_of_cliques(num_cliques, clique_size):
+    """Defines a "ring of cliques" graph.
+
+    A ring of cliques graph is consisting of cliques, connected through single
+    links. Each clique is a complete graph.
+
+    Parameters
+    ----------
+    num_cliques : int
+        Number of cliques
+    clique_size : int
+        Size of cliques
+
+    Returns
+    -------
+    G : NetworkX Graph
+        ring of cliques graph
+
+    Raises
+    ------
+    NetworkXError
+        If the number of cliques is lower than 2 or
+        if the size of cliques is smaller than 2.
+
+    Examples
+    --------
+    >>> G = nx.ring_of_cliques(8, 4)
+
+    See Also
+    --------
+    connected_caveman_graph
+
+    Notes
+    -----
+    The `connected_caveman_graph` graph removes a link from each clique to
+    connect it with the next clique. Instead, the `ring_of_cliques` graph
+    simply adds the link without removing any link from the cliques.
+    """
+    if num_cliques < 2:
+        raise nx.NetworkXError('A ring of cliques must have at least '
+                               'two cliques')
+    if clique_size < 2:
+        raise nx.NetworkXError('The cliques must have at least two nodes')
+
+    G = nx.Graph()
+    for i in range(num_cliques):
+        edges = itertools.combinations(range(i * clique_size, i * clique_size +
+                                             clique_size), 2)
+        G.add_edges_from(edges)
+        G.add_edge(i * clique_size + 1, (i + 1) * clique_size %
+                   (num_cliques * clique_size))
+    return G
+
+
+def windmill_graph(n, k):
+    """Generate a windmill graph.
+    A windmill graph is a graph of `n` cliques each of size `k` that are all
+    joined at one node.
+    It can be thought of as taking a disjoint union of `n` cliques of size `k`,
+    selecting one point from each, and contracting all of the selected points.
+    Alternatively, one could generate `n` cliques of size `k-1` and one node
+    that is connected to all other nodes in the graph.
+
+    Parameters
+    ----------
+    n : int
+        Number of cliques
+    k : int
+        Size of cliques
+
+    Returns
+    -------
+    G : NetworkX Graph
+        windmill graph with n cliques of size k
+
+    Raises
+    ------
+    NetworkXError
+        If the number of cliques is less than two
+        If the size of the cliques are less than two
+
+    Examples
+    --------
+    >>> G = nx.windmill_graph(4, 5)
+
+    Notes
+    -----
+    The node labeled `0` will be the node connected to all other nodes.
+    Note that windmill graphs are usually denoted `Wd(k,n)`, so the parameters
+    are in the opposite order as the parameters of this method.
+    """
+    if n < 2:
+        msg = 'A windmill graph must have at least two cliques'
+        raise nx.NetworkXError(msg)
+    if k < 2:
+        raise nx.NetworkXError('The cliques must have at least two nodes')
+
+    G = nx.disjoint_union_all(itertools.chain([nx.complete_graph(k)],
+                                              (nx.complete_graph(k - 1)
+                                               for _ in range(n - 1))))
+    G.add_edges_from((0, i) for i in range(k, G.number_of_nodes()))
+    return G
+
+
+@py_random_state(3)
+def stochastic_block_model(sizes, p, nodelist=None, seed=None,
+                           directed=False, selfloops=False, sparse=True):
+    """Returns a stochastic block model graph.
+
+    This model partitions the nodes in blocks of arbitrary sizes, and places
+    edges between pairs of nodes independently, with a probability that depends
+    on the blocks.
+
+    Parameters
+    ----------
+    sizes : list of ints
+        Sizes of blocks
+    p : list of list of floats
+        Element (r,s) gives the density of edges going from the nodes
+        of group r to nodes of group s.
+        p must match the number of groups (len(sizes) == len(p)),
+        and it must be symmetric if the graph is undirected.
+    nodelist : list, optional
+        The block tags are assigned according to the node identifiers
+        in nodelist. If nodelist is None, then the ordering is the
+        range [0,sum(sizes)-1].
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+    directed : boolean optional, default=False
+        Whether to create a directed graph or not.
+    selfloops : boolean optional, default=False
+        Whether to include self-loops or not.
+    sparse: boolean optional, default=True
+        Use the sparse heuristic to speed up the generator.
+
+    Returns
+    -------
+    g : NetworkX Graph or DiGraph
+        Stochastic block model graph of size sum(sizes)
+
+    Raises
+    ------
+    NetworkXError
+      If probabilities are not in [0,1].
+      If the probability matrix is not square (directed case).
+      If the probability matrix is not symmetric (undirected case).
+      If the sizes list does not match nodelist or the probability matrix.
+      If nodelist contains duplicate.
+
+    Examples
+    --------
+    >>> sizes = [75, 75, 300]
+    >>> probs = [[0.25, 0.05, 0.02],
+    ...          [0.05, 0.35, 0.07],
+    ...          [0.02, 0.07, 0.40]]
+    >>> g = nx.stochastic_block_model(sizes, probs, seed=0)
+    >>> len(g)
+    450
+    >>> H = nx.quotient_graph(g, g.graph['partition'], relabel=True)
+    >>> for v in H.nodes(data=True):
+    ...     print(round(v[1]['density'], 3))
+    ...
+    0.245
+    0.348
+    0.405
+    >>> for v in H.edges(data=True):
+    ...     print(round(1.0 * v[2]['weight'] / (sizes[v[0]] * sizes[v[1]]), 3))
+    ...
+    0.051
+    0.022
+    0.07
+
+    See Also
+    --------
+    random_partition_graph
+    planted_partition_graph
+    gaussian_random_partition_graph
+    gnp_random_graph
+
+    References
+    ----------
+    .. [1] Holland, P. W., Laskey, K. B., & Leinhardt, S.,
+           "Stochastic blockmodels: First steps",
+           Social networks, 5(2), 109-137, 1983.
+    """
+    # Check if dimensions match
+    if len(sizes) != len(p):
+        raise nx.NetworkXException("'sizes' and 'p' do not match.")
+    # Check for probability symmetry (undirected) and shape (directed)
+    for row in p:
+        if len(p) != len(row):
+            raise nx.NetworkXException("'p' must be a square matrix.")
+    if not directed:
+        p_transpose = [list(i) for i in zip(*p)]
+        for i in zip(p, p_transpose):
+            for j in zip(i[0], i[1]):
+                if abs(j[0] - j[1]) > 1e-08:
+                    raise nx.NetworkXException("'p' must be symmetric.")
+    # Check for probability range
+    for row in p:
+        for prob in row:
+            if prob < 0 or prob > 1:
+                raise nx.NetworkXException("Entries of 'p' not in [0,1].")
+    # Check for nodelist consistency
+    if nodelist is not None:
+        if len(nodelist) != sum(sizes):
+            raise nx.NetworkXException("'nodelist' and 'sizes' do not match.")
+        if len(nodelist) != len(set(nodelist)):
+            raise nx.NetworkXException("nodelist contains duplicate.")
+    else:
+        nodelist = range(0, sum(sizes))
+
+    # Setup the graph conditionally to the directed switch.
+    block_range = range(len(sizes))
+    if directed:
+        g = nx.DiGraph()
+        block_iter = itertools.product(block_range, block_range)
+    else:
+        g = nx.Graph()
+        block_iter = itertools.combinations_with_replacement(block_range, 2)
+    # Split nodelist in a partition (list of sets).
+    size_cumsum = [sum(sizes[0:x]) for x in range(0, len(sizes) + 1)]
+    g.graph['partition'] = [set(nodelist[size_cumsum[x]:size_cumsum[x + 1]])
+                            for x in range(0, len(size_cumsum) - 1)]
+    # Setup nodes and graph name
+    for block_id, nodes in enumerate(g.graph['partition']):
+        for node in nodes:
+            g.add_node(node, block=block_id)
+
+    g.name = "stochastic_block_model"
+
+    # Test for edge existence
+    parts = g.graph['partition']
+    for i, j in block_iter:
+        if i == j:
+            if directed:
+                if selfloops:
+                    edges = itertools.product(parts[i], parts[i])
+                else:
+                    edges = itertools.permutations(parts[i], 2)
+            else:
+                edges = itertools.combinations(parts[i], 2)
+                if selfloops:
+                    edges = itertools.chain(edges, zip(parts[i], parts[i]))
+            for e in edges:
+                if seed.random() < p[i][j]:
+                    g.add_edge(*e)
+        else:
+            edges = itertools.product(parts[i], parts[j])
+        if sparse:
+            if p[i][j] == 1:  # Test edges cases p_ij = 0 or 1
+                for e in edges:
+                    g.add_edge(*e)
+            elif p[i][j] > 0:
+                while True:
+                    try:
+                        logrand = math.log(seed.random())
+                        skip = math.floor(logrand / math.log(1 - p[i][j]))
+                        # consume "skip" edges
+                        next(itertools.islice(edges, skip, skip), None)
+                        e = next(edges)
+                        g.add_edge(*e)  # __safe
+                    except StopIteration:
+                        break
+        else:
+            for e in edges:
+                if seed.random() < p[i][j]:
+                    g.add_edge(*e)  # __safe
+    return g

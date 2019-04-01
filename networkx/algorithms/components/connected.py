@@ -1,23 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
-Connected components.
-"""
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Eben Kenah
+#          Aric Hagberg (hagberg@lanl.gov)
+#          Christopher Ellison
+"""Connected components."""
+import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-from networkx.algorithms.shortest_paths \
-    import single_source_shortest_path_length as sp_length
-__authors__ = "\n".join(['Eben Kenah',
-                         'Aric Hagberg <aric.hagberg@gmail.com>'
-                         'Christopher Ellison'])
-__all__ = ['number_connected_components', 'connected_components',
-           'connected_component_subgraphs','is_connected',
-           'node_connected_component']
+from ...utils import arbitrary_element
+
+__all__ = [
+    'number_connected_components',
+    'connected_components',
+    'connected_component_subgraphs',
+    'is_connected',
+    'node_connected_component',
+]
+
 
 @not_implemented_for('directed')
 def connected_components(G):
@@ -30,73 +35,64 @@ def connected_components(G):
 
     Returns
     -------
-    comp : generator of lists
-       A list of nodes for each component of G.
+    comp : generator of sets
+       A generator of sets of nodes, one for each component of G.
+
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is directed.
 
     Examples
     --------
     Generate a sorted list of connected components, largest first.
 
     >>> G = nx.path_graph(4)
-    >>> G.add_path([10, 11, 12])
-    >>> sorted(nx.connected_components(G), key = len, reverse=True)
-    [[0, 1, 2, 3], [10, 11, 12]]
+    >>> nx.add_path(G, [10, 11, 12])
+    >>> [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest connected component, it's more
+    efficient to use max instead of sort.
+
+    >>> largest_cc = max(nx.connected_components(G), key=len)
 
     See Also
     --------
     strongly_connected_components
+    weakly_connected_components
 
     Notes
     -----
     For undirected graphs only.
+
     """
-    seen={}
+    seen = set()
     for v in G:
         if v not in seen:
-            c = sp_length(G, v)
-            yield list(c)
+            c = set(_plain_bfs(G, v))
+            yield c
             seen.update(c)
+
 
 @not_implemented_for('directed')
 def connected_component_subgraphs(G, copy=True):
-    """Generate connected components as subgraphs.
+    """DEPRECATED: Use ``(G.subgraph(c) for c in connected_components(G))``
 
-    Parameters
-    ----------
-    G : NetworkX graph
-       An undirected graph.
-
-    copy: bool (default=True)
-      If True make a copy of the graph attributes
-
-    Returns
-    -------
-    comp : generator
-      A generator of graphs, one for each connected component of G.
-
-    Examples
-    --------
-    >>> G = nx.path_graph(4)
-    >>> G.add_edge(5,6)
-    >>> graphs = list(nx.connected_component_subgraphs(G))
-
-    See Also
-    --------
-    connected_components
-
-    Notes
-    -----
-    For undirected graphs only.
-    Graph, node, and edge attributes are copied to the subgraphs by default.
+           Or ``(G.subgraph(c).copy() for c in connected_components(G))``
     """
+    msg = "connected_component_subgraphs is deprecated and will be removed" \
+          "in 2.2. Use (G.subgraph(c).copy() for c in connected_components(G))"
+    _warnings.warn(msg, DeprecationWarning)
     for c in connected_components(G):
         if copy:
             yield G.subgraph(c).copy()
         else:
             yield G.subgraph(c)
 
+
 def number_connected_components(G):
-    """Return the number of connected components.
+    """Returns the number of connected components.
 
     Parameters
     ----------
@@ -111,16 +107,20 @@ def number_connected_components(G):
     See Also
     --------
     connected_components
+    number_weakly_connected_components
+    number_strongly_connected_components
 
     Notes
     -----
     For undirected graphs only.
+
     """
-    return len(list(connected_components(G)))
+    return sum(1 for cc in connected_components(G))
+
 
 @not_implemented_for('directed')
 def is_connected(G):
-    """Return True if the graph is connected, false otherwise.
+    """Returns True if the graph is connected, False otherwise.
 
     Parameters
     ----------
@@ -132,6 +132,11 @@ def is_connected(G):
     connected : bool
       True if the graph is connected, false otherwise.
 
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is directed.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -140,20 +145,26 @@ def is_connected(G):
 
     See Also
     --------
+    is_strongly_connected
+    is_weakly_connected
+    is_semiconnected
+    is_biconnected
     connected_components
 
     Notes
     -----
     For undirected graphs only.
+
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept('Connectivity is undefined ',
                                           'for the null graph.')
-    return len(sp_length(G, next(G.nodes_iter()))) == len(G)
+    return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
+
 
 @not_implemented_for('directed')
 def node_connected_component(G, n):
-    """Return the nodes in the component of graph containing node n.
+    """Returns the set of nodes in the component of graph containing node n.
 
     Parameters
     ----------
@@ -165,8 +176,13 @@ def node_connected_component(G, n):
 
     Returns
     -------
-    comp : lists
-       A list of nodes in component of G containing node n.
+    comp : set
+       A set of nodes in the component of G containing node n.
+
+    Raises
+    ------
+    NetworkXNotImplemented:
+        If G is directed.
 
     See Also
     --------
@@ -175,5 +191,21 @@ def node_connected_component(G, n):
     Notes
     -----
     For undirected graphs only.
+
     """
-    return list(sp_length(G, n))
+    return set(_plain_bfs(G, n))
+
+
+def _plain_bfs(G, source):
+    """A fast BFS node generator"""
+    G_adj = G.adj
+    seen = set()
+    nextlevel = {source}
+    while nextlevel:
+        thislevel = nextlevel
+        nextlevel = set()
+        for v in thislevel:
+            if v not in seen:
+                yield v
+                seen.add(v)
+                nextlevel.update(G_adj[v])

@@ -1,65 +1,82 @@
 # -*- coding: utf-8 -*-
-"""
-************
-Vertex Cover
-************
-
-Given an undirected graph `G = (V, E)` and a function w assigning nonnegative
-weights to its vertices, find a minimum weight subset of V such that each edge
-in E is incident to at least one vertex in the subset.
-
-http://en.wikipedia.org/wiki/Vertex_cover
-"""
 #   Copyright (C) 2011-2012 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>
 #   All rights reserved.
 #   BSD license.
-from networkx.utils import *
+#
+# Author:
+#   Nicholas Mancuso <nick.mancuso@gmail.com>
+"""Functions for computing an approximate minimum weight vertex cover.
+
+A |vertex cover|_ is a subset of nodes such that each edge in the graph
+is incident to at least one node in the subset.
+
+.. _vertex cover: https://en.wikipedia.org/wiki/Vertex_cover
+.. |vertex cover| replace:: *vertex cover*
+
+"""
+
 __all__ = ["min_weighted_vertex_cover"]
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
-@not_implemented_for('directed')
+
 def min_weighted_vertex_cover(G, weight=None):
-    r"""2-OPT Local Ratio for Minimum Weighted Vertex Cover
+    r"""Returns an approximate minimum weighted vertex cover.
 
-    Find an approximate minimum weighted vertex cover of a graph.
+    The set of nodes returned by this function is guaranteed to be a
+    vertex cover, and the total weight of the set is guaranteed to be at
+    most twice the total weight of the minimum weight vertex cover. In
+    other words,
+
+    .. math::
+
+       w(S) \leq 2 * w(S^*),
+
+    where $S$ is the vertex cover returned by this function,
+    $S^*$ is the vertex cover of minimum weight out of all vertex
+    covers of the graph, and $w$ is the function that computes the
+    sum of the weights of each node in that given set.
 
     Parameters
     ----------
     G : NetworkX graph
-      Undirected graph
 
-    weight : None or string, optional (default = None)
-        If None, every edge has weight/distance/cost 1. If a string, use this
-        edge attribute as the edge weight. Any edge attribute not present
-        defaults to 1.
+    weight : string, optional (default = None)
+        If None, every node has weight 1. If a string, use this node
+        attribute as the node weight. A node without this attribute is
+        assumed to have weight 1.
 
     Returns
     -------
     min_weighted_cover : set
-      Returns a set of vertices whose weight sum is no more than 2 * OPT.
+        Returns a set of nodes whose weight sum is no more than twice
+        the weight sum of the minimum weight vertex cover.
 
     Notes
     -----
-    Local-Ratio algorithm for computing an approximate vertex cover.
-    Algorithm greedily reduces the costs over edges and iteratively
-    builds a cover. Worst-case runtime is `O(|E|)`.
+    For a directed graph, a vertex cover has the same definition: a set
+    of nodes such that each edge in the graph is incident to at least
+    one node in the set. Whether the node is the head or tail of the
+    directed edge is ignored.
+
+    This is the local-ratio algorithm for computing an approximate
+    vertex cover. The algorithm greedily reduces the costs over edges,
+    iteratively building a cover. The worst-case runtime of this
+    implementation is $O(m \log n)$, where $n$ is the number
+    of nodes and $m$ the number of edges in the graph.
 
     References
     ----------
-    .. [1] Bar-Yehuda, R., & Even, S. (1985). A local-ratio theorem for
-       approximating the weighted vertex cover problem.
-       Annals of Discrete Mathematics, 25, 27–46
-       http://www.cs.technion.ac.il/~reuven/PDF/vc_lr.pdf
-    """
-    weight_func = lambda nd: nd.get(weight, 1)
-    cost = dict((n, weight_func(nd)) for n, nd in G.nodes(data=True))
+    .. [1] Bar-Yehuda, R., and Even, S. (1985). "A local-ratio theorem for
+       approximating the weighted vertex cover problem."
+       *Annals of Discrete Mathematics*, 25, 27–46
+       <http://www.cs.technion.ac.il/~reuven/PDF/vc_lr.pdf>
 
-    # while there are edges uncovered, continue
-    for u,v in G.edges_iter():
-        # select some uncovered edge
-        min_cost = min([cost[u], cost[v]])
+    """
+    cost = dict(G.nodes(data=weight, default=1))
+    # While there are uncovered edges, choose an uncovered and update
+    # the cost of the remaining edges.
+    for u, v in G.edges():
+        min_cost = min(cost[u], cost[v])
         cost[u] -= min_cost
         cost[v] -= min_cost
-
-    return set(u for u in cost if cost[u] == 0)
+    return {u for u, c in cost.items() if c == 0}

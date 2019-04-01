@@ -7,3 +7,5 @@ import networkx.linalg.graphmatrix
 from networkx.linalg.laplacianmatrix import *
 import networkx.linalg.laplacianmatrix
 from networkx.linalg.algebraicconnectivity import *
+from networkx.linalg.modularitymatrix import *
+import networkx.linalg.modularitymatrix

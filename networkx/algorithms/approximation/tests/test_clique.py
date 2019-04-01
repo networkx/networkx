@@ -1,41 +1,119 @@
-from nose.tools import *
+# test_clique.py - unit tests for the approximation.clique module
+#
+# Copyright 2015 NetworkX developers.
+#
+# This file is part of NetworkX.
+#
+# NetworkX is distributed under a BSD license; see LICENSE.txt for more
+# information.
+"""Unit tests for the :mod:`networkx.algorithms.approximation.clique`
+module.
+
+"""
+from __future__ import division
+
+from nose.tools import assert_greater
+from nose.tools import assert_true
+from nose.tools import assert_equal
+
 import networkx as nx
-import networkx.algorithms.approximation as apxa
+from networkx.algorithms.approximation import max_clique
+from networkx.algorithms.approximation import clique_removal
+from networkx.algorithms.approximation import large_clique_size
 
-def test_clique_removal():
-    graph = nx.complete_graph(10)
-    i, cs = apxa.clique_removal(graph)
-    idens = nx.density(graph.subgraph(i))
-    eq_(idens, 0.0, "i-set not found by clique_removal!")
-    for clique in cs:
-        cdens = nx.density(graph.subgraph(clique))
-        eq_(cdens, 1.0, "clique not found by clique_removal!")
 
-    graph = nx.trivial_graph(nx.Graph())
-    i, cs = apxa.clique_removal(graph)
-    idens = nx.density(graph.subgraph(i))
-    eq_(idens, 0.0, "i-set not found by ramsey!")
-    # we should only have 1-cliques. Just singleton nodes.
-    for clique in cs:
-        cdens = nx.density(graph.subgraph(clique))
-        eq_(cdens, 0.0, "clique not found by clique_removal!")
+def is_independent_set(G, nodes):
+    """Returns True if and only if `nodes` is a clique in `G`.
 
-    graph = nx.barbell_graph(10, 5, nx.Graph())
-    i, cs = apxa.clique_removal(graph)
-    idens = nx.density(graph.subgraph(i))
-    eq_(idens, 0.0, "i-set not found by ramsey!")
-    for clique in cs:
-        cdens = nx.density(graph.subgraph(clique))
-        eq_(cdens, 1.0, "clique not found by clique_removal!")
+    `G` is a NetworkX graph. `nodes` is an iterable of nodes in
+    `G`.
 
-def test_max_clique_smoke():
-    # smoke test
-    G = nx.Graph()
-    assert_equal(len(apxa.max_clique(G)),0)
+    """
+    return G.subgraph(nodes).number_of_edges() == 0
 
-def test_max_clique():
-    # create a complete graph
-    graph = nx.complete_graph(30)
-    # this should return the entire graph
-    mc = apxa.max_clique(graph)
-    assert_equals(30, len(mc))
+
+def is_clique(G, nodes):
+    """Returns True if and only if `nodes` is an independent set
+    in `G`.
+
+    `G` is an undirected simple graph. `nodes` is an iterable of
+    nodes in `G`.
+
+    """
+    H = G.subgraph(nodes)
+    n = len(H)
+    return H.number_of_edges() == n * (n - 1) // 2
+
+
+class TestCliqueRemoval(object):
+    """Unit tests for the
+    :func:`~networkx.algorithms.approximation.clique_removal` function.
+
+    """
+
+    def test_trivial_graph(self):
+        G = nx.trivial_graph()
+        independent_set, cliques = clique_removal(G)
+        assert_true(is_independent_set(G, independent_set))
+        assert_true(all(is_clique(G, clique) for clique in cliques))
+        # In fact, we should only have 1-cliques, that is, singleton nodes.
+        assert_true(all(len(clique) == 1 for clique in cliques))
+
+    def test_complete_graph(self):
+        G = nx.complete_graph(10)
+        independent_set, cliques = clique_removal(G)
+        assert_true(is_independent_set(G, independent_set))
+        assert_true(all(is_clique(G, clique) for clique in cliques))
+
+    def test_barbell_graph(self):
+        G = nx.barbell_graph(10, 5)
+        independent_set, cliques = clique_removal(G)
+        assert_true(is_independent_set(G, independent_set))
+        assert_true(all(is_clique(G, clique) for clique in cliques))
+
+
+class TestMaxClique(object):
+    """Unit tests for the :func:`networkx.algorithms.approximation.max_clique`
+    function.
+
+    """
+
+    def test_null_graph(self):
+        G = nx.null_graph()
+        assert_equal(len(max_clique(G)), 0)
+
+    def test_complete_graph(self):
+        graph = nx.complete_graph(30)
+        # this should return the entire graph
+        mc = max_clique(graph)
+        assert_equal(30, len(mc))
+
+    def test_maximal_by_cardinality(self):
+        """Tests that the maximal clique is computed according to maximum
+        cardinality of the sets.
+
+        For more information, see pull request #1531.
+
+        """
+        G = nx.complete_graph(5)
+        G.add_edge(4, 5)
+        clique = max_clique(G)
+        assert_greater(len(clique), 1)
+
+        G = nx.lollipop_graph(30, 2)
+        clique = max_clique(G)
+        assert_greater(len(clique), 2)
+
+
+def test_large_clique_size():
+    G = nx.complete_graph(9)
+    nx.add_cycle(G, [9, 10, 11])
+    G.add_edge(8, 9)
+    G.add_edge(1, 12)
+    G.add_node(13)
+
+    assert_equal(large_clique_size(G), 9)
+    G.remove_node(5)
+    assert_equal(large_clique_size(G), 8)
+    G.remove_edge(2, 3)
+    assert_equal(large_clique_size(G), 7)

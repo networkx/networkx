@@ -1,103 +1,111 @@
 # After changing this file, check it on:
 #   http://lint.travis-ci.org/
 #
+sudo: false
+
 language: python
 
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-  - "pypy"
+cache:
+  directories:
+    - $HOME/.cache/pip
 
 matrix:
-  fast_finish: true
-
   include:
-    - python: "3.4"
-      env: OPTIONAL_DEPS=source
-
-  allow_failures:
-    # 3.4 and pypy Wheels are not yet available.
-    - python: "pypy"
-      env: OPTIONAL_DEPS=pip
-    - env: OPTIONAL_DEPS=source
-
-env:
-  global:
-    # Install from wheels *only*.
-    - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://wheels.astropy.org --find-links=http://wheels2.astropy.org"
-    - NXOPTDEPS=""
-  matrix:
-    - OPTIONAL_DEPS=pip
-    - OPTIONAL_DEPS=no
+    - os: linux
+      python: 3.7
+      dist: xenial
+      sudo: true
+      env:
+      - OPTIONAL_DEPS=1
+      - BUILD_DOCS=1
+      - DEPLOY_DOCS=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+          - texlive
+          - texlive-latex-extra
+          - latexmk
+    - os: linux
+      python: 3.7
+      dist: xenial
+      sudo: true
+      env:
+      - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      - REPORT_COVERAGE=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 3.7
+      dist: xenial
+      sudo: true
+      env:
+      - OPTIONAL_DEPS=1
+      - PIP_FLAGS="--pre"
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: osx
+      osx_image: xcode7.3
+      language: generic
+      env:
+      - TRAVIS_PYTHON_VERSION=3.6.1
+      - OPTIONAL_DEPS=1
+      - OSX_PKG_ENV=miniconda
+    - os: osx
+      language: generic
+      env: TRAVIS_PYTHON_VERSION=3.7
+    - python: 3.5
+    - python: 3.6
+    - python: 3.7
+      dist: xenial
+      sudo: true
 
 before_install:
-  ### Prepare the system to install prerequisites or dependencies
+  # prepare the system to install prerequisites or dependencies
+  - source tools/travis/before_install.sh
   - uname -a
   - printenv
-  - pip install --upgrade setuptools
-  - pip install --upgrade pip
-  - pip install wheel
-  - pip --version
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      source tools/travis/osx_install.sh;
+    else
+      source tools/travis/linux_install.sh;
+    fi
 
 install:
-  ### Install any prerequisites or dependencies necessary to run the build.
-
-  # Skipping pydot (not 3.x compatible)
-  # Skipping gdal (errors during pip installs)
-  - sudo apt-get update -qq
-  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then sudo apt-get install graphviz libsuitesparse-dev; fi
-  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then pip install pygraphviz; fi
-  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then pip install --use-wheel pyyaml pyparsing; fi
-  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then $PIPINSTALL numpy scipy matplotlib Cython; fi
-
-  # Try to install latest and greatest from source.
-  - if [ "${OPTIONAL_DEPS}" == "source" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
-  - if [ "${OPTIONAL_DEPS}" == "source" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython; fi
-
-  # Install stuff that depends on Cython.
-  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then pip install scikits.sparse; fi
-
-before_script:
-  ### Use this to prepare your build for testing
-  - pip install --upgrade nose
-  - pip install --upgrade coverage
-  - pip install --upgrade coveralls
-
-script:
+  # install required packages
+  - pip install --upgrade pip
+  - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
+  - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
+    fi
+  # install networkx
   - printenv PWD
   - pip install .
+  # show what's installed
+  - python --version
+  - pip list
 
-  - export NX_INSTALL=`pip show networkx | grep Location | awk '{print $2"/networkx"}'`
-
-  # nose 1.3.0 does not tell coverage to only cover the requested
-  # package (except during the report).  So to restrict coverage, we must
-  # inform coverage through the .coveragerc file.
-  - cp .coveragerc $NX_INSTALL
-  - cp setup.cfg $NX_INSTALL
-
-  # Move to new directory so that networkx is not imported from repository.
-  # Why? Because we want the tests to make sure that NetworkX was installed
-  # correctly. Example: setup.py might not have included some submodules.
-  # Testing from the git repository cannot catch a mistake like that.
-  #
-  # Export current directory for logs.
-  - cd $NX_INSTALL
-  - printenv PWD
-
-  # Run nosetests.
-  - nosetests --verbosity=2 --with-coverage --cover-package=networkx
+script:
+  - if [[ "${BUILD_DOCS}" == 1 ]]; then
+      source tools/travis/build_docs.sh;
+    fi
+  - source tools/travis/script.sh
 
 after_success:
-  # We must run coveralls from the git repo. But we ran tests from the
-  # installed directory. The .coverage file looks like it contains absolute
-  # paths, but coveralls does not seem to care.
-  - cp .coverage $TRAVIS_BUILD_DIR
-  - cd $TRAVIS_BUILD_DIR
-  # Report coverage for 2.7 and 3.4 only.
-  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then coveralls; fi
+  - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
+      codecov;
+    fi
+  - if [[ "${BUILD_DOCS}" == 1 && "${DEPLOY_DOCS}" == 1 ]]; then
+      source tools/travis/deploy_docs.sh;
+    fi
 
 notifications:
   email: false
