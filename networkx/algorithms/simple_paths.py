@@ -310,7 +310,7 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
                     yield visited[1:] + [(u,v,k)]
 
             stack.pop()
-            visited.popitem()
+            visited.pop()
 
 
 @not_implemented_for('multigraph')
