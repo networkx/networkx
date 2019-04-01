@@ -14,7 +14,8 @@ from networkx.utils import pairwise
 __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>',
                             'Andrey Paramonov',
-                            'Jordi Torrents <jordi.t21@gmail.com>'])
+                            'Jordi Torrents <jordi.t21@gmail.com>',
+                            'Jorge Martín Pérez <jmartinp@it.uc3m.es>'])
 
 __all__ = [
     'all_simple_paths',
@@ -286,7 +287,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
             visited.popitem()
 
 
-def _all_simple_paths_multigraph(G, source, target, cutoff=None):
+def _all_simple_paths_multigraph(G, source, targets, cutoff):
     if cutoff < 1:
         return
     visited = [source]
@@ -299,14 +300,14 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
             stack.pop()
             visited.pop()
         elif len(visited) < cutoff:
-            if child[1] == target:
+            if child[1] in targets:
                 yield visited[1:] + [child]
             elif child[1] not in [v[0] for v in visited[1:]]:
                 visited.append(child)
                 stack.append(iter(G.edges(child[1], keys=True)))
         else: #len(visited) == cutoff:
             for (u,v,k) in [child]+list(children):
-                if v == target:
+                if v in targets:
                     yield visited[1:] + [(u,v,k)]
 
             stack.pop()
