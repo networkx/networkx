@@ -297,7 +297,7 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
         child = next(children, None)
         if child is None:
             stack.pop()
-            visited.popitem()
+            visited.pop()
         elif len(visited) < cutoff:
             if child[1] == target:
                 yield visited[1:] + [child]
