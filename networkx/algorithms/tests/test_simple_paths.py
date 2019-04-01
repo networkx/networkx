@@ -172,14 +172,14 @@ def test_all_simple_paths_multigraph():
     nx.add_path(G, [3, 1, 10, 2])
     paths = list(nx.all_simple_paths(G, 1, 2))
     assert_equal(len(paths), 3)
-    assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 2), (1, 10, 2)})
+    assert_equal(paths, [[(1,2,0)], [(1,2,1)], [(1,10,0), (10,2,0)]])
 
 
 def test_all_simple_paths_multigraph_with_cutoff():
     G = nx.MultiGraph([(1, 2), (1, 2), (1, 10), (10, 2)])
     paths = list(nx.all_simple_paths(G, 1, 2, cutoff=1))
     assert_equal(len(paths), 2)
-    assert_equal(set(tuple(p) for p in paths), {(1, 2), (1, 2)})
+    assert_equal(paths, [[(1, 2, 0)], [(1, 2, 1)]])
 
 
 def test_all_simple_paths_directed():
@@ -536,3 +536,9 @@ def test_bidirectional_dijkstra_ignore():
         1, 2,
         ignore_nodes=[1, 2],
     )
+
+
+if __name__ == "__main__":
+    # test_all_simple_paths_multigraph()
+    test_all_simple_paths_multigraph_with_cutoff()
+
