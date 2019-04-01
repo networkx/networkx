@@ -5,7 +5,7 @@
 #    BSD license.
 import collections
 from heapq import heappush, heappop
-from itertools import count
+from itertools import countall
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -215,6 +215,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
         >>> mg = nx.MultiGraph()
         >>> mg.add_edges_from([(1,2),(1,2),(1,3),(2,4),(3,4),(4,5),(3,5),(3,5)])
+        [0, 1, 0, 0, 0, 0, 0, 1]
         >>> paths = nx.all_simple_paths(mg, source=1, target=5, cutoff=3)
         >>> print(list(paths))
         [[(1, 2, 0), (2, 4, 0), (4, 5, 0)], [(1, 2, 1), (2, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 5, 0)], [(1, 3, 0), (3, 5, 1)]]
