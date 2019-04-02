@@ -38,8 +38,13 @@ worth thinking about how you provide your graphs:
 >>> ismags = nx.isomorphism.ISMAGS(graph1, graph2)
 >>> ismags.is_isomorphic()
 False
->>> list(ismags.largest_common_subgraph())
-[{1: 0, 0: 1, 2: 2}, {2: 0, 1: 1, 3: 2}]
+>>> largest_common_subgraph = list(ismags.largest_common_subgraph())
+>>> answer = [
+...     {1: 0, 0: 1, 2: 2},
+...     {2: 0, 1: 1, 3: 2}
+... ]
+>>> answer == largest_common_subgraph
+True
 >>> ismags2 = nx.isomorphism.ISMAGS(graph2, graph1)
 >>> largest_common_subgraph = list(ismags2.largest_common_subgraph())
 >>> answer = [
