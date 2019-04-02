@@ -15,6 +15,17 @@ there is an exponential number of isomorphisms that are symmetrically
 equivalent. In that case, the ISMAGS algorithm will provide only one solution
 per symmetry group.
 
+>>> import networkx as nx
+>>> petersen = nx.petersen_graph()
+>>> ismags = nx.isomorphism.ISMAGS(petersen, petersen)
+>>> isomorphisms = list(ismags.isomorphisms_iter(symmetry=False))
+>>> len(isomorphisms)
+120
+>>> isomorphisms = list(ismags.isomorphisms_iter(symmetry=True))
+>>> answer = [{0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7:7, 8: 8, 9: 9}]
+>>> answer == isomorphisms
+True
+
 In addition, this implementation also provides an interface to find the
 largest common induced subgraph [2]_ between any two graphs, again taking
 symmetry into account. Given `graph` and `subgraph` the algorithm will remove
@@ -24,48 +35,60 @@ worth thinking about how you provide your graphs:
 
 >>> graph1 = nx.path_graph(4)
 >>> graph2 = nx.star_graph(3)
->>> ismags = isomorphism.ISMAGS(graph1, graph2)
+>>> ismags = nx.isomorphism.ISMAGS(graph1, graph2)
 >>> ismags.is_isomorphic()
 False
 >>> list(ismags.largest_common_subgraph())
 [{1: 0, 0: 1, 2: 2}, {2: 0, 1: 1, 3: 2}]
->>> ismags2 = isomorphism.ISMAGS(graph2, graph1)
->>> list(ismags2.largest_common_subgraph())
-[{1: 0, 0: 1, 2: 2},
- {1: 0, 0: 1, 3: 2},
- {2: 0, 0: 1, 1: 2},
- {2: 0, 0: 1, 3: 2},
- {3: 0, 0: 1, 1: 2},
- {3: 0, 0: 1, 2: 2}]
+>>> ismags2 = nx.isomorphism.ISMAGS(graph2, graph1)
+>>> largest_common_subgraph = list(ismags2.largest_common_subgraph())
+>>> answer = [
+...     {1: 0, 0: 1, 2: 2},
+...     {1: 0, 0: 1, 3: 2},
+...     {2: 0, 0: 1, 1: 2},
+...     {2: 0, 0: 1, 3: 2},
+...     {3: 0, 0: 1, 1: 2},
+...     {3: 0, 0: 1, 2: 2}
+... ]
+>>> answer == largest_common_subgraph
+True
 
 However, when not taking symmetry into account, it doesn't matter:
 
->>> list(ismags.largest_common_subgraph(symmetry=False))
-[{1: 0, 0: 1, 2: 3},
- {1: 0, 2: 1, 0: 3},
- {2: 0, 1: 1, 3: 3},
- {2: 0, 3: 1, 1: 3},
- {1: 0, 0: 2, 2: 3},
- {1: 0, 2: 2, 0: 3},
- {2: 0, 1: 2, 3: 3},
- {2: 0, 3: 2, 1: 3},
- {1: 0, 0: 1, 2: 2},
- {1: 0, 2: 1, 0: 2},
- {2: 0, 1: 1, 3: 2},
- {2: 0, 3: 1, 1: 2}]
->>> list(ismags2.largest_common_subgraph(symmetry=False))
-[{1: 0, 0: 1, 2: 3},
- {1: 0, 2: 1, 0: 3},
- {2: 0, 1: 1, 3: 3},
- {2: 0, 3: 1, 1: 3},
- {1: 0, 0: 2, 2: 3},
- {1: 0, 2: 2, 0: 3},
- {2: 0, 1: 2, 3: 3},
- {2: 0, 3: 2, 1: 3},
- {1: 0, 0: 1, 2: 2},
- {1: 0, 2: 1, 0: 2},
- {2: 0, 1: 1, 3: 2},
- {2: 0, 3: 1, 1: 2}]
+>>> largest_common_subgraph = list(ismags.largest_common_subgraph(symmetry=False))
+>>> answer = [
+...     {1: 0, 0: 1, 2: 2},
+...     {1: 0, 2: 1, 0: 2},
+...     {2: 0, 1: 1, 3: 2},
+...     {2: 0, 3: 1, 1: 2},
+...     {1: 0, 0: 1, 2: 3},
+...     {1: 0, 2: 1, 0: 3},
+...     {2: 0, 1: 1, 3: 3},
+...     {2: 0, 3: 1, 1: 3},
+...     {1: 0, 0: 2, 2: 3},
+...     {1: 0, 2: 2, 0: 3},
+...     {2: 0, 1: 2, 3: 3},
+...     {2: 0, 3: 2, 1: 3}
+... ]
+>>> answer == largest_common_subgraph
+True
+>>> largest_common_subgraph = list(ismags2.largest_common_subgraph(symmetry=False))
+>>> answer = [
+...     {1: 0, 0: 1, 2: 2},
+...     {1: 0, 0: 1, 3: 2},
+...     {2: 0, 0: 1, 1: 2},
+...     {2: 0, 0: 1, 3: 2},
+...     {3: 0, 0: 1, 1: 2},
+...     {3: 0, 0: 1, 2: 2},
+...     {1: 1, 0: 2, 2: 3},
+...     {1: 1, 0: 2, 3: 3},
+...     {2: 1, 0: 2, 1: 3},
+...     {2: 1, 0: 2, 3: 3},
+...     {3: 1, 0: 2, 1: 3},
+...     {3: 1, 0: 2, 2: 3}
+... ]
+>>> answer == largest_common_subgraph
+True
 
 Notes
 -----
@@ -611,7 +634,7 @@ class ISMAGS:
         .. automethod:: find_isomorphisms
         """
         if len(self.graph) == len(self.subgraph):
-            yield from self.subgraph_isomorphisms_iter()
+            yield from self.subgraph_isomorphisms_iter(symmetry=symmetry)
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
         """
@@ -682,9 +705,15 @@ class ISMAGS:
         Get all permutations of items, but only permute items with the same
         length.
 
-        >>> list(_get_permutations_by_length([[1], [2], [3, 4], [4, 5]]))
-        [[[1], [2], [3, 4], [4, 5]], [[2], [1], [3, 4], [4, 5]],
-         [[1], [2], [4, 5], [3, 4]], [[2], [1], [4, 5], [3, 4]]]
+        >>> found = list(ISMAGS._get_permutations_by_length([[1], [2], [3, 4], [4, 5]]))
+        >>> answer = [
+        ...     (([1], [2]), ([3, 4], [4, 5])),
+        ...     (([1], [2]), ([4, 5], [3, 4])),
+        ...     (([2], [1]), ([3, 4], [4, 5])),
+        ...     (([2], [1]), ([4, 5], [3, 4])),
+        ... ]
+        >>> found == answer
+        True
         """
         by_len = defaultdict(list)
         for item in items:
