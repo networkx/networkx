@@ -31,7 +31,7 @@ def is_at_free(G, certificate=False):
     An asteroidal triple is a triple of non-adjacent vertices such that
     there exists a path between any two of them which avoids the closed
     neighborhood of the third. The algorithm used to check is the trivial
-    one, outlined in [1]_, which has a runtime of `O(|V||E|^2)`.
+    one, outlined in [1]_, which has a runtime of `O(|V|^3)`.
     It checks all independent triples of vertices and whether they are an
     asteroidal triple or not. This is done with the help of a data structure
     called a component structure. The component structure encodes information
