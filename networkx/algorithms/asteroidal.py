@@ -114,7 +114,7 @@ def is_at_free(G, certificate=False):
 
 @not_implemented_for("directed", "multigraph")
 def create_component_structure(G):
-    """Create component structure for G.
+    r"""Create component structure for G.
 
     A *component structure* is an `nxn` array, denoted `c`, where `n` is
     the number of vertices,  where each row and column corresponds to a vertex.
