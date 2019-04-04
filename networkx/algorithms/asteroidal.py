@@ -38,7 +38,7 @@ def is_at_free(G, certificate=False):
     the same connected component when the closed neighborhood of a given vertex
     is removed from the graph. The algorithm used to check is the trivial
     one, outlined in [1]_, which has a runtime of
-    :math:`O(|V||\overline{E} + |V||E|)`, where the second factor is the
+    :math:`O(|V||\overline{E} + |V||E|)`, where the second term is the
     creation of the component structure.
 
     Parameters
@@ -46,21 +46,23 @@ def is_at_free(G, certificate=False):
     G : NetworkX Graph
         The graph to check whether is AT-free or not
 
-    certificate : boolean (default: False)
+    certificate : bool (default: False)
         If the first detected asteroidal triple should be output, if one
         exists, or None, in the case where a graph is AT-free.
 
     Returns
     -------
-    bool or tuple (default: bool)
+    bool (default)
         The returned value depends on the certificate parameter. The default
         option is a bool which is True if the graph is AT-free, i.e. the
         given graph contains no asteroidal triples, and False otherwise, i.e.
-        if the graph contains at least one asteroidal triple. If the optional
-        parameter `certificate` is set to True then the function returns a
+        if the graph contains at least one asteroidal triple.
+
+    tuple
+        If the optional parameter `certificate` is set to True then a
         tuple containing False and an asteroidal triple, represented as a tuple
-        of vertices, if the graph is not AT-free, and a tuple with True and
-        None if the graph is AT-free.
+        of vertices, is returend if the graph is not AT-free. If the graph
+        is AT-free a tuple with True and None is returned.
 
     Examples
     --------
