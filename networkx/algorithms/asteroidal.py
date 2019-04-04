@@ -108,12 +108,12 @@ def is_at_free(G, certificate=False):
         for w in V - union_of_neighborhoods:
             if _is_asteroidal_triple(u, v, w, component_structure):
                 if certificate:
-                    return (u, v, w)
+                    return (False,  (u, v, w))
                 else:
                     return False
 
     if certificate:
-        return None
+        return (True, None)
     else:
         return True
 
