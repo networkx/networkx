@@ -67,6 +67,7 @@ sphinx_gallery_conf = {
                                        '../examples/pygraphviz',
                                        '../examples/javascript',
                                        '../examples/jit',
+                                       '../examples/applications',
                                        '../examples/subclass']),
     # path where to save gallery generated examples
     'gallery_dirs': 'auto_examples',
