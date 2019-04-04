@@ -77,13 +77,9 @@ def is_at_free(G, certificate=False):
     """
     def _is_asteroidal_triple(u, v, w, component_structure):
         """Check whether a triple of vertices is an asteroidal triple."""
-        first_cond = component_structure[u][v] == component_structure[u][w]
-        second_cond = component_structure[v][u] == component_structure[v][w]
-        third_cond = component_structure[w][u] == component_structure[w][v]
-        if first_cond and second_cond and third_cond:
-            return True
-        else:
-            return False
+        return (component_structure[u][v] == component_structure[u][w] and
+                component_structure[v][u] == component_structure[v][w] and
+                component_structure[w][u] == component_structure[w][v])
 
     V = set(G.nodes)
 
@@ -149,11 +145,9 @@ def create_component_structure(G):
             row_dict[u] = 0
 
         G_reduced = G.subgraph(set(G.nodes) - closed_neighborhood)
-        connected_components = (G_reduced.subgraph(cc) for cc in
-                                nx.connected_components(G_reduced))
-        for cc in connected_components:
+        for cc in nx.connected_components(G_reduced):
             label += 1
-            for u in cc.nodes:
+            for u in cc:
                 row_dict[u] = label
 
         component_structure[v] = row_dict
