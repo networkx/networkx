@@ -377,6 +377,7 @@ def fruchterman_reingold_layout(G,
 
     fixed : list or None  optional (default=None)
         Nodes to keep fixed at initial position.
+        ValueError raised if `fixed` specified and `pos` not.
 
     iterations : int  optional (default=50)
         Maximum number of iterations taken
@@ -425,7 +426,9 @@ def fruchterman_reingold_layout(G,
     G, center = _process_params(G, center, dim)
 
     if fixed is not None:
-        nfixed = dict(zip(G, range(len(G))))
+        if pos is None:
+            raise ValueError('nodes are fixed without positions given')
+        nfixed = {v: i for i, v in enumerate(G)}
         fixed = np.asarray([nfixed[v] for v in fixed])
 
     if pos is not None:
@@ -440,6 +443,7 @@ def fruchterman_reingold_layout(G,
                 pos_arr[i] = np.asarray(pos[n])
     else:
         pos_arr = None
+        dom_size = 1
 
     if len(G) == 0:
         return {}
