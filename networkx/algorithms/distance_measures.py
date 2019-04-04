@@ -366,42 +366,21 @@ def _laplacian_submatrix(node, mat, node_list):
     """
     import numpy as np
     j = node_list.index(node)
+    n = list(range(len(node_list)))
+    n.pop(j)
     
-    # Remove row from LIL matrix
-    if j < 0:
-        j += mat.shape[0]
-
-    if j < 0 or j >= mat.shape[0]:
-        raise IndexError('Row index out of bounds')
-
-    mat.rows = np.delete(mat.rows, j, 0)
-    mat.data = np.delete(mat.data, j, 0)
-    mat._shape = (mat._shape[0] - 1, mat.shape[1])
+    if mat.shape[0] != mat.shape[1]:
+        raise NetworkXError('Matrix must be square')
+    elif len(node_list) != mat.shape[0]:
+        raise NetworkXError('Node list length does not match matrix dimentions')
     
-    # Remove column from LIL matrix
-    if j < 0:
-        j += mat.shape[1]
+    mat = mat.tocsc()
+    mat = mat[:,n]
 
-    if j < 0 or j >= mat.shape[1]:
-        raise IndexError('Column index out of bounds')
+    mat = mat.tocsr()
+    mat = mat[n,:]
 
-    rows = mat.rows
-    data = mat.data
-    for i in range(mat.shape[0]):
-        pos = bisect.bisect_left(rows[i], j)
-        if pos == len(rows[i]):
-            continue
-        elif rows[i][pos] == j:
-            rows[i].pop(pos)
-            data[i].pop(pos)
-            if pos == len(rows[i]):
-                continue
-        for pos2 in range(pos, len(rows[i])):
-            rows[i][pos2] -= 1
-
-    mat._shape = (mat._shape[0], mat._shape[1] - 1)
-
-    node_list.pop(j)
+    node_list.pop(j) 
 
     return mat, node_list
 
@@ -476,6 +455,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
             G[u][v][k][weight] = 1/d[weight]
     # Replace with collapsing topology or approximated zero?
 
+    # Using determinats to compute the effective resistance is more mememory
+    # efficent that directly calculating the psuedo-inverse
     L = nx.laplacian_matrix(G, node_list, weight=weight)
     L = L.tolil()
 
