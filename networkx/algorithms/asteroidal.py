@@ -24,7 +24,8 @@ from networkx.utils import not_implemented_for
 __all__ = ["is_at_free"]
 
 
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def is_at_free(G, certificate=False):
     """Check if graph contains asteroidal triples.
 
@@ -112,7 +113,8 @@ def is_at_free(G, certificate=False):
         return True
 
 
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def create_component_structure(G):
     r"""Create component structure for G.
 
