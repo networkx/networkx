@@ -27,31 +27,40 @@ __all__ = ["is_at_free"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def is_at_free(G, certificate=False):
-    """Check if graph contains asteroidal triples.
+    r"""Check if graph contains no asteroidal triples.
 
     An asteroidal triple is a triple of non-adjacent vertices such that
     there exists a path between any two of them which avoids the closed
-    neighborhood of the third. The algorithm used to check is the trivial
-    one, outlined in [1]_, which has a runtime of `O(|V|^3)`.
-    It checks all independent triples of vertices and whether they are an
-    asteroidal triple or not. This is done with the help of a data structure
-    called a component structure. The component structure encodes information
-    about which vertices belongs to the same connected component
-    when the closed neighborhood of a given vertex is removed from the graph.
+    neighborhood of the third. It checks all independent triples of vertices
+    and whether they are an asteroidal triple or not. This is done with the
+    help of a data structure called a component structure.
+    The component structure encodes information about which vertices belongs to
+    the same connected component when the closed neighborhood of a given vertex
+    is removed from the graph. The algorithm used to check is the trivial
+    one, outlined in [1]_, which has a runtime of
+    :math:`O(|V||\overline{E} + |V||E|)`, where the second factor is the
+    creation of the component structure.
 
     Parameters
     ----------
     G : NetworkX Graph
         The graph to check whether is AT-free or not
 
-    certificate : boolean
+    certificate : boolean (default: False)
         If the first detected asteroidal triple should be output, if one
         exists, or None, in the case where a graph is AT-free.
 
     Returns
     -------
-    boolean
-        True if the given graph is AT-free and False otherwise.
+    bool or tuple (default: bool)
+        The returned value depends on the certificate parameter. The default
+        option is a bool which is True if the graph is AT-free, i.e. the
+        given graph contains no asteroidal triples, and False otherwise, i.e.
+        if the graph contains at least one asteroidal triple. If the optional
+        parameter `certificate` is set to True then the function returns a
+        tuple containing False and an asteroidal triple, represented as a tuple
+        of vertices, if the graph is not AT-free, and a tuple with True and
+        None if the graph is AT-free.
 
     Examples
     --------
