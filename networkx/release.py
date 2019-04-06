@@ -200,7 +200,11 @@ authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
 url = 'http://networkx.github.io/'
-download_url = 'https://github.com/networkx/networkx/releases'
+project_urls={
+    "Bug Tracker": "https://github.com/networkx/networkx/issues",
+    "Documentation": "https://networkx.github.io/documentation/stable/",
+    "Source Code": "https://github.com/networkx/networkx",
+}
 platforms = ['Linux', 'Mac OSX', 'Windows', 'Unix']
 keywords = ['Networks', 'Graph Theory', 'Mathematics',
             'network', 'graph', 'discrete mathematics', 'math']
