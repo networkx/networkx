@@ -31,6 +31,7 @@ from networkx.utils import pairwise
 
 __all__ = ['balanced_tree',
            'barbell_graph',
+           'binomial_tree',
            'complete_graph',
            'complete_multipartite_graph',
            'circular_ladder_graph',
@@ -194,6 +195,56 @@ def barbell_graph(m1, m2, create_using=None):
     if m2 > 0:
         G.add_edge(m1 + m2 - 1, m1 + m2)
     return G
+
+def binomial_tree(n):
+    """Returns the Binomial Tree of order n.
+
+    Parameters
+    ----------
+
+    n : int
+        Order of the binomial tree.
+
+    Returns
+    -------
+    G : NetworkX graph
+        A binomial tree of $2^n$ vertices and $2^n - 1$ edges.
+
+    Notes
+    -----
+    The binomial tree of order 0 consists of a single vertex.
+    A binomial tree of order k is defined recursively by linking two binomial trees of order k-1.
+
+    """
+    n += 1
+    sub_trees = []
+
+    graph = nx.Graph()
+    graph.add_node(0)
+    sub_trees.append(graph)
+
+    for i in range(1,n):
+        new = nx.Graph()
+
+        for j in range(i,0,-1):
+            G = sub_trees[i-j]
+            length = len(list(G.nodes()))
+
+            nodes = G.nodes()
+            nodes = [it + length for it in nodes]
+
+            edges = G.edges()
+            edges = [tuple(map(lambda x, y: x + y, it, (length,length))) for it in edges]
+
+            new.add_node(0)
+            new.add_nodes_from(nodes)
+            new.add_edges_from(edges)
+
+            new.add_edge(0,list(nodes)[0])
+
+        sub_trees.append(new)
+
+    return sub_trees[len(list(sub_trees))-1]
 
 
 @nodes_or_number(0)
