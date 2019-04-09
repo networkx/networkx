@@ -5,7 +5,7 @@
 #    BSD license.
 import collections
 from heapq import heappush, heappop
-from itertools import count
+from itertools import count, tee
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -91,7 +91,7 @@ def is_simple_path(G, nodes):
             all(v in G[u] for u, v in pairwise(nodes)))
 
 
-def all_simple_paths(G, source, target, cutoff=None):
+def all_simple_paths(G, source, target, cutoff_len=None, weight=None, cutoff_weight=None):
     """Generate all simple paths in the graph G from source to target.
 
     A simple path is a path with no repeated nodes.
@@ -106,14 +106,21 @@ def all_simple_paths(G, source, target, cutoff=None):
     target : nodes
        Single node or iterable of nodes at which to end path
 
-    cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+    cutoff_len : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff_len are returned.
+
+    weight : string, optional
+        Name of the edge attribute to be used as a weight. If None all
+        edges are considered to have unit weight. Default value None.
+
+    cutoff_weight : integer, optional
+        Weighted path length to stop the search. Only paths of weight_length <= cutoff_weight are returned.
 
     Returns
     -------
     path_generator: generator
        A generator that produces lists of simple paths.  If there are no paths
-       between the source and target within the given cutoff the generator
+       between the source and target within the given cutoff_len the generator
        produces no output.
 
     Examples
@@ -131,9 +138,9 @@ def all_simple_paths(G, source, target, cutoff=None):
         [0, 3]
 
     You can generate only those paths that are shorter than a certain
-    length by using the `cutoff` keyword argument::
+    length by using the `cutoff_len` keyword argument::
 
-        >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
+        >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff_len=2)
         >>> print(list(paths))
         [[0, 1, 3], [0, 2, 3], [0, 3]]
 
@@ -238,14 +245,25 @@ def all_simple_paths(G, source, target, cutoff=None):
             raise nx.NodeNotFound('target node %s not in graph' % target)
     if source in targets:
         return []
-    if cutoff is None:
-        cutoff = len(G) - 1
-    if cutoff < 1:
+    if cutoff_len is None:
+        cutoff_len = len(G) - 1
+    if cutoff_len < 1:
         return []
+
+    if weight is not None:
+        weights = nx.get_edge_attributes(G, weight)
+        if None in weights.values():
+            raise ValueError('Weight: {} cannot include None'.format(weight))
+    if cutoff_weight is None:
+        cutoff_weight = float('inf')
+
     if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, targets, cutoff)
+        return _all_simple_paths_multigraph(G, source, targets, cutoff_len)
     else:
-        return _all_simple_paths_graph(G, source, targets, cutoff)
+        if weight is False:
+            return _all_simple_paths_graph(G, source, targets, cutoff_len)
+        else:
+            return _all_simple_paths_weighted_graph(G, source, targets, cutoff_len, weight, cutoff_weight)
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
@@ -271,6 +289,52 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
             for target in (targets & (set(children) | {child})) - set(visited.keys()):
                 yield list(visited) + [target]
             stack.pop()
+            visited.popitem()
+
+
+def _all_simple_paths_weighted_graph(G, source, targets, cutoff, weight, maxdist):
+
+    def _get_last_pair_dist(nodes):
+        if len(nodes) > 1:
+            return G[nodes[-2]][nodes[-1]][weight]
+        else:
+            return 0
+
+    visited = collections.OrderedDict.fromkeys([source])
+    path_dist = 0
+    stack = [iter(G[source])]
+    while stack:
+        children = stack[-1]
+        child = next(children, None)
+        if child is None:
+            stack.pop()
+            visited.popitem()
+            if len(visited) > 1:
+                path_dist -= _get_last_pair_dist(list(visited))
+            else:
+                path_dist = 0
+        elif ((len(visited) < cutoff) and
+                (path_dist + _get_last_pair_dist(list(visited)) < maxdist)):
+            if child in visited:
+                continue
+            if child in targets:
+                yield list(visited) + [child]
+
+            visited[child] = None
+            path_dist += _get_last_pair_dist(list(visited))
+
+            if targets - set(visited.keys()):  # expand stack until find all targets
+                stack.append(iter(G[child]))
+            else:
+                path_dist -= _get_last_pair_dist(list(visited))
+                visited.popitem()# maybe other ways to child
+        else:  # len(visited) == cutoff:
+            for target in (targets & (set(children) | {child})) - set(visited.keys()):
+                # check if length requirement is met
+                if (path_dist + _get_last_pair_dist(list(visited)+[target])) <= maxdist:
+                    yield list(visited) + [target]
+            stack.pop()
+            path_dist -= _get_last_pair_dist(list(visited))
             visited.popitem()
 
 

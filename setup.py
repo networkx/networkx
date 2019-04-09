@@ -152,7 +152,7 @@ if __name__ == "__main__":
         license=release.license,
         platforms=release.platforms,
         url=release.url,
-        download_url=release.download_url,
+        project_urls=release.project_urls,
         classifiers=release.classifiers,
         packages=packages,
         data_files=data,
