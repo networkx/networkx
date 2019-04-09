@@ -104,11 +104,13 @@ class TestResistanceDistance:
 
     def test_resistance_distance(self):
         rd = networkx.algorithms.distance_measures.resistance_distance(self.G, 1, 3, 'weight', True)
-        assert_true(numpy.isclose(rd, 1/(1/(2+4) + 1/(1+3))))
+        test_data = 1/(1/(2+4) + 1/(1+3))
+        assert_equal(round(rd, 5), round(test_data, 5))
 
     def test_resistance_distance_noinv(self):
         rd = networkx.algorithms.distance_measures.resistance_distance(self.G, 1, 3, 'weight', False)
-        assert_equal(round(rd, 5), round(1/(1/(1/2+1/4)+ 1/(1/1+1/3)),5))
+        test_data = 1/(1/(1/2+1/4)+ 1/(1/1+1/3))
+        assert_equal(round(rd, 5), round(test_data,5))
 
     def test_resistance_distance_no_weight(self):
         rd = networkx.algorithms.distance_measures.resistance_distance(self.G, 1, 3)
@@ -117,7 +119,8 @@ class TestResistanceDistance:
     def test_resistance_distance_neg_weight(self):
         self.G[2][3]['weight'] = -4
         rd = networkx.algorithms.distance_measures.resistance_distance(self.G, 1, 3, 'weight', True)
-        assert_equal(round(rd, 5), round(1/(1/(2+-4) + 1/(1+3)),5))
+        test_data = 1/(1/(2+-4) + 1/(1+3))
+        assert_equal(round(rd, 5), round(test_data,5))
 
     def test_multigraph(self):
         G = networkx.MultiGraph()
