@@ -351,6 +351,12 @@ def draw_networkx_nodes(G, pos,
 
     label : [None| string]
        Label for legend
+    
+    min_source_margin : int, optional (default=0)
+       The minimum margin (gap) at the begining of the edge at the source.
+    
+    min_target_margin : int, optional (default=0)
+       The minimum margin (gap) at the end of the edge at the target.
 
     Returns
     -------
@@ -444,6 +450,8 @@ def draw_networkx_edges(G, pos,
                         nodelist=None,
                         node_shape="o",
                         connectionstyle=None,
+                        min_source_margin=0,
+                        min_target_margin=0,
                         **kwds):
     """Draw the edges of the graph G.
 
@@ -507,6 +515,12 @@ def draw_networkx_edges(G, pos,
 
     label : [None| string]
        Label for legend
+       
+    min_source_margin : int, optional (default=0)
+       The minimum margin (gap) at the begining of the edge at the source.
+    
+    min_target_margin : int, optional (default=0)
+       The minimum margin (gap) at the end of the edge at the target.
 
     Returns
     -------
@@ -680,6 +694,13 @@ def draw_networkx_edges(G, pos,
                 shrink_target = to_marker_edge(marker_size, node_shape)
             else:
                 shrink_target = to_marker_edge(node_size, node_shape)
+            
+            if shrink_source < min_source_margin:
+                shrink_source = min_source_margin
+                
+            if shrink_target < min_target_margin:
+                shrink_target = min_target_margin               
+                
             if arrow_colors is None:
                 arrow_color = edge_cmap(color_normal(edge_color[i]))
             elif len(arrow_colors) > 1:
