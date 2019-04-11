@@ -17,9 +17,8 @@ Highlights
 This release is the result of 5 months of work with over 92 pull requests by
 30 contributors. Highlights include:
 
-- Dropped support for Python 2. Most of the code will still work in the short term,
-  but we are no longer supporting Python 2.7 and we will start changing code to take
-  advantage of Python 3 features we couldn't before.
+- Dropped support for Python 2. We are no longer supporting Python 2.7 and we will
+  start changing code to take advantage of Python 3 features we couldn't before.
 - Added some Moral Graph analysis functions.
 - Enable matplotlib drawing using curved arrows via connectionstyle parameter.
 - Remove ticks and axes labels from matplotlib plots.
@@ -34,11 +33,11 @@ This release is the result of 5 months of work with over 92 pull requests by
 Improvements
 ------------
 
-- change default colors to be color-blind friendly
+- Change default colors to be color-blind friendly
 - Many bug fixes and documentation improvements
-- speed up of simple_cycles
-- improvements for reading various formats like GML, GEXF, Graphml
-- allow subclassing to access node_attr_dict_factory
+- Speed up of simple_cycles
+- Improvements for reading various formats like GML, GEXF, Graphml
+- Allow subclassing to access node_attr_dict_factory
 
 
 API Changes
