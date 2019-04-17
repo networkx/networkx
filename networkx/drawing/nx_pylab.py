@@ -181,11 +181,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        Size of nodes.  If an array is specified it must be the
        same length as nodelist.
 
-    node_color : color string, or array of floats, (default='#1f78b4')
-       Node color. Can be a single color format string,
-       or a  sequence of colors with the same length as nodelist.
-       If numeric values are specified they will be mapped to
-       colors using the cmap and vmin,vmax parameters.  See
+    node_color : color or array of colors (default='#1f78b4')
+       Node color. Can be a single color or a sequence of colors with the same
+       length as nodelist. Color can be string, or (rgb) or (rgba) tuple of
+       three floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the cmap and vmin,vmax parameters. See
        matplotlib.scatter for more details.
 
     node_shape :  string, optional (default='o')
@@ -207,11 +207,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     width : float, optional (default=1.0)
        Line width of edges
 
-    edge_color : color string, or array of floats (default='r')
-       Edge color. Can be a single color format string,
-       or a sequence of colors with the same length as edgelist.
-       If numeric values are specified they will be mapped to
-       colors using the edge_cmap and edge_vmin,edge_vmax parameters.
+    edge_color : color or array of colors (default='k')
+       Edge color. Can be a single color or a sequence of colors with the same
+       length as edgelist. Color can be string, or (rgb) or (rgba) tuple of
+       three floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
     edge_cmap : Matplotlib colormap, optional (default=None)
        Colormap for mapping intensities of edges
@@ -320,11 +320,11 @@ def draw_networkx_nodes(G, pos,
        Size of nodes (default=300).  If an array is specified it must be the
        same length as nodelist.
 
-    node_color : color string, or array of floats
-       Node color. Can be a single color format string (default='#1f78b4'),
-       or a  sequence of colors with the same length as nodelist.
-       If numeric values are specified they will be mapped to
-       colors using the cmap and vmin,vmax parameters.  See
+    node_color : color or array of colors (default='#1f78b4')
+       Node color. Can be a single color or a sequence of colors with the same
+       length as nodelist. Color can be string, or (rgb) or (rgba) tuple of
+       three floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the cmap and vmin,vmax parameters. See
        matplotlib.scatter for more details.
 
     node_shape :  string
@@ -464,11 +464,11 @@ def draw_networkx_edges(G, pos,
     width : float, or array of floats
        Line width of edges (default=1.0)
 
-    edge_color : color string, or array of floats
-       Edge color. Can be a single color format string (default='r'),
-       or a sequence of colors with the same length as edgelist.
-       If numeric values are specified they will be mapped to
-       colors using the edge_cmap and edge_vmin,edge_vmax parameters.
+    edge_color : color or array of colors (default='k')
+       Edge color. Can be a single color or a sequence of colors with the same
+       length as edgelist. Color can be string, or (rgb) or (rgba) tuple of
+       three floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
     style : string
        Edge line style (default='solid') (solid|dashed|dotted,dashdot)
@@ -600,7 +600,7 @@ def draw_networkx_edges(G, pos,
         else:
             raise ValueError('edge_color must contain color names or numbers')
     else:
-        if is_string_like(edge_color) or len(edge_color) == 1:
+        if is_string_like(edge_color) or len(edge_color) in (3, 4):
             edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
         else:
             msg = 'edge_color must be a color or list of one color per edge'
@@ -833,7 +833,7 @@ def draw_networkx_labels(G, pos,
                     clip_on=True,
                     )
         text_items[n] = t
-        
+
     plt.tick_params(
         axis='both',
         which='both',
