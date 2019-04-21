@@ -114,6 +114,52 @@ class TestEulerianCircuit(TestCase):
         f = list(eulerian_circuit(nx.complete_graph(4)))
 
 
+class TestIsSemiEulerian(TestCase):
+    
+    def test_is_semieulerian(self):
+        # Test graphs with Eulerian paths but no cycles return True.
+        assert_true(is_semieulerian(nx.path_graph(4)))
+        assert_true(is_semieulerian(nx.path_graph(6, create_using='Digraph')))
+        
+        # Test graphs with Eulerian cycles return False.
+        assert_false(is_semieulerian(nx.complete_graph(5)))
+        assert_false(is_semieulerian(nx.complete_graph(7)))
+        assert_false(is_semieulerian(nx.hypercube_graph(4)))
+        assert_false(is_semieulerian(nx.hypercube_graph(6)))
+        
+        
+class TestHasEulerianPath(TestCase):
+    
+    def test_has_eulerian_path_cyclic(self):
+        # Test graphs with Eulerian cycles return True.
+        assert_true(has_eulerian_path(nx.complete_graph(5)))
+        assert_true(has_eulerian_path(nx.complete_graph(7)))
+        assert_true(has_eulerian_path(nx.hypercube_graph(4)))
+        assert_true(has_eulerian_path(nx.hypercube_graph(6)))
+        
+    def test_has_eulerian_path_non_cyclic(self):
+        # Test graphs with Eulerian paths but no cycles return True.
+        assert_true(has_eulerian_path(nx.path_graph(4)))
+        assert_true(has_eulerian_path(nx.path_graph(6, create_using='Digraph')))
+        
+class TestFindPathStart(TestCase):
+    
+    def test_find_path_start(self):
+        # Test digraphs return correct starting node.
+        assert_equal(_find_path_start(nx.path_graph(6, create_using='Digraph'),1))
+        assert_equal(_find_path_start(nx.DiGraph([(0,1), (1,2), (2,0), (4,0)])),4)
+        
+        # Test graph with no Eulerian path return None.
+        assert_equal(_find_path_start(nx.DiGraph(nx.complete_graph(5))),None)
+        
+class TestEulerianPath(TestCase):
+    
+    def test_eulerian_path(self):
+        x = [(4,0),(0,1),(1,2),(2,0)]
+        for e1, e2 in zip(x,eulerian_path(nx.DiGraph(x))):
+            assert_equals(e1, e2)
+
+
 class TestEulerize(TestCase):
 
     @raises(nx.NetworkXError)
