@@ -10,7 +10,7 @@ from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx
-from networkx import is_eulerian, eulerian_circuit
+from networkx import is_eulerian, eulerian_circuit, is_semieulerian, has_eulerian_path, eulerian_path, _find_path_start
 
 
 class TestIsEulerian(TestCase):
