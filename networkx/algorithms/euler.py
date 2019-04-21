@@ -20,7 +20,8 @@ import networkx as nx
 from ..utils import arbitrary_element, not_implemented_for
 
 __all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize', 
-           'is_semieulerian', 'has_eulerian_path', 'eulerian_path']
+           'is_semieulerian', 'has_eulerian_path', 'eulerian_path', 
+           '_find_path_start']
 
 
 def is_eulerian(G):
