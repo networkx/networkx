@@ -19,7 +19,8 @@ from itertools import combinations
 import networkx as nx
 from ..utils import arbitrary_element, not_implemented_for
 
-__all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize']
+__all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize', 
+           'is_semieulerian', 'has_eulerian_path', 'eulerian_path']
 
 
 def is_eulerian(G):
@@ -57,6 +58,37 @@ def is_eulerian(G):
     # An undirected Eulerian graph has no vertices of odd degree and
     # must be connected.
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
+
+
+def is_semieulerian(G):
+    """Return True iff `G` is semi-Eulerian.
+    A graph is semi-Eulerian if it has an Eulerian path but no Eulerian circuit.
+    """
+    return has_eulerian_path(G) and not is_eulerian(G)
+
+
+def _find_path_start(G):
+    """Return a suitable starting vertex for an Eulerian path.
+    If no path exists, return None.
+    """
+    if not has_eulerian_path(G):
+        return None
+        
+    if is_eulerian(G):
+        return arbitrary_element(G)
+
+    if G.is_directed():
+        v1, v2 = [v for v in G if G.in_degree(v) != G.out_degree(v)]
+        # Determines which is the 'start' node (as opposed to the 'end')
+        if G.out_degree(v1) > G.in_degree(v1):
+            return v1
+        else:
+            return v2
+
+    else:
+        # In an undirected graph randomly choose one of the possibilities
+        start = [v for v in G if G.degree(v) % 2 != 0][0]
+        return start
 
 
 def _simplegraph_eulerian_circuit(G, source):
@@ -174,6 +206,58 @@ def eulerian_circuit(G, source=None, keys=False):
         G = G.copy()
     if source is None:
         source = arbitrary_element(G)
+    if G.is_multigraph():
+        for u, v, k in _multigraph_eulerian_circuit(G, source):
+            if keys:
+                yield u, v, k
+            else:
+                yield u, v
+    else:
+        for u, v in _simplegraph_eulerian_circuit(G, source):
+            yield u, v
+
+
+def has_eulerian_path(G):
+    """Return True iff `G` has an Eulerian path.
+    An Eulerian path is a path in a graph which uses each edge of a graph
+    exactly once.
+    
+    A directed graph has an Eulerian path iff:
+        - at most one vertex has (out-degree) − (in-degree) = 1, 
+        - at most one vertex has (in-degree) − (out-degree) = 1, 
+        - every other vertex has equal in-degree and out-degree, 
+        - and all of its vertices with nonzero degree belong to a 
+        - single connected component of the underlying undirected graph.
+    
+    An undirected graph has an Eulerian path iff:
+        - exactly zero or two vertices have odd degree,
+        - and all of its vertices with nonzero degree belong to a
+        - single connected component.
+    """
+    if G.is_directed():
+        semibalanced_ins = sum(G.in_degree(v) - G.out_degree(v) == 1 for v in G)
+        semibalanced_outs = sum(G.out_degree(v) - G.in_degree(v) == 1 for v in G)
+        return (semibalanced_ins <= 1 and 
+                semibalanced_outs <= 1 and
+                sum(G.in_degree(v) != G.out_degree(v) for v in G) <= 2 and
+                nx.is_weakly_connected(G))
+
+    else:
+        return (sum(d % 2 == 1 for v, d in G.degree()) in (0,2)
+                and nx.is_connected(G))
+        
+
+def eulerian_path(G, source=None, keys=False):
+    """Return an iterator over the edges of an Eulerian path in `G`.
+    """
+    if not has_eulerian_path(G):
+        raise nx.NetworkXError("Graph has no Eulerian paths.")
+    if G.is_directed():
+        G = G.reverse()
+    else:
+        G = G.copy()
+    if source is None:
+        source = _find_path_start(G)
     if G.is_multigraph():
         for u, v, k in _multigraph_eulerian_circuit(G, source):
             if keys:
