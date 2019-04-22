@@ -150,7 +150,7 @@ class TestFindPathStart(TestCase):
         assert_equal(find_path_start(nx.DiGraph([(0,1), (1,2), (2,0), (4,0)])),4)
         
         # Test graph with no Eulerian path return None.
-        assert_equal(find_path_start(nx.DiGraph(nx.complete_graph(5))),None)
+        assert_equal(find_path_start(nx.DiGraph([(0,1),(1,2),(2,3),(2,4)]),None)
         
 class TestEulerianPath(TestCase):
     
