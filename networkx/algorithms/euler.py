@@ -21,7 +21,7 @@ from ..utils import arbitrary_element, not_implemented_for
 
 __all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize', 
            'is_semieulerian', 'has_eulerian_path', 'eulerian_path', 
-           '_find_path_start']
+           'find_path_start']
 
 
 def is_eulerian(G):
@@ -68,7 +68,7 @@ def is_semieulerian(G):
     return has_eulerian_path(G) and not is_eulerian(G)
 
 
-def _find_path_start(G):
+def find_path_start(G):
     """Return a suitable starting vertex for an Eulerian path.
     If no path exists, return None.
     """
@@ -258,7 +258,7 @@ def eulerian_path(G, source=None, keys=False):
     else:
         G = G.copy()
     if source is None:
-        source = _find_path_start(G)
+        source = find_path_start(G)
     if G.is_multigraph():
         for u, v, k in _multigraph_eulerian_circuit(G, source):
             if keys:
