@@ -250,6 +250,9 @@ def has_eulerian_path(G):
 
 def eulerian_path(G, source=None, keys=False):
     """Return an iterator over the edges of an Eulerian path in `G`.
+    
+    Warning: If `source` provided is not the start node of an Euler path
+    will raise error even if an Euler Path exists.
     """
     if not has_eulerian_path(G):
         raise nx.NetworkXError("Graph has no Eulerian paths.")
