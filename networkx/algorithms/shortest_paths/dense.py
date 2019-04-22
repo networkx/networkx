@@ -123,11 +123,16 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
     for w in G:
+        Dw=dist[w]
+        Pw=pred[w]
         for u in G:
+            Du=dist[u]
+            Pu=pred[u]
             for v in G:
-                if dist[u][v] > dist[u][w] + dist[w][v]:
-                    dist[u][v] = dist[u][w] + dist[w][v]
-                    pred[u][v] = pred[w][v]
+                d=Du[w] + Dw[v]
+                if Du[v] > d:
+                    Du[v] = d
+                    Pu[v] = Pw[v]
     return dict(pred), dict(dist)
 
 
