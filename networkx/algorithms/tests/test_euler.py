@@ -146,7 +146,7 @@ class TestFindPathStart(TestCase):
     
     def testfind_path_start(self):
         # Test digraphs return correct starting node.
-        assert_equal(find_path_start(nx.path_graph(6, create_using=nx.DiGraph),0))
+        assert_equal(find_path_start(nx.path_graph(6, create_using=nx.DiGraph)),0)
         assert_equal(find_path_start(nx.DiGraph([(0,1), (1,2), (2,0), (4,0)])),4)
         
         # Test graph with no Eulerian path return None.
