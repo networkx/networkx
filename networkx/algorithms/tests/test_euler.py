@@ -10,7 +10,7 @@ from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx
-from networkx import is_eulerian, eulerian_circuit, is_semieulerian, has_eulerian_path, eulerian_path, _find_path_start
+from networkx import is_eulerian, eulerian_circuit, is_semieulerian, has_eulerian_path, eulerian_path, find_path_start
 
 
 class TestIsEulerian(TestCase):
@@ -144,13 +144,13 @@ class TestHasEulerianPath(TestCase):
         
 class TestFindPathStart(TestCase):
     
-    def test_find_path_start(self):
+    def testfind_path_start(self):
         # Test digraphs return correct starting node.
-        assert_equal(_find_path_start(nx.path_graph(6, create_using='Digraph'),1))
-        assert_equal(_find_path_start(nx.DiGraph([(0,1), (1,2), (2,0), (4,0)])),4)
+        assert_equal(find_path_start(nx.path_graph(6, create_using='Digraph'),1))
+        assert_equal(find_path_start(nx.DiGraph([(0,1), (1,2), (2,0), (4,0)])),4)
         
         # Test graph with no Eulerian path return None.
-        assert_equal(_find_path_start(nx.DiGraph(nx.complete_graph(5))),None)
+        assert_equal(find_path_start(nx.DiGraph(nx.complete_graph(5))),None)
         
 class TestEulerianPath(TestCase):
     
