@@ -1,10 +1,11 @@
+
 from nose import SkipTest
 
 import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
 
 
-class TestModularity(object):
+class TestBetheHessian(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
@@ -26,14 +27,15 @@ class TestModularity(object):
         self.P = nx.path_graph(3)
 
     def test_bethe_hessian(self):
-        "Bethe matrix"
-        H = numpy.matrix([[ 4, -2,  0],
+        "Bethe Hessian matrix"
+        H = numpy.array([[ 4, -2,  0],
                           [-2,  5, -2],
                           [ 0, -2,  4]])
 
         permutation = [2, 0, 1]
-        assert_equal(nx.bethe_hessian_matrix(self.P, r=2), H)
-        assert_equal(nx.bethe_hessian_matrix(self.P, r=2, nodelist=permutation),
+        print(nx.bethe_hessian_matrix(self.P, r=2).todense())
+        assert_equal(nx.bethe_hessian_matrix(self.P, r=2).todense(), H)
+        assert_equal(nx.bethe_hessian_matrix(self.P, r=2, nodelist=permutation).todense(),
                      H[numpy.ix_(permutation, permutation)])
-        assert_equal(nx.bethe_hessian_matrix(self.G, r=1),
-                     nx.laplacian_matrix(self.G))
+        assert_equal(nx.bethe_hessian_matrix(self.G, r=1).todense(),
+                     nx.laplacian_matrix(self.G).todense())

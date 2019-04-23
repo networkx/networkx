@@ -14,7 +14,7 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
 __all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum', 
-   'normalized_laplacian_spectrum']
+   'normalized_laplacian_spectrum', 'bethe_hessian_spectrum']
 
 
 def laplacian_spectrum(G, weight='weight'):
