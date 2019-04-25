@@ -1,4 +1,4 @@
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -41,7 +41,7 @@ __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
 
 def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
                         multigraph_weight=sum, weight='weight', nonedge=0.0):
-    """Return the graph adjacency matrix as a Pandas DataFrame.
+    """Returns the graph adjacency matrix as a Pandas DataFrame.
 
     Parameters
     ----------
@@ -130,7 +130,7 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
 
 
 def from_pandas_adjacency(df, create_using=None):
-    r"""Return a graph from Pandas DataFrame.
+    r"""Returns a graph from Pandas DataFrame.
 
     The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
 
@@ -193,7 +193,7 @@ def from_pandas_adjacency(df, create_using=None):
 
 def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
                        dtype=None, order=None):
-    """Return the graph edge list as a Pandas DataFrame.
+    """Returns the graph edge list as a Pandas DataFrame.
 
     Parameters
     ----------
@@ -244,7 +244,7 @@ def to_pandas_edgelist(G, source='source', target='target', nodelist=None,
 
 def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
                          create_using=None):
-    """Return a graph from Pandas DataFrame containing an edge list.
+    """Returns a graph from Pandas DataFrame containing an edge list.
 
     The Pandas DataFrame should contain at least two columns of node names and
     zero or more columns of edge attributes. Each row will be processed as one
@@ -348,7 +348,7 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
-    """Return the graph adjacency matrix as a NumPy matrix.
+    """Returns the graph adjacency matrix as a NumPy matrix.
 
     Parameters
     ----------
@@ -412,17 +412,13 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     resulting Numpy matrix can be modified as follows:
 
     >>> import numpy as np
-    >>> try:
-    ...    np.set_printoptions(legacy="1.13")
-    ... except TypeError:
-    ...    pass
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_numpy_matrix(G)
     >>> A
-    matrix([[ 1.]])
+    matrix([[1.]])
     >>> A.A[np.diag_indices_from(A)] *= 2
     >>> A
-    matrix([[ 2.]])
+    matrix([[2.]])
 
     Examples
     --------
@@ -436,9 +432,9 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     >>> G.add_edge(2, 2)
     1
     >>> nx.to_numpy_matrix(G, nodelist=[0, 1, 2])
-    matrix([[ 0.,  2.,  0.],
-            [ 1.,  0.,  0.],
-            [ 0.,  0.,  4.]])
+    matrix([[0., 2., 0.],
+            [1., 0., 0.],
+            [0., 0., 4.]])
 
     """
     import numpy as np
@@ -451,7 +447,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
 
 def from_numpy_matrix(A, parallel_edges=False, create_using=None):
-    """Return a graph from numpy matrix.
+    """Returns a graph from numpy matrix.
 
     The numpy matrix is interpreted as an adjacency matrix for the graph.
 
@@ -605,7 +601,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
 @not_implemented_for('multigraph')
 def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
-    """Return the graph adjacency matrix as a NumPy recarray.
+    """Returns the graph adjacency matrix as a NumPy recarray.
 
     Parameters
     ----------
@@ -642,8 +638,8 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     >>> G.add_edge(1, 2, weight=7.0, cost=5)
     >>> A = nx.to_numpy_recarray(G, dtype=[('weight', float), ('cost', int)])
     >>> print(A.weight)
-    [[ 0.  7.]
-     [ 7.  0.]]
+    [[0. 7.]
+     [7. 0.]]
     >>> print(A.cost)
     [[0 5]
      [5 0]]
@@ -677,7 +673,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
 
 def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
                            weight='weight', format='csr'):
-    """Return the graph adjacency matrix as a SciPy sparse matrix.
+    """Returns the graph adjacency matrix as a SciPy sparse matrix.
 
     Parameters
     ----------
@@ -967,7 +963,7 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
 
 def to_numpy_array(G, nodelist=None, dtype=None, order=None,
                    multigraph_weight=sum, weight='weight', nonedge=0.0):
-    """Return the graph adjacency matrix as a NumPy array.
+    """Returns the graph adjacency matrix as a NumPy array.
 
     Parameters
     ----------
@@ -1031,17 +1027,13 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
     resulting NumPy array can be modified as follows:
 
     >>> import numpy as np
-    >>> try:
-    ...    np.set_printoptions(legacy="1.13")
-    ... except TypeError:
-    ...    pass
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_numpy_array(G)
     >>> A
-    array([[ 1.]])
+    array([[1.]])
     >>> A[np.diag_indices_from(A)] *= 2
     >>> A
-    array([[ 2.]])
+    array([[2.]])
 
     Examples
     --------
@@ -1055,9 +1047,9 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
     >>> G.add_edge(2, 2)
     1
     >>> nx.to_numpy_array(G, nodelist=[0, 1, 2])
-    array([[ 0.,  2.,  0.],
-           [ 1.,  0.,  0.],
-           [ 0.,  0.,  4.]])
+    array([[0., 2., 0.],
+           [1., 0., 0.],
+           [0., 0., 4.]])
 
     """
     import numpy as np
@@ -1140,7 +1132,7 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
 
 
 def from_numpy_array(A, parallel_edges=False, create_using=None):
-    """Return a graph from NumPy array.
+    """Returns a graph from NumPy array.
 
     The NumPy array is interpreted as an adjacency matrix for the graph.
 

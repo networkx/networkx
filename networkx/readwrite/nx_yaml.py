@@ -14,7 +14,7 @@ http://pyyaml.org/wiki/PyYAML
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -96,7 +96,7 @@ def read_yaml(path):
     except ImportError:
         raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/")
 
-    G = yaml.load(path)
+    G = yaml.load(path, Loader=yaml.FullLoader)
     return G
 
 

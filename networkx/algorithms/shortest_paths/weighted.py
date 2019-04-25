@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -1865,7 +1865,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
 
 def negative_edge_cycle(G, weight='weight'):
-    """Return True if there exists a negative edge cycle anywhere in G.
+    """Returns True if there exists a negative edge cycle anywhere in G.
 
     Parameters
     ----------
@@ -1922,7 +1922,7 @@ def negative_edge_cycle(G, weight='weight'):
 
 
 def bidirectional_dijkstra(G, source, target, weight='weight'):
-    """Dijkstra's algorithm for shortest paths using bidirectional search.
+    r"""Dijkstra's algorithm for shortest paths using bidirectional search.
 
     Parameters
     ----------

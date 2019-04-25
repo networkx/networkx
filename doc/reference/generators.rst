@@ -236,6 +236,7 @@ Social Networks
    karate_club_graph
    davis_southern_women_graph
    florentine_families_graph
+   les_miserables_graph
 
 
 Community

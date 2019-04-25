@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -16,7 +16,7 @@ __all__ = ['is_semiconnected']
 
 @not_implemented_for('undirected')
 def is_semiconnected(G):
-    """Return True if the graph is semiconnected, False otherwise.
+    """Returns True if the graph is semiconnected, False otherwise.
 
     A graph is semiconnected if, and only if, for any pair of nodes, either one
     is reachable from the other, or they are mutually reachable.

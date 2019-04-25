@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -725,7 +725,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @property
     def out_degree(self):
-        """Return an iterator for (node, out-degree) or out-degree for single node.
+        """Returns an iterator for (node, out-degree) or out-degree for single node.
 
         out_degree(self, nbunch=None, weight=None)
 
@@ -770,15 +770,15 @@ class MultiDiGraph(MultiGraph, DiGraph):
         return OutMultiDegreeView(self)
 
     def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
+        """Returns True if graph is a multigraph, False otherwise."""
         return True
 
     def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
+        """Returns True if graph is directed, False otherwise."""
         return True
 
     def to_undirected(self, reciprocal=False, as_view=False):
-        """Return an undirected representation of the digraph.
+        """Returns an undirected representation of the digraph.
 
         Parameters
         ----------
@@ -849,7 +849,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         return G
 
     def reverse(self, copy=True):
-        """Return the reverse of the graph.
+        """Returns the reverse of the graph.
 
         The reverse is a graph with the same nodes and edges
         but with the directions of the edges reversed.

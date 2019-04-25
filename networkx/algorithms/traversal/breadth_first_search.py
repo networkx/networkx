@@ -1,6 +1,6 @@
 # breadth_first_search.py - breadth-first traversal of a graph
 #
-# Copyright (C) 2004-2018 NetworkX Developers
+# Copyright (C) 2004-2019 NetworkX Developers
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
@@ -147,7 +147,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
 
 
 def bfs_tree(G, source, reverse=False, depth_limit=None):
-    """Return an oriented tree constructed from of a breadth-first-search
+    """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.
 
     Parameters

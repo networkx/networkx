@@ -22,7 +22,7 @@ __all__ = ['subgraph_centrality_exp',
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def subgraph_centrality_exp(G):
-    r"""Return the subgraph centrality for each node of G.
+    r"""Returns the subgraph centrality for each node of G.
 
     Subgraph centrality  of a node `n` is the sum of weighted closed
     walks of all lengths starting and ending at node `n`. The weights
@@ -89,7 +89,7 @@ def subgraph_centrality_exp(G):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def subgraph_centrality(G):
-    r"""Return subgraph centrality for each node in G.
+    r"""Returns subgraph centrality for each node in G.
 
     Subgraph centrality  of a node `n` is the sum of weighted closed
     walks of all lengths starting and ending at node `n`. The weights
@@ -164,7 +164,7 @@ def subgraph_centrality(G):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_betweenness_centrality(G, normalized=True):
-    r"""Return subgraph communicability for all pairs of nodes in G.
+    r"""Returns subgraph communicability for all pairs of nodes in G.
 
     Communicability betweenness measure makes use of the number of walks
     connecting every pair of nodes as the basis of a betweenness centrality
@@ -272,7 +272,7 @@ def _rescale(cbc, normalized):
 
 
 def estrada_index(G):
-    r"""Return the Estrada index of a the graph G.
+    r"""Returns the Estrada index of a the graph G.
 
     The Estrada Index is a topological index of folding or 3D "compactness" ([1]_).
 

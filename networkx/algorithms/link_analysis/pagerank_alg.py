@@ -1,5 +1,5 @@
 """PageRank analysis of graph structure. """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,7 +17,7 @@ __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 def pagerank(G, alpha=0.85, personalization=None,
              max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
              dangling=None):
-    """Return the PageRank of the nodes in the graph.
+    """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
@@ -160,7 +160,7 @@ def pagerank(G, alpha=0.85, personalization=None,
 
 def google_matrix(G, alpha=0.85, personalization=None,
                   nodelist=None, weight='weight', dangling=None):
-    """Return the Google matrix of the graph.
+    """Returns the Google matrix of the graph.
 
     Parameters
     ----------
@@ -254,7 +254,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
                    dangling=None):
-    """Return the PageRank of the nodes in the graph.
+    """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
@@ -338,7 +338,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
 def pagerank_scipy(G, alpha=0.85, personalization=None,
                    max_iter=100, tol=1.0e-6, weight='weight',
                    dangling=None):
-    """Return the PageRank of the nodes in the graph.
+    """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as

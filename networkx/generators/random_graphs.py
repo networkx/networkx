@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -298,7 +298,7 @@ def gnm_random_graph(n, m, seed=None, directed=False):
 
 @py_random_state(3)
 def newman_watts_strogatz_graph(n, k, p, seed=None):
-    """Return a Newman–Watts–Strogatz small-world graph.
+    """Returns a Newman–Watts–Strogatz small-world graph.
 
     Parameters
     ----------
@@ -363,7 +363,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
 @py_random_state(3)
 def watts_strogatz_graph(n, k, p, seed=None):
-    """Return a Watts–Strogatz small-world graph.
+    """Returns a Watts–Strogatz small-world graph.
 
     Parameters
     ----------
@@ -1187,7 +1187,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
 
 @py_random_state(3)
 def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
-    r"""Return an random graph based on the specified kernel.
+    r"""Returns an random graph based on the specified kernel.
 
     The algorithm chooses each of the $[n(n-1)]/2$ possible edges with
     probability specified by a kernel $\kappa(x,y)$ [1]_.  The kernel

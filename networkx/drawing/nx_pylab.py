@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,12 +21,12 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
+from numbers import Number
 import networkx as nx
 from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
-    spring_layout, random_layout
-from numbers import Number
+    spring_layout, random_layout, planar_layout
 
 __all__ = ['draw',
            'draw_networkx',
@@ -39,6 +39,7 @@ __all__ = ['draw',
            'draw_random',
            'draw_spectral',
            'draw_spring',
+           'draw_planar',
            'draw_shell']
 
 
@@ -413,6 +414,13 @@ def draw_networkx_nodes(G, pos,
                                  linewidths=linewidths,
                                  edgecolors=edgecolors,
                                  label=label)
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     node_collection.set_zorder(2)
     return node_collection
@@ -435,6 +443,7 @@ def draw_networkx_edges(G, pos,
                         node_size=300,
                         nodelist=None,
                         node_shape="o",
+                        connectionstyle=None,
                         **kwds):
     """Draw the edges of the graph G.
 
@@ -489,6 +498,12 @@ def draw_networkx_edges(G, pos,
        For directed graphs, choose the size of the arrow head head's length and
        width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
+
+    connectionstyle : str, optional (default=None)
+       Pass the connectionstyle parameter to create curved arc of rounding
+       radius rad. For example, connectionstyle='arc3,rad=0.2'.
+       See :py:class: `matplotlib.patches.ConnectionStyle` and
+       :py:class: `matplotlib.patches.FancyArrowPatch` for more info.
 
     label : [None| string]
        Label for legend
@@ -659,7 +674,7 @@ def draw_networkx_edges(G, pos,
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
             if cb.iterable(node_size):  # many node sizes
-                src_node, dst_node = edgelist[i]
+                src_node, dst_node = edgelist[i][:2]
                 index_node = nodelist.index(dst_node)
                 marker_size = node_size[index_node]
                 shrink_target = to_marker_edge(marker_size, node_shape)
@@ -682,6 +697,7 @@ def draw_networkx_edges(G, pos,
                                     mutation_scale=mutation_scale,
                                     color=arrow_color,
                                     linewidth=line_width,
+                                    connectionstyle=connectionstyle,
                                     zorder=1)  # arrows go behind nodes
 
             # There seems to be a bug in matplotlib to make collections of
@@ -702,6 +718,14 @@ def draw_networkx_edges(G, pos,
     corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
+
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     return arrow_collection
 
@@ -809,6 +833,14 @@ def draw_networkx_labels(G, pos,
                     clip_on=True,
                     )
         text_items[n] = t
+        
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
 
     return text_items
 
@@ -955,6 +987,14 @@ def draw_networkx_edge_labels(G, pos,
                     )
         text_items[(n1, n2)] = t
 
+    plt.tick_params(
+        axis='both',
+        which='both',
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
+
     return text_items
 
 
@@ -1007,7 +1047,12 @@ def draw_random(G, **kwargs):
 
 
 def draw_spectral(G, **kwargs):
-    """Draw the graph G with a spectral layout.
+    """Draw the graph G with a spectral 2D layout.
+
+    Using the unnormalized Laplacion, the layout shows possible clusters of
+    nodes which are an approximation of the ratio cut. The positions are the
+    entries of the second and third eigenvectors corresponding to the
+    ascending eigenvalues starting from the second one.
 
     Parameters
     ----------
@@ -1055,6 +1100,22 @@ def draw_shell(G, **kwargs):
     if nlist is not None:
         del(kwargs['nlist'])
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
+
+
+def draw_planar(G, **kwargs):
+    """Draw a planar networkx graph with planar layout.
+
+    Parameters
+    ----------
+    G : graph
+       A planar networkx graph
+
+    kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
+    draw(G, planar_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):

@@ -121,6 +121,9 @@ is partially historical, and now, mostly arbitrary.
 - James Owen, Github: `leamingrad <https://github.com/leamingrad>`_
 - Robert Gmyr, Github: `gmyr <https://github.com/gmyr>`_
 - Mike Trenfield
+- Jon Crall, Github: `Erotemic <https://github.com/Erotemic>`_
+- Issa Moradnejad, `Github <https://github.com/Moradnejad>`_, `LinkedIn <https://linkedin.com/in/moradnejad/>`_
+- Julien Klaus
 
 Support
 -------

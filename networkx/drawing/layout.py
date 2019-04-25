@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -37,6 +37,7 @@ __all__ = ['bipartite_layout',
            'shell_layout',
            'spring_layout',
            'spectral_layout',
+           'planar_layout',
            'fruchterman_reingold_layout']
 
 
@@ -736,6 +737,11 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
 def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
     """Position nodes using the eigenvectors of the graph Laplacian.
 
+    Using the unnormalized Laplacion, the layout shows possible clusters of
+    nodes which are an approximation of the ratio cut. If dim is the number of
+    dimensions then the positions are the entries of the dim eigenvectors
+    corresponding to the ascending eigenvalues starting from the second one.
+
     Parameters
     ----------
     G : NetworkX graph or list of nodes
@@ -857,8 +863,71 @@ def _sparse_spectral(A, dim=2):
     return np.real(eigenvectors[:, index])
 
 
+def planar_layout(G, scale=1, center=None, dim=2):
+    """Position nodes without edge intersections.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G. If G is of type
+        PlanarEmbedding, the positions are selected accordingly.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G. If G is of type
+        nx.PlanarEmbedding, the positions are selected accordingly.
+
+    scale : number (default: 1)
+        Scale factor for positions.
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    dim : int
+        Dimension of layout.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+
+    Raises
+    ------
+    nx.NetworkXException
+        If G is not planar
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.planar_layout(G)
+    """
+    import numpy as np
+
+    if dim != 2:
+        raise ValueError('can only handle 2 dimensions')
+
+    G, center = _process_params(G, center, dim)
+
+    if len(G) == 0:
+        return {}
+
+    if isinstance(G, nx.PlanarEmbedding):
+        embedding = G
+    else:
+        is_planar, embedding = nx.check_planarity(G)
+        if not is_planar:
+            raise nx.NetworkXException("G is not planar.")
+    pos = nx.combinatorial_embedding_to_pos(embedding)
+    node_list = list(embedding)
+    pos = np.row_stack((pos[x] for x in node_list))
+    pos = pos.astype(np.float64)
+    pos = rescale_layout(pos, scale=scale) + center
+    return dict(zip(node_list, pos))
+
+
 def rescale_layout(pos, scale=1):
-    """Return scaled position array to (-scale, scale) in all axes.
+    """Returns scaled position array to (-scale, scale) in all axes.
 
     The function acts on NumPy arrays which hold position information.
     Each position is one row of the array. The dimension of the space

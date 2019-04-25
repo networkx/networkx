@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # chains.py - functions for finding chains in a graph
 #
-# Copyright 2004-2018 NetworkX developers.
+# Copyright 2004-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -16,7 +16,7 @@ from networkx.utils import not_implemented_for
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def chain_decomposition(G, root=None):
-    """Return the chain decomposition of a graph.
+    """Returns the chain decomposition of a graph.
 
     The *chain decomposition* of a graph with respect a depth-first
     search tree is a set of cycles or paths derived from the set of

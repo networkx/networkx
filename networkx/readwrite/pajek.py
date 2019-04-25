@@ -270,7 +270,7 @@ def parse_pajek(lines):
 
 
 def make_qstr(t):
-    """Return the string representation of t.
+    """Returns the string representation of t.
     Add outer double-quotes if the string has a space.
     """
     if not is_string_like(t):

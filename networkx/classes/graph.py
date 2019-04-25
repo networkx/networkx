@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -381,7 +381,7 @@ class Graph(object):
         self.graph['name'] = s
 
     def __str__(self):
-        """Return the graph name.
+        """Returns the graph name.
 
         Returns
         -------
@@ -415,7 +415,7 @@ class Graph(object):
         return iter(self._node)
 
     def __contains__(self, n):
-        """Return True if n is a node, False otherwise. Use: 'n in G'.
+        """Returns True if n is a node, False otherwise. Use: 'n in G'.
 
         Examples
         --------
@@ -429,7 +429,7 @@ class Graph(object):
             return False
 
     def __len__(self):
-        """Return the number of nodes. Use: 'len(G)'.
+        """Returns the number of nodes. Use: 'len(G)'.
 
         Returns
         -------
@@ -446,7 +446,7 @@ class Graph(object):
         return len(self._node)
 
     def __getitem__(self, n):
-        """Return a dict of neighbors of node n.  Use: 'G[n]'.
+        """Returns a dict of neighbors of node n.  Use: 'G[n]'.
 
         Parameters
         ----------
@@ -795,7 +795,7 @@ class Graph(object):
     # Done with backward compatibility methods for 1.x
 
     def number_of_nodes(self):
-        """Return the number of nodes in the graph.
+        """Returns the number of nodes in the graph.
 
         Returns
         -------
@@ -815,7 +815,7 @@ class Graph(object):
         return len(self._node)
 
     def order(self):
-        """Return the number of nodes in the graph.
+        """Returns the number of nodes in the graph.
 
         Returns
         -------
@@ -830,7 +830,7 @@ class Graph(object):
         return len(self._node)
 
     def has_node(self, n):
-        """Return True if the graph contains the node n.
+        """Returns True if the graph contains the node n.
 
         Identical to `n in G`
 
@@ -1183,7 +1183,7 @@ class Graph(object):
             raise NetworkXError("update needs nodes or edges input")
 
     def has_edge(self, u, v):
-        """Return True if the edge (u, v) is in the graph.
+        """Returns True if the edge (u, v) is in the graph.
 
         This is the same as `v in G[u]` without KeyError exceptions.
 
@@ -1224,7 +1224,7 @@ class Graph(object):
             return False
 
     def neighbors(self, n):
-        """Return an iterator over all neighbors of node n.
+        """Returns an iterator over all neighbors of node n.
 
         This is identical to `iter(G[n])`
 
@@ -1325,7 +1325,7 @@ class Graph(object):
         return EdgeView(self)
 
     def get_edge_data(self, u, v, default=None):
-        """Return the attribute dictionary associated with edge (u, v).
+        """Returns the attribute dictionary associated with edge (u, v).
 
         This is identical to `G[u][v]` except the default is returned
         instead of an exception is the edge doesn't exist.
@@ -1371,7 +1371,7 @@ class Graph(object):
             return default
 
     def adjacency(self):
-        """Return an iterator over (node, adjacency dict) tuples for all nodes.
+        """Returns an iterator over (node, adjacency dict) tuples for all nodes.
 
         For directed graphs, only outgoing neighbors/adjacencies are included.
 
@@ -1450,11 +1450,11 @@ class Graph(object):
         self.graph.clear()
 
     def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
+        """Returns True if graph is a multigraph, False otherwise."""
         return False
 
     def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
+        """Returns True if graph is directed, False otherwise."""
         return False
 
     def fresh_copy(self):
@@ -1464,7 +1464,7 @@ class Graph(object):
         return self.__class__()
 
     def copy(self, as_view=False):
-        """Return a copy of the graph.
+        """Returns a copy of the graph.
 
         The copy method by default returns an independent shallow copy
         of the graph and attributes. That is, if an attribute is a
@@ -1551,7 +1551,7 @@ class Graph(object):
         return G
 
     def to_directed(self, as_view=False):
-        """Return a directed representation of the graph.
+        """Returns a directed representation of the graph.
 
         Returns
         -------
@@ -1605,7 +1605,7 @@ class Graph(object):
         return G
 
     def to_undirected(self, as_view=False):
-        """Return an undirected copy of the graph.
+        """Returns an undirected copy of the graph.
 
         Parameters
         ----------
@@ -1660,7 +1660,7 @@ class Graph(object):
         return G
 
     def subgraph(self, nodes):
-        """Return a SubGraph view of the subgraph induced on `nodes`.
+        """Returns a SubGraph view of the subgraph induced on `nodes`.
 
         The induced subgraph of the graph contains the nodes in `nodes`
         and the edges between those nodes.
@@ -1764,7 +1764,7 @@ class Graph(object):
         return nx.edge_subgraph(self, edges)
 
     def size(self, weight=None):
-        """Return the number of edges or total of all edge weights.
+        """Returns the number of edges or total of all edge weights.
 
         Parameters
         ----------
@@ -1807,7 +1807,7 @@ class Graph(object):
         return s // 2 if weight is None else s / 2
 
     def number_of_edges(self, u=None, v=None):
-        """Return the number of edges between two nodes.
+        """Returns the number of edges between two nodes.
 
         Parameters
         ----------
@@ -1859,7 +1859,7 @@ class Graph(object):
         return 0
 
     def nbunch_iter(self, nbunch=None):
-        """Return an iterator over nodes contained in nbunch that are
+        """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
         The nodes in nbunch are checked for membership in the graph

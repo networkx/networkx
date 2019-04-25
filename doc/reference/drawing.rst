@@ -36,6 +36,7 @@ Matplotlib
    draw_networkx_edge_labels
    draw_circular
    draw_kamada_kawai
+   draw_planar
    draw_random
    draw_spectral
    draw_spring
@@ -80,6 +81,7 @@ Graph Layout
    bipartite_layout
    circular_layout
    kamada_kawai_layout
+   planar_layout
    random_layout
    rescale_layout
    shell_layout

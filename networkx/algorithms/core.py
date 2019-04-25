@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -41,7 +41,7 @@ __all__ = ['core_number', 'find_cores', 'k_core',
 
 @not_implemented_for('multigraph')
 def core_number(G):
-    """Return the core number for each vertex.
+    """Returns the core number for each vertex.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
 
@@ -139,7 +139,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
 
 
 def k_core(G, k=None, core_number=None):
-    """Return the k-core of G.
+    """Returns the k-core of G.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
 
@@ -189,7 +189,7 @@ def k_core(G, k=None, core_number=None):
 
 
 def k_shell(G, k=None, core_number=None):
-    """Return the k-shell of G.
+    """Returns the k-shell of G.
 
     The k-shell is the subgraph induced by nodes with core number k.
     That is, nodes in the k-core that are not in the (k+1)-core.
@@ -246,7 +246,7 @@ def k_shell(G, k=None, core_number=None):
 
 
 def k_crust(G, k=None, core_number=None):
-    """Return the k-crust of G.
+    """Returns the k-crust of G.
 
     The k-crust is the graph G with the k-core removed.
 
@@ -304,7 +304,7 @@ def k_crust(G, k=None, core_number=None):
 
 
 def k_corona(G, k, core_number=None):
-    """Return the k-corona of G.
+    """Returns the k-corona of G.
 
     The k-corona is the subgraph of nodes in the k-core which have
     exactly k neighbours in the k-core.

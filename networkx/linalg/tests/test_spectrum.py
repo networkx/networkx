@@ -41,6 +41,19 @@ class TestSpectrum(object):
         e = sorted(nx.laplacian_spectrum(self.WG, weight='other'))
         assert_almost_equal(e, 0.3 * evals)
 
+    def test_normalized_laplacian_spectrum(self):
+        "Normalized Laplacian eigenvalues"
+        evals = numpy.array([0, 0, 0.7712864461218, 1.5, 1.7287135538781])
+        e = sorted(nx.normalized_laplacian_spectrum(self.G))
+        assert_almost_equal(e, evals)
+        e = sorted(nx.normalized_laplacian_spectrum(self.WG, weight=None))
+        assert_almost_equal(e, evals)
+        e = sorted(nx.normalized_laplacian_spectrum(self.WG))
+        assert_almost_equal(e, evals)
+        e = sorted(nx.normalized_laplacian_spectrum(self.WG, weight='other'))
+        assert_almost_equal(e, evals)
+
+
     def test_adjacency_spectrum(self):
         "Adjacency eigenvalues"
         evals = numpy.array([-numpy.sqrt(2), 0, numpy.sqrt(2)])

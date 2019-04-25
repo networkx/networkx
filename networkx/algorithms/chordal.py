@@ -318,7 +318,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
 
 def _connected_chordal_graph_cliques(G):
-    """Return the set of maximal cliques of a connected chordal graph."""
+    """Returns the set of maximal cliques of a connected chordal graph."""
     if G.number_of_nodes() == 1:
         x = frozenset(G.nodes())
         return set([x])

@@ -62,12 +62,24 @@ class TestFunction(object):
         nlist = [12, 13, 14, 15]
         nx.add_star(G, nlist)
         assert_edges_equal(G.edges(nlist), [(12, 13), (12, 14), (12, 15)])
+
         G = self.G.copy()
         nx.add_star(G, nlist, weight=2.0)
         assert_edges_equal(G.edges(nlist, data=True),
                            [(12, 13, {'weight': 2.}),
                             (12, 14, {'weight': 2.}),
                             (12, 15, {'weight': 2.})])
+
+        G = self.G.copy()
+        nlist = [12]
+        nx.add_star(G, nlist)
+        assert_nodes_equal(G, list(self.G) + nlist)
+
+        G = self.G.copy()
+        nlist = []
+        nx.add_star(G, nlist)
+        assert_nodes_equal(G.nodes, self.Gnodes)
+        assert_edges_equal(G.edges, self.G.edges)
 
     def test_add_path(self):
         G = self.G.copy()
@@ -135,6 +147,17 @@ class TestFunction(object):
                     (15, 12, {'weight': 1.})]]
         nx.add_cycle(G, nlist, weight=1.0)
         assert_true(sorted(G.edges(nlist, data=True)) in oklists)
+
+        G = self.G.copy()
+        nlist = [12]
+        nx.add_cycle(G, nlist)
+        assert_nodes_equal(G, list(self.G) + nlist)
+
+        G = self.G.copy()
+        nlist = []
+        nx.add_cycle(G, nlist)
+        assert_nodes_equal(G.nodes, self.Gnodes)
+        assert_edges_equal(G.edges, self.G.edges)
 
     def test_subgraph(self):
         assert_equal(self.G.subgraph([0, 1, 2, 4]).adj,

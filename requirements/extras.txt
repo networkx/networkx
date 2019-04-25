@@ -4,6 +4,6 @@ pandas>=0.23.3
 matplotlib>=3.0.2
 pygraphviz>=1.5
 pydot>=1.2.4
-pyyaml>=3.13
+pyyaml>=5.1
 lxml>=4.2.3
 gdal==1.10.0

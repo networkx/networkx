@@ -26,6 +26,7 @@ class TestPylab(object):
         try:
             functions = [nx.draw_circular,
                          nx.draw_kamada_kawai,
+                         nx.draw_planar,
                          nx.draw_random,
                          nx.draw_spectral,
                          nx.draw_spring,
@@ -100,6 +101,12 @@ class TestPylab(object):
     def test_empty_graph(self):
         G = nx.Graph()
         nx.draw(G)
+
+    def test_multigraph_edgelist_tuples(self):
+        # See Issue #3295
+        G = nx.path_graph(3, create_using=nx.MultiDiGraph)
+        nx.draw_networkx(G, edgelist=[(0, 1, 0)])
+        nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20])
 
     def test_alpha_iter(self):
         pos = nx.random_layout(self.G)

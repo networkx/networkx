@@ -1,4 +1,4 @@
-#    Copyright (C) 2011-2018 by
+#    Copyright (C) 2011-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -70,7 +70,7 @@ def jit_graph(data, create_using=None):
 
 @not_implemented_for('multigraph')
 def jit_data(G, indent=None):
-    """Return data in JIT JSON format.
+    """Returns data in JIT JSON format.
 
     Parameters
     ----------
