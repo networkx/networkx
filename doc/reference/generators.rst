@@ -303,6 +303,7 @@ Joint Degree Sequence
    is_valid_joint_degree
    joint_degree_graph
 
+
 Mycielski
 ---------
 .. automodule:: networkx.generators.mycielski
@@ -311,3 +312,13 @@ Mycielski
 
    mycielskian
    mycielski_graph
+
+
+Harary Graph
+------------
+.. automodule:: networkx.generators.harary_graph
+.. autosummary::
+   :toctree: generated/
+
+   hnm_harary_graph
+   hkn_harary_graph
