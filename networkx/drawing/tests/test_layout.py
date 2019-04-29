@@ -29,7 +29,10 @@ class TestLayout(object):
 
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
-        assert_raises(ValueError, nx.fruchterman_reingold_layout, G, fixed=[0])
+        assert_raises(ValueError, nx.spring_layout, G, fixed=[0])
+        pos = {0: (1, 1), 2: (0, 0)}
+        assert_raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
+        nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
 
     def test_spring_init_pos(self):
         # Tests GH #2448

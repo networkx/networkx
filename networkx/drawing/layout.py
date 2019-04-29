@@ -428,8 +428,11 @@ def fruchterman_reingold_layout(G,
     if fixed is not None:
         if pos is None:
             raise ValueError('nodes are fixed without positions given')
-        nfixed = {v: i for i, v in enumerate(G)}
-        fixed = np.asarray([nfixed[v] for v in fixed])
+        for node in fixed:
+            if node not in pos:
+                raise ValueError('nodes are fixed without positions given')
+        nfixed = {node: i for i, node in enumerate(G)}
+        fixed = np.asarray([nfixed[node] for node in fixed])
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
