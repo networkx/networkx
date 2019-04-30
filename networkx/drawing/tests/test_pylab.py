@@ -56,8 +56,46 @@ class TestPylab(object):
         nx.draw_spring(self.G.to_directed())
         plt.show()
 
+    def test_arrows_colors_and_widths(self):
+        D = self.G.to_directed()
+        pos = nx.circular_layout(D)
+        # test node edgecolors, which refers to the node object line color
+        nx.draw_networkx_nodes(D, pos, edgecolors='cyan')
+        # edges with default color
+        nx.draw_networkx_edges(D, pos, edgelist=[(0, 1), (0, 2)],
+                               width=[1, 3],
+                               edge_color=None)
+        # edges with color strings for each edge
+        nx.draw_networkx_edges(D, pos, edgelist=[(0, 3), (1, 2)],
+                               width=[1, 3],
+                               edge_color=['r', 'b'])
+        # edges with fewer color strings and widths than edges
+        nx.draw_networkx_edges(D, pos,
+                               edgelist=[(1, 3), (2, 3), (3, 4), (4, 5)],
+                               width=[1, 3],
+                               edge_color=['g', 'm'])
+        # edges with more color strings and widths than edges
+        nx.draw_networkx_edges(D, pos, edgelist=[(5, 6), (6, 7)],
+                               width=[1, 2, 3, 4],
+                               edge_color=['r', 'b', 'g', 'k'])
+        # with rgb tuple
+        nx.draw_networkx_edges(D, pos, edgelist=[(7, 8), (8, 9)],
+                               edge_color=[(1.0, 1.0, 0.0)])
+        # with rgba tuple
+        nx.draw_networkx_edges(D, pos,
+                               edgelist=[(9, 10), (10, 11), (10, 12), (10, 13)],
+                               edge_color=[(0.0, 1.0, 1.0, 0.2)])
+        # with color string and global alpha
+        nx.draw_networkx_edges(D, pos, edgelist=[(11, 12), (11, 13)],
+                               edge_color='purple', alpha=0.2)
+        # with single edge and color
+        nx.draw_networkx_edges(D, pos, edgelist=[(12, 13)],
+                               edge_color='#1f78b4')
+
     def test_edge_colors_and_widths(self):
-        nx.draw_random(self.G, edgelist=[(0, 1), (0, 2)], width=[1, 2], edge_colors=['r', 'b'])
+        nx.draw_random(self.G, edgelist=[(0, 1), (0, 2)],
+                               width=[1, 2],
+                               edge_colors=['r', 'b'])
 
     def test_labels_and_colors(self):
         G = nx.cubical_graph()
