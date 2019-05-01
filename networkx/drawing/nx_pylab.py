@@ -192,7 +192,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        The shape of the node.  Specification is as matplotlib.scatter
        marker, one of 'so^>v<dph8'.
 
-    alpha : float, optional (default=1.0)
+    alpha : float, optional (default=None)
        The node and edge transparency
 
     cmap : Matplotlib colormap, optional (default=None)
@@ -288,7 +288,7 @@ def draw_networkx_nodes(G, pos,
                         node_size=300,
                         node_color='#1f78b4',
                         node_shape='o',
-                        alpha=1.0,
+                        alpha=None,
                         cmap=None,
                         vmin=None,
                         vmax=None,
@@ -332,7 +332,7 @@ def draw_networkx_nodes(G, pos,
        marker, one of 'so^>v<dph8' (default='o').
 
     alpha : float or array of floats
-       The node transparency.  This can be a single alpha value (default=1.0),
+       The node transparency.  This can be a single alpha value (default=None),
        in which case it will be applied to all the nodes of color. Otherwise,
        if it is an array, the elements of alpha will be applied to the colors
        in order (cycling through alpha multiple times if necessary).
@@ -431,7 +431,7 @@ def draw_networkx_edges(G, pos,
                         width=1.0,
                         edge_color='k',
                         style='solid',
-                        alpha=1.0,
+                        alpha=None,
                         arrowstyle='-|>',
                         arrowsize=10,
                         edge_cmap=None,
@@ -474,7 +474,7 @@ def draw_networkx_edges(G, pos,
        Edge line style (default='solid') (solid|dashed|dotted,dashdot)
 
     alpha : float
-       The edge transparency (default=1.0)
+       The edge transparency (default=None)
 
     edge_ cmap : Matplotlib colormap
        Colormap for mapping intensities of edges (default=None)
@@ -602,19 +602,12 @@ def draw_networkx_edges(G, pos,
                                          antialiaseds=(1,),
                                          linestyle=style,
                                          transOffset=ax.transData,
+                                         alpha=alpha
                                          )
 
         edge_collection.set_zorder(1)  # edges go behind nodes
         edge_collection.set_label(label)
         ax.add_collection(edge_collection)
-
-        # Note: there was a bug in mpl regarding the handling of alpha values
-        # for each line in a LineCollection. It was fixed in matplotlib by
-        # r7184 and r7189 (June 6 2009). We should then not set the alpha
-        # value globally, since the user can instead provide per-edge alphas
-        # now.  Only set it globally if provided as a scalar.
-        if isinstance(alpha, Number):
-            edge_collection.set_alpha(alpha)
 
         return edge_collection
 
@@ -714,7 +707,7 @@ def draw_networkx_labels(G, pos,
                          font_color='k',
                          font_family='sans-serif',
                          font_weight='normal',
-                         alpha=1.0,
+                         alpha=None,
                          bbox=None,
                          ax=None,
                          **kwds):
@@ -746,8 +739,8 @@ def draw_networkx_labels(G, pos,
     font_weight : string
        Font weight (default='normal')
 
-    alpha : float
-       The text transparency (default=1.0)
+    alpha : float or None
+       The text transparency (default=None)
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
@@ -830,7 +823,7 @@ def draw_networkx_edge_labels(G, pos,
                               font_color='k',
                               font_family='sans-serif',
                               font_weight='normal',
-                              alpha=1.0,
+                              alpha=None,
                               bbox=None,
                               ax=None,
                               rotate=True,
@@ -849,8 +842,8 @@ def draw_networkx_edge_labels(G, pos,
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
 
-    alpha : float
-       The text transparency (default=1.0)
+    alpha : float or None
+       The text transparency (default=None)
 
     edge_labels : dictionary
        Edge labels in a dictionary keyed by edge two-tuple of text
