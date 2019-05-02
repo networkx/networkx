@@ -27,6 +27,13 @@ class TestLayout(object):
         nx.add_path(self.Gs, 'abcdef')
         self.bigG = nx.grid_2d_graph(25, 25)  # bigger than 500 nodes for sparse
 
+    def test_spring_fixed_without_pos(self):
+        G = nx.path_graph(4)
+        assert_raises(ValueError, nx.spring_layout, G, fixed=[0])
+        pos = {0: (1, 1), 2: (0, 0)}
+        assert_raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
+        nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
+
     def test_spring_init_pos(self):
         # Tests GH #2448
         import math

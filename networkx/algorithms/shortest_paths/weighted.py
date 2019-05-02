@@ -1422,7 +1422,7 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
         return length[target]
     except KeyError:
         raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (source, target))
+            "node %s not reachable from %s" % (target, source))
 
 
 def single_source_bellman_ford_path(G, source, weight='weight'):
@@ -1597,7 +1597,7 @@ def single_source_bellman_ford(G, source, target=None, weight='weight'):
     try:
         return (dist[target], paths[target])
     except KeyError:
-        msg = "Node %s not reachable from %s" % (source, target)
+        msg = "Node %s not reachable from %s" % (target, source)
         raise nx.NetworkXNoPath(msg)
 
 
