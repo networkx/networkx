@@ -25,6 +25,14 @@ Laplacian Matrix
    normalized_laplacian_matrix
    directed_laplacian_matrix
 
+Bethe Hessian Matrix
+--------------------
+.. automodule:: networkx.linalg.bethehessianmatrix
+.. autosummary::
+   :toctree: generated/
+
+   bethe_hessian_matrix
+
 Spectrum
 ---------
 .. automodule:: networkx.linalg.spectrum
@@ -32,6 +40,7 @@ Spectrum
    :toctree: generated/
 
    laplacian_spectrum
+   bethe_hessian_spectrum
    adjacency_spectrum
    modularity_spectrum
 
