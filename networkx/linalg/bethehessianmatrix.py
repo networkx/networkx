@@ -1,18 +1,18 @@
-"""Bethe Hessian matrix of graphs.
-"""
+# -*- coding: utf-8 -*-
 #    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Jean-Gabriel Young <jeangabriel.young@gmail.com>
 #    All rights reserved.
 #    BSD license.
+#
+# Authors: Jean-Gabriel Young (jeangabriel.young@gmail.com)
+"""Bethe Hessian or deformed Laplacian matrix of graphs."""
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)',
-                        'Jean-Gabriel Young (Jean.gabriel.young@gmail.com)'])
-__all__ = ['bethe_hessian_matrix',]
+
+__all__ = ['bethe_hessian_matrix']
 
 
 @not_implemented_for('directed')
