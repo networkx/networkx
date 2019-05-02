@@ -93,7 +93,7 @@ class TestPylab(object):
                                    edge_color='purple', alpha=0.2)
             # with single edge and hex color string
             nx.draw_networkx_edges(G, pos, edgelist=[(12, 13)],
-                                   edge_color='#1f78b4')
+                                   edge_color='#1f78b4f0')
             plt.show()
 
     def test_labels_and_colors(self):
