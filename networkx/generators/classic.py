@@ -198,10 +198,13 @@ def barbell_graph(m1, m2, create_using=None):
 
 def binomial_tree(n):
     """Returns the Binomial Tree of order n.
+    
+    The binomial tree of order 0 consists of a single vertex. A binomial tree of order k 
+    is defined recursively by linking two binomial trees of order k-1: the root of one is 
+    the leftmost child of the root of the other.
 
     Parameters
     ----------
-
     n : int
         Order of the binomial tree.
 
@@ -209,14 +212,6 @@ def binomial_tree(n):
     -------
     G : NetworkX graph
         A binomial tree of $2^n$ vertices and $2^n - 1$ edges.
-
-    Notes
-    -----
-    The binomial tree of order 0 consists of a single vertex.
-
-    A binomial tree of order k is defined recursively by linking 
-    two binomial trees of order k-1: the root of one is the leftmost child
-    of the root of the other.
 
     """
     G = nx.empty_graph(1)
