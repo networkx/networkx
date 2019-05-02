@@ -213,39 +213,20 @@ def binomial_tree(n):
     Notes
     -----
     The binomial tree of order 0 consists of a single vertex.
-    A binomial tree of order k is defined recursively by linking two binomial trees of order k-1.
+
+    A binomial tree of order k is defined recursively by linking 
+    two binomial trees of order k-1: the root of one is the leftmost child
+    of the root of the other.
 
     """
-    n += 1
-    sub_trees = []
-
-    graph = nx.Graph()
-    graph.add_node(0)
-    sub_trees.append(graph)
-
-    for i in range(1,n):
-        new = nx.Graph()
-
-        for j in range(i,0,-1):
-            G = sub_trees[i-j]
-            length = len(list(G.nodes()))
-
-            nodes = G.nodes()
-            nodes = [it + length for it in nodes]
-
-            edges = G.edges()
-            edges = [tuple(map(lambda x, y: x + y, it, (length,length))) for it in edges]
-
-            new.add_node(0)
-            new.add_nodes_from(nodes)
-            new.add_edges_from(edges)
-
-            new.add_edge(0,list(nodes)[0])
-
-        sub_trees.append(new)
-
-    return sub_trees[len(list(sub_trees))-1]
-
+    G = nx.empty_graph(1)
+    N = 1
+    for i in range(n):
+        edges = [(u + N, v + N)  for (u, v) in G.edges]
+        G.add_edges_from(edges)
+        G.add_edge(0,N)
+        N *= 2
+    return G
 
 @nodes_or_number(0)
 def complete_graph(n, create_using=None):
