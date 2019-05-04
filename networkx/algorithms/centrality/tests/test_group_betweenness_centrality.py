@@ -20,5 +20,5 @@ class TestGroupBetweennessCentrality:
         G = nx.path_graph(5)
         C = [1, 3]
         b = nx.algorithms.centrality.group.group_betweenness_centrality(G, C, weight=None, normalized=True)
-        b_answer = 0.25
+        b_answer = 1.0
         assert_equal(b, b_answer)

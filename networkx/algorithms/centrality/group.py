@@ -123,7 +123,7 @@ def _group_rescale(betweenness, v, c,
              normalized, directed=False):
     if normalized:
         scale = 1 / ((v - c) * (v - c - 1))
-        if directed:
+        if not directed:
             scale *= 2
     else:
         scale = None
