@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2017-2019 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Nanda H Krishna <nanda.harishankar@gmail.com>
 #    All rights reserved.
 #    BSD license.
-#
-# Author: Nanda H Krishna <nanda.harishankar@gmail.com>
 #
 """Group centrality measures."""
 from __future__ import division
