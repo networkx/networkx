@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+#    Copyright (C) 2017-2019 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Author: Nanda H Krishna <nanda.harishankar@gmail.com>
+#
 """Group centrality measures."""
 from __future__ import division
 from itertools import combinations
@@ -6,10 +16,10 @@ from itertools import combinations
 import networkx as nx
 
 
-__all__ = ['betweenness_centrality']
+__all__ = ['group_betweenness_centrality']
 
 
-def betweenness_centrality(G, C, normalized=True, weight=None):
+def group_betweenness_centrality(G, C, normalized=True, weight=None):
     r"""Compute the group betweenness centrality for a group of nodes.
 
     Group betweenness centrality of a group of nodes $C$ is the sum of the
@@ -105,12 +115,12 @@ def betweenness_centrality(G, C, normalized=True, weight=None):
         except ZeroDivisionError:
             pass
     # rescaling
-    betweenness = _rescale(betweenness, len(G), len(C),
+    betweenness = _group_rescale(betweenness, len(G), len(C),
                            normalized=normalized, directed=G.is_directed())
     return betweenness
 
 
-def _rescale(betweenness, v, c,
+def _group_rescale(betweenness, v, c,
              normalized, directed=False):
     if normalized:
         scale = 1 / ((v - c) * (v - c - 1))
