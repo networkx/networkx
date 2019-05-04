@@ -8,7 +8,6 @@
 #    BSD license.
 #
 """Group centrality measures."""
-from __future__ import division
 from itertools import combinations
 
 
@@ -27,7 +26,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     .. math::
 
     c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
-    
+
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
     those paths passing through some node in group $C$. Note that
@@ -44,14 +43,14 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
       centrality is to be calculated.
 
     normalized : bool, optional
-      If True the betweenness values are normalized by `2/((|V|-|C|)(|V|-|C|-1))`
-      for graphs, and `1/((|V|-|C|)(|V|-|C|-1))` for directed graphs where `|V|`
-      is the number of nodes in G and `|C|` is the number of nodes in the group C.
-      
+      If True, group betweenness is normalized by `2/((|V|-|C|)(|V|-|C|-1))`
+      for graphs and `1/((|V|-|C|)(|V|-|C|-1))` for directed graphs where `|V|`
+      is the number of nodes in G and `|C|` is the number of nodes in C.
+
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
-      
+
     Returns
     -------
     betweenness : float
@@ -68,7 +67,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     betweenness centrality of nodes. Group betweenness is also mentioned in
     his paper [2]_ along with the algorithm. The importance of the measure is
     discussed in [3]_.
-    
+
     The number of nodes in the group must be a maximum of n - 2 where `n`
     is the total number of nodes in the graph.
 
@@ -91,39 +90,32 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
        Group Centrality Maximization via Network Design.
        SIAM International Conference on Data Mining, SDM 2018, 126–134.
        https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
-       
+
     """
     betweenness = 0  # initialize betweenness to 0
-    V = set(G.nodes()) # set of nodes in G
-    C = set(C) # set of nodes in C (group)
-    V_C = set(V - C) # set of nodes in V but not in C
-    pairs = [_ for _ in combinations(V_C, 2)] # (s, t) pairs of V_C
+    V = set(G.nodes())  # set of nodes in G
+    C = set(C)  # set of nodes in C (group)
+    V_C = set(V - C)  # set of nodes in V but not in C
     # accumulation
-    for pair in pairs:
+    for pair in combinations(V_C, 2):  # (s, t) pairs of V_C
         try:
-            paths = [_ for _ in nx.all_shortest_paths(G, source=pair[0],
-                                        target=pair[1], weight=weight)]
+            paths = list(nx.all_shortest_paths(G, source=pair[0],
+                                               target=pair[1], weight=weight))
         except (nx.exception.NetworkXNoPath, nx.exception.NodeNotFound):
             paths = []
-        paths_through_C = []
-        for _ in paths:
-            if set(_) & C:
-                paths_through_C.append(_)
+        paths_through_C = 0
+        for path in paths:
+            if set(path) & C:
+                paths_through_C += 1
         try:
-            betweenness += len(paths_through_C) / len(paths)
+            betweenness += paths_through_C / len(paths)
         except ZeroDivisionError:
-            pass
+            betweenness += 0
     # rescaling
-    betweenness = _group_rescale(betweenness, len(G), len(C),
-                           normalized=normalized, directed=G.is_directed())
-    return betweenness
-
-
-def _group_rescale(betweenness, v, c,
-             normalized, directed=False):
+    v, c = len(G), len(C)
     if normalized:
         scale = 1 / ((v - c) * (v - c - 1))
-        if not directed:
+        if not G.is_directed():
             scale *= 2
     else:
         scale = None
