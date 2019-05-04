@@ -38,8 +38,7 @@ class TestGroupBetweennessCentrality:
         """
         G = nx.cycle_graph(6)
         C = [0, 1, 5]
-        b = nx.group_betweenness_centrality(G, C,
-                                            weight=None, normalized=False)
+        b = nx.group_betweenness_centrality(G, C, weight=None)
         b_answer = 0.0
         assert_equal(b, b_answer)
 
@@ -49,8 +48,7 @@ class TestGroupBetweennessCentrality:
         """
         G = nx.path_graph(5)
         G.remove_edge(0, 1)
-        C = [0, 1, 2]
-        b = nx.group_betweenness_centrality(G, C,
-                                            weight=None, normalized=False)
+        C = [1]
+        b = nx.group_betweenness_centrality(G, C, weight=None)
         b_answer = 0.0
         assert_equal(b, b_answer)

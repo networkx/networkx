@@ -101,15 +101,12 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
         try:
             paths = list(nx.all_shortest_paths(G, source=pair[0],
                                                target=pair[1], weight=weight))
-        except (nx.exception.NetworkXNoPath, nx.exception.NodeNotFound):
-            paths = []
-        paths_through_C = 0
-        for path in paths:
-            if set(path) & C:
-                paths_through_C += 1
-        try:
+            paths_through_C = 0
+            for path in paths:
+                if set(path) & C:
+                    paths_through_C += 1
             betweenness += paths_through_C / len(paths)
-        except ZeroDivisionError:
+        except nx.exception.NetworkXNoPath:
             betweenness += 0
     # rescaling
     v, c = len(G), len(C)
