@@ -9,9 +9,9 @@ import networkx as nx
 
 class TestGroupBetweennessCentrality:
 
-    def test_group_betweenness_centrality_1(self):
+    def test_group_betweenness_single_node(self):
         """
-            Group betweenness centrality in P5 for single node group
+            Group betweenness centrality for single node group
         """
         G = nx.path_graph(5)
         C = [1]
@@ -20,9 +20,9 @@ class TestGroupBetweennessCentrality:
         b_answer = 3.0
         assert_equal(b, b_answer)
 
-    def test_group_betweenness_centrality_2(self):
+    def test_group_betweenness_normalized(self):
         """
-            Group betweenness centrality in P5 for group with more than
+            Group betweenness centrality for group with more than
             1 node and normalized
         """
         G = nx.path_graph(5)
@@ -32,7 +32,7 @@ class TestGroupBetweennessCentrality:
         b_answer = 1.0
         assert_equal(b, b_answer)
 
-    def test_group_betweenness_centrality_3(self):
+    def test_group_betweenness_value_zero(self):
         """
             Group betweenness centrality value of 0
         """
@@ -42,7 +42,7 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert_equal(b, b_answer)
 
-    def test_group_betweenness_centrality_4(self):
+    def test_group_betweenness_disconnected_graph(self):
         """
             Group betweenness centrality in a disconnected graph
         """
