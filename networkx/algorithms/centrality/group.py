@@ -99,13 +99,14 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     # accumulation
     for pair in combinations(V_C, 2):  # (s, t) pairs of V_C
         try:
-            paths = list(nx.all_shortest_paths(G, source=pair[0],
-                                               target=pair[1], weight=weight))
+            paths = 0
             paths_through_C = 0
-            for path in paths:
+            for path in nx.all_shortest_paths(G, source=pair[0],
+                                              target=pair[1], weight=weight):
                 if set(path) & C:
                     paths_through_C += 1
-            betweenness += paths_through_C / len(paths)
+                paths += 1
+            betweenness += paths_through_C / paths
         except nx.exception.NetworkXNoPath:
             betweenness += 0
     # rescaling
