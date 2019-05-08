@@ -14,9 +14,9 @@ An asteroidal triple in a graph G is a set of three non-adjacent vertices
 u, v and w such that there exist a path between any two of them avoiding the
 neighborhood of the third. More formally, v_j, v_k belongs to the same
 connected component of G - N[v_i]. A graph which contains no asteroidal
-triples is called an AT-free graph. AT-free graphs is a graph class
-for which many NP-complete problems are solvable in polynomial time.
-Amongst them, independent set and coloring.
+triples is called an AT-free graph. The class of AT-free graphs
+is a graph class for which many NP-complete problems are solvable
+in polynomial time. Amongst them, independent set and coloring.
 """
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -27,13 +27,14 @@ __all__ = ["is_at_free"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def find_asteroidal_triple(G):
+    r"""Find an asteroidal triple in the given graph.
 
     An asteroidal triple is a triple of non-adjacent vertices such that
     there exists a path between any two of them which avoids the closed
     neighborhood of the third. It checks all independent triples of vertices
     and whether they are an asteroidal triple or not. This is done with the
     help of a data structure called a component structure.
-    The component structure encodes information about which vertices belongs to
+    A component structure encodes information about which vertices belongs to
     the same connected component when the closed neighborhood of a given vertex
     is removed from the graph. The algorithm used to check is the trivial
     one, outlined in [1]_, which has a runtime of
@@ -45,33 +46,15 @@ def find_asteroidal_triple(G):
     G : NetworkX Graph
         The graph to check whether is AT-free or not
 
-    certificate : bool (default: False)
-        If the first detected asteroidal triple should be output, if one
-        exists, or None, in the case where a graph is AT-free.
-
     Returns
     -------
-    bool (default)
+    list or None
+        An asteroidal triple is returned as a list of nodes. If no asteroidal
+        triple exists, i.e. the graph is AT-free, then None is returned.
         The returned value depends on the certificate parameter. The default
         option is a bool which is True if the graph is AT-free, i.e. the
         given graph contains no asteroidal triples, and False otherwise, i.e.
         if the graph contains at least one asteroidal triple.
-
-    tuple
-        If the optional parameter `certificate` is set to True then a
-        tuple containing False and an asteroidal triple, represented as a tuple
-        of vertices, is returend if the graph is not AT-free. If the graph
-        is AT-free a tuple with True and None is returned.
-
-    Examples
-    --------
-    >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
-    >>> nx.is_at_free(G)
-    True
-
-    >>> G = nx.cycle_graph(6)
-    >>> nx.is_at_free(G)
-    False
 
     Notes
     -----
