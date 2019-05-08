@@ -128,8 +128,7 @@ def is_at_free(G):
     asteroidal_triple = find_asteroidal_triple(G)
     if asteroidal_triple:
         return False
-    else:
-        return True
+    return True
 
 
 @not_implemented_for("directed")
