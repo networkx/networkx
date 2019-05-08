@@ -26,8 +26,7 @@ __all__ = ["is_at_free"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def is_at_free(G, certificate=False):
-    r"""Check if graph contains no asteroidal triples.
+def find_asteroidal_triple(G):
 
     An asteroidal triple is a triple of non-adjacent vertices such that
     there exists a path between any two of them which avoids the closed
@@ -96,7 +95,7 @@ def is_at_free(G, certificate=False):
 
     if len(V) < 6:
         # An asteroidal triple cannot exist in a graph with 5 or less vertices.
-        return True
+        return None
 
     component_structure = create_component_structure(G)
     E_complement = set(nx.complement(G).edges)
@@ -116,6 +115,11 @@ def is_at_free(G, certificate=False):
 
     if certificate:
         return (True, None)
+                return [u, v, w]
+
+    return None
+
+
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def is_at_free(G):
