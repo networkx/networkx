@@ -403,15 +403,18 @@ def complete_to_chordal_graph(G):
     unnumbered_nodes = list(H.nodes())
     for i in range(len(H.nodes()), 0, -1):
         # get the node in unnumbered_nodes with the maximum weight
-        z = [node for node in unnumbered_nodes if weight.get(node) == max([weight.get(i) for i in unnumbered_nodes])][0]
+        z = [node for node in unnumbered_nodes
+             if weight.get(node) == max([weight.get(i)
+                                         for i in unnumbered_nodes])][0]
         unnumbered_nodes.remove(z)
         alpha[z] = i
         update_nodes = []
         sub_graph_unnumbered = nx.subgraph(H, unnumbered_nodes + [z])
         for y in unnumbered_nodes:
             # weights of nodes on a path between y and z should have smaller weight than y
-            lower_nodes = [node for node in unnumbered_nodes if weight.get(node) < weight.get(y)]
-            if nx.has_path(nx.subgraph(H, lower_nodes+[z, y]), y, z):
+            lower_nodes = [node for node in unnumbered_nodes
+                           if weight.get(node) < weight.get(y)]
+            if nx.has_path(nx.subgraph(H, lower_nodes + [z, y]), y, z):
                 update_nodes.append(y)
                 if (z, y) not in chords and (z, y) not in G.edges():
                     chords.append((z, y))
