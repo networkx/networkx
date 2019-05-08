@@ -68,12 +68,6 @@ def find_asteroidal_triple(G):
        Journal of Discrete Algorithms 2, pages 439-452, 2004.
        https://www.sciencedirect.com/science/article/pii/S157086670400019X
     """
-    def _is_asteroidal_triple(u, v, w, component_structure):
-        """Check whether a triple of vertices is an asteroidal triple."""
-        return (component_structure[u][v] == component_structure[u][w] and
-                component_structure[v][u] == component_structure[v][w] and
-                component_structure[w][u] == component_structure[w][v])
-
     V = set(G.nodes)
 
     if len(V) < 6:
@@ -90,14 +84,12 @@ def find_asteroidal_triple(G):
         v_neighborhood = set(G[v]).union([v])
         union_of_neighborhoods = u_neighborhood.union(v_neighborhood)
         for w in V - union_of_neighborhoods:
-            if _is_asteroidal_triple(u, v, w, component_structure):
-                if certificate:
-                    return (False,  (u, v, w))
-                else:
-                    return False
-
-    if certificate:
-        return (True, None)
+            """Check for each pair of vertices whether they belong to the
+            same connected component when the closed neighborhood of the
+            third is removed."""
+            if (component_structure[u][v] == component_structure[u][w] and
+                component_structure[v][u] == component_structure[v][w] and
+                    component_structure[w][u] == component_structure[w][v]):
                 return [u, v, w]
 
     return None
