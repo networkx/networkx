@@ -1011,6 +1011,33 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
 
 
 def _is_close(d1, d2, atolerance=0, rtolerance=0):
+    """Determines whether two adjacency matrices are within
+    a provided tolerance.
+    
+    Parameters
+    ----------
+    d1 : dict
+        Adjacency dictionary
+    
+    d2 : dict
+        Adjacency dictionary
+    
+    atolerance : float
+        Some scalar tolerance value to determine closeness
+    
+    rtolerance : float
+        A scalar tolerance value that will be some proportion
+        of ``d2``'s value
+    
+    Returns
+    -------
+    closeness : bool
+        If all of the nodes within ``d1`` and ``d2`` are within
+        a predefined tolerance, they are considered "close" and
+        this method will return True. Otherwise, this method will
+        return False.
+    
+    """
     # Pre-condition: d1 and d2 have the same keys at each level if they
     # are dictionaries.
     if not isinstance(d1, dict) and not isinstance(d2, dict):
@@ -1022,8 +1049,24 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
                        max_iterations=100, tolerance=1e-4):
     """Returns the SimRank similarity of nodes in the graph ``G``.
 
+    SimRank is a similarity metric that says "two objects are considered
+    to be similar if they are referenced by similar objects." [1]_.
+    
+    The pseudo-code definition from the paper is:
+
+        def simrank(G, u, v):
+            in_neighbors_u = G.predecessors(u)
+            in_neighbors_v = G.predecessors(v)
+            scale = C / len(in_neighbors_u) * len(in_neighbors_v)
+            return scale * sum(simrank(G, w, x)
+                               for w, x in product(in_neighbors_u,
+                                                   in_neighbors_v))
+    
+    where ``G`` is the graph, ``u`` is the source, ``v`` is the target,
+    and ``C`` is a float decay or importance factor between 0 and 1.
+    
     The SimRank algorithm for determining node similarity is defined in
-    [1]_.
+    [2]_.
 
     Parameters
     ----------
@@ -1082,22 +1125,13 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
 
     References
     ----------
-    .. [1] G. Jeh and J. Widom.
+    .. [1] https://en.wikipedia.org/wiki/SimRank
+    .. [2] G. Jeh and J. Widom.
            "SimRank: a measure of structural-context similarity",
            In KDD'02: Proceedings of the Eighth ACM SIGKDD
            International Conference on Knowledge Discovery and Data Mining,
            pp. 538--543. ACM Press, 2002.
     """
-    # This is the definition from the paper:
-    #
-    # def simrank(G, u, v):
-    #     in_neighbors_u = G.predecessors(u)
-    #     in_neighbors_v = G.predecessors(v)
-    #     scale = C / len(in_neighbors_u) * len(in_neighbors_v)
-    #     return scale * sum(simrank(G, w, x)
-    #                        for w, x in product(in_neighbors_u,
-    #                                            in_neighbors_v))
-    #
     prevsim = None
 
     # build up our similarity adjacency dictionary output
