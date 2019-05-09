@@ -1057,7 +1057,7 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
         def simrank(G, u, v):
             in_neighbors_u = G.predecessors(u)
             in_neighbors_v = G.predecessors(v)
-            scale = C / len(in_neighbors_u) * len(in_neighbors_v)
+            scale = C / (len(in_neighbors_u) * len(in_neighbors_v))
             return scale * sum(simrank(G, w, x)
                                for w, x in product(in_neighbors_u,
                                                    in_neighbors_v))
@@ -1112,7 +1112,7 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
 
     Examples
     --------
-    If the nodes of the graph are numbered from zero to *n*, where *n*
+    If the nodes of the graph are numbered from zero to *n - 1*, where *n*
     is the number of nodes in the graph, you can create a SimRank matrix
     from the return value of this function where the node numbers are
     the row and column indices of the matrix::
@@ -1121,7 +1121,8 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
         >>> from numpy import array
         >>> G = nx.cycle_graph(4)
         >>> sim = nx.simrank_similarity(G)
-        >>> sim_array = array([[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)])
+        >>> lol = [[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)]
+        >>> sim_array = array(lol)
 
     References
     ----------
