@@ -186,7 +186,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert_almost_equal(b[n], b_answer[n])
 
     def test_box(self):
-        """Edge etweenness subset centrality: box"""
+        """Edge betweenness subset centrality: box"""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -198,7 +198,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert_almost_equal(b[n], b_answer[n])
 
     def test_box_and_path(self):
-        """Edge etweenness subset centrality: box and path"""
+        """Edge betweenness subset centrality: box and path"""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3), (3, 4), (4, 5)])
         b_answer = dict.fromkeys(G.edges(), 0)
