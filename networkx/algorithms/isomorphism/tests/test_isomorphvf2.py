@@ -52,6 +52,16 @@ class TestWikipediaExample(object):
         gm = iso.GraphMatcher(g1, g3)
         assert_true(gm.subgraph_is_isomorphic())
 
+    def test_subgraph_mono(self):
+        g1 = nx.Graph()
+        g2 = nx.Graph()
+        g1.add_edges_from(self.g1edges)
+        g2.add_edges_from(self.g2edges)
+        g3 = g2.subgraph([1, 2, 3, 4])
+        g3.remove_edge(1,4)
+        gm = iso.GraphMatcher(g1, g3)
+        assert_true(gm.subgraph_is_monomorphic())
+
 
 class TestVF2GraphDB(object):
     # http://amalfi.dis.unina.it/graph/db/
@@ -197,6 +207,24 @@ def test_isomorphism_iter1():
     assert_true({'B': 'Z', 'C': 'Y'} in y)
     assert_equal(len(x), len(y))
     assert_equal(len(x), 2)
+
+
+def test_monomorphism_iter1():
+    # As described in:
+    # http://groups.google.com/group/networkx-discuss/browse_thread/thread/2ff65c67f5e3b99f/d674544ebea359bb?fwc=1
+    g1 = nx.DiGraph()
+    g2 = nx.DiGraph()
+    g1.add_edge('A', 'B')
+    g1.add_edge('B', 'C')
+    g1.add_edge('C', 'A')
+    g2.add_edge('X', 'Y')
+    g2.add_edge('Y', 'Z')
+    gm12 = iso.DiGraphMatcher(g1, g2)
+    x = list(gm12.subgraph_monomorphisms_iter())
+    assert_true({'A': 'X', 'B': 'Y', 'C': 'Z'} in x)
+    assert_true({'A': 'Y', 'B': 'Z', 'C': 'X'} in x)
+    assert_true({'A': 'Z', 'B': 'X', 'C': 'Y'} in x)
+    assert_equal(len(x), 3)
 
 
 def test_isomorphism_iter2():
