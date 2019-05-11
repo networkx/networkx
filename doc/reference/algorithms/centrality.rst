@@ -73,6 +73,7 @@ Group Centrality
    :toctree: generated/
 
    group_betweenness_centrality
+   group_closeness_centrality
 
 Load
 ----
