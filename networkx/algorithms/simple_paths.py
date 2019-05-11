@@ -106,8 +106,8 @@ def all_simple_paths(G, source, target, weight=None, cutoff=None):
     target : nodes
        Single node or iterable of nodes at which to end path
 
-    cutoff_len : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff_len are returned.
+    cutoff : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned.
 
     weight : string, optional
         Name of the edge attribute to be used as a weight. If None all
@@ -120,7 +120,7 @@ def all_simple_paths(G, source, target, weight=None, cutoff=None):
     -------
     path_generator: generator
        A generator that produces lists of simple paths.  If there are no paths
-       between the source and target within the given cutoff_len the generator
+       between the source and target within the given cutoff the generator
        produces no output.
 
     Examples
@@ -138,9 +138,9 @@ def all_simple_paths(G, source, target, weight=None, cutoff=None):
         [0, 3]
 
     You can generate only those paths that are shorter than a certain
-    length by using the `cutoff_len` keyword argument::
+    length by using the `cutoff` keyword argument::
 
-        >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff_len=2)
+        >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
         >>> print(list(paths))
         [[0, 1, 3], [0, 2, 3], [0, 3]]
 
