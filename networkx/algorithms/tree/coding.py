@@ -2,7 +2,7 @@
 #
 # coding.py - functions for encoding and decoding trees as sequences
 #
-# Copyright 2015-2018 NetworkX developers.
+# Copyright 2015-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

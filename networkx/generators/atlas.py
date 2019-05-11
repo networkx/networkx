@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -136,7 +136,7 @@ def graph_atlas(i):
 
 
 def graph_atlas_g():
-    """Return the list of all graphs with up to seven nodes named in the
+    """Returns the list of all graphs with up to seven nodes named in the
     Graph Atlas.
 
     The graphs are listed in increasing order by

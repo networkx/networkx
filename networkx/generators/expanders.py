@@ -44,7 +44,7 @@ __all__ = ['margulis_gabber_galil_graph', 'chordal_cycle_graph']
 #     (x, (y + (2*x + 2)) % n),
 #
 def margulis_gabber_galil_graph(n, create_using=None):
-    """Return the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
+    r"""Returns the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
     The undirected MultiGraph is regular with degree `8`. Nodes are integer
     pairs. The second-largest eigenvalue of the adjacency matrix of the graph
@@ -82,7 +82,7 @@ def margulis_gabber_galil_graph(n, create_using=None):
 
 
 def chordal_cycle_graph(p, create_using=None):
-    """Return the chordal cycle graph on `p` nodes.
+    """Returns the chordal cycle graph on `p` nodes.
 
     The returned graph is a cycle graph on `p` nodes with chords joining each
     vertex `x` to its inverse modulo `p`. This graph is a (mildly explicit)

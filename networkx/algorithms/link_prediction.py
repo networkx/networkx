@@ -160,6 +160,8 @@ def adamic_adar_index(G, ebunch=None):
         \sum_{w \in \Gamma(u) \cap \Gamma(v)} \frac{1}{\log |\Gamma(w)|}
 
     where $\Gamma(u)$ denotes the set of neighbors of $u$.
+    This index leads to zero-division for nodes only connected via self-loops.
+    It is intended to be used when no self-loops are present.
 
     Parameters
     ----------

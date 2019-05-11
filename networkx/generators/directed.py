@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2018 by
+# Copyright (C) 2006-2019 by
 #   Aric Hagberg <hagberg@lanl.gov>
 #   Dan Schult <dschult@colgate.edu>
 #   Pieter Swart <swart@lanl.gov>
@@ -30,7 +30,7 @@ __all__ = ['gn_graph', 'gnc_graph', 'gnr_graph', 'random_k_out_graph',
 
 @py_random_state(3)
 def gn_graph(n, kernel=None, create_using=None, seed=None):
-    """Return the growing network (GN) digraph with `n` nodes.
+    """Returns the growing network (GN) digraph with `n` nodes.
 
     The GN graph is built by adding nodes one at a time with a link to one
     previously added node.  The target node for the link is chosen with
@@ -95,7 +95,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
 @py_random_state(3)
 def gnr_graph(n, p, create_using=None, seed=None):
-    """Return the growing network with redirection (GNR) digraph with `n`
+    """Returns the growing network with redirection (GNR) digraph with `n`
     nodes and redirection probability `p`.
 
     The GNR graph is built by adding nodes one at a time with a link to one
@@ -148,7 +148,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
 
 @py_random_state(2)
 def gnc_graph(n, create_using=None, seed=None):
-    """Return the growing network with copying (GNC) digraph with `n` nodes.
+    """Returns the growing network with copying (GNC) digraph with `n` nodes.
 
     The GNC graph is built by adding nodes one at a time with a link to one
     previously added node (chosen uniformly at random) and to all of that
@@ -206,9 +206,9 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         Probability for adding a new node connected to an existing node
         chosen randomly according to the out-degree distribution.
     delta_in : float
-        Bias for choosing ndoes from in-degree distribution.
+        Bias for choosing nodes from in-degree distribution.
     delta_out : float
-        Bias for choosing ndoes from out-degree distribution.
+        Bias for choosing nodes from out-degree distribution.
     create_using : NetworkX graph constructor, optional
         The default is a MultiDiGraph 3-cycle.
         If a graph instance, use it without clearing first.
@@ -255,11 +255,11 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         raise nx.NetworkXError("MultiDiGraph required in create_using")
 
     if alpha <= 0:
-        raise ValueError('alpha must be >= 0.')
+        raise ValueError('alpha must be > 0.')
     if beta <= 0:
-        raise ValueError('beta must be >= 0.')
+        raise ValueError('beta must be > 0.')
     if gamma <= 0:
-        raise ValueError('beta must be >= 0.')
+        raise ValueError('gamma must be > 0.')
 
     if abs(alpha + beta + gamma - 1.0) >= 1e-9:
         raise ValueError('alpha+beta+gamma must equal 1.')

@@ -1,4 +1,4 @@
-#    Copyright (C) 2010-2018 by
+#    Copyright (C) 2010-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -249,7 +249,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
 def edge_current_flow_betweenness_centrality(G, normalized=True,
                                              weight=None,
                                              dtype=float, solver='full'):
-    """Compute current-flow betweenness centrality for edges.
+    r"""Compute current-flow betweenness centrality for edges.
 
     Current-flow betweenness centrality uses an electrical current
     model for information spreading in contrast to betweenness

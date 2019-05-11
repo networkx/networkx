@@ -28,7 +28,7 @@ from __future__ import print_function
 # Authors: Brendt Wohlberg, Aric Hagberg (hagberg@lanl.gov)
 # Date: 2005-04-01 07:56:22 -0700 (Fri, 01 Apr 2005)
 
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -53,7 +53,7 @@ chaini = chain.from_iterable
 
 
 def descendants(G, source):
-    """Return all nodes reachable from `source` in `G`.
+    """Returns all nodes reachable from `source` in `G`.
 
     Parameters
     ----------
@@ -73,7 +73,7 @@ def descendants(G, source):
 
 
 def ancestors(G, source):
-    """Return all nodes having a path to `source` in `G`.
+    """Returns all nodes having a path to `source` in `G`.
 
     Parameters
     ----------
@@ -103,7 +103,7 @@ def has_cycle(G):
 
 
 def is_directed_acyclic_graph(G):
-    """Return True if the graph `G` is a directed acyclic graph (DAG) or
+    """Returns True if the graph `G` is a directed acyclic graph (DAG) or
     False if not.
 
     Parameters
@@ -119,7 +119,7 @@ def is_directed_acyclic_graph(G):
 
 
 def topological_sort(G):
-    """Return a generator of nodes in topologically sorted order.
+    """Returns a generator of nodes in topologically sorted order.
 
     A topological sort is a nonunique permutation of the nodes such that an
     edge from u to v implies that u appears before v in the topological sort
@@ -210,7 +210,7 @@ def topological_sort(G):
 
 
 def lexicographical_topological_sort(G, key=None):
-    """Return a generator of nodes in lexicographically topologically sorted
+    """Returns a generator of nodes in lexicographically topologically sorted
     order.
 
     A topological sort is a nonunique permutation of the nodes such that an
@@ -416,7 +416,7 @@ def all_topological_sorts(G):
 
 
 def is_aperiodic(G):
-    """Return True if `G` is aperiodic.
+    """Returns True if `G` is aperiodic.
 
     A directed graph is aperiodic if there is no integer k > 1 that
     divides the length of every cycle in the graph.

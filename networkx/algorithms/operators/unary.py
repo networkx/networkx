@@ -1,5 +1,5 @@
 """Unary operations on graphs"""
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -14,7 +14,7 @@ __all__ = ['complement', 'reverse']
 
 
 def complement(G):
-    """Return the graph complement of G.
+    """Returns the graph complement of G.
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ def complement(G):
 
 
 def reverse(G, copy=True):
-    """Return the reverse directed graph of G.
+    """Returns the reverse directed graph of G.
 
     Parameters
     ----------

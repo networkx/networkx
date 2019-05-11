@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -341,7 +341,7 @@ class MultiGraph(Graph):
         return MultiAdjacencyView(self._adj)
 
     def new_edge_key(self, u, v):
-        """Return an unused key for edges between nodes `u` and `v`.
+        """Returns an unused key for edges between nodes `u` and `v`.
 
         The nodes `u` and `v` do not need to be already in the graph.
 
@@ -650,7 +650,7 @@ class MultiGraph(Graph):
                 pass
 
     def has_edge(self, u, v, key=None):
-        """Return True if the graph has an edge between nodes u and v.
+        """Returns True if the graph has an edge between nodes u and v.
 
         This is the same as `v in G[u] or key in G[u][v]`
         without KeyError exceptions.
@@ -707,7 +707,7 @@ class MultiGraph(Graph):
 
     @property
     def edges(self):
-        """Return an iterator over the edges.
+        """Returns an iterator over the edges.
 
         edges(self, nbunch=None, data=False, keys=False, default=None)
 
@@ -774,7 +774,7 @@ class MultiGraph(Graph):
         return MultiEdgeView(self)
 
     def get_edge_data(self, u, v, key=None, default=None):
-        """Return the attribute dictionary associated with edge (u, v).
+        """Returns the attribute dictionary associated with edge (u, v).
 
         This is identical to `G[u][v][key]` except the default is returned
         instead of an exception is the edge doesn't exist.
@@ -879,15 +879,15 @@ class MultiGraph(Graph):
         return MultiDegreeView(self)
 
     def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
+        """Returns True if graph is a multigraph, False otherwise."""
         return True
 
     def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
+        """Returns True if graph is directed, False otherwise."""
         return False
 
     def copy(self, as_view=False):
-        """Return a copy of the graph.
+        """Returns a copy of the graph.
 
         The copy method by default returns an independent shallow copy
         of the graph and attributes. That is, if an attribute is a
@@ -975,7 +975,7 @@ class MultiGraph(Graph):
         return G
 
     def to_directed(self, as_view=False):
-        """Return a directed representation of the graph.
+        """Returns a directed representation of the graph.
 
         Returns
         -------
@@ -1030,7 +1030,7 @@ class MultiGraph(Graph):
         return G
 
     def to_undirected(self, as_view=False):
-        """Return an undirected copy of the graph.
+        """Returns an undirected copy of the graph.
 
         Returns
         -------
@@ -1081,7 +1081,7 @@ class MultiGraph(Graph):
         return G
 
     def number_of_edges(self, u=None, v=None):
-        """Return the number of edges between two nodes.
+        """Returns the number of edges between two nodes.
 
         Parameters
         ----------

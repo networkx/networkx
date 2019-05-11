@@ -137,7 +137,7 @@ better in other contexts.
 .. nbplot::
 
     >>> list(G.nodes)
-    ['a', 1, 2, 3, 'spam', 'm', 'p', 's']
+    [1, 2, 3, 'spam', 's', 'p', 'a', 'm']
     >>> list(G.edges)
     [(1, 2), (1, 3), (3, 'm')]
     >>> list(G.adj[1])  # or list(G.neighbors(1))
@@ -296,7 +296,7 @@ Add node attributes using ``add_node()``, ``add_nodes_from()``, or ``G.nodes``
     {'time': '5pm'}
     >>> G.nodes[1]['room'] = 714
     >>> G.nodes.data()
-    NodeDataView({1: {'room': 714, 'time': '5pm'}, 3: {'time': '2pm'}})
+    NodeDataView({1: {'time': '5pm', 'room': 714}, 3: {'time': '2pm'}})
 
 Note that adding a node to ``G.nodes`` does not add it to the graph, use
 ``G.add_node()`` to add new nodes. Similarly for edges.
@@ -450,7 +450,7 @@ functions such as:
     >>> G.add_edges_from([(1, 2), (1, 3)])
     >>> G.add_node("spam")       # adds node "spam"
     >>> list(nx.connected_components(G))
-    [set([1, 2, 3]), set(['spam'])]
+    [{1, 2, 3}, {'spam'}]
     >>> sorted(d for n, d in G.degree())
     [0, 1, 1, 2]
     >>> nx.clustering(G)
@@ -463,7 +463,7 @@ These are easily stored in a `dict` structure if you desire.
 
     >>> sp = dict(nx.all_pairs_shortest_path(G))
     >>> sp[3]
-    {1: [3, 1], 2: [3, 1, 2], 3: [3]}
+    {3: [3], 1: [3, 1], 2: [3, 1, 2]}
 
 See :doc:`/reference/algorithms/index` for details on graph algorithms
 supported.

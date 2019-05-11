@@ -45,7 +45,7 @@ keyword arguments.
 >>> G=nx.Graph(region='Africa')
 >>> G.graph['color']='green'
 >>> G.graph
-{'color': 'green', 'region': 'Africa'}
+{'region': 'Africa', 'color': 'green'}
 
 Node attributes
 ---------------

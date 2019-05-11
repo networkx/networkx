@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -92,7 +92,7 @@ def connected_component_subgraphs(G, copy=True):
 
 
 def number_connected_components(G):
-    """Return the number of connected components.
+    """Returns the number of connected components.
 
     Parameters
     ----------
@@ -120,7 +120,7 @@ def number_connected_components(G):
 
 @not_implemented_for('directed')
 def is_connected(G):
-    """Return True if the graph is connected, False otherwise.
+    """Returns True if the graph is connected, False otherwise.
 
     Parameters
     ----------
@@ -164,7 +164,7 @@ def is_connected(G):
 
 @not_implemented_for('directed')
 def node_connected_component(G, n):
-    """Return the set of nodes in the component of graph containing node n.
+    """Returns the set of nodes in the component of graph containing node n.
 
     Parameters
     ----------
