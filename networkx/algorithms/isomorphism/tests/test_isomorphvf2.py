@@ -56,10 +56,8 @@ class TestWikipediaExample(object):
         g1 = nx.Graph()
         g2 = nx.Graph()
         g1.add_edges_from(self.g1edges)
-        g2.add_edges_from(self.g2edges)
-        g3 = g2.subgraph([1, 2, 3, 4])
-        g3.remove_edge(1,4)
-        gm = iso.GraphMatcher(g1, g3)
+        g2.add_edges_from([[1, 2], [2, 3], [3, 4]])
+        gm = iso.GraphMatcher(g1, g2)
         assert_true(gm.subgraph_is_monomorphic())
 
 
