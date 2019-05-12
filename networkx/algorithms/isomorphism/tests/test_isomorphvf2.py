@@ -208,8 +208,6 @@ def test_isomorphism_iter1():
 
 
 def test_monomorphism_iter1():
-    # As described in:
-    # http://groups.google.com/group/networkx-discuss/browse_thread/thread/2ff65c67f5e3b99f/d674544ebea359bb?fwc=1
     g1 = nx.DiGraph()
     g2 = nx.DiGraph()
     g1.add_edge('A', 'B')
