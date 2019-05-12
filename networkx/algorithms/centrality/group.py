@@ -12,9 +12,14 @@ from itertools import combinations
 
 
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 
 
-__all__ = ['group_betweenness_centrality', 'group_closeness_centrality']
+__all__ = ['group_betweenness_centrality',
+           'group_closeness_centrality',
+           'group_degree_centrality',
+           'group_in_degree_centrality',
+           'group_out_degree_centrality']
 
 
 def group_betweenness_centrality(G, C, normalized=True, weight=None):
@@ -210,3 +215,135 @@ def group_closeness_centrality(G, S, weight=None):
     except ZeroDivisionError:  # 1 / 0 assumed as 0
         closeness = 0
     return closeness
+
+
+def group_degree_centrality(G, S):
+    """Compute the group degree centrality for a group of nodes.
+
+    Group degree centrality of a group of nodes $S$ is the fraction
+    of non-group members connected to group members.
+
+    Parameters
+    ----------
+    G : graph
+    A NetworkX graph.
+
+    S : list or set
+    S is a group of nodes which belong to G, for which group degree
+    centrality is to be calculated.
+
+    Returns
+    -------
+    centrality : float
+    Group degree centrality of the group S.
+
+    See Also
+    --------
+    degree_centrality
+    group_in_degree_centrality
+    group_out_degree_centrality
+
+    Notes
+    -----
+    The measure was introduced in [1]_.
+
+    The number of nodes in the group must be a maximum of n - 1 where `n`
+    is the total number of nodes in the graph.
+
+    References
+    ----------
+    .. [1] M G Everett and S P Borgatti:
+    The Centrality of Groups and Classes.
+    Journal of Mathematical Sociology. 23(3): 181-201. 1999.
+    http://www.analytictech.com/borgatti/group_centrality.htm
+    """
+    centrality = len(set().union(*list(set(G.neighbors(i))
+                                       for i in S)) - set(S))
+    centrality /= (len(G.nodes()) - len(S))
+    return centrality
+
+
+@not_implemented_for('undirected')
+def group_in_degree_centrality(G, S):
+    """Compute the group in-degree centrality for a group of nodes.
+
+    Group in-degree centrality of a group of nodes $S$ is the fraction
+    of non-group members connected to group members by incoming edges.
+
+    Parameters
+    ----------
+    G : graph
+    A NetworkX graph.
+
+    S : list or set
+    S is a group of nodes which belong to G, for which group in-degree
+    centrality is to be calculated.
+
+    Returns
+    -------
+    centrality : float
+    Group in-degree centrality of the group S.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is undirected
+
+    See Also
+    --------
+    degree_centrality
+    group_degree_centrality
+    group_out_degree_centrality
+
+    Notes
+    -----
+    The number of nodes in the group must be a maximum of n - 1 where `n`
+    is the total number of nodes in the graph.
+
+    `G.neighbors(i)` gives nodes with an outward edge from i, in a DiGraph,
+    so for group in-degree centrality, the reverse graph is used.
+    """
+    return group_degree_centrality(G.reverse(), S)
+
+
+@not_implemented_for('undirected')
+def group_out_degree_centrality(G, S):
+    """Compute the group out-degree centrality for a group of nodes.
+
+    Group out-degree centrality of a group of nodes $S$ is the fraction
+    of non-group members connected to group members by outgoing edges.
+
+    Parameters
+    ----------
+    G : graph
+    A NetworkX graph.
+
+    S : list or set
+    S is a group of nodes which belong to G, for which group in-degree
+    centrality is to be calculated.
+
+    Returns
+    -------
+    centrality : float
+    Group out-degree centrality of the group S.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is undirected
+
+    See Also
+    --------
+    degree_centrality
+    group_degree_centrality
+    group_in_degree_centrality
+
+    Notes
+    -----
+    The number of nodes in the group must be a maximum of n - 1 where `n`
+    is the total number of nodes in the graph.
+
+    `G.neighbors(i)` gives nodes with an outward edge from i, in a DiGraph,
+    so for group out-degree centrality, the graph itself is used.
+    """
+    return group_degree_centrality(G, S)
