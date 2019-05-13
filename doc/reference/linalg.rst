@@ -33,17 +33,6 @@ Bethe Hessian Matrix
 
    bethe_hessian_matrix
 
-Spectrum
----------
-.. automodule:: networkx.linalg.spectrum
-.. autosummary::
-   :toctree: generated/
-
-   laplacian_spectrum
-   bethe_hessian_spectrum
-   adjacency_spectrum
-   modularity_spectrum
-
 Algebraic Connectivity
 ----------------------
 .. automodule:: networkx.linalg.algebraicconnectivity
@@ -73,3 +62,15 @@ Modularity Matrices
 
    modularity_matrix
    directed_modularity_matrix
+
+Spectrum
+---------
+.. automodule:: networkx.linalg.spectrum
+.. autosummary::
+   :toctree: generated/
+
+   adjacency_spectrum
+   laplacian_spectrum
+   bethe_hessian_spectrum
+   normalized_laplacian_spectrum
+   modularity_spectrum
