@@ -151,8 +151,9 @@ def mp_all_pairs_shortest_path_length(G):
     f = partial(single_source_shortest_path_length, G)
     with mp.Pool(mp.cpu_count()) as p:
         # TODO: or use starmap?
-        l = p.map(f, G)
-        return l
+        lengths = p.map(f, G)
+        for n, l in zip(G, lengths):
+            yield n, l
 
 
 def all_pairs_shortest_path_length(G, cutoff=None):
