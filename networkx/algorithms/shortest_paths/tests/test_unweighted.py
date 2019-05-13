@@ -86,6 +86,12 @@ class TestUnweightedPath:
         l = dict(nx.all_pairs_shortest_path_length(self.grid))
         assert_equal(l[1][16], 6)
 
+    def test_mp_all_pairs_shortest_path_length(self):
+        l = dict(nx.mp_all_pairs_shortest_path_length(self.cycle))
+        assert_equal(l[0], {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1})
+        l = dict(nx.mp_all_pairs_shortest_path_length(self.grid))
+        assert_equal(l[1][16], 6)
+
     def test_predecessor_path(self):
         G = nx.path_graph(4)
         assert_equal(nx.predecessor(G, 0), {0: [], 1: [0], 2: [1], 3: [2]})
