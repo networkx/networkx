@@ -59,6 +59,14 @@ class TestWikipediaExample(object):
         g2.add_edges_from([[1, 2], [2, 3], [3, 4]])
         gm = iso.GraphMatcher(g1, g2)
         assert_true(gm.subgraph_is_monomorphic())
+        
+    def test_subgraph_mono2(self):
+        g1 = nx.Graph()
+        g2 = nx.Graph()
+        g1.add_edges_from(self.g1edges)
+        g2.add_edges_from([[1, 2], [2, 3], [3, 4], [4, 5]])
+        gm = iso.GraphMatcher(g1, g2)
+        assert_false(gm.subgraph_is_monomorphic())
 
 
 class TestVF2GraphDB(object):
@@ -110,6 +118,9 @@ class TestVF2GraphDB(object):
         graph = self.create_graph(os.path.join(head, 'si2_b06_m200.B99'))
         gm = iso.GraphMatcher(graph, subgraph)
         assert_true(gm.subgraph_is_isomorphic())
+        
+    # There isn't a similar test implemented for subgraph monomorphism,
+    # feel free to create one.
 
 
 class TestAtlas(object):
@@ -163,6 +174,8 @@ def test_multiedge():
             else:
                 gm = iso.DiGraphMatcher(g1, g2)
             assert_true(gm.is_isomorphic())
+            #Testing if monomorphism works in multigraphs
+            assert_true(gm.subgraph_is_monomorphic())
 
 
 def test_selfloop():
@@ -183,6 +196,8 @@ def test_selfloop():
             else:
                 gm = iso.DiGraphMatcher(g1, g2)
             assert_true(gm.is_isomorphic())
+            #Testing if monomorphism works in multigraphs
+            assert_true(gm.subgraph_is_monomorphic())
 
 
 def test_isomorphism_iter1():
@@ -259,6 +274,8 @@ def test_multiple():
             gmA = iso.DiGraphMatcher(g1, g2)
         assert_true(gmA.subgraph_is_isomorphic())
         assert_true(gmB.subgraph_is_isomorphic())
+        assert_true(gmA.subgraph_is_monomorphic())
+        assert_true(gmB.subgraph_is_monomorphic())
 #        for m in [gmB.mapping, gmB.mapping]:
 #            assert_true(m['A'] == 'A')
 #            assert_true(m['B'] == 'B')
