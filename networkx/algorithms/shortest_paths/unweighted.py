@@ -142,6 +142,18 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
+def mp_all_pairs_shortest_path_length(G):
+    """Same as all_pairs_shortest_path_length, but using multiple CPUs"""
+
+    import multiprocessing as mp
+    from functools import partial
+    f = partial(single_source_shortest_path_length, G)
+    with mp.Pool(mp.cpu_count()) as p:
+        # TODO: or use starmap?
+        l = p.map(f, G)
+        return l
+
+
 def all_pairs_shortest_path_length(G, cutoff=None):
     """Computes the shortest path lengths between all nodes in `G`.
 
