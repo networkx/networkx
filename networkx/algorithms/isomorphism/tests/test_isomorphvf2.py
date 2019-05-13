@@ -59,14 +59,6 @@ class TestWikipediaExample(object):
         g2.add_edges_from([[1, 2], [2, 3], [3, 4]])
         gm = iso.GraphMatcher(g1, g2)
         assert_true(gm.subgraph_is_monomorphic())
-        
-    def test_subgraph_mono2(self):
-        g1 = nx.Graph()
-        g2 = nx.Graph()
-        g1.add_edges_from(self.g1edges)
-        g2.add_edges_from([[1, 2], [2, 3], [3, 4], [4, 5]])
-        gm = iso.GraphMatcher(g1, g2)
-        assert_false(gm.subgraph_is_monomorphic())
 
 
 class TestVF2GraphDB(object):
