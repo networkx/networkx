@@ -35,6 +35,8 @@ class TestWikipediaExample(object):
         g2.add_edges_from(self.g2edges)
         gm = iso.GraphMatcher(g1, g2)
         assert_true(gm.is_isomorphic())
+        #Just testing some cases
+        assert_true(gm.subgraph_is_monomorphic())
 
         mapping = sorted(gm.mapping.items())
 # this mapping is only one of the possibilies
@@ -51,6 +53,7 @@ class TestWikipediaExample(object):
         g3 = g2.subgraph([1, 2, 3, 4])
         gm = iso.GraphMatcher(g1, g3)
         assert_true(gm.subgraph_is_isomorphic())
+
 
     def test_subgraph_mono(self):
         g1 = nx.Graph()
@@ -110,6 +113,9 @@ class TestVF2GraphDB(object):
         graph = self.create_graph(os.path.join(head, 'si2_b06_m200.B99'))
         gm = iso.GraphMatcher(graph, subgraph)
         assert_true(gm.subgraph_is_isomorphic())
+        #Just testing some cases
+        assert_true(gm.subgraph_is_monomorphic())
+
         
     # There isn't a similar test implemented for subgraph monomorphism,
     # feel free to create one.
@@ -282,9 +288,13 @@ def test_noncomparable_nodes():
     G = nx.path_graph([node1, node2, node3])
     gm = iso.GraphMatcher(G, G)
     assert_true(gm.is_isomorphic())
+    #Just testing some cases
+    assert_true(gm.subgraph_is_monomorphic())
 
     # DiGraph
     G = nx.path_graph([node1, node2, node3], create_using=nx.DiGraph)
     H = nx.path_graph([node3, node2, node1], create_using=nx.DiGraph)
     dgm = iso.DiGraphMatcher(G, H)
     assert_true(dgm.is_isomorphic())
+    #Just testing some cases
+    assert_true(gm.subgraph_is_monomorphic())
