@@ -194,8 +194,28 @@ def test_selfloop():
             else:
                 gm = iso.DiGraphMatcher(g1, g2)
             assert_true(gm.is_isomorphic())
-            #Testing if monomorphism works in multigraphs
-            assert_true(gm.subgraph_is_monomorphic())
+            
+
+def test_selfloop_mono():
+    # Simple test for graphs with selfloops
+    edges0 = [(0, 1), (0, 2), (1, 2), (1, 3),
+             (2, 4), (3, 1), (3, 2), (4, 2), (4, 5), (5, 4)]
+    edges = edges0 + [(2, 2)]
+    nodes = list(range(6))
+
+    for g1 in [nx.Graph(), nx.DiGraph()]:
+        g1.add_edges_from(edges)
+        for _ in range(100):
+            new_nodes = list(nodes)
+            random.shuffle(new_nodes)
+            d = dict(zip(nodes, new_nodes))
+            g2 = nx.relabel_nodes(g1, d)
+            g2.remove_edges_from(g2.selfloop_edges())
+            if not g1.is_directed():
+                gm = iso.GraphMatcher(g2, g1)
+            else:
+                gm = iso.DiGraphMatcher(g2, g1)
+            assert_true(!gm.subgraph_is_monomorphic())
 
 
 def test_isomorphism_iter1():
@@ -234,6 +254,11 @@ def test_monomorphism_iter1():
     assert_true({'A': 'Y', 'B': 'Z', 'C': 'X'} in x)
     assert_true({'A': 'Z', 'B': 'X', 'C': 'Y'} in x)
     assert_equal(len(x), 3)
+    tmp = True
+    for ii in range(3):
+        gm12.subgraph_is_monomorphic()
+    #Check if StopIteration exception returns False
+    assert_true(!(gm12.subgraph_is_monomorphic()))
 
 
 def test_isomorphism_iter2():
