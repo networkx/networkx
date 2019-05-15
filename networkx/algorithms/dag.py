@@ -505,8 +505,7 @@ def transitive_closure(G):
     """
     TC = G.copy()
     for v in G:
-        TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
-                          if v != u)
+        TC.add_edges_from((v, u) for u in nx.algorithms.dag.descendants(TC, v))
     return TC
 
 
