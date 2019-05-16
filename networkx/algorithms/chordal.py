@@ -351,46 +351,45 @@ def _connected_chordal_graph_cliques(G):
 
 @not_implemented_for('directed')
 def complete_to_chordal_graph(G):
-    r"""Complete to chordal graph
+    """Complete to chordal graph
 
-        Enhances the graph by edges to receive a chordal graph.
+    Enhances the graph by edges to receive a chordal graph. A graph
+    G=(V,E) is called chordal if for each cycle with length bigger
+    than 3, two non adjacent nodes are connected by an edge (called chord).
 
-        Parameters
-        ----------
-        G : NetworkX graph
-            Undirected graph
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
 
-        Returns
-        -------
-        H : NetworkX graph
-            The chordal enhancement of G
-        alpha : Dictionary
-                The elimination ordering of nodes of G
+    Returns
+    -------
+    H : NetworkX graph
+        The chordal enhancement of G
+    alpha : Dictionary
+            The elimination ordering of nodes of G
 
-        Notes
-        ------
-        A graph G=(V,E) is called chordal if for each cycle with
-        length bigger than 3, two non adjacent nodes are connected
-        by an edge (called chord). There are different approaches
-        to calculate the chordal enhancement of a graph.
-        The algorithm used here is called MCS-M and gives a minimal
-        triangulation of graph. Note that this triangulation must not
-        be minimum.
+    Notes
+    ------
+    There are different approaches to calculate the chordal
+    enhancement of a graph. The algorithm used here is called
+    MCS-M and gives a minimal triangulation of graph. Note
+    that this triangulation must not be minimum.
 
-        https://en.wikipedia.org/wiki/Chordal_graph
+    https://en.wikipedia.org/wiki/Chordal_graph
 
-        References
-        ----------
-        .. [1] Berry, Anne & Blair, Jean & Heggernes, Pinar & Peyton, Barry. (2004).
-               Maximum Cardinality Search for Computing Minimal Triangulations of Graphs.
-               Algorithmica. 39. 287-298. 10.1007/s00453-004-1084-3.
+    References
+    ----------
+    .. [1] Berry, Anne & Blair, Jean & Heggernes, Pinar & Peyton, Barry. (2004).
+           Maximum Cardinality Search for Computing Minimal Triangulations of Graphs.
+           Algorithmica. 39. 287-298. 10.1007/s00453-004-1084-3.
 
-        Examples
-        --------
-        >>> import networkx as nx
-        >>> from networkx.algorithms.chordal import complete_to_chordal_graph
-        >>> G = nx.wheel_graph(10)
-        >>> H,alpha = complete_to_chordal_graph(G)
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.chordal import complete_to_chordal_graph
+    >>> G = nx.wheel_graph(10)
+    >>> H,alpha = complete_to_chordal_graph(G)
     """
     if G is None:
         raise ValueError("Expected NetworkX graph!")
@@ -409,11 +408,11 @@ def complete_to_chordal_graph(G):
         unnumbered_nodes.remove(z)
         alpha[z] = i
         update_nodes = []
-        sub_graph_unnumbered = nx.subgraph(H, unnumbered_nodes + [z])
         for y in unnumbered_nodes:
             # weights of nodes on a path between y and z should have smaller weight than y
+            y_weight = weight.get(y)
             lower_nodes = [node for node in unnumbered_nodes
-                           if weight.get(node) < weight.get(y)]
+                           if weight.get(node) < y_weight]
             if nx.has_path(nx.subgraph(H, lower_nodes + [z, y]), y, z):
                 update_nodes.append(y)
                 if (z, y) not in chords and (z, y) not in G.edges():
