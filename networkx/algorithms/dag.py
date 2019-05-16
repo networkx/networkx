@@ -505,7 +505,7 @@ def transitive_closure(G):
     """
     TC = G.copy()
     for v in G:
-        TC.add_edges_from((v, u) for u in nx.algorithms.dag.descendants(TC, v))
+        TC.add_edges_from((v, u) for u in descendants(TC, v))
     return TC
 
 
