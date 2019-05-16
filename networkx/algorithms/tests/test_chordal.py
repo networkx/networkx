@@ -63,9 +63,13 @@ class TestMCS:
         test_graphs = [nx.barbell_graph(6, 2), nx.cycle_graph(15),
                        nx.wheel_graph(20), nx.grid_graph([10, 4]),
                        nx.ladder_graph(15), nx.star_graph(5),
-                       nx.bull_graph(), nx.fast_gnp_random_graph(20, 0.3)]
+                       nx.bull_graph(), nx.fast_gnp_random_graph(20, 0.3, seed=1)]
         for G in test_graphs:
             H, a = nx.complete_to_chordal_graph(G)
             assert_true(nx.is_chordal(H))
+            assert_equal(len(a), H.number_of_nodes())
             if nx.is_chordal(G):
-                assert_true(G.number_of_edges() - H.number_of_edges() == 0)
+                assert_equal(G.number_of_edges(), H.number_of_edges())
+                assert_equal(set(a.values()), {0})
+            else:
+                assert_equal(len(set(a.values())), H.number_of_nodes())
