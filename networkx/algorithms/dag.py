@@ -72,6 +72,55 @@ def descendants(G, source):
     return des - {source}
 
 
+def descendants_at_distance(G, source, distance):
+    """Returns all nodes at a fixed `distance` from `source` in `G`.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed graph
+    source : node in `G`
+    distance : the distance of the wanted nodes from `source`
+
+    Returns
+    -------
+    set()
+        The descendants of `source` in `G` at the given `distance` from `source`
+
+    Notes
+    -----
+    This implementation only deals with directed graphs, but nothing prevents a
+    straightforward adaptation to undirected graphs.
+
+    TODO given its purpose and likeness to BFS exploration, this function
+         should probably move to algorithms/traversal/breadth_first_search.py
+    """
+    if not G.has_node(source):
+        raise nx.NetworkXError("The node %s is not in the graph." % source)
+    current_distance = 0
+    queue = deque([source])
+    visited = {source}
+
+    # this is basically BFS, except that the queue only stores the nodes at
+    # current_distance from source at each iteration
+    while queue:
+        if current_distance == distance:
+            return set(queue)
+
+        current_distance += 1
+
+        next_vertices = deque()
+        for vertex in queue:
+            for child in G.successors(vertex):
+                if child not in visited:
+                    visited.add(child)
+                    next_vertices.appendleft(child)
+
+        queue = next_vertices
+
+    return set()
+
+
 def ancestors(G, source):
     """Returns all nodes having a path to `source` in `G`.
 
@@ -502,11 +551,55 @@ def transitive_closure(G):
     ----------
     .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
 
+    TODO this function applies to all directed graphs and is probably misplaced
+         here in dag.py
     """
     TC = G.copy()
     for v in G:
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
+    return TC
+
+
+@not_implemented_for('undirected')
+def transitive_closure_dag(G):
+    """ Returns the transitive closure of a directed acyclic graph. This
+    function is faster than the function `transitive_closure`, but will faill
+    if the graph has a cycle.
+
+    The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
+    for all v,w in V there is an edge (v,w) in E+ if and only if there
+    is a non-null path from v to w in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed acyclic graph (DAG)
+
+    Returns
+    -------
+    NetworkX DiGraph
+        The transitive closure of `G`
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is not directed
+    NetworkXUnfeasible
+        If `G` has a cycle
+
+    Notes
+    -----
+    This algorithm is probably simple enough to be well-known but I didn't find
+    a mention in the literature.
+    """
+    TC = G.copy()
+
+    # idea: traverse vertices following a reverse topological order, connecting
+    # each vertex to its descendants at distance 2 as we go
+    for v in list(topological_sort(G))[-1::-1]:
+        TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
+
     return TC
 
 
