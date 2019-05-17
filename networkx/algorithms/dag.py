@@ -36,6 +36,7 @@ from networkx.utils import generate_unique_node
 from networkx.utils import not_implemented_for
 
 __all__ = ['descendants',
+           'descendants_at_distance',
            'ancestors',
            'topological_sort',
            'lexicographical_topological_sort',
@@ -43,6 +44,7 @@ __all__ = ['descendants',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
+           'transitive_closure_dag',
            'transitive_reduction',
            'antichains',
            'dag_longest_path',
