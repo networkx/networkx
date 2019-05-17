@@ -566,7 +566,7 @@ def transitive_closure(G):
 @not_implemented_for('undirected')
 def transitive_closure_dag(G):
     """ Returns the transitive closure of a directed acyclic graph. This
-    function is faster than the function `transitive_closure`, but will faill
+    function is faster than the function `transitive_closure`, but will fail
     if the graph has a cycle.
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
