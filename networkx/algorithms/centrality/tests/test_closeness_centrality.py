@@ -1,5 +1,5 @@
 """
-Tests for degree centrality.
+Tests for closeness centrality.
 """
 from nose.tools import *
 import networkx as nx
