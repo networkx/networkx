@@ -30,7 +30,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
 
     .. math::
 
-    c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
+        c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
@@ -135,8 +135,9 @@ def group_closeness_centrality(G, S, weight=None):
 
     .. math::
 
-    c_{close}(S) = \frac{|V-S|}{\sum_{v \in V-S} d_{S, v}}
-    d_{S, v} = min_{u \in S} d_{u, v}
+        c_{close}(S) = \frac{|V-S|}{\sum_{v \in V-S} d_{S, v}}
+
+        d_{S, v} = min_{u \in S} d_{u, v}
 
     where $V$ is the set of nodes, $d_{S, v}$ is the distance of
     the group $S$ from $v$ defined as above. ($V-S$ is the set of nodes
