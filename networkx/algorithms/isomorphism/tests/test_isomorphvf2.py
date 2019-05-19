@@ -254,9 +254,7 @@ def test_monomorphism_iter1():
     assert_true({'A': 'Y', 'B': 'Z', 'C': 'X'} in x)
     assert_true({'A': 'Z', 'B': 'X', 'C': 'Y'} in x)
     assert_equal(len(x), 3)
-    tmp = True
-    for ii in range(3):
-        gm12.subgraph_is_monomorphic()
+    gm21 = iso.DiGraphMatcher(g2, g1)
     #Check if StopIteration exception returns False
     assert_true(not gm12.subgraph_is_monomorphic())
 
