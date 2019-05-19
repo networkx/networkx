@@ -256,7 +256,7 @@ def test_monomorphism_iter1():
     assert_equal(len(x), 3)
     gm21 = iso.DiGraphMatcher(g2, g1)
     #Check if StopIteration exception returns False
-    assert_true(not gm12.subgraph_is_monomorphic())
+    assert_true(not gm21.subgraph_is_monomorphic())
 
 
 def test_isomorphism_iter2():
