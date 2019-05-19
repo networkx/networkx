@@ -693,7 +693,7 @@ def antichains(G):
     .. [1] Free Lattices, by R. Freese, J. Jezek and J. B. Nation,
        AMS, Vol 42, 1995, p. 226.
     """
-    TC = nx.transitive_closure(G)
+    TC = nx.transitive_closure_dag(G)
     antichains_stacks = [([], list(reversed(list(nx.topological_sort(G)))))]
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
