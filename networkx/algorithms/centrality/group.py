@@ -137,7 +137,7 @@ def group_closeness_centrality(G, S, weight=None):
 
         c_{close}(S) = \frac{|V-S|}{\sum_{v \in V-S} d_{S, v}}
 
-        d_{S, v} = min_{u \in S} d_{u, v}
+        d_{S, v} = min_{u \in S} (d_{u, v})
 
     where $V$ is the set of nodes, $d_{S, v}$ is the distance of
     the group $S$ from $v$ defined as above. ($V-S$ is the set of nodes
@@ -196,6 +196,7 @@ def group_closeness_centrality(G, S, weight=None):
     Disk Resident Graphs.
     WWWConference Proceedings, 2014. 689-694.
     http://wwwconference.org/proceedings/www2014/companion/p689.pdf
+
     """
     if G.is_directed():
         G = G.reverse()  # reverse view
@@ -257,6 +258,7 @@ def group_degree_centrality(G, S):
     The Centrality of Groups and Classes.
     Journal of Mathematical Sociology. 23(3): 181-201. 1999.
     http://www.analytictech.com/borgatti/group_centrality.htm
+
     """
     centrality = len(set().union(*list(set(G.neighbors(i))
                                        for i in S)) - set(S))
@@ -303,6 +305,7 @@ def group_in_degree_centrality(G, S):
 
     `G.neighbors(i)` gives nodes with an outward edge from i, in a DiGraph,
     so for group in-degree centrality, the reverse graph is used.
+
     """
     return group_degree_centrality(G.reverse(), S)
 
@@ -346,5 +349,6 @@ def group_out_degree_centrality(G, S):
 
     `G.neighbors(i)` gives nodes with an outward edge from i, in a DiGraph,
     so for group out-degree centrality, the graph itself is used.
+
     """
     return group_degree_centrality(G, S)
