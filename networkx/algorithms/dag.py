@@ -564,7 +564,7 @@ def transitive_closure(G):
 
 
 @not_implemented_for('undirected')
-def transitive_closure_dag(G):
+def transitive_closure_dag(G, topo_order=None):
     """ Returns the transitive closure of a directed acyclic graph. This
     function is faster than the function `transitive_closure`, but will fail
     if the graph has a cycle.
@@ -577,6 +577,9 @@ def transitive_closure_dag(G):
     ----------
     G : NetworkX DiGraph
         A directed acyclic graph (DAG)
+
+    topo_order: list or tuple, optional
+        A topological order for G (if None, the function will compute one)
 
     Returns
     -------
@@ -595,11 +598,14 @@ def transitive_closure_dag(G):
     This algorithm is probably simple enough to be well-known but I didn't find
     a mention in the literature.
     """
+    if topo_order is None:
+        topo_order = list(topological_sort(G))
+
     TC = G.copy()
 
     # idea: traverse vertices following a reverse topological order, connecting
     # each vertex to its descendants at distance 2 as we go
-    for v in list(topological_sort(G))[-1::-1]:
+    for v in topo_order[-1::-1]:
         TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
 
     return TC
@@ -693,8 +699,9 @@ def antichains(G):
     .. [1] Free Lattices, by R. Freese, J. Jezek and J. B. Nation,
        AMS, Vol 42, 1995, p. 226.
     """
-    TC = nx.transitive_closure_dag(G)
-    antichains_stacks = [([], list(reversed(list(nx.topological_sort(G)))))]
+    topo_order = list(nx.topological_sort(G))
+    TC = nx.transitive_closure_dag(G, topo_order)
+    antichains_stacks = [([], list(reversed(topo_order)))]
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
         # Invariant:
