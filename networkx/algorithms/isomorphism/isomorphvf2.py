@@ -317,11 +317,11 @@ class GraphMatcher(object):
             yield self.mapping
         else:
             for G1_node, G2_node in self.candidate_pairs_iter():
-                if self.syntactic_feasibility(G1_node, G2_node, mono=mono):
+                if self.syntactic_feasibility(G1_node, G2_node):
                     if self.semantic_feasibility(G1_node, G2_node):
                         # Recursive call, adding the feasible state.
                         newstate = self.state.__class__(self, G1_node, G2_node)
-                        for mapping in self.match(mono=mono):
+                        for mapping in self.match():
                             yield mapping
 
                         # restore data structures
