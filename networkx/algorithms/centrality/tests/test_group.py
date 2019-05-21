@@ -53,6 +53,13 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert_equal(b, b_answer)
 
+    @raises(nx.NodeNotFound)
+    def test_group_betweenness_node_not_in_graph(self):
+        """
+            Node(s) in C not in graph, raises NodeNotFound exception
+        """
+        b = nx.group_betweenness_centrality(nx.path_graph(5), [6, 7, 8])
+
 
 class TestGroupClosenessCentrality:
 
@@ -84,6 +91,13 @@ class TestGroupClosenessCentrality:
         c = nx.group_closeness_centrality(G, [1, 2])
         c_answer = 1
         assert_equal(c, c_answer)
+
+    @raises(nx.NodeNotFound)
+    def test_group_closeness_node_not_in_graph(self):
+        """
+            Node(s) in C not in graph, raises NodeNotFound exception
+        """
+        c = nx.group_closeness_centrality(nx.path_graph(5), [6, 7, 8])
 
 
 class TestGroupDegreeCentrality:
@@ -133,3 +147,10 @@ class TestGroupDegreeCentrality:
         d = nx.group_out_degree_centrality(G, [1, 2])
         d_answer = 1
         assert_equal(d, d_answer)
+
+    @raises(nx.NodeNotFound)
+    def test_group_degree_centrality_node_not_in_graph(self):
+        """
+            Node(s) in C not in graph, raises NodeNotFound exception
+        """
+        b = nx.group_degree_centrality(nx.path_graph(5), [6, 7, 8])

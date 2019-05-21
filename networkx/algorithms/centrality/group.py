@@ -30,7 +30,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
 
     .. math::
 
-        c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
+       c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
@@ -55,6 +55,11 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+
+    Raises
+    ------
+    NodeNotFound
+       If node(s) in C are not present in G.
 
     Returns
     -------
@@ -95,12 +100,14 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
        Group Centrality Maximization via Network Design.
        SIAM International Conference on Data Mining, SDM 2018, 126–134.
        https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
-
     """
     betweenness = 0  # initialize betweenness to 0
-    V = set(G.nodes())  # set of nodes in G
+    V = set(G)  # set of nodes in G
     C = set(C)  # set of nodes in C (group)
-    V_C = set(V - C)  # set of nodes in V but not in C
+    if len(C - V) != 0:  # element(s) of C not in V
+        raise nx.NodeNotFound('The node(s) ' + str(list(C - V)) + ' are not '
+                              'in the graph')
+    V_C = V - C  # set of nodes in V but not in C
     # accumulation
     for pair in combinations(V_C, 2):  # (s, t) pairs of V_C
         try:
@@ -135,9 +142,9 @@ def group_closeness_centrality(G, S, weight=None):
 
     .. math::
 
-        c_{close}(S) = \frac{|V-S|}{\sum_{v \in V-S} d_{S, v}}
+       c_{close}(S) = \frac{|V-S|}{\sum_{v \in V-S} d_{S, v}}
 
-        d_{S, v} = min_{u \in S} (d_{u, v})
+       d_{S, v} = min_{u \in S} (d_{u, v})
 
     where $V$ is the set of nodes, $d_{S, v}$ is the distance of
     the group $S$ from $v$ defined as above. ($V-S$ is the set of nodes
@@ -146,20 +153,25 @@ def group_closeness_centrality(G, S, weight=None):
     Parameters
     ----------
     G : graph
-    A NetworkX graph.
+       A NetworkX graph.
 
     S : list or set
-    S is a group of nodes which belong to G, for which group closeness
-    centrality is to be calculated.
+       S is a group of nodes which belong to G, for which group closeness
+       centrality is to be calculated.
 
     weight : None or string, optional (default=None)
-    If None, all edge weights are considered equal.
-    Otherwise holds the name of the edge attribute used as weight.
+       If None, all edge weights are considered equal.
+       Otherwise holds the name of the edge attribute used as weight.
+
+    Raises
+    ------
+    NodeNotFound
+       If node(s) in S are not present in G.
 
     Returns
     -------
     closeness : float
-    Group closeness centrality of the group S.
+       Group closeness centrality of the group S.
 
     See Also
     --------
@@ -188,22 +200,24 @@ def group_closeness_centrality(G, S, weight=None):
     References
     ----------
     .. [1] M G Everett and S P Borgatti:
-    The Centrality of Groups and Classes.
-    Journal of Mathematical Sociology. 23(3): 181-201. 1999.
-    http://www.analytictech.com/borgatti/group_centrality.htm
+       The Centrality of Groups and Classes.
+       Journal of Mathematical Sociology. 23(3): 181-201. 1999.
+       http://www.analytictech.com/borgatti/group_centrality.htm
     .. [2] J. Zhao et. al.:
-    Measuring and Maximizing Group Closeness Centrality over
-    Disk Resident Graphs.
-    WWWConference Proceedings, 2014. 689-694.
-    http://wwwconference.org/proceedings/www2014/companion/p689.pdf
-
+       Measuring and Maximizing Group Closeness Centrality over
+       Disk Resident Graphs.
+       WWWConference Proceedings, 2014. 689-694.
+       http://wwwconference.org/proceedings/www2014/companion/p689.pdf
     """
     if G.is_directed():
         G = G.reverse()  # reverse view
     closeness = 0  # initialize to 0
-    V = set(G.nodes())  # set of nodes in G
+    V = set(G)  # set of nodes in G
     S = set(S)  # set of nodes in group S
-    V_S = set(V - S)  # set of nodes in V but not S
+    if len(S - V) != 0:  # elements of S are not in V
+        raise nx.NodeNotFound('The node(s) ' + str(list(S - V)) + ' are not '
+                              'in the graph')
+    V_S = V - S  # set of nodes in V but not S
     shortest_path_lengths = nx.multi_source_dijkstra_path_length(G, S,
                                                                  weight=weight)
     # accumulation
@@ -228,16 +242,21 @@ def group_degree_centrality(G, S):
     Parameters
     ----------
     G : graph
-    A NetworkX graph.
+       A NetworkX graph.
 
     S : list or set
-    S is a group of nodes which belong to G, for which group degree
-    centrality is to be calculated.
+       S is a group of nodes which belong to G, for which group degree
+       centrality is to be calculated.
+
+    Raises
+    ------
+    NodeNotFound
+       If node(s) in S are not in G.
 
     Returns
     -------
     centrality : float
-    Group degree centrality of the group S.
+       Group degree centrality of the group S.
 
     See Also
     --------
@@ -255,11 +274,13 @@ def group_degree_centrality(G, S):
     References
     ----------
     .. [1] M G Everett and S P Borgatti:
-    The Centrality of Groups and Classes.
-    Journal of Mathematical Sociology. 23(3): 181-201. 1999.
-    http://www.analytictech.com/borgatti/group_centrality.htm
-
+       The Centrality of Groups and Classes.
+       Journal of Mathematical Sociology. 23(3): 181-201. 1999.
+       http://www.analytictech.com/borgatti/group_centrality.htm
     """
+    if len(set(S) - set(G)) != 0:
+        raise nx.NodeNotFound('The node(s) ' + str(list(set(S) - set(G))) + ' '
+                              'are not in the graph')
     centrality = len(set().union(*list(set(G.neighbors(i))
                                        for i in S)) - set(S))
     centrality /= (len(G.nodes()) - len(S))
@@ -276,21 +297,24 @@ def group_in_degree_centrality(G, S):
     Parameters
     ----------
     G : graph
-    A NetworkX graph.
+       A NetworkX graph.
 
     S : list or set
-    S is a group of nodes which belong to G, for which group in-degree
-    centrality is to be calculated.
+       S is a group of nodes which belong to G, for which group in-degree
+       centrality is to be calculated.
 
     Returns
     -------
     centrality : float
-    Group in-degree centrality of the group S.
+       Group in-degree centrality of the group S.
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is undirected
+       If G is undirected.
+
+    NodeNotFound
+       If node(s) in S are not in G.
 
     See Also
     --------
@@ -305,7 +329,6 @@ def group_in_degree_centrality(G, S):
 
     `G.neighbors(i)` gives nodes with an outward edge from i, in a DiGraph,
     so for group in-degree centrality, the reverse graph is used.
-
     """
     return group_degree_centrality(G.reverse(), S)
 
@@ -320,21 +343,24 @@ def group_out_degree_centrality(G, S):
     Parameters
     ----------
     G : graph
-    A NetworkX graph.
+       A NetworkX graph.
 
     S : list or set
-    S is a group of nodes which belong to G, for which group in-degree
-    centrality is to be calculated.
+       S is a group of nodes which belong to G, for which group in-degree
+       centrality is to be calculated.
 
     Returns
     -------
     centrality : float
-    Group out-degree centrality of the group S.
+       Group out-degree centrality of the group S.
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is undirected
+       If G is undirected.
+
+    NodeNotFound
+       If node(s) in S are not in G.
 
     See Also
     --------
@@ -349,6 +375,5 @@ def group_out_degree_centrality(G, S):
 
     `G.neighbors(i)` gives nodes with an outward edge from i, in a DiGraph,
     so for group out-degree centrality, the graph itself is used.
-
     """
     return group_degree_centrality(G, S)
