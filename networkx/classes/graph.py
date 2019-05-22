@@ -25,7 +25,7 @@ from collections.abc import Mapping
 import networkx as nx
 from networkx.classes.coreviews import AtlasView, AdjacencyView
 from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
-from networkx.exception import NetworkXError
+from networkx.exception import NetworkXError, NodeNotFound
 import networkx.convert as convert
 from networkx.utils import pairwise
 
@@ -1240,7 +1240,7 @@ class Graph(object):
 
         Raises
         ------
-        NetworkXError
+        NodeNotFound
             If the node n is not in the graph.
 
         Examples
@@ -1265,7 +1265,7 @@ class Graph(object):
         try:
             return iter(self._adj[n])
         except KeyError:
-            raise NetworkXError("The node %s is not in the graph." % (n,))
+            raise NodeNotFound("The node %s is not in the graph." % (n,))
 
     @property
     def edges(self):

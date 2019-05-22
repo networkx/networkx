@@ -214,9 +214,6 @@ def group_closeness_centrality(G, S, weight=None):
     closeness = 0  # initialize to 0
     V = set(G)  # set of nodes in G
     S = set(S)  # set of nodes in group S
-    if len(S - V) != 0:  # elements of S are not in V
-        raise nx.NodeNotFound('The node(s) ' + str(list(S - V)) + ' are not '
-                              'in the graph')
     V_S = V - S  # set of nodes in V but not S
     shortest_path_lengths = nx.multi_source_dijkstra_path_length(G, S,
                                                                  weight=weight)
@@ -278,9 +275,6 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    if len(set(S) - set(G)) != 0:
-        raise nx.NodeNotFound('The node(s) ' + str(list(set(S) - set(G))) + ' '
-                              'are not in the graph')
     centrality = len(set().union(*list(set(G.neighbors(i))
                                        for i in S)) - set(S))
     centrality /= (len(G.nodes()) - len(S))
