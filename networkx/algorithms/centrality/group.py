@@ -106,7 +106,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     C = set(C)  # set of nodes in C (group)
     if len(C - V) != 0:  # element(s) of C not in V
         raise nx.NodeNotFound('The node(s) ' + str(list(C - V)) + ' are not '
-                              'in the graph')
+                              'in the graph.')
     V_C = V - C  # set of nodes in V but not in C
     # accumulation
     for pair in combinations(V_C, 2):  # (s, t) pairs of V_C
@@ -275,8 +275,11 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    centrality = len(set().union(*list(set(G.neighbors(i))
-                                       for i in S)) - set(S))
+    try:
+        centrality = len(set().union(*list(set(G.neighbors(i))
+                                           for i in S)) - set(S))
+    except nx.NetworkXError as err:
+        raise nx.NodeNotFound(str(err))
     centrality /= (len(G.nodes()) - len(S))
     return centrality
 
