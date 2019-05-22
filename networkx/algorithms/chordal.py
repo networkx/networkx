@@ -373,8 +373,8 @@ def complete_to_chordal_graph(G):
     ------
     There are different approaches to calculate the chordal
     enhancement of a graph. The algorithm used here is called
-    MCS-M and gives a minimal triangulation of graph. Note
-    that this triangulation must not be minimum.
+    MCS-M and gives a minimal (local) triangulation of graph. Note
+    that this triangulation must not be minimum (global).
 
     https://en.wikipedia.org/wiki/Chordal_graph
 
