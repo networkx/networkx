@@ -247,7 +247,7 @@ def group_degree_centrality(G, S):
 
     Raises
     ------
-    NodeNotFound
+    NetworkXError
        If node(s) in S are not in G.
 
     Returns
@@ -275,11 +275,8 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    try:
-        centrality = len(set().union(*list(set(G.neighbors(i))
-                                           for i in S)) - set(S))
-    except nx.NetworkXError as err:
-        raise nx.NodeNotFound(str(err))
+    centrality = len(set().union(*list(set(G.neighbors(i))
+                                       for i in S)) - set(S))
     centrality /= (len(G.nodes()) - len(S))
     return centrality
 
