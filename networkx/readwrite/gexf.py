@@ -196,6 +196,13 @@ class GEXF(object):
                                      'http://www.gexf.net/1.2draft/gexf.xsd']),
          'VERSION': '1.2'}
     versions['1.2draft'] = d
+    d = {'NS_GEXF': "http://www.gexf.net/1.3",
+         'NS_VIZ': "http://www.gexf.net/1.3/viz",
+         'NS_XSI': "http://www.w3.org/2001/XMLSchema-instance",
+         'SCHEMALOCATION': ' '.join(['http://www.gexf.net/1.3',
+                                     'http://www.gexf.net/1.3/gexf.xsd']),
+         'VERSION': '1.3'}
+    versions['1.3'] = d
 
     types = [(int, "integer"),
              (float, "float"),
