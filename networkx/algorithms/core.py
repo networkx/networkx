@@ -2,12 +2,14 @@
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Antoine Allard <antoine.allard@phy.ulaval.ca>
 #    All rights reserved.
 #    BSD license.
 #
 # Authors: Dan Schult (dschult@colgate.edu)
 #          Jason Grout (jason-sage@creativetrax.com)
 #          Aric Hagberg (hagberg@lanl.gov)
+#          Antoine Allard (antoine.allard@phy.ulaval.ca)
 """
 Find the k-cores of a graph.
 
@@ -30,13 +32,20 @@ is the k-core.
 D-cores: Measuring Collaboration of Directed Graphs Based on Degeneracy
 Christos Giatsidis, Dimitrios M. Thilikos, Michalis Vazirgiannis, ICDM 2011.
 http://www.graphdegeneracy.org/dcores_ICDM_2011.pdf
+
+Multi-scale structure and topological anomaly detection via a new network \
+statistic: The onion decomposition
+L. Hébert-Dufresne, J. A. Grochow, and A. Allard
+Scientific Reports 6, 31708 (2016)
+http://doi.org/10.1038/srep31708
+
 """
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = ['core_number', 'find_cores', 'k_core',
-           'k_shell', 'k_crust', 'k_corona']
+           'k_shell', 'k_crust', 'k_corona', 'onion_layers']
 
 
 @not_implemented_for('multigraph')
@@ -353,3 +362,89 @@ def k_corona(G, k, core_number=None):
     def func(v, k, c):
         return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
     return _core_subgraph(G, func, k, core_number)
+
+
+@not_implemented_for('multigraph')
+def onion_layers(G):
+    """Returns the layer of each vertex in the onion decomposition of the graph.
+
+    The onion decomposition refines the k-core decomposition by providing
+    information on the internal organization of each k-shell.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A simple graph without self loops or parallel edges
+
+    Returns
+    -------
+    od_layers : dictionary
+       A dictionary keyed by vertex to the onion layer.
+
+    Raises
+    ------
+    NetworkXError
+        The onion decomposition is not implemented for graphs with self loops
+        or parallel edges or for directed graphs.
+
+    Notes
+    -----
+    Not implemented for graphs with parallel edges or self loops.
+
+    Not implemented for directed graphs.
+
+    See Also
+    --------
+    core_number
+
+    References
+    ----------
+    .. [1] Multi-scale structure and topological anomaly detection via a new
+       network statistic: The onion decomposition
+       L. Hébert-Dufresne, J. A. Grochow, and A. Allard
+       Scientific Reports 6, 31708 (2016)
+       http://doi.org/10.1038/srep31708
+    """
+    if nx.number_of_selfloops(G) > 0:
+        msg = ('Input graph has self loops which is not permitted; '
+               'Consider using G.remove_edges_from(nx.selfloop_edges(G)).')
+        raise NetworkXError(msg)
+    if nx.is_directed(G):
+        msg = ('Input graph is directed which is not permitted; '
+               'Consider using G.to_undirected().')
+        raise NetworkXError(msg)
+    # Dictionaries to register the k-core/onion decompositions.
+    # _coreness_map = {}
+    od_layers = {}
+    # Adjacency list
+    neighbors = {v: list(nx.all_neighbors(G, v)) for v in G}
+    # Effective degree of nodes.
+    degrees = dict(G.degree())
+    # Performs the onion decomposition.
+    _current_core = 1
+    _current_layer = 1
+    while len(degrees) > 0:
+        # Sets the order for looking at nodes.
+        nodes = sorted(degrees, key=degrees.get)
+        # Sets properly the current core.
+        _min_degree = degrees[nodes[0]]
+        if _min_degree > _current_core:
+            _current_core = _min_degree
+        # Identifies vertices in the current layer.
+        _this_layer_ = []
+        for n in nodes:
+            if degrees[n] > _current_core:
+                break
+            _this_layer_.append(n)
+        # Identifies the core/layer of the vertices in the current layer.
+        for v in _this_layer_:
+            # _coreness_map[v] = _current_core
+            od_layers[v] = _current_layer
+            for n in neighbors[v]:
+                neighbors[n].remove(v)
+                degrees[n] = degrees[n] - 1
+            degrees.pop(v)
+        # Updates the layer count.
+        _current_layer = _current_layer + 1
+    # Returns the dictionaries containing the onion layer of each vertices.
+    return od_layers
