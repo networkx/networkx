@@ -550,7 +550,6 @@ def draw_networkx_edges(G, pos,
     try:
         import matplotlib
         import matplotlib.pyplot as plt
-        import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter, Colormap, Normalize
         from matplotlib.collections import LineCollection
         from matplotlib.patches import FancyArrowPatch
@@ -582,7 +581,7 @@ def draw_networkx_edges(G, pos,
 
     # Check if edge_color is an array of floats and map to edge_cmap.
     # This is the only case handled differently from matplotlib
-    if cb.iterable(edge_color) and (len(edge_color) == len(edge_pos)) \
+    if np.iterable(edge_color) and (len(edge_color) == len(edge_pos)) \
         and np.alltrue([isinstance(c,Number) for c in edge_color]):
             if edge_cmap is not None:
                 assert(isinstance(edge_cmap, Colormap))
@@ -635,7 +634,7 @@ def draw_networkx_edges(G, pos,
             x2, y2 = dst
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
-            if cb.iterable(node_size):  # many node sizes
+            if np.iterable(node_size):  # many node sizes
                 src_node, dst_node = edgelist[i][:2]
                 index_node = nodelist.index(dst_node)
                 marker_size = node_size[index_node]
@@ -643,7 +642,7 @@ def draw_networkx_edges(G, pos,
             else:
                 shrink_target = to_marker_edge(node_size, node_shape)
 
-            if cb.iterable(arrow_colors):
+            if np.iterable(arrow_colors):
                 if len(arrow_colors) == len(edge_pos):
                     arrow_color = arrow_colors[i]
                 elif len(arrow_colors)==1:
@@ -653,7 +652,7 @@ def draw_networkx_edges(G, pos,
             else:
                 arrow_color = edge_color
 
-            if cb.iterable(width):
+            if np.iterable(width):
                 if len(width) == len(edge_pos):
                     line_width = width[i]
                 else:
@@ -768,7 +767,6 @@ def draw_networkx_labels(G, pos,
     """
     try:
         import matplotlib.pyplot as plt
-        import matplotlib.cbook as cb
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
