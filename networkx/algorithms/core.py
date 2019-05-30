@@ -425,6 +425,12 @@ def onion_layers(G):
     # Performs the onion decomposition.
     _current_core = 1
     _current_layer = 1
+    # Sets vertices of degree 0 to layer 1.
+    for v in nx.isolates(G):
+        od_layers[v] = _current_layer
+        degrees.pop(v)
+    if len(degrees) < G.number_of_nodes():
+        _current_layer = 2
     while len(degrees) > 0:
         # Sets the order for looking at nodes.
         nodes = sorted(degrees, key=degrees.get)
