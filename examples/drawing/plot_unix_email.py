@@ -19,7 +19,7 @@ https://raw.githubusercontent.com/networkx/networkx/master/examples/drawing/unix
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2005-2018 by
+#    Copyright (C) 2005-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

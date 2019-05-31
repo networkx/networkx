@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    William Schwartz <wkschwartz@gmail.com>
 #    All rights reserved.
 #    BSD license.
 #
@@ -299,6 +300,11 @@ def periphery(G, e=None, usebounds=False):
     -------
     p : list
        List of nodes in periphery
+
+    See Also
+    --------
+    barycenter
+    center
     """
     if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="periphery")
@@ -351,6 +357,11 @@ def center(G, e=None, usebounds=False):
     -------
     c : list
        List of nodes in center
+
+    See Also
+    --------
+    barycenter
+    periphery
     """
     if usebounds is True and e is None and not G.is_directed():
         return extrema_bounding(G, compute="center")

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -562,7 +562,7 @@ def transitive_reduction(G):
 
 
 @not_implemented_for('undirected')
-def antichains(G):
+def antichains(G, topo_order=None):
     """Generates antichains from a directed acyclic graph (DAG).
 
     An antichain is a subset of a partially ordered set such that any
@@ -572,6 +572,9 @@ def antichains(G):
     ----------
     G : NetworkX DiGraph
         A directed acyclic graph (DAG)
+
+    topo_order: list or tuple, optional
+        A topological order for G (if None, the function will compute one)
 
     Returns
     -------
@@ -598,8 +601,11 @@ def antichains(G):
     .. [1] Free Lattices, by R. Freese, J. Jezek and J. B. Nation,
        AMS, Vol 42, 1995, p. 226.
     """
+    if topo_order is None:
+        topo_order = nx.topological_sort(G)
+
     TC = nx.transitive_closure(G)
-    antichains_stacks = [([], list(reversed(list(nx.topological_sort(G)))))]
+    antichains_stacks = [([], list(topo_order)[-1::-1])]
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
         # Invariant:
@@ -615,7 +621,7 @@ def antichains(G):
 
 
 @not_implemented_for('undirected')
-def dag_longest_path(G, weight='weight', default_weight=1):
+def dag_longest_path(G, weight='weight', default_weight=1, topo_order=None):
     """Returns the longest path in a directed acyclic graph (DAG).
 
     If `G` has edges with `weight` attribute the edge data are used as
@@ -631,6 +637,9 @@ def dag_longest_path(G, weight='weight', default_weight=1):
 
     default_weight : int, optional
         The weight of edges that do not have a weight attribute
+
+    topo_order: list or tuple, optional
+        A topological order for G (if None, the function will compute one)
 
     Returns
     -------
@@ -649,14 +658,20 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     """
     if not G:
         return []
+
+    if topo_order is None:
+        topo_order = nx.topological_sort(G)
+
     dist = {}  # stores {v : (length, u)}
-    for v in nx.topological_sort(G):
+    for v in topo_order:
         us = [(dist[u][0] + data.get(weight, default_weight), u)
               for u, data in G.pred[v].items()]
+
         # Use the best predecessor if there is one and its distance is
         # non-negative, otherwise terminate.
         maxu = max(us, key=lambda x: x[0]) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
+
     u = None
     v = max(dist, key=lambda x: dist[x][0])
     path = []
@@ -664,6 +679,7 @@ def dag_longest_path(G, weight='weight', default_weight=1):
         path.append(v)
         u = v
         v = dist[v][1]
+
     path.reverse()
     return path
 

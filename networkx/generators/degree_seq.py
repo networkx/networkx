@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -745,7 +745,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     Examples
     --------
     >>> sequence = [1, 2, 2, 3]
-    >>> G = nx.random_degree_sequence_graph(sequence)
+    >>> G = nx.random_degree_sequence_graph(sequence, seed=42)
     >>> sorted(d for n, d in G.degree())
     [1, 2, 2, 3]
     """

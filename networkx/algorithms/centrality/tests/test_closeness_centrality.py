@@ -38,7 +38,7 @@ class TestClosenessCentrality:
     def test_digraph(self):
         G = nx.path_graph(3, create_using=nx.DiGraph())
         c = nx.closeness_centrality(G)
-        cr = nx.closeness_centrality(G, reverse=True)
+        cr = nx.closeness_centrality(G.reverse())
         d = {0: 0.0, 1: 0.500, 2: 0.667}
         dr = {0: 0.667, 1: 0.500, 2: 0.0}
         for n in sorted(self.P3):

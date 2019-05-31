@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -131,7 +131,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
-    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (source, target))
+    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (target, source))
 
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):

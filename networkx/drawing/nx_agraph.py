@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -226,7 +226,8 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary
+    Returns
+    -------
       Dictionary of x, y, positions keyed by node.
 
     Examples
@@ -238,7 +239,6 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     Notes
     -----
     This is a wrapper for pygraphviz_layout.
-
     """
     return pygraphviz_layout(G, prog=prog, root=root, args=args)
 

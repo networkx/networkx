@@ -69,3 +69,14 @@ class TestSpectrum(object):
         evals = numpy.array([-0.5, 0., 0.])
         e = sorted(nx.modularity_spectrum(self.DG))
         assert_almost_equal(e, evals)
+
+    def test_bethe_hessian_spectrum(self):
+        "Bethe Hessian eigenvalues"
+        evals = numpy.array([0.5 * (9 - numpy.sqrt(33)), 4,
+                             0.5 * (9 + numpy.sqrt(33))])
+        e = sorted(nx.bethe_hessian_spectrum(self.P, r=2))
+        assert_almost_equal(e, evals)
+        # Collapses back to Laplacian:
+        e1 = sorted(nx.bethe_hessian_spectrum(self.P, r=1))
+        e2 = sorted(nx.laplacian_spectrum(self.P))
+        assert_almost_equal(e1, e2)

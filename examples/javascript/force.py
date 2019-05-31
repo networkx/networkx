@@ -7,7 +7,7 @@ Example of writing JSON format graph data and using the D3 Javascript library to
 """
 # Author: Aric Hagberg <aric.hagberg@gmail.com>
 
-#    Copyright (C) 2011-2018 by
+#    Copyright (C) 2011-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

@@ -1,6 +1,6 @@
 # disjoint_paths.py - Flow based node and edge disjoint paths.
 #
-# Copyright 2017-2018 NetworkX developers.
+# Copyright 2017-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

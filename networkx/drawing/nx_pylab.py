@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,12 +21,12 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
+from numbers import Number
 import networkx as nx
 from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
-    spring_layout, random_layout
-from numbers import Number
+    spring_layout, random_layout, planar_layout
 
 __all__ = ['draw',
            'draw_networkx',
@@ -39,6 +39,7 @@ __all__ = ['draw',
            'draw_random',
            'draw_spectral',
            'draw_spring',
+           'draw_planar',
            'draw_shell']
 
 
@@ -180,18 +181,18 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        Size of nodes.  If an array is specified it must be the
        same length as nodelist.
 
-    node_color : color string, or array of floats, (default='#1f78b4')
-       Node color. Can be a single color format string,
-       or a  sequence of colors with the same length as nodelist.
-       If numeric values are specified they will be mapped to
-       colors using the cmap and vmin,vmax parameters.  See
+    node_color : color or array of colors (default='#1f78b4')
+       Node color. Can be a single color or a sequence of colors with the same
+       length as nodelist. Color can be string, or rgb (or rgba) tuple of
+       floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the cmap and vmin,vmax parameters. See
        matplotlib.scatter for more details.
 
     node_shape :  string, optional (default='o')
        The shape of the node.  Specification is as matplotlib.scatter
        marker, one of 'so^>v<dph8'.
 
-    alpha : float, optional (default=1.0)
+    alpha : float, optional (default=None)
        The node and edge transparency
 
     cmap : Matplotlib colormap, optional (default=None)
@@ -206,11 +207,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     width : float, optional (default=1.0)
        Line width of edges
 
-    edge_color : color string, or array of floats (default='r')
-       Edge color. Can be a single color format string,
-       or a sequence of colors with the same length as edgelist.
-       If numeric values are specified they will be mapped to
-       colors using the edge_cmap and edge_vmin,edge_vmax parameters.
+    edge_color : color or array of colors (default='k')
+       Edge color. Can be a single color or a sequence of colors with the same
+       length as edgelist. Color can be string, or rgb (or rgba) tuple of
+       floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
     edge_cmap : Matplotlib colormap, optional (default=None)
        Colormap for mapping intensities of edges
@@ -287,7 +288,7 @@ def draw_networkx_nodes(G, pos,
                         node_size=300,
                         node_color='#1f78b4',
                         node_shape='o',
-                        alpha=1.0,
+                        alpha=None,
                         cmap=None,
                         vmin=None,
                         vmax=None,
@@ -319,11 +320,11 @@ def draw_networkx_nodes(G, pos,
        Size of nodes (default=300).  If an array is specified it must be the
        same length as nodelist.
 
-    node_color : color string, or array of floats
-       Node color. Can be a single color format string (default='#1f78b4'),
-       or a  sequence of colors with the same length as nodelist.
-       If numeric values are specified they will be mapped to
-       colors using the cmap and vmin,vmax parameters.  See
+    node_color : color or array of colors (default='#1f78b4')
+       Node color. Can be a single color or a sequence of colors with the same
+       length as nodelist. Color can be string, or rgb (or rgba) tuple of
+       floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the cmap and vmin,vmax parameters. See
        matplotlib.scatter for more details.
 
     node_shape :  string
@@ -331,7 +332,7 @@ def draw_networkx_nodes(G, pos,
        marker, one of 'so^>v<dph8' (default='o').
 
     alpha : float or array of floats
-       The node transparency.  This can be a single alpha value (default=1.0),
+       The node transparency.  This can be a single alpha value (default=None),
        in which case it will be applied to all the nodes of color. Otherwise,
        if it is an array, the elements of alpha will be applied to the colors
        in order (cycling through alpha multiple times if necessary).
@@ -430,7 +431,7 @@ def draw_networkx_edges(G, pos,
                         width=1.0,
                         edge_color='k',
                         style='solid',
-                        alpha=1.0,
+                        alpha=None,
                         arrowstyle='-|>',
                         arrowsize=10,
                         edge_cmap=None,
@@ -463,17 +464,17 @@ def draw_networkx_edges(G, pos,
     width : float, or array of floats
        Line width of edges (default=1.0)
 
-    edge_color : color string, or array of floats
-       Edge color. Can be a single color format string (default='r'),
-       or a sequence of colors with the same length as edgelist.
-       If numeric values are specified they will be mapped to
-       colors using the edge_cmap and edge_vmin,edge_vmax parameters.
+    edge_color : color or array of colors (default='k')
+       Edge color. Can be a single color or a sequence of colors with the same
+       length as edgelist. Color can be string, or rgb (or rgba) tuple of
+       floats from 0-1. If numeric values are specified they will be
+       mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
     style : string
        Edge line style (default='solid') (solid|dashed|dotted,dashdot)
 
     alpha : float
-       The edge transparency (default=1.0)
+       The edge transparency (default=None)
 
     edge_ cmap : Matplotlib colormap
        Colormap for mapping intensities of edges (default=None)
@@ -572,69 +573,42 @@ def draw_networkx_edges(G, pos,
     if nodelist is None:
         nodelist = list(G.nodes())
 
+    # FancyArrowPatch handles color=None different from LineCollection
+    if edge_color is None:
+        edge_color = 'k'
+
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
 
-    if not cb.iterable(width):
-        lw = (width,)
-    else:
-        lw = width
-
-    if not is_string_like(edge_color) \
-            and cb.iterable(edge_color) \
-            and len(edge_color) == len(edge_pos):
-        if np.alltrue([is_string_like(c) for c in edge_color]):
-            # (should check ALL elements)
-            # list of color letters such as ['k','r','k',...]
-            edge_colors = tuple([colorConverter.to_rgba(c, alpha)
-                                 for c in edge_color])
-        elif np.alltrue([not is_string_like(c) for c in edge_color]):
-            # If color specs are given as (rgb) or (rgba) tuples, we're OK
-            if np.alltrue([cb.iterable(c) and len(c) in (3, 4)
-                           for c in edge_color]):
-                edge_colors = tuple(edge_color)
+    # Check if edge_color is an array of floats and map to edge_cmap.
+    # This is the only case handled differently from matplotlib
+    if cb.iterable(edge_color) and (len(edge_color) == len(edge_pos)) \
+        and np.alltrue([isinstance(c,Number) for c in edge_color]):
+            if edge_cmap is not None:
+                assert(isinstance(edge_cmap, Colormap))
             else:
-                # numbers (which are going to be mapped with a colormap)
-                edge_colors = None
-        else:
-            raise ValueError('edge_color must contain color names or numbers')
-    else:
-        if is_string_like(edge_color) or len(edge_color) == 1:
-            edge_colors = (colorConverter.to_rgba(edge_color, alpha), )
-        else:
-            msg = 'edge_color must be a color or list of one color per edge'
-            raise ValueError(msg)
+                edge_cmap = plt.get_cmap()
+            if edge_vmin is None:
+                edge_vmin = min(edge_color)
+            if edge_vmax is None:
+                edge_vmax = max(edge_color)
+            color_normal = Normalize(vmin=edge_vmin, vmax=edge_vmax)
+            edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
 
     if (not G.is_directed() or not arrows):
         edge_collection = LineCollection(edge_pos,
-                                         colors=edge_colors,
-                                         linewidths=lw,
+                                         colors=edge_color,
+                                         linewidths=width,
                                          antialiaseds=(1,),
                                          linestyle=style,
                                          transOffset=ax.transData,
+                                         alpha=alpha
                                          )
 
         edge_collection.set_zorder(1)  # edges go behind nodes
         edge_collection.set_label(label)
         ax.add_collection(edge_collection)
 
-        # Note: there was a bug in mpl regarding the handling of alpha values
-        # for each line in a LineCollection. It was fixed in matplotlib by
-        # r7184 and r7189 (June 6 2009). We should then not set the alpha
-        # value globally, since the user can instead provide per-edge alphas
-        # now.  Only set it globally if provided as a scalar.
-        if isinstance(alpha, Number):
-            edge_collection.set_alpha(alpha)
-
-        if edge_colors is None:
-            if edge_cmap is not None:
-                assert(isinstance(edge_cmap, Colormap))
-            edge_collection.set_array(np.asarray(edge_color))
-            edge_collection.set_cmap(edge_cmap)
-            if edge_vmin is not None or edge_vmax is not None:
-                edge_collection.set_clim(edge_vmin, edge_vmax)
-            else:
-                edge_collection.autoscale()
         return edge_collection
 
     arrow_collection = None
@@ -653,42 +627,40 @@ def draw_networkx_edges(G, pos,
         # Draw arrows with `matplotlib.patches.FancyarrowPatch`
         arrow_collection = []
         mutation_scale = arrowsize  # scale factor of arrow head
-        arrow_colors = edge_colors
-        if arrow_colors is None:
-            if edge_cmap is not None:
-                assert(isinstance(edge_cmap, Colormap))
-            else:
-                edge_cmap = plt.get_cmap()  # default matplotlib colormap
-            if edge_vmin is None:
-                edge_vmin = min(edge_color)
-            if edge_vmax is None:
-                edge_vmax = max(edge_color)
-            color_normal = Normalize(vmin=edge_vmin, vmax=edge_vmax)
 
+        # FancyArrowPatch doesn't handle color strings
+        arrow_colors = colorConverter.to_rgba_array(edge_color,alpha)
         for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
             x2, y2 = dst
-            arrow_color = None
-            line_width = None
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
             if cb.iterable(node_size):  # many node sizes
-                src_node, dst_node = edgelist[i]
+                src_node, dst_node = edgelist[i][:2]
                 index_node = nodelist.index(dst_node)
                 marker_size = node_size[index_node]
                 shrink_target = to_marker_edge(marker_size, node_shape)
             else:
                 shrink_target = to_marker_edge(node_size, node_shape)
-            if arrow_colors is None:
-                arrow_color = edge_cmap(color_normal(edge_color[i]))
-            elif len(arrow_colors) > 1:
-                arrow_color = arrow_colors[i]
+
+            if cb.iterable(arrow_colors):
+                if len(arrow_colors) == len(edge_pos):
+                    arrow_color = arrow_colors[i]
+                elif len(arrow_colors)==1:
+                    arrow_color = arrow_colors[0]
+                else: # Cycle through colors
+                    arrow_color =  arrow_colors[i%len(arrow_colors)]
             else:
-                arrow_color = arrow_colors[0]
-            if len(lw) > 1:
-                line_width = lw[i]
+                arrow_color = edge_color
+
+            if cb.iterable(width):
+                if len(width) == len(edge_pos):
+                    line_width = width[i]
+                else:
+                    line_width = width[i%len(width)]
             else:
-                line_width = lw[0]
+                line_width = width
+
             arrow = FancyArrowPatch((x1, y1), (x2, y2),
                                     arrowstyle=arrowstyle,
                                     shrinkA=shrink_source,
@@ -735,7 +707,7 @@ def draw_networkx_labels(G, pos,
                          font_color='k',
                          font_family='sans-serif',
                          font_weight='normal',
-                         alpha=1.0,
+                         alpha=None,
                          bbox=None,
                          ax=None,
                          **kwds):
@@ -767,8 +739,8 @@ def draw_networkx_labels(G, pos,
     font_weight : string
        Font weight (default='normal')
 
-    alpha : float
-       The text transparency (default=1.0)
+    alpha : float or None
+       The text transparency (default=None)
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
@@ -832,7 +804,7 @@ def draw_networkx_labels(G, pos,
                     clip_on=True,
                     )
         text_items[n] = t
-        
+
     plt.tick_params(
         axis='both',
         which='both',
@@ -851,7 +823,7 @@ def draw_networkx_edge_labels(G, pos,
                               font_color='k',
                               font_family='sans-serif',
                               font_weight='normal',
-                              alpha=1.0,
+                              alpha=None,
                               bbox=None,
                               ax=None,
                               rotate=True,
@@ -870,8 +842,8 @@ def draw_networkx_edge_labels(G, pos,
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
 
-    alpha : float
-       The text transparency (default=1.0)
+    alpha : float or None
+       The text transparency (default=None)
 
     edge_labels : dictionary
        Edge labels in a dictionary keyed by edge two-tuple of text
@@ -1099,6 +1071,22 @@ def draw_shell(G, **kwargs):
     if nlist is not None:
         del(kwargs['nlist'])
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
+
+
+def draw_planar(G, **kwargs):
+    """Draw a planar networkx graph with planar layout.
+
+    Parameters
+    ----------
+    G : graph
+       A planar networkx graph
+
+    kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
+    draw(G, planar_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
