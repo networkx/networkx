@@ -376,13 +376,13 @@ def onion_layers(G):
     Parameters
     ----------
     G : NetworkX graph
-       A simple graph without self loops or parallel edges
+        A simple graph without self loops or parallel edges
 
     Returns
     -------
     od_layers : dictionary
-       A dictionary keyed by vertex to the onion layer. The layers are
-       contiguous integers starting at 1.
+        A dictionary keyed by vertex to the onion layer. The layers are
+        contiguous integers starting at 1.
 
     Raises
     ------
