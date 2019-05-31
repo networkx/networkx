@@ -365,6 +365,7 @@ def k_corona(G, k, core_number=None):
 
 
 @not_implemented_for('multigraph')
+@not_implemented_for('directed')
 def onion_layers(G):
     """Returns the layer of each vertex in the onion decomposition of the graph.
 
@@ -406,53 +407,53 @@ def onion_layers(G):
        L. Hébert-Dufresne, J. A. Grochow, and A. Allard
        Scientific Reports 6, 31708 (2016)
        http://doi.org/10.1038/srep31708
+    .. [2] Percolation and the effective structure of complex networks
+       A. Allard and L. Hébert-Dufresne
+       Physical Review X 9, 011023 (2019)
+       http://doi.org/10.1103/PhysRevX.9.011023
     """
     if nx.number_of_selfloops(G) > 0:
-        msg = ('Input graph has self loops which is not permitted; '
+        msg = ('Input graph contains self loops which is not permitted; '
                'Consider using G.remove_edges_from(nx.selfloop_edges(G)).')
         raise NetworkXError(msg)
-    if nx.is_directed(G):
-        msg = ('Input graph is directed which is not permitted; '
-               'Consider using G.to_undirected().')
-        raise NetworkXError(msg)
     # Dictionaries to register the k-core/onion decompositions.
-    # _coreness_map = {}
     od_layers = {}
     # Adjacency list
     neighbors = {v: list(nx.all_neighbors(G, v)) for v in G}
     # Effective degree of nodes.
     degrees = dict(G.degree())
     # Performs the onion decomposition.
-    _current_core = 1
-    _current_layer = 1
-    # Sets vertices of degree 0 to layer 1.
-    for v in nx.isolates(G):
-        od_layers[v] = _current_layer
-        degrees.pop(v)
-    if len(degrees) < G.number_of_nodes():
-        _current_layer = 2
+    current_core = 1
+    current_layer = 1
+    # Sets vertices of degree 0 to layer 1, if any.
+    isolated_nodes = nx.isolates(G)
+    if len(isolated_nodes) > 0:
+        for v in isolated_nodes:
+            od_layers[v] = current_layer
+            degrees.pop(v)
+        current_layer = 2
+    # Finds the layer for the remaining nodes.
     while len(degrees) > 0:
         # Sets the order for looking at nodes.
         nodes = sorted(degrees, key=degrees.get)
         # Sets properly the current core.
-        _min_degree = degrees[nodes[0]]
-        if _min_degree > _current_core:
-            _current_core = _min_degree
+        min_degree = degrees[nodes[0]]
+        if min_degree > current_core:
+            current_core = min_degree
         # Identifies vertices in the current layer.
-        _this_layer_ = []
+        this_layer = []
         for n in nodes:
-            if degrees[n] > _current_core:
+            if degrees[n] > current_core:
                 break
-            _this_layer_.append(n)
+            this_layer.append(n)
         # Identifies the core/layer of the vertices in the current layer.
-        for v in _this_layer_:
-            # _coreness_map[v] = _current_core
-            od_layers[v] = _current_layer
+        for v in this_layer:
+            od_layers[v] = current_layer
             for n in neighbors[v]:
                 neighbors[n].remove(v)
                 degrees[n] = degrees[n] - 1
             degrees.pop(v)
         # Updates the layer count.
-        _current_layer = _current_layer + 1
+        current_layer = current_layer + 1
     # Returns the dictionaries containing the onion layer of each vertices.
     return od_layers
