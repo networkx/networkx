@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 from random import Random
+from nose import SkipTest
 from nose.tools import assert_equal, assert_is_instance, \
         assert_raises, raises, assert_less_equal, assert_false, \
         assert_true
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-import scipy.sparse
-import numpy
 
 
 class TestDistance:
@@ -95,6 +94,19 @@ class TestDistance:
 
 
 class TestResistanceDistance:
+    @classmethod
+    def setupClass(cls):
+        global np
+        global sp_sparse
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+        try:
+            import scipy.sparse as sp_sparse
+        except ImportError:
+            raise SkipTest('SciPy Sparse not available.')
+
     def setUp(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=2)
@@ -105,29 +117,29 @@ class TestResistanceDistance:
 
     def test_laplacian_submatrix(self):
         from networkx.algorithms.distance_measures import _laplacian_submatrix
-        M = scipy.sparse.csr_matrix([[1, 2, 3],
+        M = sp_sparse.csr_matrix([[1, 2, 3],
                                      [4, 5, 6],
-                                     [7, 8, 9]], dtype=numpy.float32)
-        N = scipy.sparse.csr_matrix([[5, 6],
-                                     [8, 9]], dtype=numpy.float32)
+                                     [7, 8, 9]], dtype=np.float32)
+        N = sp_sparse.csr_matrix([[5, 6],
+                                     [8, 9]], dtype=np.float32)
         Mn, Mn_nodelist = _laplacian_submatrix(1, M, [1, 2, 3])
         assert_equal(Mn_nodelist, [2, 3])
-        assert_true(numpy.allclose(Mn.toarray(), N.toarray()))
+        assert_true(np.allclose(Mn.toarray(), N.toarray()))
 
     @raises(nx.NetworkXError)
     def test_laplacian_submatrix_square(self):
         from networkx.algorithms.distance_measures import _laplacian_submatrix
-        M = scipy.sparse.csr_matrix([[1, 2],
+        M = sp_sparse.csr_matrix([[1, 2],
                                      [4, 5],
-                                     [7, 8]], dtype=numpy.float32)
+                                     [7, 8]], dtype=np.float32)
         _laplacian_submatrix(1, M, [1, 2, 3])
 
     @raises(nx.NetworkXError)
     def test_laplacian_submatrix_matrix_node_dim(self):
         from networkx.algorithms.distance_measures import _laplacian_submatrix
-        M = scipy.sparse.csr_matrix([[1, 2, 3],
+        M = sp_sparse.csr_matrix([[1, 2, 3],
                                      [4, 5, 6],
-                                     [7, 8, 9]], dtype=numpy.float32)
+                                     [7, 8, 9]], dtype=np.float32)
         _laplacian_submatrix(1, M, [1, 2, 3, 4])
 
     def test_resistance_distance(self):
@@ -157,7 +169,7 @@ class TestResistanceDistance:
         G.add_edge(3, 4, weight=1)
         G.add_edge(1, 4, weight=3)
         rd = nx.resistance_distance(G, 1, 3, 'weight', True)
-        assert_true(numpy.isclose(rd, 1/(1/(2+4) + 1/(1+3))))
+        assert_true(np.isclose(rd, 1/(1/(2+4) + 1/(1+3))))
 
     @raises(ZeroDivisionError)
     def test_resistance_distance_div0(self):
