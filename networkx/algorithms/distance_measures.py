@@ -11,11 +11,9 @@
 #          Dan Schult (dschult@colgate.edu)
 #          Brian Kiefer (bkiefer@asu.edu)
 """Graph diameter, radius, eccentricity and other properties."""
-import bisect
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-
 
 __all__ = ['extrema_bounding', 'eccentricity', 'diameter',
            'radius', 'periphery', 'center', 'resistance_distance']
@@ -373,27 +371,28 @@ def center(G, e=None, usebounds=False):
 
 
 def _laplacian_submatrix(node, mat, node_list):
-    """Removes row/col from a LIL sparse matrix and returns the submatrix
+    """Removes row/col from a sparse matrix and returns the submatrix
     """
-    import numpy as np
     j = node_list.index(node)
     n = list(range(len(node_list)))
     n.pop(j)
-    
+
     if mat.shape[0] != mat.shape[1]:
         raise nx.NetworkXError('Matrix must be square')
     elif len(node_list) != mat.shape[0]:
-        raise nx.NetworkXError('Node list length does not match matrix dimentions')
-    
+        msg = "Node list length does not match matrix dimentions"
+        raise nx.NetworkXError(msg)
+
     mat = mat.tocsr()
-    mat = mat[n,:]
+    mat = mat[n, :]
 
     mat = mat.tocsc()
-    mat = mat[:,n]
+    mat = mat[:, n]
 
-    node_list.pop(j) 
+    node_list.pop(j)
 
     return mat, node_list
+
 
 def _count_lu_permutations(perm_array):
     """Counts the number of permutations in SuperLU perm_c or perm_r
@@ -409,13 +408,14 @@ def _count_lu_permutations(perm_array):
 
     return perm_cnt
 
+
 @not_implemented_for('directed')
 def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """Returns the resistance distance between node A and node B on graph G.
 
     The resistance distance between two nodes of a graph is akin to treating
-    the graph as a grid of resistorses with a resistance equal to the provided 
-    weight. 
+    the graph as a grid of resistorses with a resistance equal to the provided
+    weight.
     
     If weight is not provided, then a weight of 1 is used for all edges.
 
@@ -435,8 +435,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
        If None, then each edge has weight 1.
 
     invert_weight : boolean (default=True)
-        Proper calculation of resistance distance requires building the 
-        Laplacian matrix with the reciprocal of the weight. Not required 
+        Proper calculation of resistance distance requires building the
+        Laplacian matrix with the reciprocal of the weight. Not required
         if the weight is already inverted. Weight cannot be zero.
 
     Returns
@@ -451,7 +451,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     * http://mathworld.wolfram.com/ResistanceDistance.html
 
     Additional details:
-    Vaya Sapobi Samui Vos, “Methods for determining the effective resistance,” M.S., 
+    Vaya Sapobi Samui Vos, “Methods for determining the effective resistance,” M.S.,
     Mathematisch Instituut, Universiteit Leiden, Leiden, Netherlands, 2016
     Available: `Link to thesis <https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
     """
@@ -475,10 +475,10 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     node_list = list(G.nodes())
 
     if invert_weight and weight is not None and type(G) is nx.Graph:
-        for (u,v,d) in list(G.edges(data=True)):
+        for (u, v, d) in list(G.edges(data=True)):
             G[u][v][weight] = 1/d[weight]
     elif invert_weight and weight is not None and type(G) is nx.MultiGraph:
-        for (u,v,k,d) in list(G.edges(keys=True, data=True)):
+        for (u, v, k, d) in list(G.edges(keys=True, data=True)):
             G[u][v][k][weight] = 1/d[weight]
     # Replace with collapsing topology or approximated zero?
 
@@ -486,11 +486,14 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     # efficent that directly calculating the psuedo-inverse
     L = nx.laplacian_matrix(G, node_list, weight=weight)
 
-    Lsub_a, node_list_a = _laplacian_submatrix(nodeA, L.copy(), node_list[:])
-    Lsub_ab, node_list_ab = _laplacian_submatrix(nodeB, Lsub_a.copy(), node_list_a[:])
+    Lsub_a, node_list_a = _laplacian_submatrix(nodeA, L.copy(),
+                                               node_list[:])
+    Lsub_ab, node_list_ab = _laplacian_submatrix(nodeB, Lsub_a.copy(),
+                                                 node_list_a[:])
 
     # Factorize Laplacian submatrixes and extract diagonals
-    # Order the diagonals to minimize the likelihood over overflows during computing the determinant
+    # Order the diagonals to minimize the likelihood over overflows
+    # during computing the determinant
     lu_a = scipy.sparse.linalg.splu(Lsub_a, options=dict(SymmetricMode=True))
     LdiagA = lu_a.U.diagonal()
     LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
@@ -498,7 +501,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagA_s *= (-1)**_count_lu_permutations(lu_a.perm_c)
     LdiagA = np.absolute(LdiagA)
     LdiagA = np.sort(LdiagA)
-    
+
     lu_ab = scipy.sparse.linalg.splu(Lsub_ab, options=dict(SymmetricMode=True))
     LdiagAB = lu_ab.U.diagonal()
     LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
@@ -506,9 +509,9 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagAB_s *= (-1)**_count_lu_permutations(lu_ab.perm_c)
     LdiagAB = np.absolute(LdiagAB)
     LdiagAB = np.sort(LdiagAB)
-    
+
     # Calculate the ratio of determinant, rd = det(Lsub_ab)/det(Lsub_a)
-    Ldet = np.product(np.divide(np.append(LdiagAB,[1]), LdiagA))
+    Ldet = np.product(np.divide(np.append(LdiagAB, [1]), LdiagA))
     rd = Ldet * LdiagAB_s / LdiagA_s
-    
+
     return rd
