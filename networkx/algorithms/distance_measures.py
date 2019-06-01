@@ -399,12 +399,12 @@ def barycenter(G, weight=None, attr=None, sp=None):
         `attr` attribute. Otherwise do not store the value.
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
-    
+
     Returns
     -------
     :class:`list`
         Nodes of `G` that induce the barycenter of `G`.
-    
+
     Raises
     ------
     :exc:`networkx.NetworkXNoPath`
@@ -413,7 +413,7 @@ def barycenter(G, weight=None, attr=None, sp=None):
         lengths for any pairs.
     :exc:`ValueError`
         If `sp` and `weight` are both given.
-    
+
     See Also
     --------
     center
@@ -488,7 +488,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     The resistance distance between two nodes of a graph is akin to treating
     the graph as a grid of resistorses with a resistance equal to the provided
     weight.
-    
+
     If weight is not provided, then a weight of 1 is used for all edges.
 
     Parameters
