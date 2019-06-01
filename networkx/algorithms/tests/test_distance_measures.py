@@ -95,8 +95,8 @@ class TestDistance:
 
 
 class TestResistanceDistance:
-    from nx.algorithms.distance_measures import resistance_distance
-    from nx.algorithms.distance_measures import _laplacian_submatrix
+    from networkx.algorithms.distance_measures import resistance_distance
+    from networkx.algorithms.distance_measures import _laplacian_submatrix
 
     def setUp(self):
         G = nx.Graph()
