@@ -355,11 +355,13 @@ def k_corona(G, k, core_number=None):
     return _core_subgraph(G, func, k, core_number)
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def k_truss(G, k):
-    """Returns the k-truss of G.
+    """Returns the k-truss of `G`.
 
-    The k-truss is the maximal subgraph of G which contains at least three
-    vertices where every edge is incident to at least k triangles.
+    The k-truss is the maximal subgraph of `G` which contains at least three
+    vertices where every edge is incident to at least `k` triangles.
 
     Parameters
     ----------
@@ -381,7 +383,7 @@ def k_truss(G, k):
 
     Notes
     -----
-    A k-clique is a (k-2)-truss and a k-truss is a (k+1) core.
+    A k-clique is a (k-2)-truss and a k-truss is a (k+1)-core.
 
     Not implemented for digraphs or graphs with parallel edges or self loops.
 
