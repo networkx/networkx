@@ -31,6 +31,14 @@ class TestIncrementalClosenessCentrality:
         v = sample(possible_nodes, 1)[0]
         return (u, v)
 
+    @raises(nx.NetworkXNotImplemented)
+    def test_directed_raises(self):
+        dir_G = nx.gn_graph(n=5)
+        prev_cc = None
+        edge = self.pick_add_edge(dir_G)
+        insert = True
+        nx.incremental_closeness_centrality(dir_G, edge, prev_cc, insert)
+
     def test_incremental(self):
         # Check that incremental and regular give same output
         G = self.G.copy()

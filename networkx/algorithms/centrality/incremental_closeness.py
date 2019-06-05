@@ -4,11 +4,13 @@ Incremental closeness centrality measure.
 
 import networkx as nx
 from networkx.exception import NetworkXError, NetworkXNotImplemented
+from networkx.utils.decorators import not_implemented_for
 
 __author__ = 'Michael Lauria <michael.david.lauria@gmail.com>'
 __all__ = ['incremental_closeness_centrality']
 
 
+@not_implemented_for('directed')
 def incremental_closeness_centrality(G,
                                      edge,
                                      prev_cc=None,
@@ -77,8 +79,6 @@ def incremental_closeness_centrality(G,
        Algorithms for Closeness Centrality
        http://sariyuce.com/papers/bigdata13.pdf
     """
-    if G.is_directed():
-        raise NetworkXNotImplemented("not implemented for directed graphs")
 
     if prev_cc is not None and len(prev_cc) != len(G.nodes()):
         raise NetworkXError(
