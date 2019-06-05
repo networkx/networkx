@@ -14,6 +14,7 @@ class TestIncrementalClosenessCentrality:
         num_nodes = 100
         edge_prob = 0.6
         self.G = nx.fast_gnp_random_graph(num_nodes, edge_prob)
+        self.G_cc = nx.closeness_centrality(self.G)
 
     @staticmethod
     def pick_add_edge(g):
@@ -38,6 +39,26 @@ class TestIncrementalClosenessCentrality:
         edge = self.pick_add_edge(dir_G)
         insert = True
         nx.incremental_closeness_centrality(dir_G, edge, prev_cc, insert)
+
+    @raises(nx.NetworkXError)
+    def test_wrong_size_prev_cc_raises(self):
+        G = self.G.copy()
+        edge = self.pick_add_edge(G)
+        insert = True
+        prev_cc = self.G_cc.copy()
+        prev_cc.pop(0)
+        nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
+
+    @raises(nx.NetworkXError)
+    def test_wrong_nodes_prev_cc_raises(self):
+        G = self.G.copy()
+        edge = self.pick_add_edge(G)
+        insert = True
+        prev_cc = self.G_cc.copy()
+        num_nodes = len(prev_cc)
+        prev_cc.pop(0)
+        prev_cc[num_nodes] = 0.5
+        nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
 
     def test_incremental(self):
         # Check that incremental and regular give same output

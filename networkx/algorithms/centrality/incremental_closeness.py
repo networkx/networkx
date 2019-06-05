@@ -3,7 +3,7 @@ Incremental closeness centrality measure.
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError, NetworkXNotImplemented
+from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for
 
 __author__ = 'Michael Lauria <michael.david.lauria@gmail.com>'
@@ -80,9 +80,12 @@ def incremental_closeness_centrality(G,
        http://sariyuce.com/papers/bigdata13.pdf
     """
 
-    if prev_cc is not None and len(prev_cc) != len(G.nodes()):
-        raise NetworkXError(
-            "Previous closeness centrality list does not correspond to given\
+    if prev_cc is not None:
+        shared_items = set(prev_cc.keys()) & set(G.nodes())
+        count_shared = len(shared_items)
+        if len(prev_cc) != count_shared or len(G.nodes()) != count_shared:
+            raise NetworkXError(
+                "Previous closeness centrality list does not correspond to given\
         graph.")
 
     # Just aliases G
