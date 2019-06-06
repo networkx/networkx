@@ -10,7 +10,7 @@
 """
 Read graphs in GML format.
 
-"GML, the G>raph Modelling Language, is our proposal for a portable
+"GML, the Graph Modelling Language, is our proposal for a portable
 file format for graphs. GML's key features are portability, simple
 syntax, extensibility and flexibility. A GML file consists of a
 hierarchical key-value lists. Graphs can be annotated with arbitrary
