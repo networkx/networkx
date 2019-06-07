@@ -414,7 +414,7 @@ def draw_networkx_nodes(G, pos,
                                  linewidths=linewidths,
                                  edgecolors=edgecolors,
                                  label=label)
-    plt.tick_params(
+    ax.tick_params(
         axis='both',
         which='both',
         bottom=False,
@@ -689,7 +689,7 @@ def draw_networkx_edges(G, pos,
     ax.update_datalim(corners)
     ax.autoscale_view()
 
-    plt.tick_params(
+    ax.tick_params(
         axis='both',
         which='both',
         bottom=False,
@@ -803,7 +803,7 @@ def draw_networkx_labels(G, pos,
                     )
         text_items[n] = t
 
-    plt.tick_params(
+    ax.tick_params(
         axis='both',
         which='both',
         bottom=False,
@@ -956,7 +956,7 @@ def draw_networkx_edge_labels(G, pos,
                     )
         text_items[(n1, n2)] = t
 
-    plt.tick_params(
+    ax.tick_params(
         axis='both',
         which='both',
         bottom=False,
