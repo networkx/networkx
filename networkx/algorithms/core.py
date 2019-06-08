@@ -397,14 +397,21 @@ def k_truss(G, k):
        Cohen, 2005.
     """
     H = G.copy()
+
     n_dropped = 1
     while n_dropped > 0:
         n_dropped = 0
         to_drop = []
-        for u, v in H.edges:
-            if len(set(H[u]) & set(H[v])) < k:
-                to_drop.append((u, v))
-        n_dropped = len(to_drop)
+        seen = set()
+        for u in H:
+            nbrs_u = set(H[u])
+            seen.add(u)
+            new_nbrs = [v for v in nbrs_u if v not in seen]
+            for v in new_nbrs:
+                if len(nbrs_u & set(H[v])) < k:
+                    to_drop.append((u, v))
         H.remove_edges_from(to_drop)
-    H.remove_nodes_from(list(nx.isolates(H)))
+        n_dropped = len(to_drop)
+        H.remove_nodes_from(list(nx.isolates(H)))
+
     return H
