@@ -627,8 +627,11 @@ class TestGraph(BaseAttrGraphTester):
 
     def test_clear(self):
         G = self.K3
+        G.graph['name'] = 'K3'
         G.clear()
+        assert_equal(list(G.nodes), [])
         assert_equal(G.adj, {})
+        assert_equal(G.graph, {})
 
     def test_clear_edges(self):
         G = self.K3
