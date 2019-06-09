@@ -1077,23 +1077,22 @@ class DiGraph(Graph):
         return OutDegreeView(self)
 
     def clear(self):
-        """Remove all nodes and edges from the graph.
+        __doc__ = Graph.clear.__doc__
 
-        This also removes the name, and all graph, node, and edge attributes.
-
-        Examples
-        --------
-        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.clear()
-        >>> list(G.nodes)
-        []
-        >>> list(G.edges)
-        []
-        """
+        super(DiGraph, self).clear()
         self._succ.clear()
         self._pred.clear()
         self._node.clear()
         self.graph.clear()
+
+    def clear_edges(self):
+        __doc__ = Graph.clear_edges.__doc__
+
+        super(DiGraph, self).clear_edges()
+        for predecessor_dict in self._pred.values():
+            predecessor_dict.clear()
+        for successor_dict in self._succ.values():
+            successor_dict.clear()
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
