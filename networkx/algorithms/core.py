@@ -427,7 +427,6 @@ def k_truss(G, k):
     return H
 
 
-@not_implemented_for('directed')
 @not_implemented_for('multigraph')
 @not_implemented_for('directed')
 def onion_layers(G):
