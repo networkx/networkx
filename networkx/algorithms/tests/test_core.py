@@ -124,3 +124,20 @@ class TestCore:
         # k=2
         k_corona_subgraph = nx.k_corona(self.H, k=0)
         assert_equal(sorted(k_corona_subgraph.nodes()), [0])
+
+    def test_k_truss(self):
+        # k=-1
+        k_truss_subgraph = nx.k_truss(self.G, -1)
+        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,21)))
+        # k=0
+        k_truss_subgraph = nx.k_truss(self.G, 0)
+        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,21)))
+        # k=1
+        k_truss_subgraph = nx.k_truss(self.G, 1)
+        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,13)))
+        # k=2
+        k_truss_subgraph = nx.k_truss(self.G, 2)
+        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,9)))
+        # k=3
+        k_truss_subgraph = nx.k_truss(self.G, 3)
+        assert_equal(sorted(k_truss_subgraph.nodes()), [])

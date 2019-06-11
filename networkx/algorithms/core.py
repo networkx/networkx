@@ -36,7 +36,7 @@ from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = ['core_number', 'find_cores', 'k_core',
-           'k_shell', 'k_crust', 'k_corona']
+           'k_shell', 'k_crust', 'k_corona', 'k_truss']
 
 
 @not_implemented_for('multigraph')
@@ -353,3 +353,65 @@ def k_corona(G, k, core_number=None):
     def func(v, k, c):
         return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
     return _core_subgraph(G, func, k, core_number)
+
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
+def k_truss(G, k):
+    """Returns the k-truss of `G`.
+
+    The k-truss is the maximal subgraph of `G` which contains at least three
+    vertices where every edge is incident to at least `k` triangles.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+      An undirected graph
+    k : int
+      The order of the truss
+
+    Returns
+    -------
+    H : NetworkX graph
+      The k-truss subgraph
+
+    Raises
+    ------
+    NetworkXError
+      The k-truss is not defined for graphs with self loops or parallel edges
+      or directed graphs.
+
+    Notes
+    -----
+    A k-clique is a (k-2)-truss and a k-truss is a (k+1)-core.
+
+    Not implemented for digraphs or graphs with parallel edges or self loops.
+
+    Graph, node, and edge attributes are copied to the subgraph.
+
+    References
+    ----------
+    .. [1] Bounds and Algorithms for k-truss. Paul Burkhardt, Vance Faber,
+       David G. Harris, 2018. https://arxiv.org/abs/1806.05523v2
+    .. [2] Trusses: Cohesive Subgraphs for Social Network Analysis. Jonathan
+       Cohen, 2005.
+    """
+    H = G.copy()
+
+    n_dropped = 1
+    while n_dropped > 0:
+        n_dropped = 0
+        to_drop = []
+        seen = set()
+        for u in H:
+            nbrs_u = set(H[u])
+            seen.add(u)
+            new_nbrs = [v for v in nbrs_u if v not in seen]
+            for v in new_nbrs:
+                if len(nbrs_u & set(H[v])) < k:
+                    to_drop.append((u, v))
+        H.remove_edges_from(to_drop)
+        n_dropped = len(to_drop)
+        H.remove_nodes_from(list(nx.isolates(H)))
+
+    return H
