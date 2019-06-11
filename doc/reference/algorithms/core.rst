@@ -12,3 +12,4 @@ Cores
    k_crust
    k_corona
    k_truss
+   onion_layers
