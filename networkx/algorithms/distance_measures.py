@@ -544,18 +544,19 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
         raise nx.NetworkXError(msg)
 
     G = G.copy()
-    node_list = list(G.nodes())
+    node_list = list(G)
 
-    if invert_weight and weight is not None and type(G) is nx.Graph:
-        for (u, v, d) in list(G.edges(data=True)):
-            G[u][v][weight] = 1/d[weight]
-    elif invert_weight and weight is not None and type(G) is nx.MultiGraph:
-        for (u, v, k, d) in list(G.edges(keys=True, data=True)):
-            G[u][v][k][weight] = 1/d[weight]
+    if invert_weight and weight is not None:
+        if G.is_multigraph():
+            for (u, v, k, d) in G.edges(keys=True, data=True):
+                d[weight] = 1/d[weight]
+        else:
+           for (u, v, d) in G.edges(data=True):
+               d[weight] = 1/d[weight]
     # Replace with collapsing topology or approximated zero?
 
-    # Using determinats to compute the effective resistance is more memory
-    # efficent that directly calculating the psuedo-inverse
+    # Using determinants to compute the effective resistance is more memory
+    # efficent than directly calculating the psuedo-inverse
     L = nx.laplacian_matrix(G, node_list, weight=weight)
 
     Lsub_a, node_list_a = _laplacian_submatrix(nodeA, L.copy(),
