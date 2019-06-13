@@ -13,5 +13,6 @@ Distance Measures
    extrema_bounding
    periphery
    radius
+   resistance_distance
 
 
