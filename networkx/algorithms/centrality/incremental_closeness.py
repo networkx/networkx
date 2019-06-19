@@ -114,7 +114,10 @@ def incremental_closeness_centrality(G,
     nodes = G_prime.nodes()
     closeness_centrality = {}
     for n in nodes:
-        if abs(du[n] - dv[n]) <= 1:
+        n_from_u = du.get(n)
+        n_from_v = dv.get(n)
+        if (n_from_u is not None and n_from_v is not None
+                and abs(n_from_u - n_from_v) <= 1):
             closeness_centrality[n] = prev_cc[n]
         else:
             sp = path_length(G_prime, n)
