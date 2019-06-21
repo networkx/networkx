@@ -18,7 +18,7 @@ class TestSubsetBetweennessCentrality:
         """Betweenness Centrality Subset: P5 directed"""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
-        b_answer = {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+        b_answer = {0: 0, 1: 1, 2: 1, 3: 0, 4: 0}
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3],
                                              weight=None)
         for n in sorted(G):
@@ -28,7 +28,7 @@ class TestSubsetBetweennessCentrality:
         """Betweenness Centrality Subset: P5"""
         G = nx.Graph()
         nx.add_path(G, range(5))
-        b_answer = {0: 0, 1: 0.5, 2: 0.5, 3: 0, 4: 0, 5: 0}
+        b_answer = {0: 0, 1: 1, 2: 1, 3: 0, 4: 0}
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3],
                                              weight=None)
         for n in sorted(G):
@@ -38,7 +38,7 @@ class TestSubsetBetweennessCentrality:
         """Betweenness Centrality Subset: P5 multiple target"""
         G = nx.Graph()
         nx.add_path(G, range(5))
-        b_answer = {0: 0, 1: 1, 2: 1, 3: 0.5, 4: 0, 5: 0}
+        b_answer = {0: 0, 1: 2, 2: 2, 3: 1, 4: 0}
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3, 4],
                                              weight=None)
         for n in sorted(G):
@@ -48,7 +48,7 @@ class TestSubsetBetweennessCentrality:
         """Betweenness Centrality Subset: box"""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
-        b_answer = {0: 0, 1: 0.25, 2: 0.25, 3: 0}
+        b_answer = {0: 0, 1: 0.5, 2: 0.5, 3: 0}
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3],
                                              weight=None)
         for n in sorted(G):
@@ -58,7 +58,7 @@ class TestSubsetBetweennessCentrality:
         """Betweenness Centrality Subset: box and path"""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3), (3, 4), (4, 5)])
-        b_answer = {0: 0, 1: 0.5, 2: 0.5, 3: 0.5, 4: 0, 5: 0}
+        b_answer = {0: 0, 1: 1, 2: 1, 3: 1, 4: 0, 5: 0}
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3, 4],
                                              weight=None)
         for n in sorted(G):
@@ -68,7 +68,7 @@ class TestSubsetBetweennessCentrality:
         """Betweenness Centrality Subset: box and path multiple target"""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (2, 3), (1, 20), (20, 3), (3, 4)])
-        b_answer = {0: 0, 1: 1.0, 2: 0.5, 20: 0.5, 3: 0.5, 4: 0}
+        b_answer = {0: 0, 1: 2.0, 2: 1.0, 20: 1.0, 3: 1.0, 4: 0}
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3, 4],
                                              weight=None)
         for n in sorted(G):
@@ -103,17 +103,17 @@ class TestSubsetBetweennessCentrality:
 
         expected_b = {
         1: 0,
-        2: 1./10,
-        3: 1./10,
-        4: 1./10,
-        5: 1./10,
-        6: 3./10,
-        7:1./10,
-        8:4./10,
+        2: 2./10,
+        3: 2./10,
+        4: 2./10,
+        5: 2./10,
+        6: 6./10,
+        7:2./10,
+        8:8./10,
         9:0,
-        10:1./10,
-        11:1./10,
-        12:1./10,
+        10:2./10,
+        11:2./10,
+        12:2./10,
         }
 
         for n in sorted(G):
