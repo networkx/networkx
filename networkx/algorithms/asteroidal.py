@@ -11,12 +11,13 @@
 Algorithms for asteroidal triples and asteroidal numbers in graphs.
 
 An asteroidal triple in a graph G is a set of three non-adjacent vertices
-u, v and w such that there exist a path between any two of them avoiding the
-neighborhood of the third. More formally, v_j, v_k belongs to the same
-connected component of G - N[v_i]. A graph which contains no asteroidal
-triples is called an AT-free graph. The class of AT-free graphs
-is a graph class for which many NP-complete problems are solvable
-in polynomial time. Amongst them, independent set and coloring.
+u, v and w such that there exist a path between any two of them that avoids
+closed neighborhood of the third. More formally, v_j, v_k belongs to the same
+connected component of G - N[v_i], where N[v_i] denotes the closed neighborhood
+of v_i. A graph which does not contain any asteroidal triples is called
+an AT-free graph. The class of AT-free graphs is a graph class for which
+many NP-complete problems are solvable in polynomial time. Amongst them,
+independent set and coloring.
 """
 import networkx as nx
 from networkx.utils import not_implemented_for
