@@ -125,10 +125,7 @@ def is_at_free(G):
     >>> nx.is_at_free(G)
     False
     """
-    asteroidal_triple = find_asteroidal_triple(G)
-    if asteroidal_triple:
-        return False
-    return True
+    return find_asteroidal_triple(G) is None
 
 
 @not_implemented_for("directed")
