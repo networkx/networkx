@@ -21,7 +21,7 @@ in polynomial time. Amongst them, independent set and coloring.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ["is_at_free"]
+__all__ = ["is_at_free", "find_asteroidal_triple"]
 
 
 @not_implemented_for("directed")
