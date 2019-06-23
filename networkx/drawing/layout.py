@@ -346,7 +346,7 @@ def bipartite_layout(G, nodes, align='vertical',
     raise ValueError(msg)
 
 
-@random_state(10)
+@random_state(11)
 def fruchterman_reingold_layout(G,
                                 k=None,
                                 pos=None,
@@ -488,7 +488,7 @@ def fruchterman_reingold_layout(G,
 spring_layout = fruchterman_reingold_layout
 
 
-@random_state(7)
+@random_state(8)
 def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
                           threshold=1e-4, center_spring=False, dim=2, seed=None):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
@@ -553,7 +553,7 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
     return pos
 
 
-@random_state(7)
+@random_state(8)
 def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
                                  iterations=50, threshold=1e-4, center_spring=False,
                                  dim=2, seed=None):
