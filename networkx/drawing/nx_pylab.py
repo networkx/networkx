@@ -373,7 +373,7 @@ def draw_networkx_nodes(G, pos,
     draw_networkx_labels()
     draw_networkx_edge_labels()
     """
-    import collections
+    from collections.abc import Iterable
     try:
         import matplotlib.pyplot as plt
         import numpy as np
@@ -399,7 +399,7 @@ def draw_networkx_nodes(G, pos,
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
 
-    if isinstance(alpha, collections.Iterable):
+    if isinstance(alpha, Iterable):
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
         alpha = None
 
