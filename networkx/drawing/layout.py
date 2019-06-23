@@ -619,7 +619,7 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
                 (delta * (k * k / distance**2 - Ai * distance / k)).sum(axis=1)
             # prevent nodes from flying off into infinity if not connected
             if center_spring: 
-                displacement[:,i] = displacement[:,i] - pos[i].T / ( 
+                displacement[:,i] = displacement[:,i] - pos[i] / ( 
                            k * np.sqrt(nnodes))
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
