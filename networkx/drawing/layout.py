@@ -356,6 +356,7 @@ def fruchterman_reingold_layout(G,
                                 weight='weight',
                                 scale=1,
                                 center=None,
+                                center_spring=False,
                                 dim=2,
                                 seed=None):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
@@ -396,6 +397,11 @@ def fruchterman_reingold_layout(G,
     center : array-like or None
         Coordinate pair around which to center the layout.
         Not used unless `fixed is None`.
+
+    center_spring : bool (default: False)
+        If True, adds a spring force attracting every node to the center of
+        the plot. This is important when the graph G is not connected
+        (nx.is_connected), otherwise the layout positions will not converge.
 
     dim : int
         Dimension of layout.
@@ -463,8 +469,8 @@ def fruchterman_reingold_layout(G,
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
-                                           iterations, threshold,
-                                           dim, seed)
+                                           iterations, threshold, 
+                                           center_spring, dim, seed)
     except:
         A = nx.to_numpy_array(G, weight=weight)
         if k is None and fixed is not None:
@@ -472,7 +478,7 @@ def fruchterman_reingold_layout(G,
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations,
-                                    threshold, dim, seed)
+                                    threshold, center_spring, dim, seed)
     if fixed is None:
         pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
@@ -484,7 +490,7 @@ spring_layout = fruchterman_reingold_layout
 
 @random_state(7)
 def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
-                          threshold=1e-4, dim=2, seed=None):
+                          threshold=1e-4, center_spring=False, dim=2, seed=None):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     import numpy as np
@@ -528,6 +534,9 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
         displacement = np.einsum('ijk,ij->ik',
                                  delta,
                                  (k * k / distance**2 - A * distance / k))
+        # prevent nodes from flying off into infinity if not connected
+        if center_spring: 
+            displacement = displacement - pos / ( k * np.sqrt(nnodes))
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
         length = np.where(length < 0.01, 0.1, length)
@@ -546,8 +555,8 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
 
 @random_state(7)
 def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
-                                 iterations=50, threshold=1e-4, dim=2,
-                                 seed=None):
+                                 iterations=50, threshold=1e-4, center_spring=False,
+                                 dim=2, seed=None):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
@@ -608,6 +617,10 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
             # displacement "force"
             displacement[:, i] +=\
                 (delta * (k * k / distance**2 - Ai * distance / k)).sum(axis=1)
+            # prevent nodes from flying off into infinity if not connected
+            if center_spring: 
+                displacement[:,i] = displacement[:,i] - pos[i].T / ( 
+                           k * np.sqrt(nnodes))
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
         length = np.where(length < 0.01, 0.1, length)
