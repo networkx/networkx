@@ -501,6 +501,9 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg)
 
+    # Normalize A so only k controls equilibrium distance
+    A = A / np.median(A[A!=0])
+
     if pos is None:
         # random initial positions
         pos = np.asarray(seed.rand(nnodes, dim), dtype=A.dtype)
@@ -572,6 +575,10 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
     except ImportError:
         msg = "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
         raise ImportError(msg)
+
+    # Normalize A so only k controls equilibrium distance
+    A = A / np.median(A[A!=0])
+
     # make sure we have a LIst of Lists representation
     try:
         A = A.tolil()
