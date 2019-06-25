@@ -281,7 +281,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
+       Specify starting node for depth-first search and return nodes in
        the component reachable from source.
 
     depth_limit : int, optional (default=len(G))
