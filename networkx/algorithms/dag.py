@@ -277,7 +277,7 @@ def lexicographical_topological_sort(G, key=None):
     heapq.heapify(zero_indegree)
 
     while zero_indegree:
-        _, node = heapq.heappop(zero_indegree)
+        _, _, node = heapq.heappop(zero_indegree)
 
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
