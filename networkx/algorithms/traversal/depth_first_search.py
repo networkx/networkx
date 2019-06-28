@@ -142,8 +142,7 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -185,8 +184,7 @@ def dfs_successors(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -231,8 +229,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.

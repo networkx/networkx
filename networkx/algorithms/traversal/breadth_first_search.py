@@ -95,8 +95,9 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
     G : NetworkX graph
 
     source : node
-       Specify starting node for breadth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for breadth-first search; this function
+       iterates over only those edges in the component reachable from
+       this node.
 
     reverse : bool, optional
        If True traverse a directed graph in the reverse direction
@@ -155,8 +156,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     G : NetworkX graph
 
     source : node
-       Specify starting node for breadth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for breadth-first search
 
     reverse : bool, optional
        If True traverse a directed graph in the reverse direction
@@ -205,8 +205,7 @@ def bfs_predecessors(G, source, depth_limit=None):
     G : NetworkX graph
 
     source : node
-       Specify starting node for breadth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for breadth-first search
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
@@ -254,8 +253,7 @@ def bfs_successors(G, source, depth_limit=None):
     G : NetworkX graph
 
     source : node
-       Specify starting node for breadth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for breadth-first search
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
