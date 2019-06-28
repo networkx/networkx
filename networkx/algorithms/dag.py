@@ -266,8 +266,10 @@ def lexicographical_topological_sort(G, key=None):
     if key is None:
         def key(x): return x
 
+    nodeid_map = {n: i for i, n in enumerate(G)}
+
     def create_tuple(node):
-        return key(node), node
+        return key(node), nodeid_map[node], node
 
     indegree_map = {v: d for v, d in G.in_degree() if d > 0}
     # These nodes have zero indegree and ready to be returned.
