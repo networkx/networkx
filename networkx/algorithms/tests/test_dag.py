@@ -368,6 +368,28 @@ class TestDAG:
             G, key=lambda x: -x)),
             [1, 5, 4, 2, 6, 3])
 
+    def test_lexicographical_topological_sort2(self):
+        '''
+        This test checks for a case where two or more nodes have same key value.
+        See Issue #3493
+        '''
+        class Test_Node:
+            def __init__(self, n):
+                self.label = n
+                self.priority = 1
+
+            def __repr__(self):
+                return 'Node({})'.format(self.label)
+
+        def sorting_key(node):
+            return node.priority
+
+        test_nodes = [Test_Node(n) for n in range(4)]
+        G = nx.DiGraph()
+        G.add_edges_from([(test_nodes[a], test_nodes[b]) for a,b in [(0,1), (0,2), (0,3), (2,3)]])
+
+        assert_equal(list(nx.lexicographical_topological_sort(G, key=sorting_key)),
+                     test_nodes)
 
 def test_is_aperiodic_cycle():
     G = nx.DiGraph()
