@@ -126,6 +126,7 @@ is partially historical, and now, mostly arbitrary.
 - Brian Kiefer, Github: `bkief <https://github.com/bkief>`_
 - Julien Klaus
 - Weisheng Si, Github: `ws4u <https://github.com/ws4u>`_
+- Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_ 
 
 Support
 -------
