@@ -10,11 +10,9 @@ def test_is_at_free():
 
     cycle = nx.cycle_graph(6)
     assert_false(is_at_free(cycle))
-    assert_equal(is_at_free(cycle, True), (False, (1, 3, 5)))
 
     path = nx.path_graph(6)
     assert_true(is_at_free(path))
-    assert_equal(is_at_free(path, True), (True, None))
 
     small_graph = nx.complete_graph(2)
     assert_true(is_at_free(small_graph))
