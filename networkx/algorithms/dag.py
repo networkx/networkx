@@ -260,14 +260,17 @@ def lexicographical_topological_sort(G, key=None):
        *Introduction to Algorithms - A Creative Approach.* Addison-Wesley.
     """
     if not G.is_directed():
-        raise nx.NetworkXError(
-            "Topological sort not defined on undirected graphs.")
+        msg = "Topological sort not defined on undirected graphs."
+        raise nx.NetworkXError(msg)
 
     if key is None:
-        def key(x): return x
+        def key(node):
+            return node
+
+    nodeid_map = {n: i for i, n in enumerate(G)}
 
     def create_tuple(node):
-        return key(node), node
+        return key(node), nodeid_map[node], node
 
     indegree_map = {v: d for v, d in G.in_degree() if d > 0}
     # These nodes have zero indegree and ready to be returned.
@@ -275,7 +278,7 @@ def lexicographical_topological_sort(G, key=None):
     heapq.heapify(zero_indegree)
 
     while zero_indegree:
-        _, node = heapq.heappop(zero_indegree)
+        _, _, node = heapq.heappop(zero_indegree)
 
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
@@ -291,8 +294,8 @@ def lexicographical_topological_sort(G, key=None):
         yield node
 
     if indegree_map:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
-                                    "during iteration")
+        msg = "Graph contains a cycle or graph changed during iteration"
+        raise nx.NetworkXUnfeasible(msg)
 
 
 @not_implemented_for('undirected')
@@ -457,7 +460,7 @@ def is_aperiodic(G):
     levels = {s: 0}
     this_level = [s]
     g = 0
-    l = 1
+    lev = 1
     while this_level:
         next_level = []
         for u in this_level:
@@ -466,9 +469,9 @@ def is_aperiodic(G):
                     g = gcd(g, levels[u] - levels[v] + 1)
                 else:  # Tree Edge
                     next_level.append(v)
-                    levels[v] = l
+                    levels[v] = lev
         this_level = next_level
-        l += 1
+        lev += 1
     if len(levels) == len(G):  # All nodes in tree
         return g == 1
     else:
