@@ -58,9 +58,9 @@ class TestDagLongestPath(object):
         # by replacing `Unorderable()` by `object()`.
         class Unorderable(object):
             def __lt__(self, other):
-                error_msg = "< not supported between instances of " \
-                    "{} and {}".format(type(self).__name__, type(other).__name__)
-                raise TypeError(error_msg)
+                error_msg = "< not supported between instances of {} and {}"
+                types = (type(self).__name__, type(other).__name__)
+                raise TypeError(error_msg.format(types))
 
         # Create the directed path graph on four nodes in a diamond shape,
         # with nodes represented as (unorderable) Python objects.
@@ -306,7 +306,7 @@ class TestDAG:
             assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
 
         k = 10
-        G = nx.DiGraph((i, i + 1, {"foo": "bar", "weight": i}) for i in range(k))
+        G = nx.DiGraph((i, i + 1, {"f": "b", "weight": i}) for i in range(k))
         H = transitive_closure(G)
         for u, v in G.edges():
             assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
@@ -370,7 +370,7 @@ class TestDAG:
 
     def test_lexicographical_topological_sort2(self):
         '''
-        This test checks for a case where two or more nodes have same key value.
+        Check the case of two or more nodes with same key value.
         See Issue #3493
         '''
         class Test_Node:
@@ -386,10 +386,12 @@ class TestDAG:
 
         test_nodes = [Test_Node(n) for n in range(4)]
         G = nx.DiGraph()
-        G.add_edges_from([(test_nodes[a], test_nodes[b]) for a,b in [(0,1), (0,2), (0,3), (2,3)]])
+        edges = [(0, 1), (0, 2), (0, 3), (2, 3)]
+        G.add_edges_from((test_nodes[a], test_nodes[b]) for a, b in edges)
 
-        assert_equal(list(nx.lexicographical_topological_sort(G, key=sorting_key)),
-                     test_nodes)
+        sorting = list(nx.lexicographical_topological_sort(G, key=sorting_key))
+        assert_equal(sorting, test_nodes)
+
 
 def test_is_aperiodic_cycle():
     G = nx.DiGraph()
