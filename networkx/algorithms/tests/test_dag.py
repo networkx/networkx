@@ -371,6 +371,7 @@ class TestDAG:
     def test_lexicographical_topological_sort2(self):
         '''
         Check the case of two or more nodes with same key value.
+        Want to avoid exception raised due to comparing nodes directly.
         See Issue #3493
         '''
         class Test_Node:
@@ -390,7 +391,11 @@ class TestDAG:
         G.add_edges_from((test_nodes[a], test_nodes[b]) for a, b in edges)
 
         sorting = list(nx.lexicographical_topological_sort(G, key=sorting_key))
-        assert_equal(sorting, test_nodes)
+        # order reported does depend on order of list(G) in python 3.5
+        # and that is not deterministic due to dicts not being ordered until v3.6
+        # after dropping NX support for 3.5 this can become:
+        # assert_equal(sorting, test_nodes)
+        assert_equal(set(sorting), set(test_nodes))
 
 
 def test_is_aperiodic_cycle():
