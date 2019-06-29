@@ -6,4 +6,5 @@ Asteroidal
 .. autosummary::
    :toctree: generated/
 
-   is_at_free 
+   is_at_free
+   find_asteroidal_triple
