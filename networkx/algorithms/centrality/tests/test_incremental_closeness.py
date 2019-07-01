@@ -1,11 +1,12 @@
 """
 Tests for incremental closeness centrality.
 """
-from nose.tools import *
-import networkx as nx
+import timeit
 from random import sample
 
-import timeit
+from nose.tools import *
+
+import networkx as nx
 
 
 class TestIncrementalClosenessCentrality:
@@ -103,7 +104,6 @@ class TestIncrementalClosenessCentrality:
 
             print("regular time: {}".format(reg_elapsed))
 
-            shared_items = set(test_cc.items()) & set(real_cc.items())
-            assert (len(shared_items) == len(real_cc))
+            assert set(test_cc.items()) == set(real_cc.items())
 
-            prev_cc = real_cc
+            prev_cc = test_cc

@@ -119,15 +119,8 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     closeness_centrality = {}
     for n in nodes:
         sp = dict(path_length(G, n))
-        totsp = sum(sp.values())
-        if totsp > 0.0 and len(G) > 1:
-            closeness_centrality[n] = (len(sp) - 1.0) / totsp
-            # normalize to number of nodes-1 in connected part
-            if wf_improved:
-                s = (len(sp) - 1.0) / (len(G) - 1)
-                closeness_centrality[n] *= s
-        else:
-            closeness_centrality[n] = 0.0
+        closeness_centrality[n] = _node_closeness_centrality(
+            len(G), sp, wf_improved)
     if u is not None:
         return closeness_centrality[u]
     else:
@@ -139,7 +132,7 @@ def incremental_closeness_centrality(G,
                                      edge,
                                      prev_cc=None,
                                      insertion=True,
-                                     normalized=True):
+                                     wf_improved=True):
     r"""Incremental closeness centrality for nodes.
 
     Compute closeness centrality for nodes using level-based work filtering
@@ -165,15 +158,20 @@ def incremental_closeness_centrality(G,
     ----------
     G : graph
       A NetworkX graph
-    edge: tuple
+
+    edge : tuple
       The modified edge (u, v) in the graph.
-    prev_cc: list
+
+    prev_cc : dictionary
       The previous closeness centrality for all nodes in the graph.
-    insertion: bool, optional
+
+    insertion : bool, optional
       If True (default) the edge was inserted, otherwise it was deleted from the graph.
-    normalized : bool, optional
-      If True (default) normalize by the number of nodes in the connected
-      part of the graph.
+
+    wf_improved : bool, optional (default=True)
+      If True, scale by the fraction of nodes reachable. This gives the
+      Wasserman and Faust improved formula. For single component graphs
+      it is the same as the original formula.
 
     Returns
     -------
@@ -204,62 +202,73 @@ def incremental_closeness_centrality(G,
        Algorithms for Closeness Centrality
        http://sariyuce.com/papers/bigdata13.pdf
     """
-
-    if prev_cc is not None:
-        shared_items = set(prev_cc.keys()) & set(G.nodes())
-        count_shared = len(shared_items)
-        if len(prev_cc) != count_shared or len(G.nodes()) != count_shared:
-            raise NetworkXError(
-                "Previous closeness centrality list does not correspond to given\
-        graph.")
-
-    # Just aliases G
-    G_prime = G
+    if prev_cc is not None and set(prev_cc.keys()) != set(G.nodes()):
+        raise NetworkXError('prev_cc and G do not have the same nodes')
 
     # Unpack edge
     (u, v) = edge
     path_length = nx.single_source_shortest_path_length
 
     if insertion:
-        # Do this first because G and G_prime refer to the same thing
+        # For edge insertion, we want shortest paths before the edge is inserted
         du = path_length(G, u)
         dv = path_length(G, v)
 
-        G_prime.add_edge(u, v)
+        G.add_edge(u, v)
     else:
-        G_prime.remove_edge(u, v)
+        G.remove_edge(u, v)
 
-        # For edge removal, we want to know about distances after the edge is gone
-        du = path_length(G_prime, u)
-        dv = path_length(G_prime, v)
+        # For edge removal, we want shortest paths after the edge is removed
+        du = path_length(G, u)
+        dv = path_length(G, v)
 
     if prev_cc is None:
-        return nx.closeness_centrality(G_prime)
+        return nx.closeness_centrality(G)
 
-    nodes = G_prime.nodes()
+    nodes = G.nodes()
     closeness_centrality = {}
     for n in nodes:
-        n_from_u = du.get(n)
-        n_from_v = dv.get(n)
-        if (n_from_u is not None and n_from_v is not None
-                and abs(n_from_u - n_from_v) <= 1):
+        if (n in du and n in dv and abs(du[n] - dv[n]) <= 1):
             closeness_centrality[n] = prev_cc[n]
         else:
-            sp = path_length(G_prime, n)
-            totsp = sum(sp.values())
-            if totsp > 0.0 and len(G_prime) > 1:
-                closeness_centrality[n] = (len(sp) - 1.0) / totsp
-                # normalize to number of nodes-1 in connected part
-                if normalized:
-                    s = (len(sp) - 1.0) / (len(G_prime) - 1)
-                    closeness_centrality[n] *= s
-            else:
-                closeness_centrality[n] = 0.0
+            sp = path_length(G, n)
+            closeness_centrality[n] = _node_closeness_centrality(
+                len(G), sp, wf_improved)
 
     # Leave the graph as we found it
     if insertion:
-        G_prime.remove_edge(u, v)
+        G.remove_edge(u, v)
     else:
-        G_prime.add_edge(u, v)
+        G.add_edge(u, v)
 
     return closeness_centrality
+
+
+def _node_closeness_centrality(len_G, sp, wf_improved):
+    r"""
+    Returns the closesness centrality of a node.
+
+    Parameters
+    ----------
+    len_G : integer
+      The size of a NetworkX graph G
+
+    sp : dictionary
+      A dictionary with keys corresponding to nodes in G and values to the
+      lengths of the shortest paths to the node in question from the node given
+      by the key of the dictionary.
+
+    wf_improved : bool
+      If True, scale by the fraction of nodes reachable. This gives the
+      Wasserman and Faust improved formula. For single component graphs
+      it is the same as the original formula.
+    """
+    _closeness_centrality = 0.0
+    totsp = sum(sp.values())
+    if totsp > 0.0 and len_G > 1:
+        _closeness_centrality = (len(sp) - 1.0) / totsp
+        # normalize to number of nodes-1 in connected part
+        if wf_improved:
+            s = (len(sp) - 1.0) / (len_G - 1)
+            _closeness_centrality *= s
+    return _closeness_centrality
