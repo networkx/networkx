@@ -105,15 +105,10 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     all_pairs_shortest_path_length
     """
     from collections import defaultdict
-    # dictionary-of-dictionaries representation for dist and pred
-    # use some defaultdict magick here
-    # for dist the default is the floating point inf value
     dist = defaultdict(lambda: defaultdict(lambda: float('inf')))
     for u in G:
         dist[u][u] = 0
     pred = defaultdict(dict)
-    # initialize path distance dictionary to be the adjacency matrix
-    # also set the distance to self to 0 (zero diagonal)
     undirected = not G.is_directed()
     for u, v, d in G.edges(data=True):
         e_weight = d.get(weight, 1.0)
@@ -123,17 +118,18 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
     for w in G:
-        Dw=dist[w]
-        Pw=pred[w]
+        Dw = dist[w]
+        Pw = pred[w]
         for u in G:
-            Du=dist[u]
-            Pu=pred[u]
+            Du = dist[u]
+            Pu = pred[u]
             for v in G:
-                d=Du[w] + Dw[v]
+                d = Du[w] + Dw[v]
                 if Du[v] > d:
                     Du[v] = d
                     Pu[v] = Pw[v]
-    return dict(pred), dict(dist)
+    non_empty_pred = {u:pred[u] for u in G if pred[u]}
+    return non_empty_pred, dict(dist)
 
 
 def reconstruct_path(source, target, predecessors):
