@@ -443,3 +443,47 @@ class TestSimilarity:
         G2.add_edge('B', 'C', label='b-c')
         G2.add_edge('B', 'D', label='bad')
         assert_equal(graph_edit_distance(G1, G2, node_match=nmatch, edge_match=ematch), 1)
+
+    def test_simrank_no_source_no_target(self):
+        G = nx.cycle_graph(5)
+        expected = {0: {0: 1, 1: 0.3951219505902448, 2: 0.5707317069281646, 3: 0.5707317069281646, 4: 0.3951219505902449}, 1: {0: 0.3951219505902448, 1: 1, 2: 0.3951219505902449, 3: 0.5707317069281646, 4: 0.5707317069281646}, 2: {0: 0.5707317069281646, 1: 0.3951219505902449, 2: 1, 3: 0.3951219505902449, 4: 0.5707317069281646}, 3: {0: 0.5707317069281646, 1: 0.5707317069281646, 2: 0.3951219505902449, 3: 1, 4: 0.3951219505902449}, 4: {0: 0.3951219505902449, 1: 0.5707317069281646, 2: 0.5707317069281646, 3: 0.3951219505902449, 4: 1}}
+        actual = nx.simrank_similarity(G)
+        assert_equal(expected, actual)
+
+    def test_simrank_source_no_target(self):
+        G = nx.cycle_graph(5)
+        expected = {0: 1, 1: 0.3951219505902448, 2: 0.5707317069281646, 3: 0.5707317069281646, 4: 0.3951219505902449}
+        actual = nx.simrank_similarity(G, source=0)
+        assert_equal(expected, actual)
+
+    def test_simrank_source_and_target(self):
+        G = nx.cycle_graph(5)
+        expected = 1
+        actual = nx.simrank_similarity(G, source=0, target=0)
+        assert_equal(expected, actual)
+
+    def test_simrank_numpy_no_source_no_target(self):
+        G = nx.cycle_graph(5)
+        expected = numpy.array([
+            [1.0, 0.3947180735764555, 0.570482097206368, 0.570482097206368, 0.3947180735764555],
+            [0.3947180735764555, 1.0, 0.3947180735764555, 0.570482097206368, 0.570482097206368],
+            [0.570482097206368, 0.3947180735764555, 1.0, 0.3947180735764555, 0.570482097206368],
+            [0.570482097206368, 0.570482097206368, 0.3947180735764555, 1.0, 0.3947180735764555],
+            [0.3947180735764555, 0.570482097206368, 0.570482097206368, 0.3947180735764555, 1.0]
+        ])
+        actual = nx.simrank_similarity_numpy(G)
+        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+
+    def test_simrank_numpy_source_no_target(self):
+        G = nx.cycle_graph(5)
+        expected = numpy.array(
+            [1.0, 0.3947180735764555, 0.570482097206368, 0.570482097206368, 0.3947180735764555],
+        )
+        actual = nx.simrank_similarity_numpy(G, source=0)
+        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+
+    def test_simrank_numpy_source_and_target(self):
+        G = nx.cycle_graph(5)
+        expected = 1.0
+        actual = nx.simrank_similarity_numpy(G, source=0, target=0)
+        numpy.testing.assert_allclose(expected, actual, atol=1e-7)

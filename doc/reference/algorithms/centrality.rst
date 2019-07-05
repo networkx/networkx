@@ -67,6 +67,17 @@ Communicability Betweenness
 
    communicability_betweenness_centrality
 
+Group Centrality
+----------------
+.. autosummary::
+   :toctree: generated/
+
+   group_betweenness_centrality
+   group_closeness_centrality
+   group_degree_centrality
+   group_in_degree_centrality
+   group_out_degree_centrality
+
 Load
 ----
 .. autosummary::

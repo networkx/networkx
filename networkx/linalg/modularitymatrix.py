@@ -63,8 +63,8 @@ def modularity_matrix(G, nodelist=None, weight=None):
     See Also
     --------
     to_numpy_matrix
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     directed_modularity_matrix
 
     References
@@ -138,8 +138,8 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     See Also
     --------
     to_numpy_matrix
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     modularity_matrix
 
     References
