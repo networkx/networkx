@@ -10,18 +10,6 @@ __author__ = """\n""".join(['Efraim Rodrigues <efraimnaassom@gmail.com>'])
 __all__ = ['cograph']
 
 
-def full_join(G, H, rename=(None, None), name=None):
-    R = nx.union(G, H, rename, name)
-    nodes = list(R.nodes())
-    for i in nodes:
-        for j in H.nodes():
-            R.add_edge(i, j)
-
-    R.add_edges_from(H.edges())
-
-    return R
-
-
 @py_random_state(1)
 def cograph(n, seed=None):
     """Returns a connected cograph. A cograph is a graph containing no path
@@ -63,7 +51,7 @@ def cograph(n, seed=None):
             return x + len(list(R.nodes()))
 
         if r:
-            R = full_join(R, nx.relabel_nodes(R.copy(), label))
+            R = nx.full_join(R, nx.relabel_nodes(R.copy(), label))
         else:
             R = nx.disjoint_union(R,
                                   nx.relabel_nodes(R.copy(), label)
