@@ -360,7 +360,7 @@ def full_join(G, H, rename=(None, None), name=None):
     -----
     It is recommended that G and H be either both directed or both undirected.
 
-    The full join union of a graph G and H is the same as getting
+    The full join operation of graphs G and H is the same as getting
     their complement, performing a disjoint union, and finally getting
     the complement of the resulting graph.
 
