@@ -18,4 +18,4 @@ from nose.tools import *
 def test_random_cograph():
     n = 3
     G = nx.cograph(n)
-    assert_equal(len(list(G.nodes())), 2 ^ n)
+    assert_equal(len(list(G.nodes())), 2 ** n)
