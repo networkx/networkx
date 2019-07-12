@@ -17,7 +17,7 @@ from nose.tools import *
 
 def test_random_cograph():
     n = 3
-    G = nx.cograph(n)
+    G = nx.random_cograph(n)
 
     assert_equal(len(G), 2 ** n)
 
