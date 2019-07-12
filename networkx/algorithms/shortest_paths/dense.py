@@ -118,20 +118,30 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
     for w in G:
-        Dw = dist[w]
-        Pw = pred[w]
+        dist_w = dist[w]
+        
+        # Recall that pred is a defautdict:
+        # can create a not growing empty dictionnary 
+        pred_w = pred[w]
         for u in G:
-            Du = dist[u]
-            Pu = pred[u]
+            dist_u = dist[u]
+            
+            # Can create a not growing empty dictionnary 
+            pred_u = pred[u]
             for v in G:
-                d = Du[w] + Dw[v]
-                if Du[v] > d:
-                    Du[v] = d
-                    Pu[v] = Pw[v]
+                d = dist_u[w] + dist_w[v]
+                if dist_u[v] > d:
+                    dist_u[v] = d
+                    pred_u[v] = pred_w[v]
+
+    # Avoid breaking previous implementations: 
+    # pred's keys don't reference any empty dictionnary
     non_empty_pred = {u:pred[u] for u in G if pred[u]}
+    
+    # dist represents *all-pairs* distances
     return non_empty_pred, dict(dist)
 
-
+ 
 def reconstruct_path(source, target, predecessors):
     """Reconstruct a path from source to target using the predecessors
     dict as returned by floyd_warshall_predecessor_and_distance
