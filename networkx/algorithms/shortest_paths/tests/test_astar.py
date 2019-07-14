@@ -87,6 +87,20 @@ class TestAStar:
         assert_equal(nx.astar_path(XG4, 0, 2), [0, 1, 2])
         assert_equal(nx.astar_path_length(XG4, 0, 2), 4)
 
+    """ Tests that A* finds correct path when there are multiple paths through a node
+        and the best one is not expanded first (GH issue #3464)
+    """
+    def test_astar_directed3(self):
+        heuristic_values = {"n5": 36, "n2": 4, "n1": 0, "n0": 0}
+
+        def h(u, v):
+            return heuristic_values[u]
+
+        edges = [("n5", "n1", 11), ("n5", "n2", 9), ("n2", "n1", 1), ("n1", "n0", 32)]
+        graph = nx.DiGraph()
+        graph.add_weighted_edges_from(edges)
+        assert_equal(nx.astar_path(graph, "n5", "n0", h), ["n5", "n2", "n1", "n0"])
+
 # >>> MXG4=NX.MultiGraph(XG4)
 # >>> MXG4.add_edge(0,1,3)
 # >>> NX.dijkstra_path(MXG4,0,2)
