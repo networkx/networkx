@@ -402,7 +402,7 @@ def _find_partition(G, starting_cell):
             new_cell = [u] + list(G_partition.neighbors(u))
             for u in new_cell:
                 for v in new_cell:
-                    if (u != v) and (v not in G.neighbors(u)):
+                    if (u != v) and (v not in G_partition.neighbors(u)):
                         msg = "G is not a line graph" \
                               "(partition cell not a complete subgraph)"
                         raise nx.NetworkXError(msg)
