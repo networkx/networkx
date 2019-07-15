@@ -123,7 +123,7 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
             dist_u = dist[u] # save recomputation
             for v in G:
                 d = dist_u[w] + dist_w[v]
-                if dist_u[v] > d:
+                if dist_u[v] > d: 
                     dist_u[v] = d
                     pred[u][v] = pred[w][v]
     return dict(pred), dict(dist)
