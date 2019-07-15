@@ -101,6 +101,15 @@ class TestAStar:
         graph.add_weighted_edges_from(edges)
         assert_equal(nx.astar_path(graph, "n5", "n0", h), ["n5", "n2", "n1", "n0"])
 
+    """ Tests that that parent is not wrongly overridden when a node is re-explored multiple
+        times.
+    """
+    def test_astar_directed4(self):
+        edges = [("a", "b", 1), ("a", "c", 1), ("b", "d", 2), ("c", "d", 1), ("d", "e", 1)]
+        graph = nx.DiGraph()
+        graph.add_weighted_edges_from(edges)
+        assert_equal(nx.astar_path(graph, "a", "e"), ["a", "c", "d", "e"])
+
 # >>> MXG4=NX.MultiGraph(XG4)
 # >>> MXG4.add_edge(0,1,3)
 # >>> NX.dijkstra_path(MXG4,0,2)

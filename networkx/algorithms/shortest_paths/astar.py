@@ -109,9 +109,15 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             path.reverse()
             return path
 
-        # Do not override the parent of starting node
-        if curnode in explored and explored[curnode] is None:
-            continue
+        if curnode in explored:
+            # Do not override the parent of starting node
+            if explored[curnode] is None:
+                continue
+
+            # Skip bad paths that were enqueued before finding a better one
+            qcost, h = enqueued[curnode]
+            if qcost < dist:
+                continue
 
         explored[curnode] = parent
 
