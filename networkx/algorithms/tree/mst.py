@@ -235,15 +235,15 @@ def prim_mst_edges(G, minimum, weight='weight',
     push = heappush
     pop = heappop
 
-    nodes = list(G)
+    nodes = set(G)
     c = count()
 
     sign = 1 if minimum else -1
 
     while nodes:
-        u = nodes.pop(0)
+        u = nodes.pop()
         frontier = []
-        visited = [u]
+        visited = set([u])
         if is_multigraph:
             for v, keydict in G.adj[u].items():
                 for k, d in keydict.items():
@@ -282,7 +282,7 @@ def prim_mst_edges(G, minimum, weight='weight',
                 else:
                     yield u, v
             # update frontier
-            visited.append(v)
+            visited.add(v)
             nodes.remove(v)
             if is_multigraph:
                 for w, keydict in G.adj[v].items():
