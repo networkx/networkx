@@ -67,7 +67,7 @@ matrix:
     - python: 3.7
       dist: xenial
       sudo: true
-    - python: pypy3-7.0
+    - python: pypy3.5-7.0
       dist: xenial
       sudo: true
 
