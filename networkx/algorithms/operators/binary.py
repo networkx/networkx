@@ -360,6 +360,10 @@ def full_join(G, H, rename=(None, None), name=None):
     -----
     It is recommended that G and H be either both directed or both undirected.
 
+    If G is directed, then edges from G to H are added as well as from H to G.
+
+    Note that full_join() does not produce parallel edges for MultiGraphs.
+
     The full join operation of graphs G and H is the same as getting
     their complement, performing a disjoint union, and finally getting
     the complement of the resulting graph.
@@ -371,13 +375,17 @@ def full_join(G, H, rename=(None, None), name=None):
     See Also
     --------
     union
+    disjoint_union
     """
     R = union(G, H, rename, name)
-    nodes = list(R.nodes())
+    nodes = list(R)
     for i in nodes:
-        for j in H.nodes():
-            R.add_edge(i, j)
-
-    R.add_edges_from(H.edges())
+        for j in H:
+            if i != j:
+                if not R.is_directed():
+                    R.add_edge(i, j)
+                else:
+                    R.add_edge(i, j)
+                    R.add_edge(j, i)
 
     return R
