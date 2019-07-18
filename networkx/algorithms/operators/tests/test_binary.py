@@ -306,6 +306,20 @@ def test_full_join_graph():
                  len(G.edges()) + len(H.edges()) + len(G) * len(H)
                  )
 
+    # Simple Graphs
+    G = nx.Graph()
+    G.add_node("a")
+    G.add_edge("b", "c")
+    H = nx.Graph()
+    H.add_edge("d", "e")
+
+    U = nx.full_join(G, H, rename=('g', 'h'))
+    assert_equal(set(U), set(['ga', 'gb', 'gc', 'hd', 'he']))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H)
+                 )
+
     # DiGraphs
     G = nx.DiGraph()
     G.add_node(0)

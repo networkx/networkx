@@ -376,17 +376,26 @@ def full_join(G, H, rename=(None, None)):
     """
     R = union(G, H, rename)
 
-    def add_prefix(node, prefix):
+    def add_prefix(graph, prefix):
         if prefix is None:
-            return node
-        return prefix + repr(node)
+            return graph
+
+        def label(x):
+            if is_string_like(x):
+                name = prefix + x
+            else:
+                name = prefix + repr(x)
+            return name
+        return nx.relabel_nodes(graph, label)
+    G = add_prefix(G, rename[0])
+    H = add_prefix(H, rename[1])
 
     for i in G:
         for j in H:
-            R.add_edge(add_prefix(i, rename[0]), add_prefix(j, rename[1]))
+            R.add_edge(i, j)
     if R.is_directed():
         for i in H:
             for j in G:
-                R.add_edge(add_prefix(i, rename[1]), add_prefix(j, rename[0]))
+                R.add_edge(i, j)
 
     return R
