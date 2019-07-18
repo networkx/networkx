@@ -1,9 +1,9 @@
-********
-s metric
-********
+**************
+non-randomness
+**************
 
-.. automodule:: networkx.algorithms.smetric
+.. automodule:: networkx.algorithms.non_randomness
 .. autosummary::
    :toctree: generated/
 
-   s_metric
+   non_randomness
