@@ -39,8 +39,7 @@ def non_randomness(G,k=None):
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> print(non_randomness(G,2))
-    (11.702771960920078, 1.2159525100083248)
+    >>> RG, RG_ = nx.non_randomness(G,2)
 
     Notes
     -----
