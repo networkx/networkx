@@ -306,7 +306,7 @@ def test_full_join_graph():
                  len(G.edges()) + len(H.edges()) + len(G) * len(H)
                  )
 
-    # Simple Graphs
+    # Rename graphs with string-like nodes
     G = nx.Graph()
     G.add_node("a")
     G.add_edge("b", "c")
