@@ -1,4 +1,5 @@
 from networkx.algorithms.assortativity import *
+from networkx.algorithms.asteroidal import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.bridges import *
 from networkx.algorithms.chains import *
@@ -33,6 +34,7 @@ from networkx.algorithms.mis import *
 from networkx.algorithms.non_randomness import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
+from networkx.algorithms.planar_drawing import *
 from networkx.algorithms.reciprocity import *
 from networkx.algorithms.richclub import *
 from networkx.algorithms.shortest_paths import *
@@ -41,7 +43,7 @@ from networkx.algorithms.simple_paths import *
 from networkx.algorithms.smallworld import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.structuralholes import *
-from networkx.algorithms.triads import *
+from networkx.algorithms.sparsifiers import *
 from networkx.algorithms.swap import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *

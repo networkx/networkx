@@ -47,12 +47,12 @@ License
 
 Released under the 3-Clause BSD license::
 
-   Copyright (C) 2004-2018 NetworkX Developers
+   Copyright (C) 2004-2019 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -65,8 +65,8 @@ Released under the 3-Clause BSD license::
 from __future__ import absolute_import
 
 import sys
-if sys.version_info[:2] < (2, 7):
-    m = "Python 2.7 or later is required for NetworkX (%d.%d detected)."
+if sys.version_info[:2] < (3, 5):
+    m = "Python 3.5 or later is required for NetworkX (%d.%d detected)."
     raise ImportError(m % sys.version_info[:2])
 del sys
 

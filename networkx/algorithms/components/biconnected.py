@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2011-2018 by
+#    Copyright (C) 2011-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -26,7 +26,7 @@ __all__ = [
 
 @not_implemented_for('directed')
 def is_biconnected(G):
-    """Return True if the graph is biconnected, False otherwise.
+    """Returns True if the graph is biconnected, False otherwise.
 
     A graph is biconnected if, and only if, it cannot be disconnected by
     removing only one node (and all edges incident on that node).  If
@@ -99,7 +99,7 @@ def is_biconnected(G):
 
 @not_implemented_for('directed')
 def biconnected_component_edges(G):
-    """Return a generator of lists of edges, one list for each biconnected
+    """Returns a generator of lists of edges, one list for each biconnected
     component of the input graph.
 
     Biconnected components are maximal subgraphs such that the removal of a
@@ -172,7 +172,7 @@ def biconnected_component_edges(G):
 
 @not_implemented_for('directed')
 def biconnected_components(G):
-    """Return a generator of sets of nodes, one set for each biconnected
+    """Returns a generator of sets of nodes, one set for each biconnected
     component of the graph
 
     Biconnected components are maximal subgraphs such that the removal of a

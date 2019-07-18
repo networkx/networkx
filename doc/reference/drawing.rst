@@ -19,7 +19,7 @@ dedicated and fully-featured graph visualization tools are
 `PGF/TikZ <https://sourceforge.net/projects/pgf/>`_.
 To use these and other such tools, you should export your NetworkX graph into
 a format that can be read by those tools. For example, Cytoscape can read the
-GraphML format, and so, ``networkx.write_graphml(G)`` might be an appropriate
+GraphML format, and so, ``networkx.write_graphml(G, path)`` might be an appropriate
 choice.
 
 Matplotlib
@@ -36,6 +36,7 @@ Matplotlib
    draw_networkx_edge_labels
    draw_circular
    draw_kamada_kawai
+   draw_planar
    draw_random
    draw_spectral
    draw_spring
@@ -80,6 +81,7 @@ Graph Layout
    bipartite_layout
    circular_layout
    kamada_kawai_layout
+   planar_layout
    random_layout
    rescale_layout
    shell_layout

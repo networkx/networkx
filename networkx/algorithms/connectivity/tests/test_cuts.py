@@ -22,7 +22,7 @@ msg = "Assertion failed in function: {0}"
 def _generate_no_biconnected(max_attempts=50):
     attempts = 0
     while True:
-        G = nx.fast_gnp_random_graph(100, 0.0575)
+        G = nx.fast_gnp_random_graph(100, 0.0575, seed=42)
         if nx.is_connected(G) and not nx.is_biconnected(G):
             attempts = 0
             yield G
@@ -168,7 +168,7 @@ def test_node_cutset_exception():
 def test_node_cutset_random_graphs():
     for flow_func in flow_funcs:
         for i in range(3):
-            G = nx.fast_gnp_random_graph(50, 0.25)
+            G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
             if not nx.is_connected(G):
                 ccs = iter(nx.connected_components(G))
                 start = arbitrary_element(next(ccs))
@@ -183,7 +183,7 @@ def test_node_cutset_random_graphs():
 def test_edge_cutset_random_graphs():
     for flow_func in flow_funcs:
         for i in range(3):
-            G = nx.fast_gnp_random_graph(50, 0.25)
+            G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
             if not nx.is_connected(G):
                 ccs = iter(nx.connected_components(G))
                 start = arbitrary_element(next(ccs))

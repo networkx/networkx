@@ -9,7 +9,7 @@ You must have matplotlib for this to work.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2004-2018
+#    Copyright (C) 2004-2019
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

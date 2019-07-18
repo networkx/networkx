@@ -1,6 +1,6 @@
 # beam_search.py - progressive widening beam search
 #
-# Copyright 2016-2018 NetworkX developers.
+# Copyright 2016-2019 NetworkX developers.
 """
 ===========
 Beam Search

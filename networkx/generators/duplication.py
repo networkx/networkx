@@ -1,7 +1,7 @@
 # duplication.py - functions for generating graphs by duplicating nodes
 #
-# Copyright 2016-2018 NetworkX developers.
-# Copyright (C) 2004-2018 by
+# Copyright 2016-2019 NetworkX developers.
+# Copyright (C) 2004-2019 by
 # Aric Hagberg <hagberg@lanl.gov>
 # Dan Schult <dschult@colgate.edu>
 # Pieter Swart <swart@lanl.gov>
@@ -26,7 +26,7 @@ __all__ = ['partial_duplication_graph', 'duplication_divergence_graph']
 
 @py_random_state(4)
 def partial_duplication_graph(N, n, p, q, seed=None):
-    """Return a random graph using the partial duplication model.
+    """Returns a random graph using the partial duplication model.
 
     Parameters
     ----------

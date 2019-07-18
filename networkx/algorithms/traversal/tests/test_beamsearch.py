@@ -1,6 +1,6 @@
 # test_beamsearch.py - unit tests for the beamsearch module
 #
-# Copyright 2016-2018 NetworkX developers.
+# Copyright 2016-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

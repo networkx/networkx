@@ -1,6 +1,6 @@
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -156,7 +156,7 @@ def from_sparse6_bytes(string):
         k += 1
 
     def parseData():
-        """Return stream of pairs b[i], x[i] for sparse6 format."""
+        """Returns stream of pairs b[i], x[i] for sparse6 format."""
         chunks = iter(data)
         d = None  # partial data word
         dLen = 0  # how many unparsed bits are left in d

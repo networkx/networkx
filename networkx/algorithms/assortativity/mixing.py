@@ -16,7 +16,7 @@ __all__ = ['attribute_mixing_matrix',
 
 
 def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
-    """Return dictionary representation of mixing matrix for attribute.
+    """Returns dictionary representation of mixing matrix for attribute.
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
 
 def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None,
                             normalized=True):
-    """Return mixing matrix for attribute.
+    """Returns mixing matrix for attribute.
 
     Parameters
     ----------
@@ -90,7 +90,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None,
 
 def degree_mixing_dict(G, x='out', y='in', weight=None,
                        nodes=None, normalized=False):
-    """Return dictionary representation of mixing matrix for degree.
+    """Returns dictionary representation of mixing matrix for degree.
 
     Parameters
     ----------
@@ -122,7 +122,7 @@ def degree_mixing_dict(G, x='out', y='in', weight=None,
 
 def degree_mixing_matrix(G, x='out', y='in', weight=None,
                          nodes=None, normalized=True):
-    """Return mixing matrix for attribute.
+    """Returns mixing matrix for attribute.
 
     Parameters
     ----------
@@ -165,7 +165,7 @@ def degree_mixing_matrix(G, x='out', y='in', weight=None,
 
 
 def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
-    """Return numeric mixing matrix for attribute.
+    """Returns numeric mixing matrix for attribute.
 
     The attribute must be an integer.
 
@@ -201,7 +201,7 @@ def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
 
 
 def mixing_dict(xy, normalized=False):
-    """Return a dictionary representation of mixing matrix.
+    """Returns a dictionary representation of mixing matrix.
 
     Parameters
     ----------

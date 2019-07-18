@@ -1,6 +1,6 @@
 # test_efficiency.py - unit tests for the efficiency module
 #
-# Copyright 2015-2018 NetworkX developers.
+# Copyright 2015-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

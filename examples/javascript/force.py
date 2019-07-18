@@ -7,7 +7,7 @@ Example of writing JSON format graph data and using the D3 Javascript library to
 """
 # Author: Aric Hagberg <aric.hagberg@gmail.com>
 
-#    Copyright (C) 2011-2018 by
+#    Copyright (C) 2011-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -33,9 +33,9 @@ print('Wrote node-link JSON data to force/force.json')
 # Serve the file over http to allow for cross origin requests
 app = flask.Flask(__name__, static_folder="force")
 
-@app.route('/<path:path>')
-def static_proxy(path):
-    return app.send_static_file(path)
+@app.route('/')
+def static_proxy():
+    return app.send_static_file('force.html')
 
-print('\nGo to http://localhost:8000/force.html to see the example\n')
+print('\nGo to http://localhost:8000 to see the example\n')
 app.run(port=8000)

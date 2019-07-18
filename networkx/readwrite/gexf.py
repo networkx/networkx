@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2018 by
+# Copyright (C) 2013-2019 by
 #
 # Authors: Aric Hagberg <hagberg@lanl.gov>
 #          Dan Schult <dschult@colgate.edu>
@@ -202,24 +202,28 @@ class GEXF(object):
              (float, "double"),
              (bool, "boolean"),
              (list, "string"),
-             (dict, "string")]
+             (dict, "string"),
+             (int, "long"),
+             (str, "liststring"),
+             (str, "anyURI"),
+             (str, "string")]
 
-    try:  # Python 3.x
-        blurb = chr(1245)  # just to trigger the exception
-        types.extend([
-            (int, "long"),
-            (str, "liststring"),
-            (str, "anyURI"),
-            (str, "string")])
-    except ValueError:  # Python 2.6+
-        types.extend([
-            (long, "long"),
-            (str, "liststring"),
-            (str, "anyURI"),
-            (str, "string"),
-            (unicode, "liststring"),
-            (unicode, "anyURI"),
-            (unicode, "string")])
+    # These additions to types allow writing numpy types
+    try:
+        import numpy as np
+    except ImportError:
+        pass
+    else:
+        # prepend so that python types are created upon read (last entry wins)
+        types = [(np.float64, "float"), (np.float32, "float"),
+                 (np.float16, "float"), (np.float_, "float"),
+                 (np.int, "int"), (np.int8, "int"),
+                 (np.int16, "int"), (np.int32, "int"),
+                 (np.int64, "int"), (np.uint8, "int"),
+                 (np.uint16, "int"), (np.uint32, "int"),
+                 (np.uint64, "int"), (np.int_, "int"),
+                 (np.intc, "int"), (np.intp, "int"),
+                ] + types
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
@@ -268,6 +272,7 @@ class GEXFWriter(GEXF):
         # counters for edge and attribute identifiers
         self.edge_id = itertools.count()
         self.attr_id = itertools.count()
+        self.all_edge_ids = set()
         # default attributes are stored in dictionaries
         self.attr = {}
         self.attr['node'] = {}
@@ -287,6 +292,11 @@ class GEXFWriter(GEXF):
         return s
 
     def add_graph(self, G):
+        # first pass through G collecting edge ids
+        for u, v, dd in G.edges(data=True):
+            eid = dd.get('id')
+            if eid is not None:
+                self.all_edge_ids.add(make_str(eid))
         # set graph attributes
         if G.graph.get('mode') == 'dynamic':
             mode = 'dynamic'
@@ -363,6 +373,9 @@ class GEXFWriter(GEXF):
                     edge_id = edge_data.pop('id', None)
                     if edge_id is None:
                         edge_id = next(self.edge_id)
+                        while make_str(edge_id) in self.all_edge_ids:
+                            edge_id = next(self.edge_id)
+                        self.all_edge_ids.add(make_str(edge_id))
                     yield u, v, edge_id, edge_data
             else:
                 for u, v, data in G.edges(data=True):
@@ -370,6 +383,9 @@ class GEXFWriter(GEXF):
                     edge_id = edge_data.pop('id', None)
                     if edge_id is None:
                         edge_id = next(self.edge_id)
+                        while make_str(edge_id) in self.all_edge_ids:
+                            edge_id = next(self.edge_id)
+                        self.all_edge_ids.add(make_str(edge_id))
                     yield u, v, edge_id, edge_data
         edges_element = Element('edges')
         for u, v, key, edge_data in edge_key_data(G):
@@ -422,6 +438,8 @@ class GEXFWriter(GEXF):
             if k == 'key':
                 k = 'networkx_key'
             val_type = type(v)
+            if val_type not in self.xml_type:
+                raise TypeError('attribute value type is not allowed: %s' % val_type)
             if isinstance(v, list):
                 # dynamic data
                 for val, start, end in v:

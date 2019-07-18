@@ -9,7 +9,7 @@ The reverse Cuthill-McKee algorithm gives a sparse matrix ordering that
 reduces the matrix bandwidth.
 """
 
-# Copyright (C) 2011-2018 by
+# Copyright (C) 2011-2019 by
 # Author:    Aric Hagberg <aric.hagberg@gmail.com>
 # BSD License
 import networkx as nx

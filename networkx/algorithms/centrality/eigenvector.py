@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -126,7 +126,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
         raise nx.NetworkXError('initial vector cannot have all zero values')
     # Normalize the initial vector so that each entry is in [0, 1]. This is
     # guaranteed to never have a divide-by-zero error by the previous line.
-    x = {k: v / sum(nstart.values()) for k, v in nstart.items()}
+    nstart_sum = sum(nstart.values())
+    x = {k: v / nstart_sum for k, v in nstart.items()}
     nnodes = G.number_of_nodes()
     # make up to max_iter iterations
     for i in range(max_iter):
@@ -135,7 +136,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
         # do the multiplication y^T = x^T A (left eigenvector)
         for n in x:
             for nbr in G[n]:
-                x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
+                w = G[n][nbr].get(weight, 1) if weight else 1
+                x[nbr] += xlast[n] * w
         # Normalize the vector. The normalization denominator `norm`
         # should never be zero by the Perron--Frobenius
         # theorem. However, in case it is due to numerical error, we

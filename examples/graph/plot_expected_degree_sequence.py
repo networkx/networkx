@@ -8,7 +8,7 @@ Random graph from given degree sequence.
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
 
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -26,7 +26,5 @@ G = expected_degree_graph(w)  # configuration model
 print("Degree histogram")
 print("degree (#nodes) ****")
 dh = nx.degree_histogram(G)
-low = min(nx.degree(G))
-for i in range(low, len(dh)):
-    bar = ''.join(dh[i] * ['*'])
-    print("%2s (%2s) %s" % (i, dh[i], bar))
+for i, d in enumerate(dh):
+    print("%2s (%2s) %s" % (i, d, '*'*d))

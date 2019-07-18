@@ -68,7 +68,7 @@ def is_distance_regular(G):
 
 
 def global_parameters(b, c):
-    """Return global parameters for a given intersection array.
+    """Returns global parameters for a given intersection array.
 
     Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
     such that for any 2 vertices x,y in G at a distance i=d(x,y), there

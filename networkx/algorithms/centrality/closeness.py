@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,8 +18,7 @@ import networkx as nx
 __all__ = ['closeness_centrality']
 
 
-def closeness_centrality(G, u=None, distance=None,
-                         wf_improved=True, reverse=False):
+def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     r"""Compute closeness centrality for nodes.
 
     Closeness centrality [1]_ of a node `u` is the reciprocal of the
@@ -30,7 +29,9 @@ def closeness_centrality(G, u=None, distance=None,
         C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes that can reach `u`.
+    and `n` is the number of nodes that can reach `u`. Notice that the
+    closeness distance function computes the incoming distance to `u`
+    for directed graphs. To use outward distance, act on `G.reverse()`.
 
     Notice that higher values of closeness indicate higher centrality.
 
@@ -63,10 +64,6 @@ def closeness_centrality(G, u=None, distance=None,
       Wasserman and Faust improved formula. For single component graphs
       it is the same as the original formula. 
 
-    reverse : bool, optional (default=False)
-      If True and G is a digraph, reverse the edges of G, using successors
-      instead of predecessors.
-
     Returns
     -------
     nodes : dictionary
@@ -89,6 +86,10 @@ def closeness_centrality(G, u=None, distance=None,
     shortest-path length will be computed using Dijkstra's algorithm with
     that edge attribute as the edge weight.
 
+    In NetworkX 2.2 and earlier a bug caused Dijkstra's algorithm to use the
+    outward distance rather than the inward distance. If you use a 'distance'
+    keyword and a DiGraph, your results will change between v2.2 and v2.3.
+
     References
     ----------
     .. [1] Linton C. Freeman: Centrality in networks: I.
@@ -98,18 +99,18 @@ def closeness_centrality(G, u=None, distance=None,
        Social Network Analysis: Methods and Applications, 1994,
        Cambridge University Press.
     """
+    if G.is_directed():
+        G = G.reverse()  # create a reversed graph view
+
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight
         path_length = functools.partial(nx.single_source_dijkstra_path_length,
                                         weight=distance)
-    else:  # handle either directed or undirected
-        if G.is_directed() and not reverse:
-            path_length = nx.single_target_shortest_path_length
-        else:
-            path_length = nx.single_source_shortest_path_length
+    else:
+        path_length = nx.single_source_shortest_path_length
 
     if u is None:
-        nodes = G.nodes()
+        nodes = G.nodes
     else:
         nodes = [u]
     closeness_centrality = {}

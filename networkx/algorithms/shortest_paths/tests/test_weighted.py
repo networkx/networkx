@@ -558,6 +558,17 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert_equal(pred[3], 0)
         assert_equal(dist, {0: 0, 1: 1, 2: 2, 3: 1})
 
+    def test_negative_weight(self):
+        G = nx.DiGraph()
+        G.add_nodes_from('abcd')
+        G.add_edge('a','d', weight = 0)
+        G.add_edge('a','b', weight = 1)
+        G.add_edge('b','c', weight = -3)
+        G.add_edge('c','d', weight = 1)
+
+        assert_equal(nx.bellman_ford_path(G, 'a', 'd'), ['a', 'b', 'c', 'd'])
+        assert_equal(nx.bellman_ford_path_length(G, 'a', 'd'), -1)
+
 
 class TestJohnsonAlgorithm(WeightedTestBase):
 

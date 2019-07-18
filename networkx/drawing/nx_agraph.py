@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -35,7 +35,7 @@ __all__ = ['from_agraph', 'to_agraph',
 
 
 def from_agraph(A, create_using=None):
-    """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
+    """Returns a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
     Parameters
     ----------
@@ -110,7 +110,7 @@ def from_agraph(A, create_using=None):
 
 
 def to_agraph(N):
-    """Return a pygraphviz graph from a NetworkX graph N.
+    """Returns a pygraphviz graph from a NetworkX graph N.
 
     Parameters
     ----------
@@ -196,7 +196,7 @@ def write_dot(G, path):
 
 
 def read_dot(path):
-    """Return a NetworkX graph from a dot file on path.
+    """Returns a NetworkX graph from a dot file on path.
 
     Parameters
     ----------
@@ -226,7 +226,8 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary
+    Returns
+    -------
       Dictionary of x, y, positions keyed by node.
 
     Examples
@@ -238,7 +239,6 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     Notes
     -----
     This is a wrapper for pygraphviz_layout.
-
     """
     return pygraphviz_layout(G, prog=prog, root=root, args=args)
 
