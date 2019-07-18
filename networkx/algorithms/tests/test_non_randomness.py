@@ -1,16 +1,14 @@
 #!/usr/bin/env python
-from nose.tools import *
 import networkx as nx
 
+from nose.tools import *
 from nose import SkipTest
 from nose.plugins.attrib import attr
-
-import numpy.testing as npt
 
 @attr('numpy')
 def test_non_randomness():
     try:
-        import numpy
+        import numpy.testing as npt
     except ImportError:
         raise SkipTest('numpy not available.')
     G = nx.karate_club_graph()
