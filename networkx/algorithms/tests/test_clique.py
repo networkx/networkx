@@ -93,16 +93,19 @@ class TestCliques:
                      [[2, 6, 1, 3]])
         assert_equal(list(nx.cliques_containing_node(G, [1]).values()),
                      [[[2, 6, 1, 3]]])
-        assert_equal(list(nx.cliques_containing_node(G, [1, 2]).values()),
+        assert_equal([sorted(c) for c in list(nx.cliques_containing_node(G, [1, 2]).values())],
                      [[[2, 6, 1, 3]], [[2, 6, 1, 3], [2, 6, 4]]])
-        assert_equal(nx.cliques_containing_node(G, [1, 2]),
+        result = nx.cliques_containing_node(G, [1, 2])
+        for k, v in result.items():
+            result[k] = sorted(v)
+        assert_equal(result,
                      {1: [[2, 6, 1, 3]], 2: [[2, 6, 1, 3], [2, 6, 4]]})
         assert_equal(nx.cliques_containing_node(G, 1),
                      [[2, 6, 1, 3]])
-        assert_equal(nx.cliques_containing_node(G, 2),
-                     [[2, 6, 1, 3], [2, 6, 4]])
-        assert_equal(nx.cliques_containing_node(G, 2, cliques=self.cl),
-                     [[2, 6, 1, 3], [2, 6, 4]])
+        assert_equal([sorted(c) for c in nx.cliques_containing_node(G, 2)],
+                     [[2, 4, 6], [1, 2, 3, 6]])
+        assert_equal([sorted(c) for c in nx.cliques_containing_node(G, 2, cliques=self.cl)],
+                     [[2, 4, 6], [1, 2, 3, 6]])
         assert_equal(len(nx.cliques_containing_node(G)), 11)
 
     def test_make_clique_bipartite(self):
