@@ -283,6 +283,98 @@ def test_compose_multigraph():
                  set(G.edges(keys=True)) | set(H.edges(keys=True)))
 
 
+def test_full_join_graph():
+    # Simple Graphs
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(1, 2)
+    H = nx.Graph()
+    H.add_edge(3, 4)
+
+    U = nx.full_join(G, H)
+    assert_equal(set(U), set(G) | set(H))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H)
+                 )
+
+    # Rename
+    U = nx.full_join(G, H, rename=('g', 'h'))
+    assert_equal(set(U), set(['g0', 'g1', 'g2', 'h3', 'h4']))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H)
+                 )
+
+    # DiGraphs
+    G = nx.DiGraph()
+    G.add_node(0)
+    G.add_edge(1, 2)
+    H = nx.DiGraph()
+    H.add_edge(3, 4)
+
+    U = nx.full_join(G, H)
+    assert_equal(set(U), set(G) | set(H))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G)*len(H) * 2
+                 )
+
+    # DiGraphs Rename
+    U = nx.full_join(G, H, rename=('g', 'h'))
+    assert_equal(set(U), set(['g0', 'g1', 'g2', 'h3', 'h4']))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2
+                 )
+
+
+def test_full_join_multigraph():
+    # MultiGraphs
+    G = nx.MultiGraph()
+    G.add_node(0)
+    G.add_edge(1, 2)
+    H = nx.MultiGraph()
+    H.add_edge(3, 4)
+
+    U = nx.full_join(G, H)
+    assert_equal(set(U), set(G) | set(H))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H)
+                 )
+
+    # MultiGraphs rename
+    U = nx.full_join(G, H, rename=('g', 'h'))
+    assert_equal(set(U), set(['g0', 'g1', 'g2', 'h3', 'h4']))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H)
+                 )
+
+    # MultiDiGraphs
+    G = nx.MultiDiGraph()
+    G.add_node(0)
+    G.add_edge(1, 2)
+    H = nx.MultiDiGraph()
+    H.add_edge(3, 4)
+
+    U = nx.full_join(G, H)
+    assert_equal(set(U), set(G) | set(H))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2
+                 )
+
+    # MultiDiGraphs rename
+    U = nx.full_join(G, H, rename=('g', 'h'))
+    assert_equal(set(U), set(['g0', 'g1', 'g2', 'h3', 'h4']))
+    assert_equal(len(U), len(G) + len(H))
+    assert_equal(len(U.edges()),
+                 len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2
+                 )
+
+
 @raises(nx.NetworkXError)
 def test_mixed_type_union():
     G = nx.Graph()

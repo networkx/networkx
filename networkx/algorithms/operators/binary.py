@@ -331,7 +331,7 @@ def compose(G, H):
     return R
 
 
-def full_join(G, H, rename=(None, None), name=None):
+def full_join(G, H, rename=(None, None)):
     """Returns the full join of graphs G and H.
 
     Full join is the union of G and H in which all edges between
@@ -348,9 +348,6 @@ def full_join(G, H, rename=(None, None), name=None):
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
-
-    name : string
-       Specify the name for the union graph
 
     Returns
     -------
@@ -377,15 +374,19 @@ def full_join(G, H, rename=(None, None), name=None):
     union
     disjoint_union
     """
-    R = union(G, H, rename, name)
-    nodes = list(R)
-    for i in nodes:
+    R = union(G, H, rename)
+
+    def add_prefix(node, prefix):
+        if prefix is None:
+            return node
+        return prefix + repr(node)
+
+    for i in G:
         for j in H:
-            if i != j:
-                if not R.is_directed():
-                    R.add_edge(i, j)
-                else:
-                    R.add_edge(i, j)
-                    R.add_edge(j, i)
+            R.add_edge(add_prefix(i, rename[0]), add_prefix(j, rename[1]))
+    if R.is_directed():
+        for i in H:
+            for j in G:
+                R.add_edge(add_prefix(i, rename[1]), add_prefix(j, rename[0]))
 
     return R
