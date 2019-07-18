@@ -5,7 +5,6 @@
 #    All rights reserved.
 #    BSD license.
 import math
-import numpy as np
 import networkx as nx
 
 __author__ = """\n""".join(['Erwan Le Merrer <erwan.le-merrer@inria.fr>'])
@@ -54,6 +53,12 @@ def non_randomness(G,k=None):
     if not k:    
         k = len(tuple(nx.networkx.algorithms.community.label_propagation.label_propagation_communities(G)))
     
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            "hits_numpy() requires NumPy: http://scipy.org/")
+
     #eq. 4.4
     RG = np.real(np.sum(np.linalg.eigvals(nx.to_numpy_matrix(G))[:k]))
     
