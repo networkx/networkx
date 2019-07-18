@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -194,12 +194,17 @@ class DiGraph(Graph):
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
     holding the factory for that dict-like structure. The variable names are
-    node_dict_factory, adjlist_inner_dict_factory, adjlist_outer_dict_factory,
-    and edge_attr_dict_factory.
+    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
+    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
         attributes, keyed by node id.
+        It should require no arguments and return a dict-like object
+
+    node_attr_dict_factory: function, (default: dict)
+        Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object
 
     adjlist_outer_dict_factory : function, (default: dict)
@@ -214,7 +219,12 @@ class DiGraph(Graph):
 
     edge_attr_dict_factory : function, optional (default: dict)
         Factory function to be used to create the edge attribute
-        dict which holds attrbute values keyed by attribute name.
+        dict which holds attribute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    graph_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
         It should require no arguments and return a dict-like object.
 
     Typically, if your extension doesn't impact the data structure all
@@ -290,12 +300,14 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
+        self.graph_attr_dict_factory = self.graph_attr_dict_factory
         self.node_dict_factory = self.node_dict_factory
+        self.node_attr_dict_factory = self.node_attr_dict_factory
         self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.graph = {}  # dictionary for graph attributes
+        self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self._pred
@@ -408,7 +420,8 @@ class DiGraph(Graph):
         if node_for_adding not in self._succ:
             self._succ[node_for_adding] = self.adjlist_inner_dict_factory()
             self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
-            self._node[node_for_adding] = attr
+            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
@@ -464,7 +477,8 @@ class DiGraph(Graph):
                 if n not in self._succ:
                     self._succ[n] = self.adjlist_inner_dict_factory()
                     self._pred[n] = self.adjlist_inner_dict_factory()
-                    self._node[n] = attr.copy()
+                    attr_dict = self._node[n] = self.node_attr_dict_factory()
+                    attr_dict.update(attr)
                 else:
                     self._node[n].update(attr)
             except TypeError:
@@ -474,7 +488,8 @@ class DiGraph(Graph):
                     self._pred[nn] = self.adjlist_inner_dict_factory()
                     newdict = attr.copy()
                     newdict.update(ndict)
-                    self._node[nn] = newdict
+                    attr_dict = self._node[nn] = self.node_attr_dict_factory()
+                    attr_dict.update(newdict)
                 else:
                     olddict = self._node[nn]
                     olddict.update(attr)
@@ -614,11 +629,11 @@ class DiGraph(Graph):
         if u not in self._succ:
             self._succ[u] = self.adjlist_inner_dict_factory()
             self._pred[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = {}
+            self._node[u] = self.node_attr_dict_factory()
         if v not in self._succ:
             self._succ[v] = self.adjlist_inner_dict_factory()
             self._pred[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = {}
+            self._node[v] = self.node_attr_dict_factory()
         # add the edge
         datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
         datadict.update(attr)
@@ -676,11 +691,11 @@ class DiGraph(Graph):
             if u not in self._succ:
                 self._succ[u] = self.adjlist_inner_dict_factory()
                 self._pred[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = {}
+                self._node[u] = self.node_attr_dict_factory()
             if v not in self._succ:
                 self._succ[v] = self.adjlist_inner_dict_factory()
                 self._pred[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = {}
+                self._node[v] = self.node_attr_dict_factory()
             datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
             datadict.update(attr)
             datadict.update(dd)
@@ -753,21 +768,21 @@ class DiGraph(Graph):
                 del self._pred[v][u]
 
     def has_successor(self, u, v):
-        """Return True if node u has successor v.
+        """Returns True if node u has successor v.
 
         This is true if graph has the edge u->v.
         """
         return (u in self._succ and v in self._succ[u])
 
     def has_predecessor(self, u, v):
-        """Return True if node u has predecessor v.
+        """Returns True if node u has predecessor v.
 
         This is true if graph has the edge u<-v.
         """
         return (u in self._pred and v in self._pred[u])
 
     def successors(self, n):
-        """Return an iterator over successor nodes of n.
+        """Returns an iterator over successor nodes of n.
 
         A successor of n is a node m such that there exists a directed
         edge from n to m.
@@ -799,7 +814,7 @@ class DiGraph(Graph):
     neighbors = successors
 
     def predecessors(self, n):
-        """Return an iterator over predecessor nodes of n.
+        """Returns an iterator over predecessor nodes of n.
 
         A predecessor of n is a node m such that there exists a directed
         edge from m to n.
@@ -1081,15 +1096,15 @@ class DiGraph(Graph):
         self.graph.clear()
 
     def is_multigraph(self):
-        """Return True if graph is a multigraph, False otherwise."""
+        """Returns True if graph is a multigraph, False otherwise."""
         return False
 
     def is_directed(self):
-        """Return True if graph is directed, False otherwise."""
+        """Returns True if graph is directed, False otherwise."""
         return True
 
     def to_undirected(self, reciprocal=False, as_view=False):
-        """Return an undirected representation of the digraph.
+        """Returns an undirected representation of the digraph.
 
         Parameters
         ----------
@@ -1164,7 +1179,7 @@ class DiGraph(Graph):
         return G
 
     def reverse(self, copy=True):
-        """Return the reverse of the graph.
+        """Returns the reverse of the graph.
 
         The reverse is a graph with the same nodes and edges
         but with the directions of the edges reversed.
@@ -1177,10 +1192,10 @@ class DiGraph(Graph):
             the original graph.
         """
         if copy:
-            H = self.fresh_copy()
+            H = self.__class__()
             H.graph.update(deepcopy(self.graph))
             H.add_nodes_from((n, deepcopy(d)) for n, d in self.node.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
             return H
-        return nx.graphviews.ReverseView(self)
+        return nx.graphviews.reverse_view(self)

@@ -1,7 +1,7 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,7 +19,7 @@ __all__ = ['incidence_matrix',
 
 def incidence_matrix(G, nodelist=None, edgelist=None,
                      oriented=False, weight=None):
-    """Return incidence matrix of G.
+    """Returns incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
     For a standard incidence matrix a 1 appears wherever a row's node is
@@ -106,7 +106,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
 
 
 def adjacency_matrix(G, nodelist=None, weight='weight'):
-    """Return adjacency matrix of G.
+    """Returns adjacency matrix of G.
 
     Parameters
     ----------
@@ -158,6 +158,7 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     to_numpy_matrix
     to_scipy_sparse_matrix
     to_dict_of_dicts
+    adjacency_spectrum
     """
     return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
 

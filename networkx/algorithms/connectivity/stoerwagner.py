@@ -22,7 +22,7 @@ __all__ = ['stoer_wagner']
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def stoer_wagner(G, weight='weight', heap=BinaryHeap):
-    """Returns the weighted minimum edge cut using the Stoer-Wagner algorithm.
+    r"""Returns the weighted minimum edge cut using the Stoer-Wagner algorithm.
 
     Determine the minimum edge cut of a connected graph using the
     Stoer-Wagner algorithm. In weighted cases, all weights must be

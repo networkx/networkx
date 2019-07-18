@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2017-2018
+#    Copyright (C) 2017-2019
 #    All rights reserved.
 #    BSD license.
 #    Author: Ferran Parés <ferran.pares@bsc.es>

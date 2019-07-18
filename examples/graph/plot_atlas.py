@@ -10,7 +10,7 @@ Gn.dot where n=0,19.
 # Author: Aric Hagberg (hagberg@lanl.gov)
 # Date: 2005-05-19 14:23:02 -0600 (Thu, 19 May 2005)
 
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

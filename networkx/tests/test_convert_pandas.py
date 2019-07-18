@@ -114,9 +114,6 @@ class TestConvertPandas(object):
                       self.df, 0, 'b', 'misspell')
         assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
                       self.df, 0, 'b', 1)
-        # unhashable attribute name
-        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
-                      self.df, 0, 'b', {})
 
     def test_from_edgelist_no_attr(self):
         Gtrue = nx.Graph([('E', 'C', {}),
@@ -163,3 +160,14 @@ class TestConvertPandas(object):
         df = nx.to_pandas_adjacency(Gtrue, dtype=int)
         G = nx.from_pandas_adjacency(df)
         assert_graphs_equal(Gtrue, G)
+
+    def test_from_adjacency_named(self):
+        # example from issue #3105
+        data = {"A": {"A": 0, "B": 0, "C": 0},
+                "B": {"A": 1, "B": 0, "C": 0},
+                "C": {"A": 0, "B": 1, "C": 0}}
+        dftrue = pd.DataFrame(data)
+        df = dftrue[["A", "C", "B"]]
+        G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph())
+        df = nx.to_pandas_adjacency(G, dtype=int)
+        pd.testing.assert_frame_equal(df, dftrue)

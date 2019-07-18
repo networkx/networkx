@@ -258,3 +258,21 @@ class TestConvert():
         G = nx.Graph([(1, 1)])
         elist = nx.to_edgelist(G, nodelist=list(G))
         assert_edges_equal(G.edges(data=True), elist)
+
+    def test_custom_node_attr_dict_safekeeping(self):
+        class custom_dict(dict):
+            pass
+
+        class Custom(nx.Graph):
+            node_attr_dict_factory = custom_dict
+
+        g = nx.Graph()
+        g.add_node(1, weight=1)
+
+        h = Custom(g)
+        assert isinstance(g._node[1], dict)
+        assert isinstance(h._node[1], custom_dict)
+
+        # this raise exception
+        # h._node.update((n, dd.copy()) for n, dd in g.nodes.items())
+        # assert isinstance(h._node[1], custom_dict)

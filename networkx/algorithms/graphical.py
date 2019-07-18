@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test sequences for graphiness.
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -35,7 +35,7 @@ def is_graphical(sequence, method='eg'):
     sequence : list or iterable container
         A sequence of integer node degrees
 
-    method : "eg" | "hh"
+    method : "eg" | "hh"  (default: 'eg')
         The method used to validate the degree sequence.
         "eg" corresponds to the Erdős-Gallai algorithm, and
         "hh" to the Havel-Hakimi algorithm.
@@ -73,7 +73,17 @@ def is_graphical(sequence, method='eg'):
 def _basic_graphical_tests(deg_sequence):
     # Sort and perform some simple tests on the sequence
     if not nx.utils.is_list_of_ints(deg_sequence):
-        raise nx.NetworkXUnfeasible
+        # check for a type that can be converted to int. Like numpy.int64
+        ds = []
+        for d in deg_sequence:
+            try:
+                intd = int(d)
+            except ValueError:
+                raise nx.NetworkXError("Invalid type in deg_sequence: not an integer")
+            if intd != d:
+                raise nx.NetworkXError("Invalid type in deg_sequence: not an integer")
+            ds.append(intd)
+        deg_sequence = ds
     p = len(deg_sequence)
     num_degs = [0] * p
     dmax, dmin, dsum, n = 0, p, 0, 0

@@ -10,12 +10,12 @@ Either this module or nx_agraph can be used to interface with graphviz.
 See Also
 --------
 pydot:         https://github.com/erocarrera/pydot
-Graphviz:      http://www.research.att.com/sw/tools/graphviz/
+Graphviz:      https://www.graphviz.org
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 # Author: Aric Hagberg (aric.hagberg@gmail.com)
 
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -24,18 +24,10 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    BSD license.
 from locale import getpreferredencoding
 from networkx.utils import open_file, make_str
-from pkg_resources import parse_version
 import networkx as nx
 
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
-
-# Minimum required version of pydot, which broke backwards API compatibility in
-# non-trivial ways and is thus a hard NetworkX requirement. Note that, although
-# pydot 1.2.0 was the first to do so, pydot 1.2.3 resolves a critical long-
-# standing Python 2.x issue required for sane NetworkX operation. See also:
-#     https://github.com/erocarrera/pydot/blob/master/ChangeLog
-PYDOT_VERSION_MIN = '1.2.3'
 
 # 2.x/3.x compatibility
 try:
@@ -58,7 +50,7 @@ def write_dot(G, path):
 
 @open_file(0, mode='r')
 def read_dot(path):
-    """Return a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
+    """Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
     dot file with the passed path.
 
     If this file contains multiple graphs, only the first such graph is
@@ -90,7 +82,7 @@ def read_dot(path):
 
 
 def from_pydot(P):
-    """Return a NetworkX graph from a Pydot graph.
+    """Returns a NetworkX graph from a Pydot graph.
 
     Parameters
     ----------
@@ -180,7 +172,7 @@ def from_pydot(P):
 
 
 def to_pydot(N):
-    """Return a pydot graph from a NetworkX graph N.
+    """Returns a pydot graph from a NetworkX graph N.
 
     Parameters
     ----------
@@ -243,10 +235,25 @@ def to_pydot(N):
     return P
 
 
-def graphviz_layout(G, prog='neato', root=None, **kwds):
+def graphviz_layout(G, prog='neato', root=None):
     """Create node positions using Pydot and Graphviz.
 
     Returns a dictionary of positions keyed by node.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph for which the layout is computed.
+    prog : string (default: 'neato')
+        The name of the GraphViz program to use for layout.
+        Options depend on GraphViz version but may include:
+        'dot', 'twopi', 'fdp', 'sfdp', 'circo'
+    root : Node from G or None (default: None)
+        The node of G from which to start some layout algorithms.
+
+    Returns
+    -------
+      Dictionary of (x, y) positions keyed by node.
 
     Examples
     --------
@@ -258,23 +265,22 @@ def graphviz_layout(G, prog='neato', root=None, **kwds):
     -----
     This is a wrapper for pydot_layout.
     """
-    return pydot_layout(G=G, prog=prog, root=root, **kwds)
+    return pydot_layout(G=G, prog=prog, root=root)
 
 
-# FIXME: Document the "root" parameter.
-# FIXME: Why does this function accept a variadic dict of keyword arguments
-# (i.e., "**kwds") but fail to do anything with them? This is probably
-# wrong, as unrecognized keyword arguments will be silently ignored.
-def pydot_layout(G, prog='neato', root=None, **kwds):
+def pydot_layout(G, prog='neato', root=None):
     """Create node positions using :mod:`pydot` and Graphviz.
 
     Parameters
     --------
     G : Graph
         NetworkX graph to be laid out.
-    prog : optional[str]
-        Basename of the GraphViz command with which to layout this graph.
-        Defaults to `neato`: default GraphViz command for undirected graphs.
+    prog : string  (default: 'neato')
+        Name of the GraphViz command to use for layout.
+        Options depend on GraphViz version but may include:
+        'dot', 'twopi', 'fdp', 'sfdp', 'circo'
+    root : Node from G or None (default: None)
+        The node of G from which to start some layout algorithms.
 
     Returns
     --------
@@ -355,20 +361,10 @@ def _import_pydot():
     Raises
     --------
     ImportError
-        If the `pydot` module is either unimportable _or_ importable but of
-        insufficient version.
+        If the `pydot` module is unimportable.
     '''
 
     import pydot
-
-    # If the currently installed version of pydot is older than this minimum,
-    # raise an exception. The pkg_resources.parse_version() function bundled
-    # with setuptools is commonly regarded to be the most robust means of
-    # comparing version strings. (Your mileage may vary.)
-    if parse_version(pydot.__version__) < parse_version(PYDOT_VERSION_MIN):
-        raise ImportError(
-            'pydot %s < %s' % (pydot.__version__, PYDOT_VERSION_MIN))
-
     return pydot
 
 # fixture for nose tests

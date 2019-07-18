@@ -10,7 +10,8 @@
 #
 # Author:  Alex Roper <aroper@umich.edu>
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
-from collections import defaultdict, Mapping, Set
+from collections import defaultdict
+from collections.abc import Mapping, Set
 from itertools import chain, count
 
 import networkx as nx
@@ -97,7 +98,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
         raise nx.NetworkXError("Graph contains a cycle.")
 
     # Iterative implementation of Tarjan's offline lca algorithm
-    # as described in CLRS on page 521.
+    # as described in CLRS on page 521 (2nd edition)/page 584 (3rd edition)
     uf = UnionFind()
     ancestors = {}
     for node in G:

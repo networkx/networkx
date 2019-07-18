@@ -1,7 +1,7 @@
 """
 Operations on graphs including union, intersection, difference.
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -136,7 +136,7 @@ def disjoint_union(G, H):
 
 
 def intersection(G, H):
-    """Return a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the edges that exist in
     both G and H.
 
     The node sets of H and G must be the same.
@@ -190,7 +190,7 @@ def intersection(G, H):
 
 
 def difference(G, H):
-    """Return a new graph that contains the edges that exist in G but not in H.
+    """Returns a new graph that contains the edges that exist in G but not in H.
 
     The node sets of H and G must be the same.
 
@@ -234,7 +234,7 @@ def difference(G, H):
 
 
 def symmetric_difference(G, H):
-    """Return new graph with edges that exist in either G or H but not both.
+    """Returns new graph with edges that exist in either G or H but not both.
 
     The node sets of H and G must be the same.
 
@@ -286,7 +286,7 @@ def symmetric_difference(G, H):
 
 
 def compose(G, H):
-    """Return a new graph of G composed with H.
+    """Returns a new graph of G composed with H.
 
     Composition is the simple union of the node sets and edge sets.
     The node sets of G and H do not need to be disjoint.

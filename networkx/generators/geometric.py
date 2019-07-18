@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -175,7 +175,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
 @nodes_or_number(0)
 def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
                                 seed=None):
-    """Returns a soft random geometric graph in the unit cube.
+    r"""Returns a soft random geometric graph in the unit cube.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
     random in the unit cube in dimension `dim`. Two nodes of distance, `dist`,
@@ -475,7 +475,7 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None, weight=None,
 @nodes_or_number(0)
 def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
                  metric=None, seed=None):
-    r"""Return a Waxman random graph.
+    r"""Returns a Waxman random graph.
 
     The Waxman random graph model places `n` nodes uniformly at random
     in a rectangular domain. Each pair of nodes at distance `d` is
@@ -592,7 +592,7 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
 
 @py_random_state(5)
 def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
-    r"""Return a navigable small-world graph.
+    r"""Returns a navigable small-world graph.
 
     A navigable small-world graph is a directed grid with additional long-range
     connections that are chosen randomly.
@@ -666,7 +666,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 @nodes_or_number(0)
 def thresholded_random_geometric_graph(n, radius, theta, dim=2,
                                        pos=None, weight=None, p=2, seed=None):
-    """Returns a thresholded random geometric graph in the unit cube.
+    r"""Returns a thresholded random geometric graph in the unit cube.
 
     The thresholded random geometric graph [1] model places `n` nodes
     uniformly at random in the unit cube of dimensions `dim`. Each node

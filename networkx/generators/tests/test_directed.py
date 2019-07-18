@@ -48,6 +48,14 @@ class TestGeneratorsDirected(object):
         MG = gnc_graph(100, create_using=MultiDiGraph(), seed=1)
         assert_equal(sorted(G.edges()), sorted(MG.edges()))
 
+        G = scale_free_graph(100, alpha=0.3, beta=0.4, gamma=0.3,
+                             delta_in=0.3, delta_out=0.1,
+                             create_using=MultiDiGraph, seed=1)
+        assert_raises(ValueError, scale_free_graph, 100, 0.5, 0.4, 0.3)
+        assert_raises(ValueError, scale_free_graph, 100, alpha=-0.3)
+        assert_raises(ValueError, scale_free_graph, 100, beta=-0.3)
+        assert_raises(ValueError, scale_free_graph, 100, gamma=-0.3)
+
 
 class TestRandomKOutGraph(object):
     """Unit tests for the

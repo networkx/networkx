@@ -1,6 +1,6 @@
 """Modularity matrix of graphs.
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,7 +19,7 @@ __all__ = ['modularity_matrix', 'directed_modularity_matrix']
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def modularity_matrix(G, nodelist=None, weight=None):
-    """Return the modularity matrix of G.
+    r"""Returns the modularity matrix of G.
 
     The modularity matrix is the matrix B = A - <A>, where A is the adjacency
     matrix and <A> is the average adjacency matrix, assuming that the graph
@@ -28,9 +28,9 @@ def modularity_matrix(G, nodelist=None, weight=None):
     More specifically, the element B_ij of B is defined as
 
     .. math::
-        A_{ij} - {k_i k_j m \over 2}
+        A_{ij} - {k_i k_j \over 2 m}
 
-    where k_i is the degree of node i, and were m is the number of edges
+    where k_i is the degree of node i, and where m is the number of edges
     in the graph. When weight is set to a name of an attribute edge, Aij, k_i,
     k_j and m are computed using its value.
 
@@ -63,8 +63,8 @@ def modularity_matrix(G, nodelist=None, weight=None):
     See Also
     --------
     to_numpy_matrix
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     directed_modularity_matrix
 
     References
@@ -86,7 +86,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
 def directed_modularity_matrix(G, nodelist=None, weight=None):
-    """Return the directed modularity matrix of G.
+    """Returns the directed modularity matrix of G.
 
     The modularity matrix is the matrix B = A - <A>, where A is the adjacency
     matrix and <A> is the expected adjacency matrix, assuming that the graph
@@ -138,8 +138,8 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     See Also
     --------
     to_numpy_matrix
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     modularity_matrix
 
     References

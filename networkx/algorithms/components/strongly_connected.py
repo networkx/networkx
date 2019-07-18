@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -287,7 +287,7 @@ def strongly_connected_component_subgraphs(G, copy=True):
 
 @not_implemented_for('undirected')
 def number_strongly_connected_components(G):
-    """Return number of strongly connected components in graph.
+    """Returns number of strongly connected components in graph.
 
     Parameters
     ----------

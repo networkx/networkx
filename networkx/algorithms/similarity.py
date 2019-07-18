@@ -21,7 +21,8 @@ and/or `optimize_edit_paths`.
 At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
-from __future__ import print_function
+from __future__ import print_function, division
+from itertools import product
 import math
 import networkx as nx
 from operator import *
@@ -33,7 +34,9 @@ __all__ = [
     'graph_edit_distance',
     'optimal_edit_paths',
     'optimize_graph_edit_distance',
-    'optimize_edit_paths'
+    'optimize_edit_paths',
+    'simrank_similarity',
+    'simrank_similarity_numpy',
 ]
 
 
@@ -1005,6 +1008,246 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         #print(vertex_path, edge_path, cost, file = sys.stderr)
         #assert cost == maxcost.value
         yield list(vertex_path), list(edge_path), cost
+
+
+def _is_close(d1, d2, atolerance=0, rtolerance=0):
+    """Determines whether two adjacency matrices are within
+    a provided tolerance.
+    
+    Parameters
+    ----------
+    d1 : dict
+        Adjacency dictionary
+    
+    d2 : dict
+        Adjacency dictionary
+    
+    atolerance : float
+        Some scalar tolerance value to determine closeness
+    
+    rtolerance : float
+        A scalar tolerance value that will be some proportion
+        of ``d2``'s value
+    
+    Returns
+    -------
+    closeness : bool
+        If all of the nodes within ``d1`` and ``d2`` are within
+        a predefined tolerance, they are considered "close" and
+        this method will return True. Otherwise, this method will
+        return False.
+    
+    """
+    # Pre-condition: d1 and d2 have the same keys at each level if they
+    # are dictionaries.
+    if not isinstance(d1, dict) and not isinstance(d2, dict):
+        return abs(d1 - d2) <= atolerance + rtolerance * abs(d2)
+    return all(all(_is_close(d1[u][v], d2[u][v]) for v in d1[u]) for u in d1)
+
+
+def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
+                       max_iterations=100, tolerance=1e-4):
+    """Returns the SimRank similarity of nodes in the graph ``G``.
+
+    SimRank is a similarity metric that says "two objects are considered
+    to be similar if they are referenced by similar objects." [1]_.
+    
+    The pseudo-code definition from the paper is:
+
+        def simrank(G, u, v):
+            in_neighbors_u = G.predecessors(u)
+            in_neighbors_v = G.predecessors(v)
+            scale = C / (len(in_neighbors_u) * len(in_neighbors_v))
+            return scale * sum(simrank(G, w, x)
+                               for w, x in product(in_neighbors_u,
+                                                   in_neighbors_v))
+    
+    where ``G`` is the graph, ``u`` is the source, ``v`` is the target,
+    and ``C`` is a float decay or importance factor between 0 and 1.
+    
+    The SimRank algorithm for determining node similarity is defined in
+    [2]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+
+    source : node
+        If this is specified, the returned dictionary maps each node
+        ``v`` in the graph to the similarity between ``source`` and
+        ``v``.
+
+    target : node
+        If both ``source`` and ``target`` are specified, the similarity
+        value between ``source`` and ``target`` is returned. If
+        ``target`` is specified but ``source`` is not, this argument is
+        ignored.
+
+    importance_factor : float
+        The relative importance of indirect neighbors with respect to
+        direct neighbors.
+
+    max_iterations : integer
+        Maximum number of iterations.
+
+    tolerance : float
+        Error tolerance used to check convergence. When an iteration of
+        the algorithm finds that no similarity value changes more than
+        this amount, the algorithm halts.
+
+    Returns
+    -------
+    similarity : dictionary or float
+        If ``source`` and ``target`` are both ``None``, this returns a
+        dictionary of dictionaries, where keys are node pairs and value
+        are similarity of the pair of nodes.
+
+        If ``source`` is not ``None`` but ``target`` is, this returns a
+        dictionary mapping node to the similarity of ``source`` and that
+        node.
+
+        If neither ``source`` nor ``target`` is ``None``, this returns
+        the similarity value for the given pair of nodes.
+
+    Examples
+    --------
+    If the nodes of the graph are numbered from zero to *n - 1*, where *n*
+    is the number of nodes in the graph, you can create a SimRank matrix
+    from the return value of this function where the node numbers are
+    the row and column indices of the matrix::
+
+        >>> import networkx as nx
+        >>> from numpy import array
+        >>> G = nx.cycle_graph(4)
+        >>> sim = nx.simrank_similarity(G)
+        >>> lol = [[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)]
+        >>> sim_array = array(lol)
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/SimRank
+    .. [2] G. Jeh and J. Widom.
+           "SimRank: a measure of structural-context similarity",
+           In KDD'02: Proceedings of the Eighth ACM SIGKDD
+           International Conference on Knowledge Discovery and Data Mining,
+           pp. 538--543. ACM Press, 2002.
+    """
+    prevsim = None
+
+    # build up our similarity adjacency dictionary output
+    newsim = {u: {v: 1 if u == v else 0 for v in G} for u in G}
+
+    # These functions compute the update to the similarity value of the nodes
+    # `u` and `v` with respect to the previous similarity values.
+    avg_sim = lambda s: sum(newsim[w][x] for (w, x) in s) / len(s)
+    sim = lambda u, v: importance_factor * avg_sim(list(product(G[u], G[v])))
+
+    for _ in range(max_iterations):
+        if prevsim and _is_close(prevsim, newsim, tolerance):
+            break
+        prevsim = newsim
+        newsim = {u: {v: sim(u, v) if u is not v else 1
+                      for v in newsim[u]} for u in newsim}
+
+    if source is not None and target is not None:
+        return newsim[source][target]
+    if source is not None:
+        return newsim[source]
+    return newsim
+
+
+def simrank_similarity_numpy(G, source=None, target=None, importance_factor=0.9,
+                             max_iterations=100, tolerance=1e-4):
+    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
+
+    The SimRank algorithm for determining node similarity is defined in
+    [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+
+    source : node
+        If this is specified, the returned dictionary maps each node
+        ``v`` in the graph to the similarity between ``source`` and
+        ``v``.
+
+    target : node
+        If both ``source`` and ``target`` are specified, the similarity
+        value between ``source`` and ``target`` is returned. If
+        ``target`` is specified but ``source`` is not, this argument is
+        ignored.
+
+    importance_factor : float
+        The relative importance of indirect neighbors with respect to
+        direct neighbors.
+
+    max_iterations : integer
+        Maximum number of iterations.
+
+    tolerance : float
+        Error tolerance used to check convergence. When an iteration of
+        the algorithm finds that no similarity value changes more than
+        this amount, the algorithm halts.
+
+    Returns
+    -------
+    similarity : dictionary or float
+        If ``source`` and ``target`` are both ``None``, this returns a
+        dictionary of dictionaries, where keys are node pairs and value
+        are similarity of the pair of nodes.
+
+        If ``source`` is not ``None`` but ``target`` is, this returns a
+        dictionary mapping node to the similarity of ``source`` and that
+        node.
+
+        If neither ``source`` nor ``target`` is ``None``, this returns
+        the similarity value for the given pair of nodes.
+
+    Examples
+    --------
+        >>> import networkx as nx
+        >>> from numpy import array
+        >>> G = nx.cycle_graph(4)
+        >>> sim = nx.simrank_similarity_numpy(G)
+
+    References
+    ----------
+    .. [1] G. Jeh and J. Widom.
+           "SimRank: a measure of structural-context similarity",
+           In KDD'02: Proceedings of the Eighth ACM SIGKDD
+           International Conference on Knowledge Discovery and Data Mining,
+           pp. 538--543. ACM Press, 2002.
+    """
+    # This algorithm follows roughly
+    #
+    #     S = max{C * (A.T * S * A), I}
+    #
+    # where C is the importance factor, A is the column normalized
+    # adjacency matrix, and I is the identity matrix.
+    import numpy as np
+    adjacency_matrix = nx.to_numpy_array(G)
+
+    # column-normalize the ``adjacency_matrix``
+    adjacency_matrix /= adjacency_matrix.sum(axis=0)
+
+    newsim = np.eye(adjacency_matrix.shape[0], dtype=np.float64)
+    for _ in range(max_iterations):
+        prevsim = np.copy(newsim)
+        newsim = importance_factor * np.matmul(
+            np.matmul(adjacency_matrix.T, prevsim), adjacency_matrix)
+        np.fill_diagonal(newsim, 1.0)
+
+        if np.allclose(prevsim, newsim, atol=tolerance):
+            break
+
+    if source is not None and target is not None:
+        return newsim[source, target]
+    if source is not None:
+        return newsim[source]
+    return newsim
 
 
 def setup_module(module):

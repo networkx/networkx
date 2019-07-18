@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -76,7 +76,7 @@ def weakly_connected_components(G):
 
 @not_implemented_for('undirected')
 def number_weakly_connected_components(G):
-    """Return the number of weakly connected components in G.
+    """Returns the number of weakly connected components in G.
 
     Parameters
     ----------

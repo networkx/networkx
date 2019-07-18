@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # gomory_hu.py - function for computing Gomory Hu trees
 #
-# Copyright 2017-2018 NetworkX developers.
+# Copyright 2017-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

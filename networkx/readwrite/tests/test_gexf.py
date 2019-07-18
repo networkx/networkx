@@ -313,6 +313,88 @@ class TestGEXF(object):
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
+    def test_edge_id_construct(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
+        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <meta>
+      <creator>NetworkX {}</creator>
+      <lastmodified>{}</lastmodified>
+    </meta>
+    <nodes>
+      <node id="0" label="0" />
+      <node id="1" label="1" />
+      <node id="2" label="2" />
+      <node id="3" label="3" />
+    </nodes>
+    <edges>
+      <edge id="0" source="0" target="1" />
+      <edge id="2" source="1" target="2" />
+      <edge id="1" source="2" target="3" />
+    </edges>
+  </graph>
+</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+        obtained = '\n'.join(nx.generate_gexf(G))
+        assert_equal(expected, obtained)
+
+    def test_numpy_type(self):
+        G = nx.path_graph(4)
+        try:
+            import numpy
+        except ImportError:
+            return
+        nx.set_node_attributes(G, {n:n for n in numpy.arange(4)}, 'number')
+        G[0][1]['edge-number'] = numpy.float64(1.1)
+
+        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <attributes class="edge" mode="static">
+      <attribute id="1" title="edge-number" type="float" />
+    </attributes>
+    <attributes class="node" mode="static">
+      <attribute id="0" title="number" type="int" />
+    </attributes>
+    <meta>
+      <creator>NetworkX {}</creator>
+      <lastmodified>{}</lastmodified>
+    </meta>
+    <nodes>
+      <node id="0" label="0">
+        <attvalues>
+          <attvalue for="0" value="0" />
+        </attvalues>
+      </node>
+      <node id="1" label="1">
+        <attvalues>
+          <attvalue for="0" value="1" />
+        </attvalues>
+      </node>
+      <node id="2" label="2">
+        <attvalues>
+          <attvalue for="0" value="2" />
+        </attvalues>
+      </node>
+      <node id="3" label="3">
+        <attvalues>
+          <attvalue for="0" value="3" />
+        </attvalues>
+      </node>
+    </nodes>
+    <edges>
+      <edge id="0" source="0" target="1">
+        <attvalues>
+          <attvalue for="1" value="1.1" />
+        </attvalues>
+      </edge>
+      <edge id="1" source="1" target="2" />
+      <edge id="2" source="2" target="3" />
+    </edges>
+  </graph>
+</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+        obtained = '\n'.join(nx.generate_gexf(G))
+        assert_equal(expected, obtained)
+
     def test_bool(self):
         G = nx.Graph()
         G.add_node(1, testattr=True)
