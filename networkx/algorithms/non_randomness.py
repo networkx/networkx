@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2019
+#    Copyright (C) 2004-2019 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 #
@@ -45,7 +48,7 @@ def non_randomness(G, k=None):
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> nr, nr_rd= nx.non_randomness(G,2)
+    >>> nr, nr_rd = nx.non_randomness(G, 2)
 
     Notes
     -----
