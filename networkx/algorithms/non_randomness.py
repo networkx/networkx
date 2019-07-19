@@ -75,10 +75,10 @@ def non_randomness(G, k=None):
 
     n = G.number_of_nodes()
     m = G.number_of_edges()
-    p = (2*k*m) / (n*(n-k))
+    p = (2 * k * m) / (n * (n - k))
 
     # eq. 4.5
-    nr_rd = (nr - ((n-2*k)*p+k))/math.sqrt(2*k*p*(1-p))
+    nr_rd = (nr - ((n - 2 * k) * p + k)) / math.sqrt(2 * k * p * (1 - p))
 
     return nr, nr_rd
 
