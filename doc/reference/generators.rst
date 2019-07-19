@@ -324,3 +324,11 @@ Harary Graph
 
    hnm_harary_graph
    hkn_harary_graph
+
+Cographs
+------------
+.. automodule:: networkx.generators.cographs
+.. autosummary::
+   :toctree: generated/
+
+   random_cograph
