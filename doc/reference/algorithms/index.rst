@@ -48,6 +48,7 @@ Algorithms
    matching
    minors
    mis
+   non_randomness
    moral
    node_classification
    operators
