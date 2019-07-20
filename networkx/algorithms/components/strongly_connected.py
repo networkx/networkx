@@ -109,12 +109,11 @@ def strongly_connected_components(G):
                                 lowlink[v] = min([lowlink[v], preorder[w]])
                     queue.pop()
                     if lowlink[v] == preorder[v]:
-                        scc_found.add(v)
                         scc = {v}
                         while scc_queue and preorder[scc_queue[-1]] > preorder[v]:
                             k = scc_queue.pop()
-                            scc_found.add(k)
                             scc.add(k)
+                        scc_found.update(scc)
                         yield scc
                     else:
                         scc_queue.append(v)
