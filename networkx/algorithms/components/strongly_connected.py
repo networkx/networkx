@@ -80,7 +80,6 @@ def strongly_connected_components(G):
        Information Processing Letters 49(1): 9-14, (1994)..
 
     """
-    nbrs = {}
     preorder = {}
     lowlink = {}
     scc_found = set()
@@ -95,10 +94,7 @@ def strongly_connected_components(G):
                     i = i + 1
                     preorder[v] = i
                 done = True
-                if v not in nbrs:
-                    nbrs[v] = iter(G[v])
-                v_nbrs = nbrs[v]
-                for w in v_nbrs:
+                for w in G[v]:
                     if w not in preorder:
                         queue.append(w)
                         done = False
