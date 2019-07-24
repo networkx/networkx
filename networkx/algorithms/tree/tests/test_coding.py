@@ -63,7 +63,6 @@ class TestPruferSequence(object):
         assert_edges_equal(list(tree.edges()), edges)
 
     def test_decoding2(self):
-        # Example from "An Optimal Algorithm for Prufer Codes".
         sequence = [2, 4, 0, 1, 3, 3]
         tree = nx.from_prufer_sequence(sequence)
         assert_nodes_equal(list(tree), list(range(8)))

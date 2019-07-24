@@ -18,11 +18,13 @@ applied to unrooted trees. Furthermore, there is a bijection from Prüfer
 sequences to labeled trees.
 
 """
-from collections import Counter
 from itertools import chain
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+
+__author__ = """\n""".join(['Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>',
+                            'Pascal Ortiz <pascal.ortiz@gmail.com>'])
 
 __all__ = ['from_nested_tuple', 'from_prufer_sequence', 'NotATree',
            'to_nested_tuple', 'to_prufer_sequence']
@@ -257,20 +259,19 @@ def to_prufer_sequence(T):
     the latter form. You can use :func:`~networkx.relabel_nodes` to
     relabel the nodes of your tree to the appropriate format.
 
-    This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    This implementation is from [1]_ and has linear time complexity.
+
+    References
+    ----------
+    .. [1] Micikevicius Paulius, Caminiti Saverio and Deo Narsingh.
+           "Linear-time algorithms for encoding trees as sequences of node labels"
+           *Congressus Numerantium* 183 (2006): 66-75.
+           <http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.70.5052&rank=1>
 
     See also
     --------
     to_nested_tuple
     from_prufer_sequence
-
-    References
-    ----------
-    .. [1] Wang, Xiaodong, Lei Wang, and Yingjie Wu.
-           "An optimal algorithm for Prufer codes."
-           *Journal of Software Engineering and Applications* 2.02 (2009): 111.
-           <https://doi.org/10.4236/jsea.2009.22016>
 
     Examples
     --------
@@ -298,22 +299,25 @@ def to_prufer_sequence(T):
     if set(T) != set(range(n)):
         raise KeyError('tree must have node labels {0, ..., n - 1}')
 
-    degree = dict(T.degree())
-
-    def parents(u):
-        return next(v for v in T[u] if degree[v] > 1)
-
-    index = u = min(k for k in range(n) if degree[k] == 1)
+    n = T.number_of_nodes()
+    in_tree = [True] * n
+    degree = [T.degree(i) for i in range(n)]
+    cnt = 0
     result = []
-    for i in range(n - 2):
-        v = parents(u)
-        result.append(v)
-        degree[v] -= 1
-        if v < index and degree[v] == 1:
-            u = v
-        else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
-    return result
+    for i in range(n):
+        index = i
+        while degree[index] == 1 and index <= i:
+            in_tree[index] = False
+            for k in T[index]:
+                degree[k] -= 1
+            for parent in T[index]:
+                if in_tree[parent]:
+                    break
+            result.append(parent)
+            cnt += 1
+            if cnt == n - 2:
+                return result
+            index = parent
 
 
 def from_prufer_sequence(sequence):
@@ -346,15 +350,14 @@ def from_prufer_sequence(sequence):
     the latter form. You can use :func:`networkx.relabel_nodes` to
     relabel the nodes of your tree to the appropriate format.
 
-    This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    This implementation is from [1]_ and has linear time complexity.
 
     References
     ----------
-    .. [1] Wang, Xiaodong, Lei Wang, and Yingjie Wu.
-           "An optimal algorithm for Prufer codes."
-           *Journal of Software Engineering and Applications* 2.02 (2009): 111.
-           <https://doi.org/10.4236/jsea.2009.22016>
+    .. [1] Micikevicius Paulius, Caminiti Saverio and Deo Narsingh.
+           "Linear-time algorithms for encoding trees as sequences of node labels"
+           *Congressus Numerantium* 183 (2006): 66-75.
+           <http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.70.5052&rank=1>
 
     See also
     --------
@@ -378,26 +381,29 @@ def from_prufer_sequence(sequence):
 
     """
     n = len(sequence) + 2
-    # `degree` stores the remaining degree (plus one) for each node. The
-    # degree of a node in the decoded tree is one more than the number
-    # of times it appears in the code.
-    degree = Counter(chain(sequence, range(n)))
     T = nx.empty_graph(n)
-    # `not_orphaned` is the set of nodes that have a parent in the
-    # tree. After the loop, there should be exactly two nodes that are
-    # not in this set.
-    not_orphaned = set()
-    index = u = min(k for k in range(n) if degree[k] == 1)
-    for v in sequence:
-        T.add_edge(u, v)
-        not_orphaned.add(u)
-        degree[v] -= 1
-        if v < index and degree[v] == 1:
+    if n == 2:
+        T.add_edge(0, 1)
+        return T
+    not_in = [True] * n
+    mult = [0] * n
+    for i in sequence:
+        not_in[i] = False
+        mult[i] += 1
+    k = 0
+    for j in range(n):
+        u = j
+        while k < n - 2 and u <= j and not_in[u]:
+            v = sequence[k]
+            T.add_edge(u, v)
+            k += 1
+            mult[v] -= 1
+            if mult[v] == 0:
+                not_in[v] = True
             u = v
-        else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
-    # At this point, there must be exactly two orphaned nodes; join them.
-    orphans = set(T) - not_orphaned
-    u, v = orphans
-    T.add_edge(u, v)
-    return T
+        if k == n - 2:
+            for u in range(j + 1, n):
+                if not_in[u] and u != v:
+                    break
+            T.add_edge(u, v)
+            return T
