@@ -1,6 +1,7 @@
 # test_matching.py - unit tests for bipartite matching algorithms
 #
-# Copyright 2015 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>.
+# Copyright 2015 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>,
+# Copyright 2019 Søren Fuglede Jørgensen
 #
 # This file is part of NetworkX.
 #
@@ -11,11 +12,13 @@ import itertools
 
 import networkx as nx
 
+from nose import SkipTest
 from nose.tools import assert_true, assert_equal, raises
 
 from networkx.algorithms.bipartite.matching import eppstein_matching
 from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
 from networkx.algorithms.bipartite.matching import maximum_matching
+from networkx.algorithms.bipartite.matching import minimum_weight_full_matching
 from networkx.algorithms.bipartite.matching import to_vertex_cover
 
 
@@ -196,3 +199,106 @@ def test_eppstein_matching():
     matching = eppstein_matching(G)
     assert_true(len(matching) == len(maximum_matching(G)))
     assert all(x in set(matching.keys()) for x in set(matching.values()))
+
+
+class TestMinimumWeightFullMatching(object):
+
+    @classmethod
+    def setupClass(cls):
+        global scipy
+        try:
+            import scipy.optimize
+        except ImportError:
+            raise SkipTest('SciPy not available.')
+
+    def test_minimum_weight_full_matching_square(self):
+        G = nx.complete_bipartite_graph(3, 3)
+        G.add_edge(0, 3, weight=400)
+        G.add_edge(0, 4, weight=150)
+        G.add_edge(0, 5, weight=400)
+        G.add_edge(1, 3, weight=400)
+        G.add_edge(1, 4, weight=450)
+        G.add_edge(1, 5, weight=600)
+        G.add_edge(2, 3, weight=300)
+        G.add_edge(2, 4, weight=225)
+        G.add_edge(2, 5, weight=300)
+        matching = minimum_weight_full_matching(G)
+        assert_equal(matching, {0: 4, 1: 3, 2: 5, 4: 0, 3: 1, 5: 2})
+
+    def test_minimum_weight_full_matching_smaller_left(self):
+        G = nx.complete_bipartite_graph(3, 4)
+        G.add_edge(0, 3, weight=400)
+        G.add_edge(0, 4, weight=150)
+        G.add_edge(0, 5, weight=400)
+        G.add_edge(0, 6, weight=1)
+        G.add_edge(1, 3, weight=400)
+        G.add_edge(1, 4, weight=450)
+        G.add_edge(1, 5, weight=600)
+        G.add_edge(1, 6, weight=2)
+        G.add_edge(2, 3, weight=300)
+        G.add_edge(2, 4, weight=225)
+        G.add_edge(2, 5, weight=290)
+        G.add_edge(2, 6, weight=3)
+        matching = minimum_weight_full_matching(G)
+        assert_equal(matching, {0: 4, 1: 6, 2: 5, 4: 0, 5: 2, 6: 1})
+
+    def test_minimum_weight_full_matching_smaller_top_nodes_right(self):
+        G = nx.complete_bipartite_graph(3, 4)
+        G.add_edge(0, 3, weight=400)
+        G.add_edge(0, 4, weight=150)
+        G.add_edge(0, 5, weight=400)
+        G.add_edge(0, 6, weight=1)
+        G.add_edge(1, 3, weight=400)
+        G.add_edge(1, 4, weight=450)
+        G.add_edge(1, 5, weight=600)
+        G.add_edge(1, 6, weight=2)
+        G.add_edge(2, 3, weight=300)
+        G.add_edge(2, 4, weight=225)
+        G.add_edge(2, 5, weight=290)
+        G.add_edge(2, 6, weight=3)
+        matching = minimum_weight_full_matching(G, top_nodes=[3, 4, 5, 6])
+        assert_equal(matching, {0: 4, 1: 6, 2: 5, 4: 0, 5: 2, 6: 1})
+
+    def test_minimum_weight_full_matching_smaller_right(self):
+        G = nx.complete_bipartite_graph(4, 3)
+        G.add_edge(0, 4, weight=400)
+        G.add_edge(0, 5, weight=400)
+        G.add_edge(0, 6, weight=300)
+        G.add_edge(1, 4, weight=150)
+        G.add_edge(1, 5, weight=450)
+        G.add_edge(1, 6, weight=225)
+        G.add_edge(2, 4, weight=400)
+        G.add_edge(2, 5, weight=600)
+        G.add_edge(2, 6, weight=290)
+        G.add_edge(3, 4, weight=1)
+        G.add_edge(3, 5, weight=2)
+        G.add_edge(3, 6, weight=3)
+        matching = minimum_weight_full_matching(G)
+        assert_equal(matching, {1: 4, 2: 6, 3: 5, 4: 1, 5: 3, 6: 2})
+
+    def test_minimum_weight_full_matching_negative_weights(self):
+        G = nx.complete_bipartite_graph(2, 2)
+        G.add_edge(0, 2, weight=-2)
+        G.add_edge(0, 3, weight=0.2)
+        G.add_edge(1, 2, weight=-2)
+        G.add_edge(1, 3, weight=0.3)
+        matching = minimum_weight_full_matching(G)
+        assert_equal(matching, {0: 3, 1: 2, 2: 1, 3: 0})
+
+    def test_minimum_weight_full_matching_different_weight_key(self):
+        G = nx.complete_bipartite_graph(2, 2)
+        G.add_edge(0, 2, mass=2)
+        G.add_edge(0, 3, mass=0.2)
+        G.add_edge(1, 2, mass=1)
+        G.add_edge(1, 3, mass=2)
+        matching = minimum_weight_full_matching(G, weight='mass')
+        assert_equal(matching, {0: 3, 1: 2, 2: 1, 3: 0})
+
+    @raises(ValueError)
+    def test_minimum_weight_full_matching_requires_complete_input(self):
+        G = nx.Graph()
+        G.add_nodes_from([1, 2, 3, 4], bipartite=0)
+        G.add_nodes_from(['a', 'b', 'c'], bipartite=1)
+        G.add_edges_from([(1, 'a'), (1, 'b'), (2, 'b'),
+                          (2, 'c'), (3, 'c'), (4, 'a')])
+        minimum_weight_full_matching(G)
