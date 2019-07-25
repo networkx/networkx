@@ -490,9 +490,21 @@ maximum_matching = hopcroft_karp_matching
 def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
     """Returns the minimum weight full matching of the bipartite graph `G`.
 
-    A full matching is a subset of edges whose cardinality is the smaller of
-    the cardinalities of the two partitions, and in which no node occurs more
-    than once. The weight of a matching is the sum of the weights of the edges.
+    Let :math:`G = ((U, V), E)` be a complete weighted bipartite graph with
+    real weights :math:`w : E \to \mathbb{R}`. This function then produces
+    a maximum matching :math:`M \subseteq E` which, since the graph is
+    assumed to be complete, has cardinality
+   
+    .. math::
+       \lvert M \rvert = \min(\lvert U \rvert, \lvert V \rvert),
+
+    and which minimizes the sum of the weights of the edges included in the
+    matching, :math:`\sum_{e \in M} w(e)`.
+    
+    When :math:`\lvert U \rvert = \lvert V \rvert`, this is commonly
+    referred to as a perfect matching; here, since we allow
+    :math:`\lvert U \rvert` and :math:`\lvert V \rvert` to differ, we
+    follow Karp[1]_ and refer to the matching as *full*.
 
     Parameters
     ----------
@@ -506,6 +518,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
       it will be computed.
 
     weight : string, optional (default='weight')
+
        The edge data key used to provide each value in the matrix.
 
     Returns
@@ -531,6 +544,13 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
     The problem of determining a minimum weight full matching is also known as
     the rectangular linear assignment problem. This implementation defers the
     calculation of the assignment to SciPy.
+
+    References
+    ----------
+    .. [1] Richard Manning Karp:
+       An algorithm to Solve the m x n Assignment Problem in Expected Time
+       O(mn log n).
+       Networks, 10(2):143–152, 1980.
 
     """
     try:
