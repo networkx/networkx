@@ -46,20 +46,6 @@ weighted bipartite graph, a matching whose cardinality is the cardinality of
 the smaller of the two partitions, and for which the sum of the weights of the
 edges included in the matching is minimal.
 
->>> G = nx.Graph()
->>> U = [1, 2, 3]
->>> V = ['a', 'b']
->>> G.add_nodes_from(U, bipartite=0)
->>> G.add_nodes_from(V, bipartite=1)
->>> G.add_edge(1, 'a', weight=-2)
->>> G.add_edge(1, 'b', weight=0.2)
->>> G.add_edge(2, 'a', weight=0)
->>> G.add_edge(2, 'b', weight=0.7)
->>> G.add_edge(3, 'a', weight=-2)
->>> G.add_edge(3, 'b', weight=1)
->>> nx.bipartite.minimum_weight_full_matching(G, top_nodes=U)
-{1: 'b', 3: 'a', 'b': 1, 'a': 3}
-
 """
 import collections
 import itertools
