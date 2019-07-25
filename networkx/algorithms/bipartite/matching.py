@@ -94,7 +94,6 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
     Notes
     -----
-
     This function is implemented with the `Hopcroft--Karp matching algorithm
     <https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm>`_ for
     bipartite graphs.
@@ -212,7 +211,6 @@ def eppstein_matching(G, top_nodes=None):
 
     Notes
     -----
-
     This function is implemented with David Eppstein's version of the algorithm
     Hopcroft--Karp algorithm (see :func:`hopcroft_karp_matching`), which
     originally appeared in the `Python Algorithms and Data Structures library
@@ -413,7 +411,6 @@ def to_vertex_cover(G, matching, top_nodes=None):
 
     Parameters
     ----------
-
     G : NetworkX graph
 
       Undirected bipartite graph
@@ -433,7 +430,6 @@ def to_vertex_cover(G, matching, top_nodes=None):
 
     Returns
     -------
-
     vertex_cover : :class:`set`
 
       The minimum vertex cover in `G`.
@@ -449,7 +445,6 @@ def to_vertex_cover(G, matching, top_nodes=None):
 
     Notes
     -----
-
     This function is implemented using the procedure guaranteed by `Konig's
     theorem
     <https://en.wikipedia.org/wiki/K%C3%B6nig%27s_theorem_%28graph_theory%29>`_,
@@ -533,7 +528,6 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
 
     Notes
     -----
-
     The problem of determining a minimum weight full matching is also known as
     the rectangular linear assignment problem. This implementation defers the
     calculation of the assignment to SciPy.
