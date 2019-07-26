@@ -25,10 +25,11 @@ class TestCliques:
     def test_selfloops(self):
         self.G.add_edge(1, 1)
         cl = list(nx.find_cliques(self.G))
-        rcl = nx.find_cliques_recursive(self.G)
-        assert_equal(sorted(map(sorted, cl)), sorted(map(sorted, rcl)))
-        assert_equal(cl,
-                     [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]])
+        rcl = list(nx.find_cliques_recursive(self.G))
+        assert_equal(set(map(frozenset, cl)), set(map(frozenset, rcl)))
+        answer = [{2, 6, 1, 3}, {2, 6, 4}, {5, 4, 7}, {8, 9}, {10, 11}]
+        assert_equal(len(answer), len(cl))
+        assert_true(all(set(c) in answer for c in cl))
 
     def test_find_cliques2(self):
         hcl = list(nx.find_cliques(self.H))
@@ -102,10 +103,12 @@ class TestCliques:
                      {1: [[2, 6, 1, 3]], 2: [[2, 6, 1, 3], [2, 6, 4]]})
         assert_equal(nx.cliques_containing_node(G, 1),
                      [[2, 6, 1, 3]])
-        assert_equal([sorted(c) for c in nx.cliques_containing_node(G, 2)],
-                     [[2, 4, 6], [1, 2, 3, 6]])
-        assert_equal([sorted(c) for c in nx.cliques_containing_node(G, 2, cliques=self.cl)],
-                     [[2, 4, 6], [1, 2, 3, 6]])
+        expected = [{2, 6, 1, 3}, {2, 6, 4}]
+        answer = [set(c) for c in nx.cliques_containing_node(G, 2)]
+        assert_in(answer, (expected, list(reversed(expected))))
+
+        answer = [set(c) for c in nx.cliques_containing_node(G, 2, cliques=self.cl)]
+        assert_in(answer, (expected, list(reversed(expected))))
         assert_equal(len(nx.cliques_containing_node(G)), 11)
 
     def test_make_clique_bipartite(self):

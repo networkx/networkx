@@ -118,8 +118,10 @@ class TestMaxWeightMatching(object):
         G.add_weighted_edges_from([(1, 2, 9), (1, 3, 9), (2, 3, 10),
                                    (2, 4, 8), (3, 5, 8), (4, 5, 10),
                                    (5, 6, 6)])
-        assert_equal(nx.max_weight_matching(G),
-                     matching_dict_to_set({1: 3, 2: 4, 3: 1, 4: 2, 5: 6, 6: 5}))
+        dict_format = {1: 3, 2: 4, 3: 1, 4: 2, 5: 6, 6: 5}
+        expected = {frozenset(e) for e in matching_dict_to_set(dict_format)}
+        answer = {frozenset(e) for e in nx.max_weight_matching(G)}
+        assert_equal(answer, expected)
 
     def test_nested_s_blossom_relabel(self):
         """Create S-blossom, relabel as S, include in nested S-blossom:"""
