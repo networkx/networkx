@@ -1140,7 +1140,7 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
 
     # These functions compute the update to the similarity value of the nodes
     # `u` and `v` with respect to the previous similarity values.
-    avg_sim = lambda s: sum(newsim[w][x] for (w, x) in s) / len(s)
+    avg_sim = lambda s: sum(newsim[w][x] for (w, x) in s) / len(s) if s else 0.0
     sim = lambda u, v: importance_factor * avg_sim(list(product(G[u], G[v])))
 
     for _ in range(max_iterations):
