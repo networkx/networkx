@@ -933,6 +933,83 @@ def planar_layout(G, scale=1, center=None, dim=2):
     return dict(zip(node_list, pos))
 
 
+def spiral_layout(G, scale=1, center=None, dim=2,
+                  resolution=0.35, equidistant=False):
+    """Position nodes in a spiral layout.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
+    scale : number (default: 1)
+        Scale factor for positions.
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+    dim : int
+        Dimension of layout, currently only dim=2 is supported.
+        Other dimension values result in a ValueError.
+    resolution : float
+        The compactness of the spiral layout returned.
+        Lower values result in more compressed spiral layouts.
+    equidistant : bool
+        If True, nodes will be plotted equidistant from each other.
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+    Raises
+    -------
+    ValueError
+        If dim != 2
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.spiral_layout(G)
+    Notes
+    -----
+    This algorithm currently only works in two dimensions.
+
+    """
+    if dim != 2:
+        raise ValueError('can only handle 2 dimensions')
+
+    G, center = _process_params(G, center, dim)
+
+    if len(G) == 0:
+        return {}
+    if len(G) == 1:
+        return {nx.utils.arbitrary_element(G): center}
+
+    pos = []
+    if equidistant:
+        chord = 1
+        step = 0.5
+        theta = resolution
+        for _ in range(len(G)):
+            r = step * theta
+            theta += chord / r
+            pos.append([np.cos(theta) * r, np.sin(theta) * r])
+
+    else:
+        # set the starting angle and step
+        step = 1
+        angle = 0.0
+        dist = 0.0
+        # set the radius for the spiral to the number of nodes in the graph
+        radius = len(G)
+
+        while dist * np.hypot(np.cos(angle), np.sin(angle)) < radius:
+            pos.append([dist * np.cos(angle), dist * np.sin(angle)])
+            dist += step
+            angle += resolution
+
+    pos = rescale_layout(np.array(pos), scale=scale) + center
+
+    pos = dict(zip(G, pos))
+
+    return pos
+
+
 def rescale_layout(pos, scale=1):
     """Returns scaled position array to (-scale, scale) in all axes.
 
