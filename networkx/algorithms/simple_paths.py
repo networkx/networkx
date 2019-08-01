@@ -5,7 +5,7 @@
 #    BSD license.
 import collections
 from heapq import heappush, heappop
-from itertools import count
+from itertools import count, groupby
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -815,8 +815,6 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('graph')
 def all_trails(G, source, target, cutoff=None):
     """
 
@@ -846,33 +844,33 @@ def all_trails(G, source, target, cutoff=None):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> dg = nx.DiGraph()
     >>> dg.add_edges_from([(1,2),(2,1),(2,3),(3,2),(3,4),(4,3),(3,5),(5,3)])
-    >>> paths = get_all_trails(G=dg, source=1, target=[1,2,3,4,5])
+    >>> paths = nx.all_trails(G=dg, source=1, target=[1,2,3,4,5])
     >>> for trail in map(nx.utils.pairwise, paths):
-    >>>     print(list(trail))
-
-    >>> [(1, 2)]
-    >>> [(1, 2), (2, 1)]
-    >>> [(1, 2), (2, 3), (3, 2), (2, 1)]
-    >>> [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
-    >>> [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
-    >>> [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
-    >>> [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
-    >>> [(1, 2), (2, 3)]
-    >>> [(1, 2), (2, 3), (3, 2)]
-    >>> [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2)]
-    >>> [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2)]
-    >>> [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2)]
-    >>> [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2)]
-    >>> [(1, 2), (2, 3), (3, 4)]
-    >>> [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4)]
-    >>> [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5)]
-    >>> [(1, 2), (2, 3), (3, 5)]
-    >>> [(1, 2), (2, 3), (3, 4), (4, 3)]
-    >>> [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3)]
-    >>> [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3)]
-    >>> [(1, 2), (2, 3), (3, 5), (5, 3)]
+    ...     print(list(trail))
+    [(1, 2)]
+    [(1, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3)]
+    [(1, 2), (2, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5)]
+    [(1, 2), (2, 3), (3, 5)]
+    [(1, 2), (2, 3), (3, 4), (4, 3)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3)]
+    [(1, 2), (2, 3), (3, 5), (5, 3)]
 
 
     See Also
@@ -882,6 +880,9 @@ def all_trails(G, source, target, cutoff=None):
     all_simple_paths
 
     """
+    if not nx.is_directed(G):
+        raise NotImplementedError('graph is not directed')
+
     dg = nx.DiGraph()
 
     # Create nodes representing connection links
