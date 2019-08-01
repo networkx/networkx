@@ -21,6 +21,7 @@ __all__ = [
     'all_simple_paths',
     'is_simple_path',
     'shortest_simple_paths',
+    'all_simple_edge_paths'
 ]
 
 
@@ -116,7 +117,6 @@ def all_simple_paths(G, source, target, cutoff=None):
        A generator that produces lists of simple paths.  If there are no paths
        between the source and target within the given cutoff the generator
        produces no output.
-       For multigraphs, a list of edges `(u,v,k)`.
 
     Examples
     --------
@@ -212,18 +212,6 @@ def all_simple_paths(G, source, target, cutoff=None):
         >>> all_paths
         [[0, 1, 3], [0, 1, 4], [2, 1, 3], [2, 1, 4]]
 
-
-        >>> mg = nx.MultiGraph()
-        >>> mg.add_edges_from([(1,2),(1,2),(1,3),(2,4),(3,4),(4,5),(3,5),(3,5)])
-        [0, 1, 0, 0, 0, 0, 0, 1]
-        >>> paths = nx.all_simple_paths(mg, source=1, target=5, cutoff=3)
-        >>> print(list(paths))
-        [[(1, 2, 0), (2, 4, 0), (4, 5, 0)], [(1, 2, 1), (2, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 5, 0)], [(1, 3, 0), (3, 5, 1)]]
-        >>> paths = nx.all_simple_paths(mg, source=1, target=5)
-        >>> print(list(paths))
-        [[(1, 2, 0), (2, 4, 0), (4, 3, 0), (3, 5, 0)], [(1, 2, 0), (2, 4, 0), (4, 3, 0), (3, 5, 1)], [(1, 2, 0), (2, 4, 0), (4, 5, 0)], [(1, 2, 1), (2, 4, 0), (4, 3, 0), (3, 5, 0)], [(1, 2, 1), (2, 4, 0), (4, 3, 0), (3, 5, 1)], [(1, 2, 1), (2, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 4, 0), (4, 5, 0)], [(1, 3, 0), (3, 5, 0)], [(1, 3, 0), (3, 5, 1)]]
-
-
     Notes
     -----
     This algorithm uses a modified depth-first search to generate the
@@ -289,8 +277,137 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
+    visited = collections.OrderedDict.fromkeys([source])
+    stack = [(v for u, v in G.edges(source))]
+    while stack:
+        children = stack[-1]
+        child = next(children, None)
+        if child is None:
+            stack.pop()
+            visited.popitem()
+        elif len(visited) < cutoff:
+            if child in visited:
+                continue
+            if child in targets:
+                yield list(visited) + [child]
+            visited[child] = None
+            if targets - set(visited.keys()):
+                stack.append((v for u, v in G.edges(child)))
+            else:
+                visited.popitem()
+        else:  # len(visited) == cutoff:
+            for target in targets - set(visited.keys()):
+                count = ([child] + list(children)).count(target)
+                for i in range(count):
+                    yield list(visited) + [target]
+            stack.pop()
+            visited.popitem()
+
+
+def all_simple_edge_paths(G, source, target, cutoff=None):
+    """Generate lists of edges for all simple paths in the graph G from
+    source to target.
+
+    A simple path is a path with no repeated nodes.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node for path
+
+    target : nodes
+       Single node or iterable of nodes at which to end path
+
+    cutoff : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    path_generator: generator
+       A generator that produces lists of simple paths.  If there are no paths
+       between the source and target within the given cutoff the generator
+       produces no output.
+       For multigraphs, the list of edges have elements of the form `(u,v,k)`.
+       Where `k` corresponds to the edge key.
+
+    Examples
+    --------
+
+    Print the simple path edges of a Graph::
+
+        >>> import networkx as nx
+        >>> 
+        >>> g = nx.Graph()
+        >>> g.add_edge('1', '2')
+        >>> g.add_edge('2', '4')
+        >>> g.add_edge('1', '3')
+        >>> g.add_edge('3', '4')
+        >>> 
+        >>> for path in nx.all_simple_edge_paths(g, '1', '4'):
+        ...     print(path)
+        [('1', '2'), ('2', '4')]
+        [('1', '3'), ('3', '4')]
+
+    Print the simple path edges of a MultiGraph. Returned edges come with
+    their associated keys::
+
+        >>> mg = nx.MultiGraph()
+        >>> mg.add_edge(1,2,key='k0')
+        >>> mg.add_edge(1,2,key='k1')
+        >>> mg.add_edge(2,3,key='k0')
+        >>> 
+        >>> for path in nx.all_simple_edge_paths(mg, 1, 3):
+        ...     print(path)
+        [(1, 2, 'k0'), (2, 3, 'k0')]
+        [(1, 2, 'k1'), (2, 3, 'k0')]
+
+
+    Notes
+    -----
+    This algorithm uses a modified depth-first search to generate the
+    paths [1]_.  A single path can be found in $O(V+E)$ time but the
+    number of simple paths in a graph can be very large, e.g. $O(n!)$ in
+    the complete graph of order $n$.
+
+    References
+    ----------
+    .. [1] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
+       Addison Wesley Professional, 3rd ed., 2001.
+
+    See Also
+    --------
+    all_shortest_paths, shortest_path, all_simple_paths
+
+    """
+    if source not in G:
+        raise nx.NodeNotFound('source node %s not in graph' % source)
+    if target in G:
+        targets = {target}
+    else:
+        try:
+            targets = set(target)
+        except TypeError:
+            raise nx.NodeNotFound('target node %s not in graph' % target)
+    if source in targets:
+        return []
+    if cutoff is None:
+        cutoff = len(G) - 1
     if cutoff < 1:
-        return
+        return []
+    if G.is_multigraph():
+        for simp_path in _all_simple_edge_paths_multigraph(G, source, targets,
+                                                           cutoff):
+            yield simp_path
+    else:
+        for simp_path in _all_simple_paths_graph(G, source, targets, cutoff):
+            yield list(zip(simp_path[:-1], simp_path[1:]))
+
+
+def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
+    if not cutoff or cutoff < 1:
+        return []
     visited = [source]
     stack = [iter(G.edges(source, keys=True))]
 
