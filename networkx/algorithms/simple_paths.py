@@ -355,8 +355,11 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
         >>> mg = nx.MultiGraph()
         >>> mg.add_edge(1,2,key='k0')
+        'k0'
         >>> mg.add_edge(1,2,key='k1')
+        'k1'
         >>> mg.add_edge(2,3,key='k0')
+        'k0'
         >>> 
         >>> for path in nx.all_simple_edge_paths(mg, 1, 3):
         ...     print(path)
