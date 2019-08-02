@@ -21,7 +21,8 @@ __all__ = [
     'all_simple_paths',
     'is_simple_path',
     'shortest_simple_paths',
-    'all_trails'
+    'all_trails',
+    'all_trails_as_edge_paths'
 ]
 
 
@@ -845,32 +846,34 @@ def all_trails(G, source, target, cutoff=None):
     Examples
     --------
     >>> import networkx as nx
+    >>> 
+    >>> 
     >>> dg = nx.DiGraph()
     >>> dg.add_edges_from([(1,2),(2,1),(2,3),(3,2),(3,4),(4,3),(3,5),(5,3)])
-    >>> paths = nx.all_trails(G=dg, source=1, target=[1,2,3,4,5])
-    >>> for trail in map(nx.utils.pairwise, paths):
-    ...     print(list(trail))
-    [(1, 2)]
-    [(1, 2), (2, 1)]
-    [(1, 2), (2, 3), (3, 2), (2, 1)]
-    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
-    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
-    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
-    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
-    [(1, 2), (2, 3)]
-    [(1, 2), (2, 3), (3, 2)]
-    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2)]
-    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2)]
-    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2)]
-    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2)]
-    [(1, 2), (2, 3), (3, 4)]
-    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4)]
-    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5)]
-    [(1, 2), (2, 3), (3, 5)]
-    [(1, 2), (2, 3), (3, 4), (4, 3)]
-    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3)]
-    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3)]
-    [(1, 2), (2, 3), (3, 5), (5, 3)]
+    >>> trail = nx.all_trails(G=dg, source=1, target=[1,2,3,4,5])
+    >>> for t in trail:
+    ...     print(t)
+    [1, 2]
+    [1, 2, 1]
+    [1, 2, 3, 2, 1]
+    [1, 2, 3, 4, 3, 2, 1]
+    [1, 2, 3, 4, 3, 5, 3, 2, 1]
+    [1, 2, 3, 5, 3, 2, 1]
+    [1, 2, 3, 5, 3, 4, 3, 2, 1]
+    [1, 2, 3]
+    [1, 2, 3, 2]
+    [1, 2, 3, 4, 3, 2]
+    [1, 2, 3, 4, 3, 5, 3, 2]
+    [1, 2, 3, 5, 3, 2]
+    [1, 2, 3, 5, 3, 4, 3, 2]
+    [1, 2, 3, 4]
+    [1, 2, 3, 5, 3, 4]
+    [1, 2, 3, 4, 3, 5]
+    [1, 2, 3, 5]
+    [1, 2, 3, 4, 3]
+    [1, 2, 3, 5, 3, 4, 3]
+    [1, 2, 3, 4, 3, 5, 3]
+    [1, 2, 3, 5, 3]
 
 
     See Also
@@ -923,4 +926,75 @@ def all_trails(G, source, target, cutoff=None):
                 trail = list(map(lambda n: dg.nodes[n]['init'], path))
                 yield [x[0] for x in groupby(trail)]
 
+
+def all_trails_as_edge_paths(G, source, target, cutoff=None):
+    """
+
+    Generate all trails in the digraph G from source to target.
+    The generated paths comes as tuples representing the edges.
+
+    A trail is a walk without repeated edges.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+
+    source : node
+       Starting node for path
+
+    target : nodes
+       Single node or iterable of nodes at which to end path
+
+    cutoff : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    path_generator: generator
+       A generator that produces lists of trails. If there are no paths
+       between the source and target within the given cutoff the generator
+       produces no output. Lists are tuples of edges
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> dg = nx.DiGraph()
+    >>> dg.add_edges_from([(1,2),(2,1),(2,3),(3,2),(3,4),(4,3),(3,5),(5,3)])
+    >>> trails = nx.all_trails(G=dg, source=1, target=[1,2,3,4,5])
+    >>> for trail in map(nx.utils.pairwise, trails):
+    ...     print(list(trail))
+    [(1, 2)]
+    [(1, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3)]
+    [(1, 2), (2, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5)]
+    [(1, 2), (2, 3), (3, 5)]
+    [(1, 2), (2, 3), (3, 4), (4, 3)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3)]
+    [(1, 2), (2, 3), (3, 5), (5, 3)]
+
+
+    See Also
+    --------
+    all_shortest_paths
+    shortest_path
+    all_simple_paths
+    all_trails
+
+    """
+    paths = nx.all_trails(G, source, target, cutoff)
+    for trail in map(nx.utils.pairwise, paths):
+        yield list(trail)
 
