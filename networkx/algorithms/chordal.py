@@ -117,7 +117,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     >>> G=nx.Graph()
     >>> G = nx.generators.classic.path_graph(10)
     >>> I = nx.find_induced_nodes(G,1,9,2)
-    >>> list(I)
+    >>> sorted(list(I))
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     Notes

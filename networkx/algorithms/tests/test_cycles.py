@@ -300,11 +300,11 @@ class TestMinimumCycles(object):
 
     def test_unweighted_diamond(self):
         mcb = minimum_cycle_basis(self.diamond_graph)
-        assert_basis_equal(mcb, [[1, 2, 4], [2, 3, 4]])
+        assert_basis_equal([sorted(c) for c in mcb], [[1, 2, 4], [2, 3, 4]])
 
     def test_weighted_diamond(self):
         mcb = minimum_cycle_basis(self.diamond_graph, weight='weight')
-        assert_basis_equal(mcb, [[1, 2, 4], [1, 2, 3, 4]])
+        assert_basis_equal([sorted(c) for c in mcb], [[1, 2, 4], [1, 2, 3, 4]])
 
     def test_dimensionality(self):
         # checks |MCB|=|E|-|V|+|NC|

@@ -4,7 +4,7 @@
 #    All rights reserved.
 #    BSD license.
 
-from nose.tools import assert_equal, assert_true, assert_false
+from nose.tools import assert_equal, assert_true, assert_false, assert_in
 import networkx as nx
 
 
@@ -23,8 +23,7 @@ class TestMinEdgeCover:
     def test_graph_single_edge(self):
         G = nx.Graph()
         G.add_edge(0, 1)
-        assert_equal(nx.min_edge_cover(G),
-                     {(0, 1)})
+        assert_in(nx.min_edge_cover(G), ({(0, 1)}, {(1, 0)}))
 
     def test_bipartite_explicit(self):
         G = nx.Graph()
