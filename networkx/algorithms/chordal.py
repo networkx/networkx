@@ -402,9 +402,7 @@ def complete_to_chordal_graph(G):
     unnumbered_nodes = list(H.nodes())
     for i in range(len(H.nodes()), 0, -1):
         # get the node in unnumbered_nodes with the maximum weight
-        z = [node for node in unnumbered_nodes
-             if weight.get(node) == max([weight.get(i)
-                                         for i in unnumbered_nodes])][0]
+        z = max(unnumbered_nodes, key=lambda node: weight[node])
         unnumbered_nodes.remove(z)
         alpha[z] = i
         update_nodes = []
