@@ -408,10 +408,10 @@ def complete_to_chordal_graph(G):
         update_nodes = []
         for y in unnumbered_nodes:
             # weights of nodes on a path between y and z should have smaller weight than y
-            y_weight = weight.get(y)
+            y_weight = weight[y]
             lower_nodes = [node for node in unnumbered_nodes
-                           if weight.get(node) < y_weight]
-            if nx.has_path(nx.subgraph(H, lower_nodes + [z, y]), y, z):
+                           if weight[node] < y_weight]
+            if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
                 update_nodes.append(y)
                 if (z, y) not in chords and (z, y) not in G.edges():
                     chords.append((z, y))
