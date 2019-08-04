@@ -258,7 +258,7 @@ def to_prufer_sequence(T):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    $O(n)$.
 
     See also
     --------
@@ -347,7 +347,7 @@ def from_prufer_sequence(sequence):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    $O(n)$.
 
     References
     ----------
