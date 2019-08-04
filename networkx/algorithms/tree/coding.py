@@ -303,7 +303,7 @@ def to_prufer_sequence(T):
     def parents(u):
         return next(v for v in T[u] if degree[v] > 1)
 
-    index = u = min(k for k in range(n) if degree[k] == 1)
+    index = u = next(k for k in range(n) if degree[k] == 1)
     result = []
     for i in range(n - 2):
         v = parents(u)
@@ -312,7 +312,7 @@ def to_prufer_sequence(T):
         if v < index and degree[v] == 1:
             u = v
         else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
+            index = u = next(k for k in range(index + 1, n) if degree[k] == 1)
     return result
 
 
@@ -387,7 +387,7 @@ def from_prufer_sequence(sequence):
     # tree. After the loop, there should be exactly two nodes that are
     # not in this set.
     not_orphaned = set()
-    index = u = min(k for k in range(n) if degree[k] == 1)
+    index = u = next(k for k in range(n) if degree[k] == 1)
     for v in sequence:
         T.add_edge(u, v)
         not_orphaned.add(u)
@@ -395,7 +395,7 @@ def from_prufer_sequence(sequence):
         if v < index and degree[v] == 1:
             u = v
         else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
+            index = u = next(k for k in range(index + 1, n) if degree[k] == 1)
     # At this point, there must be exactly two orphaned nodes; join them.
     orphans = set(T) - not_orphaned
     u, v = orphans
