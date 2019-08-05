@@ -276,6 +276,16 @@ def inverse_line_graph(G):
     -----
     This is an implementation of the Roussopoulos algorithm.
 
+    If G consists of multiple components, then the algorithm doesn't work.
+    You should invert every component seperately:
+
+    >>> from networkx import connected_components
+    >>> root_graphs = []
+    >>> for comp in connected_components(G):
+            root_graphs.append(inverse_line_graph(G.subgraph(comp)))
+
+    Later on you can unite these using ``networkx.union``.
+
     References
     ----------
     * Roussopolous, N, "A max {m, n} algorithm for determining the graph H from
