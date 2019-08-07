@@ -284,7 +284,7 @@ def inverse_line_graph(G):
     >>> G = nx.union(K5, P4)
     >>> root_graphs = []
     >>> for comp in nx.connected_components(G):
-    ...     root_graphs.append(inverse_line_graph(G.subgraph(comp)))
+    ...     root_graphs.append(nx.inverse_line_graph(G.subgraph(comp)))
     >>> len(root_graphs)
     2
 
