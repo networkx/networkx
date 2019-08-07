@@ -279,12 +279,14 @@ def inverse_line_graph(G):
     If G consists of multiple components, then the algorithm doesn't work.
     You should invert every component seperately:
 
-    >>> from networkx import connected_components
+    >>> K5 = nx.complete_graph(5)
+    >>> P4 = nx.Graph([('a', 'b'), ('b', 'c'), ('c', 'd')])
+    >>> G = nx.union(K5, P4)
     >>> root_graphs = []
-    >>> for comp in connected_components(G):
-            root_graphs.append(inverse_line_graph(G.subgraph(comp)))
-
-    Later on you can unite these using ``networkx.union``.
+    >>> for comp in nx.connected_components(G):
+    ...     root_graphs.append(inverse_line_graph(G.subgraph(comp)))
+    >>> len(root_graphs)
+    2
 
     References
     ----------
