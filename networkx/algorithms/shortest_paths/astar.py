@@ -110,13 +110,18 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             return path
 
         if curnode in explored:
-            continue
+            # Do not override the parent of starting node
+            if explored[curnode] is None:
+                continue
+
+            # Skip bad paths that were enqueued before finding a better one
+            qcost, h = enqueued[curnode]
+            if qcost < dist:
+                continue
 
         explored[curnode] = parent
 
         for neighbor, w in G[curnode].items():
-            if neighbor in explored:
-                continue
             ncost = dist + w.get(weight, 1)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
