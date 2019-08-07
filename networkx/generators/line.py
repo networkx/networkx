@@ -276,6 +276,18 @@ def inverse_line_graph(G):
     -----
     This is an implementation of the Roussopoulos algorithm.
 
+    If G consists of multiple components, then the algorithm doesn't work.
+    You should invert every component seperately:
+
+    >>> K5 = nx.complete_graph(5)
+    >>> P4 = nx.Graph([('a', 'b'), ('b', 'c'), ('c', 'd')])
+    >>> G = nx.union(K5, P4)
+    >>> root_graphs = []
+    >>> for comp in nx.connected_components(G):
+    ...     root_graphs.append(nx.inverse_line_graph(G.subgraph(comp)))
+    >>> len(root_graphs)
+    2
+
     References
     ----------
     * Roussopolous, N, "A max {m, n} algorithm for determining the graph H from
@@ -313,11 +325,11 @@ def _triangles(G, e):
     u, v = e
     if u not in G:
         raise nx.NetworkXError("Vertex %s not in graph" % u)
-    if v not in G.neighbors(u):
+    if v not in G[u]:
         raise nx.NetworkXError("Edge (%s, %s) not in graph" % (u, v))
     triangle_list = []
-    for x in G.neighbors(u):
-        if x in G.neighbors(v):
+    for x in G[u]:
+        if x in G[v]:
             triangle_list.append((u, v, x))
     return triangle_list
 
@@ -351,12 +363,12 @@ def _odd_triangle(G, T):
         if u not in G.nodes():
             raise nx.NetworkXError("Vertex %s not in graph" % u)
     for e in list(combinations(T, 2)):
-        if e[0] not in G.neighbors(e[1]):
+        if e[0] not in G[e[1]]:
             raise nx.NetworkXError("Edge (%s, %s) not in graph" % (e[0], e[1]))
 
     T_neighbors = defaultdict(int)
     for t in T:
-        for v in G.neighbors(t):
+        for v in G[t]:
             if v not in T:
                 T_neighbors[v] += 1
     for v in T_neighbors:
@@ -399,10 +411,10 @@ def _find_partition(G, starting_cell):
             # if u still has edges then we need to find its other cell
             # this other cell must be a complete subgraph or else G is
             # not a line graph
-            new_cell = [u] + list(G_partition.neighbors(u))
+            new_cell = [u] + list(G_partition[u])
             for u in new_cell:
                 for v in new_cell:
-                    if (u != v) and (v not in G.neighbors(u)):
+                    if (u != v) and (v not in G_partition[u]):
                         msg = "G is not a line graph" \
                               "(partition cell not a complete subgraph)"
                         raise nx.NetworkXError(msg)
@@ -485,7 +497,7 @@ def _select_starting_cell(G, starting_edge=None):
             if len(triangle_nodes) == s + 2:
                 for u in triangle_nodes:
                     for v in triangle_nodes:
-                        if u != v and (v not in G.neighbors(u)):
+                        if u != v and (v not in G[u]):
                             msg = "G is not a line graph (odd triangles " \
                                   "do not form complete subgraph)"
                             raise nx.NetworkXError(msg)
