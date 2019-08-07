@@ -118,9 +118,17 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         nodes = [u]
     closeness_centrality = {}
     for n in nodes:
-        sp = dict(path_length(G, n))
-        closeness_centrality[n] = _node_closeness_centrality(
-            len(G), sp, wf_improved)
+        sp = path_length(G, n)
+        totsp = sum(sp.values())
+        len_G = len(G)
+        _closeness_centrality = 0.0
+        if totsp > 0.0 and len_G > 1:
+            _closeness_centrality = (len(sp) - 1.0) / totsp
+            # normalize to number of nodes-1 in connected part
+            if wf_improved:
+                s = (len(sp) - 1.0) / (len_G - 1)
+                _closeness_centrality *= s
+        closeness_centrality[n] = _closeness_centrality
     if u is not None:
         return closeness_centrality[u]
     else:
@@ -232,8 +240,16 @@ def incremental_closeness_centrality(G,
             closeness_centrality[n] = prev_cc[n]
         else:
             sp = path_length(G, n)
-            closeness_centrality[n] = _node_closeness_centrality(
-                len(G), sp, wf_improved)
+            totsp = sum(sp.values())
+            len_G = len(G)
+            _closeness_centrality = 0.0
+            if totsp > 0.0 and len_G > 1:
+                _closeness_centrality = (len(sp) - 1.0) / totsp
+                # normalize to number of nodes-1 in connected part
+                if wf_improved:
+                    s = (len(sp) - 1.0) / (len_G - 1)
+                    _closeness_centrality *= s
+            closeness_centrality[n] = _closeness_centrality
 
     # Leave the graph as we found it
     if insertion:
@@ -242,33 +258,3 @@ def incremental_closeness_centrality(G,
         G.add_edge(u, v)
 
     return closeness_centrality
-
-
-def _node_closeness_centrality(len_G, sp, wf_improved):
-    r"""
-    Returns the closesness centrality of a node.
-
-    Parameters
-    ----------
-    len_G : integer
-      The size of a NetworkX graph G
-
-    sp : dictionary
-      A dictionary with keys corresponding to nodes in G and values to the
-      lengths of the shortest paths to the node in question from the node given
-      by the key of the dictionary.
-
-    wf_improved : bool
-      If True, scale by the fraction of nodes reachable. This gives the
-      Wasserman and Faust improved formula. For single component graphs
-      it is the same as the original formula.
-    """
-    _closeness_centrality = 0.0
-    totsp = sum(sp.values())
-    if totsp > 0.0 and len_G > 1:
-        _closeness_centrality = (len(sp) - 1.0) / totsp
-        # normalize to number of nodes-1 in connected part
-        if wf_improved:
-            s = (len(sp) - 1.0) / (len_G - 1)
-            _closeness_centrality *= s
-    return _closeness_centrality
