@@ -206,7 +206,7 @@ def incremental_closeness_centrality(G,
     .. [1] Freeman, L.C., 1979. Centrality in networks: I.
        Conceptual clarification.  Social Networks 1, 215--239.
        http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
-       [2]Sariyuce, A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V. Incremental
+    .. [2]Sariyuce, A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V. Incremental
        Algorithms for Closeness Centrality
        http://sariyuce.com/papers/bigdata13.pdf
     """
