@@ -3,8 +3,7 @@ Tests for closeness centrality.
 """
 from nose.tools import *
 import networkx as nx
-import timeit
-from random import sample
+# import timeit
 
 class TestClosenessCentrality:
     def setUp(self):
@@ -25,7 +24,7 @@ class TestClosenessCentrality:
         self.LM = nx.les_miserables_graph()
 
         # Create random undirected, unweighted graph for testing incremental version
-        self.undirected_G = nx.fast_gnp_random_graph(n=100, p=0.6)
+        self.undirected_G = nx.fast_gnp_random_graph(n=100, p=0.6, seed=123)
         self.undirected_G_cc = nx.closeness_centrality(self.undirected_G)
 
     def test_wf_improved(self):
@@ -206,18 +205,18 @@ class TestClosenessCentrality:
     #
     @staticmethod
     def pick_add_edge(g):
-        u = sample(g.nodes(), 1)[0]
+        u = nx.utils.arbitrary_element(g)
         possible_nodes = set(g.nodes())
         neighbors = list(g.neighbors(u)) + [u]
         possible_nodes.difference_update(neighbors)
-        v = sample(possible_nodes, 1)[0]
+        v = nx.utils.arbitrary_element(possible_nodes)
         return (u, v)
 
     @staticmethod
     def pick_remove_edge(g):
-        u = sample(g.nodes(), 1)[0]
+        u = nx.utils.arbitrary_element(g)
         possible_nodes = list(g.neighbors(u))
-        v = sample(possible_nodes, 1)[0]
+        v = nx.utils.arbitrary_element(possible_nodes)
         return (u, v)
 
     @raises(nx.NetworkXNotImplemented)
@@ -257,8 +256,8 @@ class TestClosenessCentrality:
         G.remove_edges_from([edge])
         real_cc = nx.closeness_centrality(G)
         shared_items = set(test_cc.items()) & set(real_cc.items())
-        assert (len(shared_items) == len(real_cc))
-        assert 0 in test_cc.values()
+        assert_equals(len(shared_items), len(real_cc))
+        assert_in(0, test_cc.values())
 
     def test_incremental(self):
         # Check that incremental and regular give same output
@@ -274,23 +273,33 @@ class TestClosenessCentrality:
                 insert = True
                 edge = self.pick_add_edge(G)
 
-            start = timeit.default_timer()
+            # start = timeit.default_timer()
             test_cc = nx.incremental_closeness_centrality(
                 G, edge, prev_cc, insert)
-            inc_elapsed = (timeit.default_timer() - start)
-            print("incremental time: {}".format(inc_elapsed))
+            # inc_elapsed = (timeit.default_timer() - start)
+            # print("incremental time: {}".format(inc_elapsed))
 
             if insert:
                 G.add_edges_from([edge])
             else:
                 G.remove_edges_from([edge])
 
-            start = timeit.default_timer()
+            # start = timeit.default_timer()
             real_cc = nx.closeness_centrality(G)
-            reg_elapsed = (timeit.default_timer() - start)
+            # reg_elapsed = (timeit.default_timer() - start)
+            # print("regular time: {}".format(reg_elapsed))
+            # Example output:
+            # incremental time: 0.208
+            # regular time: 0.276
+            # incremental time: 0.00683
+            # regular time: 0.260
+            # incremental time: 0.0224
+            # regular time: 0.278
+            # incremental time: 0.00804
+            # regular time: 0.208
+            # incremental time: 0.00947
+            # regular time: 0.188
 
-            print("regular time: {}".format(reg_elapsed))
-
-            assert set(test_cc.items()) == set(real_cc.items())
+            assert_equals(set(test_cc.items()), set(real_cc.items()))
 
             prev_cc = test_cc
