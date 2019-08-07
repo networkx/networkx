@@ -75,7 +75,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality,
-    degree_centrality
+    degree_centrality, incremental_closeness_centrality
 
     Notes
     -----
@@ -189,7 +189,7 @@ def incremental_closeness_centrality(G,
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality,
-    degree_centrality
+    degree_centrality, closeness_centrality
 
     Notes
     -----
