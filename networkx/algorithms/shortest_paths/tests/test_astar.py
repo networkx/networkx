@@ -1,9 +1,8 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_in
 from nose.tools import assert_raises
 from nose.tools import raises
 
 from math import sqrt
-from random import random, choice
 
 import networkx as nx
 from networkx.utils import pairwise
@@ -23,27 +22,24 @@ class TestAStar:
         self.XG = nx.DiGraph()
         self.XG.add_weighted_edges_from(edges)
 
-    def test_random_graph(self):
-        """Tests that the A* shortest path agrees with Dijkstra's
-        shortest path for a random graph.
+    def test_multiple_optimal_paths(self):
+        """Tests that A* algorithm finds any of the optimal paths when there are multiple optimal
+        paths. """
+        heuristic_values = {"a": 1.35, "b": 1.18, "c": 0.67, "d": 0}
 
-        """
+        def h(u, v):
+            return heuristic_values[u]
 
-        G = nx.Graph()
+        graph = nx.Graph()
+        points = ["a", "b", "c", "d"]
+        edges = [("a", "b", 0.18), ("a", "c", 0.68), ("b", "c", 0.50), ("c", "d", 0.67)]
 
-        points = [(random(), random()) for _ in range(100)]
+        graph.add_nodes_from(points)
+        graph.add_weighted_edges_from(edges)
 
-        # Build a path from points[0] to points[-1] to be sure it exists
-        for p1, p2 in pairwise(points):
-            G.add_edge(p1, p2, weight=dist(p1, p2))
-
-        # Add other random edges
-        for _ in range(100):
-            p1, p2 = choice(points), choice(points)
-            G.add_edge(p1, p2, weight=dist(p1, p2))
-
-        path = nx.astar_path(G, points[0], points[-1], dist)
-        assert_equal(path, nx.dijkstra_path(G, points[0], points[-1]))
+        path1 = ["a", "c", "d"]
+        path2 = ["a", "b", "c", "d"]
+        assert_in(nx.astar_path(graph, "a", "d", h), (path1, path2))
 
     def test_astar_directed(self):
         assert_equal(nx.astar_path(self.XG, 's', 'v'), ['s', 'x', 'u', 'v'])
