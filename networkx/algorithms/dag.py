@@ -28,15 +28,14 @@ from itertools import starmap
 import heapq
 
 import networkx as nx
+from networkx.algorithms.traversal.breadth_first_search import descendants_at_distance
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 from networkx.utils import consume
 from networkx.utils import pairwise
-from networkx.utils import generate_unique_node
 from networkx.utils import not_implemented_for
 
 __all__ = ['descendants',
-           'descendants_at_distance',
            'ancestors',
            'topological_sort',
            'lexicographical_topological_sort',
@@ -72,55 +71,6 @@ def descendants(G, source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
     des = set(n for n, d in nx.shortest_path_length(G, source=source).items())
     return des - {source}
-
-
-def descendants_at_distance(G, source, distance):
-    """Returns all nodes at a fixed `distance` from `source` in `G`.
-
-    Parameters
-    ----------
-    G : NetworkX DiGraph
-        A directed graph
-    source : node in `G`
-    distance : the distance of the wanted nodes from `source`
-
-    Returns
-    -------
-    set()
-        The descendants of `source` in `G` at the given `distance` from `source`
-
-    Notes
-    -----
-    This implementation only deals with directed graphs, but nothing prevents a
-    straightforward adaptation to undirected graphs.
-
-    TODO given its purpose and likeness to BFS exploration, this function
-         should probably move to algorithms/traversal/breadth_first_search.py
-    """
-    if not G.has_node(source):
-        raise nx.NetworkXError("The node %s is not in the graph." % source)
-    current_distance = 0
-    queue = deque([source])
-    visited = {source}
-
-    # this is basically BFS, except that the queue only stores the nodes at
-    # current_distance from source at each iteration
-    while queue:
-        if current_distance == distance:
-            return set(queue)
-
-        current_distance += 1
-
-        next_vertices = deque()
-        for vertex in queue:
-            for child in G.successors(vertex):
-                if child not in visited:
-                    visited.add(child)
-                    next_vertices.appendleft(child)
-
-        queue = next_vertices
-
-    return set()
 
 
 def ancestors(G, source):
@@ -565,8 +515,9 @@ def transitive_closure(G):
 
 @not_implemented_for('undirected')
 def transitive_closure_dag(G, topo_order=None):
-    """ Returns the transitive closure of a directed acyclic graph. This
-    function is faster than the function `transitive_closure`, but will fail
+    """ Returns the transitive closure of a directed acyclic graph.
+
+    This function is faster than the function `transitive_closure`, but fails
     if the graph has a cycle.
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
@@ -605,7 +556,7 @@ def transitive_closure_dag(G, topo_order=None):
 
     # idea: traverse vertices following a reverse topological order, connecting
     # each vertex to its descendants at distance 2 as we go
-    for v in topo_order[-1::-1]:
+    for v in reversed(topo_order):
         TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
 
     return TC
