@@ -23,8 +23,7 @@ class TestAStar:
         self.XG.add_weighted_edges_from(edges)
 
     def test_multiple_optimal_paths(self):
-        """Tests that A* algorithm finds any of the optimal paths when there are multiple optimal
-        paths. """
+        """Tests that A* algorithm finds any of multiple optimal paths"""
         heuristic_values = {"a": 1.35, "b": 1.18, "c": 0.67, "d": 0}
 
         def h(u, v):
@@ -32,7 +31,8 @@ class TestAStar:
 
         graph = nx.Graph()
         points = ["a", "b", "c", "d"]
-        edges = [("a", "b", 0.18), ("a", "c", 0.68), ("b", "c", 0.50), ("c", "d", 0.67)]
+        edges = [("a", "b", 0.18), ("a", "c", 0.68),
+                 ("b", "c", 0.50), ("c", "d", 0.67)]
 
         graph.add_nodes_from(points)
         graph.add_weighted_edges_from(edges)
@@ -83,7 +83,7 @@ class TestAStar:
         assert_equal(nx.astar_path(XG4, 0, 2), [0, 1, 2])
         assert_equal(nx.astar_path_length(XG4, 0, 2), 4)
 
-    """ Tests that A* finds correct path when there are multiple paths through a node
+    """ Tests that A* finds correct path when multiple paths exist
         and the best one is not expanded first (GH issue #3464)
     """
     def test_astar_directed3(self):
@@ -92,16 +92,19 @@ class TestAStar:
         def h(u, v):
             return heuristic_values[u]
 
-        edges = [("n5", "n1", 11), ("n5", "n2", 9), ("n2", "n1", 1), ("n1", "n0", 32)]
+        edges = [("n5", "n1", 11), ("n5", "n2", 9),
+                 ("n2", "n1", 1), ("n1", "n0", 32)]
         graph = nx.DiGraph()
         graph.add_weighted_edges_from(edges)
-        assert_equal(nx.astar_path(graph, "n5", "n0", h), ["n5", "n2", "n1", "n0"])
+        answer = ["n5", "n2", "n1", "n0"]
+        assert_equal(nx.astar_path(graph, "n5", "n0", h), answer)
 
-    """ Tests that that parent is not wrongly overridden when a node is re-explored multiple
-        times.
+    """ Tests that that parent is not wrongly overridden when a
+        node is re-explored multiple times.
     """
     def test_astar_directed4(self):
-        edges = [("a", "b", 1), ("a", "c", 1), ("b", "d", 2), ("c", "d", 1), ("d", "e", 1)]
+        edges = [("a", "b", 1), ("a", "c", 1), ("b", "d", 2),
+                 ("c", "d", 1), ("d", "e", 1)]
         graph = nx.DiGraph()
         graph.add_weighted_edges_from(edges)
         assert_equal(nx.astar_path(graph, "a", "e"), ["a", "c", "d", "e"])
