@@ -129,6 +129,7 @@ is partially historical, and now, mostly arbitrary.
 - Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_ 
 - Efraim Rodrigues, `GitHub <https://github.com/efraimrodrigues>`_, `LinkedIn <https://linkedin.com/in/efraim-rodrigues/>`_
 - Erwan Le Merrer
+- Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
 
 Support
 -------
