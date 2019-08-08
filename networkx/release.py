@@ -29,7 +29,7 @@ tar.gz file. This is why write_versionfile() includes an early escape.
 
 """
 
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -177,7 +177,7 @@ def get_info(dynamic=True):
 # Version information
 name = 'networkx'
 major = "2"
-minor = "3rc1"
+minor = "4rc1"
 
 
 # Declare current release as a development release.
@@ -200,7 +200,11 @@ authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
 url = 'http://networkx.github.io/'
-download_url = 'https://pypi.python.org/pypi/networkx/'
+project_urls={
+    "Bug Tracker": "https://github.com/networkx/networkx/issues",
+    "Documentation": "https://networkx.github.io/documentation/stable/",
+    "Source Code": "https://github.com/networkx/networkx",
+}
 platforms = ['Linux', 'Mac OSX', 'Windows', 'Unix']
 keywords = ['Networks', 'Graph Theory', 'Mathematics',
             'network', 'graph', 'discrete mathematics', 'math']
@@ -211,9 +215,10 @@ classifiers = [
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3 :: Only',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
     'Topic :: Scientific/Engineering :: Information Analysis',

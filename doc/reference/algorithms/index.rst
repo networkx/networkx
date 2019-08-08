@@ -48,9 +48,12 @@ Algorithms
    matching
    minors
    mis
+   non_randomness
+   moral
    node_classification
    operators
    planarity
+   planar_drawing
    reciprocity
    rich_club
    shortest_paths

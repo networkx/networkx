@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2015-2018 Aitor Almeida
+#    Copyright (C) 2015-2019 Aitor Almeida
 #    All rights reserved.
 #    BSD license.
 #

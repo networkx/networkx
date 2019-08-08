@@ -1,6 +1,6 @@
 # test_chains.py - unit tests for the chains module
 #
-# Copyright 2004-2018 NetworkX developers.
+# Copyright 2004-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

@@ -1,6 +1,6 @@
 # depth_first_search.py - depth-first traversals of a graph
 #
-# Copyright 2004-2018 NetworkX developers.
+# Copyright 2004-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -142,8 +142,7 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -185,8 +184,7 @@ def dfs_successors(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -231,8 +229,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -281,7 +278,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
+       Specify starting node for depth-first search and return nodes in
        the component reachable from source.
 
     depth_limit : int, optional (default=len(G))

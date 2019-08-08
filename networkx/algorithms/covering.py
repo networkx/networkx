@@ -1,4 +1,4 @@
-#    Copyright 2016-2018 NetworkX developers.
+#    Copyright 2016-2019 NetworkX developers.
 #    Copyright (C) 2016 by
 #    Nishant Nikhil <nishantiam@gmail.com>
 #    All rights reserved.

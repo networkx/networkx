@@ -1,6 +1,6 @@
 # beamsearch.py - breadth-first search with limited queueing
 #
-# Copyright 2016-2018 NetworkX developers.
+# Copyright 2016-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

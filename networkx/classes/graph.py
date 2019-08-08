@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -1083,7 +1083,7 @@ class Graph(object):
         """Update the graph using nodes/edges/graphs as input.
 
         Like dict.update, this method takes a graph as input, adding the
-        graph's noes and edges to this graph. It can also take two inputs:
+        graph's nodes and edges to this graph. It can also take two inputs:
         edges and nodes. Finally it can take either edges or nodes.
         To specify only nodes the keyword `nodes` must be used.
 

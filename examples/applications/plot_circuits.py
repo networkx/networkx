@@ -7,7 +7,12 @@
 #
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
-"""Convert a Boolean circuit to an equivalent Boolean formula.
+"""
+========
+Circuits
+========
+
+Convert a Boolean circuit to an equivalent Boolean formula.
 
 A Boolean circuit can be exponentially more expressive than an
 equivalent formula in the worst case, since the circuit can reuse

@@ -4,6 +4,7 @@ A package for generating various graphs in networkx.
 """
 from networkx.generators.atlas import *
 from networkx.generators.classic import *
+from networkx.generators.cographs import *
 from networkx.generators.community import *
 from networkx.generators.degree_seq import *
 from networkx.generators.directed import *

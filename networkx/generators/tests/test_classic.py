@@ -138,6 +138,12 @@ class TestGeneratorClassic():
         mb = barbell_graph(m1, m2, create_using=MultiGraph())
         assert_edges_equal(mb.edges(), b.edges())
 
+    def test_binomial_tree(self):
+        for n in range(0,4):
+            b = binomial_tree(n)
+            assert_true(number_of_nodes(b) == 2**n)
+            assert_true(number_of_edges(b) == (2**n - 1))
+
     def test_complete_graph(self):
         # complete_graph(m) is a connected graph with
         # m nodes and  m*(m+1)/2 edges

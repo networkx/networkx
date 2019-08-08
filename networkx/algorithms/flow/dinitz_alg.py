@@ -1,6 +1,6 @@
 # dinitz.py - Dinitz' algorithm for maximum flow problems.
 #
-# Copyright 2016-2018 NetworkX developers.
+# Copyright 2016-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #

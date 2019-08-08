@@ -27,7 +27,7 @@ Arbitrary data::
  1 2 7 green
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -170,8 +170,8 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
 
     See Also
     --------
-    write_edgelist()
-    write_weighted_edgelist()
+    read_edgelist
+    write_weighted_edgelist
     """
 
     for line in generate_edgelist(G, delimiter, data):
@@ -243,7 +243,6 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     See Also
     --------
     read_weighted_edgelist
-
     """
     from ast import literal_eval
     G = nx.empty_graph(0, create_using)
@@ -357,6 +356,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     See Also
     --------
     parse_edgelist
+    write_edgelist
 
     Notes
     -----
@@ -396,10 +396,9 @@ def write_weighted_edgelist(G, path, comments="#",
 
     See Also
     --------
-    read_edgelist()
-    write_edgelist()
-    write_weighted_edgelist()
-
+    read_edgelist
+    write_edgelist
+    read_weighted_edgelist
     """
     write_edgelist(G, path, comments=comments, delimiter=delimiter,
                    data=('weight',), encoding=encoding)
@@ -446,6 +445,10 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
      a b 1
      a c 3.14159
      d e 42
+    
+    See Also
+    --------
+    write_weighted_edgelist
     """
     return read_edgelist(path,
                          comments=comments,

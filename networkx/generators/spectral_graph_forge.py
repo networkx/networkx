@@ -1,4 +1,4 @@
-#    Copyright (C) 2017-2018 by
+#    Copyright (C) 2017-2019 by
 #    Luca Baldesi
 #    BSD license.
 #
