@@ -971,6 +971,8 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     This algorithm currently only works in two dimensions.
 
     """
+    import numpy as np
+
     if dim != 2:
         raise ValueError('can only handle 2 dimensions')
 
