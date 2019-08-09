@@ -38,7 +38,8 @@ __all__ = ['bipartite_layout',
            'spring_layout',
            'spectral_layout',
            'planar_layout',
-           'fruchterman_reingold_layout']
+           'fruchterman_reingold_layout',
+           'spiral_layout']
 
 
 def _process_params(G, center, dim):
