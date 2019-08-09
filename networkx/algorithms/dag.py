@@ -28,7 +28,8 @@ from itertools import starmap
 import heapq
 
 import networkx as nx
-from networkx.algorithms.traversal.breadth_first_search import descendants_at_distance
+from networkx.algorithms.traversal.breadth_first_search import \
+    descendants_at_distance
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 from networkx.utils import consume
