@@ -28,11 +28,12 @@ from itertools import starmap
 import heapq
 
 import networkx as nx
+from networkx.algorithms.traversal.breadth_first_search import \
+    descendants_at_distance
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 from networkx.utils import consume
 from networkx.utils import pairwise
-from networkx.utils import generate_unique_node
 from networkx.utils import not_implemented_for
 
 __all__ = ['descendants',
@@ -43,6 +44,7 @@ __all__ = ['descendants',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
+           'transitive_closure_dag',
            'transitive_reduction',
            'antichains',
            'dag_longest_path',
@@ -505,11 +507,62 @@ def transitive_closure(G):
     ----------
     .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
 
+    TODO this function applies to all directed graphs and is probably misplaced
+         here in dag.py
     """
     TC = G.copy()
     for v in G:
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
+    return TC
+
+
+@not_implemented_for('undirected')
+def transitive_closure_dag(G, topo_order=None):
+    """ Returns the transitive closure of a directed acyclic graph.
+
+    This function is faster than the function `transitive_closure`, but fails
+    if the graph has a cycle.
+
+    The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
+    for all v,w in V there is an edge (v,w) in E+ if and only if there
+    is a non-null path from v to w in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed acyclic graph (DAG)
+
+    topo_order: list or tuple, optional
+        A topological order for G (if None, the function will compute one)
+
+    Returns
+    -------
+    NetworkX DiGraph
+        The transitive closure of `G`
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is not directed
+    NetworkXUnfeasible
+        If `G` has a cycle
+
+    Notes
+    -----
+    This algorithm is probably simple enough to be well-known but I didn't find
+    a mention in the literature.
+    """
+    if topo_order is None:
+        topo_order = list(topological_sort(G))
+
+    TC = G.copy()
+
+    # idea: traverse vertices following a reverse topological order, connecting
+    # each vertex to its descendants at distance 2 as we go
+    for v in reversed(topo_order):
+        TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
+
     return TC
 
 
@@ -605,10 +658,11 @@ def antichains(G, topo_order=None):
        AMS, Vol 42, 1995, p. 226.
     """
     if topo_order is None:
-        topo_order = nx.topological_sort(G)
+        topo_order = list(nx.topological_sort(G))
 
-    TC = nx.transitive_closure(G)
-    antichains_stacks = [([], list(topo_order)[-1::-1])]
+    TC = nx.transitive_closure_dag(G, topo_order)
+    antichains_stacks = [([], list(reversed(topo_order)))]
+
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
         # Invariant:

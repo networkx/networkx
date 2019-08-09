@@ -17,7 +17,10 @@
 import networkx as nx
 from collections import deque
 
-__all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
+__all__ = [
+    'bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors',
+    'descendants_at_distance'
+]
 
 
 def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
@@ -299,3 +302,44 @@ def bfs_successors(G, source, depth_limit=None):
         children = [c]
         parent = p
     yield (parent, children)
+
+
+def descendants_at_distance(G, source, distance):
+    """Returns all nodes at a fixed `distance` from `source` in `G`.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed graph
+    source : node in `G`
+    distance : the distance of the wanted nodes from `source`
+
+    Returns
+    -------
+    set()
+        The descendants of `source` in `G` at the given `distance` from `source`
+    """
+    if not G.has_node(source):
+        raise nx.NetworkXError("The node %s is not in the graph." % source)
+    current_distance = 0
+    queue = {source}
+    visited = {source}
+
+    # this is basically BFS, except that the queue only stores the nodes at
+    # current_distance from source at each iteration
+    while queue:
+        if current_distance == distance:
+            return queue
+
+        current_distance += 1
+
+        next_vertices = set()
+        for vertex in queue:
+            for child in G[vertex]:
+                if child not in visited:
+                    visited.add(child)
+                    next_vertices.add(child)
+
+        queue = next_vertices
+
+    return set()
