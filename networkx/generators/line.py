@@ -300,7 +300,9 @@ def inverse_line_graph(G):
         H.add_node(a)
         return H
     elif G.number_of_nodes() == 1:
-        a, b = generate_unique_node(), generate_unique_node()
+        v = list(G)[0]
+        a = (v, 0)
+        b = (v, 1)
         H = nx.Graph([(a,b)])
         return H
     elif G.number_of_nodes() > 1 and G.number_of_edges() == 0:
