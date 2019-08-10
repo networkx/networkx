@@ -144,8 +144,31 @@ def incremental_closeness_centrality(G,
     r"""Incremental closeness centrality for nodes.
 
     Compute closeness centrality for nodes using level-based work filtering
-    as described in Incremental Algorithms for Closeness Centrality by Sariyuce,
-    A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V.
+    as described in Incremental Algorithms for Closeness Centrality by Sariyuce et al.
+
+    Level-based work filtering detects unnecessary updates to the closeness
+    centrality and filters them out.
+
+    ---
+    From "Incremental Algorithms for Closeness Centrality":
+
+    Theorem 1: Let G = (V, E) be a graph and u and v be two vertices in V
+    such that there is no edge (u, v) in E. Let G' = (V, E ∪ uv). Then
+    cc[s] = cc'[s] if and only if |dG(s, u) − dG(s, v)| ≤ 1.
+
+    Where dG(u, v) denotes the length of the shortest path between
+    two vertices u, v in a graph G, cc[s] is the closeness centrality for a
+    vertex s in V, and cc'[s] is the closeness centrality for a
+    vertex s in V, with the (u, v) edge added.
+    ---
+
+    We use Theorem 1 to filter out updates when adding or removing an edge.
+    When adding an edge (u, v), we compute the shortest path lengths from all
+    other nodes to u and to v before the node is added. When removing an edge,
+    we compute the shortest path lengths after the edge is removed. Then we
+    apply Theorem 1 to use previously computed closeness centrality for nodes
+    where |dG(s, u) − dG(s, v)| ≤ 1. This works only for undirected, unweighted
+    graphs; the distance argument is not supported.
 
     Closeness centrality [1]_ of a node `u` is the reciprocal of the
     sum of the shortest path distances from `u` to all `n-1` other nodes.
@@ -199,15 +222,13 @@ def incremental_closeness_centrality(G,
     this algorithm computes the closeness centrality for each
     connected part separately.
 
-    This algorithm is applicable to undirected graphs without edge weights.
-
     References
     ----------
     .. [1] Freeman, L.C., 1979. Centrality in networks: I.
        Conceptual clarification.  Social Networks 1, 215--239.
        http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
-    .. [2]Sariyuce, A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V. Incremental
-       Algorithms for Closeness Centrality
+    .. [2] Sariyuce, A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V. Incremental
+       Algorithms for Closeness Centrality. 2013 IEEE International Conference on Big Data
        http://sariyuce.com/papers/bigdata13.pdf
     """
     if prev_cc is not None and set(prev_cc.keys()) != set(G.nodes()):
