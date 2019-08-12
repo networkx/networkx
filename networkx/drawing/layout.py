@@ -3,6 +3,8 @@
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Richard Penney <rwpenney@users.sourceforge.net>
+#    Michael Fedell <mfedell@jpl.nasa.gov>
+#    Valentino Constantinou <vconstan@jpl.nasa.gov>
 #    All rights reserved.
 #    BSD license.
 #
@@ -966,6 +968,7 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     --------
     >>> G = nx.path_graph(4)
     >>> pos = nx.spiral_layout(G)
+
     Notes
     -----
     This algorithm currently only works in two dimensions.
