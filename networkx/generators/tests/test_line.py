@@ -143,7 +143,14 @@ class TestGeneratorInverseLine():
 
     def test_empty(self):
         G = nx.Graph()
-        assert_raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        H = nx.inverse_line_graph(G)
+        assert_true(nx.is_isomorphic(H, nx.complete_graph(1)))
+
+    def test_K1(self):
+        G = nx.complete_graph(1)
+        H = nx.inverse_line_graph(G)
+        solution = nx.path_graph(2)
+        assert_true(nx.is_isomorphic(H, solution))
 
     def test_claw(self):
         # This is the simplest non-line graph
@@ -154,17 +161,27 @@ class TestGeneratorInverseLine():
 
     def test_non_line_graph(self):
         # These are other non-line graphs
+
+        # wheel graph with 6 nodes
         G = nx.Graph()
         G_edges = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2],
                    [2, 3], [3, 4], [4, 5], [5, 1]]
         G.add_edges_from(G_edges)
         assert_raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
+        #   3---4---5
+        #  / \ / \ /
+        # 0---1---2
         G = nx.Graph()
         G_edges = [[0, 1], [1, 2], [3, 4], [4, 5], [0, 3], [1, 3],
                    [1, 4], [2, 4], [2, 5]]
         G.add_edges_from(G_edges)
         assert_raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
+        # K_5 minus an edge
+        K5me = nx.complete_graph(5)
+        K5me.remove_edge(0,1)
+        assert_raises(nx.NetworkXError, nx.inverse_line_graph, K5me)
 
     def test_wrong_graph_type(self):
         G = nx.DiGraph()

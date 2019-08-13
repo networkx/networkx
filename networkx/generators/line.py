@@ -15,7 +15,7 @@ from itertools import combinations
 from collections import defaultdict
 
 import networkx as nx
-from networkx.utils import arbitrary_element
+from networkx.utils import arbitrary_element, generate_unique_node
 from networkx.utils.decorators import *
 
 __all__ = ['line_graph', 'inverse_line_graph']
@@ -294,8 +294,22 @@ def inverse_line_graph(G):
       its line graph G", Information Processing Letters 2, (1973), 108--112.
 
     """
-    if G.number_of_edges() == 0 or G.number_of_nodes() == 0:
-        msg = "G is not a line graph (has zero vertices or edges)"
+    if G.number_of_nodes() == 0:
+        a = generate_unique_node()
+        H = nx.Graph()
+        H.add_node(a)
+        return H
+    elif G.number_of_nodes() == 1:
+        v = list(G)[0]
+        a = (v, 0)
+        b = (v, 1)
+        H = nx.Graph([(a,b)])
+        return H
+    elif G.number_of_nodes() > 1 and G.number_of_edges() == 0:
+        msg = (
+            "inverse_line_graph() doesn't work on an edgeless graph. "
+            "Please use this function on each component seperately."
+        )
         raise nx.NetworkXError(msg)
 
     starting_cell = _select_starting_cell(G)
