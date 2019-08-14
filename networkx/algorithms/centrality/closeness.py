@@ -154,7 +154,7 @@ def incremental_closeness_centrality(G,
 
     Theorem 1: Let :math:`G = (V, E)` be a graph and u and v be two vertices in V
     such that there is no edge (u, v) in E. Let :math:`G' = (V, E \cup uv)`
-    Then :math:`cc[s] = cc'[s]` if and only if :math:`\left|dG(s, u) − dG(s, v)\right| \leq 1`.
+    Then :math:`cc[s] = cc'[s]` if and only if :math:`\left|dG(s, u) - dG(s, v)\right| \leq 1`.
 
     Where :math:`dG(u, v)` denotes the length of the shortest path between
     two vertices u, v in a graph G, cc[s] is the closeness centrality for a
@@ -167,7 +167,7 @@ def incremental_closeness_centrality(G,
     other nodes to u and to v before the node is added. When removing an edge,
     we compute the shortest path lengths after the edge is removed. Then we
     apply Theorem 1 to use previously computed closeness centrality for nodes
-    where :math:`\left|dG(s, u) − dG(s, v)\right| \leq 1`. This works only for
+    where :math:`\left|dG(s, u) - dG(s, v)\right| \leq 1`. This works only for
     undirected, unweighted graphs; the distance argument is not supported.
 
     Closeness centrality [1]_ of a node `u` is the reciprocal of the
