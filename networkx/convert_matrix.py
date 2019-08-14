@@ -1011,6 +1011,8 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
 
     Notes
     -----
+    For directed graphs, entry i,j corresponds to an edge from i to j.
+
     Entries in the adjacency matrix are assigned to the weight edge attribute.
     When an edge does not have a weight attribute, the value of the entry is
     set to the number 1.  For multiple (parallel) edges, the values of the
