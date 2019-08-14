@@ -467,3 +467,30 @@ graph
         assert_equals(sorted(G.nodes), [1, 2, 3])
         labels = [G.nodes[n]['label'] for n in sorted(G.nodes)]
         assert_equals(labels, ['Node 1', 'Node 2', 'Node 3'])
+
+    def test_outofrange_integers(self):
+        # GML restricts integers to 32 signed bits. Check that we honor this restriction on export
+        G = nx.Graph()
+        # Test export for numbers that barely fit or don't fit into 32 bits, and 3 numbers in the middle
+        numbers = { 'toosmall': (-2**31)-1,
+                    'small': -2**31,
+                    'med1': -4,
+                    'med2': 0,
+                    'med3': 17,
+                    'big': (2**31)-1,
+                    'toobig': 2**31 }
+        G.add_node('Node', **numbers)
+
+        fd, fname = tempfile.mkstemp()
+        try:
+            nx.write_gml(G, fname)
+            # Check that the export wrote the numbers that didn't fit as strings
+            G2 = nx.read_gml(fname)
+            for attr, value in G2.nodes['Node'].items():
+                if attr == 'toosmall' or attr == 'toobig':
+                    assert_equals(type(value), str)
+                else:
+                    assert_equals(type(value), int)
+        finally:
+            os.close(fd)
+            os.unlink(fname)
