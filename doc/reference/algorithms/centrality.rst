@@ -29,6 +29,7 @@ Closeness
    :toctree: generated/
 
    closeness_centrality
+   incremental_closeness_centrality
 
 Current Flow Closeness
 ----------------------
@@ -129,4 +130,4 @@ VoteRank
 .. autosummary::
    :toctree: generated/
 
-   voterank 
+   voterank
