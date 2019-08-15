@@ -51,6 +51,7 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     --------
     to_numpy_matrix
     normalized_laplacian_matrix
+    laplacian_spectrum
     """
     import scipy.sparse
     if nodelist is None:
@@ -105,6 +106,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     See Also
     --------
     laplacian_matrix
+    normalized_laplacian_spectrum
 
     References
     ----------

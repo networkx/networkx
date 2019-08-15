@@ -110,13 +110,18 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             return path
 
         if curnode in explored:
-            continue
+            # Do not override the parent of starting node
+            if explored[curnode] is None:
+                continue
+
+            # Skip bad paths that were enqueued before finding a better one
+            qcost, h = enqueued[curnode]
+            if qcost < dist:
+                continue
 
         explored[curnode] = parent
 
         for neighbor, w in G[curnode].items():
-            if neighbor in explored:
-                continue
             ncost = dist + w.get(weight, 1)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
@@ -131,7 +136,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
-    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (source, target))
+    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (target, source))
 
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):

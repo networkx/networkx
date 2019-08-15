@@ -921,6 +921,21 @@ class TestWriteGraphML(BaseGraphML):
         assert_edges_equal(G.edges(), H.edges())
         assert_equal(G.graph, H.graph)
 
+    def test_mixed_type_attributes(self):
+        G = nx.MultiGraph()
+        G.add_node('n0', special=False)
+        G.add_node('n1', special=0)
+        G.add_edge('n0', 'n1', special=False)
+        G.add_edge('n0', 'n1', special=0)
+        fh = io.BytesIO()
+        self.writer(G, fh)
+        fh.seek(0)
+        H = nx.read_graphml(fh)
+        assert_true(H.nodes['n0']['special'] is False)
+        assert_true(H.nodes['n1']['special'] is 0)
+        assert_true(H.edges['n0','n1',0]['special'] is False)
+        assert_true(H.edges['n0','n1',1]['special'] is 0)
+
     def test_multigraph_to_graph(self):
         # test converting multigraph to graph if no parallel edges found
         G = nx.MultiGraph()

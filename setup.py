@@ -20,9 +20,14 @@ if sys.argv[-1] == 'setup.py':
     print()
 
 if sys.version_info[:2] < (3, 5):
-    print("NetworkX requires Python 3.5 or later (%d.%d detected)." %
-          sys.version_info[:2])
-    sys.exit(-1)
+    error = """NetworkX 2.3+ requires Python 3.5 or later (%d.%d detected).
+             
+For Python 2.7, please install version 2.2 using:
+
+$ pip install 'networkx==2.2'
+""" % sys.version_info[:2]
+    sys.stderr.write(error + "\n")
+    sys.exit(1)
 
 # Write the version information.
 sys.path.insert(0, 'networkx')
@@ -147,13 +152,14 @@ if __name__ == "__main__":
         license=release.license,
         platforms=release.platforms,
         url=release.url,
-        download_url=release.download_url,
+        project_urls=release.project_urls,
         classifiers=release.classifiers,
         packages=packages,
         data_files=data,
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
+        python_requires='>=3.5',
         test_suite='nose.collector',
         tests_require=['nose>=1.3.7'],
         zip_safe=False

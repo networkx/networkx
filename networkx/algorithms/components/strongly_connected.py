@@ -80,10 +80,9 @@ def strongly_connected_components(G):
        Information Processing Letters 49(1): 9-14, (1994)..
 
     """
-    nbrs = {}
     preorder = {}
     lowlink = {}
-    scc_found = {}
+    scc_found = set()
     scc_queue = []
     i = 0     # Preorder counter
     for source in G:
@@ -94,16 +93,13 @@ def strongly_connected_components(G):
                 if v not in preorder:
                     i = i + 1
                     preorder[v] = i
-                done = 1
-                if v not in nbrs:
-                    nbrs[v] = iter(G[v])
-                v_nbrs = nbrs[v]
-                for w in v_nbrs:
+                done = True
+                for w in G[v]:
                     if w not in preorder:
                         queue.append(w)
-                        done = 0
+                        done = False
                         break
-                if done == 1:
+                if done:
                     lowlink[v] = preorder[v]
                     for w in G[v]:
                         if w not in scc_found:
@@ -113,12 +109,11 @@ def strongly_connected_components(G):
                                 lowlink[v] = min([lowlink[v], preorder[w]])
                     queue.pop()
                     if lowlink[v] == preorder[v]:
-                        scc_found[v] = True
                         scc = {v}
                         while scc_queue and preorder[scc_queue[-1]] > preorder[v]:
                             k = scc_queue.pop()
-                            scc_found[k] = True
                             scc.add(k)
+                        scc_found.update(scc)
                         yield scc
                     else:
                         scc_queue.append(v)

@@ -26,7 +26,5 @@ G = expected_degree_graph(w)  # configuration model
 print("Degree histogram")
 print("degree (#nodes) ****")
 dh = nx.degree_histogram(G)
-low = min(nx.degree(G))
-for i in range(low, len(dh)):
-    bar = ''.join(dh[i] * ['*'])
-    print("%2s (%2s) %s" % (i, dh[i], bar))
+for i, d in enumerate(dh):
+    print("%2s (%2s) %s" % (i, d, '*'*d))

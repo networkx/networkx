@@ -14,16 +14,6 @@ Bipartitions
 
    kernighan_lin_bisection
 
-
-Generators
-----------
-.. automodule:: networkx.algorithms.community.community_generators
-.. autosummary::
-   :toctree: generated/
-
-   LFR_benchmark_graph
-
-
 K-Clique
 --------
 .. automodule:: networkx.algorithms.community.kclique

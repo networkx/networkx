@@ -1,9 +1,9 @@
 """
-Tests for degree centrality.
+Tests for closeness centrality.
 """
 from nose.tools import *
 import networkx as nx
-
+# import timeit
 
 class TestClosenessCentrality:
     def setUp(self):
@@ -22,6 +22,10 @@ class TestClosenessCentrality:
         self.F = F
 
         self.LM = nx.les_miserables_graph()
+
+        # Create random undirected, unweighted graph for testing incremental version
+        self.undirected_G = nx.fast_gnp_random_graph(n=100, p=0.6, seed=123)
+        self.undirected_G_cc = nx.closeness_centrality(self.undirected_G)
 
     def test_wf_improved(self):
         G = nx.union(self.P4, nx.path_graph([4, 5, 6]))
@@ -194,3 +198,108 @@ class TestClosenessCentrality:
              'v': 0.200}
         for n in sorted(XG):
             assert_almost_equal(c[n], d[n], places=3)
+
+
+    #
+    # Tests for incremental closeness centrality.
+    #
+    @staticmethod
+    def pick_add_edge(g):
+        u = nx.utils.arbitrary_element(g)
+        possible_nodes = set(g.nodes())
+        neighbors = list(g.neighbors(u)) + [u]
+        possible_nodes.difference_update(neighbors)
+        v = nx.utils.arbitrary_element(possible_nodes)
+        return (u, v)
+
+    @staticmethod
+    def pick_remove_edge(g):
+        u = nx.utils.arbitrary_element(g)
+        possible_nodes = list(g.neighbors(u))
+        v = nx.utils.arbitrary_element(possible_nodes)
+        return (u, v)
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_directed_raises(self):
+        dir_G = nx.gn_graph(n=5)
+        prev_cc = None
+        edge = self.pick_add_edge(dir_G)
+        insert = True
+        nx.incremental_closeness_centrality(dir_G, edge, prev_cc, insert)
+
+    @raises(nx.NetworkXError)
+    def test_wrong_size_prev_cc_raises(self):
+        G = self.undirected_G.copy()
+        edge = self.pick_add_edge(G)
+        insert = True
+        prev_cc = self.undirected_G_cc.copy()
+        prev_cc.pop(0)
+        nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
+
+    @raises(nx.NetworkXError)
+    def test_wrong_nodes_prev_cc_raises(self):
+        G = self.undirected_G.copy()
+        edge = self.pick_add_edge(G)
+        insert = True
+        prev_cc = self.undirected_G_cc.copy()
+        num_nodes = len(prev_cc)
+        prev_cc.pop(0)
+        prev_cc[num_nodes] = 0.5
+        nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
+
+    def test_zero_centrality(self):
+        G = nx.path_graph(3)
+        prev_cc = nx.closeness_centrality(G)
+        edge = self.pick_remove_edge(G)
+        test_cc = nx.incremental_closeness_centrality(
+            G, edge, prev_cc, insertion=False)
+        G.remove_edges_from([edge])
+        real_cc = nx.closeness_centrality(G)
+        shared_items = set(test_cc.items()) & set(real_cc.items())
+        assert_equals(len(shared_items), len(real_cc))
+        assert_in(0, test_cc.values())
+
+    def test_incremental(self):
+        # Check that incremental and regular give same output
+        G = self.undirected_G.copy()
+        prev_cc = None
+        for i in range(5):
+            if i % 2 == 0:
+                # Remove an edge
+                insert = False
+                edge = self.pick_remove_edge(G)
+            else:
+                # Add an edge
+                insert = True
+                edge = self.pick_add_edge(G)
+
+            # start = timeit.default_timer()
+            test_cc = nx.incremental_closeness_centrality(
+                G, edge, prev_cc, insert)
+            # inc_elapsed = (timeit.default_timer() - start)
+            # print("incremental time: {}".format(inc_elapsed))
+
+            if insert:
+                G.add_edges_from([edge])
+            else:
+                G.remove_edges_from([edge])
+
+            # start = timeit.default_timer()
+            real_cc = nx.closeness_centrality(G)
+            # reg_elapsed = (timeit.default_timer() - start)
+            # print("regular time: {}".format(reg_elapsed))
+            # Example output:
+            # incremental time: 0.208
+            # regular time: 0.276
+            # incremental time: 0.00683
+            # regular time: 0.260
+            # incremental time: 0.0224
+            # regular time: 0.278
+            # incremental time: 0.00804
+            # regular time: 0.208
+            # incremental time: 0.00947
+            # regular time: 0.188
+
+            assert_equals(set(test_cc.items()), set(real_cc.items()))
+
+            prev_cc = test_cc
