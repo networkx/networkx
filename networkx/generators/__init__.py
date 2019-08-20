@@ -8,6 +8,7 @@ from networkx.generators.cographs import *
 from networkx.generators.community import *
 from networkx.generators.degree_seq import *
 from networkx.generators.directed import *
+from networkx.generators.directed_joint_degree_seq import *
 from networkx.generators.duplication import *
 from networkx.generators.ego import *
 from networkx.generators.expanders import *
