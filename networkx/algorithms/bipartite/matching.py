@@ -488,7 +488,7 @@ maximum_matching = hopcroft_karp_matching
 
 
 def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
-    """Returns the minimum weight full matching of the bipartite graph `G`.
+    r"""Returns the minimum weight full matching of the bipartite graph `G`.
 
     Let :math:`G = ((U, V), E)` be a complete weighted bipartite graph with
     real weights :math:`w : E \to \mathbb{R}`. This function then produces
@@ -504,7 +504,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
     When :math:`\lvert U \rvert = \lvert V \rvert`, this is commonly
     referred to as a perfect matching; here, since we allow
     :math:`\lvert U \rvert` and :math:`\lvert V \rvert` to differ, we
-    follow Karp[1]_ and refer to the matching as *full*.
+    follow Karp [1]_ and refer to the matching as *full*.
 
     Parameters
     ----------
