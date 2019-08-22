@@ -389,8 +389,8 @@ def draw_networkx_nodes(G, pos,
     if nodelist is None:
         nodelist = list(G)
 
-    if not nodelist or len(nodelist) == 0:  # empty nodelist, no drawing
-        return None
+    if len(nodelist) == 0:  # empty nodelist, no drawing
+        return
 
     try:
         xy = np.asarray([pos[v] for v in nodelist])
