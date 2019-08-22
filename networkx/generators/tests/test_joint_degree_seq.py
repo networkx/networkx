@@ -1,8 +1,11 @@
 import time
-from nose.tools import *
-from networkx.generators.joint_degree_seq import is_valid_joint_degree, joint_degree_graph, is_valid_directed_joint_degree, directed_joint_degree_graph
+from nose.tools import assert_true, assert_false
 from networkx.algorithms.assortativity import degree_mixing_dict
 from networkx.generators import powerlaw_cluster_graph, gnm_random_graph
+from networkx.generators.joint_degree_seq import is_valid_joint_degree, \
+                                                 joint_degree_graph, \
+                                                 directed_joint_degree_graph, \
+                                                 is_valid_directed_joint_degree
 
 
 def test_is_valid_joint_degree():

@@ -18,8 +18,7 @@ __all__ = ['is_valid_joint_degree',
 
 
 def is_valid_joint_degree(joint_degrees):
-    """ Checks whether the given joint degree dictionary is realizable
-    as a simple graph.
+    """ Checks whether the given joint degree dictionary is realizable.
 
     A *joint degree dictionary* is a dictionary of dictionaries, in
     which entry ``joint_degrees[k][l]`` is an integer representing the
@@ -75,7 +74,8 @@ def is_valid_joint_degree(joint_degrees):
                              degree_count[k] * degree_count[l]):
                 return False
             elif k == l:
-                if joint_degrees[k][k] > degree_count[k] * (degree_count[k] - 1):
+                if (joint_degrees[k][k] > degree_count[k] *
+                   (degree_count[k] - 1)):
                     return False
                 if joint_degrees[k][k] % 2 != 0:
                     return False
@@ -86,8 +86,7 @@ def is_valid_joint_degree(joint_degrees):
 
 
 def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
-    """ Releases one free stub for saturated node ``w``, while preserving
-    joint degree in graph G.
+    """ Releases one free stub for ``w``, while preserving joint degree in G.
 
     Parameters
     ----------
@@ -193,7 +192,7 @@ def joint_degree_graph(joint_degrees, seed=None):
     References
     ----------
     ..  [1] M. Gjoka, B. Tillman, A. Markopoulou, "Construction of Simple
-        Graphs with a Target Joint Degree Matrix and Beyond", IEEE Infocom, '15.
+        Graphs with a Target Joint Degree Matrix and Beyond", IEEE Infocom, '15
 
     Examples
     --------
@@ -211,7 +210,8 @@ def joint_degree_graph(joint_degrees, seed=None):
         raise nx.NetworkXError(msg)
 
     # compute degree count from joint_degrees
-    degree_count = {k: sum(l.values()) // k for k, l in joint_degrees.items() if k > 0}
+    degree_count = {k: sum(l.values()) // k for k, l in joint_degrees.items()
+                    if k > 0}
 
     # start with empty N-node graph
     N = sum(degree_count.values())
@@ -251,7 +251,7 @@ def joint_degree_graph(joint_degrees, seed=None):
                 l_nodes = h_degree_nodelist[l]
 
                 # k_unsat and l_unsat consist of nodes of degree k and l that
-                # are unsaturated i.e. nodes that have at least 1 available stub
+                # are unsaturated (nodes that have at least 1 available stub)
                 k_unsat = set(v for v in k_nodes if h_node_residual[v] > 0)
 
                 if k != l:
@@ -276,9 +276,11 @@ def joint_degree_graph(joint_degrees, seed=None):
                         # if node w has no free stubs then do neighbor switch
                         if h_node_residual[w] == 0:
                             if k != l:
-                                _neighbor_switch(G, w, l_unsat, h_node_residual)
+                                _neighbor_switch(G, w, l_unsat,
+                                                 h_node_residual)
                             else:
-                                _neighbor_switch(G, w, l_unsat, h_node_residual,
+                                _neighbor_switch(G, w, l_unsat,
+                                                 h_node_residual,
                                                  avoid_node_id=v)
 
                         # add edge (v, w) and update data structures
@@ -295,18 +297,7 @@ def joint_degree_graph(joint_degrees, seed=None):
 
 
 def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
-    """ Checks whether the given directed joint degree input (in/out degree
-        sequences, nkk) is realizable as a simple directed graph by evaluating
-        necessary and sufficient conditions.
-
-    Here is the list of conditions that the inputs need to satisfy for
-    simple graph realizability:
-    - Condition 0: in_degrees and out_degrees have the same length
-    - Condition 1: nkk[k][l]  is integer for all k,l
-    - Condition 2: sum(nkk[k])/k = number of nodes with partition id k, is an
-                   integer and matching degree sequence
-    - Condition 3: number of edges and non-chords between k and l cannot exceed
-                   maximum possible number of edges
+    """ Checks whether the given directed joint degree input is realizable
 
     Parameters
     ----------
@@ -323,6 +314,19 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
     -------
     boolean
         returns true if given input is realizable, else returns false.
+
+
+    Notes
+    -----
+    Here is the list of conditions that the inputs (in/out degree sequences,
+    nkk) need to satisfy for simple directed graph realizability:
+    - Condition 0: in_degrees and out_degrees have the same length
+    - Condition 1: nkk[k][l]  is integer for all k,l
+    - Condition 2: sum(nkk[k])/k = number of nodes with partition id k, is an
+                   integer and matching degree sequence
+    - Condition 3: number of edges and non-chords between k and l cannot exceed
+                   maximum possible number of edges
+
 
     References
     ----------
@@ -367,14 +371,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
 
 def _directed_neighbor_switch(G, w, unsat, h_node_residual_out, chords,
                               h_partition_in, partition):
-    """ directed_neighbor_switch  releases one free stub for node w, while
-        preserving joint degree.
-        First, it selects node w_prime that (1) has the same degree as w and
-        (2) is unsaturated. Then, it selects node v, a neighbor of w, that is
-        not connected to w_prime and does an edge swap i.e. removes (w,v) and
-        adds (w_prime,v). If neighbor switch is not possible for w using
-        w_prime and v, then return w_prime; in [1] it's proven that
-        such unsaturated nodes can be used.
+    """ Releases one free stub for node w, while preserving joint degree in G.
 
     Parameters
     ----------
@@ -392,6 +389,15 @@ def _directed_neighbor_switch(G, w, unsat, h_node_residual_out, chords,
         for a given node, keeps track of its partition id (in degree).
     partition: integer
         partition id to check if chords have to be updated.
+
+    Notes
+    -----
+    First, it selects node w_prime that (1) has the same degree as w and
+    (2) is unsaturated. Then, it selects node v, a neighbor of w, that is
+    not connected to w_prime and does an edge swap i.e. removes (w,v) and
+    adds (w_prime,v). If neighbor switch is not possible for w using
+    w_prime and v, then return w_prime; in [1] it's proven that
+    such unsaturated nodes can be used.
 
     References
     ----------
@@ -427,9 +433,7 @@ def _directed_neighbor_switch(G, w, unsat, h_node_residual_out, chords,
 
 def _directed_neighbor_switch_rev(G, w, unsat, h_node_residual_in, chords,
                                   h_partition_out, partition):
-    """ directed_neighbor_switch_rev is similar to directed_neighbor_switch
-        except it handles this operation for incoming edges instead of
-        outgoing.
+    """ The reverse of directed_neighbor_switch.
 
     Parameters
     ----------
@@ -447,6 +451,11 @@ def _directed_neighbor_switch_rev(G, w, unsat, h_node_residual_in, chords,
         for a given node, keeps track of its partition id (out degree).
     partition: integer
         partition id to check if chords have to be updated.
+
+    Notes
+    -----
+    Same operation as directed_neighbor_switch except it handles this operation
+    for incoming edges instead of outgoing.
     """
     w_prime = unsat.pop()
     unsat.add(w_prime)
@@ -475,8 +484,7 @@ def _directed_neighbor_switch_rev(G, w, unsat, h_node_residual_in, chords,
 
 @py_random_state(3)
 def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
-    """ Return a random simple directed graph with the given degree sequence
-        (degree_seq), joint degree dictionary (nkk).
+    """ Generates a random simple directed graph with the joint degree.
 
     Parameters
     ----------

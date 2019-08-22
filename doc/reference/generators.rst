@@ -304,6 +304,8 @@ Joint Degree Sequence
 
    is_valid_joint_degree
    joint_degree_graph
+   is_valid_directed_joint_degree
+   directed_joint_degree_graph
 
 
 Mycielski
