@@ -1,8 +1,11 @@
 import time
-from nose.tools import *
-from networkx.generators.joint_degree_seq import is_valid_joint_degree, joint_degree_graph
+from nose.tools import assert_true, assert_false
 from networkx.algorithms.assortativity import degree_mixing_dict
-from networkx.generators import powerlaw_cluster_graph
+from networkx.generators import powerlaw_cluster_graph, gnm_random_graph
+from networkx.generators.joint_degree_seq import is_valid_joint_degree, \
+                                                 joint_degree_graph, \
+                                                 directed_joint_degree_graph, \
+                                                 is_valid_directed_joint_degree
 
 
 def test_is_valid_joint_degree():
@@ -64,3 +67,51 @@ def test_joint_degree_graph(ntimes=10):
         # assert that the given joint degree is equal to the generated
         # graph's joint degree
         assert_true(joint_degrees_g == joint_degrees_G)
+
+
+def test_is_valid_directed_joint_degree():
+
+    in_degrees = [0, 1, 1, 2]
+    out_degrees = [1, 1, 1, 1]
+    nkk = {1: {1: 2, 2: 2}}
+    assert_true(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+
+    # not realizable, values are not integers.
+    nkk = {1: {1: 1.5, 2: 2.5}}
+    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+
+    # not realizable, number of edges between 1-2 are insufficient.
+    nkk = {1: {1: 2, 2: 1}}
+    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+
+    # not realizable, in/out degree sequences have different number of nodes.
+    out_degrees = [1, 1, 1]
+    nkk = {1: {1: 2, 2: 2}}
+    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+
+    # not realizable, degree seqeunces have fewer than required nodes.
+    in_degrees = [0, 1, 2]
+    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+
+
+def test_directed_joint_degree_graph(n=15, m=100, ntimes=1000):
+    for _ in range(ntimes):
+
+        # generate gnm random graph and calculate its joint degree.
+        g = gnm_random_graph(n, m, None, directed=True)
+
+        # in-degree seqeunce of g as a list of integers.
+        in_degrees = list(dict(g.in_degree()).values())
+        # out-degree sequence of g as a list of integers.
+        out_degrees = list(dict(g.out_degree()).values())
+        nkk = degree_mixing_dict(g)
+
+        # generate simple directed graph with given degree sequence and joint
+        # degree matrix.
+        G = directed_joint_degree_graph(in_degrees, out_degrees, nkk)
+
+        # assert degree sequence correctness.
+        assert_true(in_degrees == list(dict(G.in_degree()).values()))
+        assert_true(out_degrees == list(dict(G.out_degree()).values()))
+        # assert joint degree matrix correctness.
+        assert_true(nkk == degree_mixing_dict(G))
