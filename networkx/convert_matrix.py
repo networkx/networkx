@@ -74,6 +74,8 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
 
     Notes
     -----
+    For directed graphs, entry i,j corresponds to an edge from i to j.
+
     The DataFrame entries are assigned to the weight edge attribute. When
     an edge does not have a weight attribute, the value of the entry is set to
     the number 1.  For multiple (parallel) edges, the values of the entries
@@ -144,6 +146,9 @@ def from_pandas_adjacency(df, create_using=None):
 
     Notes
     -----
+    For directed graphs, explicitly mention create_using=nx.Digraph,
+    and entry i,j of df corresponds to an edge from i to j.
+
     If the numpy matrix has a single data type for each matrix entry it
     will be converted to an appropriate Python data type.
 
@@ -396,6 +401,8 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     Notes
     -----
+    For directed graphs, entry i,j corresponds to an edge from i to j.
+
     The matrix entries are assigned to the weight edge attribute. When
     an edge does not have a weight attribute, the value of the entry is set to
     the number 1.  For multiple (parallel) edges, the values of the entries
@@ -468,6 +475,9 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
     Notes
     -----
+    For directed graphs, explicitly mention create_using=nx.Digraph,
+    and entry i,j of A corresponds to an edge from i to j.
+
     If `create_using` is :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
     entries of `A` are of type :class:`int`, then this function returns a
@@ -704,6 +714,8 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
 
     Notes
     -----
+    For directed graphs, matrix entry i,j corresponds to an edge from i to j.
+
     The matrix entries are populated using the edge attribute held in
     parameter weight. When an edge does not have that attribute, the
     value of the entry is 1.
@@ -886,6 +898,8 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
 
     Notes
     -----
+    For directed graphs, explicitly mention create_using=nx.Digraph,
+    and entry i,j of A corresponds to an edge from i to j.
 
     If `create_using` is :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
@@ -1155,6 +1169,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
 
     Notes
     -----
+    For directed graphs, explicitly mention create_using=nx.Digraph,
+    and entry i,j of A corresponds to an edge from i to j.
+
     If `create_using` is :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
     entries of `A` are of type :class:`int`, then this function returns a
