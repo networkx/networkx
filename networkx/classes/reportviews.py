@@ -1025,7 +1025,7 @@ class EdgeView(OutEdgeView):
     def __iter__(self):
         seen = {}
         for n, nbrs in self._nodes_nbrs():
-            for nbr in nbrs:
+            for nbr in list(nbrs):
                 if nbr not in seen:
                     yield (n, nbr)
             seen[n] = 1
