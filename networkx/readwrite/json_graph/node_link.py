@@ -92,12 +92,12 @@ def node_link_data(G, attrs=None):
         data[links] = [
             dict(chain(d.items(),
                        [(source, u), (target, v), (key, k)]))
-            for u, v, k, d in G.edges(keys=True, data=True)]
+            for u, v, k, d in sorted(G.edges(keys=True, data=True), key=lambda *x: '{}{}'.format(x[0], x[1]))]
     else:
         data[links] = [
             dict(chain(d.items(),
                        [(source, u), (target, v)]))
-            for u, v, d in G.edges(data=True)]
+            for u, v, d in sorted(G.edges(data=True), key=lambda *x: '{}{}'.format(x[0], x[1]))]
     return data
 
 
