@@ -46,15 +46,15 @@ def build_auxiliary_node_connectivity(G):
 
     for i, node in enumerate(G):
         mapping[node] = i
-        H.add_node('%dA' % i, id=node)
-        H.add_node('%dB' % i, id=node)
-        H.add_edge('%dA' % i, '%dB' % i, capacity=1)
+        H.add_node('{}A'.format(i), id=node)
+        H.add_node('{}B'.format(i), id=node)
+        H.add_edge('{}A'.format(i), '%dB' % i, capacity=1)
 
     edges = []
     for (source, target) in G.edges():
-        edges.append(('%sB' % mapping[source], '%sA' % mapping[target]))
+        edges.append(('{}B'.format(mapping[source]), '{}A'.format(mapping[target])))
         if not directed:
-            edges.append(('%sB' % mapping[target], '%sA' % mapping[source]))
+            edges.append(('{}B'.format(mapping[target]), '{}A'.format(mapping[source])))
     H.add_edges_from(edges, capacity=1)
 
     # Store mapping as graph attribute
