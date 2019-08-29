@@ -133,7 +133,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         for v in non_adjacent:
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
             # and step 5: build the associated residual network R
-            R = flow_func(H, '%sB' % mapping[x], '%sA' % mapping[v], **kwargs)
+            R = flow_func(H, '{}B'.format(mapping[x]), '{}A'.format(mapping[v]), **kwargs)
             flow_value = R.graph['flow_value']
 
             if flow_value == k:
@@ -180,7 +180,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                     for n in S:
                         S_ancestors.update(R_closure._pred[n])
                     S.update(S_ancestors)
-                    if '%sB' % mapping[x] not in S or '%sA' % mapping[v] in S:
+                    if '{}B'.format(mapping[x]) not in S or '{}A'.format(mapping[v]) in S:
                         continue
                     # Find the cutset that links the node partition (S,~S) in H
                     cutset = set()
@@ -210,18 +210,18 @@ def all_node_cuts(G, k=None, flow_func=None):
                 # Add edges to the auxiliary digraph.
                 # See build_residual_network for convention we used
                 # in residual graphs.
-                H.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
+                H.add_edge('{}B'.format(mapping[x]), '{}A'.format(mapping[v]),
                            capacity=1)
-                H.add_edge('%sB' % mapping[v], '%sA' % mapping[x],
+                H.add_edge('{}B'.format(mapping[v]), '{}A'.format(mapping[x]),
                            capacity=1)
                 # Add edges to the residual network.
-                R.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
+                R.add_edge('{}B'.format(mapping[x]), '{}A'.format(mapping[v]),
                            capacity=1)
-                R.add_edge('%sA' % mapping[v], '%sB' % mapping[x],
+                R.add_edge('{}A'.format(mapping[v]), '{}B'.format(mapping[x]),
                            capacity=0)
-                R.add_edge('%sB' % mapping[v], '%sA' % mapping[x],
+                R.add_edge('{}B'.format(mapping[v]), '{}A'.format(mapping[x]),
                            capacity=1)
-                R.add_edge('%sA' % mapping[x], '%sB' % mapping[v],
+                R.add_edge('{}A'.format(mapping[x]), '{}B'.format(mapping[v]),
                            capacity=0)
 
                 # Add again the saturated edges to reuse the residual network
