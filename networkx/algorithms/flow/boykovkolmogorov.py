@@ -170,9 +170,9 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
 
 def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError('node {} not in graph'.format(str(s)))
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError('node {} not in graph'.format(str(t)))
     if s == t:
         raise nx.NetworkXError('source and sink are the same node')
 
