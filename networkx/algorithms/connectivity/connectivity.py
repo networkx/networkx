@@ -207,7 +207,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     elif flow_func is boykov_kolmogorov:
         kwargs['cutoff'] = cutoff
 
-    return nx.maximum_flow_value(H, '%sB' % mapping[s], '%sA' % mapping[t], **kwargs)
+    return nx.maximum_flow_value(H, '{}B'.format(mapping[s]), '{}A'.format(mapping[t]), **kwargs)
 
 
 def node_connectivity(G, s=None, t=None, flow_func=None):
@@ -306,9 +306,9 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError('node {} not in graph'.format(s))
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError('node {} not in graph'.format(t))
         return local_node_connectivity(G, s, t, flow_func=flow_func)
 
     # Global node connectivity
@@ -756,9 +756,9 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     # Local edge connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError('node {} not in graph'.format(s))
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError('node {} not in graph'.format(t))
         return local_edge_connectivity(G, s, t, flow_func=flow_func,
                                        cutoff=cutoff)
 
