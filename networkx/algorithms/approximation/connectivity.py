@@ -182,9 +182,9 @@ def node_connectivity(G, s=None, t=None):
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError('node {} not in graph'.format(s))
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError('node {} not in graph'.format(t))
         return local_node_connectivity(G, s, t)
 
     # Global node connectivity
