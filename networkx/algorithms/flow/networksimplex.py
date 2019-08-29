@@ -242,7 +242,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         raise nx.NetworkXUnfeasible('total node demand is not zero')
     for e, u in zip(E, U):
         if u < 0:
-            raise nx.NetworkXUnfeasible('edge {} has negative capacity'.format(e))
+            raise nx.NetworkXUnfeasible('edge {!r} has negative capacity'.format(e))
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
