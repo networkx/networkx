@@ -289,7 +289,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
     # original graph.
-    edge_cut = minimum_st_edge_cut(H, '%sB' % mapping[s], '%sA' % mapping[t],
+    edge_cut = minimum_st_edge_cut(H, '{}B'.format(mapping[s]), '{}A'.format(mapping[t]),
                                    **kwargs)
     # Each node in the original graph maps to two nodes of the auxiliary graph
     node_cut = set(H.nodes[node]['id'] for edge in edge_cut for node in edge)
@@ -395,9 +395,9 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     # Local minimum node cut.
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError('node {} not in graph'.format(s))
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError('node {} not in graph'.format(t))
         return minimum_st_node_cut(G, s, t, flow_func=flow_func)
 
     # Global minimum node cut.
@@ -547,9 +547,9 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     # Local minimum edge cut if s and t are not None
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError('node {} not in graph'.format(s))
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError('node {} not in graph'.format(t))
         return minimum_st_edge_cut(H, s, t, **kwargs)
 
     # Global minimum edge cut
