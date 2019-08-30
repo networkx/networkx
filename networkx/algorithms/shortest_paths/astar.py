@@ -70,8 +70,8 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     """
     if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in {}'
-        raise nx.NodeNotFound(msg.format(source, target, G))
+        msg = 'Either source {} or target {} is not in graph'
+        raise nx.NodeNotFound(msg.format(source, target))
 
     if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
@@ -169,8 +169,8 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
 
     """
     if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in {}'
-        raise nx.NodeNotFound(msg.format(source, target, G))
+        msg = 'Either source {} or target {} is not in graph'
+        raise nx.NodeNotFound(msg.format(source, target))
 
     path = astar_path(G, source, target, heuristic, weight)
     return sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))
