@@ -59,7 +59,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
     shortest_path_length
     """
     if source not in G:
-        raise nx.NodeNotFound('Source {} is not in {}'.format(source, G))
+        raise nx.NodeNotFound('Source {} is not in graph'.format(source))
     if cutoff is None:
         cutoff = float('inf')
     nextlevel = {source: 1}
@@ -132,7 +132,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     single_source_shortest_path_length, shortest_path_length
     """
     if target not in G:
-        raise nx.NodeNotFound('Target {} is not in {}'.format(target, G))
+        raise nx.NodeNotFound('Target {} is not in graph'.format(target))
 
     if cutoff is None:
         cutoff = float('inf')
@@ -219,8 +219,8 @@ def bidirectional_shortest_path(G, source, target):
     """
 
     if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in {}'
-        raise nx.NodeNotFound(msg.format(source, target, G))
+        msg = 'Either source {} or target {} is not in graph'
+        raise nx.NodeNotFound(msg.format(source, target))
 
     # call helper to do the real work
     results = _bidirectional_pred_succ(G, source, target)
@@ -291,7 +291,7 @@ def _bidirectional_pred_succ(G, source, target):
                     if w in pred:  # found path
                         return pred, succ, w
 
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath("No path between {} and {}".format(source, target))
 
 
 def single_source_shortest_path(G, source, cutoff=None):
@@ -332,7 +332,7 @@ def single_source_shortest_path(G, source, cutoff=None):
     shortest_path
     """
     if source not in G:
-        raise nx.NodeNotFound("Source {} not in {}".format(source, G))
+        raise nx.NodeNotFound("Source {} not in graph".format(source))
 
     def join(p1, p2):
         return p1 + p2
@@ -413,7 +413,7 @@ def single_target_shortest_path(G, target, cutoff=None):
     shortest_path, single_source_shortest_path
     """
     if target not in G:
-        raise nx.NodeNotFound("Target {} not in {}".format(target, G))
+        raise nx.NodeNotFound("Target {} not in graph".format(target))
 
     def join(p1, p2):
         return p2 + p1
@@ -493,7 +493,7 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound("Source {} not in {}".format(source, G))
+        raise nx.NodeNotFound("Source {} not in graph".format(source))
 
     level = 0                  # the current level
     nextlevel = [source]       # list of nodes to check at next level
