@@ -814,7 +814,7 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     fringe = []
     for source in sources:
         if source not in G:
-            raise nx.NodeNotFound("Source {} not in {}".format(source, G))
+            raise nx.NodeNotFound("Source {} not in graph".format(source))
         seen[source] = 0
         push(fringe, (0, next(c), source))
     while fringe:
@@ -1260,7 +1260,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     """
     for s in source:
         if s not in G:
-            raise nx.NodeNotFound("Source {} not in {}".format(s, G))
+            raise nx.NodeNotFound("Source {} not in graph".format(s))
 
     if pred is None:
         pred = {v: [] for v in source}
