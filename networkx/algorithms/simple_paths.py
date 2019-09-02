@@ -345,7 +345,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         >>> g.add_edge('1', '3')
         >>> g.add_edge('3', '4')
         >>> 
-        >>> for path in nx.all_simple_edge_paths(g, '1', '4'):
+        >>> for path in sorted(nx.all_simple_edge_paths(g, '1', '4')):
         ...     print(path)
         [('1', '2'), ('2', '4')]
         [('1', '3'), ('3', '4')]
