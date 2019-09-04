@@ -429,13 +429,17 @@ class Graph(object):
             return False
 
     def __len__(self):
-        """Returns the number of nodes. Use: 'len(G)'.
+        """Returns the number of nodes in the graph. Use: 'len(G)'.
 
         Returns
         -------
         nnodes : int
             The number of nodes in the graph.
 
+        See Also
+        --------
+        number_of_nodes, order  which are identical
+        
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -809,7 +813,7 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> len(G)
+        >>> G.number_of_nodes()
         3
         """
         return len(self._node)
@@ -826,6 +830,11 @@ class Graph(object):
         --------
         number_of_nodes, __len__  which are identical
 
+        Examples
+        --------
+        >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.order()
+        3
         """
         return len(self._node)
 
