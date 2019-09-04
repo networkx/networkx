@@ -252,7 +252,7 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     See Also
     --------
     local_node_connectivity
-    all_pairs_node_connectivity
+    node_connectivity
 
     References
     ----------
