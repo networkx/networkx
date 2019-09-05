@@ -27,6 +27,17 @@ class TestLayout(object):
         nx.add_path(self.Gs, 'abcdef')
         self.bigG = nx.grid_2d_graph(25, 25)  # bigger than 500 nodes for sparse
 
+    @staticmethod
+    def collect_node_distances(positions):
+        distances = []
+        prev_val = None
+        for k in positions:
+            if prev_val is not None:
+                diff = positions[k] - prev_val
+                distances.append(numpy.dot(diff, diff) ** 0.5)
+            prev_val = positions[k]
+        return distances
+
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
         assert_raises(ValueError, nx.spring_layout, G, fixed=[0])
@@ -56,6 +67,7 @@ class TestLayout(object):
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
         vpos = nx.bipartite_layout(G, G)
+        vpos = nx.spiral_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
 
@@ -72,6 +84,7 @@ class TestLayout(object):
         vpos = nx.spectral_layout(self.bigG)
         vpos = nx.spectral_layout(self.bigG.to_directed())
         vpos = nx.shell_layout(G)
+        vpos = nx.spiral_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
             vpos = nx.kamada_kawai_layout(G, dim=1)
@@ -85,6 +98,7 @@ class TestLayout(object):
         vpos = nx.fruchterman_reingold_layout(G)
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
+        vpos = nx.spiral_layout(G)
         if self.scipy is not None:
             vpos = nx.kamada_kawai_layout(G)
             vpos = nx.kamada_kawai_layout(G, dim=1)
@@ -110,6 +124,7 @@ class TestLayout(object):
         sc(nx.spectral_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.circular_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.shell_layout(G, scale=2, center=c), scale=2, center=c)
+        sc(nx.spiral_layout(G, scale=2, center=c), scale=2, center=c)
         if self.scipy is not None:
             sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
 
@@ -132,6 +147,7 @@ class TestLayout(object):
         sc(nx.spectral_layout(G), scale=1, center=c)
         sc(nx.circular_layout(G), scale=1, center=c)
         sc(nx.shell_layout(G), scale=1, center=c)
+        sc(nx.spiral_layout(G), scale=1, center=c)
         if self.scipy is not None:
             sc(nx.kamada_kawai_layout(G), scale=1, center=c)
 
@@ -201,6 +217,8 @@ class TestLayout(object):
         assert_equal(tuple(vpos[0]), (1, 1))
         vpos = nx.shell_layout(G, center=(1, 1))
         assert_equal(tuple(vpos[0]), (1, 1))
+        vpos = nx.spiral_layout(G, center=(1, 1))
+        assert_equal(tuple(vpos[0]), (1, 1))
 
     def test_center_wrong_dimensions(self):
         G = nx.path_graph(1)
@@ -213,6 +231,7 @@ class TestLayout(object):
         assert_raises(ValueError, nx.spectral_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
         assert_raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
+        assert_raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
 
     def test_empty_graph(self):
         G = nx.empty_graph()
@@ -232,6 +251,8 @@ class TestLayout(object):
         assert_equal(vpos, {})
         vpos = nx.shell_layout(G, center=(1, 1))
         assert_equal(vpos, {})
+        vpos = nx.spiral_layout(G, center=(1, 1))
+        assert_equal(vpos, {})
 
     def test_bipartite_layout(self):
         G = nx.complete_bipartite_graph(3,5)
@@ -249,7 +270,7 @@ class TestLayout(object):
 
         vpos = nx.bipartite_layout(G, top,
                                    align='horizontal',
-                                   center=(2,2),
+                                   center=(2, 2),
                                    scale=2,
                                    aspect_ratio=1)
         assert_equal(len(vpos), len(G))
@@ -312,3 +333,28 @@ class TestLayout(object):
 
                 assert_almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
                                     places=5)
+
+    def test_spiral_layout(self):
+
+        G = self.Gs
+
+        # a lower value of resolution should result in a more compact layout
+        # intuitively, the total distance from the start and end nodes
+        # via each node in between (transiting through each) will be less,
+        # assuming rescaling does not occur on the computed node positions
+        pos_standard = nx.spiral_layout(G, resolution=0.35)
+        pos_tighter = nx.spiral_layout(G, resolution=0.34)
+        distances = self.collect_node_distances(pos_standard)
+        distances_tighter = self.collect_node_distances(pos_tighter)
+        assert sum(distances) > sum(distances_tighter)
+
+        # return near-equidistant points after the first value if set to true
+        pos_equidistant = nx.spiral_layout(G, equidistant=True)
+        distances_equidistant = self.collect_node_distances(pos_equidistant)
+        for d in range(1, len(distances_equidistant) - 1):
+            # test similarity to two decimal places
+            assert_almost_equal(
+                distances_equidistant[d],
+                distances_equidistant[d+1],
+                2
+            )
