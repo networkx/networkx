@@ -219,11 +219,11 @@ Stochastic
 
 AS graph
 --------
-.. automodule:: networkx.generators.internet_as_graph
+.. automodule:: networkx.generators.internet_as_graphs
 .. autosummary::
    :toctree: generated/
 
-   internet_as_graph
+   random_internet_as_graph
 
 
 Intersection

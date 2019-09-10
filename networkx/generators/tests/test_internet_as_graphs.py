@@ -1,11 +1,11 @@
 from nose.tools import assert_true, assert_raises, assert_false
 
 from networkx import is_connected, neighbors
-from networkx.generators.internet_as_graph import internet_as_graph
+from networkx.generators.internet_as_graphs import random_internet_as_graph
 
 
-def almost_equal(x, y, perc=25):
-    if abs(x - y)/(abs(x)) < perc/100:
+def almost_equal(x, y, eps=0.5):
+    if abs(x - y) < eps:
         return True
     return False
 
@@ -16,7 +16,7 @@ class TestInternetASTopology():
     def setup_class(cls):
         cls.n = 1000
         cls.seed = 42
-        cls.G = internet_as_graph(cls.n, cls.seed)
+        cls.G = random_internet_as_graph(cls.n, cls.seed)
         cls.T = []
         cls.M = []
         cls.C = []
@@ -34,7 +34,7 @@ class TestInternetASTopology():
             elif cls.G.nodes[i]['type'] == 'CP':
                 cls.CP.append(i)
             else:
-                raise ValueError(f"Inconsistent data in the graph\
+                raise ValueError("Inconsistent data in the graph\
                         node attributes")
             cls.set_customers(i)
             cls.set_providers(i)
@@ -49,10 +49,11 @@ class TestInternetASTopology():
                     customer = int(e['customer'])
                     if j == customer:
                         cls.set_customers(j)
-                        cls.customers[i]  = cls.customers[i].union(cls.customers[j])
+                        cls.customers[i] = cls.customers[i].union(
+                                cls.customers[j])
                         cls.customers[i].add(j)
                     elif i != customer:
-                        raise ValueError(f"Inconsistent data in the graph\
+                        raise ValueError("Inconsistent data in the graph\
                                 edge attributes")
 
     @classmethod
@@ -65,28 +66,30 @@ class TestInternetASTopology():
                     customer = int(e['customer'])
                     if i == customer:
                         cls.set_providers(j)
-                        cls.providers[i]  = cls.providers[i].union(cls.providers[j])
+                        cls.providers[i] = cls.providers[i].union(
+                                cls.providers[j])
                         cls.providers[i].add(j)
                     elif j != customer:
-                        raise ValueError(f"Inconsistent data in the graph\
+                        raise ValueError("Inconsistent data in the graph\
                                 edge attributes")
 
     def test_wrong_input(self):
-        G = internet_as_graph(0)
-        assert_true(len(G.nodes())==0)
+        G = random_internet_as_graph(0)
+        assert_true(len(G.nodes()) == 0)
 
-        G = internet_as_graph(-1)
-        assert_true(len(G.nodes())==0)
+        G = random_internet_as_graph(-1)
+        assert_true(len(G.nodes()) == 0)
 
-        G = internet_as_graph(1)
-        assert_true(len(G.nodes())==1)
+        G = random_internet_as_graph(1)
+        assert_true(len(G.nodes()) == 1)
 
     def test_node_numbers(self):
         assert_true(len(self.G.nodes()) == self.n)
         assert_true(len(self.T) < 7)
         assert_true(len(self.M) == int(round(self.n*0.15)))
         assert_true(len(self.CP) == int(round(self.n*0.05)))
-        assert_true(len(self.C) == self.n - len(self.T) - len(self.M) - len(self.CP))
+        assert_true(len(self.C) == self.n - len(self.T) - len(self.M)
+                    - len(self.CP))
 
     def test_connectivity(self):
         assert_true(is_connected(self.G))
@@ -106,11 +109,12 @@ class TestInternetASTopology():
 
         # test whether there is a customer-provider loop
         for i in self.G.nodes():
-            assert_true(len(self.customers[i].intersection(self.providers[i]))==0)
+            assert_true(len(self.customers[i].intersection(
+                self.providers[i])) == 0)
 
-        # test whether there is a peering with a customer or provider 
-        for i,j in self.G.edges():
-            if self.G.edges[(i,j)]['type'] == 'peer':
+        # test whether there is a peering with a customer or provider
+        for i, j in self.G.edges():
+            if self.G.edges[(i, j)]['type'] == 'peer':
                 assert_true(j not in self.customers[i])
                 assert_true(i not in self.customers[j])
                 assert_true(j not in self.providers[i])
@@ -127,8 +131,8 @@ class TestInternetASTopology():
         t_cp = 0  # probability CP's provider is T
         t_c = 0  # probability C's provider is T
 
-        for i,j in self.G.edges():
-            e = self.G.edges[(i,j)]
+        for i, j in self.G.edges():
+            e = self.G.edges[(i, j)]
             if e['type'] == 'transit':
                 cust = int(e['customer'])
                 if i == cust:
@@ -136,7 +140,7 @@ class TestInternetASTopology():
                 elif j == cust:
                     prov = i
                 else:
-                    raise ValueError(f"Inconsistent data in the graph edge\
+                    raise ValueError("Inconsistent data in the graph edge\
                             attributes")
                 if cust in self.M:
                     d_m += 1
@@ -151,27 +155,32 @@ class TestInternetASTopology():
                     if self.G.nodes[prov]['type'] == 'T':
                         t_cp += 1
                 else:
-                    raise ValueError(f"Inconsistent data in the graph edge\
+                    raise ValueError("Inconsistent data in the graph edge\
                             attributes")
             elif e['type'] == 'peer':
-                if self.G.nodes[i]['type'] == 'M' and self.G.nodes[j]['type'] == 'M':
+                if self.G.nodes[i]['type'] == 'M' and\
+                        self.G.nodes[j]['type'] == 'M':
                     p_m_m += 1
-                if self.G.nodes[i]['type'] == 'CP' and self.G.nodes[j]['type'] == 'CP':
+                if self.G.nodes[i]['type'] == 'CP' and\
+                        self.G.nodes[j]['type'] == 'CP':
                     p_cp_cp += 1
-                if self.G.nodes[i]['type'] == 'M' and self.G.nodes[j]['type'] == 'CP'\
-                        or self.G.nodes[i]['type'] == 'CP' and self.G.nodes[j]['type'] == 'M':
+                if self.G.nodes[i]['type'] == 'M' and\
+                        self.G.nodes[j]['type'] == 'CP' or\
+                        self.G.nodes[i]['type'] == 'CP' and\
+                        self.G.nodes[j]['type'] == 'M':
                     p_cp_m += 1
             else:
-                raise ValueError(f"Unexpected data in the graph edge\
+                raise ValueError("Unexpected data in the graph edge\
                         attributes")
 
-        assert_true(almost_equal(d_m/len(self.M), 2 + (2.5*self.n)/10000)) 
-        assert_true(almost_equal(d_cp/len(self.CP), 2 + (1.5*self.n)/10000)) 
-        assert_true(almost_equal(d_c/len(self.C), 1 + (5*self.n)/100000)) 
+        assert_true(almost_equal(d_m/len(self.M), 2 + (2.5*self.n)/10000))
+        assert_true(almost_equal(d_cp/len(self.CP), 2 + (1.5*self.n)/10000))
+        assert_true(almost_equal(d_c/len(self.C), 1 + (5*self.n)/100000))
 
         assert_true(almost_equal(p_m_m/len(self.M), 1 + (2*self.n)/10000))
         assert_true(almost_equal(p_cp_m/len(self.CP), 0.2 + (2*self.n)/10000))
-        assert_true(almost_equal(p_cp_cp/len(self.CP), 0.05 + (2*self.n)/100000))
+        assert_true(almost_equal(p_cp_cp/len(self.CP),
+                    0.05 + (2*self.n)/100000))
 
         assert_true(almost_equal(t_m/d_m, 0.375))
         assert_true(almost_equal(t_cp/d_cp, 0.375))
