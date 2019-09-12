@@ -104,3 +104,21 @@ class TestAGraph(object):
         G.graph['node'] = {}
         G.graph['edge'] = {}
         assert_graphs_equal(G, HH)
+
+    def test_2d_layout(self):
+        G = nx.Graph()
+        G = self.build_graph(G)
+        G.graph["dimen"] = 2
+        pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
+        pos = list(pos.values())
+        assert_equal(len(pos), 5)
+        assert_equal(len(pos[0]), 2)
+
+    def test_3d_layout(self):
+        G = nx.Graph()
+        G = self.build_graph(G)
+        G.graph["dimen"] = 3
+        pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
+        pos = list(pos.values())
+        assert_equal(len(pos), 5)
+        assert_equal(len(pos[0]), 3)
