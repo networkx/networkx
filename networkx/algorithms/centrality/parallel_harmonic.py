@@ -87,6 +87,10 @@ def _tasks(G, nbunch, distance, cache, cache_dir, n):
 def parallel_harmonic_centrality(G, n=100, nbunch=None, distance=None, verbose=False, cache=False, cache_dir=".parallel_harmonic_centrality"):
     r"""Compute harmonic centrality for nodes.
     """
+    from auto_tqdm import tqdm
+    from dict_hash import sha256
+    import compress_json
+    from touch import touch
     nbunch = list(G.nodes) if nbunch is None else nbunch
     total = ceil(len(nbunch)/n)
     if total==0:
