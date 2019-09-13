@@ -6,15 +6,11 @@
 #    Luca Cappelletti <cappelletti.luca@studenti.unimi.it>
 #
 """Functions for computing the harmonic centrality of a graph using multiprocessing and caching."""
-from auto_tqdm import tqdm
 from multiprocessing import Pool, cpu_count
-from dict_hash import sha256
 from math import ceil
 import os
 import shutil
-import compress_json
 from collections import ChainMap
-from touch import touch
 from .harmonic import harmonic_centrality
 
 __all__ = ['parallel_harmonic_centrality']
@@ -104,3 +100,15 @@ def parallel_harmonic_centrality(G, n=100, nbunch=None, distance=None, verbose=F
     if cache:
         _clear_cache(cache_dir)
     return results
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        from auto_tqdm import tqdm
+        from dict_hash import sha256
+        import compress_json
+        from touch import touch
+    except:
+        raise SkipTest("SciPy not available")
