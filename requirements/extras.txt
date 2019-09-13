@@ -7,3 +7,7 @@ pydot>=1.2.4
 pyyaml>=5.1
 lxml>=4.2.3
 gdal==1.10.0
+touch>=2019.4.13
+compress_json>=1.0.0
+auto_tqdm>=1.03
+dict_hash>=1.0.4

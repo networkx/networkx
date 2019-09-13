@@ -134,7 +134,11 @@ extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                   'pydot': ['pydot'],
                   'pygraphviz': ['pygraphviz'],
                   'pyyaml': ['pyyaml'],
-                  'scipy': ['scipy']
+                  'scipy': ['scipy'],
+                  'touch': ['touch'],
+                  'compress_json': ['compress_json'],
+                  'auto_tqdm': ['auto_tqdm'],
+                  'dict_hash': ['dict_hash'],
                  }
 
 if __name__ == "__main__":
