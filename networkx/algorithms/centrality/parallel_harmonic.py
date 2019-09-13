@@ -24,6 +24,7 @@ def _build_path(nodes, cache_dir):
         cache_dir: string
             Directory where to store the partial results.
     """
+    from dict_hash import sha256
     return "{cache_dir}/{hashcode}.json.gz".format(
         cache_dir=cache_dir,
         hashcode=sha256(nodes)
@@ -50,6 +51,8 @@ def _clear_cache(cache_dir):
 
 
 def _job(G, nbunch, distance, cache, cache_dir):
+    import compress_json
+    from touch import touch
     try:
         if cache:
             path = _build_path(nbunch, cache_dir)
@@ -88,9 +91,6 @@ def parallel_harmonic_centrality(G, n=100, nbunch=None, distance=None, verbose=F
     r"""Compute harmonic centrality for nodes.
     """
     from auto_tqdm import tqdm
-    from dict_hash import sha256
-    import compress_json
-    from touch import touch
     nbunch = list(G.nodes) if nbunch is None else nbunch
     total = ceil(len(nbunch)/n)
     if total==0:
