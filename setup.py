@@ -121,10 +121,10 @@ package_data = {
     'networkx.utils': ['tests/*.py']
 }
 
-install_requires = ['decorator>=4.3.0']
+install_requires = ['decorator>=4.3.0', 'touch', 'compress_json', 'auto_tqdm', 'dict_hash']
 extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                           'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml',
-                          'nose', 'touch', 'compress_json', 'auto_tqdm', 'dict_hash'],
+                          'nose'],
                   'gdal': ['gdal'],
                   'lxml': ['lxml'],
                   'matplotlib': ['matplotlib'],

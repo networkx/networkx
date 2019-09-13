@@ -42,7 +42,7 @@ def _build_tmp_path(path):
     With this simple tweak parallelization can be achieved without having to
     use tools such as OpenMPI at this scale, accepting a non-zero collision risk.
     """
-    return f"{path}.tmp"
+    return "{path}.tmp".format(path=path)
 
 
 def _clear_cache(cache_dir):
