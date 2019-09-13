@@ -124,7 +124,7 @@ package_data = {
 install_requires = ['decorator>=4.3.0']
 extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                           'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml',
-                          'nose'],
+                          'nose', 'touch', 'compress_json', 'auto_tqdm', 'dict_hash'],
                   'gdal': ['gdal'],
                   'lxml': ['lxml'],
                   'matplotlib': ['matplotlib'],
