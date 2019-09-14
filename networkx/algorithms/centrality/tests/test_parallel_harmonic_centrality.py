@@ -8,7 +8,6 @@ from networkx.algorithms.centrality import harmonic_centrality, parallel_harmoni
 
 class TestParallelHarmonicCentrality:
     def setUp(self):
-        self.Big_G = nx.complete_graph(300)
         self.P3 = nx.path_graph(3)
         self.P4 = nx.path_graph(4)
         self.K5 = nx.complete_graph(5)
@@ -27,15 +26,6 @@ class TestParallelHarmonicCentrality:
         d = parallel_harmonic_centrality(self.P3)
 
         for n in sorted(self.P3):
-            assert_almost_equal(c[n], d[n], places=3)
-
-    def test_big_graph_harmonic(self):
-        c = harmonic_centrality(self.Big_G)
-        d = parallel_harmonic_centrality(
-            self.Big_G,
-            cache=True
-        )
-        for n in sorted(self.Big_G):
             assert_almost_equal(c[n], d[n], places=3)
 
     def test_p4_harmonic(self):

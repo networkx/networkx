@@ -8,108 +8,57 @@
 """Functions for computing the harmonic centrality of a graph using multiprocessing and caching."""
 from multiprocessing import Pool, cpu_count
 from math import ceil
-import os
-import shutil
 from collections import ChainMap
 from .harmonic import harmonic_centrality
 
 __all__ = ['parallel_harmonic_centrality']
 
 
-def _build_path(nodes, cache_dir):
-    """Return path corresponding to given nodes.
-        nodes: container
-            Container of nodes, used to determine the unique
-            hash to build the cache path.
-        cache_dir: string
-            Directory where to store the partial results.
-    """
-    from dict_hash import sha256
-    return "{cache_dir}/{hashcode}.json.gz".format(
-        cache_dir=cache_dir,
-        hashcode=sha256(nodes)
-    )
+def _harmonic_centrality(task):
+    return harmonic_centrality(*task)
 
 
-def _build_tmp_path(path):
-    """Return, given a path, its default placeholder path.
-
-    This is necessary for when the code is run on computing SLURM clusters,
-    where multiple parallel nodes work on the same virtual disk.
-    With this simple tweak parallelization can be achieved without having to
-    use tools such as OpenMPI at this scale, accepting a non-zero collision risk.
-    """
-    return "{path}.tmp".format(path=path)
-
-
-def _clear_cache(cache_dir):
-    """Delete given cache dir.
-        cache_dir: string
-            Directory where to store the partial results.
-    """
-    shutil.rmtree(cache_dir)
-
-
-def _job(G, nbunch, distance, cache, cache_dir):
-    import compress_json
-    from touch import touch
-    try:
-        if cache:
-            path = _build_path(nbunch, cache_dir)
-            if os.path.exists(path):
-                return compress_json.load(path)
-            tmp_path = _build_tmp_path(path)
-            if os.path.exists(tmp_path):
-                return {}
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            touch(tmp_path)
-        
-        result = harmonic_centrality(G, nbunch=nbunch, distance=distance)
-
-        if cache:
-            compress_json.dump(result, path)
-            os.remove(tmp_path)
-
-        return result
-    except (Exception, KeyboardInterrupt) as e:
-        if cache and os.path.exists(tmp_path):
-            os.remove(tmp_path)
-        raise e
-    
-
-def _job_wrapper(task):
-    return _job(*task)
-
-def _tasks(G, nbunch, distance, cache, cache_dir, n):
+def _tasks(G, nbunch, distance, n):
     """Yield successive n equally sized nbunch from graphs with task arguments."""
     return (
-        (G, nbunch[i:i + n], distance, cache, cache_dir)
+        (G, nbunch[i:i + n], distance)
         for i in range(0, len(nbunch), n)
     )
 
-def parallel_harmonic_centrality(G, n=None, nbunch=None, distance=None, verbose=False, cache=False, cache_dir=".parallel_harmonic_centrality"):
-    r"""Compute harmonic centrality for nodes.
+
+def parallel_harmonic_centrality(G, nbunch=None, distance=None, n=None):
+    r"""Compute harmonic centrality for nodes in parallel fashion.
+    Parameters
+    ----------
+    G : graph
+      A NetworkX graph
+
+    nbunch : container
+      Container of nodes. If provided harmonic centrality will be computed
+      only over the nodes in nbunch.
+
+    distance : edge attribute key, optional (default=None)
+      Use the specified edge attribute as the edge distance in shortest
+      path calculations.  If `None`, then each edge will have distance equal to 1.
+
+    n: integer,
+      Size of the chunks of nodes to parse by a single job.
+
+    Returns
+    -------
+    nodes : dictionary
+      Dictionary of nodes with harmonic centrality as the value.
     """
-    nbunch = list(G.nodes) if nbunch is None else nbunch
-    if len(nbunch)==0:
+    if nbunch is None:
+        nbunch = list(G.nodes)
+    if len(nbunch) == 0:
         return {}
     if n is None:
-        n = cpu_count()
-    with Pool(min(cpu_count(), ceil(len(nbunch)/n))) as p:
+        n = ceil(len(nbunch) / cpu_count())
+    with Pool(min(cpu_count(), n)) as p:
         results = dict(ChainMap(*list(
-            p.imap(_job_wrapper, _tasks(G, nbunch, distance, cache, cache_dir, n))
+            p.imap(_harmonic_centrality, _tasks(G, nbunch, distance, n))
         )))
-    if cache:
-        _clear_cache(cache_dir)
+        p.close()
+        p.join()
     return results
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        from dict_hash import sha256
-        import compress_json
-        from touch import touch
-    except:
-        raise SkipTest("SciPy not available")
