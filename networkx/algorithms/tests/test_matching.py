@@ -19,18 +19,22 @@ class TestMaxWeightMatching(object):
         """Empty graph"""
         G = nx.Graph()
         assert_equal(nx.max_weight_matching(G), set())
+        assert_equal(nx.min_weight_matching(G), set())
 
     def test_trivial2(self):
         """Self loop"""
         G = nx.Graph()
         G.add_edge(0, 0, weight=100)
         assert_equal(nx.max_weight_matching(G), set())
+        assert_equal(nx.min_weight_matching(G), set())
 
     def test_trivial3(self):
         """Single edge"""
         G = nx.Graph()
         G.add_edge(0, 1)
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({0: 1, 1: 0}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({0: 1, 1: 0}))
 
     def test_trivial4(self):
@@ -40,6 +44,8 @@ class TestMaxWeightMatching(object):
         G.add_edge('two', 'three', weight=11)
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({'three': 'two', 'two': 'three'}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({'one': 'two', 'two': 'one'}))
 
     def test_trivial5(self):
         """Path"""
@@ -51,6 +57,13 @@ class TestMaxWeightMatching(object):
                            matching_dict_to_set({2: 3, 3: 2}))
         assert_edges_equal(nx.max_weight_matching(G, 1),
                            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}))
+        print(matching_dict_to_set({1: 2, 3: 4}))
+        print(nx.min_weight_matching(G))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 2, 3: 4}))
+        assert_edges_equal(nx.min_weight_matching(G, 1),
+                           matching_dict_to_set({1: 2, 3: 4}))
+        
 
     def test_trivial6(self):
         """Small graph with arbitrary weight attribute"""
@@ -59,6 +72,8 @@ class TestMaxWeightMatching(object):
         G.add_edge('two', 'three', weight=11, abcd=10)
         assert_edges_equal(nx.max_weight_matching(G, weight='abcd'),
                            matching_dict_to_set({'one': 'two', 'two': 'one'}))
+        assert_edges_equal(nx.min_weight_matching(G, weight='abcd'),
+                           matching_dict_to_set({'three': 'two'}))
 
     def test_floating_point_weights(self):
         """Floating point weights"""
@@ -69,6 +84,13 @@ class TestMaxWeightMatching(object):
         G.add_edge(1, 4, weight=math.sqrt(2.0))
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 4, 2: 3, 3: 2, 4: 1}))
+        assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 4, 2: 3, 3: 2, 4: 1}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 4, 2: 3, 3: 2, 4: 1}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 4, 2: 3, 3: 2, 4: 1}))
+
 
     def test_negative_weights(self):
         """Negative weights"""
@@ -82,6 +104,11 @@ class TestMaxWeightMatching(object):
                            matching_dict_to_set({1: 2, 2: 1}))
         assert_edges_equal(nx.max_weight_matching(G, 1),
                            matching_dict_to_set({1: 3, 2: 4, 3: 1, 4: 2}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 2, 3: 4}))
+        assert_edges_equal(nx.min_weight_matching(G, 1),
+                           matching_dict_to_set({1: 2, 3: 4}))
+        
 
     def test_s_blossom(self):
         """Create S-blossom and use it for augmentation:"""
@@ -90,9 +117,13 @@ class TestMaxWeightMatching(object):
                                    (2, 3, 10), (3, 4, 7)])
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}))
 
         G.add_weighted_edges_from([(1, 6, 5), (4, 5, 6)])
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1}))
 
     def test_s_t_blossom(self):
@@ -102,13 +133,19 @@ class TestMaxWeightMatching(object):
                                    (1, 4, 5), (4, 5, 4), (1, 6, 3)])
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1}))
         G.add_edge(4, 5, weight=3)
         G.add_edge(1, 6, weight=4)
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1}))
         G.remove_edge(1, 6)
         G.add_edge(3, 6, weight=4)
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 2, 2: 1, 3: 6, 4: 5, 5: 4, 6: 3}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 2, 2: 1, 3: 6, 4: 5, 5: 4, 6: 3}))
 
     def test_nested_s_blossom(self):
@@ -119,9 +156,12 @@ class TestMaxWeightMatching(object):
                                    (2, 4, 8), (3, 5, 8), (4, 5, 10),
                                    (5, 6, 6)])
         dict_format = {1: 3, 2: 4, 3: 1, 4: 2, 5: 6, 6: 5}
-        expected = {frozenset(e) for e in matching_dict_to_set(dict_format)}
-        answer = {frozenset(e) for e in nx.max_weight_matching(G)}
-        assert_equal(answer, expected)
+        max_expected = {frozenset(e) for e in matching_dict_to_set(dict_format)}
+        max_answer = {frozenset(e) for e in nx.max_weight_matching(G)}
+        min_expected = {frozenset(e) for e in matching_dict_to_set(dict_format)}
+        min_answer = {frozenset(e) for e in nx.min_weight_matching(G)}
+        assert_equal(max_answer, max_expected)
+        assert_equal(min_answer, min_expected)
 
     def test_nested_s_blossom_relabel(self):
         """Create S-blossom, relabel as S, include in nested S-blossom:"""
@@ -130,6 +170,8 @@ class TestMaxWeightMatching(object):
                                    (3, 4, 20), (3, 5, 20), (4, 5, 25),
                                    (5, 6, 10), (6, 7, 10), (7, 8, 8)])
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3, 5: 6, 6: 5, 7: 8, 8: 7}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3, 5: 6, 6: 5, 7: 8, 8: 7}))
 
     def test_nested_s_blossom_expand(self):
@@ -141,6 +183,8 @@ class TestMaxWeightMatching(object):
                                    (7, 8, 12)])
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 2, 2: 1, 3: 5, 4: 6, 5: 3, 6: 4, 7: 8, 8: 7}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 2, 2: 1, 3: 5, 4: 6, 5: 3, 6: 4, 7: 8, 8: 7}))
 
     def test_s_blossom_relabel_expand(self):
         """Create S-blossom, relabel as T, expand:"""
@@ -150,6 +194,8 @@ class TestMaxWeightMatching(object):
                                    (4, 8, 14), (5, 7, 13)])
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7, 6: 1, 7: 5, 8: 4}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7, 6: 1, 7: 5, 8: 4}))
 
     def test_nested_s_blossom_relabel_expand(self):
         """Create nested S-blossom, relabel as T, expand:"""
@@ -158,6 +204,8 @@ class TestMaxWeightMatching(object):
                                    (2, 3, 25), (2, 4, 18), (3, 5, 18),
                                    (4, 5, 13), (4, 7, 7), (5, 6, 7)])
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 8, 2: 3, 3: 2, 4: 7, 5: 6, 6: 5, 7: 4, 8: 1}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 8, 2: 3, 3: 2, 4: 7, 5: 6, 6: 5, 7: 4, 8: 1}))
 
     def test_nasty_blossom1(self):
@@ -172,6 +220,9 @@ class TestMaxWeightMatching(object):
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7,
                                                  6: 1, 7: 5, 8: 4, 9: 10, 10: 9}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7,
+                                                 6: 1, 7: 5, 8: 4, 9: 10, 10: 9}))
 
     def test_nasty_blossom2(self):
         """Again but slightly different:"""
@@ -181,6 +232,9 @@ class TestMaxWeightMatching(object):
                                    (3, 9, 35), (4, 8, 26), (5, 7, 40),
                                    (9, 10, 5)])
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7,
+                                                 6: 1, 7: 5, 8: 4, 9: 10, 10: 9}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7,
                                                  6: 1, 7: 5, 8: 4, 9: 10, 10: 9}))
 
@@ -194,6 +248,9 @@ class TestMaxWeightMatching(object):
                                    (3, 9, 35), (4, 8, 28), (5, 7, 26),
                                    (9, 10, 5)])
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7,
+                                                 6: 1, 7: 5, 8: 4, 9: 10, 10: 9}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7,
                                                  6: 1, 7: 5, 8: 4, 9: 10, 10: 9}))
 
@@ -210,6 +267,9 @@ class TestMaxWeightMatching(object):
         assert_edges_equal(nx.max_weight_matching(G),
                            matching_dict_to_set({1: 8, 2: 3, 3: 2, 4: 6, 5: 9, 6: 4,
                                                  7: 10, 8: 1, 9: 5, 10: 7, 11: 12, 12: 11}))
+        assert_edges_equal(nx.min_weight_matching(G),
+                           matching_dict_to_set({1: 8, 2: 3, 3: 2, 4: 6, 5: 9, 6: 4,
+                                                 7: 10, 8: 1, 9: 5, 10: 7, 11: 12, 12: 11}))
 
     def test_nasty_blossom_expand_recursively(self):
         """Create nested S-blossom, relabel as S, expand recursively:"""
@@ -219,6 +279,9 @@ class TestMaxWeightMatching(object):
                                    (1, 8, 15), (5, 7, 30), (7, 6, 10),
                                    (8, 10, 10), (4, 9, 30)])
         assert_edges_equal(nx.max_weight_matching(G),
+                           matching_dict_to_set({1: 2, 2: 1, 3: 5, 4: 9, 5: 3,
+                                                 6: 7, 7: 6, 8: 10, 9: 4, 10: 8}))
+        assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 2, 2: 1, 3: 5, 4: 9, 5: 3,
                                                  6: 7, 7: 6, 8: 10, 9: 4, 10: 8}))
 
