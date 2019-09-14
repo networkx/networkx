@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2019 by
 #   Luca Cappelletti <luca.cappelletti@studenti.unimi.it>
 #
