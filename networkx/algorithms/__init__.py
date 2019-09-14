@@ -120,3 +120,4 @@ from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.approximation.christofides import *
+from networkx.algorithms.approximation.karger import *

@@ -1,4 +1,4 @@
-# test_clique.py - unit tests for the approximation.clique module
+# test_christofides.py - unit tests for the approximation.christofides module
 #
 # Copyright 2015 NetworkX developers.
 #
@@ -6,7 +6,7 @@
 #
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
-"""Unit tests for the :mod:`networkx.algorithms.approximation.clique`
+"""Unit tests for the :mod:`networkx.algorithms.approximation.christofides`
 module.
 
 """

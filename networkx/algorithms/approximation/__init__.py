@@ -29,3 +29,4 @@ from .steinertree import *
 from .vertex_cover import *
 from .treewidth import *
 from .christofides import *
+from .karger import *
