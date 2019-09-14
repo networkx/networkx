@@ -50,3 +50,6 @@ networkx.egg-info/
 
 # VS Code settings
 .vscode
+test.edgelist
+
+test.edgelist.gz

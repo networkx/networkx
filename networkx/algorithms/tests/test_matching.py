@@ -57,8 +57,6 @@ class TestMaxWeightMatching(object):
                            matching_dict_to_set({2: 3, 3: 2}))
         assert_edges_equal(nx.max_weight_matching(G, 1),
                            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}))
-        print(matching_dict_to_set({1: 2, 3: 4}))
-        print(nx.min_weight_matching(G))
         assert_edges_equal(nx.min_weight_matching(G),
                            matching_dict_to_set({1: 2, 3: 4}))
         assert_edges_equal(nx.min_weight_matching(G, 1),
