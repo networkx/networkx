@@ -473,6 +473,12 @@ class TestGraph(BaseAttrGraphTester):
         self.K3._node[1] = {}
         self.K3._node[2] = {}
 
+    def test_is_complete(self):
+        G = nx.complete_graph(3)
+        assert_equal(G.is_complete(), True)
+        G.remove_edge(0, 1)
+        assert_equal(G.is_complete(), False)
+
     def test_pickle(self):
         G = self.K3
         pg = pickle.loads(pickle.dumps(G, -1))

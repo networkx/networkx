@@ -8,7 +8,7 @@ problems.
     ``from networkx.algorithms import approximation``.
 
 """
-
+from networkx.algorithms.approximation.christofides import *
 from networkx.algorithms.approximation.clustering_coefficient import *
 from networkx.algorithms.approximation.clique import *
 from networkx.algorithms.approximation.connectivity import *

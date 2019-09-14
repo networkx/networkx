@@ -502,7 +502,8 @@ class Graph(object):
         """
         if node_for_adding not in self._node:
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory(
+            )
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
