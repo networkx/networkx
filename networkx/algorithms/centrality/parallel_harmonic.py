@@ -87,20 +87,18 @@ def _tasks(G, nbunch, distance, cache, cache_dir, n):
         for i in range(0, len(nbunch), n)
     )
 
-def parallel_harmonic_centrality(G, n=100, nbunch=None, distance=None, verbose=False, cache=False, cache_dir=".parallel_harmonic_centrality"):
+def parallel_harmonic_centrality(G, n=None, nbunch=None, distance=None, verbose=False, cache=False, cache_dir=".parallel_harmonic_centrality"):
     r"""Compute harmonic centrality for nodes.
     """
-    from auto_tqdm import tqdm
     nbunch = list(G.nodes) if nbunch is None else nbunch
-    total = ceil(len(nbunch)/n)
-    if total==0:
+    if len(nbunch)==0:
         return {}
-    with Pool(min(cpu_count(), total)) as p:
-        results = dict(ChainMap(*list(tqdm(
-            p.imap(_job_wrapper, _tasks(G, nbunch, distance, cache, cache_dir, n)),
-            total=total,
-            verbose=verbose
-        ))))
+    if n is None:
+        n = cpu_count()
+    with Pool(min(cpu_count(), ceil(len(nbunch)/n))) as p:
+        results = dict(ChainMap(*list(
+            p.imap(_job_wrapper, _tasks(G, nbunch, distance, cache, cache_dir, n))
+        )))
     if cache:
         _clear_cache(cache_dir)
     return results
@@ -110,7 +108,6 @@ def parallel_harmonic_centrality(G, n=100, nbunch=None, distance=None, verbose=F
 def setup_module(module):
     from nose import SkipTest
     try:
-        from auto_tqdm import tqdm
         from dict_hash import sha256
         import compress_json
         from touch import touch
