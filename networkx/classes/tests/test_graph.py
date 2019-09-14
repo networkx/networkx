@@ -15,6 +15,7 @@ def test_deprecated():
     # for backwards compatibility with 1.x, will be removed for 3.x
     G = nx.complete_graph(3)
     assert_equal(G.node, {0: {}, 1: {}, 2: {}})
+    assert_equal(G.is_complete(), True)
 
     G = nx.DiGraph()
     G.add_path([3, 4])
@@ -29,6 +30,7 @@ def test_deprecated():
     assert_equal(G.adj, {3: {4: {}, 5: {}}, 4: {}, 5: {}})
 
     G = nx.DiGraph([(0, 0), (0, 1), (1, 2)])
+    assert_equal(G.is_complete(), False)
     assert_equal(G.number_of_selfloops(), 1)
     assert_equal(list(G.nodes_with_selfloops()), [0])
     assert_equal(list(G.selfloop_edges()), [(0, 0)])
@@ -498,6 +500,12 @@ class TestGraph(BaseAttrGraphTester):
         self.K3._node[0] = {}
         self.K3._node[1] = {}
         self.K3._node[2] = {}
+
+    def test_is_complete(self):
+        G = nx.complete_graph(3)
+        assert_equal(G.is_complete(), True)
+        G.remove_edge(0, 1)
+        assert_equal(G.is_complete(), False)
 
     def test_pickle(self):
         G = self.K3

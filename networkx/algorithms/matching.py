@@ -16,10 +16,10 @@
 # All rights reserved.
 # BSD license.
 """Functions for computing and verifying matchings in a graph."""
+import networkx as nx
 from collections import Counter
 from itertools import combinations
 from itertools import repeat
-from ..classes import Graph
 
 __all__ = ['is_matching', 'is_maximal_matching', 'is_perfect_matching',
            'max_weight_matching', 'min_weight_matching', 'maximal_matching']
@@ -217,7 +217,7 @@ def min_weight_matching(G, maxcardinality=False, weight='weight'):
     """
     if not len(G.edges):
         return max_weight_matching(G, maxcardinality=maxcardinality, weight=weight)
-    I = Graph()
+    I = nx.Graph()
     min_weight = min([W[weight] if weight in W else 1 for _, _, W in G.edges(data=True)])
     I.add_weighted_edges_from([
         (u, v, 1/(1+w[weight]-min_weight if weight in w else 1)) for u, v, w in G.edges(data=True)
