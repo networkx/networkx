@@ -42,11 +42,29 @@ class TestFloyd:
         path, dist = nx.floyd_warshall_predecessor_and_distance(G)
         assert_equal(dist['s']['v'], 2)
         # skip this test, could be alternate path s-u-v
- #       assert_equal(path['s']['v'],'x')
+        # assert_equal(path['s']['v'],'x')
 
         # alternate interface
         dist = nx.floyd_warshall(G)
         assert_equal(dist['s']['v'], 2)
+
+        # floyd_warshall_predecessor_and_distance returns
+        # dicts-of-defautdicts
+        # make sure we don't get empty dictionary
+        XG = nx.DiGraph()
+        XG.add_weighted_edges_from([('v', 'x', 5.0), ('y', 'x', 5.0),
+                                    ('v', 'y', 6.0), ('x', 'u', 2.0)])
+        path, dist = nx.floyd_warshall_predecessor_and_distance(XG)
+        inf = float("inf")
+        assert_equal(dist,
+                     {'v': {'v': 0, 'x': 5.0, 'y': 6.0, 'u': 7.0},
+                      'x': {'x': 0, 'u': 2.0, 'v': inf, 'y': inf},
+                      'y': {'y': 0, 'x': 5.0, 'v': inf, 'u': 7.0},
+                      'u': {'u': 0, 'v': inf, 'x': inf, 'y': inf}})
+        assert_equal(path,
+                     {'v': {'x': 'v', 'y': 'v', 'u': 'x'},
+                      'x': {'u': 'x'},
+                      'y': {'x': 'y', 'u': 'x'}})
 
     @raises(KeyError)
     def test_reconstruct_path(self):
