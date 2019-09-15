@@ -43,6 +43,7 @@ __all__ = ['generate_edgelist',
 
 from networkx.utils import open_file, make_str
 import networkx as nx
+import io
 import sys
 
 
@@ -373,7 +374,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
         lines = (line for line in path)"""
     
     """Version independent, r/rb independent solution"""
-    if sys.version[0]=='2' or 'b' in path.mode:
+    if sys.version[0]=='2' or isinstance(path,(io.RawIOBase, io.BufferedIOBase)):
         lines = (line.decode(encoding) for line in path)
     else:
         lines = (line for line in path)
