@@ -243,7 +243,7 @@ def prim_mst_edges(G, minimum, weight='weight',
     while nodes:
         u = nodes.pop()
         frontier = []
-        visited = set([u])
+        visited = {u}
         if is_multigraph:
             for v, keydict in G.adj[u].items():
                 for k, d in keydict.items():
