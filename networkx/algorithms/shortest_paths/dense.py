@@ -43,8 +43,8 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     ------
     Floyd's algorithm is appropriate for finding shortest paths in
     dense graphs or graphs with negative weights when Dijkstra's
-    algorithm fails.  This algorithm can still fail if there are
-    negative cycles.  It has running time $O(n^3)$ with running space of $O(n^2)$.
+    algorithm fails. This algorithm can still fail if there are negative
+    cycles.  It has running time $O(n^3)$ with running space of $O(n^2)$.
     """
     try:
         import numpy as np
@@ -57,8 +57,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     A = nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight=min,
                            weight=weight, nonedge=np.inf)
     n, m = A.shape
-    I = np.identity(n)
-    A[I == 1] = 0  # diagonal elements should be zero
+    A[np.identity(n) == 1] = 0  # diagonal elements should be zero
     for i in range(n):
         A = np.minimum(A, A[i, :] + A[:, i])
     return A
@@ -105,10 +104,15 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     all_pairs_shortest_path_length
     """
     from collections import defaultdict
+    # dictionary-of-dictionaries representation for dist and pred
+    # use some defaultdict magick here
+    # for dist the default is the floating point inf value
     dist = defaultdict(lambda: defaultdict(lambda: float('inf')))
     for u in G:
         dist[u][u] = 0
     pred = defaultdict(dict)
+    # initialize path distance dictionary to be the adjacency matrix
+    # also set the distance to self to 0 (zero diagonal)
     undirected = not G.is_directed()
     for u, v, d in G.edges(data=True):
         e_weight = d.get(weight, 1.0)
@@ -118,17 +122,17 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
     for w in G:
-        dist_w = dist[w] # save recomputation
+        dist_w = dist[w]  # save recomputation
         for u in G:
-            dist_u = dist[u] # save recomputation
+            dist_u = dist[u]  # save recomputation
             for v in G:
                 d = dist_u[w] + dist_w[v]
-                if dist_u[v] > d: 
+                if dist_u[v] > d:
                     dist_u[v] = d
                     pred[u][v] = pred[w][v]
     return dict(pred), dict(dist)
 
- 
+
 def reconstruct_path(source, target, predecessors):
     """Reconstruct a path from source to target using the predecessors
     dict as returned by floyd_warshall_predecessor_and_distance
@@ -213,5 +217,5 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-    except:
+    except ImportError:
         raise SkipTest("NumPy not available")
