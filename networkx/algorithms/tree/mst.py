@@ -365,7 +365,7 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
     >>> G.add_edge(0, 3, weight=2)
     >>> mst = tree.minimum_spanning_edges(G, algorithm='kruskal', data=False)
     >>> edgelist = list(mst)
-    >>> sorted(edgelist)
+    >>> sorted(sorted(e) for e in edgelist)
     [(0, 1), (1, 2), (2, 3)]
 
     Find minimum spanning edges by Prim's algorithm
@@ -374,7 +374,7 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
     >>> G.add_edge(0, 3, weight=2)
     >>> mst = tree.minimum_spanning_edges(G, algorithm='prim', data=False)
     >>> edgelist = list(mst)
-    >>> sorted(edgelist)
+    >>> sorted(sorted(e) for e in edgelist)
     [(0, 1), (1, 2), (2, 3)]
 
     Notes
@@ -457,7 +457,7 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
     >>> G.add_edge(0, 3, weight=2)
     >>> mst = tree.maximum_spanning_edges(G, algorithm='kruskal', data=False)
     >>> edgelist = list(mst)
-    >>> sorted(edgelist)
+    >>> sorted(sorted(e) for e in edgelist)
     [(0, 1), (0, 3), (1, 2)]
 
     Find maximum spanning edges by Prim's algorithm
@@ -466,8 +466,8 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
     >>> G.add_edge(0, 3, weight=2) # assign weight 2 to edge 0-3
     >>> mst = tree.maximum_spanning_edges(G, algorithm='prim', data=False)
     >>> edgelist = list(mst)
-    >>> sorted(edgelist)
-    [(0, 1), (0, 3), (3, 2)]
+    >>> sorted(sorted(e) for e in edgelist)
+    [(0, 1), (0, 3), (2, 3)]
 
     Notes
     -----
