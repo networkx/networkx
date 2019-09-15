@@ -42,6 +42,58 @@ def karger_iterations(G):
 
 
 def karger(G, weight='weight', iterations=None):
+    """Returns the weighted minimum edge cut using the Karger algorithm [1]_.
+
+    Karger's algorithm is a randomized algorithm to compute a minimum
+    cut of a connected graph. By iterating this basic algorithm a
+    sufficient number of times, a minimum cut can be found with high
+    probability. In weighted cases, all weights must be nonnegative.
+
+    The algorithm is generally slower than the Stoer-Wagner algorithm,
+    but it can be parallelized in an easier way.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute named by the
+        weight parameter below. If this attribute is not present, the edge is
+        considered to have unit weight.
+
+    weight : string
+        Name of the weight attribute of the edges. If the attribute is not
+        present, unit weight is assumed. Default value: 'weight'.
+
+    iterations : int
+        Number of iterations to run. By default, the number is identyfied by running
+        the function `karger_iterations`.
+
+    Returns
+    -------
+    cut_value : integer or float
+        The sum of weights of edges in a minimum cut.
+
+    partition : pair of node lists
+        A partitioning of the nodes that defines a minimum cut.
+    
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or a multigraph.
+
+    NetworkXError
+        If the graph has less than two nodes, is not connected or has a
+        negative-weighted edge.
+
+    References
+    ----------
+    .. [1] Karger, David R. "Global Min-cuts in RNC, and Other
+    Ramifications of a Simple Min-Cut Algorithm." SODA. Vol. 93. 1993.
+    """
+    n = len(G)
+    if n < 2:
+        raise nx.NetworkXError('Graph has less than two nodes.')
+    if not nx.is_connected(G):
+        raise nx.NetworkXError('Graph is not connected.')
     if iterations is None:
         iterations = karger_iterations(G)
     min_score = inf
@@ -71,6 +123,56 @@ def _karger(task):
 
 
 def parallel_karger(G, weight='weight'):
+    """Returns the weighted minimum edge cut using the parallel Karger [1]_ algorithm.
+
+    Karger's algorithm is a randomized algorithm to compute a minimum
+    cut of a connected graph. By iterating this basic algorithm a
+    sufficient number of times, a minimum cut can be found with high
+    probability. In weighted cases, all weights must be nonnegative.
+
+    The algorithm is generally slower than the Stoer-Wagner algorithm,
+    but it can be parallelized in an easier way.
+
+    The algorithm parallilezes across all available cores.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute named by the
+        weight parameter below. If this attribute is not present, the edge is
+        considered to have unit weight.
+
+    weight : string
+        Name of the weight attribute of the edges. If the attribute is not
+        present, unit weight is assumed. Default value: 'weight'.
+
+    Returns
+    -------
+    cut_value : integer or float
+        The sum of weights of edges in a minimum cut.
+
+    partition : pair of node lists
+        A partitioning of the nodes that defines a minimum cut.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or a multigraph.
+
+    NetworkXError
+        If the graph has less than two nodes, is not connected or has a
+        negative-weighted edge.
+
+    References
+    ----------
+    .. [1] Karger, David R. "Global Min-cuts in RNC, and Other
+    Ramifications of a Simple Min-Cut Algorithm." SODA. Vol. 93. 1993.
+    """
+    n = len(G)
+    if n < 2:
+        raise nx.NetworkXError('Graph has less than two nodes.')
+    if not nx.is_connected(G):
+        raise nx.NetworkXError('Graph is not connected.')
     processes = cpu_count()
     n = ceil(karger_iterations(G) / processes)
     with Pool(processes) as p:

@@ -12,6 +12,7 @@ module.
 """
 
 from nose.tools import assert_equal
+from nose.tools import raises
 import networkx as nx
 import random
 
@@ -21,6 +22,28 @@ class TestKarger(object):
 
     """
 
+    @raises(nx.NetworkXError)
+    def test_graph_size(self):
+        G = nx.complete_graph(1)
+        nx.karger(G)
+
+    @raises(nx.NetworkXError)
+    def test_graph_connected(self):
+        G = nx.Graph()
+        G.add_nodes_from([0,1,2])
+        nx.karger(G)
+
+    @raises(nx.NetworkXError)
+    def test_parallel_graph_size(self):
+        G = nx.complete_graph(1)
+        nx.parallel_karger(G)
+
+    @raises(nx.NetworkXError)
+    def test_parallel_graph_connected(self):
+        G = nx.Graph()
+        G.add_nodes_from([0,1,2])
+        nx.parallel_karger(G)
+    
     def test_karger(self):
         G = nx.fast_gnp_random_graph(20, 0.5, seed=42)
         score, _ = nx.stoer_wagner(G)

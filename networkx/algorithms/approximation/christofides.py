@@ -7,9 +7,23 @@
 """Functions for computing a 3/2-approximation of TSP using Christofides algorithm."""
 import networkx as nx
 
-__all__ = ["christofides"]
+__all__ = ["christofides", "shortcutting"]
 
 def shortcutting(circuit):
+    """Return a generator with the shortcutted circuit.
+    
+    Makes the given circuit into a Hamiltonian circuit
+    by skipping repeated vertices
+
+    Parameters
+    ----------
+    circuit : container of edges
+        Iterator of edges, for instance of an Eulerian cycle.
+
+    Returns
+    -------
+    Generator of list of edges an Hamiltonian cycle.
+    """
     nodes = []
     for u, v in circuit:
         if v in nodes:
@@ -21,7 +35,7 @@ def shortcutting(circuit):
     yield(nodes[0], nodes[-1])
 
 def christofides(G, weight='weight', algorithm='kruskal'):
-    """Compute a 3/2-approximation of TSP in given graph using Christofides [1] algorithm.
+    """Compute a 3/2-approximation of TSP in given graph using Christofides [1]_ algorithm.
 
     Parameters
     ----------
@@ -42,6 +56,11 @@ def christofides(G, weight='weight', algorithm='kruskal'):
     Generator of list of edges forming a 3/2-approximation of the minimal
     Hamiltonian cycle.
 
+    Raises
+    ------
+    NetworkXError
+        If the graph is not complete.
+
     References
     ----------
     .. [1] Christofides, Nicos. "Worst-case analysis of a new heuristic for 
@@ -49,7 +68,7 @@ def christofides(G, weight='weight', algorithm='kruskal'):
     Pittsburgh Pa Management Sciences Research Group, 1976.
     """
     if not G.is_complete():
-        raise ValueError("Christofides algorithm works only for complete graph.")
+        raise nx.NetworkXError("Christofides algorithm works only for complete graph.")
     T = nx.minimum_spanning_tree(G, weight=weight, algorithm=algorithm)
     L = nx.Graph(G)
     L.remove_nodes_from([v for v, degree in T.degree if not (degree % 2)])

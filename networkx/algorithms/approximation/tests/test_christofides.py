@@ -23,7 +23,7 @@ class TestChristofides(object):
 
     """
 
-    @raises(ValueError)
+    @raises(nx.NetworkXError)
     def test_exception(self):
         G = nx.complete_graph(10)
         G.remove_edge(0, 1)
