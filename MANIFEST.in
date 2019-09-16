@@ -13,8 +13,8 @@ include networkx/tests/*.py
 include networkx/drawing/tests/baseline/*png
 include networkx/*/tests/*.txt
 include networkx/*/tests/*.py
-include networkx/*/tests/*.tex
-include networkx/*/placeholders/*.tex
+include networkx/drawing/tests/*.tex
+include networkx/drawing/placeholders/*.tex
 include networkx/*/*/tests/*.py
 include networkx/*/*/tests/*.A99
 include networkx/*/*/tests/*.B99
