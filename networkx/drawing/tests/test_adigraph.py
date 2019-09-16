@@ -46,5 +46,5 @@ def tests_adigraph():
     script_dir = os.path.dirname(os.path.realpath(__file__))
     A.save("adigraph_result.tex", document=True)
     result = filecmp.cmp('{script_dir}/expected.tex'.format(script_dir=script_dir), 'adigraph_result.tex')
-    #os.remove("adigraph_result.tex")
+    os.remove("adigraph_result.tex")
     assert_true(result)
