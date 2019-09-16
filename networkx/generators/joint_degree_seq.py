@@ -30,7 +30,7 @@ def is_valid_joint_degree(joint_degrees):
     - the total number of nodes of degree *k*, computed by
       ``sum(joint_degrees[k].values()) / k``, must be an integer,
     - the total number of edges joining nodes of degree *k* with
-       nodes of degree *l* cannot exceed the total number of possible edges,
+      nodes of degree *l* cannot exceed the total number of possible edges,
     - each diagonal entry ``joint_degrees[k][k]`` must be even (this is
       a convention assumed by the :func:`joint_degree_graph` function).
 
@@ -75,7 +75,7 @@ def is_valid_joint_degree(joint_degrees):
                 return False
             elif k == l:
                 if (joint_degrees[k][k] > degree_count[k] *
-                   (degree_count[k] - 1)):
+                        (degree_count[k] - 1)):
                     return False
                 if joint_degrees[k][k] % 2 != 0:
                     return False
@@ -315,11 +315,11 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
     boolean
         returns true if given input is realizable, else returns false.
 
-
     Notes
     -----
     Here is the list of conditions that the inputs (in/out degree sequences,
     nkk) need to satisfy for simple directed graph realizability:
+
     - Condition 0: in_degrees and out_degrees have the same length
     - Condition 1: nkk[k][l]  is integer for all k,l
     - Condition 2: sum(nkk[k])/k = number of nodes with partition id k, is an

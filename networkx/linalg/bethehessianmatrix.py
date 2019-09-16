@@ -66,11 +66,11 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     References
     ----------
     .. [1] A. Saade, F. Krzakala and L. Zdeborová
-      "Spectral clustering of graphs with the bethe hessian",
+       "Spectral clustering of graphs with the bethe hessian",
        Advances in Neural Information Processing Systems. 2014.
     .. [2] C. M. Lee, E. Levina
-      "Estimating the number of communities in networks by spectral methods"
-      arXiv:1507.00827, 2015.
+       "Estimating the number of communities in networks by spectral methods"
+       arXiv:1507.00827, 2015.
     """
     import scipy.sparse
     if nodelist is None:
@@ -86,9 +86,11 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     return (r ** 2 - 1) * I - r * A + D
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-    except:
+    except ImportError:
         raise SkipTest("NumPy not available")
