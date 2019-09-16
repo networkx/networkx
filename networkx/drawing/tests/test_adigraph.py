@@ -1,14 +1,12 @@
 import networkx as nx
-import numpy as np
-import random
 import filecmp
+import random
 import os
 from nose.tools import assert_true
 
 def tests_adigraph():
     seed = 7
     random.seed(seed)
-    np.random.seed(seed)
 
     A = nx.Adigraph(
         vertices_color_fallback="gray!90",
@@ -18,8 +16,12 @@ def tests_adigraph():
         caption="A graph generated with python and latex."
     )
 
+    G1 = nx.bipartite.random_graph(4, 4, 1, seed=42)
+    layout = nx.spring_layout(G1, seed=42)
+
     A.add_graph(
-        nx.bipartite.random_graph(4, 4, 1),
+        G1,
+        layout=layout,
         vertices_color={
             0: 'red!90',
             1: 'red!90',
@@ -27,8 +29,12 @@ def tests_adigraph():
             7: 'cyan!90'
         }
     )
+    G1 = nx.bipartite.random_graph(4, 4, 1, seed=42)
+    layout = nx.spring_layout(G1, seed=42)
+
     A.add_graph(
-        nx.bipartite.random_graph(4, 4, 1),
+        G1,
+        layout=layout,
         directed=False,
         vertices_color={
             0: 'green!90',
@@ -40,5 +46,5 @@ def tests_adigraph():
     script_dir = os.path.dirname(os.path.realpath(__file__))
     A.save("adigraph_result.tex", document=True)
     result = filecmp.cmp('{script_dir}/expected.tex'.format(script_dir=script_dir), 'adigraph_result.tex')
-    os.remove("adigraph_result.tex")
+    #os.remove("adigraph_result.tex")
     assert_true(result)
