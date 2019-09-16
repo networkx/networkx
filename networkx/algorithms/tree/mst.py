@@ -268,7 +268,7 @@ def prim_mst_edges(G, minimum, weight='weight',
                 W, _, u, v, k, d = pop(frontier)
             else:
                 W, _, u, v, d = pop(frontier)
-            if v in visited:
+            if v in visited or v not in nodes:
                 continue
             # Multigraphs need to handle edge keys in addition to edge data.
             if is_multigraph and keys:
@@ -283,7 +283,7 @@ def prim_mst_edges(G, minimum, weight='weight',
                     yield u, v
             # update frontier
             visited.add(v)
-            nodes.remove(v)
+            nodes.discard(v)
             if is_multigraph:
                 for w, keydict in G.adj[v].items():
                     if w in visited:
