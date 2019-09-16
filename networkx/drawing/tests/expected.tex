@@ -1,0 +1,71 @@
+\documentclass{report}
+\usepackage{adigraph}
+\usepackage{subcaption}
+
+\begin{document}
+\begin{figure}
+    \begin{subfigure}{0.5\textwidth}
+    	\NewAdigraph{myAdigraph}{
+			0,red!90,:-0.4386601404141742\textwidth,0.2091077552922947\textwidth:;
+			1,red!90,:-0.15708496776680972\textwidth,0.09630690244229406\textwidth:;
+			2,gray!90,:0.43887677279554366\textwidth,-0.2079924280020609\textwidth:;
+			3,gray!90,:0.15678823839504888\textwidth,-0.09746320565948384\textwidth:;
+			4,cyan!90,:-0.3736460590634439\textwidth,-0.327631363498189\textwidth:;
+			5,gray!90,:0.3735687548614322\textwidth,0.3275275669374224\textwidth:;
+			6,gray!90,:-0.042735184609099336\textwidth,-0.4998552275122768\textwidth:;
+			7,cyan!90,:0.0428925858015027\textwidth,0.5\textwidth:;
+		}{
+			0,4,gray!90,::;
+			0,5,gray!90,::;
+			0,6,gray!90,::;
+			0,7,gray!90,::;
+			1,4,gray!90,::;
+			1,5,gray!90,::;
+			1,6,gray!90,::;
+			1,7,gray!90,::;
+			2,4,gray!90,::;
+			2,5,gray!90,::;
+			2,6,gray!90,::;
+			2,7,gray!90,::;
+			3,4,gray!90,::;
+			3,5,gray!90,::;
+			3,6,gray!90,::;
+			3,7,gray!90,::;
+		}[]
+		\myAdigraph{}
+	\caption{My adigraph number 1 of 2}\label{adigraph_1_2}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+    	\NewAdigraph{myAdigraph}{
+			0,green!90,:-0.19840567028217468\textwidth,-0.4753511061859151\textwidth:;
+			1,green!90,:0.1849665994094152\textwidth,-0.4773772248896718\textwidth:;
+			2,gray!90,:0.19853712484214237\textwidth,0.47509383654654214\textwidth:;
+			3,gray!90,:-0.18504611129435114\textwidth,0.47734487001082015\textwidth:;
+			4,purple!90,:0.5\textwidth,-0.014993082851750347\textwidth:;
+			5,gray!90,:0.18917890014045283\textwidth,0.008376834557202178\textwidth:;
+			6,gray!90,:-0.18930817869497193\textwidth,-0.009321423661130566\textwidth:;
+			7,purple!90,:-0.4999226641205127\textwidth,0.01622729647390304\textwidth:;
+		}{
+			0,4,gray!90,::;
+			0,5,gray!90,::;
+			0,6,gray!90,::;
+			0,7,gray!90,::;
+			1,4,gray!90,::;
+			1,5,gray!90,::;
+			1,6,gray!90,::;
+			1,7,gray!90,::;
+			2,4,gray!90,::;
+			2,5,gray!90,::;
+			2,6,gray!90,::;
+			2,7,gray!90,::;
+			3,4,gray!90,::;
+			3,5,gray!90,::;
+			3,6,gray!90,::;
+			3,7,gray!90,::;
+		}[]
+		\myAdigraph{}
+	\caption{My adigraph number 2 of 2}\label{adigraph_2_2}
+    \end{subfigure}
+	\caption{A graph generated with python and latex.}
+\end{figure}
+\end{document}
