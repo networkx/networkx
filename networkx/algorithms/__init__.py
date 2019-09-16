@@ -121,3 +121,4 @@ from networkx.algorithms.tree.recognition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.approximation.christofides import *
 from networkx.algorithms.approximation.karger import *
+from networkx.algorithms.approximation.center_selection import *
