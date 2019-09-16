@@ -13,6 +13,8 @@ recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc *.js
 include networkx/tests/*.py
 include networkx/*/tests/*.txt
 include networkx/*/tests/*.py
+include networkx/*/tests/*.tex
+include networkx/*/placeholders/*.tex
 include networkx/*/*/tests/*.py
 include networkx/*/*/tests/*.A99
 include networkx/*/*/tests/*.B99
