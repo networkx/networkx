@@ -17,7 +17,7 @@ import random
 
 import networkx as nx
 
-class TestCenterSelection(object):
+class TestMaximumDisjointPaths(object):
     """Unit tests for the
     :func:`~networkx.algorithms.approximation.maximum_disjoint_paths` function.
 
@@ -25,7 +25,7 @@ class TestCenterSelection(object):
 
     def test_trivial(self):
         G = nx.complete_graph(2)
-        paths, satisfied, unsatisfied = nx.maximum_disjoint_paths(G, [0, 1])
-        assert_equal(paths, [(0, 1)])
+        paths, satisfied, unsatisfied = nx.maximum_disjoint_paths(G, [(0, 1)])
+        assert_equal(paths, [[(0, 1)]])
         assert_equal(satisfied, [(0, 1)])
         assert_equal(unsatisfied, [])
