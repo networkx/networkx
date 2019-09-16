@@ -1052,7 +1052,7 @@ def simrank_similarity(G, source=None, target=None, importance_factor=0.9,
     SimRank is a similarity metric that says "two objects are considered
     to be similar if they are referenced by similar objects." [1]_.
     
-    The pseudo-code definition from the paper is:
+    The pseudo-code definition from the paper is::
 
         def simrank(G, u, v):
             in_neighbors_u = G.predecessors(u)
