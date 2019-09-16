@@ -11,6 +11,7 @@ Algorithms
 
    approximation
    assortativity
+   asteroidal
    bipartite
    boundary
    bridges
