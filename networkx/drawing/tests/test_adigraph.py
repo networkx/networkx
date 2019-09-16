@@ -5,7 +5,7 @@ import os
 from nose.tools import assert_true
 from nose import SkipTest
 
-class TestLayout(object):
+class TestAdigraph(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
     scipy = None
 
