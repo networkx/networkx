@@ -12,9 +12,10 @@ from math import inf
 
 __all__ = ["center_selection"]
 
+
 def center_selection(G, k, weight='weight'):
     """Return a tuple with the max radius and the selected centers.
-    
+
     In graph theory, the metric k-center or metric facility location
     problem is a combinatorial optimization problem: given $n$ cities
     with specified distances, one wants to build $k$ warehouses
@@ -26,7 +27,7 @@ def center_selection(G, k, weight='weight'):
 
     The proposed algorithm is a 2-approximation, meaning it achieves
     a solution with a factor 2 of the optimal one.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -60,11 +61,13 @@ def center_selection(G, k, weight='weight'):
     """
     if not G.is_complete():
         raise nx.NetworkXError("Graph must be complete.")
-    if k<1 or not isinstance(k, int):
-        raise nx.NetworkXError("Number of centers is not a strictly positive integer.")
-    if k>len(G):
-        raise nx.NetworkXError("Number of centers is more than available nodes.")
-    if any([(w[weight] if weight in w else 1)<0 for _, _, w in G.edges(data=True)]):
+    if k < 1 or not isinstance(k, int):
+        raise nx.NetworkXError(
+            "Number of centers is not a strictly positive integer.")
+    if k > len(G):
+        raise nx.NetworkXError(
+            "Number of centers is more than available nodes.")
+    if any([(w[weight] if weight in w else 1) < 0 for _, _, w in G.edges(data=True)]):
         raise nx.NetworkXError("Graph weights are not positive.")
     centers = [random.choice(list(G.nodes))]
     max_radius = inf

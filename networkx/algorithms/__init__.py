@@ -122,3 +122,4 @@ from networkx.algorithms.tree.mst import *
 from networkx.algorithms.approximation.christofides import *
 from networkx.algorithms.approximation.karger import *
 from networkx.algorithms.approximation.center_selection import *
+from networkx.algorithms.approximation.maximum_disjoint_paths import *
