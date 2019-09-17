@@ -363,7 +363,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.)
     """
-    lines = (line.decode(encoding) for line in path)
+    lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
     return parse_edgelist(lines, comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
                           data=data)
