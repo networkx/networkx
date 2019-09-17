@@ -43,8 +43,6 @@ __all__ = ['generate_edgelist',
 
 from networkx.utils import open_file, make_str
 import networkx as nx
-import io
-import sys
 
 
 def generate_edgelist(G, delimiter=' ', data=True):
@@ -365,19 +363,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.)
     """
-    """The bottom code (recommended) doesn't seem to work in python 3.7.4, Windows 10.
-    Even try...except fails for some reason"""
-    """
-    try:
-        lines = (line.decode(encoding) for line in path)
-    except AttributeError:
-        lines = (line for line in path)"""
-    
-    """Version independent, r/rb independent solution"""
-    if sys.version[0]=='2' or isinstance(path,(io.RawIOBase, io.BufferedIOBase)):
-        lines = (line.decode(encoding) for line in path)
-    else:
-        lines = (line for line in path)
+    lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
     return parse_edgelist(lines, comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
                           data=data)
