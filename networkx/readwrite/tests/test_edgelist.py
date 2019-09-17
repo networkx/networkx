@@ -89,12 +89,12 @@ class TestEdgelist:
 # comment line
 2 3 {'weight':3.0}
 """
-        bytesIO = io.StringIO(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
+        StringIO = io.StringIO(s)
+        G = nx.read_edgelist(StringIO, nodetype=int, data=False)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
-        bytesIO = io.StringIO(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
+        StringIO = io.StringIO(s)
+        G = nx.read_edgelist(StringIO, nodetype=int, data=True)
         assert_edges_equal(G.edges(data=True),
                         [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
 
