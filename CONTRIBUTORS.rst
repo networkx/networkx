@@ -131,6 +131,7 @@ is partially historical, and now, mostly arbitrary.
 - Efraim Rodrigues, `GitHub <https://github.com/efraimrodrigues>`_, `LinkedIn <https://linkedin.com/in/efraim-rodrigues/>`_
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
+- Salim BELHADDAD, `LinkedIn <https://www.linkedin.com/in/salymdotme/>`_
 
 Support
 -------

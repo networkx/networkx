@@ -102,6 +102,34 @@ class MinimumSpanningTreeTestBase(object):
         edges = nx.minimum_spanning_edges(G, algorithm=self.algo, data=False)
         assert_raises(ValueError, list, edges)
 
+    def test_nan_weights_order(self):
+        # now try again with a nan edge at the beginning of G.nodes
+        edges = [(0, 1, 7), (0, 3, 5), (1, 2, 8), (1, 3, 9), (1, 4, 7),
+                 (2, 4, 5), (3, 4, 15), (3, 5, 6), (4, 5, 8), (4, 6, 9),
+                 (5, 6, 11)]
+        G = nx.Graph()
+        G.add_weighted_edges_from([(u + 1, v + 1, wt) for u, v, wt in edges])
+        G.add_edge(0, 7, weight=float('nan'))
+        edges = nx.minimum_spanning_edges(G, algorithm=self.algo,
+                                          data=False, ignore_nan=True)
+        actual = sorted((min(u, v), max(u, v)) for u, v in edges)
+        shift = [(u + 1, v + 1) for u, v, d in self.minimum_spanning_edgelist]
+        assert_edges_equal(actual, shift)
+
+    def test_isolated_node(self):
+        # now try again with an isolated node
+        edges = [(0, 1, 7), (0, 3, 5), (1, 2, 8), (1, 3, 9), (1, 4, 7),
+                 (2, 4, 5), (3, 4, 15), (3, 5, 6), (4, 5, 8), (4, 6, 9),
+                 (5, 6, 11)]
+        G = nx.Graph()
+        G.add_weighted_edges_from([(u + 1, v + 1, wt) for u, v, wt in edges])
+        G.add_node(0)
+        edges = nx.minimum_spanning_edges(G, algorithm=self.algo,
+                                          data=False, ignore_nan=True)
+        actual = sorted((min(u, v), max(u, v)) for u, v in edges)
+        shift = [(u + 1, v + 1) for u, v, d in self.minimum_spanning_edgelist]
+        assert_edges_equal(actual, shift)
+
     def test_minimum_tree(self):
         T = nx.minimum_spanning_tree(self.G, algorithm=self.algo)
         actual = sorted(T.edges(data=True))
