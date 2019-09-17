@@ -1,15 +1,5 @@
-# -*- coding: utf-8 -*-
 """Floyd-Warshall algorithm for shortest paths.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#          Miguel Sozinho Ramalho <m.ramalho@fe.up.pt>
 import networkx as nx
 
 __all__ = ['floyd_warshall',
@@ -209,13 +199,3 @@ def floyd_warshall(G, weight='weight'):
     """
     # could make this its own function to reduce memory costs
     return floyd_warshall_predecessor_and_distance(G, weight=weight)[1]
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")

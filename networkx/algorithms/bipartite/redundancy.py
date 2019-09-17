@@ -1,18 +1,8 @@
-# -*- coding: utf-8 -*-
 """Node redundancy for bipartite graphs."""
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-from __future__ import division
-
 from itertools import combinations
 
 from networkx import NetworkXError
 
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
 __all__ = ['node_redundancy']
 
 

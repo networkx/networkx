@@ -1,15 +1,3 @@
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#     Aric Hagberg <hagberg@lanl.gov>
-#     Pieter Swart <swart@lanl.gov>
-#     Dan Schult <dschult@colgate.edu>
-#     Ben Edwards <bedwards@cs.unm.edu>
 """
 Graph products.
 """
@@ -24,7 +12,7 @@ __all__ = ['tensor_product', 'cartesian_product',
 
 
 def _dict_product(d1, d2):
-    return dict((k, (d1.get(k), d2.get(k))) for k in set(d1) | set(d2))
+    return {k: (d1.get(k), d2.get(k)) for k in set(d1) | set(d2)}
 
 
 # Generators for producting graph products

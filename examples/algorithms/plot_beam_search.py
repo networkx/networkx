@@ -1,6 +1,3 @@
-# beam_search.py - progressive widening beam search
-#
-# Copyright 2016-2019 NetworkX developers.
 """
 ===========
 Beam Search
@@ -13,6 +10,7 @@ with increasing beam width until the target node is found.
 """
 import math
 
+import matplotlib.pyplot as plt
 import networkx as nx
 
 
@@ -57,9 +55,7 @@ def progressive_widening_search(G, source, value, condition, initial_width=1):
     # least the number of nodes in the graph, so the final invocation of
     # `bfs_beam_edges` is equivalent to a plain old breadth-first
     # search. Therefore, all nodes will eventually be visited.
-    #
-    # TODO In Python 3.3+, this should be `math.log2(len(G))`.
-    log_m = math.ceil(math.log(len(G), 2))
+    log_m = math.ceil(math.log2(len(G)))
     for i in range(log_m):
         width = initial_width * pow(2, i)
         # Since we are always starting from the same source node, this
@@ -70,32 +66,44 @@ def progressive_widening_search(G, source, value, condition, initial_width=1):
                 return v
     # At this point, since all nodes have been visited, we know that
     # none of the nodes satisfied the termination condition.
-    raise nx.NodeNotFound('no node satisfied the termination condition')
+    raise nx.NodeNotFound("no node satisfied the termination condition")
 
 
-def main():
-    """Search for a node with high centrality.
+###############################################################################
+# Search for a node with high centrality.
+# ---------------------------------------
+#
+# We generate a random graph, compute the centrality of each node, then perform
+# the progressive widening search in order to find a node of high centrality.
 
-    In this example, we generate a random graph, compute the centrality
-    of each node, then perform the progressive widening search in order
-    to find a node of high centrality.
-
-    """
-    G = nx.gnp_random_graph(100, 0.5)
-    centrality = nx.eigenvector_centrality(G)
-    avg_centrality = sum(centrality.values()) / len(G)
-
-    def has_high_centrality(v):
-        return centrality[v] >= avg_centrality
-
-    source = 0
-    value = centrality.get
-    condition = has_high_centrality
-
-    found_node = progressive_widening_search(G, source, value, condition)
-    c = centrality[found_node]
-    print('found node {0} with centrality {1}'.format(found_node, c))
+G = nx.gnp_random_graph(100, 0.5)
+centrality = nx.eigenvector_centrality(G)
+avg_centrality = sum(centrality.values()) / len(G)
 
 
-if __name__ == '__main__':
-    main()
+def has_high_centrality(v):
+    return centrality[v] >= avg_centrality
+
+
+source = 0
+value = centrality.get
+condition = has_high_centrality
+
+found_node = progressive_widening_search(G, source, value, condition)
+c = centrality[found_node]
+print(f"found node {found_node} with centrality {c}")
+
+
+# Draw graph
+pos = nx.spring_layout(G)
+options = {
+    "node_color": "blue",
+    "node_size": 20,
+    "line_color": "grey",
+    "linewidths": 0,
+    "width": 0.1,
+}
+nx.draw(G, pos, **options)
+# Draw node with high centrality as large and red
+nx.draw_networkx_nodes(G, pos, nodelist=[found_node], node_size=100, node_color="r")
+plt.show()

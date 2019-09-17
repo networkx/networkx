@@ -1,9 +1,5 @@
 from itertools import combinations
 
-__author__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)',
-                        'Huston Hedinger (hstn@hdngr.com)',
-                        'Dan Schult (dschult@colgate.edu)'])
-
 __all__ = ['dispersion']
 
 
@@ -51,8 +47,8 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     def _dispersion(G_u, u, v):
         """dispersion for all nodes 'v' in a ego network G_u of node 'u'"""
         u_nbrs = set(G_u[u])
-        ST = set(n for n in G_u[v] if n in u_nbrs)
-        set_uv = set([u, v])
+        ST = {n for n in G_u[v] if n in u_nbrs}
+        set_uv = {u, v}
         # all possible ties of connections that u and b share
         possib = combinations(ST, 2)
         total = 0
@@ -83,7 +79,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     if u is None:
         # v and u are not specified
         if v is None:
-            results = dict((n, {}) for n in G)
+            results = {n: {} for n in G}
             for u in G:
                 for v in G[u]:
                     results[u][v] = _dispersion(G, u, v)

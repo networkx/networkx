@@ -1,15 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Edmonds-Karp algorithm for maximum flow problems.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 import networkx as nx
-from networkx.algorithms.flow.utils import *
+from networkx.algorithms.flow.utils import build_residual_network
 
 __all__ = ['edmonds_karp']
 
@@ -105,9 +99,9 @@ def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     """Implementation of the Edmonds-Karp algorithm.
     """
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
         raise nx.NetworkXError('source and sink are the same node')
 

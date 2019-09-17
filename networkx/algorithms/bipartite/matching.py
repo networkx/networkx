@@ -1,13 +1,3 @@
-# matching.py - bipartite graph maximum matching algorithms
-#
-# Copyright 2015 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>,
-# Copyright 2019 Søren Fuglede Jørgensen
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
 # This module uses material from the Wikipedia article Hopcroft--Karp algorithm
 # <https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm>, accessed on
 # January 3, 2015, which is released under the Creative Commons
@@ -85,8 +75,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
     Raises
     ------
-    AmbiguousSolution : Exception
-
+    AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
@@ -202,8 +191,7 @@ def eppstein_matching(G, top_nodes=None):
 
     Raises
     ------
-    AmbiguousSolution : Exception
-
+    AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
@@ -436,8 +424,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 
     Raises
     ------
-    AmbiguousSolution : Exception
-
+    AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
@@ -494,13 +481,13 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
     real weights :math:`w : E \to \mathbb{R}`. This function then produces
     a maximum matching :math:`M \subseteq E` which, since the graph is
     assumed to be complete, has cardinality
-   
+
     .. math::
        \lvert M \rvert = \min(\lvert U \rvert, \lvert V \rvert),
 
     and which minimizes the sum of the weights of the edges included in the
     matching, :math:`\sum_{e \in M} w(e)`.
-    
+
     When :math:`\lvert U \rvert = \lvert V \rvert`, this is commonly
     referred to as a perfect matching; here, since we allow
     :math:`\lvert U \rvert` and :math:`\lvert V \rvert` to differ, we
@@ -531,12 +518,10 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
 
     Raises
     ------
-    ValueError : Exception
-
+    ValueError
       Raised if the input bipartite graph is not complete.
 
-    ImportError : Exception
-
+    ImportError
       Raised if SciPy is not available.
 
     Notes

@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Efraim Rodrigues (efraimnaassom@gmail.com)
 r"""Generators for cographs
 
 A cograph is a graph containing no path on four vertices.
@@ -15,7 +6,7 @@ by disjoint union and complementation operations.
 
 References
 ----------
-.. [1] D.G. Corneil, H. Lerchs, L.Stewart Burlingham,
+.. [0] D.G. Corneil, H. Lerchs, L.Stewart Burlingham,
     "Complement reducible graphs",
     Discrete Applied Mathematics, Volume 3, Issue 3, 1981, Pages 163-174,
     ISSN 0166-218X.
@@ -43,8 +34,8 @@ def random_cograph(n, seed=None):
     n : int
             The order of the cograph.
     seed : integer, random_state, or None (default)
-            Indicator of random number generation state.
-            See :ref:`Randomness<randomness>`.
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------

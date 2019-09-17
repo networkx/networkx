@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2018 by
-#    Utkarsh Upadhyay <musically.ut@gmail.com>
-#    All rights reserved.
-#    BSD license.
 """
 Equitable coloring of graphs with bounded degree.
 """
@@ -413,8 +408,8 @@ def equitable_color(G, num_colors):
 
     if r_ >= num_colors:
         raise nx.NetworkXAlgorithmError(
-            'Graph has maximum degree {}, needs {} (> {}) colors for guaranteed coloring.'
-            .format(r_, r_ + 1, num_colors)
+            f"Graph has maximum degree {r_}, needs "
+            f"{r_ + 1} (> {num_colors}) colors for guaranteed coloring."
         )
 
     # Ensure that the number of nodes in G is a multiple of (r + 1)

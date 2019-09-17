@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-from nose.tools import ok_
-from nose.tools import eq_
 import networkx as nx
 from networkx.algorithms.approximation import min_weighted_dominating_set
 from networkx.algorithms.approximation import min_edge_dominating_set
@@ -18,12 +15,12 @@ class TestMinWeightDominatingSet:
         graph.add_edge(3, 6)
         graph.add_edge(5, 6)
 
-        vertices = set([1, 2, 3, 4, 5, 6])
+        vertices = {1, 2, 3, 4, 5, 6}
         # due to ties, this might be hard to test tight bounds
         dom_set = min_weighted_dominating_set(graph)
         for vertex in vertices - dom_set:
             neighbors = set(graph.neighbors(vertex))
-            ok_(len(neighbors & dom_set) > 0, "Non dominating set found!")
+            assert len(neighbors & dom_set) > 0, "Non dominating set found!"
 
     def test_star_graph(self):
         """Tests that an approximate dominating set for the star graph,
@@ -37,7 +34,7 @@ class TestMinWeightDominatingSet:
         # label instead of the lowest.
         G = nx.star_graph(10)
         G = nx.relabel_nodes(G, {0: 9, 9: 0})
-        eq_(min_weighted_dominating_set(G), {9})
+        assert min_weighted_dominating_set(G) == {9}
 
     def test_min_edge_dominating_set(self):
         graph = nx.path_graph(5)
@@ -52,7 +49,7 @@ class TestMinWeightDominatingSet:
                 found = False
                 for dom_edge in dom_set:
                     found |= u == dom_edge[0] or u == dom_edge[1]
-                ok_(found, "Non adjacent edge found!")
+                assert found, "Non adjacent edge found!"
 
         graph = nx.complete_graph(10)
         dom_set = min_edge_dominating_set(graph)
@@ -66,4 +63,4 @@ class TestMinWeightDominatingSet:
                 found = False
                 for dom_edge in dom_set:
                     found |= u == dom_edge[0] or u == dom_edge[1]
-                ok_(found, "Non adjacent edge found!")
+                assert found, "Non adjacent edge found!"

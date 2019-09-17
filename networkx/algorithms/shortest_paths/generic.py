@@ -1,22 +1,12 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#          Sérgio Nery Simões <sergionery@gmail.com>
 """
 Compute the shortest paths and path lengths between nodes in the graph.
 
 These algorithms work with undirected and directed graphs.
 
 """
-from __future__ import division
 
 import networkx as nx
+from networkx.algorithms.components import connected_components
 
 __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
@@ -128,7 +118,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
     """
     if method not in ('dijkstra', 'bellman-ford'):
         # so we don't need to check in each branch later
-        raise ValueError('method not supported: {}'.format(method))
+        raise ValueError(f'method not supported: {method}')
     method = 'unweighted' if weight is None else method
     if source is None:
         if target is None:
@@ -270,7 +260,7 @@ def shortest_path_length(G,
     """
     if method not in ('dijkstra', 'bellman-ford'):
         # so we don't need to check in each branch later
-        raise ValueError('method not supported: {}'.format(method))
+        raise ValueError(f'method not supported: {method}')
     method = 'unweighted' if weight is None else method
     if source is None:
         if target is None:
@@ -318,7 +308,7 @@ def shortest_path_length(G,
     return paths
 
 
-def average_shortest_path_length(G, weight=None, method='dijkstra'):
+def average_shortest_path_length(G, weight=None, method=None):
     r"""Returns the average shortest path length.
 
     The average shortest path length is
@@ -340,12 +330,13 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
 
-    method : string, optional (default = 'dijkstra')
+    method : string, optional (default = 'unweighted' or 'djikstra')
         The algorithm to use to compute the path lengths.
-        Supported options: 'dijkstra', 'bellman-ford'.
-        Other inputs produce a ValueError.
-        If `weight` is None, unweighted graph methods are used, and this
-        suggestion is ignored.
+        Supported options are 'unweighted', 'dijkstra', 'bellman-ford',
+        'floyd-warshall' and 'floyd-warshall-numpy'.
+        Other method values produce a ValueError.
+        The default method is 'unweighted' if `weight` is None,
+        otherwise the default method is 'dijkstra'.
 
     Raises
     ------
@@ -369,13 +360,24 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
     length for each component
 
     >>> G = nx.Graph([(1, 2), (3, 4)])
-    >>> for C in nx.connected_component_subgraphs(G):
+    >>> for C in (G.subgraph(c).copy() for c in connected_components(G)):
     ...     print(nx.average_shortest_path_length(C))
     1.0
     1.0
 
     """
-    method = 'unweighted' if weight is None else method
+    single_source_methods = ['unweighted',
+                             'dijkstra',
+                             'bellman-ford']
+    all_pairs_methods = ['floyd-warshall',
+                         'floyd-warshall-numpy']
+    supported_methods = single_source_methods + all_pairs_methods
+
+    if method is None:
+        method = 'unweighted' if weight is None else 'dijkstra'
+    if method not in supported_methods:
+        raise ValueError(f'method not supported: {method}')
+
     n = len(G)
     # For the special case of the null graph, raise an exception, since
     # there are no paths in the null graph.
@@ -391,8 +393,8 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
         raise nx.NetworkXError("Graph is not weakly connected.")
     if not G.is_directed() and not nx.is_connected(G):
         raise nx.NetworkXError("Graph is not connected.")
-    # Compute all-pairs shortest paths.
 
+    # Compute all-pairs shortest paths.
     def path_length(v):
         if method == 'unweighted':
             return nx.single_source_shortest_path_length(G, v)
@@ -401,10 +403,16 @@ def average_shortest_path_length(G, weight=None, method='dijkstra'):
         elif method == 'bellman-ford':
             return nx.single_source_bellman_ford_path_length(G, v,
                                                              weight=weight)
-        else:
-            raise ValueError('method not supported: {}'.format(method))
-    # Sum the distances for each (ordered) pair of source and target node.
-    s = sum(l for u in G for l in path_length(u).values())
+
+    if method in single_source_methods:
+        # Sum the distances for each (ordered) pair of source and target node.
+        s = sum(l for u in G for l in path_length(u).values())
+    else:
+        if method == 'floyd-warshall':
+            all_pairs = nx.floyd_warshall(G, weight=weight)
+            s = sum([sum(t.values()) for t in all_pairs.values()])
+        elif method == 'floyd-warshall-numpy':
+            s = nx.floyd_warshall_numpy(G, weight=weight).sum()
     return s / (n * (n - 1))
 
 
@@ -474,11 +482,11 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, source,
                                                               weight=weight)
     else:
-        raise ValueError('method not supported: {}'.format(method))
+        raise ValueError(f'method not supported: {method}')
 
     if target not in pred:
-        raise nx.NetworkXNoPath('Target {} cannot be reached'
-                                'from Source {}'.format(target, source))
+        raise nx.NetworkXNoPath(f'Target {target} cannot be reached'
+                                f'from Source {source}')
 
     stack = [[target, 0]]
     top = 0

@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-# centrality.py - functions for computing communities using centrality notions
-#
-# Copyright 2015, 2016 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing communities based on centrality notions."""
 
 import networkx as nx

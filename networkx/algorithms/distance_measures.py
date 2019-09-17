@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    William Schwartz <wkschwartz@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Brian Kiefer (bkiefer@asu.edu)
 """Graph diameter, radius, eccentricity and other properties."""
 
 import networkx as nx
@@ -402,16 +390,16 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
     Returns
     -------
-    :class:`list`
+    list
         Nodes of `G` that induce the barycenter of `G`.
 
     Raises
     ------
-    :exc:`networkx.NetworkXNoPath`
+    NetworkXNoPath
         If `G` is disconnected. `G` may appear disconnected to
         :func:`barycenter` if `sp` is given but is missing shortest path
         lengths for any pairs.
-    :exc:`ValueError`
+    ValueError
         If `sp` and `weight` are both given.
 
     See Also
@@ -429,8 +417,9 @@ def barycenter(G, weight=None, attr=None, sp=None):
     for v, dists in sp:
         if len(dists) < n:
             raise nx.NetworkXNoPath(
-                ("Input graph %r is disconnected, so every induced subgraph "
-                 "has infinite barycentricity.") % G)
+                f"Input graph {G} is disconnected, so every induced subgraph "
+                "has infinite barycentricity."
+        )
         barycentricity = sum(dists.values())
         if attr is not None:
             G.nodes[v][attr] = barycentricity
@@ -551,8 +540,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
             for (u, v, k, d) in G.edges(keys=True, data=True):
                 d[weight] = 1/d[weight]
         else:
-           for (u, v, d) in G.edges(data=True):
-               d[weight] = 1/d[weight]
+            for (u, v, d) in G.edges(data=True):
+                d[weight] = 1/d[weight]
     # Replace with collapsing topology or approximated zero?
 
     # Using determinants to compute the effective resistance is more memory

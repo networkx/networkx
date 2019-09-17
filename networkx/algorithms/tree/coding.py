@@ -1,13 +1,3 @@
-# -*- encoding: utf-8 -*-
-#
-# coding.py - functions for encoding and decoding trees as sequences
-#
-# Copyright 2015-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for encoding and decoding trees.
 
 Since a tree is a highly restricted form of graph, it can be represented
@@ -127,7 +117,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     if not nx.is_tree(T):
         raise nx.NotATree('provided graph is not a tree')
     if root not in T:
-        raise nx.NodeNotFound('Graph {} contains no node {}'.format(T, root))
+        raise nx.NodeNotFound(f'Graph {T} contains no node {root}')
 
     return _make_tuple(T, root, None)
 

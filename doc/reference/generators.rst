@@ -217,6 +217,15 @@ Stochastic
    stochastic_graph
 
 
+AS graph
+--------
+.. automodule:: networkx.generators.internet_as_graphs
+.. autosummary::
+   :toctree: generated/
+
+   random_internet_as_graph
+
+
 Intersection
 ------------
 .. automodule:: networkx.generators.intersection
@@ -334,3 +343,11 @@ Cographs
    :toctree: generated/
 
    random_cograph
+
+Sudoku
+------
+.. automodule:: networkx.generators.sudoku
+.. autosummary::
+   :toctree: generated/
+
+   sudoku_graph

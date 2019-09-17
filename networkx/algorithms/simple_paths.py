@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2012 by
-#    Sergio Nery Simoes <sergionery@gmail.com>
-#    All rights reserved.
-#    BSD license.
 import collections
 from heapq import heappush, heappop
 from itertools import count
@@ -10,11 +5,6 @@ from itertools import count
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
-
-__author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Andrey Paramonov',
-                            'Jordi Torrents <jordi.t21@gmail.com>'])
 
 __all__ = [
     'all_simple_paths',
@@ -106,8 +96,13 @@ def all_simple_paths(G, source, target, cutoff=None):
     target : nodes
        Single node or iterable of nodes at which to end path
 
-    cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+    cutoff : integer, dict, optional
+       If an integer is passed then specifies the depth to stop the search.
+       Only paths of length <= cutoff are returned.
+       If a dictionary is passed then different cutoffs can be used
+       for different weights.
+       (e.g. {'weight1': cutoff_value1, 'weight2': cutoff_value2})
+       The depth of search can be specified by using `None` as key (e.g. {None: cutoff})
 
     Returns
     -------
@@ -131,7 +126,7 @@ def all_simple_paths(G, source, target, cutoff=None):
         [0, 3]
 
     You can generate only those paths that are shorter than a certain
-    length by using the `cutoff` keyword argument::
+    length by using the `cutoff` keyword argument and passing an int::
 
         >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
         >>> print(list(paths))
@@ -228,24 +223,64 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound('source node %s not in graph' % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
     if target in G:
         targets = {target}
     else:
         try:
             targets = set(target)
         except TypeError:
-            raise nx.NodeNotFound('target node %s not in graph' % target)
+            raise nx.NodeNotFound(f"target node {target} not in graph")
     if source in targets:
         return []
+
     if cutoff is None:
         cutoff = len(G) - 1
-    if cutoff < 1:
-        return []
-    if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, targets, cutoff)
+
+    # Simplify case where a dict containing only None is passed
+    if isinstance(cutoff, dict):
+        if (len(cutoff) == 1) & (None in cutoff):
+            cutoff = cutoff[None]
+
+    if isinstance(cutoff, int):
+        if cutoff < 1:
+            return []
+
+        if G.is_multigraph():
+            return _all_simple_paths_multigraph(G, source, targets, cutoff)
+        else:
+            return _all_simple_paths_graph(G, source, targets, cutoff)
+    elif isinstance(cutoff, dict):
+        if G.is_multigraph():
+            return _all_simple_paths_weighted_multigraph(G, source, targets, cutoff)
+        else:
+            return _all_simple_paths_weighted_graph(G, source, targets, cutoff)
     else:
-        return _all_simple_paths_graph(G, source, targets, cutoff)
+        raise TypeError('cutoff is neither int nor dict')
+
+
+def _is_path_under_cutoff(G, path, cutoff):
+
+    cutoff_c = cutoff.copy()
+    cost = dict.fromkeys(cutoff.keys(), 0)
+
+    if None in cutoff_c:
+        cost[None] = len(path)
+        cutoff_c.pop(None)
+
+    for u, v in pairwise(path):
+        if G.is_multigraph():
+            for w in cutoff_c:
+                cost[w] += min([k.get(w, 1) for k in G[u][v].values()])
+        else:
+            for w in cutoff_c:
+                cost[w] += G[u][v].get(w, 1)
+
+    for w, c in cutoff.items():
+        if cost[w] > c:
+            return False
+
+    return True
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
@@ -298,6 +333,60 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
                 count = ([child] + list(children)).count(target)
                 for i in range(count):
                     yield list(visited) + [target]
+            stack.pop()
+            visited.popitem()
+
+
+def _all_simple_paths_weighted_graph(G, source, targets, cutoff):
+
+    visited = collections.OrderedDict.fromkeys([source])
+    stack = [iter(G[source])]
+
+    while stack:
+        children = stack[-1]
+        child = next(children, None)
+        if child is None:
+            stack.pop()
+            visited.popitem()
+        elif _is_path_under_cutoff(G, list(visited), cutoff):
+            if child in visited:
+                continue
+            if child in targets:
+                if _is_path_under_cutoff(G, list(visited) + [child], cutoff):
+                    yield list(visited) + [child]
+            visited[child] = None
+            if targets - set(visited.keys()):  # expand stack until find all targets
+                stack.append(iter(G[child]))
+            else:
+                visited.popitem()  # maybe other ways to child
+        else:
+            stack.pop()
+            visited.popitem()
+
+
+def _all_simple_paths_weighted_multigraph(G, source, targets, cutoff):
+
+    visited = collections.OrderedDict.fromkeys([source])
+    stack = [iter(G[source])]
+
+    while stack:
+        children = stack[-1]
+        child = next(children, None)
+        if child is None:
+            stack.pop()
+            visited.popitem()
+        elif _is_path_under_cutoff(G, list(visited), cutoff):
+            if child in visited:
+                continue
+            if child in targets:
+                if _is_path_under_cutoff(G, list(visited) + [child], cutoff):
+                    yield list(visited) + [child]
+            visited[child] = None
+            if targets - set(visited.keys()):  # expand stack until find all targets
+                stack.append((v for u, v in G.edges(child)))
+            else:
+                visited.popitem()  # maybe other ways to child
+        else:
             stack.pop()
             visited.popitem()
 
@@ -381,10 +470,10 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound('source node %s not in graph' % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
 
     if target not in G:
-        raise nx.NodeNotFound('target node %s not in graph' % target)
+        raise nx.NodeNotFound(f"target node {target} not in graph")
 
     if weight is None:
         length_func = len
@@ -430,7 +519,7 @@ def shortest_simple_paths(G, source, target, weight=None):
             break
 
 
-class PathBuffer(object):
+class PathBuffer:
 
     def __init__(self):
         self.paths = set()
@@ -525,7 +614,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
     """
     # does BFS from both source and target and meets in the middle
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if target == source:
         return ({target: None}, {source: None}, source)
 
@@ -581,7 +670,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
             Gpred = filter_iter(Gpred)
             Gsucc = filter_iter(Gsucc)
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 
@@ -613,7 +702,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
                         # found path
                         return pred, succ, w
 
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
 def _bidirectional_dijkstra(G, source, target, weight='weight',
@@ -685,7 +774,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     shortest_path_length
     """
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if source == target:
         return (0, [source])
 
@@ -757,7 +846,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     # neighs for extracting correct neighbor information
     neighs = [Gsucc, Gpred]
     # variables to hold shortest discovered path
-    #finaldist = 1e30000
+    # finaldist = 1e30000
     finalpath = []
     dir = 1
     while fringe[0] and fringe[1]:
@@ -810,4 +899,4 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
                         revpath = paths[1][w][:]
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")

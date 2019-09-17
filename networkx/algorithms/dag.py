@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#    Aric Hagberg <aric.hagberg@gmail.com>
-#    Dan Schult <dschult@colgate.edu>
-#    Ben Edwards <bedwards@cs.unm.edu>
-#    Neil Girdhar <neil.girdhar@mcgill.ca>
-#
 """Algorithms for directed acyclic graphs (DAGs).
 
 Note that most of these functions are only guaranteed to work for DAGs.
@@ -19,8 +5,8 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
-from collections import defaultdict, deque
-from fractions import gcd
+from collections import deque
+from math import gcd
 from functools import partial
 from itertools import chain
 from itertools import product
@@ -69,8 +55,8 @@ def descendants(G, source):
         The descendants of `source` in `G`
     """
     if not G.has_node(source):
-        raise nx.NetworkXError("The node %s is not in the graph." % source)
-    des = set(n for n, d in nx.shortest_path_length(G, source=source).items())
+        raise nx.NetworkXError(f"The node {source} is not in the graph.")
+    des = {n for n, d in nx.shortest_path_length(G, source=source).items()}
     return des - {source}
 
 
@@ -89,8 +75,8 @@ def ancestors(G, source):
         The ancestors of source in G
     """
     if not G.has_node(source):
-        raise nx.NetworkXError("The node %s is not in the graph." % source)
-    anc = set(n for n, d in nx.shortest_path_length(G, target=source).items())
+        raise nx.NetworkXError(f"The node {source} is not in the graph.")
+    anc = {n for n, d in nx.shortest_path_length(G, target=source).items()}
     return anc - {source}
 
 
@@ -481,17 +467,29 @@ def is_aperiodic(G):
 
 
 @not_implemented_for('undirected')
-def transitive_closure(G):
+def transitive_closure(G, reflexive=False):
     """ Returns transitive closure of a directed graph
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
-    for all v,w in V there is an edge (v,w) in E+ if and only if there
-    is a non-null path from v to w in G.
+    for all v, w in V there is an edge (v, w) in E+ if and only if there
+    is a path from v to w in G.
+
+    Handling of paths from v to v has some flexibility within this definition.
+    A reflexive transitive closure creates a self-loop for the path
+    from v to v of length 0. The usual transitive closure creates a
+    self-loop only if a cycle exists (a path from v to v with length > 0).
+    We also allow an option for no self-loops.
 
     Parameters
     ----------
     G : NetworkX DiGraph
         A directed graph
+    reflexive : Bool or None, optional (default: False)
+        Determines when cycles create self-loops in the Transitive Closure.
+        If True, trivial cycles (length 0) create self-loops. The result
+        is a reflexive tranistive closure of G.
+        If False (the default) non-trivial cycles create self-loops.
+        If None, self-loops are not created.
 
     Returns
     -------
@@ -510,10 +508,23 @@ def transitive_closure(G):
     TODO this function applies to all directed graphs and is probably misplaced
          here in dag.py
     """
+    if reflexive is None:
+        TC = G.copy()
+        for v in G:
+            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v) if v != u)
+            TC.add_edges_from(edges)
+        return TC
+    if reflexive is True:
+        TC = G.copy()
+        for v in G:
+            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v))
+            TC.add_edges_from(edges)
+        return TC
+    # reflexive is False
     TC = G.copy()
     for v in G:
-        TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
-                          if v != u)
+        edges = ((v, w) for u, w in nx.edge_dfs(G, v))
+        TC.add_edges_from(edges)
     return TC
 
 
@@ -525,7 +536,7 @@ def transitive_closure_dag(G, topo_order=None):
     if the graph has a cycle.
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
-    for all v,w in V there is an edge (v,w) in E+ if and only if there
+    for all v, w in V there is an edge (v, w) in E+ if and only if there
     is a non-null path from v to w in G.
 
     Parameters
@@ -868,7 +879,7 @@ def dag_to_branching(G):
 
         >>> for source, nodes in sources.items():
         ...     for v in nodes:
-        ...         B.node[v].update(G.node[source])
+        ...         B.nodes[v].update(G.nodes[source])
 
     Notes
     -----

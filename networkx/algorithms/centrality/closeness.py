@@ -1,15 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Aric Hagberg <aric.hagberg@gmail.com>
-#           Pieter Swart <swart@lanl.gov>
-#           Sasha Gutfraind <ag362@cornell.edu>
-#           Dan Schult <dschult@colgate.edu>
-#           Michael Lauria <michael.david.lauria@gmail.com>
 """
 Closeness centrality measures.
 """
@@ -88,6 +76,9 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     If the 'distance' keyword is set to an edge attribute key then the
     shortest-path length will be computed using Dijkstra's algorithm with
     that edge attribute as the edge weight.
+
+    The closeness centrality uses *inward* distance to a node, not outward.
+    If you want to use outword distances apply the function to `G.reverse()`
 
     In NetworkX 2.2 and earlier a bug caused Dijkstra's algorithm to use the
     outward distance rather than the inward distance. If you use a 'distance'

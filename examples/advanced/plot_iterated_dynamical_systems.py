@@ -74,7 +74,7 @@ There is a rich history of mathematical recreations
 associated with discrete dynamical systems.  The most famous
 is the Collatz 3n+1 problem. See the function
 collatz_problem_digraph below. The Collatz conjecture
---- that every orbit returrns to the fixed point 1 in finite time
+--- that every orbit returns to the fixed point 1 in finite time
 --- is still unproven. Even the great Paul Erdos said "Mathematics
 is not yet ready for such problems", and offered $500
 for its solution.
@@ -96,7 +96,7 @@ def digitsrep(n, b=10):
         return [0]
 
     dlist = []
-    while (n > 0):
+    while n > 0:
         # Prepend next least-significant digit
         dlist = [n % b] + dlist
         # Floor-division
@@ -109,7 +109,7 @@ def powersum(n, p, b=10):
     dlist = digitsrep(n, b)
     sum = 0
     for k in dlist:
-        sum += k**p
+        sum += k ** p
     return sum
 
 
@@ -146,17 +146,23 @@ def squaring_cycle_graph_old(n, b=10):
 
 
 def sum_of_digits_graph(nmax, b=10):
-    def f(n): return powersum(n, 1, b)
+    def f(n):
+        return powersum(n, 1, b)
+
     return discrete_dynamics_digraph(nmax, f)
 
 
 def squaring_cycle_digraph(nmax, b=10):
-    def f(n): return powersum(n, 2, b)
+    def f(n):
+        return powersum(n, 2, b)
+
     return discrete_dynamics_digraph(nmax, f)
 
 
 def cubing_153_digraph(nmax):
-    def f(n): return powersum(n, 3, 10)
+    def f(n):
+        return powersum(n, 3, 10)
+
     return discrete_dynamics_digraph(nmax, f)
 
 
@@ -184,6 +190,7 @@ def collatz_problem_digraph(nmax):
             return n // 2
         else:
             return 3 * n + 1
+
     return discrete_dynamics_digraph(nmax, f)
 
 
@@ -194,12 +201,10 @@ def fixed_points(G):
     return [n for n in G if G.out_degree(n) == 0]
 
 
-if __name__ == "__main__":
-    nmax = 10000
-    print("Building cubing_153_digraph(%d)" % nmax)
-    G = cubing_153_digraph(nmax)
-    print("Resulting digraph has", len(G), "nodes and",
-          G.size(), " edges")
-    print("Shortest path from 177 to 153 is:")
-    print(nx.shortest_path(G, 177, 153))
-    print("fixed points are %s" % fixed_points(G))
+nmax = 10000
+print(f"Building cubing_153_digraph({nmax})")
+G = cubing_153_digraph(nmax)
+print("Resulting digraph has", len(G), "nodes and", G.size(), " edges")
+print("Shortest path from 177 to 153 is:")
+print(nx.shortest_path(G, 177, 153))
+print(f"fixed points are {fixed_points(G)}")

@@ -1,29 +1,15 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#     Aric Hagberg <aric.hagberg@gmail.com>
-#     Pieter Swart <swart@lanl.gov>
-#     Sasha Gutfraind <ag362@cornell.edu>
 """Functions for computing eigenvector centrality."""
-from __future__ import division
 
 from math import sqrt
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['eigenvector_centrality', 'eigenvector_centrality_numpy']
+__all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 
 
-@not_implemented_for('multigraph')
-def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
-                           weight=None):
+@not_implemented_for("multigraph")
+def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None):
     r"""Compute the eigenvector centrality for the graph `G`.
 
     Eigenvector centrality computes the centrality for a node based on the
@@ -66,7 +52,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     --------
     >>> G = nx.path_graph(4)
     >>> centrality = nx.eigenvector_centrality(G)
-    >>> sorted((v, '{:0.2f}'.format(c)) for v, c in centrality.items())
+    >>> sorted((v, f"{c:0.2f}") for v, c in centrality.items())
     [(0, '0.37'), (1, '0.60'), (2, '0.60'), (3, '0.37')]
 
     Raises
@@ -117,13 +103,14 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept('cannot compute centrality for the'
-                                          ' null graph')
+        raise nx.NetworkXPointlessConcept(
+            "cannot compute centrality for the null graph"
+        )
     # If no initial vector is provided, start with the all-ones vector.
     if nstart is None:
         nstart = {v: 1 for v in G}
     if all(v == 0 for v in nstart.values()):
-        raise nx.NetworkXError('initial vector cannot have all zero values')
+        raise nx.NetworkXError("initial vector cannot have all zero values")
     # Normalize the initial vector so that each entry is in [0, 1]. This is
     # guaranteed to never have a divide-by-zero error by the previous line.
     nstart_sum = sum(nstart.values())
@@ -190,7 +177,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     --------
     >>> G = nx.path_graph(4)
     >>> centrality = nx.eigenvector_centrality_numpy(G)
-    >>> print(['{} {:0.2f}'.format(node, centrality[node]) for node in centrality])
+    >>> print([f"{node} {centrality[node]:0.2f}" for node in centrality])
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
     See Also
@@ -225,24 +212,18 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
        Networks: An Introduction.
        Oxford University Press, USA, 2010, pp. 169.
     """
+    import numpy as np
     import scipy as sp
     from scipy.sparse import linalg
+
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept('cannot compute centrality for the'
-                                          ' null graph')
-    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight,
-                                  dtype=float)
-    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR',
-                                          maxiter=max_iter, tol=tol)
+        raise nx.NetworkXPointlessConcept(
+            "cannot compute centrality for the null graph"
+        )
+    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight, dtype=float)
+    eigenvalue, eigenvector = linalg.eigs(
+        M.T, k=1, which="LR", maxiter=max_iter, tol=tol
+    )
     largest = eigenvector.flatten().real
-    norm = sp.sign(largest.sum()) * sp.linalg.norm(largest)
+    norm = np.sign(largest.sum()) * sp.linalg.norm(largest)
     return dict(zip(G, largest / norm))
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

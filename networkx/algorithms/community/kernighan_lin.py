@@ -1,20 +1,7 @@
-# -*- coding: utf-8 -*-
-#
-# kernighan_lin.py - Kernighan–Lin bipartition algorithm
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
-from __future__ import division
 
 from collections import defaultdict
-from itertools import islice
+from itertools import accumulate, islice
 from operator import itemgetter
 
 import networkx as nx
@@ -158,7 +145,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
         # `gains` is a list of triples of the form (g, u, v) for each
         # node pair (u, v), where `g` is the gain of that node pair.
         gains = _kernighan_lin_pass(G, A, B, weight)
-        csum = list(nx.utils.accumulate(g for g, u, v in gains))
+        csum = list(accumulate(g for g, u, v in gains))
         max_cgain = max(csum)
         if max_cgain <= 0:
             break

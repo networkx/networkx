@@ -30,12 +30,11 @@ Algorithms
    cycles
    cuts
    dag
-   dispersion
    distance_measures
    distance_regular
    dominance
    dominating
-   efficiency
+   efficiency_measures
    euler
    flow
    graphical

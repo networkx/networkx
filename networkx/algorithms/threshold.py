@@ -1,13 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Pieter Swart (swart@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
 """
 Threshold Graphs - Creation, manipulation and identification.
 """
@@ -514,7 +504,7 @@ def degree_correlation(creation_sequence):
     if denom == 0:
         if numer == 0:
             return 1
-        raise ValueError("Zero Denominator but Numerator is %s" % numer)
+        raise ValueError(f"Zero Denominator but Numerator is {numer}")
     return numer / float(denom)
 
 
@@ -549,9 +539,9 @@ def shortest_path(creation_sequence, u, v):
 
     verts = [s[0] for s in cs]
     if v not in verts:
-        raise ValueError("Vertex %s not in graph from creation_sequence" % v)
+        raise ValueError(f"Vertex {v} not in graph from creation_sequence")
     if u not in verts:
-        raise ValueError("Vertex %s not in graph from creation_sequence" % u)
+        raise ValueError(f"Vertex {u} not in graph from creation_sequence")
     # Done checking
     if u == v:
         return [u]
@@ -747,12 +737,12 @@ def eigenvalues(creation_sequence):
     See::
 
       @Article{degree-merris-1994,
-       author = 	 {Russel Merris},
-       title = 	 {Degree maximal graphs are Laplacian integral},
-       journal = 	 {Linear Algebra Appl.},
-       year = 	 {1994},
-       volume = 	 {199},
-       pages = 	 {381--389},
+       author = {Russel Merris},
+       title = {Degree maximal graphs are Laplacian integral},
+       journal = {Linear Algebra Appl.},
+       year = {1994},
+       volume = {199},
+       pages = {381--389},
       }
 
     """

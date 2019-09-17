@@ -1,5 +1,4 @@
 import time
-from nose.tools import assert_true, assert_false
 from networkx.algorithms.assortativity import degree_mixing_dict
 from networkx.generators import powerlaw_cluster_graph, gnm_random_graph
 from networkx.generators.joint_degree_seq import is_valid_joint_degree, \
@@ -16,7 +15,7 @@ def test_is_valid_joint_degree():
                      2: {2: 2, 3: 2, 4: 2},
                      3: {2: 2, 4: 1},
                      4: {1: 1, 2: 2, 3: 1}}
-    assert_true(is_valid_joint_degree(joint_degrees))
+    assert is_valid_joint_degree(joint_degrees)
 
     # test condition 1
     # joint_degrees_1[1][4] not integer
@@ -24,7 +23,7 @@ def test_is_valid_joint_degree():
                        2: {2: 2, 3: 2, 4: 2},
                        3: {2: 2, 4: 1},
                        4: {1: 1.5, 2: 2, 3: 1}}
-    assert_false(is_valid_joint_degree(joint_degrees_1))
+    assert not is_valid_joint_degree(joint_degrees_1)
 
     # test condition 2
     # degree_count[2] = sum(joint_degrees_2[2][j)/2, is not an int
@@ -33,7 +32,7 @@ def test_is_valid_joint_degree():
                        2: {2: 2, 3: 2, 4: 3},
                        3: {2: 2, 4: 1},
                        4: {1: 1, 2: 3, 3: 1}}
-    assert_false(is_valid_joint_degree(joint_degrees_2))
+    assert not is_valid_joint_degree(joint_degrees_2)
 
     # test conditions 3 and 4
     # joint_degrees_3[1][4]>degree_count[1]*degree_count[4]
@@ -41,12 +40,12 @@ def test_is_valid_joint_degree():
                        2: {2: 2, 3: 2, 4: 2},
                        3: {2: 2, 4: 1},
                        4: {1: 2, 2: 2, 3: 1}}
-    assert_false(is_valid_joint_degree(joint_degrees_3))
+    assert not is_valid_joint_degree(joint_degrees_3)
 
     # test condition 5
     # joint_degrees_5[1][1] not even
     joint_degrees_5 = {1: {1: 9}}
-    assert_false(is_valid_joint_degree(joint_degrees_5))
+    assert not is_valid_joint_degree(joint_degrees_5)
 
 
 def test_joint_degree_graph(ntimes=10):
@@ -66,7 +65,7 @@ def test_joint_degree_graph(ntimes=10):
 
         # assert that the given joint degree is equal to the generated
         # graph's joint degree
-        assert_true(joint_degrees_g == joint_degrees_G)
+        assert joint_degrees_g == joint_degrees_G
 
 
 def test_is_valid_directed_joint_degree():
@@ -74,24 +73,24 @@ def test_is_valid_directed_joint_degree():
     in_degrees = [0, 1, 1, 2]
     out_degrees = [1, 1, 1, 1]
     nkk = {1: {1: 2, 2: 2}}
-    assert_true(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+    assert is_valid_directed_joint_degree(in_degrees, out_degrees, nkk)
 
     # not realizable, values are not integers.
     nkk = {1: {1: 1.5, 2: 2.5}}
-    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+    assert not is_valid_directed_joint_degree(in_degrees, out_degrees, nkk)
 
     # not realizable, number of edges between 1-2 are insufficient.
     nkk = {1: {1: 2, 2: 1}}
-    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+    assert not is_valid_directed_joint_degree(in_degrees, out_degrees, nkk)
 
     # not realizable, in/out degree sequences have different number of nodes.
     out_degrees = [1, 1, 1]
     nkk = {1: {1: 2, 2: 2}}
-    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+    assert not is_valid_directed_joint_degree(in_degrees, out_degrees, nkk)
 
     # not realizable, degree seqeunces have fewer than required nodes.
     in_degrees = [0, 1, 2]
-    assert_false(is_valid_directed_joint_degree(in_degrees, out_degrees, nkk))
+    assert not is_valid_directed_joint_degree(in_degrees, out_degrees, nkk)
 
 
 def test_directed_joint_degree_graph(n=15, m=100, ntimes=1000):
@@ -111,7 +110,7 @@ def test_directed_joint_degree_graph(n=15, m=100, ntimes=1000):
         G = directed_joint_degree_graph(in_degrees, out_degrees, nkk)
 
         # assert degree sequence correctness.
-        assert_true(in_degrees == list(dict(G.in_degree()).values()))
-        assert_true(out_degrees == list(dict(G.out_degree()).values()))
+        assert in_degrees == list(dict(G.in_degree()).values())
+        assert out_degrees == list(dict(G.out_degree()).values())
         # assert joint degree matrix correctness.
-        assert_true(nkk == degree_mixing_dict(G))
+        assert nkk == degree_mixing_dict(G)

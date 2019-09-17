@@ -1,12 +1,6 @@
-# -*- coding: utf-8 -*-
 """
 Minimum cost flow algorithms on directed connected graphs.
 """
-
-__author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
-# Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
-# All rights reserved.
-# BSD license.
 
 __all__ = ['network_simplex']
 
@@ -14,15 +8,6 @@ from itertools import chain, islice, repeat
 from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
-
-try:
-    from itertools import izip as zip
-except ImportError:
-    pass
-try:
-    range = xrange
-except NameError:
-    pass
 
 
 @not_implemented_for('undirected')
@@ -197,7 +182,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     inf = float('inf')
     for p, b in zip(N, D):
         if abs(b) == inf:
-            raise nx.NetworkXError('node %r has infinite demand' % (p,))
+            raise nx.NetworkXError(f'node {p!r} has infinite demand')
 
     multigraph = G.is_multigraph()
     S = []  # edge sources
@@ -225,14 +210,14 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
 
     for e, c in zip(E, C):
         if abs(c) == inf:
-            raise nx.NetworkXError('edge %r has infinite weight' % (e,))
+            raise nx.NetworkXError(f'edge {e!r} has infinite weight')
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if abs(e[-1].get(weight, 0)) == inf:
-            raise nx.NetworkXError('edge %r has infinite weight' % (e[:-1],))
+            raise nx.NetworkXError(f'edge {e[:-1]!r} has infinite weight')
 
     ###########################################################################
     # Quick infeasibility detection
@@ -242,15 +227,14 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         raise nx.NetworkXUnfeasible('total node demand is not zero')
     for e, u in zip(E, U):
         if u < 0:
-            raise nx.NetworkXUnfeasible('edge %r has negative capacity' % (e,))
+            raise nx.NetworkXUnfeasible(f'edge {e!r} has negative capacity')
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if e[-1].get(capacity, inf) < 0:
-            raise nx.NetworkXUnfeasible(
-                'edge %r has negative capacity' % (e[:-1],))
+            raise nx.NetworkXUnfeasible(f'edge {e[:-1]!r} has negative capacity')
 
     ###########################################################################
     # Initialization
@@ -263,9 +247,10 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     # feasible spanning tree.
     n = len(N)  # number of nodes
     for p, d in enumerate(D):
-        if d > 0:  # Must be greater-than here. Zero-demand nodes must have
-                   # edges pointing towards the root to ensure strong
-                   # feasibility.
+        # Must be greater-than here. Zero-demand nodes must have
+        # edges pointing towards the root to ensure strong
+        # feasibility.
+        if d > 0:
             S.append(-1)
             T.append(p)
         else:
@@ -525,8 +510,8 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         Wn, We = find_cycle(i, p, q)
         j, s, t = find_leaving_edge(Wn, We)
         augment_flow(Wn, We, residual_capacity(j, s))
-        if i != j:  # Do nothing more if the entering edge is the same as the
-                    # the leaving edge.
+        # Do nothing more if the entering edge is the same as the leaving edge.
+        if i != j:
             if parent[t] != s:
                 # Ensure that s is the parent of t.
                 s, t = t, s

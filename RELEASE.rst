@@ -24,11 +24,14 @@ How to make a new release of ``networkx``
 
 - Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
 
-- Commit changes.
+- Commit changes::
+
+  git add networkx/release.py
+  git commit -m "Designate X.X release"
 
 - Add the version number as a tag in git::
 
-   git tag -s [-u <key-id>] networkx-<major>.<minor>
+   git tag -s [-u <key-id>] networkx-<major>.<minor> -m 'signed <major>.<minor> tag'
 
   (If you do not have a gpg key, use -m instead; it is important for
   Debian packaging that the tags are annotated)
@@ -47,8 +50,8 @@ How to make a new release of ``networkx``
 - Publish on PyPi::
 
    git clean -fxd
-   python setup.py sdist --formats=zip
-   twine upload -s dist/networkx*.zip
+   python setup.py sdist bdist_wheel
+   twine upload -s dist/*
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
@@ -59,8 +62,8 @@ How to make a new release of ``networkx``
     Assuming you are at the top-level of the ``documentation`` repo::
 
       cp -a latest networkx-<major>.<minor> 
-      git add networkx-<major>.<minor>
       ln -sfn networkx-<major>.<minor> stable
+      git add networkx-<major>.<minor> stable
       git commit -m "Add <major>.<minor> docs"
       # maybe squash all the Deploy GitHub Pages commits
       # git rebase -i HEAD~XX where XX is the number of commits back
@@ -73,6 +76,12 @@ How to make a new release of ``networkx``
 
   - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
+
+ - Commit and push changes::
+
+   git add networkx/release.py
+   git commit -m "Bump release version"
+   git push upstream master
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website

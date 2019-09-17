@@ -1,12 +1,5 @@
-#-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+
 __all__ = ['degree_centrality',
            'betweenness_centrality',
            'closeness_centrality']
@@ -73,9 +66,9 @@ def degree_centrality(G, nodes):
     top = set(nodes)
     bottom = set(G) - top
     s = 1.0 / len(bottom)
-    centrality = dict((n, d * s) for n, d in G.degree(top))
+    centrality = {n: d * s for n, d in G.degree(top)}
     s = 1.0 / len(top)
-    centrality.update(dict((n, d * s) for n, d in G.degree(bottom)))
+    centrality.update({n: d * s for n, d in G.degree(bottom)})
     return centrality
 
 

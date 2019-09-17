@@ -1,16 +1,8 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """
 Generators for random graphs.
 
 """
 
-from __future__ import division
 import itertools
 import math
 
@@ -39,11 +31,6 @@ __all__ = ['fast_gnp_random_graph',
            'random_powerlaw_tree',
            'random_powerlaw_tree_sequence',
            'random_kernel_graph']
-
-
-#-------------------------------------------------------------------------
-#  Some Famous Random Graphs
-#-------------------------------------------------------------------------
 
 
 @py_random_state(2)
@@ -336,8 +323,8 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     """
     if k > n:
         raise nx.NetworkXError("k>=n, choose smaller k or larger n")
-    
-    #If k == n the graph return is a complete graph
+
+    # If k == n the graph return is a complete graph
     if k == n:
         return nx.complete_graph(n)
 
@@ -409,8 +396,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
     """
     if k > n:
         raise nx.NetworkXError("k>n, choose smaller k or larger n")
-    
-    #If k == n, the graph is complete not Watts-Strogatz
+
+    # If k == n, the graph is complete not Watts-Strogatz
     if k == n:
         return nx.complete_graph(n)
 
@@ -651,8 +638,7 @@ def barabasi_albert_graph(n, m, seed=None):
     """
 
     if m < 1 or m >= n:
-        raise nx.NetworkXError("Barabási–Albert network must have m >= 1"
-                               " and m < n, m = %d, n = %d" % (m, n))
+        raise nx.NetworkXError(f"Barabási–Albert network must have m >= 1 and m < n, m = {m}, n = {n}")
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m)
@@ -714,15 +700,12 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     """
 
     if m1 < 1 or m1 >= n:
-        raise nx.NetworkXError("Dual Barabási–Albert network must have m1 >= 1"
-                               " and m1 < n, m1 = %d, n = %d" % (m1, n))
+        raise nx.NetworkXError(f"Dual Barabási–Albert network must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}")
     if m2 < 1 or m2 >= n:
-        raise nx.NetworkXError("Dual Barabási–Albert network must have m2 >= 1"
-                               " and m2 < n, m2 = %d, n = %d" % (m2, n))
+        raise nx.NetworkXError(f"Dual Barabási–Albert network must have m2 >= 1 and m2 < n, m2 = {m2}, n = {n}")
     if p < 0 or p > 1:
-        raise nx.NetworkXError("Dual Barabási–Albert network must have 0 <= p <= 1,"
-                               "p = %f" % p)
-    
+        raise nx.NetworkXError(f"Dual Barabási–Albert network must have 0 <= p <= 1, p = {p}")
+
     # For simplicity, if p == 0 or 1, just return BA
     if p == 1:
         return barabasi_albert_graph(n, m1, seed)
@@ -730,13 +713,13 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
         return barabasi_albert_graph(n, m2, seed)
 
     # Add max(m1,m2) initial nodes (m0 in barabasi-speak)
-    G = empty_graph(max(m1,m2))
+    G = empty_graph(max(m1, m2))
     # Target nodes for new edges
-    targets = list(range(max(m1,m2)))
+    targets = list(range(max(m1, m2)))
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = []
     # Start adding the remaining nodes.
-    source = max(m1,m2)
+    source = max(m1, m2)
     # Pick which m to use first time (m1 or m2)
     if seed.random() < p:
         m = m1
@@ -779,7 +762,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     3) With $(1 - p - q)$ probability, $m$ new nodes are added to the graph
     with edges attached preferentially.
 
-    When $p = q = 0$, the model behaves just like the Barabási–Alber mo
+    When $p = q = 0$, the model behaves just like the Barabási–Alber model.
 
     Parameters
     ----------
@@ -811,11 +794,11 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
        Physical review letters, 85(24), 5234.
     """
     if m < 1 or m >= n:
-        msg = "Extended Barabasi-Albert network needs m>=1 and m<n, m=%d, n=%d"
-        raise nx.NetworkXError(msg % (m, n))
+        msg = f"Extended Barabasi-Albert network needs m>=1 and m<n, m={m}, n={n}"
+        raise nx.NetworkXError(msg)
     if p + q >= 1:
-        msg = "Extended Barabasi-Albert network needs p + q <= 1, p=%d, q=%d"
-        raise nx.NetworkXError(msg % (p, q))
+        msg = f"Extended Barabasi-Albert network needs p + q <= 1, p={p}, q={q}"
+        raise nx.NetworkXError(msg)
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m)
@@ -852,7 +835,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 prohibited_nodes.append(src_node)
                 # This will raise an exception if the sequence is empty
                 dest_node = seed.choice([nd for nd in attachment_preference
-                                           if nd not in prohibited_nodes])
+                                         if nd not in prohibited_nodes])
                 # Adding the new edge
                 G.add_edge(src_node, dest_node)
 
@@ -888,7 +871,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 # neighbor with 'node', with preferential attachment
                 neighbor_nodes.append(node)
                 dest_node = seed.choice([nd for nd in attachment_preference
-                                           if nd not in neighbor_nodes])
+                                         if nd not in neighbor_nodes])
                 # Rewire
                 G.remove_edge(node, src_node)
                 G.add_edge(node, dest_node)
@@ -971,12 +954,10 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     """
 
     if m < 1 or n < m:
-        raise nx.NetworkXError(
-            "NetworkXError must have m>1 and m<n, m=%d,n=%d" % (m, n))
+        raise nx.NetworkXError(f"NetworkXError must have m>1 and m<n, m={m},n={n}")
 
     if p > 1 or p < 0:
-        raise nx.NetworkXError(
-            "NetworkXError p must be in [0,1], p=%f" % (p))
+        raise nx.NetworkXError(f"NetworkXError p must be in [0,1], p={p}")
 
     G = empty_graph(m)  # add m initial nodes (m0 in barabasi-speak)
     repeated_nodes = list(G.nodes())  # list of existing nodes to sample from
@@ -1019,6 +1000,11 @@ def random_lobster(n, p1, p2, seed=None):
     leaf nodes. A caterpillar is a tree that reduces to a path graph
     when pruning all leaf nodes; setting `p2` to zero produces a caterpillar.
 
+    This implementation iterates on the probabilities `p1` and `p2` to add
+    edges at levels 1 and 2, respectively. Graphs are therefore constructed
+    iteratively with uniform randomness at each level rather than being selected
+    uniformly at random from the set of all possible lobsters.
+
     Parameters
     ----------
     n : int
@@ -1030,19 +1016,29 @@ def random_lobster(n, p1, p2, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
+    Raises
+    ------
+    NetworkXError
+        If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
+    p1, p2 = abs(p1), abs(p2)
+    if any([p >= 1 for p in [p1, p2]]):
+        raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
+
     # a necessary ingredient in any self-respecting graph library
     llen = int(2 * seed.random() * n + 0.5)
     L = path_graph(llen)
     # build caterpillar: add edges to path graph with probability p1
     current_node = llen - 1
     for n in range(llen):
-        if seed.random() < p1:  # add fuzzy caterpillar parts
+        while seed.random() < p1:  # add fuzzy caterpillar parts
             current_node += 1
             L.add_edge(n, current_node)
-            if seed.random() < p2:  # add crunchy lobster bits
+            cat_node = current_node
+            while seed.random() < p2:  # add crunchy lobster bits
                 current_node += 1
-                L.add_edge(current_node - 1, current_node)
+                L.add_edge(cat_node, current_node)
     return L  # voila, un lobster!
 
 
@@ -1190,8 +1186,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
         index = seed.randint(0, n - 1)
         zseq[index] = swap.pop()
 
-    raise nx.NetworkXError('Exceeded max (%d) attempts for a valid tree'
-                           ' sequence.' % tries)
+    raise nx.NetworkXError(f"Exceeded max ({tries}) attempts for a valid tree sequence.")
 
 
 @py_random_state(3)
