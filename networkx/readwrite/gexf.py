@@ -243,7 +243,7 @@ class GEXF(object):
         self.NS_GEXF = d['NS_GEXF']
         self.NS_VIZ = d['NS_VIZ']
         self.NS_XSI = d['NS_XSI']
-        self.SCHEMALOCATION = d['NS_XSI']
+        self.SCHEMALOCATION = d['SCHEMALOCATION']
         self.VERSION = d['VERSION']
         self.version = version
 
@@ -266,7 +266,13 @@ class GEXFWriter(GEXF):
                             'xmlns:xsi': self.NS_XSI,
                             'xsi:schemaLocation': self.SCHEMALOCATION,
                             'version': self.VERSION})
-
+        
+        #Make meta element a non-graph element, and add lastmodifieddate as attribute not tag
+        meta_element = Element('meta')
+        SubElement(meta_element, 'creator').text = 'NetworkX {}'.format(nx.__version__)
+        meta_element.set('lastmodifieddate' , time.strftime('%Y-%m-%d'))
+        self.xml.append(meta_element)
+        
         ET.register_namespace('viz', self.NS_VIZ)
 
         # counters for edge and attribute identifiers
@@ -311,17 +317,10 @@ class GEXFWriter(GEXF):
         graph_element = Element('graph', defaultedgetype=default, mode=mode,
                                 name=name)
         self.graph_element = graph_element
-        self.add_meta(G, graph_element)
         self.add_nodes(G, graph_element)
         self.add_edges(G, graph_element)
         self.xml.append(graph_element)
 
-    def add_meta(self, G, graph_element):
-        # add meta element with creator and date
-        meta_element = Element('meta')
-        SubElement(meta_element, 'creator').text = 'NetworkX {}'.format(nx.__version__)
-        SubElement(meta_element, 'lastmodified').text = time.strftime('%d/%m/%Y')
-        graph_element.append(meta_element)
 
     def add_nodes(self, G, graph_element):
         nodes_element = Element('nodes')
@@ -455,6 +454,13 @@ class GEXFWriter(GEXF):
                     e = Element('attvalue')
                     e.attrib['for'] = attr_id
                     e.attrib['value'] = make_str(val)
+                    #Handle nan, inf, -inf differently
+                    if e.attrib['value'] == 'inf':
+                        e.attrib['value'] = 'INF'
+                    elif e.attrib['value'] == 'nan':
+                        e.attrib['value'] = 'NaN'
+                    elif e.attrib['value'] == '-inf':
+                        e.attrib['value'] = '-INF'
                     if start is not None:
                         e.attrib['start'] = make_str(start)
                     if end is not None:
@@ -471,6 +477,13 @@ class GEXFWriter(GEXF):
                     e.attrib['value'] = make_str(v).lower()
                 else:
                     e.attrib['value'] = make_str(v)
+                    #Handle nan, inf, -inf differently
+                    if e.attrib['value'] == 'inf':
+                        e.attrib['value'] = 'INF'
+                    elif e.attrib['value'] == 'nan':
+                        e.attrib['value'] = 'NaN'
+                    elif e.attrib['value'] == '-inf':
+                        e.attrib['value'] = '-INF'
                 attvalues.append(e)
         xml_obj.append(attvalues)
         return data
@@ -768,7 +781,15 @@ class GEXFReader(GEXF):
         if subnodes is not None:
             for node_xml in subnodes.findall('{%s}node' % self.NS_GEXF):
                 self.add_node(G, node_xml, node_attr, node_pid=node_id)
-
+        
+        #Handle nan, inf, -inf differently
+        for k,v in data.items():
+            if make_str(v) == 'inf':
+                data[k] = 'INF'
+            elif make_str(v) == 'nan':
+                data[k] = 'NaN'
+            elif make_str(v) == '-inf':
+                data[k] = '-INF'
         G.add_node(node_id, **data)
 
     def add_start_end(self, data, xml):
