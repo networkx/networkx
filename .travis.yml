@@ -74,10 +74,6 @@ matrix:
       dist: xenial
       sudo: true
 
-  fast_finish: true
-  allow_failures:
-    - python: 3.8-dev
-
 before_install:
   # prepare the system to install prerequisites or dependencies
   - source tools/travis/before_install.sh
