@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import io
+import sys
 import time
 from nose import SkipTest
 from nose.tools import *
@@ -280,6 +281,18 @@ class TestGEXF(object):
         assert_equal(list(H), [7])
         assert_equal(H.nodes[7]['label'], '77')
 
+# FIXME: We should test xml without caring about their order This is causing a
+# problem b/c of a change in Python 3.8
+#
+# "Prior to Python 3.8, the serialisation order of the XML attributes of
+# elements was artificially made predictable by sorting the attributes by their
+# name. Based on the now guaranteed ordering of dicts, this arbitrary
+# reordering was removed in Python 3.8 to preserve the order in which
+# attributes were originally parsed or created by user code."
+#
+# https://docs.python.org/3.8/library/xml.etree.elementtree.html
+# https://bugs.python.org/issue34160
+
     def test_write_with_node_attributes(self):
         # Addresses #673.
         G = nx.OrderedGraph()
@@ -291,7 +304,8 @@ class TestGEXF(object):
             G.nodes[i]['start'] = i
             G.nodes[i]['end'] = i + 1
 
-        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+        if sys.version_info < (3,8):
+            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <meta>
       <creator>NetworkX {}</creator>
@@ -310,13 +324,35 @@ class TestGEXF(object):
     </edges>
   </graph>
 </gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+        else:
+            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
+  <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
+    <meta>
+      <creator>NetworkX {}</creator>
+      <lastmodified>{}</lastmodified>
+    </meta>
+    <nodes>
+      <node id="0" label="0" pid="0" start="0" end="1" />
+      <node id="1" label="1" pid="1" start="1" end="2" />
+      <node id="2" label="2" pid="2" start="2" end="3" />
+      <node id="3" label="3" pid="3" start="3" end="4" />
+    </nodes>
+    <edges>
+      <edge source="0" target="1" id="0" />
+      <edge source="1" target="2" id="1" />
+      <edge source="2" target="3" id="2" />
+    </edges>
+  </graph>
+</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
     def test_edge_id_construct(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
-        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+        if sys.version_info < (3,8):
+            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
   <graph defaultedgetype="undirected" mode="static" name="">
     <meta>
       <creator>NetworkX {}</creator>
@@ -335,6 +371,27 @@ class TestGEXF(object):
     </edges>
   </graph>
 </gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+        else:
+            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <meta>
+      <creator>NetworkX {}</creator>
+      <lastmodified>{}</lastmodified>
+    </meta>
+    <nodes>
+      <node id="0" label="0" />
+      <node id="1" label="1" />
+      <node id="2" label="2" />
+      <node id="3" label="3" />
+    </nodes>
+    <edges>
+      <edge source="0" target="1" id="0" />
+      <edge source="1" target="2" id="2" />
+      <edge source="2" target="3" id="1" />
+    </edges>
+  </graph>
+</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
