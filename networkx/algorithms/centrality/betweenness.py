@@ -8,7 +8,6 @@
 #
 # Author: Aric Hagberg (hagberg@lanl.gov)
 """Betweenness centrality measures."""
-from __future__ import division
 from heapq import heappush, heappop
 from itertools import count
 

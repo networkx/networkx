@@ -15,7 +15,6 @@ incident to an endpoint of at least one edge in *F*.
 .. _edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
 
 """
-from __future__ import division
 
 from ..matching import maximal_matching
 from ...utils import not_implemented_for

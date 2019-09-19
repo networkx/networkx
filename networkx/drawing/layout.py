@@ -27,7 +27,6 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
-from __future__ import division
 import networkx as nx
 from networkx.utils import random_state
 

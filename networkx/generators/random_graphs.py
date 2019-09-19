@@ -10,7 +10,6 @@ Generators for random graphs.
 
 """
 
-from __future__ import division
 import itertools
 import math
 

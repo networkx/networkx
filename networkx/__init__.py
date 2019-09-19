@@ -62,8 +62,6 @@ Released under the 3-Clause BSD license::
 # Add platform dependent shared library path to sys.path
 #
 
-from __future__ import absolute_import
-
 import sys
 if sys.version_info[:2] < (3, 5):
     m = "Python 3.5 or later is required for NetworkX (%d.%d detected)."

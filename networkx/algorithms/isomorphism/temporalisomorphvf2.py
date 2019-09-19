@@ -66,7 +66,6 @@ Handles directed and undirected graphs and graphs with parallel edges.
 
 """
 
-from __future__ import absolute_import
 import networkx as nx
 from datetime import datetime, timedelta
 from .isomorphvf2 import GraphMatcher, DiGraphMatcher

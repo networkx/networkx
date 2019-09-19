@@ -21,7 +21,6 @@ and/or `optimize_edit_paths`.
 At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
-from __future__ import print_function, division
 from itertools import product
 import math
 import networkx as nx

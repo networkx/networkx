@@ -9,7 +9,6 @@
 #
 # Authors: Jordi Torrents <jtorrents@milnou.net>
 #          Aric Hagberg <hagberg@lanl.gov>
-from __future__ import division
 
 from collections import defaultdict
 

@@ -14,7 +14,6 @@
 #          Brian Cloteaux (brian.cloteaux@nist.gov)
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
-from __future__ import division
 
 import heapq
 from itertools import chain

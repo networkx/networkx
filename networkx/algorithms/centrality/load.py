@@ -10,7 +10,6 @@
 #          Pieter Swart (swart@lanl.gov)
 #          Sasha Gutfraind (ag362@cornell.edu)
 """Load centrality."""
-from __future__ import division
 from operator import itemgetter
 
 import networkx as nx

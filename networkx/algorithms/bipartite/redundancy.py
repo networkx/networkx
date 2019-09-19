@@ -5,7 +5,6 @@
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from __future__ import division
 
 from itertools import combinations
 

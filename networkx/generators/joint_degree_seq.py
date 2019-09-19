@@ -6,7 +6,6 @@
 # Authors:  Minas Gjoka (minas.gjoka@gmail.com)
 #           Balint Tillman (tillman.balint@gmail.com)
 """Generate graphs with a given joint degree and directed joint degree"""
-from __future__ import division
 
 import networkx as nx
 from networkx.utils import py_random_state

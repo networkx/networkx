@@ -7,7 +7,6 @@
 #    All rights reserved.
 #    BSD license.
 """Functions for computing measures of structural holes."""
-from __future__ import division
 
 import networkx as nx
 

@@ -18,7 +18,6 @@ as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-from __future__ import division
 
 import itertools
 

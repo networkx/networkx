@@ -14,7 +14,6 @@ Generators for some directed graphs, including growing network (GN) graphs and
 scale-free graphs.
 
 """
-from __future__ import division
 
 from collections import Counter
 
