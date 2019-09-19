@@ -175,6 +175,7 @@ def run_all_random_functions(seed):
     LFR = nx.generators.LFR_benchmark_graph
     t(LFR, 25, 3, 1.5, 0.1, average_degree=3, min_community=10,
         seed=seed, max_community=20)
+    t(nx.random_internet_as_graph, n, seed=seed)
     # print("done")
 
 
