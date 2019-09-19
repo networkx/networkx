@@ -10,7 +10,6 @@
 module.
 
 """
-from __future__ import division
 
 from nose.tools import assert_greater
 from nose.tools import assert_true

@@ -14,7 +14,6 @@
 
 """Generators for geometric graphs.
 """
-from __future__ import division
 
 from bisect import bisect_left
 from itertools import combinations

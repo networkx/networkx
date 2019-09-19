@@ -7,7 +7,6 @@
 #    All rights reserved.
 #    BSD license.
 """Algorithms to characterize the number of triangles in a graph."""
-from __future__ import division
 
 from itertools import chain
 from itertools import combinations

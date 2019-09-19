@@ -15,7 +15,6 @@
 #   - Write tests for weighted case
 """Functions for detecting communities based on modularity.
 """
-from __future__ import division
 
 import networkx as nx
 from networkx.algorithms.community.quality import modularity

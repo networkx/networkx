@@ -10,7 +10,6 @@
 #           Konstantinos Karakatsanis (dinoskarakas@gmail.com)
 #           Jean-Gabriel Young (jean.gabriel.young@gmail.com)
 """Generators for classes of graphs used in studying social networks."""
-from __future__ import division
 import itertools
 import math
 import networkx as nx

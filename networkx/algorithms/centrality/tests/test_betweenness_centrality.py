@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import division
 from nose.tools import *
 import networkx as nx
 

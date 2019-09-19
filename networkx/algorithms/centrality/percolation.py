@@ -5,7 +5,6 @@
 #    BSD license.
 #
 """Percolation centrality measures."""
-from __future__ import division
 
 __author__ = """\n""".join(['Pranay Kanwar <pranay.kanwar@gmail.com>'])
 

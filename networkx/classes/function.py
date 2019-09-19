@@ -10,7 +10,6 @@
 #          Dan Schult <dschult@colgate.edu>
 """Functional interface to graph methods and assorted utilities.
 """
-from __future__ import division
 
 from collections import Counter
 from itertools import chain

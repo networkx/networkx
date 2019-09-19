@@ -8,7 +8,6 @@
 graph.
 
 """
-from __future__ import division
 
 from networkx.classes import DiGraph
 from networkx.classes import MultiDiGraph

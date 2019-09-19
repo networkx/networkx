@@ -23,8 +23,6 @@ References
 .. [2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
 """
 
-from __future__ import print_function
-
 # Authors: Brendt Wohlberg, Aric Hagberg (hagberg@lanl.gov)
 # Date: 2005-04-01 07:56:22 -0700 (Fri, 01 Apr 2005)
 

@@ -17,7 +17,6 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
-from __future__ import division
 import warnings
 from copy import deepcopy
 from collections.abc import Mapping

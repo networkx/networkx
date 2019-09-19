@@ -36,8 +36,6 @@ tar.gz file. This is why write_versionfile() includes an early escape.
 #    All rights reserved.
 #    BSD license.
 
-from __future__ import absolute_import
-
 import os
 import sys
 import time

@@ -1,4 +1,3 @@
-from __future__ import print_function
 import random
 from nose import SkipTest
 from nose.tools import assert_equal

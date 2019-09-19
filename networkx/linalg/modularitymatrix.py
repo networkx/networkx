@@ -6,7 +6,6 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from __future__ import division
 import networkx as nx
 from networkx.utils import not_implemented_for
 __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',

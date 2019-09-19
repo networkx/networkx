@@ -28,8 +28,6 @@ This implementation is based on:
 #    language={English}
 #}
 
-from __future__ import division
-from __future__ import print_function
 
 import string
 import random
