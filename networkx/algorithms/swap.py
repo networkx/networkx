@@ -7,7 +7,6 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from __future__ import division
 
 import math
 from networkx.utils import py_random_state

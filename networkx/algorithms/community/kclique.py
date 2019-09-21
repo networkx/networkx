@@ -24,7 +24,7 @@ def k_clique_communities(G, k, cliques=None):
     k : int
        Size of smallest clique
 
-    cliques: list or generator       
+    cliques: list or generator
        Precomputed cliques (use networkx.find_cliques(G))
 
     Returns
@@ -38,7 +38,7 @@ def k_clique_communities(G, k, cliques=None):
     >>> K5 = nx.convert_node_labels_to_integers(G,first_label=2)
     >>> G.add_edges_from(K5.edges())
     >>> c = list(k_clique_communities(G, 4))
-    >>> list(c[0])
+    >>> sorted(list(c[0]))
     [0, 1, 2, 3, 4, 5, 6]
     >>> list(k_clique_communities(G, 6))
     []
@@ -46,7 +46,7 @@ def k_clique_communities(G, k, cliques=None):
     References
     ----------
     .. [1] Gergely Palla, Imre Derényi, Illés Farkas1, and Tamás Vicsek,
-       Uncovering the overlapping community structure of complex networks 
+       Uncovering the overlapping community structure of complex networks
        in nature and society Nature 435, 814-818, 2005,
        doi:10.1038/nature03607
     """

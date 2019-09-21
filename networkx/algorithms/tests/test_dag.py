@@ -58,9 +58,9 @@ class TestDagLongestPath(object):
         # by replacing `Unorderable()` by `object()`.
         class Unorderable(object):
             def __lt__(self, other):
-                error_msg = "< not supported between instances of " \
-                    "{} and {}".format(type(self).__name__, type(other).__name__)
-                raise TypeError(error_msg)
+                error_msg = "< not supported between instances of {} and {}"
+                types = (type(self).__name__, type(other).__name__)
+                raise TypeError(error_msg.format(types))
 
         # Create the directed path graph on four nodes in a diamond shape,
         # with nodes represented as (unorderable) Python objects.
@@ -306,6 +306,29 @@ class TestDAG:
             assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
 
         k = 10
+        G = nx.DiGraph((i, i + 1, {"f": "b", "weight": i}) for i in range(k))
+        H = transitive_closure(G)
+        for u, v in G.edges():
+            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+
+    def test_transitive_closure_dag(self):
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+        transitive_closure = nx.algorithms.dag.transitive_closure_dag
+        solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+        assert_edges_equal(transitive_closure(G).edges(), solution)
+        G = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
+        solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)]
+        assert_edges_equal(transitive_closure(G).edges(), solution)
+        G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        assert_raises(nx.NetworkXNotImplemented, transitive_closure, G)
+
+        # test if edge data is copied
+        G = nx.DiGraph([(1, 2, {"a": 3}), (2, 3, {"b": 0}), (3, 4)])
+        H = transitive_closure(G)
+        for u, v in G.edges():
+            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+
+        k = 10
         G = nx.DiGraph((i, i + 1, {"foo": "bar", "weight": i}) for i in range(k))
         H = transitive_closure(G)
         for u, v in G.edges():
@@ -367,6 +390,35 @@ class TestDAG:
         assert_equal(list(nx.lexicographical_topological_sort(
             G, key=lambda x: -x)),
             [1, 5, 4, 2, 6, 3])
+
+    def test_lexicographical_topological_sort2(self):
+        '''
+        Check the case of two or more nodes with same key value.
+        Want to avoid exception raised due to comparing nodes directly.
+        See Issue #3493
+        '''
+        class Test_Node:
+            def __init__(self, n):
+                self.label = n
+                self.priority = 1
+
+            def __repr__(self):
+                return 'Node({})'.format(self.label)
+
+        def sorting_key(node):
+            return node.priority
+
+        test_nodes = [Test_Node(n) for n in range(4)]
+        G = nx.DiGraph()
+        edges = [(0, 1), (0, 2), (0, 3), (2, 3)]
+        G.add_edges_from((test_nodes[a], test_nodes[b]) for a, b in edges)
+
+        sorting = list(nx.lexicographical_topological_sort(G, key=sorting_key))
+        # order reported does depend on order of list(G) in python 3.5
+        # and that is not deterministic due to dicts not being ordered until v3.6
+        # after dropping NX support for 3.5 this can become:
+        # assert_equal(sorting, test_nodes)
+        assert_equal(set(sorting), set(test_nodes))
 
 
 def test_is_aperiodic_cycle():

@@ -13,8 +13,8 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Dan Schult(dschult@colgate.edu)',
                         'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
-__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum', 
-   'normalized_laplacian_spectrum']
+__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum',
+           'normalized_laplacian_spectrum', 'bethe_hessian_spectrum']
 
 
 def laplacian_spectrum(G, weight='weight'):
@@ -135,6 +135,36 @@ def modularity_spectrum(G):
     else:
         return eigvals(nx.modularity_matrix(G))
 
+
+def bethe_hessian_spectrum(G, r=None):
+    """Returns eigenvalues of the Bethe Hessian matrix of G.
+
+    Parameters
+    ----------
+    G : Graph
+       A NetworkX Graph or DiGraph
+
+    r : float
+       Regularizer parameter
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    See Also
+    --------
+    bethe_hessian_matrix
+
+    References
+    ----------
+    .. [1] A. Saade, F. Krzakala and L. Zdeborová
+       "Spectral clustering of graphs with the bethe hessian",
+       Advances in Neural Information Processing Systems. 2014.
+    """
+    from scipy.linalg import eigvalsh
+    return eigvalsh(nx.bethe_hessian_matrix(G, r).todense())
+
 # fixture for nose tests
 
 
@@ -142,5 +172,5 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import scipy.linalg
-    except:
+    except ImportError:
         raise SkipTest("scipy.linalg not available")

@@ -50,8 +50,8 @@ Depth First Search on Edges
 
    edge_dfs
 
-Depth First Search on Edges
----------------------------
+Breadth First Search on Edges
+-----------------------------
 .. automodule:: networkx.algorithms.traversal.edgebfs
 .. autosummary::
    :toctree: generated/

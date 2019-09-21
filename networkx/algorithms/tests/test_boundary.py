@@ -7,7 +7,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.boundary` module."""
-from __future__ import division
 
 from itertools import combinations
 

@@ -7,7 +7,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.wiener` module."""
-from __future__ import division
 
 from nose.tools import eq_
 

@@ -641,12 +641,12 @@ class OutEdgeDataView(object):
 
     def __init__(self, viewer, nbunch=None, data=False, default=None):
         self._viewer = viewer
-        self._adjdict = viewer._adjdict
+        adjdict = self._adjdict = viewer._adjdict
         if nbunch is None:
-            self._nodes_nbrs = self._adjdict.items
+            self._nodes_nbrs = adjdict.items
         else:
             nbunch = list(viewer._graph.nbunch_iter(nbunch))
-            self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
+            self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
         self._default = default
@@ -769,13 +769,13 @@ class OutMultiEdgeDataView(OutEdgeDataView):
     def __init__(self, viewer, nbunch=None,
                  data=False, keys=False, default=None):
         self._viewer = viewer
-        self._adjdict = viewer._adjdict
+        adjdict = self._adjdict = viewer._adjdict
         self.keys = keys
         if nbunch is None:
-            self._nodes_nbrs = self._adjdict.items
+            self._nodes_nbrs = adjdict.items
         else:
             nbunch = list(viewer._graph.nbunch_iter(nbunch))
-            self._nodes_nbrs = lambda: [(n, self._adjdict[n]) for n in nbunch]
+            self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
         self._default = default
@@ -1025,7 +1025,7 @@ class EdgeView(OutEdgeView):
     def __iter__(self):
         seen = {}
         for n, nbrs in self._nodes_nbrs():
-            for nbr in nbrs:
+            for nbr in list(nbrs):
                 if nbr not in seen:
                     yield (n, nbr)
             seen[n] = 1

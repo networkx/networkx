@@ -10,7 +10,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Functions for analyzing triads of a graph."""
-from __future__ import division
 
 from networkx.utils import not_implemented_for
 

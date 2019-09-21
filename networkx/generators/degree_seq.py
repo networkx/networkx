@@ -14,7 +14,6 @@
 #          Brian Cloteaux (brian.cloteaux@nist.gov)
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
-from __future__ import division
 
 import heapq
 from itertools import chain
@@ -745,7 +744,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     Examples
     --------
     >>> sequence = [1, 2, 2, 3]
-    >>> G = nx.random_degree_sequence_graph(sequence)
+    >>> G = nx.random_degree_sequence_graph(sequence, seed=42)
     >>> sorted(d for n, d in G.degree())
     [1, 2, 2, 3]
     """

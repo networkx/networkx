@@ -1,4 +1,3 @@
-from __future__ import print_function
 import random
 from nose import SkipTest
 from nose.tools import assert_equal
@@ -173,9 +172,10 @@ def run_all_random_functions(seed):
     t(nx.utils.discrete_sequence, n, cdistribution=cdist, seed=seed)
     t(nx.algorithms.bipartite.random_graph, n, m, p, seed=seed)
     t(nx.algorithms.bipartite.gnmk_random_graph, n, m, k, seed=seed)
-    LFR = nx.algorithms.community.LFR_benchmark_graph
+    LFR = nx.generators.LFR_benchmark_graph
     t(LFR, 25, 3, 1.5, 0.1, average_degree=3, min_community=10,
         seed=seed, max_community=20)
+    t(nx.random_internet_as_graph, n, seed=seed)
     # print("done")
 
 

@@ -11,7 +11,6 @@
 #     Pieter Swart <swart@lanl.gov>
 #     Sasha Gutfraind <ag362@cornell.edu>
 """Functions for computing eigenvector centrality."""
-from __future__ import division
 
 from math import sqrt
 

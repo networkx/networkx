@@ -11,7 +11,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
-from __future__ import division
 
 from collections import defaultdict
 from itertools import islice

@@ -29,6 +29,7 @@ Closeness
    :toctree: generated/
 
    closeness_centrality
+   incremental_closeness_centrality
 
 Current Flow Closeness
 ----------------------
@@ -66,6 +67,17 @@ Communicability Betweenness
    :toctree: generated/
 
    communicability_betweenness_centrality
+
+Group Centrality
+----------------
+.. autosummary::
+   :toctree: generated/
+
+   group_betweenness_centrality
+   group_closeness_centrality
+   group_degree_centrality
+   group_in_degree_centrality
+   group_out_degree_centrality
 
 Load
 ----
@@ -118,4 +130,4 @@ VoteRank
 .. autosummary::
    :toctree: generated/
 
-   voterank 
+   voterank

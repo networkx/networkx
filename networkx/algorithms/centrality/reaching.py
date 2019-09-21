@@ -6,7 +6,6 @@
 #    All rights reserved.
 #    BSD license.
 """Functions for computing reaching centrality of a node or a graph."""
-from __future__ import division
 
 import networkx as nx
 

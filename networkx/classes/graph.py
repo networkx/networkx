@@ -17,7 +17,6 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
-from __future__ import division
 import warnings
 from copy import deepcopy
 from collections.abc import Mapping
@@ -429,13 +428,17 @@ class Graph(object):
             return False
 
     def __len__(self):
-        """Returns the number of nodes. Use: 'len(G)'.
+        """Returns the number of nodes in the graph. Use: 'len(G)'.
 
         Returns
         -------
         nnodes : int
             The number of nodes in the graph.
 
+        See Also
+        --------
+        number_of_nodes, order  which are identical
+        
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -809,7 +812,7 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> len(G)
+        >>> G.number_of_nodes()
         3
         """
         return len(self._node)
@@ -826,6 +829,11 @@ class Graph(object):
         --------
         number_of_nodes, __len__  which are identical
 
+        Examples
+        --------
+        >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.order()
+        3
         """
         return len(self._node)
 
@@ -1083,7 +1091,7 @@ class Graph(object):
         """Update the graph using nodes/edges/graphs as input.
 
         Like dict.update, this method takes a graph as input, adding the
-        graph's noes and edges to this graph. It can also take two inputs:
+        graph's nodes and edges to this graph. It can also take two inputs:
         edges and nodes. Finally it can take either edges or nodes.
         To specify only nodes the keyword `nodes` must be used.
 
@@ -1328,7 +1336,7 @@ class Graph(object):
         """Returns the attribute dictionary associated with edge (u, v).
 
         This is identical to `G[u][v]` except the default is returned
-        instead of an exception is the edge doesn't exist.
+        instead of an exception if the edge doesn't exist.
 
         Parameters
         ----------

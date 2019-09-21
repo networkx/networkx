@@ -3,6 +3,8 @@
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Richard Penney <rwpenney@users.sourceforge.net>
+#    Michael Fedell <mfedell@jpl.nasa.gov>
+#    Valentino Constantinou <vconstan@jpl.nasa.gov>
 #    All rights reserved.
 #    BSD license.
 #
@@ -25,7 +27,6 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
-from __future__ import division
 import networkx as nx
 from networkx.utils import random_state
 
@@ -38,7 +39,8 @@ __all__ = ['bipartite_layout',
            'spring_layout',
            'spectral_layout',
            'planar_layout',
-           'fruchterman_reingold_layout']
+           'fruchterman_reingold_layout',
+           'spiral_layout']
 
 
 def _process_params(G, center, dim):
@@ -377,6 +379,7 @@ def fruchterman_reingold_layout(G,
 
     fixed : list or None  optional (default=None)
         Nodes to keep fixed at initial position.
+        ValueError raised if `fixed` specified and `pos` not.
 
     iterations : int  optional (default=50)
         Maximum number of iterations taken
@@ -425,8 +428,13 @@ def fruchterman_reingold_layout(G,
     G, center = _process_params(G, center, dim)
 
     if fixed is not None:
-        nfixed = dict(zip(G, range(len(G))))
-        fixed = np.asarray([nfixed[v] for v in fixed])
+        if pos is None:
+            raise ValueError('nodes are fixed without positions given')
+        for node in fixed:
+            if node not in pos:
+                raise ValueError('nodes are fixed without positions given')
+        nfixed = {node: i for i, node in enumerate(G)}
+        fixed = np.asarray([nfixed[node] for node in fixed])
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
@@ -440,6 +448,7 @@ def fruchterman_reingold_layout(G,
                 pos_arr[i] = np.asarray(pos[n])
     else:
         pos_arr = None
+        dom_size = 1
 
     if len(G) == 0:
         return {}
@@ -924,6 +933,86 @@ def planar_layout(G, scale=1, center=None, dim=2):
     pos = pos.astype(np.float64)
     pos = rescale_layout(pos, scale=scale) + center
     return dict(zip(node_list, pos))
+
+
+def spiral_layout(G, scale=1, center=None, dim=2,
+                  resolution=0.35, equidistant=False):
+    """Position nodes in a spiral layout.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
+    scale : number (default: 1)
+        Scale factor for positions.
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+    dim : int
+        Dimension of layout, currently only dim=2 is supported.
+        Other dimension values result in a ValueError.
+    resolution : float
+        The compactness of the spiral layout returned.
+        Lower values result in more compressed spiral layouts.
+    equidistant : bool
+        If True, nodes will be plotted equidistant from each other.
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+    Raises
+    -------
+    ValueError
+        If dim != 2
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.spiral_layout(G)
+
+    Notes
+    -----
+    This algorithm currently only works in two dimensions.
+
+    """
+    import numpy as np
+
+    if dim != 2:
+        raise ValueError('can only handle 2 dimensions')
+
+    G, center = _process_params(G, center, dim)
+
+    if len(G) == 0:
+        return {}
+    if len(G) == 1:
+        return {nx.utils.arbitrary_element(G): center}
+
+    pos = []
+    if equidistant:
+        chord = 1
+        step = 0.5
+        theta = resolution
+        for _ in range(len(G)):
+            r = step * theta
+            theta += chord / r
+            pos.append([np.cos(theta) * r, np.sin(theta) * r])
+
+    else:
+        # set the starting angle and step
+        step = 1
+        angle = 0.0
+        dist = 0.0
+        # set the radius for the spiral to the number of nodes in the graph
+        radius = len(G)
+
+        while dist * np.hypot(np.cos(angle), np.sin(angle)) < radius:
+            pos.append([dist * np.cos(angle), dist * np.sin(angle)])
+            dist += step
+            angle += resolution
+
+    pos = rescale_layout(np.array(pos), scale=scale) + center
+
+    pos = dict(zip(G, pos))
+
+    return pos
 
 
 def rescale_layout(pos, scale=1):

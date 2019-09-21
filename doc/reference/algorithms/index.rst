@@ -11,6 +11,7 @@ Algorithms
 
    approximation
    assortativity
+   asteroidal
    bipartite
    boundary
    bridges
@@ -48,6 +49,7 @@ Algorithms
    matching
    minors
    mis
+   non_randomness
    moral
    node_classification
    operators

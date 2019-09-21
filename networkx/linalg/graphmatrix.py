@@ -158,6 +158,7 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     to_numpy_matrix
     to_scipy_sparse_matrix
     to_dict_of_dicts
+    adjacency_spectrum
     """
     return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
 

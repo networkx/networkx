@@ -3,7 +3,7 @@
 Breadth First Search on Edges
 =============================
 
-Algorithms for a depth-first traversal of edges in a graph.
+Algorithms for a breadth-first traversal of edges in a graph.
 
 """
 from collections import deque

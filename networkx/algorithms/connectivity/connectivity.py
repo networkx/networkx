@@ -2,7 +2,6 @@
 """
 Flow based connectivity algorithms
 """
-from __future__ import division
 
 import itertools
 from operator import itemgetter

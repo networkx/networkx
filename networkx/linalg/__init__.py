@@ -9,3 +9,5 @@ import networkx.linalg.laplacianmatrix
 from networkx.linalg.algebraicconnectivity import *
 from networkx.linalg.modularitymatrix import *
 import networkx.linalg.modularitymatrix
+from networkx.linalg.bethehessianmatrix import *
+import networkx.linalg.bethehessianmatrix

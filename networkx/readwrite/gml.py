@@ -10,7 +10,7 @@
 """
 Read graphs in GML format.
 
-"GML, the G>raph Modelling Language, is our proposal for a portable
+"GML, the Graph Modelling Language, is our proposal for a portable
 file format for graphs. GML's key features are portability, simple
 syntax, extensibility and flexibility. A GML file consists of a
 hierarchical key-value lists. Graphs can be annotated with arbitrary
@@ -667,6 +667,9 @@ def generate_gml(G, stringizer=None):
                     yield indent + key + ' 1'
                 elif value is False:
                     yield indent + key + ' 0'
+                # GML only supports signed 32-bit integers
+                elif value < -2**31 or value >= 2**31:
+                    yield indent + key + ' "' + str(value) + '"'
                 else:
                     yield indent + key + ' ' + str(value)
             elif isinstance(value, float):

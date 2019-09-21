@@ -526,7 +526,7 @@ def minimum_cycle_basis(G, weight=None):
     >>> G=nx.Graph()
     >>> G.add_cycle([0,1,2,3])
     >>> G.add_cycle([0,3,4,5])
-    >>> print(nx.minimum_cycle_basis(G))
+    >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 
     References:

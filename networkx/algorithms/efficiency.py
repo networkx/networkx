@@ -7,7 +7,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Provides functions for computing the efficiency of nodes and graphs."""
-from __future__ import division
 
 from itertools import permutations
 

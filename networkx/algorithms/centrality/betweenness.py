@@ -8,18 +8,19 @@
 #
 # Author: Aric Hagberg (hagberg@lanl.gov)
 """Betweenness centrality measures."""
-from __future__ import division
 from heapq import heappush, heappop
 from itertools import count
 
 import networkx as nx
 from networkx.utils import py_random_state
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['betweenness_centrality', 'edge_betweenness_centrality',
            'edge_betweenness']
 
 
 @py_random_state(5)
+@not_implemented_for('multigraph')
 def betweenness_centrality(G, k=None, normalized=True, weight=None,
                            endpoints=False, seed=None):
     r"""Compute the shortest-path betweenness centrality for nodes.

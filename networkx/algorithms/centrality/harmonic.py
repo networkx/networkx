@@ -6,7 +6,6 @@
 #    Alessandro Luongo <alessandro.luongo@studenti.unimi.it>
 #
 """Functions for computing the harmonic centrality of a graph."""
-from __future__ import division
 from functools import partial
 
 import networkx as nx

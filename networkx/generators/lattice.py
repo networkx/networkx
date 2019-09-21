@@ -24,7 +24,6 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 .. _Triangular Tiling: https://en.wikipedia.org/wiki/Triangular_tiling
 
 """
-from __future__ import division
 
 from math import sqrt
 

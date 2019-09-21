@@ -10,7 +10,6 @@
 communities).
 
 """
-from __future__ import division
 
 from functools import wraps
 from itertools import product
