@@ -46,6 +46,17 @@ class TestPylab(object):
             except OSError:
                 pass
 
+    def test_draw_shell_nlist(self):
+        try:
+            nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
+            nx.draw_shell(self.G, nlist=nlist)
+            plt.savefig('test.ps')
+        finally:
+            try:
+                os.unlink('test.ps')
+            except OSError:
+                pass
+
     def test_edge_colormap(self):
         colors = range(self.G.number_of_edges())
         nx.draw_spring(self.G, edge_color=colors, width=4,
@@ -106,6 +117,11 @@ class TestPylab(object):
             nx.draw_networkx_edges(G, pos, edgelist=[(12, 13)],
                                    edge_color='#1f78b4f0')
 
+            # edge_color as numeric using vmin, vmax
+            nx.draw_networkx_edges(G, pos, edgelist=[(7, 8), (8, 9)],
+                                   edge_color=[0.2, 0.5],
+                                   edge_vmin=0.1, edge_max=0.6)
+
             plt.show()
 
     def test_labels_and_colors(self):
@@ -130,6 +146,10 @@ class TestPylab(object):
         nx.draw_networkx_edges(G, pos,
                                edgelist=[(4, 5), (5, 6), (6, 7), (7, 4)],
                                width=8, alpha=0.5, edge_color='b')
+        nx.draw_networkx_edges(G, pos,
+                               edgelist=[(4, 5), (5, 6), (6, 7), (7, 4)],
+                               min_source_margin=0.5, min_target_margin=0.75,
+                               width=8, edge_color='b')
         # some math labels
         labels = {}
         labels[0] = r'$a$'
@@ -141,6 +161,8 @@ class TestPylab(object):
         labels[6] = r'$\gamma$'
         labels[7] = r'$\delta$'
         nx.draw_networkx_labels(G, pos, labels, font_size=16)
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
+        nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): '4-5'})
         plt.show()
 
     def test_axes(self):

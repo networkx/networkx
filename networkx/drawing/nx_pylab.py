@@ -659,15 +659,12 @@ def draw_networkx_edges(G, pos,
             if shrink_target < min_target_margin:
                 shrink_target = min_target_margin
 
-            if np.iterable(arrow_colors):
-                if len(arrow_colors) == len(edge_pos):
-                    arrow_color = arrow_colors[i]
-                elif len(arrow_colors) == 1:
-                    arrow_color = arrow_colors[0]
-                else:  # Cycle through colors
-                    arrow_color = arrow_colors[i % len(arrow_colors)]
-            else:
-                arrow_color = edge_color
+            if len(arrow_colors) == len(edge_pos):
+                arrow_color = arrow_colors[i]
+            elif len(arrow_colors) == 1:
+                arrow_color = arrow_colors[0]
+            else:  # Cycle through colors
+                arrow_color = arrow_colors[i % len(arrow_colors)]
 
             if np.iterable(width):
                 if len(width) == len(edge_pos):
