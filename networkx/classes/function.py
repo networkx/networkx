@@ -508,7 +508,7 @@ def to_directed(graph):
     Note that graph.to_directed defaults to `as_view=False`
     while this function always provides a view.
     """
-    return graph.to_directed()
+    return graph.to_directed(as_view=True)
 
 
 def to_undirected(graph):
