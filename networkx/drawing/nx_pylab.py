@@ -124,12 +124,9 @@ def draw(G, pos=None, ax=None, **kwds):
     if 'with_labels' not in kwds:
         kwds['with_labels'] = 'labels' in kwds
 
-    try:
-        draw_networkx(G, pos=pos, ax=ax, **kwds)
-        ax.set_axis_off()
-        plt.draw_if_interactive()
-    except:
-        raise
+    draw_networkx(G, pos=pos, ax=ax, **kwds)
+    ax.set_axis_off()
+    plt.draw_if_interactive()
     return
 
 
@@ -352,6 +349,12 @@ def draw_networkx_nodes(G, pos,
     label : [None| string]
        Label for legend
 
+    min_source_margin : int, optional (default=0)
+       The minimum margin (gap) at the begining of the edge at the source.
+
+    min_target_margin : int, optional (default=0)
+       The minimum margin (gap) at the end of the edge at the target.
+
     Returns
     -------
     matplotlib.collections.PathCollection
@@ -444,6 +447,8 @@ def draw_networkx_edges(G, pos,
                         nodelist=None,
                         node_shape="o",
                         connectionstyle=None,
+                        min_source_margin=0,
+                        min_target_margin=0,
                         **kwds):
     """Draw the edges of the graph G.
 
@@ -507,6 +512,12 @@ def draw_networkx_edges(G, pos,
 
     label : [None| string]
        Label for legend
+
+    min_source_margin : int, optional (default=0)
+       The minimum margin (gap) at the begining of the edge at the source.
+
+    min_target_margin : int, optional (default=0)
+       The minimum margin (gap) at the end of the edge at the target.
 
     Returns
     -------
@@ -582,17 +593,17 @@ def draw_networkx_edges(G, pos,
     # Check if edge_color is an array of floats and map to edge_cmap.
     # This is the only case handled differently from matplotlib
     if np.iterable(edge_color) and (len(edge_color) == len(edge_pos)) \
-        and np.alltrue([isinstance(c,Number) for c in edge_color]):
-            if edge_cmap is not None:
-                assert(isinstance(edge_cmap, Colormap))
-            else:
-                edge_cmap = plt.get_cmap()
-            if edge_vmin is None:
-                edge_vmin = min(edge_color)
-            if edge_vmax is None:
-                edge_vmax = max(edge_color)
-            color_normal = Normalize(vmin=edge_vmin, vmax=edge_vmax)
-            edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
+            and np.alltrue([isinstance(c, Number) for c in edge_color]):
+        if edge_cmap is not None:
+            assert(isinstance(edge_cmap, Colormap))
+        else:
+            edge_cmap = plt.get_cmap()
+        if edge_vmin is None:
+            edge_vmin = min(edge_color)
+        if edge_vmax is None:
+            edge_vmax = max(edge_color)
+        color_normal = Normalize(vmin=edge_vmin, vmax=edge_vmax)
+        edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
 
     if (not G.is_directed() or not arrows):
         edge_collection = LineCollection(edge_pos,
@@ -628,7 +639,7 @@ def draw_networkx_edges(G, pos,
         mutation_scale = arrowsize  # scale factor of arrow head
 
         # FancyArrowPatch doesn't handle color strings
-        arrow_colors = colorConverter.to_rgba_array(edge_color,alpha)
+        arrow_colors = colorConverter.to_rgba_array(edge_color, alpha)
         for i, (src, dst) in enumerate(edge_pos):
             x1, y1 = src
             x2, y2 = dst
@@ -642,21 +653,24 @@ def draw_networkx_edges(G, pos,
             else:
                 shrink_target = to_marker_edge(node_size, node_shape)
 
-            if np.iterable(arrow_colors):
-                if len(arrow_colors) == len(edge_pos):
-                    arrow_color = arrow_colors[i]
-                elif len(arrow_colors)==1:
-                    arrow_color = arrow_colors[0]
-                else: # Cycle through colors
-                    arrow_color =  arrow_colors[i%len(arrow_colors)]
-            else:
-                arrow_color = edge_color
+            if shrink_source < min_source_margin:
+                shrink_source = min_source_margin
+
+            if shrink_target < min_target_margin:
+                shrink_target = min_target_margin
+
+            if len(arrow_colors) == len(edge_pos):
+                arrow_color = arrow_colors[i]
+            elif len(arrow_colors) == 1:
+                arrow_color = arrow_colors[0]
+            else:  # Cycle through colors
+                arrow_color = arrow_colors[i % len(arrow_colors)]
 
             if np.iterable(width):
                 if len(width) == len(edge_pos):
                     line_width = width[i]
                 else:
-                    line_width = width[i%len(width)]
+                    line_width = width[i % len(width)]
             else:
                 line_width = width
 
@@ -1174,5 +1188,5 @@ def setup_module(module):
         import matplotlib as mpl
         mpl.use('PS', warn=False)
         import matplotlib.pyplot as plt
-    except:
+    except ImportError:
         raise SkipTest("matplotlib not available")
