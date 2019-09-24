@@ -81,8 +81,9 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
         parent, depth_now, children = queue[0]
         try:
             child = next(children)
+            yield parent, child
+
             if child not in visited:
-                yield parent, child
                 visited.add(child)
                 if depth_now > 1:
                     queue.append((child, depth_now - 1, neighbors(child)))
