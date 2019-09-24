@@ -343,7 +343,6 @@ class TestGEXF(object):
     </edges>
   </graph>
 </gexf>""".format(time.strftime('%Y-%m-%d') , nx.__version__)
-
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
@@ -351,51 +350,6 @@ class TestGEXF(object):
         G = nx.Graph()
         G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
         
-        if sys.version_info < (3,8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
-  </meta>
-  <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
-    <nodes>
-      <node end="1" id="0" label="0" pid="0" start="0" />
-      <node end="2" id="1" label="1" pid="1" start="1" />
-      <node end="3" id="2" label="2" pid="2" start="2" />
-      <node end="4" id="3" label="3" pid="3" start="3" />
-    </nodes>
-    <edges>
-      <edge id="0" source="0" target="1" />
-      <edge id="1" source="1" target="2" />
-      <edge id="2" source="2" target="3" />
-    </edges>
-  </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d') , nx.__version__)
-        else:
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
-  </meta>
-  <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
-    <nodes>
-      <node id="0" label="0" pid="0" start="0" end="1" />
-      <node id="1" label="1" pid="1" start="1" end="2" />
-      <node id="2" label="2" pid="2" start="2" end="3" />
-      <node id="3" label="3" pid="3" start="3" end="4" />
-    </nodes>
-    <edges>
-      <edge source="0" target="1" id="0" />
-      <edge source="1" target="2" id="1" />
-      <edge source="2" target="3" id="2" />
-    </edges>
-  </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d') , nx.__version__)
-
-        obtained = '\n'.join(nx.generate_gexf(G))
-        assert_equal(expected, obtained)
-
-    def test_edge_id_construct(self):
-        G = nx.Graph()
-        G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
         if sys.version_info < (3,8):
             expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
   <meta lastmodifieddate="{}">
@@ -434,7 +388,7 @@ class TestGEXF(object):
     </edges>
   </graph>
 </gexf>""".format(time.strftime('%Y-%m-%d') , nx.__version__)
-        
+
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
