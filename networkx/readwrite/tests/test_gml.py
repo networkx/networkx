@@ -439,6 +439,14 @@ graph
             'edge [ source 0 target 1 key 0 ] edge [ source 1 target 0 key 0 ]'
             'directed 1 multigraph 1 ]')
 
+       #Tests for string convertable alphanumeric id and label values 
+        nx.parse_gml(
+            'graph [edge [ source a target a ] node [ id a label b ] ]')
+        nx.parse_gml(
+            'graph [ node [ id n42 label 0 ] node [ id x43 label 1 ] '
+            'edge [ source n42 target x43 key 0 ] edge [ source x43 target n42 key 0 ]'
+            'directed 1 multigraph 1 ]')
+
         def assert_generate_error(*args, **kwargs):
             assert_raises(nx.NetworkXError,
                           lambda: list(nx.generate_gml(*args, **kwargs)))

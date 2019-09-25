@@ -370,8 +370,20 @@ def parse_gml_lines(lines, label, destringizer):
                 curr_token = next(tokens)
             elif category == 4:  # dict start
                 curr_token, value = parse_dict(curr_token)
-            else:
-                unexpected(curr_token, "an int, float, string or '['")
+            else: 
+                if key in ("id", "label", "source", "target"): #Allow for string convertible id and label values
+                    try:       
+                        value = unescape(str(curr_token[1])) #String convert the token value
+                        if destringizer:
+                            try:
+                                value = destringizer(value)
+                            except ValueError:
+                                pass
+                        curr_token = next(tokens)
+                    except:
+                        unexpected(curr_token, "an int, float, string, '[' or string convertable value for node id or label")
+                else: #Otherwise error out
+                    unexpected(curr_token, "an int, float, string or '['") 
             dct[key].append(value)
         dct = {key: (value if not isinstance(value, list) or len(value) != 1
                      else value[0]) for key, value in dct.items()}
