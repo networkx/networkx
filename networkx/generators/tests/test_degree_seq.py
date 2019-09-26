@@ -200,8 +200,6 @@ def test_random_degree_sequence_graph():
     d = [1, 2, 2, 3]
     G = nx.random_degree_sequence_graph(d, seed=42)
     assert_equal(d, sorted(d for n, d in G.degree()))
-    G = nx.random_degree_sequence_graph(d)
-    assert_equal(d, sorted(d for n, d in G.degree()))
 
 
 def test_random_degree_sequence_graph_raise():
@@ -210,7 +208,7 @@ def test_random_degree_sequence_graph_raise():
 
 
 def test_random_degree_sequence_large():
-    G1 = nx.fast_gnp_random_graph(100, 0.1)
+    G1 = nx.fast_gnp_random_graph(100, 0.1, seed=42)
     d1 = (d for n, d in G1.degree())
     G2 = nx.random_degree_sequence_graph(d1, seed=42)
     d2 = (d for n, d in G2.degree())
