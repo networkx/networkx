@@ -446,6 +446,8 @@ graph
             'graph [ node [ id n42 label 0 ] node [ id x43 label 1 ] '
             'edge [ source n42 target x43 key 0 ] edge [ source x43 target n42 key 0 ]'
             'directed 1 multigraph 1 ]')
+        assert_parse_error(
+            "graph [edge [ source u'u\4200' target u'u\4200' ] node [ id u'u\4200' label b ] ]")
 
         def assert_generate_error(*args, **kwargs):
             assert_raises(nx.NetworkXError,
