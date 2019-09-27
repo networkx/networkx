@@ -478,6 +478,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G.add_node(1, testattr=float('inf'))
         G.add_node(2, testattr=float('nan'))
         G.add_node(3, testattr=float('-inf'))
+        list_value = [(1, 2, 3), (2, 1, 2)]
+        G.add_node(4, key=list_value)
         fh = io.BytesIO()
         nx.write_gexf(G, fh)
         fh.seek(0)
@@ -486,3 +488,4 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert_equal(H.nodes[1]['testattr'], "INF")
         assert_equal(H.nodes[2]['testattr'], "NaN")
         assert_equal(H.nodes[3]['testattr'], "-INF")
+        assert_equals(H.nodes[4]['networkx_key'], list_value)
