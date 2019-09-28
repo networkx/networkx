@@ -162,11 +162,11 @@ def from_pydot(P):
         N.graph['graph'] = pattr
     try:
         N.graph['node'] = P.get_node_defaults()[0]
-    except Exception as e:  # IndexError,TypeError:
+    except (IndexError, TypeError):
         pass  # N.graph['node']={}
     try:
         N.graph['edge'] = P.get_edge_defaults()[0]
-    except Exception as e:  # IndexError,TypeError:
+    except (IndexError, TypeError):
         pass  # N.graph['edge']={}
     return N
 

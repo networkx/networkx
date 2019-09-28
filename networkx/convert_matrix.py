@@ -184,7 +184,7 @@ def from_pandas_adjacency(df, create_using=None):
 
     try:
         df = df[df.index]
-    except Exception as e:
+    except Exception:
         msg = "%s not in columns"
         missing = list(set(df.index).difference(set(df.columns)))
         raise nx.NetworkXError("Columns must match Indices.", msg % missing)
@@ -560,7 +560,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     dt = A.dtype
     try:
         python_type = kind_to_python_type[dt.kind]
-    except Exception as e:
+    except Exception:
         raise TypeError("Unknown numpy data type: %s" % dt)
 
     # Make sure we get even the isolated nodes of the graph.
@@ -1120,7 +1120,7 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
         operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
         try:
             op = operator[multigraph_weight]
-        except Exception as e:
+        except Exception:
             raise ValueError('multigraph_weight must be sum, min, or max')
 
         for u, v, attrs in G.edges(data=True):
@@ -1244,13 +1244,13 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-    except Exception as e:
+    except ImportError:
         raise SkipTest("NumPy not available")
     try:
         import scipy
-    except Exception as e:
+    except ImportError:
         raise SkipTest("SciPy not available")
     try:
         import pandas
-    except Exception as e:
+    except ImportError:
         raise SkipTest("Pandas not available")
