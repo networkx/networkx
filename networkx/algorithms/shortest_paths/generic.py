@@ -340,13 +340,13 @@ def average_shortest_path_length(G, weight=None, method=None):
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
 
-    method : None or string, optional (default = None)
+    method : string, optional (default = 'unweighted' or 'djikstra')
         The algorithm to use to compute the path lengths.
         Supported options are 'unweighted', 'dijkstra', 'bellman-ford',
         'floyd-warshall' and 'floyd-warshall-numpy'.
-        Other inputs produce a ValueError.
-        If `weight` is None, the default method will be 'unweighted'
-        otherwise the default method will be 'dijkstra'.
+        Other method values produce a ValueError.
+        The default method is 'unweighted' if `weight` is None,
+        otherwise the default method is 'dijkstra'.
 
     Raises
     ------
@@ -413,7 +413,6 @@ def average_shortest_path_length(G, weight=None, method=None):
         elif method == 'bellman-ford':
             return nx.single_source_bellman_ford_path_length(G, v,
                                                              weight=weight)
-
 
     if method in single_source_methods:
         # Sum the distances for each (ordered) pair of source and target node.

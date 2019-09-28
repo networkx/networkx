@@ -350,6 +350,7 @@ class TestAverageShortestPathLength(object):
         G = nx.path_graph(2)
         nx.average_shortest_path_length(G, weight='weight', method='SPAM')
 
+
 class TestAverageShortestPathLengthNumpy(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
