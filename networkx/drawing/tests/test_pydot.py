@@ -78,9 +78,8 @@ class TestPydot(object):
             (e.get_source(), e.get_destination()) for e in P.get_edge_list()])
 
         # Sorted list of all edges in the original "pydot.Dot" instance.
-        e2 = sorted([
-            (e.get_source(), e.get_destination())
-            for e in Pin.get_edge_list()])
+        e2 = sorted([(e.get_source(), e.get_destination())
+                     for e in Pin.get_edge_list()])
 
         # Validate these instances to contain the same edges.
         assert_equal(e1, e2)
