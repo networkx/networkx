@@ -184,7 +184,7 @@ def from_pandas_adjacency(df, create_using=None):
 
     try:
         df = df[df.index]
-    except:
+    except Exception:
         msg = "%s not in columns"
         missing = list(set(df.index).difference(set(df.columns)))
         raise nx.NetworkXError("Columns must match Indices.", msg % missing)
@@ -560,7 +560,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     dt = A.dtype
     try:
         python_type = kind_to_python_type[dt.kind]
-    except:
+    except Exception:
         raise TypeError("Unknown numpy data type: %s" % dt)
 
     # Make sure we get even the isolated nodes of the graph.
@@ -570,7 +570,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     edges = map(lambda e: (int(e[0]), int(e[1])),
                 zip(*(np.asarray(A).nonzero())))
     # handle numpy constructed data type
-    if python_type is 'void':
+    if python_type == 'void':
         # Sort the fields by their offset, then by dtype, then by name.
         fields = sorted((offset, dtype, name) for name, (dtype, offset) in
                         A.dtype.fields.items())
@@ -1120,7 +1120,7 @@ def to_numpy_array(G, nodelist=None, dtype=None, order=None,
         operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
         try:
             op = operator[multigraph_weight]
-        except:
+        except Exception:
             raise ValueError('multigraph_weight must be sum, min, or max')
 
         for u, v, attrs in G.edges(data=True):
@@ -1200,7 +1200,8 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     >>> A = np.array([[1, 1], [2, 1]])
     >>> G = nx.from_numpy_array(A)
     >>> G.edges(data=True)
-    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), (1, 1, {'weight': 1})])
+    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), \
+(1, 1, {'weight': 1})])
 
     If `create_using` indicates a multigraph and the array has only integer
     entries and `parallel_edges` is False, then the entries will be treated
@@ -1243,13 +1244,13 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-    except:
+    except ImportError:
         raise SkipTest("NumPy not available")
     try:
         import scipy
-    except:
+    except ImportError:
         raise SkipTest("SciPy not available")
     try:
         import pandas
-    except:
+    except ImportError:
         raise SkipTest("Pandas not available")

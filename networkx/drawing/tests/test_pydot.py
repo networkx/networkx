@@ -51,7 +51,7 @@ class TestPydot(object):
         # Validate the original and resulting graphs to be the same.
         assert_graphs_equal(G, G2)
 
-        # Serialize this "pydot.Dot" instance to a temporary file in dot format.
+        # Serialize this "pydot.Dot" instance to a temporary file in dot format
         fname = tempfile.mktemp()
         P.write_raw(fname)
 
@@ -78,8 +78,8 @@ class TestPydot(object):
             (e.get_source(), e.get_destination()) for e in P.get_edge_list()])
 
         # Sorted list of all edges in the original "pydot.Dot" instance.
-        e2 = sorted([
-            (e.get_source(), e.get_destination()) for e in Pin.get_edge_list()])
+        e2 = sorted([(e.get_source(), e.get_destination())
+                     for e in Pin.get_edge_list()])
 
         # Validate these instances to contain the same edges.
         assert_equal(e1, e2)

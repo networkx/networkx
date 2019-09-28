@@ -162,11 +162,11 @@ def from_pydot(P):
         N.graph['graph'] = pattr
     try:
         N.graph['node'] = P.get_node_defaults()[0]
-    except:  # IndexError,TypeError:
+    except (IndexError, TypeError):
         pass  # N.graph['node']={}
     try:
         N.graph['edge'] = P.get_edge_defaults()[0]
-    except:  # IndexError,TypeError:
+    except (IndexError, TypeError):
         pass  # N.graph['edge']={}
     return N
 
@@ -199,7 +199,7 @@ def to_pydot(N):
 
     name = N.name
     graph_defaults = N.graph.get('graph', {})
-    if name is '':
+    if name == '':
         P = pydot.Dot('', graph_type=graph_type, strict=strict,
                       **graph_defaults)
     else:
