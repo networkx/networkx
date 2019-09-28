@@ -193,7 +193,7 @@ def read_gml(path, label='label', destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -263,7 +263,7 @@ def parse_gml(lines, label='label', destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
@@ -302,7 +302,8 @@ def parse_gml_lines(lines, label, destringizer):
     def tokenize():
         patterns = [
             r'[A-Za-z][0-9A-Za-z_]*\b',  # keys
-            r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
+            # reals
+            r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',
             r'[+-]?[0-9]+',   # ints
             r'".*?"',         # strings
             r'\[',            # dict start
@@ -371,7 +372,23 @@ def parse_gml_lines(lines, label, destringizer):
             elif category == 4:  # dict start
                 curr_token, value = parse_dict(curr_token)
             else:
-                unexpected(curr_token, "an int, float, string or '['")
+                # Allow for string convertible id and label values
+                if key in ("id", "label", "source", "target"):
+                    try:
+                        # String convert the token value
+                        value = unescape(str(curr_token[1]))
+                        if destringizer:
+                            try:
+                                value = destringizer(value)
+                            except ValueError:
+                                pass
+                        curr_token = next(tokens)
+                    except Exception:
+                        msg = "an int, float, string, '[' or string" + \
+                              " convertable ASCII value for node id or label"
+                        unexpected(curr_token, msg)
+                else:  # Otherwise error out
+                    unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
         dct = {key: (value if not isinstance(value, list) or len(value) != 1
                      else value[0]) for key, value in dct.items()}
@@ -443,11 +460,10 @@ def parse_gml_lines(lines, label, destringizer):
             if not G.has_edge(source, target):
                 G.add_edge(source, target, **edge)
             else:
-                raise nx.NetworkXError(
-                    """edge #%d (%r%s%r) is duplicated
-
-Hint:  If this is a multigraph, add "multigraph 1" to the header of the file.""" %
-                    (i, source, '->' if directed else '--', target))
+                msg = "edge #%d (%r%s%r) is duplicated.\n"
+                msg2 = 'Hint: If multigraph add "multigraph 1" to file header.'
+                info = (i, source, '->' if directed else '--', target)
+                raise nx.NetworkXError((msg % info) + msg2)
         else:
             key = edge.pop('key', None)
             if key is not None and G.has_edge(source, target, key):
@@ -610,7 +626,7 @@ def generate_gml(G, stringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -801,7 +817,7 @@ def write_gml(G, path, stringizer=None):
     sure to write GML format. In particular, underscores are not allowed in
     attribute names.
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
