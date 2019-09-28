@@ -25,10 +25,12 @@ import time
 import networkx as nx
 from networkx.utils import open_file, make_str
 try:
-    from xml.etree.cElementTree import Element, ElementTree, SubElement, tostring
+    from xml.etree.cElementTree import (Element, ElementTree, SubElement,
+                                        tostring)
 except ImportError:
     try:
-        from xml.etree.ElementTree import Element, ElementTree, SubElement, tostring
+        from xml.etree.ElementTree import (Element, ElementTree, SubElement,
+                                           tostring)
     except ImportError:
         pass
 
@@ -36,7 +38,8 @@ __all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 
 
 @open_file(1, mode='wb')
-def write_gexf(G, path, encoding='utf-8', prettyprint=True, version='1.2draft'):
+def write_gexf(G, path, encoding='utf-8', prettyprint=True,
+               version='1.2draft'):
     """Write G in GEXF format to path.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
@@ -98,14 +101,14 @@ def generate_gexf(G, encoding='utf-8', prettyprint=True, version='1.2draft'):
     Parameters
     ----------
     G : graph
-       A NetworkX graph
+    A NetworkX graph
     encoding : string (optional, default: 'utf-8')
-       Encoding for text data.
+    Encoding for text data.
     prettyprint : bool (optional, default: True)
-       If True use line breaks and indenting in output XML.
+    If True use line breaks and indenting in output XML.
     version : string (default: 1.2draft)
-       Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html).
-       Supported values: "1.1draft", "1.2draft"
+    Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html)
+    Supported values: "1.1draft", "1.2draft"
 
 
     Examples
@@ -154,7 +157,7 @@ def read_gexf(path, node_type=None, relabel=False, version='1.2draft'):
        If True relabel the nodes to use the GEXF node "label" attribute
        instead of the node "id" attribute as the NetworkX node label.
     version : string (default: 1.2draft)
-       Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html).
+    Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html)
        Supported values: "1.1draft", "1.2draft"
 
     Returns
@@ -223,7 +226,7 @@ class GEXF(object):
                  (np.uint16, "int"), (np.uint32, "int"),
                  (np.uint64, "int"), (np.int_, "int"),
                  (np.intc, "int"), (np.intp, "int"),
-                ] + types
+                 ] + types
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
@@ -243,7 +246,7 @@ class GEXF(object):
         self.NS_GEXF = d['NS_GEXF']
         self.NS_VIZ = d['NS_VIZ']
         self.NS_XSI = d['NS_XSI']
-        self.SCHEMALOCATION = d['NS_XSI']
+        self.SCHEMALOCATION = d['SCHEMALOCATION']
         self.VERSION = d['VERSION']
         self.version = version
 
@@ -266,6 +269,14 @@ class GEXFWriter(GEXF):
                             'xmlns:xsi': self.NS_XSI,
                             'xsi:schemaLocation': self.SCHEMALOCATION,
                             'version': self.VERSION})
+
+        # Make meta element a non-graph element
+        # Also add lastmodifieddate as attribute, not tag
+        meta_element = Element('meta')
+        subelement_text = 'NetworkX {}'.format(nx.__version__)
+        SubElement(meta_element, 'creator').text = subelement_text
+        meta_element.set('lastmodifieddate', time.strftime('%Y-%m-%d'))
+        self.xml.append(meta_element)
 
         ET.register_namespace('viz', self.NS_VIZ)
 
@@ -311,17 +322,9 @@ class GEXFWriter(GEXF):
         graph_element = Element('graph', defaultedgetype=default, mode=mode,
                                 name=name)
         self.graph_element = graph_element
-        self.add_meta(G, graph_element)
         self.add_nodes(G, graph_element)
         self.add_edges(G, graph_element)
         self.xml.append(graph_element)
-
-    def add_meta(self, G, graph_element):
-        # add meta element with creator and date
-        meta_element = Element('meta')
-        SubElement(meta_element, 'creator').text = 'NetworkX {}'.format(nx.__version__)
-        SubElement(meta_element, 'lastmodified').text = time.strftime('%d/%m/%Y')
-        graph_element.append(meta_element)
 
     def add_nodes(self, G, graph_element):
         nodes_element = Element('nodes')
@@ -439,7 +442,8 @@ class GEXFWriter(GEXF):
                 k = 'networkx_key'
             val_type = type(v)
             if val_type not in self.xml_type:
-                raise TypeError('attribute value type is not allowed: %s' % val_type)
+                raise TypeError('attribute value type is not allowed: %s'
+                                % val_type)
             if isinstance(v, list):
                 # dynamic data
                 for val, start, end in v:
@@ -449,12 +453,20 @@ class GEXFWriter(GEXF):
                         self.alter_graph_mode_timeformat(start)
                         self.alter_graph_mode_timeformat(end)
                         break
-                attr_id = self.get_attr_id(make_str(k), self.xml_type[val_type],
+                attr_id = self.get_attr_id(make_str(k),
+                                           self.xml_type[val_type],
                                            node_or_edge, default, mode)
                 for val, start, end in v:
                     e = Element('attvalue')
                     e.attrib['for'] = attr_id
                     e.attrib['value'] = make_str(val)
+                    # Handle nan, inf, -inf differently
+                    if e.attrib['value'] == 'inf':
+                        e.attrib['value'] = 'INF'
+                    elif e.attrib['value'] == 'nan':
+                        e.attrib['value'] = 'NaN'
+                    elif e.attrib['value'] == '-inf':
+                        e.attrib['value'] = '-INF'
                     if start is not None:
                         e.attrib['start'] = make_str(start)
                     if end is not None:
@@ -463,7 +475,8 @@ class GEXFWriter(GEXF):
             else:
                 # static data
                 mode = 'static'
-                attr_id = self.get_attr_id(make_str(k), self.xml_type[val_type],
+                attr_id = self.get_attr_id(make_str(k),
+                                           self.xml_type[val_type],
                                            node_or_edge, default, mode)
                 e = Element('attvalue')
                 e.attrib['for'] = attr_id
@@ -471,6 +484,13 @@ class GEXFWriter(GEXF):
                     e.attrib['value'] = make_str(v).lower()
                 else:
                     e.attrib['value'] = make_str(v)
+                    # Handle nan, inf, -inf differently
+                    if e.attrib['value'] == 'inf':
+                        e.attrib['value'] = 'INF'
+                    elif e.attrib['value'] == 'nan':
+                        e.attrib['value'] = 'NaN'
+                    elif e.attrib['value'] == '-inf':
+                        e.attrib['value'] = '-INF'
                 attvalues.append(e)
         xml_obj.append(attvalues)
         return data
@@ -532,7 +552,8 @@ class GEXFWriter(GEXF):
 
             thickness = viz.get('thickness')
             if thickness is not None:
-                e = Element('{%s}thickness' % self.NS_VIZ, value=str(thickness))
+                e = Element('{%s}thickness' % self.NS_VIZ,
+                            value=str(thickness))
                 element.append(e)
 
             shape = viz.get('shape')
@@ -591,7 +612,8 @@ class GEXFWriter(GEXF):
         return node_or_edge_data
 
     def alter_graph_mode_timeformat(self, start_or_end):
-        # if 'start' or 'end' appears, alter Graph mode to dynamic and set timeformat
+        # If 'start' or 'end' appears, alter Graph mode to dynamic and
+        # set timeformat
         if self.graph_element.get('mode') == 'static':
             if start_or_end is not None:
                 if isinstance(start_or_end, str):
@@ -687,7 +709,8 @@ class GEXFReader(GEXF):
             self.timeformat = 'string'
 
         # node and edge attributes
-        attributes_elements = graph_xml.findall('{%s}attributes' % self.NS_GEXF)
+        attributes_elements = graph_xml.findall('{%s}attributes' %
+                                                self.NS_GEXF)
         # dictionaries to hold attributes and attribute defaults
         node_attr = {}
         node_default = {}
@@ -710,7 +733,8 @@ class GEXFReader(GEXF):
 
         # Hack to handle Gephi0.7beta bug
         # add weight attribute
-        ea = {'weight': {'type': 'double', 'mode': 'static', 'title': 'weight'}}
+        ea = {'weight': {'type': 'double', 'mode': 'static',
+                                 'title': 'weight'}}
         ed = {}
         edge_attr.update(ea)
         edge_default.update(ed)
@@ -769,6 +793,14 @@ class GEXFReader(GEXF):
             for node_xml in subnodes.findall('{%s}node' % self.NS_GEXF):
                 self.add_node(G, node_xml, node_attr, node_pid=node_id)
 
+        # Handle nan, inf, -inf differently
+        for k, v in data.items():
+            if make_str(v) == 'inf':
+                data[k] = 'INF'
+            elif make_str(v) == 'nan':
+                data[k] = 'NaN'
+            elif make_str(v) == '-inf':
+                data[k] = '-INF'
         G.add_node(node_id, **data)
 
     def add_start_end(self, data, xml):
@@ -917,7 +949,8 @@ class GEXFReader(GEXF):
                 try:  # should be in our gexf_keys dictionary
                     title = gexf_keys[key]['title']
                 except KeyError:
-                    raise nx.NetworkXError('No attribute defined for=%s.' % key)
+                    raise nx.NetworkXError('No attribute defined for=%s.'
+                                           % key)
                 atype = gexf_keys[key]['type']
                 value = a.get('value')
                 if atype == 'boolean':
@@ -1015,7 +1048,7 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import xml.etree.cElementTree
-    except:
+    except Exception as e:
         raise SkipTest('xml.etree.cElementTree not available.')
 
 
@@ -1024,5 +1057,5 @@ def teardown_module(module):
     import os
     try:
         os.unlink('test.gexf')
-    except:
+    except Exception as e:
         pass

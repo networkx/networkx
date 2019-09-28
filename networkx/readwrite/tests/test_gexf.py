@@ -38,8 +38,10 @@ class TestGEXF(object):
         self.simple_directed_fh = \
             io.BytesIO(self.simple_directed_data.encode('UTF-8'))
 
-        self.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>
-<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+        self.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>\
+<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.\
+org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
+1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
   <meta lastmodifieddate="2009-03-20">
     <creator>Gephi.org</creator>
     <description>A Web network</description>
@@ -135,7 +137,8 @@ class TestGEXF(object):
         self.simple_undirected_graph.add_node('1', label='World')
         self.simple_undirected_graph.add_edge('0', '1', id='0')
 
-        self.simple_undirected_fh = io.BytesIO(self.simple_undirected_data.encode('UTF-8'))
+        self.simple_undirected_fh = io.BytesIO(self.simple_undirected_data
+                                                   .encode('UTF-8'))
 
     def test_read_simple_directed_graphml(self):
         G = self.simple_directed_graph
@@ -304,13 +307,15 @@ class TestGEXF(object):
             G.nodes[i]['start'] = i
             G.nodes[i]['end'] = i + 1
 
-        if sys.version_info < (3,8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+        if sys.version_info < (3, 8):
+            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
+draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
+schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
+gexf.xsd">
+  <meta lastmodifieddate="{}">
+    <creator>NetworkX {}</creator>
+  </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
-    <meta>
-      <creator>NetworkX {}</creator>
-      <lastmodified>{}</lastmodified>
-    </meta>
     <nodes>
       <node end="1" id="0" label="0" pid="0" start="0" />
       <node end="2" id="1" label="1" pid="1" start="1" />
@@ -323,14 +328,16 @@ class TestGEXF(object):
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
+            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
+"http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
+gexf.xsd" version="1.2">
+  <meta lastmodifieddate="{}">
+    <creator>NetworkX {}</creator>
+  </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
-    <meta>
-      <creator>NetworkX {}</creator>
-      <lastmodified>{}</lastmodified>
-    </meta>
     <nodes>
       <node id="0" label="0" pid="0" start="0" end="1" />
       <node id="1" label="1" pid="1" start="1" end="2" />
@@ -343,21 +350,23 @@ class TestGEXF(object):
       <edge source="2" target="3" id="2" />
     </edges>
   </graph>
-</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
-
+</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
     def test_edge_id_construct(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
-        if sys.version_info < (3,8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+
+        if sys.version_info < (3, 8):
+            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/\
+1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
+schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
+gexf.xsd">
+  <meta lastmodifieddate="{}">
+    <creator>NetworkX {}</creator>
+  </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
-    <meta>
-      <creator>NetworkX {}</creator>
-      <lastmodified>{}</lastmodified>
-    </meta>
     <nodes>
       <node id="0" label="0" />
       <node id="1" label="1" />
@@ -370,14 +379,15 @@ class TestGEXF(object):
       <edge id="1" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
+            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
+gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+  <meta lastmodifieddate="{}">
+    <creator>NetworkX {}</creator>
+  </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
-    <meta>
-      <creator>NetworkX {}</creator>
-      <lastmodified>{}</lastmodified>
-    </meta>
     <nodes>
       <node id="0" label="0" />
       <node id="1" label="1" />
@@ -390,7 +400,7 @@ class TestGEXF(object):
       <edge source="2" target="3" id="1" />
     </edges>
   </graph>
-</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
 
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
@@ -401,10 +411,15 @@ class TestGEXF(object):
             import numpy
         except ImportError:
             return
-        nx.set_node_attributes(G, {n:n for n in numpy.arange(4)}, 'number')
+        nx.set_node_attributes(G, {n: n for n in numpy.arange(4)}, 'number')
         G[0][1]['edge-number'] = numpy.float64(1.1)
 
-        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
+="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="{}">
+    <creator>NetworkX {}</creator>
+  </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <attributes class="edge" mode="static">
       <attribute id="1" title="edge-number" type="float" />
@@ -412,10 +427,6 @@ class TestGEXF(object):
     <attributes class="node" mode="static">
       <attribute id="0" title="number" type="int" />
     </attributes>
-    <meta>
-      <creator>NetworkX {}</creator>
-      <lastmodified>{}</lastmodified>
-    </meta>
     <nodes>
       <node id="0" label="0">
         <attvalues>
@@ -448,7 +459,7 @@ class TestGEXF(object):
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(nx.__version__, time.strftime('%d/%m/%Y'))
+</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal(expected, obtained)
 
@@ -460,3 +471,21 @@ class TestGEXF(object):
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
         assert_equal(H.nodes[1]['testattr'], True)
+
+    # Test for NaN, INF and -INF
+    def test_specials(self):
+        G = nx.Graph()
+        G.add_node(1, testattr=float('inf'))
+        G.add_node(2, testattr=float('nan'))
+        G.add_node(3, testattr=float('-inf'))
+        list_value = [(1, 2, 3), (2, 1, 2)]
+        G.add_node(4, key=list_value)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        # float as inf,-inf and nan are all floats internally
+        H = nx.read_gexf(fh, node_type=float)
+        assert_equal(H.nodes[1]['testattr'], "INF")
+        assert_equal(H.nodes[2]['testattr'], "NaN")
+        assert_equal(H.nodes[3]['testattr'], "-INF")
+        assert_equals(H.nodes[4]['networkx_key'], list_value)
