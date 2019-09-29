@@ -67,7 +67,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     -----
     This implementation is from `PADS`_, which was in the public domain
     when it was first accessed in July, 2004.  The modifications
-    to allow depth limits based on the Wikipedia article
+    to allow depth limits are based on the Wikipedia article
     "`Depth-limited-search`_".
 
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py
@@ -134,12 +134,28 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
 
     Notes
     -----
+    The naming of this function is very similar to bfs_edges. The difference
+    is that 'edge_bfs' yields edges even if they extend back to an already
+    explored node while 'bfs_edges' yields the edges of the tree that results
+    from a breadth-first-search (BFS) so no edges are reported if they extend
+    to already explored nodes. That means 'edge_bfs' reports all edges while
+    'bfs_edges' only report those traversed by a node-based BFS. Yet another
+    description is that 'bfs_edges' reports the edges traversed during BFS
+    while 'edge_bfs' reports all edges in the order they are explored.
+
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
     by D. Eppstein, July 2004. The modifications
     to allow depth limits based on the Wikipedia article
     "`Depth-limited-search`_".
 
     .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    bfs_tree
+    dfs_edges
+    edge_bfs
+
     """
     if reverse and G.is_directed():
         successors = G.predecessors
@@ -192,6 +208,12 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     "`Depth-limited-search`_".
 
     .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    dfs_tree
+    bfs_edges
+    edge_bfs
     """
     T = nx.DiGraph()
     T.add_node(source)
@@ -243,6 +265,12 @@ def bfs_predecessors(G, source, depth_limit=None):
     "`Depth-limited-search`_".
 
     .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    bfs_tree
+    bfs_edges
+    edge_bfs
     """
     for s, t in bfs_edges(G, source, depth_limit=depth_limit):
         yield (t, s)
@@ -291,6 +319,12 @@ def bfs_successors(G, source, depth_limit=None):
     "`Depth-limited-search`_".
 
     .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    bfs_tree
+    bfs_edges
+    edge_bfs
     """
     parent = source
     children = []
