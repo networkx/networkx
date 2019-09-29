@@ -13,12 +13,9 @@ The simplest way is to import networkx and run the test() function.
 
 or::
 
-   python -c "import networkx; networkx.test()
+   python -c "import networkx; networkx.test()"
 
 If you have the source package and the nose testing package you
 can test the complete package from the unpacked source directory with::
 
    python setup_egg.py nosetests
-
-The python module benchmark.py can be used to compare relative speed of small
-code bits using the timeit module for different graph classes.
