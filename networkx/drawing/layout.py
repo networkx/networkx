@@ -362,6 +362,21 @@ def fruchterman_reingold_layout(G,
                                 seed=None):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
 
+    The algorithm simulates a force-directed representation of the network
+    treating edges as springs holding nodes close, while treating nodes
+    as repelling objects, sometimes called an anti-gravity force.
+    Simulation continues until the positions are close to an equilibrium.
+
+    There are some hard-coded values: minimal distance between
+    nodes (0.01) and "temperature" of 0.1 to ensure nodes don't fly away.
+    During the simulation, `k` helps determine the distance between nodes,
+    though `scale` and `center` determine the size and place after
+    rescaling occurs at the end of the simulation.
+
+    Fixing some nodes doesn't allow them to move in the simulation.
+    It also turns off the rescaling feature at the simulation's end.
+    In addition, setting `scale` to `None` turns off rescaling.
+
     Parameters
     ----------
     G : NetworkX graph or list of nodes
@@ -392,8 +407,9 @@ def fruchterman_reingold_layout(G,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : number (default: 1)
+    scale : number or None (default: 1)
         Scale factor for positions. Not used unless `fixed is None`.
+        If scale is None, no rescaling is performed.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -475,7 +491,7 @@ def fruchterman_reingold_layout(G,
             k = dom_size / np.sqrt(nnodes)
         pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations,
                                     threshold, dim, seed)
-    if fixed is None:
+    if fixed is None and scale is not None:
         pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
     return pos
@@ -833,9 +849,8 @@ def _spectral(A, dim=2):
         msg = "spectral() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg)
 
-    # form Laplacian matrix
-    I = np.identity(nnodes, dtype=A.dtype)
-    D = I * np.sum(A, axis=1)  # diagonal of degrees
+    # form Laplacian matrix where D is diagonal of degrees
+    D = np.identity(nnodes, dtype=A.dtype) * np.sum(A, axis=1)
     L = D - A
 
     eigenvalues, eigenvectors = np.linalg.eig(L)
@@ -1058,9 +1073,9 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-    except:
+    except ImportError:
         raise SkipTest("NumPy not available")
     try:
         import scipy
-    except:
+    except ImportError:
         raise SkipTest("SciPy not available")

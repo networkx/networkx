@@ -89,6 +89,9 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     shortest-path length will be computed using Dijkstra's algorithm with
     that edge attribute as the edge weight.
 
+    The closeness centrality uses *inward* distance to a node, not outward.
+    If you want to use outword distances apply the function to `G.reverse()`
+
     In NetworkX 2.2 and earlier a bug caused Dijkstra's algorithm to use the
     outward distance rather than the inward distance. If you use a 'distance'
     keyword and a DiGraph, your results will change between v2.2 and v2.3.

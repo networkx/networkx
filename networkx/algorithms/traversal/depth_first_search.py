@@ -68,6 +68,7 @@ def dfs_edges(G, source=None, depth_limit=None):
     dfs_postorder_nodes
     dfs_labeled_edges
     edge_dfs
+    bfs_edges
     """
     if source is None:
         # edges for all components
@@ -124,6 +125,13 @@ def dfs_tree(G, source=None, depth_limit=None):
     >>> list(T.edges())
     [(0, 1), (1, 2), (2, 3), (3, 4)]
 
+    See Also
+    --------
+    dfs_preorder_nodes
+    dfs_postorder_nodes
+    dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     T = nx.DiGraph()
     if source is None:
@@ -172,6 +180,14 @@ def dfs_predecessors(G, source=None, depth_limit=None):
 
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    dfs_preorder_nodes
+    dfs_postorder_nodes
+    dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     return {t: s for s, t in dfs_edges(G, source, depth_limit)}
 
@@ -214,6 +230,14 @@ def dfs_successors(G, source=None, depth_limit=None):
 
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    dfs_preorder_nodes
+    dfs_postorder_nodes
+    dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     d = defaultdict(list)
     for s, t in dfs_edges(G, source=source, depth_limit=depth_limit):
@@ -265,6 +289,8 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     dfs_edges
     dfs_preorder_nodes
     dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
     return (v for u, v, d in edges if d == 'reverse')
@@ -315,6 +341,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     dfs_edges
     dfs_postorder_nodes
     dfs_labeled_edges
+    bfs_edges
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
     return (v for u, v, d in edges if d == 'forward')

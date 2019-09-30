@@ -10,6 +10,9 @@ data.  The edges are labeled with the distance between the two cities.
 
 This example is described in Section 1.1 in Knuth's book (see [1]_ and [2]_).
 
+The data file can be found at:
+https://github.com/networkx/networkx/blob/master/examples/drawing/knuth_miles.txt.gz
+
 References.
 -----------
 
@@ -17,7 +20,6 @@ References.
    "The Stanford GraphBase: A Platform for Combinatorial Computing",
    ACM Press, New York, 1993.
 .. [2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
-
 
 """
 # Author: Aric Hagberg (hagberg@lanl.gov)
