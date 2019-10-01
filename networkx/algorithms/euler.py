@@ -19,9 +19,9 @@ from itertools import combinations
 import networkx as nx
 from ..utils import arbitrary_element, not_implemented_for
 
-__all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize', 
-           'is_semieulerian', 'has_eulerian_path', 'eulerian_path', 
-           'find_path_start']
+__all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize',
+           'is_semieulerian', 'has_eulerian_path', 'eulerian_path',
+           ]
 
 
 def is_eulerian(G):
@@ -63,18 +63,20 @@ def is_eulerian(G):
 
 def is_semieulerian(G):
     """Return True iff `G` is semi-Eulerian.
-    A graph is semi-Eulerian if it has an Eulerian path but no Eulerian circuit.
+
+    G is semi-Eulerian if it has an Eulerian path but no Eulerian circuit.
     """
     return has_eulerian_path(G) and not is_eulerian(G)
 
 
-def find_path_start(G):
+def _find_path_start(G):
     """Return a suitable starting vertex for an Eulerian path.
+
     If no path exists, return None.
     """
     if not has_eulerian_path(G):
         return None
-        
+
     if is_eulerian(G):
         return arbitrary_element(G)
 
@@ -132,7 +134,8 @@ def _multigraph_eulerian_circuit(G, source):
             last_vertex, last_key = current_vertex, current_key
             vertex_stack.pop()
         else:
-            _, next_vertex, next_key = arbitrary_element(edges(current_vertex, keys=True))
+            triple = arbitrary_element(edges(current_vertex, keys=True))
+            _, next_vertex, next_key = triple
             vertex_stack.append((next_vertex, next_key))
             G.remove_edge(current_vertex, next_vertex, next_key)
 
@@ -220,37 +223,68 @@ def eulerian_circuit(G, source=None, keys=False):
 
 def has_eulerian_path(G):
     """Return True iff `G` has an Eulerian path.
+
     An Eulerian path is a path in a graph which uses each edge of a graph
     exactly once.
-    
+
     A directed graph has an Eulerian path iff:
-        - at most one vertex has (out-degree) − (in-degree) = 1, 
-        - at most one vertex has (in-degree) − (out-degree) = 1, 
-        - every other vertex has equal in-degree and out-degree, 
-        - and all of its vertices with nonzero degree belong to a 
+        - at most one vertex has (out-degree) − (in-degree) = 1,
+        - at most one vertex has (in-degree) − (out-degree) = 1,
+        - every other vertex has equal in-degree and out-degree,
+        - and all of its vertices with nonzero degree belong to a
         - single connected component of the underlying undirected graph.
-    
+
     An undirected graph has an Eulerian path iff:
         - exactly zero or two vertices have odd degree,
         - and all of its vertices with nonzero degree belong to a
         - single connected component.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph to find an euler path in.
+
+    Returns
+    -------
+    Bool : True if G has an eulerian path.
+
+    See Also
+    --------
+    is_eulerian
+    eulerian_path
     """
     if G.is_directed():
-        semibalanced_ins = sum(G.in_degree(v) - G.out_degree(v) == 1 for v in G)
-        semibalanced_outs = sum(G.out_degree(v) - G.in_degree(v) == 1 for v in G)
-        return (semibalanced_ins <= 1 and 
+        ins = G.in_degree
+        outs = G.out_degree
+        semibalanced_ins = sum(ins(v) - outs(v) == 1 for v in G)
+        semibalanced_outs = sum(outs(v) - ins(v) == 1 for v in G)
+        return (semibalanced_ins <= 1 and
                 semibalanced_outs <= 1 and
                 sum(G.in_degree(v) != G.out_degree(v) for v in G) <= 2 and
                 nx.is_weakly_connected(G))
-
     else:
-        return (sum(d % 2 == 1 for v, d in G.degree()) in (0,2)
+        return (sum(d % 2 == 1 for v, d in G.degree()) in (0, 2)
                 and nx.is_connected(G))
-        
+
 
 def eulerian_path(G, source=None, keys=False):
     """Return an iterator over the edges of an Eulerian path in `G`.
-    
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph in which to look for an eulerian path.
+    source : node or None (default: None)
+        The node at which to start the search. None means search over all
+        starting nodes.
+    keys : Bool (default: False)
+        Indicates whether to yield edge 3-tuples (u, v, edge_key).
+        The default yields edge 2-tuples
+
+    Yields
+    ------
+    Edge tuples along the eulerian path.
+
     Warning: If `source` provided is not the start node of an Euler path
     will raise error even if an Euler Path exists.
     """
@@ -261,7 +295,7 @@ def eulerian_path(G, source=None, keys=False):
     else:
         G = G.copy()
     if source is None:
-        source = find_path_start(G)
+        source = _find_path_start(G)
     if G.is_multigraph():
         for u, v, k in _multigraph_eulerian_circuit(G, source):
             if keys:
@@ -275,8 +309,7 @@ def eulerian_path(G, source=None, keys=False):
 
 @not_implemented_for('directed')
 def eulerize(G):
-    """
-    Transforms a graph into an Eulerian graph
+    """Transforms a graph into an Eulerian graph
 
     Parameters
     ----------
@@ -294,8 +327,8 @@ def eulerize(G):
 
     See Also
     --------
-    is_eulerian, eulerian_circuit
-
+    is_eulerian
+    eulerian_circuit
 
     References
     ----------
