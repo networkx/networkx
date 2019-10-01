@@ -35,7 +35,7 @@ Algorithms
    distance_regular
    dominance
    dominating
-   efficiency
+   efficiency_measures
    euler
    flow
    graphical

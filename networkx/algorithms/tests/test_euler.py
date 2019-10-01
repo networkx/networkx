@@ -10,65 +10,62 @@ from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx
-from networkx import is_eulerian, eulerian_circuit
 
 
 class TestIsEulerian(TestCase):
-
     def test_is_eulerian(self):
-        assert_true(is_eulerian(nx.complete_graph(5)))
-        assert_true(is_eulerian(nx.complete_graph(7)))
-        assert_true(is_eulerian(nx.hypercube_graph(4)))
-        assert_true(is_eulerian(nx.hypercube_graph(6)))
+        assert_true(nx.is_eulerian(nx.complete_graph(5)))
+        assert_true(nx.is_eulerian(nx.complete_graph(7)))
+        assert_true(nx.is_eulerian(nx.hypercube_graph(4)))
+        assert_true(nx.is_eulerian(nx.hypercube_graph(6)))
 
-        assert_false(is_eulerian(nx.complete_graph(4)))
-        assert_false(is_eulerian(nx.complete_graph(6)))
-        assert_false(is_eulerian(nx.hypercube_graph(3)))
-        assert_false(is_eulerian(nx.hypercube_graph(5)))
+        assert_false(nx.is_eulerian(nx.complete_graph(4)))
+        assert_false(nx.is_eulerian(nx.complete_graph(6)))
+        assert_false(nx.is_eulerian(nx.hypercube_graph(3)))
+        assert_false(nx.is_eulerian(nx.hypercube_graph(5)))
 
-        assert_false(is_eulerian(nx.petersen_graph()))
-        assert_false(is_eulerian(nx.path_graph(4)))
+        assert_false(nx.is_eulerian(nx.petersen_graph()))
+        assert_false(nx.is_eulerian(nx.path_graph(4)))
 
     def test_is_eulerian2(self):
         # not connected
         G = nx.Graph()
         G.add_nodes_from([1, 2, 3])
-        assert_false(is_eulerian(G))
+        assert_false(nx.is_eulerian(G))
         # not strongly connected
         G = nx.DiGraph()
         G.add_nodes_from([1, 2, 3])
-        assert_false(is_eulerian(G))
+        assert_false(nx.is_eulerian(G))
         G = nx.MultiDiGraph()
         G.add_edge(1, 2)
         G.add_edge(2, 3)
         G.add_edge(2, 3)
         G.add_edge(3, 1)
-        assert_false(is_eulerian(G))
+        assert_false(nx.is_eulerian(G))
 
 
 class TestEulerianCircuit(TestCase):
-
     def test_eulerian_circuit_cycle(self):
         G = nx.cycle_graph(4)
 
-        edges = list(eulerian_circuit(G, source=0))
+        edges = list(nx.eulerian_circuit(G, source=0))
         nodes = [u for u, v in edges]
         assert_equal(nodes, [0, 3, 2, 1])
         assert_equal(edges, [(0, 3), (3, 2), (2, 1), (1, 0)])
 
-        edges = list(eulerian_circuit(G, source=1))
+        edges = list(nx.eulerian_circuit(G, source=1))
         nodes = [u for u, v in edges]
         assert_equal(nodes, [1, 2, 3, 0])
         assert_equal(edges, [(1, 2), (2, 3), (3, 0), (0, 1)])
 
         G = nx.complete_graph(3)
 
-        edges = list(eulerian_circuit(G, source=0))
+        edges = list(nx.eulerian_circuit(G, source=0))
         nodes = [u for u, v in edges]
         assert_equal(nodes, [0, 2, 1])
         assert_equal(edges, [(0, 2), (2, 1), (1, 0)])
 
-        edges = list(eulerian_circuit(G, source=1))
+        edges = list(nx.eulerian_circuit(G, source=1))
         nodes = [u for u, v in edges]
         assert_equal(nodes, [1, 2, 0])
         assert_equal(edges, [(1, 2), (2, 0), (0, 1)])
@@ -77,12 +74,12 @@ class TestEulerianCircuit(TestCase):
         G = nx.DiGraph()
         nx.add_cycle(G, [0, 1, 2, 3])
 
-        edges = list(eulerian_circuit(G, source=0))
+        edges = list(nx.eulerian_circuit(G, source=0))
         nodes = [u for u, v in edges]
         assert_equal(nodes, [0, 1, 2, 3])
         assert_equal(edges, [(0, 1), (1, 2), (2, 3), (3, 0)])
 
-        edges = list(eulerian_circuit(G, source=1))
+        edges = list(nx.eulerian_circuit(G, source=1))
         nodes = [u for u, v in edges]
         assert_equal(nodes, [1, 2, 3, 0])
         assert_equal(edges, [(1, 2), (2, 3), (3, 0), (0, 1)])
@@ -92,7 +89,7 @@ class TestEulerianCircuit(TestCase):
         nx.add_cycle(G, [0, 1, 2, 3])
         G.add_edge(1, 2)
         G.add_edge(1, 2)
-        edges = list(eulerian_circuit(G, source=0))
+        edges = list(nx.eulerian_circuit(G, source=0))
         nodes = [u for u, v in edges]
         assert_equal(nodes, [0, 3, 2, 1, 2, 1])
         assert_equal(edges, [(0, 3), (3, 2), (2, 1), (1, 2), (2, 1), (1, 0)])
@@ -102,7 +99,7 @@ class TestEulerianCircuit(TestCase):
         nx.add_cycle(G, [0, 1, 2, 3])
         G.add_edge(1, 2)
         G.add_edge(1, 2)
-        edges = list(eulerian_circuit(G, source=0, keys=True))
+        edges = list(nx.eulerian_circuit(G, source=0, keys=True))
         nodes = [u for u, v, k in edges]
         assert_equal(nodes, [0, 3, 2, 1, 2, 1])
         assert_equal(edges[:2], [(0, 3, 0), (3, 2, 0)])
@@ -111,11 +108,60 @@ class TestEulerianCircuit(TestCase):
 
     @raises(nx.NetworkXError)
     def test_not_eulerian(self):
-        f = list(eulerian_circuit(nx.complete_graph(4)))
+        f = list(nx.eulerian_circuit(nx.complete_graph(4)))
+
+
+class TestIsSemiEulerian(TestCase):
+    def test_is_semieulerian(self):
+        # Test graphs with Eulerian paths but no cycles return True.
+        assert_true(nx.is_semieulerian(nx.path_graph(4)))
+        G = nx.path_graph(6, create_using=nx.DiGraph)
+        assert_true(nx.is_semieulerian(G))
+
+        # Test graphs with Eulerian cycles return False.
+        assert_false(nx.is_semieulerian(nx.complete_graph(5)))
+        assert_false(nx.is_semieulerian(nx.complete_graph(7)))
+        assert_false(nx.is_semieulerian(nx.hypercube_graph(4)))
+        assert_false(nx.is_semieulerian(nx.hypercube_graph(6)))
+
+
+class TestHasEulerianPath(TestCase):
+    def test_has_eulerian_path_cyclic(self):
+        # Test graphs with Eulerian cycles return True.
+        assert_true(nx.has_eulerian_path(nx.complete_graph(5)))
+        assert_true(nx.has_eulerian_path(nx.complete_graph(7)))
+        assert_true(nx.has_eulerian_path(nx.hypercube_graph(4)))
+        assert_true(nx.has_eulerian_path(nx.hypercube_graph(6)))
+
+    def test_has_eulerian_path_non_cyclic(self):
+        # Test graphs with Eulerian paths but no cycles return True.
+        assert_true(nx.has_eulerian_path(nx.path_graph(4)))
+        G = nx.path_graph(6, create_using=nx.DiGraph)
+        assert_true(nx.has_eulerian_path(G))
+
+
+class TestFindPathStart(TestCase):
+    def testfind_path_start(self):
+        find_path_start = nx.algorithms.euler._find_path_start
+        # Test digraphs return correct starting node.
+        G = nx.path_graph(6, create_using=nx.DiGraph)
+        assert_equal(find_path_start(G), 0)
+        edges = [(0, 1), (1, 2), (2, 0), (4, 0)]
+        assert_equal(find_path_start(nx.DiGraph(edges)), 4)
+
+        # Test graph with no Eulerian path return None.
+        edges = [(0, 1), (1, 2), (2, 3), (2, 4)]
+        assert_equal(find_path_start(nx.DiGraph(edges)), None)
+
+
+class TestEulerianPath(TestCase):
+    def test_eulerian_path(self):
+        x = [(4, 0), (0, 1), (1, 2), (2, 0)]
+        for e1, e2 in zip(x, nx.eulerian_path(nx.DiGraph(x))):
+            assert_equal(e1, e2)
 
 
 class TestEulerize(TestCase):
-
     @raises(nx.NetworkXError)
     def test_disconnected(self):
         G = nx.from_edgelist([(0, 1), (2, 3)])
