@@ -336,7 +336,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
 
 
 def pagerank_scipy(G, alpha=0.85, personalization=None,
-                   max_iter=100, tol=1.0e-6, weight='weight',
+                   max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
                    dangling=None):
     """Returns the PageRank of the nodes in the graph.
 
@@ -365,6 +365,9 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
 
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
+
+    nstart : dictionary, optional
+      Starting value of PageRank iteration for each node.
 
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
@@ -432,7 +435,11 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     M = Q * M
 
     # initial vector
-    x = scipy.repeat(1.0 / N, N)
+    if nstart is None:
+        x = scipy.repeat(1.0 / N, N)
+    else:
+        x = scipy.array([nstart.get(n, 0) for n in nodelist], dtype=float)
+        x = x / x.sum()
 
     # Personalization vector
     if personalization is None:

@@ -157,6 +157,11 @@ class TestPageRankScipy(TestPageRank):
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08,
                                     personalization=personalize)
 
+        nstart = dict((n, random.random()) for n in G)
+        p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08, nstart=nstart)
+        for n in G:
+            assert_almost_equal(p[n], G.pagerank[n], places=4)
+
     @raises(networkx.PowerIterationFailedConvergence)
     def test_scipy_pagerank_max_iter(self):
         networkx.pagerank_scipy(self.G, max_iter=0)
