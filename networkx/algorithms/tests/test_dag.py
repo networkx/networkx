@@ -290,26 +290,54 @@ class TestDAG:
 
     def test_transitive_closure(self):
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
-        transitive_closure = nx.algorithms.dag.transitive_closure
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
-        assert_edges_equal(transitive_closure(G).edges(), solution)
+        assert_edges_equal(nx.transitive_closure(G).edges(), solution)
         G = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)]
-        assert_edges_equal(transitive_closure(G).edges(), solution)
+        assert_edges_equal(nx.transitive_closure(G).edges(), solution)
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        solution = [(1, 2), (2, 1), (2, 3), (3, 2), (1, 3), (3, 1)]
+        soln = sorted(solution + [(n, n) for n in G])
+        assert_edges_equal(sorted(nx.transitive_closure(G).edges()), soln)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
-        assert_raises(nx.NetworkXNotImplemented, transitive_closure, G)
+        assert_raises(nx.NetworkXNotImplemented, nx.transitive_closure, G)
 
         # test if edge data is copied
         G = nx.DiGraph([(1, 2, {"a": 3}), (2, 3, {"b": 0}), (3, 4)])
-        H = transitive_closure(G)
+        H = nx.transitive_closure(G)
         for u, v in G.edges():
             assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
 
         k = 10
         G = nx.DiGraph((i, i + 1, {"f": "b", "weight": i}) for i in range(k))
-        H = transitive_closure(G)
+        H = nx.transitive_closure(G)
         for u, v in G.edges():
             assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+
+    def test_reflexive_transitive_closure(self):
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+        solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+        soln = sorted(solution + [(n, n) for n in G])
+        assert_edges_equal(nx.transitive_closure(G).edges(), solution)
+        assert_edges_equal(nx.transitive_closure(G, False).edges(), solution)
+        assert_edges_equal(nx.transitive_closure(G, True).edges(), soln)
+        assert_edges_equal(nx.transitive_closure(G, None).edges(), solution)
+
+        G = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
+        solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)]
+        soln = sorted(solution + [(n, n) for n in G])
+        assert_edges_equal(nx.transitive_closure(G).edges(), solution)
+        assert_edges_equal(nx.transitive_closure(G, False).edges(), solution)
+        assert_edges_equal(nx.transitive_closure(G, True).edges(), soln)
+        assert_edges_equal(nx.transitive_closure(G, None).edges(), solution)
+
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        solution = sorted([(1, 2), (2, 1), (2, 3), (3, 2), (1, 3), (3, 1)])
+        soln = sorted(solution + [(n, n) for n in G])
+        assert_edges_equal(sorted(nx.transitive_closure(G).edges()), soln)
+        assert_edges_equal(sorted(nx.transitive_closure(G, False).edges()), soln)
+        assert_edges_equal(sorted(nx.transitive_closure(G, None).edges()), solution)
+        assert_edges_equal(sorted(nx.transitive_closure(G, True).edges()), soln)
 
     def test_transitive_closure_dag(self):
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
