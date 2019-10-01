@@ -228,9 +228,9 @@ def has_eulerian_path(G):
     exactly once.
 
     A directed graph has an Eulerian path iff:
-        - at most one vertex has (out-degree) − (in-degree) = 1,
-        - at most one vertex has (in-degree) − (out-degree) = 1,
-        - every other vertex has equal in-degree and out-degree,
+        - at most one vertex has out_degree - in_degree = 1,
+        - at most one vertex has in_degree - out_degree = 1,
+        - every other vertex has equal in_degree and out_degree,
         - and all of its vertices with nonzero degree belong to a
         - single connected component of the underlying undirected graph.
 
