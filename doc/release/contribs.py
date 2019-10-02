@@ -17,6 +17,10 @@ def call(cmd):
 tag_date = call("git log -n1 --format='%%ci' %s" % tag)[0]
 print("Release %s was on %s\n" % (tag, tag_date))
 
+commits = call("git log --since='%s' --pretty=%%s --reverse" % tag_date)
+for c in commits:
+    print(c)
+
 merges = call("git log --since='%s' --merges --format='>>>%%B' --reverse" % tag_date)
 merges = [m for m in merges if m.strip()]
 merges = '\n'.join(merges).split('>>>')
