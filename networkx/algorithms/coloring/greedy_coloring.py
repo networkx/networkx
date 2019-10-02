@@ -286,7 +286,7 @@ def greedy_color(G, strategy='largest_first', interchange=False):
        * ``'connected_sequential_bfs'``
        * ``'connected_sequential_dfs'``
        * ``'connected_sequential'`` (alias for the previous strategy)
-       * ``'strategy_saturation_largest_first'``
+       * ``'saturation_largest_first'``
        * ``'DSATUR'`` (alias for the previous strategy)
 
     interchange: bool
