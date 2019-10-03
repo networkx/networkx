@@ -98,7 +98,7 @@ class TestColoring:
     def test_seed_argument(self):
         graph = lf_shc()
         rs = nx.coloring.strategy_random_sequential
-        c1 = nx.coloring.greedy_color(graph,lambda g, c: rs(g, c, seed=1))
+        c1 = nx.coloring.greedy_color(graph, lambda g, c: rs(g, c, seed=1))
         for u, v in graph.edges:
             assert_not_equal(c1[u], c1[v])
 
@@ -299,7 +299,7 @@ class TestColoring:
         check_state(**params)
 
 
-############################## Utility functions ##############################
+#  ############################  Utility functions ############################
 def verify_coloring(graph, coloring):
     for node in graph.nodes():
         if node not in coloring:
@@ -330,7 +330,7 @@ def dict_to_sets(colors):
 
     return sets
 
-############################## Graph Generation ##############################
+#  ############################  Graph Generation ############################
 
 
 def empty_graph():
@@ -634,7 +634,7 @@ def sli_hc():
     return graph
 
 
-#---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Basic tests for all strategies
 # For each basic graph function, specify the number of expected colors.
 BASIC_TEST_CASES = {empty_graph: 0,
@@ -644,7 +644,7 @@ BASIC_TEST_CASES = {empty_graph: 0,
                     three_node_clique: 3}
 
 
-#---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Special test cases. Each strategy has a list of tuples of the form
 # (graph function, interchange, valid # of colors)
 SPECIAL_TEST_CASES = {
@@ -680,7 +680,7 @@ SPECIAL_TEST_CASES = {
 }
 
 
-#---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Helper functions to test
 # (graph function, interchange, valid # of colors)
 
@@ -721,4 +721,3 @@ def make_params_from_graph(G, F):
         'H': H,
         'L': L,
     }
-
