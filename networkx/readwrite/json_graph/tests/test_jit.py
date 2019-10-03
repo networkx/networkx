@@ -55,3 +55,10 @@ class TestJIT(object):
         K.add_edge(1, 2)
         assert_false(nx.is_isomorphic(H, K))
         assert_true(nx.is_isomorphic(G, K))
+
+    def test_jit_round_trip(self):
+        G = nx.Graph()
+        d = nx.jit_data(G)
+        H = jit_graph(json.loads(d))
+        K = jit_graph(d)
+        assert_true(nx.is_isomorphic(H, K))
