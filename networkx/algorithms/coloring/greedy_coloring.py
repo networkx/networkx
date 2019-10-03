@@ -341,7 +341,7 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     # strategy functions.
     if interchange:
         if strategy is strategy_independent_set or strategy is strategy_saturation_largest_first:
-            msg = 'interchange cannot be used with ' + strategy
+            msg = 'interchange cannot be used with ' + strategy[0]
             raise nx.NetworkXPointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)
