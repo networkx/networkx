@@ -1,7 +1,7 @@
 """Unit tests for layout functions."""
 from nose import SkipTest
 from nose.tools import assert_almost_equal, assert_equal, \
-    assert_false, assert_raises
+    assert_true, assert_false, assert_raises
 import networkx as nx
 
 
@@ -25,7 +25,7 @@ class TestLayout(object):
         self.Gi = nx.grid_2d_graph(5, 5)
         self.Gs = nx.Graph()
         nx.add_path(self.Gs, 'abcdef')
-        self.bigG = nx.grid_2d_graph(25, 25)  # bigger than 500 nodes for sparse
+        self.bigG = nx.grid_2d_graph(25, 25)  # > 500 nodes for sparse
 
     @staticmethod
     def collect_node_distances(positions):
@@ -183,9 +183,10 @@ class TestLayout(object):
         G = nx.path_graph(1)
         vpos = nx.shell_layout(G)
         assert_false(vpos[0].any())
-        G = nx.path_graph(3)
-        vpos = nx.shell_layout(G, [[0], [1, 2]])
+        G = nx.path_graph(4)
+        vpos = nx.shell_layout(G, [[0], [1, 2], [3]])
         assert_false(vpos[0].any())
+        assert_true(vpos[3].any())  # ensure node 3 not at origin (#3188)
 
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
@@ -194,11 +195,11 @@ class TestLayout(object):
     def test_fixed_node_fruchterman_reingold(self):
         # Dense version (numpy based)
         pos = nx.circular_layout(self.Gi)
-        npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos, fixed=[(0, 0)])
+        npos = nx.spring_layout(self.Gi, pos=pos, fixed=[(0, 0)])
         assert_equal(tuple(pos[(0, 0)]), tuple(npos[(0, 0)]))
         # Sparse version (scipy based)
         pos = nx.circular_layout(self.bigG)
-        npos = nx.fruchterman_reingold_layout(self.bigG, pos=pos, fixed=[(0, 0)])
+        npos = nx.spring_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         for axis in range(2):
             assert_almost_equal(pos[(0, 0)][axis], npos[(0, 0)][axis])
 
@@ -222,12 +223,12 @@ class TestLayout(object):
 
     def test_center_wrong_dimensions(self):
         G = nx.path_graph(1)
+        assert_equal(id(nx.spring_layout), id(nx.fruchterman_reingold_layout))
         assert_raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.fruchterman_reingold_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.fruchterman_reingold_layout, G, dim=3, center=(1, 1))
+        assert_raises(ValueError, nx.spring_layout, G, dim=3, center=(1, 1))
         assert_raises(ValueError, nx.spectral_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
         assert_raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
@@ -255,7 +256,7 @@ class TestLayout(object):
         assert_equal(vpos, {})
 
     def test_bipartite_layout(self):
-        G = nx.complete_bipartite_graph(3,5)
+        G = nx.complete_bipartite_graph(3, 5)
         top, bottom = nx.bipartite.sets(G)
 
         vpos = nx.bipartite_layout(G, top)
@@ -313,7 +314,8 @@ class TestLayout(object):
         expected_cost = 0.5 * meanwt * numpy.sum(numpy.sum(pos, axis=0) ** 2)
         for i in range(pos.shape[0]):
             for j in range(i + 1, pos.shape[0]):
-                expected_cost += (numpy.linalg.norm(pos[i] - pos[j]) * invdist[i][j] - 1.0) ** 2
+                diff = numpy.linalg.norm(pos[i] - pos[j])
+                expected_cost += (diff * invdist[i][j] - 1.0) ** 2
 
         assert_almost_equal(cost, expected_cost)
 

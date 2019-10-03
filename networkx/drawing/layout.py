@@ -252,7 +252,10 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
         theta = np.linspace(0, 1, len(nodes) + 1)[:-1] * 2 * np.pi
         theta = theta.astype(np.float32)
         pos = np.column_stack([np.cos(theta), np.sin(theta)])
-        pos = rescale_layout(pos, scale=scale * radius / len(nlist)) + center
+        if len(pos) > 1:
+            pos = rescale_layout(pos, scale=scale * radius / len(nlist)) + center
+        else:
+            pos = np.array([(scale * radius + center[0], center[1])])
         npos.update(zip(nodes, pos))
         radius += 1.0
 
@@ -833,7 +836,7 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
             A += A.T
         pos = _spectral(A, dim)
 
-    pos = rescale_layout(pos, scale) + center
+    pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
     return pos
 
