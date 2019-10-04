@@ -274,10 +274,11 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
         A valid column name (string or integer) for the target nodes (for the
         directed case).
 
-    edge_attr : str or int, iterable, True
-        A valid column name (str or integer) or list of column names that will
-        be used to retrieve items from the row and add them to the graph as
-        edge attributes. If `True`, all of the remaining columns will be added.
+    edge_attr : str or int, iterable, True, or None
+        A valid column name (str or int) or iterable of column names that are
+        used to retrieve items and add them to the graph as edge attributes.
+        If `True`, all of the remaining columns will be added.
+        If `None`, no edge attributes are added to the graph.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
@@ -332,6 +333,9 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
         cols = edge_attr
     else:
         cols = [edge_attr]
+    if len(cols) == 0:
+        msg = "Invalid edge_attr argument. No columns found with name: %s"
+        raise nx.NetworkXError(msg % cols)
 
     try:
         eattrs = zip(*[df[col] for col in cols])
@@ -339,14 +343,12 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
         msg = "Invalid edge_attr argument: %s" % edge_attr
         raise nx.NetworkXError(msg)
     for s, t, attrs in zip(df[source], df[target], eattrs):
-
-        g.add_edge(s, t)
-
         if g.is_multigraph():
-            key = max(g[s][t])  # default keys just count so max is most recent
-            g[s][t][key].update((attr, val) for attr, val in zip(cols, attrs))
+            key = g.add_edge(s, t)
+            g[s][t][key].update(zip(cols, attrs))
         else:
-            g[s][t].update((attr, val) for attr, val in zip(cols, attrs))
+            g.add_edge(s, t)
+            g[s][t].update(zip(cols, attrs))
 
     return g
 
