@@ -166,13 +166,6 @@ def test_numpy_degree_sequence():
     ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.float64)
     assert_true(nx.is_graphical(ds, 'eg'))
     assert_true(nx.is_graphical(ds, 'hh'))
-
-
-def test_numpy_noninteger_degree_sequence():
-    try:
-        import numpy
-    except ImportError:
-        raise nx.NetworkXError('make test pass by raising exception')
     ds = numpy.array([1.1, 2, 2, 2, 1], dtype=numpy.float64)
     assert_raises(nx.NetworkXException, nx.is_graphical, ds, 'eg')
     assert_raises(nx.NetworkXException, nx.is_graphical, ds, 'hh')
