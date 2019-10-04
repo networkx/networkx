@@ -1,6 +1,12 @@
 NetworkX
 ========
 
+.. image:: https://img.shields.io/pypi/v/networkx.svg
+   :target: https://pypi.org/project/networkx/
+
+.. image:: https://img.shields.io/pypi/pyversions/networkx.svg
+   :target: https://pypi.org/project/networkx/
+
 .. image:: https://travis-ci.org/networkx/networkx.svg?branch=master
    :target: https://travis-ci.org/networkx/networkx
 
@@ -8,7 +14,7 @@ NetworkX
    :target: https://ci.appveyor.com/project/dschult/networkx-pqott
 
 .. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/networkx/networkx
+   :target: https://codecov.io/gh/networkx/networkx
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
