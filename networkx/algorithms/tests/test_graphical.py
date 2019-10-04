@@ -26,18 +26,18 @@ def test_valid_degree_sequence2():
 @raises(nx.NetworkXException)
 def test_string_input():
     a = nx.is_graphical([], 'foo')
+    a = nx.is_graphical(['foo'], 'hh')
+    a = nx.is_graphical(['foo'], 'eg')
 
 
 def test_negative_input():
     assert_false(nx.is_graphical([-1], 'hh'))
     assert_false(nx.is_graphical([-1], 'eg'))
 
-@raises(nx.NetworkXException)
-def test_non_integer_input():
-    a = nx.is_graphical([72.5], 'eg')
 
 @raises(nx.NetworkXException)
 def test_non_integer_input():
+    a = nx.is_graphical([72.5], 'eg')
     a = nx.is_graphical([72.5], 'hh')
 
 
