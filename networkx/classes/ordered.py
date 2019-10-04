@@ -19,12 +19,13 @@ The order of nodes in the subclass is not necessarily the same order
 as the original class.  In general it is probably better to avoid using
 subgraphs and replace with code similar to:
 
-```python
+.. code-block:: python
+
     # instead of SG = G.subgraph(ordered_nodes)
     SG=nx.OrderedGraph()
     SG.add_nodes_from(ordered_nodes)
     SG.add_edges_from((u, v) for (u, v) in G.edges() if u in SG if v in SG)
-```
+
 """
 from collections import OrderedDict
 
