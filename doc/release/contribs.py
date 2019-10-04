@@ -17,10 +17,6 @@ def call(cmd):
 tag_date = call("git log -n1 --format='%%ci' %s" % tag)[0]
 print("Release %s was on %s\n" % (tag, tag_date))
 
-commits = call("git log --since='%s' --pretty=%%s --reverse" % tag_date)
-for c in commits:
-    print(c)
-
 merges = call("git log --since='%s' --merges --format='>>>%%B' --reverse" % tag_date)
 merges = [m for m in merges if m.strip()]
 merges = '\n'.join(merges).split('>>>')
@@ -29,6 +25,10 @@ merges = [m for m in merges if len(m) == 2 and m[1].strip()]
 
 num_commits = call("git rev-list %s..HEAD --count" % tag)[0]
 print("A total of %s changes have been committed.\n" % num_commits)
+
+commits = call("git log --since='%s' --pretty=%%s --reverse" % tag_date)
+for c in commits:
+    print(c)
 
 print("It contained the following %d merges:\n" % len(merges))
 for (merge, message) in merges:
