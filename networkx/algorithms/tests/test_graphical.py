@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import assert_true, assert_false, raises
+from nose.tools import assert_true, assert_false, assert_raises
 from nose import SkipTest
 import networkx as nx
 
@@ -23,22 +23,20 @@ def test_valid_degree_sequence2():
         assert_true(nx.is_graphical(deg, method='hh'))
 
 
-@raises(nx.NetworkXException)
 def test_string_input():
-    a = nx.is_graphical([], 'foo')
+    assert_raises(nx.NetworkXException, nx.is_graphical, [], 'foo')
+    assert_raises(nx.NetworkXException, nx.is_graphical, ['red'], 'hh')
+    assert_raises(nx.NetworkXException, nx.is_graphical, ['red'], 'eg')
+
+
+def test_non_integer_input():
+    assert_raises(nx.NetworkXException, nx.is_graphical, [72.5], 'eg')
+    assert_raises(nx.NetworkXException, nx.is_graphical, [72.5], 'hh')
 
 
 def test_negative_input():
     assert_false(nx.is_graphical([-1], 'hh'))
     assert_false(nx.is_graphical([-1], 'eg'))
-
-@raises(nx.NetworkXException)
-def test_non_integer_input():
-    a = nx.is_graphical([72.5], 'eg')
-
-@raises(nx.NetworkXException)
-def test_non_integer_input():
-    a = nx.is_graphical([72.5], 'hh')
 
 
 class TestAtlas(object):
@@ -113,6 +111,11 @@ def test_small_directed_sequences():
     # Test for negative integer in sequence
     din = [2, 2, 2, -2, 2, 2, 2, 2, 1, 1, 4]
     assert_false(nx.is_digraphical(din, dout))
+    # Test for noninteger
+    din = dout = [1, 1, 1.1, 1]
+    assert_false(nx.is_digraphical(din, dout))
+    din = dout = [1, 1, "rer", 1]
+    assert_false(nx.is_digraphical(din, dout))
 
 
 def test_multi_sequence():
@@ -128,6 +131,11 @@ def test_multi_sequence():
     # Test for sequence with odd sum
     seq = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     assert_false(nx.is_multigraphical(seq))
+    # Test for noninteger
+    seq = [1, 1, 1.1, 1]
+    assert_false(nx.is_multigraphical(seq))
+    seq = [1, 1, "rer", 1]
+    assert_false(nx.is_multigraphical(seq))
 
 
 def test_pseudo_sequence():
@@ -140,6 +148,12 @@ def test_pseudo_sequence():
     # Test for negative integer in sequence
     seq = [1000, 3, 3, 3, 3, 2, 2, -2, 1, 1]
     assert_false(nx.is_pseudographical(seq))
+    # Test for noninteger
+    seq = [1, 1, 1.1, 1]
+    assert_false(nx.is_pseudographical(seq))
+    seq = [1, 1, "rer", 1]
+    assert_false(nx.is_pseudographical(seq))
+
 
 def test_numpy_degree_sequence():
     try:
@@ -152,12 +166,6 @@ def test_numpy_degree_sequence():
     ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.float64)
     assert_true(nx.is_graphical(ds, 'eg'))
     assert_true(nx.is_graphical(ds, 'hh'))
-
-@raises(nx.NetworkXError, AssertionError)
-def test_numpy_noninteger_degree_sequence():
-    try:
-        import numpy
-    except ImportError:
-        raise nx.NetworkXError('make test pass by raising exception')
     ds = numpy.array([1.1, 2, 2, 2, 1], dtype=numpy.float64)
-    a = nx.is_graphical(ds, 'eg')
+    assert_raises(nx.NetworkXException, nx.is_graphical, ds, 'eg')
+    assert_raises(nx.NetworkXException, nx.is_graphical, ds, 'hh')

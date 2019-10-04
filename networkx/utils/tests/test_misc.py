@@ -27,9 +27,13 @@ def test_graph_iterable():
     assert_true(iterable(K.edges()))
 
 
-def test_is_list_of_ints():
-    assert_true(is_list_of_ints([1, 2, 3, 42]))
-    assert_false(is_list_of_ints([1, 2, 3, "kermit"]))
+def test_make_list_of_ints():
+    mylist = [1, 2, 3., 42, -2]
+    assert_is(make_list_of_ints(mylist), mylist)
+    assert_equals(make_list_of_ints(mylist), mylist)
+    assert_is(type(make_list_of_ints(mylist)[2]), int)
+    assert_raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3, "kermit"])
+    assert_raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3.1])
 
 
 def test_random_number_distribution():
@@ -78,6 +82,16 @@ class TestNumpyArray(object):
             from numpy.testing import assert_allclose
         except ImportError:
             raise SkipTest('NumPy not available.')
+
+    def test_numpy_to_list_of_ints(self):
+        a = numpy.array([1, 2, 3], dtype=numpy.int64)
+        b = numpy.array([1., 2, 3])
+        c = numpy.array([1.1, 2, 3])
+        assert_equals(type(make_list_of_ints(a)), list)
+        assert_equals(make_list_of_ints(b), list(b))
+        B = make_list_of_ints(b)
+        assert_equals(type(B[0]), int)
+        assert_raises(nx.NetworkXError, make_list_of_ints, c)
 
     def test_dict_to_numpy_array1(self):
         d = {'a': 1, 'b': 2}

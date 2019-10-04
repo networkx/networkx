@@ -34,7 +34,6 @@ from networkx.algorithms.operators.product import cartesian_product
 from networkx.exception import NetworkXError
 from networkx.relabel import relabel_nodes
 from networkx.utils import flatten
-from networkx.utils import is_list_of_ints
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 from networkx.generators.classic import cycle_graph
