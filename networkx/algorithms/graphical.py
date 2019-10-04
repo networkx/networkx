@@ -265,7 +265,7 @@ def is_multigraphical(sequence):
     """
     try:
         deg_sequence = nx.utils.make_list_of_ints(sequence)
-    except ValueError:
+    except nx.NetworkXError:
         return False
     dsum, dmax = 0, 0
     for d in deg_sequence:
@@ -305,7 +305,7 @@ def is_pseudographical(sequence):
     """
     try:
         deg_sequence = nx.utils.make_list_of_ints(sequence)
-    except ValueError:
+    except nx.NetworkXError:
         return False
     return sum(deg_sequence) % 2 == 0 and min(deg_sequence) >= 0
 
@@ -342,7 +342,7 @@ def is_digraphical(in_sequence, out_sequence):
     try:
         in_deg_sequence = nx.utils.make_list_of_ints(in_sequence)
         out_deg_sequence = nx.utils.make_list_of_ints(out_sequence)
-    except ValueError:
+    except nx.NetworkXError:
         return False
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or non-zero out degrees
