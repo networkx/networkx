@@ -137,6 +137,9 @@ extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                   'scipy': ['scipy']
                  }
 
+with open("README.rst", "r") as fh:
+    long_description = fh.read()
+
 if __name__ == "__main__":
 
     setup(
@@ -148,7 +151,7 @@ if __name__ == "__main__":
         author_email=release.authors['Hagberg'][1],
         description=release.description,
         keywords=release.keywords,
-        long_description=release.long_description,
+        long_description=long_description,
         license=release.license,
         platforms=release.platforms,
         url=release.url,
