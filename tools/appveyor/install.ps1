@@ -52,17 +52,10 @@ function InstallPython ($python_version, $architecture, $python_home) {
     } else {
         $platform_suffix = "-amd64"
     }
-    $msipath = DownloadPython $python_version $platform_suffix
-    Write-Host "Installing" $msipath "to" $python_home
-    $install_log = $python_home + ".log"
-    $install_args = "/qn /log $install_log /i $msipath TARGETDIR=$python_home"
-    $uninstall_args = "/qn /x $msipath"
-    RunCommand "msiexec.exe" $install_args
-    if (-not(Test-Path $python_home)) {
-        Write-Host "Python seems to be installed else-where, reinstalling."
-        RunCommand "msiexec.exe" $uninstall_args
-        RunCommand "msiexec.exe" $install_args
-    }
+    $installerpath = DownloadPython $python_version $platform_suffix
+    Write-Host "Installing" $installerpath "to" $python_home
+    $install_args = "/quiet InstallAllUsers=1 TargetDir=$python_home"
+    RunCommand $installerpath $install_args
     if (Test-Path $python_home) {
         Write-Host "Python $python_version ($architecture) installation complete"
     } else {
