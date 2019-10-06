@@ -9,7 +9,7 @@ $GET_PIP_PATH = "C:\get-pip.py"
 
 function DownloadPython ($python_version, $platform_suffix) {
     $webclient = New-Object System.Net.WebClient
-    $filename = "python-" + $python_version + $platform_suffix + ".msi"
+    $filename = "python-" + $python_version + "rc1" + $platform_suffix + ".exe"
     $url = $BASE_URL + $python_version + "/" + $filename
 
     $basedir = $pwd.Path + "\"
@@ -50,7 +50,7 @@ function InstallPython ($python_version, $architecture, $python_home) {
     if ($architecture -eq "32") {
         $platform_suffix = ""
     } else {
-        $platform_suffix = ".amd64"
+        $platform_suffix = "-amd64"
     }
     $msipath = DownloadPython $python_version $platform_suffix
     Write-Host "Installing" $msipath "to" $python_home
