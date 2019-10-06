@@ -474,18 +474,32 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
 
     # Test for NaN, INF and -INF
     def test_specials(self):
+        from math import isnan
+        inf, nan = float('inf'), float('nan')
         G = nx.Graph()
-        G.add_node(1, testattr=float('inf'))
-        G.add_node(2, testattr=float('nan'))
-        G.add_node(3, testattr=float('-inf'))
-        list_value = [(1, 2, 3), (2, 1, 2)]
-        G.add_node(4, key=list_value)
+        G.add_node(1, testattr=inf, strdata='inf', key='a')
+        G.add_node(2, testattr=nan, strdata='nan', key='b')
+        G.add_node(3, testattr=-inf, strdata='-inf', key='c')
+
         fh = io.BytesIO()
         nx.write_gexf(G, fh)
         fh.seek(0)
-        # float as inf,-inf and nan are all floats internally
-        H = nx.read_gexf(fh, node_type=float)
-        assert_equal(H.nodes[1]['testattr'], "INF")
-        assert_equal(H.nodes[2]['testattr'], "NaN")
-        assert_equal(H.nodes[3]['testattr'], "-INF")
-        assert_equals(H.nodes[4]['networkx_key'], list_value)
+        filetext = fh.read()
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+
+        assert_in(b'INF', filetext)
+        assert_in(b'NaN', filetext)
+        assert_in(b'-INF', filetext)
+
+        assert_equal(H.nodes[1]['testattr'], inf)
+        assert_true(isnan(H.nodes[2]['testattr']))
+        assert_equal(H.nodes[3]['testattr'], -inf)
+
+        assert_equal(H.nodes[1]['strdata'], 'inf')
+        assert_equal(H.nodes[2]['strdata'], 'nan')
+        assert_equal(H.nodes[3]['strdata'], '-inf')
+
+        assert_equal(H.nodes[1]['networkx_key'], 'a')
+        assert_equal(H.nodes[2]['networkx_key'], 'b')
+        assert_equal(H.nodes[3]['networkx_key'], 'c')
