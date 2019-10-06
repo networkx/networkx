@@ -17,6 +17,7 @@ if [[ "${OSX_PKG_ENV}" == miniconda ]]; then
 else
     # set up Python and virtualenv on OSX
     git clone https://github.com/matthew-brett/multibuild
+    sed -i "" 's/MACPYTHON_DEFAULT_OSX="10.6"/MACPYTHON_DEFAULT_OSX="10.9"/' multibuild/osx_utils.sh
     source multibuild/osx_utils.sh
     get_macpython_environment $TRAVIS_PYTHON_VERSION venv
 fi
