@@ -13,9 +13,9 @@ __author__ = """\n""".join(['Fredrik Erlandsson <fredrik.e@gmail.com>',
 
 @not_implemented_for('directed')
 def voterank(G, number_of_nodes=None, max_iter=10000):
-    """Compute a list of seeds for the nodes in the graph using VoteRank [1]_.
+    """Compute a list of seeds for the nodes in the graph using VoteRank
 
-    VoteRank computes a ranking of the nodes in the graph G based on a voting
+    VoteRank [1]_ computes a ranking of the nodes in the graph G based on a voting
     scheme. With VoteRank, all nodes vote for each neighbours and the node with
     the highest score is elected iteratively. The voting ability of neighbors of
     elected nodes will be decreased in subsequent turn.

@@ -103,6 +103,13 @@ Harmonic Centrality
 
    harmonic_centrality
 
+Dispersion
+----------
+.. autosummary::
+   :toctree: generated/
+
+   dispersion
+
 Reaching
 --------
 .. autosummary::

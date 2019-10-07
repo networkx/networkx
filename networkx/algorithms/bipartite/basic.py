@@ -161,7 +161,7 @@ def sets(G, top_nodes=None):
 
     Returns
     -------
-    X, Y : two-tuple of sets
+    (X, Y) : two-tuple of sets
       One set of nodes for each part of the bipartite graph.
 
     Raises
