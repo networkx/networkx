@@ -4,11 +4,12 @@ import networkx as nx
 
 class TestBFS:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         # simple graph
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4), (3, 4)])
-        self.G = G
+        cls.G = G
 
     def test_successor(self):
         assert_equal(dict(nx.bfs_successors(self.G, source=0)),
@@ -44,17 +45,18 @@ class TestBFS:
 
 class TestBreadthLimitedSearch:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         # a tree
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
         nx.add_path(G, [2, 7, 8, 9, 10])
-        self.G = G
+        cls.G = G
         # a disconnected graph
         D = nx.Graph()
         D.add_edges_from([(0, 1), (2, 3)])
         nx.add_path(D, [2, 7, 8, 9, 10])
-        self.D = D
+        cls.D = D
 
     def bfs_test_successor(self):
         assert_equal(dict(nx.bfs_successors(self.G, source=1, depth_limit=3)),

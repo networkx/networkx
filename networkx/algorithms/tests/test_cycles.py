@@ -11,13 +11,14 @@ REVERSE = nx.algorithms.edgedfs.REVERSE
 
 
 class TestCycles:
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         G = networkx.Graph()
         nx.add_cycle(G, [0, 1, 2, 3])
         nx.add_cycle(G, [0, 3, 4, 5])
         nx.add_cycle(G, [0, 1, 6, 7, 8])
         G.add_edge(8, 9)
-        self.G = G
+        cls.G = G
 
     def is_cyclic_permutation(self, a, b):
         n = len(a)
@@ -155,9 +156,10 @@ class TestCycles:
 
 
 class TestFindCycle(object):
-    def setUp(self):
-        self.nodes = [0, 1, 2, 3]
-        self.edges = [(-1, 0), (0, 1), (1, 0), (1, 0), (2, 1), (3, 1)]
+    @classmethod
+    def setup_class(cls):
+        cls.nodes = [0, 1, 2, 3]
+        cls.edges = [(-1, 0), (0, 1), (1, 0), (1, 0), (2, 1), (3, 1)]
 
     def test_graph_nocycle(self):
         G = nx.Graph(self.edges)
@@ -292,11 +294,12 @@ def assert_basis_equal(a, b):
 
 
 class TestMinimumCycles(object):
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         T = nx.Graph()
         T.add_cycle([1, 2, 3, 4], weight=1)
         T.add_edge(2, 4, weight=5)
-        self.diamond_graph = T
+        cls.diamond_graph = T
 
     def test_unweighted_diamond(self):
         mcb = minimum_cycle_basis(self.diamond_graph)

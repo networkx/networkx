@@ -4,7 +4,8 @@ import networkx as nx
 
 
 class TestFloyd:
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         pass
 
     def test_floyd_warshall_predecessor_and_distance(self):

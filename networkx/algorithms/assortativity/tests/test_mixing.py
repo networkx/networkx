@@ -6,7 +6,6 @@ from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
 
 class TestDegreeMixingDict(BaseTestDegreeMixing):
-
     def test_degree_mixing_dict_undirected(self):
         d = nx.degree_mixing_dict(self.P4)
         d_result = {1: {2: 2},
@@ -42,7 +41,9 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
 class TestDegreeMixingMatrix(BaseTestDegreeMixing):
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
+        BaseTestDegreeMixing.setup_class()
+
         global np
         global npt
         try:
@@ -125,7 +126,9 @@ class TestAttributeMixingDict(BaseTestAttributeMixing):
 
 class TestAttributeMixingMatrix(BaseTestAttributeMixing):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
+        BaseTestAttributeMixing.setup_class()
+
         global np
         global npt
         try:

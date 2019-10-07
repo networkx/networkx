@@ -74,7 +74,7 @@ def test_make_str_with_unicode():
 
 class TestNumpyArray(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global assert_allclose
         try:

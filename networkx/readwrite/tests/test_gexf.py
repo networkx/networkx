@@ -10,14 +10,13 @@ import networkx as nx
 
 class TestGEXF(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         try:
             import xml.etree.ElementTree
         except ImportError:
             raise SkipTest('xml.etree.ElementTree not available.')
 
-    def setUp(self):
-        self.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
+        cls.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
     <graph mode="static" defaultedgetype="directed">
         <nodes>
@@ -30,15 +29,15 @@ class TestGEXF(object):
     </graph>
 </gexf>
 """
-        self.simple_directed_graph = nx.DiGraph()
-        self.simple_directed_graph.add_node('0', label='Hello')
-        self.simple_directed_graph.add_node('1', label='World')
-        self.simple_directed_graph.add_edge('0', '1', id='0')
+        cls.simple_directed_graph = nx.DiGraph()
+        cls.simple_directed_graph.add_node('0', label='Hello')
+        cls.simple_directed_graph.add_node('1', label='World')
+        cls.simple_directed_graph.add_edge('0', '1', id='0')
 
-        self.simple_directed_fh = \
-            io.BytesIO(self.simple_directed_data.encode('UTF-8'))
+        cls.simple_directed_fh = \
+            io.BytesIO(cls.simple_directed_data.encode('UTF-8'))
 
-        self.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>\
+        cls.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>\
 <gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.\
 org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
@@ -94,32 +93,32 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
   </graph>
 </gexf>
 """
-        self.attribute_graph = nx.DiGraph()
-        self.attribute_graph.graph['node_default'] = {'frog': True}
-        self.attribute_graph.add_node('0',
+        cls.attribute_graph = nx.DiGraph()
+        cls.attribute_graph.graph['node_default'] = {'frog': True}
+        cls.attribute_graph.add_node('0',
                                       label='Gephi',
                                       url='https://gephi.org',
                                       indegree=1, frog=False)
-        self.attribute_graph.add_node('1',
+        cls.attribute_graph.add_node('1',
                                       label='Webatlas',
                                       url='http://webatlas.fr',
                                       indegree=2, frog=False)
-        self.attribute_graph.add_node('2',
+        cls.attribute_graph.add_node('2',
                                       label='RTGI',
                                       url='http://rtgi.fr',
                                       indegree=1, frog=True)
-        self.attribute_graph.add_node('3',
+        cls.attribute_graph.add_node('3',
                                       label='BarabasiLab',
                                       url='http://barabasilab.com',
                                       indegree=1, frog=True)
-        self.attribute_graph.add_edge('0', '1', id='0')
-        self.attribute_graph.add_edge('0', '2', id='1')
-        self.attribute_graph.add_edge('1', '0', id='2')
-        self.attribute_graph.add_edge('2', '1', id='3')
-        self.attribute_graph.add_edge('0', '3', id='4')
-        self.attribute_fh = io.BytesIO(self.attribute_data.encode('UTF-8'))
+        cls.attribute_graph.add_edge('0', '1', id='0')
+        cls.attribute_graph.add_edge('0', '2', id='1')
+        cls.attribute_graph.add_edge('1', '0', id='2')
+        cls.attribute_graph.add_edge('2', '1', id='3')
+        cls.attribute_graph.add_edge('0', '3', id='4')
+        cls.attribute_fh = io.BytesIO(cls.attribute_data.encode('UTF-8'))
 
-        self.simple_undirected_data = """<?xml version="1.0" encoding="UTF-8"?>
+        cls.simple_undirected_data = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
     <graph mode="static" defaultedgetype="undirected">
         <nodes>
@@ -132,13 +131,13 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
     </graph>
 </gexf>
 """
-        self.simple_undirected_graph = nx.Graph()
-        self.simple_undirected_graph.add_node('0', label='Hello')
-        self.simple_undirected_graph.add_node('1', label='World')
-        self.simple_undirected_graph.add_edge('0', '1', id='0')
+        cls.simple_undirected_graph = nx.Graph()
+        cls.simple_undirected_graph.add_node('0', label='Hello')
+        cls.simple_undirected_graph.add_node('1', label='World')
+        cls.simple_undirected_graph.add_edge('0', '1', id='0')
 
-        self.simple_undirected_fh = io.BytesIO(self.simple_undirected_data
-                                                   .encode('UTF-8'))
+        cls.simple_undirected_fh = io.BytesIO(cls.simple_undirected_data
+                                                 .encode('UTF-8'))
 
     def test_read_simple_directed_graphml(self):
         G = self.simple_directed_graph

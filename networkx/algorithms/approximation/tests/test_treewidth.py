@@ -44,51 +44,52 @@ def is_tree_decomp(graph, decomp):
 
 class TestTreewidthMinDegree(object):
     """Unit tests for the min_degree function"""
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         """Setup for different kinds of trees"""
-        self.complete = nx.Graph()
-        self.complete.add_edge(1, 2)
-        self.complete.add_edge(2, 3)
-        self.complete.add_edge(1, 3)
+        cls.complete = nx.Graph()
+        cls.complete.add_edge(1, 2)
+        cls.complete.add_edge(2, 3)
+        cls.complete.add_edge(1, 3)
 
-        self.small_tree = nx.Graph()
-        self.small_tree.add_edge(1, 3)
-        self.small_tree.add_edge(4, 3)
-        self.small_tree.add_edge(2, 3)
-        self.small_tree.add_edge(3, 5)
-        self.small_tree.add_edge(5, 6)
-        self.small_tree.add_edge(5, 7)
-        self.small_tree.add_edge(6, 7)
+        cls.small_tree = nx.Graph()
+        cls.small_tree.add_edge(1, 3)
+        cls.small_tree.add_edge(4, 3)
+        cls.small_tree.add_edge(2, 3)
+        cls.small_tree.add_edge(3, 5)
+        cls.small_tree.add_edge(5, 6)
+        cls.small_tree.add_edge(5, 7)
+        cls.small_tree.add_edge(6, 7)
 
-        self.deterministic_graph = nx.Graph()
-        self.deterministic_graph.add_edge(0, 1)  # deg(0) = 1
+        cls.deterministic_graph = nx.Graph()
+        cls.deterministic_graph.add_edge(0, 1)  # deg(0) = 1
 
-        self.deterministic_graph.add_edge(1, 2)  # deg(1) = 2
+        cls.deterministic_graph.add_edge(1, 2)  # deg(1) = 2
 
-        self.deterministic_graph.add_edge(2, 3)
-        self.deterministic_graph.add_edge(2, 4)  # deg(2) = 3
+        cls.deterministic_graph.add_edge(2, 3)
+        cls.deterministic_graph.add_edge(2, 4)  # deg(2) = 3
 
-        self.deterministic_graph.add_edge(3, 4)
-        self.deterministic_graph.add_edge(3, 5)
-        self.deterministic_graph.add_edge(3, 6)  # deg(3) = 4
+        cls.deterministic_graph.add_edge(3, 4)
+        cls.deterministic_graph.add_edge(3, 5)
+        cls.deterministic_graph.add_edge(3, 6)  # deg(3) = 4
 
-        self.deterministic_graph.add_edge(4, 5)
-        self.deterministic_graph.add_edge(4, 6)
-        self.deterministic_graph.add_edge(4, 7)  # deg(4) = 5
+        cls.deterministic_graph.add_edge(4, 5)
+        cls.deterministic_graph.add_edge(4, 6)
+        cls.deterministic_graph.add_edge(4, 7)  # deg(4) = 5
 
-        self.deterministic_graph.add_edge(5, 6)
-        self.deterministic_graph.add_edge(5, 7)
-        self.deterministic_graph.add_edge(5, 8)
-        self.deterministic_graph.add_edge(5, 9)  # deg(5) = 6
+        cls.deterministic_graph.add_edge(5, 6)
+        cls.deterministic_graph.add_edge(5, 7)
+        cls.deterministic_graph.add_edge(5, 8)
+        cls.deterministic_graph.add_edge(5, 9)  # deg(5) = 6
 
-        self.deterministic_graph.add_edge(6, 7)
-        self.deterministic_graph.add_edge(6, 8)
-        self.deterministic_graph.add_edge(6, 9)  # deg(6) = 6
+        cls.deterministic_graph.add_edge(6, 7)
+        cls.deterministic_graph.add_edge(6, 8)
+        cls.deterministic_graph.add_edge(6, 9)  # deg(6) = 6
 
-        self.deterministic_graph.add_edge(7, 8)
-        self.deterministic_graph.add_edge(7, 9)  # deg(7) = 5
+        cls.deterministic_graph.add_edge(7, 8)
+        cls.deterministic_graph.add_edge(7, 9)  # deg(7) = 5
 
-        self.deterministic_graph.add_edge(8, 9)  # deg(8) = 4
+        cls.deterministic_graph.add_edge(8, 9)  # deg(8) = 4
 
     def test_petersen_graph(self):
         """Test Petersen graph tree decomposition result"""
@@ -171,33 +172,34 @@ class TestTreewidthMinDegree(object):
 
 class TestTreewidthMinFillIn(object):
     """Unit tests for the treewidth_min_fill_in function."""
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         """Setup for different kinds of trees"""
         self.complete = nx.Graph()
-        self.complete.add_edge(1, 2)
-        self.complete.add_edge(2, 3)
-        self.complete.add_edge(1, 3)
+        cls.complete.add_edge(1, 2)
+        cls.complete.add_edge(2, 3)
+        cls.complete.add_edge(1, 3)
 
-        self.small_tree = nx.Graph()
-        self.small_tree.add_edge(1, 2)
-        self.small_tree.add_edge(2, 3)
-        self.small_tree.add_edge(3, 4)
-        self.small_tree.add_edge(1, 4)
-        self.small_tree.add_edge(2, 4)
-        self.small_tree.add_edge(4, 5)
-        self.small_tree.add_edge(5, 6)
-        self.small_tree.add_edge(5, 7)
-        self.small_tree.add_edge(6, 7)
+        cls.small_tree = nx.Graph()
+        cls.small_tree.add_edge(1, 2)
+        cls.small_tree.add_edge(2, 3)
+        cls.small_tree.add_edge(3, 4)
+        cls.small_tree.add_edge(1, 4)
+        cls.small_tree.add_edge(2, 4)
+        cls.small_tree.add_edge(4, 5)
+        cls.small_tree.add_edge(5, 6)
+        cls.small_tree.add_edge(5, 7)
+        cls.small_tree.add_edge(6, 7)
 
-        self.deterministic_graph = nx.Graph()
-        self.deterministic_graph.add_edge(1, 2)
-        self.deterministic_graph.add_edge(1, 3)
-        self.deterministic_graph.add_edge(3, 4)
-        self.deterministic_graph.add_edge(2, 4)
-        self.deterministic_graph.add_edge(3, 5)
-        self.deterministic_graph.add_edge(4, 5)
-        self.deterministic_graph.add_edge(3, 6)
-        self.deterministic_graph.add_edge(5, 6)
+        cls.deterministic_graph = nx.Graph()
+        cls.deterministic_graph.add_edge(1, 2)
+        cls.deterministic_graph.add_edge(1, 3)
+        cls.deterministic_graph.add_edge(3, 4)
+        cls.deterministic_graph.add_edge(2, 4)
+        cls.deterministic_graph.add_edge(3, 5)
+        cls.deterministic_graph.add_edge(4, 5)
+        cls.deterministic_graph.add_edge(3, 6)
+        cls.deterministic_graph.add_edge(5, 6)
 
     def test_petersen_graph(self):
         """Test Petersen graph tree decomposition result"""

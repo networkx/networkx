@@ -20,8 +20,9 @@ class _GenericTest(object):
 
 
 class TestNodesEqual(_GenericTest):
-    def setUp(self):
-        self._assert_func = assert_nodes_equal
+    @classmethod
+    def setup_class(cls):
+        cls._assert_func = assert_nodes_equal
 
     def test_nodes_equal(self):
         a = [1, 2, 5, 4]
@@ -49,8 +50,9 @@ class TestNodesEqual(_GenericTest):
 
 
 class TestEdgesEqual(_GenericTest):
-    def setUp(self):
-        self._assert_func = assert_edges_equal
+    @classmethod
+    def setup_class(cls):
+        cls._assert_func = assert_edges_equal
 
     def test_edges_equal(self):
         a = [(1, 2), (5, 4)]
@@ -116,8 +118,9 @@ class TestEdgesEqual(_GenericTest):
 
 
 class TestGraphsEqual(_GenericTest):
-    def setUp(self):
-        self._assert_func = assert_graphs_equal
+    @classmethod
+    def setup_class(cls):
+        cls._assert_func = assert_graphs_equal
 
     def test_graphs_equal(self):
         G = nx.path_graph(4)

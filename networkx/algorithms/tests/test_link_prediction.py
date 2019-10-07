@@ -17,9 +17,10 @@ def _test_func(G, ebunch, expected, predict_func, **kwargs):
 
 
 class TestResourceAllocationIndex():
-    def setUp(self):
-        self.func = nx.resource_allocation_index
-        self.test = partial(_test_func, predict_func=self.func)
+    @classmethod
+    def setup_class(cls):
+        cls.func = nx.resource_allocation_index
+        cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -67,9 +68,10 @@ class TestResourceAllocationIndex():
 
 
 class TestJaccardCoefficient():
-    def setUp(self):
-        self.func = nx.jaccard_coefficient
-        self.test = partial(_test_func, predict_func=self.func)
+    @classmethod
+    def setup_class(cls):
+        cls.func = nx.jaccard_coefficient
+        cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -114,9 +116,10 @@ class TestJaccardCoefficient():
 
 
 class TestAdamicAdarIndex():
-    def setUp(self):
-        self.func = nx.adamic_adar_index
-        self.test = partial(_test_func, predict_func=self.func)
+    @classmethod
+    def setup_class(cls):
+        cls.func = nx.adamic_adar_index
+        cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -165,9 +168,10 @@ class TestAdamicAdarIndex():
 
 
 class TestPreferentialAttachment():
-    def setUp(self):
-        self.func = nx.preferential_attachment
-        self.test = partial(_test_func, predict_func=self.func)
+    @classmethod
+    def setup_class(cls):
+        cls.func = nx.preferential_attachment
+        cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -211,7 +215,8 @@ class TestPreferentialAttachment():
 
 
 class TestCNSoundarajanHopcroft():
-    def setUp(self):
+    @classmethod
+    def setup_class(self):
         self.func = nx.cn_soundarajan_hopcroft
         self.test = partial(_test_func, predict_func=self.func,
                             community='community')
@@ -334,10 +339,11 @@ class TestCNSoundarajanHopcroft():
 
 
 class TestRAIndexSoundarajanHopcroft():
-    def setUp(self):
-        self.func = nx.ra_index_soundarajan_hopcroft
-        self.test = partial(_test_func, predict_func=self.func,
-                            community='community')
+    @classmethod
+    def setup_class(cls):
+        cls.func = nx.ra_index_soundarajan_hopcroft
+        cls.test = partial(_test_func, predict_func=cls.func,
+                           community='community')
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -457,11 +463,12 @@ class TestRAIndexSoundarajanHopcroft():
 
 
 class TestWithinInterCluster():
-    def setUp(self):
-        self.delta = 0.001
-        self.func = nx.within_inter_cluster
-        self.test = partial(_test_func, predict_func=self.func,
-                            delta=self.delta, community='community')
+    @classmethod
+    def setup_class(cls):
+        cls.delta = 0.001
+        cls.func = nx.within_inter_cluster
+        cls.test = partial(_test_func, predict_func=cls.func,
+                            delta=cls.delta, community='community')
 
     def test_K5(self):
         G = nx.complete_graph(5)

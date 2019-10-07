@@ -483,21 +483,22 @@ class BaseAttrGraphTester(BaseGraphTester):
 class TestGraph(BaseAttrGraphTester):
     """Tests specific to dict-of-dict-of-dict graph data structure"""
 
-    def setUp(self):
-        self.Graph = nx.Graph
+    @classmethod
+    def setup_class(cls):
+        cls.Graph = nx.Graph
         # build dict-of-dict-of-dict K3
         ed1, ed2, ed3 = ({}, {}, {})
-        self.k3adj = {0: {1: ed1, 2: ed2},
+        cls.k3adj = {0: {1: ed1, 2: ed2},
                       1: {0: ed1, 2: ed3},
                       2: {0: ed2, 1: ed3}}
-        self.k3edges = [(0, 1), (0, 2), (1, 2)]
-        self.k3nodes = [0, 1, 2]
-        self.K3 = self.Graph()
-        self.K3._adj = self.k3adj
-        self.K3._node = {}
-        self.K3._node[0] = {}
-        self.K3._node[1] = {}
-        self.K3._node[2] = {}
+        cls.k3edges = [(0, 1), (0, 2), (1, 2)]
+        cls.k3nodes = [0, 1, 2]
+        cls.K3 = cls.Graph()
+        cls.K3._adj = cls.k3adj
+        cls.K3._node = {}
+        cls.K3._node[0] = {}
+        cls.K3._node[1] = {}
+        cls.K3._node[2] = {}
 
     def test_pickle(self):
         G = self.K3

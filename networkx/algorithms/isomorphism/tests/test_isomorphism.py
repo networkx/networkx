@@ -6,15 +6,16 @@ from networkx.algorithms import isomorphism as iso
 
 class TestIsomorph:
 
-    def setUp(self):
-        self.G1 = nx.Graph()
-        self.G2 = nx.Graph()
-        self.G3 = nx.Graph()
-        self.G4 = nx.Graph()
-        self.G1.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 3]])
-        self.G2.add_edges_from([[10, 20], [20, 30], [10, 30], [10, 50]])
-        self.G3.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 5]])
-        self.G4.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 4]])
+    @classmethod
+    def setup_class(cls):
+        cls.G1 = nx.Graph()
+        cls.G2 = nx.Graph()
+        cls.G3 = nx.Graph()
+        cls.G4 = nx.Graph()
+        cls.G1.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 3]])
+        cls.G2.add_edges_from([[10, 20], [20, 30], [10, 30], [10, 50]])
+        cls.G3.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 5]])
+        cls.G4.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 4]])
 
     def test_could_be_isomorphic(self):
         assert_true(iso.could_be_isomorphic(self.G1, self.G2))

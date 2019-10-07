@@ -8,7 +8,7 @@ class TestGraphMatrix(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global assert_equal
         global assert_almost_equal
@@ -19,42 +19,41 @@ class TestGraphMatrix(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    def setUp(self):
         deg = [3, 2, 2, 1, 0]
-        self.G = havel_hakimi_graph(deg)
-        self.OI = numpy.array([[-1, -1, -1, 0],
+        cls.G = havel_hakimi_graph(deg)
+        cls.OI = numpy.array([[-1, -1, -1, 0],
                                [1, 0, 0, -1],
                                [0, 1, 0, 1],
                                [0, 0, 1, 0],
                                [0, 0, 0, 0]])
-        self.A = numpy.array([[0, 1, 1, 1, 0],
+        cls.A = numpy.array([[0, 1, 1, 1, 0],
                               [1, 0, 1, 0, 0],
                               [1, 1, 0, 0, 0],
                               [1, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0]])
-        self.WG = havel_hakimi_graph(deg)
-        self.WG.add_edges_from((u, v, {'weight': 0.5, 'other': 0.3})
-                               for (u, v) in self.G.edges())
-        self.WA = numpy.array([[0, 0.5, 0.5, 0.5, 0],
+        cls.WG = havel_hakimi_graph(deg)
+        cls.WG.add_edges_from((u, v, {'weight': 0.5, 'other': 0.3})
+                               for (u, v) in cls.G.edges())
+        cls.WA = numpy.array([[0, 0.5, 0.5, 0.5, 0],
                                [0.5, 0, 0.5, 0, 0],
                                [0.5, 0.5, 0, 0, 0],
                                [0.5, 0, 0, 0, 0],
                                [0, 0, 0, 0, 0]])
-        self.MG = nx.MultiGraph(self.G)
-        self.MG2 = self.MG.copy()
-        self.MG2.add_edge(0, 1)
-        self.MG2A = numpy.array([[0, 2, 1, 1, 0],
+        cls.MG = nx.MultiGraph(cls.G)
+        cls.MG2 = cls.MG.copy()
+        cls.MG2.add_edge(0, 1)
+        cls.MG2A = numpy.array([[0, 2, 1, 1, 0],
                                  [2, 0, 1, 0, 0],
                                  [1, 1, 0, 0, 0],
                                  [1, 0, 0, 0, 0],
                                  [0, 0, 0, 0, 0]])
-        self.MGOI = numpy.array([[-1, -1, -1, -1, 0],
+        cls.MGOI = numpy.array([[-1, -1, -1, -1, 0],
                                  [1, 1, 0, 0, -1],
                                  [0, 0, 1, 0, 1],
                                  [0, 0, 0, 1, 0],
                                  [0, 0, 0, 0, 0]])
-        self.no_edges_G = nx.Graph([(1, 2), (3, 2, {'weight': 8})])
-        self.no_edges_A = numpy.array([[0, 0], [0, 0]])
+        cls.no_edges_G = nx.Graph([(1, 2), (3, 2, {'weight': 8})])
+        cls.no_edges_A = numpy.array([[0, 0], [0, 0]])
 
     def test_incidence_matrix(self):
         "Conversion to incidence matrix"

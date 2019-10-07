@@ -9,9 +9,10 @@ REVERSE = nx.algorithms.edgedfs.REVERSE
 
 
 class TestEdgeBFS(object):
-    def setUp(self):
-        self.nodes = [0, 1, 2, 3]
-        self.edges = [(0, 1), (1, 0), (1, 0), (2, 0), (2, 1), (3, 1)]
+    @classmethod
+    def setup_class(cls):
+        cls.nodes = [0, 1, 2, 3]
+        cls.edges = [(0, 1), (1, 0), (1, 0), (2, 0), (2, 1), (3, 1)]
 
     def test_empty(self):
         G = nx.Graph()

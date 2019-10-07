@@ -5,7 +5,8 @@ import networkx as nx
 
 class TestLoadCentrality:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
 
         G = nx.Graph()
         G.add_edge(0, 1, weight=3)
@@ -18,22 +19,22 @@ class TestLoadCentrality:
         G.add_edge(3, 4, weight=2)
         G.add_edge(3, 5, weight=1)
         G.add_edge(4, 5, weight=4)
-        self.G = G
-        self.exact_weighted = {0: 4.0, 1: 0.0, 2: 8.0, 3: 6.0, 4: 8.0, 5: 0.0}
-        self.K = nx.krackhardt_kite_graph()
-        self.P3 = nx.path_graph(3)
-        self.P4 = nx.path_graph(4)
-        self.K5 = nx.complete_graph(5)
+        cls.G = G
+        cls.exact_weighted = {0: 4.0, 1: 0.0, 2: 8.0, 3: 6.0, 4: 8.0, 5: 0.0}
+        cls.K = nx.krackhardt_kite_graph()
+        cls.P3 = nx.path_graph(3)
+        cls.P4 = nx.path_graph(4)
+        cls.K5 = nx.complete_graph(5)
 
-        self.C4 = nx.cycle_graph(4)
-        self.T = nx.balanced_tree(r=2, h=2)
-        self.Gb = nx.Graph()
-        self.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
+        cls.C4 = nx.cycle_graph(4)
+        cls.T = nx.balanced_tree(r=2, h=2)
+        cls.Gb = nx.Graph()
+        cls.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
                                 (2, 4), (4, 5), (3, 5)])
-        self.F = nx.florentine_families_graph()
-        self.LM = nx.les_miserables_graph()
-        self.D = nx.cycle_graph(3, create_using=nx.DiGraph())
-        self.D.add_edges_from([(3, 0), (4, 3)])
+        cls.F = nx.florentine_families_graph()
+        cls.LM = nx.les_miserables_graph()
+        cls.D = nx.cycle_graph(3, create_using=nx.DiGraph())
+        cls.D.add_edges_from([(3, 0), (4, 3)])
 
     def test_not_strongly_connected(self):
         b = nx.load_centrality(self.D)

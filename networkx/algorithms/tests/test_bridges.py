@@ -40,10 +40,11 @@ class TestBridges(TestCase):
 class TestLocalBridges(TestCase):
     """Unit tests for the local_bridge function."""
 
-    def setUp(self):
-        self.BB = nx.barbell_graph(4, 0)
-        self.square = nx.cycle_graph(4)
-        self.tri = nx.cycle_graph(3)
+    @classmethod
+    def setup_class(cls):
+        cls.BB = nx.barbell_graph(4, 0)
+        cls.square = nx.cycle_graph(4)
+        cls.tri = nx.cycle_graph(3)
 
     def test_nospan(self):
         expected = {(3, 4), (4, 3)}

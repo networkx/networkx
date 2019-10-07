@@ -10,7 +10,7 @@ class TestLayout(object):
     scipy = None
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy, scipy
         try:
             import numpy
@@ -21,11 +21,10 @@ class TestLayout(object):
         except ImportError:
             pass    # Almost all tests still viable
 
-    def setUp(self):
-        self.Gi = nx.grid_2d_graph(5, 5)
-        self.Gs = nx.Graph()
-        nx.add_path(self.Gs, 'abcdef')
-        self.bigG = nx.grid_2d_graph(25, 25)  # > 500 nodes for sparse
+        cls.Gi = nx.grid_2d_graph(5, 5)
+        cls.Gs = nx.Graph()
+        nx.add_path(cls.Gs, 'abcdef')
+        cls.bigG = nx.grid_2d_graph(25, 25)  # > 500 nodes for sparse
 
     @staticmethod
     def collect_node_distances(positions):

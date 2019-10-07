@@ -27,7 +27,7 @@ def getCanonical():
 class TestSimilarity:
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global scipy
         try:

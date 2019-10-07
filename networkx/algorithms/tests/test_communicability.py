@@ -7,7 +7,7 @@ from networkx.algorithms.communicability_alg import *
 
 class TestCommunicability:
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global scipy
         try:

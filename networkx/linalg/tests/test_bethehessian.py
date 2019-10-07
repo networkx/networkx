@@ -1,4 +1,3 @@
-
 from nose import SkipTest
 
 import networkx as nx
@@ -9,7 +8,7 @@ class TestBetheHessian(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global scipy
         global assert_equal
@@ -21,10 +20,9 @@ class TestBetheHessian(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    def setUp(self):
         deg = [3, 2, 2, 1, 0]
-        self.G = havel_hakimi_graph(deg)
-        self.P = nx.path_graph(3)
+        cls.G = havel_hakimi_graph(deg)
+        cls.P = nx.path_graph(3)
 
     def test_bethe_hessian(self):
         "Bethe Hessian matrix"

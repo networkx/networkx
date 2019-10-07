@@ -15,12 +15,13 @@ def dist(a, b):
 
 class TestAStar:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         edges = [('s', 'u', 10), ('s', 'x', 5), ('u', 'v', 1), ('u', 'x', 2),
                  ('v', 'y', 1), ('x', 'u', 3), ('x', 'v', 5), ('x', 'y', 2),
                  ('y', 's', 7), ('y', 'v', 6)]
-        self.XG = nx.DiGraph()
-        self.XG.add_weighted_edges_from(edges)
+        cls.XG = nx.DiGraph()
+        cls.XG.add_weighted_edges_from(edges)
 
     def test_multiple_optimal_paths(self):
         """Tests that A* algorithm finds any of multiple optimal paths"""

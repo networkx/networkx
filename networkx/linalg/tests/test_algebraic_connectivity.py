@@ -32,7 +32,7 @@ class TestAlgebraicConnectivity(object):
     numpy = 1
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         try:
             import numpy.linalg
@@ -196,7 +196,7 @@ class TestSpectralOrdering(object):
     numpy = 1
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         try:
             import numpy.linalg
@@ -239,7 +239,7 @@ class TestSpectralOrdering(object):
             ok_(set([2, 3]) in (set(order[:-1]), set(order[1:])))
 
     def test_path(self):
-        # based on setupClass numpy is installed if we get here
+        # based on setup_class numpy is installed if we get here
         from numpy.random import shuffle
         path = list(range(10))
         shuffle(path)
@@ -250,7 +250,7 @@ class TestSpectralOrdering(object):
             ok_(order in [path, list(reversed(path))])
 
     def test_seed_argument(self):
-        # based on setupClass numpy is installed if we get here
+        # based on setup_class numpy is installed if we get here
         from numpy.random import shuffle
         path = list(range(10))
         shuffle(path)

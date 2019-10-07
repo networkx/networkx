@@ -5,7 +5,8 @@ from networkx.testing.utils import *
 
 
 class TestCore:
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         # G is the example graph in Figure 1 from Batagelj and
         # Zaversnik's paper titled An O(m) Algorithm for Cores
         # Decomposition of Networks, 2003,
@@ -21,7 +22,7 @@ class TestCore:
                           (9, 10), (9, 20), (17, 13), (13, 14), (14, 15),
                           (15, 16), (16, 13)])
         G.add_node(21)
-        self.G = G
+        cls.G = G
 
         # Create the graph H resulting from the degree sequence
         # [0, 1, 2, 2, 2, 2, 3] when using the Havel-Hakimi algorithm.
@@ -29,7 +30,7 @@ class TestCore:
         degseq = [0, 1, 2, 2, 2, 2, 3]
         H = nx.havel_hakimi_graph(degseq)
         mapping = {6: 0, 0: 1, 4: 3, 5: 6, 3: 4, 1: 2, 2: 5}
-        self.H = nx.relabel_nodes(H, mapping)
+        cls.H = nx.relabel_nodes(H, mapping)
 
     def test_trivial(self):
         """Empty graph"""

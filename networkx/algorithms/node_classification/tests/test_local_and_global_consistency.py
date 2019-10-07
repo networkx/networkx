@@ -8,7 +8,7 @@ from networkx.algorithms import node_classification
 class TestLocalAndGlobalConsistency:
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global scipy
         try:

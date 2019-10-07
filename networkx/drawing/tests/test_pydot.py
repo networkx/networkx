@@ -15,7 +15,7 @@ from networkx.testing import assert_graphs_equal
 
 class TestPydot(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         '''
         Fixture defining the `pydot` global to be the `pydot` module if both
         importable and of sufficient version _or_ skipping this test.

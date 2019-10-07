@@ -8,7 +8,7 @@ class TestLaplacian(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global scipy
         global assert_equal
@@ -20,18 +20,17 @@ class TestLaplacian(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    def setUp(self):
         deg = [3, 2, 2, 1, 0]
-        self.G = havel_hakimi_graph(deg)
-        self.WG = nx.Graph((u, v, {'weight': 0.5, 'other': 0.3})
-                           for (u, v) in self.G.edges())
-        self.WG.add_node(4)
-        self.MG = nx.MultiGraph(self.G)
+        cls.G = havel_hakimi_graph(deg)
+        cls.WG = nx.Graph((u, v, {'weight': 0.5, 'other': 0.3})
+                           for (u, v) in cls.G.edges())
+        cls.WG.add_node(4)
+        cls.MG = nx.MultiGraph(cls.G)
 
-        # Graph with selfloops
-        self.Gsl = self.G.copy()
-        for node in self.Gsl.nodes():
-            self.Gsl.add_edge(node, node)
+        # Graph with clsloops
+        cls.Gsl = cls.G.copy()
+        for node in cls.Gsl.nodes():
+            cls.Gsl.add_edge(node, node)
 
     def test_laplacian(self):
         "Graph Laplacian"

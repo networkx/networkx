@@ -8,7 +8,7 @@ from networkx.algorithms.assortativity.correlation import attribute_ac
 
 class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         global npt
         try:
@@ -49,7 +49,7 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         global npt
         try:

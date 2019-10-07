@@ -9,12 +9,13 @@ from networkx.testing import *
 
 class TestP2G:
 
-    def setUp(self):
-        self.G = nx.Graph(name="test")
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.Graph(name="test")
         e = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('e', 'f'), ('a', 'f')]
-        self.G.add_edges_from(e)
-        self.G.add_node('g')
-        self.DG = nx.DiGraph(self.G)
+        cls.G.add_edges_from(e)
+        cls.G.add_node('g')
+        cls.DG = nx.DiGraph(cls.G)
 
     def test_read_p2g(self):
         s = b"""\

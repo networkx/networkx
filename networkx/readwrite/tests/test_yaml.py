@@ -13,15 +13,14 @@ from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 class TestYaml(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global yaml
         try:
             import yaml
         except ImportError:
             raise SkipTest('yaml not available.')
 
-    def setUp(self):
-        self.build_graphs()
+        cls.build_graphs()
 
     def build_graphs(self):
         self.G = nx.Graph(name="test")

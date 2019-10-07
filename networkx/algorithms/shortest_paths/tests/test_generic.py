@@ -29,17 +29,18 @@ def validate_grid_path(r, c, s, t, p):
 
 class TestGenericPath:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         from networkx import convert_node_labels_to_integers as cnlti
-        self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1,
+        cls.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1,
                           ordering="sorted")
-        self.cycle = nx.cycle_graph(7)
-        self.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
-        self.neg_weights = nx.DiGraph()
-        self.neg_weights.add_edge(0, 1, weight=1)
-        self.neg_weights.add_edge(0, 2, weight=3)
-        self.neg_weights.add_edge(1, 3, weight=1)
-        self.neg_weights.add_edge(2, 3, weight=-2)
+        cls.cycle = nx.cycle_graph(7)
+        cls.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
+        cls.neg_weights = nx.DiGraph()
+        cls.neg_weights.add_edge(0, 1, weight=1)
+        cls.neg_weights.add_edge(0, 2, weight=3)
+        cls.neg_weights.add_edge(1, 3, weight=1)
+        cls.neg_weights.add_edge(2, 3, weight=-2)
 
     def test_shortest_path(self):
         assert_equal(nx.shortest_path(self.cycle, 0, 3), [0, 1, 2, 3])
@@ -354,7 +355,7 @@ class TestAverageShortestPathLengthNumpy(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global assert_equal
         global assert_almost_equal

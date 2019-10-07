@@ -5,12 +5,13 @@ from networkx.algorithms import bipartite
 
 class TestBipartiteCentrality(object):
 
-    def setUp(self):
-        self.P4 = nx.path_graph(4)
-        self.K3 = nx.complete_bipartite_graph(3, 3)
-        self.C4 = nx.cycle_graph(4)
-        self.davis = nx.davis_southern_women_graph()
-        self.top_nodes = [n for n, d in self.davis.nodes(data=True)
+    @classmethod
+    def setup_class(cls):
+        cls.P4 = nx.path_graph(4)
+        cls.K3 = nx.complete_bipartite_graph(3, 3)
+        cls.C4 = nx.cycle_graph(4)
+        cls.davis = nx.davis_southern_women_graph()
+        cls.top_nodes = [n for n, d in cls.davis.nodes(data=True)
                           if d['bipartite'] == 0]
 
     def test_degree_centrality(self):

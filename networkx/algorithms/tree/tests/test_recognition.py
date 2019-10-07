@@ -8,41 +8,42 @@ class TestTreeRecognition(object):
     graph = nx.Graph
     multigraph = nx.MultiGraph
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
 
-        self.T1 = self.graph()
+        cls.T1 = cls.graph()
 
-        self.T2 = self.graph()
-        self.T2.add_node(1)
+        cls.T2 = cls.graph()
+        cls.T2.add_node(1)
 
-        self.T3 = self.graph()
-        self.T3.add_nodes_from(range(5))
+        cls.T3 = cls.graph()
+        cls.T3.add_nodes_from(range(5))
         edges = [(i, i + 1) for i in range(4)]
-        self.T3.add_edges_from(edges)
+        cls.T3.add_edges_from(edges)
 
-        self.T5 = self.multigraph()
-        self.T5.add_nodes_from(range(5))
+        cls.T5 = cls.multigraph()
+        cls.T5.add_nodes_from(range(5))
         edges = [(i, i + 1) for i in range(4)]
-        self.T5.add_edges_from(edges)
+        cls.T5.add_edges_from(edges)
 
-        self.T6 = self.graph()
-        self.T6.add_nodes_from([6, 7])
-        self.T6.add_edge(6, 7)
+        cls.T6 = cls.graph()
+        cls.T6.add_nodes_from([6, 7])
+        cls.T6.add_edge(6, 7)
 
-        self.F1 = nx.compose(self.T6, self.T3)
+        cls.F1 = nx.compose(cls.T6, cls.T3)
 
-        self.N4 = self.graph()
-        self.N4.add_node(1)
-        self.N4.add_edge(1, 1)
+        cls.N4 = cls.graph()
+        cls.N4.add_node(1)
+        cls.N4.add_edge(1, 1)
 
-        self.N5 = self.graph()
-        self.N5.add_nodes_from(range(5))
+        cls.N5 = cls.graph()
+        cls.N5.add_nodes_from(range(5))
 
-        self.N6 = self.graph()
-        self.N6.add_nodes_from(range(3))
-        self.N6.add_edges_from([(0, 1), (1, 2), (2, 0)])
+        cls.N6 = cls.graph()
+        cls.N6.add_nodes_from(range(3))
+        cls.N6.add_edges_from([(0, 1), (1, 2), (2, 0)])
 
-        self.NF1 = nx.compose(self.T6, self.N6)
+        cls.NF1 = nx.compose(cls.T6, cls.N6)
 
     @raises(nx.NetworkXPointlessConcept)
     def test_null_tree(self):

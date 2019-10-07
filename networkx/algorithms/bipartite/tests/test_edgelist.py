@@ -14,18 +14,19 @@ from networkx.algorithms import bipartite
 
 class TestEdgelist:
 
-    def setUp(self):
-        self.G = nx.Graph(name="test")
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.Graph(name="test")
         e = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('e', 'f'), ('a', 'f')]
-        self.G.add_edges_from(e)
-        self.G.add_nodes_from(['a', 'c', 'e'], bipartite=0)
-        self.G.add_nodes_from(['b', 'd', 'f'], bipartite=1)
-        self.G.add_node('g', bipartite=0)
-        self.DG = nx.DiGraph(self.G)
-        self.MG = nx.MultiGraph()
-        self.MG.add_edges_from([(1, 2), (1, 2), (1, 2)])
-        self.MG.add_node(1, bipartite=0)
-        self.MG.add_node(2, bipartite=1)
+        cls.G.add_edges_from(e)
+        cls.G.add_nodes_from(['a', 'c', 'e'], bipartite=0)
+        cls.G.add_nodes_from(['b', 'd', 'f'], bipartite=1)
+        cls.G.add_node('g', bipartite=0)
+        cls.DG = nx.DiGraph(cls.G)
+        cls.MG = nx.MultiGraph()
+        cls.MG.add_edges_from([(1, 2), (1, 2), (1, 2)])
+        cls.MG.add_node(1, bipartite=0)
+        cls.MG.add_node(2, bipartite=1)
 
     def test_read_edgelist_1(self):
         s = b"""\

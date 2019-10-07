@@ -5,25 +5,26 @@ import networkx as nx
 
 class TestMCS:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         # simple graph
         connected_chordal_G = nx.Graph()
         connected_chordal_G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4),
                                             (3, 4), (3, 5), (3, 6), (4, 5),
                                             (4, 6), (5, 6)])
-        self.connected_chordal_G = connected_chordal_G
+        cls.connected_chordal_G = connected_chordal_G
 
         chordal_G = nx.Graph()
         chordal_G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (3, 4),
                                   (3, 5), (3, 6), (4, 5), (4, 6), (5, 6),
                                   (7, 8)])
         chordal_G.add_node(9)
-        self.chordal_G = chordal_G
+        cls.chordal_G = chordal_G
 
         non_chordal_G = nx.Graph()
         non_chordal_G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5),
                                       (3, 4), (3, 5)])
-        self.non_chordal_G = non_chordal_G
+        cls.non_chordal_G = non_chordal_G
 
     def test_is_chordal(self):
         assert_false(nx.is_chordal(self.non_chordal_G))

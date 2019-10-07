@@ -10,9 +10,10 @@ class TestSubGraphView(object):
     hide_edges_filter = staticmethod(nx.filters.hide_edges)
     show_edges_filter = staticmethod(nx.filters.show_edges)
 
-    def setUp(self):
-        self.G = nx.path_graph(9, create_using=self.graph())
-        self.hide_edges_w_hide_nodes = {(3, 4), (4, 5), (5, 6)}
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, create_using=cls.graph())
+        cls.hide_edges_w_hide_nodes = {(3, 4), (4, 5), (5, 6)}
 
     def test_hidden_nodes(self):
         hide_nodes = [4, 5, 111]
@@ -138,11 +139,12 @@ class TestMultiGraphView(TestSubGraphView):
     hide_edges_filter = staticmethod(nx.filters.hide_multiedges)
     show_edges_filter = staticmethod(nx.filters.show_multiedges)
 
-    def setUp(self):
-        self.G = nx.path_graph(9, create_using=self.graph())
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, create_using=cls.graph())
         multiedges = {(2, 3, 4), (2, 3, 5)}
-        self.G.add_edges_from(multiedges)
-        self.hide_edges_w_hide_nodes = {(3, 4, 0), (4, 5, 0), (5, 6, 0)}
+        cls.G.add_edges_from(multiedges)
+        cls.hide_edges_w_hide_nodes = {(3, 4, 0), (4, 5, 0), (5, 6, 0)}
 
     def test_hidden_edges(self):
         hide_edges = [(2, 3, 4), (2, 3, 3), (8, 7, 0), (222, 223, 0)]
@@ -209,8 +211,9 @@ class TestMultiDiGraphView(TestMultiGraphView, TestSubDiGraphView):
 
 # induced_subgraph
 class TestInducedSubGraph(object):
-    def setUp(self):
-        self.K3 = G = nx.complete_graph(3)
+    @classmethod
+    def setup_class(cls):
+        cls.K3 = G = nx.complete_graph(3)
         G.graph['foo'] = []
         G.nodes[0]['foo'] = []
         G.remove_edge(1, 2)
@@ -269,9 +272,10 @@ class TestInducedSubGraph(object):
 
 # edge_subgraph
 class TestEdgeSubGraph(object):
-    def setup(self):
+    @classmethod
+    def setup_class(cls):
         # Create a path graph on five nodes.
-        self.G = G = nx.path_graph(5)
+        cls.G = G = nx.path_graph(5)
         # Add some node, edge, and graph attributes.
         for i in range(5):
             G.nodes[i]['name'] = 'node{}'.format(i)
@@ -279,7 +283,7 @@ class TestEdgeSubGraph(object):
         G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'
         # Get the subgraph induced by the first and last edges.
-        self.H = nx.edge_subgraph(G, [(0, 1), (3, 4)])
+        cls.H = nx.edge_subgraph(G, [(0, 1), (3, 4)])
 
     def test_correct_nodes(self):
         """Tests that the subgraph has the correct nodes."""

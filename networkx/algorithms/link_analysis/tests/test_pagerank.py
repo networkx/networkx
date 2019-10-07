@@ -13,14 +13,13 @@ from nose import SkipTest
 class TestPageRank(object):
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         try:
             import numpy
         except ImportError:
             raise SkipTest('NumPy not available.')
 
-    def setUp(self):
         G = networkx.DiGraph()
         edges = [(1, 2), (1, 3),
                  # 2 is a dangling node
@@ -29,14 +28,14 @@ class TestPageRank(object):
                  (5, 4), (5, 6),
                  (6, 4)]
         G.add_edges_from(edges)
-        self.G = G
-        self.G.pagerank = dict(zip(sorted(G),
+        cls.G = G
+        cls.G.pagerank = dict(zip(sorted(G),
                                    [0.03721197, 0.05395735, 0.04150565,
                                     0.37508082, 0.20599833, 0.28624589]))
-        self.dangling_node_index = 1
-        self.dangling_edges = {1: 2, 2: 3,
+        cls.dangling_node_index = 1
+        cls.dangling_edges = {1: 2, 2: 3,
                                3: 0, 4: 0, 5: 0, 6: 0}
-        self.G.dangling_pagerank = dict(zip(sorted(G),
+        cls.G.dangling_pagerank = dict(zip(sorted(G),
                                             [0.10844518, 0.18618601, 0.0710892,
                                              0.2683668, 0.15919783, 0.20671497]))
 
@@ -141,7 +140,7 @@ class TestPageRank(object):
 class TestPageRankScipy(TestPageRank):
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global scipy
         try:
             import scipy

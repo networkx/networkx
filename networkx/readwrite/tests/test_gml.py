@@ -23,8 +23,9 @@ except NameError:
 
 class TestGraph(object):
 
-    def setUp(self):
-        self.simple_data = """Creator "me"
+    @classmethod
+    def setup_class(cls):
+        cls.simple_data = """Creator "me"
 Version "xx"
 graph [
  comment "This is a sample graph"

@@ -10,7 +10,7 @@ class TestConvertPandas(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         try:
             import pandas as pd
         except ImportError:

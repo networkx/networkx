@@ -11,7 +11,7 @@ from networkx.algorithms.bipartite import spectral_bipartivity as sb
 
 class TestSpectralBipartivity(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global scipy
         global assert_equal
         global assert_almost_equal

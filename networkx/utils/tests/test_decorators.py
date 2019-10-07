@@ -35,10 +35,11 @@ def test_not_implemented_decorator_raise():
 
 
 class TestOpenFileDecorator(object):
-    def setUp(self):
-        self.text = ['Blah... ', 'BLAH ', 'BLAH!!!!']
-        self.fobj = tempfile.NamedTemporaryFile('wb+', delete=False)
-        self.name = self.fobj.name
+    @classmethod
+    def setup_class(cls):
+        cls.text = ['Blah... ', 'BLAH ', 'BLAH!!!!']
+        cls.fobj = tempfile.NamedTemporaryFile('wb+', delete=False)
+        cls.name = cls.fobj.name
 
     def write(self, path):
         for text in self.text:
@@ -153,7 +154,7 @@ def test_preserve_random_state():
 
 class TestRandomState(object):
     @classmethod
-    def setUp(cls):
+    def setup_class(cls):
         global np
         try:
             import numpy as np

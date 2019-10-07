@@ -9,28 +9,29 @@ import networkx as nx
 
 class TestSubgraphAttributesDicts:
 
-    def setUp(self):
-        self.undirected = [
+    @classmethod
+    def setup_class(cls):
+        cls.undirected = [
             nx.connected_component_subgraphs,
             nx.biconnected_component_subgraphs,
         ]
-        self.directed = [
+        cls.directed = [
             nx.weakly_connected_component_subgraphs,
             nx.strongly_connected_component_subgraphs,
             nx.attracting_component_subgraphs,
         ]
-        self.subgraph_funcs = self.undirected + self.directed
+        cls.subgraph_funcs = cls.undirected + cls.directed
 
-        self.D = nx.DiGraph()
-        self.D.add_edge(1, 2, eattr='red')
-        self.D.add_edge(2, 1, eattr='red')
-        self.D.nodes[1]['nattr'] = 'blue'
-        self.D.graph['gattr'] = 'green'
+        cls.D = nx.DiGraph()
+        cls.D.add_edge(1, 2, eattr='red')
+        cls.D.add_edge(2, 1, eattr='red')
+        cls.D.nodes[1]['nattr'] = 'blue'
+        cls.D.graph['gattr'] = 'green'
 
-        self.G = nx.Graph()
-        self.G.add_edge(1, 2, eattr='red')
-        self.G.nodes[1]['nattr'] = 'blue'
-        self.G.graph['gattr'] = 'green'
+        cls.G = nx.Graph()
+        cls.G.add_edge(1, 2, eattr='red')
+        cls.G.nodes[1]['nattr'] = 'blue'
+        cls.G.graph['gattr'] = 'green'
 
     def test_subgraphs_default_copy_behavior(self):
         # Test the default behavior of subgraph functions

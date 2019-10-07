@@ -6,26 +6,27 @@ import networkx as nx
 # import timeit
 
 class TestClosenessCentrality:
-    def setUp(self):
-        self.K = nx.krackhardt_kite_graph()
-        self.P3 = nx.path_graph(3)
-        self.P4 = nx.path_graph(4)
-        self.K5 = nx.complete_graph(5)
+    @classmethod
+    def setup_class(cls):
+        cls.K = nx.krackhardt_kite_graph()
+        cls.P3 = nx.path_graph(3)
+        cls.P4 = nx.path_graph(4)
+        cls.K5 = nx.complete_graph(5)
 
-        self.C4 = nx.cycle_graph(4)
-        self.T = nx.balanced_tree(r=2, h=2)
-        self.Gb = nx.Graph()
-        self.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
+        cls.C4 = nx.cycle_graph(4)
+        cls.T = nx.balanced_tree(r=2, h=2)
+        cls.Gb = nx.Graph()
+        cls.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
                                 (2, 4), (4, 5), (3, 5)])
 
         F = nx.florentine_families_graph()
-        self.F = F
+        cls.F = F
 
-        self.LM = nx.les_miserables_graph()
+        cls.LM = nx.les_miserables_graph()
 
         # Create random undirected, unweighted graph for testing incremental version
-        self.undirected_G = nx.fast_gnp_random_graph(n=100, p=0.6, seed=123)
-        self.undirected_G_cc = nx.closeness_centrality(self.undirected_G)
+        cls.undirected_G = nx.fast_gnp_random_graph(n=100, p=0.6, seed=123)
+        cls.undirected_G_cc = nx.closeness_centrality(cls.undirected_G)
 
     def test_wf_improved(self):
         G = nx.union(self.P4, nx.path_graph([4, 5, 6]))

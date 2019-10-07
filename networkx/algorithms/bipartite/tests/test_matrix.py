@@ -8,7 +8,7 @@ from networkx.testing.utils import assert_edges_equal
 
 class TestBiadjacencyMatrix:
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np, sp, sparse, np_assert_equal
         try:
             import numpy as np

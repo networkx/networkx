@@ -311,19 +311,20 @@ def test_edge_connectivity_flow_vs_stoer_wagner():
 
 class TestAllPairsNodeConnectivity:
 
-    def setUp(self):
-        self.path = nx.path_graph(7)
-        self.directed_path = nx.path_graph(7, create_using=nx.DiGraph())
-        self.cycle = nx.cycle_graph(7)
-        self.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
-        self.gnp = nx.gnp_random_graph(30, 0.1, seed=42)
-        self.directed_gnp = nx.gnp_random_graph(30, 0.1, directed=True, seed=42)
-        self.K20 = nx.complete_graph(20)
-        self.K10 = nx.complete_graph(10)
-        self.K5 = nx.complete_graph(5)
-        self.G_list = [self.path, self.directed_path, self.cycle,
-                       self.directed_cycle, self.gnp, self.directed_gnp,
-                       self.K10, self.K5, self.K20]
+    @classmethod
+    def setup_class(cls):
+        cls.path = nx.path_graph(7)
+        cls.directed_path = nx.path_graph(7, create_using=nx.DiGraph())
+        cls.cycle = nx.cycle_graph(7)
+        cls.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
+        cls.gnp = nx.gnp_random_graph(30, 0.1, seed=42)
+        cls.directed_gnp = nx.gnp_random_graph(30, 0.1, directed=True, seed=42)
+        cls.K20 = nx.complete_graph(20)
+        cls.K10 = nx.complete_graph(10)
+        cls.K5 = nx.complete_graph(5)
+        cls.G_list = [cls.path, cls.directed_path, cls.cycle,
+                       cls.directed_cycle, cls.gnp, cls.directed_gnp,
+                       cls.K10, cls.K5, cls.K20]
 
     def test_cycles(self):
         K_undir = nx.all_pairs_node_connectivity(self.cycle)

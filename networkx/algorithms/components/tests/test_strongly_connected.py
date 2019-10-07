@@ -7,23 +7,24 @@ from networkx import NetworkXNotImplemented
 
 class TestStronglyConnected:
 
-    def setUp(self):
-        self.gc = []
+    @classmethod
+    def setup_class(cls):
+        cls.gc = []
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 3), (2, 8), (3, 4), (3, 7), (4, 5),
                           (5, 3), (5, 6), (7, 4), (7, 6), (8, 1), (8, 7)])
         C = {frozenset([3, 4, 5, 7]), frozenset([1, 2, 8]), frozenset([6])}
-        self.gc.append((G, C))
+        cls.gc.append((G, C))
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (1, 3), (1, 4), (4, 2), (3, 4), (2, 3)])
         C = {frozenset([2, 3, 4]), frozenset([1])}
-        self.gc.append((G, C))
+        cls.gc.append((G, C))
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 3), (3, 2), (2, 1)])
         C = {frozenset([1, 2, 3])}
-        self.gc.append((G, C))
+        cls.gc.append((G, C))
 
         # Eppstein's tests
         G = nx.DiGraph({0: [1], 1: [2, 3], 2: [4, 5], 3: [4, 5], 4: [6], 5: [], 6: []})
@@ -36,11 +37,11 @@ class TestStronglyConnected:
             frozenset([5]),
             frozenset([6]),
         }
-        self.gc.append((G, C))
+        cls.gc.append((G, C))
 
         G = nx.DiGraph({0: [1], 1: [2, 3, 4], 2: [0, 3], 3: [4], 4: [3]})
         C = {frozenset([0, 1, 2]), frozenset([3, 4])}
-        self.gc.append((G, C))
+        cls.gc.append((G, C))
 
     def test_tarjan(self):
         scc = nx.strongly_connected_components

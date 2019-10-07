@@ -11,7 +11,8 @@ import networkx
 
 class TestHITS:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
 
         G = networkx.DiGraph()
 
@@ -22,10 +23,10 @@ class TestHITS:
                  (6, 5)]
 
         G.add_edges_from(edges, weight=1)
-        self.G = G
-        self.G.a = dict(zip(sorted(G), [0.000000, 0.000000, 0.366025,
+        cls.G = G
+        cls.G.a = dict(zip(sorted(G), [0.000000, 0.000000, 0.366025,
                                         0.133975, 0.500000, 0.000000]))
-        self.G.h = dict(zip(sorted(G), [0.366025, 0.000000, 0.211325,
+        cls.G.h = dict(zip(sorted(G), [0.366025, 0.000000, 0.211325,
                                         0.000000, 0.211325, 0.211325]))
 
     def test_hits(self):

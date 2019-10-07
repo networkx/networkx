@@ -146,34 +146,35 @@ class TestBipartiteProject:
 
 class TestBipartiteWeightedProjection:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         # Tore Opsahl's example
         # http://toreopsahl.com/2009/05/01/projecting-two-mode-networks-onto-weighted-one-mode-networks/
-        self.G = nx.Graph()
-        self.G.add_edge('A', 1)
-        self.G.add_edge('A', 2)
-        self.G.add_edge('B', 1)
-        self.G.add_edge('B', 2)
-        self.G.add_edge('B', 3)
-        self.G.add_edge('B', 4)
-        self.G.add_edge('B', 5)
-        self.G.add_edge('C', 1)
-        self.G.add_edge('D', 3)
-        self.G.add_edge('E', 4)
-        self.G.add_edge('E', 5)
-        self.G.add_edge('E', 6)
-        self.G.add_edge('F', 6)
+        cls.G = nx.Graph()
+        cls.G.add_edge('A', 1)
+        cls.G.add_edge('A', 2)
+        cls.G.add_edge('B', 1)
+        cls.G.add_edge('B', 2)
+        cls.G.add_edge('B', 3)
+        cls.G.add_edge('B', 4)
+        cls.G.add_edge('B', 5)
+        cls.G.add_edge('C', 1)
+        cls.G.add_edge('D', 3)
+        cls.G.add_edge('E', 4)
+        cls.G.add_edge('E', 5)
+        cls.G.add_edge('E', 6)
+        cls.G.add_edge('F', 6)
         # Graph based on figure 6 from Newman (2001)
-        self.N = nx.Graph()
-        self.N.add_edge('A', 1)
-        self.N.add_edge('A', 2)
-        self.N.add_edge('A', 3)
-        self.N.add_edge('B', 1)
-        self.N.add_edge('B', 2)
-        self.N.add_edge('B', 3)
-        self.N.add_edge('C', 1)
-        self.N.add_edge('D', 1)
-        self.N.add_edge('E', 3)
+        cls.N = nx.Graph()
+        cls.N.add_edge('A', 1)
+        cls.N.add_edge('A', 2)
+        cls.N.add_edge('A', 3)
+        cls.N.add_edge('B', 1)
+        cls.N.add_edge('B', 2)
+        cls.N.add_edge('B', 3)
+        cls.N.add_edge('C', 1)
+        cls.N.add_edge('D', 1)
+        cls.N.add_edge('E', 3)
 
     def test_project_weighted_shared(self):
         edges = [('A', 'B', 2),

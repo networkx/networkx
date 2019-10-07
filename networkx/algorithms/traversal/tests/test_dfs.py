@@ -5,15 +5,16 @@ import networkx as nx
 
 class TestDFS:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         # simple graph
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4), (3, 4)])
-        self.G = G
+        cls.G = G
         # simple graph, disconnected
         D = nx.Graph()
         D.add_edges_from([(0, 1), (2, 3)])
-        self.D = D
+        cls.D = D
 
     def test_preorder_nodes(self):
         assert_equal(list(nx.dfs_preorder_nodes(self.G, source=0)),
@@ -81,17 +82,18 @@ class TestDFS:
 
 class TestDepthLimitedSearch:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         # a tree
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
         nx.add_path(G, [2, 7, 8, 9, 10])
-        self.G = G
+        cls.G = G
         # a disconnected graph
         D = nx.Graph()
         D.add_edges_from([(0, 1), (2, 3)])
         nx.add_path(D, [2, 7, 8, 9, 10])
-        self.D = D
+        cls.D = D
 
     def dls_test_preorder_nodes(self):
         assert_equal(list(nx.dfs_preorder_nodes(self.G, source=0,

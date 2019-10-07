@@ -10,7 +10,7 @@ class TestConvertNumpy(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         global np_assert_equal
         try:
@@ -253,7 +253,7 @@ class TestConvertNumpyArray(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         global np_assert_equal
         try:

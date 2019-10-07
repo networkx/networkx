@@ -8,7 +8,7 @@ class TestFloydNumpy(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global assert_equal
         global assert_almost_equal

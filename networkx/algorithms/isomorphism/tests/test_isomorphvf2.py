@@ -116,22 +116,20 @@ class TestVF2GraphDB(object):
         #Just testing some cases
         assert_true(gm.subgraph_is_monomorphic())
 
-        
     # There isn't a similar test implemented for subgraph monomorphism,
     # feel free to create one.
 
 
 class TestAtlas(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global atlas
         import platform
         if platform.python_implementation() == 'Jython':
             raise SkipTest('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas
 
-    def setUp(self):
-        self.GAG = atlas.graph_atlas_g()
+        cls.GAG = atlas.graph_atlas_g()
 
     def test_graph_atlas(self):
         # Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less

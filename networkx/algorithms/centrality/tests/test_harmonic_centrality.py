@@ -7,18 +7,19 @@ from networkx.algorithms.centrality import harmonic_centrality
 
 
 class TestClosenessCentrality:
-    def setUp(self):
-        self.P3 = nx.path_graph(3)
-        self.P4 = nx.path_graph(4)
-        self.K5 = nx.complete_graph(5)
+    @classmethod
+    def setup_class(cls):
+        cls.P3 = nx.path_graph(3)
+        cls.P4 = nx.path_graph(4)
+        cls.K5 = nx.complete_graph(5)
 
-        self.C4 = nx.cycle_graph(4)
-        self.C5 = nx.cycle_graph(5)
+        cls.C4 = nx.cycle_graph(4)
+        cls.C5 = nx.cycle_graph(5)
 
-        self.T = nx.balanced_tree(r=2, h=2)
+        cls.T = nx.balanced_tree(r=2, h=2)
 
-        self.Gb = nx.DiGraph()
-        self.Gb.add_edges_from([(0, 1), (0, 2), (0, 4), (2, 1),
+        cls.Gb = nx.DiGraph()
+        cls.Gb.add_edges_from([(0, 1), (0, 2), (0, 4), (2, 1),
                                 (2, 3), (4, 3)])
 
     def test_p3_harmonic(self):

@@ -20,11 +20,12 @@ def validate_grid_path(r, c, s, t, p):
 
 class TestUnweightedPath:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         from networkx import convert_node_labels_to_integers as cnlti
-        self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
-        self.cycle = nx.cycle_graph(7)
-        self.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
+        cls.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
+        cls.cycle = nx.cycle_graph(7)
+        cls.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
 
     def test_bidirectional_shortest_path(self):
         assert_equal(nx.bidirectional_shortest_path(self.cycle, 0, 3),

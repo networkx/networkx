@@ -5,17 +5,18 @@ from networkx import NetworkXNotImplemented
 
 
 class TestAttractingComponents(object):
-    def setUp(self):
-        self.G1 = nx.DiGraph()
-        self.G1.add_edges_from([(5, 11), (11, 2), (11, 9), (11, 10),
+    @classmethod
+    def setup_class(cls):
+        cls.G1 = nx.DiGraph()
+        cls.G1.add_edges_from([(5, 11), (11, 2), (11, 9), (11, 10),
                                 (7, 11), (7, 8), (8, 9), (3, 8), (3, 10)])
-        self.G2 = nx.DiGraph()
-        self.G2.add_edges_from([(0, 1), (0, 2), (1, 1), (1, 2), (2, 1)])
+        cls.G2 = nx.DiGraph()
+        cls.G2.add_edges_from([(0, 1), (0, 2), (1, 1), (1, 2), (2, 1)])
 
-        self.G3 = nx.DiGraph()
-        self.G3.add_edges_from([(0, 1), (1, 2), (2, 1), (0, 3), (3, 4), (4, 3)])
+        cls.G3 = nx.DiGraph()
+        cls.G3.add_edges_from([(0, 1), (1, 2), (2, 1), (0, 3), (3, 4), (4, 3)])
 
-        self.G4 = nx.DiGraph()
+        cls.G4 = nx.DiGraph()
 
     def test_attracting_components(self):
         ac = list(nx.attracting_components(self.G1))

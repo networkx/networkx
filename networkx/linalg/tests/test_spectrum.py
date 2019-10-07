@@ -8,7 +8,7 @@ class TestSpectrum(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global assert_equal
         global assert_almost_equal
@@ -19,15 +19,14 @@ class TestSpectrum(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    def setUp(self):
         deg = [3, 2, 2, 1, 0]
-        self.G = havel_hakimi_graph(deg)
-        self.P = nx.path_graph(3)
-        self.WG = nx.Graph((u, v, {'weight': 0.5, 'other': 0.3})
-                           for (u, v) in self.G.edges())
-        self.WG.add_node(4)
-        self.DG = nx.DiGraph()
-        nx.add_path(self.DG, [0, 1, 2])
+        cls.G = havel_hakimi_graph(deg)
+        cls.P = nx.path_graph(3)
+        cls.WG = nx.Graph((u, v, {'weight': 0.5, 'other': 0.3})
+                           for (u, v) in cls.G.edges())
+        cls.WG.add_node(4)
+        cls.DG = nx.DiGraph()
+        nx.add_path(cls.DG, [0, 1, 2])
 
     def test_laplacian_spectrum(self):
         "Laplacian eigenvalues"

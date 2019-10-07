@@ -78,10 +78,11 @@ def test_weightkey():
 
 
 class TestNodeMatch_Graph(object):
-    def setUp(self):
-        self.g1 = nx.Graph()
-        self.g2 = nx.Graph()
-        self.build()
+    @classmethod
+    def setup_class(cls):
+        cls.g1 = nx.Graph()
+        cls.g2 = nx.Graph()
+        cls.build()
 
     def build(self):
 
@@ -130,11 +131,12 @@ class TestNodeMatch_Graph(object):
 
 
 class TestEdgeMatch_MultiGraph(object):
-    def setUp(self):
-        self.g1 = nx.MultiGraph()
-        self.g2 = nx.MultiGraph()
-        self.GM = iso.MultiGraphMatcher
-        self.build()
+    @classmethod
+    def setup_class(cls):
+        cls.g1 = nx.MultiGraph()
+        cls.g2 = nx.MultiGraph()
+        cls.GM = iso.MultiGraphMatcher
+        cls.build()
 
     def build(self):
         g1 = self.g1
@@ -185,14 +187,16 @@ class TestEdgeMatch_MultiGraph(object):
 
 
 class TestEdgeMatch_DiGraph(TestNodeMatch_Graph):
-    def setUp(self):
-        self.g1 = nx.DiGraph()
-        self.g2 = nx.DiGraph()
-        self.build()
+    @classmethod
+    def setup_class(cls):
+        cls.g1 = nx.DiGraph()
+        cls.g2 = nx.DiGraph()
+        cls.build()
 
 
 class TestEdgeMatch_MultiDiGraph(TestEdgeMatch_MultiGraph):
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         self.g1 = nx.MultiDiGraph()
         self.g2 = nx.MultiDiGraph()
         self.GM = iso.MultiDiGraphMatcher

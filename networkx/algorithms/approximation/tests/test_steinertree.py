@@ -6,7 +6,8 @@ from networkx.testing.utils import assert_edges_equal
 
 
 class TestSteinerTree:
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         G = nx.Graph()
         G.add_edge(1, 2, weight=10)
         G.add_edge(2, 3, weight=10)
@@ -15,8 +16,8 @@ class TestSteinerTree:
         G.add_edge(5, 6, weight=10)
         G.add_edge(2, 7, weight=1)
         G.add_edge(7, 5, weight=1)
-        self.G = G
-        self.term_nodes = [1, 2, 3, 4, 5]
+        cls.G = G
+        cls.term_nodes = [1, 2, 3, 4, 5]
 
     def test_connected_metric_closure(self):
         G = self.G.copy()

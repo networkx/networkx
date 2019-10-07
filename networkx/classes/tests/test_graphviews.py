@@ -171,21 +171,22 @@ class TestToUndirected(object):
 
 
 class TestChainsOfViews(object):
-    def setUp(self):
-        self.G = nx.path_graph(9)
-        self.DG = nx.path_graph(9, create_using=nx.DiGraph())
-        self.MG = nx.path_graph(9, create_using=nx.MultiGraph())
-        self.MDG = nx.path_graph(9, create_using=nx.MultiDiGraph())
-        self.Gv = nx.to_undirected(self.DG)
-        self.DGv = nx.to_directed(self.G)
-        self.MGv = nx.to_undirected(self.MDG)
-        self.MDGv = nx.to_directed(self.MG)
-        self.Rv = self.DG.reverse()
-        self.MRv = self.MDG.reverse()
-        self.graphs = [self.G, self.DG, self.MG, self.MDG,
-                       self.Gv, self.DGv, self.MGv, self.MDGv,
-                       self.Rv, self.MRv]
-        for G in self.graphs:
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.DG = nx.path_graph(9, create_using=nx.DiGraph())
+        cls.MG = nx.path_graph(9, create_using=nx.MultiGraph())
+        cls.MDG = nx.path_graph(9, create_using=nx.MultiDiGraph())
+        cls.Gv = nx.to_undirected(cls.DG)
+        cls.DGv = nx.to_directed(cls.G)
+        cls.MGv = nx.to_undirected(cls.MDG)
+        cls.MDGv = nx.to_directed(cls.MG)
+        cls.Rv = cls.DG.reverse()
+        cls.MRv = cls.MDG.reverse()
+        cls.graphs = [cls.G, cls.DG, cls.MG, cls.MDG,
+                       cls.Gv, cls.DGv, cls.MGv, cls.MDGv,
+                       cls.Rv, cls.MRv]
+        for G in cls.graphs:
             G.edges, G.nodes, G.degree
 
     def test_pickle(self):

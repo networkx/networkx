@@ -7,7 +7,7 @@ import networkx as nx
 
 class TestPylab(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global plt
         try:
             import matplotlib as mpl
@@ -19,8 +19,7 @@ class TestPylab(object):
         except RuntimeError:
             raise SkipTest('matplotlib not available.')
 
-    def setUp(self):
-        self.G = nx.barbell_graph(4, 6)
+        cls.G = nx.barbell_graph(4, 6)
 
     def test_draw(self):
         try:

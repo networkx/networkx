@@ -9,6 +9,7 @@ from .historical_tests import HistoricalTests
 
 class TestGraphHistorical(HistoricalTests):
 
-    def setUp(self):
-        HistoricalTests.setUp(self)
-        self.G = nx.Graph
+    @classmethod
+    def setup_class(cls):
+        HistoricalTests.setup_class()
+        cls.G = nx.Graph

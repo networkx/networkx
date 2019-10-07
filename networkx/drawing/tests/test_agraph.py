@@ -11,7 +11,7 @@ import networkx as nx
 
 class TestAGraph(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global pygraphviz
         try:
             import pygraphviz

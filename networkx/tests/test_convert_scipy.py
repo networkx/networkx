@@ -8,7 +8,7 @@ from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 
 class TestConvertNumpy(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np, sp, sparse, np_assert_equal
         try:
             import numpy as np

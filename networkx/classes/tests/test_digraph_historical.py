@@ -10,9 +10,10 @@ from .historical_tests import HistoricalTests
 
 class TestDiGraphHistorical(HistoricalTests):
 
-    def setUp(self):
-        HistoricalTests.setUp(self)
-        self.G = nx.DiGraph
+    @classmethod
+    def setup_class(cls):
+        HistoricalTests.setup_class()
+        cls.G = nx.DiGraph
 
     def test_in_degree(self):
         G = self.G()

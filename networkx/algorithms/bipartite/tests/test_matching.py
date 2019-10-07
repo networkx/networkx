@@ -204,7 +204,7 @@ def test_eppstein_matching():
 class TestMinimumWeightFullMatching(object):
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global scipy
         try:
             import scipy.optimize

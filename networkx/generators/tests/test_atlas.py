@@ -32,8 +32,9 @@ class TestAtlasGraph(object):
 class TestAtlasGraphG(object):
     """Unit tests for the :func:`~networkx.graph_atlas_g` function."""
 
-    def setUp(self):
-        self.GAG = graph_atlas_g()
+    @classmethod
+    def setup_class(cls):
+        cls.GAG = graph_atlas_g()
 
     def test_sizes(self):
         G = self.GAG[0]

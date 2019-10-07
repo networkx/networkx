@@ -195,7 +195,8 @@ def test_same():
 
 
 class TestAntiGraph:
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         self.Gnp = nx.gnp_random_graph(20, 0.8)
         self.Anp = _AntiGraph(nx.complement(self.Gnp))
         self.Gd = nx.davis_southern_women_graph()

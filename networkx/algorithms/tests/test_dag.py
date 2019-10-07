@@ -109,7 +109,8 @@ class TestDagLongestPathLength(object):
 
 class TestDAG:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         pass
 
     def test_topological_sort1(self):

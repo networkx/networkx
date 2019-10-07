@@ -9,7 +9,7 @@ class TestEigenvectorCentrality(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         try:
             import numpy as np
@@ -63,15 +63,13 @@ class TestEigenvectorCentralityDirected(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         try:
             import numpy as np
             import scipy
         except ImportError:
             raise SkipTest('SciPy not available.')
-
-    def setUp(self):
 
         G = nx.DiGraph()
 
@@ -80,8 +78,8 @@ class TestEigenvectorCentralityDirected(object):
                  (7, 8), (8, 6), (8, 7)]
 
         G.add_edges_from(edges, weight=2.0)
-        self.G = G.reverse()
-        self.G.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
+        cls.G = G.reverse()
+        cls.G.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
                       0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
         H = nx.DiGraph()
@@ -91,8 +89,8 @@ class TestEigenvectorCentralityDirected(object):
                  (7, 8), (8, 6), (8, 7)]
 
         G.add_edges_from(edges)
-        self.H = G.reverse()
-        self.H.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
+        cls.H = G.reverse()
+        cls.H.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
                       0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
     def test_eigenvector_centrality_weighted(self):
@@ -124,7 +122,7 @@ class TestEigenvectorCentralityExceptions(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         try:
             import numpy as np

@@ -7,9 +7,10 @@ import networkx as nx
 
 # Nodes
 class TestNodeView(object):
-    def setup(self):
-        self.G = nx.path_graph(9)
-        self.nv = self.G.nodes   # NodeView(G)
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.nv = cls.G.nodes   # NodeView(G)
 
     def test_pickle(self):
         import pickle
@@ -63,11 +64,12 @@ class TestNodeView(object):
 
 
 class TestNodeDataView(object):
-    def setup(self):
-        self.G = nx.path_graph(9)
-        self.nv = self.G.nodes.data()   # NodeDataView(G)
-        self.ndv = self.G.nodes.data(True)
-        self.nwv = self.G.nodes.data('foo')
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.nv = cls.G.nodes.data()   # NodeDataView(G)
+        cls.ndv = cls.G.nodes.data(True)
+        cls.nwv = cls.G.nodes.data('foo')
 
     def test_viewtype(self):
         nv = self.G.nodes
@@ -166,10 +168,11 @@ def test_nodedataview_unhashable():
 
 
 class TestNodeViewSetOps(object):
-    def setUp(self):
-        self.G = nx.path_graph(9)
-        self.G.nodes[3]['foo'] = 'bar'
-        self.nv = self.G.nodes
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.G.nodes[3]['foo'] = 'bar'
+        cls.nv = cls.G.nodes
 
     def n_its(self, nodes):
         return {node for node in nodes}
@@ -213,20 +216,22 @@ class TestNodeViewSetOps(object):
 
 
 class TestNodeDataViewSetOps(TestNodeViewSetOps):
-    def setUp(self):
-        self.G = nx.path_graph(9)
-        self.G.nodes[3]['foo'] = 'bar'
-        self.nv = self.G.nodes.data('foo')
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.G.nodes[3]['foo'] = 'bar'
+        cls.nv = cls.G.nodes.data('foo')
 
     def n_its(self, nodes):
         return {(node, 'bar' if node == 3 else None) for node in nodes}
 
 
 class TestNodeDataViewDefaultSetOps(TestNodeDataViewSetOps):
-    def setUp(self):
-        self.G = nx.path_graph(9)
-        self.G.nodes[3]['foo'] = 'bar'
-        self.nv = self.G.nodes.data('foo', default=1)
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.G.nodes[3]['foo'] = 'bar'
+        cls.nv = cls.G.nodes.data('foo', default=1)
 
     def n_its(self, nodes):
         return {(node, 'bar' if node == 3 else 1) for node in nodes}
@@ -234,9 +239,10 @@ class TestNodeDataViewDefaultSetOps(TestNodeDataViewSetOps):
 
 # Edges Data View
 class TestEdgeDataView(object):
-    def setUp(self):
-        self.G = nx.path_graph(9)
-        self.eview = nx.reportviews.EdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.eview = nx.reportviews.EdgeView
 
     def test_pickle(self):
         import pickle
@@ -334,9 +340,10 @@ class TestEdgeDataView(object):
 
 
 class TestOutEdgeDataView(TestEdgeDataView):
-    def setUp(self):
-        self.G = nx.path_graph(9, create_using=nx.DiGraph())
-        self.eview = nx.reportviews.OutEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, create_using=nx.DiGraph())
+        cls.eview = nx.reportviews.OutEdgeView
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
@@ -365,9 +372,10 @@ class TestOutEdgeDataView(TestEdgeDataView):
 
 
 class TestInEdgeDataView(TestOutEdgeDataView):
-    def setUp(self):
-        self.G = nx.path_graph(9, create_using=nx.DiGraph())
-        self.eview = nx.reportviews.InEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, create_using=nx.DiGraph())
+        cls.eview = nx.reportviews.InEdgeView
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
@@ -379,9 +387,10 @@ class TestInEdgeDataView(TestOutEdgeDataView):
 
 
 class TestMultiEdgeDataView(TestEdgeDataView):
-    def setUp(self):
-        self.G = nx.path_graph(9, create_using=nx.MultiGraph())
-        self.eview = nx.reportviews.MultiEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, create_using=nx.MultiGraph())
+        cls.eview = nx.reportviews.MultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
         self.G._adj[e[0]][e[1]][0].update(kwds)
@@ -396,9 +405,10 @@ class TestMultiEdgeDataView(TestEdgeDataView):
 
 
 class TestOutMultiEdgeDataView(TestOutEdgeDataView):
-    def setUp(self):
-        self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
-        self.eview = nx.reportviews.OutMultiEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
+        cls.eview = nx.reportviews.OutMultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
         self.G._adj[e[0]][e[1]][0].update(kwds)
@@ -413,9 +423,10 @@ class TestOutMultiEdgeDataView(TestOutEdgeDataView):
 
 
 class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
-    def setUp(self):
-        self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
-        self.eview = nx.reportviews.InMultiEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
+        cls.eview = nx.reportviews.InMultiEdgeView
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
@@ -428,9 +439,10 @@ class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
 
 # Edge Views
 class TestEdgeView(object):
-    def setup(self):
-        self.G = nx.path_graph(9)
-        self.eview = nx.reportviews.EdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9)
+        cls.eview = nx.reportviews.EdgeView
 
     def test_pickle(self):
         import pickle
@@ -551,9 +563,10 @@ class TestEdgeView(object):
 
 
 class TestOutEdgeView(TestEdgeView):
-    def setup(self):
-        self.G = nx.path_graph(9, nx.DiGraph())
-        self.eview = nx.reportviews.OutEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, nx.DiGraph())
+        cls.eview = nx.reportviews.OutEdgeView
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -563,9 +576,10 @@ class TestOutEdgeView(TestEdgeView):
 
 
 class TestInEdgeView(TestEdgeView):
-    def setup(self):
-        self.G = nx.path_graph(9, nx.DiGraph())
-        self.eview = nx.reportviews.InEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, nx.DiGraph())
+        cls.eview = nx.reportviews.InEdgeView
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -575,10 +589,11 @@ class TestInEdgeView(TestEdgeView):
 
 
 class TestMultiEdgeView(TestEdgeView):
-    def setup(self):
-        self.G = nx.path_graph(9, nx.MultiGraph())
-        self.G.add_edge(1, 2, key=3, foo='bar')
-        self.eview = nx.reportviews.MultiEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, nx.MultiGraph())
+        cls.G.add_edge(1, 2, key=3, foo='bar')
+        cls.eview = nx.reportviews.MultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
         if len(e) == 2:
@@ -733,10 +748,11 @@ class TestMultiEdgeView(TestEdgeView):
 
 
 class TestOutMultiEdgeView(TestMultiEdgeView):
-    def setup(self):
-        self.G = nx.path_graph(9, nx.MultiDiGraph())
-        self.G.add_edge(1, 2, key=3, foo='bar')
-        self.eview = nx.reportviews.OutMultiEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, nx.MultiDiGraph())
+        cls.G.add_edge(1, 2, key=3, foo='bar')
+        cls.eview = nx.reportviews.OutMultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
         if len(e) == 2:
@@ -751,10 +767,11 @@ class TestOutMultiEdgeView(TestMultiEdgeView):
 
 
 class TestInMultiEdgeView(TestMultiEdgeView):
-    def setup(self):
-        self.G = nx.path_graph(9, nx.MultiDiGraph())
-        self.G.add_edge(1, 2, key=3, foo='bar')
-        self.eview = nx.reportviews.InMultiEdgeView
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(9, nx.MultiDiGraph())
+        cls.G.add_edge(1, 2, key=3, foo='bar')
+        cls.eview = nx.reportviews.InMultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
         if len(e) == 2:
@@ -773,10 +790,11 @@ class TestDegreeView(object):
     GRAPH = nx.Graph
     dview = nx.reportviews.DegreeView
 
-    def setup(self):
-        self.G = nx.path_graph(6, self.GRAPH())
-        self.G.add_edge(1, 3, foo=2)
-        self.G.add_edge(1, 3, foo=3)
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.path_graph(6, cls.GRAPH())
+        cls.G.add_edge(1, 3, foo=2)
+        cls.G.add_edge(1, 3, foo=3)
 
     def test_pickle(self):
         import pickle

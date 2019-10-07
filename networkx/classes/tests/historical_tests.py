@@ -8,17 +8,18 @@ from networkx.testing import *
 
 class HistoricalTests(object):
 
-    def setUp(self):
-        self.null = nx.null_graph()
-        self.P1 = cnlti(nx.path_graph(1), first_label=1)
-        self.P3 = cnlti(nx.path_graph(3), first_label=1)
-        self.P10 = cnlti(nx.path_graph(10), first_label=1)
-        self.K1 = cnlti(nx.complete_graph(1), first_label=1)
-        self.K3 = cnlti(nx.complete_graph(3), first_label=1)
-        self.K4 = cnlti(nx.complete_graph(4), first_label=1)
-        self.K5 = cnlti(nx.complete_graph(5), first_label=1)
-        self.K10 = cnlti(nx.complete_graph(10), first_label=1)
-        self.G = nx.Graph
+    @classmethod
+    def setup_class(cls):
+        cls.null = nx.null_graph()
+        cls.P1 = cnlti(nx.path_graph(1), first_label=1)
+        cls.P3 = cnlti(nx.path_graph(3), first_label=1)
+        cls.P10 = cnlti(nx.path_graph(10), first_label=1)
+        cls.K1 = cnlti(nx.complete_graph(1), first_label=1)
+        cls.K3 = cnlti(nx.complete_graph(3), first_label=1)
+        cls.K4 = cnlti(nx.complete_graph(4), first_label=1)
+        cls.K5 = cnlti(nx.complete_graph(5), first_label=1)
+        cls.K10 = cnlti(nx.complete_graph(10), first_label=1)
+        cls.G = nx.Graph
 
     def test_name(self):
         G = self.G(name="test")

@@ -41,15 +41,14 @@ def test_negative_input():
 
 class TestAtlas(object):
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global atlas
         import platform
         if platform.python_implementation() == 'Jython':
             raise SkipTest('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas
 
-    def setUp(self):
-        self.GAG = atlas.graph_atlas_g()
+        cls.GAG = atlas.graph_atlas_g()
 
     def test_atlas(self):
         for graph in self.GAG:

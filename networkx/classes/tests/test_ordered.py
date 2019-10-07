@@ -18,10 +18,11 @@ class SmokeTestOrdered(object):
 
 
 class TestOrderedFeatures(object):
-    def setUp(self):
-        self.G = nx.OrderedDiGraph()
-        self.G.add_nodes_from([1, 2, 3])
-        self.G.add_edges_from([(2, 3), (1, 3)])
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.OrderedDiGraph()
+        cls.G.add_nodes_from([1, 2, 3])
+        cls.G.add_edges_from([(2, 3), (1, 3)])
 
     def test_subgraph_order(self):
         G = self.G

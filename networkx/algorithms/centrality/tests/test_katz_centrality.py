@@ -107,7 +107,7 @@ class TestKatzCentralityNumpy(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         try:
             import numpy as np
@@ -224,15 +224,16 @@ class TestKatzCentralityNumpy(object):
 
 
 class TestKatzCentralityDirected(object):
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         G = nx.DiGraph()
         edges = [(1, 2), (1, 3), (2, 4), (3, 2), (3, 5), (4, 2), (4, 5),
                  (4, 6), (5, 6), (5, 7), (5, 8), (6, 8), (7, 1), (7, 5),
                  (7, 8), (8, 6), (8, 7)]
         G.add_edges_from(edges, weight=2.0)
-        self.G = G.reverse()
-        self.G.alpha = 0.1
-        self.G.evc = [
+        cls.G = G.reverse()
+        cls.G.alpha = 0.1
+        cls.G.evc = [
             0.3289589783189635,
             0.2832077296243516,
             0.3425906003685471,
@@ -244,9 +245,9 @@ class TestKatzCentralityDirected(object):
         ]
 
         H = nx.DiGraph(edges)
-        self.H = G.reverse()
-        self.H.alpha = 0.1
-        self.H.evc = [
+        cls.H = G.reverse()
+        cls.H.alpha = 0.1
+        cls.H.evc = [
             0.3289589783189635,
             0.2832077296243516,
             0.3425906003685471,
@@ -276,7 +277,7 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         try:
             import numpy as np
@@ -303,7 +304,7 @@ class TestKatzEigenvectorVKatz(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global np
         global eigvals
         try:

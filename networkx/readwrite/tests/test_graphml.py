@@ -9,8 +9,9 @@ import os
 
 
 class BaseGraphML(object):
-    def setUp(self):
-        self.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
+    @classmethod
+    def setup_class(cls):
+        cls.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <!-- This file was written by the JAVA GraphML Library.-->
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -41,10 +42,10 @@ class BaseGraphML(object):
     <edge source="n8" target="n9"/>
   </graph>
 </graphml>"""
-        self.simple_directed_graph = nx.DiGraph()
-        self.simple_directed_graph.add_node('n10')
-        self.simple_directed_graph.add_edge('n0', 'n2', id='foo')
-        self.simple_directed_graph.add_edges_from([('n1', 'n2'),
+        cls.simple_directed_graph = nx.DiGraph()
+        cls.simple_directed_graph.add_node('n10')
+        cls.simple_directed_graph.add_edge('n0', 'n2', id='foo')
+        cls.simple_directed_graph.add_edges_from([('n1', 'n2'),
                                                    ('n2', 'n3'),
                                                    ('n3', 'n5'),
                                                    ('n3', 'n4'),
@@ -55,10 +56,10 @@ class BaseGraphML(object):
                                                    ('n8', 'n7'),
                                                    ('n8', 'n9'),
                                                    ])
-        self.simple_directed_fh = \
-            io.BytesIO(self.simple_directed_data.encode('UTF-8'))
+        cls.simple_directed_fh = \
+            io.BytesIO(cls.simple_directed_data.encode('UTF-8'))
 
-        self.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>
+        cls.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
@@ -100,23 +101,23 @@ class BaseGraphML(object):
   </graph>
 </graphml>
 """
-        self.attribute_graph = nx.DiGraph(id='G')
-        self.attribute_graph.graph['node_default'] = {'color': 'yellow'}
-        self.attribute_graph.add_node('n0', color='green')
-        self.attribute_graph.add_node('n2', color='blue')
-        self.attribute_graph.add_node('n3', color='red')
-        self.attribute_graph.add_node('n4')
-        self.attribute_graph.add_node('n5', color='turquoise')
-        self.attribute_graph.add_edge('n0', 'n2', id='e0', weight=1.0)
-        self.attribute_graph.add_edge('n0', 'n1', id='e1', weight=1.0)
-        self.attribute_graph.add_edge('n1', 'n3', id='e2', weight=2.0)
-        self.attribute_graph.add_edge('n3', 'n2', id='e3')
-        self.attribute_graph.add_edge('n2', 'n4', id='e4')
-        self.attribute_graph.add_edge('n3', 'n5', id='e5')
-        self.attribute_graph.add_edge('n5', 'n4', id='e6', weight=1.1)
-        self.attribute_fh = io.BytesIO(self.attribute_data.encode('UTF-8'))
+        cls.attribute_graph = nx.DiGraph(id='G')
+        cls.attribute_graph.graph['node_default'] = {'color': 'yellow'}
+        cls.attribute_graph.add_node('n0', color='green')
+        cls.attribute_graph.add_node('n2', color='blue')
+        cls.attribute_graph.add_node('n3', color='red')
+        cls.attribute_graph.add_node('n4')
+        cls.attribute_graph.add_node('n5', color='turquoise')
+        cls.attribute_graph.add_edge('n0', 'n2', id='e0', weight=1.0)
+        cls.attribute_graph.add_edge('n0', 'n1', id='e1', weight=1.0)
+        cls.attribute_graph.add_edge('n1', 'n3', id='e2', weight=2.0)
+        cls.attribute_graph.add_edge('n3', 'n2', id='e3')
+        cls.attribute_graph.add_edge('n2', 'n4', id='e4')
+        cls.attribute_graph.add_edge('n3', 'n5', id='e5')
+        cls.attribute_graph.add_edge('n5', 'n4', id='e6', weight=1.1)
+        cls.attribute_fh = io.BytesIO(cls.attribute_data.encode('UTF-8'))
 
-        self.attribute_numeric_type_data = """<?xml version='1.0' encoding='utf-8'?>
+        cls.attribute_numeric_type_data = """<?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
@@ -142,15 +143,15 @@ class BaseGraphML(object):
   </graph>
 </graphml>
 """
-        self.attribute_numeric_type_graph = nx.DiGraph()
-        self.attribute_numeric_type_graph.add_node('n0', weight=1)
-        self.attribute_numeric_type_graph.add_node('n1', weight=2.0)
-        self.attribute_numeric_type_graph.add_edge('n0', 'n1', weight=1)
-        self.attribute_numeric_type_graph.add_edge('n1', 'n1', weight=1.0)
-        fh = io.BytesIO(self.attribute_numeric_type_data.encode('UTF-8'))
-        self.attribute_numeric_type_fh = fh
+        cls.attribute_numeric_type_graph = nx.DiGraph()
+        cls.attribute_numeric_type_graph.add_node('n0', weight=1)
+        cls.attribute_numeric_type_graph.add_node('n1', weight=2.0)
+        cls.attribute_numeric_type_graph.add_edge('n0', 'n1', weight=1)
+        cls.attribute_numeric_type_graph.add_edge('n1', 'n1', weight=1.0)
+        fh = io.BytesIO(cls.attribute_numeric_type_data.encode('UTF-8'))
+        cls.attribute_numeric_type_fh = fh
 
-        self.simple_undirected_data = """<?xml version="1.0" encoding="UTF-8"?>
+        cls.simple_undirected_data = """<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
@@ -166,14 +167,14 @@ class BaseGraphML(object):
   </graph>
 </graphml>"""
 #    <edge source="n8" target="n10" directed="false"/>
-        self.simple_undirected_graph = nx.Graph()
-        self.simple_undirected_graph.add_node('n10')
-        self.simple_undirected_graph.add_edge('n0', 'n2', id='foo')
-        self.simple_undirected_graph.add_edges_from([('n1', 'n2'),
+        cls.simple_undirected_graph = nx.Graph()
+        cls.simple_undirected_graph.add_node('n10')
+        cls.simple_undirected_graph.add_edge('n0', 'n2', id='foo')
+        cls.simple_undirected_graph.add_edges_from([('n1', 'n2'),
                                                      ('n2', 'n3'),
                                                      ])
-        fh = io.BytesIO(self.simple_undirected_data.encode('UTF-8'))
-        self.simple_undirected_fh = fh
+        fh = io.BytesIO(cls.simple_undirected_data.encode('UTF-8'))
+        cls.simple_undirected_fh = fh
 
 
 class TestReadGraphML(BaseGraphML):
@@ -838,7 +839,7 @@ class TestWriteGraphML(BaseGraphML):
     writer = staticmethod(nx.write_graphml_lxml)
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         try:
             import lxml.etree
         except ImportError:
@@ -1039,7 +1040,7 @@ class TestXMLGraphML(TestWriteGraphML):
     writer = staticmethod(nx.write_graphml_xml)
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         try:
             import xml.etree.ElementTree
         except ImportError:

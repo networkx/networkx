@@ -8,7 +8,7 @@ class TestModularity(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global scipy
         global assert_equal
@@ -20,14 +20,13 @@ class TestModularity(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    def setUp(self):
         deg = [3, 2, 2, 1, 0]
-        self.G = havel_hakimi_graph(deg)
+        cls.G = havel_hakimi_graph(deg)
         # Graph used as an example in Sec. 4.1 of Langville and Meyer,
         # "Google's PageRank and Beyond". (Used for test_directed_laplacian)
-        self.DG = nx.DiGraph()
-        self.DG.add_edges_from(((1, 2), (1, 3), (3, 1), (3, 2), (3, 5), (4, 5), (4, 6),
-                                (5, 4), (5, 6), (6, 4)))
+        cls.DG = nx.DiGraph()
+        cls.DG.add_edges_from(((1, 2), (1, 3), (3, 1), (3, 2), (3, 5), (4, 5), (4, 6),
+                               (5, 4), (5, 6), (6, 4)))
 
     def test_modularity(self):
         "Modularity matrix"

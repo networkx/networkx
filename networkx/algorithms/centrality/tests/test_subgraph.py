@@ -7,7 +7,7 @@ from networkx.algorithms.centrality.subgraph_alg import *
 
 class TestSubgraph:
     @classmethod
-    def setupClass(cls):
+    def setup_class(cls):
         global numpy
         global scipy
         try:
