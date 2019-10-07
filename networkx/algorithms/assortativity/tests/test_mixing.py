@@ -2,7 +2,7 @@
 from nose.tools import *
 from nose import SkipTest
 import networkx as nx
-from base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
+from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
 
 class TestDegreeMixingDict(BaseTestDegreeMixing):

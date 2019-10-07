@@ -2,10 +2,10 @@
 from nose.tools import *
 from collections import OrderedDict
 import networkx as nx
-from test_graph import TestGraph
-from test_digraph import TestDiGraph
-from test_multigraph import TestMultiGraph
-from test_multidigraph import TestMultiDiGraph
+from .test_graph import TestGraph
+from .test_digraph import TestDiGraph
+from .test_multigraph import TestMultiGraph
+from .test_multidigraph import TestMultiDiGraph
 
 
 def test_factories():

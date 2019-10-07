@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
+from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
 
 class TestAttributeMixingXY(BaseTestAttributeMixing):

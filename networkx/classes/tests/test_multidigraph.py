@@ -2,8 +2,8 @@
 from nose.tools import *
 from networkx.testing import assert_edges_equal
 import networkx as nx
-from test_multigraph import BaseMultiGraphTester, TestMultiGraph
-from test_multigraph import TestEdgeSubgraph as TestMultiGraphEdgeSubgraph
+from .test_multigraph import BaseMultiGraphTester, TestMultiGraph
+from .test_multigraph import TestEdgeSubgraph as TestMultiGraphEdgeSubgraph
 
 
 class BaseMultiDiGraphTester(BaseMultiGraphTester):

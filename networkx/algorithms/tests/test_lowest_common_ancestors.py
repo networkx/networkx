@@ -15,12 +15,13 @@ def get_pair(dictionary, n1, n2):
 
 
 class TestTreeLCA(object):
-    def setUp(self):
-        self.DG = nx.DiGraph()
+    @classmethod
+    def setup_class(cls):
+        cls.DG = nx.DiGraph()
         edges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
-        self.DG.add_edges_from(edges)
-        self.ans = dict(tree_all_pairs_lca(self.DG, 0))
-        gold = dict([((n, n), n) for n in self.DG])
+        cls.DG.add_edges_from(edges)
+        cls.ans = dict(tree_all_pairs_lca(cls.DG, 0))
+        gold = dict([((n, n), n) for n in cls.DG])
         gold.update(dict(((0, i), 0) for i in range(1, 7)))
         gold.update({(1, 2): 0,
                      (1, 3): 1,
@@ -38,7 +39,7 @@ class TestTreeLCA(object):
                      (4, 6): 0,
                      (5, 6): 2})
 
-        self.gold = gold
+        cls.gold = gold
 
     @staticmethod
     def assert_has_same_pairs(d1, d2):
@@ -153,18 +154,19 @@ class TestTreeLCA(object):
 
 
 class TestDAGLCA:
-    def setUp(self):
-        self.DG = nx.DiGraph()
-        nx.add_path(self.DG, (0, 1, 2, 3))
-        nx.add_path(self.DG, (0, 4, 3))
-        nx.add_path(self.DG, (0, 5, 6, 8, 3))
-        nx.add_path(self.DG, (5, 7, 8))
-        self.DG.add_edge(6, 2)
-        self.DG.add_edge(7, 2)
+    @classmethod
+    def setup_class(cls):
+        cls.DG = nx.DiGraph()
+        nx.add_path(cls.DG, (0, 1, 2, 3))
+        nx.add_path(cls.DG, (0, 4, 3))
+        nx.add_path(cls.DG, (0, 5, 6, 8, 3))
+        nx.add_path(cls.DG, (5, 7, 8))
+        cls.DG.add_edge(6, 2)
+        cls.DG.add_edge(7, 2)
 
-        self.root_distance = nx.shortest_path_length(self.DG, source=0)
+        cls.root_distance = nx.shortest_path_length(cls.DG, source=0)
 
-        self.gold = {(1, 1): 1,
+        cls.gold = {(1, 1): 1,
                      (1, 2): 1,
                      (1, 3): 1,
                      (1, 4): 0,
@@ -200,7 +202,7 @@ class TestDAGLCA:
                      (7, 7): 7,
                      (7, 8): 7,
                      (8, 8): 8}
-        self.gold.update(((0, n), 0) for n in self.DG)
+        cls.gold.update(((0, n), 0) for n in cls.DG)
 
     def assert_lca_dicts_same(self, d1, d2, G=None):
         """Checks if d1 and d2 contain the same pairs and

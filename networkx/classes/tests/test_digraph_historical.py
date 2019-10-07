@@ -5,7 +5,7 @@ import networkx
 import networkx as nx
 from networkx.testing.utils import *
 
-from historical_tests import HistoricalTests
+from .historical_tests import HistoricalTests
 
 
 class TestDiGraphHistorical(HistoricalTests):

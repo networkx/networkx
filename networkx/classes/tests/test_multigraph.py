@@ -7,7 +7,7 @@ from nose.tools import assert_raises
 import networkx as nx
 from networkx.testing.utils import *
 
-from test_graph import BaseAttrGraphTester, TestGraph
+from .test_graph import BaseAttrGraphTester, TestGraph
 
 
 class BaseMultiGraphTester(BaseAttrGraphTester):

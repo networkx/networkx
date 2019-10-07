@@ -8,8 +8,8 @@ from nose.tools import assert_raises
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal
-from test_graph import BaseGraphTester, BaseAttrGraphTester, TestGraph
-from test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
+from .test_graph import BaseGraphTester, BaseAttrGraphTester, TestGraph
+from .test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
 
 
 class BaseDiGraphTester(BaseGraphTester):
