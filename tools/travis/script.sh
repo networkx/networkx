@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-
-set -e
-
 section "Script section"
 
 export NX_SOURCE=$PWD
@@ -33,5 +29,3 @@ fi
 cd $NX_SOURCE
 
 section_end "Script section"
-
-set +e

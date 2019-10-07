@@ -11,6 +11,8 @@ cache:
 
 matrix:
   include:
+    - os: windows
+      language: shell
     - os: linux
       python: 3.7
       dist: xenial
@@ -85,6 +87,8 @@ before_install:
   - printenv
   - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       source tools/travis/osx_install.sh;
+    elif [[ "${TRAVIS_OS_NAME}" == "windows" ]]; then
+      source tools/travis/windows_install.sh; 
     else
       source tools/travis/linux_install.sh;
     fi
