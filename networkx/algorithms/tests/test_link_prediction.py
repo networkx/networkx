@@ -216,9 +216,9 @@ class TestPreferentialAttachment():
 
 class TestCNSoundarajanHopcroft():
     @classmethod
-    def setup_class(self):
-        self.func = nx.cn_soundarajan_hopcroft
-        self.test = partial(_test_func, predict_func=self.func,
+    def setup_class(cls):
+        cls.func = nx.cn_soundarajan_hopcroft
+        cls.test = partial(_test_func, predict_func=cls.func,
                             community='community')
 
     def test_K5(self):

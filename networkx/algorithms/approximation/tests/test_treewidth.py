@@ -175,7 +175,7 @@ class TestTreewidthMinFillIn(object):
     @classmethod
     def setup_class(cls):
         """Setup for different kinds of trees"""
-        self.complete = nx.Graph()
+        cls.complete = nx.Graph()
         cls.complete.add_edge(1, 2)
         cls.complete.add_edge(2, 3)
         cls.complete.add_edge(1, 3)

@@ -189,6 +189,7 @@ class TestEdgeMatch_MultiGraph(object):
 class TestEdgeMatch_DiGraph(TestNodeMatch_Graph):
     @classmethod
     def setup_class(cls):
+        TestNodeMatch_Graph.setup_class()
         cls.g1 = nx.DiGraph()
         cls.g2 = nx.DiGraph()
         cls.build()
@@ -197,7 +198,8 @@ class TestEdgeMatch_DiGraph(TestNodeMatch_Graph):
 class TestEdgeMatch_MultiDiGraph(TestEdgeMatch_MultiGraph):
     @classmethod
     def setup_class(cls):
-        self.g1 = nx.MultiDiGraph()
-        self.g2 = nx.MultiDiGraph()
-        self.GM = iso.MultiDiGraphMatcher
-        self.build()
+        TestEdgeMatch_MultiGraph.setup_class()
+        cls.g1 = nx.MultiDiGraph()
+        cls.g2 = nx.MultiDiGraph()
+        cls.GM = iso.MultiDiGraphMatcher
+        cls.build()

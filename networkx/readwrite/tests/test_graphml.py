@@ -840,6 +840,8 @@ class TestWriteGraphML(BaseGraphML):
 
     @classmethod
     def setup_class(cls):
+        BaseGraphML.setup_class()
+
         try:
             import lxml.etree
         except ImportError:
@@ -1041,6 +1043,8 @@ class TestXMLGraphML(TestWriteGraphML):
 
     @classmethod
     def setup_class(cls):
+        TestWriteGraphML.setup_class()
+
         try:
             import xml.etree.ElementTree
         except ImportError:

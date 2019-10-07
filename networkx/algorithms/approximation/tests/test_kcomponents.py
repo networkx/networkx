@@ -197,15 +197,15 @@ def test_same():
 class TestAntiGraph:
     @classmethod
     def setup_class(cls):
-        self.Gnp = nx.gnp_random_graph(20, 0.8)
-        self.Anp = _AntiGraph(nx.complement(self.Gnp))
-        self.Gd = nx.davis_southern_women_graph()
-        self.Ad = _AntiGraph(nx.complement(self.Gd))
-        self.Gk = nx.karate_club_graph()
-        self.Ak = _AntiGraph(nx.complement(self.Gk))
-        self.GA = [(self.Gnp, self.Anp),
-                   (self.Gd, self.Ad),
-                   (self.Gk, self.Ak)]
+        cls.Gnp = nx.gnp_random_graph(20, 0.8)
+        cls.Anp = _AntiGraph(nx.complement(cls.Gnp))
+        cls.Gd = nx.davis_southern_women_graph()
+        cls.Ad = _AntiGraph(nx.complement(cls.Gd))
+        cls.Gk = nx.karate_club_graph()
+        cls.Ak = _AntiGraph(nx.complement(cls.Gk))
+        cls.GA = [(cls.Gnp, cls.Anp),
+                  (cls.Gd, cls.Ad),
+                  (cls.Gk, cls.Ak)]
 
     def test_size(self):
         for G, A in self.GA:
