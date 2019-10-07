@@ -11,7 +11,6 @@ export NX_INSTALL=$(pip show networkx | grep Location | awk '{print $2"/networkx
 # package (except during the report).  So to restrict coverage, we must
 # inform coverage through the .coveragerc file.
 cp .coveragerc $NX_INSTALL
-cp setup.cfg $NX_INSTALL
 
 # Move to new directory so that networkx is not imported from repository.
 # Why? Because we want the tests to make sure that NetworkX was installed
@@ -24,10 +23,10 @@ printenv PWD
 
 # Run nosetests.
 if [[ "${REPORT_COVERAGE}" == 1 ]]; then
-  nosetests --verbosity=2 --with-ignore-docstrings --with-coverage --cover-package=networkx
+  pytest --cov=networkx --pyargs networkx
   cp -a .coverage $NX_SOURCE
 else
-  nosetests --verbosity=2 --with-ignore-docstrings
+  pytest --pyargs networkx
 fi
 
 cd $NX_SOURCE

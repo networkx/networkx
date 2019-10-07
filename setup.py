@@ -124,11 +124,11 @@ package_data = {
 install_requires = ['decorator>=4.3.0']
 extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                           'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml',
-                          'nose'],
+                          'pytest'],
                   'gdal': ['gdal'],
                   'lxml': ['lxml'],
                   'matplotlib': ['matplotlib'],
-                  'nose': ['nose'],
+                  'pytest': ['pytest'],
                   'numpy': ['numpy'],
                   'pandas': ['pandas'],
                   'pydot': ['pydot'],
@@ -163,7 +163,5 @@ if __name__ == "__main__":
         install_requires=install_requires,
         extras_require=extras_require,
         python_requires='>=3.5',
-        test_suite='nose.collector',
-        tests_require=['nose>=1.3.7'],
         zip_safe=False
     )
