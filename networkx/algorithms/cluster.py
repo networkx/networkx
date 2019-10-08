@@ -203,6 +203,41 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight = 'weight
         yield (i, dtotal, dbidirectional, directed_triangles)
 
 
+@not_implemented_for('multigraph', 'directed')
+def _closed_neighborhood_edge_count_node_order(G, nodes=None):
+    r""" Return an iterator of
+    (node, num_edges, num_vertices).
+
+    Parameters
+    ----------
+    G : nx.Graph
+        Simple Undirected Graph
+
+    nodes : list or None, optional (default=None)
+        If None, then G.nodes is used
+
+
+    Notes
+    -----
+     Here let node be some :math:`v \in G`. Then, `num_edges` is equal to the
+    amount of edges connecting the subgraph induced by the closed neighborhood
+    of `v`: :math:`N_edges = \vert E( \langle  N\left[ v\right]\rangle)\vert`
+
+    `num_vertices`, :math:`n` is simply equal to :math:`n=deg(v) + 1`.
+
+    """
+    nodes = nodes or G.nodes
+    for node in nodes:
+        adjacent_nodes = set(G.neighbors(node))
+        edge_cnt = len(adjacent_nodes)
+        order = edge_cnt + 1
+        while len(adjacent_nodes) > 1:
+            v = adjacent_nodes.pop()
+            edge_cnt += len(adjacent_nodes & set(G.adj[v]))
+
+        yield (node, edge_cnt, order)
+
+
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
 
@@ -359,9 +394,9 @@ def clustering(G, nodes=None, weight=None):
             clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
                         v, d, t in td_iter}
         else:
-            td_iter = _triangles_and_degree_iter(G, nodes)
-            clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for
-                        v, d, t, _ in td_iter}
+            ec_iter = _closed_neighborhood_edge_count_node_order(G, nodes)
+            clusterc = {v: 0 if e == 0 else e / (n * (n - 1)) for
+                        v, e, n in ec_iter}
     if nodes in G:
         # Return the value of the sole entry in the dictionary.
         return clusterc[nodes]
