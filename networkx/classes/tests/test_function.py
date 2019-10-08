@@ -6,17 +6,16 @@ from networkx.testing.utils import *
 
 
 class TestFunction(object):
-    @classmethod
-    def setup_class(cls):
-        cls.G = nx.Graph({0: [1, 2, 3], 1: [1, 2, 0], 4: []}, name='Test')
-        cls.Gdegree = {0: 3, 1: 2, 2: 2, 3: 1, 4: 0}
-        cls.Gnodes = list(range(5))
-        cls.Gedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
-        cls.DG = nx.DiGraph({0: [1, 2, 3], 1: [1, 2, 0], 4: []})
-        cls.DGin_degree = {0: 1, 1: 2, 2: 2, 3: 1, 4: 0}
-        cls.DGout_degree = {0: 3, 1: 3, 2: 0, 3: 0, 4: 0}
-        cls.DGnodes = list(range(5))
-        cls.DGedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
+    def setup_method(self):
+        self.G = nx.Graph({0: [1, 2, 3], 1: [1, 2, 0], 4: []}, name='Test')
+        self.Gdegree = {0: 3, 1: 2, 2: 2, 3: 1, 4: 0}
+        self.Gnodes = list(range(5))
+        self.Gedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
+        self.DG = nx.DiGraph({0: [1, 2, 3], 1: [1, 2, 0], 4: []})
+        self.DGin_degree = {0: 1, 1: 2, 2: 2, 3: 1, 4: 0}
+        self.DGout_degree = {0: 3, 1: 3, 2: 0, 3: 0, 4: 0}
+        self.DGnodes = list(range(5))
+        self.DGedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
 
     def test_nodes(self):
         assert_nodes_equal(self.G.nodes(), list(nx.nodes(self.G)))
@@ -406,12 +405,12 @@ class TestFunction(object):
 class TestCommonNeighbors():
     @classmethod
     def setup_class(cls):
-        cls.func = nx.common_neighbors
+        cls.func = staticmethod(nx.common_neighbors)
 
         def test_func(G, u, v, expected):
             result = sorted(cls.func(G, u, v))
             assert_equal(result, expected)
-        cls.test = test_func
+        cls.test = staticmethod(test_func)
 
     def test_K5(self):
         G = nx.complete_graph(5)
