@@ -26,17 +26,19 @@ class TestNodeView(object):
         assert_equal(repr(self.nv), "NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8))")
 
     def test_contains(self):
-        nv = self.nv
+        G = self.G.copy()
+        nv = G.nodes
         assert_true(7 in nv)
         assert_false(9 in nv)
-        self.G.remove_node(7)
-        self.G.add_node(9)
+        G.remove_node(7)
+        G.add_node(9)
         assert_false(7 in nv)
         assert_true(9 in nv)
 
     def test_getitem(self):
-        nv = self.nv
-        self.G.nodes[3]['foo'] = 'bar'
+        G = self.G.copy()
+        nv = G.nodes
+        G.nodes[3]['foo'] = 'bar'
         assert_equal(nv[7], {})
         assert_equal(nv[3], {'foo': 'bar'})
 
@@ -94,32 +96,40 @@ class TestNodeDataView(object):
         assert_equal(repr(self.ndv), msg)
 
     def test_contains(self):
-        self.G.nodes[3]['foo'] = 'bar'
-        assert_true((7, {}) in self.nv)
-        assert_true((3, {'foo': 'bar'}) in self.nv)
-        assert_true((3, 'bar') in self.nwv)
-        assert_true((7, None) in self.nwv)
+        G = self.G.copy()
+        nv = G.nodes.data()
+        nwv = G.nodes.data('foo')
+        G.nodes[3]['foo'] = 'bar'
+        assert_true((7, {}) in nv)
+        assert_true((3, {'foo': 'bar'}) in nv)
+        assert_true((3, 'bar') in nwv)
+        assert_true((7, None) in nwv)
         # default
-        nwv_def = self.G.nodes(data='foo', default='biz')
+        nwv_def = G.nodes(data='foo', default='biz')
         assert_true((7, 'biz') in nwv_def)
         assert_true((3, 'bar') in nwv_def)
 
     def test_getitem(self):
-        self.G.nodes[3]['foo'] = 'bar'
-        assert_equal(self.nv[3], {'foo': 'bar'})
+        G = self.G.copy()
+        nv = G.nodes
+        G.nodes[3]['foo'] = 'bar'
+        assert_equal(nv[3], {'foo': 'bar'})
         # default
-        nwv_def = self.G.nodes(data='foo', default='biz')
+        nwv_def = G.nodes(data='foo', default='biz')
         assert_true(nwv_def[7], 'biz')
         assert_equal(nwv_def[3], 'bar')
 
     def test_iter(self):
-        nv = self.nv
+        G = self.G.copy()
+        nv = G.nodes.data()
+        ndv = G.nodes.data(True)
+        nwv = G.nodes.data('foo')
         for i, (n, d) in enumerate(nv):
             assert_equal(i, n)
             assert_equal(d, {})
         inv = iter(nv)
         assert_equal(next(inv), (0, {}))
-        self.G.nodes[3]['foo'] = 'bar'
+        G.nodes[3]['foo'] = 'bar'
         # default
         for n, d in nv:
             if n == 3:
@@ -127,19 +137,19 @@ class TestNodeDataView(object):
             else:
                 assert_equal(d, {})
         # data=True
-        for n, d in self.ndv:
+        for n, d in ndv:
             if n == 3:
                 assert_equal(d, {'foo': 'bar'})
             else:
                 assert_equal(d, {})
         # data='foo'
-        for n, d in self.nwv:
+        for n, d in nwv:
             if n == 3:
                 assert_equal(d, 'bar')
             else:
                 assert_equal(d, None)
         # data='foo', default=1
-        for n, d in self.G.nodes.data('foo', default=1):
+        for n, d in G.nodes.data('foo', default=1):
             if n == 3:
                 assert_equal(d, 'bar')
             else:
@@ -178,11 +188,12 @@ class TestNodeViewSetOps(object):
         return {node for node in nodes}
 
     def test_len(self):
-        nv = self.nv
+        G = self.G.copy()
+        nv = G.nodes
         assert_equal(len(nv), 9)
-        self.G.remove_node(7)
+        G.remove_node(7)
         assert_equal(len(nv), 8)
-        self.G.add_node(9)
+        G.add_node(9)
         assert_equal(len(nv), 9)
 
     def test_and(self):
@@ -252,7 +263,7 @@ class TestEdgeDataView(object):
         assert_equal(ev.__slots__, pev.__slots__)
 
     def modify_edge(self, G, e, **kwds):
-        self.G._adj[e[0]][e[1]].update(kwds)
+        G._adj[e[0]][e[1]].update(kwds)
 
     def test_str(self):
         ev = self.eview(self.G)(data=True)
@@ -268,7 +279,7 @@ class TestEdgeDataView(object):
         assert_equal(repr(ev), rep)
 
     def test_iterdata(self):
-        G = self.G
+        G = self.G.copy()
         evr = self.eview(G)
         ev = evr(data=True)
         ev_def = evr(data='foo', default=1)
@@ -393,7 +404,7 @@ class TestMultiEdgeDataView(TestEdgeDataView):
         cls.eview = nx.reportviews.MultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
-        self.G._adj[e[0]][e[1]][0].update(kwds)
+        G._adj[e[0]][e[1]][0].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
@@ -411,7 +422,7 @@ class TestOutMultiEdgeDataView(TestOutEdgeDataView):
         cls.eview = nx.reportviews.OutMultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
-        self.G._adj[e[0]][e[1]][0].update(kwds)
+        G._adj[e[0]][e[1]][0].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
@@ -452,7 +463,7 @@ class TestEdgeView(object):
         assert_equal(ev.__slots__, pev.__slots__)
 
     def modify_edge(self, G, e, **kwds):
-        self.G._adj[e[0]][e[1]].update(kwds)
+        G._adj[e[0]][e[1]].update(kwds)
 
     def test_str(self):
         ev = self.eview(self.G)
@@ -598,7 +609,7 @@ class TestMultiEdgeView(TestEdgeView):
     def modify_edge(self, G, e, **kwds):
         if len(e) == 2:
             e = e + (0,)
-        self.G._adj[e[0]][e[1]][e[2]].update(kwds)
+        G._adj[e[0]][e[1]][e[2]].update(kwds)
 
     def test_str(self):
         ev = self.eview(self.G)
@@ -757,7 +768,7 @@ class TestOutMultiEdgeView(TestMultiEdgeView):
     def modify_edge(self, G, e, **kwds):
         if len(e) == 2:
             e = e + (0,)
-        self.G._adj[e[0]][e[1]][e[2]].update(kwds)
+        G._adj[e[0]][e[1]][e[2]].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -776,7 +787,7 @@ class TestInMultiEdgeView(TestMultiEdgeView):
     def modify_edge(self, G, e, **kwds):
         if len(e) == 2:
             e = e + (0,)
-        self.G._adj[e[0]][e[1]][e[2]].update(kwds)
+        G._adj[e[0]][e[1]][e[2]].update(kwds)
 
     def test_repr(self):
         ev = self.eview(self.G)
