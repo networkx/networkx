@@ -2,7 +2,8 @@
 from nose.tools import assert_equal
 from nose.tools import assert_is
 from nose.tools import assert_not_equal
-from nose.tools import assert_raises
+
+from pytest import raises
 
 import networkx as nx
 from networkx.testing.utils import *
@@ -147,22 +148,21 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
 
 
 class TestMultiGraph(BaseMultiGraphTester, TestGraph):
-    @classmethod
-    def setup_class(cls):
-        cls.Graph = nx.MultiGraph
+    def setup_method(self):
+        self.Graph = nx.MultiGraph
         # build K3
         ed1, ed2, ed3 = ({0: {}}, {0: {}}, {0: {}})
-        cls.k3adj = {0: {1: ed1, 2: ed2},
+        self.k3adj = {0: {1: ed1, 2: ed2},
                       1: {0: ed1, 2: ed3},
                       2: {0: ed2, 1: ed3}}
-        cls.k3edges = [(0, 1), (0, 2), (1, 2)]
-        cls.k3nodes = [0, 1, 2]
-        cls.K3 = cls.Graph()
-        cls.K3._adj = cls.k3adj
-        cls.K3._node = {}
-        cls.K3._node[0] = {}
-        cls.K3._node[1] = {}
-        cls.K3._node[2] = {}
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = self.k3adj
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
     def test_data_input(self):
         G = self.Graph({1: [2], 2: [1]}, name="test")
@@ -173,14 +173,17 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
     def test_getitem(self):
         G = self.K3
         assert_equal(G[0], {1: {0: {}}, 2: {0: {}}})
-        assert_raises(KeyError, G.__getitem__, 'j')
-        assert_raises((TypeError, nx.NetworkXError), G.__getitem__, ['A'])
+        with raises(KeyError):
+            G.__getitem__('j')
+        with raises(TypeError):
+            G.__getitem__(['A'])
 
     def test_remove_node(self):
         G = self.K3
         G.remove_node(0)
         assert_equal(G.adj, {1: {2: {0: {}}}, 2: {1: {0: {}}}})
-        assert_raises((KeyError, nx.NetworkXError), G.remove_node, -1)
+        with raises(nx.NetworkXError):
+            G.remove_node(-1)
 
     def test_add_edge(self):
         G = self.Graph()
@@ -218,11 +221,14 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         assert_equal(G._adj, {0: {1: keydict}, 1: {0: keydict}})
 
         # too few in tuple
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(0,)])
+        with raises(nx.NetworkXError):
+            G.add_edges_from([(0,)])
         # too many in tuple
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3, 4)])
+        with raises(nx.NetworkXError):
+            G.add_edges_from([(0, 1, 2, 3, 4)])
         # not a tuple
-        assert_raises(TypeError, G.add_edges_from, [0])
+        with raises(TypeError):
+            G.add_edges_from([0])
 
     def test_remove_edge(self):
         G = self.K3
@@ -232,9 +238,10 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
                              2: {0: {0: {}},
                                  1: {0: {}}}})
 
-        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
-        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, 0, 2,
-                      key=1)
+        with raises(nx.NetworkXError):
+            G.remove_edge(-1, 0)
+        with raises(nx.NetworkXError):
+            G.remove_edge(0, 2, key=1)
 
     def test_remove_edges_from(self):
         G = self.K3.copy()
@@ -266,13 +273,14 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         G.remove_edge(0, 1)
         kd = {0: {}}
         assert_equal(G.adj, {0: {2: kd}, 1: {2: kd}, 2: {0: kd, 1: kd}})
-        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
+        with raises(nx.NetworkXError):
+            G.remove_edge(-1, 0)
 
 
 class TestEdgeSubgraph(object):
     """Unit tests for the :meth:`MultiGraph.edge_subgraph` method."""
 
-    def setup(self):
+    def setup_method(self):
         # Create a doubly-linked path graph on five nodes.
         G = nx.MultiGraph()
         nx.add_path(G, range(5))
