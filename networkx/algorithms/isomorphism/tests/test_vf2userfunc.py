@@ -78,22 +78,20 @@ def test_weightkey():
 
 
 class TestNodeMatch_Graph(object):
-    @classmethod
-    def setup_class(cls):
-        cls.g1 = nx.Graph()
-        cls.g2 = nx.Graph()
-        cls.build()
+    def setup_method(self):
+        self.g1 = nx.Graph()
+        self.g2 = nx.Graph()
+        self.build()
 
-    @classmethod
-    def build(cls):
-        cls.nm = staticmethod(iso.categorical_node_match('color', ''))
-        cls.em = staticmethod(iso.numerical_edge_match('weight', 1))
+    def build(self):
+        self.nm = iso.categorical_node_match('color', '')
+        self.em = iso.numerical_edge_match('weight', 1)
 
-        cls.g1.add_node('A', color='red')
-        cls.g2.add_node('C', color='blue')
+        self.g1.add_node('A', color='red')
+        self.g2.add_node('C', color='blue')
 
-        cls.g1.add_edge('A', 'B', weight=1)
-        cls.g2.add_edge('C', 'D', weight=1)
+        self.g1.add_edge('A', 'B', weight=1)
+        self.g2.add_edge('C', 'D', weight=1)
 
     def test_noweight_nocolor(self):
         assert_true(nx.is_isomorphic(self.g1, self.g2))
@@ -131,17 +129,15 @@ class TestNodeMatch_Graph(object):
 
 
 class TestEdgeMatch_MultiGraph(object):
-    @classmethod
-    def setup_class(cls):
-        cls.g1 = nx.MultiGraph()
-        cls.g2 = nx.MultiGraph()
-        cls.GM = iso.MultiGraphMatcher
-        cls.build()
+    def setup_method(self):
+        self.g1 = nx.MultiGraph()
+        self.g2 = nx.MultiGraph()
+        self.GM = iso.MultiGraphMatcher
+        self.build()
 
-    @classmethod
-    def build(cls):
-        g1 = cls.g1
-        g2 = cls.g2
+    def build(self):
+        g1 = self.g1
+        g2 = self.g2
 
         # We will assume integer weights only.
         g1.add_edge('A', 'B', color='green', weight=0, size=.5)
@@ -153,21 +149,21 @@ class TestEdgeMatch_MultiGraph(object):
         g2.add_edge('C', 'D', color='red', weight=2, size=.65)
 
         if g1.is_multigraph():
-            cls.em = staticmethod(iso.numerical_multiedge_match('weight', 1))
-            cls.emc = staticmethod(iso.categorical_multiedge_match('color', ''))
-            cls.emcm = staticmethod(iso.categorical_multiedge_match(['color', 'weight'], ['', 1]))
-            cls.emg1 = staticmethod(iso.generic_multiedge_match('color', 'red', eq))
-            cls.emg2 = staticmethod(iso.generic_multiedge_match(
+            self.em = iso.numerical_multiedge_match('weight', 1)
+            self.emc = iso.categorical_multiedge_match('color', '')
+            self.emcm = iso.categorical_multiedge_match(['color', 'weight'], ['', 1])
+            self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
+            self.emg2 = iso.generic_multiedge_match(
                 ['color', 'weight', 'size'], ['red', 1, .5],
-                [eq, eq, iso.matchhelpers.close]))
+                [eq, eq, iso.matchhelpers.close])
         else:
-            cls.em = staticmethod(iso.numerical_edge_match('weight', 1))
-            cls.emc = staticmethod(iso.categorical_edge_match('color', ''))
-            cls.emcm = staticmethod(iso.categorical_edge_match(['color', 'weight'], ['', 1]))
-            cls.emg1 = staticmethod(iso.generic_multiedge_match('color', 'red', eq))
-            cls.emg2 = staticmethod(iso.generic_edge_match(
+            self.em = iso.numerical_edge_match('weight', 1)
+            self.emc = iso.categorical_edge_match('color', '')
+            self.emcm = iso.categorical_edge_match(['color', 'weight'], ['', 1])
+            self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
+            self.emg2 = iso.generic_edge_match(
                 ['color', 'weight', 'size'], ['red', 1, .5],
-                [eq, eq, iso.matchhelpers.close]))
+                [eq, eq, iso.matchhelpers.close])
 
     def test_weights_only(self):
         assert_true(nx.is_isomorphic(self.g1, self.g2, edge_match=self.em))
@@ -190,19 +186,17 @@ class TestEdgeMatch_MultiGraph(object):
 
 
 class TestEdgeMatch_DiGraph(TestNodeMatch_Graph):
-    @classmethod
-    def setup_class(cls):
-        TestNodeMatch_Graph.setup_class()
-        cls.g1 = nx.DiGraph()
-        cls.g2 = nx.DiGraph()
-        cls.build()
+    def setup_method(self):
+        TestNodeMatch_Graph.setup_method(self)
+        self.g1 = nx.DiGraph()
+        self.g2 = nx.DiGraph()
+        self.build()
 
 
 class TestEdgeMatch_MultiDiGraph(TestEdgeMatch_MultiGraph):
-    @classmethod
-    def setup_class(cls):
-        TestEdgeMatch_MultiGraph.setup_class()
-        cls.g1 = nx.MultiDiGraph()
-        cls.g2 = nx.MultiDiGraph()
-        cls.GM = iso.MultiDiGraphMatcher
-        cls.build()
+    def setup_method(self):
+        TestEdgeMatch_MultiGraph.setup_method(self)
+        self.g1 = nx.MultiDiGraph()
+        self.g2 = nx.MultiDiGraph()
+        self.GM = iso.MultiDiGraphMatcher
+        self.build()
