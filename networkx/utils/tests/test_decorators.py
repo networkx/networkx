@@ -35,11 +35,10 @@ def test_not_implemented_decorator_raise():
 
 
 class TestOpenFileDecorator(object):
-    @classmethod
-    def setup_class(cls):
-        cls.text = ['Blah... ', 'BLAH ', 'BLAH!!!!']
-        cls.fobj = tempfile.NamedTemporaryFile('wb+', delete=False)
-        cls.name = cls.fobj.name
+    def setup_method(self):
+        self.text = ['Blah... ', 'BLAH ', 'BLAH!!!!']
+        self.fobj = tempfile.NamedTemporaryFile('wb+', delete=False)
+        self.name = self.fobj.name
 
     def write(self, path):
         for text in self.text:
