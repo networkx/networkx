@@ -19,7 +19,7 @@ def _test_func(G, ebunch, expected, predict_func, **kwargs):
 class TestResourceAllocationIndex():
     @classmethod
     def setup_class(cls):
-        cls.func = nx.resource_allocation_index
+        cls.func = staticmethod(nx.resource_allocation_index)
         cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
@@ -70,7 +70,7 @@ class TestResourceAllocationIndex():
 class TestJaccardCoefficient():
     @classmethod
     def setup_class(cls):
-        cls.func = nx.jaccard_coefficient
+        cls.func = staticmethod(nx.jaccard_coefficient)
         cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
@@ -118,7 +118,7 @@ class TestJaccardCoefficient():
 class TestAdamicAdarIndex():
     @classmethod
     def setup_class(cls):
-        cls.func = nx.adamic_adar_index
+        cls.func = staticmethod(nx.adamic_adar_index)
         cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
@@ -170,7 +170,7 @@ class TestAdamicAdarIndex():
 class TestPreferentialAttachment():
     @classmethod
     def setup_class(cls):
-        cls.func = nx.preferential_attachment
+        cls.func = staticmethod(nx.preferential_attachment)
         cls.test = partial(_test_func, predict_func=cls.func)
 
     def test_K5(self):
@@ -217,7 +217,7 @@ class TestPreferentialAttachment():
 class TestCNSoundarajanHopcroft():
     @classmethod
     def setup_class(cls):
-        cls.func = nx.cn_soundarajan_hopcroft
+        cls.func = staticmethod(nx.cn_soundarajan_hopcroft)
         cls.test = partial(_test_func, predict_func=cls.func,
                             community='community')
 
@@ -341,7 +341,7 @@ class TestCNSoundarajanHopcroft():
 class TestRAIndexSoundarajanHopcroft():
     @classmethod
     def setup_class(cls):
-        cls.func = nx.ra_index_soundarajan_hopcroft
+        cls.func = staticmethod(nx.ra_index_soundarajan_hopcroft)
         cls.test = partial(_test_func, predict_func=cls.func,
                            community='community')
 
@@ -466,7 +466,7 @@ class TestWithinInterCluster():
     @classmethod
     def setup_class(cls):
         cls.delta = 0.001
-        cls.func = nx.within_inter_cluster
+        cls.func = staticmethod(nx.within_inter_cluster)
         cls.test = partial(_test_func, predict_func=cls.func,
                             delta=cls.delta, community='community')
 
