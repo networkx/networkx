@@ -8,6 +8,7 @@
 # Author:  Aric Hagberg (hagberg@lanl.gov),
 #          Pieter Swart (swart@lanl.gov),
 #          Dan Schult(dschult@colgate.edu)
+#
 """Base class for undirected graphs.
 
 The Graph class allows any hashable object as a node
@@ -438,7 +439,7 @@ class Graph(object):
         See Also
         --------
         number_of_nodes, order  which are identical
-        
+
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -515,7 +516,8 @@ class Graph(object):
         """
         if node_for_adding not in self._node:
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory(
+            )
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
@@ -1464,6 +1466,11 @@ class Graph(object):
     def is_directed(self):
         """Returns True if graph is directed, False otherwise."""
         return False
+
+    def is_complete(self):
+        """Returns True if graph is complete, False otherwise."""
+        n = len(self)
+        return self.number_of_edges() == n*(n-1) // 2 and not len(list(self.selfloop_edges()))
 
     def fresh_copy(self):
         # remove by v3 if not before

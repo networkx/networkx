@@ -10,15 +10,19 @@
 # Copyright (C) 2011 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>
 #
+# Copyright (C) 2019 by
+#   Luca Cappelletti <luca.cappelletti@studenti.unimi.it>
+#
 # All rights reserved.
 # BSD license.
 """Functions for computing and verifying matchings in a graph."""
+import networkx as nx
 from collections import Counter
 from itertools import combinations
 from itertools import repeat
 
 __all__ = ['is_matching', 'is_maximal_matching', 'is_perfect_matching',
-           'max_weight_matching', 'maximal_matching']
+           'max_weight_matching', 'min_weight_matching', 'maximal_matching']
 
 
 def maximal_matching(G):
@@ -184,6 +188,41 @@ def is_perfect_matching(G, matching):
     counts = Counter(sum(matching, ()))
 
     return all(counts[v] == 1 for v in G)
+
+
+def min_weight_matching(G, maxcardinality=False, weight='weight'):
+    """Compute a minimum weigh maximum matching of G.
+
+    This method only runs max_weight_matching on inverted weights.
+    Read the documentation of max_weight_matching for more informations.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+      Undirected graph
+
+    maxcardinality: bool, optional (default=False)
+       If maxcardinality is True, compute the maximum-cardinality matching
+       with minimum weight among all maximum-cardinality matchings.
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
+       If key not found, uses 1 as weight.
+
+    Returns
+    -------
+    matching : set
+        A maximal matching of the graph.
+        
+    """
+    if not len(G.edges):
+        return max_weight_matching(G, maxcardinality=maxcardinality, weight=weight)
+    I = nx.Graph()
+    min_weight = min([W[weight] if weight in W else 1 for _, _, W in G.edges(data=True)])
+    I.add_weighted_edges_from([
+        (u, v, 1/(1+w[weight]-min_weight if weight in w else 1)) for u, v, w in G.edges(data=True)
+    ], weight=weight)
+    return max_weight_matching(I, maxcardinality=maxcardinality, weight=weight)
 
 
 def max_weight_matching(G, maxcardinality=False, weight='weight'):
