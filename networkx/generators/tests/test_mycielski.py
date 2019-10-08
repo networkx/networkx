@@ -11,28 +11,27 @@
 
 from nose.tools import assert_true, assert_equal, raises
 import networkx as nx
-from networkx import *
 
 
 class TestMycielski(object):
 
     def test_construction(self):
         G = nx.path_graph(2)
-        M = mycielskian(G)
-        assert_true(is_isomorphic(M, cycle_graph(5)))
+        M = nx.mycielskian(G)
+        assert_true(nx.is_isomorphic(M, nx.cycle_graph(5)))
 
     def test_size(self):
         G = nx.path_graph(2)
-        M = mycielskian(G, 2)
+        M = nx.mycielskian(G, 2)
         assert_equal(len(M), 11)
         assert_equal(M.size(), 20)
 
     def test_mycielski_graph_generator(self):
-        G = mycielski_graph(1)
-        assert_true(is_isomorphic(G, nx.empty_graph(1)))
-        G = mycielski_graph(2)
-        assert_true(is_isomorphic(G, nx.path_graph(2)))
-        G = mycielski_graph(3)
-        assert_true(is_isomorphic(G, cycle_graph(5)))
-        G = mycielski_graph(4)
-        assert_true(is_isomorphic(G, mycielskian(cycle_graph(5))))
+        G = nx.mycielski_graph(1)
+        assert_true(nx.is_isomorphic(G, nx.empty_graph(1)))
+        G = nx.mycielski_graph(2)
+        assert_true(nx.is_isomorphic(G, nx.path_graph(2)))
+        G = nx.mycielski_graph(3)
+        assert_true(nx.is_isomorphic(G, nx.cycle_graph(5)))
+        G = nx.mycielski_graph(4)
+        assert_true(nx.is_isomorphic(G, nx.mycielskian(nx.cycle_graph(5))))

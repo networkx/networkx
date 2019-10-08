@@ -1,7 +1,6 @@
-from nose.tools import *
+from nose.tools import assert_equal, assert_raises, assert_false
 import networkx as nx
-from networkx import *
-from networkx.testing import *
+from networkx.testing import assert_edges_equal
 
 
 def test_union_attributes():
@@ -152,11 +151,11 @@ def test_difference_multigraph_attributes():
     assert_equal(sorted(gh.edges(keys=True)), [(0, 1, 1), (0, 1, 2)])
 
 
-@raises(nx.NetworkXError)
 def test_difference_raise():
     G = nx.path_graph(4)
     H = nx.path_graph(3)
-    GH = nx.difference(G, H)
+    assert_raises(nx.NetworkXError, nx.difference, G, H)
+    assert_raises(nx.NetworkXError, nx.symmetric_difference, G, H)
 
 
 def test_symmetric_difference_multigraph():
@@ -175,16 +174,9 @@ def test_symmetric_difference_multigraph():
                  [[0, 1, 1], [0, 1, 2], [0, 1, 3]])
 
 
-@raises(nx.NetworkXError)
-def test_symmetric_difference_raise():
-    G = nx.path_graph(4)
-    H = nx.path_graph(3)
-    GH = nx.symmetric_difference(G, H)
-
-
 def test_union_and_compose():
-    K3 = complete_graph(3)
-    P3 = path_graph(3)
+    K3 = nx.complete_graph(3)
+    P3 = nx.path_graph(3)
 
     G1 = nx.DiGraph()
     G1.add_edge('A', 'B')
@@ -195,47 +187,47 @@ def test_union_and_compose():
     G2.add_edge('1', '3')
     G2.add_edge('1', '4')
 
-    G = union(G1, G2)
-    H = compose(G1, G2)
+    G = nx.union(G1, G2)
+    H = nx.compose(G1, G2)
     assert_edges_equal(G.edges(), H.edges())
     assert_false(G.has_edge('A', 1))
     assert_raises(nx.NetworkXError, nx.union, K3, P3)
-    H1 = union(H, G1, rename=('H', 'G1'))
+    H1 = nx.union(H, G1, rename=('H', 'G1'))
     assert_equal(sorted(H1.nodes()),
                  ['G1A', 'G1B', 'G1C', 'G1D',
                   'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
 
-    H2 = union(H, G2, rename=("H", ""))
+    H2 = nx.union(H, G2, rename=("H", ""))
     assert_equal(sorted(H2.nodes()),
                  ['1', '2', '3', '4',
                   'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
 
     assert_false(H1.has_edge('NB', 'NA'))
 
-    G = compose(G, G)
+    G = nx.compose(G, G)
     assert_edges_equal(G.edges(), H.edges())
 
-    G2 = union(G2, G2, rename=('', 'copy'))
+    G2 = nx.union(G2, G2, rename=('', 'copy'))
     assert_equal(sorted(G2.nodes()),
                  ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
 
     assert_equal(sorted(G2.neighbors('copy4')), [])
     assert_equal(sorted(G2.neighbors('copy1')), ['copy2', 'copy3', 'copy4'])
     assert_equal(len(G), 8)
-    assert_equal(number_of_edges(G), 6)
+    assert_equal(nx.number_of_edges(G), 6)
 
-    E = disjoint_union(G, G)
+    E = nx.disjoint_union(G, G)
     assert_equal(len(E), 16)
-    assert_equal(number_of_edges(E), 12)
+    assert_equal(nx.number_of_edges(E), 12)
 
-    E = disjoint_union(G1, G2)
+    E = nx.disjoint_union(G1, G2)
     assert_equal(sorted(E.nodes()), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
 
     G = nx.Graph()
     H = nx.Graph()
     G.add_nodes_from([(1, {'a1': 1})])
     H.add_nodes_from([(1, {'b1': 1})])
-    R = compose(G, H)
+    R = nx.compose(G, H)
     assert_equal(R.nodes, {1: {'a1': 1, 'b1': 1}})
 
 
@@ -389,43 +381,12 @@ def test_full_join_multigraph():
                  )
 
 
-@raises(nx.NetworkXError)
 def test_mixed_type_union():
     G = nx.Graph()
     H = nx.MultiGraph()
-    U = nx.union(G, H)
-
-
-@raises(nx.NetworkXError)
-def test_mixed_type_disjoint_union():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    U = nx.disjoint_union(G, H)
-
-
-@raises(nx.NetworkXError)
-def test_mixed_type_intersection():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    U = nx.intersection(G, H)
-
-
-@raises(nx.NetworkXError)
-def test_mixed_type_difference():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    U = nx.difference(G, H)
-
-
-@raises(nx.NetworkXError)
-def test_mixed_type_symmetric_difference():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    U = nx.symmetric_difference(G, H)
-
-
-@raises(nx.NetworkXError)
-def test_mixed_type_compose():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    U = nx.compose(G, H)
+    assert_raises(nx.NetworkXError, nx.union, G, H)
+    assert_raises(nx.NetworkXError, nx.disjoint_union, G, H)
+    assert_raises(nx.NetworkXError, nx.intersection, G, H)
+    assert_raises(nx.NetworkXError, nx.difference, G, H)
+    assert_raises(nx.NetworkXError, nx.symmetric_difference, G, H)
+    assert_raises(nx.NetworkXError, nx.compose, G, H)

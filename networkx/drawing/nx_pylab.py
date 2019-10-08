@@ -85,9 +85,7 @@ def draw(G, pos=None, ax=None, **kwds):
     Notes
     -----
     This function has the same name as pylab.draw and pyplot.draw
-    so beware when using
-
-    >>> from networkx import *
+    so beware when using `from networkx import *`
 
     since you might overwrite the pylab.draw function.
 

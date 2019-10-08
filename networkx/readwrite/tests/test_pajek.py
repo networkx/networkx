@@ -3,11 +3,11 @@
 Pajek tests
 """
 from nose.tools import assert_equal
-from networkx import *
+import networkx as nx
 import os
 import tempfile
 from io import open
-from networkx.testing import *
+from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 
 class TestPajek(object):
@@ -32,12 +32,12 @@ class TestPajek(object):
     def test_parse_pajek_simple(self):
         # Example without node positions or shape
         data = """*Vertices 2\n1 "1"\n2 "2"\n*Edges\n1 2\n2 1"""
-        G = parse_pajek(data)
+        G = nx.parse_pajek(data)
         assert_equal(sorted(G.nodes()), ['1', '2'])
         assert_edges_equal(G.edges(), [('1', '2'), ('1', '2')])
 
     def test_parse_pajek(self):
-        G = parse_pajek(self.data)
+        G = nx.parse_pajek(self.data)
         assert_equal(sorted(G.nodes()), ['A1', 'Bb', 'C', 'D2'])
         assert_edges_equal(G.edges(), [('A1', 'A1'), ('A1', 'Bb'),
                                        ('A1', 'C'), ('Bb', 'A1'),
@@ -45,14 +45,14 @@ class TestPajek(object):
 
     def test_parse_pajet_mat(self):
         data = """*Vertices 3\n1 "one"\n2 "two"\n3 "three"\n*Matrix\n1 1 0\n0 1 0\n0 1 0\n"""
-        G = parse_pajek(data)
+        G = nx.parse_pajek(data)
         assert_equal(set(G.nodes()), {'one', 'two', 'three'})
         assert_equal(G.nodes['two'], {'id': '2'})
         assert_edges_equal(set(G.edges()), {('one', 'one'), ('two', 'one'), ('two', 'two'), ('two', 'three')})
 
     def test_read_pajek(self):
-        G = parse_pajek(self.data)
-        Gin = read_pajek(self.fname)
+        G = nx.parse_pajek(self.data)
+        Gin = nx.read_pajek(self.fname)
         assert_equal(sorted(G.nodes()), sorted(Gin.nodes()))
         assert_edges_equal(G.edges(), Gin.edges())
         assert_equal(self.G.graph, Gin.graph)
@@ -61,7 +61,7 @@ class TestPajek(object):
 
     def test_write_pajek(self):
         import io
-        G = parse_pajek(self.data)
+        G = nx.parse_pajek(self.data)
         fh = io.BytesIO()
         nx.write_pajek(G,fh)
         fh.seek(0)
@@ -91,7 +91,7 @@ class TestPajek(object):
         line = "*network\n"
         other_lines = self.data.split('\n')[1:]
         data = line + '\n'.join(other_lines)
-        G = parse_pajek(data)
+        G = nx.parse_pajek(data)
 
     def test_unicode(self):
         import io
