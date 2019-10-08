@@ -221,27 +221,26 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
 
 
 class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
-    @classmethod
-    def setup_class(cls):
-        cls.Graph = nx.MultiDiGraph
+    def setup_method(self):
+        self.Graph = nx.MultiDiGraph
         # build K3
-        cls.k3edges = [(0, 1), (0, 2), (1, 2)]
-        cls.k3nodes = [0, 1, 2]
-        cls.K3 = cls.Graph()
-        cls.K3._adj = {0: {}, 1: {}, 2: {}}
-        cls.K3._succ = cls.K3._adj
-        cls.K3._pred = {0: {}, 1: {}, 2: {}}
-        for u in cls.k3nodes:
-            for v in cls.k3nodes:
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = {0: {}, 1: {}, 2: {}}
+        self.K3._succ = self.K3._adj
+        self.K3._pred = {0: {}, 1: {}, 2: {}}
+        for u in self.k3nodes:
+            for v in self.k3nodes:
                 if u == v:
                     continue
                 d = {0: {}}
-                cls.K3._succ[u][v] = d
-                cls.K3._pred[v][u] = d
-        cls.K3._node = {}
-        cls.K3._node[0] = {}
-        cls.K3._node[1] = {}
-        cls.K3._node[2] = {}
+                self.K3._succ[u][v] = d
+                self.K3._pred[v][u] = d
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
     def test_add_edge(self):
         G = self.Graph()
@@ -339,7 +338,7 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
 class TestEdgeSubgraph(TestMultiGraphEdgeSubgraph):
     """Unit tests for the :meth:`MultiDiGraph.edge_subgraph` method."""
 
-    def setup(self):
+    def setup_method(self):
         # Create a quadruply-linked path graph on five nodes.
         G = nx.MultiDiGraph()
         nx.add_path(G, range(5))
