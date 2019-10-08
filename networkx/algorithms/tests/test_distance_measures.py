@@ -10,10 +10,9 @@ from networkx import convert_node_labels_to_integers as cnlti
 
 
 class TestDistance:
-    @classmethod
-    def setup_class(cls):
+    def setup_method(self):
         G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
-        cls.G = G
+        self.G = G
 
     def test_eccentricity(self):
         assert_equal(nx.eccentricity(self.G, 1), 6)
@@ -108,12 +107,13 @@ class TestResistanceDistance:
         except ImportError:
             raise SkipTest('SciPy Sparse not available.')
 
+    def setup_method(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=2)
         G.add_edge(2, 3, weight=4)
         G.add_edge(3, 4, weight=1)
         G.add_edge(1, 4, weight=3)
-        cls.G = G
+        self.G = G
 
     def test_laplacian_submatrix(self):
         from networkx.algorithms.distance_measures import _laplacian_submatrix
