@@ -11,16 +11,16 @@
 from unittest import TestCase
 
 from nose.tools import assert_equal
-from nose.tools import raises, assert_raises
+from pytest import raises
 
 import networkx as nx
 from networkx.testing import (assert_graphs_equal, assert_nodes_equal,
                               assert_edges_equal)
 
 
-@raises(ValueError)
 def test_unknown_algorithm():
-    nx.minimum_spanning_tree(nx.Graph(), algorithm='random')
+    with raises(ValueError):
+        nx.minimum_spanning_tree(nx.Graph(), algorithm='random')
 
 
 class MinimumSpanningTreeTestBase(object):
@@ -98,10 +98,12 @@ class MinimumSpanningTreeTestBase(object):
         # Now test for raising exception
         edges = nx.minimum_spanning_edges(G, algorithm=self.algo,
                                           data=False, ignore_nan=False)
-        assert_raises(ValueError, list, edges)
+        with raises(ValueError):
+            list(edges)
         # test default for ignore_nan as False
         edges = nx.minimum_spanning_edges(G, algorithm=self.algo, data=False)
-        assert_raises(ValueError, list, edges)
+        with raises(ValueError):
+            list(edges)
 
     def test_nan_weights_order(self):
         # now try again with a nan edge at the beginning of G.nodes
