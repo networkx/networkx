@@ -3,7 +3,8 @@
 from nose.tools import assert_equal
 from nose.tools import assert_false
 from nose.tools import assert_true
-from nose.tools import assert_raises
+
+from pytest import raises
 
 
 import networkx as nx
@@ -21,7 +22,8 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_successors(self):
         G = self.K3
         assert_equal(sorted(G.successors(0)), [1, 2])
-        assert_raises((KeyError, nx.NetworkXError), G.successors, -1)
+        with raises(nx.NetworkXError):
+            G.successors(-1)
 
     def test_has_predecessor(self):
         G = self.K3
@@ -31,14 +33,16 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_predecessors(self):
         G = self.K3
         assert_equal(sorted(G.predecessors(0)), [1, 2])
-        assert_raises((KeyError, nx.NetworkXError), G.predecessors, -1)
+        with raises(nx.NetworkXError):
+            G.predecessors(-1)
 
     def test_edges(self):
         G = self.K3
         assert_equal(sorted(G.edges()), [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert_equal(sorted(G.edges(0)), [(0, 1), (0, 2)])
         assert_equal(sorted(G.edges([0, 1])), [(0, 1), (0, 2), (1, 0), (1, 2)])
-        assert_raises((KeyError, nx.NetworkXError), G.edges, -1)
+        with raises(nx.NetworkXError):
+            G.edges(-1)
 
     def test_edges_data(self):
         G = self.K3
@@ -46,13 +50,15 @@ class BaseDiGraphTester(BaseGraphTester):
         assert_equal(sorted(G.edges(data=True)), all_edges)
         assert_equal(sorted(G.edges(0, data=True)), all_edges[:2])
         assert_equal(sorted(G.edges([0, 1], data=True)), all_edges[:4])
-        assert_raises((KeyError, nx.NetworkXError), G.edges, -1, True)
+        with raises(nx.NetworkXError):
+            G.edges(-1, True)
 
     def test_out_edges(self):
         G = self.K3
         assert_equal(sorted(G.out_edges()), [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert_equal(sorted(G.out_edges(0)), [(0, 1), (0, 2)])
-        assert_raises((KeyError, nx.NetworkXError), G.out_edges, -1)
+        with raises(nx.NetworkXError):
+            G.out_edges(-1)
 
     def test_out_edges_dir(self):
         G = self.P3
@@ -149,7 +155,8 @@ class BaseDiGraphTester(BaseGraphTester):
         G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse(copy=False)
         assert_equal(sorted(R.edges()), [(1, 0), (2, 1)])
-        assert_raises(nx.NetworkXError, R.remove_edge, 1, 0)
+        with raises(nx.NetworkXError):
+            R.remove_edge(1, 0)
 
     def test_reverse_hashable(self):
         class Foo(object):
@@ -169,31 +176,30 @@ class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
 class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
     """Tests specific to dict-of-dict-of-dict digraph data structure"""
 
-    @classmethod
-    def setup_class(cls):
-        cls.Graph = nx.DiGraph
+    def setup_method(self):
+        self.Graph = nx.DiGraph
         # build dict-of-dict-of-dict K3
         ed1, ed2, ed3, ed4, ed5, ed6 = ({}, {}, {}, {}, {}, {})
-        cls.k3adj = {0: {1: ed1, 2: ed2}, 1: {0: ed3, 2: ed4}, 2: {0: ed5, 1: ed6}}
-        cls.k3edges = [(0, 1), (0, 2), (1, 2)]
-        cls.k3nodes = [0, 1, 2]
-        cls.K3 = cls.Graph()
-        cls.K3._adj = cls.K3._succ = cls.k3adj
-        cls.K3._pred = {0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1: ed4}}
-        cls.K3._node = {}
-        cls.K3._node[0] = {}
-        cls.K3._node[1] = {}
-        cls.K3._node[2] = {}
+        self.k3adj = {0: {1: ed1, 2: ed2}, 1: {0: ed3, 2: ed4}, 2: {0: ed5, 1: ed6}}
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = self.K3._succ = self.k3adj
+        self.K3._pred = {0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1: ed4}}
+        self.K3._node = {}
+        self.K3._node[0] = {}
+        self.K3._node[1] = {}
+        self.K3._node[2] = {}
 
         ed1, ed2 = ({}, {})
-        cls.P3 = cls.Graph()
-        cls.P3._adj = {0: {1: ed1}, 1: {2: ed2}, 2: {}}
-        cls.P3._succ = cls.P3._adj
-        cls.P3._pred = {0: {}, 1: {0: ed1}, 2: {1: ed2}}
-        cls.P3._node = {}
-        cls.P3._node[0] = {}
-        cls.P3._node[1] = {}
-        cls.P3._node[2] = {}
+        self.P3 = self.Graph()
+        self.P3._adj = {0: {1: ed1}, 1: {2: ed2}, 2: {}}
+        self.P3._succ = self.P3._adj
+        self.P3._pred = {0: {}, 1: {0: ed1}, 2: {1: ed2}}
+        self.P3._node = {}
+        self.P3._node[0] = {}
+        self.P3._node[1] = {}
+        self.P3._node[2] = {}
 
     def test_data_input(self):
         G = self.Graph({1: [2], 2: [1]}, name="test")
@@ -221,16 +227,20 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
         assert_equal(G.succ, {0: {1: {'data': 2}, 2: {'data': 3}}, 1: {}, 2: {}})
         assert_equal(G.pred, {0: {}, 1: {0: {'data': 2}}, 2: {0: {'data': 3}}})
 
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(0,)])  # too few in tuple
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3)])  # too many in tuple
-        assert_raises(TypeError, G.add_edges_from, [0])  # not a tuple
+        with raises(nx.NetworkXError):
+            G.add_edges_from([(0,)])  # too few in tuple
+        with raises(nx.NetworkXError):
+            G.add_edges_from([(0, 1, 2, 3)])  # too many in tuple
+        with raises(TypeError):
+            G.add_edges_from([0])  # not a tuple
 
     def test_remove_edge(self):
         G = self.K3
         G.remove_edge(0, 1)
         assert_equal(G.succ, {0: {2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}})
         assert_equal(G.pred, {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}})
-        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
+        with raises(nx.NetworkXError):
+            G.remove_edge(-1, 0)
 
     def test_remove_edges_from(self):
         G = self.K3
@@ -243,7 +253,7 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
 class TestEdgeSubgraph(TestGraphEdgeSubgraph):
     """Unit tests for the :meth:`DiGraph.edge_subgraph` method."""
 
-    def setup(self):
+    def setup_method(self):
         # Create a doubly-linked path graph on five nodes.
         G = nx.DiGraph(nx.path_graph(5))
         # Add some node, edge, and graph attributes.
