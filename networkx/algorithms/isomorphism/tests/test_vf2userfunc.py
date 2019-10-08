@@ -84,16 +84,16 @@ class TestNodeMatch_Graph(object):
         cls.g2 = nx.Graph()
         cls.build()
 
-    def build(self):
+    @classmethod
+    def build(cls):
+        cls.nm = staticmethod(iso.categorical_node_match('color', ''))
+        cls.em = staticmethod(iso.numerical_edge_match('weight', 1))
 
-        self.nm = iso.categorical_node_match('color', '')
-        self.em = iso.numerical_edge_match('weight', 1)
+        cls.g1.add_node('A', color='red')
+        cls.g2.add_node('C', color='blue')
 
-        self.g1.add_node('A', color='red')
-        self.g2.add_node('C', color='blue')
-
-        self.g1.add_edge('A', 'B', weight=1)
-        self.g2.add_edge('C', 'D', weight=1)
+        cls.g1.add_edge('A', 'B', weight=1)
+        cls.g2.add_edge('C', 'D', weight=1)
 
     def test_noweight_nocolor(self):
         assert_true(nx.is_isomorphic(self.g1, self.g2))
@@ -138,9 +138,10 @@ class TestEdgeMatch_MultiGraph(object):
         cls.GM = iso.MultiGraphMatcher
         cls.build()
 
-    def build(self):
-        g1 = self.g1
-        g2 = self.g2
+    @classmethod
+    def build(cls):
+        g1 = cls.g1
+        g2 = cls.g2
 
         # We will assume integer weights only.
         g1.add_edge('A', 'B', color='green', weight=0, size=.5)
@@ -152,19 +153,21 @@ class TestEdgeMatch_MultiGraph(object):
         g2.add_edge('C', 'D', color='red', weight=2, size=.65)
 
         if g1.is_multigraph():
-            self.em = iso.numerical_multiedge_match('weight', 1)
-            self.emc = iso.categorical_multiedge_match('color', '')
-            self.emcm = iso.categorical_multiedge_match(['color', 'weight'], ['', 1])
-            self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
-            self.emg2 = iso.generic_multiedge_match(['color', 'weight', 'size'], ['red', 1, .5], [
-                                                    eq, eq, iso.matchhelpers.close])
+            cls.em = staticmethod(iso.numerical_multiedge_match('weight', 1))
+            cls.emc = staticmethod(iso.categorical_multiedge_match('color', ''))
+            cls.emcm = staticmethod(iso.categorical_multiedge_match(['color', 'weight'], ['', 1]))
+            cls.emg1 = staticmethod(iso.generic_multiedge_match('color', 'red', eq))
+            cls.emg2 = staticmethod(iso.generic_multiedge_match(
+                ['color', 'weight', 'size'], ['red', 1, .5],
+                [eq, eq, iso.matchhelpers.close]))
         else:
-            self.em = iso.numerical_edge_match('weight', 1)
-            self.emc = iso.categorical_edge_match('color', '')
-            self.emcm = iso.categorical_edge_match(['color', 'weight'], ['', 1])
-            self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
-            self.emg2 = iso.generic_edge_match(['color', 'weight', 'size'], ['red', 1, .5], [
-                                               eq, eq, iso.matchhelpers.close])
+            cls.em = staticmethod(iso.numerical_edge_match('weight', 1))
+            cls.emc = staticmethod(iso.categorical_edge_match('color', ''))
+            cls.emcm = staticmethod(iso.categorical_edge_match(['color', 'weight'], ['', 1]))
+            cls.emg1 = staticmethod(iso.generic_multiedge_match('color', 'red', eq))
+            cls.emg2 = staticmethod(iso.generic_edge_match(
+                ['color', 'weight', 'size'], ['red', 1, .5],
+                [eq, eq, iso.matchhelpers.close]))
 
     def test_weights_only(self):
         assert_true(nx.is_isomorphic(self.g1, self.g2, edge_match=self.em))
