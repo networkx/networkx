@@ -73,6 +73,7 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.tournament
 import networkx.algorithms.traversal
 import networkx.algorithms.tree
+import networkx.algorithms.approximation
 
 # Make certain functions from some of the previous subpackages available
 # to the user as direct imports from the `networkx` namespace.
@@ -118,3 +119,6 @@ from networkx.algorithms.tree.coding import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
 from networkx.algorithms.tree.mst import *
+from networkx.algorithms.approximation.christofides import *
+from networkx.algorithms.approximation.karger import *
+from networkx.algorithms.approximation.center_selection import *
