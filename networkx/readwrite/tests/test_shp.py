@@ -11,8 +11,7 @@ import networkx as nx
 
 
 class TestShp(object):
-    @classmethod
-    def setup_class(cls):
+    def setup_method(self):
         global ogr
         try:
             from osgeo import ogr
@@ -32,25 +31,25 @@ class TestShp(object):
         shppath = os.path.join(tempfile.gettempdir(), 'tmpshp.shp')
         multi_shppath = os.path.join(tempfile.gettempdir(), 'tmp_mshp.shp')
 
-        cls.deletetmp(drv, testdir, shppath, multi_shppath)
+        self.deletetmp(drv, testdir, shppath, multi_shppath)
         os.mkdir(testdir)
 
-        cls.names = ['a', 'b', 'c', 'c']  # edgenames
-        cls.paths = ([(1.0, 1.0), (2.0, 2.0)],
+        self.names = ['a', 'b', 'c', 'c']  # edgenames
+        self.paths = ([(1.0, 1.0), (2.0, 2.0)],
                       [(2.0, 2.0), (3.0, 3.0)],
                       [(0.9, 0.9), (4.0, 0.9), (4.0, 2.0)])
 
-        cls.simplified_names = ['a', 'b', 'c']  # edgenames
-        cls.simplified_paths = ([(1.0, 1.0), (2.0, 2.0)],
+        self.simplified_names = ['a', 'b', 'c']  # edgenames
+        self.simplified_paths = ([(1.0, 1.0), (2.0, 2.0)],
                                  [(2.0, 2.0), (3.0, 3.0)],
                                  [(0.9, 0.9), (4.0, 2.0)])
 
-        cls.multi_names = ['a', 'a', 'a', 'a']  # edgenames
+        self.multi_names = ['a', 'a', 'a', 'a']  # edgenames
 
         shp = drv.CreateDataSource(shppath)
         lyr = createlayer(shp)
 
-        for path, name in zip(cls.paths, cls.names):
+        for path, name in zip(self.paths, self.names):
             feat = ogr.Feature(lyr.GetLayerDefn())
             g = ogr.Geometry(ogr.wkbLineString)
             for p in path:
@@ -64,7 +63,7 @@ class TestShp(object):
         multi_lyr = createlayer(multi_shp, ogr.wkbMultiLineString)
 
         multi_g = ogr.Geometry(ogr.wkbMultiLineString)
-        for path in cls.paths:
+        for path in self.paths:
 
             g = ogr.Geometry(ogr.wkbLineString)
             for p in path:
@@ -77,10 +76,10 @@ class TestShp(object):
         multi_feat.SetField("Name", 'a')
         multi_lyr.CreateFeature(multi_feat)
 
-        cls.shppath = shppath
-        cls.multi_shppath = multi_shppath
-        cls.testdir = testdir
-        cls.drv = drv
+        self.shppath = shppath
+        self.multi_shppath = multi_shppath
+        self.testdir = testdir
+        self.drv = drv
 
     def deletetmp(self, drv, *paths):
         for p in paths:
@@ -223,7 +222,7 @@ class TestShp(object):
         self.checkgeom(shpdir.GetLayerByName("nodes"), points)
         self.checkgeom(shpdir.GetLayerByName("edges"), line)
 
-    def tearDown(self):
+    def teardown_method(self):
         self.deletetmp(self.drv, self.testdir, self.shppath)
 
 
@@ -237,21 +236,19 @@ def test_read_shp_nofile():
 
 
 class TestMissingGeometry(object):
-    @classmethod
-    def setup_class(cls):
+    def setup_method(self):
         global ogr
         try:
             from osgeo import ogr
         except ImportError:
             raise SkipTest('ogr not available.')
 
-        cls.setup_path()
-        cls.delete_shapedir()
-        cls.create_shapedir()
+        self.setup_path()
+        self.delete_shapedir()
+        self.create_shapedir()
 
-    @classmethod
-    def teardown_class(cls):
-        cls.delete_shapedir()
+    def teardown_method(self):
+        self.delete_shapedir()
 
     def setup_path(self):
         self.path = os.path.join(tempfile.gettempdir(), 'missing_geometry')
@@ -276,20 +273,18 @@ class TestMissingGeometry(object):
 
 
 class TestMissingAttrWrite(object):
-    @classmethod
-    def setup_class(cls):
+    def setup_method(self):
         global ogr
         try:
             from osgeo import ogr
         except ImportError:
             raise SkipTest('ogr not available.')
 
-        cls.setup_path()
-        cls.delete_shapedir()
+        self.setup_path()
+        self.delete_shapedir()
 
-    @classmethod
-    def teardown_class(cls):
-        cls.delete_shapedir()
+    def teardown_method(self):
+        self.delete_shapedir()
 
     def setup_path(self):
         self.path = os.path.join(tempfile.gettempdir(), 'missing_attributes')
