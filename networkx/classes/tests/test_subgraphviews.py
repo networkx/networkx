@@ -21,77 +21,77 @@ class TestSubGraphView(object):
         gview = self.gview
         print(gview)
         G = gview(self.G, filter_node=nodes_gone)
-        assert_equal(self.G.nodes - G.nodes, {4, 5})
-        assert_equal(self.G.edges - G.edges, self.hide_edges_w_hide_nodes)
+        assert self.G.nodes - G.nodes == {4, 5}
+        assert self.G.edges - G.edges == self.hide_edges_w_hide_nodes
         if G.is_directed():
-            assert_equal(list(G[3]), [])
-            assert_equal(list(G[2]), [3])
+            assert list(G[3]) == []
+            assert list(G[2]) == [3]
         else:
-            assert_equal(list(G[3]), [2])
-            assert_equal(set(G[2]), {1, 3})
+            assert list(G[3]) == [2]
+            assert set(G[2]) == {1, 3}
         assert_raises(KeyError, G.__getitem__, 4)
         assert_raises(KeyError, G.__getitem__, 112)
         assert_raises(KeyError, G.__getitem__, 111)
-        assert_equal(G.degree(3), 3 if G.is_multigraph() else 1)
-        assert_equal(G.size(), 7 if G.is_multigraph() else 5)
+        assert G.degree(3) == (3 if G.is_multigraph() else 1)
+        assert G.size() == (7 if G.is_multigraph() else 5)
 
     def test_hidden_edges(self):
         hide_edges = [(2, 3), (8, 7), (222, 223)]
         edges_gone = self.hide_edges_filter(hide_edges)
         gview = self.gview
         G = gview(self.G, filter_edge=edges_gone)
-        assert_equal(self.G.nodes, G.nodes)
+        assert self.G.nodes == G.nodes
         if G.is_directed():
-            assert_equal(self.G.edges - G.edges, {(2, 3)})
-            assert_equal(list(G[2]), [])
-            assert_equal(list(G.pred[3]), [])
-            assert_equal(list(G.pred[2]), [1])
-            assert_equal(G.size(), 7)
+            assert self.G.edges - G.edges == {(2, 3)}
+            assert list(G[2]) == []
+            assert list(G.pred[3]) == []
+            assert list(G.pred[2]) == [1]
+            assert G.size() == 7
         else:
-            assert_equal(self.G.edges - G.edges, {(2, 3), (7, 8)})
-            assert_equal(list(G[2]), [1])
-            assert_equal(G.size(), 6)
-        assert_equal(list(G[3]), [4])
+            assert self.G.edges - G.edges == {(2, 3), (7, 8)}
+            assert list(G[2]) == [1]
+            assert G.size() == 6
+        assert list(G[3]) == [4]
         assert_raises(KeyError, G.__getitem__, 221)
         assert_raises(KeyError, G.__getitem__, 222)
-        assert_equal(G.degree(3), 1)
+        assert G.degree(3) == 1
 
     def test_shown_node(self):
         induced_subgraph = nx.filters.show_nodes([2, 3, 111])
         gview = self.gview
         G = gview(self.G, filter_node=induced_subgraph)
-        assert_equal(set(G.nodes), {2, 3})
+        assert set(G.nodes) == {2, 3}
         if G.is_directed():
-            assert_equal(list(G[3]), [])
+            assert list(G[3]) == []
         else:
-            assert_equal(list(G[3]), [2])
-        assert_equal(list(G[2]), [3])
+            assert list(G[3]) == [2]
+        assert list(G[2]) == [3]
         assert_raises(KeyError, G.__getitem__, 4)
         assert_raises(KeyError, G.__getitem__, 112)
         assert_raises(KeyError, G.__getitem__, 111)
-        assert_equal(G.degree(3), 3 if G.is_multigraph() else 1)
-        assert_equal(G.size(), 3 if G.is_multigraph() else 1)
+        assert G.degree(3) == (3 if G.is_multigraph() else 1)
+        assert G.size() == (3 if G.is_multigraph() else 1)
 
     def test_shown_edges(self):
         show_edges = [(2, 3), (8, 7), (222, 223)]
         edge_subgraph = self.show_edges_filter(show_edges)
         G = self.gview(self.G, filter_edge=edge_subgraph)
-        assert_equal(self.G.nodes, G.nodes)
+        assert self.G.nodes == G.nodes
         if G.is_directed():
-            assert_equal(G.edges, {(2, 3)})
-            assert_equal(list(G[3]), [])
-            assert_equal(list(G[2]), [3])
-            assert_equal(list(G.pred[3]), [2])
-            assert_equal(list(G.pred[2]), [])
-            assert_equal(G.size(), 1)
+            assert G.edges == {(2, 3)}
+            assert list(G[3]) == []
+            assert list(G[2]) == [3]
+            assert list(G.pred[3]) == [2]
+            assert list(G.pred[2]) == []
+            assert G.size() == 1
         else:
-            assert_equal(G.edges, {(2, 3), (7, 8)})
-            assert_equal(list(G[3]), [2])
-            assert_equal(list(G[2]), [3])
-            assert_equal(G.size(), 2)
+            assert G.edges == {(2, 3), (7, 8)}
+            assert list(G[3]) == [2]
+            assert list(G[2]) == [3]
+            assert G.size() == 2
         assert_raises(KeyError, G.__getitem__, 221)
         assert_raises(KeyError, G.__getitem__, 222)
-        assert_equal(G.degree(3), 1)
+        assert G.degree(3) == 1
 
 
 class TestSubDiGraphView(TestSubGraphView):
@@ -108,8 +108,8 @@ class TestSubDiGraphView(TestSubGraphView):
         nodes_gone = nx.filters.hide_nodes(hide_nodes)
         G = self.gview(self.G, nodes_gone, edges_gone)
 
-        assert_equal(self.G.in_edges - G.in_edges, self.excluded)
-        assert_equal(self.G.out_edges - G.out_edges, self.excluded)
+        assert self.G.in_edges - G.in_edges == self.excluded
+        assert self.G.out_edges - G.out_edges == self.excluded
 
     def test_pred(self):
         edges_gone = self.hide_edges_filter(self.hide_edges)
@@ -117,8 +117,8 @@ class TestSubDiGraphView(TestSubGraphView):
         nodes_gone = nx.filters.hide_nodes(hide_nodes)
         G = self.gview(self.G, nodes_gone, edges_gone)
 
-        assert_equal(list(G.pred[2]), [1])
-        assert_equal(list(G.pred[6]), [])
+        assert list(G.pred[2]) == [1]
+        assert list(G.pred[6]) == []
 
     def test_inout_degree(self):
         edges_gone = self.hide_edges_filter(self.hide_edges)
@@ -126,10 +126,10 @@ class TestSubDiGraphView(TestSubGraphView):
         nodes_gone = nx.filters.hide_nodes(hide_nodes)
         G = self.gview(self.G, nodes_gone, edges_gone)
 
-        assert_equal(G.degree(2), 1)
-        assert_equal(G.out_degree(2), 0)
-        assert_equal(G.in_degree(2), 1)
-        assert_equal(G.size(), 4)
+        assert G.degree(2) == 1
+        assert G.out_degree(2) == 0
+        assert G.in_degree(2) == 1
+        assert G.size() == 4
 
 
 # multigraph
@@ -150,20 +150,20 @@ class TestMultiGraphView(TestSubGraphView):
         hide_edges = [(2, 3, 4), (2, 3, 3), (8, 7, 0), (222, 223, 0)]
         edges_gone = self.hide_edges_filter(hide_edges)
         G = self.gview(self.G, filter_edge=edges_gone)
-        assert_equal(self.G.nodes, G.nodes)
+        assert self.G.nodes == G.nodes
         if G.is_directed():
-            assert_equal(self.G.edges - G.edges, {(2, 3, 4)})
-            assert_equal(list(G[3]), [4])
-            assert_equal(list(G[2]), [3])
-            assert_equal(list(G.pred[3]), [2])  # only one 2 but two edges
-            assert_equal(list(G.pred[2]), [1])
-            assert_equal(G.size(), 9)
+            assert self.G.edges - G.edges == {(2, 3, 4)}
+            assert list(G[3]) == [4]
+            assert list(G[2]) == [3]
+            assert list(G.pred[3]) == [2]  # only one 2 but two edges
+            assert list(G.pred[2]) == [1]
+            assert G.size() == 9
         else:
-            assert_equal(self.G.edges - G.edges, {(2, 3, 4), (7, 8, 0)})
-            assert_equal(list(G[3]), [2, 4])
-            assert_equal(list(G[2]), [1, 3])
-            assert_equal(G.size(), 8)
-        assert_equal(G.degree(3), 3)
+            assert self.G.edges - G.edges == {(2, 3, 4), (7, 8, 0)}
+            assert list(G[3]) == [2, 4]
+            assert list(G[2]) == [1, 3]
+            assert G.size() == 8
+        assert G.degree(3) == 3
         assert_raises(KeyError, G.__getitem__, 221)
         assert_raises(KeyError, G.__getitem__, 222)
 
@@ -171,19 +171,19 @@ class TestMultiGraphView(TestSubGraphView):
         show_edges = [(2, 3, 4), (2, 3, 3), (8, 7, 0), (222, 223, 0)]
         edge_subgraph = self.show_edges_filter(show_edges)
         G = self.gview(self.G, filter_edge=edge_subgraph)
-        assert_equal(self.G.nodes, G.nodes)
+        assert self.G.nodes == G.nodes
         if G.is_directed():
-            assert_equal(G.edges, {(2, 3, 4)})
-            assert_equal(list(G[3]), [])
-            assert_equal(list(G.pred[3]), [2])
-            assert_equal(list(G.pred[2]), [])
-            assert_equal(G.size(), 1)
+            assert G.edges == {(2, 3, 4)}
+            assert list(G[3]) == []
+            assert list(G.pred[3]) == [2]
+            assert list(G.pred[2]) == []
+            assert G.size() == 1
         else:
-            assert_equal(G.edges, {(2, 3, 4), (7, 8, 0)})
-            assert_equal(G.size(), 2)
-            assert_equal(list(G[3]), [2])
-        assert_equal(G.degree(3), 1)
-        assert_equal(list(G[2]), [3])
+            assert G.edges == {(2, 3, 4), (7, 8, 0)}
+            assert G.size() == 2
+            assert list(G[3]) == [2]
+        assert G.degree(3) == 1
+        assert list(G[2]) == [3]
         assert_raises(KeyError, G.__getitem__, 221)
         assert_raises(KeyError, G.__getitem__, 222)
 
@@ -203,10 +203,10 @@ class TestMultiDiGraphView(TestMultiGraphView, TestSubDiGraphView):
         nodes_gone = nx.filters.hide_nodes(hide_nodes)
         G = self.gview(self.G, nodes_gone, edges_gone)
 
-        assert_equal(G.degree(2), 3)
-        assert_equal(G.out_degree(2), 2)
-        assert_equal(G.in_degree(2), 1)
-        assert_equal(G.size(), 6)
+        assert G.degree(2) == 3
+        assert G.out_degree(2) == 2
+        assert G.in_degree(2) == 1
+        assert G.size() == 6
 
 
 # induced_subgraph
@@ -224,39 +224,39 @@ class TestInducedSubGraph(object):
     def test_full_graph(self):
         G = self.K3
         H = nx.induced_subgraph(G, [0, 1, 2, 5])
-        assert_equal(H.name, G.name)
+        assert H.name == G.name
         self.graphs_equal(H, G)
         self.same_attrdict(H, G)
 
     def test_partial_subgraph(self):
         G = self.K3
         H = nx.induced_subgraph(G, 0)
-        assert_equal(dict(H.adj), {0: {}})
-        assert_not_equal(dict(G.adj), {0: {}})
+        assert dict(H.adj) == {0: {}}
+        assert dict(G.adj) != {0: {}}
 
         H = nx.induced_subgraph(G, [0, 1])
-        assert_equal(dict(H.adj), {0: {1: {}}, 1: {0: {}}})
+        assert dict(H.adj) == {0: {1: {}}, 1: {0: {}}}
 
     def same_attrdict(self, H, G):
         old_foo = H[1][2]['foo']
         H.edges[1, 2]['foo'] = 'baz'
-        assert_equal(G.edges, H.edges)
+        assert G.edges == H.edges
         H.edges[1, 2]['foo'] = old_foo
-        assert_equal(G.edges, H.edges)
+        assert G.edges == H.edges
         old_foo = H.nodes[0]['foo']
         H.nodes[0]['foo'] = 'baz'
-        assert_equal(G.nodes, H.nodes)
+        assert G.nodes == H.nodes
         H.nodes[0]['foo'] = old_foo
-        assert_equal(G.nodes, H.nodes)
+        assert G.nodes == H.nodes
 
     def graphs_equal(self, H, G):
-        assert_equal(G._adj, H._adj)
-        assert_equal(G._node, H._node)
-        assert_equal(G.graph, H.graph)
-        assert_equal(G.name, H.name)
+        assert G._adj == H._adj
+        assert G._node == H._node
+        assert G.graph == H.graph
+        assert G.name == H.name
         if not G.is_directed() and not H.is_directed():
-            assert_true(H._adj[1][2] is H._adj[2][1])
-            assert_true(G._adj[1][2] is G._adj[2][1])
+            assert H._adj[1][2] is H._adj[2][1]
+            assert G._adj[1][2] is G._adj[2][1]
         else:  # at least one is directed
             if not G.is_directed():
                 G._pred = G._adj
@@ -264,10 +264,10 @@ class TestInducedSubGraph(object):
             if not H.is_directed():
                 H._pred = H._adj
                 H._succ = H._adj
-            assert_equal(G._pred, H._pred)
-            assert_equal(G._succ, H._succ)
-            assert_true(H._succ[1][2] is H._pred[2][1])
-            assert_true(G._succ[1][2] is G._pred[2][1])
+            assert G._pred == H._pred
+            assert G._succ == H._succ
+            assert H._succ[1][2] is H._pred[2][1]
+            assert G._succ[1][2] is G._pred[2][1]
 
 
 # edge_subgraph
@@ -287,11 +287,11 @@ class TestEdgeSubGraph(object):
 
     def test_correct_nodes(self):
         """Tests that the subgraph has the correct nodes."""
-        assert_equal([0, 1, 3, 4], sorted(self.H.nodes))
+        assert [0, 1, 3, 4] == sorted(self.H.nodes)
 
     def test_correct_edges(self):
         """Tests that the subgraph has the correct edges."""
-        assert_equal([(0, 1, 'edge01'), (3, 4, 'edge34')],
+        assert ([(0, 1, 'edge01'), (3, 4, 'edge34')] ==
                      sorted(self.H.edges(data='name')))
 
     def test_add_node(self):
@@ -300,7 +300,7 @@ class TestEdgeSubGraph(object):
 
         """
         self.G.add_node(5)
-        assert_equal([0, 1, 3, 4], sorted(self.H.nodes))
+        assert [0, 1, 3, 4] == sorted(self.H.nodes)
         self.G.remove_node(5)
 
     def test_remove_node(self):
@@ -309,7 +309,7 @@ class TestEdgeSubGraph(object):
 
         """
         self.G.remove_node(0)
-        assert_equal([1, 3, 4], sorted(self.H.nodes))
+        assert [1, 3, 4] == sorted(self.H.nodes)
         self.G.add_edge(0, 1)
 
     def test_node_attr_dict(self):
@@ -318,12 +318,12 @@ class TestEdgeSubGraph(object):
 
         """
         for v in self.H:
-            assert_equal(self.G.nodes[v], self.H.nodes[v])
+            assert self.G.nodes[v] == self.H.nodes[v]
         # Making a change to G should make a change in H and vice versa.
         self.G.nodes[0]['name'] = 'foo'
-        assert_equal(self.G.nodes[0], self.H.nodes[0])
+        assert self.G.nodes[0] == self.H.nodes[0]
         self.H.nodes[1]['name'] = 'bar'
-        assert_equal(self.G.nodes[1], self.H.nodes[1])
+        assert self.G.nodes[1] == self.H.nodes[1]
 
     def test_edge_attr_dict(self):
         """Tests that the edge attribute dictionary of the two graphs is
@@ -331,13 +331,13 @@ class TestEdgeSubGraph(object):
 
         """
         for u, v in self.H.edges():
-            assert_equal(self.G.edges[u, v], self.H.edges[u, v])
+            assert self.G.edges[u, v] == self.H.edges[u, v]
         # Making a change to G should make a change in H and vice versa.
         self.G.edges[0, 1]['name'] = 'foo'
-        assert_equal(self.G.edges[0, 1]['name'],
+        assert (self.G.edges[0, 1]['name'] ==
                      self.H.edges[0, 1]['name'])
         self.H.edges[3, 4]['name'] = 'bar'
-        assert_equal(self.G.edges[3, 4]['name'],
+        assert (self.G.edges[3, 4]['name'] ==
                      self.H.edges[3, 4]['name'])
 
     def test_graph_attr_dict(self):
@@ -345,7 +345,7 @@ class TestEdgeSubGraph(object):
         is the same object.
 
         """
-        assert_is(self.G.graph, self.H.graph)
+        assert self.G.graph is self.H.graph
 
     def test_readonly(self):
         """Tests that the subgraph cannot change the graph structure"""

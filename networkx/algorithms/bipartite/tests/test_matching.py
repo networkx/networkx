@@ -125,11 +125,11 @@ class TestMatching():
 
     def test_eppstein_matching_simple(self):
         match = eppstein_matching(self.simple_graph)
-        assert_equal(match, self.simple_solution)
+        assert match == self.simple_solution
 
     def test_hopcroft_karp_matching_simple(self):
         match = hopcroft_karp_matching(self.simple_graph)
-        assert_equal(match, self.simple_solution)
+        assert match == self.simple_solution
 
     @raises(nx.AmbiguousSolution)
     def test_eppstein_matching_disconnected(self):
@@ -167,14 +167,14 @@ class TestMatching():
         matching = hopcroft_karp_matching(btc, top_nodes)
         vertex_cover = to_vertex_cover(btc, matching, top_nodes)
         independent_set = set(G) - {v for _, v in vertex_cover}
-        assert_equal({'B', 'D', 'F', 'I', 'H'}, independent_set)
+        assert {'B', 'D', 'F', 'I', 'H'} == independent_set
 
     def test_vertex_cover_issue_2384(self):
         G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 3)])
         matching = maximum_matching(G)
         vertex_cover = to_vertex_cover(G, matching)
         for u, v in G.edges():
-            assert_true(u in vertex_cover or v in vertex_cover)
+            assert u in vertex_cover or v in vertex_cover
 
     def test_unorderable_nodes(self):
         a = object()
@@ -186,7 +186,7 @@ class TestMatching():
         matching = maximum_matching(G)
         vertex_cover = to_vertex_cover(G, matching)
         for u, v in G.edges():
-            assert_true(u in vertex_cover or v in vertex_cover)
+            assert u in vertex_cover or v in vertex_cover
 
 
 def test_eppstein_matching():
@@ -197,7 +197,7 @@ def test_eppstein_matching():
     G.add_edges_from([('a', 1), ('a', 'b'), (2, 'b'),
                       (2, 'c'), (3, 'c'), (4, 1)])
     matching = eppstein_matching(G)
-    assert_true(len(matching) == len(maximum_matching(G)))
+    assert len(matching) == len(maximum_matching(G))
     assert all(x in set(matching.keys()) for x in set(matching.values()))
 
 
@@ -223,7 +223,7 @@ class TestMinimumWeightFullMatching(object):
         G.add_edge(2, 4, weight=225)
         G.add_edge(2, 5, weight=300)
         matching = minimum_weight_full_matching(G)
-        assert_equal(matching, {0: 4, 1: 3, 2: 5, 4: 0, 3: 1, 5: 2})
+        assert matching == {0: 4, 1: 3, 2: 5, 4: 0, 3: 1, 5: 2}
 
     def test_minimum_weight_full_matching_smaller_left(self):
         G = nx.complete_bipartite_graph(3, 4)
@@ -240,7 +240,7 @@ class TestMinimumWeightFullMatching(object):
         G.add_edge(2, 5, weight=290)
         G.add_edge(2, 6, weight=3)
         matching = minimum_weight_full_matching(G)
-        assert_equal(matching, {0: 4, 1: 6, 2: 5, 4: 0, 5: 2, 6: 1})
+        assert matching == {0: 4, 1: 6, 2: 5, 4: 0, 5: 2, 6: 1}
 
     def test_minimum_weight_full_matching_smaller_top_nodes_right(self):
         G = nx.complete_bipartite_graph(3, 4)
@@ -257,7 +257,7 @@ class TestMinimumWeightFullMatching(object):
         G.add_edge(2, 5, weight=290)
         G.add_edge(2, 6, weight=3)
         matching = minimum_weight_full_matching(G, top_nodes=[3, 4, 5, 6])
-        assert_equal(matching, {0: 4, 1: 6, 2: 5, 4: 0, 5: 2, 6: 1})
+        assert matching == {0: 4, 1: 6, 2: 5, 4: 0, 5: 2, 6: 1}
 
     def test_minimum_weight_full_matching_smaller_right(self):
         G = nx.complete_bipartite_graph(4, 3)
@@ -274,7 +274,7 @@ class TestMinimumWeightFullMatching(object):
         G.add_edge(3, 5, weight=2)
         G.add_edge(3, 6, weight=3)
         matching = minimum_weight_full_matching(G)
-        assert_equal(matching, {1: 4, 2: 6, 3: 5, 4: 1, 5: 3, 6: 2})
+        assert matching == {1: 4, 2: 6, 3: 5, 4: 1, 5: 3, 6: 2}
 
     def test_minimum_weight_full_matching_negative_weights(self):
         G = nx.complete_bipartite_graph(2, 2)
@@ -283,7 +283,7 @@ class TestMinimumWeightFullMatching(object):
         G.add_edge(1, 2, weight=-2)
         G.add_edge(1, 3, weight=0.3)
         matching = minimum_weight_full_matching(G)
-        assert_equal(matching, {0: 3, 1: 2, 2: 1, 3: 0})
+        assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
 
     def test_minimum_weight_full_matching_different_weight_key(self):
         G = nx.complete_bipartite_graph(2, 2)
@@ -292,7 +292,7 @@ class TestMinimumWeightFullMatching(object):
         G.add_edge(1, 2, mass=1)
         G.add_edge(1, 3, mass=2)
         matching = minimum_weight_full_matching(G, weight='mass')
-        assert_equal(matching, {0: 3, 1: 2, 2: 1, 3: 0})
+        assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
 
     @raises(ValueError)
     def test_minimum_weight_full_matching_requires_complete_input(self):

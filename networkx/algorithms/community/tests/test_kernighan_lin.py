@@ -21,7 +21,7 @@ from networkx.algorithms.community import kernighan_lin_bisection
 
 
 def assert_partition_equal(x, y):
-    assert_equal(set(map(frozenset, x)), set(map(frozenset, y)))
+    assert set(map(frozenset, x)) == set(map(frozenset, y))
 
 
 def test_partition():

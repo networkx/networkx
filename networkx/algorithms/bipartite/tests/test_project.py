@@ -23,11 +23,11 @@ class TestBipartiteProject:
         P = bipartite.projected_graph(G, [1, 3])
         assert_nodes_equal(list(P), [1, 3])
         assert_edges_equal(list(P.edges()), [(1, 3)])
-        assert_equal(P.nodes[1]['name'], G.nodes[1]['name'])
+        assert P.nodes[1]['name'] == G.nodes[1]['name']
         P = bipartite.projected_graph(G, [0, 2])
         assert_nodes_equal(list(P), [0, 2])
         assert_edges_equal(list(P.edges()), [(0, 2)])
-        assert_equal(P.nodes[2]['name'], G.nodes[2]['name'])
+        assert P.nodes[2]['name'] == G.nodes[2]['name']
 
     def test_path_collaboration_projected_graph(self):
         G = nx.path_graph(4)
@@ -111,8 +111,8 @@ class TestBipartiteProject:
         G.add_edge('c', 4)
         G.add_edge('b', 4)
         P = bipartite.collaboration_weighted_projected_graph(G, 'abc')
-        assert_equal(P['a']['b']['weight'], 1)
-        assert_equal(P['b']['c']['weight'], 2)
+        assert P['a']['b']['weight'] == 1
+        assert P['b']['c']['weight'] == 2
 
     def test_directed_projection(self):
         G = nx.DiGraph()
@@ -124,7 +124,7 @@ class TestBipartiteProject:
         assert_edges_equal(list(P.edges()), [('A', 'B')])
         P = bipartite.weighted_projected_graph(G, 'AB')
         assert_edges_equal(list(P.edges()), [('A', 'B')])
-        assert_equal(P['A']['B']['weight'], 1)
+        assert P['A']['B']['weight'] == 1
 
         P = bipartite.projected_graph(G, 'AB', multigraph=True)
         assert_edges_equal(list(P.edges()), [('A', 'B')])
@@ -138,7 +138,7 @@ class TestBipartiteProject:
         assert_edges_equal(list(P.edges()), [('A', 'B')])
         P = bipartite.weighted_projected_graph(G, 'AB')
         assert_edges_equal(list(P.edges()), [('A', 'B')])
-        assert_equal(P['A']['B']['weight'], 2)
+        assert P['A']['B']['weight'] == 2
 
         P = bipartite.projected_graph(G, 'AB', multigraph=True)
         assert_edges_equal(list(P.edges()), [('A', 'B'), ('A', 'B')])
@@ -188,7 +188,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.weighted_projected_graph(self.G, 'ABCDEF')
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
         edges = [('A', 'B', 3),
                  ('A', 'E', 1),
@@ -203,7 +203,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.weighted_projected_graph(self.N, 'ABCDE')
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
     def test_project_weighted_newman(self):
         edges = [('A', 'B', 1.5),
@@ -217,7 +217,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.collaboration_weighted_projected_graph(self.G, 'ABCDEF')
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
         edges = [('A', 'B', 11 / 6.0),
                  ('A', 'E', 1 / 2.0),
@@ -232,7 +232,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.collaboration_weighted_projected_graph(self.N, 'ABCDE')
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
     def test_project_weighted_ratio(self):
         edges = [('A', 'B', 2 / 6.0),
@@ -246,7 +246,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.weighted_projected_graph(self.G, 'ABCDEF', ratio=True)
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
         edges = [('A', 'B', 3 / 3.0),
                  ('A', 'E', 1 / 3.0),
@@ -261,7 +261,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.weighted_projected_graph(self.N, 'ABCDE', ratio=True)
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
     def test_project_weighted_overlap(self):
         edges = [('A', 'B', 2 / 2.0),
@@ -275,7 +275,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.overlap_weighted_projected_graph(self.G, 'ABCDEF', jaccard=False)
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
         edges = [('A', 'B', 3 / 3.0),
                  ('A', 'E', 1 / 1.0),
@@ -290,7 +290,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.overlap_weighted_projected_graph(self.N, 'ABCDE', jaccard=False)
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
     def test_project_weighted_jaccard(self):
         edges = [('A', 'B', 2 / 5.0),
@@ -304,7 +304,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.overlap_weighted_projected_graph(self.G, 'ABCDEF')
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in list(P.edges()):
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
         edges = [('A', 'B', 3 / 3.0),
                  ('A', 'E', 1 / 3.0),
@@ -319,7 +319,7 @@ class TestBipartiteWeightedProjection:
         P = bipartite.overlap_weighted_projected_graph(self.N, 'ABCDE')
         assert_edges_equal(list(P.edges()), Panswer.edges())
         for u, v in P.edges():
-            assert_equal(P[u][v]['weight'], Panswer[u][v]['weight'])
+            assert P[u][v]['weight'] == Panswer[u][v]['weight']
 
     def test_generic_weighted_projected_graph_simple(self):
         def shared(G, u, v):

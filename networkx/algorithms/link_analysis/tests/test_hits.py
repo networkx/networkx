@@ -76,10 +76,10 @@ class TestHITS:
         except ImportError:
             raise SkipTest('numpy not available.')
         G = networkx.Graph()
-        assert_equal(networkx.hits(G), ({}, {}))
-        assert_equal(networkx.hits_numpy(G), ({}, {}))
-        assert_equal(networkx.authority_matrix(G).shape, (0, 0))
-        assert_equal(networkx.hub_matrix(G).shape, (0, 0))
+        assert networkx.hits(G) == ({}, {})
+        assert networkx.hits_numpy(G) == ({}, {})
+        assert networkx.authority_matrix(G).shape == (0, 0)
+        assert networkx.hub_matrix(G).shape == (0, 0)
 
     def test_empty_scipy(self):
         try:
@@ -87,7 +87,7 @@ class TestHITS:
         except ImportError:
             raise SkipTest('scipy not available.')
         G = networkx.Graph()
-        assert_equal(networkx.hits_scipy(G), ({}, {}))
+        assert networkx.hits_scipy(G) == ({}, {})
 
     @raises(networkx.PowerIterationFailedConvergence)
     def test_hits_not_convergent(self):

@@ -40,8 +40,8 @@ class TestLRPlanarity:
                 msg = "Wrong planarity check result. Should be non-planar."
 
             # check if the result is as expected
-            assert_equals(is_planar, is_planar_lr, msg)
-            assert_equals(is_planar, is_planar_lr_rec, msg)
+            assert is_planar == is_planar_lr, msg
+            assert is_planar == is_planar_lr_rec, msg
 
         if is_planar_lr:
             # check embedding
@@ -208,8 +208,7 @@ def check_embedding(G, embedding):
 
     # Check that graphs are equivalent
 
-    assert_equals(set(G.nodes), set(embedding.nodes),
-                  "Bad embedding. Nodes don't match the original graph.")
+    assert set(G.nodes) == set(embedding.nodes), "Bad embedding. Nodes don't match the original graph."
 
     # Check that the edges are equal
     g_edges = set()
@@ -217,8 +216,7 @@ def check_embedding(G, embedding):
         if edge[0] != edge[1]:
             g_edges.add((edge[0], edge[1]))
             g_edges.add((edge[1], edge[0]))
-    assert_equals(g_edges, set(embedding.edges),
-                  "Bad embedding. Edges don't match the original graph.")
+    assert g_edges == set(embedding.edges), "Bad embedding. Edges don't match the original graph."
 
 
 def check_counterexample(G, sub_graph):
@@ -277,7 +275,7 @@ class TestPlanarEmbeddingClass:
         embedding = self.get_star_embedding(3)
         data = embedding.get_data()
         data_cmp = {0: [2, 1], 1: [0], 2: [0]}
-        assert_equals(data, data_cmp)
+        assert data == data_cmp
 
     @raises(nx.NetworkXException)
     def test_missing_edge_orientation(self):
@@ -325,7 +323,7 @@ class TestPlanarEmbeddingClass:
         embedding.add_half_edge_first(1, 2)
         embedding.add_half_edge_first(2, 1)
         face = embedding.traverse_face(1, 2)
-        assert_equals(face, [1, 2])
+        assert face == [1, 2]
 
     @raises(nx.NetworkXException)
     def test_unsuccessful_face_traversal(self):

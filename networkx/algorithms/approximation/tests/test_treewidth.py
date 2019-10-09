@@ -109,7 +109,7 @@ class TestTreewidthMinDegree(object):
         # (with [] denoting any order of the containing nodes)
         # resulting in treewidth 2 for the heuristic
         treewidth, _ = treewidth_min_fill_in(G)
-        assert_equals(treewidth, 2)
+        assert treewidth == 2
 
     def test_heuristic_abort(self):
         """Test heuristic abort condition for fully connected graph"""
@@ -138,7 +138,7 @@ class TestTreewidthMinDegree(object):
         G.add_node(1)
         G.add_node(2)
         treewidth, _ = treewidth_min_degree(G)
-        assert_equals(treewidth, 0)
+        assert treewidth == 0
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_degree heuristic"""
@@ -167,7 +167,7 @@ class TestTreewidthMinDegree(object):
             elim_node = deg_heuristic.best_node(graph)
 
         # check only the first 5 elements for equality
-        assert_equals(steps[:5], [0, 1, 2, 3, 4])
+        assert steps[:5] == [0, 1, 2, 3, 4]
 
 
 class TestTreewidthMinFillIn(object):
@@ -214,7 +214,7 @@ class TestTreewidthMinFillIn(object):
         # (with [] denoting any order of the containing nodes)
         # resulting in treewidth 2 for the heuristic
         treewidth, _ = treewidth_min_fill_in(G)
-        assert_equals(treewidth, 2)
+        assert treewidth == 2
 
     def test_heuristic_abort(self):
         """Test if min_fill_in returns None for fully connected graph"""
@@ -241,7 +241,7 @@ class TestTreewidthMinFillIn(object):
         G.add_node(1)
         G.add_node(2)
         treewidth, _ = treewidth_min_fill_in(G)
-        assert_equals(treewidth, 0)
+        assert treewidth == 0
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_fill_in heuristic"""
@@ -269,4 +269,4 @@ class TestTreewidthMinFillIn(object):
             elim_node = min_fill_in_heuristic(graph)
 
         # check only the first 2 elements for equality
-        assert_equals(steps[:2], [6, 5])
+        assert steps[:2] == [6, 5]

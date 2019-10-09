@@ -10,22 +10,22 @@ def test_double_edge_swap():
     graph = nx.barabasi_albert_graph(200, 1)
     degrees = sorted(d for n, d in graph.degree())
     G = nx.double_edge_swap(graph, 40)
-    assert_equal(degrees, sorted(d for n, d in graph.degree()))
+    assert degrees == sorted(d for n, d in graph.degree())
 
 
 def test_double_edge_swap_seed():
     graph = nx.barabasi_albert_graph(200, 1)
     degrees = sorted(d for n, d in graph.degree())
     G = nx.double_edge_swap(graph, 40, seed=1)
-    assert_equal(degrees, sorted(d for n, d in graph.degree()))
+    assert degrees == sorted(d for n, d in graph.degree())
 
 
 def test_connected_double_edge_swap():
     graph = nx.barabasi_albert_graph(200, 1)
     degrees = sorted(d for n, d in graph.degree())
     G = nx.connected_double_edge_swap(graph, 40, seed=1)
-    assert_true(nx.is_connected(graph))
-    assert_equal(degrees, sorted(d for n, d in graph.degree()))
+    assert nx.is_connected(graph)
+    assert degrees == sorted(d for n, d in graph.degree())
 
 
 @raises(nx.NetworkXError)
@@ -54,4 +54,4 @@ def test_degree_seq_c4():
     G = nx.cycle_graph(4)
     degrees = sorted(d for n, d in G.degree())
     G = nx.double_edge_swap(G, 1, 100)
-    assert_equal(degrees, sorted(d for n, d in G.degree()))
+    assert degrees == sorted(d for n, d in G.degree())

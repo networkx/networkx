@@ -18,17 +18,17 @@ class TestIsomorph:
         cls.G4.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 4]])
 
     def test_could_be_isomorphic(self):
-        assert_true(iso.could_be_isomorphic(self.G1, self.G2))
-        assert_true(iso.could_be_isomorphic(self.G1, self.G3))
-        assert_false(iso.could_be_isomorphic(self.G1, self.G4))
-        assert_true(iso.could_be_isomorphic(self.G3, self.G2))
+        assert iso.could_be_isomorphic(self.G1, self.G2)
+        assert iso.could_be_isomorphic(self.G1, self.G3)
+        assert not iso.could_be_isomorphic(self.G1, self.G4)
+        assert iso.could_be_isomorphic(self.G3, self.G2)
 
     def test_fast_could_be_isomorphic(self):
-        assert_true(iso.fast_could_be_isomorphic(self.G3, self.G2))
+        assert iso.fast_could_be_isomorphic(self.G3, self.G2)
 
     def test_faster_could_be_isomorphic(self):
-        assert_true(iso.faster_could_be_isomorphic(self.G3, self.G2))
+        assert iso.faster_could_be_isomorphic(self.G3, self.G2)
 
     def test_is_isomorphic(self):
-        assert_true(iso.is_isomorphic(self.G1, self.G2))
-        assert_false(iso.is_isomorphic(self.G1, self.G4))
+        assert iso.is_isomorphic(self.G1, self.G2)
+        assert not iso.is_isomorphic(self.G1, self.G4)

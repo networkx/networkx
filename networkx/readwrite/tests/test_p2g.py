@@ -30,8 +30,8 @@ c
 """
         bytesIO = io.BytesIO(s)
         G = read_p2g(bytesIO)
-        assert_equal(G.name, 'name')
-        assert_equal(sorted(G), ['a', 'b', 'c'])
+        assert G.name == 'name'
+        assert sorted(G) == ['a', 'b', 'c']
         edges = [(str(u), str(v)) for u, v in G.edges()]
         assert_edges_equal(G.edges(), [('a', 'c'), ('a', 'b'), ('c', 'a'), ('c', 'c')])
 
@@ -52,7 +52,7 @@ c
         write_p2g(G, fh)
         fh.seek(0)
         r = fh.read()
-        assert_equal(r, s)
+        assert r == s
 
     def test_write_read_p2g(self):
         fh = io.BytesIO()

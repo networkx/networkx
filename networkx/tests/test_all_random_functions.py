@@ -31,13 +31,13 @@ def t(f, *args, **kwds):
     after_np_rv = np.random.rand()
     # if np_rv != after_np_rv:
     #    print(np_rv, after_np_rv, "don't match np!")
-    assert_equal(np_rv, after_np_rv)
+    assert np_rv == after_np_rv
     np.random.seed(42)
 
     after_py_rv = random.random()
     # if py_rv != after_py_rv:
     #    print(py_rv, after_py_rv, "don't match py!")
-    assert_equal(py_rv, after_py_rv)
+    assert py_rv == after_py_rv
     random.seed(42)
 
 
@@ -200,11 +200,11 @@ def test_rng_interface():
         after_np_rv = np.random.rand()
 #        if np_rv != after_np_rv:
 #            print(np_rv, after_np_rv, "don't match np!")
-        assert_equal(np_rv, after_np_rv)
+        assert np_rv == after_np_rv
         after_py_rv = random.random()
 #        if py_rv != after_py_rv:
 #            print(py_rv, after_py_rv, "don't match py!")
-        assert_equal(py_rv, after_py_rv)
+        assert py_rv == after_py_rv
 
 #        print("\nDone testing seed:", seed)
 

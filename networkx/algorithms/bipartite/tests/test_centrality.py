@@ -17,42 +17,42 @@ class TestBipartiteCentrality(object):
     def test_degree_centrality(self):
         d = bipartite.degree_centrality(self.P4, [1, 3])
         answer = {0: 0.5, 1: 1.0,  2: 1.0, 3:  0.5}
-        assert_equal(d, answer)
+        assert d == answer
         d = bipartite.degree_centrality(self.K3, [0, 1, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0, 5: 1.0}
-        assert_equal(d, answer)
+        assert d == answer
         d = bipartite.degree_centrality(self.C4, [0, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0}
-        assert_equal(d, answer)
+        assert d == answer
 
     def test_betweenness_centrality(self):
         c = bipartite.betweenness_centrality(self.P4, [1, 3])
         answer = {0: 0.0, 1: 1.0, 2: 1.0, 3: 0.0}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.betweenness_centrality(self.K3, [0, 1, 2])
         answer = {0: 0.125, 1: 0.125, 2: 0.125, 3: 0.125, 4: 0.125, 5: 0.125}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.betweenness_centrality(self.C4, [0, 2])
         answer = {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
-        assert_equal(c, answer)
+        assert c == answer
 
     def test_closeness_centrality(self):
         c = bipartite.closeness_centrality(self.P4, [1, 3])
         answer = {0: 2.0 / 3, 1: 1.0, 2: 1.0, 3: 2.0 / 3}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.closeness_centrality(self.K3, [0, 1, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0, 5: 1.0}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.closeness_centrality(self.C4, [0, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0}
-        assert_equal(c, answer)
+        assert c == answer
         G = nx.Graph()
         G.add_node(0)
         G.add_node(1)
         c = bipartite.closeness_centrality(G, [0])
-        assert_equal(c, {1: 0.0})
+        assert c == {1: 0.0}
         c = bipartite.closeness_centrality(G, [1])
-        assert_equal(c, {1: 0.0})
+        assert c == {1: 0.0}
 
     def test_davis_degree_centrality(self):
         G = self.davis

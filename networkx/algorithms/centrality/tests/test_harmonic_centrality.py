@@ -110,11 +110,11 @@ class TestClosenessCentrality:
         G = nx.DiGraph()
         c = harmonic_centrality(G, distance='weight')
         d = {}
-        assert_equal(c, d)
+        assert c == d
 
     def test_singleton(self):
         G = nx.DiGraph()
         G.add_node(0)
         c = harmonic_centrality(G, distance='weight')
         d = {0: 0}
-        assert_equal(c, d)
+        assert c == d

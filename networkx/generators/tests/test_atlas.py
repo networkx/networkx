@@ -38,28 +38,28 @@ class TestAtlasGraphG(object):
 
     def test_sizes(self):
         G = self.GAG[0]
-        assert_equal(G.number_of_nodes(), 0)
-        assert_equal(G.number_of_edges(), 0)
+        assert G.number_of_nodes() == 0
+        assert G.number_of_edges() == 0
 
         G = self.GAG[7]
-        assert_equal(G.number_of_nodes(), 3)
-        assert_equal(G.number_of_edges(), 3)
+        assert G.number_of_nodes() == 3
+        assert G.number_of_edges() == 3
 
     def test_names(self):
         for i, G in enumerate(self.GAG):
-            assert_equal(int(G.name[1:]), i)
+            assert int(G.name[1:]) == i
 
     def test_nondecreasing_nodes(self):
         # check for nondecreasing number of nodes
         for n1, n2 in pairwise(map(len, self.GAG)):
-            assert_less_equal(n2, n1 + 1)
+            assert n2 <= n1 + 1
 
     def test_nondecreasing_edges(self):
         # check for nondecreasing number of edges (for fixed number of
         # nodes)
         for n, group in groupby(self.GAG, key=nx.number_of_nodes):
             for m1, m2 in pairwise(map(nx.number_of_edges, group)):
-                assert_less_equal(m2, m1 + 1)
+                assert m2 <= m1 + 1
 
     def test_nondecreasing_degree_sequence(self):
         # Check for lexicographically nondecreasing degree sequences
@@ -76,4 +76,4 @@ class TestAtlasGraphG(object):
                         continue
                     d1 = sorted(d for v, d in G1.degree())
                     d2 = sorted(d for v, d in G2.degree())
-                    assert_less_equal(d1, d2)
+                    assert d1 <= d2

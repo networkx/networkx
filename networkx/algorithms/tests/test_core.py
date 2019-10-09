@@ -35,7 +35,7 @@ class TestCore:
     def test_trivial(self):
         """Empty graph"""
         G = nx.Graph()
-        assert_equal(nx.find_cores(G), {})
+        assert nx.find_cores(G) == {}
 
     def test_find_cores(self):
         core = nx.find_cores(self.G)
@@ -64,84 +64,84 @@ class TestCore:
         G = nx.DiGraph()
         edges = [(1, 2), (2, 1), (2, 3), (2, 4), (3, 4), (4, 3)]
         G.add_edges_from(edges)
-        assert_equal(nx.core_number(G), {1: 2, 2: 2, 3: 2, 4: 2})
+        assert nx.core_number(G) == {1: 2, 2: 2, 3: 2, 4: 2}
         # small example where too aggressive edge removal can make cn[2] = 2
         more_edges = [(1, 5), (3, 5), (4, 5), (3, 6), (4, 6), (5, 6)]
         G.add_edges_from(more_edges)
-        assert_equal(nx.core_number(G), {1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 3})
+        assert nx.core_number(G) == {1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 3}
 
     def test_main_core(self):
         main_core_subgraph = nx.k_core(self.H)
-        assert_equal(sorted(main_core_subgraph.nodes()), [2, 4, 5, 6])
+        assert sorted(main_core_subgraph.nodes()) == [2, 4, 5, 6]
 
     def test_k_core(self):
         # k=0
         k_core_subgraph = nx.k_core(self.H, k=0)
-        assert_equal(sorted(k_core_subgraph.nodes()), sorted(self.H.nodes()))
+        assert sorted(k_core_subgraph.nodes()) == sorted(self.H.nodes())
         # k=1
         k_core_subgraph = nx.k_core(self.H, k=1)
-        assert_equal(sorted(k_core_subgraph.nodes()), [1, 2, 3, 4, 5, 6])
+        assert sorted(k_core_subgraph.nodes()) == [1, 2, 3, 4, 5, 6]
         # k = 2
         k_core_subgraph = nx.k_core(self.H, k=2)
-        assert_equal(sorted(k_core_subgraph.nodes()), [2, 4, 5, 6])
+        assert sorted(k_core_subgraph.nodes()) == [2, 4, 5, 6]
 
     def test_main_crust(self):
         main_crust_subgraph = nx.k_crust(self.H)
-        assert_equal(sorted(main_crust_subgraph.nodes()), [0, 1, 3])
+        assert sorted(main_crust_subgraph.nodes()) == [0, 1, 3]
 
     def test_k_crust(self):
         # k = 0
         k_crust_subgraph = nx.k_crust(self.H, k=2)
-        assert_equal(sorted(k_crust_subgraph.nodes()), sorted(self.H.nodes()))
+        assert sorted(k_crust_subgraph.nodes()) == sorted(self.H.nodes())
         # k=1
         k_crust_subgraph = nx.k_crust(self.H, k=1)
-        assert_equal(sorted(k_crust_subgraph.nodes()), [0, 1, 3])
+        assert sorted(k_crust_subgraph.nodes()) == [0, 1, 3]
         # k=2
         k_crust_subgraph = nx.k_crust(self.H, k=0)
-        assert_equal(sorted(k_crust_subgraph.nodes()), [0])
+        assert sorted(k_crust_subgraph.nodes()) == [0]
 
     def test_main_shell(self):
         main_shell_subgraph = nx.k_shell(self.H)
-        assert_equal(sorted(main_shell_subgraph.nodes()), [2, 4, 5, 6])
+        assert sorted(main_shell_subgraph.nodes()) == [2, 4, 5, 6]
 
     def test_k_shell(self):
         # k=0
         k_shell_subgraph = nx.k_shell(self.H, k=2)
-        assert_equal(sorted(k_shell_subgraph.nodes()), [2, 4, 5, 6])
+        assert sorted(k_shell_subgraph.nodes()) == [2, 4, 5, 6]
         # k=1
         k_shell_subgraph = nx.k_shell(self.H, k=1)
-        assert_equal(sorted(k_shell_subgraph.nodes()), [1, 3])
+        assert sorted(k_shell_subgraph.nodes()) == [1, 3]
         # k=2
         k_shell_subgraph = nx.k_shell(self.H, k=0)
-        assert_equal(sorted(k_shell_subgraph.nodes()), [0])
+        assert sorted(k_shell_subgraph.nodes()) == [0]
 
     def test_k_corona(self):
         # k=0
         k_corona_subgraph = nx.k_corona(self.H, k=2)
-        assert_equal(sorted(k_corona_subgraph.nodes()), [2, 4, 5, 6])
+        assert sorted(k_corona_subgraph.nodes()) == [2, 4, 5, 6]
         # k=1
         k_corona_subgraph = nx.k_corona(self.H, k=1)
-        assert_equal(sorted(k_corona_subgraph.nodes()), [1])
+        assert sorted(k_corona_subgraph.nodes()) == [1]
         # k=2
         k_corona_subgraph = nx.k_corona(self.H, k=0)
-        assert_equal(sorted(k_corona_subgraph.nodes()), [0])
+        assert sorted(k_corona_subgraph.nodes()) == [0]
 
     def test_k_truss(self):
         # k=-1
         k_truss_subgraph = nx.k_truss(self.G, -1)
-        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,21)))
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1,21))
         # k=0
         k_truss_subgraph = nx.k_truss(self.G, 0)
-        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,21)))
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1,21))
         # k=1
         k_truss_subgraph = nx.k_truss(self.G, 1)
-        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,13)))
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1,13))
         # k=2
         k_truss_subgraph = nx.k_truss(self.G, 2)
-        assert_equal(sorted(k_truss_subgraph.nodes()), list(range(1,9)))
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1,9))
         # k=3
         k_truss_subgraph = nx.k_truss(self.G, 3)
-        assert_equal(sorted(k_truss_subgraph.nodes()), [])
+        assert sorted(k_truss_subgraph.nodes()) == []
 
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)

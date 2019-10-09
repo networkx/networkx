@@ -18,7 +18,7 @@ class TestGroupBetweennessCentrality:
         b = nx.group_betweenness_centrality(G, C,
                                             weight=None, normalized=False)
         b_answer = 3.0
-        assert_equal(b, b_answer)
+        assert b == b_answer
 
     def test_group_betweenness_normalized(self):
         """
@@ -30,7 +30,7 @@ class TestGroupBetweennessCentrality:
         b = nx.group_betweenness_centrality(G, C,
                                             weight=None, normalized=True)
         b_answer = 1.0
-        assert_equal(b, b_answer)
+        assert b == b_answer
 
     def test_group_betweenness_value_zero(self):
         """
@@ -40,7 +40,7 @@ class TestGroupBetweennessCentrality:
         C = [0, 1, 5]
         b = nx.group_betweenness_centrality(G, C, weight=None)
         b_answer = 0.0
-        assert_equal(b, b_answer)
+        assert b == b_answer
 
     def test_group_betweenness_disconnected_graph(self):
         """
@@ -51,7 +51,7 @@ class TestGroupBetweennessCentrality:
         C = [1]
         b = nx.group_betweenness_centrality(G, C, weight=None)
         b_answer = 0.0
-        assert_equal(b, b_answer)
+        assert b == b_answer
 
     @raises(nx.NodeNotFound)
     def test_group_betweenness_node_not_in_graph(self):
@@ -70,7 +70,7 @@ class TestGroupClosenessCentrality:
         G = nx.path_graph(5)
         c = nx.group_closeness_centrality(G, [1])
         c_answer = nx.closeness_centrality(G, 1)
-        assert_equal(c, c_answer)
+        assert c == c_answer
 
     def test_group_closeness_disconnected(self):
         """
@@ -80,7 +80,7 @@ class TestGroupClosenessCentrality:
         G.add_nodes_from([1, 2, 3, 4])
         c = nx.group_closeness_centrality(G, [1, 2])
         c_answer = 0
-        assert_equal(c, c_answer)
+        assert c == c_answer
 
     def test_group_closeness_multiple_node(self):
         """
@@ -90,7 +90,7 @@ class TestGroupClosenessCentrality:
         G = nx.path_graph(4)
         c = nx.group_closeness_centrality(G, [1, 2])
         c_answer = 1
-        assert_equal(c, c_answer)
+        assert c == c_answer
 
     @raises(nx.NodeNotFound)
     def test_group_closeness_node_not_in_graph(self):
@@ -109,7 +109,7 @@ class TestGroupDegreeCentrality:
         G = nx.path_graph(4)
         d = nx.group_degree_centrality(G, [1])
         d_answer = nx.degree_centrality(G)[1]
-        assert_equal(d, d_answer)
+        assert d == d_answer
 
     def test_group_degree_centrality_multiple_node(self):
         """
@@ -122,7 +122,7 @@ class TestGroupDegreeCentrality:
                           (2, 3), (2, 4), (2, 5)])
         d = nx.group_degree_centrality(G, [1, 2])
         d_answer = 1
-        assert_equal(d, d_answer)
+        assert d == d_answer
 
     def test_group_in_degree_centrality(self):
         """
@@ -134,7 +134,7 @@ class TestGroupDegreeCentrality:
                           (2, 3), (2, 4), (2, 5)])
         d = nx.group_in_degree_centrality(G, [1, 2])
         d_answer = 0
-        assert_equal(d, d_answer)
+        assert d == d_answer
 
     def test_group_out_degree_centrality(self):
         """
@@ -146,7 +146,7 @@ class TestGroupDegreeCentrality:
                           (2, 3), (2, 4), (2, 5)])
         d = nx.group_out_degree_centrality(G, [1, 2])
         d_answer = 1
-        assert_equal(d, d_answer)
+        assert d == d_answer
 
     @raises(nx.NetworkXError)
     def test_group_degree_centrality_node_not_in_graph(self):

@@ -24,9 +24,9 @@ class TestBiadjacencyMatrix:
         X = [1, 3]
         Y = [0, 2, 4]
         M = bipartite.biadjacency_matrix(G, X, weight='weight')
-        assert_equal(M[0, 0], 2)
+        assert M[0, 0] == 2
         M = bipartite.biadjacency_matrix(G, X, weight='other')
-        assert_equal(M[0, 0], 4)
+        assert M[0, 0] == 4
 
     def test_biadjacency_matrix(self):
         tops = [2, 5, 10]
@@ -35,8 +35,8 @@ class TestBiadjacencyMatrix:
             G = bipartite.random_graph(tops[i], bots[i], 0.2)
             top = [n for n, d in G.nodes(data=True) if d['bipartite'] == 0]
             M = bipartite.biadjacency_matrix(G, top)
-            assert_equal(M.shape[0], tops[i])
-            assert_equal(M.shape[1], bots[i])
+            assert M.shape[0] == tops[i]
+            assert M.shape[1] == bots[i]
 
     def test_biadjacency_matrix_order(self):
         G = nx.path_graph(5)
@@ -44,7 +44,7 @@ class TestBiadjacencyMatrix:
         X = [3, 1]
         Y = [4, 2, 0]
         M = bipartite.biadjacency_matrix(G, X, Y, weight='weight')
-        assert_equal(M[1, 2], 2)
+        assert M[1, 2] == 2
 
     @raises(nx.NetworkXError)
     def test_null_graph(self):
@@ -74,7 +74,7 @@ class TestBiadjacencyMatrix:
         B1 = nx.path_graph(5)
         M = bipartite.biadjacency_matrix(B1, [0, 2, 4])
         B2 = bipartite.from_biadjacency_matrix(M)
-        assert_true(nx.is_isomorphic(B1, B2))
+        assert nx.is_isomorphic(B1, B2)
 
     def test_from_biadjacency_weight(self):
         M = sparse.csc_matrix([[1, 2], [0, 3]])

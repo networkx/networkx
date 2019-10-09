@@ -16,145 +16,145 @@ from .test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
 class BaseDiGraphTester(BaseGraphTester):
     def test_has_successor(self):
         G = self.K3
-        assert_equal(G.has_successor(0, 1), True)
-        assert_equal(G.has_successor(0, -1), False)
+        assert G.has_successor(0, 1) == True
+        assert G.has_successor(0, -1) == False
 
     def test_successors(self):
         G = self.K3
-        assert_equal(sorted(G.successors(0)), [1, 2])
+        assert sorted(G.successors(0)) == [1, 2]
         with raises(nx.NetworkXError):
             G.successors(-1)
 
     def test_has_predecessor(self):
         G = self.K3
-        assert_equal(G.has_predecessor(0, 1), True)
-        assert_equal(G.has_predecessor(0, -1), False)
+        assert G.has_predecessor(0, 1) == True
+        assert G.has_predecessor(0, -1) == False
 
     def test_predecessors(self):
         G = self.K3
-        assert_equal(sorted(G.predecessors(0)), [1, 2])
+        assert sorted(G.predecessors(0)) == [1, 2]
         with raises(nx.NetworkXError):
             G.predecessors(-1)
 
     def test_edges(self):
         G = self.K3
-        assert_equal(sorted(G.edges()), [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
-        assert_equal(sorted(G.edges(0)), [(0, 1), (0, 2)])
-        assert_equal(sorted(G.edges([0, 1])), [(0, 1), (0, 2), (1, 0), (1, 2)])
+        assert sorted(G.edges()) == [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
+        assert sorted(G.edges(0)) == [(0, 1), (0, 2)]
+        assert sorted(G.edges([0, 1])) == [(0, 1), (0, 2), (1, 0), (1, 2)]
         with raises(nx.NetworkXError):
             G.edges(-1)
 
     def test_edges_data(self):
         G = self.K3
         all_edges = [(0, 1, {}), (0, 2, {}), (1, 0, {}), (1, 2, {}), (2, 0, {}), (2, 1, {})]
-        assert_equal(sorted(G.edges(data=True)), all_edges)
-        assert_equal(sorted(G.edges(0, data=True)), all_edges[:2])
-        assert_equal(sorted(G.edges([0, 1], data=True)), all_edges[:4])
+        assert sorted(G.edges(data=True)) == all_edges
+        assert sorted(G.edges(0, data=True)) == all_edges[:2]
+        assert sorted(G.edges([0, 1], data=True)) == all_edges[:4]
         with raises(nx.NetworkXError):
             G.edges(-1, True)
 
     def test_out_edges(self):
         G = self.K3
-        assert_equal(sorted(G.out_edges()), [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
-        assert_equal(sorted(G.out_edges(0)), [(0, 1), (0, 2)])
+        assert sorted(G.out_edges()) == [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
+        assert sorted(G.out_edges(0)) == [(0, 1), (0, 2)]
         with raises(nx.NetworkXError):
             G.out_edges(-1)
 
     def test_out_edges_dir(self):
         G = self.P3
-        assert_equal(sorted(G.out_edges()), [(0, 1), (1, 2)])
-        assert_equal(sorted(G.out_edges(0)), [(0, 1)])
-        assert_equal(sorted(G.out_edges(2)), [])
+        assert sorted(G.out_edges()) == [(0, 1), (1, 2)]
+        assert sorted(G.out_edges(0)) == [(0, 1)]
+        assert sorted(G.out_edges(2)) == []
 
     def test_out_edges_data(self):
         G = nx.DiGraph([(0, 1, {'data': 0}), (1, 0, {})])
-        assert_equal(sorted(G.out_edges(data=True)), [(0, 1, {'data': 0}), (1, 0, {})])
-        assert_equal(sorted(G.out_edges(0, data=True)), [(0, 1, {'data': 0})])
-        assert_equal(sorted(G.out_edges(data='data')), [(0, 1, 0), (1, 0, None)])
-        assert_equal(sorted(G.out_edges(0, data='data')), [(0, 1, 0)])
+        assert sorted(G.out_edges(data=True)) == [(0, 1, {'data': 0}), (1, 0, {})]
+        assert sorted(G.out_edges(0, data=True)) == [(0, 1, {'data': 0})]
+        assert sorted(G.out_edges(data='data')) == [(0, 1, 0), (1, 0, None)]
+        assert sorted(G.out_edges(0, data='data')) == [(0, 1, 0)]
 
     def test_in_edges_dir(self):
         G = self.P3
-        assert_equal(sorted(G.in_edges()), [(0, 1), (1, 2)])
-        assert_equal(sorted(G.in_edges(0)), [])
-        assert_equal(sorted(G.in_edges(2)), [(1, 2)])
+        assert sorted(G.in_edges()) == [(0, 1), (1, 2)]
+        assert sorted(G.in_edges(0)) == []
+        assert sorted(G.in_edges(2)) == [(1, 2)]
 
     def test_in_edges_data(self):
         G = nx.DiGraph([(0, 1, {'data': 0}), (1, 0, {})])
-        assert_equal(sorted(G.in_edges(data=True)), [(0, 1, {'data': 0}), (1, 0, {})])
-        assert_equal(sorted(G.in_edges(1, data=True)), [(0, 1, {'data': 0})])
-        assert_equal(sorted(G.in_edges(data='data')), [(0, 1, 0), (1, 0, None)])
-        assert_equal(sorted(G.in_edges(1, data='data')), [(0, 1, 0)])
+        assert sorted(G.in_edges(data=True)) == [(0, 1, {'data': 0}), (1, 0, {})]
+        assert sorted(G.in_edges(1, data=True)) == [(0, 1, {'data': 0})]
+        assert sorted(G.in_edges(data='data')) == [(0, 1, 0), (1, 0, None)]
+        assert sorted(G.in_edges(1, data='data')) == [(0, 1, 0)]
 
     def test_degree(self):
         G = self.K3
-        assert_equal(sorted(G.degree()), [(0, 4), (1, 4), (2, 4)])
-        assert_equal(dict(G.degree()), {0: 4, 1: 4, 2: 4})
-        assert_equal(G.degree(0), 4)
-        assert_equal(list(G.degree(iter([0]))), [
-                     (0, 4)])  # run through iterator
+        assert sorted(G.degree()) == [(0, 4), (1, 4), (2, 4)]
+        assert dict(G.degree()) == {0: 4, 1: 4, 2: 4}
+        assert G.degree(0) == 4
+        assert list(G.degree(iter([0]))) == [
+                     (0, 4)]  # run through iterator
 
     def test_in_degree(self):
         G = self.K3
-        assert_equal(sorted(G.in_degree()), [(0, 2), (1, 2), (2, 2)])
-        assert_equal(dict(G.in_degree()), {0: 2, 1: 2, 2: 2})
-        assert_equal(G.in_degree(0), 2)
-        assert_equal(list(G.in_degree(iter([0]))), [(0, 2)])  # run through iterator
+        assert sorted(G.in_degree()) == [(0, 2), (1, 2), (2, 2)]
+        assert dict(G.in_degree()) == {0: 2, 1: 2, 2: 2}
+        assert G.in_degree(0) == 2
+        assert list(G.in_degree(iter([0]))) == [(0, 2)]  # run through iterator
 
     def test_in_degree_weighted(self):
         G = self.K3
         G.add_edge(0, 1, weight=0.3, other=1.2)
-        assert_equal(sorted(G.in_degree(weight='weight')), [(0, 2), (1, 1.3), (2, 2)])
-        assert_equal(dict(G.in_degree(weight='weight')), {0: 2, 1: 1.3, 2: 2})
-        assert_equal(G.in_degree(1, weight='weight'), 1.3)
-        assert_equal(sorted(G.in_degree(weight='other')), [(0, 2), (1, 2.2), (2, 2)])
-        assert_equal(dict(G.in_degree(weight='other')), {0: 2, 1: 2.2, 2: 2})
-        assert_equal(G.in_degree(1, weight='other'), 2.2)
-        assert_equal(list(G.in_degree(iter([1]), weight='other')), [(1, 2.2)])
+        assert sorted(G.in_degree(weight='weight')) == [(0, 2), (1, 1.3), (2, 2)]
+        assert dict(G.in_degree(weight='weight')) == {0: 2, 1: 1.3, 2: 2}
+        assert G.in_degree(1, weight='weight') == 1.3
+        assert sorted(G.in_degree(weight='other')) == [(0, 2), (1, 2.2), (2, 2)]
+        assert dict(G.in_degree(weight='other')) == {0: 2, 1: 2.2, 2: 2}
+        assert G.in_degree(1, weight='other') == 2.2
+        assert list(G.in_degree(iter([1]), weight='other')) == [(1, 2.2)]
 
     def test_out_degree_weighted(self):
         G = self.K3
         G.add_edge(0, 1, weight=0.3, other=1.2)
-        assert_equal(sorted(G.out_degree(weight='weight')), [(0, 1.3), (1, 2), (2, 2)])
-        assert_equal(dict(G.out_degree(weight='weight')), {0: 1.3, 1: 2, 2: 2})
-        assert_equal(G.out_degree(0, weight='weight'), 1.3)
-        assert_equal(sorted(G.out_degree(weight='other')), [(0, 2.2), (1, 2), (2, 2)])
-        assert_equal(dict(G.out_degree(weight='other')), {0: 2.2, 1: 2, 2: 2})
-        assert_equal(G.out_degree(0, weight='other'), 2.2)
-        assert_equal(list(G.out_degree(iter([0]), weight='other')), [(0, 2.2)])
+        assert sorted(G.out_degree(weight='weight')) == [(0, 1.3), (1, 2), (2, 2)]
+        assert dict(G.out_degree(weight='weight')) == {0: 1.3, 1: 2, 2: 2}
+        assert G.out_degree(0, weight='weight') == 1.3
+        assert sorted(G.out_degree(weight='other')) == [(0, 2.2), (1, 2), (2, 2)]
+        assert dict(G.out_degree(weight='other')) == {0: 2.2, 1: 2, 2: 2}
+        assert G.out_degree(0, weight='other') == 2.2
+        assert list(G.out_degree(iter([0]), weight='other')) == [(0, 2.2)]
 
     def test_out_degree(self):
         G = self.K3
-        assert_equal(sorted(G.out_degree()), [(0, 2), (1, 2), (2, 2)])
-        assert_equal(dict(G.out_degree()), {0: 2, 1: 2, 2: 2})
-        assert_equal(G.out_degree(0), 2)
-        assert_equal(list(G.out_degree(iter([0]))), [(0, 2)])
+        assert sorted(G.out_degree()) == [(0, 2), (1, 2), (2, 2)]
+        assert dict(G.out_degree()) == {0: 2, 1: 2, 2: 2}
+        assert G.out_degree(0) == 2
+        assert list(G.out_degree(iter([0]))) == [(0, 2)]
 
     def test_size(self):
         G = self.K3
-        assert_equal(G.size(), 6)
-        assert_equal(G.number_of_edges(), 6)
+        assert G.size() == 6
+        assert G.number_of_edges() == 6
 
     def test_to_undirected_reciprocal(self):
         G = self.Graph()
         G.add_edge(1, 2)
-        assert_true(G.to_undirected().has_edge(1, 2))
-        assert_false(G.to_undirected(reciprocal=True).has_edge(1, 2))
+        assert G.to_undirected().has_edge(1, 2)
+        assert not G.to_undirected(reciprocal=True).has_edge(1, 2)
         G.add_edge(2, 1)
-        assert_true(G.to_undirected(reciprocal=True).has_edge(1, 2))
+        assert G.to_undirected(reciprocal=True).has_edge(1, 2)
 
     def test_reverse_copy(self):
         G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse()
-        assert_equal(sorted(R.edges()), [(1, 0), (2, 1)])
+        assert sorted(R.edges()) == [(1, 0), (2, 1)]
         R.remove_edge(1, 0)
-        assert_equal(sorted(R.edges()), [(2, 1)])
-        assert_equal(sorted(G.edges()), [(0, 1), (1, 2)])
+        assert sorted(R.edges()) == [(2, 1)]
+        assert sorted(G.edges()) == [(0, 1), (1, 2)]
 
     def test_reverse_nocopy(self):
         G = nx.DiGraph([(0, 1), (1, 2)])
         R = G.reverse(copy=False)
-        assert_equal(sorted(R.edges()), [(1, 0), (2, 1)])
+        assert sorted(R.edges()) == [(1, 0), (2, 1)]
         with raises(nx.NetworkXError):
             R.remove_edge(1, 0)
 
@@ -166,7 +166,7 @@ class BaseDiGraphTester(BaseGraphTester):
         G = nx.DiGraph()
         G.add_edge(x, y)
         assert_nodes_equal(G.nodes(), G.reverse().nodes())
-        assert_equal([(y, x)], list(G.reverse().edges()))
+        assert [(y, x)] == list(G.reverse().edges())
 
 
 class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
@@ -203,29 +203,29 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
 
     def test_data_input(self):
         G = self.Graph({1: [2], 2: [1]}, name="test")
-        assert_equal(G.name, "test")
-        assert_equal(sorted(G.adj.items()), [(1, {2: {}}), (2, {1: {}})])
-        assert_equal(sorted(G.succ.items()), [(1, {2: {}}), (2, {1: {}})])
-        assert_equal(sorted(G.pred.items()), [(1, {2: {}}), (2, {1: {}})])
+        assert G.name == "test"
+        assert sorted(G.adj.items()) == [(1, {2: {}}), (2, {1: {}})]
+        assert sorted(G.succ.items()) == [(1, {2: {}}), (2, {1: {}})]
+        assert sorted(G.pred.items()) == [(1, {2: {}}), (2, {1: {}})]
 
     def test_add_edge(self):
         G = self.Graph()
         G.add_edge(0, 1)
-        assert_equal(G.adj, {0: {1: {}}, 1: {}})
-        assert_equal(G.succ, {0: {1: {}}, 1: {}})
-        assert_equal(G.pred, {0: {}, 1: {0: {}}})
+        assert G.adj == {0: {1: {}}, 1: {}}
+        assert G.succ == {0: {1: {}}, 1: {}}
+        assert G.pred == {0: {}, 1: {0: {}}}
         G = self.Graph()
         G.add_edge(*(0, 1))
-        assert_equal(G.adj, {0: {1: {}}, 1: {}})
-        assert_equal(G.succ, {0: {1: {}}, 1: {}})
-        assert_equal(G.pred, {0: {}, 1: {0: {}}})
+        assert G.adj == {0: {1: {}}, 1: {}}
+        assert G.succ == {0: {1: {}}, 1: {}}
+        assert G.pred == {0: {}, 1: {0: {}}}
 
     def test_add_edges_from(self):
         G = self.Graph()
         G.add_edges_from([(0, 1), (0, 2, {'data': 3})], data=2)
-        assert_equal(G.adj, {0: {1: {'data': 2}, 2: {'data': 3}}, 1: {}, 2: {}})
-        assert_equal(G.succ, {0: {1: {'data': 2}, 2: {'data': 3}}, 1: {}, 2: {}})
-        assert_equal(G.pred, {0: {}, 1: {0: {'data': 2}}, 2: {0: {'data': 3}}})
+        assert G.adj == {0: {1: {'data': 2}, 2: {'data': 3}}, 1: {}, 2: {}}
+        assert G.succ == {0: {1: {'data': 2}, 2: {'data': 3}}, 1: {}, 2: {}}
+        assert G.pred == {0: {}, 1: {0: {'data': 2}}, 2: {0: {'data': 3}}}
 
         with raises(nx.NetworkXError):
             G.add_edges_from([(0,)])  # too few in tuple
@@ -237,16 +237,16 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
     def test_remove_edge(self):
         G = self.K3
         G.remove_edge(0, 1)
-        assert_equal(G.succ, {0: {2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}})
-        assert_equal(G.pred, {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}})
+        assert G.succ == {0: {2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}}
+        assert G.pred == {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
         with raises(nx.NetworkXError):
             G.remove_edge(-1, 0)
 
     def test_remove_edges_from(self):
         G = self.K3
         G.remove_edges_from([(0, 1)])
-        assert_equal(G.succ, {0: {2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}})
-        assert_equal(G.pred, {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}})
+        assert G.succ == {0: {2: {}}, 1: {0: {}, 2: {}}, 2: {0: {}, 1: {}}}
+        assert G.pred == {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
         G.remove_edges_from([(0, 0)])  # silent fail
 
 
@@ -275,7 +275,7 @@ class TestEdgeSubgraph(TestGraphEdgeSubgraph):
         G = nx.DiGraph()
         G.add_edge(0, 1)
         H = G.edge_subgraph([(0, 1)])
-        assert_equal(list(H.predecessors(0)), [])
-        assert_equal(list(H.successors(0)), [1])
-        assert_equal(list(H.predecessors(1)), [0])
-        assert_equal(list(H.successors(1)), [])
+        assert list(H.predecessors(0)) == []
+        assert list(H.successors(0)) == [1]
+        assert list(H.predecessors(1)) == [0]
+        assert list(H.successors(1)) == []

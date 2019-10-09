@@ -105,7 +105,7 @@ class TestEdgelist:
         G.add_edges_from([(1, 2), (2, 3)])
         nx.write_edgelist(G, fh, data=False)
         fh.seek(0)
-        assert_equal(fh.read(), b"1 2\n2 3\n")
+        assert fh.read() == b"1 2\n2 3\n"
 
     def test_write_edgelist_2(self):
         fh = io.BytesIO()
@@ -113,7 +113,7 @@ class TestEdgelist:
         G.add_edges_from([(1, 2), (2, 3)])
         nx.write_edgelist(G, fh, data=True)
         fh.seek(0)
-        assert_equal(fh.read(), b"1 2 {}\n2 3 {}\n")
+        assert fh.read() == b"1 2 {}\n2 3 {}\n"
 
     def test_write_edgelist_3(self):
         fh = io.BytesIO()
@@ -122,7 +122,7 @@ class TestEdgelist:
         G.add_edge(2, 3, weight=3.0)
         nx.write_edgelist(G, fh, data=True)
         fh.seek(0)
-        assert_equal(fh.read(), b"1 2 {'weight': 2.0}\n2 3 {'weight': 3.0}\n")
+        assert fh.read() == b"1 2 {'weight': 2.0}\n2 3 {'weight': 3.0}\n"
 
     def test_write_edgelist_4(self):
         fh = io.BytesIO()
@@ -131,7 +131,7 @@ class TestEdgelist:
         G.add_edge(2, 3, weight=3.0)
         nx.write_edgelist(G, fh, data=[('weight')])
         fh.seek(0)
-        assert_equal(fh.read(), b"1 2 2.0\n2 3 3.0\n")
+        assert fh.read() == b"1 2 2.0\n2 3 3.0\n"
 
     def test_unicode(self):
         G = nx.Graph()
@@ -188,7 +188,7 @@ class TestEdgelist:
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname)
         H2 = nx.read_edgelist(fname)
-        assert_not_equal(H, H2)  # they should be different graphs
+        assert H != H2  # they should be different graphs
         G.remove_node('g')  # isolated nodes are not written in edgelist
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
@@ -201,7 +201,7 @@ class TestEdgelist:
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname, create_using=nx.DiGraph())
         H2 = nx.read_edgelist(fname, create_using=nx.DiGraph())
-        assert_not_equal(H, H2)  # they should be different graphs
+        assert H != H2  # they should be different graphs
         G.remove_node('g')  # isolated nodes are not written in edgelist
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
@@ -226,7 +226,7 @@ class TestEdgelist:
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
         H2 = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
-        assert_not_equal(H, H2)  # they should be different graphs
+        assert H != H2  # they should be different graphs
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
@@ -238,7 +238,7 @@ class TestEdgelist:
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiDiGraph())
         H2 = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiDiGraph())
-        assert_not_equal(H, H2)  # they should be different graphs
+        assert H != H2  # they should be different graphs
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)

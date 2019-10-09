@@ -33,12 +33,12 @@ class TestPajek(object):
         # Example without node positions or shape
         data = """*Vertices 2\n1 "1"\n2 "2"\n*Edges\n1 2\n2 1"""
         G = nx.parse_pajek(data)
-        assert_equal(sorted(G.nodes()), ['1', '2'])
+        assert sorted(G.nodes()) == ['1', '2']
         assert_edges_equal(G.edges(), [('1', '2'), ('1', '2')])
 
     def test_parse_pajek(self):
         G = nx.parse_pajek(self.data)
-        assert_equal(sorted(G.nodes()), ['A1', 'Bb', 'C', 'D2'])
+        assert sorted(G.nodes()) == ['A1', 'Bb', 'C', 'D2']
         assert_edges_equal(G.edges(), [('A1', 'A1'), ('A1', 'Bb'),
                                        ('A1', 'C'), ('Bb', 'A1'),
                                        ('C', 'C'), ('C', 'D2'), ('D2', 'Bb')])
@@ -46,18 +46,18 @@ class TestPajek(object):
     def test_parse_pajet_mat(self):
         data = """*Vertices 3\n1 "one"\n2 "two"\n3 "three"\n*Matrix\n1 1 0\n0 1 0\n0 1 0\n"""
         G = nx.parse_pajek(data)
-        assert_equal(set(G.nodes()), {'one', 'two', 'three'})
-        assert_equal(G.nodes['two'], {'id': '2'})
+        assert set(G.nodes()) == {'one', 'two', 'three'}
+        assert G.nodes['two'] == {'id': '2'}
         assert_edges_equal(set(G.edges()), {('one', 'one'), ('two', 'one'), ('two', 'two'), ('two', 'three')})
 
     def test_read_pajek(self):
         G = nx.parse_pajek(self.data)
         Gin = nx.read_pajek(self.fname)
-        assert_equal(sorted(G.nodes()), sorted(Gin.nodes()))
+        assert sorted(G.nodes()) == sorted(Gin.nodes())
         assert_edges_equal(G.edges(), Gin.edges())
-        assert_equal(self.G.graph, Gin.graph)
+        assert self.G.graph == Gin.graph
         for n in G:
-            assert_equal(G.nodes[n], Gin.nodes[n])
+            assert G.nodes[n] == Gin.nodes[n]
 
     def test_write_pajek(self):
         import io
@@ -83,7 +83,7 @@ class TestPajek(object):
         import warnings
         with warnings.catch_warnings(record=True) as w:
             nx.write_pajek(G,fh)
-            assert_equal(len(w), 4)
+            assert len(w) == 4
 
     def test_noname(self):
         # Make sure we can parse a line such as:  *network
@@ -109,4 +109,4 @@ class TestPajek(object):
         H = nx.read_pajek(fh)
         assert_nodes_equal(list(G), list(H))
         assert_edges_equal(list(G.edges()), list(H.edges()))
-        assert_equal(G.graph, H.graph)
+        assert G.graph == H.graph

@@ -28,7 +28,7 @@ class TestAGraph(object):
     def assert_equal(self, G1, G2):
         assert_nodes_equal(G1.nodes(), G2.nodes())
         assert_edges_equal(G1.edges(), G2.edges())
-        assert_equal(G1.graph['metal'], G2.graph['metal'])
+        assert G1.graph['metal'] == G2.graph['metal']
 
     def agraph_checks(self, G):
         G = self.build_graph(G)
@@ -55,7 +55,7 @@ class TestAGraph(object):
         G = nx.Graph(name='test')
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        assert_equal(G.name, 'test')
+        assert G.name == 'test'
 
     def test_undirected(self):
         self.agraph_checks(nx.Graph())
@@ -111,8 +111,8 @@ class TestAGraph(object):
         G.graph["dimen"] = 2
         pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
         pos = list(pos.values())
-        assert_equal(len(pos), 5)
-        assert_equal(len(pos[0]), 2)
+        assert len(pos) == 5
+        assert len(pos[0]) == 2
 
     def test_3d_layout(self):
         G = nx.Graph()
@@ -120,5 +120,5 @@ class TestAGraph(object):
         G.graph["dimen"] = 3
         pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
         pos = list(pos.values())
-        assert_equal(len(pos), 5)
-        assert_equal(len(pos[0]), 3)
+        assert len(pos) == 5
+        assert len(pos[0]) == 3

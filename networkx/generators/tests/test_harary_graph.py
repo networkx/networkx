@@ -24,7 +24,7 @@ class TestHararyGraph:
             G1 = hnm_harary_graph(n, m)
             d = 2*m // n
             G2 = nx.circulant_graph(n, list(range(1, d//2 + 1)))
-            assert_true(is_isomorphic(G1, G2))
+            assert is_isomorphic(G1, G2)
 
         # When d is even and r > 0, the hnm_harary_graph(n,m) is
         # the circulant_graph(n, list(range(1,d/2+1)))
@@ -33,8 +33,8 @@ class TestHararyGraph:
             G1 = hnm_harary_graph(n, m)
             d = 2*m // n
             G2 = nx.circulant_graph(n, list(range(1, d//2 + 1)))
-            assert_true(set(G2.edges) < set(G1.edges))
-            assert_equal(G1.number_of_edges(), m)
+            assert set(G2.edges) < set(G1.edges)
+            assert G1.number_of_edges() == m
 
         # When d is odd and n is even and r = 0, the hnm_harary_graph(n,m)
         # is the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
@@ -44,7 +44,7 @@ class TestHararyGraph:
             L = list(range(1, (d+1)//2))
             L.append(n//2)
             G2 = nx.circulant_graph(n, L)
-            assert_true(is_isomorphic(G1, G2))
+            assert is_isomorphic(G1, G2)
 
         # When d is odd and n is even and r > 0, the hnm_harary_graph(n,m)
         # is the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
@@ -55,8 +55,8 @@ class TestHararyGraph:
             L = list(range(1, (d+1)//2))
             L.append(n//2)
             G2 = nx.circulant_graph(n, L)
-            assert_true(set(G2.edges) < set(G1.edges))
-            assert_equal(G1.number_of_edges(), m)
+            assert set(G2.edges) < set(G1.edges)
+            assert G1.number_of_edges() == m
 
         # When d is odd and n is odd, the hnm_harary_graph(n,m) is
         # the circulant_graph(n, list(range(1,(d+1)/2))
@@ -66,8 +66,8 @@ class TestHararyGraph:
             d = 2*m // n
             L = list(range(1, (d+1)//2))
             G2 = nx.circulant_graph(n, L)
-            assert_true(set(G2.edges) < set(G1.edges))
-            assert_equal(G1.number_of_edges(), m)
+            assert set(G2.edges) < set(G1.edges)
+            assert G1.number_of_edges() == m
 
         # Raise NetworkXError if n<1
         n = 0
@@ -93,14 +93,14 @@ class TestHararyGraph:
         for (k, n) in [(1, 6), (1, 7)]:
             G1 = hkn_harary_graph(k, n)
             G2 = nx.path_graph(n)
-            assert_true(is_isomorphic(G1, G2))
+            assert is_isomorphic(G1, G2)
 
         # When k is even, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,k/2+1)))
         for (k, n) in [(2, 6), (2, 7), (4, 6), (4, 7)]:
             G1 = hkn_harary_graph(k, n)
             G2 = nx.circulant_graph(n, list(range(1, k//2 + 1)))
-            assert_true(is_isomorphic(G1, G2))
+            assert is_isomorphic(G1, G2)
 
         # When k is odd and n is even, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,(k+1)/2)) plus [n/2])
@@ -109,7 +109,7 @@ class TestHararyGraph:
             L = list(range(1, (k+1)//2))
             L.append(n//2)
             G2 = nx.circulant_graph(n, L)
-            assert_true(is_isomorphic(G1, G2))
+            assert is_isomorphic(G1, G2)
 
         # When k is odd and n is odd, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,(k+1)/2))) with
@@ -124,7 +124,7 @@ class TestHararyGraph:
             for i in range(0, half+1):
                 # add half+1 edges between i and i+half
                 eSet3.add((i, (i+half) % n))
-            assert_equal(eSet1, eSet2 | eSet3)
+            assert eSet1 == eSet2 | eSet3
 
         # Raise NetworkXError if k<1
         k = 0

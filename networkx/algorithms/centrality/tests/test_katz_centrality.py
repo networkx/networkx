@@ -89,7 +89,7 @@ class TestKatzCentrality(object):
 
     def test_empty(self):
         e = nx.katz_centrality(nx.Graph(), 0.1)
-        assert_equal(e, {})
+        assert e == {}
 
     @raises(nx.NetworkXException)
     def test_bad_beta(self):
@@ -185,7 +185,7 @@ class TestKatzCentralityNumpy(object):
 
     def test_empty(self):
         e = nx.katz_centrality(nx.Graph(), 0.1)
-        assert_equal(e, {})
+        assert e == {}
 
     @raises(nx.NetworkXException)
     def test_bad_beta(self):

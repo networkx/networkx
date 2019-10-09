@@ -51,7 +51,7 @@ class TestPruferSequence(object):
         # Example from Wikipedia.
         tree = nx.Graph([(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)])
         sequence = nx.to_prufer_sequence(tree)
-        assert_equal(sequence, [3, 3, 3, 4])
+        assert sequence == [3, 3, 3, 4]
 
     def test_decoding(self):
         """Tests for decoding a tree from a Prüfer sequence."""
@@ -81,7 +81,7 @@ class TestPruferSequence(object):
 
         for seq in product(range(4), repeat=2):
             seq2 = nx.to_prufer_sequence(nx.from_prufer_sequence(seq))
-            assert_equal(list(seq), seq2)
+            assert list(seq) == seq2
 
 
 class TestNestedTuple(object):
@@ -113,13 +113,13 @@ class TestNestedTuple(object):
         root = 0
         actual = nx.to_nested_tuple(T, root, canonical_form=True)
         expected = ((), ((), ()), ((), ()))
-        assert_equal(actual, expected)
+        assert actual == expected
 
     def test_decoding(self):
         balanced = (((), ()), ((), ()))
         expected = nx.full_rary_tree(2, 2 ** 3 - 1)
         actual = nx.from_nested_tuple(balanced)
-        assert_true(nx.is_isomorphic(expected, actual))
+        assert nx.is_isomorphic(expected, actual)
 
     def test_sensible_relabeling(self):
         balanced = (((), ()), ((), ()))

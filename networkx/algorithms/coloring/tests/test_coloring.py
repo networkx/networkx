@@ -44,8 +44,8 @@ class TestColoring:
             coloring = nx.coloring.greedy_color(graph,
                                                 strategy=strategy,
                                                 interchange=interchange)
-            assert_true(verify_length(coloring, n_nodes))
-            assert_true(verify_coloring(graph, coloring))
+            assert verify_length(coloring, n_nodes)
+            assert verify_coloring(graph, coloring)
 
         for graph_func, n_nodes in BASIC_TEST_CASES.items():
             for interchange in [True, False]:
@@ -63,9 +63,9 @@ class TestColoring:
                                                 interchange=interchange)
             if not hasattr(colors, '__len__'):
                 colors = [colors]
-            assert_true(any(verify_length(coloring, n_colors)
-                            for n_colors in colors))
-            assert_true(verify_coloring(graph, coloring))
+            assert any(verify_length(coloring, n_colors)
+                            for n_colors in colors)
+            assert verify_coloring(graph, coloring)
 
         for strategy, arglist in SPECIAL_TEST_CASES.items():
             for args in arglist:
@@ -93,14 +93,14 @@ class TestColoring:
                                             'largest_first')
         colors_2 = nx.coloring.greedy_color(graph,
                                             nx.coloring.strategy_largest_first)
-        assert_equal(colors_1, colors_2)
+        assert colors_1 == colors_2
 
     def test_seed_argument(self):
         graph = lf_shc()
         rs = nx.coloring.strategy_random_sequential
         c1 = nx.coloring.greedy_color(graph, lambda g, c: rs(g, c, seed=1))
         for u, v in graph.edges:
-            assert_not_equal(c1[u], c1[v])
+            assert c1[u] != c1[v]
 
     def test_is_coloring(self):
         G = nx.Graph()

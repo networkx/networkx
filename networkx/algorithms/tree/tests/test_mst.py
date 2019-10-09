@@ -152,7 +152,7 @@ class MinimumSpanningTreeTestBase(object):
         G = nx.empty_graph(3)
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
         assert_nodes_equal(sorted(T), list(range(3)))
-        assert_equal(T.number_of_edges(), 0)
+        assert T.number_of_edges() == 0
 
     def test_attributes(self):
         G = nx.Graph()
@@ -161,10 +161,10 @@ class MinimumSpanningTreeTestBase(object):
         G.add_edge(1, 3, weight=10, color='blue', distance=1)
         G.graph['foo'] = 'bar'
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
-        assert_equal(T.graph, G.graph)
+        assert T.graph == G.graph
         assert_nodes_equal(T, G)
         for u, v in T.edges():
-            assert_equal(T.adj[u][v], G.adj[u][v])
+            assert T.adj[u][v] == G.adj[u][v]
 
     def test_weight_attribute(self):
         G = nx.Graph()

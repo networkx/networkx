@@ -5,29 +5,29 @@ from nose.tools import *
 
 def _check_partition(G, cut_value, partition, weight):
     ok_(isinstance(partition, tuple))
-    assert_equal(len(partition), 2)
+    assert len(partition) == 2
     ok_(isinstance(partition[0], list))
     ok_(isinstance(partition[1], list))
     ok_(len(partition[0]) > 0)
     ok_(len(partition[1]) > 0)
-    assert_equal(sum(map(len, partition)), len(G))
-    assert_equal(set(chain.from_iterable(partition)), set(G))
+    assert sum(map(len, partition)) == len(G)
+    assert set(chain.from_iterable(partition)) == set(G)
     partition = tuple(map(set, partition))
     w = 0
     for u, v, e in G.edges(data=True):
         if (u in partition[0]) == (v in partition[1]):
             w += e.get(weight, 1)
-    assert_equal(w, cut_value)
+    assert w == cut_value
 
 
 def _test_stoer_wagner(G, answer, weight='weight'):
     cut_value, partition = nx.stoer_wagner(G, weight,
                                            heap=nx.utils.PairingHeap)
-    assert_equal(cut_value, answer)
+    assert cut_value == answer
     _check_partition(G, cut_value, partition, weight)
     cut_value, partition = nx.stoer_wagner(G, weight,
                                            heap=nx.utils.BinaryHeap)
-    assert_equal(cut_value, answer)
+    assert cut_value == answer
     _check_partition(G, cut_value, partition, weight)
 
 

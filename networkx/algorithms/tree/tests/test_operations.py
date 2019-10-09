@@ -26,8 +26,8 @@ class TestJoin(object):
 
         """
         T = nx.join([])
-        assert_equal(len(T), 1)
-        assert_equal(T.number_of_edges(), 0)
+        assert len(T) == 1
+        assert T.number_of_edges() == 0
 
     def test_single(self):
         """Tests that joining just one tree yields a tree with one more
@@ -45,4 +45,4 @@ class TestJoin(object):
         trees = [(nx.full_rary_tree(2, 2 ** 2 - 1), 0) for i in range(2)]
         actual = nx.join(trees)
         expected = nx.full_rary_tree(2, 2 ** 3 - 1)
-        assert_true(nx.is_isomorphic(actual, expected))
+        assert nx.is_isomorphic(actual, expected)

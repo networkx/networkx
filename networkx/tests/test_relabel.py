@@ -11,61 +11,61 @@ class TestRelabel():
         # test that empty graph converts fine for all options
         G = empty_graph()
         H = nx.convert_node_labels_to_integers(G, 100)
-        assert_equal(list(H.nodes()), [])
-        assert_equal(list(H.edges()), [])
+        assert list(H.nodes()) == []
+        assert list(H.edges()) == []
 
         for opt in ["default", "sorted", "increasing degree", "decreasing degree"]:
             G = empty_graph()
             H = nx.convert_node_labels_to_integers(G, 100, ordering=opt)
-            assert_equal(list(H.nodes()), [])
-            assert_equal(list(H.edges()), [])
+            assert list(H.nodes()) == []
+            assert list(H.edges()) == []
 
         G = empty_graph()
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'C'), ('C', 'D')])
         H = nx.convert_node_labels_to_integers(G)
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
-        assert_equal(sorted(degH), sorted(degG))
+        assert sorted(degH) == sorted(degG)
 
         H = nx.convert_node_labels_to_integers(G, 1000)
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
-        assert_equal(sorted(degH), sorted(degG))
+        assert sorted(degH) == sorted(degG)
         assert_nodes_equal(H.nodes(), [1000, 1001, 1002, 1003])
 
         H = nx.convert_node_labels_to_integers(G, ordering="increasing degree")
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
-        assert_equal(sorted(degH), sorted(degG))
-        assert_equal(H.degree(0), 1)
-        assert_equal(H.degree(1), 2)
-        assert_equal(H.degree(2), 2)
-        assert_equal(H.degree(3), 3)
+        assert sorted(degH) == sorted(degG)
+        assert H.degree(0) == 1
+        assert H.degree(1) == 2
+        assert H.degree(2) == 2
+        assert H.degree(3) == 3
 
         H = nx.convert_node_labels_to_integers(G, ordering="decreasing degree")
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
-        assert_equal(sorted(degH), sorted(degG))
-        assert_equal(H.degree(0), 3)
-        assert_equal(H.degree(1), 2)
-        assert_equal(H.degree(2), 2)
-        assert_equal(H.degree(3), 1)
+        assert sorted(degH) == sorted(degG)
+        assert H.degree(0) == 3
+        assert H.degree(1) == 2
+        assert H.degree(2) == 2
+        assert H.degree(3) == 1
 
         H = nx.convert_node_labels_to_integers(G, ordering="increasing degree",
                                             label_attribute='label')
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
-        assert_equal(sorted(degH), sorted(degG))
-        assert_equal(H.degree(0), 1)
-        assert_equal(H.degree(1), 2)
-        assert_equal(H.degree(2), 2)
-        assert_equal(H.degree(3), 3)
+        assert sorted(degH) == sorted(degG)
+        assert H.degree(0) == 1
+        assert H.degree(1) == 2
+        assert H.degree(2) == 2
+        assert H.degree(3) == 3
 
         # check mapping
-        assert_equal(H.nodes[3]['label'], 'C')
-        assert_equal(H.nodes[0]['label'], 'D')
-        assert_true(H.nodes[1]['label'] == 'A' or H.nodes[2]['label'] == 'A')
-        assert_true(H.nodes[1]['label'] == 'B' or H.nodes[2]['label'] == 'B')
+        assert H.nodes[3]['label'] == 'C'
+        assert H.nodes[0]['label'] == 'D'
+        assert H.nodes[1]['label'] == 'A' or H.nodes[2]['label'] == 'A'
+        assert H.nodes[1]['label'] == 'B' or H.nodes[2]['label'] == 'B'
 
     def test_convert_to_integers2(self):
         G = empty_graph()
@@ -73,14 +73,14 @@ class TestRelabel():
         H = nx.convert_node_labels_to_integers(G, ordering="sorted")
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
-        assert_equal(sorted(degH), sorted(degG))
+        assert sorted(degH) == sorted(degG)
 
         H = nx.convert_node_labels_to_integers(G, ordering="sorted",
                                             label_attribute='label')
-        assert_equal(H.nodes[0]['label'], 'A')
-        assert_equal(H.nodes[1]['label'], 'B')
-        assert_equal(H.nodes[2]['label'], 'C')
-        assert_equal(H.nodes[3]['label'], 'D')
+        assert H.nodes[0]['label'] == 'A'
+        assert H.nodes[1]['label'] == 'B'
+        assert H.nodes[2]['label'] == 'C'
+        assert H.nodes[3]['label'] == 'D'
 
     @raises(nx.NetworkXError)
     def test_convert_to_integers_raise(self):
@@ -154,14 +154,14 @@ class TestRelabel():
     def test_relabel_copy_name(self):
         G = nx.Graph()
         H = nx.relabel_nodes(G, {}, copy=True)
-        assert_equal(H.graph, G.graph)
+        assert H.graph == G.graph
         H = nx.relabel_nodes(G, {}, copy=False)
-        assert_equal(H.graph, G.graph)
+        assert H.graph == G.graph
         G.name = "first"
         H = nx.relabel_nodes(G, {}, copy=True)
-        assert_equal(H.graph, G.graph)
+        assert H.graph == G.graph
         H = nx.relabel_nodes(G, {}, copy=False)
-        assert_equal(H.graph, G.graph)
+        assert H.graph == G.graph
 
     def test_relabel_toposort(self):
         K5 = nx.complete_graph(4)

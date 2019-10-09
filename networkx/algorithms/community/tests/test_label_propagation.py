@@ -28,7 +28,7 @@ def test_one_node():
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_unconnected_communities():
@@ -48,7 +48,7 @@ def test_unconnected_communities():
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_connected_communities():
@@ -95,7 +95,7 @@ def test_connected_communities():
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_in(result, ground_truth)
+    assert result in ground_truth
 
 
 def test_termination():
@@ -120,7 +120,7 @@ class TestAsynLpaCommunities(object):
         """
         communities = asyn_lpa_communities(G)
         result = {frozenset(c) for c in communities}
-        assert_equal(result, expected)
+        assert result == expected
 
     def test_null_graph(self):
         G = nx.null_graph()
@@ -143,7 +143,7 @@ class TestAsynLpaCommunities(object):
         ground_truth = {frozenset('abc'), frozenset('def')}
         communities = asyn_lpa_communities(G, seed=1)
         result = {frozenset(c) for c in communities}
-        assert_equal(result, ground_truth)
+        assert result == ground_truth
 
     def test_several_communities(self):
         # This graph is the disjoint union of five triangles.

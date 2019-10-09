@@ -87,7 +87,7 @@ class TestBetweennessCentrality(object):
         b_approx1 = {0: 0.0, 1: 1.5, 2: 0.0}
         b_approx2 = {0: 0.0, 1: 0.75, 2: 0.0}
         for n in sorted(G):
-            assert_in(b[n], (b_approx1[n], b_approx2[n]))
+            assert b[n] in (b_approx1[n], b_approx2[n])
 
     def test_P3_endpoints(self):
         """Betweenness centrality: P3 endpoints"""

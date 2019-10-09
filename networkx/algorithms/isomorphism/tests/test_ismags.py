@@ -55,9 +55,9 @@ class TestSelfIsomorphism(object):
             graph.add_edges_from(edge_data)
 
             ismags = iso.ISMAGS(graph, graph, node_match=iso.categorical_node_match('name', None))
-            assert_true(ismags.is_isomorphic())
-            assert_true(ismags.subgraph_is_isomorphic())
-            assert_equal(list(ismags.subgraph_isomorphisms_iter(symmetry=True)),
+            assert ismags.is_isomorphic()
+            assert ismags.subgraph_is_isomorphic()
+            assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
                          [{n: n for n in graph.nodes}])
 
     def test_edgecase_self_isomorphism(self):
@@ -91,9 +91,9 @@ class TestSelfIsomorphism(object):
             graph.add_edges_from(edge_data)
 
             ismags = iso.ISMAGS(graph, graph, node_match=iso.categorical_node_match('name', None))
-            assert_true(ismags.is_isomorphic())
-            assert_true(ismags.subgraph_is_isomorphic())
-            assert_equal(list(ismags.subgraph_isomorphisms_iter(symmetry=True)),
+            assert ismags.is_isomorphic()
+            assert ismags.subgraph_is_isomorphic()
+            assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
                          [{n: n for n in graph.nodes}])
 
 
@@ -106,7 +106,7 @@ class TestSubgraphIsomorphism(object):
         g2.add_cycle(range(4))
         g2.add_edges_from([(n, m) for n, m in zip(g2, range(4, 8))])
         ismags = iso.ISMAGS(g2, g1)
-        assert_equal(list(ismags.subgraph_isomorphisms_iter(symmetry=True)),
+        assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
                      [{n: n for n in g1.nodes}])
 
     def test_isomorphism2(self):
@@ -121,14 +121,14 @@ class TestSubgraphIsomorphism(object):
         expected_symmetric = [{0: 0, 1: 1, 2: 2},
                               {0: 0, 1: 1, 3: 2},
                               {2: 0, 1: 1, 3: 2}]
-        assert_equal(_matches_to_sets(matches),
+        assert (_matches_to_sets(matches) ==
                      _matches_to_sets(expected_symmetric))
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{0: 2, 1: 1, 2: 0},
                                {0: 2, 1: 1, 3: 0},
                                {2: 2, 1: 1, 3: 0}]
-        assert_equal(_matches_to_sets(matches),
+        assert (_matches_to_sets(matches) ==
                      _matches_to_sets(expected_symmetric + expected_asymmetric))
 
     def test_labeled_nodes(self):
@@ -141,12 +141,12 @@ class TestSubgraphIsomorphism(object):
         ismags = iso.ISMAGS(g2, g1, node_match=lambda x, y: x == y)
         matches = ismags.subgraph_isomorphisms_iter(symmetry=True)
         expected_symmetric = [{0: 0, 1: 1, 2: 2}]
-        assert_equal(_matches_to_sets(matches),
+        assert (_matches_to_sets(matches) ==
                      _matches_to_sets(expected_symmetric))
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{0: 2, 1: 1, 2: 0}]
-        assert_equal(_matches_to_sets(matches),
+        assert (_matches_to_sets(matches) ==
                      _matches_to_sets(expected_symmetric + expected_asymmetric))        
 
     def test_labeled_edges(self):
@@ -159,12 +159,12 @@ class TestSubgraphIsomorphism(object):
         ismags = iso.ISMAGS(g2, g1, edge_match=lambda x, y: x == y)
         matches = ismags.subgraph_isomorphisms_iter(symmetry=True)
         expected_symmetric = [{0: 0, 1: 1, 2: 2}]
-        assert_equal(_matches_to_sets(matches),
+        assert (_matches_to_sets(matches) ==
                      _matches_to_sets(expected_symmetric))
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{1: 2, 0: 0, 2: 1}]
-        assert_equal(_matches_to_sets(matches),
+        assert (_matches_to_sets(matches) ==
                      _matches_to_sets(expected_symmetric + expected_asymmetric))  
 
 
@@ -188,7 +188,7 @@ class TestWikipediaExample(object):
         g1.add_edges_from(self.g1edges)
         g2.add_edges_from(self.g2edges)
         gm = iso.ISMAGS(g1, g2)
-        assert_true(gm.is_isomorphic())
+        assert gm.is_isomorphic()
 
 
 class TestLargestCommonSubgraph(object):
@@ -206,21 +206,21 @@ class TestLargestCommonSubgraph(object):
         graph2.nodes[7]['color'] = 2
 
         ismags = iso.ISMAGS(graph1, graph2, node_match=iso.categorical_node_match('color', None))
-        assert_equal(list(ismags.subgraph_isomorphisms_iter(True)), [])
-        assert_equal(list(ismags.subgraph_isomorphisms_iter(False)), [])
+        assert list(ismags.subgraph_isomorphisms_iter(True)) == []
+        assert list(ismags.subgraph_isomorphisms_iter(False)) == []
         found_mcis = _matches_to_sets(ismags.largest_common_subgraph())
         expected = _matches_to_sets([{2: 2, 3: 4, 4: 3, 5: 5},
                                      {2: 4, 3: 2, 4: 3, 5: 5}])
-        assert_equal(expected, found_mcis)
+        assert expected == found_mcis
 
         ismags = iso.ISMAGS(graph2, graph1, node_match=iso.categorical_node_match('color', None))
-        assert_equal(list(ismags.subgraph_isomorphisms_iter(True)), [])
-        assert_equal(list(ismags.subgraph_isomorphisms_iter(False)), [])
+        assert list(ismags.subgraph_isomorphisms_iter(True)) == []
+        assert list(ismags.subgraph_isomorphisms_iter(False)) == []
         found_mcis = _matches_to_sets(ismags.largest_common_subgraph())
         # Same answer, but reversed.
         expected = _matches_to_sets([{2: 2, 3: 4, 4: 3, 5: 5},
                                      {4: 2, 2: 3, 3: 4, 5: 5}])
-        assert_equal(expected, found_mcis)
+        assert expected == found_mcis
 
     def test_symmetry_mcis(self):
         graph1 = nx.Graph()
@@ -232,15 +232,15 @@ class TestLargestCommonSubgraph(object):
 
         # Only the symmetry of graph2 is taken into account here.
         ismags1 = iso.ISMAGS(graph1, graph2, node_match=iso.categorical_node_match('color', None))
-        assert_equal(list(ismags1.subgraph_isomorphisms_iter(True)), [])
+        assert list(ismags1.subgraph_isomorphisms_iter(True)) == []
         found_mcis = _matches_to_sets(ismags1.largest_common_subgraph())
         expected = _matches_to_sets([{0: 0, 1: 1, 2: 2},
                                      {1: 0, 3: 2, 2: 1}])
-        assert_equal(expected, found_mcis)
+        assert expected == found_mcis
 
         # Only the symmetry of graph1 is taken into account here.
         ismags2 = iso.ISMAGS(graph2, graph1, node_match=iso.categorical_node_match('color', None))
-        assert_equal(list(ismags2.subgraph_isomorphisms_iter(True)), [])
+        assert list(ismags2.subgraph_isomorphisms_iter(True)) == []
         found_mcis = _matches_to_sets(ismags2.largest_common_subgraph())
         expected = _matches_to_sets([{3: 2, 0: 0, 1: 1},
                                      {2: 0, 0: 2, 1: 1},
@@ -249,7 +249,7 @@ class TestLargestCommonSubgraph(object):
                                      {0: 0, 1: 1, 2: 2},
                                      {2: 0, 3: 2, 1: 1}])
 
-        assert_equal(expected, found_mcis)
+        assert expected == found_mcis
 
         found_mcis1 = _matches_to_sets(ismags1.largest_common_subgraph(False))
         found_mcis2 = ismags2.largest_common_subgraph(False)
@@ -268,5 +268,5 @@ class TestLargestCommonSubgraph(object):
                                      {1: 0, 3: 2, 2: 1},
                                      {0: 3, 1: 1, 2: 2},
                                      {0: 0, 1: 1, 2: 2}])
-        assert_equal(expected, found_mcis1)
-        assert_equal(expected, found_mcis2)
+        assert expected == found_mcis1
+        assert expected == found_mcis2

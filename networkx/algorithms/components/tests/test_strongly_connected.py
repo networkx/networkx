@@ -46,35 +46,35 @@ class TestStronglyConnected:
     def test_tarjan(self):
         scc = nx.strongly_connected_components
         for G, C in self.gc:
-            assert_equal({frozenset(g) for g in scc(G)}, C)
+            assert {frozenset(g) for g in scc(G)} == C
 
     def test_tarjan_recursive(self):
         scc = nx.strongly_connected_components_recursive
         for G, C in self.gc:
-            assert_equal({frozenset(g) for g in scc(G)}, C)
+            assert {frozenset(g) for g in scc(G)} == C
 
     def test_kosaraju(self):
         scc = nx.kosaraju_strongly_connected_components
         for G, C in self.gc:
-            assert_equal({frozenset(g) for g in scc(G)}, C)
+            assert {frozenset(g) for g in scc(G)} == C
 
     def test_number_strongly_connected_components(self):
         ncc = nx.number_strongly_connected_components
         for G, C in self.gc:
-            assert_equal(ncc(G), len(C))
+            assert ncc(G) == len(C)
 
     def test_is_strongly_connected(self):
         for G, C in self.gc:
             if len(C) == 1:
-                assert_true(nx.is_strongly_connected(G))
+                assert nx.is_strongly_connected(G)
             else:
-                assert_false(nx.is_strongly_connected(G))
+                assert not nx.is_strongly_connected(G)
 
     # deprecated
     def test_strongly_connected_component_subgraphs(self):
         scc = nx.strongly_connected_component_subgraphs
         for G, C in self.gc:
-            assert_equal({frozenset(g) for g in scc(G)}, C)
+            assert {frozenset(g) for g in scc(G)} == C
 
     def test_contract_scc1(self):
         G = nx.DiGraph()
@@ -86,20 +86,20 @@ class TestStronglyConnected:
         scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
         # DAG
-        assert_true(nx.is_directed_acyclic_graph(cG))
+        assert nx.is_directed_acyclic_graph(cG)
         # nodes
-        assert_equal(sorted(cG.nodes()), [0, 1, 2, 3])
+        assert sorted(cG.nodes()) == [0, 1, 2, 3]
         # edges
         mapping = {}
         for i, component in enumerate(scc):
             for n in component:
                 mapping[n] = i
         edge = (mapping[2], mapping[3])
-        assert_true(cG.has_edge(*edge))
+        assert cG.has_edge(*edge)
         edge = (mapping[2], mapping[5])
-        assert_true(cG.has_edge(*edge))
+        assert cG.has_edge(*edge)
         edge = (mapping[3], mapping[5])
-        assert_true(cG.has_edge(*edge))
+        assert cG.has_edge(*edge)
 
     def test_contract_scc_isolate(self):
         # Bug found and fixed in [1687].
@@ -108,8 +108,8 @@ class TestStronglyConnected:
         G.add_edge(2, 1)
         scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
-        assert_equal(list(cG.nodes()), [0])
-        assert_equal(list(cG.edges()), [])
+        assert list(cG.nodes()) == [0]
+        assert list(cG.edges()) == []
 
     def test_contract_scc_edge(self):
         G = nx.DiGraph()
@@ -120,30 +120,30 @@ class TestStronglyConnected:
         G.add_edge(4, 3)
         scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
-        assert_equal(sorted(cG.nodes()), [0, 1])
+        assert sorted(cG.nodes()) == [0, 1]
         if 1 in scc[0]:
             edge = (0, 1)
         else:
             edge = (1, 0)
-        assert_equal(list(cG.edges()), [edge])
+        assert list(cG.edges()) == [edge]
 
     def test_condensation_mapping_and_members(self):
         G, C = self.gc[1]
         C = sorted(C, key=len, reverse=True)
         cG = nx.condensation(G)
         mapping = cG.graph['mapping']
-        assert_true(all(n in G for n in mapping))
-        assert_true(all(0 == cN for n, cN in mapping.items() if n in C[0]))
-        assert_true(all(1 == cN for n, cN in mapping.items() if n in C[1]))
+        assert all(n in G for n in mapping)
+        assert all(0 == cN for n, cN in mapping.items() if n in C[0])
+        assert all(1 == cN for n, cN in mapping.items() if n in C[1])
         for n, d in cG.nodes(data=True):
-            assert_equal(set(C[n]), cG.nodes[n]['members'])
+            assert set(C[n]) == cG.nodes[n]['members']
 
     def test_null_graph(self):
         G = nx.DiGraph()
-        assert_equal(list(nx.strongly_connected_components(G)), [])
-        assert_equal(list(nx.kosaraju_strongly_connected_components(G)), [])
-        assert_equal(list(nx.strongly_connected_components_recursive(G)), [])
-        assert_equal(len(nx.condensation(G)), 0)
+        assert list(nx.strongly_connected_components(G)) == []
+        assert list(nx.kosaraju_strongly_connected_components(G)) == []
+        assert list(nx.strongly_connected_components_recursive(G)) == []
+        assert len(nx.condensation(G)) == 0
         assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
 
     def test_connected_raise(self):

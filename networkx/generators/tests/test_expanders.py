@@ -35,18 +35,18 @@ def test_margulis_gabber_galil_graph():
         has_scipy = False
     for n in 2, 3, 5, 6, 10:
         g = margulis_gabber_galil_graph(n)
-        assert_equal(number_of_nodes(g), n * n)
+        assert number_of_nodes(g) == n * n
         for node in g:
-            assert_equal(g.degree(node), 8)
-            assert_equal(len(node), 2)
+            assert g.degree(node) == 8
+            assert len(node) == 2
             for i in node:
-                assert_equal(int(i), i)
-                assert_true(0 <= i < n)
+                assert int(i) == i
+                assert 0 <= i < n
         if has_scipy:
             # Eigenvalues are already sorted using the scipy eigvalsh,
             # but the implementation in numpy does not guarantee order.
             w = sorted(scipy.linalg.eigvalsh(adjacency_matrix(g).A))
-            assert_less(w[-2], 5 * np.sqrt(2))
+            assert w[-2] < 5 * np.sqrt(2)
 
 
 def test_chordal_cycle_graph():
@@ -56,7 +56,7 @@ def test_chordal_cycle_graph():
     primes = [3, 5, 7, 11]
     for p in primes:
         G = chordal_cycle_graph(p)
-        assert_equal(len(G), p)
+        assert len(G) == p
         # TODO The second largest eigenvalue should be smaller than a constant,
         # independent of the number of nodes in the graph:
         #

@@ -124,7 +124,7 @@ def _check_connectivity(G):
         for component in components:
             C = G.subgraph(component)
             K = nx.node_connectivity(C)
-            assert_greater_equal(K, k)
+            assert K >= k
 
 
 def test_torrents_and_ferraro_graph():
@@ -153,7 +153,7 @@ def test_karate_1():
     G = nx.karate_club_graph()
     k_comps = k_components(G)
     k_num = build_k_number_dict(k_comps)
-    assert_in(k_num, (karate_k_num, approx_karate_k_num))
+    assert k_num in (karate_k_num, approx_karate_k_num)
 
 
 def test_example_1_detail_3_and_4():
@@ -161,12 +161,12 @@ def test_example_1_detail_3_and_4():
     result = k_components(G)
     # In this example graph there are 8 3-components, 4 with 15 nodes
     # and 4 with 5 nodes.
-    assert_equal(len(result[3]), 8)
-    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
-    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
+    assert len(result[3]) == 8
+    assert len([c for c in result[3] if len(c) == 15]) == 4
+    assert len([c for c in result[3] if len(c) == 5]) == 4
     # There are also 8 4-components all with 5 nodes.
-    assert_equal(len(result[4]), 8)
-    assert_true(all(len(c) == 5 for c in result[4]))
+    assert len(result[4]) == 8
+    assert all(len(c) == 5 for c in result[4])
     # Finally check that the k-components detected have actually node
     # connectivity >= k.
     for k, components in result.items():
@@ -174,7 +174,7 @@ def test_example_1_detail_3_and_4():
             continue
         for component in components:
             K = nx.node_connectivity(G.subgraph(component))
-            assert_greater_equal(K, k)
+            assert K >= k
 
 
 @raises(nx.NetworkXNotImplemented)
@@ -187,11 +187,11 @@ def test_same():
     equal = {'A': 2, 'B': 2, 'C': 2}
     slightly_different = {'A': 2, 'B': 1, 'C': 2}
     different = {'A': 2, 'B': 8, 'C': 18}
-    assert_true(_same(equal))
-    assert_false(_same(slightly_different))
-    assert_true(_same(slightly_different, tol=1))
-    assert_false(_same(different))
-    assert_false(_same(different, tol=4))
+    assert _same(equal)
+    assert not _same(slightly_different)
+    assert _same(slightly_different, tol=1)
+    assert not _same(different)
+    assert not _same(different, tol=4)
 
 
 class TestAntiGraph:
@@ -211,40 +211,40 @@ class TestAntiGraph:
         for G, A in self.GA:
             n = G.order()
             s = len(list(G.edges())) + len(list(A.edges()))
-            assert_true(s == (n * (n - 1)) / 2)
+            assert s == (n * (n - 1)) / 2
 
     def test_degree(self):
         for G, A in self.GA:
-            assert_equal(sorted(G.degree()), sorted(A.degree()))
+            assert sorted(G.degree()) == sorted(A.degree())
 
     def test_core_number(self):
         for G, A in self.GA:
-            assert_equal(nx.core_number(G), nx.core_number(A))
+            assert nx.core_number(G) == nx.core_number(A)
 
     def test_connected_components(self):
         for G, A in self.GA:
             gc = [set(c) for c in nx.connected_components(G)]
             ac = [set(c) for c in nx.connected_components(A)]
             for comp in ac:
-                assert_true(comp in gc)
+                assert comp in gc
 
     def test_adj(self):
         for G, A in self.GA:
             for n, nbrs in G.adj.items():
                 a_adj = sorted((n, sorted(ad)) for n, ad in A.adj.items())
                 g_adj = sorted((n, sorted(ad)) for n, ad in G.adj.items())
-                assert_equal(a_adj, g_adj)
+                assert a_adj == g_adj
 
     def test_adjacency(self):
         for G, A in self.GA:
             a_adj = list(A.adjacency())
             for n, nbrs in G.adjacency():
-                assert_true((n, set(nbrs)) in a_adj)
+                assert (n, set(nbrs)) in a_adj
 
     def test_neighbors(self):
         for G, A in self.GA:
             node = list(G.nodes())[0]
-            assert_equal(set(G.neighbors(node)), set(A.neighbors(node)))
+            assert set(G.neighbors(node)) == set(A.neighbors(node))
 
     def test_node_not_in_graph(self):
         for G, A in self.GA:
@@ -256,10 +256,10 @@ class TestAntiGraph:
         for G, A in self.GA:
             node = list(G.nodes())[0]
             nodes = list(G.nodes())[1:4]
-            assert_equal(G.degree(node), A.degree(node))
-            assert_equal(sum(d for n, d in G.degree()), sum(d for n, d in A.degree()))
+            assert G.degree(node) == A.degree(node)
+            assert sum(d for n, d in G.degree()) == sum(d for n, d in A.degree())
             # AntiGraph is a ThinGraph, so all the weights are 1
-            assert_equal(sum(d for n, d in A.degree()),
+            assert (sum(d for n, d in A.degree()) ==
                          sum(d for n, d in A.degree(weight='weight')))
-            assert_equal(sum(d for n, d in G.degree(nodes)),
+            assert (sum(d for n, d in G.degree(nodes)) ==
                          sum(d for n, d in A.degree(nodes)))

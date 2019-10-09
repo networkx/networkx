@@ -11,9 +11,9 @@ def test_global_node_connectivity():
     G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 6), (3, 4),
                       (3, 6), (4, 6), (4, 7), (5, 7), (6, 8), (6, 9), (7, 8),
                       (7, 10), (8, 11), (9, 10), (9, 11), (10, 11)])
-    assert_equal(2, approx.local_node_connectivity(G, 1, 11))
-    assert_equal(2, approx.node_connectivity(G))
-    assert_equal(2, approx.node_connectivity(G, 1, 11))
+    assert 2 == approx.local_node_connectivity(G, 1, 11)
+    assert 2 == approx.node_connectivity(G)
+    assert 2 == approx.node_connectivity(G, 1, 11)
 
 
 def test_white_harary1():
@@ -28,27 +28,27 @@ def test_white_harary1():
     G.remove_node(G.order() - 1)
     for i in range(7, 10):
         G.add_edge(0, i)
-    assert_equal(1, approx.node_connectivity(G))
+    assert 1 == approx.node_connectivity(G)
 
 
 def test_complete_graphs():
     for n in range(5, 25, 5):
         G = nx.complete_graph(n)
-        assert_equal(n - 1, approx.node_connectivity(G))
-        assert_equal(n - 1, approx.node_connectivity(G, 0, 3))
+        assert n - 1 == approx.node_connectivity(G)
+        assert n - 1 == approx.node_connectivity(G, 0, 3)
 
 
 def test_empty_graphs():
     for k in range(5, 25, 5):
         G = nx.empty_graph(k)
-        assert_equal(0, approx.node_connectivity(G))
-        assert_equal(0, approx.node_connectivity(G, 0, 3))
+        assert 0 == approx.node_connectivity(G)
+        assert 0 == approx.node_connectivity(G, 0, 3)
 
 
 def test_petersen():
     G = nx.petersen_graph()
-    assert_equal(3, approx.node_connectivity(G))
-    assert_equal(3, approx.node_connectivity(G, 0, 5))
+    assert 3 == approx.node_connectivity(G)
+    assert 3 == approx.node_connectivity(G, 0, 5)
 
 # Approximation fails with tutte graph
 # def test_tutte():
@@ -58,14 +58,14 @@ def test_petersen():
 
 def test_dodecahedral():
     G = nx.dodecahedral_graph()
-    assert_equal(3, approx.node_connectivity(G))
-    assert_equal(3, approx.node_connectivity(G, 0, 5))
+    assert 3 == approx.node_connectivity(G)
+    assert 3 == approx.node_connectivity(G, 0, 5)
 
 
 def test_octahedral():
     G = nx.octahedral_graph()
-    assert_equal(4, approx.node_connectivity(G))
-    assert_equal(4, approx.node_connectivity(G, 0, 5))
+    assert 4 == approx.node_connectivity(G)
+    assert 4 == approx.node_connectivity(G, 0, 5)
 
 # Approximation can fail with icosahedral graph depending
 # on iteration order.
@@ -103,10 +103,10 @@ def test_source_equals_target():
 def test_directed_node_connectivity():
     G = nx.cycle_graph(10, create_using=nx.DiGraph())  # only one direction
     D = nx.cycle_graph(10).to_directed()  # 2 reciprocal edges
-    assert_equal(1, approx.node_connectivity(G))
-    assert_equal(1, approx.node_connectivity(G, 1, 4))
-    assert_equal(2,  approx.node_connectivity(D))
-    assert_equal(2,  approx.node_connectivity(D, 1, 4))
+    assert 1 == approx.node_connectivity(G)
+    assert 1 == approx.node_connectivity(G, 1, 4)
+    assert 2 ==  approx.node_connectivity(D)
+    assert 2 ==  approx.node_connectivity(D, 1, 4)
 
 
 class TestAllPairsNodeConnectivityApprox:
@@ -130,31 +130,31 @@ class TestAllPairsNodeConnectivityApprox:
         K_undir = approx.all_pairs_node_connectivity(self.cycle)
         for source in K_undir:
             for target, k in K_undir[source].items():
-                assert_true(k == 2)
+                assert k == 2
         K_dir = approx.all_pairs_node_connectivity(self.directed_cycle)
         for source in K_dir:
             for target, k in K_dir[source].items():
-                assert_true(k == 1)
+                assert k == 1
 
     def test_complete(self):
         for G in [self.K10, self.K5, self.K20]:
             K = approx.all_pairs_node_connectivity(G)
             for source in K:
                 for target, k in K[source].items():
-                    assert_true(k == len(G) - 1)
+                    assert k == len(G) - 1
 
     def test_paths(self):
         K_undir = approx.all_pairs_node_connectivity(self.path)
         for source in K_undir:
             for target, k in K_undir[source].items():
-                assert_true(k == 1)
+                assert k == 1
         K_dir = approx.all_pairs_node_connectivity(self.directed_path)
         for source in K_dir:
             for target, k in K_dir[source].items():
                 if source < target:
-                    assert_true(k == 1)
+                    assert k == 1
                 else:
-                    assert_true(k == 0)
+                    assert k == 0
 
     def test_cutoff(self):
         for G in [self.K10, self.K5, self.K20]:
@@ -162,10 +162,10 @@ class TestAllPairsNodeConnectivityApprox:
                 paths = approx.all_pairs_node_connectivity(G, cutoff=mp)
                 for source in paths:
                     for target, K in paths[source].items():
-                        assert_true(K == mp)
+                        assert K == mp
 
     def test_all_pairs_connectivity_nbunch(self):
         G = nx.complete_graph(5)
         nbunch = [0, 2, 3]
         C = approx.all_pairs_node_connectivity(G, nbunch=nbunch)
-        assert_equal(len(C), len(nbunch))
+        assert len(C) == len(nbunch)

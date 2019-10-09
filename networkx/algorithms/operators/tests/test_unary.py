@@ -16,17 +16,17 @@ def test_complement():
     # complement of the complete graph is empty
 
     G = nx.complement(K3)
-    assert_true(nx.is_isomorphic(G, nx.empty_graph(3)))
+    assert nx.is_isomorphic(G, nx.empty_graph(3))
     G = nx.complement(K5)
-    assert_true(nx.is_isomorphic(G, nx.empty_graph(5)))
+    assert nx.is_isomorphic(G, nx.empty_graph(5))
     # for any G, G=complement(complement(G))
     P3cc = nx.complement(nx.complement(P3))
-    assert_true(nx.is_isomorphic(P3, P3cc))
+    assert nx.is_isomorphic(P3, P3cc)
     nullcc = nx.complement(nx.complement(null))
-    assert_true(nx.is_isomorphic(null, nullcc))
+    assert nx.is_isomorphic(null, nullcc)
     b = nx.bull_graph()
     bcc = nx.complement(nx.complement(b))
-    assert_true(nx.is_isomorphic(b, bcc))
+    assert nx.is_isomorphic(b, bcc)
 
 
 def test_complement_2():
@@ -35,7 +35,7 @@ def test_complement_2():
     G1.add_edge('A', 'C')
     G1.add_edge('A', 'D')
     G1C = nx.complement(G1)
-    assert_equal(sorted(G1C.edges()),
+    assert (sorted(G1C.edges()) ==
                  [('B', 'A'), ('B', 'C'),
                   ('B', 'D'), ('C', 'A'), ('C', 'B'),
                   ('C', 'D'), ('D', 'A'), ('D', 'B'), ('D', 'C')])

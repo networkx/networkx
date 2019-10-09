@@ -54,7 +54,7 @@ class TestLayout(object):
         fixed_pos = [0]
         pos = nx.fruchterman_reingold_layout(G, pos=init_pos, fixed=fixed_pos)
         has_nan = any(math.isnan(c) for coords in pos.values() for c in coords)
-        assert_false(has_nan, 'values should not be nan')
+        assert not has_nan, 'values should not be nan'
 
     def test_smoke_empty_graph(self):
         G = []
@@ -161,9 +161,9 @@ class TestLayout(object):
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_array(self.Gs)
         pos = nx.drawing.layout._fruchterman_reingold(A)
-        assert_equal(pos.shape, (6, 2))
+        assert pos.shape == (6, 2)
         pos = nx.drawing.layout._fruchterman_reingold(A, dim=3)
-        assert_equal(pos.shape, (6, 3))
+        assert pos.shape == (6, 3)
 
     def test_adjacency_interface_scipy(self):
         try:
@@ -172,20 +172,20 @@ class TestLayout(object):
             raise SkipTest('scipy not available.')
         A = nx.to_scipy_sparse_matrix(self.Gs, dtype='d')
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A)
-        assert_equal(pos.shape, (6, 2))
+        assert pos.shape == (6, 2)
         pos = nx.drawing.layout._sparse_spectral(A)
-        assert_equal(pos.shape, (6, 2))
+        assert pos.shape == (6, 2)
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A, dim=3)
-        assert_equal(pos.shape, (6, 3))
+        assert pos.shape == (6, 3)
 
     def test_single_nodes(self):
         G = nx.path_graph(1)
         vpos = nx.shell_layout(G)
-        assert_false(vpos[0].any())
+        assert not vpos[0].any()
         G = nx.path_graph(4)
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]])
-        assert_false(vpos[0].any())
-        assert_true(vpos[3].any())  # ensure node 3 not at origin (#3188)
+        assert not vpos[0].any()
+        assert vpos[3].any()  # ensure node 3 not at origin (#3188)
 
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
@@ -195,7 +195,7 @@ class TestLayout(object):
         # Dense version (numpy based)
         pos = nx.circular_layout(self.Gi)
         npos = nx.spring_layout(self.Gi, pos=pos, fixed=[(0, 0)])
-        assert_equal(tuple(pos[(0, 0)]), tuple(npos[(0, 0)]))
+        assert tuple(pos[(0, 0)]) == tuple(npos[(0, 0)])
         # Sparse version (scipy based)
         pos = nx.circular_layout(self.bigG)
         npos = nx.spring_layout(self.bigG, pos=pos, fixed=[(0, 0)])
@@ -206,23 +206,23 @@ class TestLayout(object):
         G = nx.path_graph(1)
         vpos = nx.random_layout(G, center=(1, 1))
         vpos = nx.circular_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.planar_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spring_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spectral_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.shell_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spiral_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
 
     def test_center_wrong_dimensions(self):
         G = nx.path_graph(1)
-        assert_equal(id(nx.spring_layout), id(nx.fruchterman_reingold_layout))
+        assert id(nx.spring_layout) == id(nx.fruchterman_reingold_layout)
         assert_raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
         assert_raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
@@ -236,51 +236,51 @@ class TestLayout(object):
     def test_empty_graph(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.circular_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.planar_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.bipartite_layout(G, G)
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.spring_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.spectral_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.shell_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.spiral_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
 
     def test_bipartite_layout(self):
         G = nx.complete_bipartite_graph(3, 5)
         top, bottom = nx.bipartite.sets(G)
 
         vpos = nx.bipartite_layout(G, top)
-        assert_equal(len(vpos), len(G))
+        assert len(vpos) == len(G)
 
         top_x = vpos[list(top)[0]][0]
         bottom_x = vpos[list(bottom)[0]][0]
         for node in top:
-            assert_equal(vpos[node][0], top_x)
+            assert vpos[node][0] == top_x
         for node in bottom:
-            assert_equal(vpos[node][0], bottom_x)
+            assert vpos[node][0] == bottom_x
 
         vpos = nx.bipartite_layout(G, top,
                                    align='horizontal',
                                    center=(2, 2),
                                    scale=2,
                                    aspect_ratio=1)
-        assert_equal(len(vpos), len(G))
+        assert len(vpos) == len(G)
 
         top_y = vpos[list(top)[0]][1]
         bottom_y = vpos[list(bottom)[0]][1]
         for node in top:
-            assert_equal(vpos[node][1], top_y)
+            assert vpos[node][1] == top_y
         for node in bottom:
-            assert_equal(vpos[node][1], bottom_y)
+            assert vpos[node][1] == bottom_y
 
         assert_raises(ValueError, nx.bipartite_layout, G, top, align='foo')
 

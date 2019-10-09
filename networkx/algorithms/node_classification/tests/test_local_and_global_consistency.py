@@ -27,10 +27,10 @@ class TestLocalAndGlobalConsistency:
         G.node[3][label_name] = 'B'
         predicted = node_classification.local_and_global_consistency(
             G, label_name=label_name)
-        assert_equal(predicted[0], 'A')
-        assert_equal(predicted[1], 'A')
-        assert_equal(predicted[2], 'B')
-        assert_equal(predicted[3], 'B')
+        assert predicted[0] == 'A'
+        assert predicted[1] == 'A'
+        assert predicted[2] == 'B'
+        assert predicted[3] == 'B'
 
     @raises(nx.NetworkXError)
     def test_no_labels(self):
@@ -66,10 +66,10 @@ class TestLocalAndGlobalConsistency:
         G.node[0][label_name] = 'A'
         predicted = node_classification.local_and_global_consistency(
             G, label_name=label_name)
-        assert_equal(predicted[0], 'A')
-        assert_equal(predicted[1], 'A')
-        assert_equal(predicted[2], 'A')
-        assert_equal(predicted[3], 'A')
+        assert predicted[0] == 'A'
+        assert predicted[1] == 'A'
+        assert predicted[2] == 'A'
+        assert predicted[3] == 'A'
 
     def test_nodes_all_labeled(self):
         G = nx.karate_club_graph()
@@ -77,4 +77,4 @@ class TestLocalAndGlobalConsistency:
         predicted = node_classification.local_and_global_consistency(
             G, alpha=0, label_name=label_name)
         for i in range(len(G)):
-            assert_equal(predicted[i], G.node[i][label_name])
+            assert predicted[i] == G.node[i][label_name]

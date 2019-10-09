@@ -11,7 +11,7 @@ def _test_func(G, ebunch, expected, predict_func, **kwargs):
     exp_dict = dict((tuple(sorted([u, v])), score) for u, v, score in expected)
     res_dict = dict((tuple(sorted([u, v])), score) for u, v, score in result)
 
-    assert_equal(len(exp_dict), len(res_dict))
+    assert len(exp_dict) == len(res_dict)
     for p in exp_dict:
         assert_almost_equal(exp_dict[p], res_dict[p])
 

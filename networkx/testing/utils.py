@@ -13,7 +13,7 @@ def assert_nodes_equal(nodes1, nodes2):
     except (ValueError, TypeError):
         d1 = dict.fromkeys(nlist1)
         d2 = dict.fromkeys(nlist2)
-    assert_equal(d1, d2)
+    assert d1 == d2
 
 
 def assert_edges_equal(edges1, edges2):
@@ -44,14 +44,14 @@ def assert_edges_equal(edges1, edges2):
     # can check one direction because lengths are the same.
     for n, nbrdict in d1.items():
         for nbr, datalist in nbrdict.items():
-            assert_in(n, d2)
-            assert_in(nbr, d2[n])
+            assert n in d2
+            assert nbr in d2[n]
             d2datalist = d2[n][nbr]
             for data in datalist:
-                assert_equal(datalist.count(data), d2datalist.count(data))
+                assert datalist.count(data) == d2datalist.count(data)
 
 
 def assert_graphs_equal(graph1, graph2):
-    assert_equal(graph1.adj, graph2.adj)
-    assert_equal(graph1.nodes, graph2.nodes)
-    assert_equal(graph1.graph, graph2.graph)
+    assert graph1.adj == graph2.adj
+    assert graph1.nodes == graph2.nodes
+    assert graph1.graph == graph2.graph

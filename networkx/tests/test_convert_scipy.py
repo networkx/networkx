@@ -42,7 +42,7 @@ class TestConvertNumpy(object):
         return G
 
     def assert_isomorphic(self, G1, G2):
-        assert_true(nx.is_isomorphic(G1, G2))
+        assert nx.is_isomorphic(G1, G2)
 
     def identity_conversion(self, G, A, create_using):
         GG = nx.from_scipy_sparse_matrix(A, create_using=create_using)

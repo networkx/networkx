@@ -39,50 +39,50 @@ class TestSubgraphAttributesDicts:
         for subgraph_func in self.subgraph_funcs:
             G = deepcopy(self.G if subgraph_func in self.undirected else self.D)
             SG = list(subgraph_func(G))[0]
-            assert_equal(SG[1][2]['eattr'], 'red')
-            assert_equal(SG.nodes[1]['nattr'], 'blue')
-            assert_equal(SG.graph['gattr'], 'green')
+            assert SG[1][2]['eattr'] == 'red'
+            assert SG.nodes[1]['nattr'] == 'blue'
+            assert SG.graph['gattr'] == 'green'
             SG[1][2]['eattr'] = 'foo'
-            assert_equal(G[1][2]['eattr'], 'red')
-            assert_equal(SG[1][2]['eattr'], 'foo')
+            assert G[1][2]['eattr'] == 'red'
+            assert SG[1][2]['eattr'] == 'foo'
             SG.nodes[1]['nattr'] = 'bar'
-            assert_equal(G.nodes[1]['nattr'], 'blue')
-            assert_equal(SG.nodes[1]['nattr'], 'bar')
+            assert G.nodes[1]['nattr'] == 'blue'
+            assert SG.nodes[1]['nattr'] == 'bar'
             SG.graph['gattr'] = 'baz'
-            assert_equal(G.graph['gattr'], 'green')
-            assert_equal(SG.graph['gattr'], 'baz')
+            assert G.graph['gattr'] == 'green'
+            assert SG.graph['gattr'] == 'baz'
 
     def test_subgraphs_copy(self):
         for subgraph_func in self.subgraph_funcs:
             test_graph = self.G if subgraph_func in self.undirected else self.D
             G = deepcopy(test_graph)
             SG = list(subgraph_func(G, copy=True))[0]
-            assert_equal(SG[1][2]['eattr'], 'red')
-            assert_equal(SG.nodes[1]['nattr'], 'blue')
-            assert_equal(SG.graph['gattr'], 'green')
+            assert SG[1][2]['eattr'] == 'red'
+            assert SG.nodes[1]['nattr'] == 'blue'
+            assert SG.graph['gattr'] == 'green'
             SG[1][2]['eattr'] = 'foo'
-            assert_equal(G[1][2]['eattr'], 'red')
-            assert_equal(SG[1][2]['eattr'], 'foo')
+            assert G[1][2]['eattr'] == 'red'
+            assert SG[1][2]['eattr'] == 'foo'
             SG.nodes[1]['nattr'] = 'bar'
-            assert_equal(G.nodes[1]['nattr'], 'blue')
-            assert_equal(SG.nodes[1]['nattr'], 'bar')
+            assert G.nodes[1]['nattr'] == 'blue'
+            assert SG.nodes[1]['nattr'] == 'bar'
             SG.graph['gattr'] = 'baz'
-            assert_equal(G.graph['gattr'], 'green')
-            assert_equal(SG.graph['gattr'], 'baz')
+            assert G.graph['gattr'] == 'green'
+            assert SG.graph['gattr'] == 'baz'
 
     def test_subgraphs_no_copy(self):
         for subgraph_func in self.subgraph_funcs:
             G = deepcopy(self.G if subgraph_func in self.undirected else self.D)
             SG = list(subgraph_func(G, copy=False))[0]
-            assert_equal(SG[1][2]['eattr'], 'red')
-            assert_equal(SG.nodes[1]['nattr'], 'blue')
-            assert_equal(SG.graph['gattr'], 'green')
+            assert SG[1][2]['eattr'] == 'red'
+            assert SG.nodes[1]['nattr'] == 'blue'
+            assert SG.graph['gattr'] == 'green'
             SG[1][2]['eattr'] = 'foo'
-            assert_equal(G[1][2]['eattr'], 'foo')
-            assert_equal(SG[1][2]['eattr'], 'foo')
+            assert G[1][2]['eattr'] == 'foo'
+            assert SG[1][2]['eattr'] == 'foo'
             SG.nodes[1]['nattr'] = 'bar'
-            assert_equal(G.nodes[1]['nattr'], 'bar')
-            assert_equal(SG.nodes[1]['nattr'], 'bar')
+            assert G.nodes[1]['nattr'] == 'bar'
+            assert SG.nodes[1]['nattr'] == 'bar'
             SG.graph['gattr'] = 'baz'
-            assert_equal(G.graph['gattr'], 'baz')
-            assert_equal(SG.graph['gattr'], 'baz')
+            assert G.graph['gattr'] == 'baz'
+            assert SG.graph['gattr'] == 'baz'

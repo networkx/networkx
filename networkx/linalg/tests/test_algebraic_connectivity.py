@@ -66,12 +66,12 @@ class TestAlgebraicConnectivity(object):
         G = nx.Graph()
         G.add_nodes_from(range(2))
         for method in self._methods:
-            assert_equal(nx.algebraic_connectivity(G), 0)
+            assert nx.algebraic_connectivity(G) == 0
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
         G.add_edge(0, 1, weight=0)
         for method in self._methods:
-            assert_equal(nx.algebraic_connectivity(G), 0)
+            assert nx.algebraic_connectivity(G) == 0
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
 
@@ -213,10 +213,10 @@ class TestSpectralOrdering(object):
         for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
             G = graph()
             G.add_node('x')
-            assert_equal(nx.spectral_ordering(G), ['x'])
+            assert nx.spectral_ordering(G) == ['x']
             G.add_edge('x', 'x', weight=33)
             G.add_edge('x', 'x', weight=33)
-            assert_equal(nx.spectral_ordering(G), ['x'])
+            assert nx.spectral_ordering(G) == ['x']
 
     def test_unrecognized_method(self):
         G = nx.path_graph(4)
@@ -229,13 +229,13 @@ class TestSpectralOrdering(object):
                                   weight='spam')
         for method in self._methods:
             order = nx.spectral_ordering(G, weight='spam', method=method)
-            assert_equal(set(order), set(G))
+            assert set(order) == set(G)
             ok_(set([1, 3]) in (set(order[:-1]), set(order[1:])))
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
-            assert_equal(set(order), set(G))
+            assert set(order) == set(G)
             ok_(set([2, 3]) in (set(order[:-1]), set(order[1:])))
 
     def test_path(self):
@@ -266,7 +266,7 @@ class TestSpectralOrdering(object):
         nx.add_path(G, range(1, 10, 2))
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
-            assert_equal(set(order), set(G))
+            assert set(order) == set(G)
             seqs = [list(range(0, 10, 2)), list(range(8, -1, -2)),
                     list(range(1, 10, 2)), list(range(9, -1, -2))]
             ok_(order[:5] in seqs)

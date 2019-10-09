@@ -20,36 +20,36 @@ class TestAttractingComponents(object):
 
     def test_attracting_components(self):
         ac = list(nx.attracting_components(self.G1))
-        assert_true({2} in ac)
-        assert_true({9} in ac)
-        assert_true({10} in ac)
+        assert {2} in ac
+        assert {9} in ac
+        assert {10} in ac
 
         ac = list(nx.attracting_components(self.G2))
         ac = [tuple(sorted(x)) for x in ac]
-        assert_true(ac == [(1, 2)])
+        assert ac == [(1, 2)]
 
         ac = list(nx.attracting_components(self.G3))
         ac = [tuple(sorted(x)) for x in ac]
-        assert_true((1, 2) in ac)
-        assert_true((3, 4) in ac)
-        assert_equal(len(ac), 2)
+        assert (1, 2) in ac
+        assert (3, 4) in ac
+        assert len(ac) == 2
 
         ac = list(nx.attracting_components(self.G4))
-        assert_equal(ac, [])
+        assert ac == []
 
     def test_number_attacting_components(self):
-        assert_equal(nx.number_attracting_components(self.G1), 3)
-        assert_equal(nx.number_attracting_components(self.G2), 1)
-        assert_equal(nx.number_attracting_components(self.G3), 2)
-        assert_equal(nx.number_attracting_components(self.G4), 0)
+        assert nx.number_attracting_components(self.G1) == 3
+        assert nx.number_attracting_components(self.G2) == 1
+        assert nx.number_attracting_components(self.G3) == 2
+        assert nx.number_attracting_components(self.G4) == 0
 
     def test_is_attracting_component(self):
-        assert_false(nx.is_attracting_component(self.G1))
-        assert_false(nx.is_attracting_component(self.G2))
-        assert_false(nx.is_attracting_component(self.G3))
+        assert not nx.is_attracting_component(self.G1)
+        assert not nx.is_attracting_component(self.G2)
+        assert not nx.is_attracting_component(self.G3)
         g2 = self.G3.subgraph([1, 2])
-        assert_true(nx.is_attracting_component(g2))
-        assert_false(nx.is_attracting_component(self.G4))
+        assert nx.is_attracting_component(g2)
+        assert not nx.is_attracting_component(self.G4)
 
     def test_connected_raise(self):
         G = nx.Graph()

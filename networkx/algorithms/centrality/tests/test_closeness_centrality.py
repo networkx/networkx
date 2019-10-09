@@ -257,8 +257,8 @@ class TestClosenessCentrality:
         G.remove_edges_from([edge])
         real_cc = nx.closeness_centrality(G)
         shared_items = set(test_cc.items()) & set(real_cc.items())
-        assert_equals(len(shared_items), len(real_cc))
-        assert_in(0, test_cc.values())
+        assert len(shared_items) == len(real_cc)
+        assert 0 in test_cc.values()
 
     def test_incremental(self):
         # Check that incremental and regular give same output
@@ -301,6 +301,6 @@ class TestClosenessCentrality:
             # incremental time: 0.00947
             # regular time: 0.188
 
-            assert_equals(set(test_cc.items()), set(real_cc.items()))
+            assert set(test_cc.items()) == set(real_cc.items())
 
             prev_cc = test_cc

@@ -22,11 +22,11 @@ class TestTree:
         G.add_edge(1, 3, foo=10)
         G.add_edge(3, 4, foo=10)
         H = tree_graph(tree_data(G, 1))
-        assert_equal(H.nodes[1]['color'], 'red')
+        assert H.nodes[1]['color'] == 'red'
 
         d = json.dumps(tree_data(G, 1))
         H = tree_graph(json.loads(d))
-        assert_equal(H.nodes[1]['color'], 'red')
+        assert H.nodes[1]['color'] == 'red'
 
     @raises(nx.NetworkXError)
     def test_exception(self):

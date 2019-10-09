@@ -132,9 +132,9 @@ class TestPageRank(object):
 
     def test_empty(self):
         G = networkx.Graph()
-        assert_equal(networkx.pagerank(G), {})
-        assert_equal(networkx.pagerank_numpy(G), {})
-        assert_equal(networkx.google_matrix(G).shape, (0, 0))
+        assert networkx.pagerank(G) == {}
+        assert networkx.pagerank_numpy(G) == {}
+        assert networkx.google_matrix(G).shape == (0, 0)
 
 
 class TestPageRankScipy(TestPageRank):
@@ -172,4 +172,4 @@ class TestPageRankScipy(TestPageRank):
 
     def test_empty_scipy(self):
         G = networkx.Graph()
-        assert_equal(networkx.pagerank_scipy(G), {})
+        assert networkx.pagerank_scipy(G) == {}

@@ -47,19 +47,15 @@ def test_average_connectivity():
     G3 = nx.Graph()
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
-        assert_equal(nx.average_node_connectivity(G1, **kwargs), 1,
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(nx.average_node_connectivity(G2, **kwargs), 2.2,
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(nx.average_node_connectivity(G3, **kwargs), 0,
-                     msg=msg.format(flow_func.__name__))
+        assert nx.average_node_connectivity(G1, **kwargs) == 1, msg.format(flow_func.__name__)
+        assert nx.average_node_connectivity(G2, **kwargs) == 2.2, msg.format(flow_func.__name__)
+        assert nx.average_node_connectivity(G3, **kwargs) == 0, msg.format(flow_func.__name__)
 
 
 def test_average_connectivity_directed():
     G = nx.DiGraph([(1, 3), (1, 4), (1, 5)])
     for flow_func in flow_funcs:
-        assert_equal(nx.average_node_connectivity(G), 0.25,
-                     msg=msg.format(flow_func.__name__))
+        assert nx.average_node_connectivity(G) == 0.25, msg.format(flow_func.__name__)
 
 
 def test_articulation_points():
@@ -67,8 +63,7 @@ def test_articulation_points():
     for flow_func in flow_funcs:
         for i in range(3):
             G = next(Ggen)
-            assert_equal(nx.node_connectivity(G, flow_func=flow_func), 1,
-                         msg=msg.format(flow_func.__name__))
+            assert nx.node_connectivity(G, flow_func=flow_func) == 1, msg.format(flow_func.__name__)
 
 
 def test_brandes_erlebach():
@@ -80,18 +75,12 @@ def test_brandes_erlebach():
                       (7, 10), (8, 11), (9, 10), (9, 11), (10, 11)])
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
-        assert_equal(3, local_edge_connectivity(G, 1, 11, **kwargs),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(3, nx.edge_connectivity(G, 1, 11, **kwargs),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(2, local_node_connectivity(G, 1, 11, **kwargs),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(2, nx.node_connectivity(G, 1, 11, **kwargs),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(2, nx.edge_connectivity(G, **kwargs),  # node 5 has degree 2
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(2, nx.node_connectivity(G, **kwargs),
-                     msg=msg.format(flow_func.__name__))
+        assert 3 == local_edge_connectivity(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
+        assert 3 == nx.edge_connectivity(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
+        assert 2 == local_node_connectivity(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
+        assert 2 == nx.node_connectivity(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
+        assert 2 == nx.edge_connectivity(G, **kwargs), msg.format(flow_func.__name__)
+        assert 2 == nx.node_connectivity(G, **kwargs), msg.format(flow_func.__name__)
 
 
 def test_white_harary_1():
@@ -108,10 +97,8 @@ def test_white_harary_1():
     for i in range(7, 10):
         G.add_edge(0, i)
     for flow_func in flow_funcs:
-        assert_equal(1, nx.node_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(3, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 1 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 3 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_white_harary_2():
@@ -120,83 +107,65 @@ def test_white_harary_2():
     G = nx.disjoint_union(nx.complete_graph(4), nx.complete_graph(4))
     G.add_edge(0, 4)
     # kappa <= lambda <= delta
-    assert_equal(3, min(nx.core_number(G).values()))
+    assert 3 == min(nx.core_number(G).values())
     for flow_func in flow_funcs:
-        assert_equal(1, nx.node_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(1, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 1 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 1 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_complete_graphs():
     for n in range(5, 20, 5):
         for flow_func in flow_funcs:
             G = nx.complete_graph(n)
-            assert_equal(n - 1, nx.node_connectivity(G, flow_func=flow_func),
-                         msg=msg.format(flow_func.__name__))
-            assert_equal(n - 1, nx.node_connectivity(G.to_directed(),
-                                                     flow_func=flow_func),
-                         msg=msg.format(flow_func.__name__))
-            assert_equal(n - 1, nx.edge_connectivity(G, flow_func=flow_func),
-                         msg=msg.format(flow_func.__name__))
-            assert_equal(n - 1, nx.edge_connectivity(G.to_directed(),
-                                                     flow_func=flow_func),
-                         msg=msg.format(flow_func.__name__))
+            assert n - 1 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+            assert n - 1 == nx.node_connectivity(G.to_directed(),
+                                                     flow_func=flow_func), msg.format(flow_func.__name__)
+            assert n - 1 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+            assert n - 1 == nx.edge_connectivity(G.to_directed(),
+                                                     flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_empty_graphs():
     for k in range(5, 25, 5):
         G = nx.empty_graph(k)
         for flow_func in flow_funcs:
-            assert_equal(0, nx.node_connectivity(G, flow_func=flow_func),
-                         msg=msg.format(flow_func.__name__))
-            assert_equal(0, nx.edge_connectivity(G, flow_func=flow_func),
-                         msg=msg.format(flow_func.__name__))
+            assert 0 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+            assert 0 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_petersen():
     G = nx.petersen_graph()
     for flow_func in flow_funcs:
-        assert_equal(3, nx.node_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(3, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 3 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 3 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_tutte():
     G = nx.tutte_graph()
     for flow_func in flow_funcs:
-        assert_equal(3, nx.node_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(3, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 3 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 3 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_dodecahedral():
     G = nx.dodecahedral_graph()
     for flow_func in flow_funcs:
-        assert_equal(3, nx.node_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(3, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 3 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 3 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_octahedral():
     G = nx.octahedral_graph()
     for flow_func in flow_funcs:
-        assert_equal(4, nx.node_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(4, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 4 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 4 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_icosahedral():
     G = nx.icosahedral_graph()
     for flow_func in flow_funcs:
-        assert_equal(5, nx.node_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(5, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 5 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 5 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_missing_source():
@@ -232,10 +201,8 @@ def test_not_weakly_connected():
     nx.add_path(G, [1, 2, 3])
     nx.add_path(G, [4, 5])
     for flow_func in flow_funcs:
-        assert_equal(nx.node_connectivity(G), 0,
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(nx.edge_connectivity(G), 0,
-                     msg=msg.format(flow_func.__name__))
+        assert nx.node_connectivity(G) == 0, msg.format(flow_func.__name__)
+        assert nx.edge_connectivity(G) == 0, msg.format(flow_func.__name__)
 
 
 def test_not_connected():
@@ -243,28 +210,20 @@ def test_not_connected():
     nx.add_path(G, [1, 2, 3])
     nx.add_path(G, [4, 5])
     for flow_func in flow_funcs:
-        assert_equal(nx.node_connectivity(G), 0,
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(nx.edge_connectivity(G), 0,
-                     msg=msg.format(flow_func.__name__))
+        assert nx.node_connectivity(G) == 0, msg.format(flow_func.__name__)
+        assert nx.edge_connectivity(G) == 0, msg.format(flow_func.__name__)
 
 
 def test_directed_edge_connectivity():
     G = nx.cycle_graph(10, create_using=nx.DiGraph())  # only one direction
     D = nx.cycle_graph(10).to_directed()  # 2 reciprocal edges
     for flow_func in flow_funcs:
-        assert_equal(1, nx.edge_connectivity(G, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(1, local_edge_connectivity(G, 1, 4, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(1, nx.edge_connectivity(G, 1, 4, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(2, nx.edge_connectivity(D, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(2, local_edge_connectivity(D, 1, 4, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
-        assert_equal(2, nx.edge_connectivity(D, 1, 4, flow_func=flow_func),
-                     msg=msg.format(flow_func.__name__))
+        assert 1 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 1 == local_edge_connectivity(G, 1, 4, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 1 == nx.edge_connectivity(G, 1, 4, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 2 == nx.edge_connectivity(D, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 2 == local_edge_connectivity(D, 1, 4, flow_func=flow_func), msg.format(flow_func.__name__)
+        assert 2 == nx.edge_connectivity(D, 1, 4, flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_cutoff():
@@ -276,8 +235,7 @@ def test_cutoff():
                 continue
             for cutoff in [3, 2, 1]:
                 result = local_func(G, 0, 4, flow_func=flow_func, cutoff=cutoff)
-                assert_equal(cutoff, result,
-                             msg="cutoff error in {0}".format(flow_func.__name__))
+                assert cutoff == result, "cutoff error in {0}".format(flow_func.__name__)
 
 
 def test_invalid_auxiliary():
@@ -306,7 +264,7 @@ def test_edge_connectivity_flow_vs_stoer_wagner():
     ]
     for graph_func in graph_funcs:
         G = graph_func()
-        assert_equal(nx.stoer_wagner(G)[0], nx.edge_connectivity(G))
+        assert nx.stoer_wagner(G)[0] == nx.edge_connectivity(G)
 
 
 class TestAllPairsNodeConnectivity:
@@ -330,42 +288,42 @@ class TestAllPairsNodeConnectivity:
         K_undir = nx.all_pairs_node_connectivity(self.cycle)
         for source in K_undir:
             for target, k in K_undir[source].items():
-                assert_true(k == 2)
+                assert k == 2
         K_dir = nx.all_pairs_node_connectivity(self.directed_cycle)
         for source in K_dir:
             for target, k in K_dir[source].items():
-                assert_true(k == 1)
+                assert k == 1
 
     def test_complete(self):
         for G in [self.K10, self.K5, self.K20]:
             K = nx.all_pairs_node_connectivity(G)
             for source in K:
                 for target, k in K[source].items():
-                    assert_true(k == len(G) - 1)
+                    assert k == len(G) - 1
 
     def test_paths(self):
         K_undir = nx.all_pairs_node_connectivity(self.path)
         for source in K_undir:
             for target, k in K_undir[source].items():
-                assert_true(k == 1)
+                assert k == 1
         K_dir = nx.all_pairs_node_connectivity(self.directed_path)
         for source in K_dir:
             for target, k in K_dir[source].items():
                 if source < target:
-                    assert_true(k == 1)
+                    assert k == 1
                 else:
-                    assert_true(k == 0)
+                    assert k == 0
 
     def test_all_pairs_connectivity_nbunch(self):
         G = nx.complete_graph(5)
         nbunch = [0, 2, 3]
         C = nx.all_pairs_node_connectivity(G, nbunch=nbunch)
-        assert_equal(len(C), len(nbunch))
+        assert len(C) == len(nbunch)
 
     def test_all_pairs_connectivity_icosahedral(self):
         G = nx.icosahedral_graph()
         C = nx.all_pairs_node_connectivity(G)
-        assert_true(all(5 == C[u][v] for u, v in itertools.combinations(G, 2)))
+        assert all(5 == C[u][v] for u, v in itertools.combinations(G, 2))
 
     def test_all_pairs_connectivity(self):
         G = nx.Graph()
@@ -375,7 +333,7 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.combinations(nodes, 2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G)
-        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
                      sorted((k, sorted(v)) for k, v in C.items()))
 
     def test_all_pairs_connectivity_directed(self):
@@ -386,7 +344,7 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.permutations(nodes, 2):
             A[u][v] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G)
-        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
                      sorted((k, sorted(v)) for k, v in C.items()))
 
     def test_all_pairs_connectivity_nbunch_combinations(self):
@@ -396,7 +354,7 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.combinations(nbunch, 2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G, nbunch=nbunch)
-        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
                      sorted((k, sorted(v)) for k, v in C.items()))
 
     def test_all_pairs_connectivity_nbunch_iter(self):
@@ -406,5 +364,5 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.combinations(nbunch, 2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G, nbunch=iter(nbunch))
-        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
                      sorted((k, sorted(v)) for k, v in C.items()))

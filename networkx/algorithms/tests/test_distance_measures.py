@@ -15,61 +15,61 @@ class TestDistance:
         self.G = G
 
     def test_eccentricity(self):
-        assert_equal(nx.eccentricity(self.G, 1), 6)
+        assert nx.eccentricity(self.G, 1) == 6
         e = nx.eccentricity(self.G)
-        assert_equal(e[1], 6)
+        assert e[1] == 6
 
         sp = dict(nx.shortest_path_length(self.G))
         e = nx.eccentricity(self.G, sp=sp)
-        assert_equal(e[1], 6)
+        assert e[1] == 6
 
         e = nx.eccentricity(self.G, v=1)
-        assert_equal(e, 6)
+        assert e == 6
 
         # This behavior changed in version 1.8 (ticket #739)
         e = nx.eccentricity(self.G, v=[1, 1])
-        assert_equal(e[1], 6)
+        assert e[1] == 6
         e = nx.eccentricity(self.G, v=[1, 2])
-        assert_equal(e[1], 6)
+        assert e[1] == 6
 
         # test against graph with one node
         G = nx.path_graph(1)
         e = nx.eccentricity(G)
-        assert_equal(e[0], 0)
+        assert e[0] == 0
         e = nx.eccentricity(G, v=0)
-        assert_equal(e, 0)
+        assert e == 0
         assert_raises(nx.NetworkXError, nx.eccentricity, G, 1)
 
         # test against empty graph
         G = nx.empty_graph()
         e = nx.eccentricity(G)
-        assert_equal(e, {})
+        assert e == {}
 
     def test_diameter(self):
-        assert_equal(nx.diameter(self.G), 6)
+        assert nx.diameter(self.G) == 6
 
     def test_radius(self):
-        assert_equal(nx.radius(self.G), 4)
+        assert nx.radius(self.G) == 4
 
     def test_periphery(self):
-        assert_equal(set(nx.periphery(self.G)), set([1, 4, 13, 16]))
+        assert set(nx.periphery(self.G)) == set([1, 4, 13, 16])
 
     def test_center(self):
-        assert_equal(set(nx.center(self.G)), set([6, 7, 10, 11]))
+        assert set(nx.center(self.G)) == set([6, 7, 10, 11])
 
     def test_bound_diameter(self):
-        assert_equal(nx.diameter(self.G, usebounds=True), 6)
+        assert nx.diameter(self.G, usebounds=True) == 6
 
     def test_bound_radius(self):
-        assert_equal(nx.radius(self.G, usebounds=True), 4)
+        assert nx.radius(self.G, usebounds=True) == 4
 
     def test_bound_periphery(self):
         result = set([1, 4, 13, 16])
-        assert_equal(set(nx.periphery(self.G, usebounds=True)), result)
+        assert set(nx.periphery(self.G, usebounds=True)) == result
 
     def test_bound_center(self):
         result = set([6, 7, 10, 11])
-        assert_equal(set(nx.center(self.G, usebounds=True)), result)
+        assert set(nx.center(self.G, usebounds=True)) == result
 
     def test_radius_exception(self):
         G = nx.Graph()
@@ -123,8 +123,8 @@ class TestResistanceDistance:
         N = sp_sparse.csr_matrix([[5, 6],
                                      [8, 9]], dtype=np.float32)
         Mn, Mn_nodelist = _laplacian_submatrix(1, M, [1, 2, 3])
-        assert_equal(Mn_nodelist, [2, 3])
-        assert_true(np.allclose(Mn.toarray(), N.toarray()))
+        assert Mn_nodelist == [2, 3]
+        assert np.allclose(Mn.toarray(), N.toarray())
 
     @raises(nx.NetworkXError)
     def test_laplacian_submatrix_square(self):
@@ -145,22 +145,22 @@ class TestResistanceDistance:
     def test_resistance_distance(self):
         rd = nx.resistance_distance(self.G, 1, 3, 'weight', True)
         test_data = 1/(1/(2+4) + 1/(1+3))
-        assert_equal(round(rd, 5), round(test_data, 5))
+        assert round(rd, 5) == round(test_data, 5)
 
     def test_resistance_distance_noinv(self):
         rd = nx.resistance_distance(self.G, 1, 3, 'weight', False)
         test_data = 1/(1/(1/2+1/4) + 1/(1/1+1/3))
-        assert_equal(round(rd, 5), round(test_data, 5))
+        assert round(rd, 5) == round(test_data, 5)
 
     def test_resistance_distance_no_weight(self):
         rd = nx.resistance_distance(self.G, 1, 3)
-        assert_equal(round(rd, 5), 1)
+        assert round(rd, 5) == 1
 
     def test_resistance_distance_neg_weight(self):
         self.G[2][3]['weight'] = -4
         rd = nx.resistance_distance(self.G, 1, 3, 'weight', True)
         test_data = 1/(1/(2+-4) + 1/(1+3))
-        assert_equal(round(rd, 5), round(test_data, 5))
+        assert round(rd, 5) == round(test_data, 5)
 
     def test_multigraph(self):
         G = nx.MultiGraph()
@@ -169,7 +169,7 @@ class TestResistanceDistance:
         G.add_edge(3, 4, weight=1)
         G.add_edge(1, 4, weight=3)
         rd = nx.resistance_distance(G, 1, 3, 'weight', True)
-        assert_true(np.isclose(rd, 1/(1/(2+4) + 1/(1+3))))
+        assert np.isclose(rd, 1/(1/(2+4) + 1/(1+3)))
 
     @raises(ZeroDivisionError)
     def test_resistance_distance_div0(self):
@@ -199,8 +199,8 @@ class TestBarycenter(object):
     def barycenter_as_subgraph(self, g, **kwargs):
         """Return the subgraph induced on the barycenter of g"""
         b = nx.barycenter(g, **kwargs)
-        assert_is_instance(b, list)
-        assert_less_equal(set(b), set(g))
+        assert isinstance(b, list)
+        assert set(b) <= set(g)
         return g.subgraph(b)
 
     def test_must_be_connected(self):
@@ -210,7 +210,7 @@ class TestBarycenter(object):
         # Complete graph K_5. Normally it works...
         K_5 = nx.complete_graph(5)
         sp = dict(nx.shortest_path_length(K_5))
-        assert_equal(nx.barycenter(K_5, sp=sp), list(K_5))
+        assert nx.barycenter(K_5, sp=sp) == list(K_5)
 
         # ...but not with the weight argument
         for u, v, data in K_5.edges.data():
@@ -231,10 +231,10 @@ class TestBarycenter(object):
             RT = nx.random_tree(prng.randint(1, 75), prng)
             b = self.barycenter_as_subgraph(RT)
             if len(b) == 2:
-                assert_equal(b.size(), 1)
+                assert b.size() == 1
             else:
-                assert_equal(len(b), 1)
-                assert_equal(b.size(), 0)
+                assert len(b) == 1
+                assert b.size() == 0
 
     def test_this_one_specific_tree(self):
         """Test the tree pictured at the bottom of [West01]_, p. 78."""
@@ -246,20 +246,20 @@ class TestBarycenter(object):
             'z': ['y', 0, 1, 2, 3, 4],
             0: ['z'], 1: ['z'], 2: ['z'], 3: ['z'], 4: ['z']})
         b = self.barycenter_as_subgraph(g, attr='barycentricity')
-        assert_equal(list(b), ['z'])
-        assert_false(b.edges)
+        assert list(b) == ['z']
+        assert not b.edges
         expected_barycentricity = {0: 23, 1: 23, 2: 23, 3: 23, 4: 23,
                                    'a': 35, 'b': 27, 'x': 21, 'y': 17, 'z': 15
                                    }
         for node, barycentricity in expected_barycentricity.items():
-            assert_equal(g.nodes[node]['barycentricity'], barycentricity)
+            assert g.nodes[node]['barycentricity'] == barycentricity
 
         # Doubling weights should do nothing but double the barycentricities
         for edge in g.edges:
             g.edges[edge]['weight'] = 2
         b = self.barycenter_as_subgraph(g, weight='weight',
                                         attr='barycentricity2')
-        assert_equal(list(b), ['z'])
-        assert_false(b.edges)
+        assert list(b) == ['z']
+        assert not b.edges
         for node, barycentricity in expected_barycentricity.items():
-            assert_equal(g.nodes[node]['barycentricity2'], barycentricity*2)
+            assert g.nodes[node]['barycentricity2'] == barycentricity*2

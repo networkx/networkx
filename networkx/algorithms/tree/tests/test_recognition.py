@@ -56,26 +56,26 @@ class TestTreeRecognition(object):
         nx.is_forest(self.multigraph())
 
     def test_is_tree(self):
-        assert_true(nx.is_tree(self.T2))
-        assert_true(nx.is_tree(self.T3))
-        assert_true(nx.is_tree(self.T5))
+        assert nx.is_tree(self.T2)
+        assert nx.is_tree(self.T3)
+        assert nx.is_tree(self.T5)
 
     def test_is_not_tree(self):
-        assert_false(nx.is_tree(self.N4))
-        assert_false(nx.is_tree(self.N5))
-        assert_false(nx.is_tree(self.N6))
+        assert not nx.is_tree(self.N4)
+        assert not nx.is_tree(self.N5)
+        assert not nx.is_tree(self.N6)
 
     def test_is_forest(self):
-        assert_true(nx.is_forest(self.T2))
-        assert_true(nx.is_forest(self.T3))
-        assert_true(nx.is_forest(self.T5))
-        assert_true(nx.is_forest(self.F1))
-        assert_true(nx.is_forest(self.N5))
+        assert nx.is_forest(self.T2)
+        assert nx.is_forest(self.T3)
+        assert nx.is_forest(self.T5)
+        assert nx.is_forest(self.F1)
+        assert nx.is_forest(self.N5)
 
     def test_is_not_forest(self):
-        assert_false(nx.is_forest(self.N4))
-        assert_false(nx.is_forest(self.N6))
-        assert_false(nx.is_forest(self.NF1))
+        assert not nx.is_forest(self.N4)
+        assert not nx.is_forest(self.N6)
+        assert not nx.is_forest(self.NF1)
 
 
 class TestDirectedTreeRecognition(TestTreeRecognition):
@@ -87,39 +87,39 @@ def test_disconnected_graph():
     # https://github.com/networkx/networkx/issues/1144
     G = nx.Graph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4)])
-    assert_false(nx.is_tree(G))
+    assert not nx.is_tree(G)
 
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4)])
-    assert_false(nx.is_tree(G))
+    assert not nx.is_tree(G)
 
 
 def test_dag_nontree():
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (0, 2), (1, 2)])
-    assert_false(nx.is_tree(G))
-    assert_true(nx.is_directed_acyclic_graph(G))
+    assert not nx.is_tree(G)
+    assert nx.is_directed_acyclic_graph(G)
 
 
 def test_multicycle():
     G = nx.MultiDiGraph()
     G.add_edges_from([(0, 1), (0, 1)])
-    assert_false(nx.is_tree(G))
-    assert_true(nx.is_directed_acyclic_graph(G))
+    assert not nx.is_tree(G)
+    assert nx.is_directed_acyclic_graph(G)
 
 
 def test_emptybranch():
     G = nx.DiGraph()
     G.add_nodes_from(range(10))
-    assert_true(nx.is_branching(G))
-    assert_false(nx.is_arborescence(G))
+    assert nx.is_branching(G)
+    assert not nx.is_arborescence(G)
 
 
 def test_path():
     G = nx.DiGraph()
     nx.add_path(G, range(5))
-    assert_true(nx.is_branching(G))
-    assert_true(nx.is_arborescence(G))
+    assert nx.is_branching(G)
+    assert nx.is_arborescence(G)
 
 
 def test_notbranching1():
@@ -127,8 +127,8 @@ def test_notbranching1():
     G = nx.MultiDiGraph()
     G.add_nodes_from(range(10))
     G.add_edges_from([(0, 1), (1, 0)])
-    assert_false(nx.is_branching(G))
-    assert_false(nx.is_arborescence(G))
+    assert not nx.is_branching(G)
+    assert not nx.is_arborescence(G)
 
 
 def test_notbranching2():
@@ -136,8 +136,8 @@ def test_notbranching2():
     G = nx.MultiDiGraph()
     G.add_nodes_from(range(10))
     G.add_edges_from([(0, 1), (0, 2), (3, 2)])
-    assert_false(nx.is_branching(G))
-    assert_false(nx.is_arborescence(G))
+    assert not nx.is_branching(G)
+    assert not nx.is_arborescence(G)
 
 
 def test_notarborescence1():
@@ -145,8 +145,8 @@ def test_notarborescence1():
     G = nx.MultiDiGraph()
     G.add_nodes_from(range(10))
     G.add_edges_from([(0, 1), (0, 2), (1, 3), (5, 6)])
-    assert_true(nx.is_branching(G))
-    assert_false(nx.is_arborescence(G))
+    assert nx.is_branching(G)
+    assert not nx.is_arborescence(G)
 
 
 def test_notarborescence2():
@@ -154,5 +154,5 @@ def test_notarborescence2():
     G = nx.MultiDiGraph()
     nx.add_path(G, range(5))
     G.add_edge(6, 4)
-    assert_false(nx.is_branching(G))
-    assert_false(nx.is_arborescence(G))
+    assert not nx.is_branching(G)
+    assert not nx.is_arborescence(G)

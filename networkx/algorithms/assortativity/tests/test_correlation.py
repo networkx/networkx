@@ -65,15 +65,15 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
 
     def test_attribute_assortativity_undirected(self):
         r = nx.attribute_assortativity_coefficient(self.G, 'fish')
-        assert_equal(r, 6.0 / 22.0)
+        assert r == 6.0 / 22.0
 
     def test_attribute_assortativity_directed(self):
         r = nx.attribute_assortativity_coefficient(self.D, 'fish')
-        assert_equal(r, 1.0 / 3.0)
+        assert r == 1.0 / 3.0
 
     def test_attribute_assortativity_multigraph(self):
         r = nx.attribute_assortativity_coefficient(self.M, 'fish')
-        assert_equal(r, 1.0)
+        assert r == 1.0
 
     def test_attribute_assortativity_coefficient(self):
         # from "Mixing patterns in networks"

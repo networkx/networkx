@@ -92,10 +92,10 @@ class TestShp(object):
             expected = nx.DiGraph()
             for p in paths:
                 nx.add_path(expected, p)
-            assert_equal(sorted(expected.nodes), sorted(g.nodes))
-            assert_equal(sorted(expected.edges()), sorted(g.edges()))
+            assert sorted(expected.nodes) == sorted(g.nodes)
+            assert sorted(expected.edges()) == sorted(g.edges())
             g_names = [g.get_edge_data(s, e)['Name'] for s, e in g.edges()]
-            assert_equal(names, sorted(g_names))
+            assert names == sorted(g_names)
 
         # simplified
         G = nx.read_shp(self.shppath)
@@ -116,7 +116,7 @@ class TestShp(object):
         while feature:
             actualwkt.append(feature.GetGeometryRef().ExportToWkt())
             feature = lyr.GetNextFeature()
-        assert_equal(sorted(expected), sorted(actualwkt))
+        assert sorted(expected) == sorted(actualwkt)
 
     def test_geometryexport(self):
         expectedpoints_simple = (
@@ -171,7 +171,7 @@ class TestShp(object):
                 last = ref.GetPointCount() - 1
                 edge_nodes = (ref.GetPoint_2D(0), ref.GetPoint_2D(last))
                 name = feature.GetFieldAsString('Name')
-                assert_equal(graph.get_edge_data(*edge_nodes)['Name'], name)
+                assert graph.get_edge_data(*edge_nodes)['Name'] == name
                 feature = lyr.GetNextFeature()
 
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
@@ -199,7 +199,7 @@ class TestShp(object):
 
         H = nx.read_shp(tpath)
         for n, d in H.nodes(data=True):
-            assert_equal(d['label'], label)
+            assert d['label'] == label
 
     def test_wkt_export(self):
         G = nx.DiGraph()
@@ -307,6 +307,6 @@ class TestMissingAttrWrite(object):
 
         for u, v, d in H.edges(data=True):
             if u == A and v == B:
-                assert_equal(d['foo'], 100)
+                assert d['foo'] == 100
             if u == A and v == C:
-                assert_equal(d['foo'], None)
+                assert d['foo'] == None

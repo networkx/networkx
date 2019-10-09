@@ -47,19 +47,19 @@ class TestMaximalIndependantSet(object):
     def test_random_seed(self):
         G = nx.complete_graph(5)
         for node in G:
-            assert_equal(nx.maximal_independent_set(G, [node], seed=1), [node])
+            assert nx.maximal_independent_set(G, [node], seed=1) == [node]
 
     def test_K5(self):
         """Maximal independent set: K5"""
         G = nx.complete_graph(5)
         for node in G:
-            assert_equal(nx.maximal_independent_set(G, [node]), [node])
+            assert nx.maximal_independent_set(G, [node]) == [node]
 
     def test_K55(self):
         """Maximal independent set: K55"""
         G = nx.complete_graph(55)
         for node in G:
-            assert_equal(nx.maximal_independent_set(G, [node]), [node])
+            assert nx.maximal_independent_set(G, [node]) == [node]
 
     def test_exception(self):
         """Bad input should raise exception."""
@@ -76,14 +76,14 @@ class TestMaximalIndependantSet(object):
     def test_florentine_family(self):
         G = self.florentine
         indep = nx.maximal_independent_set(G, ["Medici", "Bischeri"])
-        assert_equal(sorted(indep),
+        assert (sorted(indep) ==
                      sorted(["Medici", "Bischeri", "Castellani", "Pazzi",
                              "Ginori", "Lamberteschi"]))
 
     def test_bipartite(self):
         G = nx.complete_bipartite_graph(12, 34)
         indep = nx.maximal_independent_set(G, [4, 5, 9, 10])
-        assert_equal(sorted(indep), list(range(12)))
+        assert sorted(indep) == list(range(12))
 
     def test_random_graphs(self):
         """Generate 50 random graphs of different types and sizes and
@@ -91,7 +91,7 @@ class TestMaximalIndependantSet(object):
         for i in range(0, 50, 10):
             G = nx.random_graphs.erdos_renyi_graph(i * 10 + 1, random.random())
             IS = nx.maximal_independent_set(G)
-            assert_false(list(G.subgraph(IS).edges()))
+            assert not list(G.subgraph(IS).edges())
             neighbors_of_MIS = set.union(*(set(G.neighbors(v)) for v in IS))
             for v in set(G.nodes()).difference(IS):
-                assert_true(v in neighbors_of_MIS)
+                assert v in neighbors_of_MIS

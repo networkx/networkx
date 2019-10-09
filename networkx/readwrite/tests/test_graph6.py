@@ -16,9 +16,9 @@ class TestGraph6Utils(object):
 
     def test_n_data_n_conversion(self):
         for i in [0, 1, 42, 62, 63, 64, 258047, 258048, 7744773, 68719476735]:
-            assert_equal(g6.data_to_n(g6.n_to_data(i))[0], i)
-            assert_equal(g6.data_to_n(g6.n_to_data(i))[1], [])
-            assert_equal(g6.data_to_n(g6.n_to_data(i) + [42, 43])[1],
+            assert g6.data_to_n(g6.n_to_data(i))[0] == i
+            assert g6.data_to_n(g6.n_to_data(i))[1] == []
+            assert (g6.data_to_n(g6.n_to_data(i) + [42, 43])[1] ==
                          [42, 43])
 
 
@@ -47,9 +47,9 @@ class TestReadGraph6(TestCase):
         data = b'DF{\nD`{\nDqK\nD~{\n'
         fh = BytesIO(data)
         glist = nx.read_graph6(fh)
-        assert_equal(len(glist), 4)
+        assert len(glist) == 4
         for G in glist:
-            assert_equal(sorted(G), list(range(5)))
+            assert sorted(G) == list(range(5))
 
 
 class TestWriteGraph6(TestCase):
@@ -98,7 +98,7 @@ class TestWriteGraph6(TestCase):
             nx.write_graph6(g, gstr, header=False)
             # Strip the trailing newline.
             gstr = gstr.getvalue().rstrip()
-            assert_equal(len(gstr),
+            assert (len(gstr) ==
                          ((i - 1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
 
     def test_roundtrip(self):
@@ -119,8 +119,8 @@ class TestWriteGraph6(TestCase):
 
     def test_relabeling(self):
         G = nx.Graph([(0, 1)])
-        assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')
+        assert g6.to_graph6_bytes(G) == b'>>graph6<<A_\n'
         G = nx.Graph([(1, 2)])
-        assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')
+        assert g6.to_graph6_bytes(G) == b'>>graph6<<A_\n'
         G = nx.Graph([(1, 42)])
-        assert_equal(g6.to_graph6_bytes(G), b'>>graph6<<A_\n')
+        assert g6.to_graph6_bytes(G) == b'>>graph6<<A_\n'

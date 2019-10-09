@@ -11,11 +11,11 @@ def test_reversed():
     # no exception
     with nx.utils.reversed(G):
         pass
-    assert_true('B' in G['A'])
+    assert 'B' in G['A']
 
     # exception
     try:
         with nx.utils.reversed(G):
             raise Exception
     except:
-        assert_true('B' in G['A'])
+        assert 'B' in G['A']

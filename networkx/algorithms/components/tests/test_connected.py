@@ -55,27 +55,27 @@ class TestConnected:
             frozenset([4, 5, 6, 7, 8, 9]),
             frozenset([10, 11, 12, 13, 14])
         }
-        assert_equal({frozenset(g) for g in cc(G)}, C)
+        assert {frozenset(g) for g in cc(G)} == C
 
     def test_number_connected_components(self):
         ncc = nx.number_connected_components
-        assert_equal(ncc(self.G), 3)
+        assert ncc(self.G) == 3
 
     def test_number_connected_components2(self):
         ncc = nx.number_connected_components
-        assert_equal(ncc(self.grid), 1)
+        assert ncc(self.grid) == 1
 
     def test_connected_components2(self):
         cc = nx.connected_components
         G = self.grid
         C = {frozenset([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])}
-        assert_equal({frozenset(g) for g in cc(G)}, C)
+        assert {frozenset(g) for g in cc(G)} == C
 
     def test_node_connected_components(self):
         ncc = nx.node_connected_component
         G = self.grid
         C = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
-        assert_equal(ncc(G, 1), C)
+        assert ncc(G, 1) == C
 
     # deprecated
     def test_connected_component_subgraphs(self):
@@ -85,13 +85,13 @@ class TestConnected:
             U = G.to_undirected()
             w = {frozenset(g) for g in wcc(G)}
             c = {frozenset(g) for g in cc(U)}
-            assert_equal(w, c)
+            assert w == c
 
     def test_is_connected(self):
-        assert_true(nx.is_connected(self.grid))
+        assert nx.is_connected(self.grid)
         G = nx.Graph()
         G.add_nodes_from([1, 2])
-        assert_false(nx.is_connected(G))
+        assert not nx.is_connected(G)
 
     def test_connected_raise(self):
         assert_raises(NetworkXNotImplemented, nx.connected_components, self.DG)

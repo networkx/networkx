@@ -24,7 +24,7 @@ def test_single_node():
 
     communities = asyn_fluidc(test, 1)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_two_nodes():
@@ -37,7 +37,7 @@ def test_two_nodes():
 
     communities = asyn_fluidc(test, 2)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_two_clique_communities():
@@ -62,7 +62,7 @@ def test_two_clique_communities():
 
     communities = asyn_fluidc(test, 2, seed=7)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def five_clique_ring():
@@ -127,4 +127,4 @@ def five_clique_ring():
 
     communities = asyn_fluidc(test, 5, seed=9)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth

@@ -109,17 +109,17 @@ class TestStructuralHoles(object):
         G = self.G.copy()
         G.add_node(1)
         constraint = nx.constraint(G)
-        assert_true(math.isnan(constraint[1]))
+        assert math.isnan(constraint[1])
 
     def test_effective_size_isolated(self):
         G = self.G.copy()
         G.add_node(1)
         nx.set_edge_attributes(G, self.G_weights, 'weight')
         effective_size = nx.effective_size(G, weight='weight')
-        assert_true(math.isnan(effective_size[1]))
+        assert math.isnan(effective_size[1])
 
     def test_effective_size_borgatti_isolated(self):
         G = self.G.copy()
         G.add_node(1)
         effective_size = nx.effective_size(G)
-        assert_true(math.isnan(effective_size[1]))
+        assert math.isnan(effective_size[1])

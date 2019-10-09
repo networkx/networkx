@@ -44,18 +44,18 @@ class TestTreeLCA(object):
     @staticmethod
     def assert_has_same_pairs(d1, d2):
         for (a, b) in ((min(pair), max(pair)) for pair in chain(d1, d2)):
-            assert_equal(get_pair(d1, a, b), get_pair(d2, a, b))
+            assert get_pair(d1, a, b) == get_pair(d2, a, b)
 
     def test_tree_all_pairs_lowest_common_ancestor1(self):
         """Specifying the root is optional."""
-        assert_equal(dict(tree_all_pairs_lca(self.DG)), self.ans)
+        assert dict(tree_all_pairs_lca(self.DG)) == self.ans
 
     def test_tree_all_pairs_lowest_common_ancestor2(self):
         """Specifying only some pairs gives only those pairs."""
         test_pairs = [(0, 1), (0, 1), (1, 0)]
         ans = dict(tree_all_pairs_lca(self.DG, 0, test_pairs))
-        assert_true((0, 1) in ans and (1, 0) in ans)
-        assert_equal(len(ans), 2)
+        assert (0, 1) in ans and (1, 0) in ans
+        assert len(ans) == 2
 
     def test_tree_all_pairs_lowest_common_ancestor3(self):
         """Specifying no pairs same as specifying all."""
@@ -89,11 +89,11 @@ class TestTreeLCA(object):
         """Works on disconnected nodes."""
         G = nx.DiGraph()
         G.add_node(1)
-        assert_equal({(1, 1): 1}, dict(tree_all_pairs_lca(G)))
+        assert {(1, 1): 1} == dict(tree_all_pairs_lca(G))
 
         G.add_node(0)
-        assert_equal({(1, 1): 1}, dict(tree_all_pairs_lca(G, 1)))
-        assert_equal({(0, 0): 0}, dict(tree_all_pairs_lca(G, 0)))
+        assert {(1, 1): 1} == dict(tree_all_pairs_lca(G, 1))
+        assert {(0, 0): 0} == dict(tree_all_pairs_lca(G, 0))
 
         assert_raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
 
@@ -110,8 +110,8 @@ class TestTreeLCA(object):
         """Test that pairs works correctly as a generator."""
         pairs = iter([(0, 1), (0, 1), (1, 0)])
         some_pairs = dict(tree_all_pairs_lca(self.DG, 0, pairs))
-        assert_true((0, 1) in some_pairs and (1, 0) in some_pairs)
-        assert_equal(len(some_pairs), 2)
+        assert (0, 1) in some_pairs and (1, 0) in some_pairs
+        assert len(some_pairs) == 2
 
     def test_tree_all_pairs_lowest_common_ancestor10(self):
         """Test that pairs not in the graph raises error."""
@@ -150,7 +150,7 @@ class TestTreeLCA(object):
         G = nx.DiGraph()
         G.add_node(3)
         ans = list(tree_all_pairs_lca(G))
-        assert_equal(ans, [((3, 3), 3)])
+        assert ans == [((3, 3), 3)]
 
 
 class TestDAGLCA:
@@ -217,7 +217,7 @@ class TestDAGLCA:
             root_distance = nx.shortest_path_length(G, source=roots[0])
 
         for a, b in ((min(pair), max(pair)) for pair in chain(d1, d2)):
-            assert_equal(root_distance[get_pair(d1, a, b)],
+            assert (root_distance[get_pair(d1, a, b)] ==
                          root_distance[get_pair(d2, a, b)])
 
     def test_all_pairs_lowest_common_ancestor1(self):
@@ -265,7 +265,7 @@ class TestDAGLCA:
         G = self.DG.copy()
         G.add_node(-1)
         gen = all_pairs_lca(G, [(-1, -1), (-1, 0)])
-        assert_equal(dict(gen), {(-1, -1): -1})
+        assert dict(gen) == {(-1, -1): -1}
 
     def test_all_pairs_lowest_common_ancestor7(self):
         """Test that LCA on null graph bails."""
@@ -283,7 +283,7 @@ class TestDAGLCA:
         G = nx.DiGraph()
         G.add_node(3)
         ans = list(all_pairs_lca(G))
-        assert_equal(ans, [((3, 3), 3)])
+        assert ans == [((3, 3), 3)]
 
     def test_all_pairs_lowest_common_ancestor10(self):
         """Test that it bails on None as a node."""
@@ -296,11 +296,11 @@ class TestDAGLCA:
         """Test that the one-pair function works on default."""
         G = nx.DiGraph([(0, 1), (2, 1)])
         sentinel = object()
-        assert_is(nx.lowest_common_ancestor(G, 0, 2, default=sentinel),
+        assert (nx.lowest_common_ancestor(G, 0, 2, default=sentinel) is
                   sentinel)
 
     def test_lowest_common_ancestor2(self):
         """Test that the one-pair function works on identity."""
         G = nx.DiGraph()
         G.add_node(3)
-        assert_equal(nx.lowest_common_ancestor(G, 3, 3), 3)
+        assert nx.lowest_common_ancestor(G, 3, 3) == 3
