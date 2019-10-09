@@ -7,19 +7,15 @@ from networkx.testing import assert_nodes_equal, assert_edges_equal, \
 
 
 class TestConvertPandas(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
     @classmethod
     def setup_class(cls):
+        global pd
         try:
             import pandas as pd
         except ImportError:
             raise SkipTest('Pandas not available.')
 
-    def __init__(self):
-        global pd
-        import pandas as pd
-
+    def setup_method(self):
         self.rng = pd.np.random.RandomState(seed=5)
         ints = self.rng.randint(1, 11, size=(3, 2))
         a = ['A', 'B', 'C']
@@ -28,6 +24,7 @@ class TestConvertPandas(object):
         df[0] = a  # Column label 0 (int)
         df['b'] = b  # Column label 'b' (str)
         self.df = df
+
         mdf = pd.DataFrame([[4, 16, 'A', 'D']],
                            columns=['weight', 'cost', 0, 'b'])
         self.mdf = df.append(mdf)

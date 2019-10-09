@@ -19,7 +19,7 @@ class TestConvertNumpy(object):
         except ImportError:
             raise SkipTest('NumPy not available.')
 
-    def __init__(self):
+    def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)
 
@@ -262,10 +262,9 @@ class TestConvertNumpyArray(object):
         except ImportError:
             raise SkipTest('NumPy not available.')
 
-    def __init__(self):
+    def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)
-
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
 

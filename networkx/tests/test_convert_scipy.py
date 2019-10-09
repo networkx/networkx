@@ -18,7 +18,7 @@ class TestConvertNumpy(object):
         except ImportError:
             raise SkipTest('SciPy sparse library not available.')
 
-    def __init__(self):
+    def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)
 
