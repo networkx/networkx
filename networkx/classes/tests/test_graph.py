@@ -13,21 +13,21 @@ def test_deprecated():
     assert G.node == {0: {}, 1: {}, 2: {}}
 
     G = nx.DiGraph()
-    G.add_path([3, 4])
+    nx.add_path(G, [3, 4])
     assert G.adj == {3: {4: {}}, 4: {}}
 
     G = nx.DiGraph()
-    G.add_cycle([3, 4, 5])
+    nx.add_cycle(G, [3, 4, 5])
     assert G.adj == {3: {4: {}}, 4: {5: {}}, 5: {3: {}}}
 
     G = nx.DiGraph()
-    G.add_star([3, 4, 5])
+    nx.add_star(G, [3, 4, 5])
     assert G.adj == {3: {4: {}, 5: {}}, 4: {}, 5: {}}
 
     G = nx.DiGraph([(0, 0), (0, 1), (1, 2)])
-    assert G.number_of_selfloops() == 1
-    assert list(G.nodes_with_selfloops()) == [0]
-    assert list(G.selfloop_edges()) == [(0, 0)]
+    assert nx.number_of_selfloops(G) == 1
+    assert list(nx.nodes_with_selfloops(G)) == [0]
+    assert list(nx.selfloop_edges(G)) == [(0, 0)]
 
 
 class BaseGraphTester(object):

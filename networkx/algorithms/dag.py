@@ -20,7 +20,7 @@ to the user to check for that.
 """
 
 from collections import defaultdict, deque
-from fractions import gcd
+from math import gcd
 from functools import partial
 from itertools import chain
 from itertools import product
