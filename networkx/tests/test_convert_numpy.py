@@ -16,7 +16,7 @@ class TestConvertNumpy(object):
             import numpy as np
             np_assert_equal = np.testing.assert_equal
         except ImportError:
-            skip('Numpy not available', allow_module_level=True)
+            pytest.skip('Numpy not available', allow_module_level=True)
 
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)

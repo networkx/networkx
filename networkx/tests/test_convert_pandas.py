@@ -1,5 +1,5 @@
 import pytest
-numpy = pytest.importorskip("numpy")
+pd = pytest.importorskip("pandas")
 from nose.tools import assert_raises
 
 import networkx as nx
@@ -8,13 +8,13 @@ from networkx.testing import assert_nodes_equal, assert_edges_equal, \
 
 
 class TestConvertPandas(object):
-    @classmethod
-    def setup_class(cls):
-        global pd
-        try:
-            import pandas as pd
-        except ImportError:
-            raise SkipTest('Pandas not available.')
+#    @classmethod
+#    def setup_class(cls):
+#        global pd
+#        try:
+#            import pandas as pd
+#        except ImportError:
+#            raise SkipTest('Pandas not available.')
 
     def setup_method(self):
         self.rng = pd.np.random.RandomState(seed=5)
