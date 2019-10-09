@@ -133,7 +133,7 @@ Test an installed package
 
 From a shell command prompt you can test the installed package with::
 
-   pytest -pyargs networkx
+   pytest --pyargs networkx
 
 If you have a file-based (not a Python egg) installation you can test the
 installed package with::
