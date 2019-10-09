@@ -1,4 +1,5 @@
-from nose import SkipTest
+import pytest
+numpy = pytest.importorskip("numpy")
 from nose.tools import assert_raises
 
 import networkx as nx

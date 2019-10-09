@@ -1,14 +1,13 @@
-from nose import SkipTest
+import pytest
 from nose.tools import assert_raises
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 from networkx.testing.utils import assert_graphs_equal
 
+#numpy = pytest.importorskip("numpy")
 
 class TestConvertNumpy(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
     @classmethod
     def setup_class(cls):
         global np
@@ -17,7 +16,7 @@ class TestConvertNumpy(object):
             import numpy as np
             np_assert_equal = np.testing.assert_equal
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            skip('Numpy not available', allow_module_level=True)
 
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
