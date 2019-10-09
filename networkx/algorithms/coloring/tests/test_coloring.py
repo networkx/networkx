@@ -50,10 +50,9 @@ class TestColoring:
         for graph_func, n_nodes in BASIC_TEST_CASES.items():
             for interchange in [True, False]:
                 for strategy in ALL_STRATEGIES:
-                    if interchange and (strategy in INTERCHANGE_INVALID):
-                        continue
-                    yield (check_basic_case, graph_func,
-                           n_nodes, strategy, interchange)
+                    check_basic_case(graph_func, n_nodes, strategy, False)
+                    if strategy not in INTERCHANGE_INVALID:
+                        check_basic_case(graph_func, n_nodes, strategy, True)
 
     def test_special_cases(self):
         def check_special_case(strategy, graph_func, interchange, colors):
@@ -69,18 +68,14 @@ class TestColoring:
 
         for strategy, arglist in SPECIAL_TEST_CASES.items():
             for args in arglist:
-                yield (check_special_case, strategy, args[0], args[1], args[2])
+                check_special_case(strategy, args[0], args[1], args[2])
 
     def test_interchange_invalid(self):
         graph = one_node_graph()
-
-        def check_raises(strategy):
+        for strategy in INTERCHANGE_INVALID:
             assert_raises(nx.NetworkXPointlessConcept,
                           nx.coloring.greedy_color,
                           graph, strategy=strategy, interchange=True)
-
-        for strategy in INTERCHANGE_INVALID:
-            yield check_raises, strategy
 
     def test_bad_inputs(self):
         graph = one_node_graph()

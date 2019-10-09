@@ -21,7 +21,7 @@ cp .coveragerc $NX_INSTALL
 cd $NX_INSTALL
 printenv PWD
 
-# Run nosetests.
+# Run pytest.
 if [[ "${REPORT_COVERAGE}" == 1 ]]; then
   pytest --cov=networkx --pyargs networkx
   cp -a .coverage $NX_SOURCE
