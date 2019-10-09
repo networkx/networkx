@@ -118,19 +118,22 @@ Or, install any optional package (e.g., ``numpy``) individually::
 Testing
 -------
 
-NetworkX uses the Python ``nose`` testing package.  If you don't already have
-that package installed, follow the directions on the `nose homepage
-<https://nose.readthedocs.org/>`_.
+NetworkX uses the Python ``pytest`` testing package.  You can learn more
+about pytest on their `homepage <https://pytest.org>`_.
 
 Test a source distribution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can test the complete package from the unpacked source directory with::
 
-    nosetests networkx -v
+    pytest networkx
 
 Test an installed package
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+From a shell command prompt you can test the installed package with::
+
+   pytest -pyargs networkx
 
 If you have a file-based (not a Python egg) installation you can test the
 installed package with::
@@ -143,35 +146,3 @@ or::
     python -c "import networkx as nx; nx.test()"
 
 .. autofunction:: networkx.test
-
-Testing for developers
-^^^^^^^^^^^^^^^^^^^^^^
-
-You can test any or all of NetworkX by using the ``nosetests`` test runner.
-
-First make sure the NetworkX version you want to test is in your ``PYTHONPATH``
-(either installed or pointing to your unpacked source directory).
-
-Then you can run individual test files with::
-
-    nosetests path/to/file
-
-or all tests found in dir and an directories contained in dir::
-
-    nosetests path/to/dir
-
-By default nosetests does not test docutils style tests in
-Python modules but you can turn that on with::
-
-    nosetests --with-doctest
-
-For doctests in stand-alone files NetworkX uses the extension ``txt`` so
-you can add::
-
-    nosetests --with-doctest --doctest-extension=txt
-
-to also execute those tests.
-
-These options are on by default if you run nosetests from the root of the
-NetworkX distribution since they are specified in the ``setup.cfg`` file found
-there.
