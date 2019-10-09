@@ -4,7 +4,6 @@
     Tests for ISMAGS isomorphism algorithm.
 """
 
-from nose.tools import assert_true, assert_equal
 from nose import SkipTest
 import networkx as nx
 from networkx.algorithms import isomorphism as iso

@@ -1,6 +1,5 @@
 import random
 from nose import SkipTest
-from nose.tools import assert_equal
 
 try:
     import numpy as np

@@ -1,13 +1,6 @@
 from unittest import TestCase
 import collections
 
-from nose.tools import assert_equal
-from nose.tools import assert_false
-try:
-    from nose.tools import assert_count_equal
-except ImportError:
-    from nose.tools import assert_items_equal as assert_count_equal
-from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx

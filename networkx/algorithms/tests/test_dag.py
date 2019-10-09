@@ -1,16 +1,11 @@
 from itertools import combinations, permutations
 
-from nose.tools import assert_equal
-from nose.tools import assert_false
-from nose.tools import assert_in
 from nose.tools import assert_raises
-from nose.tools import assert_true
 from nose.tools import raises
 from nose.tools import ok_
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
-from networkx.utils import arbitrary_element
 from networkx.utils import consume
 from networkx.utils import pairwise
 

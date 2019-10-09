@@ -1,5 +1,5 @@
 import json
-from nose.tools import assert_equal, assert_true, raises
+from nose.tools import raises
 import networkx as nx
 from networkx.readwrite.json_graph import *
 

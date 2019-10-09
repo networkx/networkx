@@ -1,9 +1,6 @@
 from itertools import permutations
 import math
 
-from nose.tools import assert_equal
-from nose.tools import assert_false
-from nose.tools import assert_true
 import networkx as nx
 from networkx.algorithms.matching import matching_dict_to_set
 from networkx.testing import assert_edges_equal

@@ -1,4 +1,3 @@
-from nose.tools import assert_true, assert_false
 from operator import eq
 import networkx as nx
 from networkx.algorithms import isomorphism as iso

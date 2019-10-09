@@ -5,7 +5,7 @@
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from nose.tools import assert_equals, ok_
+from nose.tools import ok_
 from networkx.algorithms.approximation import treewidth_min_degree
 from networkx.algorithms.approximation import treewidth_min_fill_in
 from networkx.algorithms.approximation.treewidth import min_fill_in_heuristic

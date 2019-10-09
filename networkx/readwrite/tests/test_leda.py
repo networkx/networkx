@@ -1,9 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
 import networkx as nx
 import io
-import os
-import tempfile
 
 
 class TestLEDA(object):

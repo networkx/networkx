@@ -1,7 +1,6 @@
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_raises
 from networkx import Graph, NetworkXError
 from networkx.algorithms.community.asyn_fluid import *
-import random
 
 
 def test_exceptions():

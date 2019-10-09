@@ -10,12 +10,7 @@
 """Unit tests for the :mod:`networkx.generators.random_graphs` module.
 
 """
-from nose.tools import assert_almost_equal
-from nose.tools import assert_greater
-from nose.tools import assert_less
-from nose.tools import assert_equal
 from nose.tools import assert_raises
-from nose.tools import assert_true
 
 from networkx.exception import NetworkXError
 from networkx.generators.random_graphs import barabasi_albert_graph

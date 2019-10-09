@@ -1,6 +1,5 @@
 from nose.tools import assert_equal, assert_not_equal, assert_is,\
     assert_is_not, assert_true, assert_false, assert_raises
-import tempfile
 import pickle
 
 import networkx as nx

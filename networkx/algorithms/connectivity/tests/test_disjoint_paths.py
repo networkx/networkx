@@ -6,7 +6,7 @@
 #
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
-from nose.tools import assert_equal, assert_true, assert_false, raises
+from nose.tools import raises
 
 import networkx as nx
 from networkx.algorithms import flow

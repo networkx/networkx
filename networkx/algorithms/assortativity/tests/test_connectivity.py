@@ -1,7 +1,6 @@
 from itertools import permutations
 
 from nose.tools import assert_almost_equal
-from nose.tools import assert_equal
 from nose.tools import raises
 
 import networkx as nx

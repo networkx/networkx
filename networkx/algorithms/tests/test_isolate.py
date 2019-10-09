@@ -7,9 +7,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.isolates` module."""
-from nose.tools import assert_equal
-from nose.tools import assert_false
-from nose.tools import assert_true
 
 import networkx as nx
 

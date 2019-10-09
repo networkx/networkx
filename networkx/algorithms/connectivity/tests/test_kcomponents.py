@@ -1,5 +1,5 @@
 # Test for Moody and White k-components algorithm
-from nose.tools import assert_equal, assert_true, raises, assert_greater_equal
+from nose.tools import raises
 import networkx as nx
 from networkx.algorithms.connectivity.kcomponents import (
     build_k_number_dict,

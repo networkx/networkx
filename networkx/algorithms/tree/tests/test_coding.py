@@ -10,8 +10,6 @@
 """Unit tests for the :mod:`~networkx.algorithms.tree.coding` module."""
 from itertools import product
 
-from nose.tools import assert_equal
-from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx

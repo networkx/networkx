@@ -3,12 +3,10 @@ from io import BytesIO
 import tempfile
 from unittest import TestCase
 
-from nose.tools import assert_equal
 
 import networkx as nx
 import networkx.readwrite.graph6 as g6
 from networkx.testing.utils import assert_edges_equal
-from networkx.testing.utils import assert_graphs_equal
 from networkx.testing.utils import assert_nodes_equal
 
 

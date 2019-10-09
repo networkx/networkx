@@ -11,7 +11,6 @@
 from itertools import combinations
 
 from nose.tools import assert_almost_equals
-from nose.tools import assert_equal
 
 import networkx as nx
 from networkx.testing.utils import *

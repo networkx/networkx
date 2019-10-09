@@ -1,5 +1,4 @@
 import time
-from nose.tools import assert_true, assert_false
 from networkx.algorithms.assortativity import degree_mixing_dict
 from networkx.generators import powerlaw_cluster_graph, gnm_random_graph
 from networkx.generators.joint_degree_seq import is_valid_joint_degree, \

@@ -3,7 +3,6 @@ from nose.tools import *
 from networkx.utils import powerlaw_sequence,\
     zipf_rv, random_weighted_sample,\
     weighted_choice
-import networkx.utils
 
 
 def test_degree_sequences():

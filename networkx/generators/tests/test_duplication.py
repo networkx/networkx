@@ -10,7 +10,6 @@
 """Unit tests for the :mod:`networkx.generators.duplication` module.
 
 """
-from nose.tools import assert_equal
 from nose.tools import assert_raises
 from nose.tools import raises
 

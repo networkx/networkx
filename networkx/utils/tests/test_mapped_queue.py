@@ -12,8 +12,6 @@
 # Authors:
 #   Edward L. Platt <ed@elplatt.com>
 
-from nose.tools import assert_equal
-from nose.tools import raises
 
 from networkx.utils.mapped_queue import MappedQueue
 

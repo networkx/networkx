@@ -2,7 +2,6 @@
     Tests for VF2 isomorphism algorithm for weighted graphs.
 """
 
-from nose.tools import assert_true, assert_false
 from operator import eq
 
 import networkx as nx

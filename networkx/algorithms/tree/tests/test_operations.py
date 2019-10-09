@@ -9,8 +9,6 @@
 """Unit tests for the :mod:`networkx.algorithms.tree.operations` module.
 
 """
-from nose.tools import assert_equal
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal

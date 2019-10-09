@@ -2,9 +2,6 @@ from itertools import combinations
 from math import sqrt
 import random
 
-from nose.tools import assert_equal
-from nose.tools import assert_false
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.generators.geometric import euclidean

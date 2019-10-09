@@ -1,4 +1,3 @@
-from nose.tools import assert_equal
 import networkx as nx
 from networkx.algorithms.approximation import average_clustering
 

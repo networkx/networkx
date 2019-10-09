@@ -9,7 +9,6 @@
 
 """Unit tests for the :mod:`networkx.generators.mycielski` module."""
 
-from nose.tools import assert_true, assert_equal, raises
 import networkx as nx
 
 

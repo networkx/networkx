@@ -2,7 +2,6 @@
     Unit tests for VoteRank.
 """
 
-from nose.tools import assert_equal
 
 import networkx as nx
 

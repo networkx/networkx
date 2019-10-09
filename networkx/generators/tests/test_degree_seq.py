@@ -1,6 +1,4 @@
-from nose.tools import assert_equal
 from nose.tools import assert_raises
-from nose.tools import assert_true
 from nose.tools import raises
 
 import networkx as nx

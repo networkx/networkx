@@ -8,7 +8,6 @@ except ImportError:
     from io import StringIO
 import sys
 import tempfile
-from nose.tools import assert_equal, assert_is_instance, assert_true
 import networkx as nx
 from networkx.testing import assert_graphs_equal
 

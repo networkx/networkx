@@ -1,7 +1,7 @@
 """
     Unit tests for edgelists.
 """
-from nose.tools import assert_equal, assert_raises, assert_not_equal
+from nose.tools import assert_raises
 import io
 import tempfile
 import os

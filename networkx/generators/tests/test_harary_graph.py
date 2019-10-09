@@ -1,16 +1,12 @@
 """Unit tests for the :mod:`networkx.generators.harary_graph` module.
 """
 
-from nose.tools import assert_equal
-from nose.tools import assert_true
 from nose.tools import assert_raises
 
 import networkx as nx
 from networkx.generators.harary_graph import hnm_harary_graph
 from networkx.generators.harary_graph import hkn_harary_graph
 from networkx.algorithms.isomorphism.isomorph import is_isomorphic
-from networkx.testing import assert_edges_equal
-from networkx.testing import assert_nodes_equal
 
 
 class TestHararyGraph:

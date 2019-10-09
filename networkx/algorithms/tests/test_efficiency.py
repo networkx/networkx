@@ -8,7 +8,6 @@
 # information.
 """Unit tests for the :mod:`networkx.algorithms.efficiency` module."""
 
-from nose.tools import assert_equal
 import networkx as nx
 
 

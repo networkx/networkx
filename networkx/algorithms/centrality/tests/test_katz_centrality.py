@@ -3,7 +3,7 @@ import math
 
 import networkx as nx
 from nose import SkipTest
-from nose.tools import assert_almost_equal, assert_equal, raises
+from nose.tools import assert_almost_equal, raises
 
 
 class TestKatzCentrality(object):

@@ -1,6 +1,4 @@
-from nose.tools import assert_in, assert_not_in, assert_equal
-from nose.tools import assert_is, assert_is_not
-from nose.tools import assert_raises, assert_true, assert_false
+from nose.tools import assert_raises
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal

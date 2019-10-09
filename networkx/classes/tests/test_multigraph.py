@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-from nose.tools import assert_equal
-from nose.tools import assert_is
-from nose.tools import assert_not_equal
 
 from pytest import raises
 

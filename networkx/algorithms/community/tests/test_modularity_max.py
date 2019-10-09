@@ -1,7 +1,4 @@
-from itertools import combinations
 
-from nose.tools import assert_equal
-from nose.tools import raises
 
 import networkx as nx
 from networkx.algorithms.community import (

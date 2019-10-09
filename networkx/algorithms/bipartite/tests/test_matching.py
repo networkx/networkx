@@ -13,7 +13,7 @@ import itertools
 import networkx as nx
 
 from nose import SkipTest
-from nose.tools import assert_true, assert_equal, raises
+from nose.tools import raises
 
 from networkx.algorithms.bipartite.matching import eppstein_matching
 from networkx.algorithms.bipartite.matching import hopcroft_karp_matching

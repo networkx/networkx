@@ -2,11 +2,9 @@
 """
 Pajek tests
 """
-from nose.tools import assert_equal
 import networkx as nx
 import os
 import tempfile
-from io import open
 from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 

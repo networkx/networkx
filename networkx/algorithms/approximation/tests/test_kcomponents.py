@@ -1,6 +1,5 @@
 # Test for approximation to k-components algorithm
-from nose.tools import assert_equal, assert_true, assert_false, assert_in
-from nose.tools import assert_raises, raises, assert_greater_equal
+from nose.tools import assert_raises, raises
 import networkx as nx
 from networkx.algorithms.approximation import k_components
 from networkx.algorithms.approximation.kcomponents import _AntiGraph, _same

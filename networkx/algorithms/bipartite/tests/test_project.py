@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from nose.tools import assert_equal
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.testing import assert_edges_equal, assert_nodes_equal

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import time
 from nose.tools import *
 import networkx as nx
 from networkx import NetworkXNotImplemented

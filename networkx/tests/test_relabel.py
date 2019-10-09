@@ -2,7 +2,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx.algorithms.operators import *
-from networkx.generators.classic import empty_graph, barbell_graph, cycle_graph
+from networkx.generators.classic import empty_graph
 from networkx.testing import assert_nodes_equal, assert_edges_equal
 
 

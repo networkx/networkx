@@ -1,4 +1,3 @@
-from nose.tools import assert_equals
 from nose.tools import ok_
 import networkx as nx
 from networkx.algorithms.approximation import min_weighted_vertex_cover

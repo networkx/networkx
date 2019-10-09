@@ -2,7 +2,6 @@ from itertools import chain
 from itertools import combinations
 
 from nose.tools import *
-from nose.tools import assert_equal, assert_in
 
 import networkx as nx
 from networkx.algorithms.community import label_propagation_communities

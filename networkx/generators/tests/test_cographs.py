@@ -12,7 +12,6 @@
 """
 
 import networkx as nx
-from nose.tools import *
 
 
 def test_random_cograph():

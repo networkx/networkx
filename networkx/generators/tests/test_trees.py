@@ -1,4 +1,3 @@
-from nose.tools import assert_equal, assert_true
 
 import networkx as nx
 from networkx.generators.trees import NIL

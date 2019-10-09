@@ -2,8 +2,6 @@ from io import BytesIO
 import tempfile
 from unittest import TestCase
 
-from nose.tools import assert_equal
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal

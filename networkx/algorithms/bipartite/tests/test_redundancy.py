@@ -10,8 +10,6 @@
 
 """
 
-from nose.tools import assert_equal
-from nose.tools import assert_true
 from nose.tools import raises
 
 from networkx import cycle_graph

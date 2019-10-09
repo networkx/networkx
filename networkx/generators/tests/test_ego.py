@@ -4,7 +4,6 @@ ego graph
 ---------
 """
 
-from nose.tools import assert_true
 import networkx as nx
 from networkx.testing.utils import *
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import networkx as nx
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_raises
 import os
 
 

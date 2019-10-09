@@ -1,4 +1,3 @@
-from nose.tools import assert_equal, assert_in
 from nose.tools import assert_raises
 from nose.tools import raises
 

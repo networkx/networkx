@@ -1,5 +1,5 @@
 from nose import SkipTest
-from nose.tools import assert_true, assert_raises, assert_false
+from nose.tools import assert_raises
 
 from networkx import is_isomorphic
 from networkx.exception import NetworkXError

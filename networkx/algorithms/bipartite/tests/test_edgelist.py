@@ -1,7 +1,7 @@
 """
     Unit tests for bipartite edgelists.
 """
-from nose.tools import assert_equal, assert_raises, assert_not_equal, raises
+from nose.tools import assert_raises, raises
 import io
 import tempfile
 import os

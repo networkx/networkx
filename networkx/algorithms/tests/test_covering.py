@@ -4,7 +4,6 @@
 #    All rights reserved.
 #    BSD license.
 
-from nose.tools import assert_equal, assert_true, assert_false, assert_in
 import networkx as nx
 
 

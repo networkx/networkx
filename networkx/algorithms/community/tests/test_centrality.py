@@ -13,8 +13,6 @@ module.
 """
 from operator import itemgetter
 
-from nose.tools import assert_equal
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.algorithms.community import girvan_newman

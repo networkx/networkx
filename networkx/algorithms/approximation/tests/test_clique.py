@@ -11,9 +11,6 @@ module.
 
 """
 
-from nose.tools import assert_greater
-from nose.tools import assert_true
-from nose.tools import assert_equal
 
 import networkx as nx
 from networkx.algorithms.approximation import max_clique

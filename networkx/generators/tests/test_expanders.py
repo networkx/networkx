@@ -17,10 +17,7 @@ from networkx.generators.expanders import chordal_cycle_graph
 from networkx.generators.expanders import margulis_gabber_galil_graph
 
 from nose import SkipTest
-from nose.tools import assert_equal
-from nose.tools import assert_less
 from nose.tools import assert_raises
-from nose.tools import assert_true
 
 
 def test_margulis_gabber_galil_graph():

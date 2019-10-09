@@ -1,4 +1,3 @@
-from nose.tools import *
 from networkx.utils import reverse_cuthill_mckee_ordering
 import networkx as nx
 

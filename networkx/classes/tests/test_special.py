@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from nose.tools import *
 from collections import OrderedDict
 import networkx as nx
 from .test_graph import TestGraph

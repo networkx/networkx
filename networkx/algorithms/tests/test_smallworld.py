@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import assert_true, assert_raises
+from nose.tools import assert_raises
 import random
 
 from networkx import random_reference, lattice_reference, sigma, omega

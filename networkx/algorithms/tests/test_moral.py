@@ -2,7 +2,6 @@ import networkx as nx
 
 from networkx.algorithms.moral import moral_graph
 
-from nose.tools import assert_true
 
 
 def test_get_moral_graph():

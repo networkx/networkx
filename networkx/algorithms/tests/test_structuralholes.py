@@ -7,7 +7,7 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
-from nose.tools import assert_almost_equal, assert_true
+from nose.tools import assert_almost_equal
 
 import math
 import networkx as nx

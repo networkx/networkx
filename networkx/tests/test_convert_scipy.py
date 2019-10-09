@@ -1,5 +1,5 @@
 from nose import SkipTest
-from nose.tools import assert_raises, assert_true, raises
+from nose.tools import assert_raises, raises
 
 import networkx as nx
 from networkx.testing import assert_graphs_equal

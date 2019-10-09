@@ -5,7 +5,6 @@ from ast import literal_eval
 import codecs
 import io
 from nose.tools import *
-from nose import SkipTest
 import networkx as nx
 from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os

@@ -1,10 +1,7 @@
 """Generators - Directed Graphs
 ----------------------------
 """
-from nose.tools import assert_equal
-from nose.tools import assert_false
 from nose.tools import assert_raises
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.classes import Graph

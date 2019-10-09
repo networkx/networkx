@@ -7,7 +7,7 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.generators.stochastic` module."""
-from nose.tools import assert_true, assert_equal, raises
+from nose.tools import raises
 import networkx as nx
 
 

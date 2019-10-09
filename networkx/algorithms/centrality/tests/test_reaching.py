@@ -5,7 +5,7 @@
 #    All rights reserved.
 #    BSD license.
 """Unit tests for the :mod:`networkx.algorithms.centrality.reaching` module."""
-from nose.tools import assert_almost_equal, assert_equal, raises
+from nose.tools import assert_almost_equal, raises
 from unittest import TestCase
 
 from networkx import nx

@@ -1,5 +1,5 @@
 import networkx as nx
-from nose.tools import assert_true, assert_equal, raises
+from nose.tools import raises
 from networkx.testing import assert_edges_equal
 
 

@@ -10,7 +10,6 @@
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
 from unittest import TestCase
 
-from nose.tools import assert_equal
 from pytest import raises
 
 import networkx as nx

@@ -9,8 +9,6 @@
 """Unit tests for the :mod:`networkx.algorithms.community.utils` module.
 
 """
-from nose.tools import assert_false
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.algorithms.community import is_partition

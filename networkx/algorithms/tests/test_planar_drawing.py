@@ -1,7 +1,7 @@
 import networkx as nx
 from networkx.algorithms.planar_drawing import triangulate_embedding
 import math
-from nose.tools import assert_true, assert_equals, raises
+from nose.tools import raises
 
 
 def test_graph1():

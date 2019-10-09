@@ -9,7 +9,6 @@
 """Unit tests for the beam search functions."""
 from unittest import TestCase
 
-from nose.tools import assert_equal
 
 import networkx as nx
 

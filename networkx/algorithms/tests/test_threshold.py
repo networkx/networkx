@@ -4,7 +4,7 @@ Threshold Graphs
 ================
 """
 
-from nose.tools import assert_true, assert_false, assert_equal, assert_almost_equal, assert_raises
+from nose.tools import assert_almost_equal, assert_raises
 from nose import SkipTest
 from nose.plugins.attrib import attr
 import networkx as nx

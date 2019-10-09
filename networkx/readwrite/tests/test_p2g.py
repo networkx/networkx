@@ -1,8 +1,5 @@
-from nose.tools import assert_equal, assert_raises, assert_not_equal
 import networkx as nx
 import io
-import tempfile
-import os
 from networkx.readwrite.p2g import *
 from networkx.testing import *
 

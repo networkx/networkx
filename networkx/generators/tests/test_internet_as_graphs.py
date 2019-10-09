@@ -1,4 +1,3 @@
-from nose.tools import assert_true, assert_raises, assert_false
 
 from networkx import is_connected, neighbors
 from networkx.generators.internet_as_graphs import random_internet_as_graph

@@ -8,7 +8,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.triads` module."""
-from nose.tools import assert_equal
 
 import networkx as nx
 

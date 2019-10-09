@@ -1,9 +1,5 @@
-from nose.tools import assert_equal
-from nose.tools import assert_is
-from nose.tools import assert_not_equal
 import pickle
 import gc
-import collections
 
 import networkx as nx
 from networkx.testing.utils import *

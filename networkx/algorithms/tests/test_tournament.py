@@ -9,9 +9,6 @@
 """Unit tests for the :mod:`networkx.algorithms.tournament` module."""
 from itertools import combinations
 
-from nose.tools import assert_equal
-from nose.tools import assert_false
-from nose.tools import assert_true
 
 from networkx import DiGraph
 from networkx.algorithms.tournament import is_reachable

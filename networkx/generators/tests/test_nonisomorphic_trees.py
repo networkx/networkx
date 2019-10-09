@@ -6,7 +6,6 @@ Generators - Non Isomorphic Trees
 
 Unit tests for WROM algorithm generator in generators/nonisomorphic_trees.py
 """
-from nose.tools import *
 import networkx as nx
 from networkx.testing import assert_edges_equal
 

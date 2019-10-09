@@ -1,5 +1,4 @@
-import itertools
-from nose.tools import assert_true, assert_equal, assert_raises
+from nose.tools import assert_raises
 
 import networkx as nx
 from networkx.algorithms import approximation as approx

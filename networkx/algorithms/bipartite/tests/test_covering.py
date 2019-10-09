@@ -4,7 +4,6 @@
 #    All rights reserved.
 #    BSD license.
 
-from nose.tools import assert_equal, assert_true
 import networkx as nx
 import networkx.algorithms.bipartite as bipartite
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import assert_true, assert_false, assert_raises
+from nose.tools import assert_raises
 from nose import SkipTest
 import networkx as nx
 

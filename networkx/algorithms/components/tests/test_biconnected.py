@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from networkx.algorithms.components import biconnected
 from networkx import NetworkXNotImplemented
 
 
