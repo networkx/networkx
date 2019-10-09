@@ -35,28 +35,27 @@ class MinimumSpanningTreeTestBase(object):
 
     """
 
-    @classmethod
-    def setup_class(cls):
+    def setup_method(self, method):
         """Creates an example graph and stores the expected minimum and
         maximum spanning tree edges.
 
         """
         # This stores the class attribute `algorithm` in an instance attribute.
-        cls.algo = cls.algorithm
+        self.algo = self.algorithm
         # This example graph comes from Wikipedia:
         # https://en.wikipedia.org/wiki/Kruskal's_algorithm
         edges = [(0, 1, 7), (0, 3, 5), (1, 2, 8), (1, 3, 9), (1, 4, 7),
                  (2, 4, 5), (3, 4, 15), (3, 5, 6), (4, 5, 8), (4, 6, 9),
                  (5, 6, 11)]
-        cls.G = nx.Graph()
-        cls.G.add_weighted_edges_from(edges)
-        cls.minimum_spanning_edgelist = [(0, 1, {'weight': 7}),
+        self.G = nx.Graph()
+        self.G.add_weighted_edges_from(edges)
+        self.minimum_spanning_edgelist = [(0, 1, {'weight': 7}),
                                           (0, 3, {'weight': 5}),
                                           (1, 4, {'weight': 7}),
                                           (2, 4, {'weight': 5}),
                                           (3, 5, {'weight': 6}),
                                           (4, 6, {'weight': 9})]
-        cls.maximum_spanning_edgelist = [(0, 1, {'weight': 7}),
+        self.maximum_spanning_edgelist = [(0, 1, {'weight': 7}),
                                           (1, 2, {'weight': 8}),
                                           (1, 3, {'weight': 9}),
                                           (3, 4, {'weight': 15}),
