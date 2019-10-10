@@ -77,10 +77,10 @@ def subgraph_centrality_exp(G):
     # alternative implementation that calculates the matrix exponential
     import scipy.linalg
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A.A)
+    expA = scipy.linalg.expm(A)
     # convert diagonal to dictionary keyed by node
     sc = dict(zip(nodelist, map(float, expA.diagonal())))
     return sc

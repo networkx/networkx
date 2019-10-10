@@ -214,7 +214,7 @@ def strongly_connected_components_recursive(G):
     >>> largest = max(nx.strongly_connected_components_recursive(G), key=len)
 
     To create the induced subgraph of the components use:
-    >>> S = [G.subgraph(c).copy() for c in weakly_connected_components(G)]
+    >>> S = [G.subgraph(c).copy() for c in nx.weakly_connected_components(G)]
 
     See Also
     --------

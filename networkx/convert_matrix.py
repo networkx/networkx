@@ -424,10 +424,10 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_numpy_matrix(G)
     >>> A
-    array([[1.]])
+    matrix([[1.]])
     >>> A[np.diag_indices_from(A)] *= 2
     >>> A
-    array([[2.]])
+    matrix([[2.]])
 
     Examples
     --------
@@ -441,7 +441,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     >>> G.add_edge(2, 2)
     1
     >>> nx.to_numpy_matrix(G, nodelist=[0, 1, 2])
-    array([[0., 2., 0.],
+    matrix([[0., 2., 0.],
             [1., 0., 0.],
             [0., 0., 4.]])
 
@@ -451,9 +451,8 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     A = to_numpy_array(G, nodelist=nodelist, dtype=dtype, order=order,
                        multigraph_weight=multigraph_weight, weight=weight,
                        nonedge=nonedge)
-    return A
-#    M = np.asmatrix(A, dtype=dtype)
-#    return M
+    M = np.asmatrix(A, dtype=dtype)
+    return M
 
 
 def from_numpy_matrix(A, parallel_edges=False, create_using=None):

@@ -893,7 +893,7 @@ def dag_to_branching(G):
 
         >>> for source, nodes in sources.items():
         ...     for v in nodes:
-        ...         B.node[v].update(G.node[source])
+        ...         B.nodes[v].update(G.nodes[source])
 
     Notes
     -----
