@@ -1,12 +1,7 @@
 
 from networkx import is_connected, neighbors
 from networkx.generators.internet_as_graphs import random_internet_as_graph
-
-
-def almost_equal(x, y, eps=0.5):
-    if abs(x - y) < eps:
-        return True
-    return False
+from networkx.testing import almost_equal
 
 
 class TestInternetASTopology():
@@ -87,8 +82,8 @@ class TestInternetASTopology():
         assert len(self.T) < 7
         assert len(self.M) == int(round(self.n*0.15))
         assert len(self.CP) == int(round(self.n*0.05))
-        assert (len(self.C) == self.n - len(self.T) - len(self.M)
-                    - len(self.CP))
+        numb = self.n - len(self.T) - len(self.M) - len(self.CP)
+        assert len(self.C) == numb
 
     def test_connectivity(self):
         assert is_connected(self.G)
@@ -178,8 +173,7 @@ class TestInternetASTopology():
 
         assert almost_equal(p_m_m/len(self.M), 1 + (2*self.n)/10000)
         assert almost_equal(p_cp_m/len(self.CP), 0.2 + (2*self.n)/10000)
-        assert almost_equal(p_cp_cp/len(self.CP),
-                    0.05 + (2*self.n)/100000)
+        assert almost_equal(p_cp_cp/len(self.CP), 0.05 + (2*self.n)/100000)
 
         assert almost_equal(t_m/d_m, 0.375)
         assert almost_equal(t_cp/d_cp, 0.375)

@@ -10,10 +10,8 @@
 
 from itertools import combinations
 
-from nose.tools import assert_almost_equals
-
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing import almost_equal, assert_edges_equal
 from networkx import convert_node_labels_to_integers as cnlti
 
 
@@ -62,11 +60,11 @@ class TestNodeBoundary(object):
                        for nn in combinations(G, k))
 
         P = nx.petersen_graph()
-        assert_almost_equals(cheeger(P, 1), 3.00, places=2)
-        assert_almost_equals(cheeger(P, 2), 2.00, places=2)
-        assert_almost_equals(cheeger(P, 3), 1.67, places=2)
-        assert_almost_equals(cheeger(P, 4), 1.00, places=2)
-        assert_almost_equals(cheeger(P, 5), 0.80, places=2)
+        assert almost_equal(cheeger(P, 1), 3.00, places=2)
+        assert almost_equal(cheeger(P, 2), 2.00, places=2)
+        assert almost_equal(cheeger(P, 3), 1.67, places=2)
+        assert almost_equal(cheeger(P, 4), 1.00, places=2)
+        assert almost_equal(cheeger(P, 5), 0.80, places=2)
 
     def test_directed(self):
         """Tests the node boundary of a directed graph."""

@@ -1,10 +1,9 @@
-import random
-from nose import SkipTest
-
 try:
     import numpy as np
 except ImportError:
-    raise SkipTest('Numpy not available')
+    from pytest import skip
+    skip('Numpy not available', allow_module_level=True)
+import random
 
 import networkx as nx
 from networkx.algorithms import approximation as approx

@@ -198,18 +198,6 @@ class TestTransitivity:
         G.remove_edge(1, 2)
         assert nx.transitivity(G) == 0.875
 
-    # def test_clustering_transitivity(self):
-    #     # check that weighted average of clustering is transitivity
-    #     G = nx.complete_graph(5)
-    #     G.remove_edge(1,2)
-    #     t1=nx.transitivity(G)
-    #     (cluster_d2,weights)=nx.clustering(G,weights=True)
-    #     trans=[]
-    #     for v in G.nodes():
-    #         trans.append(cluster_d2[v]*weights[v])
-    #     t2=sum(trans)
-    #     assert_almost_equal(abs(t1-t2),0)
-
 
 class TestSquareClustering:
 

@@ -1,7 +1,8 @@
 from collections import defaultdict
-from nose.tools import *
+
 from nose import SkipTest
 import networkx as nx
+from networkx.testing import almost_equal
 from networkx.algorithms.communicability_alg import *
 
 
@@ -35,7 +36,7 @@ class TestCommunicability:
         result = communicability(nx.path_graph(2))
         for k1, val in result.items():
             for k2 in val:
-                assert_almost_equal(answer[k1][k2], result[k1][k2], places=7)
+                assert almost_equal(answer[k1][k2], result[k1][k2], places=7)
 
     def test_communicability2(self):
 
@@ -75,9 +76,9 @@ class TestCommunicability:
         result = communicability(G1)
         for k1, val in result.items():
             for k2 in val:
-                assert_almost_equal(answer[k1][k2], result[k1][k2], places=7)
+                assert almost_equal(answer[k1][k2], result[k1][k2], places=7)
 
         result = communicability_exp(G1)
         for k1, val in result.items():
             for k2 in val:
-                assert_almost_equal(answer[k1][k2], result[k1][k2], places=7)
+                assert almost_equal(answer[k1][k2], result[k1][k2], places=7)

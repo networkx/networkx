@@ -1,6 +1,9 @@
-from nose.tools import assert_equal, assert_in
+__all__ = ['assert_nodes_equal', 'assert_edges_equal', 'assert_graphs_equal',
+           'almost_equal']
 
-__all__ = ['assert_nodes_equal', 'assert_edges_equal', 'assert_graphs_equal']
+
+def almost_equal(x, y, places=7):
+    return round(abs(x - y), places) == 0
 
 
 def assert_nodes_equal(nodes1, nodes2):
@@ -40,7 +43,7 @@ def assert_edges_equal(edges1, edges2):
             data = d2[u][v] + data
         d2[u][v] = data
         d2[v][u] = data
-    assert_equal(c1, c2)
+    assert c1 == c2
     # can check one direction because lengths are the same.
     for n, nbrdict in d1.items():
         for nbr, datalist in nbrdict.items():
