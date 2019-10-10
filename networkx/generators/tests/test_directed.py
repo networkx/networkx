@@ -1,7 +1,7 @@
 """Generators - Directed Graphs
 ----------------------------
 """
-from nose.tools import assert_raises
+import pytest
 
 import networkx as nx
 from networkx.classes import Graph
@@ -27,13 +27,13 @@ class TestGeneratorsDirected(object):
         scale_free_graph(100, seed=42)
 
     def test_create_using_keyword_arguments(self):
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       gn_graph, 100, create_using=Graph())
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       gnr_graph, 100, 0.5, create_using=Graph())
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       gnc_graph, 100, create_using=Graph())
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       scale_free_graph, 100, create_using=Graph())
         G = gn_graph(100, seed=1)
         MG = gn_graph(100, create_using=MultiDiGraph(), seed=1)
@@ -48,10 +48,10 @@ class TestGeneratorsDirected(object):
         G = scale_free_graph(100, alpha=0.3, beta=0.4, gamma=0.3,
                              delta_in=0.3, delta_out=0.1,
                              create_using=MultiDiGraph, seed=1)
-        assert_raises(ValueError, scale_free_graph, 100, 0.5, 0.4, 0.3)
-        assert_raises(ValueError, scale_free_graph, 100, alpha=-0.3)
-        assert_raises(ValueError, scale_free_graph, 100, beta=-0.3)
-        assert_raises(ValueError, scale_free_graph, 100, gamma=-0.3)
+        pytest.raises(ValueError, scale_free_graph, 100, 0.5, 0.4, 0.3)
+        pytest.raises(ValueError, scale_free_graph, 100, alpha=-0.3)
+        pytest.raises(ValueError, scale_free_graph, 100, beta=-0.3)
+        pytest.raises(ValueError, scale_free_graph, 100, gamma=-0.3)
 
 
 class TestRandomKOutGraph(object):

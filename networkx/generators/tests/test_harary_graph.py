@@ -1,7 +1,7 @@
 """Unit tests for the :mod:`networkx.generators.harary_graph` module.
 """
 
-from nose.tools import assert_raises
+import pytest
 
 import networkx as nx
 from networkx.generators.harary_graph import hnm_harary_graph
@@ -68,17 +68,17 @@ class TestHararyGraph:
         # Raise NetworkXError if n<1
         n = 0
         m = 0
-        assert_raises(nx.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
 
         # Raise NetworkXError if m < n-1
         n = 6
         m = 4
-        assert_raises(nx.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
 
         # Raise NetworkXError if m > n(n-1)/2
         n = 6
         m = 16
-        assert_raises(nx.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
 
     """
         Suppose connectivity k, number of nodes n
@@ -125,9 +125,9 @@ class TestHararyGraph:
         # Raise NetworkXError if k<1
         k = 0
         n = 0
-        assert_raises(nx.NetworkXError, hkn_harary_graph, k, n)
+        pytest.raises(nx.NetworkXError, hkn_harary_graph, k, n)
 
         # Raise NetworkXError if n<k+1
         k = 6
         n = 6
-        assert_raises(nx.NetworkXError, hkn_harary_graph, k, n)
+        pytest.raises(nx.NetworkXError, hkn_harary_graph, k, n)

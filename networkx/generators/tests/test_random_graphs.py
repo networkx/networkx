@@ -10,7 +10,7 @@
 """Unit tests for the :mod:`networkx.generators.random_graphs` module.
 
 """
-from nose.tools import assert_raises
+import pytest
 
 from networkx.exception import NetworkXError
 from networkx.generators.random_graphs import barabasi_albert_graph
@@ -55,7 +55,7 @@ class TestGeneratorsRandom(object):
         G = connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
         assert len(G) == 10
         assert G.number_of_edges() == 10
-        assert_raises(NetworkXError, connected_watts_strogatz_graph, \
+        pytest.raises(NetworkXError, connected_watts_strogatz_graph, \
                       10, 2, 0.1, tries=0)
 
         G = watts_strogatz_graph(10, 4, 0.25, seed)
@@ -94,8 +94,8 @@ class TestGeneratorsRandom(object):
 
         G = random_regular_graph(10, 20, seed)
 
-        assert_raises(NetworkXError, random_regular_graph, 3, 21)
-        assert_raises(NetworkXError, random_regular_graph, 33, 21)
+        pytest.raises(NetworkXError, random_regular_graph, 3, 21)
+        pytest.raises(NetworkXError, random_regular_graph, 33, 21)
 
         constructor = [(10, 20, 0.8), (20, 40, 0.8)]
         G = random_shell_graph(constructor, seed)
@@ -133,10 +133,10 @@ class TestGeneratorsRandom(object):
 
         # Testing exceptions
         dbag = dual_barabasi_albert_graph
-        assert_raises(NetworkXError, dbag, m1, m1, m2, 0)
-        assert_raises(NetworkXError, dbag, m2, m1, m2, 0)
-        assert_raises(NetworkXError, dbag, 100, m1, m2, -0.5)
-        assert_raises(NetworkXError, dbag, 100, m1, m2, 1.5)
+        pytest.raises(NetworkXError, dbag, m1, m1, m2, 0)
+        pytest.raises(NetworkXError, dbag, m2, m1, m2, 0)
+        pytest.raises(NetworkXError, dbag, 100, m1, m2, -0.5)
+        pytest.raises(NetworkXError, dbag, 100, m1, m2, 1.5)
 
     def test_extended_barabasi_albert(self, m=2):
         """
@@ -174,9 +174,9 @@ class TestGeneratorsRandom(object):
 
         # Testing exceptions
         ebag = extended_barabasi_albert_graph
-        assert_raises(NetworkXError, ebag, m, m, 0, 0)
-        assert_raises(NetworkXError, ebag, 1, 0.5, 0, 0)
-        assert_raises(NetworkXError, ebag, 100, 2, 0.5, 0.5)
+        pytest.raises(NetworkXError, ebag, m, m, 0, 0)
+        pytest.raises(NetworkXError, ebag, 1, 0.5, 0, 0)
+        pytest.raises(NetworkXError, ebag, 100, 2, 0.5, 0.5)
 
     def test_random_zero_regular_graph(self):
         """Tests that a 0-regular graph has the correct number of nodes and
@@ -249,8 +249,8 @@ class TestGeneratorsRandom(object):
 
     def test_watts_strogatz_big_k(self):
         #Test to make sure than n <= k
-        assert_raises(NetworkXError, watts_strogatz_graph, 10, 11, 0.25)
-        assert_raises(NetworkXError, newman_watts_strogatz_graph, 10, 11, 0.25)
+        pytest.raises(NetworkXError, watts_strogatz_graph, 10, 11, 0.25)
+        pytest.raises(NetworkXError, newman_watts_strogatz_graph, 10, 11, 0.25)
         
         # could create an infinite loop, now doesn't
         # infinite loop used to occur when a node has degree n-1 and needs to rewire

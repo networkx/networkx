@@ -1241,7 +1241,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
                              create_using=create_using)
 
 
-# fixture for nose tests
+# fixture for pytest tests
 def setup_module(module):
     import pytest
     numpy = pytest.importorskip('numpy')

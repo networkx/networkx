@@ -7,7 +7,7 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.generators.triads` module."""
-from nose.tools import raises
+import pytest
 
 from networkx import triad_graph
 
@@ -17,6 +17,6 @@ def test_triad_graph():
     assert [tuple(e) for e in ('ab', 'ac', 'cb')] == sorted(G.edges())
 
 
-@raises(ValueError)
 def test_invalid_name():
-    triad_graph('bogus')
+    with pytest.raises(ValueError):
+        triad_graph('bogus')

@@ -194,16 +194,3 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     H = nx.from_numpy_matrix(B)
 
     return H
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

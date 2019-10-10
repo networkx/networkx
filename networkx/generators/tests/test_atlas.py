@@ -1,6 +1,6 @@
 from itertools import groupby
 
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 from networkx.testing import *
@@ -13,13 +13,13 @@ from networkx.utils import pairwise
 class TestAtlasGraph(object):
     """Unit tests for the :func:`~networkx.graph_atlas` function."""
 
-    @raises(ValueError)
     def test_index_too_small(self):
-        graph_atlas(-1)
+        with pytest.raises(ValueError):
+            graph_atlas(-1)
 
-    @raises(ValueError)
     def test_index_too_large(self):
-        graph_atlas(NUM_GRAPHS)
+        with pytest.raises(ValueError):
+            graph_atlas(NUM_GRAPHS)
 
     def test_graph(self):
         G = graph_atlas(6)

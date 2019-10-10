@@ -1,6 +1,6 @@
 """Unit tests for the :mod:`networkx.generators.lattice` module."""
 
-from nose.tools import assert_raises
+import pytest
 
 import networkx as nx
 from networkx.testing import assert_edges_equal
@@ -157,9 +157,9 @@ class TestTriangularLatticeGraph:
         assert len([n for n, d in G.degree() if d != 6]) == 0
         G = nx.triangular_lattice_graph(5, 7, periodic=True)
         TLG = nx.triangular_lattice_graph
-        assert_raises(nx.NetworkXError, TLG, 2, 4, periodic=True)
-        assert_raises(nx.NetworkXError, TLG, 4, 4, periodic=True)
-        assert_raises(nx.NetworkXError, TLG, 2, 6, periodic=True)
+        pytest.raises(nx.NetworkXError, TLG, 2, 4, periodic=True)
+        pytest.raises(nx.NetworkXError, TLG, 4, 4, periodic=True)
+        pytest.raises(nx.NetworkXError, TLG, 2, 6, periodic=True)
 
 
 class TestHexagonalLatticeGraph:
@@ -206,6 +206,6 @@ class TestHexagonalLatticeGraph:
         assert len([n for n, d in G.degree() if d != 3]) == 0
         G = nx.hexagonal_lattice_graph(5, 8, periodic=True)
         HLG = nx.hexagonal_lattice_graph
-        assert_raises(nx.NetworkXError, HLG, 2, 7, periodic=True)
-        assert_raises(nx.NetworkXError, HLG, 1, 4, periodic=True)
-        assert_raises(nx.NetworkXError, HLG, 2, 1, periodic=True)
+        pytest.raises(nx.NetworkXError, HLG, 2, 7, periodic=True)
+        pytest.raises(nx.NetworkXError, HLG, 1, 4, periodic=True)
+        pytest.raises(nx.NetworkXError, HLG, 2, 1, periodic=True)

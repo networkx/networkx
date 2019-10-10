@@ -1,5 +1,5 @@
 import networkx as nx
-from nose.tools import *
+import pytest
 
 import networkx.generators.line as line
 from networkx.testing.utils import *
@@ -157,7 +157,7 @@ class TestGeneratorInverseLine():
         G = nx.Graph()
         G_edges = [[0, 1], [0, 2], [0, 3]]
         G.add_edges_from(G_edges)
-        assert_raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
     def test_non_line_graph(self):
         # These are other non-line graphs
@@ -167,7 +167,7 @@ class TestGeneratorInverseLine():
         G_edges = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2],
                    [2, 3], [3, 4], [4, 5], [5, 1]]
         G.add_edges_from(G_edges)
-        assert_raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
         #   3---4---5
         #  / \ / \ /
@@ -176,23 +176,23 @@ class TestGeneratorInverseLine():
         G_edges = [[0, 1], [1, 2], [3, 4], [4, 5], [0, 3], [1, 3],
                    [1, 4], [2, 4], [2, 5]]
         G.add_edges_from(G_edges)
-        assert_raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
         # K_5 minus an edge
         K5me = nx.complete_graph(5)
         K5me.remove_edge(0,1)
-        assert_raises(nx.NetworkXError, nx.inverse_line_graph, K5me)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, K5me)
 
     def test_wrong_graph_type(self):
         G = nx.DiGraph()
         G_edges = [[0, 1], [0, 2], [0, 3]]
         G.add_edges_from(G_edges)
-        assert_raises(nx.NetworkXNotImplemented, nx.inverse_line_graph, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.inverse_line_graph, G)
 
         G = nx.MultiGraph()
         G_edges = [[0, 1], [0, 2], [0, 3]]
         G.add_edges_from(G_edges)
-        assert_raises(nx.NetworkXNotImplemented, nx.inverse_line_graph, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.inverse_line_graph, G)
 
     def test_line_inverse_line_complete(self):
         G = nx.complete_graph(10)

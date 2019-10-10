@@ -1,5 +1,4 @@
-from nose import SkipTest
-from nose.tools import assert_raises
+import pytest
 
 from networkx import is_isomorphic
 from networkx.exception import NetworkXError
@@ -9,17 +8,8 @@ from networkx.generators import karate_club_graph
 
 
 def test_spectral_graph_forge():
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-    scipy = 1
-
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest('NumPy not available.')
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')
 
     G = karate_club_graph()
 
@@ -53,6 +43,6 @@ def test_spectral_graph_forge():
     assert is_isomorphic(G, H)
 
     # invalid transformation mode, checking the error raising
-    assert_raises(NetworkXError,
+    pytest.raises(NetworkXError,
                   spectral_graph_forge, G, 0.1, transformation='unknown',
                   seed=seed)

@@ -7,7 +7,7 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.generators.stochastic` module."""
-from nose.tools import raises
+import pytest
 import networkx as nx
 
 
@@ -52,10 +52,10 @@ class TestStochasticGraph(object):
         assert (sorted(S.edges(data=True)) ==
                      [(0, 1, d), (0, 1, d), (0, 2, d), (0, 2, d)])
 
-    @raises(nx.NetworkXNotImplemented)
     def test_graph_disallowed(self):
-        nx.stochastic_graph(nx.Graph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.stochastic_graph(nx.Graph())
 
-    @raises(nx.NetworkXNotImplemented)
     def test_multigraph_disallowed(self):
-        nx.stochastic_graph(nx.MultiGraph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.stochastic_graph(nx.MultiGraph())

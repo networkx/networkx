@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 is_isomorphic = graph_could_be_isomorphic
@@ -182,7 +182,7 @@ class TestGeneratorsSmall():
         assert list(d for n, d in G.degree()) == 46 * [3]
 
         # Test create_using with directed or multigraphs on small graphs
-        assert_raises(nx.NetworkXError, nx.tutte_graph,
+        pytest.raises(nx.NetworkXError, nx.tutte_graph,
                       create_using=nx.DiGraph)
         MG = nx.tutte_graph(create_using=nx.MultiGraph)
         assert sorted(MG.edges()) == sorted(G.edges())

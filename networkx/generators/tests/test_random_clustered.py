@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx
 
 
@@ -20,9 +20,9 @@ class TestRandomClusteredGraph:
         assert G.number_of_edges() == 10
 
     def test_invalid1(self):
-        assert_raises((TypeError, networkx.NetworkXError),
+        pytest.raises((TypeError, networkx.NetworkXError),
                       networkx.random_clustered_graph, [[1, 1], [2, 1], [0, 1]])
 
     def test_invalid2(self):
-        assert_raises((TypeError, networkx.NetworkXError),
+        pytest.raises((TypeError, networkx.NetworkXError),
                       networkx.random_clustered_graph, [[1, 1], [1, 2], [0, 1]])

@@ -8,7 +8,7 @@ Unit tests for various classic graph generators in generators/classic.py
 """
 import itertools
 
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 from networkx.testing import assert_edges_equal
@@ -108,12 +108,12 @@ class TestGeneratorClassic():
         # Raise NetworkXError if m1<2
         m1 = 1
         m2 = 20
-        assert_raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
+        pytest.raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
 
         # Raise NetworkXError if m2<0
         m1 = 5
         m2 = -2
-        assert_raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
+        pytest.raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
 
         # nx.barbell_graph(2,m) = nx.path_graph(m+4)
         m1 = 2
@@ -131,7 +131,7 @@ class TestGeneratorClassic():
         b = nx.barbell_graph(m1, m2)
         assert is_isomorphic(b, nx.path_graph(m2 + 4))
 
-        assert_raises(nx.NetworkXError, nx.barbell_graph, m1, m2,
+        pytest.raises(nx.NetworkXError, nx.barbell_graph, m1, m2,
                       create_using=nx.DiGraph())
 
         mb = nx.barbell_graph(m1, m2, create_using=nx.MultiGraph())
@@ -173,7 +173,7 @@ class TestGeneratorClassic():
 
     def test_circular_ladder_graph(self):
         G = nx.circular_ladder_graph(5)
-        assert_raises(nx.NetworkXError, nx.circular_ladder_graph,
+        pytest.raises(nx.NetworkXError, nx.circular_ladder_graph,
                       5, create_using=nx.DiGraph)
         mG = nx.circular_ladder_graph(5, create_using=nx.MultiGraph)
         assert_edges_equal(mG.edges(), G.edges())
@@ -227,18 +227,18 @@ class TestGeneratorClassic():
         assert G.degree(1) == 1024
         assert G.degree(2) == 1024
 
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       nx.dorogovtsev_goltsev_mendes_graph, 7,
                       create_using=nx.DiGraph)
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       nx.dorogovtsev_goltsev_mendes_graph, 7,
                       create_using=nx.MultiGraph)
 
     def test_create_using(self):
         G = nx.empty_graph()
         assert isinstance(G, nx.Graph)
-        assert_raises(TypeError, nx.empty_graph, create_using=0.0)
-        assert_raises(TypeError, nx.empty_graph, create_using="Graph")
+        pytest.raises(TypeError, nx.empty_graph, create_using=0.0)
+        pytest.raises(TypeError, nx.empty_graph, create_using="Graph")
 
         G = nx.empty_graph(create_using=nx.MultiGraph)
         assert isinstance(G, nx.MultiGraph)
@@ -299,7 +299,7 @@ class TestGeneratorClassic():
                      (2, nx.hypercube_graph(2)), (10, nx.grid_graph([2, 10]))]:
             assert is_isomorphic(nx.ladder_graph(i), G)
 
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       nx.ladder_graph, 2, create_using=nx.DiGraph)
 
         g = nx.ladder_graph(2)
@@ -315,11 +315,11 @@ class TestGeneratorClassic():
             assert nx.number_of_edges(b) == m1 * (m1 - 1) / 2 + m2
 
         # Raise NetworkXError if m<2
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       nx.lollipop_graph, 1, 20)
 
         # Raise NetworkXError if n<0
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       nx.lollipop_graph, 5, -2)
 
         # lollipop_graph(2,m) = path_graph(m+2)
@@ -327,7 +327,7 @@ class TestGeneratorClassic():
             b = nx.lollipop_graph(m1, m2)
             assert is_isomorphic(b, nx.path_graph(m2 + 2))
 
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       nx.lollipop_graph, m1, m2, create_using=nx.DiGraph)
 
         mb = nx.lollipop_graph(m1, m2, create_using=nx.MultiGraph)
@@ -379,7 +379,7 @@ class TestGeneratorClassic():
         assert (sorted(d for n, d in s.degree()) ==
                      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10])
 
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       star_graph, 10, create_using=nx.DiGraph)
 
         ms = star_graph(10, create_using=nx.MultiGraph)
@@ -408,7 +408,7 @@ class TestGeneratorClassic():
         assert (sorted(d for n, d in g.degree()) ==
                      [3, 3, 3, 3, 3, 3, 3, 3, 3, 9])
 
-        assert_raises(nx.NetworkXError,
+        pytest.raises(nx.NetworkXError,
                       nx.wheel_graph, 10, create_using=nx.DiGraph)
 
         mg = nx.wheel_graph(10, create_using=nx.MultiGraph())
