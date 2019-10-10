@@ -13,7 +13,7 @@ class TestPrefixTree(object):
         strings = ['a', 'to', 'tea', 'ted', 'ten', 'i', 'in', 'inn']
         T, root = nx.prefix_tree(strings)
 
-        def source_label(v): return T.node[v]['source']
+        def source_label(v): return T.nodes[v]['source']
 
         # First, we check that the tree has the expected
         # structure. Recall that each node that corresponds to one of

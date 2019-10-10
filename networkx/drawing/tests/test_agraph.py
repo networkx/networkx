@@ -87,7 +87,7 @@ class TestAGraph(object):
         # edges: u,v
         G = nx.Graph()
         G = self.build_graph(G)
-        G.node['E']['n'] = 'keyword'
+        G.nodes['E']['n'] = 'keyword'
         G.edges[('A', 'B')]['u'] = 'keyword'
         G.edges[('A', 'B')]['v'] = 'keyword'
         A = nx.nx_agraph.to_agraph(G)

@@ -540,9 +540,8 @@ def minimum_cycle_basis(G, weight=None):
     --------
     simple_cycles, cycle_basis
     """
-    # We first split the graph in commected subgraphs
-    return sum((_min_cycle_basis(c, weight) for c in
-                nx.connected_component_subgraphs(G)), [])
+    return sum((_min_cycle_basis(G.subgraph(c), weight) for c in
+                nx.connected_components(G)), [])
 
 
 def _min_cycle_basis(comp, weight):
