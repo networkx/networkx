@@ -32,8 +32,8 @@ def circuit_to_formula(circuit):
     # Transfer the operator or variable labels for each node from the
     # circuit to the formula.
     for v in formula:
-        source = formula.node[v]['source']
-        formula.node[v]['label'] = circuit.node[source]['label']
+        source = formula.nodes[v]['source']
+        formula.nodes[v]['label'] = circuit.nodes[source]['label']
     return formula
 
 
@@ -41,7 +41,7 @@ def formula_to_string(formula):
 
     def _to_string(formula, root):
         # If there are no children, this is a variable node.
-        label = formula.node[root]['label']
+        label = formula.nodes[root]['label']
         if not formula[root]:
             return label
         # Otherwise, this is an operator.
