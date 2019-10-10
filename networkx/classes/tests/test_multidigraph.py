@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 from networkx.testing import assert_edges_equal
 import networkx as nx
 from .test_multigraph import BaseMultiGraphTester, TestMultiGraph
@@ -12,7 +12,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         edges = [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
         assert sorted(G.edges()) == edges
         assert sorted(G.edges(0)) == [(0, 1), (0, 2)]
-        assert_raises((KeyError, nx.NetworkXError), G.edges, -1)
+        pytest.raises((KeyError, nx.NetworkXError), G.edges, -1)
 
     def test_edges_data(self):
         G = self.K3
@@ -20,7 +20,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
                  (1, 2, {}), (2, 0, {}), (2, 1, {})]
         assert sorted(G.edges(data=True)) == edges
         assert sorted(G.edges(0, data=True)) == [(0, 1, {}), (0, 2, {})]
-        assert_raises((KeyError, nx.NetworkXError), G.neighbors, -1)
+        pytest.raises((KeyError, nx.NetworkXError), G.neighbors, -1)
 
     def test_edges_multi(self):
         G = self.K3
@@ -36,7 +36,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert (sorted(G.out_edges()) ==
                      [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.out_edges(0)) == [(0, 1), (0, 2)]
-        assert_raises((KeyError, nx.NetworkXError), G.out_edges, -1)
+        pytest.raises((KeyError, nx.NetworkXError), G.out_edges, -1)
         assert sorted(G.out_edges(0, keys=True)) == [(0, 1, 0), (0, 2, 0)]
 
     def test_out_edges_multi(self):
@@ -65,7 +65,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert (sorted(G.in_edges()) ==
                      [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.in_edges(0)) == [(1, 0), (2, 0)]
-        assert_raises((KeyError, nx.NetworkXError), G.in_edges, -1)
+        pytest.raises((KeyError, nx.NetworkXError), G.in_edges, -1)
         G.add_edge(0, 1, 2)
         assert (sorted(G.in_edges()) ==
                      [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
@@ -149,7 +149,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
     def test_successors(self):
         G = self.K3
         assert sorted(G.successors(0)) == [1, 2]
-        assert_raises((KeyError, nx.NetworkXError), G.successors, -1)
+        pytest.raises((KeyError, nx.NetworkXError), G.successors, -1)
 
     def test_has_predecessor(self):
         G = self.K3
@@ -159,7 +159,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
     def test_predecessors(self):
         G = self.K3
         assert sorted(G.predecessors(0)) == [1, 2]
-        assert_raises((KeyError, nx.NetworkXError), G.predecessors, -1)
+        pytest.raises((KeyError, nx.NetworkXError), G.predecessors, -1)
 
     def test_degree(self):
         G = self.K3
@@ -217,7 +217,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G = nx.MultiDiGraph([(0, 1), (0, 1)])
         R = G.reverse(copy=False)
         assert sorted(R.edges()) == [(1, 0), (1, 0)]
-        assert_raises(nx.NetworkXError, R.remove_edge, 1, 0)
+        pytest.raises(nx.NetworkXError, R.remove_edge, 1, 0)
 
 
 class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
@@ -280,11 +280,11 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
         assert G._pred == {1: {0: keydict}, 0: {}}
 
         # too few in tuple
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(0,)])
+        pytest.raises(nx.NetworkXError, G.add_edges_from, [(0,)])
         # too many in tuple
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3, 4)])
+        pytest.raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3, 4)])
         # not a tuple
-        assert_raises(TypeError, G.add_edges_from, [0])
+        pytest.raises(TypeError, G.add_edges_from, [0])
 
     def test_remove_edge(self):
         G = self.K3
@@ -295,8 +295,8 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
         assert G._pred == {0: {1: {0: {}}, 2: {0: {}}},
                                1: {2: {0: {}}},
                                2: {0: {0: {}}, 1: {0: {}}}}
-        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
-        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, 0, 2,
+        pytest.raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
+        pytest.raises((KeyError, nx.NetworkXError), G.remove_edge, 0, 2,
                       key=1)
 
     def test_remove_multiedge(self):
@@ -321,7 +321,7 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
         assert G._pred == {0: {1: {0: {}}, 2: {0: {}}},
                                1: {2: {0: {}}},
                                2: {0: {0: {}}, 1: {0: {}}}}
-        assert_raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
+        pytest.raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
 
     def test_remove_edges_from(self):
         G = self.K3

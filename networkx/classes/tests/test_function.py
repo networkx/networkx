@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import random
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx.testing.utils import *
 
@@ -216,15 +216,15 @@ class TestFunction(object):
     def test_freeze(self):
         G = nx.freeze(self.G)
         assert G.frozen == True
-        assert_raises(nx.NetworkXError, G.add_node, 1)
-        assert_raises(nx.NetworkXError, G.add_nodes_from, [1])
-        assert_raises(nx.NetworkXError, G.remove_node, 1)
-        assert_raises(nx.NetworkXError, G.remove_nodes_from, [1])
-        assert_raises(nx.NetworkXError, G.add_edge, 1, 2)
-        assert_raises(nx.NetworkXError, G.add_edges_from, [(1, 2)])
-        assert_raises(nx.NetworkXError, G.remove_edge, 1, 2)
-        assert_raises(nx.NetworkXError, G.remove_edges_from, [(1, 2)])
-        assert_raises(nx.NetworkXError, G.clear)
+        pytest.raises(nx.NetworkXError, G.add_node, 1)
+        pytest.raises(nx.NetworkXError, G.add_nodes_from, [1])
+        pytest.raises(nx.NetworkXError, G.remove_node, 1)
+        pytest.raises(nx.NetworkXError, G.remove_nodes_from, [1])
+        pytest.raises(nx.NetworkXError, G.add_edge, 1, 2)
+        pytest.raises(nx.NetworkXError, G.add_edges_from, [(1, 2)])
+        pytest.raises(nx.NetworkXError, G.remove_edge, 1, 2)
+        pytest.raises(nx.NetworkXError, G.remove_edges_from, [(1, 2)])
+        pytest.raises(nx.NetworkXError, G.clear)
 
     def test_is_frozen(self):
         assert nx.is_frozen(self.G) == False
@@ -269,7 +269,7 @@ class TestFunction(object):
              'Neighbors: 2'])
         assert info == expected_node_info
 
-        assert_raises(nx.NetworkXError, nx.info, G, n=-1)
+        pytest.raises(nx.NetworkXError, nx.info, G, n=-1)
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
@@ -369,7 +369,7 @@ class TestFunction(object):
         assert nx.is_weighted(G)
         assert nx.is_weighted(G, ('1', '0'))
 
-        assert_raises(nx.NetworkXError, nx.is_weighted, G, (1, 2))
+        pytest.raises(nx.NetworkXError, nx.is_weighted, G, (1, 2))
 
     def test_is_negatively_weighted(self):
         G = nx.Graph()
@@ -399,7 +399,7 @@ class TestFunction(object):
         assert not nx.is_negatively_weighted(G, ('0', '3'))
         assert nx.is_negatively_weighted(G, ('1', '0'))
 
-        assert_raises(nx.NetworkXError, nx.is_negatively_weighted, G, (1, 4))
+        pytest.raises(nx.NetworkXError, nx.is_negatively_weighted, G, (1, 4))
 
 
 class TestCommonNeighbors():
@@ -424,17 +424,17 @@ class TestCommonNeighbors():
         G = nx.star_graph(4)
         self.test(G, 1, 2, [0])
 
-    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            G = nx.DiGraph()
+            G.add_edges_from([(0, 1), (1, 2)])
+            self.func(G, 0, 2)
 
     def test_nonexistent_nodes(self):
         G = nx.complete_graph(5)
-        assert_raises(nx.NetworkXError, nx.common_neighbors, G, 5, 4)
-        assert_raises(nx.NetworkXError, nx.common_neighbors, G, 4, 5)
-        assert_raises(nx.NetworkXError, nx.common_neighbors, G, 5, 6)
+        pytest.raises(nx.NetworkXError, nx.common_neighbors, G, 5, 4)
+        pytest.raises(nx.NetworkXError, nx.common_neighbors, G, 4, 5)
+        pytest.raises(nx.NetworkXError, nx.common_neighbors, G, 5, 6)
 
     def test_custom1(self):
         """Case of no common neighbors."""

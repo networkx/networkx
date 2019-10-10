@@ -1,5 +1,4 @@
-from nose.tools import assert_equal, assert_not_equal, \
-    assert_is, assert_true, assert_raises
+import pytest
 
 import networkx as nx
 
@@ -29,9 +28,9 @@ class TestSubGraphView(object):
         else:
             assert list(G[3]) == [2]
             assert set(G[2]) == {1, 3}
-        assert_raises(KeyError, G.__getitem__, 4)
-        assert_raises(KeyError, G.__getitem__, 112)
-        assert_raises(KeyError, G.__getitem__, 111)
+        pytest.raises(KeyError, G.__getitem__, 4)
+        pytest.raises(KeyError, G.__getitem__, 112)
+        pytest.raises(KeyError, G.__getitem__, 111)
         assert G.degree(3) == (3 if G.is_multigraph() else 1)
         assert G.size() == (7 if G.is_multigraph() else 5)
 
@@ -52,8 +51,8 @@ class TestSubGraphView(object):
             assert list(G[2]) == [1]
             assert G.size() == 6
         assert list(G[3]) == [4]
-        assert_raises(KeyError, G.__getitem__, 221)
-        assert_raises(KeyError, G.__getitem__, 222)
+        pytest.raises(KeyError, G.__getitem__, 221)
+        pytest.raises(KeyError, G.__getitem__, 222)
         assert G.degree(3) == 1
 
     def test_shown_node(self):
@@ -66,9 +65,9 @@ class TestSubGraphView(object):
         else:
             assert list(G[3]) == [2]
         assert list(G[2]) == [3]
-        assert_raises(KeyError, G.__getitem__, 4)
-        assert_raises(KeyError, G.__getitem__, 112)
-        assert_raises(KeyError, G.__getitem__, 111)
+        pytest.raises(KeyError, G.__getitem__, 4)
+        pytest.raises(KeyError, G.__getitem__, 112)
+        pytest.raises(KeyError, G.__getitem__, 111)
         assert G.degree(3) == (3 if G.is_multigraph() else 1)
         assert G.size() == (3 if G.is_multigraph() else 1)
 
@@ -89,8 +88,8 @@ class TestSubGraphView(object):
             assert list(G[3]) == [2]
             assert list(G[2]) == [3]
             assert G.size() == 2
-        assert_raises(KeyError, G.__getitem__, 221)
-        assert_raises(KeyError, G.__getitem__, 222)
+        pytest.raises(KeyError, G.__getitem__, 221)
+        pytest.raises(KeyError, G.__getitem__, 222)
         assert G.degree(3) == 1
 
 
@@ -164,8 +163,8 @@ class TestMultiGraphView(TestSubGraphView):
             assert list(G[2]) == [1, 3]
             assert G.size() == 8
         assert G.degree(3) == 3
-        assert_raises(KeyError, G.__getitem__, 221)
-        assert_raises(KeyError, G.__getitem__, 222)
+        pytest.raises(KeyError, G.__getitem__, 221)
+        pytest.raises(KeyError, G.__getitem__, 222)
 
     def test_shown_edges(self):
         show_edges = [(2, 3, 4), (2, 3, 3), (8, 7, 0), (222, 223, 0)]
@@ -184,8 +183,8 @@ class TestMultiGraphView(TestSubGraphView):
             assert list(G[3]) == [2]
         assert G.degree(3) == 1
         assert list(G[2]) == [3]
-        assert_raises(KeyError, G.__getitem__, 221)
-        assert_raises(KeyError, G.__getitem__, 222)
+        pytest.raises(KeyError, G.__getitem__, 221)
+        pytest.raises(KeyError, G.__getitem__, 222)
 
 
 # multidigraph
@@ -349,7 +348,7 @@ class TestEdgeSubGraph(object):
 
     def test_readonly(self):
         """Tests that the subgraph cannot change the graph structure"""
-        assert_raises(nx.NetworkXError, self.H.add_node, 5)
-        assert_raises(nx.NetworkXError, self.H.remove_node, 0)
-        assert_raises(nx.NetworkXError, self.H.add_edge, 5, 6)
-        assert_raises(nx.NetworkXError, self.H.remove_edge, 0, 1)
+        pytest.raises(nx.NetworkXError, self.H.add_node, 5)
+        pytest.raises(nx.NetworkXError, self.H.remove_node, 0)
+        pytest.raises(nx.NetworkXError, self.H.add_edge, 5, 6)
+        pytest.raises(nx.NetworkXError, self.H.remove_edge, 0, 1)

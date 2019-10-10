@@ -77,11 +77,8 @@ class TestNumpyArray(object):
     def setup_class(cls):
         global numpy
         global assert_allclose
-        try:
-            import numpy
-            from numpy.testing import assert_allclose
-        except ImportError:
-            raise SkipTest('NumPy not available.')
+        numpy = pytest.importorskip("numpy")
+        assert_allclose = numpy.testing.assert_allclose
 
     def test_numpy_to_list_of_ints(self):
         a = numpy.array([1, 2, 3], dtype=numpy.int64)

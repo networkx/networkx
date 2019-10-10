@@ -1,6 +1,4 @@
-from nose.tools import assert_equal, assert_not_equal, \
-    assert_true, assert_false, assert_raises, \
-    assert_is, assert_is_not
+import pytest
 
 import networkx as nx
 
@@ -166,8 +164,8 @@ def test_nodedataview_unhashable():
     nvs.append(H.nodes.data(True))
     # raise unhashable
     for nv in nvs:
-        assert_raises(TypeError, set, nv)
-        assert_raises(TypeError, eval, 'nv | nv', locals())
+        pytest.raises(TypeError, set, nv)
+        pytest.raises(TypeError, eval, 'nv | nv', locals())
     # no raise... hashable
     Gn = G.nodes.data(False)
     set(Gn)

@@ -1,5 +1,4 @@
-from nose.tools import assert_equal, assert_not_equal, assert_is,\
-    assert_is_not, assert_true, assert_false, assert_raises
+import pytest
 import pickle
 
 import networkx as nx
@@ -29,7 +28,7 @@ class TestAtlasView(object):
     def test_getitem(self):
         assert self.av[1] is self.d[1]
         assert self.av[2]['color'] == 1
-        assert_raises(KeyError, self.av.__getitem__, 3)
+        pytest.raises(KeyError, self.av.__getitem__, 3)
 
     def test_copy(self):
         avcopy = self.av.copy()
@@ -84,7 +83,7 @@ class TestAdjacencyView(object):
         assert self.adjview[1] is not self.adj[1]
         assert self.adjview[3][0] is self.adjview[0][3]
         assert self.adjview[2][3]['color'] == 1
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()
@@ -125,7 +124,7 @@ class TestMultiAdjacencyView(TestAdjacencyView):
         assert self.adjview[1] is not self.adj[1]
         assert self.adjview[3][0][3] is self.adjview[0][3][3]
         assert self.adjview[3][2][3]['color'] == 1
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()
@@ -164,8 +163,8 @@ class TestUnionAtlas(object):
         assert self.av[0] is self.s[0]
         assert self.av[4] is self.p[4]
         assert self.av[2]['color'] == 1
-        assert_raises(KeyError, self.av[2].__getitem__, 'watch')
-        assert_raises(KeyError, self.av.__getitem__, 8)
+        pytest.raises(KeyError, self.av[2].__getitem__, 'watch')
+        pytest.raises(KeyError, self.av.__getitem__, 8)
 
     def test_copy(self):
         avcopy = self.av.copy()
@@ -222,7 +221,7 @@ class TestUnionAdjacency(object):
         assert self.adjview[1] is not self.s[1]
         assert self.adjview[3][0] is self.adjview[0][3]
         assert self.adjview[2][3]['color'] == 1
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()
@@ -264,8 +263,8 @@ class TestUnionMultiInner(TestUnionAdjacency):
         assert self.adjview[0][7] is self.adjview[0][3]
         assert self.adjview[2]['key']['color'] == 1
         assert self.adjview[2][1]['span'] == 2
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
-        assert_raises(KeyError, self.adjview[1].__getitem__, 'key')
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
+        pytest.raises(KeyError, self.adjview[1].__getitem__, 'key')
 
     def test_copy(self):
         avcopy = self.adjview.copy()
@@ -296,7 +295,7 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
         assert self.adjview[1] is not self.s[1]
         assert self.adjview[3][0][9] is self.adjview[0][3][9]
         assert self.adjview[3][2][9]['color'] == 1
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()

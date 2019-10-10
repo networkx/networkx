@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Original NetworkX graph tests"""
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx.testing import *
@@ -71,7 +71,7 @@ class HistoricalTests(object):
         G.add_node('m')
         assert G.has_node('m')
         G.add_node('m')   # no complaints
-        assert_raises(nx.NetworkXError, G.remove_node, 'j')
+        pytest.raises(nx.NetworkXError, G.remove_node, 'j')
         G.remove_node('m')
         assert list(G) == []
 
@@ -123,7 +123,7 @@ class HistoricalTests(object):
 
     def test_add_edge(self):
         G = self.G()
-        assert_raises(TypeError, G.add_edge, 'A')
+        pytest.raises(TypeError, G.add_edge, 'A')
 
         G.add_edge('A', 'B')     # testing add_edge()
         G.add_edge('A', 'B')  # should fail silently
@@ -201,7 +201,7 @@ class HistoricalTests(object):
         assert G.has_edge('P', 'M')
         G.remove_node('P')    # tests remove_node()'s handling of edges.
         assert not G.has_edge('P', 'M')
-        assert_raises(TypeError, G.remove_edge, 'M')
+        pytest.raises(TypeError, G.remove_edge, 'M')
 
         G.add_edge('N', 'M')
         assert G.has_edge('M', 'N')
@@ -224,7 +224,7 @@ class HistoricalTests(object):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'),
                           ('C', 'B'), ('C', 'D')])
         # node not in nbunch should be quietly ignored
-        assert_raises(nx.NetworkXError, G.edges, 6)
+        pytest.raises(nx.NetworkXError, G.edges, 6)
         assert list(G.edges('Z')) == []  # iterable non-node
         # nbunch can be an empty list
         assert list(G.edges([])) == []
@@ -358,7 +358,7 @@ class HistoricalTests(object):
         assert sorted(G.neighbors('A')) == ['B', 'C']
         assert sorted(G.neighbors('A')) == ['B', 'C']
         assert sorted(G.neighbors('G')) == []
-        assert_raises(nx.NetworkXError, G.neighbors, 'j')
+        pytest.raises(nx.NetworkXError, G.neighbors, 'j')
 
     def test_iterators(self):
         G = self.G()
@@ -376,7 +376,7 @@ class HistoricalTests(object):
                      [('A', 2), ('B', 3), ('C', 3), ('D', 2),
                       ('G', 0), ('J', 0), ('K', 0)])
         assert sorted(G.neighbors('A')) == ['B', 'C']
-        assert_raises(nx.NetworkXError, G.neighbors, 'X')
+        pytest.raises(nx.NetworkXError, G.neighbors, 'X')
         G.clear()
         assert nx.number_of_nodes(G) == 0
         assert nx.number_of_edges(G) == 0
@@ -429,6 +429,6 @@ class HistoricalTests(object):
     def test_node_tuple_issue(self):
         H = self.G()
         # Test error handling of tuple as a node
-        assert_raises(nx.NetworkXError, H.remove_node, (1, 2))
+        pytest.raises(nx.NetworkXError, H.remove_node, (1, 2))
         H.remove_nodes_from([(1, 2)])  # no error
-        assert_raises(nx.NetworkXError, H.neighbors, (1, 2))
+        pytest.raises(nx.NetworkXError, H.neighbors, (1, 2))

@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal
@@ -31,7 +31,7 @@ class TestReverseView(object):
 
     def test_exceptions(self):
         nxg = nx.graphviews
-        assert_raises(nx.NetworkXNotImplemented, nxg.reverse_view, nx.Graph())
+        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, nx.Graph())
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
@@ -80,7 +80,7 @@ class TestMultiReverseView(object):
     def test_exceptions(self):
         nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
-        assert_raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
+        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
 
 
 class TestToDirected(object):

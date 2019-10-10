@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Original NetworkX graph tests"""
-from nose.tools import *
+import pytest
 import networkx
 import networkx as nx
 from networkx.testing.utils import *
@@ -51,8 +51,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert sorted(G.neighbors('C')) == ['D']
         assert sorted(G['C']) == ['D']
         assert sorted(G.neighbors('A')) == ['B', 'C']
-        assert_raises(nx.NetworkXError, G.neighbors, 'j')
-        assert_raises(nx.NetworkXError, G.neighbors, 'j')
+        pytest.raises(nx.NetworkXError, G.neighbors, 'j')
+        pytest.raises(nx.NetworkXError, G.neighbors, 'j')
 
     def test_successors(self):
         G = self.G()
@@ -64,8 +64,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert sorted(G.successors('G')) == []
         assert sorted(G.successors('D')) == []
         assert sorted(G.successors('G')) == []
-        assert_raises(nx.NetworkXError, G.successors, 'j')
-        assert_raises(nx.NetworkXError, G.successors, 'j')
+        pytest.raises(nx.NetworkXError, G.successors, 'j')
+        pytest.raises(nx.NetworkXError, G.successors, 'j')
 
     def test_predecessors(self):
         G = self.G()
@@ -80,8 +80,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert sorted(G.predecessors('A')) == []
         assert sorted(G.successors('D')) == []
 
-        assert_raises(nx.NetworkXError, G.predecessors, 'j')
-        assert_raises(nx.NetworkXError, G.predecessors, 'j')
+        pytest.raises(nx.NetworkXError, G.predecessors, 'j')
+        pytest.raises(nx.NetworkXError, G.predecessors, 'j')
 
     def test_reverse(self):
         G = nx.complete_graph(10)
