@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # layout graphs with positions using graphviz neato
     pos = graphviz_layout(G, prog="neato")
     # color nodes the same in each connected subgraph
-    C = (U.subgraph(c) for c in nx.connected_components(U))
+    C = (G.subgraph(c) for c in nx.connected_components(G))
     for g in C:
         c = [random.random()] * nx.number_of_nodes(g)  # random color...
         nx.draw(g,

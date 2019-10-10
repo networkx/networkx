@@ -67,7 +67,7 @@ for p in pvals:
     # show other connected components
     for Gi in Gcc[1:]:
         if len(Gi) > 1:
-            nx.draw_networkx_edges(Gi, pos,
+            nx.draw_networkx_edges(G.subgraph(Gi), pos,
                                    with_labels=False,
                                    edge_color='r',
                                    alpha=0.3,
