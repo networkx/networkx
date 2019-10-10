@@ -7,29 +7,6 @@ from networkx.testing.utils import *
 from pytest import raises
 
 
-def test_deprecated():
-    # for backwards compatibility with 1.x, will be removed for 3.x
-    G = nx.complete_graph(3)
-    assert G.node == {0: {}, 1: {}, 2: {}}
-
-    G = nx.DiGraph()
-    nx.add_path(G, [3, 4])
-    assert G.adj == {3: {4: {}}, 4: {}}
-
-    G = nx.DiGraph()
-    nx.add_cycle(G, [3, 4, 5])
-    assert G.adj == {3: {4: {}}, 4: {5: {}}, 5: {3: {}}}
-
-    G = nx.DiGraph()
-    nx.add_star(G, [3, 4, 5])
-    assert G.adj == {3: {4: {}, 5: {}}, 4: {}, 5: {}}
-
-    G = nx.DiGraph([(0, 0), (0, 1), (1, 2)])
-    assert nx.number_of_selfloops(G) == 1
-    assert list(nx.nodes_with_selfloops(G)) == [0]
-    assert list(nx.selfloop_edges(G)) == [(0, 0)]
-
-
 class BaseGraphTester(object):
     """ Tests for data-structure independent graph class features."""
 

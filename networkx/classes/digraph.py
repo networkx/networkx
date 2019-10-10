@@ -1194,7 +1194,7 @@ class DiGraph(Graph):
         if copy:
             H = self.__class__()
             H.graph.update(deepcopy(self.graph))
-            H.add_nodes_from((n, deepcopy(d)) for n, d in self.node.items())
+            H.add_nodes_from((n, deepcopy(d)) for n, d in self.nodes.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
             return H

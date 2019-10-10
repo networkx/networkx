@@ -120,11 +120,6 @@ class TestToDirected(object):
         expected = sorted(list(self.G.edges) + revd)
         assert sorted(self.dv.edges) == expected
 
-    def test_exceptions(self):
-        nxg = nx.graphviews
-        assert_raises(nx.NetworkXError, nxg.DiGraphView, self.MG)
-        assert_raises(nx.NetworkXError, nxg.MultiDiGraphView, self.G)
-
 
 class TestToUndirected(object):
     def setup(self):
@@ -161,11 +156,6 @@ class TestToUndirected(object):
     def test_iter(self):
         expected = sorted(self.DG.edges)
         assert sorted(self.uv.edges) == expected
-
-    def test_exceptions(self):
-        nxg = nx.graphviews
-        assert_raises(nx.NetworkXError, nxg.GraphView, self.MDG)
-        assert_raises(nx.NetworkXError, nxg.MultiGraphView, self.DG)
 
 
 class TestChainsOfViews(object):
