@@ -2,8 +2,7 @@ import tempfile
 import os
 import random
 
-from nose.tools import *
-from nose import SkipTest
+import pytest
 
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
@@ -18,20 +17,20 @@ def test_not_implemented_decorator():
     test1(nx.Graph())
 
 
-@raises(KeyError)
 def test_not_implemented_decorator_key():
-    @not_implemented_for('foo')
-    def test1(G):
-        pass
-    test1(nx.Graph())
+    with pytest.raises(KeyError):
+        @not_implemented_for('foo')
+        def test1(G):
+            pass
+        test1(nx.Graph())
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_not_implemented_decorator_raise():
-    @not_implemented_for('graph')
-    def test1(G):
-        pass
-    test1(nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        @not_implemented_for('graph')
+        def test1(G):
+            pass
+        test1(nx.Graph())
 
 
 class TestOpenFileDecorator(object):
@@ -155,10 +154,7 @@ class TestRandomState(object):
     @classmethod
     def setup_class(cls):
         global np
-        try:
-            import numpy as np
-        except ImportError:
-            raise SkipTest('NumPy not available.')
+        np = pytest.importorskip("numpy")
 
     @random_state(1)
     def instantiate_random_state(self, random_state):
@@ -251,37 +247,37 @@ class TestRandomState(object):
         rv = self.instantiate_py_random_state(rng)
         assert rv, random.Random(seed).random()
 
-        assert_raises(ValueError, self.instantiate_random_state, rng)
-        assert_raises(ValueError, self.instantiate_np_random_state, rng)
+        pytest.raises(ValueError, self.instantiate_random_state, rng)
+        pytest.raises(ValueError, self.instantiate_np_random_state, rng)
 
 
-@raises(nx.NetworkXError)
 def test_random_state_string_arg_index():
-    @random_state('a')
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @random_state('a')
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)
 
 
-@raises(nx.NetworkXError)
 def test_py_random_state_string_arg_index():
-    @py_random_state('a')
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @py_random_state('a')
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)
 
 
-@raises(nx.NetworkXError)
 def test_random_state_invalid_arg_index():
-    @random_state(2)
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @random_state(2)
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)
 
 
-@raises(nx.NetworkXError)
 def test_py_random_state_invalid_arg_index():
-    @py_random_state(2)
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @py_random_state(2)
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)

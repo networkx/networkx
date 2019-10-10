@@ -194,3 +194,10 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     H = nx.from_numpy_matrix(B)
 
     return H
+
+
+# fixture for nose tests
+def setup_module(module):
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

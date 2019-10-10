@@ -1,4 +1,4 @@
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx.utils import *
 
@@ -94,7 +94,7 @@ def _test_heap_class(cls, *args, **kwargs):
         if op[-1] is not nx.NetworkXError:
             assert op[-1] == getattr(heap, op[0])(*op[1:-1])
         else:
-            assert_raises(op[-1], getattr(heap, op[0]), *op[1:-1])
+            pytest.raises(op[-1], getattr(heap, op[0]), *op[1:-1])
     # Coverage test.
     for i in range(99, -1, -1):
         assert heap.insert(i, i)
@@ -119,7 +119,7 @@ def _test_heap_class(cls, *args, **kwargs):
         assert heap.insert(i, i)
     for i in range(100):
         assert heap.pop() == (i, i)
-    assert_raises(nx.NetworkXError, heap.pop)
+    pytest.raises(nx.NetworkXError, heap.pop)
 
 
 def test_PairingHeap():

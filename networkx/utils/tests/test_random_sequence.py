@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 from networkx.utils import powerlaw_sequence,\
     zipf_rv, random_weighted_sample,\
     weighted_choice
@@ -16,8 +16,8 @@ def test_zipf_rv():
     r = zipf_rv(2.3, 2, 1)
     r = zipf_rv(2.3)
     assert type(r), int
-    assert_raises(ValueError, zipf_rv, 0.5)
-    assert_raises(ValueError, zipf_rv, 2, xmin=0)
+    pytest.raises(ValueError, zipf_rv, 0.5)
+    pytest.raises(ValueError, zipf_rv, 2, xmin=0)
 
 
 def test_random_weighted_sample():
@@ -25,7 +25,7 @@ def test_random_weighted_sample():
     s = random_weighted_sample(mapping, 2, seed=1)
     s = random_weighted_sample(mapping, 2)
     assert sorted(s) == sorted(mapping.keys())
-    assert_raises(ValueError, random_weighted_sample, mapping, 3)
+    pytest.raises(ValueError, random_weighted_sample, mapping, 3)
 
 
 def test_random_weighted_choice():

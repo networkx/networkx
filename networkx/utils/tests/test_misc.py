@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-from nose.tools import *
+import pytest
 from nose import SkipTest
 import networkx as nx
 from networkx.utils import *
@@ -32,8 +32,8 @@ def test_make_list_of_ints():
     assert make_list_of_ints(mylist) is mylist
     assert make_list_of_ints(mylist) == mylist
     assert type(make_list_of_ints(mylist)[2]) is int
-    assert_raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3, "kermit"])
-    assert_raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3.1])
+    pytest.raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3, "kermit"])
+    pytest.raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3.1])
 
 
 def test_random_number_distribution():
@@ -91,7 +91,7 @@ class TestNumpyArray(object):
         assert make_list_of_ints(b) == list(b)
         B = make_list_of_ints(b)
         assert type(B[0]) == int
-        assert_raises(nx.NetworkXError, make_list_of_ints, c)
+        pytest.raises(nx.NetworkXError, make_list_of_ints, c)
 
     def test_dict_to_numpy_array1(self):
         d = {'a': 1, 'b': 2}
@@ -190,7 +190,7 @@ def test_create_random_state():
     assert isinstance(create_random_state(None), rs)
     assert isinstance(create_random_state(np.random), rs)
     assert isinstance(create_random_state(rs(1)), rs)
-    assert_raises(ValueError, create_random_state, 'a')
+    pytest.raises(ValueError, create_random_state, 'a')
 
     assert np.all((rs(1).rand(10) == create_random_state(1).rand(10)))
 
@@ -201,7 +201,7 @@ def test_create_py_random_state():
     assert isinstance(create_py_random_state(1), pyrs)
     assert isinstance(create_py_random_state(None), pyrs)
     assert isinstance(create_py_random_state(pyrs(1)), pyrs)
-    assert_raises(ValueError, create_py_random_state, 'a')
+    pytest.raises(ValueError, create_py_random_state, 'a')
 
     try:
         import numpy as np
