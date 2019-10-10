@@ -69,12 +69,6 @@ class TestStronglyConnected:
             else:
                 assert not nx.is_strongly_connected(G)
 
-    # deprecated
-    def test_strongly_connected_component_subgraphs(self):
-        scc = nx.strongly_connected_component_subgraphs
-        for G, C in self.gc:
-            assert {frozenset(g) for g in scc(G)} == C
-
     def test_contract_scc1(self):
         G = nx.DiGraph()
         G.add_edges_from([
@@ -153,8 +147,6 @@ class TestStronglyConnected:
         assert_raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
         assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
         assert_raises(NetworkXNotImplemented, nx.condensation, G)
-        # deprecated
-        assert_raises(NetworkXNotImplemented, nx.strongly_connected_component_subgraphs, G)
 
 #    Commented out due to variability on Travis-CI hardware/operating systems
 #    def test_linear_time(self):

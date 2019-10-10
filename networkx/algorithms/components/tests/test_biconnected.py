@@ -76,22 +76,6 @@ def test_biconnected_components_cycle():
     answer = [{0, 1, 2}, {1, 3, 4}]
     assert_components_equal(list(nx.biconnected_components(G)), answer)
 
-# deprecated
-
-
-def test_biconnected_component_subgraphs_cycle():
-    G = nx.cycle_graph(3)
-    nx.add_cycle(G, [1, 3, 4, 5])
-    Gc = set(nx.biconnected_component_subgraphs(G))
-    assert len(Gc) == 2
-    g1, g2 = Gc
-    if 0 in g1:
-        assert nx.is_isomorphic(g1, nx.Graph([(0, 1), (0, 2), (1, 2)]))
-        assert nx.is_isomorphic(g2, nx.Graph([(1, 3), (1, 5), (3, 4), (4, 5)]))
-    else:
-        assert nx.is_isomorphic(g1, nx.Graph([(1, 3), (1, 5), (3, 4), (4, 5)]))
-        assert nx.is_isomorphic(g2, nx.Graph([(0, 1), (0, 2), (1, 2)]))
-
 
 def test_biconnected_components1():
     # graph example from
@@ -197,5 +181,3 @@ def test_connected_raise():
     assert_raises(NetworkXNotImplemented, nx.biconnected_component_edges, DG)
     assert_raises(NetworkXNotImplemented, nx.articulation_points, DG)
     assert_raises(NetworkXNotImplemented, nx.is_biconnected, DG)
-    # deprecated
-    assert_raises(NetworkXNotImplemented, nx.biconnected_component_subgraphs, DG)

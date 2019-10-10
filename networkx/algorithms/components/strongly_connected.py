@@ -17,7 +17,6 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['number_strongly_connected_components',
            'strongly_connected_components',
-           'strongly_connected_component_subgraphs',
            'is_strongly_connected',
            'strongly_connected_components_recursive',
            'kosaraju_strongly_connected_components',
@@ -214,6 +213,9 @@ def strongly_connected_components_recursive(G):
 
     >>> largest = max(nx.strongly_connected_components_recursive(G), key=len)
 
+    To create the induced subgraph of the components use:
+    >>> S = [G.subgraph(c).copy() for c in weakly_connected_components(G)]
+
     See Also
     --------
     connected_components
@@ -262,22 +264,6 @@ def strongly_connected_components_recursive(G):
         if source not in visited:
             for c in visit(source, cnt):
                 yield c
-
-
-@not_implemented_for('undirected')
-def strongly_connected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in strongly_connected_components(G))``
-
-         Or ``(G.subgraph(c).copy() for c in strongly_connected_components(G))``
-    """
-    msg = "strongly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
-        "use (G.subgraph(c).copy() for c in strongly_connected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in strongly_connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
 
 
 @not_implemented_for('undirected')

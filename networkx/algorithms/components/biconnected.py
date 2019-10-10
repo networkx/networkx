@@ -18,7 +18,6 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = [
     'biconnected_components',
     'biconnected_component_edges',
-    'biconnected_component_subgraphs',
     'is_biconnected',
     'articulation_points',
 ]
@@ -233,6 +232,9 @@ def biconnected_components(G):
 
     >>> Gc = max(nx.biconnected_components(G), key=len)
 
+    To create the components as subgraphs use:
+    ``(G.subgraph(c).copy() for c in biconnected_components(G))``
+
     See Also
     --------
     is_biconnected
@@ -261,22 +263,6 @@ def biconnected_components(G):
     """
     for comp in _biconnected_dfs(G, components=True):
         yield set(chain.from_iterable(comp))
-
-
-@not_implemented_for('directed')
-def biconnected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in biconnected_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in biconnected_components(G))``
-    """
-    msg = "connected_component_subgraphs is deprecated and will be removed" \
-        "in 2.2. Use (G.subgraph(c).copy() for c in biconnected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in biconnected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
 
 
 @not_implemented_for('directed')

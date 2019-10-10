@@ -77,16 +77,6 @@ class TestConnected:
         C = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
         assert ncc(G, 1) == C
 
-    # deprecated
-    def test_connected_component_subgraphs(self):
-        wcc = nx.weakly_connected_component_subgraphs
-        cc = nx.connected_component_subgraphs
-        for G, C in self.gc:
-            U = G.to_undirected()
-            w = {frozenset(g) for g in wcc(G)}
-            c = {frozenset(g) for g in cc(U)}
-            assert w == c
-
     def test_is_connected(self):
         assert nx.is_connected(self.grid)
         G = nx.Graph()
@@ -99,5 +89,3 @@ class TestConnected:
         assert_raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
         assert_raises(NetworkXNotImplemented, nx.is_connected, self.DG)
         assert_raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())
-        # deprecated
-        assert_raises(NetworkXNotImplemented, nx.connected_component_subgraphs, self.DG)

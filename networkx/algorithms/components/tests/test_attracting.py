@@ -56,5 +56,3 @@ class TestAttractingComponents(object):
         assert_raises(NetworkXNotImplemented, nx.attracting_components, G)
         assert_raises(NetworkXNotImplemented, nx.number_attracting_components, G)
         assert_raises(NetworkXNotImplemented, nx.is_attracting_component, G)
-        # deprecated
-        assert_raises(NetworkXNotImplemented, nx.attracting_component_subgraphs, G)

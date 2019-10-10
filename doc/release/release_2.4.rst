@@ -76,8 +76,37 @@ integer values to lists of integers
 
 Deprecations
 ------------
-None
+Removed functions (marked as deprecated in NetworkX 2.1):
+attracting_component_subgraphs
+connected_component_subgraphs
+weakly_connected_component_subgraphs
+strongly_connected_component_subgraphs
+biconnected_component_subgraphs
+See docs for component functions for how to get subgraphs.
 
+Graph Object methods removed (marked as deprecated 2.1)
+G.add_path
+G.add_cycle
+G.add_star
+G.nodes_with_selfloops
+G.number_of_selfloops
+G.selfloop_edges
+These are now NetworkX functions, e.g. nx.add_star(G, 5)
+G.node   --> use G.nodes
+G.fresh_copy   --> use G.__class__
+
+Remove old names for graphview functions.
+ReverseView
+SubGraph
+SubMultiGraph
+SubMultiDiGraph
+SubDiGraph
+GraphView
+DiGraphView
+MultiGraphView
+MultiDiGraphView
+MultiReverseView
+Use reverse_view, subgraph_view and generic_graph_view.
 
 Pull requests merged in this release
 ------------------------------------
