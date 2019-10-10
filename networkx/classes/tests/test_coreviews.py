@@ -319,10 +319,7 @@ class TestFilteredGraphs(object):
                        nx.DiGraph,
                        nx.MultiGraph,
                        nx.MultiDiGraph]
-        self.SubGraphs = [nx.graphviews.SubGraph,
-                          nx.graphviews.SubDiGraph,
-                          nx.graphviews.SubMultiGraph,
-                          nx.graphviews.SubMultiDiGraph]
+        self.SubGraphs = [nx.graphviews.subgraph_view] * 4
 
     def test_hide_show_nodes(self):
         for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):

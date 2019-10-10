@@ -43,12 +43,7 @@ from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
 
 import networkx as nx
 
-__all__ = ['generic_graph_view', 'subgraph_view', 'reverse_view',
-           'SubGraph', 'SubDiGraph', 'SubMultiGraph', 'SubMultiDiGraph',
-           'ReverseView', 'MultiReverseView',
-           'DiGraphView', 'MultiDiGraphView',
-           'GraphView', 'MultiGraphView',
-           ]
+__all__ = ['generic_graph_view', 'subgraph_view', 'reverse_view']
 
 
 def generic_graph_view(G, create_using=None):
