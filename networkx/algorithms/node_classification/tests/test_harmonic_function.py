@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #from nose.tools import *
-from pytest import raises
+import pytest
 from nose import SkipTest
 import networkx as nx
 from networkx.algorithms import node_classification
@@ -33,24 +33,24 @@ class TestHarmonicFunction:
         assert predicted[2] == 'B'
         assert predicted[3] == 'B'
 
-    @raises(nx.NetworkXError)
+    @pytest.mark.xfail(nx.NetworkXError)
     def test_no_labels(self):
         G = nx.path_graph(4)
         node_classification.harmonic_function(G)
 
-    @raises(nx.NetworkXError)
+    @pytest.mark.xfail(nx.NetworkXError)
     def test_no_nodes(self):
         G = nx.Graph()
         node_classification.harmonic_function(G)
 
-    @raises(nx.NetworkXError)
+    @pytest.mark.xfail(nx.NetworkXError)
     def test_no_edges(self):
         G = nx.Graph()
         G.add_node(1)
         G.add_node(2)
         node_classification.harmonic_function(G)
 
-    @raises(nx.NetworkXNotImplemented)
+    @pytest.mark.xfail(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edge(0, 1)
