@@ -23,8 +23,8 @@ class TestLocalAndGlobalConsistency:
     def test_path_graph(self):
         G = nx.path_graph(4)
         label_name = 'label'
-        G.node[0][label_name] = 'A'
-        G.node[3][label_name] = 'B'
+        G.nodes[0][label_name] = 'A'
+        G.nodes[3][label_name] = 'B'
         predicted = node_classification.local_and_global_consistency(
             G, label_name=label_name)
         assert predicted[0] == 'A'
@@ -56,14 +56,14 @@ class TestLocalAndGlobalConsistency:
         G.add_edge(1, 2)
         G.add_edge(2, 3)
         label_name = 'label'
-        G.node[0][label_name] = 'A'
-        G.node[3][label_name] = 'B'
+        G.nodes[0][label_name] = 'A'
+        G.nodes[3][label_name] = 'B'
         node_classification.harmonic_function(G)
 
     def test_one_labeled_node(self):
         G = nx.path_graph(4)
         label_name = 'label'
-        G.node[0][label_name] = 'A'
+        G.nodes[0][label_name] = 'A'
         predicted = node_classification.local_and_global_consistency(
             G, label_name=label_name)
         assert predicted[0] == 'A'
@@ -77,4 +77,4 @@ class TestLocalAndGlobalConsistency:
         predicted = node_classification.local_and_global_consistency(
             G, alpha=0, label_name=label_name)
         for i in range(len(G)):
-            assert predicted[i] == G.node[i][label_name]
+            assert predicted[i] == G.nodes[i][label_name]
