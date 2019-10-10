@@ -7,7 +7,6 @@ pip list
 export SPHINXCACHE=$HOME/.cache/sphinx
 cd doc
 make html
-make doctest
 make latexpdf
 cd ..
 
