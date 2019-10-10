@@ -524,8 +524,8 @@ def minimum_cycle_basis(G, weight=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
+    >>> nx.add_cycle(G, [0,1,2,3])
+    >>> nx.add_cycle(G, [0,3,4,5])
     >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 
@@ -540,8 +540,9 @@ def minimum_cycle_basis(G, weight=None):
     --------
     simple_cycles, cycle_basis
     """
-    return sum((_min_cycle_basis(G.subgraph(c), weight) for c in
-                nx.connected_components(G)), [])
+    # We first split the graph in commected subgraphs
+    return sum((_min_cycle_basis(c, weight) for c in
+                nx.connected_component_subgraphs(G)), [])
 
 
 def _min_cycle_basis(comp, weight):

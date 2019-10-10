@@ -297,7 +297,7 @@ class TestMinimumCycles(object):
     @classmethod
     def setup_class(cls):
         T = nx.Graph()
-        T.add_cycle([1, 2, 3, 4], weight=1)
+        nx.add_cycle(T, [1, 2, 3, 4], weight=1)
         T.add_edge(2, 4, weight=5)
         cls.diamond_graph = T
 

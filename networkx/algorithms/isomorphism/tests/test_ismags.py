@@ -4,7 +4,7 @@
     Tests for ISMAGS isomorphism algorithm.
 """
 
-from nose import SkipTest
+import pytest
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
@@ -65,7 +65,7 @@ class TestSelfIsomorphism(object):
         symmetry elements.
         """
         graph = nx.Graph()
-        graph.add_path(range(5))
+        nx.add_path(graph, range(5))
         graph.add_edges_from([(2, 5), (5, 6)])
 
         ismags = iso.ISMAGS(graph, graph)
@@ -77,7 +77,7 @@ class TestSelfIsomorphism(object):
         ismags_answer = list(ismags.find_isomorphisms(True))
         assert ismags_answer == [{n: n for n in graph.nodes}]
 
-    @SkipTest
+    @pytest.mark.skip()
     def test_directed_self_isomorphism(self):
         """
         For some small, directed, symmetric graphs, make sure that 1) they are
@@ -99,10 +99,10 @@ class TestSelfIsomorphism(object):
 class TestSubgraphIsomorphism(object):
     def test_isomorphism(self):
         g1 = nx.Graph()
-        g1.add_cycle(range(4))
+        nx.add_cycle(g1, range(4))
 
         g2 = nx.Graph()
-        g2.add_cycle(range(4))
+        nx.add_cycle(g2, range(4))
         g2.add_edges_from([(n, m) for n, m in zip(g2, range(4, 8))])
         ismags = iso.ISMAGS(g2, g1)
         assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
@@ -110,7 +110,7 @@ class TestSubgraphIsomorphism(object):
 
     def test_isomorphism2(self):
         g1 = nx.Graph()
-        g1.add_path(range(3))
+        nx.add_path(g1, range(3))
 
         g2 = g1.copy()
         g2.add_edge(1, 3)
@@ -132,7 +132,7 @@ class TestSubgraphIsomorphism(object):
 
     def test_labeled_nodes(self):
         g1 = nx.Graph()
-        g1.add_cycle(range(3))
+        nx.add_cycle(g1, range(3))
         g1.nodes[1]['attr'] = True
 
         g2 = g1.copy()
@@ -146,11 +146,11 @@ class TestSubgraphIsomorphism(object):
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{0: 2, 1: 1, 2: 0}]
         assert (_matches_to_sets(matches) ==
-                     _matches_to_sets(expected_symmetric + expected_asymmetric))        
+                     _matches_to_sets(expected_symmetric + expected_asymmetric))
 
     def test_labeled_edges(self):
         g1 = nx.Graph()
-        g1.add_cycle(range(3))
+        nx.add_cycle(g1, range(3))
         g1.edges[1, 2]['attr'] = True
 
         g2 = g1.copy()
@@ -223,10 +223,10 @@ class TestLargestCommonSubgraph(object):
 
     def test_symmetry_mcis(self):
         graph1 = nx.Graph()
-        graph1.add_path(range(4))
+        nx.add_path(graph1, range(4))
 
         graph2 = nx.Graph()
-        graph2.add_path(range(3))
+        nx.add_path(graph2, range(3))
         graph2.add_edge(1, 3)
 
         # Only the symmetry of graph2 is taken into account here.
