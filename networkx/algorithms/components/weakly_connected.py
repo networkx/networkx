@@ -16,6 +16,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = [
     'number_weakly_connected_components',
     'weakly_connected_components',
+    'weakly_connected_component_subgraphs',
     'is_weakly_connected',
 ]
 
@@ -54,10 +55,6 @@ def weakly_connected_components(G):
     use max instead of sort:
 
     >>> largest_cc = max(nx.weakly_connected_components(G), key=len)
-
-    Create the induced subgraphs for each component
-
-    >>> S = [G.subgraph(c).copy() for c in nx.weakly_connected_components(G)]
 
     See Also
     --------
@@ -108,6 +105,22 @@ def number_weakly_connected_components(G):
 
     """
     return sum(1 for wcc in weakly_connected_components(G))
+
+
+@not_implemented_for('undirected')
+def weakly_connected_component_subgraphs(G, copy=True):
+    """DEPRECATED: Use ``(G.subgraph(c) for c in weakly_connected_components(G))``
+
+           Or ``(G.subgraph(c).copy() for c in weakly_connected_components(G))``
+    """
+    msg = "weakly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
+        "use (G.subgraph(c).copy() for c in weakly_connected_components(G))"
+    _warnings.warn(msg, DeprecationWarning)
+    for c in weakly_connected_components(G):
+        if copy:
+            yield G.subgraph(c).copy()
+        else:
+            yield G.subgraph(c)
 
 
 @not_implemented_for('undirected')
