@@ -1,4 +1,3 @@
-
 from networkx import is_connected, neighbors
 from networkx.generators.internet_as_graphs import random_internet_as_graph
 from networkx.testing import almost_equal
@@ -167,14 +166,14 @@ class TestInternetASTopology():
                 raise ValueError("Unexpected data in the graph edge\
                         attributes")
 
-        assert almost_equal(d_m/len(self.M), 2 + (2.5*self.n)/10000)
-        assert almost_equal(d_cp/len(self.CP), 2 + (1.5*self.n)/10000)
-        assert almost_equal(d_c/len(self.C), 1 + (5*self.n)/100000)
+        assert almost_equal(d_m/len(self.M), 2 + (2.5*self.n)/10000, places=0)
+        assert almost_equal(d_cp/len(self.CP), 2 + (1.5*self.n)/10000, places=0)
+        assert almost_equal(d_c/len(self.C), 1 + (5*self.n)/100000, places=0)
 
-        assert almost_equal(p_m_m/len(self.M), 1 + (2*self.n)/10000)
-        assert almost_equal(p_cp_m/len(self.CP), 0.2 + (2*self.n)/10000)
-        assert almost_equal(p_cp_cp/len(self.CP), 0.05 + (2*self.n)/100000)
+        assert almost_equal(p_m_m/len(self.M), 1 + (2*self.n)/10000, places=0)
+        assert almost_equal(p_cp_m/len(self.CP), 0.2 + (2*self.n)/10000, places=0)
+        assert almost_equal(p_cp_cp/len(self.CP), 0.05 + (2*self.n)/100000, places=0)
 
-        assert almost_equal(t_m/d_m, 0.375)
-        assert almost_equal(t_cp/d_cp, 0.375)
-        assert almost_equal(t_c/d_c, 0.125)
+        assert almost_equal(t_m/d_m, 0.375, places=1)
+        assert almost_equal(t_cp/d_cp, 0.375, places=1)
+        assert almost_equal(t_c/d_c, 0.125, places=1)
