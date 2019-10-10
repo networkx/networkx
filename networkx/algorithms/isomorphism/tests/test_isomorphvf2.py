@@ -6,7 +6,7 @@ import os
 import struct
 import random
 
-from nose import SkipTest
+import pytest
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
@@ -125,7 +125,7 @@ class TestAtlas(object):
         global atlas
         import platform
         if platform.python_implementation() == 'Jython':
-            raise SkipTest('graph atlas not available under Jython.')
+            pytest.mark.skip('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas
 
         cls.GAG = atlas.graph_atlas_g()
@@ -207,7 +207,7 @@ def test_selfloop_mono():
             random.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
-            g2.remove_edges_from(g2.selfloop_edges())
+            g2.remove_edges_from(nx.selfloop_edges(g2))
             if not g1.is_directed():
                 gm = iso.GraphMatcher(g2, g1)
             else:
