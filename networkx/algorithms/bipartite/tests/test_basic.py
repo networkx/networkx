@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 from nose import SkipTest
-from nose.plugins.attrib import attr
 import networkx as nx
 from networkx.algorithms import bipartite
 
@@ -18,9 +17,9 @@ class TestBipartiteBasic:
         c = bipartite.color(G)
         assert c == {0: 1, 1: 0, 2: 1, 3: 0}
 
-    @raises(nx.NetworkXError)
     def test_not_bipartite_color(self):
-        c = bipartite.color(nx.complete_graph(4))
+        with pytest.raises(nx.NetworkXError):
+            c = bipartite.color(nx.complete_graph(4))
 
     def test_bipartite_directed(self):
         G = bipartite.random_graph(10, 10, 0.1, directed=True)
@@ -46,11 +45,11 @@ class TestBipartiteBasic:
         assert X == {0, 2}
         assert Y == {1, 3}
 
-    @raises(nx.AmbiguousSolution)
     def test_bipartite_sets_disconnected(self):
-        G = nx.path_graph(4)
-        G.add_edges_from([(5, 6), (6, 7)])
-        X, Y = bipartite.sets(G)
+        with pytest.raises(nx.AmbiguousSolution):
+            G = nx.path_graph(4)
+            G.add_edges_from([(5, 6), (6, 7)])
+            X, Y = bipartite.sets(G)
 
     def test_is_bipartite_node_set(self):
         G = nx.path_graph(4)
@@ -92,7 +91,6 @@ class TestBipartiteBasic:
         assert dict(u) == {1: 1.2, 3: 2}
         assert dict(d) == {0: 0.2, 2: 2, 4: 1}
 
-    @attr('numpy')
     def test_biadjacency_matrix_weight(self):
         try:
             import scipy
@@ -107,7 +105,6 @@ class TestBipartiteBasic:
         M = bipartite.biadjacency_matrix(G, X, weight='other')
         assert M[0, 0] == 4
 
-    @attr('numpy')
     def test_biadjacency_matrix(self):
         try:
             import scipy
@@ -122,7 +119,6 @@ class TestBipartiteBasic:
             assert M.shape[0] == tops[i]
             assert M.shape[1] == bots[i]
 
-    @attr('numpy')
     def test_biadjacency_matrix_order(self):
         try:
             import scipy

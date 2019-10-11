@@ -1,9 +1,9 @@
 """
 Tests for closeness centrality.
 """
-from nose.tools import *
+import pytest
 import networkx as nx
-# import timeit
+from networkx.testing import almost_equal
 
 class TestClosenessCentrality:
     @classmethod
@@ -37,8 +37,8 @@ class TestClosenessCentrality:
         wf_res = {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5,
                   4: 0.667, 5: 1.0, 6: 0.667}
         for n in G:
-            assert_almost_equal(c[n], res[n], places=3)
-            assert_almost_equal(cwf[n], wf_res[n], places=3)
+            assert almost_equal(c[n], res[n], places=3)
+            assert almost_equal(cwf[n], wf_res[n], places=3)
 
     def test_digraph(self):
         G = nx.path_graph(3, create_using=nx.DiGraph())
@@ -47,8 +47,8 @@ class TestClosenessCentrality:
         d = {0: 0.0, 1: 0.500, 2: 0.667}
         dr = {0: 0.667, 1: 0.500, 2: 0.0}
         for n in sorted(self.P3):
-            assert_almost_equal(c[n], d[n], places=3)
-            assert_almost_equal(cr[n], dr[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
+            assert almost_equal(cr[n], dr[n], places=3)
 
     def test_k5_closeness(self):
         c = nx.closeness_centrality(self.K5)
@@ -58,7 +58,7 @@ class TestClosenessCentrality:
              3: 1.000,
              4: 1.000}
         for n in sorted(self.K5):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_p3_closeness(self):
         c = nx.closeness_centrality(self.P3)
@@ -66,7 +66,7 @@ class TestClosenessCentrality:
              1: 1.000,
              2: 0.667}
         for n in sorted(self.P3):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_krackhardt_closeness(self):
         c = nx.closeness_centrality(self.K)
@@ -81,7 +81,7 @@ class TestClosenessCentrality:
              8: 0.429,
              9: 0.310}
         for n in sorted(self.K):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_florentine_families_closeness(self):
         c = nx.closeness_centrality(self.F)
@@ -101,7 +101,7 @@ class TestClosenessCentrality:
              'Strozzi':       0.4375,
              'Tornabuoni':    0.483}
         for n in sorted(self.F):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_les_miserables_closeness(self):
         c = nx.closeness_centrality(self.LM)
@@ -183,7 +183,7 @@ class TestClosenessCentrality:
              'Brujon': 0.380,
              'MmeHucheloup': 0.353}
         for n in sorted(self.LM):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_weighted_closeness(self):
         edges = ([('s', 'u', 10), ('s', 'x', 5), ('u', 'v', 1),
@@ -198,7 +198,7 @@ class TestClosenessCentrality:
              'u': 0.235,
              'v': 0.200}
         for n in sorted(XG):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
 
     #
@@ -220,33 +220,33 @@ class TestClosenessCentrality:
         v = nx.utils.arbitrary_element(possible_nodes)
         return (u, v)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_directed_raises(self):
-        dir_G = nx.gn_graph(n=5)
-        prev_cc = None
-        edge = self.pick_add_edge(dir_G)
-        insert = True
-        nx.incremental_closeness_centrality(dir_G, edge, prev_cc, insert)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            dir_G = nx.gn_graph(n=5)
+            prev_cc = None
+            edge = self.pick_add_edge(dir_G)
+            insert = True
+            nx.incremental_closeness_centrality(dir_G, edge, prev_cc, insert)
 
-    @raises(nx.NetworkXError)
     def test_wrong_size_prev_cc_raises(self):
-        G = self.undirected_G.copy()
-        edge = self.pick_add_edge(G)
-        insert = True
-        prev_cc = self.undirected_G_cc.copy()
-        prev_cc.pop(0)
-        nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
+        with pytest.raises(nx.NetworkXError):
+            G = self.undirected_G.copy()
+            edge = self.pick_add_edge(G)
+            insert = True
+            prev_cc = self.undirected_G_cc.copy()
+            prev_cc.pop(0)
+            nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
 
-    @raises(nx.NetworkXError)
     def test_wrong_nodes_prev_cc_raises(self):
-        G = self.undirected_G.copy()
-        edge = self.pick_add_edge(G)
-        insert = True
-        prev_cc = self.undirected_G_cc.copy()
-        num_nodes = len(prev_cc)
-        prev_cc.pop(0)
-        prev_cc[num_nodes] = 0.5
-        nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
+        with pytest.raises(nx.NetworkXError):
+            G = self.undirected_G.copy()
+            edge = self.pick_add_edge(G)
+            insert = True
+            prev_cc = self.undirected_G_cc.copy()
+            num_nodes = len(prev_cc)
+            prev_cc.pop(0)
+            prev_cc[num_nodes] = 0.5
+            nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
 
     def test_zero_centrality(self):
         G = nx.path_graph(3)

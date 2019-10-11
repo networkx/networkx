@@ -6,7 +6,7 @@
 #
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
@@ -159,79 +159,79 @@ def test_cutoff_disjoint_paths():
             assert cutoff == len(node_dpaths), msg.format(flow_func.__name__)
 
 
-@raises(nx.NetworkXError)
 def test_missing_source_edge_paths():
-    G = nx.path_graph(4)
-    list(nx.edge_disjoint_paths(G, 10, 1))
+    with pytest.raises(nx.NetworkXError):
+        G = nx.path_graph(4)
+        list(nx.edge_disjoint_paths(G, 10, 1))
 
 
-@raises(nx.NetworkXError)
 def test_missing_source_node_paths():
-    G = nx.path_graph(4)
-    list(nx.node_disjoint_paths(G, 10, 1))
+    with pytest.raises(nx.NetworkXError):
+        G = nx.path_graph(4)
+        list(nx.node_disjoint_paths(G, 10, 1))
 
 
-@raises(nx.NetworkXError)
 def test_missing_target_edge_paths():
-    G = nx.path_graph(4)
-    list(nx.edge_disjoint_paths(G, 1, 10))
+    with pytest.raises(nx.NetworkXError):
+        G = nx.path_graph(4)
+        list(nx.edge_disjoint_paths(G, 1, 10))
 
 
-@raises(nx.NetworkXError)
 def test_missing_target_node_paths():
-    G = nx.path_graph(4)
-    list(nx.node_disjoint_paths(G, 1, 10))
+    with pytest.raises(nx.NetworkXError):
+        G = nx.path_graph(4)
+        list(nx.node_disjoint_paths(G, 1, 10))
 
 
-@raises(nx.NetworkXNoPath)
 def test_not_weakly_connected_edges():
-    G = nx.DiGraph()
-    nx.add_path(G, [1, 2, 3])
-    nx.add_path(G, [4, 5])
-    list(nx.edge_disjoint_paths(G, 1, 5))
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.DiGraph()
+        nx.add_path(G, [1, 2, 3])
+        nx.add_path(G, [4, 5])
+        list(nx.edge_disjoint_paths(G, 1, 5))
 
 
-@raises(nx.NetworkXNoPath)
 def test_not_weakly_connected_nodes():
-    G = nx.DiGraph()
-    nx.add_path(G, [1, 2, 3])
-    nx.add_path(G, [4, 5])
-    list(nx.node_disjoint_paths(G, 1, 5))
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.DiGraph()
+        nx.add_path(G, [1, 2, 3])
+        nx.add_path(G, [4, 5])
+        list(nx.node_disjoint_paths(G, 1, 5))
 
 
-@raises(nx.NetworkXNoPath)
 def test_not_connected_edges():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    nx.add_path(G, [4, 5])
-    list(nx.edge_disjoint_paths(G, 1, 5))
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        nx.add_path(G, [4, 5])
+        list(nx.edge_disjoint_paths(G, 1, 5))
 
 
-@raises(nx.NetworkXNoPath)
 def test_not_connected_nodes():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    nx.add_path(G, [4, 5])
-    list(nx.node_disjoint_paths(G, 1, 5))
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        nx.add_path(G, [4, 5])
+        list(nx.node_disjoint_paths(G, 1, 5))
 
 
-@raises(nx.NetworkXNoPath)
 def test_isolated_edges():
-    G = nx.Graph()
-    G.add_node(1)
-    nx.add_path(G, [4, 5])
-    list(nx.edge_disjoint_paths(G, 1, 5))
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.Graph()
+        G.add_node(1)
+        nx.add_path(G, [4, 5])
+        list(nx.edge_disjoint_paths(G, 1, 5))
 
 
-@raises(nx.NetworkXNoPath)
 def test_isolated_nodes():
-    G = nx.Graph()
-    G.add_node(1)
-    nx.add_path(G, [4, 5])
-    list(nx.node_disjoint_paths(G, 1, 5))
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.Graph()
+        G.add_node(1)
+        nx.add_path(G, [4, 5])
+        list(nx.node_disjoint_paths(G, 1, 5))
 
 
-@raises(nx.NetworkXError)
 def test_invalid_auxiliary():
-    G = nx.complete_graph(5)
-    list(nx.node_disjoint_paths(G, 0, 3, auxiliary=G))
+    with pytest.raises(nx.NetworkXError):
+        G = nx.complete_graph(5)
+        list(nx.node_disjoint_paths(G, 0, 3, auxiliary=G))

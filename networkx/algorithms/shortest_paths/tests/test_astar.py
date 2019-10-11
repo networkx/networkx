@@ -1,5 +1,4 @@
 import pytest
-from nose.tools import raises
 
 from math import sqrt
 
@@ -122,9 +121,9 @@ class TestAStar:
         assert nx.astar_path(G, 's', 'v') == ['s', 'u', 'v']
         assert nx.astar_path_length(G, 's', 'v') == 2
 
-    @raises(nx.NodeNotFound)
     def test_astar_nopath(self):
-        nx.astar_path(self.XG, 's', 'moon')
+        with pytest.raises(nx.NodeNotFound):
+            nx.astar_path(self.XG, 's', 'moon')
 
     def test_cycle(self):
         C = nx.cycle_graph(7)

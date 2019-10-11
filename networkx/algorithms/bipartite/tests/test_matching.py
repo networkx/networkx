@@ -13,7 +13,7 @@ import itertools
 import networkx as nx
 
 from nose import SkipTest
-from nose.tools import raises
+import pytest
 
 from networkx.algorithms.bipartite.matching import eppstein_matching
 from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
@@ -131,13 +131,13 @@ class TestMatching():
         match = hopcroft_karp_matching(self.simple_graph)
         assert match == self.simple_solution
 
-    @raises(nx.AmbiguousSolution)
     def test_eppstein_matching_disconnected(self):
-        match = eppstein_matching(self.disconnected_graph)
+        with pytest.raises(nx.AmbiguousSolution):
+            match = eppstein_matching(self.disconnected_graph)
 
-    @raises(nx.AmbiguousSolution)
     def test_hopcroft_karp_matching_disconnected(self):
-        match = hopcroft_karp_matching(self.disconnected_graph)
+        with pytest.raises(nx.AmbiguousSolution):
+            match = hopcroft_karp_matching(self.disconnected_graph)
 
     def test_issue_2127(self):
         """Test from issue 2127"""
@@ -294,11 +294,11 @@ class TestMinimumWeightFullMatching(object):
         matching = minimum_weight_full_matching(G, weight='mass')
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
 
-    @raises(ValueError)
     def test_minimum_weight_full_matching_requires_complete_input(self):
-        G = nx.Graph()
-        G.add_nodes_from([1, 2, 3, 4], bipartite=0)
-        G.add_nodes_from(['a', 'b', 'c'], bipartite=1)
-        G.add_edges_from([(1, 'a'), (1, 'b'), (2, 'b'),
-                          (2, 'c'), (3, 'c'), (4, 'a')])
-        minimum_weight_full_matching(G)
+        with pytest.raises(ValueError):
+            G = nx.Graph()
+            G.add_nodes_from([1, 2, 3, 4], bipartite=0)
+            G.add_nodes_from(['a', 'b', 'c'], bipartite=1)
+            G.add_edges_from([(1, 'a'), (1, 'b'), (2, 'b'),
+                              (2, 'c'), (3, 'c'), (4, 'a')])
+            minimum_weight_full_matching(G)

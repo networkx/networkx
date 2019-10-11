@@ -1,6 +1,5 @@
 
 import pytest
-from nose.tools import raises
 
 import networkx as nx
 from networkx.utils import pairwise
@@ -144,12 +143,12 @@ class TestWeightedPath(WeightedTestBase):
         G = nx.path_graph(2)
         pytest.raises(nx.NodeNotFound, nx.bidirectional_dijkstra, G, 3, 0)
 
-    @raises(nx.NetworkXNoPath)
     def test_bidirectional_dijkstra_no_path(self):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
-        nx.add_path(G, [4, 5, 6])
-        path = nx.bidirectional_dijkstra(G, 1, 6)
+        with pytest.raises(nx.NetworkXNoPath):
+            G = nx.Graph()
+            nx.add_path(G, [1, 2, 3])
+            nx.add_path(G, [4, 5, 6])
+            path = nx.bidirectional_dijkstra(G, 1, 6)
 
     def test_absent_source(self):
         # the check is in _dijkstra_multisource, but this will provide
@@ -320,17 +319,17 @@ class TestMultiSourceDijkstra(object):
 
     """
 
-    @raises(ValueError)
     def test_no_sources(self):
-        nx.multi_source_dijkstra(nx.Graph(), {})
+        with pytest.raises(ValueError):
+            nx.multi_source_dijkstra(nx.Graph(), {})
 
-    @raises(ValueError)
     def test_path_no_sources(self):
-        nx.multi_source_dijkstra_path(nx.Graph(), {})
+        with pytest.raises(ValueError):
+            nx.multi_source_dijkstra_path(nx.Graph(), {})
 
-    @raises(ValueError)
     def test_path_length_no_sources(self):
-        nx.multi_source_dijkstra_path_length(nx.Graph(), {})
+        with pytest.raises(ValueError):
+            nx.multi_source_dijkstra_path_length(nx.Graph(), {})
 
     def test_absent_source(self):
         G = nx.path_graph(2)
@@ -381,10 +380,10 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                    nx.single_source_bellman_ford,):
             pytest.raises(nx.NodeNotFound, fn, G, 3, 0)
 
-    @raises(nx.NodeNotFound)
     def test_absent_source_goldberg_radzik(self):
-        G = nx.path_graph(2)
-        nx.goldberg_radzik(G, 3, 0)
+        with pytest.raises(nx.NodeNotFound):
+            G = nx.path_graph(2)
+            nx.goldberg_radzik(G, 3, 0)
 
     def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
@@ -568,11 +567,11 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
 class TestJohnsonAlgorithm(WeightedTestBase):
 
-    @raises(nx.NetworkXError)
     def test_single_node_graph(self):
-        G = nx.DiGraph()
-        G.add_node(0)
-        nx.johnson(G)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.DiGraph()
+            G.add_node(0)
+            nx.johnson(G)
 
     def test_negative_cycle(self):
         G = nx.DiGraph()
@@ -598,10 +597,10 @@ class TestJohnsonAlgorithm(WeightedTestBase):
                                                            '2': ['0', '1', '2']}, '3': {'3': ['3']},
                              '2': {'3': ['2', '3'], '2': ['2']}}
 
-    @raises(nx.NetworkXError)
     def test_unweighted_graph(self):
-        G = nx.path_graph(5)
-        nx.johnson(G)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.path_graph(5)
+            nx.johnson(G)
 
     def test_graphs(self):
         validate_path(self.XG, 's', 'v', 9, nx.johnson(self.XG)['s']['v'])

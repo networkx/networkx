@@ -10,7 +10,7 @@
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
 from unittest import TestCase
 
-from pytest import raises
+import pytest
 
 import networkx as nx
 from networkx.testing import (assert_graphs_equal, assert_nodes_equal,
@@ -18,7 +18,7 @@ from networkx.testing import (assert_graphs_equal, assert_nodes_equal,
 
 
 def test_unknown_algorithm():
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         nx.minimum_spanning_tree(nx.Graph(), algorithm='random')
 
 
@@ -96,11 +96,11 @@ class MinimumSpanningTreeTestBase(object):
         # Now test for raising exception
         edges = nx.minimum_spanning_edges(G, algorithm=self.algo,
                                           data=False, ignore_nan=False)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             list(edges)
         # test default for ignore_nan as False
         edges = nx.minimum_spanning_edges(G, algorithm=self.algo, data=False)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             list(edges)
 
     def test_nan_weights_order(self):

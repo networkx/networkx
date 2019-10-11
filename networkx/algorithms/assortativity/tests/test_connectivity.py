@@ -1,9 +1,9 @@
 from itertools import permutations
 
-from nose.tools import assert_almost_equal
-from nose.tools import raises
+import pytest
 
 import networkx as nx
+from networkx.testing import almost_equal
 
 
 class TestNeighborConnectivity(object):
@@ -87,9 +87,9 @@ class TestNeighborConnectivity(object):
         nd = nx.average_degree_connectivity(G)[5]
         assert nd == 1.8
         nd = nx.average_degree_connectivity(G, weight='weight')[5]
-        assert_almost_equal(nd, 3.222222, places=5)
+        assert almost_equal(nd, 3.222222, places=5)
         nd = nx.k_nearest_neighbors(G, weight='weight')[5]
-        assert_almost_equal(nd, 3.222222, places=5)
+        assert almost_equal(nd, 3.222222, places=5)
 
     def test_zero_deg(self):
         G = nx.DiGraph()
@@ -122,15 +122,15 @@ class TestNeighborConnectivity(object):
                                                 weight='weight')
             assert c == cw
 
-    @raises(ValueError)
     def test_invalid_source(self):
-        G = nx.DiGraph()
-        nx.average_degree_connectivity(G, source='bogus')
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            nx.average_degree_connectivity(G, source='bogus')
 
-    @raises(ValueError)
     def test_invalid_target(self):
-        G = nx.DiGraph()
-        nx.average_degree_connectivity(G, target='bogus')
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            nx.average_degree_connectivity(G, target='bogus')
 
     def test_single_node(self):
         # TODO Is this really the intended behavior for providing a

@@ -1,8 +1,8 @@
 """Unit tests for PyGraphviz interface."""
 import os
 import tempfile
+import pytest
 from nose import SkipTest
-from nose.tools import assert_true, assert_equal, assert_raises
 from networkx.testing import assert_edges_equal, assert_nodes_equal, \
         assert_graphs_equal
 
@@ -71,7 +71,7 @@ class TestAGraph(object):
 
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
-        assert_raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
+        pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
         G = nx.barbell_graph(4, 6)
         nx.nx_agraph.view_pygraphviz(G)
 

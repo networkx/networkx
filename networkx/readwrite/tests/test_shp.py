@@ -4,7 +4,7 @@
 import os
 import tempfile
 from nose import SkipTest
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 
@@ -225,13 +225,13 @@ class TestShp(object):
         self.deletetmp(self.drv, self.testdir, self.shppath)
 
 
-@raises(RuntimeError)
 def test_read_shp_nofile():
-    try:
-        from osgeo import ogr
-    except ImportError:
-        raise SkipTest('ogr not available.')
-    G = nx.read_shp("hopefully_this_file_will_not_be_available")
+    with pytest.raises(RuntimeError):
+        try:
+            from osgeo import ogr
+        except ImportError:
+            raise SkipTest('ogr not available.')
+        G = nx.read_shp("hopefully_this_file_will_not_be_available")
 
 
 class TestMissingGeometry(object):
@@ -266,9 +266,9 @@ class TestMissingGeometry(object):
         if os.path.exists(self.path):
             drv.DeleteDataSource(self.path)
 
-    @raises(nx.NetworkXError)
     def test_missing_geometry(self):
-        G = nx.read_shp(self.path)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.read_shp(self.path)
 
 
 class TestMissingAttrWrite(object):

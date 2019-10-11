@@ -1,13 +1,11 @@
 
 from nose import SkipTest
 
-from nose.tools import assert_almost_equal
 import pytest
 from nose.tools import ok_
-from nose.tools import raises
 
 import networkx as nx
-
+from networkx.testing import almost_equal
 
 def validate_grid_path(r, c, s, t, p):
     ok_(isinstance(p, list))
@@ -256,37 +254,37 @@ class TestGenericPath:
                      sorted(nx.all_shortest_paths(G, 0, 3, weight='weight',
                                                   method='bellman-ford')))
 
-    @raises(nx.NetworkXNoPath)
     def test_all_shortest_paths_raise(self):
-        G = nx.path_graph(4)
-        G.add_node(4)
-        list(nx.all_shortest_paths(G, 0, 4))
+        with pytest.raises(nx.NetworkXNoPath):
+            G = nx.path_graph(4)
+            G.add_node(4)
+            list(nx.all_shortest_paths(G, 0, 4))
 
-    @raises(ValueError)
     def test_bad_method(self):
-        G = nx.path_graph(2)
-        list(nx.all_shortest_paths(G, 0, 1, weight='weight', method='SPAM'))
+        with pytest.raises(ValueError):
+            G = nx.path_graph(2)
+            list(nx.all_shortest_paths(G, 0, 1, weight='weight', method='SPAM'))
 
 
 class TestAverageShortestPathLength(object):
 
     def test_cycle_graph(self):
         ans = nx.average_shortest_path_length(nx.cycle_graph(7))
-        assert_almost_equal(ans, 2)
+        assert almost_equal(ans, 2)
 
     def test_path_graph(self):
         ans = nx.average_shortest_path_length(nx.path_graph(5))
-        assert_almost_equal(ans, 2)
+        assert almost_equal(ans, 2)
 
     def test_weighted(self):
         G = nx.Graph()
         nx.add_cycle(G, range(7), weight=2)
         ans = nx.average_shortest_path_length(G, weight='weight')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(G, weight='weight')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
 
     def test_specified_methods(self):
         G = nx.Graph()
@@ -294,30 +292,30 @@ class TestAverageShortestPathLength(object):
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='dijkstra')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='bellman-ford')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='floyd-warshall')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
 
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='dijkstra')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='bellman-ford')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='floyd-warshall')
-        assert_almost_equal(ans, 4)
+        assert almost_equal(ans, 4)
 
     def test_disconnected(self):
         g = nx.Graph()
@@ -338,14 +336,14 @@ class TestAverageShortestPathLength(object):
         G = nx.trivial_graph()
         assert nx.average_shortest_path_length(G) == 0
 
-    @raises(nx.NetworkXPointlessConcept)
     def test_null_graph(self):
-        nx.average_shortest_path_length(nx.null_graph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.average_shortest_path_length(nx.null_graph())
 
-    @raises(ValueError)
     def test_bad_method(self):
-        G = nx.path_graph(2)
-        nx.average_shortest_path_length(G, weight='weight', method='SPAM')
+        with pytest.raises(ValueError):
+            G = nx.path_graph(2)
+            nx.average_shortest_path_length(G, weight='weight', method='SPAM')
 
 
 class TestAverageShortestPathLengthNumpy(object):

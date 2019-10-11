@@ -2,7 +2,6 @@
 import io
 import sys
 import time
-from nose import SkipTest
 import pytest
 
 import networkx as nx
@@ -11,10 +10,7 @@ import networkx as nx
 class TestGEXF(object):
     @classmethod
     def setup_class(cls):
-        try:
-            import xml.etree.ElementTree
-        except ImportError:
-            raise SkipTest('xml.etree.ElementTree not available.')
+        _ = pytest.importorskip("xml.etree.ElementTree")
 
         cls.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">

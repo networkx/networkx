@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 import networkx as nx
 
-from nose.tools import *
 from nose import SkipTest
-from nose.plugins.attrib import attr
 
 
-@attr('numpy')
 def test_non_randomness():
     try:
         import numpy.testing as npt

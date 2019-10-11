@@ -1,5 +1,5 @@
 from itertools import combinations
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms.flow import boykov_kolmogorov
@@ -112,12 +112,12 @@ class TestGomoryHuTree:
                 assert (nx.minimum_cut_value(G, u, v, capacity='weight') ==
                              cut_value)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_directed_raises(self):
-        G = nx.DiGraph()
-        T = nx.gomory_hu_tree(G)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            G = nx.DiGraph()
+            T = nx.gomory_hu_tree(G)
 
-    @raises(nx.NetworkXError)
     def test_empty_raises(self):
-        G = nx.empty_graph()
-        T = nx.gomory_hu_tree(G)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.empty_graph()
+            T = nx.gomory_hu_tree(G)

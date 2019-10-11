@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import math
 from nose import SkipTest
-from nose.tools import *
+import pytest
 import networkx as nx
-
+from networkx.testing import almost_equal
 
 class TestEigenvectorCentrality(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
@@ -24,15 +24,15 @@ class TestEigenvectorCentrality(object):
         v = math.sqrt(1 / 5.0)
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
         nstart = dict([(n, 1) for n in G])
         b = nx.eigenvector_centrality(G, nstart=nstart)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
         b = nx.eigenvector_centrality_numpy(G)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n], places=3)
+            assert almost_equal(b[n], b_answer[n], places=3)
 
     def test_P3(self):
         """Eigenvector centrality: P3"""
@@ -40,10 +40,10 @@ class TestEigenvectorCentrality(object):
         b_answer = {0: 0.5, 1: 0.7071, 2: 0.5}
         b = nx.eigenvector_centrality_numpy(G)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n], places=4)
+            assert almost_equal(b[n], b_answer[n], places=4)
         b = nx.eigenvector_centrality(G)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n], places=4)
+            assert almost_equal(b[n], b_answer[n], places=4)
 
     def test_P3_unweighted(self):
         """Eigenvector centrality: P3"""
@@ -51,12 +51,12 @@ class TestEigenvectorCentrality(object):
         b_answer = {0: 0.5, 1: 0.7071, 2: 0.5}
         b = nx.eigenvector_centrality_numpy(G, weight=None)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n], places=4)
+            assert almost_equal(b[n], b_answer[n], places=4)
 
-    @raises(nx.PowerIterationFailedConvergence)
     def test_maxiter(self):
-        G = nx.path_graph(3)
-        b = nx.eigenvector_centrality(G, max_iter=0)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            G = nx.path_graph(3)
+            b = nx.eigenvector_centrality(G, max_iter=0)
 
 
 class TestEigenvectorCentralityDirected(object):
@@ -97,25 +97,25 @@ class TestEigenvectorCentralityDirected(object):
         G = self.G
         p = nx.eigenvector_centrality(G)
         for (a, b) in zip(list(p.values()), self.G.evc):
-            assert_almost_equal(a, b, places=4)
+            assert almost_equal(a, b, places=4)
 
     def test_eigenvector_centrality_weighted_numpy(self):
         G = self.G
         p = nx.eigenvector_centrality_numpy(G)
         for (a, b) in zip(list(p.values()), self.G.evc):
-            assert_almost_equal(a, b)
+            assert almost_equal(a, b)
 
     def test_eigenvector_centrality_unweighted(self):
         G = self.H
         p = nx.eigenvector_centrality(G)
         for (a, b) in zip(list(p.values()), self.G.evc):
-            assert_almost_equal(a, b, places=4)
+            assert almost_equal(a, b, places=4)
 
     def test_eigenvector_centrality_unweighted_numpy(self):
         G = self.H
         p = nx.eigenvector_centrality_numpy(G)
         for (a, b) in zip(list(p.values()), self.G.evc):
-            assert_almost_equal(a, b)
+            assert almost_equal(a, b)
 
 
 class TestEigenvectorCentralityExceptions(object):
@@ -130,18 +130,18 @@ class TestEigenvectorCentralityExceptions(object):
         except ImportError:
             raise SkipTest('SciPy not available.')
 
-    @raises(nx.NetworkXException)
     def test_multigraph(self):
-        e = nx.eigenvector_centrality(nx.MultiGraph())
+        with pytest.raises(nx.NetworkXException):
+            e = nx.eigenvector_centrality(nx.MultiGraph())
 
-    @raises(nx.NetworkXException)
     def test_multigraph_numpy(self):
-        e = nx.eigenvector_centrality_numpy(nx.MultiGraph())
+        with pytest.raises(nx.NetworkXException):
+            e = nx.eigenvector_centrality_numpy(nx.MultiGraph())
 
-    @raises(nx.NetworkXException)
     def test_empty(self):
-        e = nx.eigenvector_centrality(nx.Graph())
+        with pytest.raises(nx.NetworkXException):
+            e = nx.eigenvector_centrality(nx.Graph())
 
-    @raises(nx.NetworkXException)
     def test_empty_numpy(self):
-        e = nx.eigenvector_centrality_numpy(nx.Graph())
+        with pytest.raises(nx.NetworkXException):
+            e = nx.eigenvector_centrality_numpy(nx.Graph())

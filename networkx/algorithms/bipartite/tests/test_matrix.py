@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 from nose import SkipTest
 import networkx as nx
 from networkx.algorithms import bipartite
@@ -46,29 +46,29 @@ class TestBiadjacencyMatrix:
         M = bipartite.biadjacency_matrix(G, X, Y, weight='weight')
         assert M[1, 2] == 2
 
-    @raises(nx.NetworkXError)
     def test_null_graph(self):
-        bipartite.biadjacency_matrix(nx.Graph(), [])
+        with pytest.raises(nx.NetworkXError):
+            bipartite.biadjacency_matrix(nx.Graph(), [])
 
-    @raises(nx.NetworkXError)
     def test_empty_graph(self):
-        bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [])
+        with pytest.raises(nx.NetworkXError):
+            bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [])
 
-    @raises(nx.NetworkXError)
     def test_duplicate_row(self):
-        bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [1, 1])
+        with pytest.raises(nx.NetworkXError):
+            bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [1, 1])
 
-    @raises(nx.NetworkXError)
     def test_duplicate_col(self):
-        bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], [1, 1])
+        with pytest.raises(nx.NetworkXError):
+            bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], [1, 1])
 
-    @raises(nx.NetworkXError)
     def test_duplicate_col(self):
-        bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], [1, 1])
+        with pytest.raises(nx.NetworkXError):
+            bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], [1, 1])
 
-    @raises(nx.NetworkXError)
     def test_format_keyword(self):
-        bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], format='foo')
+        with pytest.raises(nx.NetworkXError):
+            bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], format='foo')
 
     def test_from_biadjacency_roundtrip(self):
         B1 = nx.path_graph(5)

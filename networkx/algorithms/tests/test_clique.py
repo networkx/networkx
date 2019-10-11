@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 
@@ -141,9 +141,9 @@ class TestCliques:
         H2 = nx.make_max_clique_graph(G)
         assert H1.adj == H2.adj
 
-    @raises(nx.NetworkXNotImplemented)
     def test_directed(self):
-        cliques = nx.find_cliques(nx.DiGraph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            cliques = nx.find_cliques(nx.DiGraph())
 
 
 class TestEnumerateAllCliques:

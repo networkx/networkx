@@ -1,7 +1,7 @@
+import pytest
 import networkx as nx
 from networkx.algorithms.planar_drawing import triangulate_embedding
 import math
-from nose.tools import raises
 
 
 def test_graph1():
@@ -65,12 +65,12 @@ def test_multiple_component_graph2():
     check_embedding_data(embedding_data)
 
 
-@raises(nx.NetworkXException)
 def test_invalid_half_edge():
-    embedding_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
-    embedding = nx.PlanarEmbedding()
-    embedding.set_data(embedding_data)
-    nx.combinatorial_embedding_to_pos(embedding)
+    with pytest.raises(nx.NetworkXException):
+        embedding_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
+        embedding = nx.PlanarEmbedding()
+        embedding.set_data(embedding_data)
+        nx.combinatorial_embedding_to_pos(embedding)
 
 
 def test_triangulate_embedding1():

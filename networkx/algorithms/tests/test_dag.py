@@ -1,7 +1,6 @@
 from itertools import combinations, permutations
 
 import pytest
-from nose.tools import raises
 from nose.tools import ok_
 
 import networkx as nx
@@ -589,20 +588,20 @@ class TestDagToBranching(object):
         B = nx.dag_to_branching(G)
         assert nx.is_isomorphic(G, B)
 
-    @raises(nx.HasACycle)
     def test_not_acyclic(self):
         """Tests that a non-acyclic graph causes an exception."""
-        G = nx.DiGraph(pairwise('abc', cyclic=True))
-        nx.dag_to_branching(G)
+        with pytest.raises(nx.HasACycle):
+            G = nx.DiGraph(pairwise('abc', cyclic=True))
+            nx.dag_to_branching(G)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_undirected(self):
-        nx.dag_to_branching(nx.Graph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag_to_branching(nx.Graph())
 
-    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
-        nx.dag_to_branching(nx.MultiGraph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag_to_branching(nx.MultiGraph())
 
-    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
-        nx.dag_to_branching(nx.MultiDiGraph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag_to_branching(nx.MultiDiGraph())

@@ -2,7 +2,6 @@
 from random import Random
 from nose import SkipTest
 import pytest
-from nose.tools import raises
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
@@ -76,20 +75,20 @@ class TestDistance:
         G.add_edge(3, 4)
         pytest.raises(nx.NetworkXError, nx.diameter, G)
 
-    @raises(nx.NetworkXError)
     def test_eccentricity_infinite(self):
-        G = nx.Graph([(1, 2), (3, 4)])
-        e = nx.eccentricity(G)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.Graph([(1, 2), (3, 4)])
+            e = nx.eccentricity(G)
 
-    @raises(nx.NetworkXError)
     def test_eccentricity_undirected_not_connected(self):
-        G = nx.Graph([(1, 2), (3, 4)])
-        e = nx.eccentricity(G, sp=1)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.Graph([(1, 2), (3, 4)])
+            e = nx.eccentricity(G, sp=1)
 
-    @raises(nx.NetworkXError)
     def test_eccentricity_directed_weakly_connected(self):
-        DG = nx.DiGraph([(1, 2), (1, 3)])
-        nx.eccentricity(DG)
+        with pytest.raises(nx.NetworkXError):
+            DG = nx.DiGraph([(1, 2), (1, 3)])
+            nx.eccentricity(DG)
 
 
 class TestResistanceDistance:
@@ -125,21 +124,21 @@ class TestResistanceDistance:
         assert Mn_nodelist == [2, 3]
         assert np.allclose(Mn.toarray(), N.toarray())
 
-    @raises(nx.NetworkXError)
     def test_laplacian_submatrix_square(self):
-        from networkx.algorithms.distance_measures import _laplacian_submatrix
-        M = sp_sparse.csr_matrix([[1, 2],
-                                     [4, 5],
-                                     [7, 8]], dtype=np.float32)
-        _laplacian_submatrix(1, M, [1, 2, 3])
+        with pytest.raises(nx.NetworkXError):
+            from networkx.algorithms.distance_measures import _laplacian_submatrix
+            M = sp_sparse.csr_matrix([[1, 2],
+                                         [4, 5],
+                                         [7, 8]], dtype=np.float32)
+            _laplacian_submatrix(1, M, [1, 2, 3])
 
-    @raises(nx.NetworkXError)
     def test_laplacian_submatrix_matrix_node_dim(self):
-        from networkx.algorithms.distance_measures import _laplacian_submatrix
-        M = sp_sparse.csr_matrix([[1, 2, 3],
-                                     [4, 5, 6],
-                                     [7, 8, 9]], dtype=np.float32)
-        _laplacian_submatrix(1, M, [1, 2, 3, 4])
+        with pytest.raises(nx.NetworkXError):
+            from networkx.algorithms.distance_measures import _laplacian_submatrix
+            M = sp_sparse.csr_matrix([[1, 2, 3],
+                                         [4, 5, 6],
+                                         [7, 8, 9]], dtype=np.float32)
+            _laplacian_submatrix(1, M, [1, 2, 3, 4])
 
     def test_resistance_distance(self):
         rd = nx.resistance_distance(self.G, 1, 3, 'weight', True)
@@ -170,27 +169,27 @@ class TestResistanceDistance:
         rd = nx.resistance_distance(G, 1, 3, 'weight', True)
         assert np.isclose(rd, 1/(1/(2+4) + 1/(1+3)))
 
-    @raises(ZeroDivisionError)
     def test_resistance_distance_div0(self):
-        self.G[1][2]['weight'] = 0
-        nx.resistance_distance(self.G, 1, 3, 'weight')
+        with pytest.raises(ZeroDivisionError):
+            self.G[1][2]['weight'] = 0
+            nx.resistance_distance(self.G, 1, 3, 'weight')
 
-    @raises(nx.NetworkXError)
     def test_resistance_distance_not_connected(self):
-        self.G.add_node(5)
-        nx.resistance_distance(self.G, 1, 5)
+        with pytest.raises(nx.NetworkXError):
+            self.G.add_node(5)
+            nx.resistance_distance(self.G, 1, 5)
 
-    @raises(nx.NetworkXError)
     def test_resistance_distance_same_node(self):
-        nx.resistance_distance(self.G, 1, 1)
+        with pytest.raises(nx.NetworkXError):
+            nx.resistance_distance(self.G, 1, 1)
 
-    @raises(nx.NetworkXError)
     def test_resistance_distance_nodeA_not_in_graph(self):
-        nx.resistance_distance(self.G, 9, 1)
+        with pytest.raises(nx.NetworkXError):
+            nx.resistance_distance(self.G, 9, 1)
 
-    @raises(nx.NetworkXError)
     def test_resistance_distance_nodeB_not_in_graph(self):
-        nx.resistance_distance(self.G, 1, 9)
+        with pytest.raises(nx.NetworkXError):
+            nx.resistance_distance(self.G, 1, 9)
 
 
 class TestBarycenter(object):

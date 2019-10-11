@@ -1,5 +1,4 @@
-
-from nose.tools import *
+import pytest
 import networkx as nx
 
 
@@ -45,15 +44,15 @@ class TestTreeRecognition(object):
 
         cls.NF1 = nx.compose(cls.T6, cls.N6)
 
-    @raises(nx.NetworkXPointlessConcept)
     def test_null_tree(self):
-        nx.is_tree(self.graph())
-        nx.is_tree(self.multigraph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.is_tree(self.graph())
+            nx.is_tree(self.multigraph())
 
-    @raises(nx.NetworkXPointlessConcept)
     def test_null_forest(self):
-        nx.is_forest(self.graph())
-        nx.is_forest(self.multigraph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.is_forest(self.graph())
+            nx.is_forest(self.multigraph())
 
     def test_is_tree(self):
         assert nx.is_tree(self.T2)

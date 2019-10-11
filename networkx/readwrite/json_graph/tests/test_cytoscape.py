@@ -1,5 +1,5 @@
 import json
-from nose.tools import raises
+import pytest
 import networkx as nx
 from networkx.readwrite.json_graph import *
 
@@ -57,8 +57,8 @@ class TestCytoscape:
         assert nx.is_isomorphic(G, H)
         assert H[1][2]['second']['color'] == 'blue'
 
-    @raises(nx.NetworkXError)
     def test_exception(self):
-        G = nx.MultiDiGraph()
-        attrs = dict(name='node', ident='node')
-        cytoscape_data(G, attrs)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.MultiDiGraph()
+            attrs = dict(name='node', ident='node')
+            cytoscape_data(G, attrs)

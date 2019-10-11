@@ -1,11 +1,11 @@
+import pytest
 import networkx as nx
-from nose.tools import raises
 from networkx.testing import assert_edges_equal
 
 
-@raises(nx.NetworkXError)
 def test_tensor_product_raises():
-    P = nx.tensor_product(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXError):
+        P = nx.tensor_product(nx.DiGraph(), nx.Graph())
 
 
 def test_tensor_product_null():
@@ -114,9 +114,9 @@ def test_cartesian_product_multigraph():
                    ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]})
 
 
-@raises(nx.NetworkXError)
 def test_cartesian_product_raises():
-    P = nx.cartesian_product(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXError):
+        P = nx.cartesian_product(nx.DiGraph(), nx.Graph())
 
 
 def test_cartesian_product_null():
@@ -197,9 +197,9 @@ def test_cartesian_product_random():
                 assert not GH.has_edge((u_G, u_H), (v_G, v_H))
 
 
-@raises(nx.NetworkXError)
 def test_lexicographic_product_raises():
-    P = nx.lexicographic_product(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXError):
+        P = nx.lexicographic_product(nx.DiGraph(), nx.Graph())
 
 
 def test_lexicographic_product_null():
@@ -273,9 +273,9 @@ def test_lexicographic_product_random():
                 assert not GH.has_edge((u_G, u_H), (v_G, v_H))
 
 
-@raises(nx.NetworkXError)
 def test_strong_product_raises():
-    P = nx.strong_product(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXError):
+        P = nx.strong_product(nx.DiGraph(), nx.Graph())
 
 
 def test_strong_product_null():
@@ -351,9 +351,9 @@ def test_strong_product_random():
                 assert not GH.has_edge((u_G, u_H), (v_G, v_H))
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_graph_power_raises():
-    nx.power(nx.MultiDiGraph(), 2)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.power(nx.MultiDiGraph(), 2)
 
 
 def test_graph_power():
@@ -373,14 +373,14 @@ def test_graph_power():
                         (8, 9)])
 
 
-@raises(ValueError)
 def test_graph_power_negative():
-    nx.power(nx.Graph(), -1)
+    with pytest.raises(ValueError):
+        nx.power(nx.Graph(), -1)
 
 
-@raises(nx.NetworkXError)
 def test_rooted_product_raises():
-    nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
+    with pytest.raises(nx.NetworkXError):
+        nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
 
 
 def test_rooted_product():

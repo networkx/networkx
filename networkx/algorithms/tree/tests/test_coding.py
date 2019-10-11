@@ -10,8 +10,7 @@
 """Unit tests for the :mod:`~networkx.algorithms.tree.coding` module."""
 from itertools import product
 
-from nose.tools import raises
-
+import pytest
 import networkx as nx
 from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
@@ -23,23 +22,23 @@ class TestPruferSequence(object):
 
     """
 
-    @raises(nx.NotATree)
     def test_nontree(self):
-        G = nx.cycle_graph(3)
-        nx.to_prufer_sequence(G)
+        with pytest.raises(nx.NotATree):
+            G = nx.cycle_graph(3)
+            nx.to_prufer_sequence(G)
 
-    @raises(nx.NetworkXPointlessConcept)
     def test_null_graph(self):
-        nx.to_prufer_sequence(nx.null_graph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.to_prufer_sequence(nx.null_graph())
 
-    @raises(nx.NetworkXPointlessConcept)
     def test_trivial_graph(self):
-        nx.to_prufer_sequence(nx.trivial_graph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.to_prufer_sequence(nx.trivial_graph())
 
-    @raises(KeyError)
     def test_bad_integer_labels(self):
-        T = nx.Graph(nx.utils.pairwise('abc'))
-        nx.to_prufer_sequence(T)
+        with pytest.raises(KeyError):
+            T = nx.Graph(nx.utils.pairwise('abc'))
+            nx.to_prufer_sequence(T)
 
     def test_encoding(self):
         """Tests for encoding a tree as a Prüfer sequence using the
@@ -87,15 +86,15 @@ class TestNestedTuple(object):
 
     """
 
-    @raises(nx.NotATree)
     def test_nontree(self):
-        G = nx.cycle_graph(3)
-        nx.to_nested_tuple(G, 0)
+        with pytest.raises(nx.NotATree):
+            G = nx.cycle_graph(3)
+            nx.to_nested_tuple(G, 0)
 
-    @raises(nx.NodeNotFound)
     def test_unknown_root(self):
-        G = nx.path_graph(2)
-        nx.to_nested_tuple(G, 'bogus')
+        with pytest.raises(nx.NodeNotFound):
+            G = nx.path_graph(2)
+            nx.to_nested_tuple(G, 'bogus')
 
     def test_encoding(self):
         T = nx.full_rary_tree(2, 2 ** 3 - 1)

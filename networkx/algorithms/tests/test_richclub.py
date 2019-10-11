@@ -1,5 +1,5 @@
+import pytest
 import networkx as nx
-from nose.tools import *
 
 
 def test_richclub():
@@ -64,16 +64,16 @@ def test_richclub4():
                       3: 0.0}
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_richclub_exception():
-    G = nx.DiGraph()
-    nx.rich_club_coefficient(G)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        G = nx.DiGraph()
+        nx.rich_club_coefficient(G)
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_rich_club_exception2():
-    G = nx.MultiGraph()
-    nx.rich_club_coefficient(G)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        G = nx.MultiGraph()
+        nx.rich_club_coefficient(G)
 
 
 # def test_richclub2_normalized():

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import pytest
-from nose.tools import raises
 import networkx
 import networkx as nx
 
@@ -46,15 +45,15 @@ class TestCycles:
         assert sort_cy == [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5],
                                ['A', 'B', 'C']]
 
-    @raises(nx.NetworkXNotImplemented)
     def test_cycle_basis(self):
-        G = nx.DiGraph()
-        cy = networkx.cycle_basis(G, 0)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            G = nx.DiGraph()
+            cy = networkx.cycle_basis(G, 0)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_cycle_basis(self):
-        G = nx.MultiGraph()
-        cy = networkx.cycle_basis(G, 0)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            G = nx.MultiGraph()
+            cy = networkx.cycle_basis(G, 0)
 
     def test_simple_cycles(self):
         edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
@@ -65,10 +64,10 @@ class TestCycles:
         for c in cc:
             assert any(self.is_cyclic_permutation(c, rc) for rc in ca)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_simple_cycles_graph(self):
-        G = nx.Graph()
-        c = sorted(nx.simple_cycles(G))
+        with pytest.raises(nx.NetworkXNotImplemented):
+            G = nx.Graph()
+            c = sorted(nx.simple_cycles(G))
 
     def test_unsortable(self):
         #  TODO What does this test do?  das 6/2013

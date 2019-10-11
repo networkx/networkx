@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import pytest
-from nose import SkipTest
 import networkx as nx
 from networkx.testing.utils import *
 import io
@@ -841,11 +840,7 @@ class TestWriteGraphML(BaseGraphML):
     @classmethod
     def setup_class(cls):
         BaseGraphML.setup_class()
-
-        try:
-            import lxml.etree
-        except ImportError:
-            raise SkipTest('lxml.etree not available.')
+        _ = pytest.importorskip("lxml.etree")
 
     def test_write_interface(self):
         try:
@@ -1044,8 +1039,4 @@ class TestXMLGraphML(TestWriteGraphML):
     @classmethod
     def setup_class(cls):
         TestWriteGraphML.setup_class()
-
-        try:
-            import xml.etree.ElementTree
-        except ImportError:
-            raise SkipTest('xml.etree.ElementTree not available.')
+        _ = pytest.importorskip("xml.etree.ElementTree")

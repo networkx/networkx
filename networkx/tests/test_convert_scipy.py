@@ -1,6 +1,4 @@
 import pytest
-from nose import SkipTest
-from nose.tools import raises
 
 import networkx as nx
 from networkx.testing import assert_graphs_equal
@@ -11,13 +9,10 @@ class TestConvertNumpy(object):
     @classmethod
     def setup_class(cls):
         global np, sp, sparse, np_assert_equal
-        try:
-            import numpy as np
-            import scipy as sp
-            import scipy.sparse as sparse
-            np_assert_equal = np.testing.assert_equal
-        except ImportError:
-            raise SkipTest('SciPy sparse library not available.')
+        np = pytest.importorskip('numpy')
+        sp = pytest.importorskip('scipy')
+        sparse = sp.sparse
+        np_assert_equal = np.testing.assert_equal
 
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
@@ -160,17 +155,17 @@ class TestConvertNumpy(object):
         np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
 
-    @raises(nx.NetworkXError)
     def test_format_keyword_raise(self):
-        WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3))
-                           for n in range(3))
-        P4 = path_graph(4)
-        nx.to_scipy_sparse_matrix(P4, format='any_other')
+        with pytest.raises(nx.NetworkXError):
+            WP4 = nx.Graph()
+            WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3))
+                               for n in range(3))
+            P4 = path_graph(4)
+            nx.to_scipy_sparse_matrix(P4, format='any_other')
 
-    @raises(nx.NetworkXError)
     def test_null_raise(self):
-        nx.to_scipy_sparse_matrix(nx.Graph())
+        with pytest.raises(nx.NetworkXError):
+            nx.to_scipy_sparse_matrix(nx.Graph())
 
     def test_empty(self):
         G = nx.Graph()

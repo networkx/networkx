@@ -1,4 +1,4 @@
-from nose.tools import raises
+import pytest
 import networkx as nx
 
 
@@ -20,10 +20,10 @@ def test_complete():
     assert len(nx.dominating_set(K5)) == 1
 
 
-@raises(nx.NetworkXError)
 def test_raise_dominating_set():
-    G = nx.path_graph(4)
-    D = nx.dominating_set(G, start_with=10)
+    with pytest.raises(nx.NetworkXError):
+        G = nx.path_graph(4)
+        D = nx.dominating_set(G, start_with=10)
 
 
 def test_is_dominating_set():

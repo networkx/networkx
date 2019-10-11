@@ -248,17 +248,13 @@ class TestConvertNumpy(object):
 
 
 class TestConvertNumpyArray(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
     def setup_class(cls):
         global np
         global np_assert_equal
-        try:
-            import numpy as np
-            np_assert_equal = np.testing.assert_equal
-        except ImportError:
-            pytest.skip('Numpy not available', allow_module_level=True)
+        np = pytest.importorskip('numpy')
+        np_assert_equal = np.testing.assert_equal
 
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)

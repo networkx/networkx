@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx.algorithms.operators import *
 from networkx.generators.classic import empty_graph
@@ -82,10 +82,10 @@ class TestRelabel():
         assert H.nodes[2]['label'] == 'C'
         assert H.nodes[3]['label'] == 'D'
 
-    @raises(nx.NetworkXError)
     def test_convert_to_integers_raise(self):
-        G = nx.Graph()
-        H = nx.convert_node_labels_to_integers(G, ordering="increasing age")
+        with pytest.raises(nx.NetworkXError):
+            G = nx.Graph()
+            H = nx.convert_node_labels_to_integers(G, ordering="increasing age")
 
     def test_relabel_nodes_copy(self):
         G = nx.empty_graph()
@@ -145,11 +145,11 @@ class TestRelabel():
         H = nx.relabel_nodes(G, mapping, copy=False)
         assert_nodes_equal(H.nodes(), list(range(4)))
 
-    @raises(KeyError)
     def test_relabel_nodes_missing(self):
-        G = nx.Graph([('A', 'B'), ('A', 'C'), ('B', 'C'), ('C', 'D')])
-        mapping = {0: 'aardvark'}
-        G = nx.relabel_nodes(G, mapping, copy=False)
+        with pytest.raises(KeyError):
+            G = nx.Graph([('A', 'B'), ('A', 'C'), ('B', 'C'), ('C', 'D')])
+            mapping = {0: 'aardvark'}
+            G = nx.relabel_nodes(G, mapping, copy=False)
 
     def test_relabel_copy_name(self):
         G = nx.Graph()

@@ -1,7 +1,7 @@
 from unittest import TestCase
 import collections
 
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 
@@ -100,9 +100,9 @@ class TestEulerianCircuit(TestCase):
         assert collections.Counter(edges[2:5]) == collections.Counter([(2, 1, 0), (1, 2, 1), (2, 1, 2)])
         assert edges[5:] == [(1, 0, 0)]
 
-    @raises(nx.NetworkXError)
     def test_not_eulerian(self):
-        f = list(nx.eulerian_circuit(nx.complete_graph(4)))
+        with pytest.raises(nx.NetworkXError):
+            f = list(nx.eulerian_circuit(nx.complete_graph(4)))
 
 
 class TestIsSemiEulerian(TestCase):
@@ -156,22 +156,22 @@ class TestEulerianPath(TestCase):
 
 
 class TestEulerize(TestCase):
-    @raises(nx.NetworkXError)
     def test_disconnected(self):
-        G = nx.from_edgelist([(0, 1), (2, 3)])
-        nx.eulerize(G)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.from_edgelist([(0, 1), (2, 3)])
+            nx.eulerize(G)
 
-    @raises(nx.NetworkXPointlessConcept)
     def test_null_graph(self):
-        nx.eulerize(nx.Graph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.eulerize(nx.Graph())
 
-    @raises(nx.NetworkXPointlessConcept)
     def test_null_multigraph(self):
-        nx.eulerize(nx.MultiGraph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.eulerize(nx.MultiGraph())
 
-    @raises(nx.NetworkXError)
     def test_on_empty_graph(self):
-        nx.eulerize(nx.empty_graph(3))
+        with pytest.raises(nx.NetworkXError):
+            nx.eulerize(nx.empty_graph(3))
 
     def test_on_eulerian(self):
         G = nx.cycle_graph(3)

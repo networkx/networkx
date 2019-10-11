@@ -1,5 +1,4 @@
 import pytest
-from nose.tools import raises
 import networkx as nx
 from networkx.testing import *
 
@@ -170,53 +169,53 @@ def test_input_output():
     assert len(l) == 2
 
 
-@raises(nx.NetworkXError)
 def test_mixed_type_union():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    I = nx.Graph()
-    U = nx.union_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        G = nx.Graph()
+        H = nx.MultiGraph()
+        I = nx.Graph()
+        U = nx.union_all([G, H, I])
 
 
-@raises(nx.NetworkXError)
 def test_mixed_type_disjoint_union():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    I = nx.Graph()
-    U = nx.disjoint_union_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        G = nx.Graph()
+        H = nx.MultiGraph()
+        I = nx.Graph()
+        U = nx.disjoint_union_all([G, H, I])
 
 
-@raises(nx.NetworkXError)
 def test_mixed_type_intersection():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    I = nx.Graph()
-    U = nx.intersection_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        G = nx.Graph()
+        H = nx.MultiGraph()
+        I = nx.Graph()
+        U = nx.intersection_all([G, H, I])
 
 
-@raises(nx.NetworkXError)
 def test_mixed_type_compose():
-    G = nx.Graph()
-    H = nx.MultiGraph()
-    I = nx.Graph()
-    U = nx.compose_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        G = nx.Graph()
+        H = nx.MultiGraph()
+        I = nx.Graph()
+        U = nx.compose_all([G, H, I])
 
 
-@raises(ValueError)
 def test_empty_union():
-    nx.union_all([])
+    with pytest.raises(ValueError):
+        nx.union_all([])
 
 
-@raises(ValueError)
 def test_empty_disjoint_union():
-    nx.disjoint_union_all([])
+    with pytest.raises(ValueError):
+        nx.disjoint_union_all([])
 
 
-@raises(ValueError)
 def test_empty_compose_all():
-    nx.compose_all([])
+    with pytest.raises(ValueError):
+        nx.compose_all([])
 
 
-@raises(ValueError)
 def test_empty_intersection_all():
-    nx.intersection_all([])
+    with pytest.raises(ValueError):
+        nx.intersection_all([])

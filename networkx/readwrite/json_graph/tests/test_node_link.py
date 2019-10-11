@@ -1,6 +1,6 @@
 #  -*- coding: utf-8 -*-
 import json
-from nose.tools import raises
+import pytest
 import networkx as nx
 from networkx.readwrite.json_graph import *
 
@@ -67,11 +67,11 @@ class TestNodeLink:
         H = node_link_graph(data)
         assert H.nodes[1][q] == q
 
-    @raises(nx.NetworkXError)
     def test_exception(self):
-        G = nx.MultiDiGraph()
-        attrs = dict(name='node', source='node', target='node', key='node')
-        node_link_data(G, attrs)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.MultiDiGraph()
+            attrs = dict(name='node', source='node', target='node', key='node')
+            node_link_data(G, attrs)
 
     def test_string_ids(self):
         try:

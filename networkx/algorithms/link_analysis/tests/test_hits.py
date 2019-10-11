@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 from nose import SkipTest
-from nose.plugins.attrib import attr
 import networkx
+from networkx.testing import almost_equal
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -33,16 +33,15 @@ class TestHITS:
         G = self.G
         h, a = networkx.hits(G, tol=1.e-08)
         for n in G:
-            assert_almost_equal(h[n], G.h[n], places=4)
+            assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
-            assert_almost_equal(a[n], G.a[n], places=4)
+            assert almost_equal(a[n], G.a[n], places=4)
 
     def test_hits_nstart(self):
         G = self.G
         nstart = dict([(i, 1. / 2) for i in G])
         h, a = networkx.hits(G, nstart=nstart)
 
-    @attr('numpy')
     def test_hits_numpy(self):
         try:
             import numpy as np
@@ -52,9 +51,9 @@ class TestHITS:
         G = self.G
         h, a = networkx.hits_numpy(G)
         for n in G:
-            assert_almost_equal(h[n], G.h[n], places=4)
+            assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
-            assert_almost_equal(a[n], G.a[n], places=4)
+            assert almost_equal(a[n], G.a[n], places=4)
 
     def test_hits_scipy(self):
         try:
@@ -65,11 +64,10 @@ class TestHITS:
         G = self.G
         h, a = networkx.hits_scipy(G, tol=1.e-08)
         for n in G:
-            assert_almost_equal(h[n], G.h[n], places=4)
+            assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
-            assert_almost_equal(a[n], G.a[n], places=4)
+            assert almost_equal(a[n], G.a[n], places=4)
 
-    @attr('numpy')
     def test_empty(self):
         try:
             import numpy
@@ -89,7 +87,7 @@ class TestHITS:
         G = networkx.Graph()
         assert networkx.hits_scipy(G) == ({}, {})
 
-    @raises(networkx.PowerIterationFailedConvergence)
     def test_hits_not_convergent(self):
-        G = self.G
-        networkx.hits(G, max_iter=0)
+        with pytest.raises(networkx.PowerIterationFailedConvergence):
+            G = self.G
+            networkx.hits(G, max_iter=0)

@@ -10,7 +10,7 @@
 
 """
 
-from nose.tools import raises
+import pytest
 
 from networkx import cycle_graph
 from networkx import NetworkXError
@@ -35,7 +35,7 @@ def test_redundant_nodes():
         assert redundancy[v] == 1
 
 
-@raises(NetworkXError)
 def test_not_enough_neighbors():
-    G = complete_bipartite_graph(1, 2)
-    node_redundancy(G)
+    with pytest.raises(NetworkXError):
+        G = complete_bipartite_graph(1, 2)
+        node_redundancy(G)

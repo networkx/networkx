@@ -1,7 +1,6 @@
 import random
 
 import pytest
-from nose.tools import raises
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
@@ -225,18 +224,18 @@ def test_cutoff_zero():
     assert list(list(p) for p in paths) == []
 
 
-@raises(nx.NodeNotFound)
 def test_source_missing():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    paths = list(nx.all_simple_paths(nx.MultiGraph(G), 0, 3))
+    with pytest.raises(nx.NodeNotFound):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        paths = list(nx.all_simple_paths(nx.MultiGraph(G), 0, 3))
 
 
-@raises(nx.NodeNotFound)
 def test_target_missing():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    paths = list(nx.all_simple_paths(nx.MultiGraph(G), 1, 4))
+    with pytest.raises(nx.NodeNotFound):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        paths = list(nx.all_simple_paths(nx.MultiGraph(G), 1, 4))
 
 
 # Tests for shortest_simple_paths
@@ -342,33 +341,33 @@ def test_weight_name():
     assert paths == solution
 
 
-@raises(nx.NodeNotFound)
 def test_ssp_source_missing():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    paths = list(nx.shortest_simple_paths(G, 0, 3))
+    with pytest.raises(nx.NodeNotFound):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        paths = list(nx.shortest_simple_paths(G, 0, 3))
 
 
-@raises(nx.NodeNotFound)
 def test_ssp_target_missing():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    paths = list(nx.shortest_simple_paths(G, 1, 4))
+    with pytest.raises(nx.NodeNotFound):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        paths = list(nx.shortest_simple_paths(G, 1, 4))
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_ssp_multigraph():
-    G = nx.MultiGraph()
-    nx.add_path(G, [1, 2, 3])
-    paths = list(nx.shortest_simple_paths(G, 1, 4))
+    with pytest.raises(nx.NetworkXNotImplemented):
+        G = nx.MultiGraph()
+        nx.add_path(G, [1, 2, 3])
+        paths = list(nx.shortest_simple_paths(G, 1, 4))
 
 
-@raises(nx.NetworkXNoPath)
 def test_ssp_source_missing():
-    G = nx.Graph()
-    nx.add_path(G, [0, 1, 2])
-    nx.add_path(G, [3, 4, 5])
-    paths = list(nx.shortest_simple_paths(G, 0, 3))
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.Graph()
+        nx.add_path(G, [0, 1, 2])
+        nx.add_path(G, [3, 4, 5])
+        paths = list(nx.shortest_simple_paths(G, 0, 3))
 
 
 def test_bidirectional_shortest_path_restricted_cycle():
@@ -500,12 +499,12 @@ def test_bidirectional_dijksta_restricted():
     )
 
 
-@raises(nx.NetworkXNoPath)
 def test_bidirectional_dijkstra_no_path():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    nx.add_path(G, [4, 5, 6])
-    path = _bidirectional_dijkstra(G, 1, 6)
+    with pytest.raises(nx.NetworkXNoPath):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        nx.add_path(G, [4, 5, 6])
+        path = _bidirectional_dijkstra(G, 1, 6)
 
 
 def test_bidirectional_dijkstra_ignore():

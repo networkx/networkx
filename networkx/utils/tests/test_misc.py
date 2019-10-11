@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 import pytest
-from nose import SkipTest
 import networkx as nx
 from networkx.utils import *
 
@@ -176,11 +175,7 @@ def test_to_tuple():
 
 
 def test_create_random_state():
-    try:
-        import numpy as np
-    except ImportError:
-        raise SkipTest('numpy not available.')
-
+    np = pytest.importorskip('numpy')
     rs = np.random.RandomState
 
     assert isinstance(create_random_state(1), rs)
@@ -200,10 +195,7 @@ def test_create_py_random_state():
     assert isinstance(create_py_random_state(pyrs(1)), pyrs)
     pytest.raises(ValueError, create_py_random_state, 'a')
 
-    try:
-        import numpy as np
-    except ImportError:
-        raise SkipTest('numpy not available.')
+    np = pytest.importorskip('numpy')
 
     rs = np.random.RandomState
     nprs = PythonRandomInterface
@@ -214,10 +206,7 @@ def test_create_py_random_state():
 
 
 def test_PythonRandomInterface():
-    try:
-        import numpy as np
-    except ImportError:
-        raise SkipTest('numpy not available.')
+    np = pytest.importorskip('numpy')
     rs = np.random.RandomState
     rng = PythonRandomInterface(rs(42))
     rs42 = rs(42)

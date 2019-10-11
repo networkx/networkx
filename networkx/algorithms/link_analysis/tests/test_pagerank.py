@@ -4,7 +4,6 @@ import random
 import networkx
 import pytest
 from nose import SkipTest
-from nose.tools import raises
 from networkx.testing import almost_equal
 
 # Example from
@@ -52,9 +51,9 @@ class TestPageRank(object):
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
 
-    @raises(networkx.PowerIterationFailedConvergence)
     def test_pagerank_max_iter(self):
-        networkx.pagerank(self.G, max_iter=0)
+        with pytest.raises(networkx.PowerIterationFailedConvergence):
+            networkx.pagerank(self.G, max_iter=0)
 
     def test_numpy_pagerank(self):
         G = self.G
@@ -163,9 +162,9 @@ class TestPageRankScipy(TestPageRank):
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
 
-    @raises(networkx.PowerIterationFailedConvergence)
     def test_scipy_pagerank_max_iter(self):
-        networkx.pagerank_scipy(self.G, max_iter=0)
+        with pytest.raises(networkx.PowerIterationFailedConvergence):
+            networkx.pagerank_scipy(self.G, max_iter=0)
 
     def test_dangling_scipy_pagerank(self):
         pr = networkx.pagerank_scipy(self.G, dangling=self.dangling_edges)

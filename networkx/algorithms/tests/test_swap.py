@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 
 #import random
@@ -28,26 +28,26 @@ def test_connected_double_edge_swap():
     assert degrees == sorted(d for n, d in graph.degree())
 
 
-@raises(nx.NetworkXError)
 def test_double_edge_swap_small():
-    G = nx.double_edge_swap(nx.path_graph(3))
+    with pytest.raises(nx.NetworkXError):
+        G = nx.double_edge_swap(nx.path_graph(3))
 
 
-@raises(nx.NetworkXError)
 def test_double_edge_swap_tries():
-    G = nx.double_edge_swap(nx.path_graph(10), nswap=1, max_tries=0)
+    with pytest.raises(nx.NetworkXError):
+        G = nx.double_edge_swap(nx.path_graph(10), nswap=1, max_tries=0)
 
 
-@raises(nx.NetworkXError)
 def test_connected_double_edge_swap_small():
-    G = nx.connected_double_edge_swap(nx.path_graph(3))
+    with pytest.raises(nx.NetworkXError):
+        G = nx.connected_double_edge_swap(nx.path_graph(3))
 
 
-@raises(nx.NetworkXError)
 def test_connected_double_edge_swap_not_connected():
-    G = nx.path_graph(3)
-    nx.add_path(G, [10, 11, 12])
-    G = nx.connected_double_edge_swap(G)
+    with pytest.raises(nx.NetworkXError):
+        G = nx.path_graph(3)
+        nx.add_path(G, [10, 11, 12])
+        G = nx.connected_double_edge_swap(G)
 
 
 def test_degree_seq_c4():

@@ -1,5 +1,5 @@
 # Test for Moody and White k-components algorithm
-from nose.tools import raises
+import pytest
 import networkx as nx
 from networkx.algorithms.connectivity.kcomponents import (
     build_k_number_dict,
@@ -75,10 +75,10 @@ def torrents_and_ferraro_graph():
     return G
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_directed():
-    G = nx.gnp_random_graph(10, 0.2, directed=True, seed=42)
-    nx.k_components(G)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        G = nx.gnp_random_graph(10, 0.2, directed=True, seed=42)
+        nx.k_components(G)
 
 
 # Helper function

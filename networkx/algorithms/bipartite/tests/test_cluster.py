@@ -1,5 +1,5 @@
 import networkx as nx
-from nose.tools import *
+import pytest
 from networkx.algorithms.bipartite.cluster import cc_dot, cc_min, cc_max
 import networkx.algorithms.bipartite as bipartite
 
@@ -30,14 +30,14 @@ def test_star_graph():
     assert bipartite.clustering(G, mode='max') == answer
 
 
-@raises(nx.NetworkXError)
 def test_not_bipartite():
-    bipartite.clustering(nx.complete_graph(4))
+    with pytest.raises(nx.NetworkXError):
+        bipartite.clustering(nx.complete_graph(4))
 
 
-@raises(nx.NetworkXError)
 def test_bad_mode():
-    bipartite.clustering(nx.path_graph(4), mode='foo')
+    with pytest.raises(nx.NetworkXError):
+        bipartite.clustering(nx.path_graph(4), mode='foo')
 
 
 def test_path_graph():

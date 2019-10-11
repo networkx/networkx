@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pytest import raises
+import pytest
 
 import networkx as nx
 from networkx.testing.utils import *
@@ -170,16 +170,16 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
     def test_getitem(self):
         G = self.K3
         assert G[0] == {1: {0: {}}, 2: {0: {}}}
-        with raises(KeyError):
+        with pytest.raises(KeyError):
             G.__getitem__('j')
-        with raises(TypeError):
+        with pytest.raises(TypeError):
             G.__getitem__(['A'])
 
     def test_remove_node(self):
         G = self.K3
         G.remove_node(0)
         assert G.adj == {1: {2: {0: {}}}, 2: {1: {0: {}}}}
-        with raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError):
             G.remove_node(-1)
 
     def test_add_edge(self):
@@ -218,13 +218,13 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         assert G._adj == {0: {1: keydict}, 1: {0: keydict}}
 
         # too few in tuple
-        with raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError):
             G.add_edges_from([(0,)])
         # too many in tuple
-        with raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError):
             G.add_edges_from([(0, 1, 2, 3, 4)])
         # not a tuple
-        with raises(TypeError):
+        with pytest.raises(TypeError):
             G.add_edges_from([0])
 
     def test_remove_edge(self):
@@ -235,9 +235,9 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
                              2: {0: {0: {}},
                                  1: {0: {}}}}
 
-        with raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError):
             G.remove_edge(-1, 0)
-        with raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError):
             G.remove_edge(0, 2, key=1)
 
     def test_remove_edges_from(self):
@@ -270,7 +270,7 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         G.remove_edge(0, 1)
         kd = {0: {}}
         assert G.adj == {0: {2: kd}, 1: {2: kd}, 2: {0: kd, 1: kd}}
-        with raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError):
             G.remove_edge(-1, 0)
 
 

@@ -2,7 +2,6 @@
     Unit tests for bipartite edgelists.
 """
 import pytest
-from nose.tools import raises
 import io
 import tempfile
 import os
@@ -194,13 +193,13 @@ class TestEdgelist:
         os.close(fd)
         os.unlink(fname)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_empty_digraph(self):
-        bytesIO = io.BytesIO()
-        bipartite.write_edgelist(nx.DiGraph(), bytesIO)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            bytesIO = io.BytesIO()
+            bipartite.write_edgelist(nx.DiGraph(), bytesIO)
 
-    @raises(AttributeError)
     def test_raise_attribute(self):
-        G = nx.path_graph(4)
-        bytesIO = io.BytesIO()
-        bipartite.write_edgelist(G, bytesIO)
+        with pytest.raises(AttributeError):
+            G = nx.path_graph(4)
+            bytesIO = io.BytesIO()
+            bipartite.write_edgelist(G, bytesIO)

@@ -1,21 +1,21 @@
 from itertools import chain
 from itertools import combinations
 
-from nose.tools import *
+import pytest
 
 import networkx as nx
 from networkx.algorithms.community import label_propagation_communities
 from networkx.algorithms.community import asyn_lpa_communities
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_directed_not_supported():
-    # not supported for directed graphs
-    test = nx.DiGraph()
-    test.add_edge('a', 'b')
-    test.add_edge('a', 'c')
-    test.add_edge('b', 'd')
-    result = label_propagation_communities(test)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        # not supported for directed graphs
+        test = nx.DiGraph()
+        test.add_edge('a', 'b')
+        test.add_edge('a', 'c')
+        test.add_edge('b', 'd')
+        result = label_propagation_communities(test)
 
 
 def test_one_node():

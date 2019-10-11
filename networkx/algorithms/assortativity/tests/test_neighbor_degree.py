@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
 import networkx as nx
+from networkx.testing import almost_equal
 
 
 class TestAverageNeighbor(object):
@@ -77,4 +77,4 @@ class TestAverageNeighbor(object):
         nd = nx.average_neighbor_degree(G)[5]
         assert nd == 1.8
         nd = nx.average_neighbor_degree(G, weight='weight')[5]
-        assert_almost_equal(nd, 3.222222, places=5)
+        assert almost_equal(nd, 3.222222, places=5)

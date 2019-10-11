@@ -3,7 +3,7 @@
 """
 
 
-from nose.tools import *
+import pytest
 import networkx as nx
 
 
@@ -53,12 +53,12 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert b == b_answer
 
-    @raises(nx.NodeNotFound)
     def test_group_betweenness_node_not_in_graph(self):
         """
             Node(s) in C not in graph, raises NodeNotFound exception
         """
-        b = nx.group_betweenness_centrality(nx.path_graph(5), [6, 7, 8])
+        with pytest.raises(nx.NodeNotFound):
+            b = nx.group_betweenness_centrality(nx.path_graph(5), [6, 7, 8])
 
 
 class TestGroupClosenessCentrality:
@@ -92,12 +92,12 @@ class TestGroupClosenessCentrality:
         c_answer = 1
         assert c == c_answer
 
-    @raises(nx.NodeNotFound)
     def test_group_closeness_node_not_in_graph(self):
         """
             Node(s) in S not in graph, raises NodeNotFound exception
         """
-        c = nx.group_closeness_centrality(nx.path_graph(5), [6, 7, 8])
+        with pytest.raises(nx.NodeNotFound):
+            c = nx.group_closeness_centrality(nx.path_graph(5), [6, 7, 8])
 
 
 class TestGroupDegreeCentrality:
@@ -148,9 +148,9 @@ class TestGroupDegreeCentrality:
         d_answer = 1
         assert d == d_answer
 
-    @raises(nx.NetworkXError)
     def test_group_degree_centrality_node_not_in_graph(self):
         """
             Node(s) in S not in graph, raises NetworkXError
         """
-        b = nx.group_degree_centrality(nx.path_graph(5), [6, 7, 8])
+        with pytest.raises(nx.NetworkXError):
+            b = nx.group_degree_centrality(nx.path_graph(5), [6, 7, 8])

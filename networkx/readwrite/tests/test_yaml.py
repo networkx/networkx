@@ -4,8 +4,7 @@
 
 import os
 import tempfile
-from nose import SkipTest
-from nose.tools import assert_equal
+import pytest
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal
@@ -14,12 +13,6 @@ from networkx.testing import assert_edges_equal, assert_nodes_equal
 class TestYaml(object):
     @classmethod
     def setup_class(cls):
-        global yaml
-        try:
-            import yaml
-        except ImportError:
-            raise SkipTest('yaml not available.')
-
         cls.build_graphs()
 
     @classmethod
@@ -53,3 +46,9 @@ class TestYaml(object):
 
     def testMultiGraph(self):
         self.assert_equal(self.MG, data=True)
+
+
+# fixture for pytest tests
+def setup_module(module):
+    import pytest
+    yaml = pytest.importorskip("yaml")

@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms.community import k_clique_communities
@@ -60,6 +60,6 @@ class TestZacharyKarateClub(object):
         self._check_communities(6, expected)
 
 
-@raises(nx.NetworkXError)
 def test_bad_k():
-    list(k_clique_communities(nx.Graph(), 1))
+    with pytest.raises(nx.NetworkXError):
+        list(k_clique_communities(nx.Graph(), 1))

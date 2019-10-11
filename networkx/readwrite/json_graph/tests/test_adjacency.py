@@ -1,5 +1,5 @@
 import json
-from nose.tools import raises
+import pytest
 import networkx as nx
 from networkx.readwrite.json_graph import *
 
@@ -52,8 +52,8 @@ class TestAdjacency:
         nx.is_isomorphic(G, H)
         assert H[1][2]['second']['color'] == 'blue'
 
-    @raises(nx.NetworkXError)
     def test_exception(self):
-        G = nx.MultiDiGraph()
-        attrs = dict(id='node', key='node')
-        adjacency_data(G, attrs)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.MultiDiGraph()
+            attrs = dict(id='node', key='node')
+            adjacency_data(G, attrs)

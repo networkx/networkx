@@ -7,7 +7,7 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.minors` module."""
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 from networkx.testing.utils import *
@@ -142,11 +142,11 @@ class TestQuotient(object):
             assert M.nodes[n]['nnodes'] == 2
             assert M.nodes[n]['density'] == 0.5
 
-    @raises(nx.NetworkXException)
     def test_overlapping_blocks(self):
-        G = nx.path_graph(6)
-        partition = [{0, 1, 2}, {2, 3}, {4, 5}]
-        nx.quotient_graph(G, partition)
+        with pytest.raises(nx.NetworkXException):
+            G = nx.path_graph(6)
+            partition = [{0, 1, 2}, {2, 3}, {4, 5}]
+            nx.quotient_graph(G, partition)
 
     def test_weighted_path(self):
         G = nx.path_graph(6)
@@ -321,11 +321,11 @@ class TestContraction(object):
         expected.add_edge(0, 0)
         assert nx.is_isomorphic(actual, expected)
 
-    @raises(ValueError)
     def test_nonexistent_edge(self):
         """Tests that attempting to contract a non-existent edge raises an
         exception.
 
         """
-        G = nx.cycle_graph(4)
-        nx.contracted_edge(G, (0, 2))
+        with pytest.raises(ValueError):
+            G = nx.cycle_graph(4)
+            nx.contracted_edge(G, (0, 2))
