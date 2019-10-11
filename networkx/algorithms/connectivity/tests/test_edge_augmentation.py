@@ -3,9 +3,7 @@ import random
 import networkx as nx
 import itertools as it
 from networkx.utils import pairwise
-from nose.tools import (assert_equal, assert_false, assert_true,
-                        assert_greater_equal, assert_less, assert_less_equal,
-                        assert_raises)
+import pytest
 from networkx.algorithms.connectivity import (
     k_edge_augmentation,
 )
@@ -53,13 +51,13 @@ def test_weight_key():
 
 
 def test_is_locally_k_edge_connected_exceptions():
-    assert_raises(nx.NetworkXNotImplemented,
+    pytest.raises(nx.NetworkXNotImplemented,
                   is_k_edge_connected,
                   nx.DiGraph(), k=0)
-    assert_raises(nx.NetworkXNotImplemented,
+    pytest.raises(nx.NetworkXNotImplemented,
                   is_k_edge_connected,
                   nx.MultiGraph(), k=0)
-    assert_raises(ValueError, is_k_edge_connected,
+    pytest.raises(ValueError, is_k_edge_connected,
                   nx.Graph(), k=0)
 
 
@@ -81,13 +79,13 @@ def test_is_k_edge_connected():
 
 
 def test_is_k_edge_connected_exceptions():
-    assert_raises(nx.NetworkXNotImplemented,
+    pytest.raises(nx.NetworkXNotImplemented,
                   is_locally_k_edge_connected,
                   nx.DiGraph(), 1, 2, k=0)
-    assert_raises(nx.NetworkXNotImplemented,
+    pytest.raises(nx.NetworkXNotImplemented,
                   is_locally_k_edge_connected,
                   nx.MultiGraph(), 1, 2, k=0)
-    assert_raises(ValueError,
+    pytest.raises(ValueError,
                   is_locally_k_edge_connected,
                   nx.Graph(), 1, 2, k=0)
 
@@ -134,19 +132,19 @@ def test_edgeless_graph():
 
 def test_invalid_k():
     G = nx.Graph()
-    assert_raises(ValueError, list, k_edge_augmentation(G, k=-1))
-    assert_raises(ValueError, list, k_edge_augmentation(G, k=0))
+    pytest.raises(ValueError, list, k_edge_augmentation(G, k=-1))
+    pytest.raises(ValueError, list, k_edge_augmentation(G, k=0))
 
 
 def test_unfeasible():
     G = tarjan_bridge_graph()
-    assert_raises(nx.NetworkXUnfeasible, list,
+    pytest.raises(nx.NetworkXUnfeasible, list,
                   k_edge_augmentation(G, k=1, avail=[]))
 
-    assert_raises(nx.NetworkXUnfeasible, list,
+    pytest.raises(nx.NetworkXUnfeasible, list,
                   k_edge_augmentation(G, k=2, avail=[]))
 
-    assert_raises(nx.NetworkXUnfeasible, list,
+    pytest.raises(nx.NetworkXUnfeasible, list,
                   k_edge_augmentation(G, k=2, avail=[(7, 9)]))
 
     # partial solutions should not error if real solutions are infeasible

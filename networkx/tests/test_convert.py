@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import (assert_equal, assert_not_equal,
-                        assert_true, assert_false,
-                        assert_raises, assert_is)
+import pytest
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal, assert_edges_equal, assert_graphs_equal
@@ -46,26 +44,26 @@ class TestConvert():
         class G(object):
             adj = None
 
-        assert_raises(nx.NetworkXError, to_networkx_graph, G)
+        pytest.raises(nx.NetworkXError, to_networkx_graph, G)
 
         # pygraphviz  agraph
         class G(object):
             is_strict = None
 
-        assert_raises(nx.NetworkXError, to_networkx_graph, G)
+        pytest.raises(nx.NetworkXError, to_networkx_graph, G)
 
         # Dict of [dicts, lists]
         G = {"a": 0}
-        assert_raises(TypeError, to_networkx_graph, G)
+        pytest.raises(TypeError, to_networkx_graph, G)
 
         # list or generator of edges
         class G(object):
             next = None
 
-        assert_raises(nx.NetworkXError, to_networkx_graph, G)
+        pytest.raises(nx.NetworkXError, to_networkx_graph, G)
 
         # no match
-        assert_raises(nx.NetworkXError, to_networkx_graph, "a")
+        pytest.raises(nx.NetworkXError, to_networkx_graph, "a")
 
     def test_digraphs(self):
         for dest, source in [(to_dict_of_dicts, from_dict_of_dicts),

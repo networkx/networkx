@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import assert_raises
+import pytest
 from nose import SkipTest
 import networkx as nx
 
@@ -24,14 +24,14 @@ def test_valid_degree_sequence2():
 
 
 def test_string_input():
-    assert_raises(nx.NetworkXException, nx.is_graphical, [], 'foo')
-    assert_raises(nx.NetworkXException, nx.is_graphical, ['red'], 'hh')
-    assert_raises(nx.NetworkXException, nx.is_graphical, ['red'], 'eg')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, [], 'foo')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ['red'], 'hh')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ['red'], 'eg')
 
 
 def test_non_integer_input():
-    assert_raises(nx.NetworkXException, nx.is_graphical, [72.5], 'eg')
-    assert_raises(nx.NetworkXException, nx.is_graphical, [72.5], 'hh')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], 'eg')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], 'hh')
 
 
 def test_negative_input():
@@ -166,5 +166,5 @@ def test_numpy_degree_sequence():
     assert nx.is_graphical(ds, 'eg')
     assert nx.is_graphical(ds, 'hh')
     ds = numpy.array([1.1, 2, 2, 2, 1], dtype=numpy.float64)
-    assert_raises(nx.NetworkXException, nx.is_graphical, ds, 'eg')
-    assert_raises(nx.NetworkXException, nx.is_graphical, ds, 'hh')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, 'eg')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, 'hh')

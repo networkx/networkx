@@ -1,7 +1,7 @@
 from itertools import chain
 import networkx as nx
-from nose.tools import *
-
+import pytest
+from nose.tools import ok_
 
 def _check_partition(G, cut_value, partition, weight):
     ok_(isinstance(partition, tuple))
@@ -87,16 +87,16 @@ def test_weight_name():
 
 def test_exceptions():
     G = nx.Graph()
-    assert_raises(nx.NetworkXError, nx.stoer_wagner, G)
+    pytest.raises(nx.NetworkXError, nx.stoer_wagner, G)
     G.add_node(1)
-    assert_raises(nx.NetworkXError, nx.stoer_wagner, G)
+    pytest.raises(nx.NetworkXError, nx.stoer_wagner, G)
     G.add_node(2)
-    assert_raises(nx.NetworkXError, nx.stoer_wagner, G)
+    pytest.raises(nx.NetworkXError, nx.stoer_wagner, G)
     G.add_edge(1, 2, weight=-2)
-    assert_raises(nx.NetworkXError, nx.stoer_wagner, G)
+    pytest.raises(nx.NetworkXError, nx.stoer_wagner, G)
     G = nx.DiGraph()
-    assert_raises(nx.NetworkXNotImplemented, nx.stoer_wagner, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.stoer_wagner, G)
     G = nx.MultiGraph()
-    assert_raises(nx.NetworkXNotImplemented, nx.stoer_wagner, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.stoer_wagner, G)
     G = nx.MultiDiGraph()
-    assert_raises(nx.NetworkXNotImplemented, nx.stoer_wagner, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.stoer_wagner, G)

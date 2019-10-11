@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
@@ -158,7 +158,7 @@ def test_node_cutset_exception():
     G = nx.Graph()
     G.add_edges_from([(1, 2), (3, 4)])
     for flow_func in flow_funcs:
-        assert_raises(nx.NetworkXError, nx.minimum_node_cut, G, flow_func=flow_func)
+        pytest.raises(nx.NetworkXError, nx.minimum_node_cut, G, flow_func=flow_func)
 
 
 def test_node_cutset_random_graphs():
@@ -194,9 +194,9 @@ def test_empty_graphs():
     D = nx.DiGraph()
     for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXPointlessConcept, interface_func, G,
+            pytest.raises(nx.NetworkXPointlessConcept, interface_func, G,
                           flow_func=flow_func)
-            assert_raises(nx.NetworkXPointlessConcept, interface_func, D,
+            pytest.raises(nx.NetworkXPointlessConcept, interface_func, D,
                           flow_func=flow_func)
 
 
@@ -210,7 +210,7 @@ def test_missing_source():
     G = nx.path_graph(4)
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXError, interface_func, G, 10, 1,
+            pytest.raises(nx.NetworkXError, interface_func, G, 10, 1,
                           flow_func=flow_func)
 
 
@@ -218,7 +218,7 @@ def test_missing_target():
     G = nx.path_graph(4)
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXError, interface_func, G, 1, 10,
+            pytest.raises(nx.NetworkXError, interface_func, G, 1, 10,
                           flow_func=flow_func)
 
 
@@ -228,7 +228,7 @@ def test_not_weakly_connected():
     nx.add_path(G, [4, 5])
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXError, interface_func, G,
+            pytest.raises(nx.NetworkXError, interface_func, G,
                           flow_func=flow_func)
 
 
@@ -238,7 +238,7 @@ def test_not_connected():
     nx.add_path(G, [4, 5])
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXError, interface_func, G,
+            pytest.raises(nx.NetworkXError, interface_func, G,
                           flow_func=flow_func)
 
 
@@ -267,17 +267,17 @@ def tests_minimum_st_node_cut():
 
 def test_invalid_auxiliary():
     G = nx.complete_graph(5)
-    assert_raises(nx.NetworkXError, minimum_st_node_cut, G, 0, 3,
+    pytest.raises(nx.NetworkXError, minimum_st_node_cut, G, 0, 3,
                   auxiliary=G)
 
 
 def test_interface_only_source():
     G = nx.complete_graph(5)
     for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
-        assert_raises(nx.NetworkXError, interface_func, G, s=0)
+        pytest.raises(nx.NetworkXError, interface_func, G, s=0)
 
 
 def test_interface_only_target():
     G = nx.complete_graph(5)
     for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
-        assert_raises(nx.NetworkXError, interface_func, G, t=3)
+        pytest.raises(nx.NetworkXError, interface_func, G, t=3)

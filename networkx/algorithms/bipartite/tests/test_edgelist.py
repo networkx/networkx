@@ -1,7 +1,8 @@
 """
     Unit tests for bipartite edgelists.
 """
-from nose.tools import assert_raises, raises
+import pytest
+from nose.tools import raises
 import io
 import tempfile
 import os
@@ -131,7 +132,7 @@ class TestEdgelist:
         G.add_node(name1, bipartite=0)
         G.add_node('Radiohead', bipartite=1)
         fd, fname = tempfile.mkstemp()
-        assert_raises(UnicodeEncodeError,
+        pytest.raises(UnicodeEncodeError,
                       bipartite.write_edgelist,
                       G, fname, encoding='latin-1')
         os.close(fd)

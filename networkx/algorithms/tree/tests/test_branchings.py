@@ -1,5 +1,5 @@
 from nose import SkipTest
-from nose.tools import *
+import pytest
 
 import networkx as nx
 
@@ -384,5 +384,5 @@ def test_edge_attribute_discard():
     B = ed.find_optimum('weight', preserve_attrs=False)
 
     edge_dict = B[0][1]
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         _ = edge_dict['otherattr']

@@ -1,5 +1,5 @@
 import json
-from nose.tools import assert_raises
+import pytest
 import networkx as nx
 from networkx.readwrite.json_graph import jit_data, jit_graph
 
@@ -46,7 +46,7 @@ class TestJIT(object):
         G.add_edge(1, 2, weight=9, something=0)
         G.add_edge(2, 3, weight=4, something=3)
         G.add_edge(1, 2)
-        assert_raises(nx.NetworkXNotImplemented, jit_data, G)
+        pytest.raises(nx.NetworkXNotImplemented, jit_data, G)
 
         H = nx.DiGraph(G)
         d = jit_data(H)

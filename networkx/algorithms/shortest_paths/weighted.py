@@ -1172,11 +1172,12 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> from nose.tools import assert_raises
+    >>> import pytest
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, \
+    >>> pytest.raises(nx.NetworkXUnbounded, \
                       nx.bellman_ford_predecessor_and_distance, G, 0)
+    <ExceptionInfo NetworkXUnbounded tblen=3>
 
     Notes
     -----
@@ -1748,10 +1749,11 @@ def goldberg_radzik(G, source, weight='weight'):
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> from nose.tools import assert_raises
+    >>> import pytest
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 0)
+    >>> pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 0)
+    <ExceptionInfo NetworkXUnbounded tblen=3>
 
     Notes
     -----

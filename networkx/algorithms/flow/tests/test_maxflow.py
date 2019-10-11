@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Maximum flow algorithms test suite.
 """
-from nose.tools import *
+import pytest
+from nose.tools import ok_
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
@@ -288,7 +289,7 @@ class TestMaxflowMinCutCommon:
         G.add_edge('c', 't')
 
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXUnbounded,
+            pytest.raises(nx.NetworkXUnbounded,
                           flow_func, G, 's', 't')
 
     def test_graph_infcap_edges(self):
@@ -337,24 +338,24 @@ class TestMaxflowMinCutCommon:
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight='capacity')
         G.remove_node(0)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 3)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 3)
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight='capacity')
         G.remove_node(3)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 3)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 3)
 
     def test_source_target_coincide(self):
         G = nx.Graph()
         G.add_node(0)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 0)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 0)
 
     def test_multigraphs_raise(self):
         G = nx.MultiGraph()
         M = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 0)], capacity=True)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 0)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 0)
 
 
 class TestMaxFlowMinCutInterface:
@@ -381,9 +382,9 @@ class TestMaxFlowMinCutInterface:
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight='capacity')
         for flow_func in interface_funcs:
             for element in elements:
-                assert_raises(nx.NetworkXError,
+                pytest.raises(nx.NetworkXError,
                               flow_func, G, 0, 1, flow_func=element)
-                assert_raises(nx.NetworkXError,
+                pytest.raises(nx.NetworkXError,
                               flow_func, G, 0, 1, flow_func=element)
 
     def test_flow_func_parameters(self):
@@ -400,9 +401,9 @@ class TestMaxFlowMinCutInterface:
     def test_minimum_cut_no_cutoff(self):
         G = self.G
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXError, nx.minimum_cut, G, 'x', 'y',
+            pytest.raises(nx.NetworkXError, nx.minimum_cut, G, 'x', 'y',
                           flow_func=flow_func, cutoff=1.0)
-            assert_raises(nx.NetworkXError, nx.minimum_cut_value, G, 'x', 'y',
+            pytest.raises(nx.NetworkXError, nx.minimum_cut_value, G, 'x', 'y',
                           flow_func=flow_func, cutoff=1.0)
 
     def test_kwargs(self):
@@ -423,7 +424,7 @@ class TestMaxFlowMinCutInterface:
     def test_kwargs_default_flow_func(self):
         G = self.H
         for interface_func in interface_funcs:
-            assert_raises(nx.NetworkXError, interface_func,
+            pytest.raises(nx.NetworkXError, interface_func,
                           G, 0, 1, global_relabel_freq=2)
 
     def test_reusing_residual(self):
@@ -448,7 +449,7 @@ def test_preflow_push_global_relabel_freq():
     G.add_edge(1, 2, capacity=1)
     R = preflow_push(G, 1, 2, global_relabel_freq=None)
     assert R.graph['flow_value'] == 1
-    assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
+    pytest.raises(nx.NetworkXError, preflow_push, G, 1, 2,
                   global_relabel_freq=-1)
 
 

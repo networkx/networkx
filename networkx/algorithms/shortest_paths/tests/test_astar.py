@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 from nose.tools import raises
 
 from math import sqrt
@@ -47,8 +47,8 @@ class TestAStar:
 
     def test_astar_multigraph(self):
         G = nx.MultiDiGraph(self.XG)
-        assert_raises(nx.NetworkXNotImplemented, nx.astar_path, G, 's', 'v')
-        assert_raises(nx.NetworkXNotImplemented, nx.astar_path_length,
+        pytest.raises(nx.NetworkXNotImplemented, nx.astar_path, G, 's', 'v')
+        pytest.raises(nx.NetworkXNotImplemented, nx.astar_path_length,
                       G, 's', 'v')
 
     def test_astar_undirected(self):

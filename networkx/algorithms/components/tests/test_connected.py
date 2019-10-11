@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx import NetworkXNotImplemented
@@ -84,8 +84,8 @@ class TestConnected:
         assert not nx.is_connected(G)
 
     def test_connected_raise(self):
-        assert_raises(NetworkXNotImplemented, nx.connected_components, self.DG)
-        assert_raises(NetworkXNotImplemented, nx.number_connected_components, self.DG)
-        assert_raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
-        assert_raises(NetworkXNotImplemented, nx.is_connected, self.DG)
-        assert_raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())
+        pytest.raises(NetworkXNotImplemented, nx.connected_components, self.DG)
+        pytest.raises(NetworkXNotImplemented, nx.number_connected_components, self.DG)
+        pytest.raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
+        pytest.raises(NetworkXNotImplemented, nx.is_connected, self.DG)
+        pytest.raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())

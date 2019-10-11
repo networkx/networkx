@@ -1,5 +1,4 @@
 import pytest
-from nose.tools import assert_raises
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
@@ -27,7 +26,7 @@ class TestConvertNumpy(object):
 
     def test_exceptions(self):
         G = np.array("a")
-        assert_raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
 
     def create_weighted(self, G):
         g = cycle_graph(4)
@@ -51,7 +50,7 @@ class TestConvertNumpy(object):
     def test_shape(self):
         "Conversion from non-square array."
         A = np.array([[1, 2, 3], [4, 5, 6]])
-        assert_raises(nx.NetworkXError, nx.from_numpy_matrix, A)
+        pytest.raises(nx.NetworkXError, nx.from_numpy_matrix, A)
 
     def test_identity_graph_matrix(self):
         "Conversion from graph to matrix to graph."
@@ -108,7 +107,7 @@ class TestConvertNumpy(object):
 
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
-        assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
+        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
@@ -141,7 +140,7 @@ class TestConvertNumpy(object):
         assert type(G[0][0]['weight']) == complex
 
         A = np.matrix([[1]]).astype(np.object)
-        assert_raises(TypeError, nx.from_numpy_matrix, A)
+        pytest.raises(TypeError, nx.from_numpy_matrix, A)
 
         G = nx.cycle_graph(3)
         A = nx.adj_matrix(G).todense()
@@ -289,7 +288,7 @@ class TestConvertNumpyArray(object):
     def test_shape(self):
         "Conversion from non-square array."
         A = np.array([[1, 2, 3], [4, 5, 6]])
-        assert_raises(nx.NetworkXError, nx.from_numpy_array, A)
+        pytest.raises(nx.NetworkXError, nx.from_numpy_array, A)
 
     def test_identity_graph_array(self):
         "Conversion from graph to array to graph."
@@ -322,7 +321,7 @@ class TestConvertNumpyArray(object):
 
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
-        assert_raises(nx.NetworkXError, nx.to_numpy_array, P3, nodelist=nodelist)
+        pytest.raises(nx.NetworkXError, nx.to_numpy_array, P3, nodelist=nodelist)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
@@ -355,7 +354,7 @@ class TestConvertNumpyArray(object):
         assert type(G[0][0]['weight']) == complex
 
         A = np.array([[1]]).astype(np.object)
-        assert_raises(TypeError, nx.from_numpy_array, A)
+        pytest.raises(TypeError, nx.from_numpy_array, A)
 
     def test_from_numpy_array_dtype(self):
         dt = [('weight', float), ('cost', int)]

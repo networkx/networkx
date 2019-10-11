@@ -1,4 +1,5 @@
-from nose.tools import *
+import pytest
+from nose.tools import raises
 import networkx as nx
 from networkx.testing import *
 
@@ -66,7 +67,7 @@ def test_intersection_all_attributes():
     assert sorted(gh.edges()) == sorted(g.edges())
 
     h.remove_node(0)
-    assert_raises(nx.NetworkXError, nx.intersection, g, h)
+    pytest.raises(nx.NetworkXError, nx.intersection, g, h)
 
 
 def test_intersection_all_multigraph_attributes():
@@ -101,7 +102,7 @@ def test_union_all_and_compose_all():
     H = nx.compose_all([G1, G2])
     assert_edges_equal(G.edges(), H.edges())
     assert not G.has_edge('A', '1')
-    assert_raises(nx.NetworkXError, nx.union, K3, P3)
+    pytest.raises(nx.NetworkXError, nx.union, K3, P3)
     H1 = nx.union_all([H, G1], rename=('H', 'G1'))
     assert (sorted(H1.nodes()) ==
                  ['G1A', 'G1B', 'G1C', 'G1D',

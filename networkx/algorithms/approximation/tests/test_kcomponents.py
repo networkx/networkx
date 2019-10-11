@@ -1,5 +1,6 @@
 # Test for approximation to k-components algorithm
-from nose.tools import assert_raises, raises
+import pytest
+from nose.tools import raises
 import networkx as nx
 from networkx.algorithms.approximation import k_components
 from networkx.algorithms.approximation.kcomponents import _AntiGraph, _same
@@ -248,8 +249,8 @@ class TestAntiGraph:
     def test_node_not_in_graph(self):
         for G, A in self.GA:
             node = 'non_existent_node'
-            assert_raises(nx.NetworkXError, A.neighbors, node)
-            assert_raises(nx.NetworkXError, G.neighbors, node)
+            pytest.raises(nx.NetworkXError, A.neighbors, node)
+            pytest.raises(nx.NetworkXError, G.neighbors, node)
 
     def test_degree_thingraph(self):
         for G, A in self.GA:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
@@ -137,16 +137,16 @@ class TestStronglyConnected:
         assert list(nx.kosaraju_strongly_connected_components(G)) == []
         assert list(nx.strongly_connected_components_recursive(G)) == []
         assert len(nx.condensation(G)) == 0
-        assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
+        pytest.raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
 
     def test_connected_raise(self):
         G = nx.Graph()
-        assert_raises(NetworkXNotImplemented, nx.strongly_connected_components, G)
-        assert_raises(NetworkXNotImplemented, nx.kosaraju_strongly_connected_components, G)
-        assert_raises(NetworkXNotImplemented, nx.strongly_connected_components_recursive, G)
-        assert_raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
-        assert_raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
-        assert_raises(NetworkXNotImplemented, nx.condensation, G)
+        pytest.raises(NetworkXNotImplemented, nx.strongly_connected_components, G)
+        pytest.raises(NetworkXNotImplemented, nx.kosaraju_strongly_connected_components, G)
+        pytest.raises(NetworkXNotImplemented, nx.strongly_connected_components_recursive, G)
+        pytest.raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
+        pytest.raises(nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph())
+        pytest.raises(NetworkXNotImplemented, nx.condensation, G)
 
 #    Commented out due to variability on Travis-CI hardware/operating systems
 #    def test_linear_time(self):

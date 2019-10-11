@@ -15,7 +15,7 @@ Tests for maximal (not maximum) independent sets.
 
 """
 
-from nose.tools import *
+import pytest
 import networkx as nx
 import random
 
@@ -64,14 +64,14 @@ class TestMaximalIndependantSet(object):
     def test_exception(self):
         """Bad input should raise exception."""
         G = self.florentine
-        assert_raises(nx.NetworkXUnfeasible,
+        pytest.raises(nx.NetworkXUnfeasible,
                       nx.maximal_independent_set, G, ["Smith"])
-        assert_raises(nx.NetworkXUnfeasible,
+        pytest.raises(nx.NetworkXUnfeasible,
                       nx.maximal_independent_set, G, ["Salviati", "Pazzi"])
 
     def test_digraph_exception(self):
         G = nx.DiGraph([(1, 2), (3, 4)])
-        assert_raises(nx.NetworkXNotImplemented, nx.maximal_independent_set, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.maximal_independent_set, G)
 
     def test_florentine_family(self):
         G = self.florentine

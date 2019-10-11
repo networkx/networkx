@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 import networkx as nx
 from networkx.testing import assert_edges_equal
 
@@ -57,7 +57,7 @@ def test_intersection_attributes():
     assert sorted(gh.edges()) == sorted(g.edges())
 
     h.remove_node(0)
-    assert_raises(nx.NetworkXError, nx.intersection, g, h)
+    pytest.raises(nx.NetworkXError, nx.intersection, g, h)
 
 
 def test_intersection_multigraph_attributes():
@@ -133,7 +133,7 @@ def test_difference_attributes():
     assert sorted(gh.edges()) == []
 
     h.remove_node(0)
-    assert_raises(nx.NetworkXError, nx.intersection, g, h)
+    pytest.raises(nx.NetworkXError, nx.intersection, g, h)
 
 
 def test_difference_multigraph_attributes():
@@ -154,8 +154,8 @@ def test_difference_multigraph_attributes():
 def test_difference_raise():
     G = nx.path_graph(4)
     H = nx.path_graph(3)
-    assert_raises(nx.NetworkXError, nx.difference, G, H)
-    assert_raises(nx.NetworkXError, nx.symmetric_difference, G, H)
+    pytest.raises(nx.NetworkXError, nx.difference, G, H)
+    pytest.raises(nx.NetworkXError, nx.symmetric_difference, G, H)
 
 
 def test_symmetric_difference_multigraph():
@@ -191,7 +191,7 @@ def test_union_and_compose():
     H = nx.compose(G1, G2)
     assert_edges_equal(G.edges(), H.edges())
     assert not G.has_edge('A', 1)
-    assert_raises(nx.NetworkXError, nx.union, K3, P3)
+    pytest.raises(nx.NetworkXError, nx.union, K3, P3)
     H1 = nx.union(H, G1, rename=('H', 'G1'))
     assert (sorted(H1.nodes()) ==
                  ['G1A', 'G1B', 'G1C', 'G1D',
@@ -375,9 +375,9 @@ def test_full_join_multigraph():
 def test_mixed_type_union():
     G = nx.Graph()
     H = nx.MultiGraph()
-    assert_raises(nx.NetworkXError, nx.union, G, H)
-    assert_raises(nx.NetworkXError, nx.disjoint_union, G, H)
-    assert_raises(nx.NetworkXError, nx.intersection, G, H)
-    assert_raises(nx.NetworkXError, nx.difference, G, H)
-    assert_raises(nx.NetworkXError, nx.symmetric_difference, G, H)
-    assert_raises(nx.NetworkXError, nx.compose, G, H)
+    pytest.raises(nx.NetworkXError, nx.union, G, H)
+    pytest.raises(nx.NetworkXError, nx.disjoint_union, G, H)
+    pytest.raises(nx.NetworkXError, nx.intersection, G, H)
+    pytest.raises(nx.NetworkXError, nx.difference, G, H)
+    pytest.raises(nx.NetworkXError, nx.symmetric_difference, G, H)
+    pytest.raises(nx.NetworkXError, nx.compose, G, H)

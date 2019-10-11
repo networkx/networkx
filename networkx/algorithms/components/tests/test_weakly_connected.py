@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
@@ -57,10 +57,10 @@ class TestWeaklyConnected:
         G = nx.DiGraph()
         assert list(nx.weakly_connected_components(G)) == []
         assert nx.number_weakly_connected_components(G) == 0
-        assert_raises(nx.NetworkXPointlessConcept, nx.is_weakly_connected, G)
+        pytest.raises(nx.NetworkXPointlessConcept, nx.is_weakly_connected, G)
 
     def test_connected_raise(self):
         G = nx.Graph()
-        assert_raises(NetworkXNotImplemented, nx.weakly_connected_components, G)
-        assert_raises(NetworkXNotImplemented, nx.number_weakly_connected_components, G)
-        assert_raises(NetworkXNotImplemented, nx.is_weakly_connected, G)
+        pytest.raises(NetworkXNotImplemented, nx.weakly_connected_components, G)
+        pytest.raises(NetworkXNotImplemented, nx.number_weakly_connected_components, G)
+        pytest.raises(NetworkXNotImplemented, nx.is_weakly_connected, G)

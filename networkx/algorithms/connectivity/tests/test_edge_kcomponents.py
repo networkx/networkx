@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
 import itertools as it
-from nose.tools import (assert_equal, assert_not_equal, assert_greater_equal,
-                        assert_raises, assert_in)
+import pytest
 from networkx.utils import pairwise
 from networkx.algorithms.connectivity import (
     bridge_components,
@@ -138,15 +137,15 @@ def _check_edge_connectivity(G):
 def test_zero_k_exception():
     G = nx.Graph()
     # functions that return generators error immediately
-    assert_raises(ValueError, nx.k_edge_components, G, k=0)
-    assert_raises(ValueError, nx.k_edge_subgraphs, G, k=0)
+    pytest.raises(ValueError, nx.k_edge_components, G, k=0)
+    pytest.raises(ValueError, nx.k_edge_subgraphs, G, k=0)
 
     # actual generators only error when you get the first item
     aux_graph = EdgeComponentAuxGraph.construct(G)
-    assert_raises(ValueError, list, aux_graph.k_edge_components(k=0))
-    assert_raises(ValueError, list, aux_graph.k_edge_subgraphs(k=0))
+    pytest.raises(ValueError, list, aux_graph.k_edge_components(k=0))
+    pytest.raises(ValueError, list, aux_graph.k_edge_subgraphs(k=0))
 
-    assert_raises(ValueError, list, general_k_edge_subgraphs(G, k=0))
+    pytest.raises(ValueError, list, general_k_edge_subgraphs(G, k=0))
 
 
 def test_empty_input():
@@ -161,11 +160,11 @@ def test_empty_input():
 
 def test_not_implemented():
     G = nx.MultiGraph()
-    assert_raises(nx.NetworkXNotImplemented, EdgeComponentAuxGraph.construct, G)
-    assert_raises(nx.NetworkXNotImplemented, nx.k_edge_components, G, k=2)
-    assert_raises(nx.NetworkXNotImplemented, nx.k_edge_subgraphs, G, k=2)
-    assert_raises(nx.NetworkXNotImplemented, bridge_components, G)
-    assert_raises(nx.NetworkXNotImplemented, bridge_components, nx.DiGraph())
+    pytest.raises(nx.NetworkXNotImplemented, EdgeComponentAuxGraph.construct, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.k_edge_components, G, k=2)
+    pytest.raises(nx.NetworkXNotImplemented, nx.k_edge_subgraphs, G, k=2)
+    pytest.raises(nx.NetworkXNotImplemented, bridge_components, G)
+    pytest.raises(nx.NetworkXNotImplemented, bridge_components, nx.DiGraph())
 
 
 def test_general_k_edge_subgraph_quick_return():

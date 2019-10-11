@@ -2,7 +2,7 @@
 from nose import SkipTest
 
 from nose.tools import assert_almost_equal
-from nose.tools import assert_raises
+import pytest
 from nose.tools import ok_
 from nose.tools import raises
 
@@ -67,9 +67,9 @@ class TestGenericPath:
                                       method='bellman-ford') ==
                      [0, 2, 3])
         # confirm bad method rejection
-        assert_raises(ValueError, nx.shortest_path, self.cycle, method='SPAM')
+        pytest.raises(ValueError, nx.shortest_path, self.cycle, method='SPAM')
         # confirm absent source rejection
-        assert_raises(nx.NodeNotFound, nx.shortest_path, self.cycle, 8)
+        pytest.raises(nx.NodeNotFound, nx.shortest_path, self.cycle, 8)
 
     def test_shortest_path_target(self):
         answer = {0: [0, 1], 1: [1], 2: [2, 1]}
@@ -108,12 +108,12 @@ class TestGenericPath:
                                              method='bellman-ford') ==
                      3)
         # confirm bad method rejection
-        assert_raises(ValueError,
+        pytest.raises(ValueError,
                       nx.shortest_path_length,
                       self.cycle,
                       method='SPAM')
         # confirm absent source rejection
-        assert_raises(nx.NodeNotFound, nx.shortest_path_length, self.cycle, 8)
+        pytest.raises(nx.NodeNotFound, nx.shortest_path_length, self.cycle, 8)
 
     def test_shortest_path_length_target(self):
         answer = {0: 1, 1: 0, 2: 1}
@@ -323,9 +323,9 @@ class TestAverageShortestPathLength(object):
         g = nx.Graph()
         g.add_nodes_from(range(3))
         g.add_edge(0, 1)
-        assert_raises(nx.NetworkXError, nx.average_shortest_path_length, g)
+        pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
         g = g.to_directed()
-        assert_raises(nx.NetworkXError, nx.average_shortest_path_length, g)
+        pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
 
     def test_trivial_graph(self):
         """Tests that the trivial graph has average path length zero,

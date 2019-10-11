@@ -4,7 +4,7 @@
 from ast import literal_eval
 import codecs
 import io
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
@@ -214,7 +214,7 @@ graph
 """
         fh = io.BytesIO(data.encode('UTF-8'))
         fh.seek(0)
-        assert_raises(
+        pytest.raises(
             nx.NetworkXError, nx.read_gml, fh, label='label')
 
     def test_tuplelabels(self):
@@ -380,18 +380,18 @@ graph
         assert answer == gml
 
     def test_exceptions(self):
-        assert_raises(ValueError, literal_destringizer, '(')
-        assert_raises(ValueError, literal_destringizer, 'frozenset([1, 2, 3])')
-        assert_raises(ValueError, literal_destringizer, literal_destringizer)
-        assert_raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
-        assert_raises(ValueError, literal_stringizer, literal_stringizer)
+        pytest.raises(ValueError, literal_destringizer, '(')
+        pytest.raises(ValueError, literal_destringizer, 'frozenset([1, 2, 3])')
+        pytest.raises(ValueError, literal_destringizer, literal_destringizer)
+        pytest.raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
+        pytest.raises(ValueError, literal_stringizer, literal_stringizer)
         with tempfile.TemporaryFile() as f:
             f.write(codecs.BOM_UTF8 + 'graph[]'.encode('ascii'))
             f.seek(0)
-            assert_raises(nx.NetworkXError, nx.read_gml, f)
+            pytest.raises(nx.NetworkXError, nx.read_gml, f)
 
         def assert_parse_error(gml):
-            assert_raises(nx.NetworkXError, nx.parse_gml, gml)
+            pytest.raises(nx.NetworkXError, nx.parse_gml, gml)
 
         assert_parse_error(['graph [\n\n', unicode(']')])
         assert_parse_error('')
@@ -456,7 +456,7 @@ graph
             "node [ id u'u\4200' label b ] ]")
 
         def assert_generate_error(*args, **kwargs):
-            assert_raises(nx.NetworkXError,
+            pytest.raises(nx.NetworkXError,
                           lambda: list(nx.generate_gml(*args, **kwargs)))
 
         G = nx.Graph()

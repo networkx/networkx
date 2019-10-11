@@ -2,8 +2,10 @@
 import random
 
 import networkx
-from nose.tools import *
+import pytest
 from nose import SkipTest
+from nose.tools import raises
+from networkx.testing import almost_equal
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -43,12 +45,12 @@ class TestPageRank(object):
         G = self.G
         p = networkx.pagerank(G, alpha=0.9, tol=1.e-08)
         for n in G:
-            assert_almost_equal(p[n], G.pagerank[n], places=4)
+            assert almost_equal(p[n], G.pagerank[n], places=4)
 
         nstart = dict((n, random.random()) for n in G)
         p = networkx.pagerank(G, alpha=0.9, tol=1.e-08, nstart=nstart)
         for n in G:
-            assert_almost_equal(p[n], G.pagerank[n], places=4)
+            assert almost_equal(p[n], G.pagerank[n], places=4)
 
     @raises(networkx.PowerIterationFailedConvergence)
     def test_pagerank_max_iter(self):
@@ -58,7 +60,7 @@ class TestPageRank(object):
         G = self.G
         p = networkx.pagerank_numpy(G, alpha=0.9)
         for n in G:
-            assert_almost_equal(p[n], G.pagerank[n], places=4)
+            assert almost_equal(p[n], G.pagerank[n], places=4)
         personalize = dict((n, random.random()) for n in G)
         p = networkx.pagerank_numpy(G, alpha=0.9, personalization=personalize)
 
@@ -68,7 +70,7 @@ class TestPageRank(object):
         e, ev = numpy.linalg.eig(M.T)
         p = numpy.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
         for (a, b) in zip(p, self.G.pagerank.values()):
-            assert_almost_equal(a, b)
+            assert almost_equal(a, b)
 
     def test_personalization(self):
         G = networkx.complete_graph(4)
@@ -76,12 +78,12 @@ class TestPageRank(object):
         answer = {0: 0.23246732615667579, 1: 0.23246732615667579, 2: 0.267532673843324, 3: 0.2675326738433241}
         p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
-            assert_almost_equal(p[n], answer[n], places=4)
+            assert almost_equal(p[n], answer[n], places=4)
 
     def test_zero_personalization_vector(self):
         G = networkx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 0}
-        assert_raises(ZeroDivisionError, networkx.pagerank, G,
+        pytest.raises(ZeroDivisionError, networkx.pagerank, G,
                       personalization=personalize)
 
     def test_one_nonzero_personalization_value(self):
@@ -90,7 +92,7 @@ class TestPageRank(object):
         answer = {0: 0.22077931820379187, 1: 0.22077931820379187, 2: 0.22077931820379187, 3: 0.3376620453886241}
         p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
-            assert_almost_equal(p[n], answer[n], places=4)
+            assert almost_equal(p[n], answer[n], places=4)
 
     def test_incomplete_personalization(self):
         G = networkx.complete_graph(4)
@@ -98,7 +100,7 @@ class TestPageRank(object):
         answer = {0: 0.22077931820379187, 1: 0.22077931820379187, 2: 0.22077931820379187, 3: 0.3376620453886241}
         p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
         for n in G:
-            assert_almost_equal(p[n], answer[n], places=4)
+            assert almost_equal(p[n], answer[n], places=4)
 
     def test_dangling_matrix(self):
         """
@@ -114,21 +116,21 @@ class TestPageRank(object):
         for i in range(len(G)):
             for j in range(len(G)):
                 if i == self.dangling_node_index and (j + 1) in dangling:
-                    assert_almost_equal(M2[i, j],
+                    assert almost_equal(M2[i, j],
                                         dangling[j + 1] / dangling_sum,
                                         places=4)
                 else:
-                    assert_almost_equal(M2[i, j], M1[i, j], places=4)
+                    assert almost_equal(M2[i, j], M1[i, j], places=4)
 
     def test_dangling_pagerank(self):
         pr = networkx.pagerank(self.G, dangling=self.dangling_edges)
         for n in self.G:
-            assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
+            assert almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
     def test_dangling_numpy_pagerank(self):
         pr = networkx.pagerank_numpy(self.G, dangling=self.dangling_edges)
         for n in self.G:
-            assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
+            assert almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
     def test_empty(self):
         G = networkx.Graph()
@@ -151,7 +153,7 @@ class TestPageRankScipy(TestPageRank):
         G = self.G
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08)
         for n in G:
-            assert_almost_equal(p[n], G.pagerank[n], places=4)
+            assert almost_equal(p[n], G.pagerank[n], places=4)
         personalize = dict((n, random.random()) for n in G)
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08,
                                     personalization=personalize)
@@ -159,7 +161,7 @@ class TestPageRankScipy(TestPageRank):
         nstart = dict((n, random.random()) for n in G)
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08, nstart=nstart)
         for n in G:
-            assert_almost_equal(p[n], G.pagerank[n], places=4)
+            assert almost_equal(p[n], G.pagerank[n], places=4)
 
     @raises(networkx.PowerIterationFailedConvergence)
     def test_scipy_pagerank_max_iter(self):
@@ -168,7 +170,7 @@ class TestPageRankScipy(TestPageRank):
     def test_dangling_scipy_pagerank(self):
         pr = networkx.pagerank_scipy(self.G, dangling=self.dangling_edges)
         for n in self.G:
-            assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
+            assert almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
     def test_empty_scipy(self):
         G = networkx.Graph()

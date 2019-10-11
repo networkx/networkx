@@ -1,4 +1,4 @@
-from nose.tools import *
+import pytest
 
 import networkx as nx
 
@@ -44,7 +44,7 @@ class TestEdgeDFS(object):
     def test_digraph_orientation_invalid(self):
         G = nx.DiGraph(self.edges)
         edge_iterator = edge_dfs(G, self.nodes, orientation='hello')
-        assert_raises(nx.NetworkXError, list, edge_iterator)
+        pytest.raises(nx.NetworkXError, list, edge_iterator)
 
     def test_digraph_orientation_none(self):
         G = nx.DiGraph(self.edges)

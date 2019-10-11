@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 from networkx import Graph, NetworkXError
 from networkx.algorithms.community.asyn_fluid import *
 
@@ -6,11 +6,11 @@ from networkx.algorithms.community.asyn_fluid import *
 def test_exceptions():
     test = Graph()
     test.add_node('a')
-    assert_raises(NetworkXError, asyn_fluidc, test, 'hi')
-    assert_raises(NetworkXError, asyn_fluidc, test, -1)
-    assert_raises(NetworkXError, asyn_fluidc, test, 3)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 'hi')
+    pytest.raises(NetworkXError, asyn_fluidc, test, -1)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 3)
     test.add_node('b')
-    assert_raises(NetworkXError, asyn_fluidc, test, 1)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 1)
 
 
 def test_single_node():

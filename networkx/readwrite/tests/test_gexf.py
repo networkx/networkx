@@ -3,7 +3,7 @@ import io
 import sys
 import time
 from nose import SkipTest
-from nose.tools import *
+import pytest
 
 import networkx as nx
 
@@ -194,7 +194,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 </gexf>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_gexf, fh)
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
 
     def test_undirected_edge_in_directed(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -211,7 +211,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 </gexf>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_gexf, fh)
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
 
     def test_key_raises(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -232,7 +232,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 </gexf>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_gexf, fh)
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
 
     def test_relabel(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>

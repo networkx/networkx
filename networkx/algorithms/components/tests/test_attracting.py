@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
@@ -53,6 +53,6 @@ class TestAttractingComponents(object):
 
     def test_connected_raise(self):
         G = nx.Graph()
-        assert_raises(NetworkXNotImplemented, nx.attracting_components, G)
-        assert_raises(NetworkXNotImplemented, nx.number_attracting_components, G)
-        assert_raises(NetworkXNotImplemented, nx.is_attracting_component, G)
+        pytest.raises(NetworkXNotImplemented, nx.attracting_components, G)
+        pytest.raises(NetworkXNotImplemented, nx.number_attracting_components, G)
+        pytest.raises(NetworkXNotImplemented, nx.is_attracting_component, G)

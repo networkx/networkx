@@ -1,6 +1,6 @@
 import random
 
-from nose.tools import assert_raises
+import pytest
 from nose.tools import raises
 
 import networkx as nx
@@ -396,7 +396,7 @@ def test_bidirectional_shortest_path_restricted_directed_cycle():
     directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
     length, path = _bidirectional_shortest_path(directed_cycle, 0, 3)
     assert path == [0, 1, 2, 3]
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_shortest_path,
         directed_cycle,
@@ -406,7 +406,7 @@ def test_bidirectional_shortest_path_restricted_directed_cycle():
     length, path = _bidirectional_shortest_path(directed_cycle, 0, 3,
                                                 ignore_edges=[(2, 1)])
     assert path == [0, 1, 2, 3]
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_shortest_path,
         directed_cycle,
@@ -420,14 +420,14 @@ def test_bidirectional_shortest_path_ignore():
     nx.add_path(G, [1, 2])
     nx.add_path(G, [1, 3])
     nx.add_path(G, [1, 4])
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_shortest_path,
         G,
         1, 2,
         ignore_nodes=[1],
     )
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_shortest_path,
         G,
@@ -438,7 +438,7 @@ def test_bidirectional_shortest_path_ignore():
     nx.add_path(G, [1, 3])
     nx.add_path(G, [1, 4])
     nx.add_path(G, [3, 2])
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_shortest_path,
         G,
@@ -477,7 +477,7 @@ def test_bidirectional_dijksta_restricted():
                          *_bidirectional_dijkstra(XG, 's', 'v', ignore_nodes=['u']))
     validate_length_path(XG, 's', 'v', 11,
                          *_bidirectional_dijkstra(XG, 's', 'v', ignore_edges=[('s', 'x')]))
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_dijkstra,
         XG,
@@ -490,7 +490,7 @@ def test_bidirectional_dijksta_restricted():
                          *_bidirectional_dijkstra(XG3, 0, 3, ignore_nodes=[1]))
     validate_length_path(XG3, 0, 3, 16,
                          *_bidirectional_dijkstra(XG3, 0, 3, ignore_edges=[(2, 3)]))
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_dijkstra,
         XG3,
@@ -512,21 +512,21 @@ def test_bidirectional_dijkstra_ignore():
     G = nx.Graph()
     nx.add_path(G, [1, 2, 10])
     nx.add_path(G, [1, 3, 10])
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_dijkstra,
         G,
         1, 2,
         ignore_nodes=[1],
     )
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_dijkstra,
         G,
         1, 2,
         ignore_nodes=[2],
     )
-    assert_raises(
+    pytest.raises(
         nx.NetworkXNoPath,
         _bidirectional_dijkstra,
         G,

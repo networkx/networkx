@@ -1,4 +1,4 @@
-from nose.tools import *
+import pytest
 from itertools import chain, combinations, product
 
 import networkx as nx
@@ -73,10 +73,10 @@ class TestTreeLCA(object):
     def test_tree_all_pairs_lowest_common_ancestor5(self):
         """Handles invalid input correctly."""
         empty_digraph = tree_all_pairs_lca(nx.DiGraph())
-        assert_raises(nx.NetworkXPointlessConcept, list, empty_digraph)
+        pytest.raises(nx.NetworkXPointlessConcept, list, empty_digraph)
 
         bad_pairs_digraph = tree_all_pairs_lca(self.DG, pairs=[(-1, -2)])
-        assert_raises(nx.NodeNotFound, list, bad_pairs_digraph)
+        pytest.raises(nx.NodeNotFound, list, bad_pairs_digraph)
 
     def test_tree_all_pairs_lowest_common_ancestor6(self):
         """Works on subtrees."""
@@ -95,16 +95,16 @@ class TestTreeLCA(object):
         assert {(1, 1): 1} == dict(tree_all_pairs_lca(G, 1))
         assert {(0, 0): 0} == dict(tree_all_pairs_lca(G, 0))
 
-        assert_raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
 
     def test_tree_all_pairs_lowest_common_ancestor8(self):
         """Raises right errors if not a tree."""
         # Cycle
         G = nx.DiGraph([(1, 2), (2, 1)])
-        assert_raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
         # DAG
         G = nx.DiGraph([(0, 2), (1, 2)])
-        assert_raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
 
     def test_tree_all_pairs_lowest_common_ancestor9(self):
         """Test that pairs works correctly as a generator."""
@@ -116,34 +116,34 @@ class TestTreeLCA(object):
     def test_tree_all_pairs_lowest_common_ancestor10(self):
         """Test that pairs not in the graph raises error."""
         lca = tree_all_pairs_lca(self.DG, 0, [(-1, -1)])
-        assert_raises(nx.NodeNotFound, list, lca)
+        pytest.raises(nx.NodeNotFound, list, lca)
 
     def test_tree_all_pairs_lowest_common_ancestor11(self):
         """Test that None as a node in the graph raises an error."""
         G = nx.DiGraph([(None, 3)])
-        assert_raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
-        assert_raises(nx.NodeNotFound, list,
+        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.NodeNotFound, list,
                       tree_all_pairs_lca(self.DG, pairs=G.edges()))
 
     def test_tree_all_pairs_lowest_common_ancestor12(self):
         """Test that tree routine bails on DAGs."""
         G = nx.DiGraph([(3, 4), (5, 4)])
-        assert_raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
 
     def test_not_implemented_for(self):
         NNI = nx.NetworkXNotImplemented
         G = nx.Graph([(0, 1)])
-        assert_raises(NNI, tree_all_pairs_lca, G)
-        assert_raises(NNI, all_pairs_lca, G)
-        assert_raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
+        pytest.raises(NNI, tree_all_pairs_lca, G)
+        pytest.raises(NNI, all_pairs_lca, G)
+        pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
         G = nx.MultiGraph([(0, 1)])
-        assert_raises(NNI, tree_all_pairs_lca, G)
-        assert_raises(NNI, all_pairs_lca, G)
-        assert_raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
+        pytest.raises(NNI, tree_all_pairs_lca, G)
+        pytest.raises(NNI, all_pairs_lca, G)
+        pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
         G = nx.MultiDiGraph([(0, 1)])
-        assert_raises(NNI, tree_all_pairs_lca, G)
-        assert_raises(NNI, all_pairs_lca, G)
-        assert_raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
+        pytest.raises(NNI, tree_all_pairs_lca, G)
+        pytest.raises(NNI, all_pairs_lca, G)
+        pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
 
     def test_tree_all_pairs_lowest_common_ancestor13(self):
         """Test that it works on non-empty trees with no LCAs."""
@@ -258,7 +258,7 @@ class TestDAGLCA:
 
     def test_all_pairs_lowest_common_ancestor5(self):
         """Test that pairs not in the graph raises error."""
-        assert_raises(nx.NodeNotFound, all_pairs_lca, self.DG, [(-1, -1)])
+        pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, [(-1, -1)])
 
     def test_all_pairs_lowest_common_ancestor6(self):
         """Test that pairs with no LCA specified emits nothing."""
@@ -269,13 +269,13 @@ class TestDAGLCA:
 
     def test_all_pairs_lowest_common_ancestor7(self):
         """Test that LCA on null graph bails."""
-        assert_raises(nx.NetworkXPointlessConcept,
+        pytest.raises(nx.NetworkXPointlessConcept,
                       all_pairs_lca,
                       nx.DiGraph())
 
     def test_all_pairs_lowest_common_ancestor8(self):
         """Test that LCA on non-dags bails."""
-        assert_raises(nx.NetworkXError, all_pairs_lca,
+        pytest.raises(nx.NetworkXError, all_pairs_lca,
                       nx.DiGraph([(3, 4), (4, 3)]))
 
     def test_all_pairs_lowest_common_ancestor9(self):
@@ -288,8 +288,8 @@ class TestDAGLCA:
     def test_all_pairs_lowest_common_ancestor10(self):
         """Test that it bails on None as a node."""
         G = nx.DiGraph([(None, 3)])
-        assert_raises(nx.NetworkXError, all_pairs_lca, G)
-        assert_raises(nx.NodeNotFound, all_pairs_lca,
+        pytest.raises(nx.NetworkXError, all_pairs_lca, G)
+        pytest.raises(nx.NodeNotFound, all_pairs_lca,
                       self.DG, pairs=G.edges())
 
     def test_lowest_common_ancestor1(self):

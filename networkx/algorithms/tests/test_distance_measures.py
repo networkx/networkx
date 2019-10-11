@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 from random import Random
 from nose import SkipTest
-from nose.tools import assert_equal, assert_is_instance, \
-        assert_raises, raises, assert_less_equal, assert_false, \
-        assert_true
+import pytest
+from nose.tools import raises
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
@@ -38,7 +37,7 @@ class TestDistance:
         assert e[0] == 0
         e = nx.eccentricity(G, v=0)
         assert e == 0
-        assert_raises(nx.NetworkXError, nx.eccentricity, G, 1)
+        pytest.raises(nx.NetworkXError, nx.eccentricity, G, 1)
 
         # test against empty graph
         G = nx.empty_graph()
@@ -75,7 +74,7 @@ class TestDistance:
         G = nx.Graph()
         G.add_edge(1, 2)
         G.add_edge(3, 4)
-        assert_raises(nx.NetworkXError, nx.diameter, G)
+        pytest.raises(nx.NetworkXError, nx.diameter, G)
 
     @raises(nx.NetworkXError)
     def test_eccentricity_infinite(self):
@@ -204,7 +203,7 @@ class TestBarycenter(object):
         return g.subgraph(b)
 
     def test_must_be_connected(self):
-        assert_raises(nx.NetworkXNoPath, nx.barycenter, nx.empty_graph(5))
+        pytest.raises(nx.NetworkXNoPath, nx.barycenter, nx.empty_graph(5))
 
     def test_sp_kwarg(self):
         # Complete graph K_5. Normally it works...
@@ -215,11 +214,11 @@ class TestBarycenter(object):
         # ...but not with the weight argument
         for u, v, data in K_5.edges.data():
             data['weight'] = 1
-        assert_raises(ValueError, nx.barycenter, K_5, sp=sp, weight='weight')
+        pytest.raises(ValueError, nx.barycenter, K_5, sp=sp, weight='weight')
 
         # ...and a corrupted sp can make it seem like K_5 is disconnected
         del sp[0][1]
-        assert_raises(nx.NetworkXNoPath, nx.barycenter, K_5, sp=sp)
+        pytest.raises(nx.NetworkXNoPath, nx.barycenter, K_5, sp=sp)
 
     def test_trees(self):
         """The barycenter of a tree is a single vertex or an edge.

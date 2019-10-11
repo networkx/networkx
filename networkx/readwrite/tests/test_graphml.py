@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 from nose import SkipTest
 import networkx as nx
 from networkx.testing.utils import *
 import io
 import tempfile
 import os
-
+from networkx.testing import almost_equal
 
 class BaseGraphML(object):
     @classmethod
@@ -236,8 +236,8 @@ class TestReadGraphML(BaseGraphML):
   </graph>
 </graphml>"""
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_graphml, fh)
-        assert_raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
 
     def test_undirected_edge_in_directed(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -254,8 +254,8 @@ class TestReadGraphML(BaseGraphML):
   </graph>
 </graphml>"""
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_graphml, fh)
-        assert_raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
 
     def test_key_raise(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -282,8 +282,8 @@ class TestReadGraphML(BaseGraphML):
 </graphml>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_graphml, fh)
-        assert_raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
 
     def test_hyperedge_raise(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -312,8 +312,8 @@ class TestReadGraphML(BaseGraphML):
 </graphml>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_graphml, fh)
-        assert_raises(nx.NetworkXError, nx.parse_graphml, s)
+        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
 
     def test_multigraph_keys(self):
         # Test that reading multigraphs uses edge id attributes as keys
@@ -539,8 +539,8 @@ class TestReadGraphML(BaseGraphML):
                 assert graph.nodes['n0']['test'] == True
 
         fh = io.BytesIO(ugly.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_graphml, fh)
-        assert_raises(nx.NetworkXError, nx.parse_graphml, ugly)
+        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, ugly)
 
     def test_read_attributes_with_groups(self):
         data = """\
@@ -977,7 +977,7 @@ class TestWriteGraphML(BaseGraphML):
         assert G.edges == H.edges
         wtG = G[1][2]['weight']
         wtH = H[1][2]['weight']
-        assert_almost_equal(wtG, wtH, places=6)
+        assert almost_equal(wtG, wtH, places=6)
         assert type(wtG) == np.float64
         assert type(wtH) == float
         os.close(fd)
@@ -996,7 +996,7 @@ class TestWriteGraphML(BaseGraphML):
         assert G.edges == H.edges
         wtG = G[1][2]['weight']
         wtH = H[1][2]['weight']
-        assert_almost_equal(wtG, wtH, places=6)
+        assert almost_equal(wtG, wtH, places=6)
         assert type(wtG) == np.float32
         assert type(wtH) == float
         os.close(fd)

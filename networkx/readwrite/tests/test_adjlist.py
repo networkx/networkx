@@ -3,7 +3,7 @@
     Unit tests for adjlist.
 """
 import io
-from nose.tools import assert_raises
+import pytest
 import os
 import tempfile
 import networkx as nx
@@ -63,7 +63,7 @@ class TestAdjlist():
             name2 = unichr(5543) + unichr(1543) + unichr(324)
         G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
-        assert_raises(UnicodeEncodeError,
+        pytest.raises(UnicodeEncodeError,
                       nx.write_multiline_adjlist,
                       G, fname, encoding='latin-1')
         os.close(fd)

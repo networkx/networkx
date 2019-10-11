@@ -1,9 +1,8 @@
 """Unit tests for layout functions."""
 from nose import SkipTest
-from nose.tools import assert_almost_equal, assert_equal, \
-    assert_true, assert_false, assert_raises
+import pytest
 import networkx as nx
-
+from networkx.testing import almost_equal
 
 class TestLayout(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
@@ -39,9 +38,9 @@ class TestLayout(object):
 
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
-        assert_raises(ValueError, nx.spring_layout, G, fixed=[0])
+        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0])
         pos = {0: (1, 1), 2: (0, 0)}
-        assert_raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
+        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
         nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
 
     def test_spring_init_pos(self):
@@ -129,7 +128,7 @@ class TestLayout(object):
 
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
-        assert_raises(nx.NetworkXException, nx.planar_layout, G)
+        pytest.raises(nx.NetworkXException, nx.planar_layout, G)
 
     def test_smoke_planar_layout_embedding_input(self):
         embedding = nx.PlanarEmbedding()
@@ -152,11 +151,11 @@ class TestLayout(object):
 
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
-        assert_raises(ValueError, nx.circular_layout, G, dim=1)
-        assert_raises(ValueError, nx.shell_layout, G, dim=1)
-        assert_raises(ValueError, nx.shell_layout, G, dim=3)
-        assert_raises(ValueError, nx.planar_layout, G, dim=1)
-        assert_raises(ValueError, nx.planar_layout, G, dim=3)
+        pytest.raises(ValueError, nx.circular_layout, G, dim=1)
+        pytest.raises(ValueError, nx.shell_layout, G, dim=1)
+        pytest.raises(ValueError, nx.shell_layout, G, dim=3)
+        pytest.raises(ValueError, nx.planar_layout, G, dim=1)
+        pytest.raises(ValueError, nx.planar_layout, G, dim=3)
 
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_array(self.Gs)
@@ -200,7 +199,7 @@ class TestLayout(object):
         pos = nx.circular_layout(self.bigG)
         npos = nx.spring_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         for axis in range(2):
-            assert_almost_equal(pos[(0, 0)][axis], npos[(0, 0)][axis])
+            assert almost_equal(pos[(0, 0)][axis], npos[(0, 0)][axis])
 
     def test_center_parameter(self):
         G = nx.path_graph(1)
@@ -223,15 +222,15 @@ class TestLayout(object):
     def test_center_wrong_dimensions(self):
         G = nx.path_graph(1)
         assert id(nx.spring_layout) == id(nx.fruchterman_reingold_layout)
-        assert_raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spring_layout, G, dim=3, center=(1, 1))
-        assert_raises(ValueError, nx.spectral_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
-        assert_raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spring_layout, G, dim=3, center=(1, 1))
+        pytest.raises(ValueError, nx.spectral_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
+        pytest.raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
 
     def test_empty_graph(self):
         G = nx.empty_graph()
@@ -282,7 +281,7 @@ class TestLayout(object):
         for node in bottom:
             assert vpos[node][1] == bottom_y
 
-        assert_raises(ValueError, nx.bipartite_layout, G, top, align='foo')
+        pytest.raises(ValueError, nx.bipartite_layout, G, top, align='foo')
 
     def test_kamada_kawai_costfn_1d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
@@ -292,9 +291,9 @@ class TestLayout(object):
 
         cost, grad = costfn(pos, numpy, invdist, meanweight=0, dim=1)
 
-        assert_almost_equal(cost, ((3 / 2.0 - 1) ** 2))
-        assert_almost_equal(grad[0], -0.5)
-        assert_almost_equal(grad[1], 0.5)
+        assert almost_equal(cost, ((3 / 2.0 - 1) ** 2))
+        assert almost_equal(grad[0], -0.5)
+        assert almost_equal(grad[1], 0.5)
 
     def test_kamada_kawai_costfn_2d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
@@ -316,7 +315,7 @@ class TestLayout(object):
                 diff = numpy.linalg.norm(pos[i] - pos[j])
                 expected_cost += (diff * invdist[i][j] - 1.0) ** 2
 
-        assert_almost_equal(cost, expected_cost)
+        assert almost_equal(cost, expected_cost)
 
         dx = 1e-4
         for nd in range(pos.shape[0]):
@@ -332,7 +331,7 @@ class TestLayout(object):
                 cminus = costfn(pos0, numpy, invdist,
                                 meanweight=meanwt, dim=pos.shape[1])[0]
 
-                assert_almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
+                assert almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
                                     places=5)
 
     def test_spiral_layout(self):
@@ -354,7 +353,7 @@ class TestLayout(object):
         distances_equidistant = self.collect_node_distances(pos_equidistant)
         for d in range(1, len(distances_equidistant) - 1):
             # test similarity to two decimal places
-            assert_almost_equal(
+            assert almost_equal(
                 distances_equidistant[d],
                 distances_equidistant[d+1],
                 2

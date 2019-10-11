@@ -10,7 +10,7 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Jake VanderPlas <jakevdp@uw.edu>"])
 
 import networkx as nx
-from nose.tools import *
+import pytest
 
 
 is_coloring = nx.algorithms.coloring.equitable_coloring.is_coloring
@@ -73,13 +73,13 @@ class TestColoring:
     def test_interchange_invalid(self):
         graph = one_node_graph()
         for strategy in INTERCHANGE_INVALID:
-            assert_raises(nx.NetworkXPointlessConcept,
+            pytest.raises(nx.NetworkXPointlessConcept,
                           nx.coloring.greedy_color,
                           graph, strategy=strategy, interchange=True)
 
     def test_bad_inputs(self):
         graph = one_node_graph()
-        assert_raises(nx.NetworkXError, nx.coloring.greedy_color,
+        pytest.raises(nx.NetworkXError, nx.coloring.greedy_color,
                       graph, strategy='invalid strategy')
 
     def test_strategy_as_function(self):
@@ -123,7 +123,7 @@ class TestColoring:
     def test_num_colors(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3)])
-        assert_raises(nx.NetworkXAlgorithmError,
+        pytest.raises(nx.NetworkXAlgorithmError,
                       nx.coloring.equitable_color, G, 2)
 
     def test_equitable_color(self):

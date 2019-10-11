@@ -1,20 +1,20 @@
 from itertools import chain
 import networkx as nx
-from nose.tools import *
-
+import pytest
+from nose.tools import ok_
 
 class TestIsSemiconnected(object):
 
     def test_undirected(self):
-        assert_raises(nx.NetworkXNotImplemented, nx.is_semiconnected,
+        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected,
                       nx.Graph())
-        assert_raises(nx.NetworkXNotImplemented, nx.is_semiconnected,
+        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected,
                       nx.MultiGraph())
 
     def test_empty(self):
-        assert_raises(nx.NetworkXPointlessConcept, nx.is_semiconnected,
+        pytest.raises(nx.NetworkXPointlessConcept, nx.is_semiconnected,
                       nx.DiGraph())
-        assert_raises(nx.NetworkXPointlessConcept, nx.is_semiconnected,
+        pytest.raises(nx.NetworkXPointlessConcept, nx.is_semiconnected,
                       nx.MultiDiGraph())
 
     def test_single_node_graph(self):

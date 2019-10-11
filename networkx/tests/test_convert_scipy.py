@@ -1,5 +1,6 @@
+import pytest
 from nose import SkipTest
-from nose.tools import assert_raises, raises
+from nose.tools import raises
 
 import networkx as nx
 from networkx.testing import assert_graphs_equal
@@ -29,7 +30,7 @@ class TestConvertNumpy(object):
         class G(object):
             format = None
 
-        assert_raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
 
     def create_weighted(self, G):
         g = cycle_graph(4)
@@ -77,7 +78,7 @@ class TestConvertNumpy(object):
     def test_shape(self):
         "Conversion from non-square sparse array."
         A = sp.sparse.lil_matrix([[1, 2, 3], [4, 5, 6]])
-        assert_raises(nx.NetworkXError, nx.from_scipy_sparse_matrix, A)
+        pytest.raises(nx.NetworkXError, nx.from_scipy_sparse_matrix, A)
 
     def test_identity_graph_matrix(self):
         "Conversion from graph to sparse matrix to graph."
@@ -110,7 +111,7 @@ class TestConvertNumpy(object):
 
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
-        assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3,
+        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3,
                       nodelist=nodelist)
 
     def test_weight_keyword(self):

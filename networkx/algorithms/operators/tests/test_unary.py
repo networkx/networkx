@@ -1,4 +1,4 @@
-from nose.tools import *
+import pytest
 import networkx as nx
 
 
@@ -44,4 +44,4 @@ def test_complement_2():
 def test_reverse1():
     # Other tests for reverse are done by the DiGraph and MultiDigraph.
     G1 = nx.Graph()
-    assert_raises(nx.NetworkXError, nx.reverse, G1)
+    pytest.raises(nx.NetworkXError, nx.reverse, G1)

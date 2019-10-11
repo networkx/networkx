@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
@@ -177,7 +177,7 @@ def test_null_graph():
 
 def test_connected_raise():
     DG = nx.DiGraph()
-    assert_raises(NetworkXNotImplemented, nx.biconnected_components, DG)
-    assert_raises(NetworkXNotImplemented, nx.biconnected_component_edges, DG)
-    assert_raises(NetworkXNotImplemented, nx.articulation_points, DG)
-    assert_raises(NetworkXNotImplemented, nx.is_biconnected, DG)
+    pytest.raises(NetworkXNotImplemented, nx.biconnected_components, DG)
+    pytest.raises(NetworkXNotImplemented, nx.biconnected_component_edges, DG)
+    pytest.raises(NetworkXNotImplemented, nx.articulation_points, DG)
+    pytest.raises(NetworkXNotImplemented, nx.is_biconnected, DG)

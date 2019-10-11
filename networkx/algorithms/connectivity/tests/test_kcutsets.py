@@ -1,7 +1,7 @@
 # Jordi Torrents
 # Test for k-cutsets
 import itertools
-from nose.tools import assert_raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
@@ -205,7 +205,7 @@ def test_grid_2d_graph():
 def test_disconnected_graph():
     G = nx.fast_gnp_random_graph(100, 0.01, seed=42)
     cuts = nx.all_node_cuts(G)
-    assert_raises(nx.NetworkXError, next, cuts)
+    pytest.raises(nx.NetworkXError, next, cuts)
 
 
 def test_alternative_flow_functions():

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from nose.tools import assert_raises
+import pytest
 import random
 
 from networkx import random_reference, lattice_reference, sigma, omega
@@ -16,8 +16,8 @@ def test_random_reference():
     Cr = nx.average_clustering(Gr)
     assert C > Cr
 
-    assert_raises(nx.NetworkXError, random_reference, nx.Graph())
-    assert_raises(nx.NetworkXNotImplemented, random_reference, nx.DiGraph())
+    pytest.raises(nx.NetworkXError, random_reference, nx.Graph())
+    pytest.raises(nx.NetworkXNotImplemented, random_reference, nx.DiGraph())
 
     H = nx.Graph(((0, 1), (2, 3)))
     Hl = random_reference(H, niter=1, seed=rng)
@@ -30,8 +30,8 @@ def test_lattice_reference():
     Ll = nx.average_shortest_path_length(Gl)
     assert Ll > L
 
-    assert_raises(nx.NetworkXError, lattice_reference, nx.Graph())
-    assert_raises(nx.NetworkXNotImplemented, lattice_reference, nx.DiGraph())
+    pytest.raises(nx.NetworkXError, lattice_reference, nx.Graph())
+    pytest.raises(nx.NetworkXNotImplemented, lattice_reference, nx.DiGraph())
 
     H = nx.Graph(((0, 1), (2, 3)))
     Hl = lattice_reference(H, niter=1)

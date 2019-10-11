@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
+import pytest
+from nose.tools import raises
 import networkx
 import networkx as nx
 
@@ -163,7 +164,7 @@ class TestFindCycle(object):
 
     def test_graph_nocycle(self):
         G = nx.Graph(self.edges)
-        assert_raises(nx.exception.NetworkXNoCycle, find_cycle, G, self.nodes)
+        pytest.raises(nx.exception.NetworkXNoCycle, find_cycle, G, self.nodes)
 
     def test_graph_cycle(self):
         G = nx.Graph(self.edges)
@@ -252,12 +253,12 @@ class TestFindCycle(object):
         # when 4 is visited from the first time (so we must make sure that 4
         # is not visited from 2, and hence, we respect the edge orientation).
         G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 3), (4, 2)])
-        assert_raises(nx.exception.NetworkXNoCycle,
+        pytest.raises(nx.exception.NetworkXNoCycle,
                       find_cycle, G, [0, 1, 2, 3, 4], orientation='original')
 
     def test_dag(self):
         G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
-        assert_raises(nx.exception.NetworkXNoCycle,
+        pytest.raises(nx.exception.NetworkXNoCycle,
                       find_cycle, G, orientation='original')
         x = list(find_cycle(G, orientation='ignore'))
         assert x == [(0, 1, FORWARD), (1, 2, FORWARD), (0, 2, REVERSE)]
@@ -267,7 +268,7 @@ class TestFindCycle(object):
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 0), (2, 0), (1, 2), (2, 1)])
-        assert_raises(nx.NetworkXNoCycle, find_cycle, G, source=0)
+        pytest.raises(nx.NetworkXNoCycle, find_cycle, G, source=0)
         x = list(nx.find_cycle(G, 1))
         x_ = [(1, 2), (2, 1)]
         assert x == x_
@@ -285,8 +286,8 @@ class TestFindCycle(object):
 
         G = nx.DiGraph()
         G.add_edges_from([(1, 2), (2, 0), (3, 1), (3, 2)])
-        assert_raises(nx.NetworkXNoCycle, find_cycle, G, source=0)
-        assert_raises(nx.NetworkXNoCycle, find_cycle, G)
+        pytest.raises(nx.NetworkXNoCycle, find_cycle, G, source=0)
+        pytest.raises(nx.NetworkXNoCycle, find_cycle, G)
 
 
 def assert_basis_equal(a, b):
