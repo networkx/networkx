@@ -56,9 +56,8 @@ def enumerate_all_cliques(G):
     To obtain a list of all cliques, use
     `list(enumerate_all_cliques(G))`. However, be aware that in the
     worst-case, the length of this list can be exponential in the number
-    of nodes in the graph (for example, when the graph is the complete
-    graph). This function avoids storing all cliques in memory by only
-    keeping current candidate node lists in memory during its search.
+    of nodes in the graph. This function avoids storing all cliques in memory
+    by only keeping current candidate node lists in memory during its search.
 
     The implementation is adapted from the algorithm by Zhang, et
     al. (2005) [1]_ to output all cliques discovered.
@@ -132,9 +131,8 @@ def find_cliques(G):
     To obtain a list of all maximal cliques, use
     `list(find_cliques(G))`. However, be aware that in the worst-case,
     the length of this list can be exponential in the number of nodes in
-    the graph (for example, when the graph is the complete graph). This
-    function avoids storing all cliques in memory by only keeping
-    current candidate node lists in memory during its search.
+    the graph. This function avoids storing all cliques in memory by
+    only keeping current candidate node lists in memory during its search.
 
     This implementation is based on the algorithm published by Bron and
     Kerbosch (1973) [1]_, as adapted by Tomita, Tanaka and Takahashi
@@ -239,9 +237,8 @@ def find_cliques_recursive(G):
     To obtain a list of all maximal cliques, use
     `list(find_cliques_recursive(G))`. However, be aware that in the
     worst-case, the length of this list can be exponential in the number
-    of nodes in the graph (for example, when the graph is the complete
-    graph). This function avoids storing all cliques in memory by only
-    keeping current candidate node lists in memory during its search.
+    of nodes in the graph. This function avoids storing all cliques in memory
+    by only keeping current candidate node lists in memory during its search.
 
     This implementation is based on the algorithm published by Bron and
     Kerbosch (1973) [1]_, as adapted by Tomita, Tanaka and Takahashi
