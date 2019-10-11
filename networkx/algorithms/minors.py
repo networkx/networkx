@@ -314,7 +314,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     
     copy : Boolean
         If this is True (default True), make a copy of
-        `G` and returN that instead of directly changing `G`.
+        `G` and return that instead of directly changing `G`.
 
     Returns
     -------

@@ -343,7 +343,6 @@ class TestContraction(object):
         expected = nx.complete_graph(3)
         expected.add_edge(0, 0)
         assert_true(nx.is_isomorphic(actual, expected))
-        
 
     @raises(ValueError)
     def test_nonexistent_edge(self):
