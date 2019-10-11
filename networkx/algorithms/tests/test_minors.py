@@ -247,20 +247,24 @@ class TestContraction(object):
         assert_true(nx.is_isomorphic(actual, expected))
     
     def test_undirected_node_contraction_no_copy(self):
-        """Tests for node contraction in an undirected graph."""
+        """Tests for node contraction in an undirected graph
+        by making changes in place."""
         G = nx.cycle_graph(4)
         actual = nx.contracted_nodes(G, 0, 1, copy=False)
         expected = nx.complete_graph(3)
         expected.add_edge(0, 0)
+        assert_true(nx.is_isomorphic(actual,G))
         assert_true(nx.is_isomorphic(actual, expected))
 
     def test_directed_node_contraction_no_copy(self):
-        """Tests for node contraction in a directed graph."""
+        """Tests for node contraction in a directed graph
+        by making changes in place."""
         G = nx.DiGraph(nx.cycle_graph(4))
         actual = nx.contracted_nodes(G, 0, 1, copy=False)
         expected = nx.DiGraph(nx.complete_graph(3))
         expected.add_edge(0, 0)
         expected.add_edge(0, 0)
+        assert_true(nx.is_isomorphic(actual,G))
         assert_true(nx.is_isomorphic(actual, expected))
 
     def test_create_multigraph(self):
