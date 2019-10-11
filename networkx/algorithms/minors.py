@@ -294,7 +294,7 @@ def _quotient_graph(G, partition, edge_relation=None, node_data=None,
     return H
 
 
-def contracted_nodes(G, u, v, self_loops=True):
+def contracted_nodes(G, u, v, self_loops=True, copy=True):
     """Returns the graph that results from contracting `u` and `v`.
 
     Node contraction identifies the two nodes as a single node incident to any
@@ -311,14 +311,23 @@ def contracted_nodes(G, u, v, self_loops=True):
     self_loops : Boolean
        If this is True, any edges joining `u` and `v` in `G` become
        self-loops on the new node in the returned graph.
+    
+    copy : Boolean
+        If this is True (default True), make a copy of
+        `G` and returN that instead of directly changing `G`.
 
     Returns
     -------
     Networkx graph
+       If Copy is True:
        A new graph object of the same type as `G` (leaving `G` unmodified)
        with `u` and `v` identified in a single node. The right node `v`
        will be merged into the node `u`, so only `u` will appear in the
        returned graph.
+       if Copy is False:
+       Modifies `G` with `u` and `v` identified in a single node. 
+       The right node `v` will be merged into the node `u`, so
+       only `u` will appear in the returned graph.
 
     Notes
     -----
@@ -358,7 +367,12 @@ def contracted_nodes(G, u, v, self_loops=True):
     -----
     This function is also available as `identified_nodes`.
     """
-    H = G.copy()
+    #Copying has significant overhead and can be disabled if needed
+    if copy:
+        H = G.copy()
+    else:
+        H = G
+
     # edge code uses G.edges(v) instead of G.adj[v] to handle multiedges
     if H.is_directed():
         in_edges = ((w if w != v else u, u, d)
@@ -368,12 +382,18 @@ def contracted_nodes(G, u, v, self_loops=True):
                      for x, w, d in G.out_edges(v, data=True)
                      if self_loops or w != u)
         new_edges = chain(in_edges, out_edges)
+        if not copy:
+            new_edges = list(new_edges)
     else:
         new_edges = ((u, w if w != v else u, d)
                      for x, w, d in G.edges(v, data=True)
                      if self_loops or w != u)
+        if not copy:
+            new_edges = list(new_edges)
+    
     v_data = H.nodes[v]
     H.remove_node(v)
+
     H.add_edges_from(new_edges)
 
     if 'contraction' in H.nodes[u]:
