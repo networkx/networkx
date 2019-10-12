@@ -2,7 +2,6 @@
 """Maximum flow algorithms test suite.
 """
 import pytest
-from nose.tools import ok_
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
@@ -38,8 +37,8 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
-                ok_(flow <= G[u][v][capacity])
-            ok_(flow >= 0, msg=msg.format(flow_func.__name__))
+                assert flow <= G[u][v][capacity]
+            assert flow >= 0, msg.format(flow_func.__name__)
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
@@ -487,11 +486,11 @@ class TestCutoff:
             nx.add_path(G, ((i, j) for j in range(p)), capacity=2)
             G.add_edge((i, p - 1), 't', capacity=2)
         R = shortest_augmenting_path(G, 's', 't', two_phase=True, cutoff=k)
-        ok_(k <= R.graph['flow_value'] <= 2 * k)
+        assert k <= R.graph['flow_value'] <= (2 * k)
         R = shortest_augmenting_path(G, 's', 't', two_phase=False, cutoff=k)
-        ok_(k <= R.graph['flow_value'] <= 2 * k)
+        assert k <= R.graph['flow_value'] <= (2 * k)
         R = edmonds_karp(G, 's', 't', cutoff=k)
-        ok_(k <= R.graph['flow_value'] <= 2 * k)
+        assert k <= R.graph['flow_value'] <= (2 * k)
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)

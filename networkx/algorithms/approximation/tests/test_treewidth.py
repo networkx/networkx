@@ -5,7 +5,6 @@
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from nose.tools import ok_
 from networkx.algorithms.approximation import treewidth_min_degree
 from networkx.algorithms.approximation import treewidth_min_fill_in
 from networkx.algorithms.approximation.treewidth import min_fill_in_heuristic
@@ -21,7 +20,7 @@ def is_tree_decomp(graph, decomp):
             if x in bag:
                 appear_once = True
                 break
-        ok_(appear_once)
+        assert appear_once
 
     # Check if each connected pair of nodes are at least once together in a bag
     for (x, y) in graph.edges():
@@ -30,7 +29,7 @@ def is_tree_decomp(graph, decomp):
             if x in bag and y in bag:
                 appear_together = True
                 break
-        ok_(appear_together)
+        assert appear_together
 
     # Check if the nodes associated with vertex v form a connected subset of T
     for v in graph.nodes():
@@ -39,7 +38,7 @@ def is_tree_decomp(graph, decomp):
             if v in bag:
                 subset.append(bag)
         sub_graph = decomp.subgraph(subset)
-        ok_(nx.is_connected(sub_graph))
+        assert nx.is_connected(sub_graph)
 
 
 class TestTreewidthMinDegree(object):

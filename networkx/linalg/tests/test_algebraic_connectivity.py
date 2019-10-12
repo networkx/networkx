@@ -1,7 +1,6 @@
 from math import sqrt
 import networkx as nx
 from nose import SkipTest
-from nose.tools import ok_
 import pytest
 from networkx.testing import almost_equal
 
@@ -232,13 +231,13 @@ class TestSpectralOrdering(object):
         for method in self._methods:
             order = nx.spectral_ordering(G, weight='spam', method=method)
             assert set(order) == set(G)
-            ok_(set([1, 3]) in (set(order[:-1]), set(order[1:])))
+            assert set([1, 3]) in (set(order[:-1]), set(order[1:]))
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             assert set(order) == set(G)
-            ok_(set([2, 3]) in (set(order[:-1]), set(order[1:])))
+            assert set([2, 3]) in (set(order[:-1]), set(order[1:]))
 
     def test_path(self):
         # based on setup_class numpy is installed if we get here
@@ -249,7 +248,7 @@ class TestSpectralOrdering(object):
         nx.add_path(G, path)
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
-            ok_(order in [path, list(reversed(path))])
+            assert order in [path, list(reversed(path))]
 
     def test_seed_argument(self):
         # based on setup_class numpy is installed if we get here
@@ -260,7 +259,7 @@ class TestSpectralOrdering(object):
         nx.add_path(G, path)
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method, seed=1)
-            ok_(order in [path, list(reversed(path))])
+            assert order in [path, list(reversed(path))]
 
     def test_disconnected(self):
         G = nx.Graph()
@@ -271,8 +270,8 @@ class TestSpectralOrdering(object):
             assert set(order) == set(G)
             seqs = [list(range(0, 10, 2)), list(range(8, -1, -2)),
                     list(range(1, 10, 2)), list(range(9, -1, -2))]
-            ok_(order[:5] in seqs)
-            ok_(order[5:] in seqs)
+            assert order[:5] in seqs
+            assert order[5:] in seqs
 
     def test_cycle(self):
         path = list(range(10))
@@ -291,10 +290,10 @@ class TestSpectralOrdering(object):
                         raise
                 else:
                     if not normalized:
-                        ok_(order in [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8],
-                                      [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]])
+                        assert order in [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8],
+                                         [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]]
                     else:
-                        ok_(order in [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8],
-                                      [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]])
+                        assert order in [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8],
+                                         [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]]
 
     _methods = methods

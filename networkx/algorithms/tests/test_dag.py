@@ -1,7 +1,6 @@
 from itertools import combinations, permutations
 
 import pytest
-from nose.tools import ok_
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
@@ -158,7 +157,7 @@ class TestDAG:
         DG.add_edges_from([(4, i) for i in range(12, 15)])
 
         def validate(order):
-            ok_(isinstance(order, list))
+            assert isinstance(order, list)
             assert set(order) == set(DG)
             for u, v in combinations(order, 2):
                 assert not nx.has_path(DG, v, u)

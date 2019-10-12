@@ -7,7 +7,6 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 # All rights reserved.
 # BSD license.
 import os
-from nose.tools import *
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
@@ -16,6 +15,7 @@ from networkx.algorithms.flow import dinitz
 from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import preflow_push
 from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.testing import almost_equal
 
 flow_funcs = [
     boykov_kolmogorov,
@@ -66,9 +66,8 @@ def validate_flows(G, s, t, soln_value, R, flow_func):
     excess = {u: 0 for u in flow_dict}
     for u in flow_dict:
         for v, flow in flow_dict[u].items():
-            ok_(flow <= G[u][v].get('capacity', float('inf')),
-                msg=msg.format(flow_func.__name__))
-            ok_(flow >= 0, msg=msg.format(flow_func.__name__))
+            assert flow <= G[u][v].get('capacity', float('inf')), msg.format(flow_func.__name__)
+            assert flow >= 0, msg.format(flow_func.__name__)
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
@@ -104,8 +103,7 @@ class TestMaxflowLargeGraph:
         for flow_func in flow_funcs:
             kwargs['flow_func'] = flow_func
             flow_value = nx.maximum_flow_value(G, (0, 0), 't', **kwargs)
-            assert_almost_equal(flow_value, 1.,
-                                msg=msg.format(flow_func.__name__))
+            assert almost_equal(flow_value, 1.), msg.format(flow_func.__name__)
 
     def test_gl1(self):
         G = read_graph('gl1')

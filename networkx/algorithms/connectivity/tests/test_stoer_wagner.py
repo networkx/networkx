@@ -1,15 +1,14 @@
 from itertools import chain
 import networkx as nx
 import pytest
-from nose.tools import ok_
 
 def _check_partition(G, cut_value, partition, weight):
-    ok_(isinstance(partition, tuple))
+    assert isinstance(partition, tuple)
     assert len(partition) == 2
-    ok_(isinstance(partition[0], list))
-    ok_(isinstance(partition[1], list))
-    ok_(len(partition[0]) > 0)
-    ok_(len(partition[1]) > 0)
+    assert isinstance(partition[0], list)
+    assert isinstance(partition[1], list)
+    assert len(partition[0]) > 0
+    assert len(partition[1]) > 0
     assert sum(map(len, partition)) == len(G)
     assert set(chain.from_iterable(partition)) == set(G)
     partition = tuple(map(set, partition))
