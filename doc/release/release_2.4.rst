@@ -18,6 +18,8 @@ This release is the result of 6 months of work with over 104 pull requests by
 67 contributors. Highlights include:
 
 - Support for Python 3.8
+- Switched to pytest for testing
+- Last release to support Python 3.5
 
 New Functions:
 - barycenter functions
