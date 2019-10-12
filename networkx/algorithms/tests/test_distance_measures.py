@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from random import Random
-from nose import SkipTest
+
 import pytest
+
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
@@ -96,14 +97,9 @@ class TestResistanceDistance:
     def setup_class(cls):
         global np
         global sp_sparse
-        try:
-            import numpy as np
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy.sparse as sp_sparse
-        except ImportError:
-            raise SkipTest('SciPy Sparse not available.')
+        np = pytest.importorskip('numpy')
+        scipy = pytest.importorskip('scipy')
+        sp_sparse = pytest.importorskip('scipy.sparse')
 
     def setup_method(self):
         G = nx.Graph()

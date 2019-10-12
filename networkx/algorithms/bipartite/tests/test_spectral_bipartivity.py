@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from nose import SkipTest
+import pytest
+
 import networkx as nx
 from networkx.algorithms.bipartite import spectral_bipartivity as sb
 from networkx.testing import almost_equal
@@ -13,10 +14,7 @@ class TestSpectralBipartivity(object):
     @classmethod
     def setup_class(cls):
         global scipy
-        try:
-            import scipy.linalg
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        scipy = pytest.importorskip('scipy')
 
     def test_star_like(self):
         # star-like

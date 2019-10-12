@@ -3,7 +3,10 @@ import random
 
 import networkx
 import pytest
-from nose import SkipTest
+import pytest
+numpy = pytest.importorskip('numpy')
+scipy = pytest.importorskip('scipy')
+
 from networkx.testing import almost_equal
 
 # Example from
@@ -15,12 +18,6 @@ class TestPageRank(object):
 
     @classmethod
     def setup_class(cls):
-        global numpy
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-
         G = networkx.DiGraph()
         edges = [(1, 2), (1, 3),
                  # 2 is a dangling node
@@ -139,14 +136,6 @@ class TestPageRank(object):
 
 
 class TestPageRankScipy(TestPageRank):
-
-    @classmethod
-    def setup_class(cls):
-        global scipy
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_scipy_pagerank(self):
         G = self.G

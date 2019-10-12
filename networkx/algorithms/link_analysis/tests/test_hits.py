@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import pytest
-from nose import SkipTest
+
+
 import networkx
 from networkx.testing import almost_equal
 
@@ -43,11 +44,7 @@ class TestHITS:
         h, a = networkx.hits(G, nstart=nstart)
 
     def test_hits_numpy(self):
-        try:
-            import numpy as np
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-
+        numpy = pytest.importorskip('numpy')
         G = self.G
         h, a = networkx.hits_numpy(G)
         for n in G:
@@ -56,11 +53,7 @@ class TestHITS:
             assert almost_equal(a[n], G.a[n], places=4)
 
     def test_hits_scipy(self):
-        try:
-            import scipy as sp
-        except ImportError:
-            raise SkipTest('SciPy not available.')
-
+        sp = pytest.importorskip('scipy')
         G = self.G
         h, a = networkx.hits_scipy(G, tol=1.e-08)
         for n in G:
@@ -69,10 +62,7 @@ class TestHITS:
             assert almost_equal(a[n], G.a[n], places=4)
 
     def test_empty(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
+        numpy = pytest.importorskip('numpy')
         G = networkx.Graph()
         assert networkx.hits(G) == ({}, {})
         assert networkx.hits_numpy(G) == ({}, {})
@@ -80,10 +70,7 @@ class TestHITS:
         assert networkx.hub_matrix(G).shape == (0, 0)
 
     def test_empty_scipy(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('scipy not available.')
+        scipy = pytest.importorskip('scipy')
         G = networkx.Graph()
         assert networkx.hits_scipy(G) == ({}, {})
 

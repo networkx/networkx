@@ -1,25 +1,17 @@
 """Unit tests for layout functions."""
-from nose import SkipTest
+import pytest
+numpy = pytest.importorskip('numpy')
+test_smoke_empty_graphscipy = pytest.importorskip('scipy')
+
+
 import pytest
 import networkx as nx
 from networkx.testing import almost_equal
 
 class TestLayout(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-    scipy = None
 
     @classmethod
     def setup_class(cls):
-        global numpy, scipy
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-        except ImportError:
-            pass    # Almost all tests still viable
-
         cls.Gi = nx.grid_2d_graph(5, 5)
         cls.Gs = nx.Graph()
         nx.add_path(cls.Gs, 'abcdef')
@@ -66,8 +58,7 @@ class TestLayout(object):
         vpos = nx.shell_layout(G)
         vpos = nx.bipartite_layout(G, G)
         vpos = nx.spiral_layout(G)
-        if self.scipy is not None:
-            vpos = nx.kamada_kawai_layout(G)
+        # FIXME vpos = nx.kamada_kawai_layout(G)
 
     def test_smoke_int(self):
         G = self.Gi
@@ -83,9 +74,8 @@ class TestLayout(object):
         vpos = nx.spectral_layout(self.bigG.to_directed())
         vpos = nx.shell_layout(G)
         vpos = nx.spiral_layout(G)
-        if self.scipy is not None:
-            vpos = nx.kamada_kawai_layout(G)
-            vpos = nx.kamada_kawai_layout(G, dim=1)
+        vpos = nx.kamada_kawai_layout(G)
+        vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -97,9 +87,8 @@ class TestLayout(object):
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
         vpos = nx.spiral_layout(G)
-        if self.scipy is not None:
-            vpos = nx.kamada_kawai_layout(G)
-            vpos = nx.kamada_kawai_layout(G, dim=1)
+        vpos = nx.kamada_kawai_layout(G)
+        vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def check_scale_and_center(self, pos, scale, center):
         center = numpy.array(center)
@@ -123,8 +112,7 @@ class TestLayout(object):
         sc(nx.circular_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.shell_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.spiral_layout(G, scale=2, center=c), scale=2, center=c)
-        if self.scipy is not None:
-            sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
+        sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
 
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
@@ -146,8 +134,7 @@ class TestLayout(object):
         sc(nx.circular_layout(G), scale=1, center=c)
         sc(nx.shell_layout(G), scale=1, center=c)
         sc(nx.spiral_layout(G), scale=1, center=c)
-        if self.scipy is not None:
-            sc(nx.kamada_kawai_layout(G), scale=1, center=c)
+        sc(nx.kamada_kawai_layout(G), scale=1, center=c)
 
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
@@ -165,10 +152,6 @@ class TestLayout(object):
         assert pos.shape == (6, 3)
 
     def test_adjacency_interface_scipy(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('scipy not available.')
         A = nx.to_scipy_sparse_matrix(self.Gs, dtype='d')
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A)
         assert pos.shape == (6, 2)

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-from nose import SkipTest
+import pytest
+np = pytest.importorskip('numpy')
+scipy = pytest.importorskip('scipy')
+
 import networkx as nx
 from networkx.testing import almost_equal
 
@@ -11,16 +14,6 @@ from networkx import edge_current_flow_betweenness_centrality_subset \
 
 
 class TestFlowBetweennessCentrality(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
-    @classmethod
-    def setup_class(cls):
-        global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""
@@ -108,16 +101,6 @@ class TestFlowBetweennessCentrality(object):
 
 
 class TestEdgeFlowBetweennessCentrality(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
-    @classmethod
-    def setup_class(cls):
-        global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""

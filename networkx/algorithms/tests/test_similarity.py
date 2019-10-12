@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from nose import SkipTest
+import pytest
+
 import networkx as nx
 from networkx.algorithms.similarity import *
 from networkx.generators.classic import *
@@ -29,14 +30,8 @@ class TestSimilarity:
     def setup_class(cls):
         global numpy
         global scipy
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        numpy = pytest.importorskip('numpy')
+        scipy = pytest.importorskip('scipy')
 
     def test_graph_edit_distance(self):
         G0 = nx.Graph()

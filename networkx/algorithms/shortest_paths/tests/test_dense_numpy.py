@@ -1,21 +1,13 @@
 #!/usr/bin/env python
-from nose import SkipTest
+import pytest
+numpy = pytest.importorskip('numpy')
+npt = pytest.importorskip('numpy.testing')
+
+
 import networkx as nx
 
 
 class TestFloydNumpy(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
-    @classmethod
-    def setup_class(cls):
-        global numpy
-        global assert_equal
-        global assert_almost_equal
-        try:
-            import numpy
-            from numpy.testing import assert_equal, assert_almost_equal
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_cycle_numpy(self):
         dist = nx.floyd_warshall_numpy(nx.cycle_graph(7))
@@ -51,7 +43,7 @@ class TestFloydNumpy(object):
         nx.add_cycle(G, [0, 1, 2, 3])
         pred, dist = nx.floyd_warshall_predecessor_and_distance(G)
         D = nx.utils.dict_to_numpy_array(dist)
-        assert_equal(nx.floyd_warshall_numpy(G), D)
+        npt.assert_equal(nx.floyd_warshall_numpy(G), D)
 
     def test_zero_weight(self):
         G = nx.DiGraph()

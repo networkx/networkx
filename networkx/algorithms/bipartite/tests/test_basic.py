@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import pytest
-from nose import SkipTest
+
 import networkx as nx
 from networkx.algorithms import bipartite
 
@@ -92,10 +92,7 @@ class TestBipartiteBasic:
         assert dict(d) == {0: 0.2, 2: 2, 4: 1}
 
     def test_biadjacency_matrix_weight(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        scipy = pytest.importorskip('scipy')
         G = nx.path_graph(5)
         G.add_edge(0, 1, weight=2, other=4)
         X = [1, 3]
@@ -106,10 +103,7 @@ class TestBipartiteBasic:
         assert M[0, 0] == 4
 
     def test_biadjacency_matrix(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        scipy = pytest.importorskip('scipy')
         tops = [2, 5, 10]
         bots = [5, 10, 15]
         for i in range(len(tops)):
@@ -120,10 +114,7 @@ class TestBipartiteBasic:
             assert M.shape[1] == bots[i]
 
     def test_biadjacency_matrix_order(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        scipy = pytest.importorskip('scipy')
         G = nx.path_graph(5)
         G.add_edge(0, 1, weight=2)
         X = [3, 1]

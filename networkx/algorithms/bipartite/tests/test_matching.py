@@ -12,7 +12,6 @@ import itertools
 
 import networkx as nx
 
-from nose import SkipTest
 import pytest
 
 from networkx.algorithms.bipartite.matching import eppstein_matching
@@ -206,10 +205,7 @@ class TestMinimumWeightFullMatching(object):
     @classmethod
     def setup_class(cls):
         global scipy
-        try:
-            import scipy.optimize
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        scipy = pytest.importorskip('scipy')
 
     def test_minimum_weight_full_matching_square(self):
         G = nx.complete_bipartite_graph(3, 3)

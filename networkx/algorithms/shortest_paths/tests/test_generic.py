@@ -1,7 +1,5 @@
-
-from nose import SkipTest
-
 import pytest
+
 
 import networkx as nx
 from networkx.testing import almost_equal
@@ -346,18 +344,15 @@ class TestAverageShortestPathLength(object):
 
 
 class TestAverageShortestPathLengthNumpy(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
     def setup_class(cls):
         global numpy
-        global assert_equal
-        global assert_almost_equal
-        try:
-            import numpy
-            from numpy.testing import assert_equal, assert_almost_equal
-        except ImportError:
-            raise SkipTest('NumPy not available.')
+        global npt
+        import pytest
+        numpy = pytest.importorskip('numpy')
+        npt = pytest.importorskip('numpy.testing')
+
 
     def test_specified_methods_numpy(self):
         G = nx.Graph()
@@ -365,11 +360,11 @@ class TestAverageShortestPathLengthNumpy(object):
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='floyd-warshall-numpy')
-        assert_almost_equal(ans, 4)
+        npt.assert_almost_equal(ans, 4)
 
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(G,
                                               weight='weight',
                                               method='floyd-warshall-numpy')
-        assert_almost_equal(ans, 4)
+        npt.assert_almost_equal(ans, 4)

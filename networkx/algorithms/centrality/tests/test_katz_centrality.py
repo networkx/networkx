@@ -3,7 +3,6 @@ import math
 
 import networkx as nx
 from networkx.testing import almost_equal
-from nose import SkipTest
 import pytest
 
 class TestKatzCentrality(object):
@@ -104,16 +103,12 @@ class TestKatzCentrality(object):
 
 
 class TestKatzCentralityNumpy(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
     def setup_class(cls):
         global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        np = pytest.importorskip('numpy')
+        scipy = pytest.importorskip('scipy')
 
     def test_K5(self):
         """Katz centrality: K5"""
@@ -274,16 +269,12 @@ class TestKatzCentralityDirected(object):
 
 
 class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
     def setup_class(cls):
         global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        np = pytest.importorskip('numpy')
+        scipy = pytest.importorskip('scipy')
 
     def test_katz_centrality_weighted(self):
         G = self.G
@@ -301,18 +292,14 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
 
 
 class TestKatzEigenvectorVKatz(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
     def setup_class(cls):
         global np
         global eigvals
-        try:
-            import numpy as np
-            import scipy
-            from numpy.linalg import eigvals
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        np = pytest.importorskip('numpy')
+        scipy = pytest.importorskip('scipy')
+        from numpy.linalg import eigvals
 
     def test_eigenvector_v_katz_random(self):
         G = nx.gnp_random_graph(10, 0.5, seed=1234)

@@ -1,27 +1,16 @@
 #!/usr/bin/env python
-from nose import SkipTest
+import pytest
+np = pytest.importorskip('numpy')
+npt = pytest.importorskip('numpy.testing')
+scipy = pytest.importorskip('scipy')
+
+
 import networkx as nx
 from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 from networkx.algorithms.assortativity.correlation import attribute_ac
 
 
 class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
-    @classmethod
-    def setup_class(cls):
-        BaseTestDegreeMixing.setup_class()
-
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-            import scipy.stats
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_degree_assortativity_undirected(self):
         r = nx.degree_assortativity_coefficient(self.P4)
@@ -49,18 +38,6 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
 
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
-    @classmethod
-    def setup_class(cls):
-        BaseTestAttributeMixing.setup_class()
-
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_attribute_assortativity_undirected(self):
         r = nx.attribute_assortativity_coefficient(self.G, 'fish')

@@ -1,7 +1,14 @@
 from math import sqrt
-import networkx as nx
-from nose import SkipTest
+
 import pytest
+numpy = pytest.importorskip('numpy')
+numpy.linalg = pytest.importorskip('numpy.linalg')
+scipy = pytest.importorskip('scipy')
+scipy.sparse = pytest.importorskip('scipy.sparse')
+
+
+
+import networkx as nx
 from networkx.testing import almost_equal
 
 try:
@@ -29,17 +36,6 @@ def check_eigenvector(A, l, x):
 
 
 class TestAlgebraicConnectivity(object):
-
-    numpy = 1
-
-    @classmethod
-    def setup_class(cls):
-        global numpy
-        try:
-            import numpy.linalg
-            import scipy.sparse
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_directed(self):
         G = nx.DiGraph()
@@ -193,17 +189,6 @@ class TestAlgebraicConnectivity(object):
 
 
 class TestSpectralOrdering(object):
-
-    numpy = 1
-
-    @classmethod
-    def setup_class(cls):
-        global numpy
-        try:
-            import numpy.linalg
-            import scipy.sparse
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_nullgraph(self):
         for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):

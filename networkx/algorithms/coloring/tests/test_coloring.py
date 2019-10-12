@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Greedy coloring test suite.
 
-Run with nose: nosetests -v test_coloring.py
 """
 
 __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",

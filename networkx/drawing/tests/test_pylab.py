@@ -1,24 +1,20 @@
 """Unit tests for matplotlib drawing functions."""
 import os
 import itertools
-from nose import SkipTest
+import pytest
+
+mpl = pytest.importorskip('matplotlib')
+mpl.use('PS', warn=False)
+plt = pytest.importorskip('matplotlib.pyplot')
+plt.rcParams['text.usetex'] = False
+
 import networkx as nx
 
 
 class TestPylab(object):
+
     @classmethod
     def setup_class(cls):
-        global plt
-        try:
-            import matplotlib as mpl
-            mpl.use('PS', warn=False)
-            import matplotlib.pyplot as plt
-            plt.rcParams['text.usetex'] = False
-        except ImportError:
-            raise SkipTest('matplotlib not available.')
-        except RuntimeError:
-            raise SkipTest('matplotlib not available.')
-
         cls.G = nx.barbell_graph(4, 6)
 
     def test_draw(self):

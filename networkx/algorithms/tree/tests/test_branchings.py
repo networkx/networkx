@@ -1,12 +1,8 @@
-from nose import SkipTest
 import pytest
+np = pytest.importorskip('numpy')
 
 import networkx as nx
 
-try:
-    import numpy as np
-except:
-    raise SkipTest('NumPy not available.')
 
 from networkx.algorithms.tree import branchings
 from networkx.algorithms.tree import recognition

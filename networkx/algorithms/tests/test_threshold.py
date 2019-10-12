@@ -5,7 +5,7 @@ Threshold Graphs
 """
 
 import pytest
-from nose import SkipTest
+
 import networkx as nx
 import networkx.algorithms.threshold as nxt
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
@@ -215,17 +215,14 @@ class TestGeneratorThreshold():
         s1 = nxt.swap_d(s, 1.0, 1.0, seed=1)
 
     def test_eigenvectors(self):
-        try:
-            import numpy as N
-            eigenval = N.linalg.eigvals
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
+        np = pytest.importorskip('numpy')
+        eigenval = np.linalg.eigvals
+        scipy = pytest.importorskip('scipy')
 
         cs = 'ddiiddid'
         G = nxt.threshold_graph(cs)
         (tgeval, tgevec) = nxt.eigenvectors(cs)
-        dot = N.dot
+        dot = np.dot
         assert [abs(dot(lv, lv) - 1.0) < 1e-9 for lv in tgevec] == [True] * 8
         lapl = nx.laplacian_matrix(G)
 #        tgev=[ dot(lv,dot(lapl,lv)) for lv in tgevec ]

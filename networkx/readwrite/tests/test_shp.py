@@ -3,19 +3,14 @@
 
 import os
 import tempfile
-from nose import SkipTest
 import pytest
+ogr = pytest.importorskip('osgeo.ogr')
 
 import networkx as nx
 
 
 class TestShp(object):
     def setup_method(self):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
 
         def createlayer(driver, layerType=ogr.wkbLineString):
             lyr = driver.CreateLayer("edges", None, layerType)

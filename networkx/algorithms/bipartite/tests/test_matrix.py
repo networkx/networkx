@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 import pytest
-from nose import SkipTest
+np = pytest.importorskip('numpy')
+sp = pytest.importorskip('scipy')
+sparse = pytest.importorskip('scipy.sparse')
+
+
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.testing.utils import assert_edges_equal
 
 
 class TestBiadjacencyMatrix:
-    @classmethod
-    def setup_class(cls):
-        global np, sp, sparse, np_assert_equal
-        try:
-            import numpy as np
-            import scipy as sp
-            import scipy.sparse as sparse
-            np_assert_equal = np.testing.assert_equal
-        except ImportError:
-            raise SkipTest('SciPy sparse library not available.')
 
     def test_biadjacency_matrix_weight(self):
         G = nx.path_graph(5)

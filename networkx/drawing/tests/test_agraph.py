@@ -2,7 +2,10 @@
 import os
 import tempfile
 import pytest
-from nose import SkipTest
+import pytest
+pygraphviz = pytest.importorskip('pygraphviz')
+
+
 from networkx.testing import assert_edges_equal, assert_nodes_equal, \
         assert_graphs_equal
 
@@ -10,13 +13,6 @@ import networkx as nx
 
 
 class TestAGraph(object):
-    @classmethod
-    def setup_class(cls):
-        global pygraphviz
-        try:
-            import pygraphviz
-        except ImportError:
-            raise SkipTest('PyGraphviz not available.')
 
     def build_graph(self, G):
         edges = [('A', 'B'), ('A', 'C'), ('A', 'C'), ('B', 'C'), ('A', 'D')]

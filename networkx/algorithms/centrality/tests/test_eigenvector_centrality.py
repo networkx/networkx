@@ -1,21 +1,14 @@
 #!/usr/bin/env python
 import math
-from nose import SkipTest
 import pytest
+np = pytest.importorskip('numpy')
+scipy = pytest.importorskip('scipy')
+
+
 import networkx as nx
 from networkx.testing import almost_equal
 
 class TestEigenvectorCentrality(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
-    @classmethod
-    def setup_class(cls):
-        global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_K5(self):
         """Eigenvector centrality: K5"""
@@ -60,17 +53,9 @@ class TestEigenvectorCentrality(object):
 
 
 class TestEigenvectorCentralityDirected(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
     def setup_class(cls):
-        global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
-
         G = nx.DiGraph()
 
         edges = [(1, 2), (1, 3), (2, 4), (3, 2), (3, 5), (4, 2), (4, 5), (4, 6),
@@ -119,16 +104,6 @@ class TestEigenvectorCentralityDirected(object):
 
 
 class TestEigenvectorCentralityExceptions(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
-    @classmethod
-    def setup_class(cls):
-        global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):

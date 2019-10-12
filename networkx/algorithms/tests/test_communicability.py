@@ -1,24 +1,15 @@
 from collections import defaultdict
 
-from nose import SkipTest
+import pytest
+numpy = pytest.importorskip('numpy')
+scipy = pytest.importorskip('scipy')
+
 import networkx as nx
 from networkx.testing import almost_equal
 from networkx.algorithms.communicability_alg import *
 
 
 class TestCommunicability:
-    @classmethod
-    def setup_class(cls):
-        global numpy
-        global scipy
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_communicability(self):
         answer = {0: {0: 1.5430806348152435,

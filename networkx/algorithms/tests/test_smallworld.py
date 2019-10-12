@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import pytest
+numpy = pytest.importorskip('numpy')
+
 import random
 
 from networkx import random_reference, lattice_reference, sigma, omega
@@ -55,12 +57,3 @@ def test_omega():
     print("omegas, omegal, omegar")
     print(omegas, omegal, omegar)
     assert omegal < omegas and omegas < omegar
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")

@@ -1,22 +1,14 @@
 from collections import defaultdict
-from nose import SkipTest
+
+import pytest
+numpy = pytest.importorskip('numpy')
+scipy = pytest.importorskip('scipy')
+
 import networkx as nx
 from networkx.algorithms.centrality.subgraph_alg import *
 from networkx.testing import almost_equal
 
 class TestSubgraph:
-    @classmethod
-    def setup_class(cls):
-        global numpy
-        global scipy
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_subgraph_centrality(self):
         answer = {0: 1.5430806348152433, 1: 1.5430806348152433}

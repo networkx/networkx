@@ -1,24 +1,13 @@
 #!/usr/bin/env python
 import pytest
-from nose import SkipTest
+numpy = pytest.importorskip('numpy')
+scipy = pytest.importorskip('scipy')
+
 import networkx as nx
 from networkx.algorithms import node_classification
 
 
 class TestHarmonicFunction:
-
-    @classmethod
-    def setup_class(cls):
-        global numpy
-        global scipy
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_path_graph(self):
         G = nx.path_graph(4)

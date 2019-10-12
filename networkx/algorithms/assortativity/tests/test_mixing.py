@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-from nose import SkipTest
+import pytest
+np = pytest.importorskip('numpy')
+npt = pytest.importorskip('numpy.testing')
+
+
 import networkx as nx
 from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
@@ -39,18 +43,6 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
 
 class TestDegreeMixingMatrix(BaseTestDegreeMixing):
 
-    @classmethod
-    def setup_class(cls):
-        BaseTestDegreeMixing.setup_class()
-
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_degree_mixing_matrix_undirected(self):
         a_result = np.array([[0, 0, 0],
@@ -124,18 +116,6 @@ class TestAttributeMixingDict(BaseTestAttributeMixing):
 
 
 class TestAttributeMixingMatrix(BaseTestAttributeMixing):
-    @classmethod
-    def setup_class(cls):
-        BaseTestAttributeMixing.setup_class()
-
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_attribute_mixing_matrix_undirected(self):
         mapping = {'one': 0, 'two': 1, 'red': 2, 'blue': 3}

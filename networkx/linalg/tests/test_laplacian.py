@@ -1,25 +1,16 @@
-from nose import SkipTest
+import pytest
+numpy = pytest.importorskip('numpy')
+npt = pytest.importorskip('numpy.testing')
+scipy = pytest.importorskip('scipy')
 
 import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
 
 
 class TestLaplacian(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
     @classmethod
     def setup_class(cls):
-        global numpy
-        global scipy
-        global assert_equal
-        global assert_almost_equal
-        try:
-            import numpy
-            import scipy
-            from numpy.testing import assert_equal, assert_almost_equal
-        except ImportError:
-            raise SkipTest('SciPy not available.')
-
         deg = [3, 2, 2, 1, 0]
         cls.G = havel_hakimi_graph(deg)
         cls.WG = nx.Graph((u, v, {'weight': 0.5, 'other': 0.3})
@@ -41,13 +32,13 @@ class TestLaplacian(object):
                           [0,  0,  0,  0, 0]])
         WL = 0.5 * NL
         OL = 0.3 * NL
-        assert_equal(nx.laplacian_matrix(self.G).todense(), NL)
-        assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
-        assert_equal(nx.laplacian_matrix(self.G, nodelist=[0, 1]).todense(),
+        npt.assert_equal(nx.laplacian_matrix(self.G).todense(), NL)
+        npt.assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
+        npt.assert_equal(nx.laplacian_matrix(self.G, nodelist=[0, 1]).todense(),
                      numpy.array([[1, -1], [-1, 1]]))
-        assert_equal(nx.laplacian_matrix(self.WG).todense(), WL)
-        assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
-        assert_equal(nx.laplacian_matrix(self.WG, weight='other').todense(), OL)
+        npt.assert_equal(nx.laplacian_matrix(self.WG).todense(), WL)
+        npt.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
+        npt.assert_equal(nx.laplacian_matrix(self.WG, weight='other').todense(), OL)
 
     def test_normalized_laplacian(self):
         "Generalized Graph Laplacian"
@@ -62,15 +53,15 @@ class TestLaplacian(object):
                            [-0.3536,  0.,  0.,  0.5,  0.],
                            [0.,  0.,  0.,  0.,  0.]])
 
-        assert_almost_equal(nx.normalized_laplacian_matrix(self.G).todense(),
+        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.G).todense(),
                             GL, decimal=3)
-        assert_almost_equal(nx.normalized_laplacian_matrix(self.MG).todense(),
+        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.MG).todense(),
                             GL, decimal=3)
-        assert_almost_equal(nx.normalized_laplacian_matrix(self.WG).todense(),
+        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.WG).todense(),
                             GL, decimal=3)
-        assert_almost_equal(nx.normalized_laplacian_matrix(self.WG, weight='other').todense(),
+        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.WG, weight='other').todense(),
                             GL, decimal=3)
-        assert_almost_equal(nx.normalized_laplacian_matrix(self.Gsl).todense(),
+        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.Gsl).todense(),
                             Lsl, decimal=3)
 
     def test_directed_laplacian(self):
@@ -88,7 +79,7 @@ class TestLaplacian(object):
                           [-0.0231, -0.0589, -0.0896, -0.4878,  0.9833, -0.2078],
                           [-0.0261, -0.0554, -0.0251, -0.6675, -0.2078,  0.9833]])
         L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
-        assert_almost_equal(L, GL, decimal=3)
+        npt.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
         G.add_edges_from((((2, 5), (6, 1))))
@@ -99,7 +90,7 @@ class TestLaplacian(object):
                           [0., -0.3162, -0.0913, -0.5,  1., -0.25],
                           [-0.3227,  0.,  0., -0.5, -0.25,  1.]])
         L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type='random')
-        assert_almost_equal(L, GL, decimal=3)
+        npt.assert_almost_equal(L, GL, decimal=3)
 
         GL = numpy.array([[0.5, -0.1531, -0.2357,  0.,  0., -0.1614],
                           [-0.1531,  0.5, -0.0722,  0., -0.1581,  0.],
@@ -108,7 +99,7 @@ class TestLaplacian(object):
                           [0., -0.1581, -0.0456, -0.25,  0.5, -0.125],
                           [-0.1614,  0.,  0., -0.25, -0.125,  0.5]])
         L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type='lazy')
-        assert_almost_equal(L, GL, decimal=3)
+        npt.assert_almost_equal(L, GL, decimal=3)
 
     def test_directed_combinatorial_laplacian(self):
         "Directed combinatorial Laplacian"
@@ -128,7 +119,7 @@ class TestLaplacian(object):
 
         L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9,
                                                        nodelist=sorted(G))
-        assert_almost_equal(L, GL, decimal=3)
+        npt.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
         G.add_edges_from((((2, 5), (6, 1))))
@@ -143,7 +134,7 @@ class TestLaplacian(object):
         L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9,
                                                        nodelist=sorted(G),
                                                        walk_type='random')
-        assert_almost_equal(L, GL, decimal=3)
+        npt.assert_almost_equal(L, GL, decimal=3)
 
         GL = numpy.array([[0.0698, -0.0174, -0.0233, 0, 0, -0.0291],
                           [-0.0174, 0.0465, -0.0058, 0, -0.0233, 0],
@@ -155,4 +146,4 @@ class TestLaplacian(object):
         L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9,
                                                        nodelist=sorted(G),
                                                        walk_type='lazy')
-        assert_almost_equal(L, GL, decimal=3)
+        npt.assert_almost_equal(L, GL, decimal=3)

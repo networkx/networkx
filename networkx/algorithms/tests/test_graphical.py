@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import pytest
-from nose import SkipTest
 import networkx as nx
 
 
@@ -44,8 +43,8 @@ class TestAtlas(object):
     def setup_class(cls):
         global atlas
         import platform
-        if platform.python_implementation() == 'Jython':
-            raise SkipTest('graph atlas not available under Jython.')
+#        if platform.python_implementation() == 'Jython':
+#            raise SkipTest('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas
 
         cls.GAG = atlas.graph_atlas_g()
@@ -155,10 +154,7 @@ def test_pseudo_sequence():
 
 
 def test_numpy_degree_sequence():
-    try:
-        import numpy
-    except ImportError:
-        return
+    numpy = pytest.importorskip('numpy')
     ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.int64)
     assert nx.is_graphical(ds, 'eg')
     assert nx.is_graphical(ds, 'hh')
