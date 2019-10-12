@@ -10,6 +10,7 @@
 """
 Shortest path algorithms for unweighted graphs.
 """
+from collections import deque
 import networkx as nx
 
 __all__ = ['bidirectional_shortest_path',
@@ -79,20 +80,23 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
         cutoff : int or float
             level at which we stop the process
     """
-    seen = {}                  # level (number of hops) when seen in BFS
-    level = 0                  # the current level
-    nextlevel = firstlevel     # dict of nodes to check at next level
-
-    while nextlevel and cutoff >= level:
-        thislevel = nextlevel  # advance to next level
-        nextlevel = {}         # and start a new list (fringe)
-        for v in thislevel:
-            if v not in seen:
-                seen[v] = level  # set the level of vertex v
-                nextlevel.update(adj[v])  # add neighbors of v
-                yield (v, level)
-        level += 1
-    del seen
+    visited = set(firstlevel)
+    queue = deque(firstlevel.items())  # sorted by level, ascending
+    for u, level in queue:
+        yield u, level-1  # level 1 means distance 0 to source nodes
+    unvisited = len(adj) - 1
+    while queue:
+        node, level = queue.popleft()
+        if level > cutoff:
+            return
+        for v in adj[node]:
+            if v not in visited:
+                visited.add(v)
+                queue.append((v, level+1))
+                yield v, level
+                unvisited -= 1
+                if not unvisited:  # all nodes seen: terminate
+                    return
 
 
 def single_target_shortest_path_length(G, target, cutoff=None):
