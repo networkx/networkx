@@ -56,8 +56,9 @@ def enumerate_all_cliques(G):
     To obtain a list of all cliques, use
     `list(enumerate_all_cliques(G))`. However, be aware that in the
     worst-case, the length of this list can be exponential in the number
-    of nodes in the graph. This function avoids storing all cliques in memory
-    by only keeping current candidate node lists in memory during its search.
+    of nodes in the graph (for example, when the graph is the complete
+    graph). This function avoids storing all cliques in memory by only
+    keeping current candidate node lists in memory during its search.
 
     The implementation is adapted from the algorithm by Zhang, et
     al. (2005) [1]_ to output all cliques discovered.
