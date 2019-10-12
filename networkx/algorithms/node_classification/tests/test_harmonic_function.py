@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#from nose.tools import *
 import pytest
 from nose import SkipTest
 import networkx as nx

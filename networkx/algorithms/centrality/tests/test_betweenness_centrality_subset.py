@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
 import networkx as nx
-
+from networkx.testing import almost_equal
 
 class TestSubsetBetweennessCentrality:
 
@@ -12,7 +11,7 @@ class TestSubsetBetweennessCentrality:
                                              weight=None)
         b_answer = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_P5_directed(self):
         """Betweenness Centrality Subset: P5 directed"""
@@ -22,7 +21,7 @@ class TestSubsetBetweennessCentrality:
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3],
                                              weight=None)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_P5(self):
         """Betweenness Centrality Subset: P5"""
@@ -32,7 +31,7 @@ class TestSubsetBetweennessCentrality:
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3],
                                              weight=None)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_P5_multiple_target(self):
         """Betweenness Centrality Subset: P5 multiple target"""
@@ -42,7 +41,7 @@ class TestSubsetBetweennessCentrality:
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3, 4],
                                              weight=None)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_box(self):
         """Betweenness Centrality Subset: box"""
@@ -52,7 +51,7 @@ class TestSubsetBetweennessCentrality:
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3],
                                              weight=None)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_box_and_path(self):
         """Betweenness Centrality Subset: box and path"""
@@ -62,7 +61,7 @@ class TestSubsetBetweennessCentrality:
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3, 4],
                                              weight=None)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_box_and_path2(self):
         """Betweenness Centrality Subset: box and path multiple target"""
@@ -72,7 +71,7 @@ class TestSubsetBetweennessCentrality:
         b = nx.betweenness_centrality_subset(G, sources=[0], targets=[3, 4],
                                              weight=None)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_diamond_multi_path(self):
         """Betweenness Centrality Subset: Diamond Multi Path"""
@@ -117,7 +116,7 @@ class TestSubsetBetweennessCentrality:
         }
 
         for n in sorted(G):
-            assert_almost_equal(b[n], expected_b[n])
+            assert almost_equal(b[n], expected_b[n])
 
 
 class TestBetweennessCentralitySources:
@@ -128,7 +127,7 @@ class TestBetweennessCentralitySources:
         b = nx.betweenness_centrality_source(G, weight=None, normalized=False)
         b_answer = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_P3(self):
         """Betweenness Centrality Sources: P3"""
@@ -136,7 +135,7 @@ class TestBetweennessCentralitySources:
         b_answer = {0: 0.0, 1: 1.0, 2: 0.0}
         b = nx.betweenness_centrality_source(G, weight=None, normalized=True)
         for n in sorted(G):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
 
 class TestEdgeSubsetBetweennessCentrality:
@@ -149,7 +148,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b_answer = dict.fromkeys(G.edges(), 0)
         b_answer[(0, 3)] = b_answer[(0, 1)] = 0.5
         for n in sorted(G.edges()):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_P5_directed(self):
         """Edge betweenness subset centrality: P5 directed"""
@@ -160,7 +159,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b = nx.edge_betweenness_centrality_subset(G, sources=[0], targets=[3],
                                                   weight=None)
         for n in sorted(G.edges()):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_P5(self):
         """Edge betweenness subset centrality: P5"""
@@ -171,7 +170,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b = nx.edge_betweenness_centrality_subset(G, sources=[0], targets=[3],
                                                   weight=None)
         for n in sorted(G.edges()):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_P5_multiple_target(self):
         """Edge betweenness subset centrality: P5 multiple target"""
@@ -183,7 +182,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b = nx.edge_betweenness_centrality_subset(G, sources=[0],
                                                   targets=[3, 4], weight=None)
         for n in sorted(G.edges()):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_box(self):
         """Edge betweenness subset centrality: box"""
@@ -195,7 +194,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b = nx.edge_betweenness_centrality_subset(G, sources=[0], targets=[3],
                                                   weight=None)
         for n in sorted(G.edges()):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_box_and_path(self):
         """Edge betweenness subset centrality: box and path"""
@@ -208,7 +207,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b = nx.edge_betweenness_centrality_subset(G, sources=[0],
                                                   targets=[3, 4], weight=None)
         for n in sorted(G.edges()):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])
 
     def test_box_and_path2(self):
         """Edge betweenness subset centrality: box and path multiple target"""
@@ -222,4 +221,4 @@ class TestEdgeSubsetBetweennessCentrality:
         b = nx.edge_betweenness_centrality_subset(G, sources=[0],
                                                   targets=[3, 4], weight=None)
         for n in sorted(G.edges()):
-            assert_almost_equal(b[n], b_answer[n])
+            assert almost_equal(b[n], b_answer[n])

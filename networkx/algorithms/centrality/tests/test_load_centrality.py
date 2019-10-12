@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
 import networkx as nx
-
+from networkx.testing import almost_equal
 
 class TestLoadCentrality:
 
@@ -44,8 +43,8 @@ class TestLoadCentrality:
                   3: 1. / 4,
                   4: 0.000}
         for n in sorted(self.D):
-            assert_almost_equal(result[n], b[n], places=3)
-            assert_almost_equal(result[n], nx.load_centrality(self.D, n), places=3)
+            assert almost_equal(result[n], b[n], places=3)
+            assert almost_equal(result[n], nx.load_centrality(self.D, n), places=3)
 
     def test_weighted_load(self):
         b = nx.load_centrality(self.G, weight='weight', normalized=False)
@@ -61,7 +60,7 @@ class TestLoadCentrality:
              3: 0.000,
              4: 0.000}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_p3_load(self):
         G = self.P3
@@ -70,11 +69,11 @@ class TestLoadCentrality:
              1: 1.000,
              2: 0.000}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
         c = nx.load_centrality(G, v=1)
-        assert_almost_equal(c, 1.0)
+        assert almost_equal(c, 1.0)
         c = nx.load_centrality(G, v=1, normalized=True)
-        assert_almost_equal(c, 1.0)
+        assert almost_equal(c, 1.0)
 
     def test_p2_load(self):
         G = nx.path_graph(2)
@@ -82,7 +81,7 @@ class TestLoadCentrality:
         d = {0: 0.000,
              1: 0.000}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_krackhardt_load(self):
         G = self.K
@@ -98,7 +97,7 @@ class TestLoadCentrality:
              8: 0.222,
              9: 0.000}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_florentine_families_load(self):
         G = self.F
@@ -119,7 +118,7 @@ class TestLoadCentrality:
              'Strozzi':       0.106,
              'Tornabuoni':    0.090}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_les_miserables_load(self):
         G = self.LM
@@ -202,7 +201,7 @@ class TestLoadCentrality:
              'Brujon': 0.000,
              'MmeHucheloup': 0.000}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_unnormalized_k5_load(self):
         G = self.K5
@@ -213,7 +212,7 @@ class TestLoadCentrality:
              3: 0.000,
              4: 0.000}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_unnormalized_p3_load(self):
         G = self.P3
@@ -222,7 +221,7 @@ class TestLoadCentrality:
              1: 2.000,
              2: 0.000}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_unnormalized_krackhardt_load(self):
         G = self.K
@@ -239,7 +238,7 @@ class TestLoadCentrality:
              9: 0.000}
 
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_unnormalized_florentine_families_load(self):
         G = self.F
@@ -261,7 +260,7 @@ class TestLoadCentrality:
              'Strozzi':    19.333,
              'Tornabuoni': 16.333}
         for n in sorted(G):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_load_betweenness_difference(self):
         # Difference Between Load and Betweenness
@@ -302,7 +301,7 @@ class TestLoadCentrality:
              4: 1.750,
              5: 1.750}
         for n in sorted(B):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_c4_edge_load(self):
         G = self.C4
@@ -312,7 +311,7 @@ class TestLoadCentrality:
              (1, 2): 6.000,
              (2, 3): 6.000}
         for n in G.edges():
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_p4_edge_load(self):
         G = self.P4
@@ -321,7 +320,7 @@ class TestLoadCentrality:
              (1, 2): 8.000,
              (2, 3): 6.000}
         for n in G.edges():
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_k5_edge_load(self):
         G = self.K5
@@ -337,7 +336,7 @@ class TestLoadCentrality:
              (2, 4): 5.000,
              (3, 4): 5.000}
         for n in G.edges():
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_tree_edge_load(self):
         G = self.T
@@ -349,4 +348,4 @@ class TestLoadCentrality:
              (2, 5): 12.000,
              (2, 6): 12.000}
         for n in G.edges():
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
