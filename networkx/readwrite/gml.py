@@ -834,7 +834,7 @@ def write_gml(G, path, stringizer=None):
         path.write((line + '\n').encode('ascii'))
 
 
-# fixture for nose
+# fixture for pytest
 def teardown_module(module):
     import os
     for fname in ['test.gml', 'test.gml.gz']:

@@ -1177,14 +1177,10 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         rgba_colors[:, -1] = alpha
     return rgba_colors
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import matplotlib as mpl
-        mpl.use('PS', warn=False)
-        import matplotlib.pyplot as plt
-    except ImportError:
-        raise SkipTest("matplotlib not available")
+    import pytest
+    mpl = pytest.importorskip('matplotlib')
+    mpl.use('PS', warn=False)
+    plt = pytest.importorskip('matplotlib.pyplot')

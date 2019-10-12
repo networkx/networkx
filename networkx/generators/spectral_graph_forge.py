@@ -196,7 +196,7 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     return H
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
     import pytest
     numpy = pytest.importorskip('numpy')

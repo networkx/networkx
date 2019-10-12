@@ -154,14 +154,8 @@ def local_and_global_consistency(G, alpha=0.99,
     return predicted
 
 
+# fixture for pytest
 def setup_module(module):
-    """Fixture for nose tests."""
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

@@ -85,12 +85,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     I = scipy.sparse.eye(m, n, format='csr')
     return (r ** 2 - 1) * I - r * A + D
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')

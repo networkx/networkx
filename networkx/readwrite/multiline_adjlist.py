@@ -374,7 +374,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
                                    edgetype=edgetype)
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     for fname in ['test.adjlist', 'test.adjlist.gz']:

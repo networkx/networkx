@@ -1241,22 +1241,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
                              create_using=create_using)
 
 
-# fixture for pytest tests
+# fixture for pytest
 def setup_module(module):
     import pytest
     numpy = pytest.importorskip('numpy')
     scipy = pytest.importorskip('scipy')
     pandas = pytest.importorskip('pandas')
-#    from nose import SkipTest
-#    try:
-#        import numpy
-#    except ImportError:
-#        raise SkipTest("NumPy not available")
-#    try:
-#        import scipy
-#    except ImportError:
-#        raise SkipTest("SciPy not available")
-#    try:
-#        import pandas
-#    except ImportError:
-#        raise SkipTest("Pandas not available")
