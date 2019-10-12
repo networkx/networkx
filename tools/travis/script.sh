@@ -23,7 +23,7 @@ printenv PWD
 
 # Run pytest.
 if [[ "${REPORT_COVERAGE}" == 1 ]]; then
-  pytest --cov=networkx --pyargs networkx
+  pytest --cov=networkx --doctest-modules --pyargs networkx
   cp -a .coverage $NX_SOURCE
 elif [[ "${DOCTEST}" == 1 ]]; then
   pytest --doctest-modules --pyargs networkx
