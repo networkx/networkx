@@ -1249,14 +1249,8 @@ def simrank_similarity_numpy(G, source=None, target=None, importance_factor=0.9,
     return newsim
 
 
+# fixture for pytest
 def setup_module(module):
-    """Fixture for nose tests."""
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

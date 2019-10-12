@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-from nose.tools import *
 from collections import OrderedDict
 import networkx as nx
-from test_graph import TestGraph
-from test_digraph import TestDiGraph
-from test_multigraph import TestMultiGraph
-from test_multidigraph import TestMultiDiGraph
+from .test_graph import TestGraph
+from .test_digraph import TestDiGraph
+from .test_multigraph import TestMultiGraph
+from .test_multidigraph import TestMultiDiGraph
 
 
 def test_factories():
@@ -33,20 +32,20 @@ def test_factories():
             edge_key_dict_factory = mydict4
             edge_attr_dict_factory = mydict5
         G = MyGraph()
-        assert_is_instance(G._node, mydict1)
-        assert_is_instance(G._adj, mydict2)
+        assert isinstance(G._node, mydict1)
+        assert isinstance(G._adj, mydict2)
         G.add_node(1)
-        assert_is_instance(G._adj[1], mydict3)
+        assert isinstance(G._adj[1], mydict3)
         if G.is_directed():
-            assert_is_instance(G._pred, mydict2)
-            assert_is_instance(G._succ, mydict2)
-            assert_is_instance(G._pred[1], mydict3)
+            assert isinstance(G._pred, mydict2)
+            assert isinstance(G._succ, mydict2)
+            assert isinstance(G._pred[1], mydict3)
         G.add_edge(1, 2)
         if G.is_multigraph():
-            assert_is_instance(G._adj[1][2], mydict4)
-            assert_is_instance(G._adj[1][2][0], mydict5)
+            assert isinstance(G._adj[1][2], mydict4)
+            assert isinstance(G._adj[1][2][0], mydict5)
         else:
-            assert_is_instance(G._adj[1][2], mydict5)
+            assert isinstance(G._adj[1][2], mydict5)
 
 
 class SpecialGraphTester(TestGraph):

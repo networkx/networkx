@@ -448,14 +448,8 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         return M
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

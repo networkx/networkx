@@ -159,11 +159,8 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     return A - X
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

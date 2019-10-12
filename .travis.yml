@@ -46,6 +46,7 @@ matrix:
       sudo: true
       env:
       - OPTIONAL_DEPS=1
+      - DOCTEST=1
       - PIP_FLAGS="--pre"
       addons:
         apt:
@@ -68,9 +69,6 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=3.8-dev
     - python: 3.5
     - python: 3.6
-    - python: 3.7
-      dist: xenial
-      sudo: true
     - python: 3.8-dev
       dist: xenial
       sudo: true

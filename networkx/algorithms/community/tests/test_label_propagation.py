@@ -1,22 +1,21 @@
 from itertools import chain
 from itertools import combinations
 
-from nose.tools import *
-from nose.tools import assert_equal, assert_in
+import pytest
 
 import networkx as nx
 from networkx.algorithms.community import label_propagation_communities
 from networkx.algorithms.community import asyn_lpa_communities
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_directed_not_supported():
-    # not supported for directed graphs
-    test = nx.DiGraph()
-    test.add_edge('a', 'b')
-    test.add_edge('a', 'c')
-    test.add_edge('b', 'd')
-    result = label_propagation_communities(test)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        # not supported for directed graphs
+        test = nx.DiGraph()
+        test.add_edge('a', 'b')
+        test.add_edge('a', 'c')
+        test.add_edge('b', 'd')
+        result = label_propagation_communities(test)
 
 
 def test_one_node():
@@ -28,7 +27,7 @@ def test_one_node():
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_unconnected_communities():
@@ -48,7 +47,7 @@ def test_unconnected_communities():
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_connected_communities():
@@ -95,7 +94,7 @@ def test_connected_communities():
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
-    assert_in(result, ground_truth)
+    assert result in ground_truth
 
 
 def test_termination():
@@ -120,7 +119,7 @@ class TestAsynLpaCommunities(object):
         """
         communities = asyn_lpa_communities(G)
         result = {frozenset(c) for c in communities}
-        assert_equal(result, expected)
+        assert result == expected
 
     def test_null_graph(self):
         G = nx.null_graph()
@@ -143,7 +142,7 @@ class TestAsynLpaCommunities(object):
         ground_truth = {frozenset('abc'), frozenset('def')}
         communities = asyn_lpa_communities(G, seed=1)
         result = {frozenset(c) for c in communities}
-        assert_equal(result, ground_truth)
+        assert result == ground_truth
 
     def test_several_communities(self):
         # This graph is the disjoint union of five triangles.

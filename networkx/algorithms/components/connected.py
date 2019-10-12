@@ -18,7 +18,6 @@ from ...utils import arbitrary_element
 __all__ = [
     'number_connected_components',
     'connected_components',
-    'connected_component_subgraphs',
     'is_connected',
     'node_connected_component',
 ]
@@ -57,6 +56,9 @@ def connected_components(G):
 
     >>> largest_cc = max(nx.connected_components(G), key=len)
 
+    To create the induced subgraph of each component use:
+    >>> S = [G.subgraph(c).copy() for c in connected_components(G)]
+
     See Also
     --------
     strongly_connected_components
@@ -73,22 +75,6 @@ def connected_components(G):
             c = set(_plain_bfs(G, v))
             yield c
             seen.update(c)
-
-
-@not_implemented_for('directed')
-def connected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in connected_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in connected_components(G))``
-    """
-    msg = "connected_component_subgraphs is deprecated and will be removed" \
-          "in 2.2. Use (G.subgraph(c).copy() for c in connected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
 
 
 def number_connected_components(G):

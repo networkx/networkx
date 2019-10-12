@@ -1,13 +1,6 @@
-from nose.tools import assert_true, assert_raises, assert_false
-
 from networkx import is_connected, neighbors
 from networkx.generators.internet_as_graphs import random_internet_as_graph
-
-
-def almost_equal(x, y, eps=0.5):
-    if abs(x - y) < eps:
-        return True
-    return False
+from networkx.testing import almost_equal
 
 
 class TestInternetASTopology():
@@ -75,50 +68,50 @@ class TestInternetASTopology():
 
     def test_wrong_input(self):
         G = random_internet_as_graph(0)
-        assert_true(len(G.nodes()) == 0)
+        assert len(G.nodes()) == 0
 
         G = random_internet_as_graph(-1)
-        assert_true(len(G.nodes()) == 0)
+        assert len(G.nodes()) == 0
 
         G = random_internet_as_graph(1)
-        assert_true(len(G.nodes()) == 1)
+        assert len(G.nodes()) == 1
 
     def test_node_numbers(self):
-        assert_true(len(self.G.nodes()) == self.n)
-        assert_true(len(self.T) < 7)
-        assert_true(len(self.M) == int(round(self.n*0.15)))
-        assert_true(len(self.CP) == int(round(self.n*0.05)))
-        assert_true(len(self.C) == self.n - len(self.T) - len(self.M)
-                    - len(self.CP))
+        assert len(self.G.nodes()) == self.n
+        assert len(self.T) < 7
+        assert len(self.M) == int(round(self.n*0.15))
+        assert len(self.CP) == int(round(self.n*0.05))
+        numb = self.n - len(self.T) - len(self.M) - len(self.CP)
+        assert len(self.C) == numb
 
     def test_connectivity(self):
-        assert_true(is_connected(self.G))
+        assert is_connected(self.G)
 
     def test_relationships(self):
         # T nodes are not customers of anyone
         for i in self.T:
-            assert_true(len(self.providers[i]) == 0)
+            assert len(self.providers[i]) == 0
 
         # C nodes are not providers of anyone
         for i in self.C:
-            assert_true(len(self.customers[i]) == 0)
+            assert len(self.customers[i]) == 0
 
         # CP nodes are not providers of anyone
         for i in self.CP:
-            assert_true(len(self.customers[i]) == 0)
+            assert len(self.customers[i]) == 0
 
         # test whether there is a customer-provider loop
         for i in self.G.nodes():
-            assert_true(len(self.customers[i].intersection(
-                self.providers[i])) == 0)
+            assert len(self.customers[i].intersection(
+                self.providers[i])) == 0
 
         # test whether there is a peering with a customer or provider
         for i, j in self.G.edges():
             if self.G.edges[(i, j)]['type'] == 'peer':
-                assert_true(j not in self.customers[i])
-                assert_true(i not in self.customers[j])
-                assert_true(j not in self.providers[i])
-                assert_true(i not in self.providers[j])
+                assert j not in self.customers[i]
+                assert i not in self.customers[j]
+                assert j not in self.providers[i]
+                assert i not in self.providers[j]
 
     def test_degree_values(self):
         d_m = 0  # multihoming degree for M nodes
@@ -173,15 +166,14 @@ class TestInternetASTopology():
                 raise ValueError("Unexpected data in the graph edge\
                         attributes")
 
-        assert_true(almost_equal(d_m/len(self.M), 2 + (2.5*self.n)/10000))
-        assert_true(almost_equal(d_cp/len(self.CP), 2 + (1.5*self.n)/10000))
-        assert_true(almost_equal(d_c/len(self.C), 1 + (5*self.n)/100000))
+        assert almost_equal(d_m/len(self.M), 2 + (2.5*self.n)/10000, places=0)
+        assert almost_equal(d_cp/len(self.CP), 2 + (1.5*self.n)/10000, places=0)
+        assert almost_equal(d_c/len(self.C), 1 + (5*self.n)/100000, places=0)
 
-        assert_true(almost_equal(p_m_m/len(self.M), 1 + (2*self.n)/10000))
-        assert_true(almost_equal(p_cp_m/len(self.CP), 0.2 + (2*self.n)/10000))
-        assert_true(almost_equal(p_cp_cp/len(self.CP),
-                    0.05 + (2*self.n)/100000))
+        assert almost_equal(p_m_m/len(self.M), 1 + (2*self.n)/10000, places=0)
+        assert almost_equal(p_cp_m/len(self.CP), 0.2 + (2*self.n)/10000, places=0)
+        assert almost_equal(p_cp_cp/len(self.CP), 0.05 + (2*self.n)/100000, places=0)
 
-        assert_true(almost_equal(t_m/d_m, 0.375))
-        assert_true(almost_equal(t_cp/d_cp, 0.375))
-        assert_true(almost_equal(t_c/d_c, 0.125))
+        assert almost_equal(t_m/d_m, 0.375, places=1)
+        assert almost_equal(t_cp/d_cp, 0.375, places=1)
+        assert almost_equal(t_c/d_c, 0.125, places=1)

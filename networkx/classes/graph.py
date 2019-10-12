@@ -761,42 +761,6 @@ class Graph(object):
         self.__dict__['nodes'] = nodes
         return nodes
 
-    # for backwards compatibility with 1.x, will be removed for 3.x
-    node = nodes
-
-    def add_path(self, nodes, **attr):
-        msg = "add_path is deprecated. Use nx.add_path instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_path(self, nodes, **attr)
-
-    def add_cycle(self, nodes, **attr):
-        msg = "add_cycle is deprecated. Use nx.add_cycle instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_cycle(self, nodes, **attr)
-
-    def add_star(self, nodes, **attr):
-        msg = "add_star is deprecated. Use nx.add_star instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_star(self, nodes, **attr)
-
-    def nodes_with_selfloops(self):
-        msg = "nodes_with_selfloops is deprecated." \
-              "Use nx.nodes_with_selfloops instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.nodes_with_selfloops(self)
-
-    def number_of_selfloops(self):
-        msg = "number_of_selfloops is deprecated." \
-              "Use nx.number_of_selfloops instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.number_of_selfloops(self)
-
-    def selfloop_edges(self, data=False, keys=False, default=None):
-        msg = "selfloop_edges is deprecated. Use nx.selfloop_edges instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.selfloop_edges(self, data, keys, default)
-    # Done with backward compatibility methods for 1.x
-
     def number_of_nodes(self):
         """Returns the number of nodes in the graph.
 
@@ -1464,12 +1428,6 @@ class Graph(object):
     def is_directed(self):
         """Returns True if graph is directed, False otherwise."""
         return False
-
-    def fresh_copy(self):
-        # remove by v3 if not before
-        msg = 'G.fresh_copy is deprecated. Use G.__class__ instead'
-        warnings.warn(msg, DeprecationWarning, stacklevel=2)
-        return self.__class__()
 
     def copy(self, as_view=False):
         """Returns a copy of the graph.

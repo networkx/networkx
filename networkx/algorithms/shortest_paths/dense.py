@@ -210,12 +210,8 @@ def floyd_warshall(G, weight='weight'):
     # could make this its own function to reduce memory costs
     return floyd_warshall_predecessor_and_distance(G, weight=weight)[1]
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')

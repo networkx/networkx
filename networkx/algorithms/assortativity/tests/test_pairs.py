@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
 import networkx as nx
-from base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
+from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
 
 class TestAttributeMixingXY(BaseTestAttributeMixing):
@@ -17,14 +16,14 @@ class TestAttributeMixingXY(BaseTestAttributeMixing):
                                 ('blue', 'two'),
                                 ('two', 'blue')
                                 ])
-        assert_equal(attrxy, attrxy_result)
+        assert attrxy == attrxy_result
 
     def test_node_attribute_xy_undirected_nodes(self):
         attrxy = sorted(nx.node_attribute_xy(self.G, 'fish',
                                              nodes=['one', 'yellow']))
         attrxy_result = sorted([
         ])
-        assert_equal(attrxy, attrxy_result)
+        assert attrxy == attrxy_result
 
     def test_node_attribute_xy_directed(self):
         attrxy = sorted(nx.node_attribute_xy(self.D, 'fish'))
@@ -33,7 +32,7 @@ class TestAttributeMixingXY(BaseTestAttributeMixing):
                                 ('one', 'red'),
                                 ('two', 'blue')
                                 ])
-        assert_equal(attrxy, attrxy_result)
+        assert attrxy == attrxy_result
 
     def test_node_attribute_xy_multigraph(self):
         attrxy = sorted(nx.node_attribute_xy(self.M, 'fish'))
@@ -44,14 +43,14 @@ class TestAttributeMixingXY(BaseTestAttributeMixing):
                          ('two', 'two'),
                          ('two', 'two')
                          ]
-        assert_equal(attrxy, attrxy_result)
+        assert attrxy == attrxy_result
 
     def test_node_attribute_xy_selfloop(self):
         attrxy = sorted(nx.node_attribute_xy(self.S, 'fish'))
         attrxy_result = [('one', 'one'),
                          ('two', 'two')
                          ]
-        assert_equal(attrxy, attrxy_result)
+        assert attrxy == attrxy_result
 
 
 class TestDegreeMixingXY(BaseTestDegreeMixing):
@@ -64,13 +63,13 @@ class TestDegreeMixingXY(BaseTestDegreeMixing):
                             (2, 2),
                             (1, 2),
                             (2, 1)])
-        assert_equal(xy, xy_result)
+        assert xy == xy_result
 
     def test_node_degree_xy_undirected_nodes(self):
         xy = sorted(nx.node_degree_xy(self.P4, nodes=[0, 1, -1]))
         xy_result = sorted([(1, 2),
                             (2, 1), ])
-        assert_equal(xy, xy_result)
+        assert xy == xy_result
 
     def test_node_degree_xy_directed(self):
         xy = sorted(nx.node_degree_xy(self.D))
@@ -78,7 +77,7 @@ class TestDegreeMixingXY(BaseTestDegreeMixing):
                             (2, 3),
                             (1, 3),
                             (1, 3)])
-        assert_equal(xy, xy_result)
+        assert xy == xy_result
 
     def test_node_degree_xy_multigraph(self):
         xy = sorted(nx.node_degree_xy(self.M))
@@ -90,13 +89,13 @@ class TestDegreeMixingXY(BaseTestDegreeMixing):
                             (3, 2),
                             (1, 2),
                             (2, 1)])
-        assert_equal(xy, xy_result)
+        assert xy == xy_result
 
     def test_node_degree_xy_selfloop(self):
         xy = sorted(nx.node_degree_xy(self.S))
         xy_result = sorted([(2, 2),
                             (2, 2)])
-        assert_equal(xy, xy_result)
+        assert xy == xy_result
 
     def test_node_degree_xy_weighted(self):
         G = nx.Graph()
@@ -107,4 +106,4 @@ class TestDegreeMixingXY(BaseTestDegreeMixing):
                             (17, 10),
                             (17, 7),
                             (10, 17)])
-        assert_equal(xy, xy_result)
+        assert xy == xy_result

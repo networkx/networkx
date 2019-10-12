@@ -1071,14 +1071,8 @@ def rescale_layout(pos, scale=1):
     return pos
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

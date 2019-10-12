@@ -7,10 +7,9 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
-from nose.tools import assert_almost_equal, assert_true
-
 import math
 import networkx as nx
+from networkx.testing import almost_equal
 
 
 class TestStructuralHoles(object):
@@ -43,83 +42,83 @@ class TestStructuralHoles(object):
 
     def test_constraint_directed(self):
         constraint = nx.constraint(self.D)
-        assert_almost_equal(round(constraint[0], 3), 1.003)
-        assert_almost_equal(round(constraint[1], 3), 1.003)
-        assert_almost_equal(round(constraint[2], 3), 1.389)
+        assert almost_equal(constraint[0], 1.003, places=3)
+        assert almost_equal(constraint[1], 1.003, places=3)
+        assert almost_equal(constraint[2], 1.389, places=3)
 
     def test_effective_size_directed(self):
         effective_size = nx.effective_size(self.D)
-        assert_almost_equal(round(effective_size[0], 3), 1.167)
-        assert_almost_equal(round(effective_size[1], 3), 1.167)
-        assert_almost_equal(round(effective_size[2], 3), 1)
+        assert almost_equal(effective_size[0], 1.167, places=3)
+        assert almost_equal(effective_size[1], 1.167, places=3)
+        assert almost_equal(effective_size[2], 1, places=3)
 
     def test_constraint_weighted_directed(self):
         D = self.D.copy()
         nx.set_edge_attributes(D, self.D_weights, 'weight')
         constraint = nx.constraint(D, weight='weight')
-        assert_almost_equal(round(constraint[0], 3), 0.840)
-        assert_almost_equal(round(constraint[1], 3), 1.143)
-        assert_almost_equal(round(constraint[2], 3), 1.378)
+        assert almost_equal(constraint[0], 0.840, places=3)
+        assert almost_equal(constraint[1], 1.143, places=3)
+        assert almost_equal(constraint[2], 1.378, places=3)
 
     def test_effective_size_weighted_directed(self):
         D = self.D.copy()
         nx.set_edge_attributes(D, self.D_weights, 'weight')
         effective_size = nx.effective_size(D, weight='weight')
-        assert_almost_equal(round(effective_size[0], 3), 1.567)
-        assert_almost_equal(round(effective_size[1], 3), 1.083)
-        assert_almost_equal(round(effective_size[2], 3), 1)
+        assert almost_equal(effective_size[0], 1.567, places=3)
+        assert almost_equal(effective_size[1], 1.083, places=3)
+        assert almost_equal(effective_size[2], 1, places=3)
 
     def test_constraint_undirected(self):
         constraint = nx.constraint(self.G)
-        assert_almost_equal(round(constraint['G'], 3), 0.400)
-        assert_almost_equal(round(constraint['A'], 3), 0.595)
-        assert_almost_equal(round(constraint['C'], 3), 1)
+        assert almost_equal(constraint['G'], 0.400, places=3)
+        assert almost_equal(constraint['A'], 0.595, places=3)
+        assert almost_equal(constraint['C'], 1, places=3)
 
     def test_effective_size_undirected_borgatti(self):
         effective_size = nx.effective_size(self.G)
-        assert_almost_equal(round(effective_size['G'], 2), 4.67)
-        assert_almost_equal(round(effective_size['A'], 2), 2.50)
-        assert_almost_equal(round(effective_size['C'], 2), 1)
+        assert almost_equal(effective_size['G'], 4.67, places=2)
+        assert almost_equal(effective_size['A'], 2.50, places=2)
+        assert almost_equal(effective_size['C'], 1, places=2)
 
     def test_effective_size_undirected(self):
         G = self.G.copy()
         nx.set_edge_attributes(G, 1, 'weight')
         effective_size = nx.effective_size(G, weight='weight')
-        assert_almost_equal(round(effective_size['G'], 2), 4.67)
-        assert_almost_equal(round(effective_size['A'], 2), 2.50)
-        assert_almost_equal(round(effective_size['C'], 2), 1)
+        assert almost_equal(effective_size['G'], 4.67, places=2)
+        assert almost_equal(effective_size['A'], 2.50, places=2)
+        assert almost_equal(effective_size['C'], 1, places=2)
 
     def test_constraint_weighted_undirected(self):
         G = self.G.copy()
         nx.set_edge_attributes(G, self.G_weights, 'weight')
         constraint = nx.constraint(G, weight='weight')
-        assert_almost_equal(round(constraint['G'], 3), 0.299)
-        assert_almost_equal(round(constraint['A'], 3), 0.795)
-        assert_almost_equal(round(constraint['C'], 3), 1)
+        assert almost_equal(constraint['G'], 0.299, places=3)
+        assert almost_equal(constraint['A'], 0.795, places=3)
+        assert almost_equal(constraint['C'], 1, places=3)
 
     def test_effective_size_weighted_undirected(self):
         G = self.G.copy()
         nx.set_edge_attributes(G, self.G_weights, 'weight')
         effective_size = nx.effective_size(G, weight='weight')
-        assert_almost_equal(round(effective_size['G'], 2), 5.47)
-        assert_almost_equal(round(effective_size['A'], 2), 2.47)
-        assert_almost_equal(round(effective_size['C'], 2), 1)
+        assert almost_equal(effective_size['G'], 5.47, places=2)
+        assert almost_equal(effective_size['A'], 2.47, places=2)
+        assert almost_equal(effective_size['C'], 1, places=2)
 
     def test_constraint_isolated(self):
         G = self.G.copy()
         G.add_node(1)
         constraint = nx.constraint(G)
-        assert_true(math.isnan(constraint[1]))
+        assert math.isnan(constraint[1])
 
     def test_effective_size_isolated(self):
         G = self.G.copy()
         G.add_node(1)
         nx.set_edge_attributes(G, self.G_weights, 'weight')
         effective_size = nx.effective_size(G, weight='weight')
-        assert_true(math.isnan(effective_size[1]))
+        assert math.isnan(effective_size[1])
 
     def test_effective_size_borgatti_isolated(self):
         G = self.G.copy()
         G.add_node(1)
         effective_size = nx.effective_size(G)
-        assert_true(math.isnan(effective_size[1]))
+        assert math.isnan(effective_size[1])

@@ -1,5 +1,5 @@
 # Test for Moody and White k-components algorithm
-from nose.tools import assert_equal, assert_true, raises, assert_greater_equal
+import pytest
 import networkx as nx
 from networkx.algorithms.connectivity.kcomponents import (
     build_k_number_dict,
@@ -75,10 +75,10 @@ def torrents_and_ferraro_graph():
     return G
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_directed():
-    G = nx.gnp_random_graph(10, 0.2, directed=True, seed=42)
-    nx.k_components(G)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        G = nx.gnp_random_graph(10, 0.2, directed=True, seed=42)
+        nx.k_components(G)
 
 
 # Helper function
@@ -90,7 +90,7 @@ def _check_connectivity(G, k_components):
         for component in components:
             C = G.subgraph(component)
             K = nx.node_connectivity(C)
-            assert_greater_equal(K, k)
+            assert K >= k
 
 
 def test_torrents_and_ferraro_graph():
@@ -100,12 +100,12 @@ def test_torrents_and_ferraro_graph():
 
     # In this example graph there are 8 3-components, 4 with 15 nodes
     # and 4 with 5 nodes.
-    assert_equal(len(result[3]), 8)
-    assert_equal(len([c for c in result[3] if len(c) == 15]), 4)
-    assert_equal(len([c for c in result[3] if len(c) == 5]), 4)
+    assert len(result[3]) == 8
+    assert len([c for c in result[3] if len(c) == 15]) == 4
+    assert len([c for c in result[3] if len(c) == 5]) == 4
     # There are also 8 4-components all with 5 nodes.
-    assert_equal(len(result[4]), 8)
-    assert_true(all(len(c) == 5 for c in result[4]))
+    assert len(result[4]) == 8
+    assert all(len(c) == 5 for c in result[4])
 
 
 def test_random_gnp():
@@ -145,7 +145,7 @@ def test_karate_component_number():
     G = nx.karate_club_graph()
     k_components = nx.k_components(G)
     k_num = build_k_number_dict(k_components)
-    assert_equal(karate_k_num, k_num)
+    assert karate_k_num == k_num
 
 
 def test_davis_southern_women():
@@ -219,18 +219,17 @@ def test_davis_southern_women_detail_3_and_4():
     for k, components in result.items():
         if k < 3:
             continue
-        assert_true(len(components) == len(solution[k]))
+        assert len(components) == len(solution[k])
         for component in components:
-            assert_true(component in solution[k])
+            assert component in solution[k]
 
 
 def test_set_consolidation_rosettacode():
     # Tests from http://rosettacode.org/wiki/Set_consolidation
     def list_of_sets_equal(result, solution):
-        assert_equal(
-            {frozenset(s) for s in result},
-            {frozenset(s) for s in solution}
-        )
+        assert (
+            {frozenset(s) for s in result} ==
+            {frozenset(s) for s in solution})
     question = [{'A', 'B'}, {'C', 'D'}]
     solution = [{'A', 'B'}, {'C', 'D'}]
     list_of_sets_equal(_consolidate(question, 1), solution)

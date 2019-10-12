@@ -1,5 +1,5 @@
-from nose import SkipTest
-from nose.tools import assert_raises
+import pytest
+pd = pytest.importorskip("pandas")
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal, assert_edges_equal, \
@@ -7,19 +7,7 @@ from networkx.testing import assert_nodes_equal, assert_edges_equal, \
 
 
 class TestConvertPandas(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-
-    @classmethod
-    def setupClass(cls):
-        try:
-            import pandas as pd
-        except ImportError:
-            raise SkipTest('Pandas not available.')
-
-    def __init__(self):
-        global pd
-        import pandas as pd
-
+    def setup_method(self):
         self.rng = pd.np.random.RandomState(seed=5)
         ints = self.rng.randint(1, 11, size=(3, 2))
         a = ['A', 'B', 'C']
@@ -28,18 +16,19 @@ class TestConvertPandas(object):
         df[0] = a  # Column label 0 (int)
         df['b'] = b  # Column label 'b' (str)
         self.df = df
+
         mdf = pd.DataFrame([[4, 16, 'A', 'D']],
                            columns=['weight', 'cost', 0, 'b'])
         self.mdf = df.append(mdf)
 
     def test_exceptions(self):
         G = pd.DataFrame(["a"])  # adj
-        assert_raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
         G = pd.DataFrame(["a", 0.0])  # elist
-        assert_raises(nx.NetworkXError, nx.to_networkx_graph, G)
+        pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
         df = pd.DataFrame([[1, 1], [1, 0]], dtype=int,
                           index=[1, 2], columns=["a", "b"])
-        assert_raises(nx.NetworkXError, nx.from_pandas_adjacency, df)
+        pytest.raises(nx.NetworkXError, nx.from_pandas_adjacency, df)
 
     def test_from_edgelist_all_attr(self):
         Gtrue = nx.Graph([('E', 'C', {'cost': 9, 'weight': 10}),
@@ -111,17 +100,17 @@ class TestConvertPandas(object):
         assert_graphs_equal(G, Gtrue)
 
     def test_from_edgelist_invalid_attr(self):
-        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
                       self.df, 0, 'b', 'misspell')
-        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
                       self.df, 0, 'b', 1)
         # see Issue #3562
         edgeframe = pd.DataFrame([[0, 1], [1, 2], [2, 0]], columns=['s', 't'])
-        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
                       edgeframe, 's', 't', True)
-        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
                       edgeframe, 's', 't', 'weight')
-        assert_raises(nx.NetworkXError, nx.from_pandas_edgelist,
+        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
                       edgeframe, 's', 't', ['weight', 'size'])
 
     def test_from_edgelist_no_attr(self):

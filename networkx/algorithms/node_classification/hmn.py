@@ -47,8 +47,8 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     --------
     >>> from networkx.algorithms import node_classification
     >>> G = nx.path_graph(4)
-    >>> G.node[0]['label'] = 'A'
-    >>> G.node[3]['label'] = 'B'
+    >>> G.nodes[0]['label'] = 'A'
+    >>> G.nodes[3]['label'] = 'B'
     >>> G.nodes(data=True)
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()
@@ -144,14 +144,8 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     return predicted
 
 
+# fixture for pytest
 def setup_module(module):
-    """Fixture for nose tests."""
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

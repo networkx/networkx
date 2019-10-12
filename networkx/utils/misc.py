@@ -444,10 +444,7 @@ def create_py_random_state(random_state=None):
     raise ValueError(msg % random_state)
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')

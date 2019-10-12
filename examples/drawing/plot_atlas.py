@@ -50,8 +50,8 @@ def atlas6():
             G.remove_node(n)
         U = nx.disjoint_union(U, G)
 
-    # list of graphs of all connected components
-    C = nx.connected_component_subgraphs(U)
+    # iterator of graphs of all connected components
+    C = (U.subgraph(c) for c in nx.connected_components(U))
 
     UU = nx.Graph()
     # do quick isomorphic-like check, not a true isomorphism checker
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # layout graphs with positions using graphviz neato
     pos = graphviz_layout(G, prog="neato")
     # color nodes the same in each connected subgraph
-    C = nx.connected_component_subgraphs(G)
+    C = (G.subgraph(c) for c in nx.connected_components(G))
     for g in C:
         c = [random.random()] * nx.number_of_nodes(g)  # random color...
         nx.draw(g,

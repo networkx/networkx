@@ -325,10 +325,7 @@ def write_shp(G, outdir):
     nodes, edges = None, None
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import ogr
-    except:
-        raise SkipTest("OGR not available")
+    import pytest
+    ogr = pytest.importorskip('ogr')

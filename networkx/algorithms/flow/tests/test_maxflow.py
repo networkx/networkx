@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Maximum flow algorithms test suite.
 """
-from nose.tools import *
+import pytest
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
@@ -30,44 +30,38 @@ def compute_cutset(G, partition):
 
 
 def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
-    assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
+    assert set(G) == set(flowDict), msg.format(flow_func.__name__)
     for u in G:
-        assert_equal(set(G[u]), set(flowDict[u]),
-                     msg=msg.format(flow_func.__name__))
+        assert set(G[u]) == set(flowDict[u]), msg.format(flow_func.__name__)
     excess = {u: 0 for u in flowDict}
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
-                ok_(flow <= G[u][v][capacity])
-            ok_(flow >= 0, msg=msg.format(flow_func.__name__))
+                assert flow <= G[u][v][capacity]
+            assert flow >= 0, msg.format(flow_func.__name__)
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            assert_equal(exc, -solnValue, msg=msg.format(flow_func.__name__))
+            assert exc == -solnValue, msg.format(flow_func.__name__)
         elif u == t:
-            assert_equal(exc, solnValue, msg=msg.format(flow_func.__name__))
+            assert exc == solnValue, msg.format(flow_func.__name__)
         else:
-            assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
+            assert exc == 0, msg.format(flow_func.__name__)
 
 
 def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
-    assert_true(all(n in G for n in partition[0]),
-                msg=msg.format(flow_func.__name__))
-    assert_true(all(n in G for n in partition[1]),
-                msg=msg.format(flow_func.__name__))
+    assert all(n in G for n in partition[0]), msg.format(flow_func.__name__)
+    assert all(n in G for n in partition[1]), msg.format(flow_func.__name__)
     cutset = compute_cutset(G, partition)
-    assert_true(all(G.has_edge(u, v) for (u, v) in cutset),
-                msg=msg.format(flow_func.__name__))
-    assert_equal(solnValue, sum(G[u][v][capacity] for (u, v) in cutset),
-                 msg=msg.format(flow_func.__name__))
+    assert all(G.has_edge(u, v) for (u, v) in cutset), msg.format(flow_func.__name__)
+    assert solnValue == sum(G[u][v][capacity] for (u, v) in cutset), msg.format(flow_func.__name__)
     H = G.copy()
     H.remove_edges_from(cutset)
     if not G.is_directed():
-        assert_false(nx.is_connected(H), msg=msg.format(flow_func.__name__))
+        assert not nx.is_connected(H), msg.format(flow_func.__name__)
     else:
-        assert_false(nx.is_strongly_connected(H),
-                     msg=msg.format(flow_func.__name__))
+        assert not nx.is_strongly_connected(H), msg.format(flow_func.__name__)
 
 
 def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
@@ -76,7 +70,7 @@ def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
         # Test both legacy and new implementations.
         flow_value = R.graph['flow_value']
         flow_dict = build_flow_dict(G, R)
-        assert_equal(flow_value, solnValue, msg=msg.format(flow_func.__name__))
+        assert flow_value == solnValue, msg.format(flow_func.__name__)
         validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         # Minimum cut
         cut_value, partition = nx.minimum_cut(G, s, t, capacity=capacity,
@@ -294,7 +288,7 @@ class TestMaxflowMinCutCommon:
         G.add_edge('c', 't')
 
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXUnbounded,
+            pytest.raises(nx.NetworkXUnbounded,
                           flow_func, G, 's', 't')
 
     def test_graph_infcap_edges(self):
@@ -334,7 +328,7 @@ class TestMaxflowMinCutCommon:
         G = nx.Graph()
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight='capacity')
         G.remove_node(1)
-        assert_equal(nx.maximum_flow_value(G, 0, 3), 0)
+        assert nx.maximum_flow_value(G, 0, 3) == 0
         flowSoln = {0: {}, 2: {3: 0}, 3: {2: 0}}
         compare_flows_and_cuts(G, 0, 3, flowSoln, 0)
 
@@ -343,24 +337,24 @@ class TestMaxflowMinCutCommon:
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight='capacity')
         G.remove_node(0)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 3)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 3)
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight='capacity')
         G.remove_node(3)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 3)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 3)
 
     def test_source_target_coincide(self):
         G = nx.Graph()
         G.add_node(0)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 0)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 0)
 
     def test_multigraphs_raise(self):
         G = nx.MultiGraph()
         M = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 0)], capacity=True)
         for flow_func in all_funcs:
-            assert_raises(nx.NetworkXError, flow_func, G, 0, 0)
+            pytest.raises(nx.NetworkXError, flow_func, G, 0, 0)
 
 
 class TestMaxFlowMinCutInterface:
@@ -387,9 +381,9 @@ class TestMaxFlowMinCutInterface:
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight='capacity')
         for flow_func in interface_funcs:
             for element in elements:
-                assert_raises(nx.NetworkXError,
+                pytest.raises(nx.NetworkXError,
                               flow_func, G, 0, 1, flow_func=element)
-                assert_raises(nx.NetworkXError,
+                pytest.raises(nx.NetworkXError,
                               flow_func, G, 0, 1, flow_func=element)
 
     def test_flow_func_parameters(self):
@@ -400,15 +394,15 @@ class TestMaxFlowMinCutInterface:
                 result = interface_func(G, 'x', 'y', flow_func=flow_func)
                 if interface_func in max_min_funcs:
                     result = result[0]
-                assert_equal(fv, result, msg=msgi.format(flow_func.__name__,
-                                                         interface_func.__name__))
+                assert fv == result, msgi.format(flow_func.__name__,
+                                                         interface_func.__name__)
 
     def test_minimum_cut_no_cutoff(self):
         G = self.G
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXError, nx.minimum_cut, G, 'x', 'y',
+            pytest.raises(nx.NetworkXError, nx.minimum_cut, G, 'x', 'y',
                           flow_func=flow_func, cutoff=1.0)
-            assert_raises(nx.NetworkXError, nx.minimum_cut_value, G, 'x', 'y',
+            pytest.raises(nx.NetworkXError, nx.minimum_cut_value, G, 'x', 'y',
                           flow_func=flow_func, cutoff=1.0)
 
     def test_kwargs(self):
@@ -423,13 +417,13 @@ class TestMaxFlowMinCutInterface:
                 result = interface_func(G, 0, 2, flow_func=flow_func, **kwargs)
                 if interface_func in max_min_funcs:
                     result = result[0]
-                assert_equal(fv, result, msg=msgi.format(flow_func.__name__,
-                                                         interface_func.__name__))
+                assert fv == result, msgi.format(flow_func.__name__,
+                                                         interface_func.__name__)
 
     def test_kwargs_default_flow_func(self):
         G = self.H
         for interface_func in interface_funcs:
-            assert_raises(nx.NetworkXError, interface_func,
+            pytest.raises(nx.NetworkXError, interface_func,
                           G, 0, 1, global_relabel_freq=2)
 
     def test_reusing_residual(self):
@@ -444,9 +438,8 @@ class TestMaxFlowMinCutInterface:
                                             residual=R)
                     if interface_func in max_min_funcs:
                         result = result[0]
-                    assert_equal(fv, result,
-                                 msg=msgi.format(flow_func.__name__,
-                                                 interface_func.__name__))
+                    assert fv == result, msgi.format(flow_func.__name__,
+                                                 interface_func.__name__)
 
 
 # Tests specific to one algorithm
@@ -454,8 +447,8 @@ def test_preflow_push_global_relabel_freq():
     G = nx.DiGraph()
     G.add_edge(1, 2, capacity=1)
     R = preflow_push(G, 1, 2, global_relabel_freq=None)
-    assert_equal(R.graph['flow_value'], 1)
-    assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
+    assert R.graph['flow_value'] == 1
+    pytest.raises(nx.NetworkXError, preflow_push, G, 1, 2,
                   global_relabel_freq=-1)
 
 
@@ -465,7 +458,7 @@ def test_preflow_push_makes_enough_space():
     nx.add_path(G, [0, 1, 3], capacity=1)
     nx.add_path(G, [1, 2, 3], capacity=1)
     R = preflow_push(G, 0, 3, value_only=False)
-    assert_equal(R.graph['flow_value'], 1)
+    assert R.graph['flow_value'] == 1
 
 
 def test_shortest_augmenting_path_two_phase():
@@ -477,9 +470,9 @@ def test_shortest_augmenting_path_two_phase():
         nx.add_path(G, ((i, j) for j in range(p)), capacity=1)
         G.add_edge((i, p - 1), 't', capacity=1)
     R = shortest_augmenting_path(G, 's', 't', two_phase=True)
-    assert_equal(R.graph['flow_value'], k)
+    assert R.graph['flow_value'] == k
     R = shortest_augmenting_path(G, 's', 't', two_phase=False)
-    assert_equal(R.graph['flow_value'], k)
+    assert R.graph['flow_value'] == k
 
 
 class TestCutoff:
@@ -493,11 +486,11 @@ class TestCutoff:
             nx.add_path(G, ((i, j) for j in range(p)), capacity=2)
             G.add_edge((i, p - 1), 't', capacity=2)
         R = shortest_augmenting_path(G, 's', 't', two_phase=True, cutoff=k)
-        ok_(k <= R.graph['flow_value'] <= 2 * k)
+        assert k <= R.graph['flow_value'] <= (2 * k)
         R = shortest_augmenting_path(G, 's', 't', two_phase=False, cutoff=k)
-        ok_(k <= R.graph['flow_value'] <= 2 * k)
+        assert k <= R.graph['flow_value'] <= (2 * k)
         R = edmonds_karp(G, 's', 't', cutoff=k)
-        ok_(k <= R.graph['flow_value'] <= 2 * k)
+        assert k <= R.graph['flow_value'] <= (2 * k)
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
@@ -507,5 +500,4 @@ class TestCutoff:
             for cutoff in [3, 2, 1]:
                 result = nx.maximum_flow_value(G, 0, 4, flow_func=flow_func,
                                                cutoff=cutoff)
-                assert_equal(cutoff, result,
-                             msg="cutoff error in {0}".format(flow_func.__name__))
+                assert cutoff == result, "cutoff error in {0}".format(flow_func.__name__)

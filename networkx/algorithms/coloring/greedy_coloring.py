@@ -194,12 +194,12 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
     else:
         raise nx.NetworkXError("Please specify one of the strings 'bfs' or"
                                " 'dfs' for connected sequential ordering")
-    for component in nx.connected_component_subgraphs(G):
+    for component in nx.connected_components(G):
         source = arbitrary_element(component)
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(component, source):
+        for (_, end) in traverse(G.subgraph(component), source):
             yield end
 
 

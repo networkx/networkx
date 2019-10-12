@@ -11,6 +11,7 @@ Bipartite Graph Algorithms
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from networkx.algorithms.components import connected_components
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['is_bipartite',
@@ -134,7 +135,7 @@ def is_bipartite_node_set(G, nodes):
     disconnected graphs.
     """
     S = set(nodes)
-    for CC in nx.connected_component_subgraphs(G):
+    for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
         if not ((X.issubset(S) and Y.isdisjoint(S)) or
                 (Y.issubset(S) and X.isdisjoint(S))):

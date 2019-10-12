@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-import sys
-from os import path, getcwd
 
 
-def run(verbosity=1, doctest=False, numpy=True):
+def run(verbosity=1, doctest=False):
     """Run NetworkX tests.
 
     Parameters
@@ -13,32 +11,26 @@ def run(verbosity=1, doctest=False, numpy=True):
 
     doctest: bool, optional
       True to run doctests in code modules
-
-    numpy: bool, optional
-      True to test modules dependent on numpy
     """
-    try:
-        import nose
-    except ImportError:
-        raise ImportError(
-            "The nose package is needed to run the NetworkX tests.")
 
-    sys.stderr.write("Running NetworkX tests:")
-    nx_install_dir = path.join(path.dirname(__file__), path.pardir)
-    # stop if running from source directory
-    if getcwd() == path.abspath(path.join(nx_install_dir, path.pardir)):
-        raise RuntimeError("Can't run tests from source directory.\n"
-                           "Run 'nosetests' from the command line.")
+    import pytest
 
-    argv = [' ', '--verbosity=%d' % verbosity,
-            '-w', nx_install_dir,
-            '-exe']
+    pytest_args = ['-l']
+
+    if verbosity and int(verbosity) > 1:
+        pytest_args += ["-" + "v"*(int(verbosity)-1)]
+
     if doctest:
-        argv.extend(['--with-doctest', '--doctest-extension=txt'])
-    if not numpy:
-        argv.extend(['-A not numpy'])
+        pytest_args += ["--doctest-modules"]
 
-    nose.run(argv=argv)
+    pytest_args += ["--pyargs", "networkx"]
+
+    try:
+        code = pytest.main(pytest_args)
+    except SystemExit as exc:
+        code = exc.code
+
+    return (code == 0)
 
 
 if __name__ == "__main__":

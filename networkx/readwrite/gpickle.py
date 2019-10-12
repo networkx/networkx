@@ -100,9 +100,8 @@ def read_gpickle(path):
     """
     return pickle.load(path)
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def teardown_module(module):
     import os
     os.unlink('test.gpickle')

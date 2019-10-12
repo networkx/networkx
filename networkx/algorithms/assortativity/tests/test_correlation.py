@@ -1,26 +1,16 @@
 #!/usr/bin/env python
-from nose.tools import *
-from nose import SkipTest
+import pytest
+np = pytest.importorskip('numpy')
+npt = pytest.importorskip('numpy.testing')
+scipy = pytest.importorskip('scipy')
+
+
 import networkx as nx
-from base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
+from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 from networkx.algorithms.assortativity.correlation import attribute_ac
 
 
 class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
-    @classmethod
-    def setupClass(cls):
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-            import scipy.stats
-        except ImportError:
-            raise SkipTest('SciPy not available.')
 
     def test_degree_assortativity_undirected(self):
         r = nx.degree_assortativity_coefficient(self.P4)
@@ -48,28 +38,18 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
 
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
-    @classmethod
-    def setupClass(cls):
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_attribute_assortativity_undirected(self):
         r = nx.attribute_assortativity_coefficient(self.G, 'fish')
-        assert_equal(r, 6.0 / 22.0)
+        assert r == 6.0 / 22.0
 
     def test_attribute_assortativity_directed(self):
         r = nx.attribute_assortativity_coefficient(self.D, 'fish')
-        assert_equal(r, 1.0 / 3.0)
+        assert r == 1.0 / 3.0
 
     def test_attribute_assortativity_multigraph(self):
         r = nx.attribute_assortativity_coefficient(self.M, 'fish')
-        assert_equal(r, 1.0)
+        assert r == 1.0
 
     def test_attribute_assortativity_coefficient(self):
         # from "Mixing patterns in networks"

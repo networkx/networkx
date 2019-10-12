@@ -44,11 +44,12 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
+  # install required packages
+  - "pip install -r requirements.txt"
+
   # Install the build and runtime dependencies of the project.
   # - "%CMD_IN_ENV% pip install --timeout=60 -r requirements.txt"
   - "pip install ."
-
-  - "pip install nose"
 
 # Not a .NET project, we build networkx in the install step instead
 build: false
@@ -57,4 +58,4 @@ test_script:
   # Change to a non-source folder to make sure we run the tests on the
   # installed library.
   - "pushd %TEMP%"
-  - "nosetests --verbosity=2 networkx"
+  - "pytest --pyargs networkx"

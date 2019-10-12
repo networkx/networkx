@@ -467,10 +467,7 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     nx.utils.default_opener(filename)
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import pygraphviz
-    except:
-        raise SkipTest("pygraphviz not available")
+    import pytest
+    pygraphviz = pytest.importorskip('pygraphviz')

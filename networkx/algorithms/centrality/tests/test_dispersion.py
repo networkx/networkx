@@ -1,5 +1,4 @@
 import networkx as nx
-from nose.tools import *
 
 
 def small_ego_G():

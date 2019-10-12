@@ -311,16 +311,9 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
     authorities = dict(zip(G, map(float, a)))
     return hubs, authorities
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

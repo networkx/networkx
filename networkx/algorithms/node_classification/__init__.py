@@ -12,8 +12,8 @@ For example:
   >>> G = nx.path_graph(4)
   >>> G.edges()
   EdgeView([(0, 1), (1, 2), (2, 3)])
-  >>> G.node[0]['label'] = 'A'
-  >>> G.node[3]['label'] = 'B'
+  >>> G.nodes[0]['label'] = 'A'
+  >>> G.nodes[3]['label'] = 'B'
   >>> node_classification.harmonic_function(G)  # doctest: +SKIP
   ['A', 'A', 'B', 'B']
 

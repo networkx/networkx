@@ -1037,16 +1037,13 @@ def relabel_gexf_graph(G):
     return H
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import xml.etree.cElementTree
-    except Exception as e:
-        raise SkipTest('xml.etree.cElementTree not available.')
+    import pytest
+    xml.etree.cElementTree = pytest.importorskip('xml.etree.cElementTree')
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     try:

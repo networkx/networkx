@@ -71,7 +71,7 @@ def read_dot(path):
     Use `G = nx.Graph(read_dot(path))` to return a :class:`Graph` instead of a
     :class:`MultiGraph`.
     """
-    pydot = _import_pydot()
+    import pydot
     data = path.read()
 
     # List of one or more "pydot.Dot" instances deserialized from this file.
@@ -188,7 +188,7 @@ def to_pydot(N):
     -----
 
     """
-    pydot = _import_pydot()
+    import pydot
 
     # set Graphviz graph type
     if N.is_directed():
@@ -306,7 +306,7 @@ def pydot_layout(G, prog='neato', root=None):
         G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
 
     """
-    pydot = _import_pydot()
+    import pydot
     P = to_pydot(G)
     if root is not None:
         P.set("root", make_str(root))
@@ -348,31 +348,7 @@ def pydot_layout(G, prog='neato', root=None):
     return node_pos
 
 
-def _import_pydot():
-    '''
-    Import and return the `pydot` module if the currently installed version of
-    this module satisfies NetworkX requirements _or_ raise an exception.
-
-    Returns
-    --------
-    :mod:`pydot`
-        Imported `pydot` module object.
-
-    Raises
-    --------
-    ImportError
-        If the `pydot` module is unimportable.
-    '''
-
-    import pydot
-    return pydot
-
-# fixture for nose tests
-
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        return _import_pydot()
-    except ImportError:
-        raise SkipTest("pydot not available")
+    import pytest
+    pytdot = pytest.importorskip('pytdot')
