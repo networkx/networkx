@@ -38,8 +38,6 @@ from networkx.classes.coreviews import UnionAdjacency, UnionMultiAdjacency, \
 from networkx.classes.filters import no_filter
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
-# remove the graph class import when deprecated GraphView removed
-from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
 
 import networkx as nx
 
