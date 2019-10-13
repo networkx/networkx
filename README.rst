@@ -25,19 +25,6 @@ of complex networks.
 - **Source:** https://github.com/networkx/networkx
 - **Bug reports:** https://github.com/networkx/networkx/issues
 
-Install
--------
-
-Install the latest version of NetworkX::
-
-    $ pip install networkx
-
-Install with all optional dependencies::
-
-    $ pip install networkx[all]
-
-For additional details, please see `INSTALL.rst`.
-
 Simple example
 --------------
 
@@ -53,6 +40,19 @@ Find the shortest path between two nodes in an undirected graph:
     >>> G.add_edge('C', 'D', weight=4)
     >>> nx.shortest_path(G, 'A', 'D', weight='weight')
     ['A', 'B', 'D']
+
+Install
+-------
+
+Install the latest version of NetworkX::
+
+    $ pip install networkx
+
+Install with all optional dependencies::
+
+    $ pip install networkx[all]
+
+For additional details, please see `INSTALL.rst`.
 
 Bugs
 ----
