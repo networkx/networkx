@@ -28,7 +28,7 @@ print("A total of %s changes have been committed.\n" % num_commits)
 
 commits = call("git log --since='%s' --pretty=%%s --reverse" % tag_date)
 for c in commits:
-    print(c)
+    print('- ' + c)
 
 print("It contained the following %d merges:\n" % len(merges))
 for (merge, message) in merges:
