@@ -175,12 +175,12 @@ def get_info(dynamic=True):
 # Version information
 name = 'networkx'
 major = "2"
-minor = "4rc1"
+minor = "4rc2"
 
 
 # Declare current release as a development release.
 # Change to False before tagging a release; then change back.
-dev = False
+dev = True
 
 
 description = "Python package for creating and manipulating graphs and networks"
