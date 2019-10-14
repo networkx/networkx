@@ -9,7 +9,7 @@ $GET_PIP_PATH = "C:\get-pip.py"
 
 function DownloadPython ($python_version, $platform_suffix) {
     $webclient = New-Object System.Net.WebClient
-    $filename = "python-" + $python_version + "rc1" + $platform_suffix + ".exe"
+    $filename = "python-" + $python_version + $platform_suffix + ".exe"
     $url = $BASE_URL + $python_version + "/" + $filename
 
     $basedir = $pwd.Path + "\"
