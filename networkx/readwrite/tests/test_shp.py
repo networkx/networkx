@@ -222,21 +222,11 @@ class TestShp(object):
 
 def test_read_shp_nofile():
     with pytest.raises(RuntimeError):
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
         G = nx.read_shp("hopefully_this_file_will_not_be_available")
 
 
 class TestMissingGeometry(object):
     def setup_method(self):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
         self.setup_path()
         self.delete_shapedir()
         self.create_shapedir()
@@ -268,12 +258,6 @@ class TestMissingGeometry(object):
 
 class TestMissingAttrWrite(object):
     def setup_method(self):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
         self.setup_path()
         self.delete_shapedir()
 

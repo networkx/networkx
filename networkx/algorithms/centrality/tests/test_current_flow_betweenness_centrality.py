@@ -145,15 +145,6 @@ class TestWeightedFlowBetweennessCentrality(object):
 
 class TestEdgeFlowBetweennessCentrality(object):
 
-    @classmethod
-    def setup_class(cls):
-        global np
-        try:
-            import numpy as np
-            import scipy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-
     def test_K4(self):
         """Edge flow betweenness centrality: K4"""
         G = nx.complete_graph(4)
