@@ -3,9 +3,7 @@
 #
 language: python
 
-cache:
-  directories:
-    - $HOME/.cache/pip
+cache: pip
 
 matrix:
   include:

@@ -8,6 +8,7 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script interpreter
     # See: http://stackoverflow.com/a/13751649/163740
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\tools\\appveyor\\run_with_env.cmd"
+    CACHE_DIR: "%LOCALAPPDATA%\\pip\\Cache"
 
   matrix:
     - PYTHON: "C:\\Python35-x64"
@@ -37,7 +38,7 @@ install:
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
   # install required packages
-  - "pip install -r requirements.txt"
+  - "pip install --cache-dir=%CACHE_DIR% -r requirements.txt"
 
   # Install the build and runtime dependencies of the project.
   # - "%CMD_IN_ENV% pip install --timeout=60 -r requirements.txt"
@@ -54,4 +55,4 @@ test_script:
 
 cache:
   # Avoid re-downloading large packages
-  - '%APPDATA%\pip\Cache'
+  - '%CACHE_DIR%'
