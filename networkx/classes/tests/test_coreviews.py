@@ -1,6 +1,4 @@
-from nose.tools import assert_equal, assert_not_equal, assert_is,\
-    assert_is_not, assert_true, assert_false, assert_raises
-import tempfile
+import pytest
 import pickle
 
 import networkx as nx
@@ -15,50 +13,50 @@ class TestAtlasView(object):
     def test_pickle(self):
         view = self.av
         pview = pickle.loads(pickle.dumps(view, -1))
-        assert_equal(view, pview)
-        assert_equal(view.__slots__, pview.__slots__)
+        assert view == pview
+        assert view.__slots__ == pview.__slots__
         pview = pickle.loads(pickle.dumps(view))
-        assert_equal(view, pview)
-        assert_equal(view.__slots__, pview.__slots__)
+        assert view == pview
+        assert view.__slots__ == pview.__slots__
 
     def test_len(self):
-        assert_equal(len(self.av), len(self.d))
+        assert len(self.av) == len(self.d)
 
     def test_iter(self):
-        assert_equal(list(self.av), list(self.d))
+        assert list(self.av) == list(self.d)
 
     def test_getitem(self):
-        assert_is(self.av[1], self.d[1])
-        assert_equal(self.av[2]['color'], 1)
-        assert_raises(KeyError, self.av.__getitem__, 3)
+        assert self.av[1] is self.d[1]
+        assert self.av[2]['color'] == 1
+        pytest.raises(KeyError, self.av.__getitem__, 3)
 
     def test_copy(self):
         avcopy = self.av.copy()
-        assert_equal(avcopy[0], self.av[0])
-        assert_equal(avcopy, self.av)
-        assert_is_not(avcopy[0], self.av[0])
-        assert_is_not(avcopy, self.av)
+        assert avcopy[0] == self.av[0]
+        assert avcopy == self.av
+        assert avcopy[0] is not self.av[0]
+        assert avcopy is not self.av
         avcopy[5] = {}
-        assert_not_equal(avcopy, self.av)
+        assert avcopy != self.av
 
         avcopy[0]['ht'] = 4
-        assert_not_equal(avcopy[0], self.av[0])
+        assert avcopy[0] != self.av[0]
         self.av[0]['ht'] = 4
-        assert_equal(avcopy[0], self.av[0])
+        assert avcopy[0] == self.av[0]
         del self.av[0]['ht']
 
-        assert_false(hasattr(self.av, '__setitem__'))
+        assert not hasattr(self.av, '__setitem__')
 
     def test_items(self):
-        assert_equal(sorted(self.av.items()), sorted(self.d.items()))
+        assert sorted(self.av.items()) == sorted(self.d.items())
 
     def test_str(self):
         out = str(self.d)
-        assert_equal(str(self.av), out)
+        assert str(self.av) == out
 
     def test_repr(self):
         out = "AtlasView(" + str(self.d) + ")"
-        assert_equal(repr(self.av), out)
+        assert repr(self.av) == out
 
 
 class TestAdjacencyView(object):
@@ -72,45 +70,45 @@ class TestAdjacencyView(object):
     def test_pickle(self):
         view = self.adjview
         pview = pickle.loads(pickle.dumps(view, -1))
-        assert_equal(view, pview)
-        assert_equal(view.__slots__, pview.__slots__)
+        assert view == pview
+        assert view.__slots__ == pview.__slots__
 
     def test_len(self):
-        assert_equal(len(self.adjview), len(self.adj))
+        assert len(self.adjview) == len(self.adj)
 
     def test_iter(self):
-        assert_equal(list(self.adjview), list(self.adj))
+        assert list(self.adjview) == list(self.adj)
 
     def test_getitem(self):
-        assert_is_not(self.adjview[1], self.adj[1])
-        assert_is(self.adjview[3][0], self.adjview[0][3])
-        assert_equal(self.adjview[2][3]['color'], 1)
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        assert self.adjview[1] is not self.adj[1]
+        assert self.adjview[3][0] is self.adjview[0][3]
+        assert self.adjview[2][3]['color'] == 1
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()
-        assert_equal(avcopy[0], self.adjview[0])
-        assert_is_not(avcopy[0], self.adjview[0])
+        assert avcopy[0] == self.adjview[0]
+        assert avcopy[0] is not self.adjview[0]
 
         avcopy[2][3]['ht'] = 4
-        assert_not_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] != self.adjview[2]
         self.adjview[2][3]['ht'] = 4
-        assert_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] == self.adjview[2]
         del self.adjview[2][3]['ht']
 
-        assert_false(hasattr(self.adjview, '__setitem__'))
+        assert not hasattr(self.adjview, '__setitem__')
 
     def test_items(self):
         view_items = sorted((n, dict(d)) for n, d in self.adjview.items())
-        assert_equal(view_items, sorted(self.adj.items()))
+        assert view_items == sorted(self.adj.items())
 
     def test_str(self):
         out = str(dict(self.adj))
-        assert_equal(str(self.adjview), out)
+        assert str(self.adjview) == out
 
     def test_repr(self):
         out = self.adjview.__class__.__name__ + "(" + str(self.adj) + ")"
-        assert_equal(repr(self.adjview), out)
+        assert repr(self.adjview) == out
 
 
 class TestMultiAdjacencyView(TestAdjacencyView):
@@ -123,23 +121,23 @@ class TestMultiAdjacencyView(TestAdjacencyView):
         self.adjview = nx.classes.coreviews.MultiAdjacencyView(self.adj)
 
     def test_getitem(self):
-        assert_is_not(self.adjview[1], self.adj[1])
-        assert_is(self.adjview[3][0][3], self.adjview[0][3][3])
-        assert_equal(self.adjview[3][2][3]['color'], 1)
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        assert self.adjview[1] is not self.adj[1]
+        assert self.adjview[3][0][3] is self.adjview[0][3][3]
+        assert self.adjview[3][2][3]['color'] == 1
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()
-        assert_equal(avcopy[0], self.adjview[0])
-        assert_is_not(avcopy[0], self.adjview[0])
+        assert avcopy[0] == self.adjview[0]
+        assert avcopy[0] is not self.adjview[0]
 
         avcopy[2][3][8]['ht'] = 4
-        assert_not_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] != self.adjview[2]
         self.adjview[2][3][8]['ht'] = 4
-        assert_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] == self.adjview[2]
         del self.adjview[2][3][8]['ht']
 
-        assert_false(hasattr(self.adjview, '__setitem__'))
+        assert not hasattr(self.adjview, '__setitem__')
 
 
 class TestUnionAtlas(object):
@@ -152,50 +150,50 @@ class TestUnionAtlas(object):
     def test_pickle(self):
         view = self.av
         pview = pickle.loads(pickle.dumps(view, -1))
-        assert_equal(view, pview)
-        assert_equal(view.__slots__, pview.__slots__)
+        assert view == pview
+        assert view.__slots__ == pview.__slots__
 
     def test_len(self):
-        assert_equal(len(self.av), len(self.s) + len(self.p))
+        assert len(self.av) == len(self.s) + len(self.p)
 
     def test_iter(self):
-        assert_equal(set(self.av), set(self.s) | set(self.p))
+        assert set(self.av) == set(self.s) | set(self.p)
 
     def test_getitem(self):
-        assert_is(self.av[0], self.s[0])
-        assert_is(self.av[4], self.p[4])
-        assert_equal(self.av[2]['color'], 1)
-        assert_raises(KeyError, self.av[2].__getitem__, 'watch')
-        assert_raises(KeyError, self.av.__getitem__, 8)
+        assert self.av[0] is self.s[0]
+        assert self.av[4] is self.p[4]
+        assert self.av[2]['color'] == 1
+        pytest.raises(KeyError, self.av[2].__getitem__, 'watch')
+        pytest.raises(KeyError, self.av.__getitem__, 8)
 
     def test_copy(self):
         avcopy = self.av.copy()
-        assert_equal(avcopy[0], self.av[0])
-        assert_is_not(avcopy[0], self.av[0])
-        assert_is_not(avcopy, self.av)
+        assert avcopy[0] == self.av[0]
+        assert avcopy[0] is not self.av[0]
+        assert avcopy is not self.av
         avcopy[5] = {}
-        assert_not_equal(avcopy, self.av)
+        assert avcopy != self.av
 
         avcopy[0]['ht'] = 4
-        assert_not_equal(avcopy[0], self.av[0])
+        assert avcopy[0] != self.av[0]
         self.av[0]['ht'] = 4
-        assert_equal(avcopy[0], self.av[0])
+        assert avcopy[0] == self.av[0]
         del self.av[0]['ht']
 
-        assert_false(hasattr(self.av, '__setitem__'))
+        assert not hasattr(self.av, '__setitem__')
 
     def test_items(self):
         expected = dict(self.p.items())
         expected.update(self.s)
-        assert_equal(sorted(self.av.items()), sorted(expected.items()))
+        assert sorted(self.av.items()) == sorted(expected.items())
 
     def test_str(self):
         out = str(dict(self.av))
-        assert_equal(str(self.av), out)
+        assert str(self.av) == out
 
     def test_repr(self):
         out = "{}({}, {})".format(self.av.__class__.__name__, self.s, self.p)
-        assert_equal(repr(self.av), out)
+        assert repr(self.av) == out
 
 
 class TestUnionAdjacency(object):
@@ -210,42 +208,42 @@ class TestUnionAdjacency(object):
     def test_pickle(self):
         view = self.adjview
         pview = pickle.loads(pickle.dumps(view, -1))
-        assert_equal(view, pview)
-        assert_equal(view.__slots__, pview.__slots__)
+        assert view == pview
+        assert view.__slots__ == pview.__slots__
 
     def test_len(self):
-        assert_equal(len(self.adjview), len(self.s))
+        assert len(self.adjview) == len(self.s)
 
     def test_iter(self):
-        assert_equal(sorted(self.adjview), sorted(self.s))
+        assert sorted(self.adjview) == sorted(self.s)
 
     def test_getitem(self):
-        assert_is_not(self.adjview[1], self.s[1])
-        assert_is(self.adjview[3][0], self.adjview[0][3])
-        assert_equal(self.adjview[2][3]['color'], 1)
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        assert self.adjview[1] is not self.s[1]
+        assert self.adjview[3][0] is self.adjview[0][3]
+        assert self.adjview[2][3]['color'] == 1
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()
-        assert_equal(avcopy[0], self.adjview[0])
-        assert_is_not(avcopy[0], self.adjview[0])
+        assert avcopy[0] == self.adjview[0]
+        assert avcopy[0] is not self.adjview[0]
 
         avcopy[2][3]['ht'] = 4
-        assert_not_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] != self.adjview[2]
         self.adjview[2][3]['ht'] = 4
-        assert_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] == self.adjview[2]
         del self.adjview[2][3]['ht']
 
-        assert_false(hasattr(self.adjview, '__setitem__'))
+        assert not hasattr(self.adjview, '__setitem__')
 
     def test_str(self):
         out = str(dict(self.adjview))
-        assert_equal(str(self.adjview), out)
+        assert str(self.adjview) == out
 
     def test_repr(self):
         clsname = self.adjview.__class__.__name__
         out = "{}({}, {})".format(clsname, self.s, self.p)
-        assert_equal(repr(self.adjview), out)
+        assert repr(self.adjview) == out
 
 
 class TestUnionMultiInner(TestUnionAdjacency):
@@ -258,29 +256,29 @@ class TestUnionMultiInner(TestUnionAdjacency):
         self.adjview = nx.classes.coreviews.UnionMultiInner(self.s, self.p)
 
     def test_len(self):
-        assert_equal(len(self.adjview), len(self.s) + len(self.p))
+        assert len(self.adjview) == len(self.s) + len(self.p)
 
     def test_getitem(self):
-        assert_is_not(self.adjview[1], self.s[1])
-        assert_is(self.adjview[0][7], self.adjview[0][3])
-        assert_equal(self.adjview[2]['key']['color'], 1)
-        assert_equal(self.adjview[2][1]['span'], 2)
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
-        assert_raises(KeyError, self.adjview[1].__getitem__, 'key')
+        assert self.adjview[1] is not self.s[1]
+        assert self.adjview[0][7] is self.adjview[0][3]
+        assert self.adjview[2]['key']['color'] == 1
+        assert self.adjview[2][1]['span'] == 2
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
+        pytest.raises(KeyError, self.adjview[1].__getitem__, 'key')
 
     def test_copy(self):
         avcopy = self.adjview.copy()
-        assert_equal(avcopy[0], self.adjview[0])
-        assert_is_not(avcopy[0], self.adjview[0])
+        assert avcopy[0] == self.adjview[0]
+        assert avcopy[0] is not self.adjview[0]
 
         avcopy[2][1]['width'] = 8
-        assert_not_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] != self.adjview[2]
         self.adjview[2][1]['width'] = 8
-        assert_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] == self.adjview[2]
         del self.adjview[2][1]['width']
 
-        assert_false(hasattr(self.adjview, '__setitem__'))
-        assert_true(hasattr(avcopy, '__setitem__'))
+        assert not hasattr(self.adjview, '__setitem__')
+        assert hasattr(avcopy, '__setitem__')
 
 
 class TestUnionMultiAdjacency(TestUnionAdjacency):
@@ -294,24 +292,24 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
         self.adjview = nx.classes.coreviews.UnionMultiAdjacency(self.s, self.p)
 
     def test_getitem(self):
-        assert_is_not(self.adjview[1], self.s[1])
-        assert_is(self.adjview[3][0][9], self.adjview[0][3][9])
-        assert_equal(self.adjview[3][2][9]['color'], 1)
-        assert_raises(KeyError, self.adjview.__getitem__, 4)
+        assert self.adjview[1] is not self.s[1]
+        assert self.adjview[3][0][9] is self.adjview[0][3][9]
+        assert self.adjview[3][2][9]['color'] == 1
+        pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
         avcopy = self.adjview.copy()
-        assert_equal(avcopy[0], self.adjview[0])
-        assert_is_not(avcopy[0], self.adjview[0])
+        assert avcopy[0] == self.adjview[0]
+        assert avcopy[0] is not self.adjview[0]
 
         avcopy[2][3][8]['ht'] = 4
-        assert_not_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] != self.adjview[2]
         self.adjview[2][3][8]['ht'] = 4
-        assert_equal(avcopy[2], self.adjview[2])
+        assert avcopy[2] == self.adjview[2]
         del self.adjview[2][3][8]['ht']
 
-        assert_false(hasattr(self.adjview, '__setitem__'))
-        assert_true(hasattr(avcopy, '__setitem__'))
+        assert not hasattr(self.adjview, '__setitem__')
+        assert hasattr(avcopy, '__setitem__')
 
 
 class TestFilteredGraphs(object):
@@ -320,22 +318,19 @@ class TestFilteredGraphs(object):
                        nx.DiGraph,
                        nx.MultiGraph,
                        nx.MultiDiGraph]
-        self.SubGraphs = [nx.graphviews.SubGraph,
-                          nx.graphviews.SubDiGraph,
-                          nx.graphviews.SubMultiGraph,
-                          nx.graphviews.SubMultiDiGraph]
+        self.SubGraphs = [nx.graphviews.subgraph_view] * 4
 
     def test_hide_show_nodes(self):
         for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
-            assert_equal(SG.nodes, RG.nodes)
-            assert_equal(SG.edges, RG.edges)
+            assert SG.nodes == RG.nodes
+            assert SG.edges == RG.edges
             SGC = SG.copy()
             RGC = RG.copy()
-            assert_equal(SGC.nodes, RGC.nodes)
-            assert_equal(SGC.edges, RGC.edges)
+            assert SGC.nodes == RGC.nodes
+            assert SGC.edges == RGC.edges
 
     def test_str_repr(self):
         for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
@@ -356,9 +351,9 @@ class TestFilteredGraphs(object):
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
-            assert_equal(G.adj.copy(), G.adj)
-            assert_equal(G.adj[2].copy(), G.adj[2])
-            assert_equal(SG.adj.copy(), SG.adj)
-            assert_equal(SG.adj[2].copy(), SG.adj[2])
-            assert_equal(RG.adj.copy(), RG.adj)
-            assert_equal(RG.adj[2].copy(), RG.adj[2])
+            assert G.adj.copy() == G.adj
+            assert G.adj[2].copy() == G.adj[2]
+            assert SG.adj.copy() == SG.adj
+            assert SG.adj[2].copy() == SG.adj[2]
+            assert RG.adj.copy() == RG.adj
+            assert RG.adj[2].copy() == RG.adj[2]

@@ -903,16 +903,13 @@ class GraphMLReader(GraphML):
         return graphml_keys, graphml_key_defaults
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import xml.etree.ElementTree
-    except:
-        raise SkipTest("xml.etree.ElementTree not available")
+    import pytest
+    xml.etree.ElementTree = pytest.importorskip('xml.etree.ElementTree')
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     try:

@@ -100,17 +100,15 @@ def read_yaml(path):
     return G
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
     try:
         import yaml
     except:
-        raise SkipTest("PyYAML not available")
+        from pytest import skip
+        skip("PyYAML not available", allow_module_level=True)
 
-# fixture for nose tests
-
-
+# fixture for pytest
 def teardown_module(module):
     import os
     os.unlink('test.yaml')

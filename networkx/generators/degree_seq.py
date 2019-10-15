@@ -580,8 +580,8 @@ def directed_havel_hakimi_graph(in_deg_sequence,
        Algorithms for Constructing Graphs and Digraphs with Given Valences
        and Factors Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
-    assert(nx.utils.is_list_of_ints(in_deg_sequence))
-    assert(nx.utils.is_list_of_ints(out_deg_sequence))
+    in_deg_sequence = nx.utils.make_list_of_ints(in_deg_sequence)
+    out_deg_sequence = nx.utils.make_list_of_ints(out_deg_sequence)
 
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or nonzero out degrees

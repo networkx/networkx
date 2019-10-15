@@ -24,11 +24,14 @@ How to make a new release of ``networkx``
 
 - Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
 
-- Commit changes.
+- Commit changes::
+
+  git add networkx/release.py
+  git commit -m "Designate X.X release"
 
 - Add the version number as a tag in git::
 
-   git tag -s [-u <key-id>] networkx-<major>.<minor>
+   git tag -s [-u <key-id>] networkx-<major>.<minor> -m 'signed <major>.<minor> tag'
 
   (If you do not have a gpg key, use -m instead; it is important for
   Debian packaging that the tags are annotated)
@@ -73,6 +76,12 @@ How to make a new release of ``networkx``
 
   - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
+
+ - Commit and push changes::
+
+   git add networkx/release.py
+   git commit -m "Bump release version"
+   git push upstream master
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website

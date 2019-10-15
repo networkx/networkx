@@ -238,10 +238,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     return dict(zip(G, largest / norm))
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    scipy = pytest.importorskip('scipy')

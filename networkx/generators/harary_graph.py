@@ -9,7 +9,7 @@
 """Generators for Harary graphs
 
 This module gives two generators for the Harary graph, which was
-introduced by the famous mathematician Frank Harary in his 1962 work [1]_.
+introduced by the famous mathematician Frank Harary in his 1962 work [H]_.
 The first generator gives the Harary graph that maximizes the node
 connectivity with given number of nodes and given number of edges.
 The second generator gives the Harary graph that minimizes
@@ -18,7 +18,7 @@ number of nodes.
 
 References
 ----------
-.. [1] Harary, F. "The Maximum Connectivity of a Graph."
+.. [H] Harary, F. "The Maximum Connectivity of a Graph."
        Proc. Nat. Acad. Sci. USA 48, 1142-1146, 1962.
 
 """

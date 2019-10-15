@@ -1,7 +1,7 @@
 # Jordi Torrents
 # Test for k-cutsets
 import itertools
-from nose.tools import assert_equal, assert_false, assert_true, assert_raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
@@ -126,8 +126,8 @@ def _check_separating_sets(G):
         all_cuts = nx.all_node_cuts(Gc)
         # Only test a limited number of cut sets to reduce test time.
         for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
-            assert_equal(node_conn, len(cut))
-            assert_false(nx.is_connected(nx.restricted_view(G, cut, [])))
+            assert node_conn == len(cut)
+            assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
 def test_torrents_and_ferraro_graph():
@@ -184,7 +184,7 @@ def test_articulation_points():
         G = next(Ggen)
         articulation_points = list({a} for a in nx.articulation_points(G))
         for cut in nx.all_node_cuts(G):
-            assert_true(cut in articulation_points)
+            assert cut in articulation_points
 
 
 def test_grid_2d_graph():
@@ -199,13 +199,13 @@ def test_grid_2d_graph():
         set([(0, 3), (1, 4)]),
     ]
     for cut in nx.all_node_cuts(G):
-        assert_true(cut in solution)
+        assert cut in solution
 
 
 def test_disconnected_graph():
     G = nx.fast_gnp_random_graph(100, 0.01, seed=42)
     cuts = nx.all_node_cuts(G)
-    assert_raises(nx.NetworkXError, next, cuts)
+    pytest.raises(nx.NetworkXError, next, cuts)
 
 
 def test_alternative_flow_functions():
@@ -217,45 +217,46 @@ def test_alternative_flow_functions():
             all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
             # Only test a limited number of cut sets to reduce test time.
             for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
-                assert_equal(node_conn, len(cut))
-                assert_false(nx.is_connected(nx.restricted_view(G, cut, [])))
+                assert node_conn == len(cut)
+                assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
 def test_is_separating_set_complete_graph():
     G = nx.complete_graph(5)
-    assert_true(_is_separating_set(G, {0, 1, 2, 3}))
+    assert _is_separating_set(G, {0, 1, 2, 3})
 
 
 def test_is_separating_set():
     for i in [5, 10, 15]:
         G = nx.star_graph(i)
         max_degree_node = max(G, key=G.degree)
-        assert_true(_is_separating_set(G, {max_degree_node}))
+        assert _is_separating_set(G, {max_degree_node})
 
 
 def test_non_repeated_cuts():
     # The algorithm was repeating the cut {0, 1} for the giant biconnected
     # component of the Karate club graph.
     K = nx.karate_club_graph()
-    G = max(list(nx.biconnected_component_subgraphs(K)), key=len)
+    bcc = max(list(nx.biconnected_components(K)), key=len)
+    G = K.subgraph(bcc)
     solution = [{32, 33}, {2, 33}, {0, 3}, {0, 1}, {29, 33}]
     cuts = list(nx.all_node_cuts(G))
     if len(solution) != len(cuts):
         print(nx.info(G))
         print("Solution: {}".format(solution))
         print("Result: {}".format(cuts))
-    assert_true(len(solution) == len(cuts))
+    assert len(solution) == len(cuts)
     for cut in cuts:
-        assert_true(cut in solution)
+        assert cut in solution
 
 
 def test_cycle_graph():
     G = nx.cycle_graph(5)
     solution = [{0, 2}, {0, 3}, {1, 3}, {1, 4}, {2, 4}]
     cuts = list(nx.all_node_cuts(G))
-    assert_true(len(solution) == len(cuts))
+    assert len(solution) == len(cuts)
     for cut in cuts:
-        assert_true(cut in solution)
+        assert cut in solution
 
 
 def test_complete_graph():
@@ -268,6 +269,6 @@ def test_complete_graph():
         {1, 2, 3, 4},
     ]
     cuts = list(nx.all_node_cuts(G))
-    assert_true(len(solution) == len(cuts))
+    assert len(solution) == len(cuts)
     for cut in cuts:
-        assert_true(cut in solution)
+        assert cut in solution

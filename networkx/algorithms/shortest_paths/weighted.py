@@ -155,9 +155,13 @@ def dijkstra_path(G, source, target, weight='weight'):
     In this example we take the average of start and end node
     weights of an edge and add it to the weight of the edge.
 
+    The function :func:`single_source_dijkstra` computes both
+    path and length-of-path if you need both, use that.
+
     See Also
     --------
     bidirectional_dijkstra(), bellman_ford_path()
+    single_source_dijkstra()
     """
     (length, path) = single_source_dijkstra(G, source, target=target,
                                             weight=weight)
@@ -221,9 +225,13 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
     will find the shortest red path.
 
+    The function :func:`single_source_dijkstra` computes both
+    path and length-of-path if you need both, use that.
+
     See Also
     --------
     bidirectional_dijkstra(), bellman_ford_path_length()
+    single_source_dijkstra()
 
     """
     if source == target:
@@ -1164,11 +1172,12 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> from nose.tools import assert_raises
+    >>> import pytest
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, \
+    >>> pytest.raises(nx.NetworkXUnbounded, \
                       nx.bellman_ford_predecessor_and_distance, G, 0)
+    <ExceptionInfo NetworkXUnbounded tblen=3>
 
     Notes
     -----
@@ -1740,10 +1749,11 @@ def goldberg_radzik(G, source, weight='weight'):
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> from nose.tools import assert_raises
+    >>> import pytest
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 0)
+    >>> pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 0)
+    <ExceptionInfo NetworkXUnbounded tblen=3>
 
     Notes
     -----

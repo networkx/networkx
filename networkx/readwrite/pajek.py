@@ -280,7 +280,7 @@ def make_qstr(t):
     return t
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     os.unlink('test.net')

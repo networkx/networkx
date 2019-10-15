@@ -123,7 +123,7 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
 
     """
     import pandas as pd
-    M = to_numpy_matrix(G, nodelist=nodelist, dtype=dtype, order=order,
+    M = to_numpy_array(G, nodelist=nodelist, dtype=dtype, order=order,
                         multigraph_weight=multigraph_weight, weight=weight,
                         nonedge=nonedge)
     if nodelist is None:
@@ -274,10 +274,11 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
         A valid column name (string or integer) for the target nodes (for the
         directed case).
 
-    edge_attr : str or int, iterable, True
-        A valid column name (str or integer) or list of column names that will
-        be used to retrieve items from the row and add them to the graph as
-        edge attributes. If `True`, all of the remaining columns will be added.
+    edge_attr : str or int, iterable, True, or None
+        A valid column name (str or int) or iterable of column names that are
+        used to retrieve items and add them to the graph as edge attributes.
+        If `True`, all of the remaining columns will be added.
+        If `None`, no edge attributes are added to the graph.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
@@ -332,6 +333,9 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
         cols = edge_attr
     else:
         cols = [edge_attr]
+    if len(cols) == 0:
+        msg = "Invalid edge_attr argument. No columns found with name: %s"
+        raise nx.NetworkXError(msg % cols)
 
     try:
         eattrs = zip(*[df[col] for col in cols])
@@ -339,14 +343,12 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
         msg = "Invalid edge_attr argument: %s" % edge_attr
         raise nx.NetworkXError(msg)
     for s, t, attrs in zip(df[source], df[target], eattrs):
-
-        g.add_edge(s, t)
-
         if g.is_multigraph():
-            key = max(g[s][t])  # default keys just count so max is most recent
-            g[s][t][key].update((attr, val) for attr, val in zip(cols, attrs))
+            key = g.add_edge(s, t)
+            g[s][t][key].update(zip(cols, attrs))
         else:
-            g[s][t].update((attr, val) for attr, val in zip(cols, attrs))
+            g.add_edge(s, t)
+            g[s][t].update(zip(cols, attrs))
 
     return g
 
@@ -423,7 +425,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     >>> A = nx.to_numpy_matrix(G)
     >>> A
     matrix([[1.]])
-    >>> A.A[np.diag_indices_from(A)] *= 2
+    >>> A[np.diag_indices_from(A)] *= 2
     >>> A
     matrix([[2.]])
 
@@ -503,14 +505,14 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     Simple integer weights on edges:
 
     >>> import numpy as np
-    >>> A = np.matrix([[1, 1], [2, 1]])
+    >>> A = np.array([[1, 1], [2, 1]])
     >>> G = nx.from_numpy_matrix(A)
 
     If `create_using` indicates a multigraph and the matrix has only integer
     entries and `parallel_edges` is False, then the entries will be treated
     as weights for edges joining the nodes (without creating parallel edges):
 
-    >>> A = np.matrix([[1, 1], [1, 2]])
+    >>> A = np.array([[1, 1], [1, 2]])
     >>> G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 2}})
@@ -519,7 +521,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     entries and `parallel_edges` is True, then the entries will be treated
     as the number of parallel edges joining those two vertices:
 
-    >>> A = np.matrix([[1, 1], [1, 2]])
+    >>> A = np.array([[1, 1], [1, 2]])
     >>> temp = nx.MultiGraph()
     >>> G = nx.from_numpy_matrix(A, parallel_edges=True, create_using=temp)
     >>> G[1][1]
@@ -528,7 +530,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     User defined compound data type on edges:
 
     >>> dt = [('weight', float), ('cost', int)]
-    >>> A = np.matrix([[(1.0, 2)]], dtype=dt)
+    >>> A = np.array([[(1.0, 2)]], dtype=dt)
     >>> G = nx.from_numpy_matrix(A)
     >>> list(G.edges())
     [(0, 0)]
@@ -1239,18 +1241,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
                              create_using=create_using)
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")
-    try:
-        import pandas
-    except ImportError:
-        raise SkipTest("Pandas not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')
+    pandas = pytest.importorskip('pandas')

@@ -194,12 +194,12 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
     else:
         raise nx.NetworkXError("Please specify one of the strings 'bfs' or"
                                " 'dfs' for connected sequential ordering")
-    for component in nx.connected_component_subgraphs(G):
+    for component in nx.connected_components(G):
         source = arbitrary_element(component)
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(component, source):
+        for (_, end) in traverse(G.subgraph(component), source):
             yield end
 
 
@@ -286,18 +286,17 @@ def greedy_color(G, strategy='largest_first', interchange=False):
        * ``'connected_sequential_bfs'``
        * ``'connected_sequential_dfs'``
        * ``'connected_sequential'`` (alias for the previous strategy)
-       * ``'strategy_saturation_largest_first'``
+       * ``'saturation_largest_first'``
        * ``'DSATUR'`` (alias for the previous strategy)
 
     interchange: bool
        Will use the color interchange algorithm described by [3]_ if set
        to ``True``.
 
-       Note that ``strategy_saturation_largest_first`` and
-       ``strategy_independent_set`` do not work with
-       interchange. Furthermore, if you use interchange with your own
-       strategy function, you cannot rely on the values in the
-       ``colors`` argument.
+       Note that ``saturation_largest_first`` and ``independent_set``
+       do not work with interchange. Furthermore, if you use
+       interchange with your own strategy function, you cannot rely
+       on the values in the ``colors`` argument.
 
     Returns
     -------
@@ -314,8 +313,8 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     Raises
     ------
     NetworkXPointlessConcept
-        If ``strategy`` is ``strategy_saturation_largest_first`` or
-        ``strategy_independent_set`` and ``interchange`` is ``True``.
+        If ``strategy`` is ``saturation_largest_first`` or
+        ``independent_set`` and ``interchange`` is ``True``.
 
     References
     ----------
@@ -341,11 +340,11 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     # strategy functions.
     if interchange:
         if strategy is strategy_independent_set:
-            msg = 'interchange cannot be used with strategy_independent_set'
+            msg = 'interchange cannot be used with independent_set'
             raise nx.NetworkXPointlessConcept(msg)
         if strategy is strategy_saturation_largest_first:
             msg = ('interchange cannot be used with'
-                   ' strategy_saturation_largest_first')
+                   ' saturation_largest_first')
             raise nx.NetworkXPointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-from nose.tools import *
-from nose import SkipTest
-from nose.plugins.attrib import attr
+import pytest
+
+
 import networkx
+from networkx.testing import almost_equal
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -11,7 +12,8 @@ import networkx
 
 class TestHITS:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
 
         G = networkx.DiGraph()
 
@@ -22,73 +24,57 @@ class TestHITS:
                  (6, 5)]
 
         G.add_edges_from(edges, weight=1)
-        self.G = G
-        self.G.a = dict(zip(sorted(G), [0.000000, 0.000000, 0.366025,
+        cls.G = G
+        cls.G.a = dict(zip(sorted(G), [0.000000, 0.000000, 0.366025,
                                         0.133975, 0.500000, 0.000000]))
-        self.G.h = dict(zip(sorted(G), [0.366025, 0.000000, 0.211325,
+        cls.G.h = dict(zip(sorted(G), [0.366025, 0.000000, 0.211325,
                                         0.000000, 0.211325, 0.211325]))
 
     def test_hits(self):
         G = self.G
         h, a = networkx.hits(G, tol=1.e-08)
         for n in G:
-            assert_almost_equal(h[n], G.h[n], places=4)
+            assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
-            assert_almost_equal(a[n], G.a[n], places=4)
+            assert almost_equal(a[n], G.a[n], places=4)
 
     def test_hits_nstart(self):
         G = self.G
         nstart = dict([(i, 1. / 2) for i in G])
         h, a = networkx.hits(G, nstart=nstart)
 
-    @attr('numpy')
     def test_hits_numpy(self):
-        try:
-            import numpy as np
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-
+        numpy = pytest.importorskip('numpy')
         G = self.G
         h, a = networkx.hits_numpy(G)
         for n in G:
-            assert_almost_equal(h[n], G.h[n], places=4)
+            assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
-            assert_almost_equal(a[n], G.a[n], places=4)
+            assert almost_equal(a[n], G.a[n], places=4)
 
     def test_hits_scipy(self):
-        try:
-            import scipy as sp
-        except ImportError:
-            raise SkipTest('SciPy not available.')
-
+        sp = pytest.importorskip('scipy')
         G = self.G
         h, a = networkx.hits_scipy(G, tol=1.e-08)
         for n in G:
-            assert_almost_equal(h[n], G.h[n], places=4)
+            assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
-            assert_almost_equal(a[n], G.a[n], places=4)
+            assert almost_equal(a[n], G.a[n], places=4)
 
-    @attr('numpy')
     def test_empty(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
+        numpy = pytest.importorskip('numpy')
         G = networkx.Graph()
-        assert_equal(networkx.hits(G), ({}, {}))
-        assert_equal(networkx.hits_numpy(G), ({}, {}))
-        assert_equal(networkx.authority_matrix(G).shape, (0, 0))
-        assert_equal(networkx.hub_matrix(G).shape, (0, 0))
+        assert networkx.hits(G) == ({}, {})
+        assert networkx.hits_numpy(G) == ({}, {})
+        assert networkx.authority_matrix(G).shape == (0, 0)
+        assert networkx.hub_matrix(G).shape == (0, 0)
 
     def test_empty_scipy(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('scipy not available.')
+        scipy = pytest.importorskip('scipy')
         G = networkx.Graph()
-        assert_equal(networkx.hits_scipy(G), ({}, {}))
+        assert networkx.hits_scipy(G) == ({}, {})
 
-    @raises(networkx.PowerIterationFailedConvergence)
     def test_hits_not_convergent(self):
-        G = self.G
-        networkx.hits(G, max_iter=0)
+        with pytest.raises(networkx.PowerIterationFailedConvergence):
+            G = self.G
+            networkx.hits(G, max_iter=0)

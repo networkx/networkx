@@ -168,12 +168,8 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    scipy = pytest.importorskip('scipy')

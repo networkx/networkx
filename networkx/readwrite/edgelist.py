@@ -460,7 +460,7 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
                          )
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     for fname in ['test.edgelist', 'test.edgelist.gz',

@@ -1,7 +1,4 @@
-from itertools import combinations
 
-from nose.tools import assert_equal
-from nose.tools import raises
 
 import networkx as nx
 from networkx.algorithms.community import (
@@ -16,7 +13,7 @@ class TestCNM(object):
 
     def _check_communities(self, expected):
         communities = set(greedy_modularity_communities(self.G))
-        assert_equal(communities, expected)
+        assert communities == expected
 
     def test_karate_club(self):
         john_a = frozenset([
@@ -33,7 +30,7 @@ class TestNaive(object):
 
     def _check_communities(self, expected):
         communities = set(_naive_greedy_modularity_communities(self.G))
-        assert_equal(communities, expected)
+        assert communities == expected
 
     def test_karate_club(self):
         john_a = frozenset([

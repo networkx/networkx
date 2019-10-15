@@ -80,21 +80,21 @@ def partial_duplication_graph(N, n, p, q, seed=None):
 
     G = nx.complete_graph(n)
     for new_node in range(n, N):
+        # Pick a random vertex, u, already in the graph.
+        src_node = seed.randint(0, new_node - 1)
+
         # Add a new vertex, v, to the graph.
         G.add_node(new_node)
-
-        # Pick a random vertex, u, already in the graph.
-        src_node = seed.randint(0, new_node)
-
-        # Join v and u with probability q.
-        if seed.random() < q:
-            G.add_edge(new_node, src_node)
 
         # For each neighbor of u...
         for neighbor_node in list(nx.all_neighbors(G, src_node)):
             # Add the neighbor to v with probability p.
             if seed.random() < p:
                 G.add_edge(new_node, neighbor_node)
+
+        # Join v and u with probability q.
+        if seed.random() < q:
+            G.add_edge(new_node, src_node)
     return G
 
 

@@ -92,10 +92,7 @@ def non_randomness(G, k=None):
     return nr, nr_rd
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')

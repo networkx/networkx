@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Greedy coloring test suite.
 
-Run with nose: nosetests -v test_coloring.py
 """
 
 __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
@@ -10,7 +9,7 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Jake VanderPlas <jakevdp@uw.edu>"])
 
 import networkx as nx
-from nose.tools import *
+import pytest
 
 
 is_coloring = nx.algorithms.coloring.equitable_coloring.is_coloring
@@ -44,16 +43,15 @@ class TestColoring:
             coloring = nx.coloring.greedy_color(graph,
                                                 strategy=strategy,
                                                 interchange=interchange)
-            assert_true(verify_length(coloring, n_nodes))
-            assert_true(verify_coloring(graph, coloring))
+            assert verify_length(coloring, n_nodes)
+            assert verify_coloring(graph, coloring)
 
         for graph_func, n_nodes in BASIC_TEST_CASES.items():
             for interchange in [True, False]:
                 for strategy in ALL_STRATEGIES:
-                    if interchange and (strategy in INTERCHANGE_INVALID):
-                        continue
-                    yield (check_basic_case, graph_func,
-                           n_nodes, strategy, interchange)
+                    check_basic_case(graph_func, n_nodes, strategy, False)
+                    if strategy not in INTERCHANGE_INVALID:
+                        check_basic_case(graph_func, n_nodes, strategy, True)
 
     def test_special_cases(self):
         def check_special_case(strategy, graph_func, interchange, colors):
@@ -63,28 +61,24 @@ class TestColoring:
                                                 interchange=interchange)
             if not hasattr(colors, '__len__'):
                 colors = [colors]
-            assert_true(any(verify_length(coloring, n_colors)
-                            for n_colors in colors))
-            assert_true(verify_coloring(graph, coloring))
+            assert any(verify_length(coloring, n_colors)
+                            for n_colors in colors)
+            assert verify_coloring(graph, coloring)
 
         for strategy, arglist in SPECIAL_TEST_CASES.items():
             for args in arglist:
-                yield (check_special_case, strategy, args[0], args[1], args[2])
+                check_special_case(strategy, args[0], args[1], args[2])
 
     def test_interchange_invalid(self):
         graph = one_node_graph()
-
-        def check_raises(strategy):
-            assert_raises(nx.NetworkXPointlessConcept,
+        for strategy in INTERCHANGE_INVALID:
+            pytest.raises(nx.NetworkXPointlessConcept,
                           nx.coloring.greedy_color,
                           graph, strategy=strategy, interchange=True)
 
-        for strategy in INTERCHANGE_INVALID:
-            yield check_raises, strategy
-
     def test_bad_inputs(self):
         graph = one_node_graph()
-        assert_raises(nx.NetworkXError, nx.coloring.greedy_color,
+        pytest.raises(nx.NetworkXError, nx.coloring.greedy_color,
                       graph, strategy='invalid strategy')
 
     def test_strategy_as_function(self):
@@ -93,14 +87,14 @@ class TestColoring:
                                             'largest_first')
         colors_2 = nx.coloring.greedy_color(graph,
                                             nx.coloring.strategy_largest_first)
-        assert_equal(colors_1, colors_2)
+        assert colors_1 == colors_2
 
     def test_seed_argument(self):
         graph = lf_shc()
         rs = nx.coloring.strategy_random_sequential
-        c1 = nx.coloring.greedy_color(graph,lambda g, c: rs(g, c, seed=1))
+        c1 = nx.coloring.greedy_color(graph, lambda g, c: rs(g, c, seed=1))
         for u, v in graph.edges:
-            assert_not_equal(c1[u], c1[v])
+            assert c1[u] != c1[v]
 
     def test_is_coloring(self):
         G = nx.Graph()
@@ -128,7 +122,7 @@ class TestColoring:
     def test_num_colors(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3)])
-        assert_raises(nx.NetworkXAlgorithmError,
+        pytest.raises(nx.NetworkXAlgorithmError,
                       nx.coloring.equitable_color, G, 2)
 
     def test_equitable_color(self):
@@ -299,7 +293,7 @@ class TestColoring:
         check_state(**params)
 
 
-############################## Utility functions ##############################
+#  ############################  Utility functions ############################
 def verify_coloring(graph, coloring):
     for node in graph.nodes():
         if node not in coloring:
@@ -330,7 +324,7 @@ def dict_to_sets(colors):
 
     return sets
 
-############################## Graph Generation ##############################
+#  ############################  Graph Generation ############################
 
 
 def empty_graph():
@@ -634,7 +628,7 @@ def sli_hc():
     return graph
 
 
-#---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Basic tests for all strategies
 # For each basic graph function, specify the number of expected colors.
 BASIC_TEST_CASES = {empty_graph: 0,
@@ -644,7 +638,7 @@ BASIC_TEST_CASES = {empty_graph: 0,
                     three_node_clique: 3}
 
 
-#---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Special test cases. Each strategy has a list of tuples of the form
 # (graph function, interchange, valid # of colors)
 SPECIAL_TEST_CASES = {
@@ -680,7 +674,7 @@ SPECIAL_TEST_CASES = {
 }
 
 
-#---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Helper functions to test
 # (graph function, interchange, valid # of colors)
 
@@ -721,4 +715,3 @@ def make_params_from_graph(G, F):
         'H': H,
         'L': L,
     }
-

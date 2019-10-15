@@ -85,7 +85,8 @@ if __name__ == '__main__':
 
     # identify connected components
     # of the undirected version
-    Gcc = list(nx.connected_component_subgraphs(G.to_undirected()))
+    H = G.to_undirected()
+    Gcc = [H.subgraph(c) for c in nx.connected_components(H)]
     if len(Gcc) > 1:
         print("Note the disconnected component consisting of:")
         print(Gcc[1].nodes())

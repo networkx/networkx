@@ -287,7 +287,7 @@ class ISMAGS:
             `n1` and `n2` node property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_node_match` and
             friends.
-            If `None`, all nodes are considered equal. 
+            If `None`, all nodes are considered equal.
         edge_match: collections.abc.Callable or None
             Function used to determine whether two edges are equivalent. Its
             signature should look like ``f(e1: dict, e2: dict) -> bool``, with
@@ -437,9 +437,9 @@ class ISMAGS:
         return comparer
 
     def find_isomorphisms(self, symmetry=True):
-        """
-        Find all subgraph isomorphisms between :attr:`subgraph` <=
-        :attr:`graph`.
+        """Find all subgraph isomorphisms between subgraph and graph
+
+        Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
 
         Parameters
         ----------
@@ -526,7 +526,7 @@ class ISMAGS:
                     pass
                 else:
                     new_sg_count[ge_color, gn_color] = count
-            
+
             for gn, g_count in g_counts.items():
                 if all(new_sg_count[x] <= g_count[x] for x in new_sg_count):
                     # Valid candidate
@@ -635,18 +635,12 @@ class ISMAGS:
         """
         Does the same as :meth:`find_isomorphisms` if :attr:`graph` and
         :attr:`subgraph` have the same number of nodes.
-        
-        .. automethod:: find_isomorphisms
         """
         if len(self.graph) == len(self.subgraph):
             yield from self.subgraph_isomorphisms_iter(symmetry=symmetry)
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """
-        Alternative name for :meth:`find_isomorphisms`.
-
-        .. automethod:: find_isomorphisms
-        """
+        """Alternative name for :meth:`find_isomorphisms`."""
         return self.find_isomorphisms(symmetry)
 
     def _find_nodecolor_candidates(self):

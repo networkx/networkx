@@ -13,15 +13,14 @@
 module.
 
 """
-from nose.tools import assert_equal
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms.community import kernighan_lin_bisection
 
 
 def assert_partition_equal(x, y):
-    assert_equal(set(map(frozenset, x)), set(map(frozenset, y)))
+    assert set(map(frozenset, x)) == set(map(frozenset, y))
 
 
 def test_partition():
@@ -36,18 +35,18 @@ def test_seed_argument():
     assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
 
 
-@raises(nx.NetworkXError)
 def test_non_disjoint_partition():
-    G = nx.barbell_graph(3, 0)
-    partition = ({0, 1, 2}, {2, 3, 4, 5})
-    kernighan_lin_bisection(G, partition)
+    with pytest.raises(nx.NetworkXError):
+        G = nx.barbell_graph(3, 0)
+        partition = ({0, 1, 2}, {2, 3, 4, 5})
+        kernighan_lin_bisection(G, partition)
 
 
-@raises(nx.NetworkXError)
 def test_too_many_blocks():
-    G = nx.barbell_graph(3, 0)
-    partition = ({0, 1}, {2}, {3, 4, 5})
-    kernighan_lin_bisection(G, partition)
+    with pytest.raises(nx.NetworkXError):
+        G = nx.barbell_graph(3, 0)
+        partition = ({0, 1}, {2}, {3, 4, 5})
+        kernighan_lin_bisection(G, partition)
 
 
 def test_multigraph():

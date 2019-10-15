@@ -122,16 +122,16 @@ is partially historical, and now, mostly arbitrary.
 - Robert Gmyr, Github: `gmyr <https://github.com/gmyr>`_
 - Mike Trenfield
 - Jon Crall, Github: `Erotemic <https://github.com/Erotemic>`_
-- Issa Moradnejad, `Github <https://github.com/Moradnejad>`_, `LinkedIn <https://linkedin.com/in/moradnejad/>`_
+- Issa Moradnejad, Github `<https://github.com/Moradnejad>`_, LinkedIn `<https://linkedin.com/in/moradnejad/>`_
 - Brian Kiefer, Github: `bkief <https://github.com/bkief>`_
 - Julien Klaus
 - Peter C. Kroon, Github: `pckroon <https://github.com/pckroon>`_
 - Weisheng Si, Github: `ws4u <https://github.com/ws4u>`_
 - Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_ 
-- Efraim Rodrigues, `GitHub <https://github.com/efraimrodrigues>`_, `LinkedIn <https://linkedin.com/in/efraim-rodrigues/>`_
+- Efraim Rodrigues, GitHub `<https://github.com/efraimrodrigues>`_, LinkedIn `<https://linkedin.com/in/efraim-rodrigues/>`_
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
-- Salim BELHADDAD, `LinkedIn <https://www.linkedin.com/in/salymdotme/>`_
+- Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
 
 Support
 -------

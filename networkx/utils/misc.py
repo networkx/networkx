@@ -91,6 +91,41 @@ def flatten(obj, result=None):
     return obj.__class__(result)
 
 
+def make_list_of_ints(sequence):
+    """Return list of ints from sequence of integral numbers.
+    
+    All elements of the sequence must satisfy int(element) == element
+    or a ValueError is raised. Sequence is iterated through once.
+
+    If sequence is a list, the non-int values are replaced with ints.
+    So, no new list is created
+    """
+    msg = 'sequence is not all integers: %s'
+    if not isinstance(sequence, list):
+        result = []
+        for i in sequence:
+            try:
+                ii = int(i)
+            except ValueError:
+                raise nx.NetworkXError(msg % i) from None
+            if ii != i:
+                raise nx.NetworkXError(msg % i)
+            result.append(ii)
+        return result
+    # original sequence is a list... in-place conversion to ints
+    for indx, i in enumerate(sequence):
+        if isinstance(i, int):
+            continue
+        try:
+            ii = int(i)
+        except ValueError:
+            raise nx.NetworkXError(msg % i) from None
+        if ii != i:
+            raise nx.NetworkXError(msg % i)
+        sequence[indx] = ii
+    return sequence
+
+
 def is_list_of_ints(intlist):
     """ Return True if list is a list of ints. """
     if not isinstance(intlist, list):
@@ -409,10 +444,7 @@ def create_py_random_state(random_state=None):
     raise ValueError(msg % random_state)
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')

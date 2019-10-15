@@ -368,12 +368,8 @@ def _transition_matrix(G, nodelist=None, weight='weight',
 
     return P
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')

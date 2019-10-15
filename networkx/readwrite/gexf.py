@@ -461,12 +461,13 @@ class GEXFWriter(GEXF):
                     e.attrib['for'] = attr_id
                     e.attrib['value'] = make_str(val)
                     # Handle nan, inf, -inf differently
-                    if e.attrib['value'] == 'inf':
-                        e.attrib['value'] = 'INF'
-                    elif e.attrib['value'] == 'nan':
-                        e.attrib['value'] = 'NaN'
-                    elif e.attrib['value'] == '-inf':
-                        e.attrib['value'] = '-INF'
+                    if val_type == float:
+                        if e.attrib['value'] == 'inf':
+                            e.attrib['value'] = 'INF'
+                        elif e.attrib['value'] == 'nan':
+                            e.attrib['value'] = 'NaN'
+                        elif e.attrib['value'] == '-inf':
+                            e.attrib['value'] = '-INF'
                     if start is not None:
                         e.attrib['start'] = make_str(start)
                     if end is not None:
@@ -484,13 +485,14 @@ class GEXFWriter(GEXF):
                     e.attrib['value'] = make_str(v).lower()
                 else:
                     e.attrib['value'] = make_str(v)
-                    # Handle nan, inf, -inf differently
-                    if e.attrib['value'] == 'inf':
-                        e.attrib['value'] = 'INF'
-                    elif e.attrib['value'] == 'nan':
-                        e.attrib['value'] = 'NaN'
-                    elif e.attrib['value'] == '-inf':
-                        e.attrib['value'] = '-INF'
+                    # Handle float nan, inf, -inf differently
+                    if val_type == float:
+                        if e.attrib['value'] == 'inf':
+                            e.attrib['value'] = 'INF'
+                        elif e.attrib['value'] == 'nan':
+                            e.attrib['value'] = 'NaN'
+                        elif e.attrib['value'] == '-inf':
+                            e.attrib['value'] = '-INF'
                 attvalues.append(e)
         xml_obj.append(attvalues)
         return data
@@ -793,14 +795,6 @@ class GEXFReader(GEXF):
             for node_xml in subnodes.findall('{%s}node' % self.NS_GEXF):
                 self.add_node(G, node_xml, node_attr, node_pid=node_id)
 
-        # Handle nan, inf, -inf differently
-        for k, v in data.items():
-            if make_str(v) == 'inf':
-                data[k] = 'INF'
-            elif make_str(v) == 'nan':
-                data[k] = 'NaN'
-            elif make_str(v) == '-inf':
-                data[k] = '-INF'
         G.add_node(node_id, **data)
 
     def add_start_end(self, data, xml):
@@ -1043,16 +1037,13 @@ def relabel_gexf_graph(G):
     return H
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import xml.etree.cElementTree
-    except Exception as e:
-        raise SkipTest('xml.etree.cElementTree not available.')
+    import pytest
+    xml.etree.cElementTree = pytest.importorskip('xml.etree.cElementTree')
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     try:

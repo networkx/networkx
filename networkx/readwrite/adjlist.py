@@ -295,9 +295,8 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
                          create_using=create_using,
                          nodetype=nodetype)
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def teardown_module(module):
     import os
     for fname in ['test.adjlist', 'test.adjlist.gz']:

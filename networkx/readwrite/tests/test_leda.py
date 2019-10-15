@@ -1,9 +1,6 @@
 #!/usr/bin/env python
-from nose.tools import *
 import networkx as nx
 import io
-import os
-import tempfile
 
 
 class TestLEDA(object):
@@ -12,9 +9,9 @@ class TestLEDA(object):
         data = """#header section	  \nLEDA.GRAPH \nstring\nint\n-1\n#nodes section\n5 \n|{v1}| \n|{v2}| \n|{v3}| \n|{v4}| \n|{v5}| \n\n#edges section\n7 \n1 2 0 |{4}| \n1 3 0 |{3}| \n2 3 0 |{2}| \n3 4 0 |{3}| \n3 5 0 |{7}| \n4 5 0 |{6}| \n5 1 0 |{foo}|"""
         G = nx.parse_leda(data)
         G = nx.parse_leda(data.split('\n'))
-        assert_equal(sorted(G.nodes()),
+        assert (sorted(G.nodes()) ==
                      ['v1', 'v2', 'v3', 'v4', 'v5'])
-        assert_equal(sorted(G.edges(data=True)),
+        assert (sorted(G.edges(data=True)) ==
                      [('v1', 'v2', {'label': '4'}),
                       ('v1', 'v3', {'label': '3'}),
                       ('v2', 'v3', {'label': '2'}),
@@ -30,5 +27,5 @@ class TestLEDA(object):
         fh.write(data.encode('UTF-8'))
         fh.seek(0)
         Gin = nx.read_leda(fh)
-        assert_equal(sorted(G.nodes()), sorted(Gin.nodes()))
-        assert_equal(sorted(G.edges()), sorted(Gin.edges()))
+        assert sorted(G.nodes()) == sorted(Gin.nodes())
+        assert sorted(G.edges()) == sorted(Gin.edges())

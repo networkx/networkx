@@ -91,7 +91,7 @@ def prefix_tree(paths):
         ...     s = ''
         ...     while v != root:
         ...         # Prepend the character `v` to the accumulator `s`.
-        ...         s = str(T.node[v]['source']) + s
+        ...         s = str(T.nodes[v]['source']) + s
         ...         # Each non-nil, non-root node has exactly one parent.
         ...         v = next(T.predecessors(v))
         ...     recovered.append(s)

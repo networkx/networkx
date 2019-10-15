@@ -56,7 +56,7 @@ if __name__ == '__main__':
     G = nx.read_edgelist("hartford_drug.edgelist")
 
     # Extract largest connected component into graph H
-    H = next(nx.connected_component_subgraphs(G))
+    H = G.subgraph(next(nx.connected_components(G)))
     # Makes life easier to have consecutively labeled integer nodes
     H = nx.convert_node_labels_to_integers(H)
     # Create parititions with hierarchical clustering

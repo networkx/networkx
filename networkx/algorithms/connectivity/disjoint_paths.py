@@ -400,7 +400,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
                                       **kwargs)
     for path in paths_edges:
         # Each node in the original graph maps to two nodes in auxiliary graph
-        yield list(_unique_everseen(H.node[node]['id'] for node in path))
+        yield list(_unique_everseen(H.nodes[node]['id'] for node in path))
 
 
 def _unique_everseen(iterable):

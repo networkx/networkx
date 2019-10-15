@@ -175,7 +175,7 @@ def get_info(dynamic=True):
 # Version information
 name = 'networkx'
 major = "2"
-minor = "4rc1"
+minor = "4rc2"
 
 
 # Declare current release as a development release.
@@ -184,13 +184,6 @@ dev = True
 
 
 description = "Python package for creating and manipulating graphs and networks"
-
-long_description = \
-    """
-NetworkX is a Python package for the creation, manipulation, and
-study of the structure, dynamics, and functions of complex networks.
-
-"""
 license = 'BSD'
 authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
            'Schult': ('Dan Schult', 'dschult@colgate.edu'),
@@ -198,7 +191,7 @@ authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
 url = 'http://networkx.github.io/'
-project_urls={
+project_urls = {
     "Bug Tracker": "https://github.com/networkx/networkx/issues",
     "Documentation": "https://networkx.github.io/documentation/stable/",
     "Source Code": "https://github.com/networkx/networkx",
@@ -216,6 +209,7 @@ classifiers = [
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3 :: Only',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
