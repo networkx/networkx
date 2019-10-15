@@ -1,8 +1,6 @@
 # After changing this file, check it on:
 #   http://lint.travis-ci.org/
 #
-sudo: false
-
 language: python
 
 cache:
@@ -13,8 +11,6 @@ matrix:
   include:
     - os: linux
       python: 3.7
-      dist: xenial
-      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - BUILD_DOCS=1
@@ -29,8 +25,6 @@ matrix:
           - latexmk
     - os: linux
       python: 3.7
-      dist: xenial
-      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - MINIMUM_REQUIREMENTS=1
@@ -42,8 +36,6 @@ matrix:
           - graphviz
     - os: linux
       python: 3.7
-      dist: xenial
-      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - DOCTEST=1
@@ -70,11 +62,7 @@ matrix:
     - python: 3.5
     - python: 3.6
     - python: 3.8-dev
-      dist: xenial
-      sudo: true
     - python: pypy3.6-7.1.1
-      dist: xenial
-      sudo: true
 
 before_install:
   # prepare the system to install prerequisites or dependencies
