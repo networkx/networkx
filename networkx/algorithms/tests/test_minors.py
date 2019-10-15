@@ -231,7 +231,7 @@ class TestContraction(object):
         """Tests for node contraction in an undirected graph."""
         G = nx.cycle_graph(4)
         actual = nx.contracted_nodes(G, 0, 1)
-        expected = nx.complete_graph(3)
+        expected = nx.cycle_graph(3)
         expected.add_edge(0, 0)
         assert nx.is_isomorphic(actual, expected)
 
@@ -239,7 +239,7 @@ class TestContraction(object):
         """Tests for node contraction in a directed graph."""
         G = nx.DiGraph(nx.cycle_graph(4))
         actual = nx.contracted_nodes(G, 0, 1)
-        expected = nx.DiGraph(nx.complete_graph(3))
+        expected = nx.DiGraph(nx.cycle_graph(3))
         expected.add_edge(0, 0)
         expected.add_edge(0, 0)
         assert nx.is_isomorphic(actual, expected)
@@ -249,21 +249,22 @@ class TestContraction(object):
         by making changes in place."""
         G = nx.cycle_graph(4)
         actual = nx.contracted_nodes(G, 0, 1, copy=False)
-        expected = nx.complete_graph(3)
+        expected = nx.cycle_graph(3)
         expected.add_edge(0, 0)
-        assert_true(nx.is_isomorphic(actual,G))
-        assert_true(nx.is_isomorphic(actual, expected))
+        assert nx.is_isomorphic(actual,G)
+        assert nx.is_isomorphic(actual, expected)
 
     def test_directed_node_contraction_no_copy(self):
         """Tests for node contraction in a directed graph
         by making changes in place."""
         G = nx.DiGraph(nx.cycle_graph(4))
         actual = nx.contracted_nodes(G, 0, 1, copy=False)
-        expected = nx.DiGraph(nx.complete_graph(3))
+        expected = nx.DiGraph(nx.cycle_graph(3))
         expected.add_edge(0, 0)
         expected.add_edge(0, 0)
-        assert_true(nx.is_isomorphic(actual,G))
-        assert_true(nx.is_isomorphic(actual, expected))
+        assert nx.is_isomorphic(actual,G)
+        assert nx.is_isomorphic(actual, expected)
+
     def test_create_multigraph(self):
         """Tests that using a MultiGraph creates multiple edges."""
         G = nx.path_graph(3, create_using=nx.MultiGraph())
