@@ -2,7 +2,7 @@
 
 set -e
 
-section "Script section"
+section "script section"
 
 export NX_SOURCE=$PWD
 export NX_INSTALL=$(pip show networkx | grep Location | awk '{print $2"/networkx"}')
@@ -33,6 +33,6 @@ fi
 
 cd $NX_SOURCE
 
-section_end "Script section"
+section_end "script section"
 
 set +e
