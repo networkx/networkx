@@ -50,7 +50,7 @@ How to make a new release of ``networkx``
 - Publish on PyPi::
 
    git clean -fxd
-   python setup.py sdist --formats=zip
+   python setup.py sdist bdist_wheel
    twine upload -s dist/networkx*.zip
 
 - Update documentation on the web:
