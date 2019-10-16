@@ -92,21 +92,21 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         cls.attribute_graph = nx.DiGraph()
         cls.attribute_graph.graph['node_default'] = {'frog': True}
         cls.attribute_graph.add_node('0',
-                                      label='Gephi',
-                                      url='https://gephi.org',
-                                      indegree=1, frog=False)
+                                     label='Gephi',
+                                     url='https://gephi.org',
+                                     indegree=1, frog=False)
         cls.attribute_graph.add_node('1',
-                                      label='Webatlas',
-                                      url='http://webatlas.fr',
-                                      indegree=2, frog=False)
+                                     label='Webatlas',
+                                     url='http://webatlas.fr',
+                                     indegree=2, frog=False)
         cls.attribute_graph.add_node('2',
-                                      label='RTGI',
-                                      url='http://rtgi.fr',
-                                      indegree=1, frog=True)
+                                     label='RTGI',
+                                     url='http://rtgi.fr',
+                                     indegree=1, frog=True)
         cls.attribute_graph.add_node('3',
-                                      label='BarabasiLab',
-                                      url='http://barabasilab.com',
-                                      indegree=1, frog=True)
+                                     label='BarabasiLab',
+                                     url='http://barabasilab.com',
+                                     indegree=1, frog=True)
         cls.attribute_graph.add_edge('0', '1', id='0')
         cls.attribute_graph.add_edge('0', '2', id='1')
         cls.attribute_graph.add_edge('1', '0', id='2')
@@ -141,7 +141,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert sorted(G.edges()) == sorted(H.edges())
         assert (sorted(G.edges(data=True)) ==
-                     sorted(H.edges(data=True)))
+                sorted(H.edges(data=True)))
         self.simple_directed_fh.seek(0)
 
     def test_write_read_simple_directed_graphml(self):
@@ -153,7 +153,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert sorted(G.edges()) == sorted(H.edges())
         assert (sorted(G.edges(data=True)) ==
-                     sorted(H.edges(data=True)))
+                sorted(H.edges(data=True)))
         self.simple_directed_fh.seek(0)
 
     def test_read_simple_undirected_graphml(self):
@@ -465,7 +465,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
-        assert H.nodes[1]['testattr'] == True
+        assert H.nodes[1]['testattr'] is True
 
     # Test for NaN, INF and -INF
     def test_specials(self):
@@ -475,7 +475,9 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G.add_node(1, testattr=inf, strdata='inf', key='a')
         G.add_node(2, testattr=nan, strdata='nan', key='b')
         G.add_node(3, testattr=-inf, strdata='-inf', key='c')
-
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
         fh = io.BytesIO()
         nx.write_gexf(G, fh)
         fh.seek(0)
@@ -498,3 +500,113 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert H.nodes[1]['networkx_key'] == 'a'
         assert H.nodes[2]['networkx_key'] == 'b'
         assert H.nodes[3]['networkx_key'] == 'c'
+
+    def test_simple_list(self):
+        G = nx.Graph()
+        list_value = [(1, 2, 3), (9, 1, 2)]
+        G.add_node(1, key=list_value)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.nodes[1]['networkx_key'] == list_value
+
+    def test_dynamic_mode(self):
+        G = nx.Graph()
+        G.add_node(1, label='1', color='green')
+        G.graph['mode'] = 'dynamic'
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (
+            sorted(sorted(e) for e in G.edges()) ==
+            sorted(sorted(e) for e in H.edges()))
+
+    def test_multigraph_with_missing_attributes(self):
+        G = nx.MultiGraph()
+        G.add_node(0, label='1', color='green')
+        G.add_node(1, label='2', color='green')
+        G.add_edge(0, 1, id='0', weight=3, type='undirected', start=0, end=1)
+        G.add_edge(0, 1)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (
+            sorted(sorted(e) for e in G.edges()) ==
+            sorted(sorted(e) for e in H.edges()))
+
+    def test_missing_viz_attributes(self):
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['viz'] = {'size': 54}
+        G.nodes[0]['viz']['position'] = {'x': 0, 'y': 1, 'z': 0}
+        G.nodes[0]['viz']['color'] = {'r': 0, 'g': 0, 'b': 256}
+        G.nodes[0]['viz']['shape'] = 'http://random.url'
+        G.nodes[0]['viz']['thickness'] = 2
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh, version='1.1draft')
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (
+            sorted(sorted(e) for e in G.edges()) ==
+            sorted(sorted(e) for e in H.edges()))
+
+        # Second graph for the other branch
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['viz'] = {'size': 54}
+        G.nodes[0]['viz']['position'] = {'x': 0, 'y': 1, 'z': 0}
+        G.nodes[0]['viz']['color'] = {'r': 0, 'g': 0, 'b': 256, 'a': 0.5}
+        G.nodes[0]['viz']['shape'] = 'ftp://random.url'
+        G.nodes[0]['viz']['thickness'] = 2
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (
+            sorted(sorted(e) for e in G.edges()) ==
+            sorted(sorted(e) for e in H.edges()))
+
+    def test_slice_and_spell(self):
+        # Test spell first, so version = 1.2
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['spells'] = [(1, 2)]
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (
+            sorted(sorted(e) for e in G.edges()) ==
+            sorted(sorted(e) for e in H.edges()))
+
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['slices'] = [(1, 2)]
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh, version='1.1draft')
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (
+            sorted(sorted(e) for e in G.edges()) ==
+            sorted(sorted(e) for e in H.edges()))
+
+    def test_add_parent(self):
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green', parents=[1, 2])
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (
+            sorted(sorted(e) for e in G.edges()) ==
+            sorted(sorted(e) for e in H.edges()))

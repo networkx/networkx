@@ -356,7 +356,7 @@ class GEXFWriter(GEXF):
             # add node element and attr subelements
             default = G.graph.get('node_default', {})
             node_data = self.add_parents(node_element, node_data)
-            if self.version == '1.1':
+            if self.VERSION == '1.1':
                 node_data = self.add_slices(node_element, node_data)
             else:
                 node_data = self.add_spells(node_element, node_data)
@@ -420,7 +420,7 @@ class GEXFWriter(GEXF):
             edge_element = Element('edge',
                                    source=source_id, target=target_id, **kw)
             default = G.graph.get('edge_default', {})
-            if self.version == '1.1':
+            if self.VERSION == '1.1':
                 edge_data = self.add_slices(edge_element, edge_data)
             else:
                 edge_data = self.add_spells(edge_element, edge_data)
@@ -768,7 +768,7 @@ class GEXFReader(GEXF):
         # get attributes and subattributues for node
         data = self.decode_attr_elements(node_attr, node_xml)
         data = self.add_parents(data, node_xml)  # add any parents
-        if self.version == '1.1':
+        if self.VERSION == '1.1':
             data = self.add_slices(data, node_xml)  # add slices
         else:
             data = self.add_spells(data, node_xml)  # add spells
@@ -899,7 +899,7 @@ class GEXFReader(GEXF):
         data = self.decode_attr_elements(edge_attr, edge_element)
         data = self.add_start_end(data, edge_element)
 
-        if self.version == '1.1':
+        if self.VERSION == '1.1':
             data = self.add_slices(data, edge_element)  # add slices
         else:
             data = self.add_spells(data, edge_element)  # add spells
