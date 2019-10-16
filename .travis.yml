@@ -1,20 +1,14 @@
 # After changing this file, check it on:
 #   http://lint.travis-ci.org/
 #
-sudo: false
-
 language: python
 
-cache:
-  directories:
-    - $HOME/.cache/pip
+cache: pip
 
 matrix:
   include:
     - os: linux
       python: 3.7
-      dist: xenial
-      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - BUILD_DOCS=1
@@ -29,8 +23,6 @@ matrix:
           - latexmk
     - os: linux
       python: 3.7
-      dist: xenial
-      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - MINIMUM_REQUIREMENTS=1
@@ -42,8 +34,6 @@ matrix:
           - graphviz
     - os: linux
       python: 3.7
-      dist: xenial
-      sudo: true
       env:
       - OPTIONAL_DEPS=1
       - DOCTEST=1
@@ -57,7 +47,7 @@ matrix:
       osx_image: xcode7.3
       language: generic
       env:
-      - TRAVIS_PYTHON_VERSION=3.6.1
+      - TRAVIS_PYTHON_VERSION=3.6
       - OPTIONAL_DEPS=1
       - OSX_PKG_ENV=miniconda
     - os: osx
@@ -66,15 +56,11 @@ matrix:
     - os: osx
       osx_image: xcode11
       language: generic
-      env: TRAVIS_PYTHON_VERSION=3.8-dev
+      env: TRAVIS_PYTHON_VERSION=3.8
     - python: 3.5
     - python: 3.6
-    - python: 3.8-dev
-      dist: xenial
-      sudo: true
+    - python: 3.8
     - python: pypy3.6-7.1.1
-      dist: xenial
-      sudo: true
 
 before_install:
   # prepare the system to install prerequisites or dependencies
