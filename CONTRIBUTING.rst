@@ -120,7 +120,7 @@ Here we provide instructions for two popular environment managers:
 ``venv`` (pip based) and ``conda`` (Anaconda or Miniconda).
 
 venv
-====
+^^^^
 When using ``venv``, you may find the following bash commands useful::
 
   # Create a virtualenv named ``networkx-dev`` that lives in the directory of
@@ -136,7 +136,7 @@ When using ``venv``, you may find the following bash commands useful::
   PYTHONPATH=. pytest networkx
 
 conda
-=====
+^^^^^
 
 When using conda, you may find the following bash commands useful::
 
