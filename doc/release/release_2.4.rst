@@ -14,9 +14,10 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of 6 months of work with 190 commits by
-66 contributors. Highlights include:
+This release is the result of 6 months of work with over 200 commits by
+67 contributors. Highlights include:
 
+- Remove deprecated code from 1.x
 - Support for Python 3.8
 - Switched to pytest for testing
 - Last release to support Python 3.5
@@ -120,7 +121,7 @@ Remove old names for graphview functions.
 Pull requests and commits merged in this release
 ------------------------------------------------
 
-A total of 190 changes have been committed.
+A total of 205 changes have been committed.
 
 - Bump release version
 - algorithms/traversal/edgebfs name fix (#3397)
@@ -303,23 +304,38 @@ A total of 190 changes have been committed.
 - Remove nose from classes
 - Replace nose.assert_raises with pytest.raises
 - Replace nose.raises with pytest.raises context manager
-- Replace eq_, ok_ with assert
+- Replace `eq_`, `ok_` with assert
 - Use pytest for doctest
 - Highlight switch to pytest in release notes
-- Remove 'from nose.tools import *'
+- Remove `from nose.tools import *`
 - Remove nose.tools.SkipTest
 - Finalize transition to pytest
 - Merge pull request #3639 from stefanv/pytest-port
 - Test Python 3.8 with AppVeyor
 - Merge pull request #3648 from jarrodmillman/windows-py3.8
 - Remove deprecated weakly_connected_component_subgraphs
+- Update release notes
+- Update README
+- Announce Python 3.8 support
+- Designate 2.4rc1 release
+- Bump release version
+- Remove remaining SkipTests
+- fix documentation notes (#3644) (#3645)
+- Test Py 3.8.0 on AppVeyor
+- Speed up AppVeyor
+- Cleanup travis config
+- Improve CI caching
+- Update Py 3.8 on travis
+- Merge pull request #3652 from jarrodmillman/speedup-appveyor
+- Finalize release notes
 
-It contained the following 4 merges:
+It contained the following 5 merges:
 
 - Fixed typo in betweenness centrality subset test (#3436)
 - explicitly stated i.j convention in to_numpy_array (#3542)
 - pytest port (#3639)
 - Test Python 3.8 with AppVeyor (#3648)
+- Cleanup and speedup CI (#3652)
 
 Contributors to this release
 ----------------------------
@@ -372,6 +388,7 @@ Contributors to this release
 - Alexios Polyzos
 - Michael Recachinas
 - Efraim Rodrigues
+- Adam Rosenthal
 - Dan Schult
 - William Schwartz
 - Weisheng Si
@@ -379,8 +396,8 @@ Contributors to this release
 - Ivan Tham
 - George Valkanas
 - Stefan van der Walt
-- Haochen Wu
 - Hsi-Hsuan Wu
+- Haochen Wu
 - Xiangyu Xu
 - Jean-Gabriel Young
 - bkief

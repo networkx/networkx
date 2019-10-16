@@ -92,6 +92,9 @@ source_encoding = 'utf-8'
 # The master toctree document.
 master_doc = 'index'
 
+# Do not include release announcement template
+exclude_patterns = ['release/release_template.rst']
+
 # General substitutions.
 project = 'NetworkX'
 copyright = '2004-{}, NetworkX Developers'.format(date.today().year)
