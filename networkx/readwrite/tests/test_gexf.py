@@ -140,8 +140,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         H = nx.read_gexf(self.simple_directed_fh)
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert sorted(G.edges()) == sorted(H.edges())
-        assert (sorted(G.edges(data=True)) ==
-                sorted(H.edges(data=True)))
+        assert sorted(G.edges(data=True)) == sorted(H.edges(data=True))
         self.simple_directed_fh.seek(0)
 
     def test_write_read_simple_directed_graphml(self):
@@ -152,17 +151,15 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         H = nx.read_gexf(fh)
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert sorted(G.edges()) == sorted(H.edges())
-        assert (sorted(G.edges(data=True)) ==
-                sorted(H.edges(data=True)))
+        assert sorted(G.edges(data=True)) == sorted(H.edges(data=True))
         self.simple_directed_fh.seek(0)
 
     def test_read_simple_undirected_graphml(self):
         G = self.simple_undirected_graph
         H = nx.read_gexf(self.simple_undirected_fh)
         assert sorted(G.nodes()) == sorted(H.nodes())
-        assert (
-            sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
         self.simple_undirected_fh.seek(0)
 
     def test_read_attribute_graphml(self):
@@ -260,9 +257,8 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
         assert sorted(G.nodes()) == sorted(H.nodes())
-        assert (
-            sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
         # Reading a gexf graph always sets mode attribute to either
         # 'static' or 'dynamic'. Remove the mode attribute from the
         # read graph for the sake of comparing remaining attributes.
@@ -498,3 +494,106 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert H.nodes[1]['networkx_key'] == 'a'
         assert H.nodes[2]['networkx_key'] == 'b'
         assert H.nodes[3]['networkx_key'] == 'c'
+
+    def test_simple_list(self):
+        G = nx.Graph()
+        list_value = [(1, 2, 3), (9, 1, 2)]
+        G.add_node(1, key=list_value)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.nodes[1]['networkx_key'] == list_value
+
+    def test_dynamic_mode(self):
+        G = nx.Graph()
+        G.add_node(1, label='1', color='green')
+        G.graph['mode'] = 'dynamic'
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_multigraph_with_missing_attributes(self):
+        G = nx.MultiGraph()
+        G.add_node(0, label='1', color='green')
+        G.add_node(1, label='2', color='green')
+        G.add_edge(0, 1, id='0', weight=3, type='undirected', start=0, end=1)
+        G.add_edge(0, 1)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_missing_viz_attributes(self):
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['viz'] = {'size': 54}
+        G.nodes[0]['viz']['position'] = {'x': 0, 'y': 1, 'z': 0}
+        G.nodes[0]['viz']['color'] = {'r': 0, 'g': 0, 'b': 256}
+        G.nodes[0]['viz']['shape'] = 'http://random.url'
+        G.nodes[0]['viz']['thickness'] = 2
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh, version='1.1draft')
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+        # Second graph for the other branch
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['viz'] = {'size': 54}
+        G.nodes[0]['viz']['position'] = {'x': 0, 'y': 1, 'z': 0}
+        G.nodes[0]['viz']['color'] = {'r': 0, 'g': 0, 'b': 256, 'a': 0.5}
+        G.nodes[0]['viz']['shape'] = 'ftp://random.url'
+        G.nodes[0]['viz']['thickness'] = 2
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_slice_and_spell(self):
+        # Test spell first, so version = 1.2
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['spells'] = [(1, 2)]
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['slices'] = [(1, 2)]
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh, version='1.1draft')
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_add_parent(self):
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green', parents=[1, 2])
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
