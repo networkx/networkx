@@ -1,4 +1,4 @@
-#    Copyright (C) 2017-2018 by
+#    Copyright (C) 2017-2019 by
 #    Luca Baldesi
 #    BSD license.
 #
@@ -87,7 +87,7 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
 
 @np_random_state(3)
 def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
-    """Return a random simple graph with spectrum resembling that of `G`
+    """Returns a random simple graph with spectrum resembling that of `G`
 
     This algorithm, called Spectral Graph Forge (SGF), computes the
     eigenvectors of a given graph adjacency matrix, filters them and
@@ -196,14 +196,8 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     return H
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

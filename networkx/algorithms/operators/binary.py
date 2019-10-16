@@ -1,7 +1,7 @@
 """
 Operations on graphs including union, intersection, difference.
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -13,7 +13,7 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['union', 'compose', 'disjoint_union', 'intersection',
-           'difference', 'symmetric_difference']
+           'difference', 'symmetric_difference', 'full_join']
 
 
 def union(G, H, rename=(None, None), name=None):
@@ -136,7 +136,7 @@ def disjoint_union(G, H):
 
 
 def intersection(G, H):
-    """Return a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the edges that exist in
     both G and H.
 
     The node sets of H and G must be the same.
@@ -190,7 +190,7 @@ def intersection(G, H):
 
 
 def difference(G, H):
-    """Return a new graph that contains the edges that exist in G but not in H.
+    """Returns a new graph that contains the edges that exist in G but not in H.
 
     The node sets of H and G must be the same.
 
@@ -234,7 +234,7 @@ def difference(G, H):
 
 
 def symmetric_difference(G, H):
-    """Return new graph with edges that exist in either G or H but not both.
+    """Returns new graph with edges that exist in either G or H but not both.
 
     The node sets of H and G must be the same.
 
@@ -286,7 +286,7 @@ def symmetric_difference(G, H):
 
 
 def compose(G, H):
-    """Return a new graph of G composed with H.
+    """Returns a new graph of G composed with H.
 
     Composition is the simple union of the node sets and edge sets.
     The node sets of G and H do not need to be disjoint.
@@ -328,4 +328,74 @@ def compose(G, H):
         R.add_edges_from(H.edges(keys=True, data=True))
     else:
         R.add_edges_from(H.edges(data=True))
+    return R
+
+
+def full_join(G, H, rename=(None, None)):
+    """Returns the full join of graphs G and H.
+
+    Full join is the union of G and H in which all edges between
+    G and H are added.
+    The node sets of G and H must be disjoint,
+    otherwise an exception is raised.
+
+    Parameters
+    ----------
+    G, H : graph
+       A NetworkX graph
+
+    rename : bool , default=(None, None)
+       Node names of G and H can be changed by specifying the tuple
+       rename=('G-','H-') (for example).  Node "u" in G is then renamed
+       "G-u" and "v" in H is renamed "H-v".
+
+    Returns
+    -------
+    U : The full join graph with the same type as G.
+
+    Notes
+    -----
+    It is recommended that G and H be either both directed or both undirected.
+
+    If G is directed, then edges from G to H are added as well as from H to G.
+
+    Note that full_join() does not produce parallel edges for MultiGraphs.
+
+    The full join operation of graphs G and H is the same as getting
+    their complement, performing a disjoint union, and finally getting
+    the complement of the resulting graph.
+
+    Graph, edge, and node attributes are propagated from G and H
+    to the union graph.  If a graph attribute is present in both
+    G and H the value from H is used.
+
+    See Also
+    --------
+    union
+    disjoint_union
+    """
+    R = union(G, H, rename)
+
+    def add_prefix(graph, prefix):
+        if prefix is None:
+            return graph
+
+        def label(x):
+            if is_string_like(x):
+                name = prefix + x
+            else:
+                name = prefix + repr(x)
+            return name
+        return nx.relabel_nodes(graph, label)
+    G = add_prefix(G, rename[0])
+    H = add_prefix(H, rename[1])
+
+    for i in G:
+        for j in H:
+            R.add_edge(i, j)
+    if R.is_directed():
+        for i in H:
+            for j in G:
+                R.add_edge(i, j)
+
     return R

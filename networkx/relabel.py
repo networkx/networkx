@@ -1,4 +1,4 @@
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -166,7 +166,7 @@ def _relabel_copy(G, mapping):
 
 def convert_node_labels_to_integers(G, first_label=0, ordering="default",
                                     label_attribute=None):
-    """Return a copy of the graph G with the nodes relabeled using
+    """Returns a copy of the graph G with the nodes relabeled using
     consecutive integers.
 
     Parameters

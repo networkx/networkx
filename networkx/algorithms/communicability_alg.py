@@ -21,7 +21,7 @@ __all__ = ['communicability',
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability(G):
-    r"""Return communicability between all pairs of nodes in G.
+    r"""Returns communicability between all pairs of nodes in G.
 
     The communicability between pairs of nodes in G is the sum of
     closed walks of different lengths starting at node u and ending at node v.
@@ -79,7 +79,7 @@ def communicability(G):
     import numpy
     import scipy.linalg
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     w, vec = numpy.linalg.eigh(A)
@@ -94,7 +94,7 @@ def communicability(G):
             p = mapping[u]
             q = mapping[v]
             for j in range(len(nodelist)):
-                s += vec[:, j][p, 0] * vec[:, j][q, 0] * expw[j]
+                s += vec[:, j][p] * vec[:, j][q] * expw[j]
             c[u][v] = float(s)
     return c
 
@@ -102,7 +102,7 @@ def communicability(G):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_exp(G):
-    r"""Return communicability between all pairs of nodes in G.
+    r"""Returns communicability between all pairs of nodes in G.
 
     Communicability between pair of node (u,v) of node in G is the sum of
     closed walks of different lengths starting at node u and ending at node v.
@@ -156,11 +156,11 @@ def communicability_exp(G):
     """
     import scipy.linalg
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     # communicability matrix
-    expA = scipy.linalg.expm(A.A)
+    expA = scipy.linalg.expm(A)
     mapping = dict(zip(nodelist, range(len(nodelist))))
     c = {}
     for u in G:
@@ -169,16 +169,9 @@ def communicability_exp(G):
             c[u][v] = float(expA[mapping[u], mapping[v]])
     return c
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

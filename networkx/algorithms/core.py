@@ -1,13 +1,15 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Antoine Allard <antoine.allard@phy.ulaval.ca>
 #    All rights reserved.
 #    BSD license.
 #
 # Authors: Dan Schult (dschult@colgate.edu)
 #          Jason Grout (jason-sage@creativetrax.com)
 #          Aric Hagberg (hagberg@lanl.gov)
+#          Antoine Allard (antoine.allard@phy.ulaval.ca)
 """
 Find the k-cores of a graph.
 
@@ -30,18 +32,25 @@ is the k-core.
 D-cores: Measuring Collaboration of Directed Graphs Based on Degeneracy
 Christos Giatsidis, Dimitrios M. Thilikos, Michalis Vazirgiannis, ICDM 2011.
 http://www.graphdegeneracy.org/dcores_ICDM_2011.pdf
+
+Multi-scale structure and topological anomaly detection via a new network \
+statistic: The onion decomposition
+L. Hébert-Dufresne, J. A. Grochow, and A. Allard
+Scientific Reports 6, 31708 (2016)
+http://doi.org/10.1038/srep31708
+
 """
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
-__all__ = ['core_number', 'find_cores', 'k_core',
-           'k_shell', 'k_crust', 'k_corona']
+__all__ = ['core_number', 'find_cores', 'k_core', 'k_shell',
+           'k_crust', 'k_corona', 'k_truss', 'onion_layers']
 
 
 @not_implemented_for('multigraph')
 def core_number(G):
-    """Return the core number for each vertex.
+    """Returns the core number for each vertex.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
 
@@ -139,7 +148,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
 
 
 def k_core(G, k=None, core_number=None):
-    """Return the k-core of G.
+    """Returns the k-core of G.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
 
@@ -189,7 +198,7 @@ def k_core(G, k=None, core_number=None):
 
 
 def k_shell(G, k=None, core_number=None):
-    """Return the k-shell of G.
+    """Returns the k-shell of G.
 
     The k-shell is the subgraph induced by nodes with core number k.
     That is, nodes in the k-core that are not in the (k+1)-core.
@@ -246,7 +255,7 @@ def k_shell(G, k=None, core_number=None):
 
 
 def k_crust(G, k=None, core_number=None):
-    """Return the k-crust of G.
+    """Returns the k-crust of G.
 
     The k-crust is the graph G with the k-core removed.
 
@@ -304,7 +313,7 @@ def k_crust(G, k=None, core_number=None):
 
 
 def k_corona(G, k, core_number=None):
-    """Return the k-corona of G.
+    """Returns the k-corona of G.
 
     The k-corona is the subgraph of nodes in the k-core which have
     exactly k neighbours in the k-core.
@@ -353,3 +362,161 @@ def k_corona(G, k, core_number=None):
     def func(v, k, c):
         return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
     return _core_subgraph(G, func, k, core_number)
+
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
+def k_truss(G, k):
+    """Returns the k-truss of `G`.
+
+    The k-truss is the maximal subgraph of `G` which contains at least three
+    vertices where every edge is incident to at least `k` triangles.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+      An undirected graph
+    k : int
+      The order of the truss
+
+    Returns
+    -------
+    H : NetworkX graph
+      The k-truss subgraph
+
+    Raises
+    ------
+    NetworkXError
+
+      The k-truss is not defined for graphs with self loops or parallel edges
+      or directed graphs.
+
+    Notes
+    -----
+    A k-clique is a (k-2)-truss and a k-truss is a (k+1)-core.
+
+    Not implemented for digraphs or graphs with parallel edges or self loops.
+
+    Graph, node, and edge attributes are copied to the subgraph.
+
+    References
+    ----------
+    .. [1] Bounds and Algorithms for k-truss. Paul Burkhardt, Vance Faber,
+       David G. Harris, 2018. https://arxiv.org/abs/1806.05523v2
+    .. [2] Trusses: Cohesive Subgraphs for Social Network Analysis. Jonathan
+       Cohen, 2005.
+    """
+    H = G.copy()
+
+    n_dropped = 1
+    while n_dropped > 0:
+        n_dropped = 0
+        to_drop = []
+        seen = set()
+        for u in H:
+            nbrs_u = set(H[u])
+            seen.add(u)
+            new_nbrs = [v for v in nbrs_u if v not in seen]
+            for v in new_nbrs:
+                if len(nbrs_u & set(H[v])) < k:
+                    to_drop.append((u, v))
+        H.remove_edges_from(to_drop)
+        n_dropped = len(to_drop)
+        H.remove_nodes_from(list(nx.isolates(H)))
+
+    return H
+
+
+@not_implemented_for('multigraph')
+@not_implemented_for('directed')
+def onion_layers(G):
+    """Returns the layer of each vertex in the onion decomposition of the graph.
+
+    The onion decomposition refines the k-core decomposition by providing
+    information on the internal organization of each k-shell. It is usually
+    used alongside the `core numbers`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A simple graph without self loops or parallel edges
+
+    Returns
+    -------
+    od_layers : dictionary
+        A dictionary keyed by vertex to the onion layer. The layers are
+        contiguous integers starting at 1.
+
+    Raises
+    ------
+    NetworkXError
+        The onion decomposition is not implemented for graphs with self loops
+        or parallel edges or for directed graphs.
+
+    Notes
+    -----
+    Not implemented for graphs with parallel edges or self loops.
+
+    Not implemented for directed graphs.
+
+    See Also
+    --------
+    core_number
+
+    References
+    ----------
+    .. [1] Multi-scale structure and topological anomaly detection via a new
+       network statistic: The onion decomposition
+       L. Hébert-Dufresne, J. A. Grochow, and A. Allard
+       Scientific Reports 6, 31708 (2016)
+       http://doi.org/10.1038/srep31708
+    .. [2] Percolation and the effective structure of complex networks
+       A. Allard and L. Hébert-Dufresne
+       Physical Review X 9, 011023 (2019)
+       http://doi.org/10.1103/PhysRevX.9.011023
+    """
+    if nx.number_of_selfloops(G) > 0:
+        msg = ('Input graph contains self loops which is not permitted; '
+               'Consider using G.remove_edges_from(nx.selfloop_edges(G)).')
+        raise NetworkXError(msg)
+    # Dictionaries to register the k-core/onion decompositions.
+    od_layers = {}
+    # Adjacency list
+    neighbors = {v: list(nx.all_neighbors(G, v)) for v in G}
+    # Effective degree of nodes.
+    degrees = dict(G.degree())
+    # Performs the onion decomposition.
+    current_core = 1
+    current_layer = 1
+    # Sets vertices of degree 0 to layer 1, if any.
+    isolated_nodes = [v for v in nx.isolates(G)]
+    if len(isolated_nodes) > 0:
+        for v in isolated_nodes:
+            od_layers[v] = current_layer
+            degrees.pop(v)
+        current_layer = 2
+    # Finds the layer for the remaining nodes.
+    while len(degrees) > 0:
+        # Sets the order for looking at nodes.
+        nodes = sorted(degrees, key=degrees.get)
+        # Sets properly the current core.
+        min_degree = degrees[nodes[0]]
+        if min_degree > current_core:
+            current_core = min_degree
+        # Identifies vertices in the current layer.
+        this_layer = []
+        for n in nodes:
+            if degrees[n] > current_core:
+                break
+            this_layer.append(n)
+        # Identifies the core/layer of the vertices in the current layer.
+        for v in this_layer:
+            od_layers[v] = current_layer
+            for n in neighbors[v]:
+                neighbors[n].remove(v)
+                degrees[n] = degrees[n] - 1
+            degrees.pop(v)
+        # Updates the layer count.
+        current_layer = current_layer + 1
+    # Returns the dictionaries containing the onion layer of each vertices.
+    return od_layers

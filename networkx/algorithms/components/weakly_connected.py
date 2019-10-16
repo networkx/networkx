@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -16,7 +16,6 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = [
     'number_weakly_connected_components',
     'weakly_connected_components',
-    'weakly_connected_component_subgraphs',
     'is_weakly_connected',
 ]
 
@@ -76,7 +75,7 @@ def weakly_connected_components(G):
 
 @not_implemented_for('undirected')
 def number_weakly_connected_components(G):
-    """Return the number of weakly connected components in G.
+    """Returns the number of weakly connected components in G.
 
     Parameters
     ----------
@@ -105,22 +104,6 @@ def number_weakly_connected_components(G):
 
     """
     return sum(1 for wcc in weakly_connected_components(G))
-
-
-@not_implemented_for('undirected')
-def weakly_connected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in weakly_connected_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in weakly_connected_components(G))``
-    """
-    msg = "weakly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
-        "use (G.subgraph(c).copy() for c in weakly_connected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in weakly_connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
 
 
 @not_implemented_for('undirected')

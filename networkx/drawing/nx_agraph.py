@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -35,7 +35,7 @@ __all__ = ['from_agraph', 'to_agraph',
 
 
 def from_agraph(A, create_using=None):
-    """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
+    """Returns a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
     Parameters
     ----------
@@ -110,7 +110,7 @@ def from_agraph(A, create_using=None):
 
 
 def to_agraph(N):
-    """Return a pygraphviz graph from a NetworkX graph N.
+    """Returns a pygraphviz graph from a NetworkX graph N.
 
     Parameters
     ----------
@@ -196,7 +196,7 @@ def write_dot(G, path):
 
 
 def read_dot(path):
-    """Return a NetworkX graph from a dot file on path.
+    """Returns a NetworkX graph from a dot file on path.
 
     Parameters
     ----------
@@ -226,7 +226,8 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary
+    Returns
+    -------
       Dictionary of x, y, positions keyed by node.
 
     Examples
@@ -238,7 +239,6 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     Notes
     -----
     This is a wrapper for pygraphviz_layout.
-
     """
     return pygraphviz_layout(G, prog=prog, root=root, args=args)
 
@@ -292,8 +292,8 @@ def pygraphviz_layout(G, prog='neato', root=None, args=''):
     for n in G:
         node = pygraphviz.Node(A, n)
         try:
-            xx, yy = node.attr["pos"].split(',')
-            node_pos[n] = (float(xx), float(yy))
+            xs = node.attr["pos"].split(',')
+            node_pos[n] = tuple(float(x) for x in xs)
         except:
             print("no position for node", n)
             node_pos[n] = (0.0, 0.0)
@@ -467,10 +467,7 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     nx.utils.default_opener(filename)
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import pygraphviz
-    except:
-        raise SkipTest("pygraphviz not available")
+    import pytest
+    pygraphviz = pytest.importorskip('pygraphviz')

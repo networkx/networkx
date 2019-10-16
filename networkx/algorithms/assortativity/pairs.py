@@ -7,7 +7,7 @@ __all__ = ['node_attribute_xy',
 
 
 def node_attribute_xy(G, attribute, nodes=None):
-    """Return iterator of node-attribute pairs for all edges in G.
+    """Returns iterator of node-attribute pairs for all edges in G.
 
     Parameters
     ----------
@@ -121,14 +121,8 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
             yield degu, degv
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

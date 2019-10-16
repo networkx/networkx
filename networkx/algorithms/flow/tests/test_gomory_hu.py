@@ -1,5 +1,5 @@
 from itertools import combinations
-from nose.tools import assert_equal, assert_true, raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms.flow import boykov_kolmogorov
@@ -36,10 +36,10 @@ class TestGomoryHuTree:
         G = nx.karate_club_graph()
         nx.set_edge_attributes(G, 1, 'capacity')
         T = nx.gomory_hu_tree(G)
-        assert_true(nx.is_tree(T))
+        assert nx.is_tree(T)
         for u, v in combinations(G, 2):
             cut_value, edge = self.minimum_edge_weight(T, u, v)
-            assert_equal(nx.minimum_cut_value(G, u, v),
+            assert (nx.minimum_cut_value(G, u, v) ==
                          cut_value)
 
     def test_karate_club_graph(self):
@@ -47,10 +47,10 @@ class TestGomoryHuTree:
         nx.set_edge_attributes(G, 1, 'capacity')
         for flow_func in flow_funcs:
             T = nx.gomory_hu_tree(G, flow_func=flow_func)
-            assert_true(nx.is_tree(T))
+            assert nx.is_tree(T)
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
-                assert_equal(nx.minimum_cut_value(G, u, v),
+                assert (nx.minimum_cut_value(G, u, v) ==
                              cut_value)
 
     def test_davis_southern_women_graph(self):
@@ -58,10 +58,10 @@ class TestGomoryHuTree:
         nx.set_edge_attributes(G, 1, 'capacity')
         for flow_func in flow_funcs:
             T = nx.gomory_hu_tree(G, flow_func=flow_func)
-            assert_true(nx.is_tree(T))
+            assert nx.is_tree(T)
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
-                assert_equal(nx.minimum_cut_value(G, u, v),
+                assert (nx.minimum_cut_value(G, u, v) ==
                              cut_value)
 
     def test_florentine_families_graph(self):
@@ -69,21 +69,32 @@ class TestGomoryHuTree:
         nx.set_edge_attributes(G, 1, 'capacity')
         for flow_func in flow_funcs:
             T = nx.gomory_hu_tree(G, flow_func=flow_func)
-            assert_true(nx.is_tree(T))
+            assert nx.is_tree(T)
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
-                assert_equal(nx.minimum_cut_value(G, u, v),
+                assert (nx.minimum_cut_value(G, u, v) ==
+                             cut_value)
+
+    def test_les_miserables_graph_cutset(self):
+        G = nx.les_miserables_graph()
+        nx.set_edge_attributes(G, 1, 'capacity')
+        for flow_func in flow_funcs:
+            T = nx.gomory_hu_tree(G, flow_func=flow_func)
+            assert nx.is_tree(T)
+            for u, v in combinations(G, 2):
+                cut_value, edge = self.minimum_edge_weight(T, u, v)
+                assert (nx.minimum_cut_value(G, u, v) ==
                              cut_value)
 
     def test_karate_club_graph_cutset(self):
         G = nx.karate_club_graph()
         nx.set_edge_attributes(G, 1, 'capacity')
         T = nx.gomory_hu_tree(G)
-        assert_true(nx.is_tree(T))
+        assert nx.is_tree(T)
         u, v = 0, 33
         cut_value, edge = self.minimum_edge_weight(T, u, v)
         cutset = self.compute_cutset(G, T, edge)
-        assert_equal(cut_value, len(cutset))
+        assert cut_value == len(cutset)
 
     def test_wikipedia_example(self):
         # Example from https://en.wikipedia.org/wiki/Gomory%E2%80%93Hu_tree
@@ -95,18 +106,18 @@ class TestGomoryHuTree:
         ))
         for flow_func in flow_funcs:
             T = nx.gomory_hu_tree(G, capacity='weight', flow_func=flow_func)
-            assert_true(nx.is_tree(T))
+            assert nx.is_tree(T)
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
-                assert_equal(nx.minimum_cut_value(G, u, v, capacity='weight'),
+                assert (nx.minimum_cut_value(G, u, v, capacity='weight') ==
                              cut_value)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_directed_raises(self):
-        G = nx.DiGraph()
-        T = nx.gomory_hu_tree(G)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            G = nx.DiGraph()
+            T = nx.gomory_hu_tree(G)
 
-    @raises(nx.NetworkXError)
     def test_empty_raises(self):
-        G = nx.empty_graph()
-        T = nx.gomory_hu_tree(G)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.empty_graph()
+            T = nx.gomory_hu_tree(G)

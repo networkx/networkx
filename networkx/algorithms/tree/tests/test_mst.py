@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # test_mst.py - unit tests for minimum spanning tree functions
 #
-# Copyright 2016-2018 NetworkX developers.
+# Copyright 2016-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -10,17 +10,16 @@
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
 from unittest import TestCase
 
-from nose.tools import assert_equal
-from nose.tools import raises, assert_raises
+import pytest
 
 import networkx as nx
 from networkx.testing import (assert_graphs_equal, assert_nodes_equal,
                               assert_edges_equal)
 
 
-@raises(ValueError)
 def test_unknown_algorithm():
-    nx.minimum_spanning_tree(nx.Graph(), algorithm='random')
+    with pytest.raises(ValueError):
+        nx.minimum_spanning_tree(nx.Graph(), algorithm='random')
 
 
 class MinimumSpanningTreeTestBase(object):
@@ -35,7 +34,7 @@ class MinimumSpanningTreeTestBase(object):
 
     """
 
-    def setUp(self):
+    def setup_method(self, method):
         """Creates an example graph and stores the expected minimum and
         maximum spanning tree edges.
 
@@ -97,10 +96,40 @@ class MinimumSpanningTreeTestBase(object):
         # Now test for raising exception
         edges = nx.minimum_spanning_edges(G, algorithm=self.algo,
                                           data=False, ignore_nan=False)
-        assert_raises(ValueError, list, edges)
+        with pytest.raises(ValueError):
+            list(edges)
         # test default for ignore_nan as False
         edges = nx.minimum_spanning_edges(G, algorithm=self.algo, data=False)
-        assert_raises(ValueError, list, edges)
+        with pytest.raises(ValueError):
+            list(edges)
+
+    def test_nan_weights_order(self):
+        # now try again with a nan edge at the beginning of G.nodes
+        edges = [(0, 1, 7), (0, 3, 5), (1, 2, 8), (1, 3, 9), (1, 4, 7),
+                 (2, 4, 5), (3, 4, 15), (3, 5, 6), (4, 5, 8), (4, 6, 9),
+                 (5, 6, 11)]
+        G = nx.Graph()
+        G.add_weighted_edges_from([(u + 1, v + 1, wt) for u, v, wt in edges])
+        G.add_edge(0, 7, weight=float('nan'))
+        edges = nx.minimum_spanning_edges(G, algorithm=self.algo,
+                                          data=False, ignore_nan=True)
+        actual = sorted((min(u, v), max(u, v)) for u, v in edges)
+        shift = [(u + 1, v + 1) for u, v, d in self.minimum_spanning_edgelist]
+        assert_edges_equal(actual, shift)
+
+    def test_isolated_node(self):
+        # now try again with an isolated node
+        edges = [(0, 1, 7), (0, 3, 5), (1, 2, 8), (1, 3, 9), (1, 4, 7),
+                 (2, 4, 5), (3, 4, 15), (3, 5, 6), (4, 5, 8), (4, 6, 9),
+                 (5, 6, 11)]
+        G = nx.Graph()
+        G.add_weighted_edges_from([(u + 1, v + 1, wt) for u, v, wt in edges])
+        G.add_node(0)
+        edges = nx.minimum_spanning_edges(G, algorithm=self.algo,
+                                          data=False, ignore_nan=True)
+        actual = sorted((min(u, v), max(u, v)) for u, v in edges)
+        shift = [(u + 1, v + 1) for u, v, d in self.minimum_spanning_edgelist]
+        assert_edges_equal(actual, shift)
 
     def test_minimum_tree(self):
         T = nx.minimum_spanning_tree(self.G, algorithm=self.algo)
@@ -122,7 +151,7 @@ class MinimumSpanningTreeTestBase(object):
         G = nx.empty_graph(3)
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
         assert_nodes_equal(sorted(T), list(range(3)))
-        assert_equal(T.number_of_edges(), 0)
+        assert T.number_of_edges() == 0
 
     def test_attributes(self):
         G = nx.Graph()
@@ -131,10 +160,10 @@ class MinimumSpanningTreeTestBase(object):
         G.add_edge(1, 3, weight=10, color='blue', distance=1)
         G.graph['foo'] = 'bar'
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
-        assert_equal(T.graph, G.graph)
+        assert T.graph == G.graph
         assert_nodes_equal(T, G)
         for u, v in T.edges():
-            assert_equal(T.adj[u][v], G.adj[u][v])
+            assert T.adj[u][v] == G.adj[u][v]
 
     def test_weight_attribute(self):
         G = nx.Graph()

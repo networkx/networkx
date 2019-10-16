@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-from __future__ import division
-from nose.tools import *
 import networkx as nx
-
+from networkx.testing import almost_equal
 
 def example1a_G():
     G = nx.Graph()
@@ -39,7 +37,7 @@ class TestPercolationCentrality(object):
         p = nx.percolation_centrality(G)
         p_answer = {4: 0.625, 6: 0.667}
         for n in p_answer:
-            assert_almost_equal(p[n], p_answer[n], places=3)
+            assert almost_equal(p[n], p_answer[n], places=3)
 
     def test_percolation_example1b(self):
         """percolation centrality: example 1a"""
@@ -47,7 +45,7 @@ class TestPercolationCentrality(object):
         p = nx.percolation_centrality(G)
         p_answer = {4: 0.825, 6: 0.4}
         for n in p_answer:
-            assert_almost_equal(p[n], p_answer[n], places=3)
+            assert almost_equal(p[n], p_answer[n], places=3)
 
     def test_converge_to_betweenness(self):
         """percolation centrality: should converge to betweenness
@@ -74,9 +72,9 @@ class TestPercolationCentrality(object):
         p_states = {k: 1.0 for k, v in b_answer.items()}
         p_answer = nx.percolation_centrality(G, states=p_states)
         for n in sorted(G):
-            assert_almost_equal(p_answer[n], b_answer[n], places=3)
+            assert almost_equal(p_answer[n], b_answer[n], places=3)
 
         p_states = {k: 0.3 for k, v in b_answer.items()}
         p_answer = nx.percolation_centrality(G, states=p_states)
         for n in sorted(G):
-            assert_almost_equal(p_answer[n], b_answer[n], places=3)
+            assert almost_equal(p_answer[n], b_answer[n], places=3)

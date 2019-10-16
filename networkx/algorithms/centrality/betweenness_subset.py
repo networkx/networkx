@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -72,11 +72,25 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False,
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
-    The normalization might seem a little strange but it is the same
-    as in betweenness_centrality() and is designed to make
-    betweenness_centrality(G) be the same as
+    The normalization might seem a little strange but it is
+    designed to make betweenness_centrality(G) be the same as
     betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes()).
 
+    The total number of paths between source and target is counted
+    differently for directed and undirected graphs. Directed paths
+    are easy to count. Undirected paths are tricky: should a path
+    from "u" to "v" count as 1 undirected path or as 2 directed paths?
+
+    For betweenness_centrality we report the number of undirected
+    paths when G is undirected.
+
+    For betweenness_centrality_subset the reporting is different.
+    If the source and target subsets are the same, then we want
+    to count undirected paths. But if the source and target subsets
+    differ -- for example, if sources is {0} and targets is {1},
+    then we are only counting the paths in one direction. They are
+    undirected paths but we are counting them in a directed way.
+    To count them as undirected paths, each should count as half a path.
 
     References
     ----------
@@ -192,15 +206,16 @@ def betweenness_centrality_source(G, normalized=True, weight=None,
 
 
 def _accumulate_subset(betweenness, S, P, sigma, s, targets):
-    delta = dict.fromkeys(S, 0)
-    target_set = set(targets)
+    delta = dict.fromkeys(S, 0.0)
+    target_set = set(targets) - {s}
     while S:
         w = S.pop()
+        if w in target_set:
+            coeff = (delta[w] + 1.0) / sigma[w]
+        else:
+            coeff = delta[w] / sigma[w]
         for v in P[w]:
-            if w in target_set:
-                delta[v] += (sigma[v] / sigma[w]) * (1.0 + delta[w])
-            else:
-                delta[v] += delta[w] / len(P[w])
+            delta[v] += sigma[v] * coeff
         if w != s:
             betweenness[w] += delta[w]
     return betweenness

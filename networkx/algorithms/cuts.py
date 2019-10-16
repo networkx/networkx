@@ -12,7 +12,6 @@
 """Functions for finding and evaluating cuts in a graph.
 
 """
-from __future__ import division
 
 from itertools import chain
 

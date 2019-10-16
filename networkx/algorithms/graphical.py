@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test sequences for graphiness.
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -35,7 +35,7 @@ def is_graphical(sequence, method='eg'):
     sequence : list or iterable container
         A sequence of integer node degrees
 
-    method : "eg" | "hh"
+    method : "eg" | "hh"  (default: 'eg')
         The method used to validate the degree sequence.
         "eg" corresponds to the Erdős-Gallai algorithm, and
         "hh" to the Havel-Hakimi algorithm.
@@ -72,8 +72,7 @@ def is_graphical(sequence, method='eg'):
 
 def _basic_graphical_tests(deg_sequence):
     # Sort and perform some simple tests on the sequence
-    if not nx.utils.is_list_of_ints(deg_sequence):
-        raise nx.NetworkXUnfeasible
+    deg_sequence = nx.utils.make_list_of_ints(deg_sequence)
     p = len(deg_sequence)
     num_degs = [0] * p
     dmax, dmin, dsum, n = 0, p, 0, 0
@@ -264,8 +263,9 @@ def is_multigraphical(sequence):
        degrees of the vertices of a linear graph", J. SIAM, 10, pp. 496-506
        (1962).
     """
-    deg_sequence = list(sequence)
-    if not nx.utils.is_list_of_ints(deg_sequence):
+    try:
+        deg_sequence = nx.utils.make_list_of_ints(sequence)
+    except nx.NetworkXError:
         return False
     dsum, dmax = 0, 0
     for d in deg_sequence:
@@ -303,10 +303,11 @@ def is_pseudographical(sequence):
        and their degree lists", IEEE Trans. Circuits and Systems, CAS-23(12),
        pp. 778-782 (1976).
     """
-    s = list(sequence)
-    if not nx.utils.is_list_of_ints(s):
+    try:
+        deg_sequence = nx.utils.make_list_of_ints(sequence)
+    except nx.NetworkXError:
         return False
-    return sum(s) % 2 == 0 and min(s) >= 0
+    return sum(deg_sequence) % 2 == 0 and min(deg_sequence) >= 0
 
 
 def is_digraphical(in_sequence, out_sequence):
@@ -338,11 +339,10 @@ def is_digraphical(in_sequence, out_sequence):
        Algorithms for Constructing Graphs and Digraphs with Given Valences
        and Factors, Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
-    in_deg_sequence = list(in_sequence)
-    out_deg_sequence = list(out_sequence)
-    if not nx.utils.is_list_of_ints(in_deg_sequence):
-        return False
-    if not nx.utils.is_list_of_ints(out_deg_sequence):
+    try:
+        in_deg_sequence = nx.utils.make_list_of_ints(in_sequence)
+        out_deg_sequence = nx.utils.make_list_of_ints(out_sequence)
+    except nx.NetworkXError:
         return False
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or non-zero out degrees

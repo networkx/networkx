@@ -1,4 +1,4 @@
-#    Copyright (C) 2010-2018 by
+#    Copyright (C) 2010-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -248,11 +248,8 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
                 for (s, t), v in betweenness.items())
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

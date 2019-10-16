@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,7 +17,6 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['number_strongly_connected_components',
            'strongly_connected_components',
-           'strongly_connected_component_subgraphs',
            'is_strongly_connected',
            'strongly_connected_components_recursive',
            'kosaraju_strongly_connected_components',
@@ -80,10 +79,9 @@ def strongly_connected_components(G):
        Information Processing Letters 49(1): 9-14, (1994)..
 
     """
-    nbrs = {}
     preorder = {}
     lowlink = {}
-    scc_found = {}
+    scc_found = set()
     scc_queue = []
     i = 0     # Preorder counter
     for source in G:
@@ -94,16 +92,13 @@ def strongly_connected_components(G):
                 if v not in preorder:
                     i = i + 1
                     preorder[v] = i
-                done = 1
-                if v not in nbrs:
-                    nbrs[v] = iter(G[v])
-                v_nbrs = nbrs[v]
-                for w in v_nbrs:
+                done = True
+                for w in G[v]:
                     if w not in preorder:
                         queue.append(w)
-                        done = 0
+                        done = False
                         break
-                if done == 1:
+                if done:
                     lowlink[v] = preorder[v]
                     for w in G[v]:
                         if w not in scc_found:
@@ -113,12 +108,11 @@ def strongly_connected_components(G):
                                 lowlink[v] = min([lowlink[v], preorder[w]])
                     queue.pop()
                     if lowlink[v] == preorder[v]:
-                        scc_found[v] = True
                         scc = {v}
                         while scc_queue and preorder[scc_queue[-1]] > preorder[v]:
                             k = scc_queue.pop()
-                            scc_found[k] = True
                             scc.add(k)
+                        scc_found.update(scc)
                         yield scc
                     else:
                         scc_queue.append(v)
@@ -219,6 +213,9 @@ def strongly_connected_components_recursive(G):
 
     >>> largest = max(nx.strongly_connected_components_recursive(G), key=len)
 
+    To create the induced subgraph of the components use:
+    >>> S = [G.subgraph(c).copy() for c in nx.weakly_connected_components(G)]
+
     See Also
     --------
     connected_components
@@ -270,24 +267,8 @@ def strongly_connected_components_recursive(G):
 
 
 @not_implemented_for('undirected')
-def strongly_connected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in strongly_connected_components(G))``
-
-         Or ``(G.subgraph(c).copy() for c in strongly_connected_components(G))``
-    """
-    msg = "strongly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
-        "use (G.subgraph(c).copy() for c in strongly_connected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in strongly_connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
-
-
-@not_implemented_for('undirected')
 def number_strongly_connected_components(G):
-    """Return number of strongly connected components in graph.
+    """Returns number of strongly connected components in graph.
 
     Parameters
     ----------

@@ -4,13 +4,14 @@
 Bipartite Graph Algorithms
 ==========================
 """
-#    Copyright (C) 2013-2018 by
+#    Copyright (C) 2013-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from networkx.algorithms.components import connected_components
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['is_bipartite',
@@ -134,7 +135,7 @@ def is_bipartite_node_set(G, nodes):
     disconnected graphs.
     """
     S = set(nodes)
-    for CC in nx.connected_component_subgraphs(G):
+    for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
         if not ((X.issubset(S) and Y.isdisjoint(S)) or
                 (Y.issubset(S) and X.isdisjoint(S))):
@@ -155,31 +156,28 @@ def sets(G, top_nodes=None):
     G : NetworkX graph
 
     top_nodes : container
-
       Container with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
       will be raised.
 
     Returns
     -------
-    (X,Y) : two-tuple of sets
-       One set of nodes for each part of the bipartite graph.
+    (X, Y) : two-tuple of sets
+      One set of nodes for each part of the bipartite graph.
 
     Raises
     ------
     AmbiguousSolution : Exception
-
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
       possible if the input graph is disconnected.
-
     NetworkXError: Exception
-
       Raised if the input graph is not bipartite.
 
     Examples
     --------
+
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
     >>> X, Y = bipartite.sets(G)
@@ -211,7 +209,7 @@ def sets(G, top_nodes=None):
 
 
 def density(B, nodes):
-    """Return density of bipartite graph B.
+    """Returns density of bipartite graph B.
 
     Parameters
     ----------
@@ -263,7 +261,7 @@ def density(B, nodes):
 
 
 def degrees(B, nodes, weight=None):
-    """Return the degrees of the two node sets in the bipartite graph B.
+    """Returns the degrees of the two node sets in the bipartite graph B.
 
     Parameters
     ----------

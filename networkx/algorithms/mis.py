@@ -23,7 +23,7 @@ __all__ = ['maximal_independent_set']
 @py_random_state(2)
 @not_implemented_for('directed')
 def maximal_independent_set(G, nodes=None, seed=None):
-    """Return a random maximal independent set guaranteed to contain
+    """Returns a random maximal independent set guaranteed to contain
     a given set of nodes.
 
     An independent set is a set of nodes such that the subgraph

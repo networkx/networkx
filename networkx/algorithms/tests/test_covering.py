@@ -1,10 +1,9 @@
-#    Copyright 2016-2018 NetworkX developers.
+#    Copyright 2016-2019 NetworkX developers.
 #    Copyright (C) 2016 by
 #    Nishant Nikhil <nishantiam@gmail.com>
 #    All rights reserved.
 #    BSD license.
 
-from nose.tools import assert_equal, assert_true, assert_false
 import networkx as nx
 
 
@@ -13,18 +12,17 @@ class TestMinEdgeCover:
 
     def test_empty_graph(self):
         G = nx.Graph()
-        assert_equal(nx.min_edge_cover(G), set())
+        assert nx.min_edge_cover(G) == set()
 
     def test_graph_with_loop(self):
         G = nx.Graph()
         G.add_edge(0, 0)
-        assert_equal(nx.min_edge_cover(G), {(0, 0)})
+        assert nx.min_edge_cover(G) == {(0, 0)}
 
     def test_graph_single_edge(self):
         G = nx.Graph()
         G.add_edge(0, 1)
-        assert_equal(nx.min_edge_cover(G),
-                     {(0, 1)})
+        assert nx.min_edge_cover(G) in ({(0, 1)}, {(1, 0)})
 
     def test_bipartite_explicit(self):
         G = nx.Graph()
@@ -35,14 +33,14 @@ class TestMinEdgeCover:
         min_cover = nx.min_edge_cover(G, nx.algorithms.bipartite.matching.
                                       eppstein_matching)
         min_cover2 = nx.min_edge_cover(G)
-        assert_true(nx.is_edge_cover(G, min_cover))
-        assert_equal(len(min_cover), 8)
+        assert nx.is_edge_cover(G, min_cover)
+        assert len(min_cover) == 8
 
     def test_complete_graph(self):
         G = nx.complete_graph(10)
         min_cover = nx.min_edge_cover(G)
-        assert_true(nx.is_edge_cover(G, min_cover))
-        assert_equal(len(min_cover), 5)
+        assert nx.is_edge_cover(G, min_cover)
+        assert len(min_cover) == 5
 
 
 class TestIsEdgeCover:
@@ -50,17 +48,17 @@ class TestIsEdgeCover:
 
     def test_empty_graph(self):
         G = nx.Graph()
-        assert_true(nx.is_edge_cover(G, set()))
+        assert nx.is_edge_cover(G, set())
 
     def test_graph_with_loop(self):
         G = nx.Graph()
         G.add_edge(1, 1)
-        assert_true(nx.is_edge_cover(G, {(1, 1)}))
+        assert nx.is_edge_cover(G, {(1, 1)})
 
     def test_graph_single_edge(self):
         G = nx.Graph()
         G.add_edge(0, 1)
-        assert_true(nx.is_edge_cover(G, {(0, 0), (1, 1)}))
-        assert_true(nx.is_edge_cover(G, {(0, 1), (1, 0)}))
-        assert_true(nx.is_edge_cover(G, {(0, 1)}))
-        assert_false(nx.is_edge_cover(G, {(0, 0)}))
+        assert nx.is_edge_cover(G, {(0, 0), (1, 1)})
+        assert nx.is_edge_cover(G, {(0, 1), (1, 0)})
+        assert nx.is_edge_cover(G, {(0, 1)})
+        assert not nx.is_edge_cover(G, {(0, 0)})

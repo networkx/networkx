@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -14,7 +14,6 @@
 
 """Generators for geometric graphs.
 """
-from __future__ import division
 
 from bisect import bisect_left
 from itertools import combinations
@@ -175,7 +174,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
 @nodes_or_number(0)
 def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
                                 seed=None):
-    """Returns a soft random geometric graph in the unit cube.
+    r"""Returns a soft random geometric graph in the unit cube.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
     random in the unit cube in dimension `dim`. Two nodes of distance, `dist`,
@@ -415,16 +414,6 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None, weight=None,
     If node positions are not specified they are randomly assigned from the
     uniform distribution.
 
-    Starting in NetworkX 2.1 the parameter ``alpha`` is deprecated and replaced
-    with the customizable ``p_dist`` function parameter, which defaults to r^-2
-    if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX
-    versions, a custom function needs to be defined and passed as the
-    ``p_dist`` parameter. For example, if the parameter ``alpha`` = 2 was used
-    in NetworkX 2.0, the custom function def custom_dist(r): r**-2 can be
-    passed in versions >=2.1 as the parameter p_dist = custom_dist to
-    produce an equivalent network. Note the change in sign from +2 to -2 in
-    this parameter change.
-
     References
     ----------
     .. [1] Masuda, N., Miwa, H., Konno, N.:
@@ -475,7 +464,7 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None, weight=None,
 @nodes_or_number(0)
 def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
                  metric=None, seed=None):
-    r"""Return a Waxman random graph.
+    r"""Returns a Waxman random graph.
 
     The Waxman random graph model places `n` nodes uniformly at random
     in a rectangular domain. Each pair of nodes at distance `d` is
@@ -592,7 +581,7 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
 
 @py_random_state(5)
 def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
-    r"""Return a navigable small-world graph.
+    r"""Returns a navigable small-world graph.
 
     A navigable small-world graph is a directed grid with additional long-range
     connections that are chosen randomly.
@@ -666,7 +655,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 @nodes_or_number(0)
 def thresholded_random_geometric_graph(n, radius, theta, dim=2,
                                        pos=None, weight=None, p=2, seed=None):
-    """Returns a thresholded random geometric graph in the unit cube.
+    r"""Returns a thresholded random geometric graph in the unit cube.
 
     The thresholded random geometric graph [1] model places `n` nodes
     uniformly at random in the unit cube of dimensions `dim`. Each node

@@ -3,7 +3,7 @@
 Breadth First Search on Edges
 =============================
 
-Algorithms for a depth-first traversal of edges in a graph.
+Algorithms for a breadth-first traversal of edges in a graph.
 
 """
 from collections import deque
@@ -86,6 +86,15 @@ def edge_bfs(G, source=None, orientation=None):
     that it does not stop once every node has been visited. In a directed graph
     with edges [(0, 1), (1, 2), (2, 1)], the edge (2, 1) would not be visited
     if not for the functionality provided by this function.
+
+    The naming of this function is very similar to bfs_edges. The difference
+    is that 'edge_bfs' yields edges even if they extend back to an already
+    explored node while 'bfs_edges' yields the edges of the tree that results
+    from a breadth-first-search (BFS) so no edges are reported if they extend
+    to already explored nodes. That means 'edge_bfs' reports all edges while
+    'bfs_edges' only report those traversed by a node-based BFS. Yet another
+    description is that 'bfs_edges' reports the edges traversed during BFS
+    while 'edge_bfs' reports all edges in the order they are explored.
 
     See Also
     --------

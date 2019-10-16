@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,7 +10,6 @@
 #          Pieter Swart (swart@lanl.gov)
 #          Sasha Gutfraind (ag362@cornell.edu)
 """Load centrality."""
-from __future__ import division
 from operator import itemgetter
 
 import networkx as nx

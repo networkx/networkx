@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # gomory_hu.py - function for computing Gomory Hu trees
 #
-# Copyright 2017-2018 NetworkX developers.
+# Copyright 2017-2019 NetworkX developers.
 #
 # This file is part of NetworkX.
 #
@@ -164,7 +164,8 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
         target = tree[source]
         # compute minimum cut
         cut_value, partition = nx.minimum_cut(G, source, target,
-                                              capacity=capacity, flow_func=flow_func,
+                                              capacity=capacity,
+                                              flow_func=flow_func,
                                               residual=R)
         labels[(source, target)] = cut_value
         # Update the tree
@@ -172,9 +173,16 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
         for node in partition[0]:
             if node != source and node in tree and tree[node] == target:
                 tree[node] = source
-                labels[(node, source)] = labels.get((node, target), cut_value)
+                labels[node, source] = labels.get((node, target), cut_value)
+        #
+        if target != root and tree[target] in partition[0]:
+            labels[source, tree[target]] = labels[target, tree[target]]
+            labels[target, source] = cut_value
+            tree[source] = tree[target]
+            tree[target] = source
+
     # Build the tree
     T = nx.Graph()
     T.add_nodes_from(G)
-    T.add_weighted_edges_from(((u, v, labels[(u, v)]) for u, v in tree.items()))
+    T.add_weighted_edges_from(((u, v, labels[u, v]) for u, v in tree.items()))
     return T

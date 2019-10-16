@@ -1,5 +1,5 @@
 # encoding: utf-8
-#    Copyright (C) 2008-2018 by
+#    Copyright (C) 2008-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,7 +10,7 @@
 """
 Read graphs in GML format.
 
-"GML, the G>raph Modelling Language, is our proposal for a portable
+"GML, the Graph Modelling Language, is our proposal for a portable
 file format for graphs. GML's key features are portability, simple
 syntax, extensibility and flexibility. A GML file consists of a
 hierarchical key-value lists. Graphs can be annotated with arbitrary
@@ -193,7 +193,7 @@ def read_gml(path, label='label', destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -263,7 +263,7 @@ def parse_gml(lines, label='label', destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
@@ -302,7 +302,8 @@ def parse_gml_lines(lines, label, destringizer):
     def tokenize():
         patterns = [
             r'[A-Za-z][0-9A-Za-z_]*\b',  # keys
-            r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
+            # reals
+            r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',
             r'[+-]?[0-9]+',   # ints
             r'".*?"',         # strings
             r'\[',            # dict start
@@ -371,7 +372,23 @@ def parse_gml_lines(lines, label, destringizer):
             elif category == 4:  # dict start
                 curr_token, value = parse_dict(curr_token)
             else:
-                unexpected(curr_token, "an int, float, string or '['")
+                # Allow for string convertible id and label values
+                if key in ("id", "label", "source", "target"):
+                    try:
+                        # String convert the token value
+                        value = unescape(str(curr_token[1]))
+                        if destringizer:
+                            try:
+                                value = destringizer(value)
+                            except ValueError:
+                                pass
+                        curr_token = next(tokens)
+                    except Exception:
+                        msg = "an int, float, string, '[' or string" + \
+                              " convertable ASCII value for node id or label"
+                        unexpected(curr_token, msg)
+                else:  # Otherwise error out
+                    unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
         dct = {key: (value if not isinstance(value, list) or len(value) != 1
                      else value[0]) for key, value in dct.items()}
@@ -415,17 +432,18 @@ def parse_gml_lines(lines, label, destringizer):
 
     nodes = graph.get('node', [])
     mapping = {}
-    labels = set()
+    node_labels = set()
     for i, node in enumerate(nodes if isinstance(nodes, list) else [nodes]):
         id = pop_attr(node, 'node', 'id', i)
         if id in G:
             raise NetworkXError('node id %r is duplicated' % (id,))
-        if label != 'id':
-            label = pop_attr(node, 'node', 'label', i)
-            if label in labels:
-                raise NetworkXError('node label %r is duplicated' % (label,))
-            labels.add(label)
-            mapping[id] = label
+        if label is not None and label != 'id':
+            node_label = pop_attr(node, 'node', label, i)
+            if node_label in node_labels:
+                raise NetworkXError('node label %r is duplicated' %
+                                    (node_label,))
+            node_labels.add(node_label)
+            mapping[id] = node_label
         G.add_node(id, **node)
 
     edges = graph.get('edge', [])
@@ -442,11 +460,10 @@ def parse_gml_lines(lines, label, destringizer):
             if not G.has_edge(source, target):
                 G.add_edge(source, target, **edge)
             else:
-                raise nx.NetworkXError(
-                    """edge #%d (%r%s%r) is duplicated
-
-Hint:  If this is a multigraph, add "multigraph 1" to the header of the file.""" %
-                    (i, source, '->' if directed else '--', target))
+                msg = "edge #%d (%r%s%r) is duplicated.\n"
+                msg2 = 'Hint: If multigraph add "multigraph 1" to file header.'
+                info = (i, source, '->' if directed else '--', target)
+                raise nx.NetworkXError((msg % info) + msg2)
         else:
             key = edge.pop('key', None)
             if key is not None and G.has_edge(source, target, key):
@@ -455,7 +472,7 @@ Hint:  If this is a multigraph, add "multigraph 1" to the header of the file."""
                     (i, source, '->' if directed else '--', target, key))
             G.add_edge(source, target, key, **edge)
 
-    if label != 'id':
+    if label is not None and label != 'id':
         G = nx.relabel_nodes(G, mapping)
     return G
 
@@ -609,7 +626,7 @@ def generate_gml(G, stringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -666,6 +683,9 @@ def generate_gml(G, stringizer=None):
                     yield indent + key + ' 1'
                 elif value is False:
                     yield indent + key + ' 0'
+                # GML only supports signed 32-bit integers
+                elif value < -2**31 or value >= 2**31:
+                    yield indent + key + ' "' + str(value) + '"'
                 else:
                     yield indent + key + ' ' + str(value)
             elif isinstance(value, float):
@@ -797,7 +817,7 @@ def write_gml(G, path, stringizer=None):
     sure to write GML format. In particular, underscores are not allowed in
     attribute names.
     For additional documentation on the GML file format, please see the
-    `GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -814,7 +834,7 @@ def write_gml(G, path, stringizer=None):
         path.write((line + '\n').encode('ascii'))
 
 
-# fixture for nose
+# fixture for pytest
 def teardown_module(module):
     import os
     for fname in ['test.gml', 'test.gml.gz']:

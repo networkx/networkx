@@ -1,25 +1,27 @@
 #!/usr/bin/env python
-from nose.tools import *
-from nose import SkipTest
+import pytest
+np = pytest.importorskip('numpy')
+npt = pytest.importorskip('numpy.testing')
+
+
 import networkx as nx
-from base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
+from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
 
 class TestDegreeMixingDict(BaseTestDegreeMixing):
-
     def test_degree_mixing_dict_undirected(self):
         d = nx.degree_mixing_dict(self.P4)
         d_result = {1: {2: 2},
                     2: {1: 2, 2: 2},
                     }
-        assert_equal(d, d_result)
+        assert d == d_result
 
     def test_degree_mixing_dict_undirected_normalized(self):
         d = nx.degree_mixing_dict(self.P4, normalized=True)
         d_result = {1: {2: 1.0 / 3},
                     2: {1: 1.0 / 3, 2: 1.0 / 3},
                     }
-        assert_equal(d, d_result)
+        assert d == d_result
 
     def test_degree_mixing_dict_directed(self):
         d = nx.degree_mixing_dict(self.D)
@@ -28,7 +30,7 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
                     2: {1: 1, 3: 1},
                     3: {}
                     }
-        assert_equal(d, d_result)
+        assert d == d_result
 
     def test_degree_mixing_dict_multigraph(self):
         d = nx.degree_mixing_dict(self.M)
@@ -36,21 +38,11 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
                     2: {1: 1, 3: 3},
                     3: {2: 3}
                     }
-        assert_equal(d, d_result)
+        assert d == d_result
 
 
 class TestDegreeMixingMatrix(BaseTestDegreeMixing):
 
-    @classmethod
-    def setupClass(cls):
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_degree_mixing_matrix_undirected(self):
         a_result = np.array([[0, 0, 0],
@@ -104,7 +96,7 @@ class TestAttributeMixingDict(BaseTestAttributeMixing):
                     'red': {'one': 1},
                     'blue': {'two': 1}
                     }
-        assert_equal(d, d_result)
+        assert d == d_result
 
     def test_attribute_mixing_dict_directed(self):
         d = nx.attribute_mixing_dict(self.D, 'fish')
@@ -113,27 +105,17 @@ class TestAttributeMixingDict(BaseTestAttributeMixing):
                     'red': {},
                     'blue': {}
                     }
-        assert_equal(d, d_result)
+        assert d == d_result
 
     def test_attribute_mixing_dict_multigraph(self):
         d = nx.attribute_mixing_dict(self.M, 'fish')
         d_result = {'one': {'one': 4},
                     'two': {'two': 2},
                     }
-        assert_equal(d, d_result)
+        assert d == d_result
 
 
 class TestAttributeMixingMatrix(BaseTestAttributeMixing):
-    @classmethod
-    def setupClass(cls):
-        global np
-        global npt
-        try:
-            import numpy as np
-            import numpy.testing as npt
-
-        except ImportError:
-            raise SkipTest('NumPy not available.')
 
     def test_attribute_mixing_matrix_undirected(self):
         mapping = {'one': 0, 'two': 1, 'red': 2, 'blue': 3}

@@ -7,7 +7,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Functions related to the Wiener index of a graph."""
-from __future__ import division
 
 from itertools import chain
 

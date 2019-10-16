@@ -1,4 +1,4 @@
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -36,18 +36,12 @@ Often it is easiest to use .copy() to avoid chains.
 from networkx.classes.coreviews import UnionAdjacency, UnionMultiAdjacency, \
     FilterAtlas, FilterAdjacency, FilterMultiAdjacency
 from networkx.classes.filters import no_filter
-from networkx.exception import NetworkXError, NetworkXNotImplemented
-# remove the graph class import when deprecated GraphView removed
-from networkx.classes import Graph, DiGraph, MultiGraph, MultiDiGraph
+from networkx.exception import NetworkXError
+from networkx.utils import not_implemented_for
 
 import networkx as nx
 
-__all__ = ['generic_graph_view', 'subgraph_view', 'reverse_view',
-           'SubGraph', 'SubDiGraph', 'SubMultiGraph', 'SubMultiDiGraph',
-           'ReverseView', 'MultiReverseView',
-           'DiGraphView', 'MultiDiGraphView',
-           'GraphView', 'MultiGraphView',
-           ]
+__all__ = ['generic_graph_view', 'subgraph_view', 'reverse_view']
 
 
 def generic_graph_view(G, create_using=None):
@@ -84,6 +78,83 @@ def generic_graph_view(G, create_using=None):
 
 
 def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
+    """ View of `G` applying a filter on nodes and edges.
+
+    `subgraph_view` provides a read-only view of the input graph that excludes
+    nodes and edges based on the outcome of two filter functions `filter_node`
+    and `filter_edge`.
+
+    The `filter_node` function takes one argument --- the node --- and returns
+    `True` if the node should be included in the subgraph, and `False` if it
+    should not be included.
+
+    The `filter_edge` function takes two arguments --- the nodes describing an
+    edge --- and returns `True` if the edge should be included in the subgraph,
+    and `False` if it should not be included.
+
+    Both node and edge filter functions are called on graph elements as they
+    are queried, meaning there is no up-front cost to creating the view.
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        A directed/undirected graph/multigraph
+
+    filter_node : callable, optional
+        A function taking a node as input, which returns `True` if the node
+        should appear in the view.
+
+    filter_edge : callable, optional
+        A function taking as input the two nodes describing an edge, which
+        returns `True` if the edge should appear in the view.
+
+    Returns
+    -------
+    graph : networkx.Graph
+        A read-only graph view of the input graph.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.path_graph(6)
+
+    Filter functions operate on the node, and return `True` if the node should
+    appear in the view:
+
+    >>> def filter_node(n1):
+    ...     return n1 != 5
+    ...
+    >>> view = nx.subgraph_view(
+    ...     G,
+    ...     filter_node=filter_node
+    ... )
+    >>> view.nodes()
+    NodeView((0, 1, 2, 3, 4))
+
+    We can use a closure pattern to filter graph elements based on additional
+    data --- for example, filtering on edge data attached to the graph:
+
+    >>> G[3][4]['cross_me'] = False
+    >>> def filter_edge(n1, n2):
+    ...     return G[n1][n2].get('cross_me', True)
+    ...
+    >>> view = nx.subgraph_view(
+    ...     G,
+    ...     filter_edge=filter_edge
+    ... )
+    >>> view.edges()
+    EdgeView([(0, 1), (1, 2), (2, 3), (4, 5)])
+
+    >>> view = nx.subgraph_view(
+    ...     G,
+    ...     filter_node=filter_node,
+    ...     filter_edge=filter_edge,
+    ... )
+    >>> view.nodes()
+    NodeView((0, 1, 2, 3, 4))
+    >>> view.edges()
+    EdgeView([(0, 1), (1, 2), (2, 3)])
+    """
     newG = nx.freeze(G.__class__())
     newG._NODE_OK = filter_node
     newG._EDGE_OK = filter_edge
@@ -110,64 +181,37 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
     return newG
 
 
+@not_implemented_for('undirected')
 def reverse_view(G):
-    if not G.is_directed():
-        msg = "not implemented for undirected type"
-        raise NetworkXNotImplemented(msg)
+    """ View of `G` with edge directions reversed
+
+    `reverse_view` returns a read-only view of the input graph where
+    edge directions are reversed.
+
+    Identical to digraph.reverse(copy=False)
+
+    Parameters
+    ----------
+    G : networkx.DiGraph
+
+    Returns
+    -------
+    graph : networkx.DiGraph
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> G.edges()
+    OutEdgeView([(1, 2), (2, 3)])
+
+    >>> view = nx.reverse_view(G)
+    >>> view.edges()
+    OutEdgeView([(2, 1), (3, 2)])
+    """
     newG = generic_graph_view(G)
     newG._succ, newG._pred = G._pred, G._succ
     newG._adj = newG._succ
     return newG
-
-
-# The remaining definitions are for backward compatibility with v2.0 and 2.1
-def ReverseView(G):
-    # remove by v3 if not before
-    import warnings
-    msg = 'ReverseView is deprecated. Use reverse_view instead'
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-    return reverse_view(G)
-
-
-def SubGraph(G, filter_node=no_filter, filter_edge=no_filter):
-    # remove by v3 if not before
-    import warnings
-    msg = 'SubGraph is deprecated. Use subgraph_view instead'
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-    return subgraph_view(G, filter_node, filter_edge)
-
-
-def GraphView(G):
-    # remove by v3 if not before
-    import warnings
-    msg = 'GraphView is deprecated. Use generic_graph_view instead'
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-    return generic_graph_view(G, Graph)
-
-
-def DiGraphView(G):
-    # remove by v3 if not before
-    import warnings
-    msg = 'GraphView is deprecated. Use generic_graph_view instead'
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-    return generic_graph_view(G, DiGraph)
-
-
-def MultiGraphView(G):
-    # remove by v3 if not before
-    import warnings
-    msg = 'GraphView is deprecated. Use generic_graph_view instead'
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-    return generic_graph_view(G, MultiGraph)
-
-
-def MultiDiGraphView(G):
-    # remove by v3 if not before
-    import warnings
-    msg = 'GraphView is deprecated. Use generic_graph_view instead'
-    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
-    return generic_graph_view(G, MultiDiGraph)
-
-
-MultiReverseView = ReverseView
-SubMultiGraph = SubMultiDiGraph = SubDiGraph = SubGraph

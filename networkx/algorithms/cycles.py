@@ -1,4 +1,4 @@
-#    Copyright (C) 2010-2018 by
+#    Copyright (C) 2010-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -181,9 +181,20 @@ def simple_cycles(G):
     # Also we save the actual graph so we can mutate it. We only take the
     # edges because we do not want to copy edge and node attributes here.
     subG = type(G)(G.edges())
-    sccs = list(nx.strongly_connected_components(subG))
+    sccs = [scc for scc in nx.strongly_connected_components(subG)
+            if len(scc) > 1]
+
+    # Johnson's algorithm exclude self cycle edges like (v, v)
+    # To be backward compatible, we record those cycles in advance
+    # and then remove from subG
+    for v in subG:
+        if subG.has_edge(v, v):
+            yield [v]
+            subG.remove_edge(v, v)
+
     while sccs:
         scc = sccs.pop()
+        sccG = subG.subgraph(scc)
         # order of scc determines ordering of nodes
         startnode = scc.pop()
         # Processing node runs "circuit" routine from recursive version
@@ -192,7 +203,7 @@ def simple_cycles(G):
         closed = set()   # nodes involved in a cycle
         blocked.add(startnode)
         B = defaultdict(set)  # graph portions that yield no elementary circuit
-        stack = [(startnode, list(subG[startnode]))]  # subG gives comp nbrs
+        stack = [(startnode, list(sccG[startnode]))]  # sccG gives comp nbrs
         while stack:
             thisnode, nbrs = stack[-1]
             if nbrs:
@@ -203,7 +214,7 @@ def simple_cycles(G):
 #                        print "Found a cycle", path, closed
                 elif nextnode not in blocked:
                     path.append(nextnode)
-                    stack.append((nextnode, list(subG[nextnode])))
+                    stack.append((nextnode, list(sccG[nextnode])))
                     closed.discard(nextnode)
                     blocked.add(nextnode)
                     continue
@@ -212,16 +223,16 @@ def simple_cycles(G):
                 if thisnode in closed:
                     _unblock(thisnode, blocked, B)
                 else:
-                    for nbr in subG[thisnode]:
+                    for nbr in sccG[thisnode]:
                         if thisnode not in B[nbr]:
                             B[nbr].add(thisnode)
                 stack.pop()
 #                assert path[-1] == thisnode
                 path.pop()
         # done processing this node
-        subG.remove_node(startnode)
         H = subG.subgraph(scc)  # make smaller to avoid work in SCC routine
-        sccs.extend(list(nx.strongly_connected_components(H)))
+        sccs.extend(scc for scc in nx.strongly_connected_components(H)
+                    if len(scc) > 1)
 
 
 @not_implemented_for('undirected')
@@ -251,7 +262,7 @@ def recursive_simple_cycles(G):
     >>> edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
     >>> G = nx.DiGraph(edges)
     >>> nx.recursive_simple_cycles(G)
-    [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
+    [[0], [2], [0, 1, 2], [0, 2], [1, 2]]
 
     See Also
     --------
@@ -306,6 +317,15 @@ def recursive_simple_cycles(G):
     blocked = defaultdict(bool)  # vertex: blocked from search?
     B = defaultdict(list)  # graph portions that yield no elementary circuit
     result = []            # list to accumulate the circuits found
+
+    # Johnson's algorithm exclude self cycle edges like (v, v)
+    # To be backward compatible, we record those cycles in advance
+    # and then remove from subG
+    for v in G:
+        if G.has_edge(v, v):
+            result.append([v])
+            G.remove_edge(v, v)
+
     # Johnson's algorithm requires some ordering of the nodes.
     # They might not be sortable so we assign an arbitrary ordering.
     ordering = dict(zip(G, range(len(G))))
@@ -318,7 +338,7 @@ def recursive_simple_cycles(G):
         strongcomp = nx.strongly_connected_components(subgraph)
         mincomp = min(strongcomp, key=lambda ns: min(ordering[n] for n in ns))
         component = G.subgraph(mincomp)
-        if component:
+        if len(component) > 1:
             # smallest node in the component according to the ordering
             startnode = min(component, key=ordering.__getitem__)
             for node in component:
@@ -504,9 +524,9 @@ def minimum_cycle_basis(G, weight=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
-    >>> print(nx.minimum_cycle_basis(G))
+    >>> nx.add_cycle(G, [0,1,2,3])
+    >>> nx.add_cycle(G, [0,3,4,5])
+    >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 
     References:
@@ -521,8 +541,8 @@ def minimum_cycle_basis(G, weight=None):
     simple_cycles, cycle_basis
     """
     # We first split the graph in commected subgraphs
-    return sum((_min_cycle_basis(c, weight) for c in
-                nx.connected_component_subgraphs(G)), [])
+    return sum((_min_cycle_basis(G.subgraph(c), weight) for c in
+                nx.connected_components(G)), [])
 
 
 def _min_cycle_basis(comp, weight):

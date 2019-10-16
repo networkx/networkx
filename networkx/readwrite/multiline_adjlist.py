@@ -28,7 +28,7 @@ adjacency list (anything following the # in a line is a comment)::
 __author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Loïc Séguin-C. <loicseguin@gmail.com>'])
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -374,7 +374,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
                                    edgetype=edgetype)
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     for fname in ['test.adjlist', 'test.adjlist.gz']:

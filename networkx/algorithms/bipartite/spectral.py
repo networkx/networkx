@@ -77,14 +77,8 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
         return sb
 
 
+# fixture for pytest
 def setup_module(module):
-    """Fixture for nose tests."""
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')

@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 """Original NetworkX graph tests"""
-from nose.tools import *
 import networkx
 import networkx as nx
 
-from historical_tests import HistoricalTests
+from .historical_tests import HistoricalTests
 
 
 class TestGraphHistorical(HistoricalTests):
 
-    def setUp(self):
-        HistoricalTests.setUp(self)
-        self.G = nx.Graph
+    @classmethod
+    def setup_class(cls):
+        HistoricalTests.setup_class()
+        cls.G = nx.Graph

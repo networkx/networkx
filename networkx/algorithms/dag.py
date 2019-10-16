@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2018 by
+#    Copyright (C) 2006-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -20,7 +20,7 @@ to the user to check for that.
 """
 
 from collections import defaultdict, deque
-from fractions import gcd
+from math import gcd
 from functools import partial
 from itertools import chain
 from itertools import product
@@ -28,11 +28,12 @@ from itertools import starmap
 import heapq
 
 import networkx as nx
+from networkx.algorithms.traversal.breadth_first_search import \
+    descendants_at_distance
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 from networkx.utils import consume
 from networkx.utils import pairwise
-from networkx.utils import generate_unique_node
 from networkx.utils import not_implemented_for
 
 __all__ = ['descendants',
@@ -43,6 +44,7 @@ __all__ = ['descendants',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
+           'transitive_closure_dag',
            'transitive_reduction',
            'antichains',
            'dag_longest_path',
@@ -53,7 +55,7 @@ chaini = chain.from_iterable
 
 
 def descendants(G, source):
-    """Return all nodes reachable from `source` in `G`.
+    """Returns all nodes reachable from `source` in `G`.
 
     Parameters
     ----------
@@ -73,7 +75,7 @@ def descendants(G, source):
 
 
 def ancestors(G, source):
-    """Return all nodes having a path to `source` in `G`.
+    """Returns all nodes having a path to `source` in `G`.
 
     Parameters
     ----------
@@ -103,7 +105,7 @@ def has_cycle(G):
 
 
 def is_directed_acyclic_graph(G):
-    """Return True if the graph `G` is a directed acyclic graph (DAG) or
+    """Returns True if the graph `G` is a directed acyclic graph (DAG) or
     False if not.
 
     Parameters
@@ -119,7 +121,7 @@ def is_directed_acyclic_graph(G):
 
 
 def topological_sort(G):
-    """Return a generator of nodes in topologically sorted order.
+    """Returns a generator of nodes in topologically sorted order.
 
     A topological sort is a nonunique permutation of the nodes such that an
     edge from u to v implies that u appears before v in the topological sort
@@ -210,7 +212,7 @@ def topological_sort(G):
 
 
 def lexicographical_topological_sort(G, key=None):
-    """Return a generator of nodes in lexicographically topologically sorted
+    """Returns a generator of nodes in lexicographically topologically sorted
     order.
 
     A topological sort is a nonunique permutation of the nodes such that an
@@ -260,14 +262,17 @@ def lexicographical_topological_sort(G, key=None):
        *Introduction to Algorithms - A Creative Approach.* Addison-Wesley.
     """
     if not G.is_directed():
-        raise nx.NetworkXError(
-            "Topological sort not defined on undirected graphs.")
+        msg = "Topological sort not defined on undirected graphs."
+        raise nx.NetworkXError(msg)
 
     if key is None:
-        def key(x): return x
+        def key(node):
+            return node
+
+    nodeid_map = {n: i for i, n in enumerate(G)}
 
     def create_tuple(node):
-        return key(node), node
+        return key(node), nodeid_map[node], node
 
     indegree_map = {v: d for v, d in G.in_degree() if d > 0}
     # These nodes have zero indegree and ready to be returned.
@@ -275,7 +280,7 @@ def lexicographical_topological_sort(G, key=None):
     heapq.heapify(zero_indegree)
 
     while zero_indegree:
-        _, node = heapq.heappop(zero_indegree)
+        _, _, node = heapq.heappop(zero_indegree)
 
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
@@ -291,8 +296,8 @@ def lexicographical_topological_sort(G, key=None):
         yield node
 
     if indegree_map:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle or graph changed "
-                                    "during iteration")
+        msg = "Graph contains a cycle or graph changed during iteration"
+        raise nx.NetworkXUnfeasible(msg)
 
 
 @not_implemented_for('undirected')
@@ -416,7 +421,7 @@ def all_topological_sorts(G):
 
 
 def is_aperiodic(G):
-    """Return True if `G` is aperiodic.
+    """Returns True if `G` is aperiodic.
 
     A directed graph is aperiodic if there is no integer k > 1 that
     divides the length of every cycle in the graph.
@@ -457,7 +462,7 @@ def is_aperiodic(G):
     levels = {s: 0}
     this_level = [s]
     g = 0
-    l = 1
+    lev = 1
     while this_level:
         next_level = []
         for u in this_level:
@@ -466,9 +471,9 @@ def is_aperiodic(G):
                     g = gcd(g, levels[u] - levels[v] + 1)
                 else:  # Tree Edge
                     next_level.append(v)
-                    levels[v] = l
+                    levels[v] = lev
         this_level = next_level
-        l += 1
+        lev += 1
     if len(levels) == len(G):  # All nodes in tree
         return g == 1
     else:
@@ -476,18 +481,30 @@ def is_aperiodic(G):
 
 
 @not_implemented_for('undirected')
-def transitive_closure(G):
+def transitive_closure(G, reflexive=False):
     """ Returns transitive closure of a directed graph
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
-    for all v,w in V there is an edge (v,w) in E+ if and only if there
-    is a non-null path from v to w in G.
+    for all v, w in V there is an edge (v, w) in E+ if and only if there
+    is a path from v to w in G.
+
+    Handling of paths from v to v has some flexibility within this definition.
+    A reflexive transitive closure creates a self-loop for the path
+    from v to v of length 0. The usual transitive closure creates a
+    self-loop only if a cycle exists (a path from v to v with length > 0).
+    We also allow an option for no self-loops.
 
     Parameters
     ----------
     G : NetworkX DiGraph
         A directed graph
-
+    reflexive : Bool or None, optional (default: False)
+        Determines when cycles create self-loops in the Transitive Closure.
+        If True, trivial cycles (length 0) create self-loops. The result
+        is a reflexive tranistive closure of G.
+        If False (the default) non-trivial cycles create self-loops.
+        If None, self-loops are not created.
+        
     Returns
     -------
     NetworkX DiGraph
@@ -502,11 +519,75 @@ def transitive_closure(G):
     ----------
     .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
 
+    TODO this function applies to all directed graphs and is probably misplaced
+         here in dag.py
     """
+    if reflexive is None:
+        TC = G.copy()
+        for v in G:
+            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v) if v != u)
+            TC.add_edges_from(edges)
+        return TC
+    if reflexive is True:
+        TC = G.copy()
+        for v in G:
+            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v))
+            TC.add_edges_from(edges)
+        return TC
+    # reflexive is False
     TC = G.copy()
     for v in G:
-        TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
-                          if v != u)
+        edges = ((v, w) for u, w in nx.edge_dfs(G, v))
+        TC.add_edges_from(edges)
+    return TC
+
+
+@not_implemented_for('undirected')
+def transitive_closure_dag(G, topo_order=None):
+    """ Returns the transitive closure of a directed acyclic graph.
+
+    This function is faster than the function `transitive_closure`, but fails
+    if the graph has a cycle.
+
+    The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
+    for all v, w in V there is an edge (v, w) in E+ if and only if there
+    is a non-null path from v to w in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed acyclic graph (DAG)
+
+    topo_order: list or tuple, optional
+        A topological order for G (if None, the function will compute one)
+
+    Returns
+    -------
+    NetworkX DiGraph
+        The transitive closure of `G`
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is not directed
+    NetworkXUnfeasible
+        If `G` has a cycle
+
+    Notes
+    -----
+    This algorithm is probably simple enough to be well-known but I didn't find
+    a mention in the literature.
+    """
+    if topo_order is None:
+        topo_order = list(topological_sort(G))
+
+    TC = G.copy()
+
+    # idea: traverse vertices following a reverse topological order, connecting
+    # each vertex to its descendants at distance 2 as we go
+    for v in reversed(topo_order):
+        TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
+
     return TC
 
 
@@ -562,7 +643,7 @@ def transitive_reduction(G):
 
 
 @not_implemented_for('undirected')
-def antichains(G):
+def antichains(G, topo_order=None):
     """Generates antichains from a directed acyclic graph (DAG).
 
     An antichain is a subset of a partially ordered set such that any
@@ -572,6 +653,9 @@ def antichains(G):
     ----------
     G : NetworkX DiGraph
         A directed acyclic graph (DAG)
+
+    topo_order: list or tuple, optional
+        A topological order for G (if None, the function will compute one)
 
     Returns
     -------
@@ -598,8 +682,12 @@ def antichains(G):
     .. [1] Free Lattices, by R. Freese, J. Jezek and J. B. Nation,
        AMS, Vol 42, 1995, p. 226.
     """
-    TC = nx.transitive_closure(G)
-    antichains_stacks = [([], list(reversed(list(nx.topological_sort(G)))))]
+    if topo_order is None:
+        topo_order = list(nx.topological_sort(G))
+
+    TC = nx.transitive_closure_dag(G, topo_order)
+    antichains_stacks = [([], list(reversed(topo_order)))]
+
     while antichains_stacks:
         (antichain, stack) = antichains_stacks.pop()
         # Invariant:
@@ -615,7 +703,7 @@ def antichains(G):
 
 
 @not_implemented_for('undirected')
-def dag_longest_path(G, weight='weight', default_weight=1):
+def dag_longest_path(G, weight='weight', default_weight=1, topo_order=None):
     """Returns the longest path in a directed acyclic graph (DAG).
 
     If `G` has edges with `weight` attribute the edge data are used as
@@ -631,6 +719,9 @@ def dag_longest_path(G, weight='weight', default_weight=1):
 
     default_weight : int, optional
         The weight of edges that do not have a weight attribute
+
+    topo_order: list or tuple, optional
+        A topological order for G (if None, the function will compute one)
 
     Returns
     -------
@@ -649,14 +740,20 @@ def dag_longest_path(G, weight='weight', default_weight=1):
     """
     if not G:
         return []
+
+    if topo_order is None:
+        topo_order = nx.topological_sort(G)
+
     dist = {}  # stores {v : (length, u)}
-    for v in nx.topological_sort(G):
+    for v in topo_order:
         us = [(dist[u][0] + data.get(weight, default_weight), u)
               for u, data in G.pred[v].items()]
+
         # Use the best predecessor if there is one and its distance is
         # non-negative, otherwise terminate.
         maxu = max(us, key=lambda x: x[0]) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
+
     u = None
     v = max(dist, key=lambda x: dist[x][0])
     path = []
@@ -664,6 +761,7 @@ def dag_longest_path(G, weight='weight', default_weight=1):
         path.append(v)
         u = v
         v = dist[v][1]
+
     path.reverse()
     return path
 
@@ -795,7 +893,7 @@ def dag_to_branching(G):
 
         >>> for source, nodes in sources.items():
         ...     for v in nodes:
-        ...         B.node[v].update(G.node[source])
+        ...         B.nodes[v].update(G.nodes[source])
 
     Notes
     -----

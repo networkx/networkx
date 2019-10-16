@@ -16,22 +16,24 @@ __all__ = ['is_partition']
 
 
 def is_partition(G, communities):
-    """Return True if and only if `communities` is a partition of
-    the nodes of `G`.
+    """Returns *True* if `communities` is a partition of the nodes of `G`.
 
     A partition of a universe set is a family of pairwise disjoint sets
     whose union is the entire universe set.
 
-    `G` is a NetworkX graph.
+    Parameters
+    ----------
+    G : NetworkX graph.
 
-    `communities` is an iterable of sets of nodes of `G`. This
-    iterable will be consumed multiple times during the execution of
-    this function.
+    communities : list or iterable of sets of nodes
+        If not a list, the iterable is converted internally to a list.
+        If it is an iterator it is exhausted.
 
     """
     # Alternate implementation:
-    #
-    #     return (len(G) == sum(len(c) for c in community) and
-    #             set(G) == set.union(*community))
-    #
-    return all(sum(1 if v in c else 0 for c in communities) == 1 for v in G)
+    # return all(sum(1 if v in c else 0 for c in communities) == 1 for v in G)
+    if not isinstance(communities, list):
+        communities = list(communities)
+    nodes = set(n for c in communities for n in c if n in G)
+
+    return len(G) == len(nodes) == sum(len(c) for c in communities)

@@ -79,7 +79,11 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             if hasattr(data, 'graph'):  # data.graph should be dict-like
                 result.graph.update(data.graph)
             if hasattr(data, 'nodes'):  # data.nodes should be dict-like
-                result._node.update((n, dd.copy()) for n, dd in data.nodes.items())
+                # result.add_node_from(data.nodes.items()) possible but
+                # for custom node_attr_dict_factory which may be hashable
+                # will be unexpected behavior
+                for n, dd in data.nodes.items():
+                    result._node[n].update(dd)
             return result
         except:
             raise nx.NetworkXError("Input is not a correct NetworkX graph.")
@@ -162,7 +166,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
 
 def to_dict_of_lists(G, nodelist=None):
-    """Return adjacency representation of graph as a dictionary of lists.
+    """Returns adjacency representation of graph as a dictionary of lists.
 
     Parameters
     ----------
@@ -187,7 +191,7 @@ def to_dict_of_lists(G, nodelist=None):
 
 
 def from_dict_of_lists(d, create_using=None):
-    """Return a graph from a dictionary of lists.
+    """Returns a graph from a dictionary of lists.
 
     Parameters
     ----------
@@ -226,7 +230,7 @@ def from_dict_of_lists(d, create_using=None):
 
 
 def to_dict_of_dicts(G, nodelist=None, edge_data=None):
-    """Return adjacency representation of graph as a dictionary of dictionaries.
+    """Returns adjacency representation of graph as a dictionary of dictionaries.
 
     Parameters
     ----------
@@ -266,7 +270,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
 
 
 def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
-    """Return a graph from a dictionary of dictionaries.
+    """Returns a graph from a dictionary of dictionaries.
 
     Parameters
     ----------
@@ -345,7 +349,7 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
 
 
 def to_edgelist(G, nodelist=None):
-    """Return a list of edges in the graph.
+    """Returns a list of edges in the graph.
 
     Parameters
     ----------
@@ -362,7 +366,7 @@ def to_edgelist(G, nodelist=None):
 
 
 def from_edgelist(edgelist, create_using=None):
-    """Return a graph from a list of edges.
+    """Returns a graph from a list of edges.
 
     Parameters
     ----------

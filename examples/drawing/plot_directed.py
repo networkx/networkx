@@ -10,7 +10,6 @@ Edges have different colors and alphas (opacity). Drawn using matplotlib.
 """
 # Author: Rodrigo Dorantes-Gilardi (rodgdor@gmail.com)
 
-from __future__ import division
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx

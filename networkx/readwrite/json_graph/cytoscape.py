@@ -8,7 +8,7 @@ _attrs = dict(name='name', ident='id')
 
 
 def cytoscape_data(G, attrs=None):
-    """Return data in Cytoscape JSON format (cyjs).
+    """Returns data in Cytoscape JSON format (cyjs).
 
     Parameters
     ----------

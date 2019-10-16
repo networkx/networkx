@@ -1,7 +1,7 @@
 # duplication.py - functions for generating graphs by duplicating nodes
 #
-# Copyright 2016-2018 NetworkX developers.
-# Copyright (C) 2004-2018 by
+# Copyright 2016-2019 NetworkX developers.
+# Copyright (C) 2004-2019 by
 # Aric Hagberg <hagberg@lanl.gov>
 # Dan Schult <dschult@colgate.edu>
 # Pieter Swart <swart@lanl.gov>
@@ -26,7 +26,7 @@ __all__ = ['partial_duplication_graph', 'duplication_divergence_graph']
 
 @py_random_state(4)
 def partial_duplication_graph(N, n, p, q, seed=None):
-    """Return a random graph using the partial duplication model.
+    """Returns a random graph using the partial duplication model.
 
     Parameters
     ----------
@@ -80,21 +80,21 @@ def partial_duplication_graph(N, n, p, q, seed=None):
 
     G = nx.complete_graph(n)
     for new_node in range(n, N):
+        # Pick a random vertex, u, already in the graph.
+        src_node = seed.randint(0, new_node - 1)
+
         # Add a new vertex, v, to the graph.
         G.add_node(new_node)
-
-        # Pick a random vertex, u, already in the graph.
-        src_node = seed.randint(0, new_node)
-
-        # Join v and u with probability q.
-        if seed.random() < q:
-            G.add_edge(new_node, src_node)
 
         # For each neighbor of u...
         for neighbor_node in list(nx.all_neighbors(G, src_node)):
             # Add the neighbor to v with probability p.
             if seed.random() < p:
                 G.add_edge(new_node, neighbor_node)
+
+        # Join v and u with probability q.
+        if seed.random() < q:
+            G.add_edge(new_node, src_node)
     return G
 
 

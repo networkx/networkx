@@ -1,4 +1,4 @@
-#    Copyright (C) 2008-2018 by
+#    Copyright (C) 2008-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -644,36 +644,30 @@ class GraphMLWriterLxml(GraphMLWriter):
             element_type = self.xml_type[self.attr_type(k, "graph", v)]
             self.get_key(make_str(k), element_type, "graph", None)
         # Nodes and data
-        attributes = {}
         for node, d in G.nodes(data=True):
             for k, v in d.items():
                 self.attribute_types[(make_str(k), "node")].add(type(v))
-                if k not in attributes:
-                    attributes[k] = v
-        for k, v in attributes.items():
-            T = self.xml_type[self.attr_type(k, "node", v)]
-            self.get_key(make_str(k), T, "node", node_default.get(k))
+        for node, d in G.nodes(data=True):
+            for k, v in d.items():
+                T = self.xml_type[self.attr_type(k, "node", v)]
+                self.get_key(make_str(k), T, "node", node_default.get(k))
         # Edges and data
         if G.is_multigraph():
-            attributes = {}
             for u, v, ekey, d in G.edges(keys=True, data=True):
                 for k, v in d.items():
                     self.attribute_types[(make_str(k), "edge")].add(type(v))
-                    if k not in attributes:
-                        attributes[k] = v
-            for k, v in attributes.items():
-                T = self.xml_type[self.attr_type(k, "edge", v)]
-                self.get_key(make_str(k), T, "edge", edge_default.get(k))
+            for u, v, ekey, d in G.edges(keys=True, data=True):
+                for k, v in d.items():
+                    T = self.xml_type[self.attr_type(k, "edge", v)]
+                    self.get_key(make_str(k), T, "edge", edge_default.get(k))
         else:
-            attributes = {}
             for u, v, d in G.edges(data=True):
                 for k, v in d.items():
                     self.attribute_types[(make_str(k), "edge")].add(type(v))
-                    if k not in attributes:
-                        attributes[k] = v
-            for k, v in attributes.items():
-                T = self.xml_type[self.attr_type(k, "edge", v)]
-                self.get_key(make_str(k), T, "edge", edge_default.get(k))
+            for u, v, d in G.edges(data=True):
+                for k, v in d.items():
+                    T = self.xml_type[self.attr_type(k, "edge", v)]
+                    self.get_key(make_str(k), T, "edge", edge_default.get(k))
 
         # Now add attribute keys to the xml file
         for key in self.xml:
@@ -909,16 +903,13 @@ class GraphMLReader(GraphML):
         return graphml_keys, graphml_key_defaults
 
 
-# fixture for nose tests
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import xml.etree.ElementTree
-    except:
-        raise SkipTest("xml.etree.ElementTree not available")
+    import pytest
+    xml.etree.ElementTree = pytest.importorskip('xml.etree.ElementTree')
 
 
-# fixture for nose tests
+# fixture for pytest
 def teardown_module(module):
     import os
     try:

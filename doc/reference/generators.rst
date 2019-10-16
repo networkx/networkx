@@ -25,6 +25,7 @@ Classic
 
    balanced_tree
    barbell_graph
+   binomial_tree
    complete_graph
    complete_multipartite_graph
    circular_ladder_graph
@@ -115,6 +116,7 @@ Random Graphs
    connected_watts_strogatz_graph
    random_regular_graph
    barabasi_albert_graph
+   dual_barabasi_albert_graph
    extended_barabasi_albert_graph
    powerlaw_cluster_graph
    random_kernel_graph
@@ -215,6 +217,15 @@ Stochastic
    stochastic_graph
 
 
+AS graph
+--------
+.. automodule:: networkx.generators.internet_as_graphs
+.. autosummary::
+   :toctree: generated/
+
+   random_internet_as_graph
+
+
 Intersection
 ------------
 .. automodule:: networkx.generators.intersection
@@ -235,6 +246,7 @@ Social Networks
    karate_club_graph
    davis_southern_women_graph
    florentine_families_graph
+   les_miserables_graph
 
 
 Community
@@ -245,10 +257,11 @@ Community
 
    caveman_graph
    connected_caveman_graph
-   relaxed_caveman_graph
-   random_partition_graph
-   planted_partition_graph
    gaussian_random_partition_graph
+   LFR_benchmark_graph
+   planted_partition_graph
+   random_partition_graph
+   relaxed_caveman_graph
    ring_of_cliques
    stochastic_block_model
    windmill_graph
@@ -300,6 +313,9 @@ Joint Degree Sequence
 
    is_valid_joint_degree
    joint_degree_graph
+   is_valid_directed_joint_degree
+   directed_joint_degree_graph
+
 
 Mycielski
 ---------
@@ -309,3 +325,21 @@ Mycielski
 
    mycielskian
    mycielski_graph
+
+
+Harary Graph
+------------
+.. automodule:: networkx.generators.harary_graph
+.. autosummary::
+   :toctree: generated/
+
+   hnm_harary_graph
+   hkn_harary_graph
+
+Cographs
+------------
+.. automodule:: networkx.generators.cographs
+.. autosummary::
+   :toctree: generated/
+
+   random_cograph

@@ -1,12 +1,9 @@
-from __future__ import print_function
-import random
-from nose import SkipTest
-from nose.tools import assert_equal
-
 try:
     import numpy as np
 except ImportError:
-    raise SkipTest('Numpy not available')
+    from pytest import skip
+    skip('Numpy not available', allow_module_level=True)
+import random
 
 import networkx as nx
 from networkx.algorithms import approximation as approx
@@ -32,13 +29,13 @@ def t(f, *args, **kwds):
     after_np_rv = np.random.rand()
     # if np_rv != after_np_rv:
     #    print(np_rv, after_np_rv, "don't match np!")
-    assert_equal(np_rv, after_np_rv)
+    assert np_rv == after_np_rv
     np.random.seed(42)
 
     after_py_rv = random.random()
     # if py_rv != after_py_rv:
     #    print(py_rv, after_py_rv, "don't match py!")
-    assert_equal(py_rv, after_py_rv)
+    assert py_rv == after_py_rv
     random.seed(42)
 
 
@@ -173,9 +170,10 @@ def run_all_random_functions(seed):
     t(nx.utils.discrete_sequence, n, cdistribution=cdist, seed=seed)
     t(nx.algorithms.bipartite.random_graph, n, m, p, seed=seed)
     t(nx.algorithms.bipartite.gnmk_random_graph, n, m, k, seed=seed)
-    LFR = nx.algorithms.community.LFR_benchmark_graph
+    LFR = nx.generators.LFR_benchmark_graph
     t(LFR, 25, 3, 1.5, 0.1, average_degree=3, min_community=10,
         seed=seed, max_community=20)
+    t(nx.random_internet_as_graph, n, seed=seed)
     # print("done")
 
 
@@ -200,11 +198,11 @@ def test_rng_interface():
         after_np_rv = np.random.rand()
 #        if np_rv != after_np_rv:
 #            print(np_rv, after_np_rv, "don't match np!")
-        assert_equal(np_rv, after_np_rv)
+        assert np_rv == after_np_rv
         after_py_rv = random.random()
 #        if py_rv != after_py_rv:
 #            print(py_rv, after_py_rv, "don't match py!")
-        assert_equal(py_rv, after_py_rv)
+        assert py_rv == after_py_rv
 
 #        print("\nDone testing seed:", seed)
 

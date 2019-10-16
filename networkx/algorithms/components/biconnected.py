@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2011-2018 by
+#    Copyright (C) 2011-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,7 +18,6 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = [
     'biconnected_components',
     'biconnected_component_edges',
-    'biconnected_component_subgraphs',
     'is_biconnected',
     'articulation_points',
 ]
@@ -26,7 +25,7 @@ __all__ = [
 
 @not_implemented_for('directed')
 def is_biconnected(G):
-    """Return True if the graph is biconnected, False otherwise.
+    """Returns True if the graph is biconnected, False otherwise.
 
     A graph is biconnected if, and only if, it cannot be disconnected by
     removing only one node (and all edges incident on that node).  If
@@ -99,7 +98,7 @@ def is_biconnected(G):
 
 @not_implemented_for('directed')
 def biconnected_component_edges(G):
-    """Return a generator of lists of edges, one list for each biconnected
+    """Returns a generator of lists of edges, one list for each biconnected
     component of the input graph.
 
     Biconnected components are maximal subgraphs such that the removal of a
@@ -172,7 +171,7 @@ def biconnected_component_edges(G):
 
 @not_implemented_for('directed')
 def biconnected_components(G):
-    """Return a generator of sets of nodes, one set for each biconnected
+    """Returns a generator of sets of nodes, one set for each biconnected
     component of the graph
 
     Biconnected components are maximal subgraphs such that the removal of a
@@ -233,6 +232,9 @@ def biconnected_components(G):
 
     >>> Gc = max(nx.biconnected_components(G), key=len)
 
+    To create the components as subgraphs use:
+    ``(G.subgraph(c).copy() for c in biconnected_components(G))``
+
     See Also
     --------
     is_biconnected
@@ -261,22 +263,6 @@ def biconnected_components(G):
     """
     for comp in _biconnected_dfs(G, components=True):
         yield set(chain.from_iterable(comp))
-
-
-@not_implemented_for('directed')
-def biconnected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in biconnected_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in biconnected_components(G))``
-    """
-    msg = "connected_component_subgraphs is deprecated and will be removed" \
-        "in 2.2. Use (G.subgraph(c).copy() for c in biconnected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in biconnected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
 
 
 @not_implemented_for('directed')

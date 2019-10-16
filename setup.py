@@ -19,10 +19,15 @@ if sys.argv[-1] == 'setup.py':
     print("To install, run 'python setup.py install'")
     print()
 
-if sys.version_info[:2] < (2, 7):
-    print("NetworkX requires Python 2.7 or later (%d.%d detected)." %
-          sys.version_info[:2])
-    sys.exit(-1)
+if sys.version_info[:2] < (3, 5):
+    error = """NetworkX 2.3+ requires Python 3.5 or later (%d.%d detected).
+             
+For Python 2.7, please install version 2.2 using:
+
+$ pip install 'networkx==2.2'
+""" % sys.version_info[:2]
+    sys.stderr.write(error + "\n")
+    sys.exit(1)
 
 # Write the version information.
 sys.path.insert(0, 'networkx')
@@ -119,11 +124,11 @@ package_data = {
 install_requires = ['decorator>=4.3.0']
 extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                           'pygraphviz', 'pydot', 'pyyaml', 'gdal', 'lxml',
-                          'nose'],
+                          'pytest'],
                   'gdal': ['gdal'],
                   'lxml': ['lxml'],
                   'matplotlib': ['matplotlib'],
-                  'nose': ['nose'],
+                  'pytest': ['pytest'],
                   'numpy': ['numpy'],
                   'pandas': ['pandas'],
                   'pydot': ['pydot'],
@@ -131,6 +136,9 @@ extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                   'pyyaml': ['pyyaml'],
                   'scipy': ['scipy']
                  }
+
+with open("README.rst", "r") as fh:
+    long_description = fh.read()
 
 if __name__ == "__main__":
 
@@ -143,18 +151,17 @@ if __name__ == "__main__":
         author_email=release.authors['Hagberg'][1],
         description=release.description,
         keywords=release.keywords,
-        long_description=release.long_description,
+        long_description=long_description,
         license=release.license,
         platforms=release.platforms,
         url=release.url,
-        download_url=release.download_url,
+        project_urls=release.project_urls,
         classifiers=release.classifiers,
         packages=packages,
         data_files=data,
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
-        test_suite='nose.collector',
-        tests_require=['nose>=1.3.7'],
+        python_requires='>=3.5',
         zip_safe=False
     )

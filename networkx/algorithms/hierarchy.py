@@ -2,7 +2,7 @@
 """
 Flow Hierarchy.
 """
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -49,6 +49,6 @@ def flow_hierarchy(G, weight=None):
        http://web.mit.edu/~cmagee/www/documents/28-DetectingEvolvingPatterns_FlowHierarchy.pdf
     """
     if not G.is_directed():
-        raise nx.NetworkXError("G must be a digraph in flow_heirarchy")
+        raise nx.NetworkXError("G must be a digraph in flow_hierarchy")
     scc = nx.strongly_connected_components(G)
     return 1. - sum(G.subgraph(c).size(weight) for c in scc) / float(G.size(weight))

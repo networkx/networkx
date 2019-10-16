@@ -15,6 +15,7 @@ Helper Functions
    flatten
    iterable
    is_list_of_ints
+   make_list_of_ints
    make_str
    generate_unique_node
    default_opener

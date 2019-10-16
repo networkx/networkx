@@ -4,8 +4,7 @@
 from ast import literal_eval
 import codecs
 import io
-from nose.tools import *
-from nose import SkipTest
+import pytest
 import networkx as nx
 from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
@@ -23,8 +22,9 @@ except NameError:
 
 class TestGraph(object):
 
-    def setUp(self):
-        self.simple_data = """Creator "me"
+    @classmethod
+    def setup_class(cls):
+        cls.simple_data = """Creator "me"
 Version "xx"
 graph [
  comment "This is a sample graph"
@@ -153,14 +153,14 @@ graph   [
 
     def test_parse_gml(self):
         G = nx.parse_gml(self.simple_data, label='label')
-        assert_equals(sorted(G.nodes()),
+        assert (sorted(G.nodes()) ==
                       ['Node 1', 'Node 2', 'Node 3'])
-        assert_equals([e for e in sorted(G.edges())],
+        assert ([e for e in sorted(G.edges())] ==
                       [('Node 1', 'Node 2'),
                        ('Node 2', 'Node 3'),
                        ('Node 3', 'Node 1')])
 
-        assert_equals([e for e in sorted(G.edges(data=True))],
+        assert ([e for e in sorted(G.edges(data=True))] ==
                       [('Node 1', 'Node 2',
                         {'color': {'line': 'blue', 'thickness': 3},
                          'label': 'Edge from node 1 to node 2'}),
@@ -176,8 +176,8 @@ graph   [
         fh.close()
         Gin = nx.read_gml(fname, label='label')
         G = nx.parse_gml(self.simple_data, label='label')
-        assert_equals(sorted(G.nodes(data=True)), sorted(Gin.nodes(data=True)))
-        assert_equals(sorted(G.edges(data=True)), sorted(Gin.edges(data=True)))
+        assert sorted(G.nodes(data=True)) == sorted(Gin.nodes(data=True))
+        assert sorted(G.edges(data=True)) == sorted(Gin.edges(data=True))
         os.close(fd)
         os.unlink(fname)
 
@@ -192,7 +192,7 @@ graph   [
         G = nx.Graph()
         G.add_node(1203)
         data = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
-        assert_equal(data, answer)
+        assert data == answer
 
     def test_relabel_duplicate(self):
         data = """
@@ -214,7 +214,7 @@ graph
 """
         fh = io.BytesIO(data.encode('UTF-8'))
         fh.seek(0)
-        assert_raises(
+        pytest.raises(
             nx.NetworkXError, nx.read_gml, fh, label='label')
 
     def test_tuplelabels(self):
@@ -237,7 +237,7 @@ graph
     target 1
   ]
 ]"""
-        assert_equal(data, answer)
+        assert data == answer
 
     def test_quotes(self):
         # https://github.com/networkx/networkx/issues/1061
@@ -259,7 +259,7 @@ graph
     demo "This is &#34;quoted&#34; and this is a copyright: &#169;"
   ]
 ]"""
-        assert_equal(data, answer)
+        assert data == answer
 
     def test_unicode_node(self):
         node = 'node' + unichr(169)
@@ -276,7 +276,7 @@ graph
     label "node&#169;"
   ]
 ]"""
-        assert_equal(data, answer)
+        assert data == answer
 
     def test_float_label(self):
         node = 1.0
@@ -293,14 +293,14 @@ graph
     label "1.0"
   ]
 ]"""
-        assert_equal(data, answer)
+        assert data == answer
 
     def test_name(self):
         G = nx.parse_gml('graph [ name "x" node [ id 0 label "x" ] ]')
-        assert_equal('x', G.graph['name'])
+        assert 'x' == G.graph['name']
         G = nx.parse_gml('graph [ node [ id 0 label "x" ] ]')
-        assert_equal('', G.name)
-        assert_not_in('name', G.graph)
+        assert '' == G.name
+        assert 'name' not in G.graph
 
     def test_graph_types(self):
         for directed in [None, False, True]:
@@ -314,8 +314,8 @@ graph
                 gml += ' edge [ source 0 target 0 ]'
                 gml += ' ]'
                 G = nx.parse_gml(gml)
-                assert_equal(bool(directed), G.is_directed())
-                assert_equal(bool(multigraph), G.is_multigraph())
+                assert bool(directed) == G.is_directed()
+                assert bool(multigraph) == G.is_multigraph()
                 gml = 'graph [\n'
                 if directed is True:
                     gml += '  directed 1\n'
@@ -332,17 +332,17 @@ graph
                 if multigraph:
                     gml += '    key 0\n'
                 gml += '  ]\n]'
-                assert_equal(gml, '\n'.join(nx.generate_gml(G)))
+                assert gml == '\n'.join(nx.generate_gml(G))
 
     def test_data_types(self):
         data = [True, False, 10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
                 [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}, (2, "3")]]
-        try:
-            data.append(unichr(0x14444))  # fails under IronPython
+        try:  # fails under IronPython
+            data.append(unichr(0x14444))
         except ValueError:
             data.append(unichr(0x1444))
-        try:
-            data.append(literal_eval('{2.3j, 1 - 2.3j, ()}'))  # fails under Python 2.7
+        try:  # fails under Python 2.7
+            data.append(literal_eval('{2.3j, 1 - 2.3j, ()}'))
         except ValueError:
             data.append([2.3j, 1 - 2.3j, ()])
         G = nx.Graph()
@@ -352,42 +352,46 @@ graph
         G.add_edge(0, 0, float=-2.5, data=data)
         gml = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
-        assert_equal(data, G.name)
-        assert_equal({'name': data, unicode('data'): data}, G.graph)
-        assert_equal(list(G.nodes(data=True)),
+        assert data == G.name
+        assert {'name': data, unicode('data'): data} == G.graph
+        assert (list(G.nodes(data=True)) ==
                      [(0, dict(int=-1, data=dict(data=data)))])
-        assert_equal(list(G.edges(data=True)), [(0, 0, dict(float=-2.5, data=data))])
+        assert (list(G.edges(data=True)) ==
+                     [(0, 0, dict(float=-2.5, data=data))])
         G = nx.Graph()
         G.graph['data'] = 'frozenset([1, 2, 3])'
         G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)
-        assert_equal(G.graph['data'], 'frozenset([1, 2, 3])')
+        assert G.graph['data'] == 'frozenset([1, 2, 3])'
 
     def test_escape_unescape(self):
         gml = """graph [
   name "&amp;&#34;&#xf;&#x4444;&#1234567890;&#x1234567890abcdef;&unknown;"
 ]"""
         G = nx.parse_gml(gml)
-        assert_equal(
-            '&"\x0f' + unichr(0x4444) + '&#1234567890;&#x1234567890abcdef;&unknown;',
+        assert (
+            '&"\x0f' + unichr(0x4444) +
+            '&#1234567890;&#x1234567890abcdef;&unknown;' ==
             G.name)
         gml = '\n'.join(nx.generate_gml(G))
-        assert_equal("""graph [
-  name "&#38;&#34;&#15;&#17476;&#38;#1234567890;&#38;#x1234567890abcdef;&#38;unknown;"
-]""", gml)
+        alnu = "#1234567890;&#38;#x1234567890abcdef"
+        answer = """graph [
+  name "&#38;&#34;&#15;&#17476;&#38;""" + alnu + """;&#38;unknown;"
+]"""
+        assert answer == gml
 
     def test_exceptions(self):
-        assert_raises(ValueError, literal_destringizer, '(')
-        assert_raises(ValueError, literal_destringizer, 'frozenset([1, 2, 3])')
-        assert_raises(ValueError, literal_destringizer, literal_destringizer)
-        assert_raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
-        assert_raises(ValueError, literal_stringizer, literal_stringizer)
+        pytest.raises(ValueError, literal_destringizer, '(')
+        pytest.raises(ValueError, literal_destringizer, 'frozenset([1, 2, 3])')
+        pytest.raises(ValueError, literal_destringizer, literal_destringizer)
+        pytest.raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
+        pytest.raises(ValueError, literal_stringizer, literal_stringizer)
         with tempfile.TemporaryFile() as f:
             f.write(codecs.BOM_UTF8 + 'graph[]'.encode('ascii'))
             f.seek(0)
-            assert_raises(nx.NetworkXError, nx.read_gml, f)
+            pytest.raises(nx.NetworkXError, nx.read_gml, f)
 
         def assert_parse_error(gml):
-            assert_raises(nx.NetworkXError, nx.parse_gml, gml)
+            pytest.raises(nx.NetworkXError, nx.parse_gml, gml)
 
         assert_parse_error(['graph [\n\n', unicode(']')])
         assert_parse_error('')
@@ -439,8 +443,20 @@ graph
             'edge [ source 0 target 1 key 0 ] edge [ source 1 target 0 key 0 ]'
             'directed 1 multigraph 1 ]')
 
+        # Tests for string convertable alphanumeric id and label values
+        nx.parse_gml(
+            'graph [edge [ source a target a ] node [ id a label b ] ]')
+        nx.parse_gml(
+            'graph [ node [ id n42 label 0 ] node [ id x43 label 1 ]'
+            'edge [ source n42 target x43 key 0 ]'
+            'edge [ source x43 target n42 key 0 ]'
+            'directed 1 multigraph 1 ]')
+        assert_parse_error(
+            "graph [edge [ source u'u\4200' target u'u\4200' ] " +
+            "node [ id u'u\4200' label b ] ]")
+
         def assert_generate_error(*args, **kwargs):
-            assert_raises(nx.NetworkXError,
+            pytest.raises(nx.NetworkXError,
                           lambda: list(nx.generate_gml(*args, **kwargs)))
 
         G = nx.Graph()
@@ -456,3 +472,43 @@ graph
         G.graph['data'] = []
         assert_generate_error(G)
         assert_generate_error(G, stringizer=len)
+
+    def test_label_kwarg(self):
+        G = nx.parse_gml(self.simple_data, label='id')
+        assert sorted(G.nodes) == [1, 2, 3]
+        labels = [G.nodes[n]['label'] for n in sorted(G.nodes)]
+        assert labels == ['Node 1', 'Node 2', 'Node 3']
+
+        G = nx.parse_gml(self.simple_data, label=None)
+        assert sorted(G.nodes) == [1, 2, 3]
+        labels = [G.nodes[n]['label'] for n in sorted(G.nodes)]
+        assert labels == ['Node 1', 'Node 2', 'Node 3']
+
+    def test_outofrange_integers(self):
+        # GML restricts integers to 32 signed bits.
+        # Check that we honor this restriction on export
+        G = nx.Graph()
+        # Test export for numbers that barely fit or don't fit into 32 bits,
+        # and 3 numbers in the middle
+        numbers = {'toosmall': (-2**31)-1,
+                   'small': -2**31,
+                   'med1': -4,
+                   'med2': 0,
+                   'med3': 17,
+                   'big': (2**31)-1,
+                   'toobig': 2**31}
+        G.add_node('Node', **numbers)
+
+        fd, fname = tempfile.mkstemp()
+        try:
+            nx.write_gml(G, fname)
+            # Check that the export wrote the nonfitting numbers as strings
+            G2 = nx.read_gml(fname)
+            for attr, value in G2.nodes['Node'].items():
+                if attr == 'toosmall' or attr == 'toobig':
+                    assert type(value) == str
+                else:
+                    assert type(value) == int
+        finally:
+            os.close(fd)
+            os.unlink(fname)

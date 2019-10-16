@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from nose.tools import assert_equal
 import os
 import tempfile
 
@@ -8,7 +7,8 @@ from networkx.testing.utils import *
 
 
 class TestGpickle(object):
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         G = nx.Graph(name="test")
         e = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('e', 'f'), ('a', 'f')]
         G.add_edges_from(e, width=10)
@@ -27,14 +27,14 @@ class TestGpickle(object):
         nx.freeze(fDG)
         nx.freeze(fMG)
         nx.freeze(fMDG)
-        self.G = G
-        self.DG = DG
-        self.MG = MG
-        self.MDG = MDG
-        self.fG = fG
-        self.fDG = fDG
-        self.fMG = fMG
-        self.fMDG = fMDG
+        cls.G = G
+        cls.DG = DG
+        cls.MG = MG
+        cls.MDG = MDG
+        cls.fG = fG
+        cls.fDG = fDG
+        cls.fMG = fMG
+        cls.fMDG = fMDG
 
     def test_gpickle(self):
         for G in [self.G, self.DG, self.MG, self.MDG,

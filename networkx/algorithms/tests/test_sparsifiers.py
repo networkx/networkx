@@ -3,7 +3,7 @@
 # All rights reserved.
 # BSD license.
 """Unit tests for the sparsifier computation functions."""
-from nose.tools import *
+import pytest
 import networkx as nx
 from networkx.utils import py_random_state
 
@@ -134,8 +134,8 @@ def test_spanner_unweighted_disconnected_graph():
     _test_spanner(G, spanner, 10)
 
 
-@raises(ValueError)
 def test_spanner_invalid_stretch():
     """Check whether an invalid stretch is caught."""
-    G = nx.empty_graph()
-    nx.spanner(G, 0)
+    with pytest.raises(ValueError):
+        G = nx.empty_graph()
+        nx.spanner(G, 0)

@@ -2,8 +2,6 @@ from io import BytesIO
 import tempfile
 from unittest import TestCase
 
-from nose.tools import assert_equal
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
@@ -28,10 +26,10 @@ class TestSparseGraph6(object):
     def test_from_bytes_multigraph_graph(self):
         graph_data = b':An'
         G = nx.from_sparse6_bytes(graph_data)
-        assert_true(type(G), nx.Graph)
+        assert type(G), nx.Graph
         multigraph_data = b':Ab'
         M = nx.from_sparse6_bytes(multigraph_data)
-        assert_true(type(M), nx.MultiGraph)
+        assert type(M), nx.MultiGraph
 
     def test_read_sparse6(self):
         data = b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM'
@@ -47,7 +45,7 @@ class TestSparseGraph6(object):
                 b':Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM')
         fh = BytesIO(data)
         glist = nx.read_sparse6(fh)
-        assert_equal(len(glist), 2)
+        assert len(glist) == 2
         for G in glist:
             assert_nodes_equal(G.nodes(),
                                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -117,7 +115,7 @@ class TestWriteSparse6(TestCase):
         nx.write_sparse6(G, result)
         # Compared with sage
         expected = b'>>sparse6<<:Nk' + b'?G`cJ' * 9 + b'\n'
-        assert_equal(result.getvalue(), expected)
+        assert result.getvalue() == expected
 
     def test_read_write_inverse(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:
@@ -128,7 +126,7 @@ class TestWriteSparse6(TestCase):
             # Strip the trailing newline.
             gstr = gstr.getvalue().rstrip()
             g2 = nx.from_sparse6_bytes(gstr)
-            assert_equal(g2.order(), g.order())
+            assert g2.order() == g.order()
             assert_edges_equal(g2.edges(), g.edges())
 
     def no_directed_graphs(self):

@@ -21,7 +21,7 @@ Format
 See https://docs.python.org/2/library/pickle.html
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -100,9 +100,8 @@ def read_gpickle(path):
     """
     return pickle.load(path)
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def teardown_module(module):
     import os
     os.unlink('test.gpickle')

@@ -20,7 +20,7 @@ __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
 
 
 def union_all(graphs, rename=(None,)):
-    """Return the union of all graphs.
+    """Returns the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
 
@@ -68,7 +68,7 @@ def union_all(graphs, rename=(None,)):
 
 
 def disjoint_union_all(graphs):
-    """Return the disjoint union of all graphs.
+    """Returns the disjoint union of all graphs.
 
     This operation forces distinct integer node labels starting with 0
     for the first graph in the list and numbering consecutively.
@@ -105,7 +105,7 @@ def disjoint_union_all(graphs):
 
 
 def compose_all(graphs):
-    """Return the composition of all graphs.
+    """Returns the composition of all graphs.
 
     Composition is the simple union of the node sets and edge sets.
     The node sets of the supplied graphs need not be disjoint.
@@ -143,7 +143,7 @@ def compose_all(graphs):
 
 
 def intersection_all(graphs):
-    """Return a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the edges that exist in
     all graphs.
 
     All supplied graphs must have the same node set.

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2015-2018 Aitor Almeida
+#    Copyright (C) 2015-2019 Aitor Almeida
 #    All rights reserved.
 #    BSD license.
 #
@@ -84,18 +84,18 @@ def asyn_lpa_communities(G, weight=None, seed=None):
             # algorithm asynchronous.
             label_freq = Counter()
             for v in G[node]:
-                label_freq.update({labels[v]: G.edges[v, node][weight]
+                label_freq.update({labels[v]: G.edges[node, v][weight]
                                    if weight else 1})
             # Choose the label with the highest frecuency. If more than 1 label
             # has the highest frecuency choose one randomly.
             max_freq = max(label_freq.values())
             best_labels = [label for label, freq in label_freq.items()
                            if freq == max_freq]
-            new_label = seed.choice(best_labels)
-            labels[node] = new_label
-            # Continue until all nodes have a label that is better than other
-            # neighbour labels (only one label has max_freq for each node).
-            cont = cont or len(best_labels) > 1
+            
+            # Continue until all nodes have a majority label
+            if labels[node] not in best_labels:
+                labels[node] = seed.choice(best_labels)
+                cont = True
 
     # TODO In Python 3.3 or later, this should be `yield from ...`.
     return iter(groups(labels).values())

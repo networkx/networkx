@@ -1,4 +1,5 @@
 from networkx.algorithms.assortativity import *
+from networkx.algorithms.asteroidal import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.bridges import *
 from networkx.algorithms.chains import *
@@ -18,7 +19,7 @@ from networkx.algorithms.distance_measures import *
 from networkx.algorithms.distance_regular import *
 from networkx.algorithms.dominance import *
 from networkx.algorithms.dominating import *
-from networkx.algorithms.efficiency import *
+from networkx.algorithms.efficiency_measures import *
 from networkx.algorithms.euler import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.hierarchy import *
@@ -30,8 +31,10 @@ from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
+from networkx.algorithms.non_randomness import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
+from networkx.algorithms.planar_drawing import *
 from networkx.algorithms.reciprocity import *
 from networkx.algorithms.richclub import *
 from networkx.algorithms.shortest_paths import *

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,7 +21,7 @@ __all__ = ['astar_path', 'astar_path_length']
 
 @not_implemented_for('multigraph')
 def astar_path(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target
+    """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
@@ -110,13 +110,18 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             return path
 
         if curnode in explored:
-            continue
+            # Do not override the parent of starting node
+            if explored[curnode] is None:
+                continue
+
+            # Skip bad paths that were enqueued before finding a better one
+            qcost, h = enqueued[curnode]
+            if qcost < dist:
+                continue
 
         explored[curnode] = parent
 
         for neighbor, w in G[curnode].items():
-            if neighbor in explored:
-                continue
             ncost = dist + w.get(weight, 1)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
@@ -131,11 +136,11 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
-    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (source, target))
+    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (target, source))
 
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):
-    """Return the length of the shortest path between source and target using
+    """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
 
     Parameters

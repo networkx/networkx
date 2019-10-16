@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
+#    Copyright (C) 2004-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -24,7 +24,6 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 .. _Triangular Tiling: https://en.wikipedia.org/wiki/Triangular_tiling
 
 """
-from __future__ import division
 
 from math import sqrt
 
@@ -35,7 +34,6 @@ from networkx.algorithms.operators.product import cartesian_product
 from networkx.exception import NetworkXError
 from networkx.relabel import relabel_nodes
 from networkx.utils import flatten
-from networkx.utils import is_list_of_ints
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 from networkx.generators.classic import cycle_graph
@@ -171,7 +169,7 @@ def hypercube_graph(n):
 
 def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
                              create_using=None):
-    """Returns the $m$ by $n$ triangular lattice graph.
+    r"""Returns the $m$ by $n$ triangular lattice graph.
 
     The `triangular lattice graph`_ is a two-dimensional `grid graph`_ in
     which each square unit has a diagonal edge (each grid unit has a chord).

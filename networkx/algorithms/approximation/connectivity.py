@@ -252,7 +252,7 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     See Also
     --------
     local_node_connectivity
-    all_pairs_node_connectivity
+    node_connectivity
 
     References
     ----------
@@ -283,7 +283,7 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
 
 
 def _bidirectional_shortest_path(G, source, target, exclude):
-    """Return shortest path between source and target ignoring nodes in the
+    """Returns shortest path between source and target ignoring nodes in the
     container 'exclude'.
 
     Parameters

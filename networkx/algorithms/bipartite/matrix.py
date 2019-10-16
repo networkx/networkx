@@ -4,7 +4,7 @@
 Biadjacency matrices
 ====================
 """
-#    Copyright (C) 2013-2018 by
+#    Copyright (C) 2013-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -20,7 +20,7 @@ __all__ = ['biadjacency_matrix', 'from_biadjacency_matrix']
 
 def biadjacency_matrix(G, row_order, column_order=None,
                        dtype=None, weight='weight',  format='csr'):
-    r"""Return the biadjacency matrix of the bipartite graph G.
+    r"""Returns the biadjacency matrix of the bipartite graph G.
 
     Let `G = (U, V, E)` be a bipartite graph with node sets
     `U = u_{1},...,u_{r}` and `V = v_{1},...,v_{s}`. The biadjacency
@@ -168,12 +168,8 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
 
-# fixture for nose tests
 
-
+# fixture for pytest
 def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    import pytest
+    scipy = pytest.importorskip('scipy')

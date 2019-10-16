@@ -1,4 +1,4 @@
-#    Copyright (C) 2013-2018 by
+#    Copyright (C) 2013-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -15,14 +15,14 @@ from itertools import combinations
 from collections import defaultdict
 
 import networkx as nx
-from networkx.utils import arbitrary_element
+from networkx.utils import arbitrary_element, generate_unique_node
 from networkx.utils.decorators import *
 
 __all__ = ['line_graph', 'inverse_line_graph']
 
 
 def line_graph(G, create_using=None):
-    """Returns the line graph of the graph or digraph `G`.
+    r"""Returns the line graph of the graph or digraph `G`.
 
     The line graph of a graph `G` has a node for each edge in `G` and an
     edge joining those nodes if the two edges in `G` share a common node. For
@@ -162,7 +162,7 @@ def _sorted_edge(u, v):
 
 
 def _lg_directed(G, create_using=None):
-    """Return the line graph L of the (multi)digraph G.
+    """Returns the line graph L of the (multi)digraph G.
 
     Edges in G appear as nodes in L, represented as tuples of the form (u,v)
     or (u,v,key) if G is a multidigraph. A node in L corresponding to the edge
@@ -192,7 +192,7 @@ def _lg_directed(G, create_using=None):
 
 
 def _lg_undirected(G, selfloops=False, create_using=None):
-    """Return the line graph L of the (multi)graph G.
+    """Returns the line graph L of the (multi)graph G.
 
     Edges in G appear as nodes in L, represented as sorted tuples of the form
     (u,v), or (u,v,key) if G is a multigraph. A node in L corresponding to
@@ -276,14 +276,40 @@ def inverse_line_graph(G):
     -----
     This is an implementation of the Roussopoulos algorithm.
 
+    If G consists of multiple components, then the algorithm doesn't work.
+    You should invert every component seperately:
+
+    >>> K5 = nx.complete_graph(5)
+    >>> P4 = nx.Graph([('a', 'b'), ('b', 'c'), ('c', 'd')])
+    >>> G = nx.union(K5, P4)
+    >>> root_graphs = []
+    >>> for comp in nx.connected_components(G):
+    ...     root_graphs.append(nx.inverse_line_graph(G.subgraph(comp)))
+    >>> len(root_graphs)
+    2
+
     References
     ----------
     * Roussopolous, N, "A max {m, n} algorithm for determining the graph H from
       its line graph G", Information Processing Letters 2, (1973), 108--112.
 
     """
-    if G.number_of_edges() == 0 or G.number_of_nodes() == 0:
-        msg = "G is not a line graph (has zero vertices or edges)"
+    if G.number_of_nodes() == 0:
+        a = generate_unique_node()
+        H = nx.Graph()
+        H.add_node(a)
+        return H
+    elif G.number_of_nodes() == 1:
+        v = list(G)[0]
+        a = (v, 0)
+        b = (v, 1)
+        H = nx.Graph([(a,b)])
+        return H
+    elif G.number_of_nodes() > 1 and G.number_of_edges() == 0:
+        msg = (
+            "inverse_line_graph() doesn't work on an edgeless graph. "
+            "Please use this function on each component seperately."
+        )
         raise nx.NetworkXError(msg)
 
     starting_cell = _select_starting_cell(G)
@@ -313,11 +339,11 @@ def _triangles(G, e):
     u, v = e
     if u not in G:
         raise nx.NetworkXError("Vertex %s not in graph" % u)
-    if v not in G.neighbors(u):
+    if v not in G[u]:
         raise nx.NetworkXError("Edge (%s, %s) not in graph" % (u, v))
     triangle_list = []
-    for x in G.neighbors(u):
-        if x in G.neighbors(v):
+    for x in G[u]:
+        if x in G[v]:
             triangle_list.append((u, v, x))
     return triangle_list
 
@@ -351,12 +377,12 @@ def _odd_triangle(G, T):
         if u not in G.nodes():
             raise nx.NetworkXError("Vertex %s not in graph" % u)
     for e in list(combinations(T, 2)):
-        if e[0] not in G.neighbors(e[1]):
+        if e[0] not in G[e[1]]:
             raise nx.NetworkXError("Edge (%s, %s) not in graph" % (e[0], e[1]))
 
     T_neighbors = defaultdict(int)
     for t in T:
-        for v in G.neighbors(t):
+        for v in G[t]:
             if v not in T:
                 T_neighbors[v] += 1
     for v in T_neighbors:
@@ -399,10 +425,10 @@ def _find_partition(G, starting_cell):
             # if u still has edges then we need to find its other cell
             # this other cell must be a complete subgraph or else G is
             # not a line graph
-            new_cell = [u] + list(G_partition.neighbors(u))
+            new_cell = [u] + list(G_partition[u])
             for u in new_cell:
                 for v in new_cell:
-                    if (u != v) and (v not in G.neighbors(u)):
+                    if (u != v) and (v not in G_partition[u]):
                         msg = "G is not a line graph" \
                               "(partition cell not a complete subgraph)"
                         raise nx.NetworkXError(msg)
@@ -485,7 +511,7 @@ def _select_starting_cell(G, starting_edge=None):
             if len(triangle_nodes) == s + 2:
                 for u in triangle_nodes:
                     for v in triangle_nodes:
-                        if u != v and (v not in G.neighbors(u)):
+                        if u != v and (v not in G[u]):
                             msg = "G is not a line graph (odd triangles " \
                                   "do not form complete subgraph)"
                             raise nx.NetworkXError(msg)

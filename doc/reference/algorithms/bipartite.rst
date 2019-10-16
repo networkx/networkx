@@ -27,6 +27,7 @@ Matching
    eppstein_matching
    hopcroft_karp_matching
    to_vertex_cover
+   minimum_weight_full_matching
 
 
 Matrix

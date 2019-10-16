@@ -70,7 +70,7 @@ class MinHeap(object):
         raise NotImplementedError
 
     def get(self, key, default=None):
-        """Return the value associated with a key.
+        """Returns the value associated with a key.
 
         Parameters
         ----------
@@ -112,22 +112,22 @@ class MinHeap(object):
         raise NotImplementedError
 
     def __nonzero__(self):
-        """Return whether the heap if empty.
+        """Returns whether the heap if empty.
         """
         return bool(self._dict)
 
     def __bool__(self):
-        """Return whether the heap if empty.
+        """Returns whether the heap if empty.
         """
         return bool(self._dict)
 
     def __len__(self):
-        """Return the number of key-value pairs in the heap.
+        """Returns the number of key-value pairs in the heap.
         """
         return len(self._dict)
 
     def __contains__(self, key):
-        """Return whether a key exists in the heap.
+        """Returns whether a key exists in the heap.
 
         Parameters
         ----------

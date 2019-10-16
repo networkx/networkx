@@ -1,4 +1,4 @@
-#    Copyright (C) 2011-2018 by
+#    Copyright (C) 2011-2019 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -60,6 +60,9 @@ def jit_graph(data, create_using=None):
         G = create_using
         G.clear()
 
+    if nx.utils.is_string_like(data):
+        data = json.loads(data)
+
     for node in data:
         G.add_node(node['id'], **node['data'])
         if node.get('adjacencies') is not None:
@@ -70,17 +73,17 @@ def jit_graph(data, create_using=None):
 
 @not_implemented_for('multigraph')
 def jit_data(G, indent=None):
-    """Return data in JIT JSON format.
+    """Returns data in JIT JSON format.
 
     Parameters
     ----------
     G : NetworkX Graph
 
     indent: optional, default=None
-        If indent is a non-negative integer, then JSON array elements and object
-        members will be pretty-printed with that indent level. An indent level
-        of 0, or negative, will only insert newlines. None (the default) selects
-        the most compact representation.
+        If indent is a non-negative integer, then JSON array elements and
+        object members will be pretty-printed with that indent level.
+        An indent level of 0, or negative, will only insert newlines.
+        None (the default) selects the most compact representation.
 
     Returns
     -------
