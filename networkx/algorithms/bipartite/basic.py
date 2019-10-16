@@ -155,29 +155,30 @@ def sets(G, top_nodes=None):
     ----------
     G : NetworkX graph
 
-    top_nodes : container
+    top_nodes : container, optional
       Container with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
       will be raised.
 
     Returns
     -------
-    (X, Y) : two-tuple of sets
-      One set of nodes for each part of the bipartite graph.
+    X : set
+      Nodes from one side of the bipartite graph.
+    Y : set
+      Nodes from the other side.
 
     Raises
     ------
-    AmbiguousSolution : Exception
+    AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
       possible if the input graph is disconnected.
-    NetworkXError: Exception
+    NetworkXError
       Raised if the input graph is not bipartite.
 
     Examples
     --------
-
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
     >>> X, Y = bipartite.sets(G)
