@@ -51,7 +51,7 @@ How to make a new release of ``networkx``
 
    git clean -fxd
    python setup.py sdist bdist_wheel
-   twine upload -s dist/networkx*.zip
+   twine upload -s dist/*
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
