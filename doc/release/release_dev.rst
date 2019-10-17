@@ -17,6 +17,7 @@ Highlights
 This release is the result of 6 months of work with over X pull requests by
 X contributors. Highlights include:
 
+- Dropped support for Python 3.5.
 
 Improvements
 ------------
