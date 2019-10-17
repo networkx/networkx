@@ -19,8 +19,8 @@ if sys.argv[-1] == 'setup.py':
     print("To install, run 'python setup.py install'")
     print()
 
-if sys.version_info[:2] < (3, 5):
-    error = """NetworkX 2.3+ requires Python 3.5 or later (%d.%d detected).
+if sys.version_info[:2] < (3, 6):
+    error = """NetworkX 2.5+ requires Python 3.6 or later (%d.%d detected).
              
 For Python 2.7, please install version 2.2 using:
 
@@ -162,6 +162,6 @@ if __name__ == "__main__":
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
-        python_requires='>=3.5',
+        python_requires='>=3.6',
         zip_safe=False
     )
