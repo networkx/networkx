@@ -1030,7 +1030,7 @@ def draw_random(G, **kwargs):
 def draw_spectral(G, **kwargs):
     """Draw the graph G with a spectral 2D layout.
 
-    Using the unnormalized Laplacion, the layout shows possible clusters of
+    Using the unnormalized Laplacian, the layout shows possible clusters of
     nodes which are an approximation of the ratio cut. The positions are the
     entries of the second and third eigenvectors corresponding to the
     ascending eigenvalues starting from the second one.
