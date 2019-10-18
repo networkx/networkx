@@ -42,7 +42,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
     >>> from networkx.utils import cuthill_mckee_ordering
     >>> G = nx.path_graph(4)
     >>> rcm = list(cuthill_mckee_ordering(G))
-    >>> A = nx.adjacency_matrix(G, nodelist=rcm) # doctest: +SKIP
+    >>> A = nx.adjacency_matrix(G, nodelist=rcm)
 
     Smallest degree node as heuristic function:
 
@@ -101,7 +101,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
     >>> from networkx.utils import reverse_cuthill_mckee_ordering
     >>> G = nx.path_graph(4)
     >>> rcm = list(reverse_cuthill_mckee_ordering(G))
-    >>> A = nx.adjacency_matrix(G, nodelist=rcm) # doctest: +SKIP
+    >>> A = nx.adjacency_matrix(G, nodelist=rcm)
 
     Smallest degree node as heuristic function:
 

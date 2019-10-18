@@ -230,7 +230,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
     Examples
     --------
-    >>> nx.to_sparse6_bytes(nx.path_graph(2))  # doctest: +SKIP
+    >>> nx.to_sparse6_bytes(nx.path_graph(2))
     b'>>sparse6<<:An\\n'
 
     See Also
@@ -349,7 +349,7 @@ def write_sparse6(G, path, nodes=None, header=True):
         >>> import tempfile
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_sparse6(nx.path_graph(2), f.name)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>sparse6<<:An\\n'
 
     You can also write a sparse6 file by giving an open file-like object::
@@ -357,7 +357,7 @@ def write_sparse6(G, path, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_sparse6(nx.path_graph(2), f)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>sparse6<<:An\\n'
 
     See Also

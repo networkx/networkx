@@ -72,7 +72,8 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
     Examples
     --------
-    >>> nx.zipf_rv(alpha=2, xmin=3, seed=42)  # doctest: +SKIP
+    >>> nx.utils.zipf_rv(alpha=2, xmin=3, seed=42)
+    8
 
     References
     ----------

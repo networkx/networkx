@@ -162,7 +162,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
     Examples
     --------
-    >>> nx.to_graph6_bytes(nx.path_graph(2)) # doctest: +SKIP
+    >>> nx.to_graph6_bytes(nx.path_graph(2))
     b'>>graph6<<A_\\n'
 
     See Also
@@ -289,7 +289,7 @@ def write_graph6(G, path, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_graph6(nx.path_graph(2), f.name)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>graph6<<A_\\n'
 
     See Also
@@ -349,7 +349,7 @@ def write_graph6_file(G, f, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_graph6(nx.path_graph(2), f)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>graph6<<A_\\n'
 
     See Also
