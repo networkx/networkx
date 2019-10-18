@@ -9,7 +9,6 @@
 #          Pieter Swart (swart@lanl.gov)
 #          Sasha Gutfraind (ag362@cornell.edu)
 """Degree centrality measures."""
-import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['degree_centrality',

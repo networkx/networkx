@@ -7,7 +7,6 @@
 #
 # Author: Aric Hagberg (hagberg@lanl.gov)
 """Betweenness centrality measures for subsets of nodes."""
-import networkx as nx
 
 from networkx.algorithms.centrality.betweenness import\
     _single_source_dijkstra_path_basic as dijkstra
