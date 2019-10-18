@@ -76,7 +76,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
 
     Examples
     --------
-    >>> G=nx.read_shp('test.shp') # doctest: +SKIP
+    >>> G = nx.read_shp('test.shp') # doctest: +SKIP
 
     References
     ----------

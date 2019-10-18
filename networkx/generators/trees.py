@@ -61,7 +61,8 @@ def prefix_tree(paths):
             >>> from networkx.generators.trees import NIL
             >>> paths = ['ab', 'abs', 'ad']
             >>> T, root = nx.prefix_tree(paths)
-            >>> T.predecessors(NIL)  # doctest: +SKIP
+            >>> T.predecessors(NIL)
+            <dict_keyiterator object at 0x...>
 
     root : string
         The randomly generated uuid of the root node.
